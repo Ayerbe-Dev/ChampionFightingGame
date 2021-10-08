@@ -1,4 +1,5 @@
 using namespace std;
+#include <iostream>
 #include <functional>
 
 /*
@@ -43,13 +44,8 @@ class PlayerInfo {
 		void blockstun() {};
 };
 
-struct StatusFunctions 	{
-	
-	//There will 100% be more statuses than this, but these are the basics
-};
-
 void process_inputs(PlayerInfo player_info);
-//internal void set_status_functions(PlayerInfo player_info);
+internal void set_status_functions(PlayerInfo player_info);
 bool check_button_on(PlayerInfo player_info, u32 button);
 bool check_button_trigger(PlayerInfo player_info, u32 button);
 bool check_button_release(PlayerInfo player_info, u32 button);
@@ -57,21 +53,22 @@ void status_wait(PlayerInfo player_info);
 
 internal void game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
 	/*
-		Find the sprite for the current character, map it to a surface, give that surface a texture, then free the surface.The texture instances are all 
+		Find the sprite for the current character, map it to a surface, give that surface a texture, then free the surface. The texture instances are all 
 		handled together outside of this function.
 	*/
 	player_info.resource_dir = ("resource/chara/" + player_info.chara_kind + "/");
 	string sprite_dir = (player_info.resource_dir + "sprite/sprite.png");
 	const char* sprite = sprite_dir.c_str(); //Trying to turn sprite_dir directly into a const *char turned the text into a bunch of spaghetti
-	cout << sprite_dir << endl;
-	cout << sprite << endl;
 	SDL_Surface* surface = IMG_Load(sprite);
 	player_info.texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 
-//	set_status_functions(player_info);
+	set_status_functions(player_info);
 	player_info.status_kind = CHARA_STATUS_WAIT;
+	cout << "About to call wait" << endl;
 	player_info.wait();
+	status_wait(player_info);
+	cout << "Called wait" << endl;
 
 	/*
 		Once that's all finished, send the player_info over to an input processor which will be used to set up status changes in the future
@@ -79,9 +76,9 @@ internal void game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
 	process_inputs(player_info);
 }
 
-/*internal void set_status_functions(PlayerInfo player_info) {
-	player_info.wait() = status_wait;
-}*/
+internal void set_status_functions(PlayerInfo player_info) {
+//	player_info.wait() = status_wait;
+}
 
 internal void process_inputs(PlayerInfo player_info) {
 
@@ -120,8 +117,6 @@ internal void process_inputs(PlayerInfo player_info) {
 
 	return;
 }
-
-//I wonder what could have inspired me to make these...
 
 bool check_button_on(PlayerInfo player_info, u32 button) {
 	return player_info.buttons[button].button_on;

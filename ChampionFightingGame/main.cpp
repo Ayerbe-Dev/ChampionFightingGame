@@ -69,9 +69,6 @@ int main() {
 		}
 
 		SDL_RenderClear(renderer); 
-		/*
-			Clear BEFORE we run the player loop, since we don't want to clear it again between calling SDL_RenderCopy and actually rendering it
-		*/
 
 		for (int i = 0; i < 2; i++) {
 			game_main(player_info[i], renderer);
@@ -81,16 +78,11 @@ int main() {
 
 			render_pos.w = 0.3;
 			render_pos.h = 0.3;
-			SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h);
-
+			SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h); //Texture Instance pointer is broken
 			SDL_RenderCopy(renderer, player_info[i].texture_instance, nullptr, &render_pos);
 		}
 
 		SDL_RenderPresent(renderer); 
-		/*
-			Since this part doesn't render anything, either I keep messing up the file directories for the sprites, or I'm missing something. Leaning
-			towards the latter but I copied from multiple examples that all seemed to be exactly the same.
-		*/
 
 		SDL_Delay(1000 / 60);
 	}

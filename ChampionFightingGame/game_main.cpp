@@ -22,8 +22,8 @@ class PlayerInfo {
 	public:
 		u64 id;
 		string chara_kind;
-		f32 pos_x;
-		f32 pos_y;
+		f32 pos_x = 0.0;
+		f32 pos_y = 0.0;
 		f32 prev_pos_x;
 		f32 prev_pos_y;
 		u32 status_kind;
@@ -44,65 +44,68 @@ class PlayerInfo {
 		void blockstun() {};
 };
 
-void process_inputs(PlayerInfo player_info);
+void process_inputs(PlayerInfo* player_info);
 internal void set_status_functions(PlayerInfo player_info);
-bool check_button_on(PlayerInfo player_info, u32 button);
-bool check_button_trigger(PlayerInfo player_info, u32 button);
-bool check_button_release(PlayerInfo player_info, u32 button);
-void status_wait(PlayerInfo player_info);
+bool check_button_on(PlayerInfo* player_info, u32 button);
+bool check_button_trigger(PlayerInfo* player_info, u32 button);
+bool check_button_release(PlayerInfo* player_info, u32 button);
+void status_wait(PlayerInfo* player_info);
 
-internal void game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
+internal PlayerInfo game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
 	/*
 		Find the sprite for the current character, map it to a surface, give that surface a texture, then free the surface. The texture instances are all 
 		handled together outside of this function.
 	*/
 	player_info.resource_dir = ("resource/chara/" + player_info.chara_kind + "/");
 	string sprite_dir = (player_info.resource_dir + "sprite/sprite.png");
-	const char* sprite = sprite_dir.c_str(); //Trying to turn sprite_dir directly into a const *char turned the text into a bunch of spaghetti
+	const char* sprite = sprite_dir.c_str();
 	SDL_Surface* surface = IMG_Load(sprite);
 	player_info.texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 
 	set_status_functions(player_info);
 	player_info.status_kind = CHARA_STATUS_WAIT;
-	cout << "About to call wait" << endl;
 	player_info.wait();
-	status_wait(player_info);
-	cout << "Called wait" << endl;
+//	status_wait(&player_info);
 
 	/*
 		Once that's all finished, send the player_info over to an input processor which will be used to set up status changes in the future
 	*/
-	process_inputs(player_info);
+	process_inputs(&player_info);
+
+	return player_info;
 }
 
 internal void set_status_functions(PlayerInfo player_info) {
 //	player_info.wait() = status_wait;
 }
 
-internal void process_inputs(PlayerInfo player_info) {
+internal void process_inputs(PlayerInfo* player_info) {
 
 	//Our position on the last frame is set to prev_pos
 
-	player_info.prev_pos_x = player_info.pos_x;
-	player_info.prev_pos_y = player_info.pos_y;
+	(*player_info).prev_pos_x = (*player_info).pos_x;
+	(*player_info).prev_pos_y = (*player_info).pos_y;
 
 	if (check_button_on(player_info, BUTTON_START)) {
-		player_info.pos_x = 0.0;
-		player_info.pos_y = 0.0;
+		(*player_info).pos_x = 0.0;
+		(*player_info).pos_y = 0.0;
 	}
 	if (check_button_on(player_info, BUTTON_UP)) {
-		player_info.pos_y += 1.0;
+		(*player_info).pos_y += 1.0;
 	}
 	if (check_button_on(player_info, BUTTON_DOWN)) {
-		player_info.pos_y -= 1.0;
+		(*player_info).pos_y -= 1.0;
 	}
 	if (check_button_on(player_info, BUTTON_LEFT)) {
-		player_info.pos_x -= 1.0;
+		(*player_info).pos_x -= 1.0;
 	}
 	if (check_button_on(player_info, BUTTON_RIGHT)) {
-		player_info.pos_x += 1.0;
+		(*player_info).pos_x += 1.0;
 	}
+
+	cout << "Player " << (*player_info).id << " X: " << (*player_info).pos_x << endl;
+	cout << "Player " << (*player_info).id << " Y: " << (*player_info).pos_y << endl;
 
 	/*
 		Once I start adding collision, I'm going to add a check here that basically says "if part of your position is otherwise invalid, change that part
@@ -112,25 +115,25 @@ internal void process_inputs(PlayerInfo player_info) {
 	//We're done actively checking for any changed inputs, so now we can safely reset them in preparation for the next frame
 
 	for (int i = 0; i < BUTTON_MAX; i++) {
-		player_info.buttons[i].changed = false;
+		(*player_info).buttons[i].changed = false;
 	}
 
 	return;
 }
 
-bool check_button_on(PlayerInfo player_info, u32 button) {
-	return player_info.buttons[button].button_on;
+bool check_button_on(PlayerInfo* player_info, u32 button) {
+	return (*player_info).buttons[button].button_on;
 }
 
-bool check_button_trigger(PlayerInfo player_info, u32 button) {
-	return player_info.buttons[button].changed && player_info.buttons[button].button_on;
+bool check_button_trigger(PlayerInfo* player_info, u32 button) {
+	return (*player_info).buttons[button].changed && (*player_info).buttons[button].button_on;
 }
 
-bool check_button_release(PlayerInfo player_info, u32 button) {
-	return player_info.buttons[button].changed && !player_info.buttons[button].button_on;
+bool check_button_release(PlayerInfo* player_info, u32 button) {
+	return (*player_info).buttons[button].changed && !(*player_info).buttons[button].button_on;
 }
 
-void status_wait(PlayerInfo player_info) {
-	cout << "Player " << player_info.id << " X: " << player_info.pos_x << endl;
-	cout << "Player " << player_info.id << " X: " << player_info.pos_x << endl;
+void status_wait(PlayerInfo* player_info) {
+	cout << "Player " << (*player_info).id << " X: " << (*player_info).pos_x << endl;
+	cout << "Player " << (*player_info).id << " Y: " << (*player_info).pos_y << endl;
 }

@@ -1,80 +1,94 @@
 using namespace std;
 #include <iostream>
 #include <functional>
+#include <vector>
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
 on the current frame
 */
 
+class Animation {
+public:
+
+	vector<SDL_Texture> frame_vector;
+
+	Animation() {}
+	Animation(string animation_location, int frame_count) {
+		for (int i = 0; i < frame_count; i++) {
+			frame_vector.push_back();
+		}
+	}
+};
+
 class GameCoordinate {
-	public:
-		f32 x;
-		f32 y;
-		f32 x_offset;
-		f32 y_offset;
+public:
+	f32 x;
+	f32 y;
+	f32 x_offset;
+	f32 y_offset;
 
-		GameCoordinate() {
-			x = 0.0;
-			y = 0.0;
-			x_offset = 0.0;
-			y_offset = 0.0;
-		}
+	GameCoordinate() {
+		x = 0.0;
+		y = 0.0;
+		x_offset = 0.0;
+		y_offset = 0.0;
+	}
 
-		GameCoordinate(f32 window_width, f32 window_height) {
-			x = 0.0;
-			y = 0.0;
-			x_offset = window_width/2;
-			y_offset = window_height/2;
-		}
+	GameCoordinate(f32 window_width, f32 window_height) {
+		x = 0.0;
+		y = 0.0;
+		x_offset = window_width/2;
+		y_offset = window_height/2;
+	}
 
-		GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
-			x = start_x;
-			y = start_y;
-			x_offset = window_width / 2;
-			y_offset = window_height / 2;
-		}
+	GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
+		x = start_x;
+		y = start_y;
+		x_offset = window_width / 2;
+		y_offset = window_height / 2;
+	}
 
-		f32 getRenderCoodrinateX() {
-			return x + x_offset;
-		}
+	f32 getRenderCoodrinateX() {
+		return x + x_offset;
+	}
 
-		f32 getRenderCoodrinateY() {
-			return y + y_offset;
-		}
+	f32 getRenderCoodrinateY() {
+		return y + y_offset;
+	}
 };
 
 class ButtonMap {
-	public:
-		SDL_Scancode mappings[BUTTON_MAX];
+public:
+	SDL_Scancode mappings[BUTTON_MAX];
 
-		ButtonMap() {
+	ButtonMap() {
+		mappings[BUTTON_UP] = SDL_SCANCODE_W;
+		mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
+		mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
+		mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
+			
+		mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
+	}
+
+	void loadDefaultButtonMap(int player) {
+		if (player == 0) {
 			mappings[BUTTON_UP] = SDL_SCANCODE_W;
 			mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
 			mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
 			mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
-			
+
 			mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
 		}
+		else if (player == 1) {
+			mappings[BUTTON_UP] = SDL_SCANCODE_UP;
+			mappings[BUTTON_DOWN] = SDL_SCANCODE_DOWN;
+			mappings[BUTTON_LEFT] = SDL_SCANCODE_LEFT;
+			mappings[BUTTON_RIGHT] = SDL_SCANCODE_RIGHT;
 
-		void loadDefaultButtonMap(int player) {
-			if (player == 0) {
-				mappings[BUTTON_UP] = SDL_SCANCODE_W;
-				mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
-				mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
-				mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
-
-				mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
-			}
-			else if (player == 1) {
-				mappings[BUTTON_UP] = SDL_SCANCODE_UP;
-				mappings[BUTTON_DOWN] = SDL_SCANCODE_DOWN;
-				mappings[BUTTON_LEFT] = SDL_SCANCODE_LEFT;
-				mappings[BUTTON_RIGHT] = SDL_SCANCODE_RIGHT;
-
-				mappings[BUTTON_START] = SDL_SCANCODE_RETURN;
-			} 
-		}
+			mappings[BUTTON_START] = SDL_SCANCODE_RETURN;
+		} 
+	}
 };
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.

@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SDL2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SDL2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -104,6 +104,11 @@
       <AdditionalLibraryDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>Copies neccesary DLL files on successful build</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -130,12 +135,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>SDL2_image.lib;SDL2.lib;SDL2main.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

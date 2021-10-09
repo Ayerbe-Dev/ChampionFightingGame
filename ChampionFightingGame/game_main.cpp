@@ -19,32 +19,69 @@ struct NameTag {
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 class PlayerInfo {
-	public:
-		i64 id = -1;
-		string chara_kind = "default";
-		f32 pos_x = 0.0;
-		f32 pos_y = 0.0;
-		f32 prev_pos_x = 0.0;
-		f32 prev_pos_y = 0.0;
-		f32 height = 0.0;
-		f32 width = 0.0;
-		u32 status_kind = 0;
-		ButtonState buttons[BUTTON_MAX];
-		string resource_dir = "resource/chara/default/";
-		SDL_Texture* texture_instance;
+public:
+	i64 id{ -1 };
+	string chara_kind{ "default" };
+	f32 pos_x{ 0.0 };
+	f32 pos_y{ 0.0 };
+	f32 prev_pos_x{ 0.0 };
+	f32 prev_pos_y{ 0.0 };
+	f32 height{ 0.0 };
+	f32 width{ 0.0 };
+	u32 status_kind{ 0 };
+	ButtonState buttons[BUTTON_MAX];
+	const char* resource_dir;
+	SDL_Texture* default_texture;
 
-		function<void(PlayerInfo*)> wait;
-		function<void(PlayerInfo*)> walkf;
-		function<void(PlayerInfo*)> walkb;
-		function<void(PlayerInfo*)> dash;
-		function<void(PlayerInfo*)> dashb;
-		function<void(PlayerInfo*)> crouch;
-		function<void(PlayerInfo*)> crouchs;
-		function<void(PlayerInfo*)> jumpsquat;
-		function<void(PlayerInfo*)> jump;
-		function<void(PlayerInfo*)> attack;
-		function<void(PlayerInfo*)> hitstun;
-		function<void(PlayerInfo*)> blockstun;
+	PlayerInfo() { }
+
+	PlayerInfo(const char* character_type, SDL_Renderer* renderer){
+		// runs on creation of instance;	
+
+		//default texture loading
+		resource_dir = "resource/chara/";
+		const char* texture_path = *resource_dir + character_type; // some shit about const chars is really making this painful
+		default_texture = loadTexture(texture_path, renderer);
+		
+		//other numbers
+		height = 100;
+		width = 100;
+
+	}
+
+	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer){
+		SDL_Surface* image_surface = IMG_Load("resource/chara/eric/sprite/sprite.png");
+		if (image_surface == NULL) {
+			std::cout << "Error loading image: " << IMG_GetError() << endl;
+		}
+		return SDL_CreateTextureFromSurface(renderer, image_surface);
+		SDL_FreeSurface(image_surface); // haha no more memory leaks
+	}
+
+	void setStateLikePlayer1(){
+		id = 0;
+		pos_x = 0.0 ;
+		pos_y = 100.0 ;
+	}
+
+	void setStateLikePlayer2() {
+		id = 1;
+		pos_x = 500.0;
+		pos_y = 100.0;
+	}
+
+	function<void(PlayerInfo*)> wait;
+	function<void(PlayerInfo*)> walkf;
+	function<void(PlayerInfo*)> walkb;
+	function<void(PlayerInfo*)> dash;
+	function<void(PlayerInfo*)> dashb;
+	function<void(PlayerInfo*)> crouch;
+	function<void(PlayerInfo*)> crouchs;
+	function<void(PlayerInfo*)> jumpsquat;
+	function<void(PlayerInfo*)> jump;
+	function<void(PlayerInfo*)> attack;
+	function<void(PlayerInfo*)> hitstun;
+	function<void(PlayerInfo*)> blockstun;
 };
 
 void process_inputs(PlayerInfo* player_info);
@@ -89,12 +126,12 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 		handled together outside of this function.
 	*/
 
-	(*player_info).resource_dir = ("resource/chara/" + (*player_info).chara_kind + "/");
+	/*(*player_info).resource_dir = ("resource/chara/" + (*player_info).chara_kind + "/");
 	string sprite_dir = ((*player_info).resource_dir + "sprite/sprite.png");
 	const char* sprite = sprite_dir.c_str();
 	SDL_Surface* surface = IMG_Load(sprite);
 	(*player_info).texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
+	SDL_FreeSurface(surface);*/
 
 	//Handle statuses
 

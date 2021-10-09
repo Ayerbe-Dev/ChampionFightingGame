@@ -14,7 +14,27 @@ bool running = true;
 #include "game_main.cpp"
 
 int main() {
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+		printf("error initializing SDL: %s\n", SDL_GetError());
+	}
+
+	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+
 	PlayerInfo player_info[2];
+
+	PlayerInfo p1 {"eric", renderer};
+	p1.setStateLikePlayer1();
+
+	PlayerInfo p2{ "roy", renderer };
+	p2.setStateLikePlayer2();
+
+	player_info[0] = p1;
+	player_info[1] = p2;
+	/*PlayerInfo player_info[2];
 	player_info[0].buttons[BUTTON_UP].mapping = SDL_SCANCODE_UP;
 	player_info[0].buttons[BUTTON_DOWN].mapping = SDL_SCANCODE_DOWN;
 	player_info[0].buttons[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
@@ -32,16 +52,9 @@ int main() {
 	player_info[1].id = 1;
 	player_info[1].chara_kind = "eric";
 	player_info[1].width = 0.1;
-	player_info[1].height = 0.1;
+	player_info[1].height = 0.1;*/
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		printf("error initializing SDL: %s\n", SDL_GetError());
-	}
-
-	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	
 
 	while (running) {
 		SDL_Event event;
@@ -84,9 +97,9 @@ int main() {
 			render_pos.w = player_info[i].width;
 			render_pos.h = player_info[i].height;
 
-			SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h);
-			SDL_RenderCopy(renderer, player_info[i].texture_instance, NULL, &render_pos);
-			SDL_DestroyTexture(player_info[i].texture_instance);
+			//SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h);
+			SDL_RenderCopy(renderer, player_info[i].default_texture, NULL, &render_pos);
+			//SDL_DestroyTexture(player_info[i].texture_instance);
 		}
 
 		SDL_RenderPresent(renderer); 

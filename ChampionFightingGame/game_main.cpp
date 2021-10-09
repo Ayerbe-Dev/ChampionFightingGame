@@ -30,18 +30,18 @@ public:
 	f32 width{ 0.0 };
 	u32 status_kind{ 0 };
 	ButtonState buttons[BUTTON_MAX];
-	const char* resource_dir;
+	string resource_dir;
 	SDL_Texture* default_texture;
 
 	PlayerInfo() { }
 
-	PlayerInfo(const char* character_type, SDL_Renderer* renderer){
+	PlayerInfo(string character_type, SDL_Renderer* renderer){
 		// runs on creation of instance;	
 
 		//default texture loading
-		resource_dir = "resource/chara/";
-		const char* texture_path = *resource_dir + character_type; // some shit about const chars is really making this painful
-		default_texture = loadTexture(texture_path, renderer);
+		resource_dir = "resource/chara/" + character_type;
+		string texture_path = resource_dir + "/sprite/sprite.png"; 
+		default_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
 		
 		//other numbers
 		height = 100;
@@ -50,7 +50,7 @@ public:
 	}
 
 	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer){
-		SDL_Surface* image_surface = IMG_Load("resource/chara/eric/sprite/sprite.png");
+		SDL_Surface* image_surface = IMG_Load(file_path);
 		if (image_surface == NULL) {
 			std::cout << "Error loading image: " << IMG_GetError() << endl;
 		}

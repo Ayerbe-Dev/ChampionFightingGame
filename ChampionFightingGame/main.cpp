@@ -34,21 +34,26 @@ int main() {
 
 	player_info[0] = p1;
 	player_info[1] = p2;
-	/*PlayerInfo player_info[2];
+
 	player_info[0].buttons[BUTTON_UP].mapping = SDL_SCANCODE_UP;
 	player_info[0].buttons[BUTTON_DOWN].mapping = SDL_SCANCODE_DOWN;
 	player_info[0].buttons[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
 	player_info[0].buttons[BUTTON_RIGHT].mapping = SDL_SCANCODE_RIGHT;
 	player_info[0].buttons[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
-	player_info[0].width = 0.1;
-	player_info[0].height = 0.1;
-	player_info[0].id = 0;
-	player_info[0].chara_kind = "roy";
+
 	player_info[1].buttons[BUTTON_UP].mapping = SDL_SCANCODE_W;
 	player_info[1].buttons[BUTTON_DOWN].mapping = SDL_SCANCODE_S;
 	player_info[1].buttons[BUTTON_LEFT].mapping = SDL_SCANCODE_A;
 	player_info[1].buttons[BUTTON_RIGHT].mapping = SDL_SCANCODE_D;
 	player_info[1].buttons[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
+
+	/*PlayerInfo player_info[2];
+
+	player_info[0].width = 0.1;
+	player_info[0].height = 0.1;
+	player_info[0].id = 0;
+	player_info[0].chara_kind = "roy";
+
 	player_info[1].id = 1;
 	player_info[1].chara_kind = "eric";
 	player_info[1].width = 0.1;

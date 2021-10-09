@@ -86,15 +86,12 @@ int main() {
 
 			SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h);
 			SDL_RenderCopy(renderer, player_info[i].texture_instance, NULL, &render_pos);
+			SDL_DestroyTexture(player_info[i].texture_instance);
 		}
 
 		SDL_RenderPresent(renderer); 
 
 		SDL_Delay(1000 / 60);
-	}
-
-	for (int i = 0; i < 2; i++) {
-		SDL_DestroyTexture(player_info[i].texture_instance);
 	}
 
 	SDL_DestroyRenderer(renderer);

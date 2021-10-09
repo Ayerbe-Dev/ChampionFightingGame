@@ -72,14 +72,12 @@ int main() {
 		for (int i = 0; i < 2; i++) {
 			player_info[i] = game_main(player_info[i], renderer);
 
-			//Trying to check any of the attributes of player_info after this call is returning garbage data
-
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos_x;
 			render_pos.y = player_info[i].pos_y;
 
-			render_pos.w = 0.3;
-			render_pos.h = 0.3;
+			render_pos.w = 60;
+			render_pos.h = 60;
 
 			SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h);
 			SDL_RenderCopy(renderer, player_info[i].texture_instance, nullptr, &render_pos);

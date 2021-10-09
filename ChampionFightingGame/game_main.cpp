@@ -8,8 +8,8 @@ on the current frame
 */
 struct ButtonState { 
 	u32 mapping;
-	bool button_on;
-	bool changed;
+	bool button_on = false;
+	bool changed = false;
 };
 
 //Smash-style name tag system where custom controls are mapped to a tag
@@ -20,42 +20,73 @@ struct NameTag {
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 class PlayerInfo {
 	public:
-		u64 id;
-		string chara_kind;
+		i64 id = -1;
+		string chara_kind = "default";
 		f32 pos_x = 0.0;
 		f32 pos_y = 0.0;
-		f32 prev_pos_x;
-		f32 prev_pos_y;
-		u32 status_kind;
+		f32 prev_pos_x = 0.0;
+		f32 prev_pos_y = 0.0;
+		u32 status_kind= 0;
 		ButtonState buttons[BUTTON_MAX];
-		string resource_dir;
+		string resource_dir = "resource/chara/default/";
 		SDL_Texture* texture_instance;
 
-		void wait() {};
-		void walkf() {};
-		void walkb() {};
-		void dash() {};
-		void dashb() {};
-		void crouch() {};
-		void crouchs() {};
-		void jumpsquat() {};
-		void attack() {};
-		void hitstun() {};
-		void blockstun() {};
+		function<void(PlayerInfo*)> wait;
+		function<void(PlayerInfo*)> walkf;
+		function<void(PlayerInfo*)> walkb;
+		function<void(PlayerInfo*)> dash;
+		function<void(PlayerInfo*)> dashb;
+		function<void(PlayerInfo*)> crouch;
+		function<void(PlayerInfo*)> crouchs;
+		function<void(PlayerInfo*)> jumpsquat;
+		function<void(PlayerInfo*)> jump;
+		function<void(PlayerInfo*)> attack;
+		function<void(PlayerInfo*)> hitstun;
+		function<void(PlayerInfo*)> blockstun;
 };
 
 void process_inputs(PlayerInfo* player_info);
-internal void set_status_functions(PlayerInfo player_info);
+void status_wait(PlayerInfo* player_info);
+void status_walkf(PlayerInfo* player_info);
+void status_walkb(PlayerInfo* player_info);
+void status_dash(PlayerInfo* player_info);
+void status_dashb(PlayerInfo* player_info);
+void status_crouch(PlayerInfo* player_info);
+void status_crouchs(PlayerInfo* player_info);
+void status_jumpsquat(PlayerInfo* player_info);
+void status_jump(PlayerInfo* player_info);
+void status_attack(PlayerInfo* player_info);
+void status_hitstun(PlayerInfo* player_info);
+void status_blockstun(PlayerInfo* player_info);
+
+void set_status_functions(PlayerInfo* player_info);
+
 bool check_button_on(PlayerInfo* player_info, u32 button);
 bool check_button_trigger(PlayerInfo* player_info, u32 button);
 bool check_button_release(PlayerInfo* player_info, u32 button);
-void status_wait(PlayerInfo* player_info);
+
+void set_status_functions(PlayerInfo* player_info) {
+	(*player_info).wait = &status_wait;
+	(*player_info).walkf = &status_walkf;
+	(*player_info).walkb = &status_walkb;
+	(*player_info).dash = &status_dash;
+	(*player_info).dashb = &status_dashb;
+	(*player_info).crouch = &status_crouch;
+	(*player_info).crouchs = &status_crouchs;
+	(*player_info).jumpsquat = &status_jumpsquat;
+	(*player_info).jump = &status_jump;
+	(*player_info).attack = &status_attack;
+	(*player_info).hitstun = &status_hitstun;
+	(*player_info).blockstun = &status_blockstun;
+}
+
 
 internal PlayerInfo game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
 	/*
 		Find the sprite for the current character, map it to a surface, give that surface a texture, then free the surface. The texture instances are all 
 		handled together outside of this function.
 	*/
+
 	player_info.resource_dir = ("resource/chara/" + player_info.chara_kind + "/");
 	string sprite_dir = (player_info.resource_dir + "sprite/sprite.png");
 	const char* sprite = sprite_dir.c_str();
@@ -63,21 +94,18 @@ internal PlayerInfo game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
 	player_info.texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 
-	set_status_functions(player_info);
+	//Handle statuses
+
+	set_status_functions(&player_info);
 	player_info.status_kind = CHARA_STATUS_WAIT;
-	player_info.wait();
-//	status_wait(&player_info);
+	player_info.wait(&player_info);
 
 	/*
-		Once that's all finished, send the player_info over to an input processor which will be used to set up status changes in the future
+		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
 	process_inputs(&player_info);
 
 	return player_info;
-}
-
-internal void set_status_functions(PlayerInfo player_info) {
-//	player_info.wait() = status_wait;
 }
 
 internal void process_inputs(PlayerInfo* player_info) {
@@ -103,9 +131,6 @@ internal void process_inputs(PlayerInfo* player_info) {
 	if (check_button_on(player_info, BUTTON_RIGHT)) {
 		(*player_info).pos_x += 1.0;
 	}
-
-	cout << "Player " << (*player_info).id << " X: " << (*player_info).pos_x << endl;
-	cout << "Player " << (*player_info).id << " Y: " << (*player_info).pos_y << endl;
 
 	/*
 		Once I start adding collision, I'm going to add a check here that basically says "if part of your position is otherwise invalid, change that part
@@ -134,6 +159,49 @@ bool check_button_release(PlayerInfo* player_info, u32 button) {
 }
 
 void status_wait(PlayerInfo* player_info) {
-	cout << "Player " << (*player_info).id << " X: " << (*player_info).pos_x << endl;
-	cout << "Player " << (*player_info).id << " Y: " << (*player_info).pos_y << endl;
+
+}
+
+void status_walkf(PlayerInfo* player_info) {
+
+}
+
+void status_walkb(PlayerInfo* player_info) {
+
+}
+
+void status_dash(PlayerInfo* player_info) {
+
+}
+
+void status_dashb(PlayerInfo* player_info) {
+
+}
+
+void status_crouch(PlayerInfo* player_info) {
+
+}
+
+void status_crouchs(PlayerInfo* player_info) {
+
+}
+
+void status_jumpsquat(PlayerInfo* player_info) {
+
+}
+
+void status_jump(PlayerInfo* player_info) {
+
+}
+
+void status_attack(PlayerInfo* player_info) {
+
+}
+
+void status_hitstun(PlayerInfo* player_info) {
+
+}
+
+void status_blockstun(PlayerInfo* player_info) {
+
 }

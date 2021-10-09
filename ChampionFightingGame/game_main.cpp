@@ -26,7 +26,9 @@ class PlayerInfo {
 		f32 pos_y = 0.0;
 		f32 prev_pos_x = 0.0;
 		f32 prev_pos_y = 0.0;
-		u32 status_kind= 0;
+		f32 height = 0.0;
+		f32 width = 0.0;
+		u32 status_kind = 0;
 		ButtonState buttons[BUTTON_MAX];
 		string resource_dir = "resource/chara/default/";
 		SDL_Texture* texture_instance;
@@ -81,34 +83,34 @@ void set_status_functions(PlayerInfo* player_info) {
 }
 
 
-internal PlayerInfo game_main(PlayerInfo player_info, SDL_Renderer* renderer) {
+void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Find the sprite for the current character, map it to a surface, give that surface a texture, then free the surface. The texture instances are all 
 		handled together outside of this function.
 	*/
 
-	player_info.resource_dir = ("resource/chara/" + player_info.chara_kind + "/");
-	string sprite_dir = (player_info.resource_dir + "sprite/sprite.png");
+	(*player_info).resource_dir = ("resource/chara/" + (*player_info).chara_kind + "/");
+	string sprite_dir = ((*player_info).resource_dir + "sprite/sprite.png");
 	const char* sprite = sprite_dir.c_str();
 	SDL_Surface* surface = IMG_Load(sprite);
-	player_info.texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
+	(*player_info).texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 
 	//Handle statuses
 
-	set_status_functions(&player_info);
-	player_info.status_kind = CHARA_STATUS_WAIT;
-	player_info.wait(&player_info);
+	set_status_functions(player_info);
+	(*player_info).status_kind = CHARA_STATUS_WAIT;
+	(*player_info).wait(player_info);
 
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	process_inputs(&player_info);
+	process_inputs(player_info);
 
-	return player_info;
+//	return;
 }
 
-internal void process_inputs(PlayerInfo* player_info) {
+void process_inputs(PlayerInfo* player_info) {
 
 	//Our position on the last frame is set to prev_pos
 
@@ -120,10 +122,10 @@ internal void process_inputs(PlayerInfo* player_info) {
 		(*player_info).pos_y = 0.0;
 	}
 	if (check_button_on(player_info, BUTTON_UP)) {
-		(*player_info).pos_y += 1.0;
+		(*player_info).pos_y -= 1.0;
 	}
 	if (check_button_on(player_info, BUTTON_DOWN)) {
-		(*player_info).pos_y -= 1.0;
+		(*player_info).pos_y += 1.0;
 	}
 	if (check_button_on(player_info, BUTTON_LEFT)) {
 		(*player_info).pos_x -= 1.0;

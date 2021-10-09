@@ -9,7 +9,7 @@
 #undef main
 using namespace std;
 
-global_variable bool running = true;
+bool running = true;
 
 #include "game_main.cpp"
 
@@ -20,6 +20,8 @@ int main() {
 	player_info[0].buttons[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
 	player_info[0].buttons[BUTTON_RIGHT].mapping = SDL_SCANCODE_RIGHT;
 	player_info[0].buttons[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
+	player_info[0].width = 0.1;
+	player_info[0].height = 0.1;
 	player_info[0].id = 0;
 	player_info[0].chara_kind = "roy";
 	player_info[1].buttons[BUTTON_UP].mapping = SDL_SCANCODE_W;
@@ -29,6 +31,8 @@ int main() {
 	player_info[1].buttons[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
 	player_info[1].id = 1;
 	player_info[1].chara_kind = "eric";
+	player_info[1].width = 0.1;
+	player_info[1].height = 0.1;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("error initializing SDL: %s\n", SDL_GetError());
@@ -64,23 +68,24 @@ int main() {
 					}
 				}
 				break;
+				default: {}
+				break;
 			}
 		}
 
-		SDL_RenderClear(renderer); 
+		SDL_RenderClear(renderer);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i] = game_main(player_info[i], renderer);
+			game_main(&player_info[i], renderer);
 
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos_x;
 			render_pos.y = player_info[i].pos_y;
-
-			render_pos.w = 60;
-			render_pos.h = 60;
+			render_pos.w = player_info[i].width;
+			render_pos.h = player_info[i].height;
 
 			SDL_QueryTexture(player_info[i].texture_instance, NULL, NULL, &render_pos.w, &render_pos.h);
-			SDL_RenderCopy(renderer, player_info[i].texture_instance, nullptr, &render_pos);
+			SDL_RenderCopy(renderer, player_info[i].texture_instance, NULL, &render_pos);
 		}
 
 		SDL_RenderPresent(renderer); 

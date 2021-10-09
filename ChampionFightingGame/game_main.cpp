@@ -8,18 +8,7 @@ For each of the user's controls, track what key they're assigned to, whether or 
 on the current frame
 */
 
-class Animation {
-public:
 
-	vector<SDL_Texture> frame_vector;
-
-	Animation() {}
-	Animation(string animation_location, int frame_count) {
-		for (int i = 0; i < frame_count; i++) {
-			frame_vector.push_back();
-		}
-	}
-};
 
 class GameCoordinate {
 public:

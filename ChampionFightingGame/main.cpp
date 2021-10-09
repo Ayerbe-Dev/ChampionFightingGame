@@ -100,8 +100,8 @@ int main() {
 			game_main(&player_info[i], renderer, keyboard_state);
 
 			SDL_Rect render_pos;
-			render_pos.x = player_info[i].pos_x;
-			render_pos.y = player_info[i].pos_y;
+			render_pos.x = player_info[i].pos.getRenderCoodrinateX();
+			render_pos.y = player_info[i].pos.getRenderCoodrinateY();
 			render_pos.w = player_info[i].width;
 			render_pos.h = player_info[i].height;
 

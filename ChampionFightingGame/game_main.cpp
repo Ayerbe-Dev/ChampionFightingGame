@@ -13,8 +13,41 @@ struct ButtonState {
 };
 
 //Smash-style name tag system where custom controls are mapped to a tag
-struct NameTag {
-	ButtonState buttons[BUTTON_MAX];
+//struct NameTag {
+//	ButtonMap button_map;
+//};
+
+class ButtonMap {
+	public:
+		SDL_Scancode mappings[BUTTON_MAX];
+
+		ButtonMap() {
+			mappings[BUTTON_UP] = SDL_SCANCODE_W;
+			mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
+			mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
+			mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
+			
+			mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
+		}
+
+		void loadDefaultButtonMap(int player) {
+			if (player == 0) {
+				mappings[BUTTON_UP] = SDL_SCANCODE_W;
+				mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
+				mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
+				mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
+
+				mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
+			}
+			else if (player == 1) {
+				mappings[BUTTON_UP] = SDL_SCANCODE_UP;
+				mappings[BUTTON_DOWN] = SDL_SCANCODE_DOWN;
+				mappings[BUTTON_LEFT] = SDL_SCANCODE_LEFT;
+				mappings[BUTTON_RIGHT] = SDL_SCANCODE_RIGHT;
+
+				mappings[BUTTON_START] = SDL_SCANCODE_RETURN;
+			} 
+		}
 };
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
@@ -29,7 +62,7 @@ public:
 	f32 height{ 0.0 };
 	f32 width{ 0.0 };
 	u32 status_kind{ 0 };
-	ButtonState buttons[BUTTON_MAX];
+	ButtonMap loaded_button_map;
 	string resource_dir;
 	SDL_Texture* default_texture;
 
@@ -62,12 +95,39 @@ public:
 		id = 0;
 		pos_x = 0.0 ;
 		pos_y = 100.0 ;
+		loaded_button_map.loadDefaultButtonMap(0);
 	}
 
 	void setStateLikePlayer2() {
 		id = 1;
 		pos_x = 500.0;
 		pos_y = 100.0;
+		loaded_button_map.loadDefaultButtonMap(1);
+	}
+
+	void processInput(const Uint8* keyboard_state) {
+		if (keyboard_state[loaded_button_map.mappings[BUTTON_UP]]) {
+			pos_y -= 1.0;
+		}
+		if (keyboard_state[loaded_button_map.mappings[BUTTON_DOWN]]) {
+			pos_y += 1.0;
+		}
+		if (keyboard_state[loaded_button_map.mappings[BUTTON_LEFT]]) {
+			pos_x -= 1.0;
+		}
+		if (keyboard_state[loaded_button_map.mappings[BUTTON_RIGHT]]) {
+			pos_x += 1.0;
+		}
+		if (keyboard_state[loaded_button_map.mappings[BUTTON_START]]) {
+			if (id == 0){
+				pos_x = 0.0;
+				pos_y = 100.0;
+			}
+			else {
+				pos_x = 500.0;
+				pos_y = 100.0;
+			}
+		}
 	}
 
 	function<void(PlayerInfo*)> wait;
@@ -120,19 +180,7 @@ void set_status_functions(PlayerInfo* player_info) {
 }
 
 
-void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
-	/*
-		Find the sprite for the current character, map it to a surface, give that surface a texture, then free the surface. The texture instances are all 
-		handled together outside of this function.
-	*/
-
-	/*(*player_info).resource_dir = ("resource/chara/" + (*player_info).chara_kind + "/");
-	string sprite_dir = ((*player_info).resource_dir + "sprite/sprite.png");
-	const char* sprite = sprite_dir.c_str();
-	SDL_Surface* surface = IMG_Load(sprite);
-	(*player_info).texture_instance = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);*/
-
+void game_main(PlayerInfo* player_info, SDL_Renderer* renderer, const Uint8* keyboard_state) {
 	//Handle statuses
 
 	set_status_functions(player_info);
@@ -142,60 +190,62 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	process_inputs(player_info);
+	//process_inputs(player_info);
+	player_info->processInput(keyboard_state);
 
 //	return;
 }
 
-void process_inputs(PlayerInfo* player_info) {
+//void process_inputs(PlayerInfo* player_info, const Uint8* keyboard_state) {
+//
+//	//Our position on the last frame is set to prev_pos
+//
+//	(*player_info).prev_pos_x = (*player_info).pos_x;
+//	(*player_info).prev_pos_y = (*player_info).pos_y;
+//
+//	if (keyboard_state[player_info.button_map[BUTTON_START]]) {
+//		(*player_info).pos_x = 0.0;
+//		(*player_info).pos_y = 0.0;
+//	}
+//	if (check_button_on(player_info, BUTTON_UP)) {
+//		(*player_info).pos_y -= 1.0;
+//	}
+//	if (check_button_on(player_info, BUTTON_DOWN)) {
+//		(*player_info).pos_y += 1.0;
+//	}
+//	if (check_button_on(player_info, BUTTON_LEFT)) {
+//		(*player_info).pos_x -= 1.0;
+//	}
+//	if (check_button_on(player_info, BUTTON_RIGHT)) {
+//		(*player_info).pos_x += 1.0;
+//	}
+//
+//	/*
+//		Once I start adding collision, I'm going to add a check here that basically says "if part of your position is otherwise invalid, change that part
+//		back to whatever it was on the previous frame. Since this function runs before things are rendered, no out of bounds movement will actually be seen
+//	*/
+//
+//	//We're done actively checking for any changed inputs, so now we can safely reset them in preparation for the next frame
+//
+//	for (int i = 0; i < BUTTON_MAX; i++) {
+//		(*player_info).buttons[i].changed = false;
+//	}
+//
+//	return;
+//}
 
-	//Our position on the last frame is set to prev_pos
-
-	(*player_info).prev_pos_x = (*player_info).pos_x;
-	(*player_info).prev_pos_y = (*player_info).pos_y;
-
-	if (check_button_on(player_info, BUTTON_START)) {
-		(*player_info).pos_x = 0.0;
-		(*player_info).pos_y = 0.0;
-	}
-	if (check_button_on(player_info, BUTTON_UP)) {
-		(*player_info).pos_y -= 1.0;
-	}
-	if (check_button_on(player_info, BUTTON_DOWN)) {
-		(*player_info).pos_y += 1.0;
-	}
-	if (check_button_on(player_info, BUTTON_LEFT)) {
-		(*player_info).pos_x -= 1.0;
-	}
-	if (check_button_on(player_info, BUTTON_RIGHT)) {
-		(*player_info).pos_x += 1.0;
-	}
-
-	/*
-		Once I start adding collision, I'm going to add a check here that basically says "if part of your position is otherwise invalid, change that part
-		back to whatever it was on the previous frame. Since this function runs before things are rendered, no out of bounds movement will actually be seen
-	*/
-
-	//We're done actively checking for any changed inputs, so now we can safely reset them in preparation for the next frame
-
-	for (int i = 0; i < BUTTON_MAX; i++) {
-		(*player_info).buttons[i].changed = false;
-	}
-
-	return;
-}
-
-bool check_button_on(PlayerInfo* player_info, u32 button) {
-	return (*player_info).buttons[button].button_on;
-}
-
-bool check_button_trigger(PlayerInfo* player_info, u32 button) {
-	return (*player_info).buttons[button].changed && (*player_info).buttons[button].button_on;
-}
-
-bool check_button_release(PlayerInfo* player_info, u32 button) {
-	return (*player_info).buttons[button].changed && !(*player_info).buttons[button].button_on;
-}
+//bool check_button_on(PlayerInfo* player_info, const Uint8* keyboard_state) {
+//	if 
+//	return (*player_info).buttons[button].button_on;
+//}
+//
+//bool check_button_trigger(PlayerInfo* player_info, u32 button) {
+//	return (*player_info).buttons[button].changed && (*player_info).buttons[button].button_on;
+//}
+//
+//bool check_button_release(PlayerInfo* player_info, u32 button) {
+//	return (*player_info).buttons[button].changed && !(*player_info).buttons[button].button_on;
+//}
 
 void status_wait(PlayerInfo* player_info) {
 

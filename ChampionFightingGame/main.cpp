@@ -35,6 +35,9 @@ int main() {
 	player_info[0] = p1;
 	player_info[1] = p2;
 
+	
+
+	/*PlayerInfo player_info[2];
 	player_info[0].buttons[BUTTON_UP].mapping = SDL_SCANCODE_UP;
 	player_info[0].buttons[BUTTON_DOWN].mapping = SDL_SCANCODE_DOWN;
 	player_info[0].buttons[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
@@ -46,9 +49,6 @@ int main() {
 	player_info[1].buttons[BUTTON_LEFT].mapping = SDL_SCANCODE_A;
 	player_info[1].buttons[BUTTON_RIGHT].mapping = SDL_SCANCODE_D;
 	player_info[1].buttons[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
-
-	/*PlayerInfo player_info[2];
-
 	player_info[0].width = 0.1;
 	player_info[0].height = 0.1;
 	player_info[0].id = 0;
@@ -59,10 +59,13 @@ int main() {
 	player_info[1].width = 0.1;
 	player_info[1].height = 0.1;*/
 
-	
+	const Uint8* keyboard_state;
 
 	while (running) {
 		SDL_Event event;
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -70,7 +73,7 @@ int main() {
 					running = false;
 				}
 				break;
-				case SDL_KEYUP:
+				/*case SDL_KEYUP:
 				case SDL_KEYDOWN: {
 					u32 key = (u32)event.key.keysym.scancode;
 					bool pressed = (event.type == SDL_KEYDOWN);
@@ -85,7 +88,7 @@ int main() {
 						}
 					}
 				}
-				break;
+				break;*/
 				default: {}
 				break;
 			}
@@ -94,7 +97,7 @@ int main() {
 		SDL_RenderClear(renderer);
 
 		for (int i = 0; i < 2; i++) {
-			game_main(&player_info[i], renderer);
+			game_main(&player_info[i], renderer, keyboard_state);
 
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos_x;

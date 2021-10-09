@@ -11,6 +11,9 @@ typedef float f32;
 #define global_variable static
 #define internal static
 
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
+
 int clamp(int min, int value, int max) {
 	if (min <= max) {
 		if (value < min) {

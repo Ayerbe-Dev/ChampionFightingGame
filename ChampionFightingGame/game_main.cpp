@@ -14,40 +14,40 @@ struct Buttons {
 };
 
 class GameCoordinate {
-	public:
-		f32 x;
-		f32 y;
-		f32 x_offset;
-		f32 y_offset;
+public:
+	f32 x;
+	f32 y;
+	f32 x_offset;
+	f32 y_offset;
 
-		GameCoordinate() {
-			x = 0.0;
-			y = 0.0;
-			x_offset = 0.0;
-			y_offset = 0.0;
-		}
+	GameCoordinate() {
+		x = 0.0;
+		y = 0.0;
+		x_offset = 0.0;
+		y_offset = 0.0;
+	}
 
-		GameCoordinate(f32 window_width, f32 window_height) {
-			x = 0.0;
-			y = 0.0;
-			x_offset = window_width/2;
-			y_offset = window_height/2;
-		}
+	GameCoordinate(f32 window_width, f32 window_height) {
+		x = 0.0;
+		y = 0.0;
+		x_offset = window_width / 2;
+		y_offset = window_height / 2;
+	}
 
-		GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
-			x = start_x;
-			y = start_y;
-			x_offset = window_width / 2;
-			y_offset = window_height / 2;
-		}
+	GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
+		x = start_x;
+		y = start_y;
+		x_offset = window_width / 2;
+		y_offset = window_height / 2;
+	}
 
-		f32 getRenderCoodrinateX() {
-			return x + x_offset;
-		}
+	f32 getRenderCoodrinateX() {
+		return x + x_offset;
+	}
 
-		f32 getRenderCoodrinateY() {
-			return y + y_offset;
-		}
+	f32 getRenderCoodrinateY() {
+		return y + y_offset;
+	}
 };
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
@@ -57,23 +57,24 @@ public:
 	string chara_kind{ "default" };
 	GameCoordinate pos;
 	GameCoordinate prevpos;
-	f32 height { 0.0 };
-	f32 width { 0.0 };
-	u32 status_kind { 0 };
+	f32 height{ 0.0 };
+	f32 width{ 0.0 };
+	u32 status_kind{ 0 };
+	void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
 	SDL_Texture* default_texture;
 
 	PlayerInfo() { }
 
-	PlayerInfo(string chara_kind, SDL_Renderer* renderer){
+	PlayerInfo(string chara_kind, SDL_Renderer* renderer) {
 		// runs on creation of instance;	
 
 		//default texture loading
 		resource_dir = "resource/chara/" + chara_kind;
-		string texture_path = resource_dir + "/sprite/sprite.png"; 
+		string texture_path = resource_dir + "/sprite/sprite.png";
 		default_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
-		
+
 		//other numbers
 		height = 100;
 		width = 100;
@@ -100,7 +101,7 @@ public:
 		}
 	}
 
-	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer){
+	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 		SDL_Surface* image_surface = IMG_Load(file_path);
 		if (image_surface == NULL) {
 			std::cout << "Error loading image: " << IMG_GetError() << endl;
@@ -109,7 +110,7 @@ public:
 		SDL_FreeSurface(image_surface); // haha no more memory leaks
 	}
 
-	void setStateLikePlayer1(){
+	void setStateLikePlayer1() {
 		id = 0;
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0); // Idk if this causes a leak
 
@@ -189,17 +190,29 @@ void set_status_functions(PlayerInfo* player_info);
 
 void set_status_functions(PlayerInfo* player_info) {
 	(*player_info).wait = &status_wait;
+	(*player_info).status_pointer[CHARA_STATUS_WAIT] = status_wait;
 	(*player_info).walkf = &status_walkf;
+	(*player_info).status_pointer[CHARA_STATUS_WALKF] = status_walkf;
 	(*player_info).walkb = &status_walkb;
+	(*player_info).status_pointer[CHARA_STATUS_WALKB] = status_walkb;
 	(*player_info).dash = &status_dash;
+	(*player_info).status_pointer[CHARA_STATUS_DASH] = status_dash;
 	(*player_info).dashb = &status_dashb;
+	(*player_info).status_pointer[CHARA_STATUS_DASHB] = status_dashb;
 	(*player_info).crouch = &status_crouch;
+	(*player_info).status_pointer[CHARA_STATUS_CROUCH] = status_crouch;
 	(*player_info).crouchs = &status_crouchs;
+	(*player_info).status_pointer[CHARA_STATUS_CROUCHS] = status_crouchs;
 	(*player_info).jumpsquat = &status_jumpsquat;
+	(*player_info).status_pointer[CHARA_STATUS_JUMPSQUAT] = status_jumpsquat;
 	(*player_info).jump = &status_jump;
+	(*player_info).status_pointer[CHARA_STATUS_JUMP] = status_jump;
 	(*player_info).attack = &status_attack;
+	(*player_info).status_pointer[CHARA_STATUS_ATTACK] = status_attack;
 	(*player_info).hitstun = &status_hitstun;
+	(*player_info).status_pointer[CHARA_STATUS_HITSTUN] = status_hitstun;
 	(*player_info).blockstun = &status_blockstun;
+	(*player_info).status_pointer[CHARA_STATUS_BLOCKSTUN] = status_blockstun;
 }
 
 
@@ -208,12 +221,12 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 
 	set_status_functions(player_info);
 	(*player_info).status_kind = CHARA_STATUS_WAIT;
-	(*player_info).wait(player_info);
+	(*player_info).status_pointer[(*player_info).status_kind](player_info);
 
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	
+
 	player_info->processInput();
 }
 

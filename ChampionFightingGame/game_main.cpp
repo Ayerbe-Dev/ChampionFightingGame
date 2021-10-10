@@ -1,83 +1,53 @@
 using namespace std;
 #include <iostream>
 #include <functional>
-#include <vector>
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
 on the current frame
 */
 
-
-
-class GameCoordinate {
-public:
-	f32 x;
-	f32 y;
-	f32 x_offset;
-	f32 y_offset;
-
-	GameCoordinate() {
-		x = 0.0;
-		y = 0.0;
-		x_offset = 0.0;
-		y_offset = 0.0;
-	}
-
-	GameCoordinate(f32 window_width, f32 window_height) {
-		x = 0.0;
-		y = 0.0;
-		x_offset = window_width/2;
-		y_offset = window_height/2;
-	}
-
-	GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
-		x = start_x;
-		y = start_y;
-		x_offset = window_width / 2;
-		y_offset = window_height / 2;
-	}
-
-	f32 getRenderCoodrinateX() {
-		return x + x_offset;
-	}
-
-	f32 getRenderCoodrinateY() {
-		return y + y_offset;
-	}
+struct Buttons {
+	u32 mapping = 0;
+	bool button_on = false;
+	bool changed = false;
 };
 
-class ButtonMap {
-public:
-	SDL_Scancode mappings[BUTTON_MAX];
+class GameCoordinate {
+	public:
+		f32 x;
+		f32 y;
+		f32 x_offset;
+		f32 y_offset;
 
-	ButtonMap() {
-		mappings[BUTTON_UP] = SDL_SCANCODE_W;
-		mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
-		mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
-		mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
-			
-		mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
-	}
-
-	void loadDefaultButtonMap(int player) {
-		if (player == 0) {
-			mappings[BUTTON_UP] = SDL_SCANCODE_W;
-			mappings[BUTTON_LEFT] = SDL_SCANCODE_A;
-			mappings[BUTTON_DOWN] = SDL_SCANCODE_S;
-			mappings[BUTTON_RIGHT] = SDL_SCANCODE_D;
-
-			mappings[BUTTON_START] = SDL_SCANCODE_SPACE;
+		GameCoordinate() {
+			x = 0.0;
+			y = 0.0;
+			x_offset = 0.0;
+			y_offset = 0.0;
 		}
-		else if (player == 1) {
-			mappings[BUTTON_UP] = SDL_SCANCODE_UP;
-			mappings[BUTTON_DOWN] = SDL_SCANCODE_DOWN;
-			mappings[BUTTON_LEFT] = SDL_SCANCODE_LEFT;
-			mappings[BUTTON_RIGHT] = SDL_SCANCODE_RIGHT;
 
-			mappings[BUTTON_START] = SDL_SCANCODE_RETURN;
-		} 
-	}
+		GameCoordinate(f32 window_width, f32 window_height) {
+			x = 0.0;
+			y = 0.0;
+			x_offset = window_width/2;
+			y_offset = window_height/2;
+		}
+
+		GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
+			x = start_x;
+			y = start_y;
+			x_offset = window_width / 2;
+			y_offset = window_height / 2;
+		}
+
+		f32 getRenderCoodrinateX() {
+			return x + x_offset;
+		}
+
+		f32 getRenderCoodrinateY() {
+			return y + y_offset;
+		}
 };
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
@@ -87,24 +57,20 @@ public:
 	string chara_kind{ "default" };
 	GameCoordinate pos;
 	GameCoordinate prevpos;
-	//f32 pos_x{ 0.0 };
-	//f32 pos_y{ 0.0 };
-	//f32 prev_pos_x{ 0.0 };
-	//f32 prev_pos_y{ 0.0 };
-	f32 height{ 0.0 };
-	f32 width{ 0.0 };
-	u32 status_kind{ 0 };
-	ButtonMap loaded_button_map;
+	f32 height { 0.0 };
+	f32 width { 0.0 };
+	u32 status_kind { 0 };
+	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
 	SDL_Texture* default_texture;
 
 	PlayerInfo() { }
 
-	PlayerInfo(string character_type, SDL_Renderer* renderer){
+	PlayerInfo(string chara_kind, SDL_Renderer* renderer){
 		// runs on creation of instance;	
 
 		//default texture loading
-		resource_dir = "resource/chara/" + character_type;
+		resource_dir = "resource/chara/" + chara_kind;
 		string texture_path = resource_dir + "/sprite/sprite.png"; 
 		default_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
 		
@@ -113,6 +79,25 @@ public:
 		width = 100;
 
 
+	}
+
+	void loadDefaultButtonMap() {
+		if (id == 0) {
+			button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;
+			button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_A;
+			button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_S;
+			button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_D;
+
+			button_info[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
+		}
+		else if (id == 1) {
+			button_info[BUTTON_UP].mapping = SDL_SCANCODE_UP;
+			button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_DOWN;
+			button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
+			button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_RIGHT;
+
+			button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
+		}
 	}
 
 	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer){
@@ -127,38 +112,48 @@ public:
 	void setStateLikePlayer1(){
 		id = 0;
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0); // Idk if this causes a leak
-		loaded_button_map.loadDefaultButtonMap(0);
 
 	}
 
 	void setStateLikePlayer2() {
 		id = 1;
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0); // Idk if this causes a leak
-		loaded_button_map.loadDefaultButtonMap(1);
 	}
 
-	void processInput(const Uint8* keyboard_state) {
-		if (keyboard_state[loaded_button_map.mappings[BUTTON_UP]]) {
-			pos.y += 1.0;
-		}
-		if (keyboard_state[loaded_button_map.mappings[BUTTON_DOWN]]) {
-			pos.y -= 1.0;
-		}
-		if (keyboard_state[loaded_button_map.mappings[BUTTON_LEFT]]) {
-			pos.x -= 1.0;
-		}
-		if (keyboard_state[loaded_button_map.mappings[BUTTON_RIGHT]]) {
-			pos.x += 1.0;
-		}
-		if (keyboard_state[loaded_button_map.mappings[BUTTON_START]]) {
-			if (id == 0){
+
+	bool check_button_on(u32 button) {
+		return button_info[button].button_on;
+	}
+
+	bool check_button_trigger(u32 button) {
+		return button_info[button].changed && button_info[button].button_on;
+	}
+
+	bool check_button_release(u32 button) {
+		return button_info[button].changed && !button_info[button].button_on;
+	}
+
+	void processInput() {
+		if (check_button_on(BUTTON_START)) {
+			pos.y = 0.0;
+			if (id == 0) {
 				pos.x = -200.0;
-				pos.y = 0.0;
 			}
 			else {
 				pos.x = 200.0;
-				pos.y = 0.0;
 			}
+		}
+		if (check_button_on(BUTTON_UP)) {
+			pos.y -= 1.0;
+		}
+		if (check_button_on(BUTTON_DOWN)) {
+			pos.y += 1.0;
+		}
+		if (check_button_on(BUTTON_LEFT)) {
+			pos.x -= 1.0;
+		}
+		if (check_button_on(BUTTON_RIGHT)) {
+			pos.x += 1.0;
 		}
 	}
 
@@ -192,10 +187,6 @@ void status_blockstun(PlayerInfo* player_info);
 
 void set_status_functions(PlayerInfo* player_info);
 
-bool check_button_on(PlayerInfo* player_info, u32 button);
-bool check_button_trigger(PlayerInfo* player_info, u32 button);
-bool check_button_release(PlayerInfo* player_info, u32 button);
-
 void set_status_functions(PlayerInfo* player_info) {
 	(*player_info).wait = &status_wait;
 	(*player_info).walkf = &status_walkf;
@@ -212,7 +203,7 @@ void set_status_functions(PlayerInfo* player_info) {
 }
 
 
-void game_main(PlayerInfo* player_info, SDL_Renderer* renderer, const Uint8* keyboard_state) {
+void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	//Handle statuses
 
 	set_status_functions(player_info);
@@ -223,7 +214,7 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer, const Uint8* key
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
 	
-	player_info->processInput(keyboard_state);
+	player_info->processInput();
 }
 
 

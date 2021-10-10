@@ -12,8 +12,10 @@ using namespace std;
 bool running = true;
 
 #include "game_main.cpp"
+int error_render;
 
 int main() {
+	//init SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("error initializing SDL: %s\n", SDL_GetError());
 	}
@@ -23,7 +25,11 @@ int main() {
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
+	//load animations
+	loadAnimation(&TEST_IDLE_ANIMATION, renderer);
+	loadAnimation(&TEST_WALK_ANIMATION, renderer);
 
+	//init players
 	PlayerInfo player_info[2];
 
 	PlayerInfo p1 {"eric", renderer};
@@ -73,15 +79,17 @@ int main() {
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos.getRenderCoodrinateX();
 			render_pos.y = player_info[i].pos.getRenderCoodrinateY();
-			render_pos.w = player_info[i].width;
-			render_pos.h = player_info[i].height;
-
-			SDL_RenderCopy(renderer, player_info[i].default_texture, NULL, &render_pos);
+			render_pos.w = player_info[i].current_animation->sprite_width;
+			render_pos.h = player_info[i].current_animation->sprite_height;
+			error_render = SDL_RenderCopy(renderer, player_info[i].current_animation->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
+			if (error_render != 0) {
+				cout << "\n" << SDL_GetError();
+			}
 		}
 
 		SDL_RenderPresent(renderer); 
 
-		SDL_Delay(1000 / 60);
+		SDL_Delay(1000 / 24);
 	}
 
 	SDL_DestroyRenderer(renderer);

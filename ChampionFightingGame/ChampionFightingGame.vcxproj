@@ -164,6 +164,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="animations.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="game_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -185,6 +191,18 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="resource\chara\eric\sprite\sprite.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_0.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_1.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_2.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_3.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_4.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_5.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_6.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_7.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_8.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_9.png" />
+    <Image Include="resource\chara\not_ryu\animation_idle\spritesheet.png" />
+    <Image Include="resource\chara\not_ryu\animation_walk\spritesheet.png" />
     <Image Include="resource\chara\roy\sprite\sprite.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

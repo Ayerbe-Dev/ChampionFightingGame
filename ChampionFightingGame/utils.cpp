@@ -26,6 +26,7 @@ int clamp(int min, int value, int max) {
 	return value;
 }
 
+
 enum {
 	BUTTON_UP,
 	BUTTON_DOWN,
@@ -58,3 +59,5 @@ enum {
 
 	CHARA_STATUS_MAX,
 };
+
+SDL_Texture* IDLE_ANIMATION[10];

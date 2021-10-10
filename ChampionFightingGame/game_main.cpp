@@ -1,11 +1,16 @@
 using namespace std;
 #include <iostream>
 #include <functional>
+#include <vector>
+#include<string>
+#include "animations.cpp"
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
 on the current frame
 */
+
+
 
 struct Buttons {
 	u32 mapping = 0;
@@ -14,73 +19,90 @@ struct Buttons {
 };
 
 class GameCoordinate {
-	public:
-		f32 x;
-		f32 y;
-		f32 x_offset;
-		f32 y_offset;
+public:
+	f32 x;
+	f32 y;
+	f32 x_offset;
+	f32 y_offset;
+	f32 x_spr_offset;
 
-		GameCoordinate() {
-			x = 0.0;
-			y = 0.0;
-			x_offset = 0.0;
-			y_offset = 0.0;
-		}
+	GameCoordinate() {
+		x = 0.0;
+		y = 0.0;
+		x_offset = 0.0;
+		y_offset = 0.0;
+	}
 
-		GameCoordinate(f32 window_width, f32 window_height) {
-			x = 0.0;
-			y = 0.0;
-			x_offset = window_width/2;
-			y_offset = window_height/2;
-		}
+	GameCoordinate(f32 window_width, f32 window_height) {
+		x = 0.0;
+		y = 0.0;
+		x_offset = window_width / 2;
+		y_offset = window_height / 2;
+	}
 
-		GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
-			x = start_x;
-			y = start_y;
-			x_offset = window_width / 2;
-			y_offset = window_height / 2;
-		}
+	GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {
+		x = start_x;
+		y = start_y;
+		x_offset = window_width / 2;
+		y_offset = window_height / 2;
+	}
 
-		f32 getRenderCoodrinateX() {
-			return x + x_offset;
-		}
+	f32 getRenderCoodrinateX() {
+		return x + x_offset - x_spr_offset;
+	}
 
-		f32 getRenderCoodrinateY() {
-			return y + y_offset;
-		}
+	f32 getRenderCoodrinateY() {
+		return y + y_offset;
+	}
 };
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 class PlayerInfo {
 public:
-	i64 id{ -1 };
-	string chara_kind{ "default" };
+	i64 id;
+	string chara_kind;
 	GameCoordinate pos;
 	GameCoordinate prevpos;
-	f32 height { 0.0 };
-	f32 width { 0.0 };
-	u32 status_kind { 0 };
+	f32 height;
+	f32 width;
+	bool facing_right;
+	f32 facing_dir;
+	u32 status_kind;
+	void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
+	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
+	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
-	SDL_Texture* default_texture;
+	SDL_Texture* current_texture;
+	int frame;
+	Animation* current_animation;
+	SDL_Rect frame_rect;
 
 	PlayerInfo() { }
 
-	PlayerInfo(string chara_kind, SDL_Renderer* renderer){
+	PlayerInfo(string chara_kind, SDL_Renderer* renderer) {
 		// runs on creation of instance;	
-
-		//default texture loading
-		resource_dir = "resource/chara/" + chara_kind;
-		string texture_path = resource_dir + "/sprite/sprite.png"; 
-		default_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
+		startAnimation(&TEST_IDLE_ANIMATION);
 		
 		//other numbers
 		height = 100;
 		width = 100;
-
-
 	}
 
+	void startAnimation(Animation* animation) {
+		current_animation = animation;
+		frame = 0;
+		pos.x_spr_offset = animation->sprite_width / 2;
+		
+	}
+
+	void stepAnimation() {
+		//this is not a good way to handle this, im just testing
+		frame_rect = getFrame(frame, current_animation);
+		if (frame == current_animation->length) { startAnimation(&TEST_IDLE_ANIMATION); }
+		else { frame++; }
+	}
+		
 	void loadDefaultButtonMap() {
 		if (id == 0) {
 			button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;
@@ -100,16 +122,7 @@ public:
 		}
 	}
 
-	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer){
-		SDL_Surface* image_surface = IMG_Load(file_path);
-		if (image_surface == NULL) {
-			std::cout << "Error loading image: " << IMG_GetError() << endl;
-		}
-		return SDL_CreateTextureFromSurface(renderer, image_surface);
-		SDL_FreeSurface(image_surface); // haha no more memory leaks
-	}
-
-	void setStateLikePlayer1(){
+	void setStateLikePlayer1() {
 		id = 0;
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0); // Idk if this causes a leak
 
@@ -133,6 +146,48 @@ public:
 		return button_info[button].changed && !button_info[button].button_on;
 	}
 
+	i32 get_stick_dir() {
+		if (check_button_on(BUTTON_UP)) {
+			if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+				if (check_button_on(BUTTON_RIGHT) == facing_right) {
+					return 9;
+				}
+				else {
+					return 7;
+				}
+			}
+			else {
+				return 8;
+			}
+		}
+		else if (check_button_on(BUTTON_DOWN)) {
+			if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+				if (check_button_on(BUTTON_RIGHT) == facing_right) {
+					return 3;
+				}
+				else {
+					return 1;
+				}
+			}
+			else {
+				return 2;
+			}
+		}
+		else {
+			if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+				if (check_button_on(BUTTON_RIGHT) == facing_right) {
+					return 6;
+				}
+				else {
+					return 4;
+				}
+			}
+			else {
+				return 5;
+			}
+		}
+	}
+
 	void processInput() {
 		if (check_button_on(BUTTON_START)) {
 			pos.y = 0.0;
@@ -152,9 +207,19 @@ public:
 		if (check_button_on(BUTTON_LEFT)) {
 			pos.x -= 1.0;
 		}
+
+		//my jank test code <3
 		if (check_button_on(BUTTON_RIGHT)) {
-			pos.x += 1.0;
+			pos.x += 6.0;
+			if (frame == 0 or current_animation == &TEST_IDLE_ANIMATION) {
+				startAnimation(&TEST_WALK_ANIMATION);
+			}
 		}
+		else if (current_animation == &TEST_WALK_ANIMATION){
+			startAnimation(&TEST_IDLE_ANIMATION);
+		}
+
+		//
 	}
 
 	function<void(PlayerInfo*)> wait;
@@ -171,36 +236,97 @@ public:
 	function<void(PlayerInfo*)> blockstun;
 };
 
-void process_inputs(PlayerInfo* player_info);
 void status_wait(PlayerInfo* player_info);
+void enter_status_wait(PlayerInfo* player_info);
+void exit_status_wait(PlayerInfo* player_info);
 void status_walkf(PlayerInfo* player_info);
+void enter_status_walkf(PlayerInfo* player_info);
+void exit_status_walkf(PlayerInfo* player_info);
 void status_walkb(PlayerInfo* player_info);
+void enter_status_walkb(PlayerInfo* player_info);
+void exit_status_walkb(PlayerInfo* player_info);
 void status_dash(PlayerInfo* player_info);
+void enter_status_dash(PlayerInfo* player_info);
+void exit_status_dash(PlayerInfo* player_info);
 void status_dashb(PlayerInfo* player_info);
+void enter_status_dashb(PlayerInfo* player_info);
+void exit_status_dashb(PlayerInfo* player_info);
 void status_crouch(PlayerInfo* player_info);
+void enter_status_crouch(PlayerInfo* player_info);
+void exit_status_crouch(PlayerInfo* player_info);
 void status_crouchs(PlayerInfo* player_info);
+void enter_status_crouchs(PlayerInfo* player_info);
+void exit_status_crouchs(PlayerInfo* player_info);
 void status_jumpsquat(PlayerInfo* player_info);
+void enter_status_jumpsquat(PlayerInfo* player_info);
+void exit_status_jumpsquat(PlayerInfo* player_info);
 void status_jump(PlayerInfo* player_info);
+void enter_status_jump(PlayerInfo* player_info);
+void exit_status_jump(PlayerInfo* player_info);
 void status_attack(PlayerInfo* player_info);
+void enter_status_attack(PlayerInfo* player_info);
+void exit_status_attack(PlayerInfo* player_info);
 void status_hitstun(PlayerInfo* player_info);
+void enter_status_hitstun(PlayerInfo* player_info);
+void exit_status_hitstun(PlayerInfo* player_info);
 void status_blockstun(PlayerInfo* player_info);
+void enter_status_blockstun(PlayerInfo* player_info);
+void exit_status_blockstun(PlayerInfo* player_info);
+
 
 void set_status_functions(PlayerInfo* player_info);
 
 void set_status_functions(PlayerInfo* player_info) {
 	(*player_info).wait = &status_wait;
+	(*player_info).status_pointer[CHARA_STATUS_WAIT] = status_wait;
+	(*player_info).enter_status_pointer[CHARA_STATUS_WAIT] = enter_status_wait;
+	(*player_info).exit_status_pointer[CHARA_STATUS_WAIT] = exit_status_wait;
 	(*player_info).walkf = &status_walkf;
+	(*player_info).status_pointer[CHARA_STATUS_WALKF] = status_walkf;
+	(*player_info).enter_status_pointer[CHARA_STATUS_WALKF] = enter_status_walkf;
+	(*player_info).exit_status_pointer[CHARA_STATUS_WALKF] = exit_status_walkf;
 	(*player_info).walkb = &status_walkb;
+	(*player_info).status_pointer[CHARA_STATUS_WALKB] = status_walkb;
+	(*player_info).enter_status_pointer[CHARA_STATUS_WALKB] = enter_status_walkb;
+	(*player_info).exit_status_pointer[CHARA_STATUS_WALKB] = exit_status_walkb;
 	(*player_info).dash = &status_dash;
+	(*player_info).status_pointer[CHARA_STATUS_DASH] = status_dash;
+	(*player_info).enter_status_pointer[CHARA_STATUS_DASH] = enter_status_dash;
+	(*player_info).exit_status_pointer[CHARA_STATUS_DASH] = exit_status_dash;
 	(*player_info).dashb = &status_dashb;
+	(*player_info).status_pointer[CHARA_STATUS_DASHB] = status_dashb;
+	(*player_info).enter_status_pointer[CHARA_STATUS_DASHB] = enter_status_dashb;
+	(*player_info).exit_status_pointer[CHARA_STATUS_DASHB] = exit_status_dashb;
 	(*player_info).crouch = &status_crouch;
+	(*player_info).status_pointer[CHARA_STATUS_CROUCH] = status_crouch;
+	(*player_info).enter_status_pointer[CHARA_STATUS_CROUCH] = enter_status_crouch;
+	(*player_info).exit_status_pointer[CHARA_STATUS_CROUCH] = exit_status_crouch;
 	(*player_info).crouchs = &status_crouchs;
+	(*player_info).status_pointer[CHARA_STATUS_CROUCHS] = status_crouchs;
+	(*player_info).enter_status_pointer[CHARA_STATUS_CROUCHS] = enter_status_crouchs;
+	(*player_info).exit_status_pointer[CHARA_STATUS_CROUCHS] = exit_status_crouchs;
 	(*player_info).jumpsquat = &status_jumpsquat;
+	(*player_info).status_pointer[CHARA_STATUS_JUMPSQUAT] = status_jumpsquat;
+	(*player_info).enter_status_pointer[CHARA_STATUS_JUMPSQUAT] = enter_status_jumpsquat;
+	(*player_info).exit_status_pointer[CHARA_STATUS_JUMPSQUAT] = exit_status_jumpsquat;
 	(*player_info).jump = &status_jump;
+	(*player_info).status_pointer[CHARA_STATUS_JUMP] = status_jump;
+	(*player_info).enter_status_pointer[CHARA_STATUS_JUMP] = enter_status_jump;
+	(*player_info).exit_status_pointer[CHARA_STATUS_JUMP] = exit_status_jump;
 	(*player_info).attack = &status_attack;
+	(*player_info).status_pointer[CHARA_STATUS_ATTACK] = status_attack;
+	(*player_info).enter_status_pointer[CHARA_STATUS_ATTACK] = enter_status_attack;
+	(*player_info).exit_status_pointer[CHARA_STATUS_ATTACK] = exit_status_attack;
 	(*player_info).hitstun = &status_hitstun;
+	(*player_info).status_pointer[CHARA_STATUS_HITSTUN] = status_hitstun;
+	(*player_info).enter_status_pointer[CHARA_STATUS_HITSTUN] = enter_status_hitstun;
+	(*player_info).exit_status_pointer[CHARA_STATUS_HITSTUN] = exit_status_hitstun;
 	(*player_info).blockstun = &status_blockstun;
+	(*player_info).status_pointer[CHARA_STATUS_BLOCKSTUN] = status_blockstun;
+	(*player_info).enter_status_pointer[CHARA_STATUS_BLOCKSTUN] = enter_status_blockstun;
+	(*player_info).exit_status_pointer[CHARA_STATUS_BLOCKSTUN] = exit_status_blockstun;
 }
+
 
 
 void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
@@ -208,13 +334,14 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 
 	set_status_functions(player_info);
 	(*player_info).status_kind = CHARA_STATUS_WAIT;
-	(*player_info).wait(player_info);
+	(*player_info).status_pointer[(*player_info).status_kind](player_info);
 
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	
 	player_info->processInput();
+	player_info->stepAnimation();
+	
 }
 
 
@@ -222,7 +349,23 @@ void status_wait(PlayerInfo* player_info) {
 
 }
 
+void enter_status_wait(PlayerInfo* player_info) {
+
+}
+
+void exit_status_wait(PlayerInfo* player_info) {
+
+}
+
 void status_walkf(PlayerInfo* player_info) {
+
+}
+
+void enter_status_walkf(PlayerInfo* player_info) {
+
+}
+
+void exit_status_walkf(PlayerInfo* player_info) {
 
 }
 
@@ -230,7 +373,23 @@ void status_walkb(PlayerInfo* player_info) {
 
 }
 
+void enter_status_walkb(PlayerInfo* player_info) {
+
+}
+
+void exit_status_walkb(PlayerInfo* player_info) {
+
+}
+
 void status_dash(PlayerInfo* player_info) {
+
+}
+
+void enter_status_dash(PlayerInfo* player_info) {
+
+}
+
+void exit_status_dash(PlayerInfo* player_info) {
 
 }
 
@@ -238,7 +397,23 @@ void status_dashb(PlayerInfo* player_info) {
 
 }
 
+void enter_status_dashb(PlayerInfo* player_info) {
+
+}
+
+void exit_status_dashb(PlayerInfo* player_info) {
+
+}
+
 void status_crouch(PlayerInfo* player_info) {
+
+}
+
+void enter_status_crouch(PlayerInfo* player_info) {
+
+}
+
+void exit_status_crouch(PlayerInfo* player_info) {
 
 }
 
@@ -246,7 +421,23 @@ void status_crouchs(PlayerInfo* player_info) {
 
 }
 
+void enter_status_crouchs(PlayerInfo* player_info) {
+
+}
+
+void exit_status_crouchs(PlayerInfo* player_info) {
+
+}
+
 void status_jumpsquat(PlayerInfo* player_info) {
+
+}
+
+void enter_status_jumpsquat(PlayerInfo* player_info) {
+
+}
+
+void exit_status_jumpsquat(PlayerInfo* player_info) {
 
 }
 
@@ -254,7 +445,23 @@ void status_jump(PlayerInfo* player_info) {
 
 }
 
+void enter_status_jump(PlayerInfo* player_info) {
+
+}
+
+void exit_status_jump(PlayerInfo* player_info) {
+
+}
+
 void status_attack(PlayerInfo* player_info) {
+
+}
+
+void enter_status_attack(PlayerInfo* player_info) {
+
+}
+
+void exit_status_attack(PlayerInfo* player_info) {
 
 }
 
@@ -262,6 +469,22 @@ void status_hitstun(PlayerInfo* player_info) {
 
 }
 
+void enter_status_hitstun(PlayerInfo* player_info) {
+
+}
+
+void exit_status_hitstun(PlayerInfo* player_info) {
+
+}
+
 void status_blockstun(PlayerInfo* player_info) {
+
+}
+
+void enter_status_blockstun(PlayerInfo* player_info) {
+
+}
+
+void exit_status_blockstun(PlayerInfo* player_info) {
 
 }

@@ -89,6 +89,7 @@ public:
 		current_animation = animation;
 		frame = 0;
 		pos.x_spr_offset = animation->sprite_width / 2;
+		
 	}
 
 	void stepAnimation() {
@@ -243,8 +244,9 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	player_info->stepAnimation();
 	player_info->processInput();
+	player_info->stepAnimation();
+	
 }
 
 

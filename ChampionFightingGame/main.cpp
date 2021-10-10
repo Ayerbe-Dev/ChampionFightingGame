@@ -12,7 +12,7 @@ using namespace std;
 bool running = true;
 
 #include "game_main.cpp"
-
+int error_render;
 
 int main() {
 	//init SDL
@@ -27,6 +27,7 @@ int main() {
 
 	//load animations
 	loadAnimation(&TEST_IDLE_ANIMATION, renderer);
+	loadAnimation(&TEST_WALK_ANIMATION, renderer);
 
 	//init players
 	PlayerInfo player_info[2];
@@ -78,10 +79,12 @@ int main() {
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos.getRenderCoodrinateX();
 			render_pos.y = player_info[i].pos.getRenderCoodrinateY();
-			render_pos.w = player_info[i].width;
-			render_pos.h = player_info[i].height;
-
-			SDL_RenderCopy(renderer, player_info[i].current_animation->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
+			render_pos.w = player_info[i].current_animation->sprite_width;
+			render_pos.h = player_info[i].current_animation->sprite_height;
+			error_render = SDL_RenderCopy(renderer, player_info[i].current_animation->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
+			if (error_render != 0) {
+				cout << "\n" << SDL_GetError();
+			}
 		}
 
 		SDL_RenderPresent(renderer); 

@@ -24,6 +24,7 @@ public:
 	f32 y;
 	f32 x_offset;
 	f32 y_offset;
+	f32 x_spr_offset;
 
 	GameCoordinate() {
 		x = 0.0;
@@ -47,7 +48,7 @@ public:
 	}
 
 	f32 getRenderCoodrinateX() {
-		return x + x_offset;
+		return x + x_offset - x_spr_offset;
 	}
 
 	f32 getRenderCoodrinateY() {
@@ -58,19 +59,18 @@ public:
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 class PlayerInfo {
 public:
-	i64 id{ -1 };
-	string chara_kind{ "default" };
+	i64 id;
+	string chara_kind;
 	GameCoordinate pos;
 	GameCoordinate prevpos;
-	f32 height{ 0.0 };
-	f32 width{ 0.0 };
-	u32 status_kind{ 0 };
+	f32 height;
+	f32 width;
+	u32 status_kind;
 	void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
 	SDL_Texture* current_texture;
 	int frame;
-	int eframe;
 	Animation* current_animation;
 	SDL_Rect frame_rect;
 
@@ -78,7 +78,6 @@ public:
 
 	PlayerInfo(string chara_kind, SDL_Renderer* renderer) {
 		// runs on creation of instance;	
-
 		startAnimation(&TEST_IDLE_ANIMATION);
 		
 		//other numbers
@@ -89,18 +88,16 @@ public:
 	void startAnimation(Animation* animation) {
 		current_animation = animation;
 		frame = 0;
+		pos.x_spr_offset = animation->sprite_width / 2;
 	}
 
-	void idle_aimation_test() {
+	void stepAnimation() {
 		//this is not a good way to handle this, im just testing
 		frame_rect = getFrame(frame, current_animation);
-		if (frame == eframe) { frame = 0; }
+		if (frame == current_animation->length) { startAnimation(&TEST_IDLE_ANIMATION); }
 		else { frame++; }
-		}
+	}
 		
-		
-	
-
 	void loadDefaultButtonMap() {
 		if (id == 0) {
 			button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;
@@ -118,15 +115,6 @@ public:
 
 			button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
 		}
-	}
-
-	SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
-		SDL_Surface* image_surface = IMG_Load(file_path);
-		if (image_surface == NULL) {
-			std::cout << "Error loading image: " << IMG_GetError() << endl;
-		}
-		return SDL_CreateTextureFromSurface(renderer, image_surface);
-		SDL_FreeSurface(image_surface); // haha no more memory leaks
 	}
 
 	void setStateLikePlayer1() {
@@ -172,9 +160,19 @@ public:
 		if (check_button_on(BUTTON_LEFT)) {
 			pos.x -= 1.0;
 		}
+
+		//my jank test code <3
 		if (check_button_on(BUTTON_RIGHT)) {
-			pos.x += 1.0;
+			pos.x += 6.0;
+			if (frame == 0 or current_animation == &TEST_IDLE_ANIMATION) {
+				startAnimation(&TEST_WALK_ANIMATION);
+			}
 		}
+		else if (current_animation == &TEST_WALK_ANIMATION){
+			startAnimation(&TEST_IDLE_ANIMATION);
+		}
+
+		//
 	}
 
 	function<void(PlayerInfo*)> wait;
@@ -245,7 +243,7 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	player_info->idle_aimation_test();
+	player_info->stepAnimation();
 	player_info->processInput();
 }
 

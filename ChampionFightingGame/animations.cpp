@@ -13,8 +13,8 @@ struct Animation {
 	int sprite_height;
 	int sprite_width;
 	Animation() {}
-	Animation(string dir,int length,int height, int width) : 
-		ANIMATION_DIR{ dir }, length{ length }, sprite_height{ height }, sprite_width{ width } {}
+	Animation(string dir,int length,int width, int height) : 
+		ANIMATION_DIR{ dir }, length{ length-1 }, sprite_height{ height }, sprite_width{ width } {}
 };
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
@@ -29,6 +29,9 @@ SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 SDL_Rect getFrame(int frame, Animation* animation) {
 	SDL_Rect frame_rect;
 	frame_rect.x = frame * animation->sprite_width;
+	frame_rect.y = 0;
+	frame_rect.h = animation->sprite_height;
+	frame_rect.w = animation->sprite_width;
 	return frame_rect;
 }
 
@@ -36,4 +39,5 @@ void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
 	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR + "spritesheet.png").c_str(), renderer);
 }
 
-Animation TEST_IDLE_ANIMATION{ "resource/chara/not_ryu/animation_idle/", 9, 111, 78 };
+Animation TEST_IDLE_ANIMATION{ "resource/chara/not_ryu/animation_idle/", 10, 78, 111 };
+Animation TEST_WALK_ANIMATION{ "resource/chara/not_ryu/animation_walk/", 11, 112, 113 };

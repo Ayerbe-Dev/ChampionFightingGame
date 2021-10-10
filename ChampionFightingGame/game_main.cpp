@@ -1,11 +1,15 @@
 using namespace std;
 #include <iostream>
 #include <functional>
+#include <vector>
+#include<string>
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
 on the current frame
 */
+
+
 
 struct Buttons {
 	u32 mapping = 0;
@@ -62,7 +66,9 @@ public:
 	u32 status_kind { 0 };
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
-	SDL_Texture* default_texture;
+	SDL_Texture* current_texture;
+	int frame;
+	int eframe;
 
 	PlayerInfo() { }
 
@@ -72,14 +78,39 @@ public:
 		//default texture loading
 		resource_dir = "resource/chara/" + chara_kind;
 		string texture_path = resource_dir + "/sprite/sprite.png"; 
-		default_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
+		current_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
 		
 		//other numbers
 		height = 100;
 		width = 100;
 
+		
 
+		//load animation
+		string loc;
+		SDL_Texture* tmp_texture;
+		for (int i = 0; i < 10; i++) {
+			loc = "resource/chara/not_ryu/animation_idle/idle_" + to_string(i) + ".png";
+			tmp_texture = loadTexture(loc.c_str(), renderer);
+			IDLE_ANIMATION[i] = tmp_texture;
+		}
+		frame = 0;
+		eframe = 9;// sizeof(IDLE_ANIMATION);
 	}
+
+	void idle_aimation_test() {
+		//this is not a good way to handle this, im just testing
+		frame++;
+		current_texture = IDLE_ANIMATION[frame];
+		if (frame == eframe) {
+			frame = 0;
+		}
+
+
+		}
+		
+		
+	
 
 	void loadDefaultButtonMap() {
 		if (id == 0) {
@@ -213,7 +244,7 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	
+	player_info->idle_aimation_test();
 	player_info->processInput();
 }
 

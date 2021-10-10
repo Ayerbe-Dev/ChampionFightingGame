@@ -76,12 +76,12 @@ int main() {
 			render_pos.w = player_info[i].width;
 			render_pos.h = player_info[i].height;
 
-			SDL_RenderCopy(renderer, player_info[i].default_texture, NULL, &render_pos);
+			SDL_RenderCopy(renderer, player_info[i].current_texture, NULL, &render_pos);
 		}
 
 		SDL_RenderPresent(renderer); 
 
-		SDL_Delay(1000 / 60);
+		SDL_Delay(1000 / 24);
 	}
 
 	SDL_DestroyRenderer(renderer);

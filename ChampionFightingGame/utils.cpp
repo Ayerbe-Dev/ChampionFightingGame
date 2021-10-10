@@ -26,6 +26,7 @@ int clamp(int min, int value, int max) {
 	return value;
 }
 
+
 enum {
 	BUTTON_UP,
 	BUTTON_DOWN,

@@ -133,6 +133,13 @@ public:
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0); // Idk if this causes a leak
 	}
 
+	void change_status(u32 new_status_kind) {
+		if (new_status_kind != status_kind) {
+			exit_status_pointer[status_kind];
+			status_kind = new_status_kind;
+			enter_status_pointer[status_kind];
+		}
+	}
 
 	bool check_button_on(u32 button) {
 		return button_info[button].button_on;

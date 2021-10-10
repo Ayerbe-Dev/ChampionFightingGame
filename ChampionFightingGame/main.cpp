@@ -13,7 +13,9 @@ bool running = true;
 
 #include "game_main.cpp"
 
+
 int main() {
+	//init SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("error initializing SDL: %s\n", SDL_GetError());
 	}
@@ -23,7 +25,10 @@ int main() {
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
+	//load animations
+	loadAnimation(&TEST_IDLE_ANIMATION, renderer);
 
+	//init players
 	PlayerInfo player_info[2];
 
 	PlayerInfo p1 {"eric", renderer};
@@ -76,7 +81,7 @@ int main() {
 			render_pos.w = player_info[i].width;
 			render_pos.h = player_info[i].height;
 
-			SDL_RenderCopy(renderer, player_info[i].current_texture, NULL, &render_pos);
+			SDL_RenderCopy(renderer, player_info[i].current_animation->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
 		}
 
 		SDL_RenderPresent(renderer); 

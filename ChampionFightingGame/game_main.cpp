@@ -3,6 +3,7 @@ using namespace std;
 #include <functional>
 #include <vector>
 #include<string>
+#include "animations.cpp"
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
@@ -70,44 +71,31 @@ public:
 	SDL_Texture* current_texture;
 	int frame;
 	int eframe;
+	Animation* current_animation;
+	SDL_Rect frame_rect;
 
 	PlayerInfo() { }
 
 	PlayerInfo(string chara_kind, SDL_Renderer* renderer) {
 		// runs on creation of instance;	
 
-		//default texture loading
-		resource_dir = "resource/chara/" + chara_kind;
-		string texture_path = resource_dir + "/sprite/sprite.png"; 
-		current_texture = loadTexture(texture_path.c_str(), renderer);// some shit about const chars is really making this painful
+		startAnimation(&TEST_IDLE_ANIMATION);
 		
 		//other numbers
 		height = 100;
 		width = 100;
+	}
 
-		
-
-		//load animation
-		string loc;
-		SDL_Texture* tmp_texture;
-		for (int i = 0; i < 10; i++) {
-			loc = "resource/chara/not_ryu/animation_idle/idle_" + to_string(i) + ".png";
-			tmp_texture = loadTexture(loc.c_str(), renderer);
-			IDLE_ANIMATION[i] = tmp_texture;
-		}
+	void startAnimation(Animation* animation) {
+		current_animation = animation;
 		frame = 0;
-		eframe = 9;// sizeof(IDLE_ANIMATION);
 	}
 
 	void idle_aimation_test() {
 		//this is not a good way to handle this, im just testing
-		frame++;
-		current_texture = IDLE_ANIMATION[frame];
-		if (frame == eframe) {
-			frame = 0;
-		}
-
-
+		frame_rect = getFrame(frame, current_animation);
+		if (frame == eframe) { frame = 0; }
+		else { frame++; }
 		}
 		
 		

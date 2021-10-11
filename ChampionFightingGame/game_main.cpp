@@ -244,8 +244,10 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Get the player's inputs. This will also probably be where statuses are changed later on
 	*/
-	player_info->processInput();
+
 	player_info->stepAnimation();
+	player_info->processInput();
+	
 	
 }
 

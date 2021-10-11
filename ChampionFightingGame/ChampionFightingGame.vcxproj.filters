@@ -35,5 +35,41 @@
     <Image Include="resource\chara\roy\sprite\sprite.png">
       <Filter>resource</Filter>
     </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_0.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_1.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_2.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_3.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_4.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_5.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_6.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_7.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_8.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\idle_9.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_idle\spritesheet.png">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="resource\chara\not_ryu\animation_walk\spritesheet.png">
+      <Filter>resource</Filter>
+    </Image>
   </ItemGroup>
 </Project>

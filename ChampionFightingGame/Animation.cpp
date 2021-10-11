@@ -32,3 +32,6 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
 	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR + "spritesheet.png").c_str(), renderer);
 }
+
+Animation TEST_IDLE_ANIMATION{ "resource/chara/not_ryu/animation_idle/", 10, 78, 111 };
+Animation TEST_WALK_ANIMATION{ "resource/chara/not_ryu/animation_walk/", 11, 112, 113 };

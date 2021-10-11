@@ -5,6 +5,7 @@
 #include "PlayerInfo.h"
 #include <SDL.h>
 #include "Animation.h"
+#include "Status.h"
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
@@ -17,45 +18,6 @@ on the current frame
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 
-void status_wait(PlayerInfo* player_info);
-void enter_status_wait(PlayerInfo* player_info);
-void exit_status_wait(PlayerInfo* player_info);
-void status_walkf(PlayerInfo* player_info);
-void enter_status_walkf(PlayerInfo* player_info);
-void exit_status_walkf(PlayerInfo* player_info);
-void status_walkb(PlayerInfo* player_info);
-void enter_status_walkb(PlayerInfo* player_info);
-void exit_status_walkb(PlayerInfo* player_info);
-void status_dash(PlayerInfo* player_info);
-void enter_status_dash(PlayerInfo* player_info);
-void exit_status_dash(PlayerInfo* player_info);
-void status_dashb(PlayerInfo* player_info);
-void enter_status_dashb(PlayerInfo* player_info);
-void exit_status_dashb(PlayerInfo* player_info);
-void status_crouchd(PlayerInfo* player_info);
-void enter_status_crouchd(PlayerInfo* player_info);
-void exit_status_crouchd(PlayerInfo* player_info);
-void status_crouch(PlayerInfo* player_info);
-void enter_status_crouch(PlayerInfo* player_info);
-void exit_status_crouch(PlayerInfo* player_info);
-void status_crouchu(PlayerInfo* player_info);
-void enter_status_crouchu(PlayerInfo* player_info);
-void exit_status_crouchu(PlayerInfo* player_info);
-void status_jumpsquat(PlayerInfo* player_info);
-void enter_status_jumpsquat(PlayerInfo* player_info);
-void exit_status_jumpsquat(PlayerInfo* player_info);
-void status_jump(PlayerInfo* player_info);
-void enter_status_jump(PlayerInfo* player_info);
-void exit_status_jump(PlayerInfo* player_info);
-void status_attack(PlayerInfo* player_info);
-void enter_status_attack(PlayerInfo* player_info);
-void exit_status_attack(PlayerInfo* player_info);
-void status_hitstun(PlayerInfo* player_info);
-void enter_status_hitstun(PlayerInfo* player_info);
-void exit_status_hitstun(PlayerInfo* player_info);
-void status_blockstun(PlayerInfo* player_info);
-void enter_status_blockstun(PlayerInfo* player_info);
-void exit_status_blockstun(PlayerInfo* player_info);
 
 void set_status_functions(PlayerInfo* player_info) {
 	

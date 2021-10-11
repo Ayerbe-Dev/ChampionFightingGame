@@ -16,5 +16,5 @@ SDL_Rect getFrame(int frame, Animation* animation);
 void loadAnimation(Animation* animation, SDL_Renderer* renderer);
 
 
-Animation TEST_IDLE_ANIMATION{ "resource/chara/not_ryu/animation_idle/", 10, 78, 111 };
-Animation TEST_WALK_ANIMATION{ "resource/chara/not_ryu/animation_walk/", 11, 112, 113 };
+extern Animation TEST_IDLE_ANIMATION;
+extern Animation TEST_WALK_ANIMATION;

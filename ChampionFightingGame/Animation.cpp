@@ -10,6 +10,7 @@ using namespace std;
 Animation::Animation() {}
 Animation::Animation(std::string dir, int length, int width, int height) :
 	ANIMATION_DIR{ dir }, length{ length - 1 }, sprite_height{ height }, sprite_width{ width } {}
+fstream f_stream;
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	SDL_Surface* image_surface = IMG_Load(file_path);

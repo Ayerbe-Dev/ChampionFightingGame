@@ -7,20 +7,10 @@
 #include "Animation.h"
 #include "Status.h"
 
-/*
-For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
-on the current frame
-*/
-
-
-
-
-
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 
 
 void set_status_functions(PlayerInfo* player_info) {
-	
 	(*player_info).status_pointer[CHARA_STATUS_WAIT] = status_wait;
 	(*player_info).enter_status_pointer[CHARA_STATUS_WAIT] = enter_status_wait;
 	(*player_info).exit_status_pointer[CHARA_STATUS_WAIT] = exit_status_wait;

@@ -33,7 +33,7 @@ void PlayerInfo::stepAnimation() {
 		*/
 	}
 	else {
-		frame++;
+		frame ++;
 	}
 	is_anim_end = prev_frame > frame;
 }

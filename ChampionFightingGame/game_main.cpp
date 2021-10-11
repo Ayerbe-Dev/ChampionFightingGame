@@ -68,6 +68,7 @@ public:
 	bool facing_right{ true };
 	f32 facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
+	u32 situation_kind{ CHARA_SITUATION_GROUND };
 	void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
@@ -434,6 +435,7 @@ void status_wait(PlayerInfo* player_info) {
 
 void enter_status_wait(PlayerInfo* player_info) {
 	(*player_info).startAnimation(&TEST_IDLE_ANIMATION);
+	(*player_info).situation_kind = CHARA_SITUATION_GROUND;
 }
 
 void exit_status_wait(PlayerInfo* player_info) {
@@ -446,7 +448,7 @@ void status_walkf(PlayerInfo* player_info) {
 		(*player_info).change_status(CHARA_STATUS_WAIT);
 	}
 	if ((*player_info).status_kind == CHARA_STATUS_WALKF) { //Only execute this if our status hasn't changed
-		(*player_info).pos.x += 3.0;
+		(*player_info).pos.x += 3.0 * (*player_info).facing_dir;
 	}
 }
 
@@ -464,7 +466,7 @@ void status_walkb(PlayerInfo* player_info) {
 		(*player_info).change_status(CHARA_STATUS_WAIT);
 	}
 	if ((*player_info).status_kind == CHARA_STATUS_WALKB) {
-		(*player_info).pos.x -= 3.0;
+		(*player_info).pos.x -= 3.0 * (*player_info).facing_dir;
 	}
 }
 
@@ -555,7 +557,7 @@ void enter_status_jumpsquat(PlayerInfo* player_info) {
 }
 
 void exit_status_jumpsquat(PlayerInfo* player_info) {
-
+	(*player_info).situation_kind = CHARA_SITUATION_AIR;
 }
 
 void status_jump(PlayerInfo* player_info) {

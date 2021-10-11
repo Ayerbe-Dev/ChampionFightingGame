@@ -72,8 +72,19 @@ int main() {
 		}
 
 		SDL_RenderClear(renderer);
-
 		for (int i = 0; i < 2; i++) {
+			SDL_RendererFlip flip = SDL_FLIP_NONE;
+			if (player_info[i].situation_kind == CHARA_SITUATION_GROUND) {
+				if (player_info[i].pos.x > player_info[!i].pos.x) {
+					player_info[i].facing_dir = -1.0;
+					player_info[i].facing_right = false;
+					flip = SDL_FLIP_HORIZONTAL;
+				}
+				else {
+					player_info[i].facing_dir = 1.0;
+					player_info[i].facing_right = true;
+				}
+			}
 			game_main(&player_info[i], renderer);
 
 			SDL_Rect render_pos;
@@ -81,7 +92,8 @@ int main() {
 			render_pos.y = player_info[i].pos.getRenderCoodrinateY();
 			render_pos.w = player_info[i].anim_kind->sprite_width;
 			render_pos.h = player_info[i].anim_kind->sprite_height;
-			error_render = SDL_RenderCopy(renderer, player_info[i].anim_kind->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
+			const double angle = 0;
+			error_render = SDL_RenderCopyEx(renderer, player_info[i].anim_kind->SPRITESHEET, &player_info[i].frame_rect, &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
@@ -89,7 +101,7 @@ int main() {
 
 		SDL_RenderPresent(renderer); 
 
-		SDL_Delay(1000 / 24);
+		SDL_Delay(1000 / 60);
 	}
 
 	SDL_DestroyRenderer(renderer);

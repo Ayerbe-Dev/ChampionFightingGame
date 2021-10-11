@@ -65,9 +65,9 @@ public:
 	GameCoordinate prevpos;
 	f32 height;
 	f32 width;
-	bool facing_right;
-	f32 facing_dir;
-	u32 status_kind;
+	bool facing_right{ true };
+	f32 facing_dir{ 1.0 };
+	u32 status_kind{ CHARA_STATUS_WAIT };
 	void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
@@ -75,7 +75,8 @@ public:
 	string resource_dir;
 	SDL_Texture* current_texture;
 	int frame;
-	Animation* current_animation;
+	bool is_anim_end{ false };
+	Animation* anim_kind;
 	SDL_Rect frame_rect;
 
 	PlayerInfo() { }
@@ -90,17 +91,33 @@ public:
 	}
 
 	void startAnimation(Animation* animation) {
-		current_animation = animation;
+		anim_kind = animation;
 		frame = 0;
 		pos.x_spr_offset = animation->sprite_width / 2;
 		
 	}
 
 	void stepAnimation() {
-		//this is not a good way to handle this, im just testing
-		frame_rect = getFrame(frame, current_animation);
-		if (frame == current_animation->length) { startAnimation(&TEST_IDLE_ANIMATION); }
-		else { frame++; }
+		//tbh i think this impl isn't that bad
+		int prev_frame = frame;
+		frame_rect = getFrame(frame, anim_kind);
+		if (frame == anim_kind->length) {
+			frame = 0; 
+			/*
+				Instead of going back to idle after reaching the end of an animation, go back to 0. If the animation is designed to loop, nothing
+				happens, but if it isn't, we still save that the end of the animation was reached. From there if we want to make certain status
+				changes based on the animation ending, doing so is a pretty simple check.
+			*/
+		}
+		else {
+			frame++; 
+		}
+		if (prev_frame > frame) {
+			is_anim_end = true;
+		}
+		else {
+			is_anim_end = false;
+		}
 	}
 		
 	void loadDefaultButtonMap() {
@@ -124,21 +141,12 @@ public:
 
 	void setStateLikePlayer1() {
 		id = 0;
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0); // Idk if this causes a leak
-
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
 	}
 
 	void setStateLikePlayer2() {
 		id = 1;
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0); // Idk if this causes a leak
-	}
-
-	void change_status(u32 new_status_kind) {
-		if (new_status_kind != status_kind) {
-			exit_status_pointer[status_kind];
-			status_kind = new_status_kind;
-			enter_status_pointer[status_kind];
-		}
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 
 	bool check_button_on(u32 button) {
@@ -153,8 +161,8 @@ public:
 		return button_info[button].changed && !button_info[button].button_on;
 	}
 
-	i32 get_stick_dir() {
-		if (check_button_on(BUTTON_UP)) {
+	i32 get_stick_dir() { //Use this instead of check_button_on with left and right, it factors in the player's facing direction
+		if (check_button_on(BUTTON_UP) && !check_button_on(BUTTON_DOWN)) {
 			if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
 				if (check_button_on(BUTTON_RIGHT) == facing_right) {
 					return 9;
@@ -167,7 +175,7 @@ public:
 				return 8;
 			}
 		}
-		else if (check_button_on(BUTTON_DOWN)) {
+		else if (check_button_on(BUTTON_DOWN) && !check_button_on(BUTTON_UP)) {
 			if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
 				if (check_button_on(BUTTON_RIGHT) == facing_right) {
 					return 3;
@@ -195,6 +203,15 @@ public:
 		}
 	}
 
+	void change_status(u32 new_status_kind) {
+		//Call the exit status function for whatever we're leaving, change the value, then call the entry status to prepare any relevant info
+		if (new_status_kind != status_kind) {
+			exit_status_pointer[status_kind](this);
+			status_kind = new_status_kind;
+			enter_status_pointer[status_kind](this);
+		}
+	}
+
 	void processInput() {
 		if (check_button_on(BUTTON_START)) {
 			pos.y = 0.0;
@@ -211,36 +228,51 @@ public:
 		if (check_button_on(BUTTON_DOWN)) {
 			pos.y += 1.0;
 		}
-		if (check_button_on(BUTTON_LEFT)) {
-			pos.x -= 1.0;
-		}
 
-		//my jank test code <3
-		if (check_button_on(BUTTON_RIGHT)) {
-			pos.x += 6.0;
-			if (frame == 0 or current_animation == &TEST_IDLE_ANIMATION) {
-				startAnimation(&TEST_WALK_ANIMATION);
-			}
+		if (get_stick_dir() == 6) {
+			change_status(CHARA_STATUS_WALKF);
 		}
-		else if (current_animation == &TEST_WALK_ANIMATION){
-			startAnimation(&TEST_IDLE_ANIMATION);
+		if (get_stick_dir() == 4) {
+			change_status(CHARA_STATUS_WALKB);
 		}
-
-		//
 	}
 
 	function<void(PlayerInfo*)> wait;
+	function<void(PlayerInfo*)> enter_wait;
+	function<void(PlayerInfo*)> exit_wait;
 	function<void(PlayerInfo*)> walkf;
+	function<void(PlayerInfo*)> enter_walkf;
+	function<void(PlayerInfo*)> exit_walkf;
 	function<void(PlayerInfo*)> walkb;
+	function<void(PlayerInfo*)> enter_walkb;
+	function<void(PlayerInfo*)> exit_walkb;
 	function<void(PlayerInfo*)> dash;
+	function<void(PlayerInfo*)> enter_dash;
+	function<void(PlayerInfo*)> exit_dash;
 	function<void(PlayerInfo*)> dashb;
+	function<void(PlayerInfo*)> enter_dashb;
+	function<void(PlayerInfo*)> exit_dashb;
 	function<void(PlayerInfo*)> crouch;
+	function<void(PlayerInfo*)> enter_crouch;
+	function<void(PlayerInfo*)> exit_crouch;
 	function<void(PlayerInfo*)> crouchs;
+	function<void(PlayerInfo*)> enter_crouchs;
+	function<void(PlayerInfo*)> exit_crouchs;
 	function<void(PlayerInfo*)> jumpsquat;
+	function<void(PlayerInfo*)> enter_jumpsquat;
+	function<void(PlayerInfo*)> exit_jumpsquat;
 	function<void(PlayerInfo*)> jump;
+	function<void(PlayerInfo*)> enter_jump;
+	function<void(PlayerInfo*)> exit_jump;
 	function<void(PlayerInfo*)> attack;
+	function<void(PlayerInfo*)> enter_attack;
+	function<void(PlayerInfo*)> exit_attack;
 	function<void(PlayerInfo*)> hitstun;
+	function<void(PlayerInfo*)> enter_hitstun;
+	function<void(PlayerInfo*)> exit_hitstun;
 	function<void(PlayerInfo*)> blockstun;
+	function<void(PlayerInfo*)> enter_blockstun;
+	function<void(PlayerInfo*)> exit_blockstun;
 };
 
 void status_wait(PlayerInfo* player_info);
@@ -280,19 +312,22 @@ void status_blockstun(PlayerInfo* player_info);
 void enter_status_blockstun(PlayerInfo* player_info);
 void exit_status_blockstun(PlayerInfo* player_info);
 
-
-void set_status_functions(PlayerInfo* player_info);
-
 void set_status_functions(PlayerInfo* player_info) {
 	(*player_info).wait = &status_wait;
+	(*player_info).enter_wait = &enter_status_wait;
+	(*player_info).exit_wait = &exit_status_wait;
 	(*player_info).status_pointer[CHARA_STATUS_WAIT] = status_wait;
 	(*player_info).enter_status_pointer[CHARA_STATUS_WAIT] = enter_status_wait;
 	(*player_info).exit_status_pointer[CHARA_STATUS_WAIT] = exit_status_wait;
 	(*player_info).walkf = &status_walkf;
+	(*player_info).enter_walkf = &enter_status_walkf;
+	(*player_info).exit_walkf = &exit_status_walkf;
 	(*player_info).status_pointer[CHARA_STATUS_WALKF] = status_walkf;
 	(*player_info).enter_status_pointer[CHARA_STATUS_WALKF] = enter_status_walkf;
 	(*player_info).exit_status_pointer[CHARA_STATUS_WALKF] = exit_status_walkf;
 	(*player_info).walkb = &status_walkb;
+	(*player_info).enter_walkb = &enter_status_walkb;
+	(*player_info).exit_walkb = &exit_status_walkb;
 	(*player_info).status_pointer[CHARA_STATUS_WALKB] = status_walkb;
 	(*player_info).enter_status_pointer[CHARA_STATUS_WALKB] = enter_status_walkb;
 	(*player_info).exit_status_pointer[CHARA_STATUS_WALKB] = exit_status_walkb;
@@ -337,14 +372,20 @@ void set_status_functions(PlayerInfo* player_info) {
 
 
 void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
-	//Handle statuses
+	//Marks down the addresses of all of the player's status functions and puts them all on their info table. 
 
+	/*
+		TODO: Make it so this only runs once, probably while initializing the player_info class but it could be somewhere else.Eventually there's
+		going to be a version of this function for each character that may or may not overwrite the global one, so ideally they aren't constantly
+		overwriting each other every frame.
+	*/
 	set_status_functions(player_info);
-	(*player_info).status_kind = CHARA_STATUS_WAIT;
+
+	//Calls the looping status function for whatever the player's current status_kind is.
 	(*player_info).status_pointer[(*player_info).status_kind](player_info);
 
 	/*
-		Get the player's inputs. This will also probably be where statuses are changed later on
+		Get the player's inputs and increment the frame.
 	*/
 	player_info->processInput();
 	player_info->stepAnimation();
@@ -357,7 +398,7 @@ void status_wait(PlayerInfo* player_info) {
 }
 
 void enter_status_wait(PlayerInfo* player_info) {
-
+	(*player_info).startAnimation(&TEST_IDLE_ANIMATION);
 }
 
 void exit_status_wait(PlayerInfo* player_info) {
@@ -365,11 +406,15 @@ void exit_status_wait(PlayerInfo* player_info) {
 }
 
 void status_walkf(PlayerInfo* player_info) {
-
+	if ((*player_info).get_stick_dir() != 6) {
+		(*player_info).change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	(*player_info).pos.x += 3.0;
 }
 
 void enter_status_walkf(PlayerInfo* player_info) {
-
+	(*player_info).startAnimation(&TEST_WALK_ANIMATION);
 }
 
 void exit_status_walkf(PlayerInfo* player_info) {
@@ -377,7 +422,11 @@ void exit_status_walkf(PlayerInfo* player_info) {
 }
 
 void status_walkb(PlayerInfo* player_info) {
-
+	if ((*player_info).get_stick_dir() != 4) {
+		(*player_info).change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	(*player_info).pos.x -= 3.0;
 }
 
 void enter_status_walkb(PlayerInfo* player_info) {

@@ -59,5 +59,3 @@ enum {
 
 	CHARA_STATUS_MAX,
 };
-
-SDL_Texture* IDLE_ANIMATION[10];

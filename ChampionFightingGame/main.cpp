@@ -79,9 +79,9 @@ int main() {
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos.getRenderCoodrinateX();
 			render_pos.y = player_info[i].pos.getRenderCoodrinateY();
-			render_pos.w = player_info[i].current_animation->sprite_width;
-			render_pos.h = player_info[i].current_animation->sprite_height;
-			error_render = SDL_RenderCopy(renderer, player_info[i].current_animation->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
+			render_pos.w = player_info[i].anim_kind->sprite_width;
+			render_pos.h = player_info[i].anim_kind->sprite_height;
+			error_render = SDL_RenderCopy(renderer, player_info[i].anim_kind->SPRITESHEET, &player_info[i].frame_rect, &render_pos);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}

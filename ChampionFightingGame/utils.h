@@ -15,6 +15,9 @@ typedef float f32;
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 
+#define TICK_RATE_S 60
+#define TICK_RATE_MS 1000 / TICK_RATE_S
+
 int clamp(int min, int value, int max);
 
 

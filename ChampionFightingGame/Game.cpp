@@ -5,7 +5,7 @@
 #include "PlayerInfo.h"
 #include <SDL.h>
 #include "Animation.h"
-#include "Status.h"
+#include "Game.h"
 
 /*
 For each of the user's controls, track what key they're assigned to, whether or not that button is being pressed, and whether or not a change was made
@@ -76,7 +76,7 @@ void set_status_functions(PlayerInfo* player_info) {
 
 
 
-void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
+void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	//Marks down the addresses of all of the player's status functions and puts them all on their info table. 
 
 	/*
@@ -93,9 +93,10 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 		Get the player's inputs and increment the frame.
 	*/
 
-	player_info->stepAnimation();
 	player_info->processInput();
-	player_info->stepAnimation();
+	if (player_info->canStep()) {
+		player_info->stepAnimation();
+	}
 
 }
 

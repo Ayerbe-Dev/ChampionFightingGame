@@ -26,10 +26,6 @@ int main() {
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-	//load animations
-	loadAnimation(&TEST_IDLE_ANIMATION, renderer);
-	loadAnimation(&TEST_WALK_ANIMATION, renderer);
-
 	//init players
 	PlayerInfo player_info[2];
 
@@ -43,6 +39,11 @@ int main() {
 
 	player_info[0] = p1;
 	player_info[1] = p2;
+
+	for (int i = 0; i < 60; i++) {
+		loadAnimation(&ANIM_TABLE[i][0], renderer);
+		loadAnimation(&ANIM_TABLE[i][1], renderer);
+	}
 
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
@@ -107,8 +108,6 @@ int main() {
 			}
 		}
 		SDL_RenderPresent(renderer); 
-
-		//SDL_Delay(1000 / 60);
 	}
 
 	SDL_DestroyRenderer(renderer);

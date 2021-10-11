@@ -1,3 +1,6 @@
+using namespace std;
+#include <iostream>
+#include <sstream>
 #include "utils.h"
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -10,5 +13,3 @@ int clamp(int min, int value, int max) {
 	}
 	return value;
 }
-
-

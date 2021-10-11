@@ -10,7 +10,6 @@ using namespace std;
 Animation::Animation() {}
 Animation::Animation(std::string dir, int length, int width, int height) :
 	ANIMATION_DIR{ dir }, length{ length - 1 }, sprite_height{ height }, sprite_width{ width } {}
-fstream f_stream;
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	SDL_Surface* image_surface = IMG_Load(file_path);
@@ -31,8 +30,7 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 }
 
 void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
-	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR + "spritesheet.png").c_str(), renderer);
+	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR).c_str(), renderer);
 }
 
-Animation TEST_IDLE_ANIMATION{ "resource/chara/not_ryu/animation_idle/", 10, 78, 111 };
-Animation TEST_WALK_ANIMATION{ "resource/chara/not_ryu/animation_walk/", 11, 112, 113 };
+Animation ANIM_TABLE[60][2];

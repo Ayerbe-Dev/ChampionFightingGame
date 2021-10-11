@@ -96,7 +96,7 @@ void status_wait(PlayerInfo* player_info) {
 }
 
 void enter_status_wait(PlayerInfo* player_info) {
-	(*player_info).startAnimation(&TEST_IDLE_ANIMATION);
+	(*player_info).change_anim("wait", 0, 30);
 	(*player_info).situation_kind = CHARA_SITUATION_GROUND;
 }
 
@@ -115,7 +115,7 @@ void status_walkf(PlayerInfo* player_info) {
 }
 
 void enter_status_walkf(PlayerInfo* player_info) {
-	(*player_info).startAnimation(&TEST_WALK_ANIMATION);
+	(*player_info).change_anim("walk_f", 0, 30);
 }
 
 void exit_status_walkf(PlayerInfo* player_info) {
@@ -133,7 +133,7 @@ void status_walkb(PlayerInfo* player_info) {
 }
 
 void enter_status_walkb(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("walk_b", 0, 30);
 }
 
 void exit_status_walkb(PlayerInfo* player_info) {
@@ -171,7 +171,7 @@ void status_crouchd(PlayerInfo* player_info) {
 }
 
 void enter_status_crouchd(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("crouch_d", 0, 30);
 }
 
 void exit_status_crouchd(PlayerInfo* player_info) {
@@ -186,7 +186,7 @@ void status_crouch(PlayerInfo* player_info) {
 }
 
 void enter_status_crouch(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("crouch", 0, 30);
 }
 
 void exit_status_crouch(PlayerInfo* player_info) {
@@ -201,7 +201,7 @@ void status_crouchu(PlayerInfo* player_info) {
 }
 
 void enter_status_crouchu(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("crouch_u", 0, 30);
 }
 
 void exit_status_crouchu(PlayerInfo* player_info) {
@@ -215,7 +215,7 @@ void status_jumpsquat(PlayerInfo* player_info) {
 }
 
 void enter_status_jumpsquat(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("jump_squat", 0, 30);
 }
 
 void exit_status_jumpsquat(PlayerInfo* player_info) {
@@ -227,7 +227,19 @@ void status_jump(PlayerInfo* player_info) {
 }
 
 void enter_status_jump(PlayerInfo* player_info) {
-
+	if ((*player_info).get_stick_dir() == 7
+	|| (*player_info).get_stick_dir() == 4 
+	|| (*player_info).get_stick_dir() == 1) {
+		(*player_info).change_anim("jump_b", 0, 30);
+	}
+	else if ((*player_info).get_stick_dir() == 9
+	|| (*player_info).get_stick_dir() == 6
+	|| (*player_info).get_stick_dir() == 3) {
+		(*player_info).change_anim("jump_f", 0, 30);
+	}
+	else {
+		(*player_info).change_anim("jump", 0, 30);
+	}
 }
 
 void exit_status_jump(PlayerInfo* player_info) {

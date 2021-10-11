@@ -1,3 +1,6 @@
+using namespace std;
+#include <iostream>
+#include <sstream>
 #pragma once
 typedef char i8;
 typedef unsigned char u8;

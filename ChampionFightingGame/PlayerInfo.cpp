@@ -1,23 +1,72 @@
 #include "PlayerInfo.h"
 #include "GameCoordinate.h"
 #include "Animation.h"
-
+#include <fstream>
 
 PlayerInfo::PlayerInfo() { }
 
 PlayerInfo::PlayerInfo(std::string chara_kind, SDL_Renderer* renderer) {
 	// runs on creation of instance;	
-	startAnimation(&TEST_IDLE_ANIMATION);
+	this->chara_kind = chara_kind;
+	this->resource_dir = ("resource/chara/" + chara_kind);
+	load_anim_list();
+	startAnimation(&ANIM_TABLE[0][id]);
 
 	//other numbers
 	height = 100;
 	width = 100;
 }
 
+void PlayerInfo::load_anim_list() {
+	ifstream anim_list;
+	anim_list.open(resource_dir + "/anims/anim_list.yml");
+
+	if (anim_list.fail()) {
+		cerr << "Could not open anim_list!" << endl;
+		exit(1);
+	}
+
+	string line_1;
+	anim_list >> line_1;
+	int num_anims = stoi(line_1.substr(line_1.find("=") + 1));
+
+	for (int i = 0; i < num_anims; i++) {
+		string filename;
+		string frame_count;
+		string width;
+		string height;
+		string faf;
+		anim_list >> filename >> frame_count >> width >> height >> faf;
+		ANIM_TABLE[i][id].ANIMATION_DIR = (resource_dir + "/anims/" + filename.substr(filename.find("=") + 1));
+		ANIM_TABLE[i][id].length = stoi(frame_count.substr(frame_count.find("=") + 1)) - 1;
+		ANIM_TABLE[i][id].sprite_width = stoi(width.substr(width.find("=") + 1));
+		ANIM_TABLE[i][id].sprite_height = stoi(height.substr(height.find("=") + 1));
+		ANIM_TABLE[i][id].faf = stoi(faf.substr(faf.find("=") + 1));
+	}
+}
+
+void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate) {
+	int anim_to_use = -1;
+	for (int i = 0; i < 60; i++) {
+		int low_index = ANIM_TABLE[i][id].ANIMATION_DIR.find("anims/") + 6;
+		int high_index = ANIM_TABLE[i][id].ANIMATION_DIR.find(".png");
+		if (new_anim_kind + ".png" == ANIM_TABLE[i][id].ANIMATION_DIR.substr(low_index, high_index)) {
+			anim_to_use = i;
+			break;
+		}
+	}
+	if (anim_to_use != -1) {
+		frame = entry_frame;
+		hold_ms = (1000 / div_rate);
+		startAnimation(&ANIM_TABLE[anim_to_use][id]);
+	}
+	else {
+		cout << "Invalid Animation" << endl;
+	}
+}
+
 void PlayerInfo::startAnimation(Animation* animation) {
 	anim_kind = animation;
-	frame = 0;
-	hold_ms = (1000 / 30); //this is just hardcapped atm itl be dynamic later
 	pos.x_spr_offset = animation->sprite_width / 2;
 	last_frame_ms = SDL_GetTicks();
 	frame_rect = getFrame(frame, anim_kind); // needs to be here in case the player was in the middle of an animation.
@@ -36,10 +85,10 @@ bool PlayerInfo::canStep() {
 
 void PlayerInfo::stepAnimation() {
 	//tbh i think this impl isn't that bad
+	int last_frame = frame;
 	frame_rect = getFrame(frame, anim_kind);
 	if (frame == anim_kind->length) {
 		frame = 0;
-		is_anim_end = true;
 		/*
 			Instead of going back to idle after reaching the end of an animation, go back to 0. If the animation is designed to loop, nothing
 			happens, but if it isn't, we still save that the end of the animation was reached. From there if we want to make certain status
@@ -49,6 +98,7 @@ void PlayerInfo::stepAnimation() {
 	else {
 		frame ++;
 	}
+	is_anim_end = last_frame >= frame; //This needs to be here or else is_anim_end will never be reset back to false
 }
 
 void PlayerInfo::loadDefaultButtonMap() {
@@ -167,12 +217,6 @@ void PlayerInfo::processInput() {
 		else {
 			pos.x = 200.0;
 		}
-	}
-	if (check_button_on(BUTTON_UP)) {
-		pos.y -= 1.0;
-	}
-	if (check_button_on(BUTTON_DOWN)) {
-		pos.y += 1.0;
 	}
 }
 

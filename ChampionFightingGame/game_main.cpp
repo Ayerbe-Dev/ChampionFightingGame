@@ -420,6 +420,8 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	/*
 		Get the player's inputs and increment the frame.
 	*/
+
+	player_info->stepAnimation();
 	player_info->processInput();
 	player_info->stepAnimation();
 

@@ -5,13 +5,11 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
-#include "utils.cpp"
+#include "utils.h"
+#include "Status.h"
 #undef main
 using namespace std;
-
 bool running = true;
-
-#include "game_main.cpp"
 int error_render;
 
 int main() {

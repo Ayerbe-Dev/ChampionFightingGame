@@ -5,17 +5,11 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include <functional>
+#include "Animation.h"
 
-struct Animation {
-	SDL_Texture* SPRITESHEET; 
-	string ANIMATION_DIR;
-	int length;
-	int sprite_height;
-	int sprite_width;
-	Animation() {}
-	Animation(string dir,int length,int width, int height) : 
-		ANIMATION_DIR{ dir }, length{ length-1 }, sprite_height{ height }, sprite_width{ width } {}
-};
+Animation::Animation() {}
+Animation::Animation(std::string dir, int length, int width, int height) :
+	ANIMATION_DIR{ dir }, length{ length - 1 }, sprite_height{ height }, sprite_width{ width } {}
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	SDL_Surface* image_surface = IMG_Load(file_path);

@@ -112,12 +112,7 @@ public:
 		else {
 			frame++; 
 		}
-		if (prev_frame > frame) {
-			is_anim_end = true;
-		}
-		else {
-			is_anim_end = false;
-		}
+		is_anim_end = prev_frame > frame;
 	}
 		
 	void loadDefaultButtonMap() {
@@ -212,6 +207,21 @@ public:
 		}
 	}
 
+	void common_ground_status_act() { //Handles all grounded options where the player is fully actionable
+		if (get_stick_dir() == 6) {
+			change_status(CHARA_STATUS_WALKF);
+		}
+		if (get_stick_dir() == 4) {
+			change_status(CHARA_STATUS_WALKB);
+		}
+		if (get_stick_dir() > 6) {
+			change_status(CHARA_STATUS_JUMPSQUAT);
+		}
+		if (get_stick_dir() < 4) {
+			change_status(CHARA_STATUS_CROUCHD);
+		}
+	}
+
 	void processInput() {
 		if (check_button_on(BUTTON_START)) {
 			pos.y = 0.0;
@@ -227,13 +237,6 @@ public:
 		}
 		if (check_button_on(BUTTON_DOWN)) {
 			pos.y += 1.0;
-		}
-
-		if (get_stick_dir() == 6) {
-			change_status(CHARA_STATUS_WALKF);
-		}
-		if (get_stick_dir() == 4) {
-			change_status(CHARA_STATUS_WALKB);
 		}
 	}
 
@@ -252,12 +255,15 @@ public:
 	function<void(PlayerInfo*)> dashb;
 	function<void(PlayerInfo*)> enter_dashb;
 	function<void(PlayerInfo*)> exit_dashb;
+	function<void(PlayerInfo*)> crouchd;
+	function<void(PlayerInfo*)> enter_crouchd;
+	function<void(PlayerInfo*)> exit_crouchd;
 	function<void(PlayerInfo*)> crouch;
 	function<void(PlayerInfo*)> enter_crouch;
 	function<void(PlayerInfo*)> exit_crouch;
-	function<void(PlayerInfo*)> crouchs;
-	function<void(PlayerInfo*)> enter_crouchs;
-	function<void(PlayerInfo*)> exit_crouchs;
+	function<void(PlayerInfo*)> crouchu;
+	function<void(PlayerInfo*)> enter_crouchu;
+	function<void(PlayerInfo*)> exit_crouchu;
 	function<void(PlayerInfo*)> jumpsquat;
 	function<void(PlayerInfo*)> enter_jumpsquat;
 	function<void(PlayerInfo*)> exit_jumpsquat;
@@ -290,12 +296,15 @@ void exit_status_dash(PlayerInfo* player_info);
 void status_dashb(PlayerInfo* player_info);
 void enter_status_dashb(PlayerInfo* player_info);
 void exit_status_dashb(PlayerInfo* player_info);
+void status_crouchd(PlayerInfo* player_info);
+void enter_status_crouchd(PlayerInfo* player_info);
+void exit_status_crouchd(PlayerInfo* player_info);
 void status_crouch(PlayerInfo* player_info);
 void enter_status_crouch(PlayerInfo* player_info);
 void exit_status_crouch(PlayerInfo* player_info);
-void status_crouchs(PlayerInfo* player_info);
-void enter_status_crouchs(PlayerInfo* player_info);
-void exit_status_crouchs(PlayerInfo* player_info);
+void status_crouchu(PlayerInfo* player_info);
+void enter_status_crouchu(PlayerInfo* player_info);
+void exit_status_crouchu(PlayerInfo* player_info);
 void status_jumpsquat(PlayerInfo* player_info);
 void enter_status_jumpsquat(PlayerInfo* player_info);
 void exit_status_jumpsquat(PlayerInfo* player_info);
@@ -332,38 +341,62 @@ void set_status_functions(PlayerInfo* player_info) {
 	(*player_info).enter_status_pointer[CHARA_STATUS_WALKB] = enter_status_walkb;
 	(*player_info).exit_status_pointer[CHARA_STATUS_WALKB] = exit_status_walkb;
 	(*player_info).dash = &status_dash;
+	(*player_info).enter_dash = &enter_status_dash;
+	(*player_info).exit_dash = &exit_status_dash;
 	(*player_info).status_pointer[CHARA_STATUS_DASH] = status_dash;
 	(*player_info).enter_status_pointer[CHARA_STATUS_DASH] = enter_status_dash;
 	(*player_info).exit_status_pointer[CHARA_STATUS_DASH] = exit_status_dash;
 	(*player_info).dashb = &status_dashb;
+	(*player_info).enter_dashb = &enter_status_dashb;
+	(*player_info).exit_dashb = &exit_status_dashb;
 	(*player_info).status_pointer[CHARA_STATUS_DASHB] = status_dashb;
 	(*player_info).enter_status_pointer[CHARA_STATUS_DASHB] = enter_status_dashb;
 	(*player_info).exit_status_pointer[CHARA_STATUS_DASHB] = exit_status_dashb;
+	(*player_info).crouchd = &status_crouchd;
+	(*player_info).enter_crouchd = &enter_status_crouchd;
+	(*player_info).exit_crouchd = &exit_status_crouchd;
+	(*player_info).status_pointer[CHARA_STATUS_CROUCHD] = status_crouchd;
+	(*player_info).enter_status_pointer[CHARA_STATUS_CROUCHD] = enter_status_crouchd;
+	(*player_info).exit_status_pointer[CHARA_STATUS_CROUCHD] = exit_status_crouchd;
 	(*player_info).crouch = &status_crouch;
+	(*player_info).enter_crouch = &enter_status_crouch;
+	(*player_info).exit_crouch = &exit_status_crouch;
 	(*player_info).status_pointer[CHARA_STATUS_CROUCH] = status_crouch;
 	(*player_info).enter_status_pointer[CHARA_STATUS_CROUCH] = enter_status_crouch;
 	(*player_info).exit_status_pointer[CHARA_STATUS_CROUCH] = exit_status_crouch;
-	(*player_info).crouchs = &status_crouchs;
-	(*player_info).status_pointer[CHARA_STATUS_CROUCHS] = status_crouchs;
-	(*player_info).enter_status_pointer[CHARA_STATUS_CROUCHS] = enter_status_crouchs;
-	(*player_info).exit_status_pointer[CHARA_STATUS_CROUCHS] = exit_status_crouchs;
+	(*player_info).crouchu = &status_crouchu;
+	(*player_info).enter_crouchu = &status_crouchu;
+	(*player_info).exit_crouchu = &status_crouchu;
+	(*player_info).status_pointer[CHARA_STATUS_CROUCHU] = status_crouchu;
+	(*player_info).enter_status_pointer[CHARA_STATUS_CROUCHU] = enter_status_crouchu;
+	(*player_info).exit_status_pointer[CHARA_STATUS_CROUCHU] = exit_status_crouchu;
 	(*player_info).jumpsquat = &status_jumpsquat;
+	(*player_info).enter_jumpsquat = &enter_status_jumpsquat;
+	(*player_info).exit_jumpsquat = &exit_status_jumpsquat;
 	(*player_info).status_pointer[CHARA_STATUS_JUMPSQUAT] = status_jumpsquat;
 	(*player_info).enter_status_pointer[CHARA_STATUS_JUMPSQUAT] = enter_status_jumpsquat;
 	(*player_info).exit_status_pointer[CHARA_STATUS_JUMPSQUAT] = exit_status_jumpsquat;
 	(*player_info).jump = &status_jump;
+	(*player_info).enter_jump = &enter_status_jump;
+	(*player_info).exit_jump = &exit_status_jump;
 	(*player_info).status_pointer[CHARA_STATUS_JUMP] = status_jump;
 	(*player_info).enter_status_pointer[CHARA_STATUS_JUMP] = enter_status_jump;
 	(*player_info).exit_status_pointer[CHARA_STATUS_JUMP] = exit_status_jump;
 	(*player_info).attack = &status_attack;
+	(*player_info).enter_attack = &enter_status_attack;
+	(*player_info).exit_attack = &exit_status_attack;
 	(*player_info).status_pointer[CHARA_STATUS_ATTACK] = status_attack;
 	(*player_info).enter_status_pointer[CHARA_STATUS_ATTACK] = enter_status_attack;
 	(*player_info).exit_status_pointer[CHARA_STATUS_ATTACK] = exit_status_attack;
 	(*player_info).hitstun = &status_hitstun;
+	(*player_info).enter_hitstun = &enter_status_hitstun;
+	(*player_info).exit_hitstun = &exit_status_hitstun;
 	(*player_info).status_pointer[CHARA_STATUS_HITSTUN] = status_hitstun;
 	(*player_info).enter_status_pointer[CHARA_STATUS_HITSTUN] = enter_status_hitstun;
 	(*player_info).exit_status_pointer[CHARA_STATUS_HITSTUN] = exit_status_hitstun;
 	(*player_info).blockstun = &status_blockstun;
+	(*player_info).enter_blockstun = &enter_status_blockstun;
+	(*player_info).exit_blockstun = &exit_status_blockstun;
 	(*player_info).status_pointer[CHARA_STATUS_BLOCKSTUN] = status_blockstun;
 	(*player_info).enter_status_pointer[CHARA_STATUS_BLOCKSTUN] = enter_status_blockstun;
 	(*player_info).exit_status_pointer[CHARA_STATUS_BLOCKSTUN] = exit_status_blockstun;
@@ -389,12 +422,12 @@ void game_main(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	*/
 	player_info->processInput();
 	player_info->stepAnimation();
-	
+
 }
 
 
 void status_wait(PlayerInfo* player_info) {
-
+	(*player_info).common_ground_status_act();
 }
 
 void enter_status_wait(PlayerInfo* player_info) {
@@ -406,11 +439,13 @@ void exit_status_wait(PlayerInfo* player_info) {
 }
 
 void status_walkf(PlayerInfo* player_info) {
-	if ((*player_info).get_stick_dir() != 6) {
+	(*player_info).common_ground_status_act();
+	if ((*player_info).get_stick_dir() == 5) {
 		(*player_info).change_status(CHARA_STATUS_WAIT);
-		return;
 	}
-	(*player_info).pos.x += 3.0;
+	if ((*player_info).status_kind == CHARA_STATUS_WALKF) { //Only execute this if our status hasn't changed
+		(*player_info).pos.x += 3.0;
+	}
 }
 
 void enter_status_walkf(PlayerInfo* player_info) {
@@ -422,11 +457,13 @@ void exit_status_walkf(PlayerInfo* player_info) {
 }
 
 void status_walkb(PlayerInfo* player_info) {
-	if ((*player_info).get_stick_dir() != 4) {
+	(*player_info).common_ground_status_act();
+	if ((*player_info).get_stick_dir() == 5) {
 		(*player_info).change_status(CHARA_STATUS_WAIT);
-		return;
 	}
-	(*player_info).pos.x -= 3.0;
+	if ((*player_info).status_kind == CHARA_STATUS_WALKB) {
+		(*player_info).pos.x -= 3.0;
+	}
 }
 
 void enter_status_walkb(PlayerInfo* player_info) {
@@ -461,8 +498,25 @@ void exit_status_dashb(PlayerInfo* player_info) {
 
 }
 
-void status_crouch(PlayerInfo* player_info) {
+void status_crouchd(PlayerInfo* player_info) {
+	if ((*player_info).is_anim_end) {
+		(*player_info).change_status(CHARA_STATUS_CROUCH);
+	}
+}
 
+void enter_status_crouchd(PlayerInfo* player_info) {
+
+}
+
+void exit_status_crouchd(PlayerInfo* player_info) {
+
+}
+
+void status_crouch(PlayerInfo* player_info) {
+	(*player_info).common_ground_status_act();
+	if ((*player_info).get_stick_dir() == 5) {
+		(*player_info).change_status(CHARA_STATUS_CROUCHU);
+	}
 }
 
 void enter_status_crouch(PlayerInfo* player_info) {
@@ -473,20 +527,25 @@ void exit_status_crouch(PlayerInfo* player_info) {
 
 }
 
-void status_crouchs(PlayerInfo* player_info) {
+void status_crouchu(PlayerInfo* player_info) {
+	(*player_info).common_ground_status_act();
+	if ((*player_info).is_anim_end) {
+		(*player_info).change_status(CHARA_STATUS_WAIT);
+	}
+}
+
+void enter_status_crouchu(PlayerInfo* player_info) {
 
 }
 
-void enter_status_crouchs(PlayerInfo* player_info) {
-
-}
-
-void exit_status_crouchs(PlayerInfo* player_info) {
+void exit_status_crouchu(PlayerInfo* player_info) {
 
 }
 
 void status_jumpsquat(PlayerInfo* player_info) {
-
+	if ((*player_info).is_anim_end) {
+		(*player_info).change_status(CHARA_STATUS_JUMP);
+	}
 }
 
 void enter_status_jumpsquat(PlayerInfo* player_info) {

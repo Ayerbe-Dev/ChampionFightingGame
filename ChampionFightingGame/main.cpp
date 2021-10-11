@@ -6,11 +6,14 @@
 #include <SDL_image.h>
 #include <SDL_timer.h>
 #include "utils.h"
-#include "Status.h"
+#include "Game.h"
 #undef main
 using namespace std;
 bool running = true;
 int error_render;
+
+Uint32 tick;
+Uint32 tok;
 
 int main() {
 	//init SDL
@@ -41,12 +44,19 @@ int main() {
 	player_info[0] = p1;
 	player_info[1] = p2;
 
-	
-
 	const Uint8* keyboard_state;
+	tick = SDL_GetTicks();
 
 	while (running) {
 		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+			case SDL_QUIT: {
+				running = false;
+			}
+						 break;
+			}
+		}
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
@@ -59,15 +69,14 @@ int main() {
 			}
 		}
 
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					running = false;
-				}
-				break;
-
-			}
+		tok = SDL_GetTicks() - tick;
+		//cout << "delta: " << tok << endl;
+		if (tok < TICK_RATE_MS) {
+			//cout << "delay: " << TICK_RATE_MS - tok << endl;
+			SDL_Delay(TICK_RATE_MS - tok);
+			//put code below in here
 		}
+		tick = SDL_GetTicks();
 
 		SDL_RenderClear(renderer);
 		for (int i = 0; i < 2; i++) {
@@ -83,7 +92,8 @@ int main() {
 					player_info[i].facing_right = true;
 				}
 			}
-			game_main(&player_info[i], renderer);
+
+			tickOnce(&player_info[i], renderer);
 
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i].pos.getRenderCoodrinateX();
@@ -96,10 +106,9 @@ int main() {
 				cout << "\n" << SDL_GetError();
 			}
 		}
-
 		SDL_RenderPresent(renderer); 
 
-		SDL_Delay(1000 / 60);
+		//SDL_Delay(1000 / 60);
 	}
 
 	SDL_DestroyRenderer(renderer);

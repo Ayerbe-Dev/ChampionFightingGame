@@ -2,6 +2,7 @@
 #include "GameCoordinate.h"
 #include "Animation.h"
 
+
 PlayerInfo::PlayerInfo() { }
 
 PlayerInfo::PlayerInfo(std::string chara_kind, SDL_Renderer* renderer) {
@@ -16,16 +17,29 @@ PlayerInfo::PlayerInfo(std::string chara_kind, SDL_Renderer* renderer) {
 void PlayerInfo::startAnimation(Animation* animation) {
 	anim_kind = animation;
 	frame = 0;
+	hold_ms = (1000 / 30); //this is just hardcapped atm itl be dynamic later
 	pos.x_spr_offset = animation->sprite_width / 2;
+	last_frame_ms = SDL_GetTicks();
+	frame_rect = getFrame(frame, anim_kind); // needs to be here in case the player was in the middle of an animation.
+}
 
+bool PlayerInfo::canStep() {
+	u32 delta = SDL_GetTicks() - last_frame_ms;
+	if (delta > hold_ms) {
+		last_frame_ms = SDL_GetTicks();
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void PlayerInfo::stepAnimation() {
 	//tbh i think this impl isn't that bad
-	int prev_frame = frame;
 	frame_rect = getFrame(frame, anim_kind);
 	if (frame == anim_kind->length) {
 		frame = 0;
+		is_anim_end = true;
 		/*
 			Instead of going back to idle after reaching the end of an animation, go back to 0. If the animation is designed to loop, nothing
 			happens, but if it isn't, we still save that the end of the animation was reached. From there if we want to make certain status
@@ -35,7 +49,6 @@ void PlayerInfo::stepAnimation() {
 	else {
 		frame ++;
 	}
-	is_anim_end = prev_frame > frame;
 }
 
 void PlayerInfo::loadDefaultButtonMap() {

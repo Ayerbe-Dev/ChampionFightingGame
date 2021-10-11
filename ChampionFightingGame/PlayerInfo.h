@@ -29,11 +29,14 @@ public:
 	bool is_anim_end{ false };
 	Animation* anim_kind;
 	SDL_Rect frame_rect;
+	u32 hold_ms;
+	u32 last_frame_ms;
 
 	PlayerInfo();
 	PlayerInfo(std::string chara_kind, SDL_Renderer* renderer);
 	void startAnimation(Animation* animation);
 	void stepAnimation();
+	bool canStep();
 	void loadDefaultButtonMap();
 	void setStateLikePlayer1();
 	void setStateLikePlayer2();

@@ -2,7 +2,7 @@
 #include "PlayerInfo.h"
 
 void set_status_functions(PlayerInfo* player_info);
-void game_main(PlayerInfo* player_info, SDL_Renderer* renderer);
+void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer);
 
 void status_wait(PlayerInfo* player_info);
 void enter_status_wait(PlayerInfo* player_info);

@@ -172,7 +172,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GameCoordinate.cpp" />
-    <ClCompile Include="game_main.cpp">
+    <ClCompile Include="Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -217,7 +217,7 @@
     <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />
-    <ClInclude Include="Status.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="PlayerInfo.h" />
   </ItemGroup>

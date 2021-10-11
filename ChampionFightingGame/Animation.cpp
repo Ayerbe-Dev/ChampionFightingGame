@@ -5,17 +5,11 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include <functional>
+#include "Animation.h"
 
-struct Animation {
-	SDL_Texture* SPRITESHEET; 
-	string ANIMATION_DIR;
-	int length;
-	int sprite_height;
-	int sprite_width;
-	Animation() {}
-	Animation(string dir,int length,int width, int height) : 
-		ANIMATION_DIR{ dir }, length{ length-1 }, sprite_height{ height }, sprite_width{ width } {}
-};
+Animation::Animation() {}
+Animation::Animation(std::string dir, int length, int width, int height) :
+	ANIMATION_DIR{ dir }, length{ length - 1 }, sprite_height{ height }, sprite_width{ width } {}
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	SDL_Surface* image_surface = IMG_Load(file_path);
@@ -38,6 +32,3 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
 	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR + "spritesheet.png").c_str(), renderer);
 }
-
-Animation TEST_IDLE_ANIMATION{ "resource/chara/not_ryu/animation_idle/", 10, 78, 111 };
-Animation TEST_WALK_ANIMATION{ "resource/chara/not_ryu/animation_walk/", 11, 112, 113 };

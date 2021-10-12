@@ -38,7 +38,7 @@ public:
 
 	PlayerInfo();
 	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
-	void change_anim(string new_anim_kind, int entry_frame = 0, int div_rate = 60);
+	void change_anim(string new_anim_kind, int div_rate = 60, int entry_frame = 0);
 	void startAnimation(Animation* animation);
 	void load_anim_list(SDL_Renderer *renderer);
 	void load_params();
@@ -52,7 +52,7 @@ public:
 	i32 get_stick_dir();
 	i32 get_flick_dir();
 	bool is_actionable();
-	bool change_status(u32 new_status_kind);
+	bool change_status(u32 new_status_kind, bool call_end_status = true);
 	bool common_ground_status_act();
 	void processInput();
 };

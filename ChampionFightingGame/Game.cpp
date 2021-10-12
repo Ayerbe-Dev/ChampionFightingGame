@@ -160,20 +160,33 @@ void status_dash(PlayerInfo* player_info) {
 	}
 	int min_frame = (*player_info).stats.dash_f_accel_frame;
 	int max_frame = min_frame + (*player_info).stats.dash_f_maintain_speed_frame;
+
 	if ((*player_info).frame >= min_frame && (*player_info).frame < max_frame) {
 		(*player_info).pos.x += (*player_info).stats.dash_f_speed * (*player_info).facing_dir;
 	}
 	else {
 		(*player_info).pos.x += (*player_info).stats.walk_f_speed * (*player_info).facing_dir;
 	}
+
+	if (!(*player_info).chara_bool[CHARA_BOOL_DASH_CANCEL]) {
+		if ((*player_info).frame >= max_frame && (*player_info).frame < max_frame + 3) {
+			if ((*player_info).get_flick_dir() == 4) {
+				if ((*player_info).stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
+					(*player_info).chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
+				}
+				(*player_info).change_status(CHARA_STATUS_DASHB, false);
+				return;
+			}
+		}
+	}
 }
 
 void enter_status_dash(PlayerInfo* player_info) {
-	(*player_info).change_anim("dash_f");
+	(*player_info).change_anim("dash_f", 30);
 }
 
 void exit_status_dash(PlayerInfo* player_info) {
-
+	(*player_info).chara_bool[CHARA_BOOL_DASH_CANCEL] = false;
 }
 
 void status_dashb(PlayerInfo* player_info) {
@@ -186,20 +199,33 @@ void status_dashb(PlayerInfo* player_info) {
 	}
 	int min_frame = (*player_info).stats.dash_b_accel_frame;
 	int max_frame = min_frame + (*player_info).stats.dash_b_maintain_speed_frame;
+
 	if ((*player_info).frame >= min_frame && (*player_info).frame < max_frame) {
 		(*player_info).pos.x -= (*player_info).stats.dash_b_speed * (*player_info).facing_dir;
 	}
 	else {
 		(*player_info).pos.x -= (*player_info).stats.walk_b_speed * (*player_info).facing_dir;
 	}
+
+	if (!(*player_info).chara_bool[CHARA_BOOL_DASH_CANCEL]) {
+		if ((*player_info).frame >= max_frame && (*player_info).frame < max_frame + 3) {
+			if ((*player_info).get_flick_dir() == 6) {
+				if ((*player_info).stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
+					(*player_info).chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
+				}
+				(*player_info).change_status(CHARA_STATUS_DASH, false);
+				return;
+			}
+		}
+	}
 }
 
 void enter_status_dashb(PlayerInfo* player_info) {
-	(*player_info).change_anim("dash_b");
+	(*player_info).change_anim("dash_b", 30);
 }
 
 void exit_status_dashb(PlayerInfo* player_info) {
-
+	(*player_info).chara_bool[CHARA_BOOL_DASH_CANCEL] = false;
 }
 
 void status_crouchd(PlayerInfo* player_info) {

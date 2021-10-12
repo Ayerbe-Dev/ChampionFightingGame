@@ -14,7 +14,7 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	load_anim_list(renderer);
-	change_anim("wait", 0, 30);
+	change_anim("wait", 30);
 	loadDefaultButtonMap();
 	load_params();
 
@@ -273,11 +273,13 @@ i32 PlayerInfo::get_flick_dir() { //get_stick_dir, but only for stick inputs mad
 	}
 }
 
-bool PlayerInfo::change_status(u32 new_status_kind) {
+bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 	//Call the exit status function for whatever we're leaving, change the value, then call the entry status to prepare any relevant info
 	//This function will return whether or not a status was successfully changed, typically from the common_status_act functions.
 	if (new_status_kind != status_kind) {
-		exit_status_pointer[status_kind](this);
+		if (call_end_status) {
+			exit_status_pointer[status_kind](this);
+		}
 		status_kind = new_status_kind;
 		enter_status_pointer[status_kind](this);
 		return true;

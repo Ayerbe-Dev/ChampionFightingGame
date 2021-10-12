@@ -33,7 +33,7 @@ public:
 	u32 last_frame_ms;
 
 	PlayerInfo();
-	PlayerInfo(std::string chara_kind, SDL_Renderer* renderer);
+	PlayerInfo(std::string chara_kind, int id, SDL_Renderer* renderer);
 	void change_anim(string new_anim_kind, int entry_frame = 0, int div_rate = 60);
 	void startAnimation(Animation* animation);
 	void load_anim_list();

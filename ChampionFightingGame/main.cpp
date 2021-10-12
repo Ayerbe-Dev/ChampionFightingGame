@@ -29,11 +29,11 @@ int main() {
 	//init players
 	PlayerInfo player_info[2];
 
-	PlayerInfo p1 {"eric", renderer};
+	PlayerInfo p1 {"eric", 0, renderer};
 	p1.setStateLikePlayer1();
 	p1.loadDefaultButtonMap();
 
-	PlayerInfo p2{ "roy", renderer };
+	PlayerInfo p2{ "roy", 1, renderer };
 	p2.setStateLikePlayer2();
 	p2.loadDefaultButtonMap();
 

@@ -179,7 +179,15 @@ void exit_status_crouchd(PlayerInfo* player_info) {
 }
 
 void status_crouch(PlayerInfo* player_info) {
-	(*player_info).common_ground_status_act();
+	if ((*player_info).get_stick_dir() == 6) {
+		(*player_info).change_status(CHARA_STATUS_WALKF);
+	}
+	if ((*player_info).get_stick_dir() == 4) {
+		(*player_info).change_status(CHARA_STATUS_WALKB);
+	}
+	if ((*player_info).get_stick_dir() > 6) {
+		(*player_info).change_status(CHARA_STATUS_JUMPSQUAT);
+	}
 	if ((*player_info).get_stick_dir() == 5) {
 		(*player_info).change_status(CHARA_STATUS_CROUCHU);
 	}

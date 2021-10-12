@@ -5,12 +5,13 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(std::string chara_kind, SDL_Renderer* renderer) {
+PlayerInfo::PlayerInfo(std::string chara_kind, int id, SDL_Renderer* renderer) {
 	// runs on creation of instance;	
 	this->chara_kind = chara_kind;
+	this->id = id;
 	this->resource_dir = ("resource/chara/" + chara_kind);
 	load_anim_list();
-	startAnimation(&ANIM_TABLE[0][id]);
+	change_anim("wait", 0, 30);
 
 	//other numbers
 	height = 100;
@@ -47,10 +48,9 @@ void PlayerInfo::load_anim_list() {
 
 void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate) {
 	int anim_to_use = -1;
+	new_anim_kind = (resource_dir + "/anims/" + new_anim_kind + ".png");
 	for (int i = 0; i < 60; i++) {
-		int low_index = ANIM_TABLE[i][id].ANIMATION_DIR.find("anims/") + 6;
-		int high_index = ANIM_TABLE[i][id].ANIMATION_DIR.find(".png");
-		if (new_anim_kind + ".png" == ANIM_TABLE[i][id].ANIMATION_DIR.substr(low_index, high_index)) {
+		if (new_anim_kind == ANIM_TABLE[i][id].ANIMATION_DIR) {
 			anim_to_use = i;
 			break;
 		}
@@ -121,12 +121,10 @@ void PlayerInfo::loadDefaultButtonMap() {
 }
 
 void PlayerInfo::setStateLikePlayer1() {
-	id = 0;
 	pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
 }
 
 void PlayerInfo::setStateLikePlayer2() {
-	id = 1;
 	pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 }
 

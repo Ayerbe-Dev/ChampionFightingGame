@@ -32,16 +32,11 @@ int main() {
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
-	PlayerInfo p1{ 0, "roy"};
-	PlayerInfo p2{ 1, "eric"};
+	PlayerInfo p1{ 0, "roy", renderer};
+	PlayerInfo p2{ 1, "eric", renderer};
 
 	player_info[0] = p1;
 	player_info[1] = p2;
-
-	for (int i = 0; i < 60; i++) {
-		loadAnimation(&ANIM_TABLE[i][0], renderer);
-		loadAnimation(&ANIM_TABLE[i][1], renderer);
-	}
 
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();

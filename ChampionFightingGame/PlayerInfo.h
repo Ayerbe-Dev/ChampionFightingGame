@@ -37,13 +37,13 @@ public:
 	u32 last_frame_ms;
 
 	PlayerInfo();
-	PlayerInfo(int id, string chara_kind);
+	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
 	void change_anim(string new_anim_kind, int entry_frame = 0, int div_rate = 60);
 	void startAnimation(Animation* animation);
-	void load_anim_list();
+	void load_anim_list(SDL_Renderer *renderer);
 	void load_params();
 	void stepAnimation();
-	void superInit();
+	void superInit(SDL_Renderer* renderer);
 	bool canStep();
 	void loadDefaultButtonMap();
 	bool check_button_on(u32 button);

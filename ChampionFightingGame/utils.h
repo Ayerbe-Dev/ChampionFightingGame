@@ -22,7 +22,8 @@ typedef float f32;
 #define TICK_RATE_MS 1000 / TICK_RATE_S
 
 int clamp(int min, int value, int max);
-
+int ymlChopInt(string line);
+string ymlChopString(string line);
 
 enum {
 	BUTTON_UP,

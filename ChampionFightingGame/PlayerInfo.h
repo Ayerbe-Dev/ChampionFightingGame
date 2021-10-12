@@ -6,6 +6,7 @@
 #include "Button.h"
 #include <SDL.h>
 #include "Animation.h"
+#include "ParamTable.h"
 
 class PlayerInfo{
 public:
@@ -20,12 +21,13 @@ public:
 	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	Buttons button_info[BUTTON_MAX];
-	std::string resource_dir;
+	string resource_dir;
 	SDL_Texture* current_texture;
 	int frame;
 	bool is_anim_end{ false };
 	Animation* anim_kind;
 	SDL_Rect frame_rect;
+	StatsTable stats;
 	u32 hold_ms;
 	u32 last_frame_ms;
 
@@ -34,6 +36,7 @@ public:
 	void change_anim(string new_anim_kind, int entry_frame = 0, int div_rate = 60);
 	void startAnimation(Animation* animation);
 	void load_anim_list();
+	void load_params();
 	void stepAnimation();
 	void superInit();
 	bool canStep();

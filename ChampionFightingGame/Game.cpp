@@ -151,11 +151,21 @@ void exit_status_walkb(PlayerInfo* player_info) {
 }
 
 void status_dash(PlayerInfo* player_info) {
-
+	if ((*player_info).is_anim_end) {
+		(*player_info).change_status(CHARA_STATUS_WAIT);
+	}
+	int min_frame = (*player_info).stats.dash_f_accel_frame;
+	int max_frame = min_frame + (*player_info).stats.dash_f_maintain_speed_frame;
+	if ((*player_info).frame >= min_frame && (*player_info).frame < max_frame) {
+		(*player_info).pos.x += (*player_info).stats.dash_f_speed * (*player_info).facing_dir;
+	}
+	else {
+		(*player_info).pos.x += (*player_info).stats.walk_f_speed * (*player_info).facing_dir;
+	}
 }
 
 void enter_status_dash(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("wait");
 }
 
 void exit_status_dash(PlayerInfo* player_info) {
@@ -163,11 +173,21 @@ void exit_status_dash(PlayerInfo* player_info) {
 }
 
 void status_dashb(PlayerInfo* player_info) {
-
+	if ((*player_info).is_anim_end) {
+		(*player_info).change_status(CHARA_STATUS_WAIT);
+	}
+	int min_frame = (*player_info).stats.dash_b_accel_frame;
+	int max_frame = min_frame + (*player_info).stats.dash_b_maintain_speed_frame;
+	if ((*player_info).frame >= min_frame && (*player_info).frame < max_frame) {
+		(*player_info).pos.x -= (*player_info).stats.dash_b_speed * (*player_info).facing_dir;
+	}
+	else {
+		(*player_info).pos.x -= (*player_info).stats.walk_b_speed * (*player_info).facing_dir;
+	}
 }
 
 void enter_status_dashb(PlayerInfo* player_info) {
-
+	(*player_info).change_anim("wait");
 }
 
 void exit_status_dashb(PlayerInfo* player_info) {

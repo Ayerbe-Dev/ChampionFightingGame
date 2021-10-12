@@ -314,10 +314,24 @@ void PlayerInfo::processInput() {
 	}
 	int stick_dir = get_stick_dir();
 	if (stick_dir < 4) {
-
+		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
+		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] ++;
+	}
+	else if (chara_int[CHARA_INT_DOWN_CHARGE_TIMER] != 0) {
+		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] --;
+	}
+	else {
+		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
 	}
 	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
-
+		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] ++;
+		chara_int[CHARA_INT_BACK_CHARGE_TIMER] = 6;
+	}
+	else if (chara_int[CHARA_INT_BACK_CHARGE_TIMER] != 0) {
+		chara_int[CHARA_INT_BACK_CHARGE_TIMER] --;
+	}
+	else {
+		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
 	}
 	if (check_button_on(BUTTON_START)) {
 		pos.y = 0.0;

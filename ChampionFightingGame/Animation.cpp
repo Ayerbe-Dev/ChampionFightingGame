@@ -7,9 +7,7 @@ using namespace std;
 #include <functional>
 #include "Animation.h"
 
-Animation::Animation() {}
-Animation::Animation(std::string dir, int length, int width, int height) :
-	ANIMATION_DIR{ dir }, length{ length - 1 }, sprite_height{ height }, sprite_width{ width } {}
+Animation::Animation() {};
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	SDL_Surface* image_surface = IMG_Load(file_path);
@@ -30,7 +28,7 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 }
 
 void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
-	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR).c_str(), renderer);
+	animation->SPRITESHEET = loadTexture((animation->path).c_str(), renderer);
 }
 
-Animation ANIM_TABLE[60][2];
+//Animation ANIM_TABLE[60][2];

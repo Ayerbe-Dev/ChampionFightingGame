@@ -30,8 +30,10 @@ int main() {
 	//init players
 	PlayerInfo player_info[2];
 
-	PlayerInfo p1{ 0, "roy", renderer};
-	PlayerInfo p2{ 1, "eric", renderer};
+//	TestFighter p1{0};
+//	TestFighter p2{1};
+	PlayerInfo p1{ 0, "testchar", renderer};
+	PlayerInfo p2{ 1, "testchar", renderer};
 
 	player_info[0] = p1;
 	player_info[1] = p2;

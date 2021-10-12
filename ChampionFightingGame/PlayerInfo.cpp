@@ -14,7 +14,7 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	load_anim_list(renderer);
-	change_anim("wait", 30);
+	startAnimation("wait", 30);
 	loadDefaultButtonMap();
 	load_params();
 
@@ -49,12 +49,13 @@ void PlayerInfo::load_anim_list(SDL_Renderer *renderer) {
 		string height;
 		string faf;
 		anim_list >> filename >> frame_count >> width >> height >> faf;
-		ANIM_TABLE[i][id].ANIMATION_DIR = (resource_dir + "/anims/" + ymlChopString(filename));
-		ANIM_TABLE[i][id].length = ymlChopInt(frame_count) - 1;
-		ANIM_TABLE[i][id].sprite_width = ymlChopInt(width);
-		ANIM_TABLE[i][id].sprite_height = ymlChopInt(height);
-		ANIM_TABLE[i][id].faf = ymlChopInt(faf);
-		loadAnimation(&ANIM_TABLE[i][id], renderer);
+		animation_table[i].name = ymlChopString(filename);
+		animation_table[i].path = (resource_dir + "/anims/" + animation_table[i].name + ".png");
+		animation_table[i].length = ymlChopInt(frame_count) - 1;
+		animation_table[i].sprite_width = ymlChopInt(width);
+		animation_table[i].sprite_height = ymlChopInt(height);
+		animation_table[i].faf = ymlChopInt(faf);
+		loadAnimation(&animation_table[i], renderer);
 	}
 	anim_list.close();
 }
@@ -129,31 +130,25 @@ void PlayerInfo::load_params() {
 }
 
 bool PlayerInfo::is_actionable() {
-	if ((*anim_kind).faf == -1) {
+	if (anim_kind->faf == -1) {
 		return is_anim_end;
 	}
 	else {
-		return frame >= (*anim_kind).faf;
+		return frame >= anim_kind->faf;
 	}
 }
 
-void PlayerInfo::change_anim(string new_anim_kind, int div_rate, int entry_frame) {
+void PlayerInfo::startAnimation(string animation_name, int frame_rate , int entry_frame) {
 	int anim_to_use = -1;
-	new_anim_kind = (resource_dir + "/anims/" + new_anim_kind + ".png");
 	for (int i = 0; i < 60; i++) {
-		if (new_anim_kind == ANIM_TABLE[i][id].ANIMATION_DIR) {
-			anim_to_use = i;
-			break;
+		if (animation_table[i].name == animation_name) {
+			frame = entry_frame;
+			hold_ms = (1000 / frame_rate);
+			startAnimation(&animation_table[i]);
+			return;
 		}
 	}
-	if (anim_to_use != -1) {
-		frame = entry_frame;
-		hold_ms = (1000 / div_rate);
-		startAnimation(&ANIM_TABLE[anim_to_use][id]);
-	}
-	else {
-		cout << "Invalid Animation" << endl;
-	}
+	cout << "Invalid Animation '" << animation_name << "'" << endl;
 }
 
 void PlayerInfo::startAnimation(Animation* animation) {

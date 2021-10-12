@@ -31,6 +31,7 @@ public:
 	int frame;
 	bool is_anim_end{ false };
 	Animation* anim_kind;
+	Animation animation_table[256];
 	SDL_Rect frame_rect;
 	StatsTable stats;
 	u32 hold_ms;
@@ -38,9 +39,10 @@ public:
 
 	PlayerInfo();
 	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
-	void change_anim(string new_anim_kind, int div_rate = 60, int entry_frame = 0);
+	//void change_anim(string new_anim_kind, int div_rate = 60, int entry_frame = 0);
 	void startAnimation(Animation* animation);
-	void load_anim_list(SDL_Renderer *renderer);
+	void startAnimation(string animation_name, int frame_rate = 30, int entry_frame = 0);
+	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void stepAnimation();
 	void superInit(SDL_Renderer* renderer);

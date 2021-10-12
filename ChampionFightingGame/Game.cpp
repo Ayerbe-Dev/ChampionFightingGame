@@ -104,7 +104,8 @@ void status_wait(PlayerInfo* player_info) {
 }
 
 void enter_status_wait(PlayerInfo* player_info) {
-	(*player_info).change_anim("wait", 30);
+	player_info->startAnimation("wait", 30,0);
+	
 	(*player_info).situation_kind = CHARA_SITUATION_GROUND;
 }
 
@@ -124,7 +125,7 @@ void status_walkf(PlayerInfo* player_info) {
 }
 
 void enter_status_walkf(PlayerInfo* player_info) {
-	(*player_info).change_anim("walk_f", 30);
+	(*player_info).startAnimation("walk_f", 30,0);
 }
 
 void exit_status_walkf(PlayerInfo* player_info) {
@@ -143,7 +144,7 @@ void status_walkb(PlayerInfo* player_info) {
 }
 
 void enter_status_walkb(PlayerInfo* player_info) {
-	(*player_info).change_anim("walk_b", 30);
+	(*player_info).startAnimation("walk_b", 30);
 }
 
 void exit_status_walkb(PlayerInfo* player_info) {
@@ -185,7 +186,7 @@ void status_dash(PlayerInfo* player_info) {
 }
 
 void enter_status_dash(PlayerInfo* player_info) {
-	(*player_info).change_anim("dash_f", 30);
+	(*player_info).startAnimation("dash_f", 30,0);
 }
 
 void exit_status_dash(PlayerInfo* player_info) {
@@ -224,7 +225,7 @@ void status_dashb(PlayerInfo* player_info) {
 }
 
 void enter_status_dashb(PlayerInfo* player_info) {
-	(*player_info).change_anim("dash_b", 30);
+	(*player_info).startAnimation("dash_b", 30);
 }
 
 void exit_status_dashb(PlayerInfo* player_info) {
@@ -239,7 +240,7 @@ void status_crouchd(PlayerInfo* player_info) {
 }
 
 void enter_status_crouchd(PlayerInfo* player_info) {
-	(*player_info).change_anim("crouch_d", 30);
+	(*player_info).startAnimation("crouch_d", 30);
 }
 
 void exit_status_crouchd(PlayerInfo* player_info) {
@@ -266,7 +267,7 @@ void status_crouch(PlayerInfo* player_info) {
 }
 
 void enter_status_crouch(PlayerInfo* player_info) {
-	(*player_info).change_anim("crouch", 30);
+	(*player_info).startAnimation("crouch", 30);
 }
 
 void exit_status_crouch(PlayerInfo* player_info) {
@@ -283,7 +284,7 @@ void status_crouchu(PlayerInfo* player_info) {
 }
 
 void enter_status_crouchu(PlayerInfo* player_info) {
-	(*player_info).change_anim("crouch_u", 30);
+	(*player_info).startAnimation("crouch_u", 30);
 }
 
 void exit_status_crouchu(PlayerInfo* player_info) {
@@ -298,7 +299,7 @@ void status_jumpsquat(PlayerInfo* player_info) {
 }
 
 void enter_status_jumpsquat(PlayerInfo* player_info) {
-	(*player_info).change_anim("jump_squat", 120);
+	(*player_info).startAnimation("jump_squat", 120);
 }
 
 void exit_status_jumpsquat(PlayerInfo* player_info) {
@@ -328,17 +329,17 @@ void enter_status_jump(PlayerInfo* player_info) {
 	if ((*player_info).get_stick_dir() == 7
 	|| (*player_info).get_stick_dir() == 4 
 	|| (*player_info).get_stick_dir() == 1) {
-		(*player_info).change_anim("jump_b");
+		(*player_info).startAnimation("jump_b");
 		(*player_info).chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
 	}
 	else if ((*player_info).get_stick_dir() == 9
 	|| (*player_info).get_stick_dir() == 6
 	|| (*player_info).get_stick_dir() == 3) {
-		(*player_info).change_anim("jump_f");
+		(*player_info).startAnimation("jump_f");
 		(*player_info).chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
 	}
 	else {
-		(*player_info).change_anim("jump");
+		(*player_info).startAnimation("jump");
 		(*player_info).chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 	}
 	if ((*player_info).chara_bool[CHARA_BOOL_SHORT_HOP]) {

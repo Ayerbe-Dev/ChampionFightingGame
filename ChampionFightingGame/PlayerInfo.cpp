@@ -77,6 +77,8 @@ void PlayerInfo::load_params() {
 	string dash_b_speed;
 	string dash_b_maintain_speed_frame;
 	string dash_cancel_kind;
+	string dash_f_cancel_frame;
+	string dash_b_cancel_frame;
 	string jump_y_init_speed;
 	string jump_y_init_speed_s;
 	string jump_x_speed;
@@ -93,33 +95,35 @@ void PlayerInfo::load_params() {
 	string has_airdash;
 
 	stats_table >> walk_f_speed >> walk_b_speed >> dash_f_accel_frame >> dash_f_speed >> dash_f_maintain_speed_frame >> dash_b_accel_frame
-		>> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> jump_y_init_speed >> jump_y_init_speed_s >> jump_x_speed >> gravity
-		>> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag >> hp_landing_lag >> lk_landing_lag >> mk_landing_lag
-		>> hk_landing_lag >> health >> has_airdash;
+		>> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> dash_f_cancel_frame >> dash_b_cancel_frame >> jump_y_init_speed 
+		>> jump_y_init_speed_s >> jump_x_speed >> gravity >> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag 
+		>> hp_landing_lag >> lk_landing_lag >> mk_landing_lag >> hk_landing_lag >> health >> has_airdash;
 
-	stats.walk_f_speed = stof(walk_f_speed.substr(walk_f_speed.find("=") + 1));
-	stats.walk_b_speed = stof(walk_b_speed.substr(walk_b_speed.find("=") + 1));
-	stats.dash_f_accel_frame = stoi(dash_f_accel_frame.substr(dash_f_accel_frame.find("=") + 1));
-	stats.dash_f_speed = stof(dash_f_speed.substr(dash_f_speed.find("=") + 1));
-	stats.dash_f_maintain_speed_frame = stoi(dash_f_maintain_speed_frame.substr(dash_f_maintain_speed_frame.find("=") + 1));
-	stats.dash_b_accel_frame = stoi(dash_b_accel_frame.substr(dash_b_accel_frame.find("=") + 1));
-	stats.dash_b_speed = stof(dash_b_speed.substr(dash_b_speed.find("=") + 1));
-	stats.dash_b_maintain_speed_frame = stoi(dash_b_maintain_speed_frame.substr(dash_b_maintain_speed_frame.find("=") + 1));
-	stats.dash_cancel_kind = stoi(dash_cancel_kind.substr(dash_cancel_kind.find("=") + 1));
-	stats.jump_y_init_speed = stof(jump_y_init_speed.substr(jump_y_init_speed.find("=") + 1));
-	stats.jump_y_init_speed_s = stof(jump_y_init_speed_s.substr(jump_y_init_speed_s.find("=") + 1));
-	stats.jump_x_speed = stof(jump_x_speed.substr(jump_x_speed.find("=") + 1));
-	stats.gravity = stof(gravity.substr(gravity.find("=") + 1));
-	stats.max_fall_speed = stof(max_fall_speed.substr(max_fall_speed.find("=") + 1));
-	stats.empty_landing_lag = stoi(empty_landing_lag.substr(empty_landing_lag.find("=") + 1));
-	stats.lp_landing_lag = stoi(lp_landing_lag.substr(lp_landing_lag.find("=") + 1));
-	stats.mp_landing_lag = stoi(mp_landing_lag.substr(mp_landing_lag.find("=") + 1));
-	stats.hp_landing_lag = stoi(hp_landing_lag.substr(hp_landing_lag.find("=") + 1));
-	stats.lk_landing_lag = stoi(lk_landing_lag.substr(lk_landing_lag.find("=") + 1));
-	stats.mk_landing_lag = stoi(mk_landing_lag.substr(mk_landing_lag.find("=") + 1));
-	stats.hk_landing_lag = stoi(hk_landing_lag.substr(hk_landing_lag.find("=") + 1));
-	stats.health = stoi(health.substr(health.find("=") + 1));
-	stats.has_airdash = (bool)stoi(has_airdash.substr(has_airdash.find("=") + 1));
+	stats.walk_f_speed = ymlChopFloat (walk_f_speed);
+	stats.walk_b_speed = ymlChopFloat(walk_b_speed);
+	stats.dash_f_accel_frame = ymlChopInt(dash_f_accel_frame);
+	stats.dash_f_speed = ymlChopFloat(dash_f_speed);
+	stats.dash_f_maintain_speed_frame = ymlChopInt(dash_f_maintain_speed_frame);
+	stats.dash_b_accel_frame = ymlChopInt(dash_b_accel_frame);
+	stats.dash_b_speed = ymlChopFloat(dash_b_speed);
+	stats.dash_b_maintain_speed_frame = ymlChopInt(dash_b_maintain_speed_frame);
+	stats.dash_cancel_kind = ymlChopInt(dash_cancel_kind);
+	stats.dash_f_cancel_frame = ymlChopInt(dash_f_cancel_frame);
+	stats.dash_b_cancel_frame = ymlChopInt(dash_b_cancel_frame);
+	stats.jump_y_init_speed = ymlChopFloat(jump_y_init_speed);
+	stats.jump_y_init_speed_s = ymlChopFloat(jump_y_init_speed_s);
+	stats.jump_x_speed = ymlChopFloat(jump_x_speed);
+	stats.gravity = ymlChopFloat(gravity);
+	stats.max_fall_speed = ymlChopFloat(max_fall_speed);
+	stats.empty_landing_lag = ymlChopInt(empty_landing_lag);
+	stats.lp_landing_lag = ymlChopInt(lp_landing_lag);
+	stats.mp_landing_lag = ymlChopInt(mp_landing_lag);
+	stats.hp_landing_lag = ymlChopInt(hp_landing_lag);
+	stats.lk_landing_lag = ymlChopInt(lk_landing_lag);
+	stats.mk_landing_lag = ymlChopInt(mk_landing_lag);
+	stats.hk_landing_lag = ymlChopInt(hk_landing_lag);
+	stats.health = ymlChopInt(health);
+	stats.has_airdash = (bool)ymlChopInt(has_airdash);
 
 	stats_table.close();
 }
@@ -277,7 +281,7 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 	//Call the exit status function for whatever we're leaving, change the value, then call the entry status to prepare any relevant info
 	//This function will return whether or not a status was successfully changed, typically from the common_status_act functions.
 	if (new_status_kind != status_kind) {
-		if (call_end_status) {
+		if (call_end_status) { //For some related statuses, not everything should be reset
 			exit_status_pointer[status_kind](this);
 		}
 		status_kind = new_status_kind;

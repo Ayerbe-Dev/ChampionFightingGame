@@ -14,6 +14,8 @@ struct StatsTable {
 	f32 dash_b_speed;
 	i32 dash_b_maintain_speed_frame;
 	i32 dash_cancel_kind;
+	i32 dash_f_cancel_frame;
+	i32 dash_b_cancel_frame;
 	f32 jump_y_init_speed;
 	f32 jump_y_init_speed_s;
 	f32 jump_x_speed;

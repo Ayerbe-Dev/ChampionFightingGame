@@ -1,12 +1,12 @@
-walk_f_speed=3.0
-walk_b_speed=3.0
+walk_f_speed=5.0
+walk_b_speed=5.0
 dash_f_accel_frame=4
 dash_f_speed=6.0
 dash_f_maintain_speed_frame=6
 dash_b_accel_frame=4
 dash_b_speed=6.0
 dash_f_maintain_speed_frame=6
-dash_cancel_kind=DASH_CANCEL_KIND_FOLLOWUP
+dash_cancel_kind=1
 jump_y_init_speed=25.0
 jump_y_init_speed_s=15.0
 jump_x_speed=5.0

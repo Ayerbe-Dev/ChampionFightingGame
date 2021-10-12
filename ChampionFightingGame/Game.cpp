@@ -110,7 +110,7 @@ void status_walkf(PlayerInfo* player_info) {
 		(*player_info).change_status(CHARA_STATUS_WAIT);
 	}
 	if ((*player_info).status_kind == CHARA_STATUS_WALKF) { //Only execute this if our status hasn't changed
-		(*player_info).pos.x += 3.0 * (*player_info).facing_dir;
+		(*player_info).pos.x += (*player_info).stats.walk_f_speed * (*player_info).facing_dir;
 	}
 }
 
@@ -128,7 +128,7 @@ void status_walkb(PlayerInfo* player_info) {
 		(*player_info).change_status(CHARA_STATUS_WAIT);
 	}
 	if ((*player_info).status_kind == CHARA_STATUS_WALKB) {
-		(*player_info).pos.x -= 3.0 * (*player_info).facing_dir;
+		(*player_info).pos.x -= (*player_info).stats.walk_b_speed * (*player_info).facing_dir;
 	}
 }
 
@@ -223,7 +223,7 @@ void status_jumpsquat(PlayerInfo* player_info) {
 }
 
 void enter_status_jumpsquat(PlayerInfo* player_info) {
-	(*player_info).change_anim("jump_squat", 0, 30);
+	(*player_info).change_anim("jump_squat");
 }
 
 void exit_status_jumpsquat(PlayerInfo* player_info) {
@@ -231,27 +231,29 @@ void exit_status_jumpsquat(PlayerInfo* player_info) {
 }
 
 void status_jump(PlayerInfo* player_info) {
-
+	if ((*player_info).is_anim_end) {
+		(*player_info).change_status(CHARA_STATUS_WAIT);
+	}
 }
 
 void enter_status_jump(PlayerInfo* player_info) {
 	if ((*player_info).get_stick_dir() == 7
 	|| (*player_info).get_stick_dir() == 4 
 	|| (*player_info).get_stick_dir() == 1) {
-		(*player_info).change_anim("jump_b", 0, 30);
+		(*player_info).change_anim("jump_b");
 	}
 	else if ((*player_info).get_stick_dir() == 9
 	|| (*player_info).get_stick_dir() == 6
 	|| (*player_info).get_stick_dir() == 3) {
-		(*player_info).change_anim("jump_f", 0, 30);
+		(*player_info).change_anim("jump_f");
 	}
 	else {
-		(*player_info).change_anim("jump", 0, 30);
+		(*player_info).change_anim("jump");
 	}
 }
 
 void exit_status_jump(PlayerInfo* player_info) {
-
+	(*player_info).situation_kind = CHARA_SITUATION_GROUND;
 }
 
 void status_attack(PlayerInfo* player_info) {

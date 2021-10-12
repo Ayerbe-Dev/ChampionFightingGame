@@ -30,8 +30,10 @@ int main() {
 	//init players
 	PlayerInfo player_info[2];
 
-	TestFighter p1 {0};
-	TestFighter p2{1};
+//	TestFighter p1{0};
+//	TestFighter p2{1};
+	PlayerInfo p1{ 0, "roy"};
+	PlayerInfo p2{ 1, "eric"};
 
 	player_info[0] = p1;
 	player_info[1] = p2;
@@ -51,7 +53,7 @@ int main() {
 			case SDL_QUIT: {
 				running = false;
 			}
-						 break;
+			break;
 			}
 		}
 
@@ -88,6 +90,9 @@ int main() {
 					player_info[i].facing_dir = 1.0;
 					player_info[i].facing_right = true;
 				}
+			}
+			else if (!player_info[i].facing_right) {
+				flip = SDL_FLIP_HORIZONTAL;
 			}
 
 			tickOnce(&player_info[i], renderer);

@@ -5,10 +5,10 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(int id) {
+PlayerInfo::PlayerInfo(int id, string chara_kind) {
 	// runs on creation of instance;	
 	this->id = id;
-	resource_dir = ("resource/chara/testchar");
+	resource_dir = ("resource/chara/" + chara_kind);
 	superInit();
 }
 
@@ -16,6 +16,7 @@ void PlayerInfo::superInit() {
 	load_anim_list();
 	change_anim("wait", 0, 30);
 	loadDefaultButtonMap();
+	load_params();
 
 	// set position
 	if (id == 0) {
@@ -138,6 +139,7 @@ void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate
 }
 
 void PlayerInfo::startAnimation(Animation* animation) {
+	is_anim_end = false;
 	anim_kind = animation;
 	pos.x_spr_offset = animation->sprite_width / 2;
 	pos.y_spr_offset = animation->sprite_height;
@@ -171,7 +173,7 @@ void PlayerInfo::stepAnimation() {
 	else {
 		frame ++;
 	}
-	is_anim_end = last_frame >= frame; //This needs to be here or else is_anim_end will never be reset back to false
+	is_anim_end = last_frame > frame; //This needs to be here or else is_anim_end will never be reset back to false
 }
 
 void PlayerInfo::loadDefaultButtonMap() {

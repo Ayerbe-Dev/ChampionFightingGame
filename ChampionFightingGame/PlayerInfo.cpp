@@ -5,17 +5,25 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(std::string chara_kind, int id, SDL_Renderer* renderer) {
+PlayerInfo::PlayerInfo(int id) {
 	// runs on creation of instance;	
-	this->chara_kind = chara_kind;
 	this->id = id;
-	this->resource_dir = ("resource/chara/" + chara_kind);
+	resource_dir = ("resource/chara/testchar");
+	superInit();
+}
+
+void PlayerInfo::superInit() {
 	load_anim_list();
 	change_anim("wait", 0, 30);
+	loadDefaultButtonMap();
 
-	//other numbers
-	height = 100;
-	width = 100;
+	// set position
+	if (id == 0) {
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
+	}
+	else if (id == 1){
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
+	}
 }
 
 void PlayerInfo::load_anim_list() {
@@ -118,14 +126,6 @@ void PlayerInfo::loadDefaultButtonMap() {
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
 	}
-}
-
-void PlayerInfo::setStateLikePlayer1() {
-	pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
-}
-
-void PlayerInfo::setStateLikePlayer2() {
-	pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 }
 
 bool PlayerInfo::check_button_on(u32 button) {

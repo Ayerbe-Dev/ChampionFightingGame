@@ -10,11 +10,8 @@
 class PlayerInfo{
 public:
 	i64 id;
-	std::string chara_kind;
 	GameCoordinate pos;
 	GameCoordinate prevpos;
-	f32 height;
-	f32 width;
 	bool facing_right{ true };
 	f32 facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
@@ -33,15 +30,14 @@ public:
 	u32 last_frame_ms;
 
 	PlayerInfo();
-	PlayerInfo(std::string chara_kind, int id, SDL_Renderer* renderer);
+	PlayerInfo(int id);
 	void change_anim(string new_anim_kind, int entry_frame = 0, int div_rate = 60);
 	void startAnimation(Animation* animation);
 	void load_anim_list();
 	void stepAnimation();
+	void superInit();
 	bool canStep();
 	void loadDefaultButtonMap();
-	void setStateLikePlayer1();
-	void setStateLikePlayer2();
 	bool check_button_on(u32 button);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);

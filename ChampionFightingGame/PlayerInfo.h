@@ -31,6 +31,7 @@ public:
 	int frame;
 	bool is_anim_end{ false };
 	Animation* anim_kind;
+	Animation animation_table[256];
 	SDL_Rect frame_rect;
 	StatsTable stats;
 	u32 hold_ms;

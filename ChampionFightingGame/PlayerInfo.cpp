@@ -49,12 +49,12 @@ void PlayerInfo::load_anim_list(SDL_Renderer *renderer) {
 		string height;
 		string faf;
 		anim_list >> filename >> frame_count >> width >> height >> faf;
-		ANIM_TABLE[i][id].ANIMATION_DIR = (resource_dir + "/anims/" + ymlChopString(filename));
-		ANIM_TABLE[i][id].length = ymlChopInt(frame_count) - 1;
-		ANIM_TABLE[i][id].sprite_width = ymlChopInt(width);
-		ANIM_TABLE[i][id].sprite_height = ymlChopInt(height);
-		ANIM_TABLE[i][id].faf = ymlChopInt(faf);
-		loadAnimation(&ANIM_TABLE[i][id], renderer);
+		animation_table[i].ANIMATION_DIR = (resource_dir + "/anims/" + ymlChopString(filename));
+		animation_table[i].length = ymlChopInt(frame_count) - 1;
+		animation_table[i].sprite_width = ymlChopInt(width);
+		animation_table[i].sprite_height = ymlChopInt(height);
+		animation_table[i].faf = ymlChopInt(faf);
+		loadAnimation(&animation_table[i], renderer);
 	}
 	anim_list.close();
 }
@@ -137,7 +137,7 @@ void PlayerInfo::change_anim(string new_anim_kind, int div_rate, int entry_frame
 	int anim_to_use = -1;
 	new_anim_kind = (resource_dir + "/anims/" + new_anim_kind + ".png");
 	for (int i = 0; i < 60; i++) {
-		if (new_anim_kind == ANIM_TABLE[i][id].ANIMATION_DIR) {
+		if (new_anim_kind == animation_table[i].ANIMATION_DIR) {
 			anim_to_use = i;
 			break;
 		}
@@ -145,7 +145,7 @@ void PlayerInfo::change_anim(string new_anim_kind, int div_rate, int entry_frame
 	if (anim_to_use != -1) {
 		frame = entry_frame;
 		hold_ms = (1000 / div_rate);
-		startAnimation(&ANIM_TABLE[anim_to_use][id]);
+		startAnimation(&animation_table[anim_to_use]);
 	}
 	else {
 		cout << "Invalid Animation" << endl;

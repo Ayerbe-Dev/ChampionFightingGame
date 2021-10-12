@@ -33,4 +33,4 @@ void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
 	animation->SPRITESHEET = loadTexture((animation->ANIMATION_DIR).c_str(), renderer);
 }
 
-Animation ANIM_TABLE[60][2];
+//Animation ANIM_TABLE[60][2];

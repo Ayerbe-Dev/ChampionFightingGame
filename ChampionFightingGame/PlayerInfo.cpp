@@ -5,16 +5,16 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(int id, string chara_kind) {
+PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 	// runs on creation of instance;	
 	this->id = id;
 	resource_dir = ("resource/chara/" + chara_kind);
-	superInit();
+	superInit(renderer);
 }
 
-void PlayerInfo::superInit() {
-	load_anim_list();
-	change_anim("wait", 30);
+void PlayerInfo::superInit(SDL_Renderer* renderer) {
+	load_anim_list(renderer);
+	change_anim("wait", 0, 30);
 	loadDefaultButtonMap();
 	load_params();
 
@@ -29,7 +29,7 @@ void PlayerInfo::superInit() {
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 }
 
-void PlayerInfo::load_anim_list() {
+void PlayerInfo::load_anim_list(SDL_Renderer *renderer) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
@@ -40,7 +40,7 @@ void PlayerInfo::load_anim_list() {
 
 	string line_1;
 	anim_list >> line_1;
-	int num_anims = stoi(line_1.substr(line_1.find("=") + 1));
+	int num_anims = ymlChopInt(line_1);
 
 	for (int i = 0; i < num_anims; i++) {
 		string filename;
@@ -49,11 +49,12 @@ void PlayerInfo::load_anim_list() {
 		string height;
 		string faf;
 		anim_list >> filename >> frame_count >> width >> height >> faf;
-		ANIM_TABLE[i][id].ANIMATION_DIR = (resource_dir + "/anims/" + filename.substr(filename.find("=") + 1));
-		ANIM_TABLE[i][id].length = stoi(frame_count.substr(frame_count.find("=") + 1)) - 1;
-		ANIM_TABLE[i][id].sprite_width = stoi(width.substr(width.find("=") + 1));
-		ANIM_TABLE[i][id].sprite_height = stoi(height.substr(height.find("=") + 1));
-		ANIM_TABLE[i][id].faf = stoi(faf.substr(faf.find("=") + 1));
+		ANIM_TABLE[i][id].ANIMATION_DIR = (resource_dir + "/anims/" + ymlChopString(filename));
+		ANIM_TABLE[i][id].length = ymlChopInt(frame_count) - 1;
+		ANIM_TABLE[i][id].sprite_width = ymlChopInt(width);
+		ANIM_TABLE[i][id].sprite_height = ymlChopInt(height);
+		ANIM_TABLE[i][id].faf = ymlChopInt(faf);
+		loadAnimation(&ANIM_TABLE[i][id], renderer);
 	}
 	anim_list.close();
 }

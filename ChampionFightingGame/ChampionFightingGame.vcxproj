@@ -195,7 +195,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="TestFighter.cpp" />
     <ClCompile Include="utils.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -226,7 +225,6 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="ParamTable.h" />
-    <ClInclude Include="TestFighter.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="PlayerInfo.h" />
   </ItemGroup>

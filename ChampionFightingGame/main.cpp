@@ -32,6 +32,7 @@ int main() {
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
+	//why doesnt the above work
 	PlayerInfo p1{ 0, "testchar", renderer};
 	PlayerInfo p2{ 1, "testchar", renderer};
 

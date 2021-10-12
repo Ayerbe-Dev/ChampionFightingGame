@@ -18,9 +18,9 @@ public:
 	f32 facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
-	void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
+	/*void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
-	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
+	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);*/
 	Buttons button_info[BUTTON_MAX];
 	int prev_stick_dir;
 	int chara_int[CHARA_INT_MAX];
@@ -37,8 +37,14 @@ public:
 	u32 hold_ms;
 	u32 last_frame_ms;
 
+	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();
+	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();
+	void (PlayerInfo::* pExit_status[CHARA_STATUS_MAX])();
+
+	//constructors
 	PlayerInfo();
 	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
+	
 	//void change_anim(string new_anim_kind, int div_rate = 60, int entry_frame = 0);
 	void startAnimation(Animation* animation);
 	void startAnimation(string animation_name, int frame_rate = 30, int entry_frame = 0);
@@ -57,4 +63,47 @@ public:
 	bool change_status(u32 new_status_kind, bool call_end_status = true);
 	bool common_ground_status_act();
 	void processInput();
+	void playoutStatus();
+	void loadStatusFunctions();
+
+	//great wall of status funcs
+	void status_wait();
+	void enter_status_wait();
+	void exit_status_wait();
+	void status_walkf();
+	void enter_status_walkf();
+	void exit_status_walkf();
+	void status_walkb();
+	void enter_status_walkb();
+	void exit_status_walkb();
+	void status_dash();
+	void enter_status_dash();
+	void exit_status_dash();
+	void status_dashb();
+	void enter_status_dashb();
+	void exit_status_dashb();
+	void status_crouchd();
+	void enter_status_crouchd();
+	void exit_status_crouchd();
+	void status_crouch();
+	void enter_status_crouch();
+	void exit_status_crouch();
+	void status_crouchu();
+	void enter_status_crouchu();
+	void exit_status_crouchu();
+	void status_jumpsquat();
+	void enter_status_jumpsquat();
+	void exit_status_jumpsquat();
+	void status_jump();
+	void enter_status_jump();
+	void exit_status_jump();
+	void status_attack();
+	void enter_status_attack();
+	void exit_status_attack();
+	void status_hitstun();
+	void enter_status_hitstun();
+	void exit_status_hitstun();
+	void status_blockstun();
+	void enter_status_blockstun();
+	void exit_status_blockstun();
 };

@@ -16,6 +16,7 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	load_anim_list(renderer);
 	startAnimation("wait", 30);
 	loadDefaultButtonMap();
+	loadStatusFunctions();
 	load_params();
 
 	// set position
@@ -273,15 +274,19 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 	//This function will return whether or not a status was successfully changed, typically from the common_status_act functions.
 	if (new_status_kind != status_kind) {
 		if (call_end_status) {
-			exit_status_pointer[status_kind](this);
+			(this->*pExit_status[status_kind])(); //wtf is this syntax
 		}
 		status_kind = new_status_kind;
-		enter_status_pointer[status_kind](this);
+		(this->*pEnter_status[status_kind])();
 		return true;
 	}
 	else {
 		return false;
 	}
+}
+
+void PlayerInfo::playoutStatus() {
+	(this->*pStatus[status_kind])();
 }
 
 bool PlayerInfo::common_ground_status_act() { 
@@ -351,3 +356,358 @@ void PlayerInfo::processInput() {
 	}
 }
 
+// STATUS 
+
+/*
+	 ..=====.. |==|
+	||     || |= |
+ _  ||     || |^*| _
+|=| o=,===,=o |__||=|
+|_|  _______)~`)  |_|
+	[=======]  ()
+*/
+
+void PlayerInfo::loadStatusFunctions() {
+	pStatus[CHARA_STATUS_WAIT] = &PlayerInfo::status_wait;
+	pEnter_status[CHARA_STATUS_WAIT] = &PlayerInfo::enter_status_wait;
+	pExit_status[CHARA_STATUS_WAIT] = &PlayerInfo::exit_status_wait;
+
+	pStatus[CHARA_STATUS_WALKF] = &PlayerInfo::status_walkf;
+	pEnter_status[CHARA_STATUS_WALKF] = &PlayerInfo::enter_status_walkf;
+	pExit_status[CHARA_STATUS_WALKF] = &PlayerInfo::exit_status_walkf;
+
+	pStatus[CHARA_STATUS_WALKB] = &PlayerInfo::status_walkb;
+	pEnter_status[CHARA_STATUS_WALKB] = &PlayerInfo::enter_status_walkb;
+	pExit_status[CHARA_STATUS_WALKB] = &PlayerInfo::exit_status_walkb;
+
+	pStatus[CHARA_STATUS_DASH] = &PlayerInfo::status_dash;
+	pEnter_status[CHARA_STATUS_DASH] = &PlayerInfo::enter_status_dash;
+	pExit_status[CHARA_STATUS_DASH] = &PlayerInfo::exit_status_dash;
+
+	pStatus[CHARA_STATUS_DASHB] = &PlayerInfo::status_dashb;
+	pEnter_status[CHARA_STATUS_DASHB] = &PlayerInfo::enter_status_dashb;
+	pExit_status[CHARA_STATUS_DASHB] = &PlayerInfo::exit_status_dashb;
+
+	pStatus[CHARA_STATUS_CROUCHD] = &PlayerInfo::status_crouchd;
+	pEnter_status[CHARA_STATUS_CROUCHD] = &PlayerInfo::enter_status_crouchd;
+	pExit_status[CHARA_STATUS_CROUCHD] = &PlayerInfo::exit_status_crouchd;
+
+	pStatus[CHARA_STATUS_CROUCH] = &PlayerInfo::status_crouch;
+	pEnter_status[CHARA_STATUS_CROUCH] = &PlayerInfo::enter_status_crouch;
+	pExit_status[CHARA_STATUS_CROUCH] = &PlayerInfo::exit_status_crouch;
+
+	pStatus[CHARA_STATUS_CROUCHU] = &PlayerInfo::status_crouchu;
+	pEnter_status[CHARA_STATUS_CROUCHU] = &PlayerInfo::enter_status_crouchu;
+	pExit_status[CHARA_STATUS_CROUCHU] = &PlayerInfo::exit_status_crouchu;
+
+	pStatus[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::status_jumpsquat;
+	pEnter_status[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::enter_status_jumpsquat;
+	pExit_status[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::exit_status_jumpsquat;
+
+	pStatus[CHARA_STATUS_JUMP] = &PlayerInfo::status_jump;
+	pEnter_status[CHARA_STATUS_JUMP] = &PlayerInfo::enter_status_jump;
+	pExit_status[CHARA_STATUS_JUMP] = &PlayerInfo::exit_status_jump;
+
+	pStatus[CHARA_STATUS_ATTACK] = &PlayerInfo::status_attack;
+	pEnter_status[CHARA_STATUS_ATTACK] = &PlayerInfo::enter_status_attack;
+	pExit_status[CHARA_STATUS_ATTACK] = &PlayerInfo::exit_status_attack;
+
+	pStatus[CHARA_STATUS_HITSTUN] = &PlayerInfo::status_hitstun;
+	pEnter_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::enter_status_hitstun;
+	pExit_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::exit_status_hitstun;
+
+	pStatus[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::status_blockstun;
+	pEnter_status[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::enter_status_blockstun;
+	pExit_status[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::exit_status_blockstun;
+}
+
+void PlayerInfo::status_wait() {
+	if (common_ground_status_act()) {
+		return;
+	}
+}
+
+void PlayerInfo::enter_status_wait() {
+	startAnimation("wait", 30, 0);
+
+	situation_kind = CHARA_SITUATION_GROUND;
+}
+
+void PlayerInfo::exit_status_wait() {
+
+}
+
+void PlayerInfo::status_walkf() {
+	if (common_ground_status_act()) {
+		return;
+	}
+	if (get_stick_dir() == 5) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	pos.x += stats.walk_f_speed * facing_dir;
+}
+
+void PlayerInfo::enter_status_walkf() {
+	startAnimation("walk_f", 30, 0);
+}
+
+void PlayerInfo::exit_status_walkf() {
+
+}
+
+void PlayerInfo::status_walkb() {
+	if (common_ground_status_act()) {
+		return;
+	}
+	if (get_stick_dir() == 5) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	pos.x -= stats.walk_b_speed * facing_dir;
+}
+
+void PlayerInfo::enter_status_walkb() {
+	startAnimation("walk_b", 30);
+}
+
+void PlayerInfo::exit_status_walkb() {
+
+}
+
+void PlayerInfo::status_dash() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable() && common_ground_status_act()) {
+		return;
+	}
+	int min_frame = stats.dash_f_accel_frame;
+	int max_frame = min_frame + stats.dash_f_maintain_speed_frame;
+
+	if (frame >= min_frame && frame < max_frame) {
+		pos.x += stats.dash_f_speed * facing_dir;
+	}
+	else {
+		pos.x += stats.walk_f_speed * facing_dir;
+	}
+
+	if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
+		if (frame >= max_frame && frame < max_frame + 3) {
+			if (get_flick_dir() == 4) {
+				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
+					chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
+				}
+				change_status(CHARA_STATUS_DASHB, false);
+				return;
+			}
+		}
+	}
+}
+
+void PlayerInfo::enter_status_dash() {
+	startAnimation("dash_f", 30, 0);
+}
+
+void PlayerInfo::exit_status_dash() {
+	chara_bool[CHARA_BOOL_DASH_CANCEL] = false;
+}
+
+void PlayerInfo::status_dashb() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable() && common_ground_status_act()) {
+		return;
+	}
+	int min_frame = stats.dash_b_accel_frame;
+	int max_frame = min_frame + stats.dash_b_maintain_speed_frame;
+
+	if (frame >= min_frame && frame < max_frame) {
+		pos.x -= stats.dash_b_speed * facing_dir;
+	}
+	else {
+		pos.x -= stats.walk_b_speed * facing_dir;
+	}
+
+	if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
+		if (frame >= max_frame && frame < max_frame + 3) {
+			if (get_flick_dir() == 6) {
+				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
+					chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
+				}
+				change_status(CHARA_STATUS_DASH, false);
+				return;
+			}
+		}
+	}
+}
+
+void PlayerInfo::enter_status_dashb() {
+	startAnimation("dash_b", 30);
+}
+
+void PlayerInfo::exit_status_dashb() {
+	chara_bool[CHARA_BOOL_DASH_CANCEL] = false;
+}
+
+void PlayerInfo::status_crouchd() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_CROUCH);
+		return;
+	}
+}
+
+void PlayerInfo::enter_status_crouchd() {
+	startAnimation("crouch_d", 30);
+}
+
+void PlayerInfo::exit_status_crouchd() {
+
+}
+
+void PlayerInfo::status_crouch() {
+	if (get_stick_dir() == 6) {
+		change_status(CHARA_STATUS_WALKF);
+		return;
+	}
+	if (get_stick_dir() == 4) {
+		change_status(CHARA_STATUS_WALKB);
+		return;
+	}
+	if (get_stick_dir() > 6) {
+		change_status(CHARA_STATUS_JUMPSQUAT);
+		return;
+	}
+	if (get_stick_dir() == 5) {
+		change_status(CHARA_STATUS_CROUCHU);
+		return;
+	}
+}
+
+void PlayerInfo::enter_status_crouch() {
+	startAnimation("crouch", 30);
+}
+
+void PlayerInfo::exit_status_crouch() {
+
+}
+
+void PlayerInfo::status_crouchu() {
+	if (common_ground_status_act()) {
+		return;
+	}
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+	}
+}
+
+void PlayerInfo::enter_status_crouchu() {
+	startAnimation("crouch_u", 30);
+}
+
+void PlayerInfo::exit_status_crouchu() {
+
+}
+
+void PlayerInfo::status_jumpsquat() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_JUMP);
+		return;
+	}
+}
+
+void PlayerInfo::enter_status_jumpsquat() {
+	startAnimation("jump_squat", 120);
+}
+
+void PlayerInfo::exit_status_jumpsquat() {
+	chara_bool[CHARA_BOOL_SHORT_HOP] = get_stick_dir() < 7;
+	situation_kind = CHARA_SITUATION_AIR;
+	chara_float[CHARA_FLOAT_INIT_POS_JUMP_Y] = pos.y; //This will eventually be replaced by a proper ground collision check
+}
+
+void PlayerInfo::status_jump() {
+	if (pos.y > chara_float[CHARA_FLOAT_INIT_POS_JUMP_Y]) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
+	}
+	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
+		pos.x += stats.jump_x_speed * facing_dir;
+	}
+	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
+		pos.x -= stats.jump_x_speed * facing_dir;
+	}
+	pos.y -= chara_float[CHARA_FLOAT_CURRENT_Y_SPEED];
+}
+
+void PlayerInfo::enter_status_jump() {
+	if (get_stick_dir() == 7
+		|| get_stick_dir() == 4
+		|| get_stick_dir() == 1) {
+		startAnimation("jump_b");
+		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
+	}
+	else if (get_stick_dir() == 9
+		|| get_stick_dir() == 6
+		|| get_stick_dir() == 3) {
+		startAnimation("jump_f");
+		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
+	}
+	else {
+		startAnimation("jump");
+		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
+	}
+	if (chara_bool[CHARA_BOOL_SHORT_HOP]) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed_s;
+	}
+	else {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed;
+	}
+}
+
+void PlayerInfo::exit_status_jump() {
+	pos.y = chara_float[CHARA_FLOAT_INIT_POS_JUMP_Y];
+	situation_kind = CHARA_SITUATION_GROUND;
+}
+
+void PlayerInfo::status_attack() {
+
+}
+
+void PlayerInfo::enter_status_attack() {
+
+}
+
+void PlayerInfo::exit_status_attack() {
+
+}
+
+void PlayerInfo::status_hitstun() {
+
+}
+
+void PlayerInfo::enter_status_hitstun() {
+
+}
+
+void PlayerInfo::exit_status_hitstun() {
+
+}
+
+void PlayerInfo::status_blockstun() {
+
+}
+
+void PlayerInfo::enter_status_blockstun() {
+
+}
+
+void PlayerInfo::exit_status_blockstun() {
+
+}

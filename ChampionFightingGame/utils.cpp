@@ -18,6 +18,10 @@ int ymlChopInt(string line) {
 	return stoi(line.substr(line.find("=") + 1));
 }
 
+float ymlChopFloat(string line) {
+	return stof(line.substr(line.find("=") + 1));
+}
+
 string ymlChopString(string line) {
 	return line.substr(line.find("=") + 1);
 }

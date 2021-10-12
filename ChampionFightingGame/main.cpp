@@ -80,7 +80,7 @@ int main() {
 		SDL_RenderClear(renderer);
 		for (int i = 0; i < 2; i++) {
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (player_info[i].situation_kind == CHARA_SITUATION_GROUND) {
+			if (player_info[i].situation_kind == CHARA_SITUATION_GROUND && player_info[i].is_actionable()) {
 				if (player_info[i].pos.x > player_info[!i].pos.x) {
 					player_info[i].facing_dir = -1.0;
 					player_info[i].facing_right = false;

@@ -14,7 +14,7 @@ PlayerInfo::PlayerInfo(int id, string chara_kind) {
 
 void PlayerInfo::superInit() {
 	load_anim_list();
-	change_anim("wait", 0, 30);
+	change_anim("wait", 30);
 	loadDefaultButtonMap();
 	load_params();
 
@@ -123,7 +123,16 @@ void PlayerInfo::load_params() {
 	stats_table.close();
 }
 
-void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate) {
+bool PlayerInfo::is_actionable() {
+	if ((*anim_kind).faf == -1) {
+		return is_anim_end;
+	}
+	else {
+		return frame >= (*anim_kind).faf;
+	}
+}
+
+void PlayerInfo::change_anim(string new_anim_kind, int div_rate, int entry_frame) {
 	int anim_to_use = -1;
 	new_anim_kind = (resource_dir + "/anims/" + new_anim_kind + ".png");
 	for (int i = 0; i < 60; i++) {

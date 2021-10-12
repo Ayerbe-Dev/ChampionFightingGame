@@ -8,6 +8,7 @@ public:
 	f32 x_offset;
 	f32 y_offset;
 	f32 x_spr_offset;
+	f32 y_spr_offset;
 
 	GameCoordinate();
 

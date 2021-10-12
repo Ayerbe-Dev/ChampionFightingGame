@@ -76,6 +76,7 @@ void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate
 void PlayerInfo::startAnimation(Animation* animation) {
 	anim_kind = animation;
 	pos.x_spr_offset = animation->sprite_width / 2;
+	pos.y_spr_offset = animation->sprite_height;
 	last_frame_ms = SDL_GetTicks();
 	frame_rect = getFrame(frame, anim_kind); // needs to be here in case the player was in the middle of an animation.
 }

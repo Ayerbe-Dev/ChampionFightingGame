@@ -25,6 +25,8 @@ void PlayerInfo::superInit() {
 	else if (id == 1){
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
+	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
+	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 }
 
 void PlayerInfo::load_anim_list() {
@@ -117,6 +119,8 @@ void PlayerInfo::load_params() {
 	stats.hk_landing_lag = stoi(hk_landing_lag.substr(hk_landing_lag.find("=") + 1));
 	stats.health = stoi(health.substr(health.find("=") + 1));
 	stats.has_airdash = (bool)stoi(has_airdash.substr(has_airdash.find("=") + 1));
+
+	stats_table.close();
 }
 
 void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate) {
@@ -249,31 +253,72 @@ i32 PlayerInfo::get_stick_dir() { //Use this instead of check_button_on with lef
 	}
 }
 
-void PlayerInfo::change_status(u32 new_status_kind) {
+i32 PlayerInfo::get_flick_dir() { //get_stick_dir, but only for stick inputs made on that frame
+	int stick_dir = get_stick_dir();
+	if (stick_dir == prev_stick_dir) {
+		return 0;
+	}
+	else {
+		return stick_dir;
+	}
+}
+
+bool PlayerInfo::change_status(u32 new_status_kind) {
 	//Call the exit status function for whatever we're leaving, change the value, then call the entry status to prepare any relevant info
+	//This function will return whether or not a status was successfully changed, typically from the common_status_act functions.
 	if (new_status_kind != status_kind) {
 		exit_status_pointer[status_kind](this);
 		status_kind = new_status_kind;
 		enter_status_pointer[status_kind](this);
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
-void PlayerInfo::common_ground_status_act() { //Handles all grounded options where the player is fully actionable
+bool PlayerInfo::common_ground_status_act() { 
+	//Handles all grounded options where the player is fully actionable
+	//This function will return whether or not any status was successfully changed. If it was, the status script that called it will return.
 	if (get_stick_dir() == 6) {
-		change_status(CHARA_STATUS_WALKF);
+		if (chara_int[CHARA_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6) {
+			return change_status(CHARA_STATUS_DASH);
+		}
+		else {
+			return change_status(CHARA_STATUS_WALKF);
+		}
 	}
 	if (get_stick_dir() == 4) {
-		change_status(CHARA_STATUS_WALKB);
+		if (chara_int[CHARA_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4) {
+			return change_status(CHARA_STATUS_DASHB);
+		}
+		else {
+			return change_status(CHARA_STATUS_WALKB);
+		}
 	}
 	if (get_stick_dir() > 6) {
-		change_status(CHARA_STATUS_JUMPSQUAT);
+		return change_status(CHARA_STATUS_JUMPSQUAT);
 	}
 	if (get_stick_dir() < 4) {
-		change_status(CHARA_STATUS_CROUCHD);
+		return change_status(CHARA_STATUS_CROUCHD);
 	}
+	return false;
 }
 
 void PlayerInfo::processInput() {
+	if (get_flick_dir() == 6) {
+		chara_int[CHARA_INT_DASH_F_WINDOW] = 8;
+	}
+	if (get_flick_dir() == 4) {
+		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
+	}
+	int stick_dir = get_stick_dir();
+	if (stick_dir < 4) {
+
+	}
+	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
+
+	}
 	if (check_button_on(BUTTON_START)) {
 		pos.y = 0.0;
 		if (id == 0) {

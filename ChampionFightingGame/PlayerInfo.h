@@ -22,6 +22,10 @@ public:
 	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
 	Buttons button_info[BUTTON_MAX];
+	int prev_stick_dir;
+	int chara_int[CHARA_INT_MAX];
+	float chara_float[CHARA_FLOAT_MAX];
+	bool chara_bool[CHARA_BOOL_MAX];
 	string resource_dir;
 	SDL_Texture* current_texture;
 	int frame;
@@ -46,7 +50,8 @@ public:
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
 	i32 get_stick_dir();
-	void change_status(u32 new_status_kind);
-	void common_ground_status_act();
+	i32 get_flick_dir();
+	bool change_status(u32 new_status_kind);
+	bool common_ground_status_act();
 	void processInput();
 };

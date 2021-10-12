@@ -44,6 +44,70 @@ void PlayerInfo::load_anim_list() {
 		ANIM_TABLE[i][id].sprite_height = stoi(height.substr(height.find("=") + 1));
 		ANIM_TABLE[i][id].faf = stoi(faf.substr(faf.find("=") + 1));
 	}
+	anim_list.close();
+}
+
+void PlayerInfo::load_params() {
+	ifstream stats_table;
+	stats_table.open(resource_dir + "/param/stats.yml");
+
+	if (stats_table.fail()) {
+		cerr << "Could not open stats table!" << endl;
+		exit(1);
+	}
+
+	string walk_f_speed;
+	string walk_b_speed;
+	string dash_f_accel_frame;
+	string dash_f_speed;
+	string dash_f_maintain_speed_frame;
+	string dash_b_accel_frame;
+	string dash_b_speed;
+	string dash_b_maintain_speed_frame;
+	string dash_cancel_kind;
+	string jump_y_init_speed;
+	string jump_y_init_speed_s;
+	string jump_x_speed;
+	string gravity;
+	string max_fall_speed;
+	string empty_landing_lag;
+	string lp_landing_lag;
+	string mp_landing_lag;
+	string hp_landing_lag;
+	string lk_landing_lag;
+	string mk_landing_lag;
+	string hk_landing_lag;
+	string health;
+	string has_airdash;
+
+	stats_table >> walk_f_speed >> walk_b_speed >> dash_f_accel_frame >> dash_f_speed >> dash_f_maintain_speed_frame >> dash_b_accel_frame
+		>> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> jump_y_init_speed >> jump_y_init_speed_s >> jump_x_speed >> gravity
+		>> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag >> hp_landing_lag >> lk_landing_lag >> mk_landing_lag
+		>> hk_landing_lag >> health >> has_airdash;
+
+	stats.walk_f_speed = stof(walk_f_speed.substr(walk_f_speed.find("=") + 1));
+	stats.walk_b_speed = stof(walk_b_speed.substr(walk_b_speed.find("=") + 1));
+	stats.dash_f_accel_frame = stoi(dash_f_accel_frame.substr(dash_f_accel_frame.find("=") + 1));
+	stats.dash_f_speed = stof(dash_f_speed.substr(dash_f_speed.find("=") + 1));
+	stats.dash_f_maintain_speed_frame = stoi(dash_f_maintain_speed_frame.substr(dash_f_maintain_speed_frame.find("=") + 1));
+	stats.dash_b_accel_frame = stoi(dash_b_accel_frame.substr(dash_b_accel_frame.find("=") + 1));
+	stats.dash_b_speed = stof(dash_b_speed.substr(dash_b_speed.find("=") + 1));
+	stats.dash_b_maintain_speed_frame = stoi(dash_b_maintain_speed_frame.substr(dash_b_maintain_speed_frame.find("=") + 1));
+	stats.dash_cancel_kind = stoi(dash_cancel_kind.substr(dash_cancel_kind.find("=") + 1));
+	stats.jump_y_init_speed = stof(jump_y_init_speed.substr(jump_y_init_speed.find("=") + 1));
+	stats.jump_y_init_speed_s = stof(jump_y_init_speed_s.substr(jump_y_init_speed_s.find("=") + 1));
+	stats.jump_x_speed = stof(jump_x_speed.substr(jump_x_speed.find("=") + 1));
+	stats.gravity = stof(gravity.substr(gravity.find("=") + 1));
+	stats.max_fall_speed = stof(max_fall_speed.substr(max_fall_speed.find("=") + 1));
+	stats.empty_landing_lag = stoi(empty_landing_lag.substr(empty_landing_lag.find("=") + 1));
+	stats.lp_landing_lag = stoi(lp_landing_lag.substr(lp_landing_lag.find("=") + 1));
+	stats.mp_landing_lag = stoi(mp_landing_lag.substr(mp_landing_lag.find("=") + 1));
+	stats.hp_landing_lag = stoi(hp_landing_lag.substr(hp_landing_lag.find("=") + 1));
+	stats.lk_landing_lag = stoi(lk_landing_lag.substr(lk_landing_lag.find("=") + 1));
+	stats.mk_landing_lag = stoi(mk_landing_lag.substr(mk_landing_lag.find("=") + 1));
+	stats.hk_landing_lag = stoi(hk_landing_lag.substr(hk_landing_lag.find("=") + 1));
+	stats.health = stoi(health.substr(health.find("=") + 1));
+	stats.has_airdash = (bool)stoi(has_airdash.substr(has_airdash.find("=") + 1));
 }
 
 void PlayerInfo::change_anim(string new_anim_kind, int entry_frame, int div_rate) {

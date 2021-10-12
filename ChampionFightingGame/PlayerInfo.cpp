@@ -195,6 +195,7 @@ void PlayerInfo::loadDefaultButtonMap() {
 		button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_A;
 		button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_S;
 		button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_D;
+		button_info[BUTTON_LP].mapping = SDL_SCANCODE_Z;
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
 	}

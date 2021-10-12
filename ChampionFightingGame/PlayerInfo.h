@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "ParamTable.h"
+#include "Hitbox.h"
 
 class PlayerInfo{
 public:
@@ -36,6 +37,9 @@ public:
 	StatsTable stats;
 	u32 hold_ms;
 	u32 last_frame_ms;
+	Hitbox hitboxes[10];
+	Hurtbox hurtboxes[10];
+	Grabbox grabboxes[10];
 
 	PlayerInfo();
 	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);

@@ -94,6 +94,10 @@ void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	if ((*player_info).chara_int[CHARA_INT_DASH_B_WINDOW] != 0) {
 		(*player_info).chara_int[CHARA_INT_DASH_B_WINDOW] --;
 	}
+	if ((*player_info).check_button_on(BUTTON_LP)) {
+		(*player_info).hitboxes[0] = Hitbox{player_info, 0, 0, 30, 0, 30, false, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL,
+		20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20};
+	}
 }
 
 

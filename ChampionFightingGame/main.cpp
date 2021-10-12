@@ -7,6 +7,7 @@
 #include <SDL_timer.h>
 #include "utils.h"
 #include "Game.h"
+#include "TestFighter.h"
 #undef main
 using namespace std;
 bool running = true;
@@ -29,13 +30,8 @@ int main() {
 	//init players
 	PlayerInfo player_info[2];
 
-	PlayerInfo p1 {"eric", 0, renderer};
-	p1.setStateLikePlayer1();
-	p1.loadDefaultButtonMap();
-
-	PlayerInfo p2{ "roy", 1, renderer };
-	p2.setStateLikePlayer2();
-	p2.loadDefaultButtonMap();
+	TestFighter p1 {0};
+	TestFighter p2{1};
 
 	player_info[0] = p1;
 	player_info[1] = p2;

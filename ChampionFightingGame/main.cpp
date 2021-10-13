@@ -112,17 +112,19 @@ int main() {
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
+			//testing
 			for (int o = 0; o < 10; o++) {
 				if (player_info[i].hitboxes[o].id != -1) {
 					SDL_Rect render_pos;
 					render_pos.x = player_info[i].hitboxes[o].x0;
 					render_pos.y = player_info[i].hitboxes[o].y0;
-					render_pos.w = player_info[i].hitboxes[o].x1;
-					render_pos.h = player_info[i].hitboxes[o].y1;
+					render_pos.w = 60;
+					render_pos.h = 20;
 
 					SDL_RenderDrawRect(renderer, &render_pos);
 				}
 			}
+			//
 		}
 		SDL_RenderPresent(renderer); 
 	}

@@ -32,7 +32,7 @@ public:
 	SDL_Rect frame_rect;
 	StatsTable stats;
 	u32 hold_ms;
-	u32 last_frame_ms;
+	u32 last_frame_ms; 
 //	Hitbox hitboxes[10];
 //	Hurtbox hurtboxes[10];
 //	Grabbox grabboxes[10];

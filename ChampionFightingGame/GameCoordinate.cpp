@@ -27,5 +27,5 @@ f32 GameCoordinate::getRenderCoodrinateX() {
 }
 
 f32 GameCoordinate::getRenderCoodrinateY() {
-	return y + y_offset - y_spr_offset;
+	return (y * -1.0) + WINDOW_HEIGHT - y_spr_offset;
 }

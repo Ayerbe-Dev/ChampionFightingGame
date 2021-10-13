@@ -15,10 +15,10 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	// set position
 	if (id == 0) {
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 320);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
 	}
 	else if (id == 1) {
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 320);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 	load_anim_list(renderer);
 	change_anim("wait", 30);
@@ -641,7 +641,7 @@ void PlayerInfo::exit_status_jumpsquat() {
 }
 
 void PlayerInfo::status_jump() {
-	if (pos.y > chara_float[CHARA_FLOAT_INIT_POS_JUMP_Y]) {
+	if (pos.y < chara_float[CHARA_FLOAT_INIT_POS_JUMP_Y]) {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
@@ -654,7 +654,7 @@ void PlayerInfo::status_jump() {
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
 		pos.x -= stats.jump_x_speed * facing_dir;
 	}
-	pos.y -= chara_float[CHARA_FLOAT_CURRENT_Y_SPEED];
+	pos.y += chara_float[CHARA_FLOAT_CURRENT_Y_SPEED];
 }
 
 void PlayerInfo::enter_status_jump() {

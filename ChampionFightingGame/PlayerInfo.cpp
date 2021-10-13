@@ -13,6 +13,7 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 }
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
+	// set position
 	if (id == 0) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 320);
 	}

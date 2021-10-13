@@ -116,10 +116,10 @@ int main() {
 			for (int o = 0; o < 10; o++) {
 				if (player_info[i].hitboxes[o].id != -1) {
 					SDL_Rect render_pos;
-					render_pos.x = player_info[i].hitboxes[o].x0;
-					render_pos.y = player_info[i].hitboxes[o].y0;
-					render_pos.w = 60;
-					render_pos.h = 20;
+					render_pos.x = player_info[i].hitboxes[o].anchor.getRenderCoodrinateX();
+					render_pos.y = player_info[i].hitboxes[o].anchor.getRenderCoodrinateY();
+					render_pos.w = player_info[i].hitboxes[o].width;
+					render_pos.h = player_info[i].hitboxes[o].height;
 
 					SDL_RenderDrawRect(renderer, &render_pos);
 				}

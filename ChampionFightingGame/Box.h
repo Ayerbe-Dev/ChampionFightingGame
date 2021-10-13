@@ -9,9 +9,8 @@ class Hitbox {
 public:
 	PlayerInfo* player_info;
 	int id;
-	GameCoordinate anchor; 
-	int height; 
-	int width;
+	GameCoordinate anchor;
+	GameCoordinate offset;
 	SDL_Rect rect;
 	int hitbox_kind;
 	int situation_hit;
@@ -30,13 +29,9 @@ public:
 	int max_juggle;
 
 	Hitbox();
-	Hitbox(PlayerInfo* player_info, int id, GameCoordinate anchor, int width, int height, int hitbox_kind, int situation_hit, int attack_level,
+	Hitbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind, int situation_hit, int attack_level,
 		int clank_kind, int damage, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable,
-		bool success_hit, int juggle_set, int max_juggle);
-
-	Hitbox(PlayerInfo* player_info, int id, int width, int height, int hitbox_kind, int situation_hit, int attack_level,
-		int clank_kind, int damage, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable,
-		bool success_hit, int juggle_set, int max_juggle);
+		bool success_hit, int juggle_set, int max_juggle, bool use_player_pos = true);
 
 	void init(PlayerInfo* player_info, int id, int hitbox_kind, int situation_hit, int attack_level,
 		int clank_kind, int damage, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable,

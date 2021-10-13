@@ -117,9 +117,9 @@ int main() {
 				if (player_info[i].hitboxes[o].id != -1) {
 					SDL_Rect render_pos;
 					render_pos.x = player_info[i].hitboxes[o].anchor.x;
-					render_pos.y = player_info[i].hitboxes[o].anchor.y;
-					render_pos.w = player_info[i].hitboxes[o].width;
-					render_pos.h = player_info[i].hitboxes[o].height;
+					render_pos.y = player_info[i].hitboxes[o].anchor.y + WINDOW_HEIGHT / 2;
+					render_pos.w = player_info[i].hitboxes[o].offset.x;
+					render_pos.h = player_info[i].hitboxes[o].offset.y + WINDOW_HEIGHT / 2;
 
 					SDL_RenderDrawRect(renderer, &render_pos);
 				}

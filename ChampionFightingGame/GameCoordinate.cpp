@@ -8,11 +8,9 @@ GameCoordinate::GameCoordinate() {
 	y_offset = 0.0;
 }
 
-GameCoordinate::GameCoordinate(f32 window_width, f32 window_height) {
-	x = 0.0;
-	y = 0.0;
-	x_offset = window_width / 2;
-	y_offset = window_height / 2;
+GameCoordinate::GameCoordinate(f32 x, f32 y) {
+	this->x = x;
+	this->y = y;
 }
 
 GameCoordinate::GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y) {

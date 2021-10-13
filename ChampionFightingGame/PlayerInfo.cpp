@@ -232,9 +232,9 @@ void PlayerInfo::processInput() {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
 	}
 	if (check_button_on(BUTTON_LP)) {
-		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, -50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
+		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 75 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
 		hitboxes[1] = Hitbox(this, 1, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
-		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,25 }, GameCoordinate{ 100, -25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
+		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
 	}
 	else {
 		clear_hitbox_all();

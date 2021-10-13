@@ -11,7 +11,6 @@
 #include "Animation.h"
 #undef main
 using namespace std;
-bool running = true;
 int error_render;
 
 Uint32 tick;
@@ -20,6 +19,8 @@ Uint32 tok;
 SDL_Texture* pBG;
 
 int main() {
+	bool running = true;
+	bool visualize_boxes = true;
 	//init SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("error initializing SDL: %s\n", SDL_GetError());
@@ -28,7 +29,8 @@ int main() {
 	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 	//Background image
 	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
@@ -118,7 +120,12 @@ int main() {
 					SDL_Rect render_pos;
 					render_pos = player_info[i].hitboxes[o].rect;
 
-					SDL_RenderDrawRect(renderer, &render_pos);
+					if (visualize_boxes) {
+						SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+						SDL_RenderDrawRect(renderer, &render_pos);
+						SDL_SetRenderDrawColor(renderer, 255, 0, 0, 127);
+						SDL_RenderFillRect(renderer, &render_pos);
+					}
 				}
 			}
 			for (int o = 0; o < 10; o++) {
@@ -126,7 +133,12 @@ int main() {
 					SDL_Rect render_pos;
 					render_pos = player_info[i].hurtboxes[o].rect;
 
-					SDL_RenderDrawRect(renderer, &render_pos);
+					if (visualize_boxes) {
+						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+						SDL_RenderDrawRect(renderer, &render_pos);
+						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 127);
+						SDL_RenderFillRect(renderer, &render_pos);
+					}
 				}
 			}
 		}

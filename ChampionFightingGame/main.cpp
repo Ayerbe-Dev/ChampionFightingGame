@@ -29,13 +29,13 @@ int main() {
 
 	//init players
 	PlayerInfo player_info[2];
-	Hitbox p1_hitboxes[10];
-	Hitbox p2_hitboxes[10];
+//	Hitbox p1_hitboxes[10];
+//	Hitbox p2_hitboxes[10];
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
-	PlayerInfo p1{ 0, "testchar", renderer};
-	PlayerInfo p2{ 1, "testchar", renderer};
+	PlayerInfo p1{ 0, "roy", renderer};
+	PlayerInfo p2{ 1, "eric", renderer};
 
 	player_info[0] = p1;
 	player_info[1] = p2;
@@ -104,7 +104,7 @@ int main() {
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
-			for (int o = 0; o < 10; o++) {
+/*			for (int o = 0; o < 10; o++) {
 				if (player_info[i].hitboxes[o].id != -1) {
 					SDL_Rect render_pos;
 					render_pos.x = player_info[i].hitboxes[o].x0;
@@ -114,7 +114,7 @@ int main() {
 
 					SDL_RenderDrawRect(renderer, &render_pos);
 				}
-			}
+			}*/
 		}
 		SDL_RenderPresent(renderer); 
 	}

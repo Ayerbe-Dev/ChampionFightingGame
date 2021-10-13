@@ -3,7 +3,7 @@ using namespace std;
 #include "PlayerInfo.h"
 #include "utils.h"
 
-Hitbox::Hitbox() { 
+/*Hitbox::Hitbox() {
 	this->id = -1;
 }
 

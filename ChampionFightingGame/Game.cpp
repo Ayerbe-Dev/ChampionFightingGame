@@ -12,11 +12,26 @@
 void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	//Marks down the addresses of all of the player's status functions and puts them all on their info table. 
 
-	/*
-		TODO: Make it so this only runs once, probably while initializing the player_info class but it could be somewhere else.Eventually there's
-		going to be a version of this function for each character that may or may not overwrite the global one, so ideally they aren't constantly
-		overwriting each other every frame.
-	*/
+	
+	 /*                _.-, 
+              _ .-'  / .._
+           .-:'/ - - \:::::-.
+         .::: '  e e  ' '-::::.
+        ::::'(    ^    )_.::::::
+       ::::.' '.  o   '.::::'.'/_
+   .  :::.'       -  .::::'_   _.:
+ .-''---' .'|      .::::'   '''::::
+'. ..-:::'  |    .::::'        ::::
+ '.' ::::    \ .::::'          ::::
+      ::::   .::::'           ::::
+       ::::.::::'._          ::::
+        ::::::' /  '-      .::::
+         '::::-/__    __.-::::'
+           '-::::::::::::::-'
+               '''::::'''
+	 */
+
+	
 
 	//Calls the looping status function for whatever the player's current status_kind is.
 	player_info->playoutStatus();

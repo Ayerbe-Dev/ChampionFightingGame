@@ -32,16 +32,24 @@ int main() {
 	//Background image
 	pBG = loadTexture("resource/stage/TrainingRoom.png", renderer);
 
+	//Background image
+	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
+
 	//init players
 	PlayerInfo player_info[2];
-	Hitbox p1_hitboxes[10];
-	Hitbox p2_hitboxes[10];
+//	Hitbox p1_hitboxes[10];
+//	Hitbox p2_hitboxes[10];
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
 	//why doesnt the above work
+<<<<<<< HEAD
+	PlayerInfo p1{ 0, "roy", renderer}; //bro just use the characters that are already there lmao
+	PlayerInfo p2{ 1, "eric", renderer}; //like you can just make the child classes for roy and eric
+=======
 	PlayerInfo p1{ 0, "testchar", renderer};
 	PlayerInfo p2{ 1, "testchar", renderer};
+>>>>>>> f39a118b7620675d48e03dd9078c846d77a7a960
 
 	player_info[0] = p1;
 	player_info[1] = p2;
@@ -110,17 +118,6 @@ int main() {
 			error_render = SDL_RenderCopyEx(renderer, player_info[i].anim_kind->SPRITESHEET, &player_info[i].frame_rect, &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
-			}
-			for (int o = 0; o < 10; o++) {
-				if (player_info[i].hitboxes[o].id != -1) {
-					SDL_Rect render_pos;
-					render_pos.x = player_info[i].hitboxes[o].x0;
-					render_pos.y = player_info[i].hitboxes[o].y0;
-					render_pos.w = player_info[i].hitboxes[o].x1;
-					render_pos.h = player_info[i].hitboxes[o].y1;
-
-					SDL_RenderDrawRect(renderer, &render_pos);
-				}
 			}
 		}
 		SDL_RenderPresent(renderer); 

@@ -7,7 +7,6 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "ParamTable.h"
-#include "Hitbox.h"
 
 class PlayerInfo{
 public:
@@ -19,9 +18,6 @@ public:
 	f32 facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
-	/*void (*status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
-	void (*enter_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);
-	void (*exit_status_pointer[CHARA_STATUS_MAX])(PlayerInfo* player_info);*/
 	Buttons button_info[BUTTON_MAX];
 	int prev_stick_dir;
 	int chara_int[CHARA_INT_MAX];
@@ -37,9 +33,9 @@ public:
 	StatsTable stats;
 	u32 hold_ms;
 	u32 last_frame_ms;
-	Hitbox hitboxes[10];
-	Hurtbox hurtboxes[10];
-	Grabbox grabboxes[10];
+//	Hitbox hitboxes[10];
+//	Hurtbox hurtboxes[10];
+//	Grabbox grabboxes[10];
 
 	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();
@@ -49,9 +45,8 @@ public:
 	PlayerInfo();
 	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
 	
-	//void change_anim(string new_anim_kind, int div_rate = 60, int entry_frame = 0);
 	void startAnimation(Animation* animation);
-	void startAnimation(string animation_name, int frame_rate = 30, int entry_frame = 0);
+	void change_anim(string animation_name, int frame_rate = 60, int entry_frame = 0);
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void stepAnimation();

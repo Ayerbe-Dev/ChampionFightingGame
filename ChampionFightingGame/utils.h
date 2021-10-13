@@ -23,7 +23,7 @@ typedef float f32;
 
 int clamp(int min, int value, int max);
 int ymlChopInt(string line);
-f32 ymlChopFloat(string line);
+float ymlChopFloat(string line);
 string ymlChopString(string line);
 
 enum {

@@ -6,28 +6,31 @@ Hitbox::Hitbox() {
 	this->id = -1;
 }
 
-Hitbox::Hitbox(PlayerInfo* player_info, int id, int x0, int x1, int y0, int y1, bool raw_coords, int hitbox_kind, int situation_hit, int attack_level,
-	int clank_kind, int damage, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable, bool success_hit,
-	int juggle_set, int max_juggle) {
+Hitbox::Hitbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind, int situation_hit, int attack_level, int clank_kind, int damage, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable, bool success_hit, int juggle_set, int max_juggle, bool use_player_pos)
+{
+	if (use_player_pos) {
+		anchor.x = ((anchor.x + (player_info->pos.x * player_info->facing_dir)) * player_info->facing_dir) + WINDOW_WIDTH / 2;
+		anchor.y += player_info->pos.y;
+		offset.x = ((offset.x + (player_info->pos.x * player_info->facing_dir)) * player_info->facing_dir) + WINDOW_WIDTH / 2;
+		offset.y += player_info->pos.y;
+	}
+	offset.x -= anchor.x;
+	offset.y -= anchor.y;
+	this->anchor.x = anchor.x;
+	this->anchor.y = anchor.y;
+	this->offset.x = offset.x;
+	this->offset.y = offset.y;
 
+
+	init(player_info, id, hitbox_kind, situation_hit, attack_level,
+		clank_kind,  damage,  hitlag,  hitstun,  blocklag,  blockstun,  attack_height,  meter_gain, unblockable, success_hit,
+		juggle_set,  max_juggle);
+}
+
+void Hitbox::init(PlayerInfo* player_info, int id, int hitbox_kind, int situation_hit, int attack_level, int clank_kind, int damage, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable, bool success_hit, int juggle_set, int max_juggle)
+{
 	this->player_info = player_info;
 	this->id = id;
-	if (raw_coords) {
-		this->x0 = x0;
-		this->y0 = y0;
-		this->x1 = x1;
-		this->y1 = y1;
-	}
-	else {
-		this->x0 = (player_info->pos.x + x0) * player_info->facing_dir;
-		this->y0 = player_info->pos.y + y0;
-		this->x1 = (this->x0 + x1) * player_info->facing_dir;
-		this->y1 = this->y0 + y1;
-	}
-	this->rect.x = x0;
-	this->rect.w = x1;
-	this->rect.y = y0;
-	this->rect.h = y1;
 	this->hitbox_kind = hitbox_kind;
 	this->situation_hit = situation_hit;
 	this->attack_level = attack_level;

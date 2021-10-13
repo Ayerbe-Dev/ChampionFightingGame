@@ -34,6 +34,7 @@ public:
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
+	SDL_Rect hurtbox_rect;
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
 	SDL_Texture* current_texture;
@@ -54,6 +55,7 @@ public:
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void loadDefaultButtonMap();
+	void set_hurtboxes();
 	void loadStatusFunctions();
 
 	//Inputs
@@ -84,6 +86,7 @@ public:
 	
 	//Hurtbox
 	
+	void update_hurtbox_pos();
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();
 

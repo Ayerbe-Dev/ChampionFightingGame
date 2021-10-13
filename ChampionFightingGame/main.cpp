@@ -121,7 +121,14 @@ int main() {
 					SDL_RenderDrawRect(renderer, &render_pos);
 				}
 			}
-			//
+			for (int o = 0; o < 10; o++) {
+				if (player_info[i].hurtboxes[o].id != -1) {
+					SDL_Rect render_pos;
+					render_pos = player_info[i].hurtboxes[o].rect;
+
+					SDL_RenderDrawRect(renderer, &render_pos);
+				}
+			}
 		}
 		SDL_RenderPresent(renderer); 
 	}

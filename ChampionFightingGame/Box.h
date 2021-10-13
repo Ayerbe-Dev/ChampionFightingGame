@@ -55,14 +55,17 @@ class Hurtbox {
 public:
 	PlayerInfo* player_info;
 	int id;
+	int orig_pos_x;
+	int orig_pos_y;
+	int orig_pos_w;
+	int orig_pos_h;
 	SDL_Rect rect;
 	int hurtbox_kind;
-	bool is_invincible;
 	bool is_armor;
 	int intangible_kind;
 
 	Hurtbox();
-	Hurtbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_invincible, bool is_armor, int intangible_kind);
-	
+	Hurtbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind);
+	void update_pos(PlayerInfo *player_info);
 	void clear();
 };

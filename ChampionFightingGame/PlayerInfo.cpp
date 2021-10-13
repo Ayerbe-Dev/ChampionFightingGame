@@ -13,19 +13,21 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 }
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
+	// set position
+	if (id == 0) {
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 320);
+	}
+	else if (id == 1) {
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 320);
+	}
+
 	load_anim_list(renderer);
 	startAnimation("wait", 30);
 	loadDefaultButtonMap();
 	loadStatusFunctions();
 	load_params();
 
-	// set position
-	if (id == 0) {
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
-	}
-	else if (id == 1){
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
-	}
+	
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 }

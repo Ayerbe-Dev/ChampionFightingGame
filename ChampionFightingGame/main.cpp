@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "Game.h"
 #include "TestFighter.h"
+#include "Animation.h"
 #undef main
 using namespace std;
 bool running = true;
@@ -15,6 +16,8 @@ int error_render;
 
 Uint32 tick;
 Uint32 tok;
+
+SDL_Texture* pBG;
 
 int main() {
 	//init SDL
@@ -26,6 +29,8 @@ int main() {
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	//Background image
+	pBG = loadTexture("resource/stage/TrainingRoom.png", renderer);
 
 	//init players
 	PlayerInfo player_info[2];
@@ -34,6 +39,7 @@ int main() {
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
+	//why doesnt the above work
 	PlayerInfo p1{ 0, "testchar", renderer};
 	PlayerInfo p2{ 1, "testchar", renderer};
 
@@ -75,6 +81,7 @@ int main() {
 		tick = SDL_GetTicks();
 
 		SDL_RenderClear(renderer);
+		SDL_RenderCopy(renderer, pBG, nullptr, nullptr);
 		for (int i = 0; i < 2; i++) {
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
 			if (player_info[i].situation_kind == CHARA_SITUATION_GROUND && player_info[i].is_actionable()) {

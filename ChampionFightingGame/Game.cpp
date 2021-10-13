@@ -22,7 +22,7 @@ void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	player_info->playoutStatus();
 
 	/*
-		Get the player's inputs and increment the frame. 
+		Get the player's inputs and increment the frame.
 	*/
 
 	player_info->processInput();

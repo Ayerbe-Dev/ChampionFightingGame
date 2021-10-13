@@ -29,16 +29,14 @@ int main() {
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	//Background image
-	pBG = loadTexture("resource/stage/TrainingRoom.png", renderer);
 
 	//Background image
 	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
 
 	//init players
 	PlayerInfo player_info[2];
-//	Hitbox p1_hitboxes[10];
-//	Hitbox p2_hitboxes[10];
+	Hitbox p1_hitboxes[10];
+	Hitbox p2_hitboxes[10];
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
@@ -113,6 +111,17 @@ int main() {
 			error_render = SDL_RenderCopyEx(renderer, player_info[i].anim_kind->SPRITESHEET, &player_info[i].frame_rect, &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
+			}
+			for (int o = 0; o < 10; o++) {
+				if (player_info[i].hitboxes[o].id != -1) {
+					SDL_Rect render_pos;
+					render_pos.x = player_info[i].hitboxes[o].x0;
+					render_pos.y = player_info[i].hitboxes[o].y0;
+					render_pos.w = player_info[i].hitboxes[o].x1;
+					render_pos.h = player_info[i].hitboxes[o].y1;
+
+					SDL_RenderDrawRect(renderer, &render_pos);
+				}
 			}
 		}
 		SDL_RenderPresent(renderer); 

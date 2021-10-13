@@ -179,6 +179,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -220,11 +221,14 @@
     <Image Include="resource\chara\roy\sprite\sprite.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Box.fwd.h" />
     <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Box.h" />
     <ClInclude Include="ParamTable.h" />
+    <ClInclude Include="PlayerInfo.fwd.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="PlayerInfo.h" />
   </ItemGroup>

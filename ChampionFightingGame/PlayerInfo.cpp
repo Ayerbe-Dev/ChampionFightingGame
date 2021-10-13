@@ -325,8 +325,12 @@ void PlayerInfo::processInput() {
 	if (get_flick_dir() == 4) {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
 	}
+	if (check_button_on(BUTTON_LP)) {
+		hitboxes[0] = Hitbox{ this, 0, 0, 30, 0, 30, false, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL,
+		20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20 };
+	}
 	int stick_dir = get_stick_dir();
-	if (stick_dir < 4) {
+	if (stick_dir < 4) { //disgusting
 		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
 		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] ++;
 	}

@@ -1,12 +1,14 @@
 #pragma once
 #include "utils.h"
 #include <string>
-#include <string>
 #include "GameCoordinate.h"
 #include "Button.h"
 #include <SDL.h>
 #include "Animation.h"
 #include "ParamTable.h"
+#include "PlayerInfo.fwd.h"
+#include "Box.fwd.h"
+#include "Box.h"
 
 class PlayerInfo{
 public:
@@ -33,9 +35,9 @@ public:
 	StatsTable stats;
 	u32 hold_ms;
 	u32 last_frame_ms;
-//	Hitbox hitboxes[10];
-//	Hurtbox hurtboxes[10];
-//	Grabbox grabboxes[10];
+	Hitbox hitboxes[10];
+	Hurtbox hurtboxes[10];
+	Grabbox grabboxes[10];
 
 	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();

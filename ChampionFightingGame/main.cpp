@@ -43,13 +43,8 @@ int main() {
 //	TestFighter p1{0};
 //	TestFighter p2{1};
 	//why doesnt the above work
-<<<<<<< HEAD
 	PlayerInfo p1{ 0, "roy", renderer}; //bro just use the characters that are already there lmao
 	PlayerInfo p2{ 1, "eric", renderer}; //like you can just make the child classes for roy and eric
-=======
-	PlayerInfo p1{ 0, "testchar", renderer};
-	PlayerInfo p2{ 1, "testchar", renderer};
->>>>>>> f39a118b7620675d48e03dd9078c846d77a7a960
 
 	player_info[0] = p1;
 	player_info[1] = p2;

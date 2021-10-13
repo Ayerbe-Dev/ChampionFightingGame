@@ -30,6 +30,8 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 }
 
+//Setup
+
 void PlayerInfo::load_anim_list(SDL_Renderer *renderer) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
@@ -130,66 +132,6 @@ void PlayerInfo::load_params() {
 	stats_table.close();
 }
 
-bool PlayerInfo::is_actionable() {
-	if (anim_kind->faf == -1) {
-		return is_anim_end;
-	}
-	else {
-		return frame >= anim_kind->faf;
-	}
-}
-
-void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_frame) {
-	int anim_to_use = -1;
-	for (int i = 0; i < 60; i++) {
-		if (animation_table[i].name == animation_name) {
-			frame = entry_frame;
-			hold_ms = (1000 / frame_rate);
-			startAnimation(&animation_table[i]);
-			return;
-		}
-	}
-	cout << "Invalid Animation '" << animation_name << "'" << endl;
-}
-
-void PlayerInfo::startAnimation(Animation* animation) {
-	is_anim_end = false;
-	anim_kind = animation;
-	pos.x_spr_offset = animation->sprite_width / 2;
-	pos.y_spr_offset = animation->sprite_height;
-	last_frame_ms = SDL_GetTicks();
-	frame_rect = getFrame(frame, anim_kind); // needs to be here in case the player was in the middle of an animation.
-}
-
-bool PlayerInfo::canStep() {
-	u32 delta = SDL_GetTicks() - last_frame_ms;
-	if (delta > hold_ms) {
-		last_frame_ms = SDL_GetTicks();
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-void PlayerInfo::stepAnimation() {
-	//tbh i think this impl isn't that bad
-	int last_frame = frame;
-	frame_rect = getFrame(frame, anim_kind);
-	if (frame == anim_kind->length) {
-		frame = 0;
-		/*
-			Instead of going back to idle after reaching the end of an animation, go back to 0. If the animation is designed to loop, nothing
-			happens, but if it isn't, we still save that the end of the animation was reached. From there if we want to make certain status
-			changes based on the animation ending, doing so is a pretty simple check.
-		*/
-	}
-	else {
-		frame ++;
-	}
-	is_anim_end = last_frame > frame; //This needs to be here or else is_anim_end will never be reset back to false
-}
-
 void PlayerInfo::loadDefaultButtonMap() {
 	if (id == 0) {
 		button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;
@@ -207,6 +149,106 @@ void PlayerInfo::loadDefaultButtonMap() {
 		button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_RIGHT;
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
+	}
+}
+
+void PlayerInfo::loadStatusFunctions() {
+	pStatus[CHARA_STATUS_WAIT] = &PlayerInfo::status_wait;
+	pEnter_status[CHARA_STATUS_WAIT] = &PlayerInfo::enter_status_wait;
+	pExit_status[CHARA_STATUS_WAIT] = &PlayerInfo::exit_status_wait;
+
+	pStatus[CHARA_STATUS_WALKF] = &PlayerInfo::status_walkf;
+	pEnter_status[CHARA_STATUS_WALKF] = &PlayerInfo::enter_status_walkf;
+	pExit_status[CHARA_STATUS_WALKF] = &PlayerInfo::exit_status_walkf;
+
+	pStatus[CHARA_STATUS_WALKB] = &PlayerInfo::status_walkb;
+	pEnter_status[CHARA_STATUS_WALKB] = &PlayerInfo::enter_status_walkb;
+	pExit_status[CHARA_STATUS_WALKB] = &PlayerInfo::exit_status_walkb;
+
+	pStatus[CHARA_STATUS_DASH] = &PlayerInfo::status_dash;
+	pEnter_status[CHARA_STATUS_DASH] = &PlayerInfo::enter_status_dash;
+	pExit_status[CHARA_STATUS_DASH] = &PlayerInfo::exit_status_dash;
+
+	pStatus[CHARA_STATUS_DASHB] = &PlayerInfo::status_dashb;
+	pEnter_status[CHARA_STATUS_DASHB] = &PlayerInfo::enter_status_dashb;
+	pExit_status[CHARA_STATUS_DASHB] = &PlayerInfo::exit_status_dashb;
+
+	pStatus[CHARA_STATUS_CROUCHD] = &PlayerInfo::status_crouchd;
+	pEnter_status[CHARA_STATUS_CROUCHD] = &PlayerInfo::enter_status_crouchd;
+	pExit_status[CHARA_STATUS_CROUCHD] = &PlayerInfo::exit_status_crouchd;
+
+	pStatus[CHARA_STATUS_CROUCH] = &PlayerInfo::status_crouch;
+	pEnter_status[CHARA_STATUS_CROUCH] = &PlayerInfo::enter_status_crouch;
+	pExit_status[CHARA_STATUS_CROUCH] = &PlayerInfo::exit_status_crouch;
+
+	pStatus[CHARA_STATUS_CROUCHU] = &PlayerInfo::status_crouchu;
+	pEnter_status[CHARA_STATUS_CROUCHU] = &PlayerInfo::enter_status_crouchu;
+	pExit_status[CHARA_STATUS_CROUCHU] = &PlayerInfo::exit_status_crouchu;
+
+	pStatus[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::status_jumpsquat;
+	pEnter_status[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::enter_status_jumpsquat;
+	pExit_status[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::exit_status_jumpsquat;
+
+	pStatus[CHARA_STATUS_JUMP] = &PlayerInfo::status_jump;
+	pEnter_status[CHARA_STATUS_JUMP] = &PlayerInfo::enter_status_jump;
+	pExit_status[CHARA_STATUS_JUMP] = &PlayerInfo::exit_status_jump;
+
+	pStatus[CHARA_STATUS_ATTACK] = &PlayerInfo::status_attack;
+	pEnter_status[CHARA_STATUS_ATTACK] = &PlayerInfo::enter_status_attack;
+	pExit_status[CHARA_STATUS_ATTACK] = &PlayerInfo::exit_status_attack;
+
+	pStatus[CHARA_STATUS_HITSTUN] = &PlayerInfo::status_hitstun;
+	pEnter_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::enter_status_hitstun;
+	pExit_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::exit_status_hitstun;
+
+	pStatus[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::status_blockstun;
+	pEnter_status[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::enter_status_blockstun;
+	pExit_status[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::exit_status_blockstun;
+}
+
+//Inputs
+
+void PlayerInfo::processInput() {
+	if (get_flick_dir() == 6) {
+		chara_int[CHARA_INT_DASH_F_WINDOW] = 8;
+	}
+	if (get_flick_dir() == 4) {
+		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
+	}
+	if (check_button_on(BUTTON_LP)) {
+		hitboxes[0] = Hitbox(
+			this, 0, GameCoordinate{ 0,0 }, GameCoordinate{ 100, 400 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL,
+			20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
+	}
+	int stick_dir = get_stick_dir();
+	if (stick_dir < 4) { //disgusting
+		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
+		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] ++;
+	}
+	else if (chara_int[CHARA_INT_DOWN_CHARGE_TIMER] != 0) {
+		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] --;
+	}
+	else {
+		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
+	}
+	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
+		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] ++;
+		chara_int[CHARA_INT_BACK_CHARGE_TIMER] = 6;
+	}
+	else if (chara_int[CHARA_INT_BACK_CHARGE_TIMER] != 0) {
+		chara_int[CHARA_INT_BACK_CHARGE_TIMER] --;
+	}
+	else {
+		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
+	}
+	if (check_button_on(BUTTON_START)) {
+		pos.y = 0.0;
+		if (id == 0) {
+			pos.x = -200.0;
+		}
+		else {
+			pos.x = 200.0;
+		}
 	}
 }
 
@@ -274,10 +316,104 @@ i32 PlayerInfo::get_flick_dir() {
 	}
 }
 
+//Hitbox
+
+void PlayerInfo::clear_hitbox(int id) {
+	hitboxes[id].clear();
+}
+
+void PlayerInfo::clear_hitbox_all() {
+	for (int i = 0; i < 10; i++) {
+		hitboxes[i].clear();
+	}
+}
+
+//Grabbox
+
+void PlayerInfo::clear_grabbox(int id) {
+	grabboxes[id].clear();
+}
+
+void PlayerInfo::clear_grabbox_all() {
+	for (int i = 0; i < 10; i++) {
+		grabboxes[i].clear();
+	}
+}
+
+//Hurtbox
+
+void PlayerInfo::clear_hurtbox(int id) {
+	hurtboxes[id].clear();
+}
+
+void PlayerInfo::clear_hurtbox_all() {
+	for (int i = 0; i < 10; i++) {
+		hurtboxes[i].clear();
+	}
+}
+
+//Animations
+
+bool PlayerInfo::is_actionable() {
+	if (anim_kind->faf == -1) {
+		return is_anim_end;
+	}
+	else {
+		return frame >= anim_kind->faf;
+	}
+}
+
+void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_frame) {
+	int anim_to_use = -1;
+	for (int i = 0; i < 60; i++) {
+		if (animation_table[i].name == animation_name) {
+			frame = entry_frame;
+			hold_ms = (1000 / frame_rate);
+			startAnimation(&animation_table[i]);
+			return;
+		}
+	}
+	cout << "Invalid Animation '" << animation_name << "'" << endl;
+}
+
+void PlayerInfo::startAnimation(Animation* animation) {
+	is_anim_end = false;
+	anim_kind = animation;
+	pos.x_spr_offset = animation->sprite_width / 2;
+	pos.y_spr_offset = animation->sprite_height;
+	last_frame_ms = SDL_GetTicks();
+	frame_rect = getFrame(frame, anim_kind);
+}
+
+bool PlayerInfo::canStep() {
+	u32 delta = SDL_GetTicks() - last_frame_ms;
+	if (delta > hold_ms) {
+		last_frame_ms = SDL_GetTicks();
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void PlayerInfo::stepAnimation() {
+	int last_frame = frame;
+	frame_rect = getFrame(frame, anim_kind);
+	if (frame == anim_kind->length) {
+		frame = 0;
+	}
+	else {
+		frame++;
+	}
+	is_anim_end = last_frame > frame;
+}
+
+//Status
+
 bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 	if (new_status_kind != status_kind) {
 		if (call_end_status) {
-			(this->*pExit_status[status_kind])(); //hey it's fine because now we don't have to think about it
+			(this->*pExit_status[status_kind])();
 		}
 		status_kind = new_status_kind;
 		(this->*pEnter_status[status_kind])();
@@ -318,51 +454,7 @@ bool PlayerInfo::common_ground_status_act() {
 	return false;
 }
 
-void PlayerInfo::processInput() {
-	if (get_flick_dir() == 6) {
-		chara_int[CHARA_INT_DASH_F_WINDOW] = 8;
-	}
-	if (get_flick_dir() == 4) {
-		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
-	}
-	if (check_button_on(BUTTON_LP)) {
-		hitboxes[0] = Hitbox(
-			this, 0, GameCoordinate{ 0,0 }, GameCoordinate{ 100, 400 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL,
-			20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
-	}
-	int stick_dir = get_stick_dir();
-	if (stick_dir < 4) { //disgusting
-		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
-		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] ++;
-	}
-	else if (chara_int[CHARA_INT_DOWN_CHARGE_TIMER] != 0) {
-		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] --;
-	}
-	else {
-		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
-	}
-	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
-		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] ++;
-		chara_int[CHARA_INT_BACK_CHARGE_TIMER] = 6;
-	}
-	else if (chara_int[CHARA_INT_BACK_CHARGE_TIMER] != 0) {
-		chara_int[CHARA_INT_BACK_CHARGE_TIMER] --;
-	}
-	else {
-		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
-	}
-	if (check_button_on(BUTTON_START)) {
-		pos.y = 0.0;
-		if (id == 0) {
-			pos.x = -200.0;
-		}
-		else {
-			pos.x = 200.0;
-		}
-	}
-}
-
-// STATUS 
+// STATUS FUNCTIONS
 
 /*
 	 ..=====.. |==|
@@ -372,60 +464,6 @@ void PlayerInfo::processInput() {
 |_|  ________)~`)  |_|
 	[========]  ()
 */
-
-void PlayerInfo::loadStatusFunctions() {
-	pStatus[CHARA_STATUS_WAIT] = &PlayerInfo::status_wait;
-	pEnter_status[CHARA_STATUS_WAIT] = &PlayerInfo::enter_status_wait;
-	pExit_status[CHARA_STATUS_WAIT] = &PlayerInfo::exit_status_wait;
-
-	pStatus[CHARA_STATUS_WALKF] = &PlayerInfo::status_walkf;
-	pEnter_status[CHARA_STATUS_WALKF] = &PlayerInfo::enter_status_walkf;
-	pExit_status[CHARA_STATUS_WALKF] = &PlayerInfo::exit_status_walkf;
-
-	pStatus[CHARA_STATUS_WALKB] = &PlayerInfo::status_walkb;
-	pEnter_status[CHARA_STATUS_WALKB] = &PlayerInfo::enter_status_walkb;
-	pExit_status[CHARA_STATUS_WALKB] = &PlayerInfo::exit_status_walkb;
-
-	pStatus[CHARA_STATUS_DASH] = &PlayerInfo::status_dash;
-	pEnter_status[CHARA_STATUS_DASH] = &PlayerInfo::enter_status_dash;
-	pExit_status[CHARA_STATUS_DASH] = &PlayerInfo::exit_status_dash;
-
-	pStatus[CHARA_STATUS_DASHB] = &PlayerInfo::status_dashb;
-	pEnter_status[CHARA_STATUS_DASHB] = &PlayerInfo::enter_status_dashb;
-	pExit_status[CHARA_STATUS_DASHB] = &PlayerInfo::exit_status_dashb;
-
-	pStatus[CHARA_STATUS_CROUCHD] = &PlayerInfo::status_crouchd;
-	pEnter_status[CHARA_STATUS_CROUCHD] = &PlayerInfo::enter_status_crouchd;
-	pExit_status[CHARA_STATUS_CROUCHD] = &PlayerInfo::exit_status_crouchd;
-
-	pStatus[CHARA_STATUS_CROUCH] = &PlayerInfo::status_crouch;
-	pEnter_status[CHARA_STATUS_CROUCH] = &PlayerInfo::enter_status_crouch;
-	pExit_status[CHARA_STATUS_CROUCH] = &PlayerInfo::exit_status_crouch;
-
-	pStatus[CHARA_STATUS_CROUCHU] = &PlayerInfo::status_crouchu;
-	pEnter_status[CHARA_STATUS_CROUCHU] = &PlayerInfo::enter_status_crouchu;
-	pExit_status[CHARA_STATUS_CROUCHU] = &PlayerInfo::exit_status_crouchu;
-
-	pStatus[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::status_jumpsquat;
-	pEnter_status[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::enter_status_jumpsquat;
-	pExit_status[CHARA_STATUS_JUMPSQUAT] = &PlayerInfo::exit_status_jumpsquat;
-
-	pStatus[CHARA_STATUS_JUMP] = &PlayerInfo::status_jump;
-	pEnter_status[CHARA_STATUS_JUMP] = &PlayerInfo::enter_status_jump;
-	pExit_status[CHARA_STATUS_JUMP] = &PlayerInfo::exit_status_jump;
-
-	pStatus[CHARA_STATUS_ATTACK] = &PlayerInfo::status_attack;
-	pEnter_status[CHARA_STATUS_ATTACK] = &PlayerInfo::enter_status_attack;
-	pExit_status[CHARA_STATUS_ATTACK] = &PlayerInfo::exit_status_attack;
-
-	pStatus[CHARA_STATUS_HITSTUN] = &PlayerInfo::status_hitstun;
-	pEnter_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::enter_status_hitstun;
-	pExit_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::exit_status_hitstun;
-
-	pStatus[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::status_blockstun;
-	pEnter_status[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::enter_status_blockstun;
-	pExit_status[CHARA_STATUS_BLOCKSTUN] = &PlayerInfo::exit_status_blockstun;
-}
 
 void PlayerInfo::status_wait() {
 	if (common_ground_status_act()) {

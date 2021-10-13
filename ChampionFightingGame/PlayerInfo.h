@@ -20,54 +20,88 @@ public:
 	f32 facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
-	Buttons button_info[BUTTON_MAX];
+	Animation* anim_kind;
+	Animation animation_table[256];
+	int frame;
+	u32 hold_ms;
+	u32 last_frame_ms;
+	bool is_anim_end{ false };
 	int prev_stick_dir;
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_bool[CHARA_BOOL_MAX];
+	StatsTable stats;
+	Hitbox hitboxes[10];
+	Grabbox grabboxes[10];
+	Hurtbox hurtboxes[10];
+	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
 	SDL_Texture* current_texture;
-	int frame;
-	bool is_anim_end{ false };
-	Animation* anim_kind;
-	Animation animation_table[256];
 	SDL_Rect frame_rect;
-	StatsTable stats;
-	u32 hold_ms;
-	u32 last_frame_ms;
-	Hitbox hitboxes[10];
-	Hurtbox hurtboxes[10];
-	Grabbox grabboxes[10];
 
 	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pExit_status[CHARA_STATUS_MAX])();
 
-	//constructors
+	//Constructors
+
 	PlayerInfo();
 	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
-	
-	void startAnimation(Animation* animation);
-	void change_anim(string animation_name, int frame_rate = 60, int entry_frame = 0);
+
+	//Setup
+
+	void superInit(SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
-	void stepAnimation();
-	void superInit(SDL_Renderer* renderer);
-	bool canStep();
 	void loadDefaultButtonMap();
+	void loadStatusFunctions();
+
+	//Inputs
+
+	void processInput();
 	bool check_button_on(u32 button);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
 	i32 get_stick_dir();
 	i32 get_flick_dir();
-	bool is_actionable();
-	bool change_status(u32 new_status_kind, bool call_end_status = true);
-	bool common_ground_status_act();
-	void processInput();
-	void playoutStatus();
-	void loadStatusFunctions();
 
-	//great wall of status funcs
+	/*
+		For classes with multiple instances in the PlayerInfo table, it makes sense to be able to call their methods from the PlayerInfo class instead
+		of needing to manually iterate through all of them. It's technically bad practice to do these for ALL of these methods but it's more streamlined
+		than, for example, having a "clear_hitbox_all" macro that clears the hitboxes from the PlayerInfo, and having a "clear_hitbox" that can only
+		be called from the Hitbox class
+	*/
+
+	//Hitbox
+	
+	void clear_hitbox(int id);
+	void clear_hitbox_all();
+	
+	//Grabbox
+	
+	void clear_grabbox(int id);
+	void clear_grabbox_all();
+	
+	//Hurtbox
+	
+	void clear_hurtbox(int id);
+	void clear_hurtbox_all();
+
+	//Animation
+	
+	bool is_actionable();
+	void change_anim(string animation_name, int frame_rate = 60, int entry_frame = 0);
+	void startAnimation(Animation* animation);
+	bool canStep();
+	void stepAnimation();
+
+	//Status
+
+	bool change_status(u32 new_status_kind, bool call_end_status = true);
+	void playoutStatus();
+	bool common_ground_status_act();
+
+	//don't worry, it'll get longer :)
 	void status_wait();
 	void enter_status_wait();
 	void exit_status_wait();

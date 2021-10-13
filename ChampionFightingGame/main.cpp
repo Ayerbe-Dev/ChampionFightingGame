@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "Game.h"
 #include "TestFighter.h"
+#include "Animation.h"
 #undef main
 using namespace std;
 bool running = true;
@@ -15,6 +16,8 @@ int error_render;
 
 Uint32 tick;
 Uint32 tok;
+
+SDL_Texture* pBG;
 
 int main() {
 	//init SDL
@@ -27,6 +30,9 @@ int main() {
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
+	//Background image
+	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
+
 	//init players
 	PlayerInfo player_info[2];
 //	Hitbox p1_hitboxes[10];
@@ -34,8 +40,9 @@ int main() {
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
-	PlayerInfo p1{ 0, "roy", renderer};
-	PlayerInfo p2{ 1, "eric", renderer};
+	//why doesnt the above work
+	PlayerInfo p1{ 0, "roy", renderer}; //bro just use the characters that are already there lmao
+	PlayerInfo p2{ 1, "eric", renderer}; //like you can just make the child classes for roy and eric
 
 	player_info[0] = p1;
 	player_info[1] = p2;
@@ -75,6 +82,7 @@ int main() {
 		tick = SDL_GetTicks();
 
 		SDL_RenderClear(renderer);
+		SDL_RenderCopy(renderer, pBG, nullptr, nullptr);
 		for (int i = 0; i < 2; i++) {
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
 			if (player_info[i].situation_kind == CHARA_SITUATION_GROUND && player_info[i].is_actionable()) {
@@ -104,17 +112,6 @@ int main() {
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
-/*			for (int o = 0; o < 10; o++) {
-				if (player_info[i].hitboxes[o].id != -1) {
-					SDL_Rect render_pos;
-					render_pos.x = player_info[i].hitboxes[o].x0;
-					render_pos.y = player_info[i].hitboxes[o].y0;
-					render_pos.w = player_info[i].hitboxes[o].x1;
-					render_pos.h = player_info[i].hitboxes[o].y1;
-
-					SDL_RenderDrawRect(renderer, &render_pos);
-				}
-			}*/
 		}
 		SDL_RenderPresent(renderer); 
 	}

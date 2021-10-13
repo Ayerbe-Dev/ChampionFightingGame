@@ -13,8 +13,14 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 }
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
+	if (id == 0) {
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 320);
+	}
+	else if (id == 1) {
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 320);
+	}
 	load_anim_list(renderer);
-	startAnimation("wait", 30);
+	change_anim("wait", 30);
 	loadDefaultButtonMap();
 	loadStatusFunctions();
 	load_params();
@@ -97,11 +103,11 @@ void PlayerInfo::load_params() {
 	string has_airdash;
 
 	stats_table >> walk_f_speed >> walk_b_speed >> dash_f_accel_frame >> dash_f_speed >> dash_f_maintain_speed_frame >> dash_b_accel_frame
-		>> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> dash_f_cancel_frame >> dash_b_cancel_frame >> jump_y_init_speed 
-		>> jump_y_init_speed_s >> jump_x_speed >> gravity >> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag 
+		>> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> dash_f_cancel_frame >> dash_b_cancel_frame >> jump_y_init_speed
+		>> jump_y_init_speed_s >> jump_x_speed >> gravity >> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag
 		>> hp_landing_lag >> lk_landing_lag >> mk_landing_lag >> hk_landing_lag >> health >> has_airdash;
 
-	stats.walk_f_speed = ymlChopFloat (walk_f_speed);
+	stats.walk_f_speed = ymlChopFloat(walk_f_speed);
 	stats.walk_b_speed = ymlChopFloat(walk_b_speed);
 	stats.dash_f_accel_frame = ymlChopInt(dash_f_accel_frame);
 	stats.dash_f_speed = ymlChopFloat(dash_f_speed);
@@ -139,7 +145,7 @@ bool PlayerInfo::is_actionable() {
 	}
 }
 
-void PlayerInfo::startAnimation(string animation_name, int frame_rate , int entry_frame) {
+void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	int anim_to_use = -1;
 	for (int i = 0; i < 60; i++) {
 		if (animation_table[i].name == animation_name) {
@@ -222,7 +228,7 @@ bool PlayerInfo::check_button_release(u32 button) {
 	return button_info[button].changed && !button_info[button].button_on;
 }
 
-i32 PlayerInfo::get_stick_dir() { //Use this instead of check_button_on with left and right, it factors in the player's facing direction
+i32 PlayerInfo::get_stick_dir() {
 	if (check_button_on(BUTTON_UP) && !check_button_on(BUTTON_DOWN)) {
 		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
 			if (check_button_on(BUTTON_RIGHT) == facing_right) {
@@ -264,7 +270,7 @@ i32 PlayerInfo::get_stick_dir() { //Use this instead of check_button_on with lef
 	}
 }
 
-i32 PlayerInfo::get_flick_dir() { //get_stick_dir, but only for stick inputs made on that frame
+i32 PlayerInfo::get_flick_dir() { 
 	int stick_dir = get_stick_dir();
 	if (stick_dir == prev_stick_dir) {
 		return 0;
@@ -275,11 +281,9 @@ i32 PlayerInfo::get_flick_dir() { //get_stick_dir, but only for stick inputs mad
 }
 
 bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
-	//Call the exit status function for whatever we're leaving, change the value, then call the entry status to prepare any relevant info
-	//This function will return whether or not a status was successfully changed, typically from the common_status_act functions.
 	if (new_status_kind != status_kind) {
 		if (call_end_status) {
-			(this->*pExit_status[status_kind])(); //wtf is this syntax
+			(this->*pExit_status[status_kind])(); //hey it's fine because now we don't have to think about it
 		}
 		status_kind = new_status_kind;
 		(this->*pEnter_status[status_kind])();
@@ -295,8 +299,6 @@ void PlayerInfo::playoutStatus() {
 }
 
 bool PlayerInfo::common_ground_status_act() { 
-	//Handles all grounded options where the player is fully actionable
-	//This function will return whether or not any status was successfully changed. If it was, the status script that called it will return.
 	if (get_stick_dir() == 6) {
 		if (chara_int[CHARA_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6) {
 			return change_status(CHARA_STATUS_DASH);
@@ -365,11 +367,11 @@ void PlayerInfo::processInput() {
 
 /*
 	 ..=====.. |==|
-	||     || |= |
- _  ||     || |^*| _
-|=| o=,===,=o |__||=|
-|_|  _______)~`)  |_|
-	[=======]  ()
+	|| sans || |= |
+ _  ||      || |^*| _
+|=| o==,===,=o |__||=|
+|_|  ________)~`)  |_|
+	[========]  ()
 */
 
 void PlayerInfo::loadStatusFunctions() {
@@ -433,7 +435,7 @@ void PlayerInfo::status_wait() {
 }
 
 void PlayerInfo::enter_status_wait() {
-	startAnimation("wait", 30, 0);
+	change_anim("wait", 30, 0);
 
 	situation_kind = CHARA_SITUATION_GROUND;
 }
@@ -454,7 +456,7 @@ void PlayerInfo::status_walkf() {
 }
 
 void PlayerInfo::enter_status_walkf() {
-	startAnimation("walk_f", 30, 0);
+	change_anim("walk_f", 30, 0);
 }
 
 void PlayerInfo::exit_status_walkf() {
@@ -473,7 +475,7 @@ void PlayerInfo::status_walkb() {
 }
 
 void PlayerInfo::enter_status_walkb() {
-	startAnimation("walk_b", 30);
+	change_anim("walk_b", 30);
 }
 
 void PlayerInfo::exit_status_walkb() {
@@ -498,8 +500,8 @@ void PlayerInfo::status_dash() {
 		pos.x += stats.walk_f_speed * facing_dir;
 	}
 
-	if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
-		if (frame >= max_frame && frame < max_frame + 3) {
+	if (frame >= stats.dash_f_cancel_frame) {
+		if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
 			if (get_flick_dir() == 4) {
 				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
 					chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
@@ -508,11 +510,14 @@ void PlayerInfo::status_dash() {
 				return;
 			}
 		}
+		else if (stats.dash_cancel_kind == DASH_CANCEL_KIND_FOLLOWUP) {
+
+		}
 	}
 }
 
 void PlayerInfo::enter_status_dash() {
-	startAnimation("dash_f", 30, 0);
+	change_anim("dash_f", 30, 0);
 }
 
 void PlayerInfo::exit_status_dash() {
@@ -537,8 +542,8 @@ void PlayerInfo::status_dashb() {
 		pos.x -= stats.walk_b_speed * facing_dir;
 	}
 
-	if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
-		if (frame >= max_frame && frame < max_frame + 3) {
+	if (frame >= stats.dash_f_cancel_frame) {
+		if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
 			if (get_flick_dir() == 6) {
 				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
 					chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
@@ -548,10 +553,13 @@ void PlayerInfo::status_dashb() {
 			}
 		}
 	}
+	else if (stats.dash_cancel_kind == DASH_CANCEL_KIND_FOLLOWUP) {
+
+	}
 }
 
 void PlayerInfo::enter_status_dashb() {
-	startAnimation("dash_b", 30);
+	change_anim("dash_b", 30);
 }
 
 void PlayerInfo::exit_status_dashb() {
@@ -566,7 +574,7 @@ void PlayerInfo::status_crouchd() {
 }
 
 void PlayerInfo::enter_status_crouchd() {
-	startAnimation("crouch_d", 30);
+	change_anim("crouch_d", 30);
 }
 
 void PlayerInfo::exit_status_crouchd() {
@@ -593,7 +601,7 @@ void PlayerInfo::status_crouch() {
 }
 
 void PlayerInfo::enter_status_crouch() {
-	startAnimation("crouch", 30);
+	change_anim("crouch", 30);
 }
 
 void PlayerInfo::exit_status_crouch() {
@@ -610,7 +618,7 @@ void PlayerInfo::status_crouchu() {
 }
 
 void PlayerInfo::enter_status_crouchu() {
-	startAnimation("crouch_u", 30);
+	change_anim("crouch_u", 30);
 }
 
 void PlayerInfo::exit_status_crouchu() {
@@ -625,7 +633,7 @@ void PlayerInfo::status_jumpsquat() {
 }
 
 void PlayerInfo::enter_status_jumpsquat() {
-	startAnimation("jump_squat", 120);
+	change_anim("jump_squat", 120);
 }
 
 void PlayerInfo::exit_status_jumpsquat() {
@@ -655,17 +663,17 @@ void PlayerInfo::enter_status_jump() {
 	if (get_stick_dir() == 7
 		|| get_stick_dir() == 4
 		|| get_stick_dir() == 1) {
-		startAnimation("jump_b");
+		change_anim("jump_b");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
 	}
 	else if (get_stick_dir() == 9
 		|| get_stick_dir() == 6
 		|| get_stick_dir() == 3) {
-		startAnimation("jump_f");
+		change_anim("jump_f");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
 	}
 	else {
-		startAnimation("jump");
+		change_anim("jump");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 	}
 	if (chara_bool[CHARA_BOOL_SHORT_HOP]) {

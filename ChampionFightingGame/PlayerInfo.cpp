@@ -15,10 +15,10 @@ PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	// set position
 	if (id == 0) {
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 50);
 	}
 	else if (id == 1) {
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 50);
 	}
 	load_anim_list(renderer);
 	change_anim("wait", 30);

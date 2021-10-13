@@ -25,13 +25,6 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	loadStatusFunctions();
 	load_params();
 
-	// set position
-	if (id == 0) {
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
-	}
-	else if (id == 1){
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
-	}
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 }

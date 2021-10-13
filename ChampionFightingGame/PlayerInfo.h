@@ -7,7 +7,6 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "ParamTable.h"
-#include "Hitbox.h"
 
 class PlayerInfo{
 public:

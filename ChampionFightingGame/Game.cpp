@@ -58,13 +58,14 @@ void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	}
 }
 
-void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer, bool visualize_boxes) {
+void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* renderer, bool visualize_boxes) {
+	PlayerInfo* player_info[2] = { p1, p2 };
 	for (int i = 0; i < 2; i++) { //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = -1;
 		for (int i2 = 0; i2 < 10; i2++) {
-			if (player_info[i].hurtboxes[i2].id != -1) {
+			if (player_info[i]->hurtboxes[i2].id != -1) {
 				SDL_Rect hurtbox;
-				hurtbox = player_info[i].hurtboxes[i2].rect;
+				hurtbox = player_info[i]->hurtboxes[i2].rect;
 
 				if (visualize_boxes) {
 					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
@@ -73,11 +74,11 @@ void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer,
 					SDL_RenderFillRect(renderer, &hurtbox);
 				}
 				for (int i3 = 0; i3 < 10; i3++) {
-					if (player_info[!i].hitboxes[i3].id != -1) {
+					if (player_info[!i]->hitboxes[i3].id != -1) {
 						SDL_Rect hitbox;
-						hitbox = player_info[!i].hitboxes[i3].rect;
+						hitbox = player_info[!i]->hitboxes[i3].rect;
 						if (is_collide(hitbox, hurtbox)) {
-							hitbox_to_use = call_event_hit_collide((&player_info)[-i], (&player_info[i]), &(player_info[!i].hitboxes[i3]), &(player_info[i].hurtboxes[i2]));
+							hitbox_to_use = call_event_hit_collide(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
 						}
 						if (hitbox_to_use != -1) {
 							break;
@@ -90,9 +91,9 @@ void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer,
 			}
 		}
 		for (int i2 = 0; i2 < 10; i2++) {
-			if (player_info[i].hitboxes[i2].id != -1) {
+			if (player_info[i]->hitboxes[i2].id != -1) {
 				SDL_Rect render_pos;
-				render_pos = player_info[i].hitboxes[i2].rect;
+				render_pos = player_info[i]->hitboxes[i2].rect;
 
 				if (visualize_boxes) {
 					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -102,12 +103,11 @@ void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer,
 				}
 			}
 		}
-		(&player_info[i])->connected_hitbox = hitbox_to_use;
+		player_info[i]->connected_hitbox = hitbox_to_use;
 	}
 }
 
 int call_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hitbox, Hurtbox *hurtbox) {
-
 	//First, check if the hit and hurtboxes are even compatible
 
 	if (hitbox->situation_hit != SITUATION_HIT_ALL) {

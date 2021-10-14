@@ -8,6 +8,7 @@ PlayerInfo::PlayerInfo() { }
 PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 	// runs on creation of instance;	
 	this->id = id;
+	this->chara_kind = chara_kind;
 	resource_dir = ("resource/chara/" + chara_kind);
 	superInit(renderer);
 }

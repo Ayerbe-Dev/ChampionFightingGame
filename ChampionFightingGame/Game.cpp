@@ -196,28 +196,34 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 	else if (p1_hitbox->id != -1) { //P2 got hit
 		p1_hitbox->success_hit = true; //This hitbox may not connect again
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
-			//[Add extra meter for successfully parrying]
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
+			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->stats.meter_gain_on_parry;
 			p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
 			p2->change_status(CHARA_STATUS_PARRY);
 		}
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2->change_status(CHARA_STATUS_BLOCKSTUN);
 		}
 		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
 			//If the opponent didn't block but this flag is still false, that means the opponent armored through it
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage / 2;
 		}
 		else {
 			p2->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
+			p2->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
 			if (can_counterhit(p2, p1_hitbox)) {
+				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
 				p2->change_status(get_damage_status(p1_hitbox->counterhit_status));
 			}
 			else {
+				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage;
 				p2->change_status(get_damage_status(p1_hitbox->hit_status));
 			}
@@ -227,30 +233,36 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 	else if (p2_hitbox->id != -1) { //P1 got hit
 		p2_hitbox->success_hit = true; //This hitbox may not connect again
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
-			//[Add extra meter for successfully parrying]
+			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1->stats.meter_gain_on_parry;
 			p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
 			p1->change_status(CHARA_STATUS_PARRY);
 		}
 		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
+			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p1->change_status(CHARA_STATUS_BLOCKSTUN);
 		}
 		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
 			//If the opponent didn't block but this flag is still false, that means the opponent armored through it
+			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
 		else {
 			p1->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p2_hitbox->launch_init_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p2_hitbox->launch_gravity_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p2_hitbox->launch_max_fall_speed;
+			p1->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p2_hitbox->launch_speed_x;
 			if (can_counterhit(p1, p2_hitbox)) {
-				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
-				p2->change_status(get_damage_status(p1_hitbox->counterhit_status));
+				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
+				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
+				p1->change_status(get_damage_status(p2_hitbox->counterhit_status));
 			}
 			else {
-				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage;
-				p2->change_status(get_damage_status(p1_hitbox->hit_status));
+				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_hit;
+				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage;
+				p1->change_status(get_damage_status(p2_hitbox->hit_status));
 			}
 			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
 		}

@@ -103,11 +103,12 @@ void PlayerInfo::load_params() {
 	string hk_landing_lag;
 	string health;
 	string has_airdash;
+	string meter_gain_on_parry;
 
 	stats_table >> walk_f_speed >> walk_b_speed >> dash_f_accel_frame >> dash_f_speed >> dash_f_maintain_speed_frame >> dash_b_accel_frame
 		>> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> dash_f_cancel_frame >> dash_b_cancel_frame >> jump_y_init_speed
 		>> jump_y_init_speed_s >> jump_x_speed >> gravity >> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag
-		>> hp_landing_lag >> lk_landing_lag >> mk_landing_lag >> hk_landing_lag >> health >> has_airdash;
+		>> hp_landing_lag >> lk_landing_lag >> mk_landing_lag >> hk_landing_lag >> health >> has_airdash >> meter_gain_on_parry;
 
 	stats.walk_f_speed = ymlChopFloat(walk_f_speed);
 	stats.walk_b_speed = ymlChopFloat(walk_b_speed);
@@ -134,6 +135,7 @@ void PlayerInfo::load_params() {
 	stats.hk_landing_lag = ymlChopInt(hk_landing_lag);
 	stats.health = ymlChopInt(health);
 	stats.has_airdash = (bool)ymlChopInt(has_airdash);
+	stats.meter_gain_on_parry = ymlChopFloat(meter_gain_on_parry);
 
 	stats_table.close();
 }
@@ -233,9 +235,9 @@ void PlayerInfo::processInput() {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
 	}
 	if (check_button_trigger(BUTTON_LP)) {
-		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 75 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0);
-		hitboxes[1] = Hitbox(this, 1, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0);
-		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0);
+		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 75 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, 60, 120, 20, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
+		hitboxes[1] = Hitbox(this, 1, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, 60, 120, 20, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
+		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, 60, 120, 20, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
 	}
 	if (!check_button_on(BUTTON_LP)) {
 		clear_hitbox_all();

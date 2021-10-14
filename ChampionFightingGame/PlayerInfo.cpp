@@ -22,8 +22,8 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	}
 	load_anim_list(renderer);
 	loadDefaultButtonMap();
-	loadStatusFunctions();
 	load_params();
+	loadStatusFunctions();
 	change_status(CHARA_STATUS_WAIT, false); //no idea why but doing this on its own doesn't run the entry status for WAIT even after loading the status funcs
 	change_anim("wait", 30);
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE); //...hence why these are here
@@ -455,7 +455,7 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 	if (new_status_kind != status_kind) {
 		clear_hitbox_all();
 		clear_grabbox_all();
-		//clear_hurtbox_all(); this one we can worry about once every animation has a hurtbox
+		clear_hurtbox_all();
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -540,7 +540,10 @@ void PlayerInfo::status_walkf() {
 }
 
 void PlayerInfo::enter_status_walkf() {
-	change_anim("walk_f", 30, 0);
+	change_anim("walk_f", 30);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_walkf() {
@@ -560,6 +563,9 @@ void PlayerInfo::status_walkb() {
 
 void PlayerInfo::enter_status_walkb() {
 	change_anim("walk_b", 30);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_walkb() {
@@ -601,7 +607,10 @@ void PlayerInfo::status_dash() {
 }
 
 void PlayerInfo::enter_status_dash() {
-	change_anim("dash_f", 30, 0);
+	change_anim("dash_f", 30);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_dash() {
@@ -644,6 +653,9 @@ void PlayerInfo::status_dashb() {
 
 void PlayerInfo::enter_status_dashb() {
 	change_anim("dash_b", 30);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_dashb() {
@@ -658,7 +670,8 @@ void PlayerInfo::status_crouchd() {
 }
 
 void PlayerInfo::enter_status_crouchd() {
-	change_anim("crouch_d", 30);
+	change_anim("crouch_d");
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_crouchd() {
@@ -686,6 +699,7 @@ void PlayerInfo::status_crouch() {
 
 void PlayerInfo::enter_status_crouch() {
 	change_anim("crouch", 30);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_crouch() {
@@ -702,7 +716,10 @@ void PlayerInfo::status_crouchu() {
 }
 
 void PlayerInfo::enter_status_crouchu() {
-	change_anim("crouch_u", 30);
+	change_anim("crouch_u", 120);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::exit_status_crouchu() {
@@ -749,15 +766,19 @@ void PlayerInfo::enter_status_jump() {
 		|| get_stick_dir() == 1) {
 		change_anim("jump_b");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
+		new_hurtbox(0, GameCoordinate{ -35, 30 }, GameCoordinate{ 35, 45 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	}
 	else if (get_stick_dir() == 9
 		|| get_stick_dir() == 6
 		|| get_stick_dir() == 3) {
 		change_anim("jump_f");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
+		new_hurtbox(0, GameCoordinate{ -35, 30 }, GameCoordinate{ 35, 45 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	}
 	else {
 		change_anim("jump");
+		new_hurtbox(0, GameCoordinate{ -25, 10 }, GameCoordinate{ 20, 100 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(1, GameCoordinate{ -35, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 	}
 	if (chara_bool[CHARA_BOOL_SHORT_HOP]) {

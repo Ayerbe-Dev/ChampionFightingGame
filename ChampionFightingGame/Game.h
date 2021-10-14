@@ -3,6 +3,7 @@
 
 void set_status_functions(PlayerInfo* player_info);
 void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer);
+void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer, bool visualize_boxes);
 
 void status_wait(PlayerInfo* player_info);
 void enter_status_wait(PlayerInfo* player_info);

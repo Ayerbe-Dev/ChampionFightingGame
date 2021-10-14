@@ -14,27 +14,33 @@ class PlayerInfo{
 public:
 	i64 id;
 	string chara_kind;
+
 	GameCoordinate pos;
 	GameCoordinate prevpos;
 	bool facing_right{ true };
 	f32 facing_dir{ 1.0 };
+	
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
+	
 	Animation* anim_kind;
 	Animation animation_table[256];
 	int frame;
 	u32 hold_ms;
 	u32 last_frame_ms;
 	bool is_anim_end{ false };
+	
 	int prev_stick_dir;
+	
+	StatsTable stats;
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_bool[CHARA_BOOL_MAX];
-	StatsTable stats;
+	
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
-	SDL_Rect hurtbox_rect;
+	
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
 	SDL_Texture* current_texture;
@@ -76,11 +82,13 @@ public:
 
 	//Hitbox
 	
+	void update_hitbox_pos();
 	void clear_hitbox(int id);
 	void clear_hitbox_all();
 	
 	//Grabbox
 	
+	void update_grabbox_pos();
 	void clear_grabbox(int id);
 	void clear_grabbox_all();
 	

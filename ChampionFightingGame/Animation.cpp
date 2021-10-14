@@ -15,7 +15,7 @@ SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 		cout << "Error loading image: " << IMG_GetError() << endl;
 	}
 	return SDL_CreateTextureFromSurface(renderer, image_surface);
-	SDL_FreeSurface(image_surface); // haha no more memory leaks
+	SDL_FreeSurface(image_surface);
 }
 
 SDL_Rect getFrame(int frame, Animation* animation) {
@@ -30,5 +30,3 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
 	animation->SPRITESHEET = loadTexture((animation->path).c_str(), renderer);
 }
-
-//Animation ANIM_TABLE[60][2];

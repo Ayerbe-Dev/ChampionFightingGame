@@ -20,8 +20,6 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	else if (id == 1) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 50);
 	}
-	hurtboxes[0] = Hurtbox(this, 0, GameCoordinate{ 0,0 }, GameCoordinate{ 40, 50 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	hurtboxes[1] = Hurtbox(this, 1, GameCoordinate{ 0,0 }, GameCoordinate{ 40, 100 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	load_anim_list(renderer);
 	change_anim("wait", 30);
 	loadDefaultButtonMap();
@@ -156,15 +154,8 @@ void PlayerInfo::loadDefaultButtonMap() {
 }
 
 void PlayerInfo::set_hurtboxes() {
-	hurtbox_rect = hurtboxes[0].rect;
-	for (int i = 0; i < 10; i++) {
-		if (hurtboxes[i].id != -1) {
-			SDL_UnionRect(&hurtbox_rect, &hurtboxes[i].rect, &hurtbox_rect);
-		}
-		else {
-			break;
-		}
-	}
+	hurtboxes[0] = Hurtbox(this, 0, GameCoordinate{ 0,0 }, GameCoordinate{ 40, 50 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	hurtboxes[1] = Hurtbox(this, 1, GameCoordinate{ 0,0 }, GameCoordinate{ 40, 100 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::loadStatusFunctions() {
@@ -224,6 +215,8 @@ void PlayerInfo::loadStatusFunctions() {
 //Inputs
 
 void PlayerInfo::processInput() {
+	update_hitbox_pos();
+	update_grabbox_pos();
 	update_hurtbox_pos();
 	if (get_flick_dir() == 6) {
 		chara_int[CHARA_INT_DASH_F_WINDOW] = 8;
@@ -231,12 +224,12 @@ void PlayerInfo::processInput() {
 	if (get_flick_dir() == 4) {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
 	}
-	if (check_button_on(BUTTON_LP)) {
+	if (check_button_trigger(BUTTON_LP)) {
 		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 75 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
 		hitboxes[1] = Hitbox(this, 1, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
 		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 15, 10, 15, 10, ATTACK_HEIGHT_MID, 0, false, false, 0, 20);
 	}
-	else {
+	if (!check_button_on(BUTTON_LP)) {
 		clear_hitbox_all();
 	}
 	int stick_dir = get_stick_dir();
@@ -337,6 +330,14 @@ i32 PlayerInfo::get_flick_dir() {
 
 //Hitbox
 
+void PlayerInfo::update_hitbox_pos() {
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1) {
+			hitboxes[i].update_pos(this);
+		}
+	}
+}
+
 void PlayerInfo::clear_hitbox(int id) {
 	hitboxes[id].clear();
 }
@@ -348,6 +349,14 @@ void PlayerInfo::clear_hitbox_all() {
 }
 
 //Grabbox
+
+void PlayerInfo::update_grabbox_pos() {
+	for (int i = 0; i < 10; i++) {
+		if (grabboxes[i].id != -1) {
+			grabboxes[i].update_pos(this);
+		}
+	}
+}
 
 void PlayerInfo::clear_grabbox(int id) {
 	grabboxes[id].clear();
@@ -363,7 +372,9 @@ void PlayerInfo::clear_grabbox_all() {
 
 void PlayerInfo::update_hurtbox_pos() {
 	for (int i = 0; i < 10; i++) {
-		hurtboxes[i].update_pos(this);
+		if (hurtboxes[i].id != -1) {
+			hurtboxes[i].update_pos(this);
+		}
 	}
 }
 

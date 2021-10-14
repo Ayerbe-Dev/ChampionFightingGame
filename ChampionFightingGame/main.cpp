@@ -37,8 +37,6 @@ int main() {
 
 	//init players
 	PlayerInfo player_info[2];
-	Hitbox p1_hitboxes[10];
-	Hitbox p2_hitboxes[10];
 
 //	TestFighter p1{0};
 //	TestFighter p2{1};
@@ -114,34 +112,8 @@ int main() {
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
-			//testing
-			for (int o = 0; o < 10; o++) {
-				if (player_info[i].hitboxes[o].id != -1) {
-					SDL_Rect render_pos;
-					render_pos = player_info[i].hitboxes[o].rect;
-
-					if (visualize_boxes) {
-						SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-						SDL_RenderDrawRect(renderer, &render_pos);
-						SDL_SetRenderDrawColor(renderer, 255, 0, 0, 127);
-						SDL_RenderFillRect(renderer, &render_pos);
-					}
-				}
-			}
-			for (int o = 0; o < 10; o++) {
-				if (player_info[i].hurtboxes[o].id != -1) {
-					SDL_Rect render_pos;
-					render_pos = player_info[i].hurtboxes[o].rect;
-
-					if (visualize_boxes) {
-						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-						SDL_RenderDrawRect(renderer, &render_pos);
-						SDL_SetRenderDrawColor(renderer, 0, 0, 255, 127);
-						SDL_RenderFillRect(renderer, &render_pos);
-					}
-				}
-			}
 		}
+		check_attack_connections(player_info, renderer, visualize_boxes);
 		SDL_RenderPresent(renderer); 
 	}
 

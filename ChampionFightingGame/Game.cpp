@@ -10,10 +10,9 @@
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 
 void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
-	//Marks down the addresses of all of the player's status functions and puts them all on their info table. 
-
 	
-	 /*                _.-, 
+	 /*
+				   _.-, 
               _ .-'  / .._
            .-:'/ - - \:::::-.
          .::: '  e e  ' '-::::.
@@ -53,4 +52,54 @@ void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 	}
 }
 
+void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer, bool visualize_boxes) {
+	for (int i = 0; i < 2; i++) { //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (player_info[i].hurtboxes[i2].id != -1) {
+				SDL_Rect hurtbox;
+				hurtbox = player_info[i].hurtboxes[i2].rect;
 
+				if (visualize_boxes) {
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+					SDL_RenderDrawRect(renderer, &hurtbox);
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 127);
+					SDL_RenderFillRect(renderer, &hurtbox);
+				}
+				for (int i3 = 0; i3 < 10; i3++) {
+					if (player_info[!i].hitboxes[i3].id != -1) {
+						SDL_Rect hitbox;
+						hitbox = player_info[!i].hitboxes[i3].rect;
+						if (SDL_HasIntersection(&hurtbox, &hitbox)) {
+							cout << "Player " << !i << " successfully hit player " << i << "!" << endl;
+							(&player_info)[!i]->clear_hitbox_all();
+						}
+						else {
+							cout << "Player " << !i << " hitbox " << i3 << " did not connect with player " << i << " hurtbox " << i2 << "." << endl;
+							cout << "Hitbox X: " << hitbox.x << endl;
+							cout << "Hitbox Y: " << hitbox.y << endl;
+							cout << "Hitbox W: " << hitbox.w << endl;
+							cout << "Hitbox H: " << hitbox.h << endl;
+							cout << "Hurtbox X: " << hurtbox.x << endl;
+							cout << "Hurtbox Y: " << hurtbox.y << endl;
+							cout << "Hurtbox W: " << hurtbox.w << endl;
+							cout << "Hurtbox H: " << hurtbox.h << endl;
+						}
+					}
+				}
+			}
+		}
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (player_info[i].hitboxes[i2].id != -1) {
+				SDL_Rect render_pos;
+				render_pos = player_info[i].hitboxes[i2].rect;
+
+				if (visualize_boxes) {
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					SDL_RenderDrawRect(renderer, &render_pos);
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 127);
+					SDL_RenderFillRect(renderer, &render_pos);
+				}
+			}
+		}
+	}
+}

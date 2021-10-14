@@ -1,5 +1,6 @@
 using namespace std;
 #include <iostream>
+#include "SDL.h"
 #include <sstream>
 #pragma once
 typedef char i8;
@@ -25,6 +26,7 @@ int clamp(int min, int value, int max);
 int ymlChopInt(string line);
 float ymlChopFloat(string line);
 string ymlChopString(string line);
+bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 
 enum {
 	BUTTON_UP,

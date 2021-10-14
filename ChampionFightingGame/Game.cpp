@@ -69,20 +69,9 @@ void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer,
 					if (player_info[!i].hitboxes[i3].id != -1) {
 						SDL_Rect hitbox;
 						hitbox = player_info[!i].hitboxes[i3].rect;
-						if (SDL_HasIntersection(&hitbox, &hurtbox)) { //why the FUCK isn't this working
-							cout << "Player " << !i << " successfully hit player " << i << "!" << endl;
+						if (is_collide(hitbox, hurtbox)) {
 							(&player_info)[!i]->clear_hitbox_all();
-						}
-						else {
-							cout << "Player " << !i << " hitbox " << i3 << " did not connect with player " << i << " hurtbox " << i2 << "." << endl;
-							cout << "Hitbox X: " << hitbox.x << endl;
-							cout << "Hitbox Y: " << hitbox.y << endl;
-							cout << "Hitbox W: " << hitbox.w << endl;
-							cout << "Hitbox H: " << hitbox.h << endl;
-							cout << "Hurtbox X: " << hurtbox.x << endl;
-							cout << "Hurtbox Y: " << hurtbox.y << endl;
-							cout << "Hurtbox W: " << hurtbox.w << endl;
-							cout << "Hurtbox H: " << hurtbox.h << endl;
+							break;
 						}
 					}
 				}

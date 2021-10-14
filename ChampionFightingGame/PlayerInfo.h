@@ -153,4 +153,10 @@ public:
 	void status_blockstun();
 	void enter_status_blockstun();
 	void exit_status_blockstun();
+	void status_parry_start();
+	void enter_status_parry_start();
+	void exit_status_parry_start();
+	void status_parry();
+	void enter_status_parry();
+	void exit_status_parry();
 };

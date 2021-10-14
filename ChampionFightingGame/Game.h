@@ -4,7 +4,10 @@
 void set_status_functions(PlayerInfo* player_info);
 void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer);
 void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* renderer, bool visualize_boxes);
-int call_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hitbox, Hurtbox *hurtbox);
+int get_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hitbox, Hurtbox *hurtbox);
+void event_hit_collide(PlayerInfo *p1, PlayerInfo *p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox);
+bool can_counterhit(PlayerInfo* defender, Hitbox* hitbox);
+int get_damage_status(int hit_status);
 
 void status_wait(PlayerInfo* player_info);
 void enter_status_wait(PlayerInfo* player_info);
@@ -45,3 +48,9 @@ void exit_status_hitstun(PlayerInfo* player_info);
 void status_blockstun(PlayerInfo* player_info);
 void enter_status_blockstun(PlayerInfo* player_info);
 void exit_status_blockstun(PlayerInfo* player_info);
+void status_parry_start(PlayerInfo* player_info);
+void enter_status_parry_start(PlayerInfo* player_info);
+void exit_status_parry_start(PlayerInfo* player_info);
+void status_parry(PlayerInfo* player_info);
+void enter_status_parry(PlayerInfo* player_info);
+void exit_status_parry(PlayerInfo* player_info);

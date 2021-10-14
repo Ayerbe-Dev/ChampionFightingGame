@@ -190,25 +190,72 @@ int get_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hi
 	will never actually be used, its ID will always be 0.
 */
 void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
-	if (p1_hitbox->id != -1 && p2_hitbox->id != -1) { //Both players got hit
+	bool p1_hit = p1_hitbox->id != -1;
+	bool p2_hit = p2_hitbox->id != -1;
+	u32 p1_status_post_hit = p1->status_kind;
+	u32 p2_status_post_hit = p2->status_kind;
+	if (p1_hit && p2_hit) { //Both players got hit
+		if (p1->situation_kind != p2->situation_kind) {
+			if (p1->situation_kind == CHARA_SITUATION_GROUND) { 
+				/*
+					Grounded opponents will always win trades against aerial opponents. This is important for balancing because holy shit jumping is
+					gonna be busted without stuff like this
 
+					Oh also, no need to check OTG because there won't be any attacks you can use outside of CHARA_SITUATION_GROUND or 
+					CHARA_SITUATION_AIR
+				*/
+				p1_hit = false;
+			}
+			else {
+				p2_hit = false;
+			}
+		}
+		else if (p1_hitbox->attack_level == p2_hitbox->attack_level) {
+			if (p1_hitbox->clank_kind == CLANK_KIND_CONTINUE || p2_hitbox->clank_kind == CLANK_KIND_CONTINUE) {
+				if (p2_hitbox->clank_kind != CLANK_KIND_CONTINUE) {
+					p2->change_status(CHARA_STATUS_CLANK);
+					return;
+				}
+				else if (p1_hitbox->clank_kind != CLANK_KIND_CONTINUE) {
+					p1->change_status(CHARA_STATUS_CLANK);
+					return;
+				}
+				else { //If both people have trample, it's better to make them both clank than it is to make them both ignore having just been hit
+					p1->change_status(CHARA_STATUS_CLANK);
+					p2->change_status(CHARA_STATUS_CLANK);
+					return;
+				}
+			}
+			else if (p1_hitbox->clank_kind == CLANK_KIND_CLANK || p2_hitbox->clank_kind == CLANK_KIND_CLANK) {
+				p1->change_status(CHARA_STATUS_CLANK);
+				p2->change_status(CHARA_STATUS_CLANK);
+				return;
+			}
+			//if both players have CLANK_KIND_NORMAL as well as using the same attack level, they can just trade and both take damage
+		}
+		else if (p1_hitbox->attack_level > p2_hitbox->attack_level) {
+			p1_hit = false;
+		}
+		else {
+			p2_hit = false;
+		}
 	}
-	else if (p1_hitbox->id != -1) { //P2 got hit
+	if (p2_hit) {
 		p1_hitbox->success_hit = true; //This hitbox may not connect again
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->stats.meter_gain_on_parry;
 			p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
-			p2->change_status(CHARA_STATUS_PARRY);
+			p2_status_post_hit = CHARA_STATUS_PARRY;
 		}
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
-			p2->change_status(CHARA_STATUS_BLOCKSTUN);
+			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
 		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
-			//If the opponent didn't block but this flag is still false, that means the opponent armored through it
+			//If the opponent didn't block but the attack_connected flag is false, that means the opponent armored through it
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage / 2;
 		}
@@ -220,32 +267,32 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
-				p2->change_status(get_damage_status(p1_hitbox->counterhit_status));
+				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status);
 			}
 			else {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage;
-				p2->change_status(get_damage_status(p1_hitbox->hit_status));
+				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status);
 			}
 			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
 		}
 	}
-	else if (p2_hitbox->id != -1) { //P1 got hit
+
+	if (p1_hit) { //P1 got hit
 		p2_hitbox->success_hit = true; //This hitbox may not connect again
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1->stats.meter_gain_on_parry;
 			p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
-			p1->change_status(CHARA_STATUS_PARRY);
+			p1_status_post_hit = CHARA_STATUS_PARRY;
 		}
 		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
-			p1->change_status(CHARA_STATUS_BLOCKSTUN);
+			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
 		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
-			//If the opponent didn't block but this flag is still false, that means the opponent armored through it
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
@@ -257,19 +304,19 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
-				p1->change_status(get_damage_status(p2_hitbox->counterhit_status));
+				p1_status_post_hit = get_damage_status(p2_hitbox->counterhit_status);
 			}
 			else {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_hit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage;
-				p1->change_status(get_damage_status(p2_hitbox->hit_status));
+				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status);
 			}
 			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
 		}
 	}
-	else { //No one got hit
-		return;
-	}
+
+	p1->change_status(p1_status_post_hit);
+	p2->change_status(p2_status_post_hit);
 }
 
 bool can_counterhit(PlayerInfo* defender, Hitbox* hitbox) {

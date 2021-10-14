@@ -5,11 +5,19 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
+PlayerInfo::PlayerInfo(int id, string chara_kind, int chara_id, SDL_Renderer *renderer) {
 	// runs on creation of instance;	
 	this->id = id;
 	resource_dir = ("resource/chara/" + chara_kind);
 	superInit(renderer);
+	switch (chara_id) {
+		case (CHARA_KIND_ROY): {
+			Roy(this, id);
+		} break;
+		case (CHARA_KIND_ERIC): {
+			Eric(this, id);
+		} break;
+	}
 }
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
@@ -591,10 +599,10 @@ void PlayerInfo::status_dash() {
 	}
 
 	if (frame >= stats.dash_f_cancel_frame) {
-		if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
+		if (!chara_flag[CHARA_FLAG_DASH_CANCEL]) {
 			if (get_flick_dir() == 4) {
 				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
-					chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
+					chara_flag[CHARA_FLAG_DASH_CANCEL] = true;
 				}
 				change_status(CHARA_STATUS_DASHB, false);
 				return;
@@ -614,7 +622,7 @@ void PlayerInfo::enter_status_dash() {
 }
 
 void PlayerInfo::exit_status_dash() {
-	chara_bool[CHARA_BOOL_DASH_CANCEL] = false;
+	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
 }
 
 void PlayerInfo::status_dashb() {
@@ -636,10 +644,10 @@ void PlayerInfo::status_dashb() {
 	}
 
 	if (frame >= stats.dash_f_cancel_frame) {
-		if (!chara_bool[CHARA_BOOL_DASH_CANCEL]) {
+		if (!chara_flag[CHARA_FLAG_DASH_CANCEL]) {
 			if (get_flick_dir() == 6) {
 				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE) {
-					chara_bool[CHARA_BOOL_DASH_CANCEL] = true;
+					chara_flag[CHARA_FLAG_DASH_CANCEL] = true;
 				}
 				change_status(CHARA_STATUS_DASH, false);
 				return;
@@ -659,7 +667,7 @@ void PlayerInfo::enter_status_dashb() {
 }
 
 void PlayerInfo::exit_status_dashb() {
-	chara_bool[CHARA_BOOL_DASH_CANCEL] = false;
+	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
 }
 
 void PlayerInfo::status_crouchd() {
@@ -738,7 +746,7 @@ void PlayerInfo::enter_status_jumpsquat() {
 }
 
 void PlayerInfo::exit_status_jumpsquat() {
-	chara_bool[CHARA_BOOL_SHORT_HOP] = get_stick_dir() < 7;
+	chara_flag[CHARA_FLAG_SHORT_HOP] = get_stick_dir() < 7;
 	situation_kind = CHARA_SITUATION_AIR;
 	chara_float[CHARA_FLOAT_INIT_POS_JUMP_Y] = pos.y; //This will eventually be replaced by a proper ground collision check
 }
@@ -781,7 +789,7 @@ void PlayerInfo::enter_status_jump() {
 		new_hurtbox(1, GameCoordinate{ -35, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 	}
-	if (chara_bool[CHARA_BOOL_SHORT_HOP]) {
+	if (chara_flag[CHARA_FLAG_SHORT_HOP]) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed_s;
 	}
 	else {

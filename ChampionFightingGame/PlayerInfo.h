@@ -9,6 +9,10 @@
 #include "PlayerInfo.fwd.h"
 #include "Box.fwd.h"
 #include "Box.h"
+#include "Roy.fwd.h"
+#include "Roy.h"
+#include "Eric.fwd.h"
+#include "Eric.h"
 
 class PlayerInfo{
 public:
@@ -35,7 +39,7 @@ public:
 	StatsTable stats;
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
-	bool chara_bool[CHARA_BOOL_MAX];
+	bool chara_flag[CHARA_FLAG_MAX];
 	
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
@@ -53,7 +57,7 @@ public:
 	//Constructors
 
 	PlayerInfo();
-	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
+	PlayerInfo(int id, string chara_kind, int chara_id, SDL_Renderer* renderer);
 
 	//Setup
 

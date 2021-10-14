@@ -61,7 +61,6 @@ public:
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void loadDefaultButtonMap();
-	void set_hurtboxes();
 	void loadStatusFunctions();
 
 	//Inputs
@@ -94,6 +93,7 @@ public:
 	
 	//Hurtbox
 	
+	void new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind);
 	void update_hurtbox_pos();
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();

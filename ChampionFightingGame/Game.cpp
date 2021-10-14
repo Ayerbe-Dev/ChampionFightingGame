@@ -69,7 +69,7 @@ void check_attack_connections(PlayerInfo player_info[2], SDL_Renderer* renderer,
 					if (player_info[!i].hitboxes[i3].id != -1) {
 						SDL_Rect hitbox;
 						hitbox = player_info[!i].hitboxes[i3].rect;
-						if (SDL_HasIntersection(&hurtbox, &hitbox)) {
+						if (SDL_HasIntersection(&hitbox, &hurtbox)) { //why the FUCK isn't this working
 							cout << "Player " << !i << " successfully hit player " << i << "!" << endl;
 							(&player_info)[!i]->clear_hitbox_all();
 						}

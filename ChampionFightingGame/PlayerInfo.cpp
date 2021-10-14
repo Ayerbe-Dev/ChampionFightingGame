@@ -21,11 +21,15 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 50);
 	}
 	load_anim_list(renderer);
-	change_anim("wait", 30);
 	loadDefaultButtonMap();
 	loadStatusFunctions();
 	load_params();
-	set_hurtboxes();
+	change_status(CHARA_STATUS_WAIT, false); //no idea why but doing this on its own doesn't run the entry status for WAIT even after loading the status funcs
+	change_anim("wait", 30);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE); //...hence why these are here
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+
 
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
@@ -151,11 +155,6 @@ void PlayerInfo::loadDefaultButtonMap() {
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
 	}
-}
-
-void PlayerInfo::set_hurtboxes() {
-	hurtboxes[0] = Hurtbox(this, 0, GameCoordinate{ 0,0 }, GameCoordinate{ 40, 50 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	hurtboxes[1] = Hurtbox(this, 1, GameCoordinate{ 0,0 }, GameCoordinate{ 40, 100 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 void PlayerInfo::loadStatusFunctions() {
@@ -370,6 +369,12 @@ void PlayerInfo::clear_grabbox_all() {
 
 //Hurtbox
 
+void PlayerInfo::new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind) {
+	if (id < 10) {
+		hurtboxes[id] = Hurtbox(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+	}
+}
+
 void PlayerInfo::update_hurtbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (hurtboxes[i].id != -1) {
@@ -448,6 +453,9 @@ void PlayerInfo::stepAnimation() {
 
 bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 	if (new_status_kind != status_kind) {
+		clear_hitbox_all();
+		clear_grabbox_all();
+		//clear_hurtbox_all(); this one we can worry about once every animation has a hurtbox
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -509,6 +517,9 @@ void PlayerInfo::status_wait() {
 
 void PlayerInfo::enter_status_wait() {
 	change_anim("wait", 30, 0);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, -5 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 
 	situation_kind = CHARA_SITUATION_GROUND;
 }

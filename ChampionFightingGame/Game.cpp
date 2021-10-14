@@ -72,7 +72,7 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 						SDL_Rect hitbox;
 						hitbox = player_info[!i]->hitboxes[i3].rect;
 						if (is_collide(hitbox, hurtbox)) {
-							hitbox_to_use = get_event_hit_collide(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+							hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
@@ -112,11 +112,14 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 		}
 		player_info[i]->connected_hitbox = hitbox_to_use;
 	}
-	event_hit_collide(player_info[0], player_info[1], &(player_info[0]->hitboxes[player_info[0]->connected_hitbox]), &(player_info[1]->hitboxes[player_info[1]->connected_hitbox]));
+	event_hit_collide_player(player_info[0], player_info[1], &(player_info[1]->hitboxes[player_info[0]->connected_hitbox]), &(player_info[0]->hitboxes[player_info[1]->connected_hitbox]));
 }
 
-int get_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hitbox, Hurtbox *hurtbox) {
+int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hitbox, Hurtbox *hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
+	if (hitbox->success_hit) {
+		return HITBOX_COUNT_MAX;
+	}
 
 	if (hitbox->situation_hit != SITUATION_HIT_ALL) {
 		if (hitbox->situation_hit != defender->situation_kind) {
@@ -173,6 +176,7 @@ int get_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hi
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
 		defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->blockstun;
+		defender->chara_int[CHARA_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = true;
 		return hitbox->id;
 	}
@@ -187,9 +191,9 @@ int get_event_hit_collide(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hi
 
 /*
 	If this function is triggered and a player didn't hit the opponent, the hitbox arg for that player should be HITBOX_COUNT_MAX. Since this hitbox
-	will never actually be used, its ID will always be 0.
+	will never actually be used, its ID will always be -1.
 */
-void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
+void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
 	bool p1_hit = p1_hitbox->id != -1;
 	bool p2_hit = p2_hitbox->id != -1;
 	u32 p1_status_post_hit = p1->status_kind;
@@ -241,7 +245,7 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 		}
 	}
 	if (p2_hit) {
-		p1_hitbox->success_hit = true; //This hitbox may not connect again
+		p1->update_hitbox_connect();
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->stats.meter_gain_on_parry;
@@ -267,11 +271,13 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
+				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status);
 			}
 			else {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage;
+				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status);
 			}
 			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
@@ -279,7 +285,7 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 	}
 
 	if (p1_hit) { //P1 got hit
-		p2_hitbox->success_hit = true; //This hitbox may not connect again
+		p2->update_hitbox_connect();
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1->stats.meter_gain_on_parry;
@@ -304,11 +310,13 @@ void event_hit_collide(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
+				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p1_status_post_hit = get_damage_status(p2_hitbox->counterhit_status);
 			}
 			else {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_hit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage;
+				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = p2_hitbox->attack_level;
 				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status);
 			}
 			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;

@@ -8,7 +8,7 @@ Hitbox::Hitbox() {
 
 Hitbox::Hitbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind, int situation_hit, int attack_level, 
 	int clank_kind, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit, 
-	f32 meter_gain_on_block, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, int meter_gain, bool unblockable, bool success_hit,
+	f32 meter_gain_on_block, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, bool unblockable, bool success_hit,
 	int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, f32 launch_gravity_y, 
 	f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos) {
 	anchor.y *= -1.0;
@@ -48,7 +48,6 @@ Hitbox::Hitbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoord
 	this->blocklag = blocklag;
 	this->blockstun = blockstun;
 	this->attack_height = attack_height;
-	this->meter_gain = meter_gain;
 	this->unblockable = unblockable;
 	this->success_hit = success_hit;
 	this->juggle_set = juggle_set;
@@ -61,6 +60,10 @@ Hitbox::Hitbox(PlayerInfo* player_info, int id, GameCoordinate anchor, GameCoord
 	this->launch_max_fall_speed = launch_max_fall_speed;
 	this->launch_speed_x = launch_speed_x;
 	this->use_player_pos = use_player_pos;
+}
+
+void Hitbox::update_connect() {
+	this->success_hit = true;
 }
 
 void Hitbox::update_pos(PlayerInfo * player_info) {

@@ -83,6 +83,7 @@ public:
 	//Hitbox
 	
 	void update_hitbox_pos();
+	void update_hitbox_connect();
 	void clear_hitbox(int id);
 	void clear_hitbox_all();
 	

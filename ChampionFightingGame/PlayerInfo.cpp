@@ -235,9 +235,9 @@ void PlayerInfo::processInput() {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
 	}
 	if (check_button_trigger(BUTTON_LP)) {
-		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 75 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, 60, 120, 20, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
-		hitboxes[1] = Hitbox(this, 1, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, 60, 120, 20, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
-		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 10, 15, 10, 60, 120, 20, ATTACK_HEIGHT_MID, 0, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
+		hitboxes[0] = Hitbox(this, 0, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 75 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 30, 10, 15, 20, 15, 20, ATTACK_HEIGHT_HIGH, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
+		hitboxes[1] = Hitbox(this, 1, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 50 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 30, 10, 15, 20, 15, 20, ATTACK_HEIGHT_HIGH, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
+		hitboxes[2] = Hitbox(this, 2, GameCoordinate{ 50,0 }, GameCoordinate{ 100, 25 }, HITBOX_KIND_NORMAL, SITUATION_HIT_ALL, ATTACK_LEVEL_LIGHT, CLANK_KIND_NORMAL, 20, 5, 1.2, 15, 30, 10, 15, 20, 15, 20, ATTACK_HEIGHT_HIGH, false, false, 0, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0);
 	}
 	if (!check_button_on(BUTTON_LP)) {
 		clear_hitbox_all();
@@ -339,6 +339,14 @@ i32 PlayerInfo::get_flick_dir() {
 }
 
 //Hitbox
+
+void PlayerInfo::update_hitbox_connect() {
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1) {
+			hitboxes[i].update_connect();
+		}
+	}
+}
 
 void PlayerInfo::update_hitbox_pos() {
 	for (int i = 0; i < 10; i++) {
@@ -477,6 +485,7 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status) {
 		clear_hitbox_all();
 		clear_grabbox_all();
 		clear_hurtbox_all();
+		chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -830,15 +839,38 @@ void PlayerInfo::exit_status_attack() {
 }
 
 void PlayerInfo::status_hitstun() {
-
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
+		if (get_stick_dir() < 4) {
+			change_status(CHARA_STATUS_CROUCHD);
+		}
+		else {
+			change_status(CHARA_STATUS_WAIT);
+		}
+	}
 }
 
 void PlayerInfo::enter_status_hitstun() {
-	if (get_stick_dir() == 1) {
-		//[Enter crouching hitstun anim]
+	if (get_stick_dir() < 4) {
+		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
+			change_anim("crouch_hitstun_l", 30);
+		}
+		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
+			change_anim("crouch_hitstun_m", 30);
+		}
+		else {
+			change_anim("crouch_hitstun_h", 30);
+		}
 	}
 	else {
-		//[Enter standing hitstun anim]
+		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
+			change_anim("stand_hitstun_l", 30);
+		}
+		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
+			change_anim("stand_hitstun_m", 30);
+		}
+		else {
+			change_anim("stand_hitstun_h", 30);
+		}
 	}
 }
 
@@ -847,15 +879,25 @@ void PlayerInfo::exit_status_hitstun() {
 }
 
 void PlayerInfo::status_blockstun() {
-
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
+		if (get_stick_dir() < 4) {
+			change_status(CHARA_STATUS_CROUCHD);
+		}
+		else {
+			change_status(CHARA_STATUS_WAIT);
+		}
+	}
 }
 
 void PlayerInfo::enter_status_blockstun() {
-	if (get_stick_dir() == 1) {
-		//[Enter crouching blockstun anim]
+	if (get_stick_dir() < 4) {
+		change_anim("crouch_block", 30);
+	}
+	else if (chara_int[CHARA_INT_BLOCKSTUN_HEIGHT] == ATTACK_HEIGHT_HIGH) {
+		change_anim("high_block", 30);
 	}
 	else {
-		//[Enter standing blockstun anim]
+		change_anim("stand_block", 30);
 	}
 }
 

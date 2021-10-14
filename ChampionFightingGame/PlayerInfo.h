@@ -19,7 +19,7 @@ public:
 	GameCoordinate prevpos;
 	bool facing_right{ true };
 	f32 facing_dir{ 1.0 };
-	
+
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
 	
@@ -35,11 +35,12 @@ public:
 	StatsTable stats;
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
-	bool chara_bool[CHARA_BOOL_MAX];
+	bool chara_flag[CHARA_FLAG_MAX];
 	
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
+	i32 connected_hitbox;
 	
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;

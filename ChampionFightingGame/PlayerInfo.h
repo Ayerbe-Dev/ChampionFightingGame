@@ -26,6 +26,8 @@ public:
 	Animation* anim_kind;
 	Animation animation_table[256];
 	int frame;
+	int last_excute_frame;
+	int excute_count;
 	u32 hold_ms;
 	u32 last_frame_ms;
 	bool is_anim_end{ false };
@@ -64,6 +66,11 @@ public:
 	void loadDefaultButtonMap();
 	void loadStatusFunctions();
 
+	//Definitely not ACMD
+
+	bool is_excute_frame(int excute_count, int frame);
+	bool is_excute_wait(int excute_count, int frames);
+
 	//Inputs
 
 	void processInput();
@@ -89,6 +96,11 @@ public:
 	
 	//Grabbox
 	
+	void new_hitbox(int id, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind, int situation_hit, int attack_level,
+		int clank_kind, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit,
+		f32 meter_gain_on_block, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, bool unblockable, bool success_hit,
+		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, f32 launch_gravity_y,
+		f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
 	void update_grabbox_pos();
 	void clear_grabbox(int id);
 	void clear_grabbox_all();
@@ -110,7 +122,7 @@ public:
 
 	//Status
 
-	bool change_status(u32 new_status_kind, bool call_end_status = true);
+	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	void playoutStatus();
 	bool common_ground_status_act();
 

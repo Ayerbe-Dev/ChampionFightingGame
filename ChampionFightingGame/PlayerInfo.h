@@ -89,6 +89,11 @@ public:
 
 	//Hitbox
 	
+	void new_hitbox(int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind,
+		f32 meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, int hitstun, int blocklag,
+		int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind, bool success_hit,
+		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, f32 launch_gravity_y,
+		f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
 	void update_hitbox_pos();
 	void update_hitbox_connect();
 	void clear_hitbox(int id);
@@ -96,11 +101,6 @@ public:
 	
 	//Grabbox
 	
-	void new_hitbox(int id, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind, int situation_hit, int attack_level,
-		int clank_kind, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit,
-		f32 meter_gain_on_block, int hitlag, int hitstun, int blocklag, int blockstun, int attack_height, bool unblockable, bool success_hit,
-		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, f32 launch_gravity_y,
-		f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
 	void update_grabbox_pos();
 	void clear_grabbox(int id);
 	void clear_grabbox_all();
@@ -125,6 +125,8 @@ public:
 	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	void playoutStatus();
 	bool common_ground_status_act();
+	bool common_air_status_act();
+	bool common_air_status_general();
 
 	//don't worry, it'll get longer :)
 	void status_wait();
@@ -163,6 +165,9 @@ public:
 	void status_hitstun();
 	void enter_status_hitstun();
 	void exit_status_hitstun();
+	void status_hitstun_air();
+	void enter_status_hitstun_air();
+	void exit_status_hitstun_air();
 	void status_blockstun();
 	void enter_status_blockstun();
 	void exit_status_blockstun();
@@ -172,4 +177,28 @@ public:
 	void status_parry();
 	void enter_status_parry();
 	void exit_status_parry();
+	void status_crumple();
+	void enter_status_crumple();
+	void exit_status_crumple();
+	void status_launch_start();
+	void enter_status_launch_start();
+	void exit_status_launch_start();
+	void status_launch();
+	void enter_status_launch();
+	void exit_status_launch();
+	void status_clank();
+	void enter_status_clank();
+	void exit_status_clank();
+	void status_throw_tech();
+	void enter_status_throw_tech();
+	void exit_status_throw_tech();
+	void status_landing();
+	void enter_status_landing();
+	void exit_status_landing();
+	void status_landing_attack();
+	void enter_status_landing_attack();
+	void exit_status_landing_attack();
+	void status_landing_hitstun();
+	void enter_status_landing_hitstun();
+	void exit_status_landing_hitstun();
 };

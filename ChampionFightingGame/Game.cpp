@@ -91,6 +91,7 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 	PlayerInfo* player_info[2] = { p1, p2 };
 	for (int i = 0; i < 2; i++) { //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = HITBOX_COUNT_MAX;
+		player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (player_info[i]->hurtboxes[i2].id != -1) {
 				SDL_Rect hurtbox;
@@ -100,11 +101,13 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 					if (player_info[!i]->hitboxes[i3].id != -1 && !player_info[!i]->hitboxes[i3].success_hit) {
 						SDL_Rect hitbox;
 						hitbox = player_info[!i]->hitboxes[i3].rect;
-						if (is_collide(hitbox, hurtbox)) {
-							hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+						if (player_info[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
+							if (is_collide(hitbox, hurtbox)) {
+								hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+							}
 						}
-						else if (player_info[!i]->hitboxes[i3].hitbox_kind == HITBOX_KIND_BLOCK) {
-							player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
+						else {
+							player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
@@ -135,7 +138,11 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 				render_pos = player_info[i]->hitboxes[i2].rect;
 
 				if (visualize_boxes) {
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					Vec3f hitbox_color = { 255, 0, 0 };
+					if (player_info[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK) {
+						hitbox_color.y = 165;
+					}
+					SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
 					SDL_RenderDrawRect(renderer, &render_pos);
 					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 127);
 					SDL_RenderFillRect(renderer, &render_pos);
@@ -190,10 +197,6 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 		if (hitbox->situation_hit != defender->situation_kind) {
 			return HITBOX_COUNT_MAX;
 		}
-	}
-	if (hitbox->hitbox_kind == HITBOX_KIND_BLOCK) {
-		defender->chara_flag[CHARA_FLAG_PROX_GUARD] = true;
-		return HITBOX_COUNT_MAX;
 	}
 	if (hurtbox->intangible_kind == hitbox->attack_height
 		|| hurtbox->intangible_kind == INTANGIBLE_KIND_NORMAL

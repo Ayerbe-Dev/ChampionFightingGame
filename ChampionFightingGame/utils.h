@@ -295,3 +295,9 @@ struct Offset {
 	int offset_x;
 	int offset_y;
 };
+
+struct Vec3f {
+	int x;
+	int y;
+	int z;
+};

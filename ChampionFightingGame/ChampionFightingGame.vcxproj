@@ -171,6 +171,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Eric.cpp" />
     <ClCompile Include="GameCoordinate.cpp" />
     <ClCompile Include="Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -196,6 +197,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Roy.cpp" />
     <ClCompile Include="utils.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -222,6 +224,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box.fwd.h" />
+    <ClInclude Include="Eric.fwd.h" />
+    <ClInclude Include="Eric.h" />
     <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />
@@ -229,6 +233,8 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="ParamTable.h" />
     <ClInclude Include="PlayerInfo.fwd.h" />
+    <ClInclude Include="Roy.fwd.h" />
+    <ClInclude Include="Roy.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="PlayerInfo.h" />
   </ItemGroup>

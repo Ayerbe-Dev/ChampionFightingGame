@@ -5,12 +5,20 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
+PlayerInfo::PlayerInfo(int id, string chara_kind, int chara_id, SDL_Renderer *renderer) {
 	// runs on creation of instance;	
 	this->id = id;
 	this->chara_kind = chara_kind;
 	resource_dir = ("resource/chara/" + chara_kind);
 	superInit(renderer);
+	switch (chara_id) {
+		case (CHARA_KIND_ROY): {
+			Roy(this, id);
+		} break;
+		case (CHARA_KIND_ERIC): {
+			Eric(this, id);
+		} break;
+	}
 }
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {

@@ -272,6 +272,7 @@ void PlayerInfo::loadStatusFunctions() {
 
 	P.S. It's misspelled in Smash as well. You can fix it if you want, idrc
 */
+
 bool PlayerInfo::is_excute_frame(int excute_count, int frame) {
 	if (this->frame >= frame) {
 		if (this->excute_count >= excute_count) {
@@ -410,6 +411,50 @@ i32 PlayerInfo::get_flick_dir() {
 	else {
 		return stick_dir;
 	}
+}
+
+//Position
+
+bool PlayerInfo::add_pos(int x, int y) {
+	pos.x += x;
+	pos.y += y;
+	if (invalid_x() || invalid_y()) {
+		if (invalid_x()) {
+			pos.x = prevpos.x;
+		}
+		if (invalid_y()) {
+			pos.y = prevpos.y;
+		}
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+bool PlayerInfo::set_pos(int x, int y) {
+	pos.x = x;
+	pos.y = y;
+	if (invalid_x() || invalid_y()) {
+		if (invalid_x()) {
+			pos.x = prevpos.x;
+		}
+		if (invalid_y()) {
+			pos.y = prevpos.y;
+		}
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+bool PlayerInfo::invalid_x() {
+	return pos.x > WINDOW_WIDTH / 2 || pos.x < WINDOW_WIDTH / -2;
+}
+
+bool PlayerInfo::invalid_y() {
+	return pos.y < 0 || pos.y > WINDOW_HEIGHT;
 }
 
 //Hitbox
@@ -644,7 +689,7 @@ bool PlayerInfo::common_air_status_general() {
 
 /*
 	 ..=====.. |==|
-	|| sans || |= |
+	|| sus  || |= |
  _  ||      || |^*| _
 |=| o==,===,=o |__||=|
 |_|  ________)~`)  |_|
@@ -658,7 +703,7 @@ void PlayerInfo::status_wait() {
 }
 
 void PlayerInfo::enter_status_wait() {
-	pos.y = 50.0;
+	set_pos (pos.x, 50);
 	change_anim("wait", 30, 0);
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -679,7 +724,7 @@ void PlayerInfo::status_walkf() {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	pos.x += stats.walk_f_speed * facing_dir;
+	add_pos(stats.walk_f_speed * facing_dir, 0);
 }
 
 void PlayerInfo::enter_status_walkf() {
@@ -701,7 +746,7 @@ void PlayerInfo::status_walkb() {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	pos.x -= stats.walk_b_speed * facing_dir;
+	add_pos(stats.walk_f_speed * facing_dir * -1, 0);
 }
 
 void PlayerInfo::enter_status_walkb() {
@@ -727,10 +772,10 @@ void PlayerInfo::status_dash() {
 	int max_frame = min_frame + stats.dash_f_maintain_speed_frame;
 
 	if (frame >= min_frame && frame < max_frame) {
-		pos.x += stats.dash_f_speed * facing_dir;
+		add_pos(stats.dash_f_speed * facing_dir, 0);
 	}
 	else {
-		pos.x += stats.walk_f_speed * facing_dir;
+		add_pos(stats.walk_f_speed * facing_dir, 0);
 	}
 
 	if (frame >= stats.dash_f_cancel_frame) {
@@ -772,10 +817,10 @@ void PlayerInfo::status_dashb() {
 	int max_frame = min_frame + stats.dash_b_maintain_speed_frame;
 
 	if (frame >= min_frame && frame < max_frame) {
-		pos.x -= stats.dash_b_speed * facing_dir;
+		add_pos(stats.dash_b_speed * facing_dir * -1, 0);
 	}
 	else {
-		pos.x -= stats.walk_b_speed * facing_dir;
+		add_pos(stats.walk_b_speed * facing_dir * -1, 0);
 	}
 
 	if (frame >= stats.dash_f_cancel_frame) {
@@ -898,12 +943,12 @@ void PlayerInfo::status_jump() {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		pos.x += stats.jump_x_speed * facing_dir;
+		add_pos(stats.jump_x_speed * facing_dir, 0);
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		pos.x -= stats.jump_x_speed * facing_dir;
+		add_pos(stats.jump_x_speed * facing_dir * -1, 0);
 	}
-	pos.y += chara_float[CHARA_FLOAT_CURRENT_Y_SPEED];
+	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void PlayerInfo::enter_status_jump() {
@@ -948,12 +993,12 @@ void PlayerInfo::status_fall() {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		pos.x += stats.jump_x_speed * facing_dir;
+		add_pos(stats.jump_x_speed * facing_dir, 0);
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		pos.x -= stats.jump_x_speed * facing_dir;
+		add_pos(stats.jump_x_speed * facing_dir * -1, 0);
 	}
-	pos.y += chara_float[CHARA_FLOAT_CURRENT_Y_SPEED];
+	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void PlayerInfo::enter_status_fall () {
@@ -978,7 +1023,7 @@ void PlayerInfo::status_attack() {
 		}
 	}
 	if (is_excute_frame(1, 2)) {
-		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 70, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 50, 50, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
+		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 70, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 	}
 	if (is_excute_wait(2, 2)) {
 		clear_hitbox_all();
@@ -1072,8 +1117,7 @@ void PlayerInfo::status_hitstun_air() {
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
-	pos.x -= stats.jump_x_speed * facing_dir;
-	pos.y += chara_float[CHARA_FLOAT_CURRENT_Y_SPEED];
+	add_pos(stats.jump_x_speed * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void PlayerInfo::enter_status_hitstun_air() {

@@ -30,7 +30,7 @@ void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
                '''::::'''
 	 */
 
-	
+	player_info->prevpos = player_info->pos;
 
 	//Calls the looping status function for whatever the player's current status_kind is.
 	player_info->playoutStatus();
@@ -115,7 +115,8 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 	event_hit_collide_player(player_info[0], player_info[1], &(player_info[1]->hitboxes[player_info[0]->connected_hitbox]), &(player_info[0]->hitboxes[player_info[1]->connected_hitbox]));
 }
 
-/*░░░░░░░░░░░░░░░░██████████████████
+/*
+░░░░░░░░░░░░░░░░██████████████████
 ░░░░░░░░░░░░████░░░░░░░░░░░░░░░░░░████
 ░░░░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░██
 ░░░░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░██
@@ -144,7 +145,8 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 ░░░░░░░░░░████████████░░░░░░████████████
 ░░░░░░██████░░░░░░░░██░░░░░░██░░░░░░░░██████
 ░░░░░░██░░░░░░░░░░████░░░░░░████░░░░░░░░░░██
-░░░░░░░░██████████░░░░░░░░░░░░░░██████████*/
+░░░░░░░░██████████░░░░░░░░░░░░░░██████████
+*/
 
 int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hitbox *hitbox, Hurtbox *hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
@@ -282,9 +284,7 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			cout << "Pushback: " << p1_hitbox->block_pushback << endl;
-			cout << "Blockstun: " << p2->chara_int[CHARA_INT_HITSTUN_FRAMES] << endl;
-			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 10.0 / p2->chara_int[CHARA_INT_HITSTUN_FRAMES];
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITSTUN_FRAMES];
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
@@ -298,9 +298,7 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p2->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
-			cout << "Pushback: " << p1_hitbox->hit_pushback << endl;
-			cout << "Hitstun: " << p2->chara_int[CHARA_INT_HITSTUN_FRAMES] << endl;
-			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 10.0 / p2->chara_int[CHARA_INT_HITSTUN_FRAMES];
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITSTUN_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;

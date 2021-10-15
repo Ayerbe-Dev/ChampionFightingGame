@@ -80,6 +80,13 @@ public:
 	i32 get_stick_dir();
 	i32 get_flick_dir();
 
+	//Position
+
+	bool add_pos(int x, int y);
+	bool set_pos(int x, int y);
+	bool invalid_x();
+	bool invalid_y();
+
 	/*
 		For classes with multiple instances in the PlayerInfo table, it makes sense to be able to call their methods from the PlayerInfo class instead
 		of needing to manually iterate through all of them. It's technically bad practice to do these for ALL of these methods but it's more streamlined

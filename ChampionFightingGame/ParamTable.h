@@ -30,4 +30,5 @@ struct StatsTable {
 	i32 hk_landing_lag;
 	i32 health;
 	bool has_airdash;
+	f32 meter_gain_on_parry;
 };

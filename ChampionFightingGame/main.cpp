@@ -113,7 +113,7 @@ int main() {
 				cout << "\n" << SDL_GetError();
 			}
 		}
-		check_attack_connections(player_info, renderer, visualize_boxes);
+		check_attack_connections(&player_info[0], &player_info[1], renderer, visualize_boxes);
 		SDL_RenderPresent(renderer); 
 	}
 

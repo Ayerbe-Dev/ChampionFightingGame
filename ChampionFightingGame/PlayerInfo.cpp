@@ -709,6 +709,7 @@ void PlayerInfo::enter_status_wait() {
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 
 	situation_kind = CHARA_SITUATION_GROUND;
+	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
 }
 
 void PlayerInfo::exit_status_wait() {
@@ -941,7 +942,7 @@ void PlayerInfo::exit_status_jumpsquat() {
 
 void PlayerInfo::status_jump() {
 	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL);
+		change_status(CHARA_STATUS_FALL, false);
 		return;
 	}
 	if (pos.y < 50.0) {
@@ -952,10 +953,10 @@ void PlayerInfo::status_jump() {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		add_pos(stats.jump_x_speed * facing_dir, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		add_pos(stats.jump_x_speed * facing_dir * -1, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
 	}
 	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -987,10 +988,12 @@ void PlayerInfo::enter_status_jump() {
 	else {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed;
 	}
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = stats.jump_x_speed;
 }
 
 void PlayerInfo::exit_status_jump() {
-
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 }
 
 void PlayerInfo::status_fall() {
@@ -1002,10 +1005,10 @@ void PlayerInfo::status_fall() {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		add_pos(stats.jump_x_speed * facing_dir, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		add_pos(stats.jump_x_speed * facing_dir * -1, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
 	}
 	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -1035,8 +1038,7 @@ void PlayerInfo::status_attack() {
 		new_hitbox(1, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 	}
 	if (is_excute_frame(2, 2)) {
-		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 70, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
-		new_hitbox(1, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
+		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 60, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 11, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 	}
 	if (is_excute_wait(3, 2)) {
 		clear_hitbox_all();
@@ -1074,7 +1076,7 @@ void PlayerInfo::exit_status_attack() {
 void PlayerInfo::status_hitstun() {
 	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
 		if (get_stick_dir() < 4) {
-			if (change_status(CHARA_STATUS_CROUCHD)) {
+			if (change_status(CHARA_STATUS_CROUCH)) {
 				return;
 			}
 		}
@@ -1127,19 +1129,26 @@ void PlayerInfo::status_hitstun_air() {
 		change_status(CHARA_STATUS_LANDING_HITSTUN);
 		return;
 	}
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
+		change_status(CHARA_STATUS_FALL, false);
+		return;
+	}
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
-	add_pos(stats.jump_x_speed * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void PlayerInfo::enter_status_hitstun_air() {
-	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = (stats.jump_y_init_speed + stats.jump_y_init_speed_s) / 2.5;
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = chara_float[CHARA_FLOAT_LAUNCH_SPEED_X];
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
 	change_anim("jump_hitstun", 30);
 }
 
 void PlayerInfo::exit_status_hitstun_air() {
-
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 }
 
 void PlayerInfo::status_blockstun() {
@@ -1290,6 +1299,7 @@ void PlayerInfo::status_landing() {
 void PlayerInfo::enter_status_landing() {
 	change_anim("landing", 30);
 	chara_int[CHARA_INT_LANDING_LAG] = 2;
+	situation_kind = CHARA_SITUATION_GROUND;
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -1328,6 +1338,8 @@ void PlayerInfo::status_landing_hitstun() {
 void PlayerInfo::enter_status_landing_hitstun() {
 	change_anim("landing_hitstun", 30);
 	chara_int[CHARA_INT_LANDING_LAG] = 4;
+	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
+	situation_kind = CHARA_SITUATION_GROUND;
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);

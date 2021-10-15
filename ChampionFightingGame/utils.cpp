@@ -37,5 +37,5 @@ bool is_collide(SDL_Rect RectA, SDL_Rect RectB) {
 	int by1 = RectB.y + RectB.h;
 	bool horizontal_check = false;
 	bool vertical_check = false;
-	return ((ax1 >= bx0 && (ax0 <= bx0 || ax1 <= bx1)) || (bx1 >= ax0 && (bx0 <= ax0 || bx1 <= ax1))) && ((ay1 <= by0 && (ay0 >= by0 || ay1 >= by1)) || (by1 <= ay0 && (by0 >= ay0 || by1 >= ay1))) || ((ax1 >= bx1 && ax0 <= bx0 && ay1 >= by1 && ay0 <= by0) || (ax1 <= bx1 && ax0 >= bx0 && ay1 <= by1 && ay0 >= by0));
+	return ((ax1 >= bx0 && (ax0 <= bx0 || ax1 <= bx1)) || (bx1 >= ax0 && (bx0 <= ax0 || bx1 <= ax1))) && ((ay1 <= by0 && (ay0 >= by0 || ay1 >= by1)) || (by1 <= ay0 && (by0 >= ay0 || by1 >= ay1))) || ((ax1 >= bx1 && ax0 <= bx0 && ay1 >= by1 && ay0 <= by0) || (ax1 <= bx1 && ax0 >= bx0 && ay1 <= by1 && ay0 >= by0)) || (bx1 <= ax1 && bx0 >= ax0 && by1 >= ay1 && bx0 <= ay0);
 }

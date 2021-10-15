@@ -65,7 +65,7 @@ public:
 	//Constructors
 
 	PlayerInfo();
-	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
+	PlayerInfo(int id, SDL_Renderer* renderer);
 
 	//Setup
 

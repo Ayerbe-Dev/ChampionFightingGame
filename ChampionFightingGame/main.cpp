@@ -41,11 +41,8 @@ int main() {
 	IFighter* p1 = new IFighter(CHARA_KIND_ROY);
 	IFighter* p2 = new IFighter(CHARA_KIND_ERIC);
 
-	PlayerInfo p1{ 0, "roy", renderer}; //bro just use the characters that are already there lmao
-	PlayerInfo p2{ 1, "eric", renderer}; //like you can just make the child classes for roy and eric
-
 	player_info[0] = p1->get_fighter();
-	player_info[1] = p2->get_fighter();;
+	player_info[1] = p2->get_fighter();
 
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();

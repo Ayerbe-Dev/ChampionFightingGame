@@ -38,6 +38,9 @@ public:
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_flag[CHARA_FLAG_MAX];
+
+	void (PlayerInfo::* moveScript)();
+	RoyScript roy_scripts[256]; //Will go in child class in the future
 	
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
@@ -65,6 +68,7 @@ public:
 	void load_params();
 	void loadDefaultButtonMap();
 	void loadStatusFunctions();
+	void set_current_move_script(string anim_name); //Will go in child class
 
 	//Definitely not ACMD
 

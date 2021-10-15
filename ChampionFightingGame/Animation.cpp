@@ -9,6 +9,13 @@ using namespace std;
 
 Animation::Animation() {};
 
+RoyScript::RoyScript() {};
+
+RoyScript::RoyScript(string name, function<void()> move_script) {
+	this->name = name;
+	this->move_script = &move_script;
+}
+
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {

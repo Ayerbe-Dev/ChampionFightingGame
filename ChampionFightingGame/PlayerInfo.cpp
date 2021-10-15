@@ -52,14 +52,15 @@ void PlayerInfo::load_anim_list(SDL_Renderer *renderer) {
 	int num_anims = ymlChopInt(line_1);
 
 	for (int i = 0; i < num_anims; i++) {
-		string filename;
+		string name;
+		string path;
 		string frame_count;
 		string width;
 		string height;
 		string faf;
-		anim_list >> filename >> frame_count >> width >> height >> faf;
-		animation_table[i].name = ymlChopString(filename);
-		animation_table[i].path = (resource_dir + "/anims/" + animation_table[i].name + ".png");
+		anim_list >> name >> path >> frame_count >> width >> height >> faf;
+		animation_table[i].name = ymlChopString(name);
+		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
 		animation_table[i].sprite_width = ymlChopInt(width);
 		animation_table[i].sprite_height = ymlChopInt(height);
@@ -260,6 +261,14 @@ void PlayerInfo::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_LANDING_HITSTUN] = &PlayerInfo::status_landing_hitstun;
 	pEnter_status[CHARA_STATUS_LANDING_HITSTUN] = &PlayerInfo::enter_status_landing_hitstun;
 	pExit_status[CHARA_STATUS_LANDING_HITSTUN] = &PlayerInfo::exit_status_landing_hitstun;
+}
+
+void PlayerInfo::set_current_move_script(string anim_name) {
+	for (int i = 0; i < 256; i++) {
+		if (roy_scripts[i].name == anim_name) {
+			moveScript = &RoyScript::move_script;
+		}
+	}
 }
 
 //Move Scripting

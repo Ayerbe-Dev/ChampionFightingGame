@@ -7,7 +7,7 @@
 class EricScript {
 public:
 	string name;
-	void (EricScript::* move_script)();
+	function<void()> eric_script;
 	int id{ -1 };
 
 	EricScript();

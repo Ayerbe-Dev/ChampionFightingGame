@@ -38,7 +38,6 @@ public:
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_flag[CHARA_FLAG_MAX];
-	void (PlayerInfo::* moveScript)();
 	
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
@@ -53,6 +52,7 @@ public:
 	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pExit_status[CHARA_STATUS_MAX])();
+	function<void()> move_script;
 
 	//Haha interface go brrrrrrrrrrrr
 
@@ -73,6 +73,7 @@ public:
 
 	//Definitely not ACMD
 
+	virtual void set_current_move_script(string anim_name);
 	bool is_excute_frame(int excute_count, int frame);
 	bool is_excute_wait(int excute_count, int frames);
 

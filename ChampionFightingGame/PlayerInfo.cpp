@@ -11,7 +11,6 @@ PlayerInfo::PlayerInfo(SDL_Renderer *renderer) {
 }
 
 void PlayerInfo::superInit(int id, SDL_Renderer* renderer) {
-	// set position
 	this->id = id;
 	if (id == 0) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 50);
@@ -23,12 +22,7 @@ void PlayerInfo::superInit(int id, SDL_Renderer* renderer) {
 	loadDefaultButtonMap();
 	load_params();
 	loadStatusFunctions();
-	change_status(CHARA_STATUS_WAIT, false); //no idea why but doing this on its own doesn't run the entry status for WAIT even after loading the status funcs
-	change_anim("wait", 30);
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE); //...hence why these are here
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-
+	change_status(CHARA_STATUS_WAIT, false, false); 
 
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
@@ -271,6 +265,8 @@ void PlayerInfo::loadStatusFunctions() {
 
 	P.S. It's misspelled in Smash as well. You can fix it if you want, idrc
 */
+
+void PlayerInfo::set_current_move_script(string anim_name) {}
 
 bool PlayerInfo::is_excute_frame(int excute_count, int frame) {
 	if (this->frame >= frame) {
@@ -566,6 +562,7 @@ void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_fr
 		if (animation_table[i].name == animation_name) {
 			frame = entry_frame;
 			hold_ms = (1000 / frame_rate);
+			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
 			return;
 		}
@@ -632,6 +629,7 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status, bool r
 
 void PlayerInfo::playoutStatus() {
 	(this->*pStatus[status_kind])();
+	move_script();
 }
 
 bool PlayerInfo::common_ground_status_act() { 
@@ -1033,15 +1031,6 @@ void PlayerInfo::status_attack() {
 		if (common_ground_status_act()) {
 			return;
 		}
-	}
-	if (is_excute_frame(1, 0)) {
-		new_hitbox(1, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
-	}
-	if (is_excute_frame(2, 2)) {
-		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 60, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 11, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
-	}
-	if (is_excute_wait(3, 2)) {
-		clear_hitbox_all();
 	}
 }
 

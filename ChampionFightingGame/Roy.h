@@ -7,7 +7,7 @@
 class RoyScript {
 public:
 	string name;
-	void (RoyScript::* move_script)();
+	function<void()> roy_script;
 	int id{ -1 };
 
 	RoyScript();

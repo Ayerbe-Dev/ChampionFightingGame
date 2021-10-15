@@ -9,10 +9,6 @@
 #include "PlayerInfo.fwd.h"
 #include "Box.fwd.h"
 #include "Box.h"
-#include "Roy.fwd.h"
-#include "Roy.h"
-#include "Eric.fwd.h"
-#include "Eric.h"
 
 class PlayerInfo{
 public:

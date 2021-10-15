@@ -6,6 +6,10 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "Game.h"
+#include "Roy.fwd.h"
+#include "Roy.h"
+#include "Eric.fwd.h"
+#include "Eric.h"
 
 IFighter::IFighter(int chara_id) {
 	switch (chara_id) {

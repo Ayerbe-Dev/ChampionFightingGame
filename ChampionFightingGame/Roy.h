@@ -1,7 +1,7 @@
 #pragma once
-#include "Roy.fwd.h"
 #include "PlayerInfo.fwd.h"
 #include "PlayerInfo.h"
+#include "Roy.fwd.h"
 #include "utils.h"
 
 class RoyScript {

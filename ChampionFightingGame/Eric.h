@@ -1,7 +1,7 @@
 #pragma once
-#include "Eric.fwd.h"
 #include "PlayerInfo.fwd.h"
 #include "PlayerInfo.h"
+#include "Eric.fwd.h"
 #include "utils.h"
 
 class EricScript {

@@ -7,7 +7,6 @@
 #include <SDL_timer.h>
 #include "utils.h"
 #include "Game.h"
-#include "TestFighter.h"
 #include "Animation.h"
 #undef main
 using namespace std;

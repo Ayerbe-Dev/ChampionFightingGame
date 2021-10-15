@@ -36,8 +36,8 @@ public:
 	f32 launch_gravity_y;
 	f32 launch_max_fall_speed;
 	f32 launch_speed_x;
-	int hit_pushback;
-	int block_pushback;
+	f32 hit_pushback;
+	f32 block_pushback;
 	GameCoordinate init_anchor;
 	GameCoordinate init_offset;
 	bool use_player_pos;

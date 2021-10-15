@@ -159,6 +159,9 @@ public:
 	void status_jump();
 	void enter_status_jump();
 	void exit_status_jump();
+	void status_fall();
+	void enter_status_fall();
+	void exit_status_fall();
 	void status_attack();
 	void enter_status_attack();
 	void exit_status_attack();

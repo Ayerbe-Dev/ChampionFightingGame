@@ -58,6 +58,10 @@ public:
 	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pExit_status[CHARA_STATUS_MAX])();
 
+	//Haha interface go brrrrrrrrrrrr
+
+	virtual void chara_id() = 0;
+
 	//Constructors
 
 	PlayerInfo();

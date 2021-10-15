@@ -7,6 +7,31 @@
 #include "Animation.h"
 #include "Game.h"
 
+IFighter::IFighter(int chara_id) {
+	switch (chara_id) {
+		case(CHARA_KIND_ROY): {
+			player_info = new Roy();
+		} break;
+		case(CHARA_KIND_ERIC): {
+			player_info = new Eric();
+		} break;
+		case (CHARA_KIND_MAX): {
+			player_info = NULL;
+		} break;
+	}
+}
+
+IFighter::~IFighter() {
+	if (player_info) {
+		delete[] player_info;
+		player_info = NULL;
+	}
+}
+
+PlayerInfo *IFighter::get_fighter() {
+	return player_info;
+}
+
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 
 void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {

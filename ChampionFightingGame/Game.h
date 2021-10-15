@@ -8,3 +8,12 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 void event_hit_collide_player(PlayerInfo *p1, PlayerInfo *p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox);
 bool can_counterhit(PlayerInfo* defender, Hitbox* hitbox);
 int get_damage_status(int hit_status, int situation_kind);
+
+class IFighter {
+public:
+	IFighter(int chara_id);
+	~IFighter();
+	PlayerInfo* get_fighter();
+private:
+	PlayerInfo* player_info;
+};

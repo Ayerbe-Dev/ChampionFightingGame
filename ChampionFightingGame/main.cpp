@@ -36,16 +36,16 @@ int main() {
 	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
 
 	//init players
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 
-//	TestFighter p1{0};
-//	TestFighter p2{1};
-	//why doesnt the above work
+	IFighter* p1 = new IFighter(CHARA_KIND_ROY);
+	IFighter* p2 = new IFighter(CHARA_KIND_ERIC);
+
 	PlayerInfo p1{ 0, "roy", renderer}; //bro just use the characters that are already there lmao
 	PlayerInfo p2{ 1, "eric", renderer}; //like you can just make the child classes for roy and eric
 
-	player_info[0] = p1;
-	player_info[1] = p2;
+	player_info[0] = p1->get_fighter();
+	player_info[1] = p2->get_fighter();;
 
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
@@ -65,10 +65,10 @@ int main() {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < BUTTON_MAX; i++) {
 			for (int o = 0; o < 2; o++) {
-				bool old_button = player_info[o].button_info[i].button_on;
-				player_info[o].button_info[i].button_on = keyboard_state[player_info[o].button_info[i].mapping];
-				bool new_button = player_info[o].button_info[i].button_on;
-				player_info[o].button_info[i].changed = (old_button != new_button);
+				bool old_button = player_info[o]->button_info[i].button_on;
+				player_info[o]->button_info[i].button_on = keyboard_state[player_info[o]->button_info[i].mapping];
+				bool new_button = player_info[o]->button_info[i].button_on;
+				player_info[o]->button_info[i].changed = (old_button != new_button);
 			}
 		}
 
@@ -85,35 +85,35 @@ int main() {
 		SDL_RenderCopy(renderer, pBG, nullptr, nullptr);
 		for (int i = 0; i < 2; i++) {
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (player_info[i].situation_kind == CHARA_SITUATION_GROUND && player_info[i].is_actionable()) {
-				if (player_info[i].pos.x > player_info[!i].pos.x) {
-					player_info[i].facing_dir = -1.0;
-					player_info[i].facing_right = false;
+			if (player_info[i]->situation_kind == CHARA_SITUATION_GROUND && player_info[i]->is_actionable()) {
+				if (player_info[i]->pos.x > player_info[!i]->pos.x) {
+					player_info[i]->facing_dir = -1.0;
+					player_info[i]->facing_right = false;
 					flip = SDL_FLIP_HORIZONTAL;
 				}
 				else {
-					player_info[i].facing_dir = 1.0;
-					player_info[i].facing_right = true;
+					player_info[i]->facing_dir = 1.0;
+					player_info[i]->facing_right = true;
 				}
 			}
-			else if (!player_info[i].facing_right) {
+			else if (!player_info[i]->facing_right) {
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 
-			tickOnce(&player_info[i], renderer);
+			tickOnce(player_info[i], renderer);
 
 			SDL_Rect render_pos;
-			render_pos.x = player_info[i].pos.getRenderCoodrinateX();
-			render_pos.y = player_info[i].pos.getRenderCoodrinateY();
-			render_pos.w = player_info[i].anim_kind->sprite_width;
-			render_pos.h = player_info[i].anim_kind->sprite_height;
+			render_pos.x = player_info[i]->pos.getRenderCoodrinateX();
+			render_pos.y = player_info[i]->pos.getRenderCoodrinateY();
+			render_pos.w = player_info[i]->anim_kind->sprite_width;
+			render_pos.h = player_info[i]->anim_kind->sprite_height;
 			const double angle = 0;
-			error_render = SDL_RenderCopyEx(renderer, player_info[i].anim_kind->SPRITESHEET, &player_info[i].frame_rect, &render_pos, angle, NULL, flip);
+			error_render = SDL_RenderCopyEx(renderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
 		}
-		check_attack_connections(&player_info[0], &player_info[1], renderer, visualize_boxes);
+		check_attack_connections(player_info[0], player_info[1], renderer, visualize_boxes);
 		SDL_RenderPresent(renderer); 
 	}
 

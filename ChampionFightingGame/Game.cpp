@@ -6,6 +6,35 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "Game.h"
+#include "Roy.fwd.h"
+#include "Roy.h"
+#include "Eric.fwd.h"
+#include "Eric.h"
+
+IFighter::IFighter(int chara_id, SDL_Renderer *renderer, int id) {
+	switch (chara_id) {
+		case(CHARA_KIND_ROY): {
+			player_info = new Roy(renderer, id);
+		} break;
+		case(CHARA_KIND_ERIC): {
+			player_info = new Eric(renderer, id);
+		} break;
+		case (CHARA_KIND_MAX): {
+			player_info = NULL;
+		} break;
+	}
+}
+
+IFighter::~IFighter() {
+	if (player_info) {
+		delete[] player_info;
+		player_info = NULL;
+	}
+}
+
+PlayerInfo *IFighter::get_fighter() {
+	return player_info;
+}
 
 //Store all relevant information about each character. Treat this like a L2CFighterCommon or Boma.
 
@@ -62,6 +91,7 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 	PlayerInfo* player_info[2] = { p1, p2 };
 	for (int i = 0; i < 2; i++) { //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = HITBOX_COUNT_MAX;
+		player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (player_info[i]->hurtboxes[i2].id != -1) {
 				SDL_Rect hurtbox;
@@ -71,8 +101,13 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 					if (player_info[!i]->hitboxes[i3].id != -1 && !player_info[!i]->hitboxes[i3].success_hit) {
 						SDL_Rect hitbox;
 						hitbox = player_info[!i]->hitboxes[i3].rect;
-						if (is_collide(hitbox, hurtbox)) {
-							hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+						if (player_info[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
+							if (is_collide(hitbox, hurtbox)) {
+								hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+							}
+						}
+						else {
+							player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
@@ -86,14 +121,19 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 		}
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (player_info[i]->hurtboxes[i2].id != -1) {
-				SDL_Rect hurtbox;
-				hurtbox = player_info[i]->hurtboxes[i2].rect;
+				SDL_Rect render_pos;
+				render_pos = player_info[i]->hurtboxes[i2].rect;
 
 				if (visualize_boxes) {
-					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-					SDL_RenderDrawRect(renderer, &hurtbox);
-					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 127);
-					SDL_RenderFillRect(renderer, &hurtbox);
+					Vec3f hurtbox_color = { 0, 0, 255 };
+					if (player_info[i]->hurtboxes[i2].intangible_kind != INTANGIBLE_KIND_NONE) {
+						hurtbox_color.y = 255;
+					}
+
+					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, 255);
+					SDL_RenderDrawRect(renderer, &render_pos);
+					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, 127);
+					SDL_RenderFillRect(renderer, &render_pos);
 				}
 			}
 		}
@@ -103,7 +143,11 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 				render_pos = player_info[i]->hitboxes[i2].rect;
 
 				if (visualize_boxes) {
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					Vec3f hitbox_color = { 255, 0, 0 };
+					if (player_info[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK) {
+						hitbox_color.y = 165;
+					}
+					SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
 					SDL_RenderDrawRect(renderer, &render_pos);
 					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 127);
 					SDL_RenderFillRect(renderer, &render_pos);
@@ -112,7 +156,7 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 		}
 		player_info[i]->connected_hitbox = hitbox_to_use;
 	}
-	event_hit_collide_player(player_info[0], player_info[1], &(player_info[1]->hitboxes[player_info[0]->connected_hitbox]), &(player_info[0]->hitboxes[player_info[1]->connected_hitbox]));
+	event_hit_collide_player(player_info[0], player_info[1], &(player_info[0]->hitboxes[player_info[1]->connected_hitbox]), &(player_info[1]->hitboxes[player_info[0]->connected_hitbox]));
 }
 
 /*
@@ -159,13 +203,12 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 			return HITBOX_COUNT_MAX;
 		}
 	}
-	if (hitbox->hitbox_kind == HITBOX_KIND_BLOCK) {
-		defender->chara_flag[CHARA_FLAG_PROX_GUARD] = true;
-		return HITBOX_COUNT_MAX;
-	}
 	if (hurtbox->intangible_kind == hitbox->attack_height
 		|| hurtbox->intangible_kind == INTANGIBLE_KIND_NORMAL
 		|| hurtbox->intangible_kind == INTANGIBLE_KIND_ALL) {
+		return HITBOX_COUNT_MAX;
+	}
+	if (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->max_juggle < defender->chara_int[CHARA_INT_JUGGLE_VALUE]) {
 		return HITBOX_COUNT_MAX;
 	}
 
@@ -194,7 +237,7 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 			blocking = true;
 		}
 	}
-	if (defender->status_kind == CHARA_STATUS_PARRY) {
+	if (defender->status_kind == CHARA_STATUS_PARRY_START) {
 		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == hitbox->attack_height) {
 			parrying = true;
 		}
@@ -223,8 +266,8 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 }
 
 void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
-	bool p1_hit = p1_hitbox->id != -1;
-	bool p2_hit = p2_hitbox->id != -1;
+	bool p1_hit = p2_hitbox->id != -1;
+	bool p2_hit = p1_hitbox->id != -1;
 	u32 p1_status_post_hit = p1->status_kind;
 	u32 p2_status_post_hit = p2->status_kind;
 	if (p1_hit && p2_hit) { //Both players got hit
@@ -284,7 +327,7 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITSTUN_FRAMES];
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
@@ -298,7 +341,13 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p2->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
-			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITSTUN_FRAMES];
+			if (p2->chara_int[CHARA_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_set) {
+				p2->chara_int[CHARA_INT_JUGGLE_VALUE] ++;
+			}
+			else {
+				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
+			}
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
@@ -331,7 +380,7 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
-		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
+		else if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
@@ -340,6 +389,12 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p1->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p2_hitbox->launch_gravity_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p2_hitbox->launch_max_fall_speed;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p2_hitbox->launch_speed_x;
+			if (p1->chara_int[CHARA_INT_JUGGLE_VALUE] >= p2_hitbox->juggle_set) {
+				p1->chara_int[CHARA_INT_JUGGLE_VALUE] ++;
+			}
+			else {
+				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = p2_hitbox->juggle_set;
+			}
 			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
@@ -357,9 +412,12 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
 		}
 	}
-
-	p1->change_status(p1_status_post_hit);
-	p2->change_status(p2_status_post_hit);
+	if (p1_hit) {
+		p1->change_status(p1_status_post_hit, true, false);
+	}
+	if (p2_hit) {
+		p2->change_status(p2_status_post_hit, true, false);
+	}
 }
 
 bool can_counterhit(PlayerInfo* defender, Hitbox* hitbox) {

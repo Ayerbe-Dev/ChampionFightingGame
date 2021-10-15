@@ -52,15 +52,20 @@ public:
 	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pEnter_status[CHARA_STATUS_MAX])();
 	void (PlayerInfo::* pExit_status[CHARA_STATUS_MAX])();
+	function<void()> move_script;
+
+	//Haha interface go brrrrrrrrrrrr
+
+	virtual void chara_id() = 0;
 
 	//Constructors
 
 	PlayerInfo();
-	PlayerInfo(int id, string chara_kind, SDL_Renderer* renderer);
+	PlayerInfo(SDL_Renderer* renderer);
 
 	//Setup
 
-	void superInit(SDL_Renderer* renderer);
+	void superInit(int id, SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void loadDefaultButtonMap();
@@ -68,6 +73,7 @@ public:
 
 	//Definitely not ACMD
 
+	virtual void set_current_move_script(string anim_name);
 	bool is_excute_frame(int excute_count, int frame);
 	bool is_excute_wait(int excute_count, int frames);
 

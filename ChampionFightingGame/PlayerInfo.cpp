@@ -3,18 +3,15 @@
 #include "Animation.h"
 #include <fstream>
 
-PlayerInfo::PlayerInfo() { }
+PlayerInfo::PlayerInfo() {}
 
-PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
+PlayerInfo::PlayerInfo(SDL_Renderer *renderer) {
 	// runs on creation of instance;	
-	this->id = id;
-	this->chara_kind = chara_kind;
-	resource_dir = ("resource/chara/" + chara_kind);
-	superInit(renderer);
+	superInit(0, renderer);
 }
 
-void PlayerInfo::superInit(SDL_Renderer* renderer) {
-	// set position
+void PlayerInfo::superInit(int id, SDL_Renderer* renderer) {
+	this->id = id;
 	if (id == 0) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 50);
 	}
@@ -25,12 +22,7 @@ void PlayerInfo::superInit(SDL_Renderer* renderer) {
 	loadDefaultButtonMap();
 	load_params();
 	loadStatusFunctions();
-	change_status(CHARA_STATUS_WAIT, false); //no idea why but doing this on its own doesn't run the entry status for WAIT even after loading the status funcs
-	change_anim("wait", 30);
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE); //...hence why these are here
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-
+	change_status(CHARA_STATUS_WAIT, false, false); 
 
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
@@ -52,14 +44,15 @@ void PlayerInfo::load_anim_list(SDL_Renderer *renderer) {
 	int num_anims = ymlChopInt(line_1);
 
 	for (int i = 0; i < num_anims; i++) {
-		string filename;
+		string name;
+		string path;
 		string frame_count;
 		string width;
 		string height;
 		string faf;
-		anim_list >> filename >> frame_count >> width >> height >> faf;
-		animation_table[i].name = ymlChopString(filename);
-		animation_table[i].path = (resource_dir + "/anims/" + animation_table[i].name + ".png");
+		anim_list >> name >> path >> frame_count >> width >> height >> faf;
+		animation_table[i].name = ymlChopString(name);
+		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
 		animation_table[i].sprite_width = ymlChopInt(width);
 		animation_table[i].sprite_height = ymlChopInt(height);
@@ -272,6 +265,8 @@ void PlayerInfo::loadStatusFunctions() {
 
 	P.S. It's misspelled in Smash as well. You can fix it if you want, idrc
 */
+
+void PlayerInfo::set_current_move_script(string anim_name) {}
 
 bool PlayerInfo::is_excute_frame(int excute_count, int frame) {
 	if (this->frame >= frame) {
@@ -567,6 +562,7 @@ void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_fr
 		if (animation_table[i].name == animation_name) {
 			frame = entry_frame;
 			hold_ms = (1000 / frame_rate);
+			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
 			return;
 		}
@@ -633,6 +629,7 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status, bool r
 
 void PlayerInfo::playoutStatus() {
 	(this->*pStatus[status_kind])();
+	move_script();
 }
 
 bool PlayerInfo::common_ground_status_act() { 
@@ -710,6 +707,7 @@ void PlayerInfo::enter_status_wait() {
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 
 	situation_kind = CHARA_SITUATION_GROUND;
+	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
 }
 
 void PlayerInfo::exit_status_wait() {
@@ -746,7 +744,17 @@ void PlayerInfo::status_walkb() {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	add_pos(stats.walk_f_speed * facing_dir * -1, 0);
+	if (chara_flag[CHARA_FLAG_PROX_GUARD]) {
+		if (anim_kind->name != "stand_block") {
+			change_anim("stand_block");
+		}
+	}
+	else {
+		if (anim_kind->name == "stand_block") {
+			change_anim("walk_b");
+		}
+		add_pos(stats.walk_f_speed * facing_dir * -1, 0);
+	}
 }
 
 void PlayerInfo::enter_status_walkb() {
@@ -932,7 +940,7 @@ void PlayerInfo::exit_status_jumpsquat() {
 
 void PlayerInfo::status_jump() {
 	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL);
+		change_status(CHARA_STATUS_FALL, false);
 		return;
 	}
 	if (pos.y < 50.0) {
@@ -943,10 +951,10 @@ void PlayerInfo::status_jump() {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		add_pos(stats.jump_x_speed * facing_dir, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		add_pos(stats.jump_x_speed * facing_dir * -1, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
 	}
 	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -978,10 +986,12 @@ void PlayerInfo::enter_status_jump() {
 	else {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed;
 	}
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = stats.jump_x_speed;
 }
 
 void PlayerInfo::exit_status_jump() {
-
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 }
 
 void PlayerInfo::status_fall() {
@@ -993,10 +1003,10 @@ void PlayerInfo::status_fall() {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		add_pos(stats.jump_x_speed * facing_dir, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		add_pos(stats.jump_x_speed * facing_dir * -1, 0);
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
 	}
 	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -1021,12 +1031,6 @@ void PlayerInfo::status_attack() {
 		if (common_ground_status_act()) {
 			return;
 		}
-	}
-	if (is_excute_frame(1, 2)) {
-		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 70, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
-	}
-	if (is_excute_wait(2, 2)) {
-		clear_hitbox_all();
 	}
 }
 
@@ -1061,7 +1065,7 @@ void PlayerInfo::exit_status_attack() {
 void PlayerInfo::status_hitstun() {
 	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
 		if (get_stick_dir() < 4) {
-			if (change_status(CHARA_STATUS_CROUCHD)) {
+			if (change_status(CHARA_STATUS_CROUCH)) {
 				return;
 			}
 		}
@@ -1114,19 +1118,26 @@ void PlayerInfo::status_hitstun_air() {
 		change_status(CHARA_STATUS_LANDING_HITSTUN);
 		return;
 	}
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
+		change_status(CHARA_STATUS_FALL, false);
+		return;
+	}
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
-	add_pos(stats.jump_x_speed * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void PlayerInfo::enter_status_hitstun_air() {
-	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = (stats.jump_y_init_speed + stats.jump_y_init_speed_s) / 2.5;
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = chara_float[CHARA_FLOAT_LAUNCH_SPEED_X];
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
 	change_anim("jump_hitstun", 30);
 }
 
 void PlayerInfo::exit_status_hitstun_air() {
-
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 }
 
 void PlayerInfo::status_blockstun() {
@@ -1277,6 +1288,7 @@ void PlayerInfo::status_landing() {
 void PlayerInfo::enter_status_landing() {
 	change_anim("landing", 30);
 	chara_int[CHARA_INT_LANDING_LAG] = 2;
+	situation_kind = CHARA_SITUATION_GROUND;
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -1315,6 +1327,8 @@ void PlayerInfo::status_landing_hitstun() {
 void PlayerInfo::enter_status_landing_hitstun() {
 	change_anim("landing_hitstun", 30);
 	chara_int[CHARA_INT_LANDING_LAG] = 4;
+	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
+	situation_kind = CHARA_SITUATION_GROUND;
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);

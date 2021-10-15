@@ -61,11 +61,11 @@ public:
 	//Constructors
 
 	PlayerInfo();
-	PlayerInfo(int id, SDL_Renderer* renderer);
+	PlayerInfo(SDL_Renderer* renderer);
 
 	//Setup
 
-	void superInit(SDL_Renderer* renderer);
+	void superInit(int id, SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void loadDefaultButtonMap();

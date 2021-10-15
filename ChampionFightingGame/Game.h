@@ -11,7 +11,7 @@ int get_damage_status(int hit_status, int situation_kind);
 
 class IFighter {
 public:
-	IFighter(int chara_id);
+	IFighter(int chara_id, SDL_Renderer* renderer, int id);
 	~IFighter();
 	PlayerInfo* get_fighter();
 private:

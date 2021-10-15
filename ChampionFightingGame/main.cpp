@@ -37,8 +37,8 @@ int main() {
 	//init players
 	PlayerInfo *player_info[2];
 
-	IFighter* p1 = new IFighter(CHARA_KIND_ROY);
-	IFighter* p2 = new IFighter(CHARA_KIND_ERIC);
+	IFighter* p1 = new IFighter(CHARA_KIND_ROY, renderer, 0);
+	IFighter* p2 = new IFighter(CHARA_KIND_ERIC, renderer, 1);
 
 	player_info[0] = p1->get_fighter();
 	player_info[1] = p2->get_fighter();

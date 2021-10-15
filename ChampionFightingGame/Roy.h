@@ -27,5 +27,5 @@ public:
 	RoyScript roy_scripts[256];
 
 	Roy();
-	Roy(PlayerInfo* player_info, int id);
+	Roy(SDL_Renderer *renderer, int id);
 };

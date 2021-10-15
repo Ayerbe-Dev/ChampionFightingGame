@@ -3,15 +3,16 @@
 #include "Animation.h"
 #include <fstream>
 
-PlayerInfo::PlayerInfo() { }
+PlayerInfo::PlayerInfo() {}
 
-PlayerInfo::PlayerInfo(int id, SDL_Renderer *renderer) {
+PlayerInfo::PlayerInfo(SDL_Renderer *renderer) {
 	// runs on creation of instance;	
-	superInit(renderer);
+	superInit(0, renderer);
 }
 
-void PlayerInfo::superInit(SDL_Renderer* renderer) {
+void PlayerInfo::superInit(int id, SDL_Renderer* renderer) {
 	// set position
+	this->id = id;
 	if (id == 0) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 50);
 	}
@@ -744,7 +745,17 @@ void PlayerInfo::status_walkb() {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	add_pos(stats.walk_f_speed * facing_dir * -1, 0);
+/*	if (chara_flag[CHARA_FLAG_PROX_GUARD]) {
+		if (anim_kind->name != "stand_block") {
+			change_anim("stand_block");
+		}
+	}
+	else {
+		if (anim_kind->name == "stand_block") {
+			change_anim("walk_b");
+		}
+		add_pos(stats.walk_f_speed * facing_dir * -1, 0);
+	}*/
 }
 
 void PlayerInfo::enter_status_walkb() {
@@ -1022,6 +1033,7 @@ void PlayerInfo::status_attack() {
 	}
 	if (is_excute_frame(1, 2)) {
 		new_hitbox(0, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 70, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
+		new_hitbox(1, 30, 5, 1.2, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 	}
 	if (is_excute_wait(2, 2)) {
 		clear_hitbox_all();

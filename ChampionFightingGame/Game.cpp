@@ -11,13 +11,13 @@
 #include "Eric.fwd.h"
 #include "Eric.h"
 
-IFighter::IFighter(int chara_id) {
+IFighter::IFighter(int chara_id, SDL_Renderer *renderer, int id) {
 	switch (chara_id) {
 		case(CHARA_KIND_ROY): {
-			player_info = new Roy();
+			player_info = new Roy(renderer, id);
 		} break;
 		case(CHARA_KIND_ERIC): {
-			player_info = new Eric();
+			player_info = new Eric(renderer, id);
 		} break;
 		case (CHARA_KIND_MAX): {
 			player_info = NULL;
@@ -102,6 +102,9 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 						hitbox = player_info[!i]->hitboxes[i3].rect;
 						if (is_collide(hitbox, hurtbox)) {
 							hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+						}
+						else if (player_info[!i]->hitboxes[i3].hitbox_kind == HITBOX_KIND_BLOCK) {
+							player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
@@ -356,7 +359,7 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
-			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
+			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
@@ -369,7 +372,7 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p1->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p2_hitbox->launch_gravity_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p2_hitbox->launch_max_fall_speed;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p2_hitbox->launch_speed_x;
-			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
+			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;

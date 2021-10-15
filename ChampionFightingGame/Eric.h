@@ -27,5 +27,5 @@ public:
 	EricScript eric_scripts[256];
 
 	Eric();
-	Eric(PlayerInfo* player_info, int id);
+	Eric(SDL_Renderer *renderer, int id);
 };

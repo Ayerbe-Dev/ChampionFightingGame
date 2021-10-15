@@ -14,14 +14,6 @@ struct Animation {
 	Animation();
 };
 
-class RoyScript {
-public:
-	string name;
-	void (RoyScript::* move_script)();
-
-	RoyScript();
-	RoyScript(string name, function<void()> move_script);
-};
 
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
 SDL_Rect getFrame(int frame, Animation* animation);

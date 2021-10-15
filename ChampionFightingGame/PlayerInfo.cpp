@@ -5,20 +5,11 @@
 
 PlayerInfo::PlayerInfo() { }
 
-PlayerInfo::PlayerInfo(int id, string chara_kind, int chara_id, SDL_Renderer *renderer) {
+PlayerInfo::PlayerInfo(int id, string chara_kind, SDL_Renderer *renderer) {
 	// runs on creation of instance;	
-	this->id = id;
 	this->chara_kind = chara_kind;
 	resource_dir = ("resource/chara/" + chara_kind);
 	superInit(renderer);
-	switch (chara_id) {
-		case (CHARA_KIND_ROY): {
-			Roy(this, id);
-		} break;
-		case (CHARA_KIND_ERIC): {
-			Eric(this, id);
-		} break;
-	}
 }
 
 void PlayerInfo::superInit(SDL_Renderer* renderer) {
@@ -269,14 +260,6 @@ void PlayerInfo::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_LANDING_HITSTUN] = &PlayerInfo::status_landing_hitstun;
 	pEnter_status[CHARA_STATUS_LANDING_HITSTUN] = &PlayerInfo::enter_status_landing_hitstun;
 	pExit_status[CHARA_STATUS_LANDING_HITSTUN] = &PlayerInfo::exit_status_landing_hitstun;
-}
-
-void PlayerInfo::set_current_move_script(string anim_name) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_scripts[i].name == anim_name) {
-			moveScript = &RoyScript::move_script;
-		}
-	}
 }
 
 //Move Scripting

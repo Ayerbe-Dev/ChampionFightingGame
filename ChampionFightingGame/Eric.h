@@ -8,9 +8,10 @@ class EricScript {
 public:
 	string name;
 	void (EricScript::* move_script)();
+	int id{ -1 };
 
 	EricScript();
-	EricScript(string name, function<void()> move_script);
+	EricScript(string name, function<void()> move_script, int id);
 };
 
 class Eric : public PlayerInfo {
@@ -21,8 +22,10 @@ public:
 	float eric_float[CHARA_ERIC_FLOAT_MAX];
 	bool eric_flag[CHARA_ERIC_FLAG_MAX];
 
+	void loadEricACMD();
 	void loadEricStatusFunctions();
-//	void set_current_move_script(string anim_name);
+	void set_current_move_script(string anim_name);
+	void script(string name, function<void()> move_script);
 
 	EricScript eric_scripts[256];
 

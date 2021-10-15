@@ -8,9 +8,10 @@ class RoyScript {
 public:
 	string name;
 	void (RoyScript::* move_script)();
+	int id{ -1 };
 
 	RoyScript();
-	RoyScript(string name, function<void()> move_script);
+	RoyScript(string name, function<void()> move_script, int id);
 };
 
 class Roy : public PlayerInfo {
@@ -21,8 +22,10 @@ public:
 	float roy_float[CHARA_ROY_FLOAT_MAX];
 	bool roy_flag[CHARA_ROY_FLAG_MAX];
 
+	void loadRoyACMD();
 	void loadRoyStatusFunctions();
 	void set_current_move_script(string anim_name);
+	void script(string name, function<void()> move_script);
 
 	RoyScript roy_scripts[256];
 

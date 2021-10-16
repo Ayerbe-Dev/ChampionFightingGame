@@ -1,0 +1,26 @@
+{
+    "folders": [
+      {
+        "path": "."
+      }
+    ],
+    "settings": {
+      "C_Cpp.default.includePath": [
+        "SDL2\\include"
+      ],
+      "search.exclude": {
+        // "**/node_modules": true,
+      },
+      "files.exclude": {
+        "ChampionFightingGame/*.vcxproj*": true,
+        "ChampionFightingGame/*.o": true,
+        "ChampionFightingGame/*.aps": true,
+        "ChampionFightingGame/*.rc": true,
+        "ChampionFightingGame/*.dll": true,
+        "ChampionFightingGame/x64": true,
+        "ChampionFightingGame/Debug": true,
+        "**/ios": true,
+      },
+      "editor.formatOnSave": true, // not needed
+    }
+  }

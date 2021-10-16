@@ -188,7 +188,7 @@ void Eric::set_current_move_script(string anim_name) {
 void Eric::script(string name, function<void()> move_script) {
 	for (int i = 0; i < 256; i++) {
 		if (eric_scripts[i].id == -1) {
-			eric_scripts[i] = EricScript::EricScript(name, move_script, i);
+			eric_scripts[i] = EricScript(name, move_script, i);
 			break;
 		}
 	}

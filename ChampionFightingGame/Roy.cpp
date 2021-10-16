@@ -155,7 +155,7 @@ void Roy::set_current_move_script(string anim_name) {
 void Roy::script(string name, function<void()> move_script) {
 	for (int i = 0; i < 256; i++) {
 		if (roy_scripts[i].id == -1) {
-			roy_scripts[i] = RoyScript::RoyScript(name, move_script, i);
+			roy_scripts[i] = RoyScript(name, move_script, i);
 			break;
 		}
 	}

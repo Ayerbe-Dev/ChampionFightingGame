@@ -139,7 +139,12 @@ void PlayerInfo::loadDefaultButtonMap() {
 		button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_A;
 		button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_S;
 		button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_D;
-		button_info[BUTTON_LP].mapping = SDL_SCANCODE_Z;
+		button_info[BUTTON_LP].mapping = SDL_SCANCODE_Y;
+		button_info[BUTTON_MP].mapping = SDL_SCANCODE_U;
+		button_info[BUTTON_HP].mapping = SDL_SCANCODE_I;
+		button_info[BUTTON_LK].mapping = SDL_SCANCODE_H;
+		button_info[BUTTON_MK].mapping = SDL_SCANCODE_J;
+		button_info[BUTTON_HK].mapping = SDL_SCANCODE_K;
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
 	}
@@ -148,6 +153,13 @@ void PlayerInfo::loadDefaultButtonMap() {
 		button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_DOWN;
 		button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
 		button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_RIGHT;
+
+		button_info[BUTTON_LP].mapping = SDL_SCANCODE_Z;
+		button_info[BUTTON_MP].mapping = SDL_SCANCODE_X;
+		button_info[BUTTON_HP].mapping = SDL_SCANCODE_C;
+		button_info[BUTTON_LK].mapping = SDL_SCANCODE_V;
+		button_info[BUTTON_MK].mapping = SDL_SCANCODE_B;
+		button_info[BUTTON_HK].mapping = SDL_SCANCODE_N;
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
 	}
@@ -201,6 +213,18 @@ void PlayerInfo::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_ATTACK] = &PlayerInfo::status_attack;
 	pEnter_status[CHARA_STATUS_ATTACK] = &PlayerInfo::enter_status_attack;
 	pExit_status[CHARA_STATUS_ATTACK] = &PlayerInfo::exit_status_attack;
+
+	pStatus[CHARA_STATUS_ATTACK_AIR] = &PlayerInfo::status_attack_air;
+	pEnter_status[CHARA_STATUS_ATTACK_AIR] = &PlayerInfo::enter_status_attack_air;
+	pExit_status[CHARA_STATUS_ATTACK_AIR] = &PlayerInfo::exit_status_attack_air;
+
+	pStatus[CHARA_STATUS_GRAB] = &PlayerInfo::status_grab;
+	pEnter_status[CHARA_STATUS_GRAB] = &PlayerInfo::enter_status_grab;
+	pExit_status[CHARA_STATUS_GRAB] = &PlayerInfo::exit_status_grab;
+
+	pStatus[CHARA_STATUS_GRAB_AIR] = &PlayerInfo::status_grab_air;
+	pEnter_status[CHARA_STATUS_GRAB_AIR] = &PlayerInfo::enter_status_grab_air;
+	pExit_status[CHARA_STATUS_GRAB_AIR] = &PlayerInfo::exit_status_grab_air;
 
 	pStatus[CHARA_STATUS_HITSTUN] = &PlayerInfo::status_hitstun;
 	pEnter_status[CHARA_STATUS_HITSTUN] = &PlayerInfo::enter_status_hitstun;
@@ -333,8 +357,26 @@ void PlayerInfo::processInput() {
 	else {
 		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
 	}
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
+		if (chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] != 0.0 && situation_kind == CHARA_SITUATION_GROUND) {
+			pos.x -= chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir;
+		}
+	}
+	else {
+		chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
+	}
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1) {
+			chara_flag[CHARA_FLAG_HAS_ATTACK] = true;
+			chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = true;
+			break;
+		}
+		else {
+			chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
+		}
+	}
 	if (check_button_on(BUTTON_START)) {
-		pos.y = 0.0;
+		pos.y = 50.0;
 		if (id == 0) {
 			pos.x = -200.0;
 		}
@@ -413,11 +455,11 @@ i32 PlayerInfo::get_flick_dir() {
 bool PlayerInfo::add_pos(int x, int y) {
 	pos.x += x;
 	pos.y += y;
-	if (invalid_x() || invalid_y()) {
-		if (invalid_x()) {
+	if (invalid_x(pos.x) || invalid_y(pos.y)) {
+		if (invalid_x(pos.x)) {
 			pos.x = prevpos.x;
 		}
-		if (invalid_y()) {
+		if (invalid_y(pos.x)) {
 			pos.y = prevpos.y;
 		}
 		return false;
@@ -430,11 +472,11 @@ bool PlayerInfo::add_pos(int x, int y) {
 bool PlayerInfo::set_pos(int x, int y) {
 	pos.x = x;
 	pos.y = y;
-	if (invalid_x() || invalid_y()) {
-		if (invalid_x()) {
+	if (invalid_x(pos.x) || invalid_y(pos.y)) {
+		if (invalid_x(pos.x)) {
 			pos.x = prevpos.x;
 		}
-		if (invalid_y()) {
+		if (invalid_y(pos.y)) {
 			pos.y = prevpos.y;
 		}
 		return false;
@@ -444,23 +486,23 @@ bool PlayerInfo::set_pos(int x, int y) {
 	}
 }
 
-bool PlayerInfo::invalid_x() {
-	return pos.x > WINDOW_WIDTH / 2 || pos.x < WINDOW_WIDTH / -2;
+bool PlayerInfo::invalid_x(f32 x) {
+	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2;
 }
 
-bool PlayerInfo::invalid_y() {
-	return pos.y < 0 || pos.y > WINDOW_HEIGHT;
+bool PlayerInfo::invalid_y(f32 y) {
+	return y < 0 || y > WINDOW_HEIGHT;
 }
 
 //Hitbox
 
-void PlayerInfo::new_hitbox(int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, GameCoordinate anchor, GameCoordinate offset,
+void PlayerInfo::new_hitbox(int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
 	int hitbox_kind, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
 	int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind, 
 	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, 
 	f32 launch_gravity_y, f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos) {
 	if (id < 10) {
-		hitboxes[id] = Hitbox(this, id, damage, chip_damage, counterhit_damage_mul, anchor, offset, hitbox_kind, meter_gain_on_hit,
+		hitboxes[id] = Hitbox(this, id, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, hitbox_kind, meter_gain_on_hit,
 			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, attack_height,
 			attack_level, hit_pushback, block_pushback, clank_kind, success_hit, juggle_set, max_juggle, hit_status, counterhit_status, 
 			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, use_player_pos);
@@ -539,7 +581,7 @@ void PlayerInfo::clear_hurtbox_all() {
 	}
 }
 
-//Animations
+//Transitions
 
 bool PlayerInfo::is_actionable() {
 	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0 && chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
@@ -554,6 +596,17 @@ bool PlayerInfo::is_actionable() {
 		return false;
 	}
 }
+
+bool PlayerInfo::can_kara() {
+	if (((chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS]) || kara_enabled) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+//Animations
 
 void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
@@ -614,7 +667,9 @@ bool PlayerInfo::change_status(u32 new_status_kind, bool call_end_status, bool r
 		clear_hitbox_all();
 		clear_grabbox_all();
 		clear_hurtbox_all();
+		kara_enabled = false;
 		chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
+		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -634,12 +689,55 @@ void PlayerInfo::playoutStatus() {
 
 bool PlayerInfo::common_ground_status_act() { 
 	if (is_actionable()) {
-		if (check_button_trigger(BUTTON_LP)) {
-			if (get_stick_dir() < 4) {
-				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CLP;
+		if (check_button_trigger(BUTTON_LP) || check_button_trigger(BUTTON_MP) || check_button_trigger(BUTTON_HP)
+			|| check_button_trigger(BUTTON_LK) || check_button_trigger(BUTTON_MK) || check_button_trigger(BUTTON_HK)) {
+			if (check_button_trigger(BUTTON_LP)) {
+				if (get_stick_dir() < 4) {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CLP;
+				}
+				else {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LP;
+				}
 			}
-			else {
-				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LP;
+			if (check_button_trigger(BUTTON_LK)) {
+				if (get_stick_dir() < 4) {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CLK;
+				}
+				else {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
+				}
+			}
+			if (check_button_trigger(BUTTON_MP)) {
+				if (get_stick_dir() < 4) {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CMP;
+				}
+				else {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MP;
+				}
+			}
+			if (check_button_trigger(BUTTON_MK)) {
+				if (get_stick_dir() < 4) {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CMK;
+				}
+				else {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MK;
+				}
+			}
+			if (check_button_trigger(BUTTON_HP)) {
+				if (get_stick_dir() < 4) {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CHP;
+				}
+				else {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HP;
+				}
+			}
+			if (check_button_trigger(BUTTON_HK)) {
+				if (get_stick_dir() < 4) {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CHK;
+				}
+				else {
+					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HK;
+				}
 			}
 			return change_status(CHARA_STATUS_ATTACK, true, false);
 		}
@@ -662,7 +760,7 @@ bool PlayerInfo::common_ground_status_act() {
 		if (get_stick_dir() > 6) {
 			return change_status(CHARA_STATUS_JUMPSQUAT);
 		}
-		if (get_stick_dir() < 4) {
+		if (get_flick_dir() < 4 && get_flick_dir() != 0) {
 			return change_status(CHARA_STATUS_CROUCHD);
 		}
 	}
@@ -670,15 +768,65 @@ bool PlayerInfo::common_ground_status_act() {
 }
 
 bool PlayerInfo::common_air_status_act() {
+	if (is_actionable()) {
+		if (check_button_trigger(BUTTON_LP) || check_button_trigger(BUTTON_MP) || check_button_trigger(BUTTON_HP)
+			|| check_button_trigger(BUTTON_LK) || check_button_trigger(BUTTON_MK) || check_button_trigger(BUTTON_HK)) {
+			if (check_button_trigger(BUTTON_LP)) {
+				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LP;
+			}
+			if (check_button_trigger(BUTTON_LK)) {
+				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
+			}
+			if (check_button_trigger(BUTTON_MP)) {
+				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MP;
+			}
+			if (check_button_trigger(BUTTON_MK)) {
+				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MK;
+			}
+			if (check_button_trigger(BUTTON_HP)) {
+				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HP;
+			}
+			if (check_button_trigger(BUTTON_HK)) {
+				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HK;
+			}
+			return change_status(CHARA_STATUS_ATTACK_AIR, false, false);
+		}
+	}
 	return false;
 }
 
 bool PlayerInfo::common_air_status_general() {
-	if (pos.y < 50.0) {
-		return change_status(CHARA_STATUS_WAIT);
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
 	}
-	else {
-		return false;
+	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
+	}
+	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
+	}
+	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	return false;
+}
+
+u32 PlayerInfo::get_status_group(u32 status) {
+	switch (status) {
+		case (CHARA_STATUS_HITSTUN):
+		case (CHARA_STATUS_HITSTUN_AIR):
+		case (CHARA_STATUS_LAUNCH): 
+		case (CHARA_STATUS_CRUMPLE): {
+			return STATUS_GROUP_HITSTUN;
+		}
+		break;
+		case (CHARA_STATUS_CROUCHD):
+		case (CHARA_STATUS_CROUCH):
+		case (CHARA_STATUS_CROUCHU): {
+			return STATUS_GROUP_CROUCH;
+		}
+		break;
+		default: {
+			return STATUS_GROUP_NORMAL;
+		} break;
 	}
 }
 
@@ -866,7 +1014,7 @@ void PlayerInfo::status_crouchd() {
 }
 
 void PlayerInfo::enter_status_crouchd() {
-	change_anim("crouch_d");
+	change_anim("crouch_d", 120);
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
@@ -875,16 +1023,7 @@ void PlayerInfo::exit_status_crouchd() {
 }
 
 void PlayerInfo::status_crouch() {
-	if (get_stick_dir() == 6) {
-		change_status(CHARA_STATUS_WALKF);
-		return;
-	}
-	if (get_stick_dir() == 4) {
-		change_status(CHARA_STATUS_WALKB);
-		return;
-	}
-	if (get_stick_dir() > 6) {
-		change_status(CHARA_STATUS_JUMPSQUAT);
+	if (common_ground_status_act()) {
 		return;
 	}
 	if (get_stick_dir() == 5) {
@@ -939,24 +1078,18 @@ void PlayerInfo::exit_status_jumpsquat() {
 }
 
 void PlayerInfo::status_jump() {
+	if (common_air_status_act()) {
+		return;
+	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_FALL, false);
 		return;
 	}
 	if (pos.y < 50.0) {
-		change_status(CHARA_STATUS_WAIT);
+		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
-	}
-	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
-	}
-	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
-	}
-	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	common_air_status_general();
 }
 
 void PlayerInfo::enter_status_jump() {
@@ -992,23 +1125,18 @@ void PlayerInfo::enter_status_jump() {
 void PlayerInfo::exit_status_jump() {
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
+	chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 }
 
 void PlayerInfo::status_fall() {
+	if (common_air_status_act()) {
+		return;
+	}
 	if (pos.y < 50.0) {
 		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
-	}
-	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
-	}
-	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
-	}
-	add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	common_air_status_general();
 }
 
 void PlayerInfo::enter_status_fall () {
@@ -1018,12 +1146,19 @@ void PlayerInfo::enter_status_fall () {
 }
 
 void PlayerInfo::exit_status_fall() {
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 	chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 }
 
 void PlayerInfo::status_attack() {
 	if (is_anim_end) {
-		if (change_status(CHARA_STATUS_WAIT)) {
+		if (get_stick_dir() < 4) {
+			if (change_status(CHARA_STATUS_CROUCH)) {
+				return;
+			}
+		}
+		else if (change_status(CHARA_STATUS_WAIT)) {
 			return;
 		}
 	}
@@ -1032,33 +1167,140 @@ void PlayerInfo::status_attack() {
 			return;
 		}
 	}
+	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
+		change_status(CHARA_STATUS_GRAB);
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK
+		|| chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
+		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
+			if (chara_flag[CHARA_FLAG_HAS_ATTACK] && chara_float[CHARA_FLOAT_SUPER_METER] >= 30.0) {
+				chara_float[CHARA_FLOAT_SUPER_METER] -= 30.0;
+				change_status(CHARA_STATUS_PARRY_START);
+				return;
+			}
+			else if (!chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS]) {
+				change_status(CHARA_STATUS_PARRY_START);
+				return;
+			}
+		}
+	}
 }
 
 void PlayerInfo::enter_status_attack() {
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
 		change_anim("stand_lp");
 	}
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP) {
-		change_anim("stand_mp", 30);
+		change_anim("stand_mp");
 	}
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HP) {
-		change_anim("stand_hp", 30);
+		change_anim("stand_hp");
 	}
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) {
-		change_anim("stand_lk", 30);
+		change_anim("stand_lk");
 	}
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK) {
-		change_anim("stand_mk", 30);
+		change_anim("stand_mk");
 	}
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HK) {
-		change_anim("stand_hk", 30);
+		change_anim("stand_hk");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CLP) {
+		change_anim("crouch_lp");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP) {
+		change_anim("crouch_mp");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CHP) {
+		change_anim("crouch_hp");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CLK) {
+		change_anim("crouch_lk");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
+		change_anim("crouch_mk");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CHK) {
+		change_anim("crouch_hk");
 	}
 }
 
 void PlayerInfo::exit_status_attack() {
+
+}
+
+void PlayerInfo::status_attack_air() {
+	if (pos.y < 50.0) {
+		change_status(CHARA_STATUS_LANDING);
+		return;
+	}
+	if (is_anim_end) {
+		if (change_status(CHARA_STATUS_FALL)) {
+			return;
+		}
+	}
+	if (is_actionable()) {
+		if (common_air_status_act()) {
+			return;
+		}
+	}
+	common_air_status_general();
+}
+
+void PlayerInfo::enter_status_attack_air() {
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
+		change_anim("jump_lp");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP) {
+		change_anim("jump_mp");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HP) {
+		change_anim("jump_hp");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) {
+		change_anim("jump_lk");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK) {
+		change_anim("jump_mk");
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HK) {
+		change_anim("jump_hk");
+	}
+}
+
+void PlayerInfo::exit_status_attack_air() {
+
+}
+
+void PlayerInfo::status_grab() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
+}
+
+void PlayerInfo::enter_status_grab() {
+	change_anim("grab");
+}
+
+void PlayerInfo::exit_status_grab() {
+
+}
+
+void PlayerInfo::status_grab_air() {
+
+}
+
+void PlayerInfo::enter_status_grab_air() {
+
+}
+
+void PlayerInfo::exit_status_grab_air() {
 
 }
 
@@ -1074,9 +1316,6 @@ void PlayerInfo::status_hitstun() {
 				return;
 			}
 		}
-	}
-	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
-		pos.x -= chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir;
 	}
 }
 
@@ -1161,7 +1400,6 @@ void PlayerInfo::status_blockstun() {
 			change_anim("stand_block", 30);
 		}
 	}
-	pos.x -= chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir;
 }
 
 void PlayerInfo::enter_status_blockstun() {
@@ -1188,11 +1426,34 @@ void PlayerInfo::exit_status_blockstun() {
 }
 
 void PlayerInfo::status_parry_start() {
-
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
+	if (is_anim_end) {
+		if (get_stick_dir() < 4) {
+			if (change_status(CHARA_STATUS_CROUCH)) {
+				return;
+			}
+		}
+		else if (change_status(CHARA_STATUS_WAIT)) {
+			return;
+		}
+	}
+	if (get_stick_dir() < 4) {
+		chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
+	}
+	else if (get_stick_dir() < 7) {
+		chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MID;
+	}
+	else {
+		chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+	}
 }
 
 void PlayerInfo::enter_status_parry_start() {
-
+	change_anim("parry_start", 15);
 }
 
 void PlayerInfo::exit_status_parry_start() {
@@ -1200,11 +1461,33 @@ void PlayerInfo::exit_status_parry_start() {
 }
 
 void PlayerInfo::status_parry() {
-
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
+	if (is_anim_end) {
+		if (get_stick_dir() < 4) {
+			if (change_status(CHARA_STATUS_CROUCH)) {
+				return;
+			}
+		}
+		else if (change_status(CHARA_STATUS_WAIT)) {
+			return;
+		}
+	}
 }
 
 void PlayerInfo::enter_status_parry() {
-
+	if (chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
+		change_anim("parry_low");
+	}
+	else if (chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID) {
+		change_anim("parry_mid");
+	}
+	else {
+		change_anim("parry_high");
+	}
 }
 
 void PlayerInfo::exit_status_parry() {

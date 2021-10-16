@@ -31,6 +31,7 @@ public:
 	u32 hold_ms;
 	u32 last_frame_ms;
 	bool is_anim_end{ false };
+	bool kara_enabled{ false };
 	
 	int prev_stick_dir;
 	
@@ -90,8 +91,8 @@ public:
 
 	bool add_pos(int x, int y);
 	bool set_pos(int x, int y);
-	bool invalid_x();
-	bool invalid_y();
+	bool invalid_x(f32 x);
+	bool invalid_y(f32 y);
 
 	/*
 		For classes with multiple instances in the PlayerInfo table, it makes sense to be able to call their methods from the PlayerInfo class instead
@@ -102,11 +103,11 @@ public:
 
 	//Hitbox
 	
-	void new_hitbox(int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, GameCoordinate anchor, GameCoordinate offset, int hitbox_kind,
-		f32 meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, int hitstun, int blocklag,
-		int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind, bool success_hit,
-		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, f32 launch_gravity_y,
-		f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
+	void new_hitbox(int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset, 
+		int hitbox_kind, f32 meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
+		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind, 
+		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, 
+		f32 launch_gravity_y, f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
 	void update_hitbox_pos();
 	void update_hitbox_connect();
 	void clear_hitbox(int id);
@@ -125,9 +126,13 @@ public:
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();
 
+	//Transitions
+
+	bool is_actionable();
+	bool can_kara();
+
 	//Animation
 	
-	bool is_actionable();
 	void change_anim(string animation_name, int frame_rate = 60, int entry_frame = 0);
 	void startAnimation(Animation* animation);
 	bool canStep();
@@ -140,6 +145,7 @@ public:
 	bool common_ground_status_act();
 	bool common_air_status_act();
 	bool common_air_status_general();
+	u32 get_status_group(u32 status_kind);
 
 	//don't worry, it'll get longer :)
 	void status_wait();
@@ -178,6 +184,15 @@ public:
 	void status_attack();
 	void enter_status_attack();
 	void exit_status_attack();
+	void status_attack_air();
+	void enter_status_attack_air();
+	void exit_status_attack_air();
+	void status_grab();
+	void enter_status_grab();
+	void exit_status_grab();
+	void status_grab_air();
+	void enter_status_grab_air();
+	void exit_status_grab_air();
 	void status_hitstun();
 	void enter_status_hitstun();
 	void exit_status_hitstun();

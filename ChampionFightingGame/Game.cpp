@@ -237,7 +237,7 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 			blocking = true;
 		}
 	}
-	if (defender->status_kind == CHARA_STATUS_PARRY_START) {
+	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
 		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == hitbox->attack_height) {
 			parrying = true;
 		}
@@ -261,7 +261,6 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 	defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->hitstun;
 	attacker->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = true;
-	attacker->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 	return hitbox->id;
 }
 
@@ -327,41 +326,68 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
+			if (p2->invalid_x(p2->pos.x - p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
+				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
+			}
+			else {
+				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
+			}
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
 		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
-			//If the opponent didn't block but the attack_connected flag is false, that means the opponent armored through it
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage / 2;
 		}
 		else {
+			/*
+				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
+				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
+			*/
+			if (p2->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) { 
+				if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
+				}
+			}
+			else {
+				p1->chara_int[CHARA_INT_DAMAGE_SCALE] = 0;
+			}
 			p2->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
+			/*
+			If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise, 
+			increase it by one so that the opponent's juggle value is always going up
+			*/
 			if (p2->chara_int[CHARA_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_set) {
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] ++;
 			}
 			else {
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
 			}
-			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
+			if (p2->invalid_x(p2->pos.x - p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
+				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
+			}
+			else {
+				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
+			}
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
+				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
 				p2->chara_int[CHARA_INT_HITSTUN_FRAMES] *= 1.2;
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);
 			}
 			else {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
-				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage;
+				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * ((f32)(clamp(1, 10 - p1->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10);
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
 			}
 			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
+			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
 	}
 
@@ -376,7 +402,12 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
-			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
+			if (p1->invalid_x(p1->pos.x - p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir)) {
+				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
+			}
+			else {
+				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
+			}
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
@@ -385,6 +416,14 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
 		else {
+			if (p1->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+				if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+					p2->chara_int[CHARA_INT_DAMAGE_SCALE] += p2_hitbox->scale;
+				}
+			}
+			else {
+				p2->chara_int[CHARA_INT_DAMAGE_SCALE] = 0;
+			}
 			p1->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p2_hitbox->launch_init_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p2_hitbox->launch_gravity_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p2_hitbox->launch_max_fall_speed;
@@ -395,21 +434,28 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 			else {
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = p2_hitbox->juggle_set;
 			}
-			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
+			if (p1->invalid_x(p1->pos.x - p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir)) {
+				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
+			}
+			else {
+				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
+			}
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
+				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
 				p1->chara_int[CHARA_INT_HITSTUN_FRAMES] *= 1.2;
 				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p1_status_post_hit = get_damage_status(p2_hitbox->counterhit_status, p1->situation_kind);
 			}
 			else {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_hit;
-				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage;
+				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * ((f32)(clamp(1, 10 - p2->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10.0);
 				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = p2_hitbox->attack_level;
 				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status, p1->situation_kind);
 			}
 			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
+			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
 	}
 	if (p1_hit) {
@@ -421,7 +467,10 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 }
 
 bool can_counterhit(PlayerInfo* defender, Hitbox* hitbox) {
-	return false;
+	if (defender->status_kind == CHARA_STATUS_HITSTUN_PARRY) {
+		hitbox->scale = -5;
+	}
+	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT];
 }
 
 int get_damage_status(int hit_status, int situation_kind) {
@@ -440,6 +489,9 @@ int get_damage_status(int hit_status, int situation_kind) {
 		else {
 			return CHARA_STATUS_LAUNCH_START;
 		}
+	}
+	else if (hit_status == HIT_STATUS_KNOCKDOWN) {
+		return CHARA_STATUS_KNOCKDOWN_START;
 	}
 	else {
 		if (situation_kind == CHARA_SITUATION_AIR) {

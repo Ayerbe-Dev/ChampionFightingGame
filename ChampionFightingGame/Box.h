@@ -17,6 +17,7 @@ public:
 	f32 damage;
 	f32 chip_damage;
 	f32 counterhit_damage_mul;
+	int scale;
 	f32 meter_gain_on_hit;
 	f32 meter_gain_on_counterhit;
 	f32 meter_gain_on_block;
@@ -43,10 +44,10 @@ public:
 	bool use_player_pos;
 
 	Hitbox();
-	Hitbox(PlayerInfo* player_info, int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, GameCoordinate anchor, GameCoordinate offset,
-		int hitbox_kind, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
-		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind,
-		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y,
+	Hitbox(PlayerInfo* player_info, int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, int scale, GameCoordinate anchor, 
+		GameCoordinate offset, int hitbox_kind, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, 
+		int hitlag, int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback,
+		int clank_kind, bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y,
 		f32 launch_gravity_y, f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
 	
 	void update_connect();

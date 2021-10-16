@@ -168,7 +168,7 @@ int main() {
 				debug_rect[i].h = debug_offset[i].y;
 				debug_rect[i].w -= debug_rect[i].x;
 				debug_rect[i].h -= debug_rect[i].y;
-				if (player_info[i]->check_button_on(BUTTON_START)) {
+				if (debugger[i].check_button_on(BUTTON_START)) {
 					SDL_Rect temp_rect;
 					temp_rect.x = ((debug_anchor[i].x - (player_info[i]->pos.x + WINDOW_WIDTH / 2 * player_info[i]->facing_dir)));
 					temp_rect.y = (debug_anchor[i].y - WINDOW_HEIGHT) * -1.0 - player_info[i]->pos.y;

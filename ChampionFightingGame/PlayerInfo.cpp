@@ -147,6 +147,8 @@ void PlayerInfo::loadDefaultButtonMap() {
 		button_info[BUTTON_HK].mapping = SDL_SCANCODE_K;
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
+		button_info[BUTTON_DEBUG].mapping = SDL_SCANCODE_SLASH;
+		button_info[BUTTON_DEBUG_2].mapping = SDL_SCANCODE_LCTRL;
 	}
 	else if (id == 1) {
 		button_info[BUTTON_UP].mapping = SDL_SCANCODE_UP;
@@ -162,6 +164,8 @@ void PlayerInfo::loadDefaultButtonMap() {
 		button_info[BUTTON_HK].mapping = SDL_SCANCODE_N;
 
 		button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
+		button_info[BUTTON_DEBUG].mapping = SDL_SCANCODE_LSHIFT;
+		button_info[BUTTON_DEBUG_2].mapping = SDL_SCANCODE_LCTRL;
 	}
 }
 
@@ -293,33 +297,34 @@ void PlayerInfo::loadStatusFunctions() {
 void PlayerInfo::set_current_move_script(string anim_name) {}
 
 bool PlayerInfo::is_excute_frame(int excute_count, int frame) {
-	if (this->frame >= frame) {
-		if (this->excute_count >= excute_count) {
+	if (this->frame >= frame) { //If we've reached the statement in question
+		if (this->excute_count >= excute_count) { //If we've already executed the statement
 			return false;
 		}
-		else {
+		else { //If we are at the correct frame and haven't executed the statement yet
 			last_excute_frame = frame;
 			this->excute_count = excute_count;
 			return true;
 		}
 	}
-	else {
+	else { //If we still haven't reached the correct frame
+		last_excute_frame = frame;
 		return false;
 	}
 }
 
 bool PlayerInfo::is_excute_wait(int excute_count, int frames) {
-	if (frame >= last_excute_frame + frames) {
-		if (this->excute_count >= excute_count) {
+	if (frame >= last_excute_frame + frames) { //If it's been enough time since the last non-executed statement
+		if (this->excute_count >= excute_count) { //If we already executed the statement
 			return false;
 		}
-		else {
+		else { //Success
 			last_excute_frame = frame;
 			this->excute_count = excute_count;
 			return true;
 		}
 	}
-	else {
+	else { //Still waiting
 		return false;
 	}
 }
@@ -610,11 +615,13 @@ bool PlayerInfo::can_kara() {
 
 void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
+	last_excute_frame = 0;
 	int anim_to_use = -1;
 	for (int i = 0; i < 60; i++) {
 		if (animation_table[i].name == animation_name) {
-			frame = entry_frame;
+			render_frame = entry_frame;
 			hold_ms = (1000 / frame_rate);
+			frame = (render_frame * ((1000/60) / hold_ms));
 			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
 			return;
@@ -634,6 +641,7 @@ void PlayerInfo::startAnimation(Animation* animation) {
 
 bool PlayerInfo::canStep() {
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+		frame++;
 		u32 delta = SDL_GetTicks() - last_frame_ms;
 		if (delta > hold_ms) {
 			last_frame_ms = SDL_GetTicks();
@@ -649,13 +657,14 @@ bool PlayerInfo::canStep() {
 }
 
 void PlayerInfo::stepAnimation() {
-	int last_frame = frame;
-	frame_rect = getFrame(frame, anim_kind);
-	if (frame == anim_kind->length) {
+	int last_frame = render_frame;
+	frame_rect = getFrame(render_frame, anim_kind);
+	if (render_frame == anim_kind->length) {
+		render_frame = 0;
 		frame = 0;
 	}
 	else {
-		frame++;
+		render_frame++;
 	}
 	is_anim_end = last_frame > frame;
 }
@@ -930,8 +939,8 @@ void PlayerInfo::status_dash() {
 	if (frame >= min_frame && frame < max_frame) {
 		add_pos(stats.dash_f_speed * facing_dir, 0);
 	}
-	else {
-		add_pos(stats.walk_f_speed * facing_dir, 0);
+	else if (frame < max_frame + 2) {
+		add_pos((stats.walk_f_speed + stats.dash_f_speed) * facing_dir / 2, 0);
 	}
 
 	if (frame >= stats.dash_f_cancel_frame) {
@@ -975,8 +984,8 @@ void PlayerInfo::status_dashb() {
 	if (frame >= min_frame && frame < max_frame) {
 		add_pos(stats.dash_b_speed * facing_dir * -1, 0);
 	}
-	else {
-		add_pos(stats.walk_b_speed * facing_dir * -1, 0);
+	else if (frame < max_frame + 2) {
+		add_pos((stats.walk_b_speed + stats.dash_b_speed) * facing_dir / -2, 0);
 	}
 
 	if (frame >= stats.dash_f_cancel_frame) {

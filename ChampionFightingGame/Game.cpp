@@ -68,6 +68,9 @@ void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
 		Get the player's inputs and increment the frame.
 	*/
 
+	if (player_info->check_button_on(BUTTON_START)) {
+		player_info->superInit(player_info->id, renderer); //Debugging
+	}
 	player_info->processInput();
 	if (player_info->canStep()) {
 		player_info->stepAnimation();
@@ -125,14 +128,14 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 				render_pos = player_info[i]->hurtboxes[i2].rect;
 
 				if (visualize_boxes) {
-					Vec3f hurtbox_color = { 0, 0, 255 };
+					Vec4f hurtbox_color = { 0, 0, 255, 127 };
 					if (player_info[i]->hurtboxes[i2].intangible_kind != INTANGIBLE_KIND_NONE) {
 						hurtbox_color.y = 255;
 					}
 
 					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, 255);
 					SDL_RenderDrawRect(renderer, &render_pos);
-					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, 127);
+					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, hurtbox_color.w);
 					SDL_RenderFillRect(renderer, &render_pos);
 				}
 			}
@@ -143,13 +146,15 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer* rend
 				render_pos = player_info[i]->hitboxes[i2].rect;
 
 				if (visualize_boxes) {
-					Vec3f hitbox_color = { 255, 0, 0 };
+					Vec4f hitbox_color = { 255, 0, 0, 127 };
 					if (player_info[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK) {
 						hitbox_color.y = 165;
+						hitbox_color.w = 50;
 					}
+
 					SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
 					SDL_RenderDrawRect(renderer, &render_pos);
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 127);
+					SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, hitbox_color.w);
 					SDL_RenderFillRect(renderer, &render_pos);
 				}
 			}

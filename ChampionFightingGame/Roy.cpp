@@ -10,6 +10,7 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 	loadRoyACMD();
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
+	this->chara_kind = CHARA_KIND_ROY;
 }
 
 void Roy::chara_id() {
@@ -41,7 +42,7 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hitbox(1, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 		}
-		if (is_excute_frame(2, 2)) {
+		if (is_excute_frame(2, 3)) {
 			new_hitbox(0, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 60, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 11, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 		}
 		if (is_excute_wait(3, 2)) {
@@ -49,7 +50,18 @@ void Roy::loadRoyACMD() {
 		}
 	});
 	script("stand_hp", [this]() {
-
+		if (is_excute_frame(1, 0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hitbox(1, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_ALL, 12, 9, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
+		}
+		if (is_excute_frame(2, 2)) {
+			new_hitbox(0, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 60, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_ALL, 12, 11, 9, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, false, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
+		}
+		if (is_excute_wait(3, 2)) {
+			clear_hitbox_all();
+		}
 	});
 	script("stand_lk", [this]() {
 
@@ -105,7 +117,7 @@ void Roy::loadRoyACMD() {
 		if (is_excute_frame(2, 1)) {
 			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
 		}
-		if (is_excute_wait(3, 1)) { //due to rates, this is actually active for 4 frames
+		if (is_excute_wait(3, 4)) { //due to rates, this is actually active for 4 frames
 			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
 			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
 		}

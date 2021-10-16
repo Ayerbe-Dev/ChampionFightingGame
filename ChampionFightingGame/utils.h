@@ -42,6 +42,8 @@ enum {
 	BUTTON_MK,
 	BUTTON_HK,
 	BUTTON_START,
+	BUTTON_DEBUG,
+	BUTTON_DEBUG_2,
 
 	BUTTON_MAX,
 };
@@ -321,8 +323,9 @@ struct Offset {
 	int offset_y;
 };
 
-struct Vec3f {
+struct Vec4f {
 	int x;
 	int y;
 	int z;
+	int w;
 };

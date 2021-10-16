@@ -13,7 +13,7 @@
 class PlayerInfo{
 public:
 	i64 id;
-	string chara_kind;
+	int chara_kind;
 
 	GameCoordinate pos;
 	GameCoordinate prevpos;
@@ -26,6 +26,7 @@ public:
 	Animation* anim_kind;
 	Animation animation_table[256];
 	int frame;
+	int render_frame;
 	int last_excute_frame;
 	int excute_count;
 	u32 hold_ms;

@@ -147,7 +147,7 @@ int main()
 				debug = !debug;
 			}
 			if (!debug) {
-				tickOnce(player_info[i], renderer);
+				tickOnce(player_info[i], pRenderer);
 				frame_advance_entry_ms = SDL_GetTicks();
 			}
 			else if (i == 0) {
@@ -170,14 +170,14 @@ int main()
 						player_info[1]->button_info[o].changed = (old_button != new_button);
 					}
 					frame_advance_entry_ms = SDL_GetTicks();
-					tickOnce(player_info[0], renderer);
-					tickOnce(player_info[1], renderer);
+					tickOnce(player_info[0], pRenderer);
+					tickOnce(player_info[1], pRenderer);
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << player_info[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << player_info[debugger.target]->render_frame - 1 << endl;
 					}
 				}
-				debug_mode(&debugger, player_info[debugger.target], renderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
+				debug_mode(&debugger, player_info[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
 
 			}
 

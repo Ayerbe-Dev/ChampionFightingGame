@@ -5,6 +5,8 @@
 
 *.o
 *.exe
+AlphaBuild/
+AlphaBuild.zip
 
 # User-specific files
 *.rsuser

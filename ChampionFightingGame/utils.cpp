@@ -70,11 +70,11 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y)
 	int iYdelta = (559 - std::min(player2Y, player1Y));
 	if (iYdelta >= JUMP_FOLLOW_THRESHOLD)
 	{
-		cCamera.y = WINDOW_HEIGHT - cCamera.h - iYdelta + JUMP_FOLLOW_THRESHOLD;
+		cCamera.y = WINDOW_HEIGHT - cCamera.h - iYdelta + JUMP_FOLLOW_THRESHOLD - 50;
 	}
 	else
 	{
-		cCamera.y = WINDOW_HEIGHT - cCamera.h;
+		cCamera.y = WINDOW_HEIGHT - cCamera.h - 50;
 	}
 
 	return cCamera;

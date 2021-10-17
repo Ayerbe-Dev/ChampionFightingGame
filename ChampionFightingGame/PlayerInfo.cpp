@@ -18,13 +18,13 @@ void PlayerInfo::superInit(int id, SDL_Renderer *renderer)
 	//these initial gamecoord values get overwritten almost immediately. why are we still here, just to suffer?
 	if (id == 0)
 	{
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -50, 0);
 	}
 	else if (id == 1)
 	{
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 50, 0);
 	}
-	std::cout << pos.y << endl;
+
 	load_anim_list(renderer);
 	loadDefaultButtonMap();
 	load_params();

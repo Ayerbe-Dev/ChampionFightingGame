@@ -26,10 +26,10 @@ typedef float f32;
 
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
 #define JUMP_FOLLOW_THRESHOLD 100
-#define CAMERA_MAX_ZOOM_OUT 900
-#define CAMERA_MAX_ZOOM_IN 700
+#define CAMERA_MAX_ZOOM_OUT 700
+#define CAMERA_MAX_ZOOM_IN 400
 
-#define FLOOR_GAMECOORD 0
+#define FLOOR_GAMECOORD 75.0
 
 int clamp(int min, int value, int max);
 int ymlChopInt(string line);

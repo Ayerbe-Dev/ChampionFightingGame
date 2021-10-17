@@ -236,11 +236,11 @@ int main()
 		check_attack_connections(player_info[0], player_info[1], renderer, visualize_boxes);
 
 		SDL_Rect camera;
-
+		//cout << player_info[0]->pos.getRenderCoodrinateY() << endl;
 		camera.w = player_info[1]->pos.getRenderCoodrinateX() + 100 - player_info[0]->pos.getRenderCoodrinateX();
 		camera.h = camera.w * 0.5625;
 		camera.x = player_info[0]->pos.getRenderCoodrinateX();
-		camera.y = WINDOW_HEIGHT - camera.h;
+		camera.y = WINDOW_HEIGHT - camera.h - (559 - player_info[0]->pos.getRenderCoodrinateY());
 
 		//SDL_RenderSetClipRect(renderer, &viewport);
 		//SDL_RenderSetScale(renderer, 2, 1);

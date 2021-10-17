@@ -53,16 +53,29 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y)
 {
 	SDL_Rect cCamera;
 
+	//the 300 serves to give some padding to the player on the right. remember, the sprite coords are to the top left
 	cCamera.w = std::min(
-		std::max(player1X, player2X) + 300 - std::min(player1X, player2X),
-		900);
+		std::max(std::max(player1X, player2X) + 300 - std::min(player1X, player2X),
+				 CAMERA_MAX_ZOOM_IN),
+		CAMERA_MAX_ZOOM_OUT);
 
 	//0.5625 = WINDOW_HEIGHT / WINDOW_WIDTH. its used to scale the camera for correct proportions
-	cCamera.h = cCamera.w * 0.5625;
-	cCamera.x = std::min(player1X, player1Y) - 100;
+	cCamera.h = cCamera.w * WINDOW_FACTOR;
+
+	// the 100 gives padding to the player on the left
+	cCamera.x = std::min(player1X, player2X) - 100;
 
 	//559 is the absolute y value of the floor
-	cCamera.y = WINDOW_HEIGHT - cCamera.h - (559 - std::min(player2Y, player1Y));
+	//JUMP_FOLLOW_THRESHOLD is the jump line before the camera starts moving
+	int iYdelta = (559 - std::min(player2Y, player1Y));
+	if (iYdelta >= JUMP_FOLLOW_THRESHOLD)
+	{
+		cCamera.y = WINDOW_HEIGHT - cCamera.h - iYdelta + JUMP_FOLLOW_THRESHOLD;
+	}
+	else
+	{
+		cCamera.y = WINDOW_HEIGHT - cCamera.h;
+	}
 
 	return cCamera;
 }

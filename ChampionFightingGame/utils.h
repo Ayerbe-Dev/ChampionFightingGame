@@ -24,6 +24,11 @@ typedef float f32;
 
 #define HITBOX_COUNT_MAX 9
 
+#define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
+#define JUMP_FOLLOW_THRESHOLD 100
+#define CAMERA_MAX_ZOOM_OUT 900
+#define CAMERA_MAX_ZOOM_IN 700
+
 int clamp(int min, int value, int max);
 int ymlChopInt(string line);
 float ymlChopFloat(string line);

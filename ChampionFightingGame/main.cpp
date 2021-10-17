@@ -125,8 +125,13 @@ int main() {
 						player_info[i]->button_info[o].button_on = keyboard_state[player_info[i]->button_info[o].mapping];
 						bool new_button = player_info[i]->button_info[o].button_on;
 						player_info[i]->button_info[o].changed = (old_button != new_button);
+						old_button = player_info[!i]->button_info[o].button_on;
+						player_info[!i]->button_info[o].button_on = keyboard_state[player_info[!i]->button_info[o].mapping];
+						new_button = player_info[!i]->button_info[o].button_on;
+						player_info[!i]->button_info[o].changed = (old_button != new_button);
 					}
 					tickOnce(player_info[i], renderer);
+					tickOnce(player_info[!i], renderer);
 				}
 				if (debugger[i].check_button_trigger(BUTTON_LP)) {
 					debug_anchor[i].x = (((player_info[i]->pos.x * player_info[i]->facing_dir)) * player_info[i]->facing_dir) + WINDOW_WIDTH / 2;

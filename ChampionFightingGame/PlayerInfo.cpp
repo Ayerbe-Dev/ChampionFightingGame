@@ -971,6 +971,9 @@ void PlayerInfo::exit_status_dash() {
 }
 
 void PlayerInfo::status_dashb() {
+	cout << "Frame: " << frame << endl;
+	cout << "RFrame: " << render_frame << endl;
+
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
 		return;

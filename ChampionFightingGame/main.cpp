@@ -16,14 +16,15 @@ int error_render;
 Uint32 tick;
 Uint32 tok;
 
-SDL_Texture* pBG;
+SDL_Texture *pBG;
 
-int main() {
+int main()
+{
 	bool running = true;
 	bool visualize_boxes = true;
 	bool debug = false;
 	bool enable_player_input = true;
-	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
+	SDL_Rect debug_rect[2] = {0, 0, 0, 0};
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
 	Debugger debugger[2];
@@ -31,36 +32,42 @@ int main() {
 	debugger[1] = Debugger(1);
 
 	//init SDL
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	{
 		printf("error initializing SDL: %s\n", SDL_GetError());
 	}
 
-	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Window *window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 	//Background image
 	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
+	SDL_Texture *screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	//init players
 	PlayerInfo *player_info[2];
 
-	IFighter* p1 = new IFighter(CHARA_KIND_ROY, renderer, 0);
-	IFighter* p2 = new IFighter(CHARA_KIND_ERIC, renderer, 1);
+	IFighter *p1 = new IFighter(CHARA_KIND_ROY, renderer, 0);
+	IFighter *p2 = new IFighter(CHARA_KIND_ERIC, renderer, 1);
 
 	player_info[0] = p1->get_fighter();
 	player_info[1] = p2->get_fighter();
 
-	const Uint8* keyboard_state;
+	const Uint8 *keyboard_state;
 	tick = SDL_GetTicks();
 
-	while (running) {
+	while (running)
+	{
 		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			case SDL_QUIT: {
+		while (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_QUIT:
+			{
 				running = false;
 			}
 			break;
@@ -69,9 +76,12 @@ int main() {
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
-		for (int i = 0; i < BUTTON_MAX; i++) {
-			for (int o = 0; o < 2; o++) {
-				if (!debug) {
+		for (int i = 0; i < BUTTON_MAX; i++)
+		{
+			for (int o = 0; o < 2; o++)
+			{
+				if (!debug)
+				{
 					bool old_button = player_info[o]->button_info[i].button_on;
 					player_info[o]->button_info[i].button_on = keyboard_state[player_info[o]->button_info[i].mapping];
 					bool new_button = player_info[o]->button_info[i].button_on;
@@ -86,7 +96,8 @@ int main() {
 
 		tok = SDL_GetTicks() - tick;
 		//cout << "delta: " << tok << endl;
-		if (tok < TICK_RATE_MS) {
+		if (tok < TICK_RATE_MS)
+		{
 			//cout << "delay: " << TICK_RATE_MS - tok << endl;
 			SDL_Delay(TICK_RATE_MS - tok);
 			//put code below in here
@@ -94,33 +105,45 @@ int main() {
 		tick = SDL_GetTicks();
 
 		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, pBG, nullptr, nullptr);
-		for (int i = 0; i < 2; i++) {
+
+		SDL_SetRenderTarget(renderer, screen);
+		SDL_RenderCopy(renderer, pBG, nullptr, nullptr); //copies the background
+		for (int i = 0; i < 2; i++)
+		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (player_info[i]->situation_kind == CHARA_SITUATION_GROUND && player_info[i]->is_actionable()) {
-				if (player_info[i]->pos.x > player_info[!i]->pos.x) {
+			if (player_info[i]->situation_kind == CHARA_SITUATION_GROUND && player_info[i]->is_actionable())
+			{
+				if (player_info[i]->pos.x > player_info[!i]->pos.x)
+				{
 					player_info[i]->facing_dir = -1.0;
 					player_info[i]->facing_right = false;
 					flip = SDL_FLIP_HORIZONTAL;
 				}
-				else {
+				else
+				{
 					player_info[i]->facing_dir = 1.0;
 					player_info[i]->facing_right = true;
 				}
 			}
-			else if (!player_info[i]->facing_right) {
+			else if (!player_info[i]->facing_right)
+			{
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 
-			if (debugger[i].check_button_trigger(BUTTON_DEBUG)) {
+			if (debugger[i].check_button_trigger(BUTTON_DEBUG))
+			{
 				debug = !debug;
 			}
-			if (!debug) {
+			if (!debug)
+			{
 				tickOnce(player_info[i], renderer);
 			}
-			else {
-				if (debugger[i].check_button_trigger(BUTTON_DEBUG_2)) {
-					for (int o = 0; o < BUTTON_MAX; o++) {
+			else
+			{
+				if (debugger[i].check_button_trigger(BUTTON_DEBUG_2))
+				{
+					for (int o = 0; o < BUTTON_MAX; o++)
+					{
 						bool old_button = player_info[i]->button_info[o].button_on;
 						player_info[i]->button_info[o].button_on = keyboard_state[player_info[i]->button_info[o].mapping];
 						bool new_button = player_info[i]->button_info[o].button_on;
@@ -128,37 +151,48 @@ int main() {
 					}
 					tickOnce(player_info[i], renderer);
 				}
-				if (debugger[i].check_button_trigger(BUTTON_LP)) {
+				if (debugger[i].check_button_trigger(BUTTON_LP))
+				{
 					debug_anchor[i].x = (((player_info[i]->pos.x * player_info[i]->facing_dir)) * player_info[i]->facing_dir) + WINDOW_WIDTH / 2;
 					debug_anchor[i].y = WINDOW_HEIGHT - player_info[i]->pos.y;
 					debug_offset[i].x = (((player_info[i]->pos.x * player_info[i]->facing_dir)) * player_info[i]->facing_dir) + WINDOW_WIDTH / 2;
 					debug_offset[i].y = WINDOW_HEIGHT - player_info[i]->pos.y;
 				}
-				if (debugger[i].check_button_on(BUTTON_MP)) {
-					if (debugger[i].check_button_on(BUTTON_RIGHT)) {
+				if (debugger[i].check_button_on(BUTTON_MP))
+				{
+					if (debugger[i].check_button_on(BUTTON_RIGHT))
+					{
 						debug_anchor[i].x += 1;
 					}
-					if (debugger[i].check_button_on(BUTTON_LEFT)) {
+					if (debugger[i].check_button_on(BUTTON_LEFT))
+					{
 						debug_anchor[i].x -= 1;
 					}
-					if (debugger[i].check_button_on(BUTTON_UP)) {
+					if (debugger[i].check_button_on(BUTTON_UP))
+					{
 						debug_anchor[i].y -= 1;
 					}
-					if (debugger[i].check_button_on(BUTTON_DOWN)) {
+					if (debugger[i].check_button_on(BUTTON_DOWN))
+					{
 						debug_anchor[i].y += 1;
 					}
 				}
-				if (debugger[i].check_button_on(BUTTON_HP)) {
-					if (debugger[i].check_button_on(BUTTON_RIGHT)) {
+				if (debugger[i].check_button_on(BUTTON_HP))
+				{
+					if (debugger[i].check_button_on(BUTTON_RIGHT))
+					{
 						debug_offset[i].x += 1;
 					}
-					if (debugger[i].check_button_on(BUTTON_LEFT)) {
+					if (debugger[i].check_button_on(BUTTON_LEFT))
+					{
 						debug_offset[i].x -= 1;
 					}
-					if (debugger[i].check_button_on(BUTTON_UP)) {
+					if (debugger[i].check_button_on(BUTTON_UP))
+					{
 						debug_offset[i].y -= 1;
 					}
-					if (debugger[i].check_button_on(BUTTON_DOWN)) {
+					if (debugger[i].check_button_on(BUTTON_DOWN))
+					{
 						debug_offset[i].y += 1;
 					}
 				}
@@ -168,7 +202,8 @@ int main() {
 				debug_rect[i].h = debug_offset[i].y;
 				debug_rect[i].w -= debug_rect[i].x;
 				debug_rect[i].h -= debug_rect[i].y;
-				if (debugger[i].check_button_on(BUTTON_START)) {
+				if (debugger[i].check_button_on(BUTTON_START))
+				{
 					SDL_Rect temp_rect;
 					temp_rect.x = ((debug_anchor[i].x - (player_info[i]->pos.x + WINDOW_WIDTH / 2 * player_info[i]->facing_dir)));
 					temp_rect.y = (debug_anchor[i].y - WINDOW_HEIGHT) * -1.0 - player_info[i]->pos.y;
@@ -192,12 +227,26 @@ int main() {
 			render_pos.h = player_info[i]->anim_kind->sprite_height;
 			const double angle = 0;
 			error_render = SDL_RenderCopyEx(renderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
-			if (error_render != 0) {
-				cout << "\n" << SDL_GetError();
+			if (error_render != 0)
+			{
+				cout << "\n"
+					 << SDL_GetError();
 			}
 		}
 		check_attack_connections(player_info[0], player_info[1], renderer, visualize_boxes);
-		SDL_RenderPresent(renderer); 
+
+		SDL_Rect camera;
+
+		camera.w = 500;
+		camera.h = camera.w * 0.5625;
+		camera.x = 200;
+		camera.y = 500;
+
+		//SDL_RenderSetClipRect(renderer, &viewport);
+		//SDL_RenderSetScale(renderer, 2, 1);
+		SDL_SetRenderTarget(renderer, nullptr);
+		SDL_RenderCopy(renderer, screen, &camera, nullptr);
+		SDL_RenderPresent(renderer);
 	}
 
 	SDL_DestroyRenderer(renderer);

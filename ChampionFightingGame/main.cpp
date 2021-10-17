@@ -237,10 +237,10 @@ int main()
 
 		SDL_Rect camera;
 
-		camera.w = 500;
+		camera.w = player_info[1]->pos.getRenderCoodrinateX() + 100 - player_info[0]->pos.getRenderCoodrinateX();
 		camera.h = camera.w * 0.5625;
-		camera.x = 200;
-		camera.y = 500;
+		camera.x = player_info[0]->pos.getRenderCoodrinateX();
+		camera.y = WINDOW_HEIGHT - camera.h;
 
 		//SDL_RenderSetClipRect(renderer, &viewport);
 		//SDL_RenderSetScale(renderer, 2, 1);

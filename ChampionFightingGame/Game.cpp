@@ -204,7 +204,12 @@ int get_event_hit_collide_player(PlayerInfo* attacker, PlayerInfo* defender, Hit
 	}
 
 	if (hitbox->situation_hit != SITUATION_HIT_ALL) {
-		if (hitbox->situation_hit != defender->situation_kind) {
+		if (hitbox->situation_hit != SITUATION_HIT_GROUND_AIR) {
+			if (hitbox->situation_hit != defender->situation_kind) {
+				return HITBOX_COUNT_MAX;
+			}
+		}
+		else if (defender->situation_kind == CHARA_SITUATION_DOWN) {
 			return HITBOX_COUNT_MAX;
 		}
 	}
@@ -321,6 +326,8 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 		}
 	}
 	if (p2_hit) {
+		p1->stepAnimation();
+		p1->frame++;
 		p1->update_hitbox_connect();
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
@@ -397,6 +404,8 @@ void event_hit_collide_player(PlayerInfo* p1, PlayerInfo* p2, Hitbox* p1_hitbox,
 	}
 
 	if (p1_hit) { //P1 got hit
+		p2->stepAnimation();
+		p2->frame++;
 		p2->update_hitbox_connect();
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;

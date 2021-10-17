@@ -15,20 +15,21 @@ int error_render;
 
 Uint32 tick;
 Uint32 tok;
+u32 frame_advance_entry_ms;
+u32 frame_advance_ms;
+bool debug = false;
+
 
 SDL_Texture* pBG;
 
 int main() {
 	bool running = true;
 	bool visualize_boxes = true;
-	bool debug = false;
-	bool enable_player_input = true;
+	Debugger debugger;
+	debugger = Debugger();
 	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
-	Debugger debugger[2];
-	debugger[0] = Debugger(0);
-	debugger[1] = Debugger(1);
 
 	//init SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -77,11 +78,13 @@ int main() {
 					bool new_button = player_info[o]->button_info[i].button_on;
 					player_info[o]->button_info[i].changed = (old_button != new_button);
 				}
-				bool old_button = debugger[o].button_info[i].button_on;
-				debugger[o].button_info[i].button_on = keyboard_state[debugger[o].button_info[i].mapping];
-				bool new_button = debugger[o].button_info[i].button_on;
-				debugger[o].button_info[i].changed = (old_button != new_button);
 			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
 		}
 
 		tok = SDL_GetTicks() - tick;
@@ -111,83 +114,41 @@ int main() {
 			else if (!player_info[i]->facing_right) {
 				flip = SDL_FLIP_HORIZONTAL;
 			}
-
-			if (debugger[i].check_button_trigger(BUTTON_DEBUG)) {
+			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
 			}
 			if (!debug) {
 				tickOnce(player_info[i], renderer);
+				frame_advance_entry_ms = SDL_GetTicks();
 			}
-			else {
-				if (debugger[i].check_button_trigger(BUTTON_DEBUG_2)) {
+			else if (i == 0) {
+				frame_advance_ms = SDL_GetTicks() - frame_advance_entry_ms;
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
+					debugger.target = 0;
+				}
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2)) {
+					debugger.target = 1;
+				}
+				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 					for (int o = 0; o < BUTTON_MAX; o++) {
-						bool old_button = player_info[i]->button_info[o].button_on;
-						player_info[i]->button_info[o].button_on = keyboard_state[player_info[i]->button_info[o].mapping];
-						bool new_button = player_info[i]->button_info[o].button_on;
-						player_info[i]->button_info[o].changed = (old_button != new_button);
-						old_button = player_info[!i]->button_info[o].button_on;
-						player_info[!i]->button_info[o].button_on = keyboard_state[player_info[!i]->button_info[o].mapping];
-						new_button = player_info[!i]->button_info[o].button_on;
-						player_info[!i]->button_info[o].changed = (old_button != new_button);
+						bool old_button = player_info[0]->button_info[o].button_on;
+						player_info[0]->button_info[o].button_on = keyboard_state[player_info[0]->button_info[o].mapping];
+						bool new_button = player_info[0]->button_info[o].button_on;
+						player_info[0]->button_info[o].changed = (old_button != new_button);
+						old_button = player_info[1]->button_info[o].button_on;
+						player_info[1]->button_info[o].button_on = keyboard_state[player_info[1]->button_info[o].mapping];
+						new_button = player_info[1]->button_info[o].button_on;
+						player_info[1]->button_info[o].changed = (old_button != new_button);
 					}
-					tickOnce(player_info[i], renderer);
-					tickOnce(player_info[!i], renderer);
-				}
-				if (debugger[i].check_button_trigger(BUTTON_LP)) {
-					debug_anchor[i].x = (((player_info[i]->pos.x * player_info[i]->facing_dir)) * player_info[i]->facing_dir) + WINDOW_WIDTH / 2;
-					debug_anchor[i].y = WINDOW_HEIGHT - player_info[i]->pos.y;
-					debug_offset[i].x = (((player_info[i]->pos.x * player_info[i]->facing_dir)) * player_info[i]->facing_dir) + WINDOW_WIDTH / 2;
-					debug_offset[i].y = WINDOW_HEIGHT - player_info[i]->pos.y;
-				}
-				if (debugger[i].check_button_on(BUTTON_MP)) {
-					if (debugger[i].check_button_on(BUTTON_RIGHT)) {
-						debug_anchor[i].x += 1;
-					}
-					if (debugger[i].check_button_on(BUTTON_LEFT)) {
-						debug_anchor[i].x -= 1;
-					}
-					if (debugger[i].check_button_on(BUTTON_UP)) {
-						debug_anchor[i].y -= 1;
-					}
-					if (debugger[i].check_button_on(BUTTON_DOWN)) {
-						debug_anchor[i].y += 1;
+					frame_advance_entry_ms = SDL_GetTicks();
+					tickOnce(player_info[0], renderer);
+					tickOnce(player_info[1], renderer);
+					if (debugger.print_frames) {
+						cout << "Player " << debugger.target + 1 << " Frame: " << player_info[debugger.target]->frame - 1 << endl;
+						cout << "Player " << debugger.target + 1 << " Render Frame: " << player_info[debugger.target]->render_frame - 1 << endl;
 					}
 				}
-				if (debugger[i].check_button_on(BUTTON_HP)) {
-					if (debugger[i].check_button_on(BUTTON_RIGHT)) {
-						debug_offset[i].x += 1;
-					}
-					if (debugger[i].check_button_on(BUTTON_LEFT)) {
-						debug_offset[i].x -= 1;
-					}
-					if (debugger[i].check_button_on(BUTTON_UP)) {
-						debug_offset[i].y -= 1;
-					}
-					if (debugger[i].check_button_on(BUTTON_DOWN)) {
-						debug_offset[i].y += 1;
-					}
-				}
-				debug_rect[i].x = debug_anchor[i].x;
-				debug_rect[i].y = debug_anchor[i].y;
-				debug_rect[i].w = debug_offset[i].x;
-				debug_rect[i].h = debug_offset[i].y;
-				debug_rect[i].w -= debug_rect[i].x;
-				debug_rect[i].h -= debug_rect[i].y;
-				if (debugger[i].check_button_on(BUTTON_START)) {
-					SDL_Rect temp_rect;
-					temp_rect.x = ((debug_anchor[i].x - (player_info[i]->pos.x + WINDOW_WIDTH / 2 * player_info[i]->facing_dir)));
-					temp_rect.y = (debug_anchor[i].y - WINDOW_HEIGHT) * -1.0 - player_info[i]->pos.y;
-					temp_rect.w = ((debug_offset[i].x - (player_info[i]->pos.x + WINDOW_WIDTH / 2 * player_info[i]->facing_dir)));
-					temp_rect.h = (debug_offset[i].y - WINDOW_HEIGHT) * -1.0 - player_info[i]->pos.y;
-					cout << "x0: " << temp_rect.x << endl;
-					cout << "y0: " << temp_rect.y << endl;
-					cout << "x1: " << temp_rect.w << endl;
-					cout << "y1: " << temp_rect.h << endl;
-				}
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-				SDL_RenderDrawRect(renderer, debug_rect);
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 127);
-				SDL_RenderFillRect(renderer, debug_rect);
+				debug_mode(&debugger, player_info[debugger.target], renderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
 			}
 
 			SDL_Rect render_pos;

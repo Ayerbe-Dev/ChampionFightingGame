@@ -29,6 +29,8 @@ typedef float f32;
 #define CAMERA_MAX_ZOOM_OUT 900
 #define CAMERA_MAX_ZOOM_IN 700
 
+#define FLOOR_GAMECOORD 0
+
 int clamp(int min, int value, int max);
 int ymlChopInt(string line);
 float ymlChopFloat(string line);

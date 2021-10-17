@@ -233,4 +233,10 @@ public:
 	void status_landing_hitstun();
 	void enter_status_landing_hitstun();
 	void exit_status_landing_hitstun();
+	void status_knockdown_start();
+	void enter_status_knockdown_start();
+	void exit_status_knockdown_start();
+	void status_knockdown();
+	void enter_status_knockdown();
+	void exit_status_knockdown();
 };

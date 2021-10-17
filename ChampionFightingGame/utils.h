@@ -30,7 +30,17 @@ float ymlChopFloat(string line);
 string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 
-enum {
+/*
+	updateCamera(); 
+	Returns a new camera because the SDL_Render func refuses to work with 
+	a pointer to a camera... smh.
+	
+	What a looser.
+*/
+SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y);
+
+enum
+{
 	BUTTON_UP,
 	BUTTON_DOWN,
 	BUTTON_LEFT,
@@ -48,14 +58,16 @@ enum {
 	BUTTON_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_KIND_ROY,
 	CHARA_KIND_ERIC,
 
 	CHARA_KIND_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_STATUS_WAIT,
 	CHARA_STATUS_WALKF,
 	CHARA_STATUS_WALKB,
@@ -94,7 +106,8 @@ enum {
 	CHARA_STATUS_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_SITUATION_GROUND,
 	CHARA_SITUATION_AIR,
 	CHARA_SITUATION_DOWN,
@@ -102,7 +115,8 @@ enum {
 	CHARA_SITUATION_MAX,
 };
 
-enum {
+enum
+{
 	STATUS_GROUP_NORMAL,
 	STATUS_GROUP_HITSTUN,
 	STATUS_GROUP_CROUCH,
@@ -110,14 +124,16 @@ enum {
 	STATUS_GROUP_MAX,
 };
 
-enum {
+enum
+{
 	DASH_CANCEL_KIND_FOLLOWUP,
 	DASH_CANCEL_KIND_INDEFINITE,
 
 	DASH_CANCEL_KIND_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_JUMP_KIND_F,
 	CHARA_JUMP_KIND_B,
 	CHARA_JUMP_KIND_N,
@@ -125,7 +141,8 @@ enum {
 	CHARA_JUMP_KIND_MAX,
 };
 
-enum {
+enum
+{
 	PARRY_HEIGHT_HIGH,
 	PARRY_HEIGHT_MID,
 	PARRY_HEIGHT_LOW,
@@ -133,14 +150,16 @@ enum {
 	PARRY_HEIGHT_MAX,
 };
 
-enum {
+enum
+{
 	HITBOX_KIND_NORMAL,
 	HITBOX_KIND_BLOCK,
 
 	HITBOX_KIND_MAX,
 };
 
-enum {
+enum
+{
 	ATTACK_LEVEL_LIGHT,
 	ATTACK_LEVEL_MEDIUM,
 	ATTACK_LEVEL_HEAVY,
@@ -148,7 +167,8 @@ enum {
 	ATTACK_LEVEL_MAX,
 };
 
-enum {
+enum
+{
 	CLANK_KIND_NORMAL,
 	CLANK_KIND_CLANK,
 	CLANK_KIND_CONTINUE,
@@ -156,7 +176,8 @@ enum {
 	CLANK_KIND_MAX,
 };
 
-enum {
+enum
+{
 	HIT_STATUS_NORMAL,
 	HIT_STATUS_CRUMPLE,
 	HIT_STATUS_LAUNCH,
@@ -165,7 +186,8 @@ enum {
 	HIT_STATUS_MAX,
 };
 
-enum {
+enum
+{
 	COUNTERHIT_TYPE_NONE,
 	COUNTERHIT_TYPE_AERIAL,
 	COUNTERHIT_TYPE_NORMAL,
@@ -173,14 +195,16 @@ enum {
 	COUNTERHIT_TYPE_MAX,
 };
 
-enum {
+enum
+{
 	GRABBOX_KIND_NORMAL,
 	GRABBOX_KIND_NOTECH,
 
 	GRABBOX_KIND_MAX,
 };
 
-enum {
+enum
+{
 	HURTBOX_KIND_NORMAL,
 	HURTBOX_KIND_GRAB,
 	HURTBOX_KIND_COUNTER,
@@ -188,11 +212,12 @@ enum {
 	HURTBOX_KIND_MAX,
 };
 
-enum {
+enum
+{
 	INTANGIBLE_KIND_HIGH,
 	INTANGIBLE_KIND_MID,
 	INTANGIBLE_KIND_LOW,
-	INTANGIBLE_KIND_NONE, 
+	INTANGIBLE_KIND_NONE,
 	INTANGIBLE_KIND_THROW,
 	INTANGIBLE_KIND_NORMAL,
 	INTANGIBLE_KIND_PROJECTILE,
@@ -202,15 +227,17 @@ enum {
 	INTANGIBLE_KIND_MAX,
 };
 
-enum {
+enum
+{
 	ATTACK_HEIGHT_HIGH,
 	ATTACK_HEIGHT_MID,
 	ATTACK_HEIGHT_LOW,
-	
+
 	ATTACK_HEIGHT_MAX,
 };
 
-enum {
+enum
+{
 	ATTACK_KIND_LP,
 	ATTACK_KIND_MP,
 	ATTACK_KIND_HP,
@@ -227,7 +254,8 @@ enum {
 	ATTACK_KIND_MAX,
 };
 
-enum {
+enum
+{
 	SITUATION_HIT_GROUND,
 	SITUATION_HIT_AIR,
 	SITUATION_HIT_DOWN,
@@ -236,7 +264,8 @@ enum {
 	SITUATION_HIT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_INT_JUMP_KIND,
 	CHARA_INT_DASH_F_WINDOW,
 	CHARA_INT_DASH_B_WINDOW,
@@ -257,7 +286,8 @@ enum {
 	CHARA_INT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_FLOAT_HEALTH,
 	CHARA_FLOAT_SUPER_METER,
 	CHARA_FLOAT_INIT_POS_JUMP_Y,
@@ -272,7 +302,8 @@ enum {
 	CHARA_FLOAT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_FLAG_SHORT_HOP,
 	CHARA_FLAG_DASH_CANCEL,
 	CHARA_FLAG_ATTACK_CONNECTED,
@@ -288,42 +319,50 @@ enum {
 	CHARA_FLAG_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_ROY_INT_PLACEHOLDER,
 	CHARA_ROY_INT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_ROY_FLOAT_PLACEHOLDER,
 	CHARA_ROY_FLOAT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_ROY_FLAG_PLACEHOLDER,
 	CHARA_ROY_FLAG_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_ERIC_INT_DISCHARGE_LEVEL,
 	CHARA_ERIC_INT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_ERIC_FLOAT_PLACEHOLDER,
 	CHARA_ERIC_FLOAT_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_ERIC_FLAG_OVERDRIVEN,
 	CHARA_ERIC_FLAG_MAX,
 };
 
-struct Offset {
+struct Offset
+{
 	int offset_x;
 	int offset_y;
 };
 
-struct Vec4f {
+struct Vec4f
+{
 	int x;
 	int y;
 	int z;

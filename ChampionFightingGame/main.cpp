@@ -16,7 +16,7 @@ int error_render;
 Uint32 tick;
 Uint32 tok;
 
-SDL_Texture *pBG;
+SDL_Texture *pBackgroundTexture;
 
 int main()
 {
@@ -38,20 +38,21 @@ int main()
 	}
 
 	SDL_Window *window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer *pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 
 	//Background image
-	pBG = loadTexture("resource/stage/training_room/background.png", renderer);
-	SDL_Texture *screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	pBackgroundTexture = loadTexture("resource/stage/training_room/background.png", pRenderer);
+	SDL_Texture *pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Rect camera;
 
 	//init players
 	PlayerInfo *player_info[2];
 
-	IFighter *p1 = new IFighter(CHARA_KIND_ROY, renderer, 0);
-	IFighter *p2 = new IFighter(CHARA_KIND_ERIC, renderer, 1);
+	IFighter *p1 = new IFighter(CHARA_KIND_ROY, pRenderer, 0);
+	IFighter *p2 = new IFighter(CHARA_KIND_ERIC, pRenderer, 1);
 
 	player_info[0] = p1->get_fighter();
 	player_info[1] = p2->get_fighter();
@@ -104,10 +105,17 @@ int main()
 		}
 		tick = SDL_GetTicks();
 
-		SDL_RenderClear(renderer);
+		/*
+			Rendering. The method for rendering relies on setting render targets. pScreenTexture is where all the scalable
+			textures are rendered. The GUI will be applied after the render target has been set back to the window.
+			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
+			the content in pScreenTexture.
+		*/
+		SDL_RenderClear(pRenderer);
+		SDL_SetRenderTarget(pRenderer, pScreenTexture);
+		SDL_RenderCopy(pRenderer, pBackgroundTexture, nullptr, nullptr); //copies the background
 
-		SDL_SetRenderTarget(renderer, screen);
-		SDL_RenderCopy(renderer, pBG, nullptr, nullptr); //copies the background
+		// Flip Player code, tbh it shouldnt be here
 		for (int i = 0; i < 2; i++)
 		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -136,7 +144,7 @@ int main()
 			}
 			if (!debug)
 			{
-				tickOnce(player_info[i], renderer);
+				tickOnce(player_info[i], pRenderer);
 			}
 			else
 			{
@@ -149,7 +157,7 @@ int main()
 						bool new_button = player_info[i]->button_info[o].button_on;
 						player_info[i]->button_info[o].changed = (old_button != new_button);
 					}
-					tickOnce(player_info[i], renderer);
+					tickOnce(player_info[i], pRenderer);
 				}
 				if (debugger[i].check_button_trigger(BUTTON_LP))
 				{
@@ -214,10 +222,10 @@ int main()
 					cout << "x1: " << temp_rect.w << endl;
 					cout << "y1: " << temp_rect.h << endl;
 				}
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-				SDL_RenderDrawRect(renderer, debug_rect);
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 127);
-				SDL_RenderFillRect(renderer, debug_rect);
+				SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+				SDL_RenderDrawRect(pRenderer, debug_rect);
+				SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
+				SDL_RenderFillRect(pRenderer, debug_rect);
 			}
 
 			SDL_Rect render_pos;
@@ -226,30 +234,29 @@ int main()
 			render_pos.w = player_info[i]->anim_kind->sprite_width;
 			render_pos.h = player_info[i]->anim_kind->sprite_height;
 			const double angle = 0;
-			error_render = SDL_RenderCopyEx(renderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
+			error_render = SDL_RenderCopyEx(pRenderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0)
 			{
 				cout << "\n"
 					 << SDL_GetError();
 			}
 		}
-		check_attack_connections(player_info[0], player_info[1], renderer, visualize_boxes);
+		// ^^^ END OF FLIP CODE ^^^
 
-		SDL_Rect camera;
-		//cout << player_info[0]->pos.getRenderCoodrinateY() << endl;
-		camera.w = player_info[1]->pos.getRenderCoodrinateX() + 100 - player_info[0]->pos.getRenderCoodrinateX();
-		camera.h = camera.w * 0.5625;
-		camera.x = player_info[0]->pos.getRenderCoodrinateX();
-		camera.y = WINDOW_HEIGHT - camera.h - (559 - player_info[0]->pos.getRenderCoodrinateY());
+		check_attack_connections(player_info[0], player_info[1], pRenderer, visualize_boxes);
 
-		//SDL_RenderSetClipRect(renderer, &viewport);
-		//SDL_RenderSetScale(renderer, 2, 1);
-		SDL_SetRenderTarget(renderer, nullptr);
-		SDL_RenderCopy(renderer, screen, &camera, nullptr);
-		SDL_RenderPresent(renderer);
+		camera = updateCamera(
+			player_info[0]->pos.getRenderCoodrinateX(),
+			player_info[0]->pos.getRenderCoodrinateY(),
+			player_info[1]->pos.getRenderCoodrinateX(),
+			player_info[1]->pos.getRenderCoodrinateY());
+
+		SDL_SetRenderTarget(pRenderer, nullptr);
+		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr);
+		SDL_RenderPresent(pRenderer);
 	}
 
-	SDL_DestroyRenderer(renderer);
+	SDL_DestroyRenderer(pRenderer);
 
 	SDL_DestroyWindow(window);
 

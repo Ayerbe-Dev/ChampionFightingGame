@@ -6,7 +6,7 @@ INCLUDE_DIR=../SDL2/include
 LIB_DIR=../SDL2/lib/x86
 LIB_FILES=-lSDL2 -lSDL2main -llibpng16-16 -lSDL2_image
 OBJ_FILE_DIR=Debug/
-CFLAGS=-I $(INCLUDE_DIR) -L $(LIB_DIR)
+CFLAGS=-I $(INCLUDE_DIR) -L $(LIB_DIR) -static-libgcc -static-libstdc++
 
 
 all: $(CWD)/$(TARGET)

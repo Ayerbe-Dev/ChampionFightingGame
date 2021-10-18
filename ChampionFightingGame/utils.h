@@ -36,7 +36,7 @@ int ymlChopInt(string line);
 float ymlChopFloat(string line);
 string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
-SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
+SDL_Texture *loadTexture(const char *file_path, SDL_Renderer *renderer);
 
 /*
 	updateCamera(); 
@@ -47,11 +47,13 @@ SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
 */
 SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y);
 
-enum {
+enum
+{
 	GAME_STATE_CLOSE,
 	GAME_STATE_GAME,
 	GAME_STATE_MENU,
 	GAME_STATE_CHARA_SELECT,
+	GAME_STATE_DEBUG_MENU,
 
 	GAME_STATE_MAX,
 };

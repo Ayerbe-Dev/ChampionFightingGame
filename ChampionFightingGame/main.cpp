@@ -28,7 +28,7 @@ int main()
 {
 	bool running = true;
 	bool visualize_boxes = true;
-	int game_state = GAME_STATE_MENU;
+	int game_state = GAME_STATE_DEBUG_MENU;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -64,6 +64,10 @@ int main()
 		else if (game_state == GAME_STATE_CLOSE)
 		{
 			running = false;
+		}
+		else
+		{
+			game_state = debugMenu(game_state, pRenderer);
 		}
 	}
 

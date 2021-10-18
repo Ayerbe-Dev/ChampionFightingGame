@@ -364,6 +364,10 @@ void PlayerInfo::processInput()
 	update_hitbox_pos();
 	update_grabbox_pos();
 	update_hurtbox_pos();
+	int width;
+	int height;
+	SDL_QueryTexture(this->base_texture, NULL, NULL, &width, &height);
+	pos.x_spr_offset = width / 2;
 	if (get_flick_dir() == 6)
 	{
 		chara_int[CHARA_INT_DASH_F_WINDOW] = 8;

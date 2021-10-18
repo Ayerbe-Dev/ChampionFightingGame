@@ -12,10 +12,6 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ROY;
 	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png", renderer);
-	int width;
-	int height;
-	SDL_QueryTexture(this->base_texture, NULL, NULL, &width, &height);
-	pos.x_spr_offset = width / 2;
 }
 
 void Roy::chara_id() {

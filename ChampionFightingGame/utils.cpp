@@ -65,6 +65,15 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y)
 	//78 is the current average size of the character.
 	cCamera.x = ((player1X + player2X) / 2) - (cCamera.w / 2) + (78 / 2);
 
+	if (cCamera.x + cCamera.w > WINDOW_WIDTH)
+	{
+		cCamera.x = WINDOW_WIDTH - cCamera.w;
+	}
+	else if (cCamera.x < 0)
+	{
+		cCamera.x = 0;
+	}
+
 	//559 is the absolute y value of the floor
 	//JUMP_FOLLOW_THRESHOLD is the jump line before the camera starts moving
 	int iYdelta = (559 - std::min(player2Y, player1Y));

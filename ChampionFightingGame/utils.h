@@ -27,7 +27,7 @@ typedef float f32;
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
 #define JUMP_FOLLOW_THRESHOLD 120
 #define CAMERA_MAX_ZOOM_OUT 700
-#define CAMERA_MAX_ZOOM_IN 400
+#define CAMERA_MAX_ZOOM_IN 500
 
 #define FLOOR_GAMECOORD 75.0
 
@@ -36,6 +36,7 @@ int ymlChopInt(string line);
 float ymlChopFloat(string line);
 string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
+SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
 
 /*
 	updateCamera(); 

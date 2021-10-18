@@ -741,7 +741,7 @@ void PlayerInfo::change_anim(string animation_name, int frame_rate, int entry_fr
 	excute_count = 0;
 	last_excute_frame = 0;
 	int anim_to_use = -1;
-	for (int i = 0; i < 60; i++)
+	for (int i = 0; i < 256; i++)
 	{
 		if (animation_table[i].name == animation_name)
 		{
@@ -765,6 +765,7 @@ void PlayerInfo::startAnimation(Animation *animation)
 	int width;
 	int height;
 	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
+	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
 	pos.y_spr_offset = height;
 	last_frame_ms = SDL_GetTicks();
 	frame_rect = getFrame(frame, anim_kind);

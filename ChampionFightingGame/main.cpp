@@ -9,6 +9,7 @@
 #include "Game.h"
 #include "Animation.h"
 #include "Debugger.h"
+#include "Stage.h"
 #undef main
 using namespace std;
 int error_render;
@@ -19,7 +20,6 @@ u32 frame_advance_entry_ms;
 u32 frame_advance_ms;
 bool debug = false;
 
-SDL_Texture *pBackgroundTexture;
 SDL_Texture *pTimerTexture;
 SDL_Texture *pP2IndicatorTexture;
 SDL_Texture *pP1IndicatorTexture;
@@ -57,8 +57,10 @@ int main()
 	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 
+	//init stage
+	Stage stage = Stage(pRenderer, "training_room");
+
 	//Background image
-	pBackgroundTexture = loadTexture("resource/stage/training_room/background.png", pRenderer);
 	pTimerTexture = loadTexture("resource/game/TimerTemplate.png", pRenderer);
 	pP2IndicatorTexture = loadTexture("resource/game/P2Tag.png", pRenderer);
 	pP1IndicatorTexture = loadTexture("resource/game/P1Tag.png", pRenderer);
@@ -135,7 +137,7 @@ int main()
 		*/
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
-		SDL_RenderCopy(pRenderer, pBackgroundTexture, nullptr, nullptr); //copies the background
+		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr); //copies the background
 
 		// Flip Player code, tbh it shouldnt be here
 		for (int i = 0; i < 2; i++)
@@ -206,7 +208,7 @@ int main()
 			}
 
 			SDL_Rect render_pos;
-			render_pos.x = player_info[i]->pos.getRenderCoodrinateX();
+			render_pos.x = player_info[i]->pos.getRenderCoodrinateXFacingDir(player_info[i]->facing_dir);
 			render_pos.y = player_info[i]->pos.getRenderCoodrinateY();
 			int width;
 			int height;

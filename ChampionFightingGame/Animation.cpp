@@ -9,16 +9,6 @@
 
 Animation::Animation() {};
 
-SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
-	SDL_Surface* image_surface = IMG_Load(file_path);
-	if (image_surface == NULL) {
-		cout << "Error loading image: " << IMG_GetError() << endl;
-	}
-	SDL_Texture *ret = SDL_CreateTextureFromSurface(renderer, image_surface);
-	SDL_FreeSurface(image_surface);
-	return ret;
-}
-
 SDL_Rect getFrame(int frame, Animation* animation) {
 	int width;
 	int height;

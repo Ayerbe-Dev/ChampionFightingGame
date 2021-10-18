@@ -20,3 +20,10 @@ $(CWD)/$(TARGET): $(OBJECT_FILES)
 clean:
 	del *.o 
 	del $(TARGET)	
+	del prebuild\*
+
+package: all
+	copy /y /v ..\sdl2\lib\x86\*.dll prebuild
+	xcopy resource prebuild\resource /I /E /H /C /Y 
+	copy /y /v ChampionFightingGame.exe prebuild
+	7z a -tzip prebuild.zip prebuild

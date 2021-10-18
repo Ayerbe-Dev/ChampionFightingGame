@@ -1,6 +1,6 @@
-CWD = C:\Users\franc\source\repos\ChampionFightingGame\ChampionFightingGame
+CWD = $(shell cd)
 TARGET=ChampionFightingGame.exe
-OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o
+OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o
 OBJECT_FILES=$(patsubst %,$(CWD)/%,$(OBJECT_NAMES))
 INCLUDE_DIR=../SDL2/include
 LIB_DIR=../SDL2/lib/x86
@@ -20,3 +20,10 @@ $(CWD)/$(TARGET): $(OBJECT_FILES)
 clean:
 	del *.o 
 	del $(TARGET)	
+	del prebuild\*
+
+package: all
+	copy /y /v ..\sdl2\lib\x86\*.dll prebuild
+	xcopy resource prebuild\resource /I /E /H /C /Y 
+	copy /y /v ChampionFightingGame.exe prebuild
+	7z a -tzip prebuild.zip prebuild

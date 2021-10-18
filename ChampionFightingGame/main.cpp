@@ -10,6 +10,7 @@
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
+#include "UI.h"
 #undef main
 using namespace std;
 int error_render;
@@ -26,12 +27,6 @@ SDL_Texture *pP1IndicatorTexture;
 SDL_Rect cTimerRect{WINDOW_WIDTH / 2 - (92 / 2), 0, 92, 92};
 SDL_Rect cP2IndicatorRect{0, 0, 92, 92};
 SDL_Rect cP1IndicatorRect{0, 0, 92, 92};
-
-//wow healthbars
-SDL_Texture *pP1BarTexture;
-SDL_Texture *pP1HealthTexture;
-SDL_Rect cP1BarRect{0, 0, 400, 50};
-SDL_Rect cP1HealthRect{0, 0, 400, 50};
 
 int main()
 {
@@ -64,8 +59,6 @@ int main()
 	pTimerTexture = loadTexture("resource/game/TimerTemplate.png", pRenderer);
 	pP2IndicatorTexture = loadTexture("resource/game/P2Tag.png", pRenderer);
 	pP1IndicatorTexture = loadTexture("resource/game/P1Tag.png", pRenderer);
-	pP1HealthTexture = loadTexture("resource/game/JustTheBar.png", pRenderer);
-	pP1BarTexture = loadTexture("resource/game/TheBarMinusTheJust.png", pRenderer);
 	SDL_Texture *pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Rect camera;
 
@@ -77,6 +70,9 @@ int main()
 
 	player_info[0] = p1->get_fighter();
 	player_info[1] = p2->get_fighter();
+
+	//init healthbars
+	HealthBar cP1HpBar{player_info[0]->chara_float[CHARA_FLOAT_HEALTH], player_info[0], pRenderer};
 
 	const Uint8 *keyboard_state;
 	tick = SDL_GetTicks();
@@ -225,7 +221,7 @@ int main()
 		}
 		// ^^^ END OF FLIP CODE ^^^
 
-		check_attack_connections(player_info[0], player_info[1], pRenderer, visualize_boxes);
+		check_attack_connections(player_info[0], player_info[1], pRenderer, false);
 
 		camera = updateCamera(
 			player_info[0]->pos.getRenderCoodrinateX(),
@@ -252,11 +248,12 @@ int main()
 
 		SDL_RenderCopy(pRenderer, pTimerTexture, nullptr, &cTimerRect);
 
+		cP1HpBar.Render(pRenderer);
 		//super mega placeholder code
-		SDL_RenderCopy(pRenderer, pP1BarTexture, nullptr, &cP1BarRect);
-		SDL_Rect cHealthRect{0, 0, player_info[0]->chara_float[CHARA_FLOAT_HEALTH] / 1000 * 400, 50}; // change this -1 to something else once hp actually gets initialized.
-		cP1HealthRect = SDL_Rect{0, 0, cHealthRect.w, 50};
-		SDL_RenderCopy(pRenderer, pP1HealthTexture, &cHealthRect, &cP1HealthRect);
+		// SDL_RenderCopy(pRenderer, pP1BarTexture, nullptr, &cP1BarRect);
+		// SDL_Rect cHealthRect{0, 0, player_info[0]->chara_float[CHARA_FLOAT_HEALTH] / 1000 * 400, 50}; // change this -1 to something else once hp actually gets initialized.
+		// cP1HealthRect = SDL_Rect{0, 0, cHealthRect.w, 50};
+		// SDL_RenderCopy(pRenderer, pP1HealthTexture, &cHealthRect, &cP1HealthRect);
 		// end super placeholder code
 
 		SDL_RenderPresent(pRenderer);

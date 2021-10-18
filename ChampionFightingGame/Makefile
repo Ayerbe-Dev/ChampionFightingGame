@@ -1,4 +1,4 @@
-CWD = C:\Users\franc\source\repos\ChampionFightingGame\ChampionFightingGame
+CWD = $(shell cd)
 TARGET=ChampionFightingGame.exe
 OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o
 OBJECT_FILES=$(patsubst %,$(CWD)/%,$(OBJECT_NAMES))

@@ -8,6 +8,7 @@ public:
 	f32 x_offset;
 	f32 y_offset;
 	f32 x_spr_offset;
+	f32 x_anim_offset;
 	f32 y_spr_offset;
 
 	GameCoordinate();
@@ -17,6 +18,8 @@ public:
 	GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y);
 
 	f32 getRenderCoodrinateX();
+
+	f32 getRenderCoodrinateXFacingDir(f32 facing_dir);
 
 	f32 getRenderCoodrinateY();
 };

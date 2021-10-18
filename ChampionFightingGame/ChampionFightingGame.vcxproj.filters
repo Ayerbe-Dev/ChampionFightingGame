@@ -48,6 +48,12 @@
     <ClCompile Include="Debugger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Stage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resource\chara\eric\sprite\sprite.png">
@@ -140,6 +146,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Leon.fwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

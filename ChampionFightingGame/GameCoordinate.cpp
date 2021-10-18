@@ -28,6 +28,11 @@ f32 GameCoordinate::getRenderCoodrinateX()
 	return x + x_offset - x_spr_offset;
 }
 
+f32 GameCoordinate::getRenderCoodrinateXFacingDir(f32 facing_dir)
+{
+	return x + x_offset - x_anim_offset;
+}
+
 f32 GameCoordinate::getRenderCoodrinateY()
 {
 	return (y * -1.0) + WINDOW_HEIGHT - y_spr_offset;

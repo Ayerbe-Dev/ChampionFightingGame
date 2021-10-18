@@ -414,12 +414,12 @@ bool FighterInstance::check_button_on(u32 button)
 
 bool FighterInstance::check_button_trigger(u32 button)
 {
-	return player_info->button_info[button].changed && player_info->button_info[button].button_on;
+	return player_info->check_button_trigger(button);
 }
 
 bool FighterInstance::check_button_release(u32 button)
 {
-	return player_info->button_info[button].changed && !player_info->button_info[button].button_on;
+	return player_info->check_button_release(button);
 }
 
 i32 FighterInstance::get_stick_dir()

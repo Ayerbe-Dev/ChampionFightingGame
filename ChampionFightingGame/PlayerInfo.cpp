@@ -4,13 +4,15 @@ PlayerInfo::PlayerInfo() {}
 
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
+	SDL_GameController *new_controller;
 
 	for (int i = 0; i < SDL_NumJoysticks(); ++i) {
 		if (SDL_IsGameController(i)) {
-			this->controller = SDL_GameControllerOpen(i);
+			new_controller = SDL_GameControllerOpen(i);
 
-			if (SDL_GameControllerGetAttached(this->controller)) {
-				SDL_GameControllerClose(this->controller);
+			if (SDL_GameControllerGetAttached(new_controller)) {
+				this->controller = new_controller;
+				SDL_GameControllerClose(new_controller);
 			}
 		}
 	}
@@ -34,7 +36,7 @@ bool PlayerInfo::check_button_release(u32 button)
 void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 	for (int i = 0; i < BUTTON_MAX; i++) {
 		bool old_button = button_info[i].button_on;
-		if (controller) {
+		if (controller != NULL) {
 			if (i < 8) {
 				if (i == 0 || i == 4) { //Up
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);

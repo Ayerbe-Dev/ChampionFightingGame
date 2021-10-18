@@ -4,7 +4,6 @@
 #include "GameCoordinate.h"
 #include "Button.h"
 #include <SDL.h>
-#include <SDL_gamecontroller.h>
 #include "Animation.h"
 #include "ParamTable.h"
 #include "FighterInstance.fwd.h"

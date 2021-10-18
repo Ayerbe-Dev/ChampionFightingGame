@@ -8,7 +8,7 @@ public:
 	int chara_kind{ 0 };
 	string name;
 	Buttons button_info[BUTTON_MAX];
-	SDL_GameController* controller;
+	SDL_GameController* controller{ NULL };
 
 	PlayerInfo();
 	PlayerInfo(int id);

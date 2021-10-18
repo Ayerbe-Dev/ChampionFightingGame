@@ -221,7 +221,7 @@ int main()
 		}
 		// ^^^ END OF FLIP CODE ^^^
 
-		check_attack_connections(player_info[0], player_info[1], pRenderer, false);
+		check_attack_connections(player_info[0], player_info[1], pRenderer, visualize_boxes);
 
 		camera = updateCamera(
 			player_info[0]->pos.getRenderCoodrinateX(),

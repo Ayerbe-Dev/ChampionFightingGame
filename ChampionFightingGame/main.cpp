@@ -254,7 +254,7 @@ int main()
 
 		//super mega placeholder code
 		SDL_RenderCopy(pRenderer, pP1BarTexture, nullptr, &cP1BarRect);
-		SDL_Rect cHealthRect{0, 0, player_info[0]->chara_float[CHARA_FLOAT_HEALTH], 50}; // change this -1 to something else once hp actually gets initialized.
+		SDL_Rect cHealthRect{0, 0, player_info[0]->chara_float[CHARA_FLOAT_HEALTH] / 1000 * 400, 50}; // change this -1 to something else once hp actually gets initialized.
 		cP1HealthRect = SDL_Rect{0, 0, cHealthRect.w, 50};
 		SDL_RenderCopy(pRenderer, pP1HealthTexture, &cHealthRect, &cP1HealthRect);
 		// end super placeholder code

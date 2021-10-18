@@ -31,6 +31,7 @@ void PlayerInfo::superInit(int id, SDL_Renderer *renderer)
 	load_anim_list(renderer);
 	loadDefaultButtonMap();
 	load_params();
+	chara_float[CHARA_FLOAT_HEALTH] = stats.health;
 	loadStatusFunctions();
 	change_status(CHARA_STATUS_WAIT, false, false);
 

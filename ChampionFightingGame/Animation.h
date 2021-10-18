@@ -7,8 +7,6 @@ struct Animation {
 	std::string name;
 	std::string path;
 	int length;
-	int sprite_height;
-	int sprite_width;
 	int faf;
 
 	Animation();

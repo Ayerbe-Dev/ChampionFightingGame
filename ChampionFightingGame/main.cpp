@@ -184,8 +184,11 @@ int main()
 			SDL_Rect render_pos;
 			render_pos.x = player_info[i]->pos.getRenderCoodrinateX();
 			render_pos.y = player_info[i]->pos.getRenderCoodrinateY();
-			render_pos.w = player_info[i]->anim_kind->sprite_width;
-			render_pos.h = player_info[i]->anim_kind->sprite_height;
+			int width;
+			int height;
+			SDL_QueryTexture(player_info[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
+			render_pos.w = (width / (player_info[i]->anim_kind->length + 1));
+			render_pos.h = height;
 			const double angle = 0;
 			error_render = SDL_RenderCopyEx(pRenderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0)

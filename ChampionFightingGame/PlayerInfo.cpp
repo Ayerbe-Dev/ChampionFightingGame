@@ -63,12 +63,10 @@ void PlayerInfo::load_anim_list(SDL_Renderer *renderer)
 		string width;
 		string height;
 		string faf;
-		anim_list >> name >> path >> frame_count >> width >> height >> faf;
+		anim_list >> name >> path >> frame_count >> faf;
 		animation_table[i].name = ymlChopString(name);
 		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
-		animation_table[i].sprite_width = ymlChopInt(width);
-		animation_table[i].sprite_height = ymlChopInt(height);
 		animation_table[i].faf = ymlChopInt(faf);
 		loadAnimation(&animation_table[i], renderer);
 	}
@@ -759,6 +757,10 @@ void PlayerInfo::startAnimation(Animation *animation)
 {
 	is_anim_end = false;
 	anim_kind = animation;
+	int width;
+	int height;
+	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
+	pos.y_spr_offset = height;
 	last_frame_ms = SDL_GetTicks();
 	frame_rect = getFrame(frame, anim_kind);
 }

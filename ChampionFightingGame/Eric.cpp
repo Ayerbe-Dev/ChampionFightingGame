@@ -16,7 +16,6 @@ Eric::Eric(SDL_Renderer *renderer, int id) {
 	int height;
 	SDL_QueryTexture(this->base_texture, NULL, NULL, &width, &height);
 	pos.x_spr_offset = width / 2;
-	pos.y_spr_offset = height;
 }
 
 void Eric::chara_id() {

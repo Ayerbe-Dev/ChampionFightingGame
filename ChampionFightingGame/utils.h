@@ -47,6 +47,15 @@ SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
 */
 SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y);
 
+enum {
+	GAME_STATE_CLOSE,
+	GAME_STATE_GAME,
+	GAME_STATE_MENU,
+	GAME_STATE_CHARA_SELECT,
+
+	GAME_STATE_MAX,
+};
+
 enum
 {
 	BUTTON_UP,
@@ -79,6 +88,7 @@ enum
 	BUTTON_DEBUG_MOVE_1,
 	BUTTON_DEBUG_PRINT_POS,
 	BUTTON_DEBUG_PRINT_FRAME,
+	BUTTON_DEBUG_RESET,
 
 	BUTTON_DEBUG_MAX,
 };

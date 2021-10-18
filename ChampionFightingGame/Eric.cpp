@@ -11,6 +11,12 @@ Eric::Eric(SDL_Renderer *renderer, int id) {
 	loadEricStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ERIC;
+	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png", renderer);
+	int width;
+	int height;
+	SDL_QueryTexture(this->base_texture, NULL, NULL, &width, &height);
+	pos.x_spr_offset = width / 2;
+	pos.y_spr_offset = height;
 }
 
 void Eric::chara_id() {

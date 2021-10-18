@@ -48,7 +48,8 @@ public:
 	
 	Buttons button_info[BUTTON_MAX];
 	string resource_dir;
-	SDL_Texture* current_texture;
+	SDL_Texture* base_texture;
+	SDL_Rect base_rect;
 	SDL_Rect frame_rect;
 
 	void (PlayerInfo::* pStatus[CHARA_STATUS_MAX])();

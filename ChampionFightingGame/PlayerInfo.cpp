@@ -759,8 +759,6 @@ void PlayerInfo::startAnimation(Animation *animation)
 {
 	is_anim_end = false;
 	anim_kind = animation;
-	pos.x_spr_offset = animation->sprite_width / 2;
-	pos.y_spr_offset = animation->sprite_height;
 	last_frame_ms = SDL_GetTicks();
 	frame_rect = getFrame(frame, anim_kind);
 }

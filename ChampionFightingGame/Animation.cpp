@@ -14,16 +14,20 @@ SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
 	if (image_surface == NULL) {
 		cout << "Error loading image: " << IMG_GetError() << endl;
 	}
-	return SDL_CreateTextureFromSurface(renderer, image_surface);
+	SDL_Texture *ret = SDL_CreateTextureFromSurface(renderer, image_surface);
 	SDL_FreeSurface(image_surface);
+	return ret;
 }
 
 SDL_Rect getFrame(int frame, Animation* animation) {
+	int width;
+	int height;
+	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
 	SDL_Rect frame_rect;
 	frame_rect.x = frame * animation->sprite_width;
 	frame_rect.y = 0;
-	frame_rect.h = animation->sprite_height;
 	frame_rect.w = animation->sprite_width;
+	frame_rect.h = animation->sprite_height;
 	return frame_rect;
 }
 

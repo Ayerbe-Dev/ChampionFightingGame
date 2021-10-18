@@ -14,6 +14,7 @@
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
+#include "Menu.h"
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -21,32 +22,7 @@ extern u32 tick;
 extern u32 tok;
 extern int error_render;
 
-IFighter::IFighter(int chara_id, SDL_Renderer *renderer, int id) {
-	switch (chara_id) {
-		case(CHARA_KIND_ROY): {
-			player_info = new Roy(renderer, id);
-		} break;
-		case(CHARA_KIND_ERIC): {
-			player_info = new Eric(renderer, id);
-		} break;
-		case (CHARA_KIND_MAX): {
-			player_info = NULL;
-		} break;
-	}
-}
-
-IFighter::~IFighter() {
-	if (player_info) {
-		delete[] player_info;
-		player_info = NULL;
-	}
-}
-
-PlayerInfo *IFighter::get_fighter() {
-	return player_info;
-}
-
-int game_main(SDL_Renderer* pRenderer) {
+int game_main(SDL_Renderer* pRenderer, PlayerChoice* p1_choice, PlayerChoice* p2_choice) {
 	bool gaming = true;
 	bool visualize_boxes = true;
 
@@ -66,8 +42,8 @@ int game_main(SDL_Renderer* pRenderer) {
 	//init players
 	PlayerInfo* player_info[2];
 
-	IFighter* p1 = new IFighter(CHARA_KIND_ROY, pRenderer, 0);
-	IFighter* p2 = new IFighter(CHARA_KIND_ERIC, pRenderer, 1);
+	IFighter* p1 = new IFighter(p1_choice->chara_kind, pRenderer, 0);
+	IFighter* p2 = new IFighter(p2_choice->chara_kind, pRenderer, 1);
 
 	player_info[0] = p1->get_fighter();
 	player_info[1] = p2->get_fighter();
@@ -90,10 +66,9 @@ int game_main(SDL_Renderer* pRenderer) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-			case SDL_QUIT: {
-				gaming = false;
-				return false;
-			} break;
+				case SDL_QUIT: {
+					return GAME_STATE_CLOSE;
+				} break;
 			}
 		}
 
@@ -201,6 +176,10 @@ int game_main(SDL_Renderer* pRenderer) {
 					}
 				}
 				debug_mode(&debugger, player_info[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
+				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
+					debug = false;
+					gaming = false;
+				}
 			}
 
 			SDL_Rect render_pos;
@@ -257,7 +236,8 @@ int game_main(SDL_Renderer* pRenderer) {
 
 		SDL_RenderPresent(pRenderer);
 	}
-	return GAME_STATE_CLOSE;
+
+	return GAME_STATE_MENU;
 }
 
 void tickOnce(PlayerInfo* player_info, SDL_Renderer* renderer) {
@@ -737,4 +717,29 @@ int get_damage_status(int hit_status, int situation_kind) {
 			return CHARA_STATUS_HITSTUN;
 		}
 	}
+}
+
+IFighter::IFighter(int chara_id, SDL_Renderer* renderer, int id) {
+	switch (chara_id) {
+	case(CHARA_KIND_ROY): {
+		player_info = new Roy(renderer, id);
+	} break;
+	case(CHARA_KIND_ERIC): {
+		player_info = new Eric(renderer, id);
+	} break;
+	case (CHARA_KIND_MAX): {
+		player_info = NULL;
+	} break;
+	}
+}
+
+IFighter::~IFighter() {
+	if (player_info) {
+		delete[] player_info;
+		player_info = NULL;
+	}
+}
+
+PlayerInfo* IFighter::get_fighter() {
+	return player_info;
 }

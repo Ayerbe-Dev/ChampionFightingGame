@@ -7,6 +7,7 @@
 #include <SDL_timer.h>
 #include "utils.h"
 #include "Game.h"
+#include "Menu.h"
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
@@ -25,7 +26,7 @@ int game_main(SDL_Renderer* pRenderer);
 int main() {
 	bool running = true;
 	bool visualize_boxes = true;
-	int game_state = GAME_STATE_GAME;
+	int game_state = GAME_STATE_MENU;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("error initializing SDL: %s\n", SDL_GetError());
@@ -37,13 +38,22 @@ int main() {
 	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 
+//	PlayerChoice p1_choice = { -1, 0, "" };
+//	PlayerChoice p2_choice = { -1, 0, "" };
+
+	PlayerChoice p1_choice = { -1, 0};
+	PlayerChoice p2_choice = { -1, 0};
+
 
 	while (running) {
 		if (game_state == GAME_STATE_GAME) {
-			game_state = game_main(pRenderer);
+			game_state = game_main(pRenderer, &p1_choice, &p2_choice);
 		}
 		else if (game_state == GAME_STATE_MENU) {
-
+			game_state = menu_main(pRenderer);
+		}
+		else if (game_state == GAME_STATE_CHARA_SELECT) {
+			game_state = chara_select_main(pRenderer, &p1_choice, &p2_choice);
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;

@@ -21,16 +21,16 @@ Uint32 tok;
 u32 frame_advance_entry_ms;
 u32 frame_advance_ms;
 bool debug = false;
-int game_main(SDL_Renderer* pRenderer);
 
 int main() {
 	bool running = true;
 	bool visualize_boxes = true;
-	int game_state = GAME_STATE_MENU;
+	int game_state = GAME_STATE_GAME;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		printf("error initializing SDL: %s\n", SDL_GetError());
+		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
+	SDL_GameControllerEventState(SDL_ENABLE);
 
 	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
 	SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -38,22 +38,19 @@ int main() {
 	SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 
-//	PlayerChoice p1_choice = { -1, 0, "" };
-//	PlayerChoice p2_choice = { -1, 0, "" };
-
-	PlayerChoice p1_choice = { -1, 0};
-	PlayerChoice p2_choice = { -1, 0};
-
+	PlayerInfo player_info[2];
+	player_info[0] = PlayerInfo(0);
+	player_info[1] = PlayerInfo(1);
 
 	while (running) {
 		if (game_state == GAME_STATE_GAME) {
-			game_state = game_main(pRenderer, &p1_choice, &p2_choice);
+			game_state = game_main(pRenderer, player_info);
 		}
 		else if (game_state == GAME_STATE_MENU) {
-			game_state = menu_main(pRenderer);
+			game_state = menu_main(pRenderer, player_info);
 		}
 		else if (game_state == GAME_STATE_CHARA_SELECT) {
-			game_state = chara_select_main(pRenderer, &p1_choice, &p2_choice);
+			game_state = chara_select_main(pRenderer, player_info);
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;

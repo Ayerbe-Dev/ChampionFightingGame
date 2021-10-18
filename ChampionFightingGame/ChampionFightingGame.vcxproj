@@ -195,10 +195,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
+    <ClCompile Include="FighterInstance.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -239,13 +240,14 @@
     <ClInclude Include="Leon.fwd.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="ParamTable.h" />
-    <ClInclude Include="PlayerInfo.fwd.h" />
+    <ClInclude Include="FighterInstance.fwd.h" />
+    <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Roy.fwd.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
-    <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="FighterInstance.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

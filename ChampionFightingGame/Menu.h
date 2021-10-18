@@ -4,12 +4,8 @@
 #include <iostream>
 #include <functional>
 #include <vector>
+#include "Button.h"
+#include "PlayerInfo.h"
 
-struct PlayerChoice {
-	int chara_kind;
-	int color;
-//	string controls;
-};
-
-int menu_main(SDL_Renderer* renderer);
-int chara_select_main(SDL_Renderer* renderer, PlayerChoice *p1_choice, PlayerChoice *p2_choice);
+int menu_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]);
+int chara_select_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]);

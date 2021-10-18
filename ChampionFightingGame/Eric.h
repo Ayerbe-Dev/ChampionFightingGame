@@ -1,6 +1,6 @@
 #pragma once
-#include "PlayerInfo.fwd.h"
-#include "PlayerInfo.h"
+#include "FighterInstance.fwd.h"
+#include "FighterInstance.h"
 #include "Eric.fwd.h"
 #include "utils.h"
 
@@ -14,7 +14,7 @@ public:
 	EricScript(string name, function<void()> move_script, int id);
 };
 
-class Eric : public PlayerInfo {
+class Eric : public FighterInstance {
 public:
 	void chara_id();
 

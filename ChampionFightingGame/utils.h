@@ -37,6 +37,7 @@ float ymlChopFloat(string line);
 string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
+SDL_GameControllerButton getSDLButtonFromMapping(u32 button);
 
 /*
 	updateCamera(); 
@@ -62,13 +63,22 @@ enum
 	BUTTON_DOWN,
 	BUTTON_LEFT,
 	BUTTON_RIGHT,
+	BUTTON_MENU_UP,
+	BUTTON_MENU_DOWN,
+	BUTTON_MENU_LEFT,
+	BUTTON_MENU_RIGHT,
 	BUTTON_LP,
 	BUTTON_MP,
 	BUTTON_HP,
 	BUTTON_LK,
 	BUTTON_MK,
 	BUTTON_HK,
+	BUTTON_MACRO_P,
+	BUTTON_MACRO_K,
 	BUTTON_START,
+	BUTTON_MENU_SELECT,
+	BUTTON_MENU_BACK,
+	BUTTON_MENU_START,
 
 	BUTTON_MAX,
 };

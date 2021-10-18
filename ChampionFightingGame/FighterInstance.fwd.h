@@ -1,5 +1,5 @@
 ﻿#pragma once
-class PlayerInfo;
+class FighterInstance;
 
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣤⣤⣶⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀

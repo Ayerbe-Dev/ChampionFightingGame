@@ -27,7 +27,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
+    <ClCompile Include="FighterInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameCoordinate.cpp">
@@ -56,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="Menu.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,7 +106,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PlayerInfo.h">
+    <ClInclude Include="FighterInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.h">
@@ -127,7 +130,7 @@
     <ClInclude Include="Box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerInfo.fwd.h">
+    <ClInclude Include="FighterInstance.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Box.fwd.h">
@@ -158,6 +161,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -337,10 +337,8 @@ bool PlayerInfo::is_excute_frame(int excute_count, int frame)
 	}
 }
 
-bool PlayerInfo::is_excute_wait(int excute_count, int frames)
-{
-	if (frame >= last_excute_frame + frames)
-	{ //If it's been enough time since the last non-executed statement
+bool PlayerInfo::is_excute_wait(int excute_count, int frames) {
+	if (frame >= last_excute_frame + frames) { //If it's been enough time since the last non-executed statement
 		if (this->excute_count >= excute_count)
 		{ //If we already executed the statement
 			return false;
@@ -360,8 +358,7 @@ bool PlayerInfo::is_excute_wait(int excute_count, int frames)
 
 //Inputs
 
-void PlayerInfo::processInput()
-{
+void PlayerInfo::processInput() {
 	update_hitbox_pos();
 	update_grabbox_pos();
 	update_hurtbox_pos();
@@ -378,8 +375,7 @@ void PlayerInfo::processInput()
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 8;
 	}
 	int stick_dir = get_stick_dir();
-	if (stick_dir < 4)
-	{ //disgusting
+	if (stick_dir < 4) { //disgusting
 		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
 		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES]++;
 	}

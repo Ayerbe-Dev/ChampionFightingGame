@@ -11,6 +11,7 @@
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
+#include "DebugMenu.h"
 #undef main
 using namespace std;
 int error_render;
@@ -21,7 +22,8 @@ u32 frame_advance_entry_ms;
 u32 frame_advance_ms;
 bool debug = false;
 
-int main() {
+int main()
+{
 	bool running = true;
 	bool visualize_boxes = true;
 
@@ -33,7 +35,8 @@ int main() {
 	GameCoordinate debug_offset[2];
 
 	//init SDL
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	{
 		printf("error initializing SDL: %s\n", SDL_GetError());
 	}
 
@@ -72,20 +75,26 @@ int main() {
 	const Uint8 *keyboard_state;
 	tick = SDL_GetTicks();
 
-	while (running) {
+	while (running)
+	{
 		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					running = false;
-				} break;
+		while (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_QUIT:
+			{
+				running = false;
+			}
+			break;
 			}
 		}
 
 		//Frame delay
 
 		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS) {
+		if (tok < TICK_RATE_MS)
+		{
 			SDL_Delay(TICK_RATE_MS - tok);
 		}
 		tick = SDL_GetTicks();
@@ -94,9 +103,12 @@ int main() {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		//Check the players' buttons
-		for (int i = 0; i < BUTTON_MAX; i++) {
-			for (int o = 0; o < 2; o++) {
-				if (!debug) { 
+		for (int i = 0; i < BUTTON_MAX; i++)
+		{
+			for (int o = 0; o < 2; o++)
+			{
+				if (!debug)
+				{
 					/*
 					Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
 					directly when the frame is advanced manually
@@ -109,7 +121,8 @@ int main() {
 				}
 			}
 		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++)
+		{
 			bool old_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
 			bool new_button = debugger.button_info[i].button_on;
@@ -133,41 +146,53 @@ int main() {
 		Start by flipping the characters.It's important that both characters get flipped before anything else happens because facing direction will affect the players'
 		inputs
 		*/
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
+		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (player_info[i]->situation_kind == CHARA_SITUATION_GROUND && player_info[i]->is_actionable()) {
-				if (player_info[i]->pos.x > player_info[!i]->pos.x) {
+			if (player_info[i]->situation_kind == CHARA_SITUATION_GROUND && player_info[i]->is_actionable())
+			{
+				if (player_info[i]->pos.x > player_info[!i]->pos.x)
+				{
 					player_info[i]->facing_dir = -1.0;
 					player_info[i]->facing_right = false;
 					flip = SDL_FLIP_HORIZONTAL;
 				}
-				else {
+				else
+				{
 					player_info[i]->facing_dir = 1.0;
 					player_info[i]->facing_right = true;
 				}
 			}
-			else if (!player_info[i]->facing_right) {
+			else if (!player_info[i]->facing_right)
+			{
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 
 			//Debug mode
-			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
+			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0)
+			{
 				debug = !debug;
 			}
-			if (!debug) {
+			if (!debug)
+			{
 				tickOnce(player_info[i], pRenderer);
 				frame_advance_entry_ms = SDL_GetTicks();
 			}
-			else if (i == 0) {
+			else if (i == 0)
+			{
 				frame_advance_ms = SDL_GetTicks() - frame_advance_entry_ms;
-				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1))
+				{
 					debugger.target = 0;
 				}
-				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2)) {
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2))
+				{
 					debugger.target = 1;
 				}
-				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					for (int o = 0; o < BUTTON_MAX; o++) {
+				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE))
+				{
+					for (int o = 0; o < BUTTON_MAX; o++)
+					{
 						bool old_button = player_info[0]->button_info[o].button_on;
 						player_info[0]->button_info[o].button_on = keyboard_state[player_info[0]->button_info[o].mapping];
 						bool new_button = player_info[0]->button_info[o].button_on;
@@ -180,7 +205,8 @@ int main() {
 					frame_advance_entry_ms = SDL_GetTicks();
 					tickOnce(player_info[0], pRenderer);
 					tickOnce(player_info[1], pRenderer);
-					if (debugger.print_frames) {
+					if (debugger.print_frames)
+					{
 						cout << "Player " << debugger.target + 1 << " Frame: " << player_info[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << player_info[debugger.target]->render_frame - 1 << endl;
 					}
@@ -198,7 +224,8 @@ int main() {
 			render_pos.h = height;
 			const double angle = 0;
 			error_render = SDL_RenderCopyEx(pRenderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
-			if (error_render != 0) {
+			if (error_render != 0)
+			{
 				cout << "\n"
 					 << SDL_GetError();
 			}
@@ -218,9 +245,11 @@ int main() {
 		SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
 
 		//if the static cast is so bad, just... don't do it?
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
+		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (i == 1) {
+			if (i == 1)
+			{
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 			const double angle = 0;
@@ -229,8 +258,7 @@ int main() {
 				(int)(player_info[i]->pos.getRenderCoodrinateX() + 20),
 				(int)(player_info[i]->pos.getRenderCoodrinateY() - 33),
 				30,
-				30
-			};
+				30};
 			SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
 			SDL_RenderCopyEx(pRenderer, health_bar[i].bar_texture, nullptr, &(health_bar[i].bar_rect), angle, NULL, flip);
 			health_bar[i].health_rect.w = 400 * (player_info[i]->chara_float[CHARA_FLOAT_HEALTH] / health_bar[i].max_health);

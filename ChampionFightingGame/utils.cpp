@@ -55,7 +55,7 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y)
 
 	cCamera.w = std::min(
 		std::max(
-			(std::abs(player1X - player2X)),
+			std::abs(player1X - player2X) + 150,
 			CAMERA_MAX_ZOOM_IN),
 		CAMERA_MAX_ZOOM_OUT);
 

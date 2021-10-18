@@ -25,7 +25,7 @@ typedef float f32;
 #define HITBOX_COUNT_MAX 9
 
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
-#define JUMP_FOLLOW_THRESHOLD 100
+#define JUMP_FOLLOW_THRESHOLD 120
 #define CAMERA_MAX_ZOOM_OUT 700
 #define CAMERA_MAX_ZOOM_IN 400
 
@@ -63,8 +63,8 @@ enum
 	BUTTON_MAX,
 };
 
-
-enum {
+enum
+{
 	BUTTON_DEBUG_ENABLE,
 	BUTTON_DEBUG_ADVANCE,
 	BUTTON_DEBUG_PICK_1,
@@ -82,7 +82,8 @@ enum {
 	BUTTON_DEBUG_MAX,
 };
 
-enum {
+enum
+{
 	CHARA_KIND_ROY,
 	CHARA_KIND_ERIC,
 
@@ -311,8 +312,8 @@ enum
 	CHARA_INT_MAX,
 };
 
-
-enum {
+enum
+{
 	WAKEUP_SPEED_MIN,
 	WAKEUP_SPEED_FAST,
 	WAKEUP_SPEED_DEFAULT,
@@ -321,7 +322,8 @@ enum {
 	DOWN_SPEED_MAX,
 };
 
-enum {
+enum
+{
 
 	CHARA_FLOAT_HEALTH,
 	CHARA_FLOAT_SUPER_METER,

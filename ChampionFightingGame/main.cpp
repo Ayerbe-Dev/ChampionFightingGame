@@ -19,8 +19,13 @@ u32 frame_advance_entry_ms;
 u32 frame_advance_ms;
 bool debug = false;
 
-
 SDL_Texture *pBackgroundTexture;
+SDL_Texture *pTimerTexture;
+SDL_Texture *pP2IndicatorTexture;
+SDL_Texture *pP1IndicatorTexture;
+SDL_Rect cTimerRect{WINDOW_WIDTH / 2 - (92 / 2), 0, 92, 92};
+SDL_Rect cP2IndicatorRect{0, 0, 92, 92};
+SDL_Rect cP1IndicatorRect{0, 0, 92, 92};
 
 int main()
 {
@@ -29,7 +34,7 @@ int main()
 
 	Debugger debugger;
 	debugger = Debugger();
-	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
+	SDL_Rect debug_rect[2] = {0, 0, 0, 0};
 
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
@@ -48,6 +53,9 @@ int main()
 
 	//Background image
 	pBackgroundTexture = loadTexture("resource/stage/training_room/background.png", pRenderer);
+	pTimerTexture = loadTexture("resource/game/TimerTemplate.png", pRenderer);
+	pP2IndicatorTexture = loadTexture("resource/game/P2Tag.png", pRenderer);
+	pP1IndicatorTexture = loadTexture("resource/game/P1Tag.png", pRenderer);
 	SDL_Texture *pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Rect camera;
 
@@ -93,7 +101,8 @@ int main()
 				}
 			}
 		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++)
+		{
 			bool old_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
 			bool new_button = debugger.button_info[i].button_on;
@@ -143,23 +152,30 @@ int main()
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 
-			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
+			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0)
+			{
 				debug = !debug;
 			}
-			if (!debug) {
+			if (!debug)
+			{
 				tickOnce(player_info[i], pRenderer);
 				frame_advance_entry_ms = SDL_GetTicks();
 			}
-			else if (i == 0) {
+			else if (i == 0)
+			{
 				frame_advance_ms = SDL_GetTicks() - frame_advance_entry_ms;
-				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1))
+				{
 					debugger.target = 0;
 				}
-				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2)) {
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2))
+				{
 					debugger.target = 1;
 				}
-				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					for (int o = 0; o < BUTTON_MAX; o++) {
+				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE))
+				{
+					for (int o = 0; o < BUTTON_MAX; o++)
+					{
 						bool old_button = player_info[0]->button_info[o].button_on;
 						player_info[0]->button_info[o].button_on = keyboard_state[player_info[0]->button_info[o].mapping];
 						bool new_button = player_info[0]->button_info[o].button_on;
@@ -172,13 +188,13 @@ int main()
 					frame_advance_entry_ms = SDL_GetTicks();
 					tickOnce(player_info[0], pRenderer);
 					tickOnce(player_info[1], pRenderer);
-					if (debugger.print_frames) {
+					if (debugger.print_frames)
+					{
 						cout << "Player " << debugger.target + 1 << " Frame: " << player_info[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << player_info[debugger.target]->render_frame - 1 << endl;
 					}
 				}
 				debug_mode(&debugger, player_info[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
-
 			}
 
 			SDL_Rect render_pos;
@@ -204,8 +220,25 @@ int main()
 			player_info[1]->pos.getRenderCoodrinateX(),
 			player_info[1]->pos.getRenderCoodrinateY());
 
+		//this static cast thing is disgusting
+		cP2IndicatorRect = SDL_Rect{
+			static_cast<int>(player_info[1]->pos.getRenderCoodrinateX() + 20),
+			static_cast<int>(player_info[1]->pos.getRenderCoodrinateY() - 33),
+			30, 30};
+		SDL_RenderCopy(pRenderer, pP2IndicatorTexture, nullptr, &cP2IndicatorRect);
+
+		cP1IndicatorRect = SDL_Rect{
+			static_cast<int>(player_info[0]->pos.getRenderCoodrinateX() + 20),
+			static_cast<int>(player_info[0]->pos.getRenderCoodrinateY() - 33),
+			30, 30};
+		SDL_RenderCopy(pRenderer, pP1IndicatorTexture, nullptr, &cP1IndicatorRect);
+
 		SDL_SetRenderTarget(pRenderer, nullptr);
+
 		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr);
+
+		SDL_RenderCopy(pRenderer, pTimerTexture, nullptr, &cTimerRect);
+
 		SDL_RenderPresent(pRenderer);
 	}
 

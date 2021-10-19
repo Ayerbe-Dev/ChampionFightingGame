@@ -544,9 +544,11 @@ bool FighterInstance::set_pos(int x, int y)
 	}
 }
 
-bool FighterInstance::invalid_x(f32 x)
-{
-	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2;
+bool FighterInstance::invalid_x(f32 x) {
+	f32 opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
+	f32 x_distance = abs(opponent_x - x);
+
+	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > MAX_PLAYER_DISTANCE;
 }
 
 bool FighterInstance::invalid_y(f32 y)
@@ -988,7 +990,7 @@ void FighterInstance::status_wait()
 
 void FighterInstance::enter_status_wait()
 {
-	set_pos(pos.x, FLOOR_GAMECOORD);
+	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait", 30, 0);
 	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);

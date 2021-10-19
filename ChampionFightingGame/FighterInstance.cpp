@@ -15,6 +15,22 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info
 	superInit(0, renderer);
 }
 
+FighterInstance::~FighterInstance() {
+	if (player_info) {
+		delete player_info;
+	}
+	if (fighter_instance_accessor) {
+		delete fighter_instance_accessor;
+	}
+	if (anim_kind) {
+		delete anim_kind;
+	}
+	if (animation_table) {
+		delete[] animation_table;
+	}
+	delete this;
+}
+
 void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 {
 	this->id = id;
@@ -22,11 +38,11 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 	//these initial gamecoord values get overwritten almost immediately. why are we still here, just to suffer?
 	if (id == 0)
 	{
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -50, 0);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
 	}
 	else if (id == 1)
 	{
-		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 50, 0);
+		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 
 	load_anim_list(renderer);
@@ -144,8 +160,7 @@ void FighterInstance::load_params()
 	stats_table.close();
 }
 
-void FighterInstance::loadStatusFunctions()
-{
+void FighterInstance::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_WAIT] = &FighterInstance::status_wait;
 	pEnter_status[CHARA_STATUS_WAIT] = &FighterInstance::enter_status_wait;
 	pExit_status[CHARA_STATUS_WAIT] = &FighterInstance::exit_status_wait;

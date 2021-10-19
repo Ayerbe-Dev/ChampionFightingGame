@@ -257,13 +257,9 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		tick = SDL_GetTicks();
 	}
 
-	fighter_instance[0] = NULL; //These ones work fine
-	fighter_instance[1] = NULL;
-
-//	p1->~IFighter(); //These ones cause the crash
-//	p2->~IFighter(); 
-
 	delete fighter_instance_accessor;
+	fighter_instance[0]->~FighterInstance();
+	fighter_instance[1]->~FighterInstance();
 
 	return next_state;
 }

@@ -913,10 +913,12 @@ bool FighterInstance::common_air_status_act() {
 		}
 		if (chara_int[CHARA_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6 && stats.has_airdash && !chara_flag[CHARA_FLAG_USED_AIRDASH]) {
 			chara_int[CHARA_INT_DASH_AIR_DIR] = 1;
+			chara_flag[CHARA_FLAG_USED_AIRDASH] = true;
 			return change_status(CHARA_STATUS_DASH_AIR);
 		}
 		if (chara_int[CHARA_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4 && stats.has_airdash && !chara_flag[CHARA_FLAG_USED_AIRDASH]) {
 			chara_int[CHARA_INT_DASH_AIR_DIR] = 2;
+			chara_flag[CHARA_FLAG_USED_AIRDASH] = true;
 			return change_status(CHARA_STATUS_DASH_AIR);
 		}
 	}

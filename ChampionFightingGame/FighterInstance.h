@@ -9,6 +9,8 @@
 #include "FighterInstance.fwd.h"
 #include "Box.fwd.h"
 #include "Box.h"
+#include "FighterInstanceAccessor.fwd.h"
+#include "FighterInstanceAccessor.h"
 #include "PlayerInfo.h"
 
 class FighterInstance{
@@ -21,6 +23,7 @@ public:
 	GameCoordinate prevpos;
 	bool facing_right{ true };
 	f32 facing_dir{ 1.0 };
+	FighterInstanceAccessor *fighter_instance_accessor;
 
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };

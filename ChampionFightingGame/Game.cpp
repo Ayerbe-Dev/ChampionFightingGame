@@ -254,6 +254,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	p1->~IFighter(); //These ones cause the crash
 	p2->~IFighter();
 
+	delete fighter_instance_accessor;
+
 	return next_state;
 }
 

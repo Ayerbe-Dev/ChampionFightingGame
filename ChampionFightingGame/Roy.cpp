@@ -126,7 +126,7 @@ void Roy::loadRoyACMD() {
 		if (is_excute_frame(2, 1)) {
 			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
 		}
-		if (is_excute_wait(3, 4)) { //due to rates, this is actually active for 4 frames
+		if (is_excute_wait(3, 4)) {
 			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
 			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
 		}

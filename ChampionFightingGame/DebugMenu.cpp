@@ -166,5 +166,7 @@ SDL_Texture *newFontTexture(std::string text, SDL_Renderer *pRenderer, TTF_Font 
     {
         printf("Failed to render text:  %s\n", TTF_GetError());
     }
-    return SDL_CreateTextureFromSurface(pRenderer, textSurface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+    SDL_FreeSurface(textSurface);
+    return texture;
 }

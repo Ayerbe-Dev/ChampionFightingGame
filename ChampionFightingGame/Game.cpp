@@ -248,6 +248,12 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		SDL_RenderPresent(pRenderer);
 	}
 
+	fighter_instance[0] = NULL; //These ones work fine
+	fighter_instance[1] = NULL;
+
+	p1->~IFighter(); //These ones cause the crash
+	p2->~IFighter();
+
 	return next_state;
 }
 

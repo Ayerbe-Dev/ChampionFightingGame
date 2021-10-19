@@ -803,8 +803,7 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 	}
 }
 
-void FighterInstance::playoutStatus()
-{
+void FighterInstance::playoutStatus() {
 	(this->*pStatus[status_kind])();
 	move_script();
 }

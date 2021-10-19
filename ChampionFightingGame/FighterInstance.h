@@ -84,6 +84,7 @@ public:
 
 	void processInput();
 	bool check_button_on(u32 button);
+	bool check_button_input(u32 button);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
 	i32 get_stick_dir();
@@ -165,6 +166,9 @@ public:
 	void status_dashb();
 	void enter_status_dashb();
 	void exit_status_dashb();
+	void status_dash_air();
+	void enter_status_dash_air();
+	void exit_status_dash_air();
 	void status_crouchd();
 	void enter_status_crouchd();
 	void exit_status_crouchd();

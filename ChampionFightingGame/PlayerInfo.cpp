@@ -9,8 +9,9 @@ PlayerInfo::PlayerInfo(int id) {
 	for (int i = 0; i < SDL_NumJoysticks(); ++i) {
 		if (SDL_IsGameController(i)) {
 			new_controller = SDL_GameControllerOpen(i);
-
+			cout << "Controller " << i << " is open" << endl;
 			if (SDL_GameControllerGetAttached(new_controller)) {
+				cout << "Controller " << i << " is attached" << endl;
 				this->controller = new_controller;
 				SDL_GameControllerClose(new_controller);
 			}
@@ -21,6 +22,10 @@ PlayerInfo::PlayerInfo(int id) {
 
 bool PlayerInfo::check_button_on(u32 button) {
 	return button_info[button].button_on;
+}
+
+bool PlayerInfo::check_button_input(u32 button) {
+	return button_info[button].buffer > 0 && last_buffered_button == button;
 }
 
 bool PlayerInfo::check_button_trigger(u32 button) {
@@ -60,6 +65,20 @@ void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 		}
 		bool new_button = button_info[i].button_on;
 		button_info[i].changed = (old_button != new_button);
+		button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
+		if (button_info[i].changed && button_info[i].button_on && is_valid_buffer_button(i)) {
+			last_buffered_button = i;
+			button_info[i].buffer = BUFFER_WINDOW;
+		}
+	}
+}
+
+bool PlayerInfo::is_valid_buffer_button(u32 button) {
+	if (button == BUTTON_LP || button == BUTTON_MP || button == BUTTON_HP || button == BUTTON_LK || button == BUTTON_MK || button == BUTTON_HK) {
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 

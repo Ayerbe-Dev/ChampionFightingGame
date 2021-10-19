@@ -22,5 +22,5 @@ lk_landing_lag=5
 mk_landing_lag=5
 hk_landing_lag=5
 health=1000
-has_airdash=0
+has_airdash=1
 meter_gain_on_parry=30

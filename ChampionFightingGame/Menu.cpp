@@ -84,6 +84,12 @@ int chara_select_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_buttons(keyboard_state);
+			if (player_info[i].check_button_trigger(BUTTON_LP)) {
+				player_info[i].chara_kind = CHARA_KIND_ROY;
+			}
+			if (player_info[i].check_button_trigger(BUTTON_MP)) {
+				player_info[i].chara_kind = CHARA_KIND_ERIC;
+			}
 		}
 
 		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {

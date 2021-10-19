@@ -47,25 +47,20 @@ int main()
 
 	while (running)
 	{
-		if (game_state == GAME_STATE_GAME)
-		{
+		if (game_state == GAME_STATE_GAME) {
 			game_state = game_main(pRenderer, player_info);
 		}
-		else if (game_state == GAME_STATE_MENU)
-		{
+		else if (game_state == GAME_STATE_MENU) {
 			game_state = menu_main(pRenderer, player_info);
 		}
-		else if (game_state == GAME_STATE_CHARA_SELECT)
-		{
+		else if (game_state == GAME_STATE_CHARA_SELECT) {
 			game_state = chara_select_main(pRenderer, player_info);
 		}
-		else if (game_state == GAME_STATE_CLOSE)
-		{
+		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
-		else
-		{
-			game_state = debugMenu(game_state, pRenderer);
+		else {
+			game_state = debugMenu(pRenderer, player_info);
 		}
 	}
 

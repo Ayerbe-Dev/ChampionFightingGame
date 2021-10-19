@@ -7,10 +7,10 @@
 #include <sstream>
 #include "utils.h"
 #include "DebugMenu.h"
+extern u32 tick;
+extern u32 tok;
 
-int debugMenu(int iLastMenu, SDL_Renderer *pRenderer)
-{
-
+int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
     const Uint8 *keyboard_state;
     int select = 0;
     std::ostringstream lastString;
@@ -22,16 +22,16 @@ int debugMenu(int iLastMenu, SDL_Renderer *pRenderer)
     bool bPressedUp = false;
     SDL_Rect selectRect{0, 0, 100, 700};
 
-    if (TTF_Init() < 0)
-    {
+    SDL_RenderClear(pRenderer);
+
+    if (TTF_Init() < 0) {
         printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
     }
 
     TTF_Font *font;
 
     font = TTF_OpenFont("FiraCode-Regular.ttf", 24);
-    if (!font)
-    {
+    if (!font) {
         printf("Failed to load font:  %s\n", TTF_GetError());
     }
 
@@ -50,7 +50,7 @@ int debugMenu(int iLastMenu, SDL_Renderer *pRenderer)
     // text_texture = SDL_CreateTextureFromSurface(pRenderer, text);
 
     option_surfaces[0] = 280;
-    lastString << "Menu Call [" << iLastMenu << "] 'a' to select";
+    lastString << "Menu Call [" << GAME_STATE_DEBUG_MENU << "] 'SPACE' or 'ENTER' to select";
     option_texts[0] = newFontTexture(lastString.str(), pRenderer, font);
 
     option_surfaces[1] = 50;
@@ -63,14 +63,32 @@ int debugMenu(int iLastMenu, SDL_Renderer *pRenderer)
     option_texts[3] = newFontTexture("MENU", pRenderer, font);
 
     option_surfaces[4] = 60;
-    option_texts[4] = newFontTexture("CCS", pRenderer, font);
+    option_texts[4] = newFontTexture("CSS", pRenderer, font);
 
     option_surfaces[5] = 120;
     option_texts[5] = newFontTexture("DEBUG (this)", pRenderer, font);
 
-    printf("DEBUG");
-    while (debugging)
-    {
+    while (debugging) {
+        tok = SDL_GetTicks() - tick;
+        if (tok < TICK_RATE_MS)
+        {
+            SDL_Delay(TICK_RATE_MS - tok);
+        }
+        tick = SDL_GetTicks();
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+            case SDL_QUIT:
+            {
+                return GAME_STATE_CLOSE;
+            }
+            break;
+            }
+        }
+
         for (int i = 0; i <= GAME_STATE_MAX; i++)
         {
             dest = {100, 26 * i, option_surfaces[i], 25}; // I am so lazy oml
@@ -88,21 +106,52 @@ int debugMenu(int iLastMenu, SDL_Renderer *pRenderer)
         SDL_RenderPresent(pRenderer);
         SDL_PumpEvents();
 
+        //bro
+
+        //im just going to leave this old code here so you can look at it and think about how you handled the cycling
+
+        //no really, go sit down and think about what you've done
+
+        //shoo
+
+        //i'm not mad, i'm just disappointed
+
+        //like bro??? 10 fps????? when we have to go through this menu all the time??????????
+
+        //smh my head if i'm being tbh
+
+        //cry
+
+        /*
         keyboard_state = SDL_GetKeyboardState(nullptr);
-        if (keyboard_state[SDL_SCANCODE_DOWN] && select < GAME_STATE_MAX - 1)
-        {
+        if (keyboard_state[SDL_SCANCODE_DOWN] && select < GAME_STATE_MAX - 1) {
             select++;
         }
-        else if (keyboard_state[SDL_SCANCODE_UP] && select > 0)
-        {
+        else if (keyboard_state[SDL_SCANCODE_UP] && select > 0) {
             select--;
         }
-        else if (keyboard_state[SDL_SCANCODE_A])
-        {
+        else if (keyboard_state[SDL_SCANCODE_A]) {
             SDL_Delay(200);
             return select;
         }
-        SDL_Delay(1000 / 10);
+        */
+        keyboard_state = SDL_GetKeyboardState(nullptr);
+        for (int i = 0; i < 2; i++) {
+            (&player_info[i])->update_buttons(keyboard_state);
+            if ((&player_info[i])->check_button_trigger(BUTTON_DOWN)) {
+                if (select < GAME_STATE_MAX - 1) {
+                    select++;
+                }
+            }
+            if ((&player_info[i])->check_button_trigger(BUTTON_UP)) {
+                if (select > 0) {
+                    select--;
+                }
+            }
+            if ((&player_info[i])->check_button_trigger(BUTTON_START)) {
+                return select;
+            }
+        }
     }
 }
 

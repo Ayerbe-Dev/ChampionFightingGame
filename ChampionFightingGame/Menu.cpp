@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "utils.h"
+#include "PlayerInfo.h"
 #include <SDL.h>
 extern bool debug;
 extern u32 frame_advance_ms;
@@ -8,7 +9,7 @@ extern u32 tick;
 extern u32 tok;
 extern int error_render;
 
-int menu_main(SDL_Renderer* pRenderer) {
+int menu_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 	bool menuing = true;
 	
 	const Uint8* keyboard_state;
@@ -38,22 +39,25 @@ int menu_main(SDL_Renderer* pRenderer) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
-		if (keyboard_state[SDL_SCANCODE_RETURN]) {
+		for (int i = 0; i < 2; i++) {
+			(&player_info[i])->update_buttons(keyboard_state);
+		}
+
+		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {
 			menuing = false;
 		}
+
 		SDL_RenderPresent(pRenderer);
 	}
 
 	return GAME_STATE_CHARA_SELECT;
 }
 
-int chara_select_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2_choice) {
+int chara_select_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 	bool chara_selecting = true;
 	
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
-
-	int current_character = 1;
 
 	while (chara_selecting) {
 		SDL_RenderClear(pRenderer);
@@ -78,34 +82,14 @@ int chara_select_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerCh
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
-
-		if (keyboard_state[SDL_SCANCODE_1]) {
-			current_character = 1;
-		}
-		if (keyboard_state[SDL_SCANCODE_2]) {
-			current_character = 2;
+		for (int i = 0; i < 2; i++) {
+			(&player_info[i])->update_buttons(keyboard_state);
 		}
 
-		if (keyboard_state[SDL_SCANCODE_R]) {
-			if (current_character == 1) {
-				p1_choice->chara_kind = CHARA_KIND_ROY;
-			}
-			else {
-				p2_choice->chara_kind = CHARA_KIND_ROY;
-			}
-		}
-		if (keyboard_state[SDL_SCANCODE_E]) {
-			if (current_character == 1) {
-				p1_choice->chara_kind = CHARA_KIND_ERIC;
-			}
-			else {
-				p2_choice->chara_kind = CHARA_KIND_ERIC;
-			}
-		}
-
-		if (keyboard_state[SDL_SCANCODE_SPACE]) {
+		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {
 			chara_selecting = false;
 		}
+
 		SDL_RenderPresent(pRenderer);
 	}
 	

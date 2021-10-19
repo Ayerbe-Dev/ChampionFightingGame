@@ -2,7 +2,7 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include "PlayerInfo.h"
+#include "FighterInstance.h"
 #include <SDL.h>
 #include "Animation.h"
 #include "Game.h"
@@ -22,7 +22,7 @@ extern u32 tick;
 extern u32 tok;
 extern int error_render;
 
-int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2_choice)
+int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2])
 {
 	bool gaming = true;
 	bool visualize_boxes = true;
@@ -41,24 +41,30 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 	SDL_Rect camera;
 
 	//init players
-	PlayerInfo *player_info[2];
+	FighterInstance *fighter_instance[2];
 
-	IFighter *p1 = new IFighter(p1_choice->chara_kind, pRenderer, 0);
-	IFighter *p2 = new IFighter(p2_choice->chara_kind, pRenderer, 1);
+	IFighter *p1 = new IFighter((&player_info[0])->chara_kind, pRenderer, 0);
+	IFighter *p2 = new IFighter((&player_info[1])->chara_kind, pRenderer, 1);
 
-	player_info[0] = p1->get_fighter();
-	player_info[1] = p2->get_fighter();
+	fighter_instance[0] = p1->get_fighter();
+	fighter_instance[1] = p2->get_fighter();
+
+	for (int i = 0; i < 2; i++)
+	{
+		fighter_instance[i]->player_info = &player_info[i];
+		fighter_instance[i]->superInit(i, pRenderer);
+	}
 
 	//init ui
 	Timer timer = Timer(pRenderer, -1);
 
 	HealthBar health_bar[2];
-	health_bar[0] = HealthBar(pRenderer, player_info[0]);
-	health_bar[1] = HealthBar(pRenderer, player_info[1]);
+	health_bar[0] = HealthBar(pRenderer, fighter_instance[0]);
+	health_bar[1] = HealthBar(pRenderer, fighter_instance[1]);
 
 	PlayerIndicator player_indicator[2];
-	player_indicator[0] = PlayerIndicator(pRenderer, player_info[0]);
-	player_indicator[1] = PlayerIndicator(pRenderer, player_info[1]);
+	player_indicator[0] = PlayerIndicator(pRenderer, fighter_instance[0]);
+	player_indicator[1] = PlayerIndicator(pRenderer, fighter_instance[1]);
 
 	const Uint8 *keyboard_state;
 	tick = SDL_GetTicks();
@@ -91,22 +97,15 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		//Check the players' buttons
-		for (int i = 0; i < BUTTON_MAX; i++)
+		for (int i = 0; i < 2; i++)
 		{
-			for (int o = 0; o < 2; o++)
+			if (!debug)
 			{
-				if (!debug)
-				{
-					/*
-					Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
-					directly when the frame is advanced manually
-					*/
-
-					bool old_button = player_info[o]->button_info[i].button_on;
-					player_info[o]->button_info[i].button_on = keyboard_state[player_info[o]->button_info[i].mapping];
-					bool new_button = player_info[o]->button_info[i].button_on;
-					player_info[o]->button_info[i].changed = (old_button != new_button);
-				}
+				/*
+				Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
+				directly when the frame is advanced manually
+				*/
+				(&player_info[i])->update_buttons(keyboard_state);
 			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++)
@@ -137,21 +136,21 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 		for (int i = 0; i < 2; i++)
 		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (player_info[i]->situation_kind == CHARA_SITUATION_GROUND && player_info[i]->is_actionable())
+			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable())
 			{
-				if (player_info[i]->pos.x > player_info[!i]->pos.x)
+				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x)
 				{
-					player_info[i]->facing_dir = -1.0;
-					player_info[i]->facing_right = false;
+					fighter_instance[i]->facing_dir = -1.0;
+					fighter_instance[i]->facing_right = false;
 					flip = SDL_FLIP_HORIZONTAL;
 				}
 				else
 				{
-					player_info[i]->facing_dir = 1.0;
-					player_info[i]->facing_right = true;
+					fighter_instance[i]->facing_dir = 1.0;
+					fighter_instance[i]->facing_right = true;
 				}
 			}
-			else if (!player_info[i]->facing_right)
+			else if (!fighter_instance[i]->facing_right)
 			{
 				flip = SDL_FLIP_HORIZONTAL;
 			}
@@ -163,7 +162,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 			}
 			if (!debug)
 			{
-				tickOnce(player_info[i], pRenderer);
+				tickOnce(fighter_instance[i], pRenderer);
 				frame_advance_entry_ms = SDL_GetTicks();
 			}
 			else if (i == 0)
@@ -181,25 +180,18 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 				{
 					for (int o = 0; o < BUTTON_MAX; o++)
 					{
-						bool old_button = player_info[0]->button_info[o].button_on;
-						player_info[0]->button_info[o].button_on = keyboard_state[player_info[0]->button_info[o].mapping];
-						bool new_button = player_info[0]->button_info[o].button_on;
-						player_info[0]->button_info[o].changed = (old_button != new_button);
-						old_button = player_info[1]->button_info[o].button_on;
-						player_info[1]->button_info[o].button_on = keyboard_state[player_info[1]->button_info[o].mapping];
-						new_button = player_info[1]->button_info[o].button_on;
-						player_info[1]->button_info[o].changed = (old_button != new_button);
+						(&player_info[i])->update_buttons(keyboard_state);
 					}
 					frame_advance_entry_ms = SDL_GetTicks();
-					tickOnce(player_info[0], pRenderer);
-					tickOnce(player_info[1], pRenderer);
+					tickOnce(fighter_instance[0], pRenderer);
+					tickOnce(fighter_instance[1], pRenderer);
 					if (debugger.print_frames)
 					{
-						cout << "Player " << debugger.target + 1 << " Frame: " << player_info[debugger.target]->frame - 1 << endl;
-						cout << "Player " << debugger.target + 1 << " Render Frame: " << player_info[debugger.target]->render_frame - 1 << endl;
+						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
+						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;
 					}
 				}
-				debug_mode(&debugger, player_info[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
+				debug_mode(&debugger, fighter_instance[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
 				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET))
 				{
 					debug = false;
@@ -208,15 +200,15 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 			}
 
 			SDL_Rect render_pos;
-			render_pos.x = player_info[i]->pos.getRenderCoodrinateXFacingDir(player_info[i]->facing_dir);
-			render_pos.y = player_info[i]->pos.getRenderCoodrinateY();
+			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXFacingDir(fighter_instance[i]->facing_dir);
+			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateY();
 			int width;
 			int height;
-			SDL_QueryTexture(player_info[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
-			render_pos.w = (width / (player_info[i]->anim_kind->length + 1));
+			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
+			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
 			render_pos.h = height;
 			const double angle = 0;
-			error_render = SDL_RenderCopyEx(pRenderer, player_info[i]->anim_kind->SPRITESHEET, &(player_info[i]->frame_rect), &render_pos, angle, NULL, flip);
+			error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0)
 			{
 				cout << "\n"
@@ -226,16 +218,16 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 		// Main character function and textures have now been set up
 
 		//Only do this part once everything else is done
-		check_attack_connections(player_info[0], player_info[1], pRenderer, false);
+		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes);
 
 		//Camera things
-		camera = updateCamera(player_info[0]->pos.getRenderCoodrinateX(), player_info[0]->pos.getRenderCoodrinateY(), player_info[1]->pos.getRenderCoodrinateX(), player_info[1]->pos.getRenderCoodrinateY());
+		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY());
 
 		for (int i = 0; i < 2; i++)
 		{
 			player_indicator[i].indicator_rect = SDL_Rect{
-				(int)(player_info[i]->pos.getRenderCoodrinateX() + 20),
-				(int)(player_info[i]->pos.getRenderCoodrinateY() - 33),
+				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() + 20),
+				(int)(fighter_instance[i]->pos.getRenderCoodrinateY() - 33),
 				30,
 				30};
 			SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
@@ -258,7 +250,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 			const double angle = 0;
 
 			SDL_RenderCopyEx(pRenderer, health_bar[i].bar_texture, nullptr, &(health_bar[i].bar_rect), angle, NULL, flip);
-			health_bar[i].health_rect.w = 400 * (player_info[i]->chara_float[CHARA_FLOAT_HEALTH] / health_bar[i].max_health);
+			health_bar[i].health_rect.w = 400 * (fighter_instance[i]->chara_float[CHARA_FLOAT_HEALTH] / health_bar[i].max_health);
 			SDL_RenderCopyEx(pRenderer, health_bar[i].health_texture, nullptr, &(health_bar[i].health_rect), angle, NULL, flip);
 		}
 
@@ -268,7 +260,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerChoice *p1_choice, PlayerChoice *p2
 	return GAME_STATE_MENU;
 }
 
-void tickOnce(PlayerInfo *player_info, SDL_Renderer *renderer)
+void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer)
 {
 
 	/*
@@ -290,73 +282,73 @@ void tickOnce(PlayerInfo *player_info, SDL_Renderer *renderer)
                '''::::'''
 	 */
 
-	player_info->prevpos = player_info->pos;
+	fighter_instance->prevpos = fighter_instance->pos;
 
 	//Calls the looping status function for whatever the player's current status_kind is.
-	player_info->playoutStatus();
+	fighter_instance->playoutStatus();
 
 	/*
 		Get the player's inputs and increment the frame.
 	*/
 
-	if (player_info->check_button_on(BUTTON_START))
+	if (fighter_instance->check_button_on(BUTTON_START))
 	{
-		player_info->superInit(player_info->id, renderer); //Debugging
+		fighter_instance->superInit(fighter_instance->id, renderer); //Debugging
 	}
-	player_info->processInput();
-	if (player_info->canStep())
+	fighter_instance->processInput();
+	if (fighter_instance->canStep())
 	{
-		player_info->stepAnimation();
+		fighter_instance->stepAnimation();
 	}
-	player_info->prev_stick_dir = player_info->get_stick_dir();
-	if (player_info->chara_int[CHARA_INT_HITLAG_FRAMES] != 0)
+	fighter_instance->prev_stick_dir = fighter_instance->get_stick_dir();
+	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0)
 	{
-		player_info->chara_int[CHARA_INT_HITLAG_FRAMES]--;
+		fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES]--;
 	}
-	else if (player_info->chara_int[CHARA_INT_HITSTUN_FRAMES] != 0)
+	else if (fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES] != 0)
 	{
-		player_info->chara_int[CHARA_INT_HITSTUN_FRAMES]--;
+		fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES]--;
 	}
-	if (player_info->chara_int[CHARA_INT_DASH_F_WINDOW] != 0)
+	if (fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW] != 0)
 	{
-		player_info->chara_int[CHARA_INT_DASH_F_WINDOW]--;
+		fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW]--;
 	}
-	if (player_info->chara_int[CHARA_INT_DASH_B_WINDOW] != 0)
+	if (fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW] != 0)
 	{
-		player_info->chara_int[CHARA_INT_DASH_B_WINDOW]--;
+		fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW]--;
 	}
 }
 
-void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer *renderer, bool visualize_boxes)
+void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer *renderer, bool visualize_boxes)
 {
-	PlayerInfo *player_info[2] = {p1, p2};
+	FighterInstance *fighter_instance[2] = {p1, p2};
 	for (int i = 0; i < 2; i++)
 	{ //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = HITBOX_COUNT_MAX;
-		player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
+		fighter_instance[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
 		for (int i2 = 0; i2 < 10; i2++)
 		{
-			if (player_info[i]->hurtboxes[i2].id != -1)
+			if (fighter_instance[i]->hurtboxes[i2].id != -1)
 			{
 				SDL_Rect hurtbox;
-				hurtbox = player_info[i]->hurtboxes[i2].rect;
+				hurtbox = fighter_instance[i]->hurtboxes[i2].rect;
 
 				for (int i3 = 0; i3 < 10; i3++)
 				{
-					if (player_info[!i]->hitboxes[i3].id != -1 && !player_info[!i]->hitboxes[i3].success_hit)
+					if (fighter_instance[!i]->hitboxes[i3].id != -1 && !fighter_instance[!i]->hitboxes[i3].success_hit)
 					{
 						SDL_Rect hitbox;
-						hitbox = player_info[!i]->hitboxes[i3].rect;
-						if (player_info[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK)
+						hitbox = fighter_instance[!i]->hitboxes[i3].rect;
+						if (fighter_instance[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK)
 						{
 							if (is_collide(hitbox, hurtbox))
 							{
-								hitbox_to_use = get_event_hit_collide_player(player_info[!i], player_info[i], &(player_info[!i]->hitboxes[i3]), &(player_info[i]->hurtboxes[i2]));
+								hitbox_to_use = get_event_hit_collide_player(fighter_instance[!i], fighter_instance[i], &(fighter_instance[!i]->hitboxes[i3]), &(fighter_instance[i]->hurtboxes[i2]));
 							}
 						}
 						else
 						{
-							player_info[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
+							fighter_instance[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX)
 						{
@@ -372,15 +364,15 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer *rend
 		}
 		for (int i2 = 0; i2 < 10; i2++)
 		{
-			if (player_info[i]->hurtboxes[i2].id != -1)
+			if (fighter_instance[i]->hurtboxes[i2].id != -1)
 			{
 				SDL_Rect render_pos;
-				render_pos = player_info[i]->hurtboxes[i2].rect;
+				render_pos = fighter_instance[i]->hurtboxes[i2].rect;
 
 				if (visualize_boxes)
 				{
 					Vec4f hurtbox_color = {0, 0, 255, 127};
-					if (player_info[i]->hurtboxes[i2].intangible_kind != INTANGIBLE_KIND_NONE)
+					if (fighter_instance[i]->hurtboxes[i2].intangible_kind != INTANGIBLE_KIND_NONE)
 					{
 						hurtbox_color.y = 255;
 					}
@@ -394,15 +386,15 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer *rend
 		}
 		for (int i2 = 0; i2 < 10; i2++)
 		{
-			if (player_info[i]->hitboxes[i2].id != -1)
+			if (fighter_instance[i]->hitboxes[i2].id != -1)
 			{
 				SDL_Rect render_pos;
-				render_pos = player_info[i]->hitboxes[i2].rect;
+				render_pos = fighter_instance[i]->hitboxes[i2].rect;
 
 				if (visualize_boxes)
 				{
 					Vec4f hitbox_color = {255, 0, 0, 127};
-					if (player_info[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK)
+					if (fighter_instance[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK)
 					{
 						hitbox_color.y = 165;
 						hitbox_color.w = 50;
@@ -415,9 +407,9 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer *rend
 				}
 			}
 		}
-		player_info[i]->connected_hitbox = hitbox_to_use;
+		fighter_instance[i]->connected_hitbox = hitbox_to_use;
 	}
-	event_hit_collide_player(player_info[0], player_info[1], &(player_info[0]->hitboxes[player_info[1]->connected_hitbox]), &(player_info[1]->hitboxes[player_info[0]->connected_hitbox]));
+	event_hit_collide_player(fighter_instance[0], fighter_instance[1], &(fighter_instance[0]->hitboxes[fighter_instance[1]->connected_hitbox]), &(fighter_instance[1]->hitboxes[fighter_instance[0]->connected_hitbox]));
 }
 
 /*
@@ -453,7 +445,7 @@ void check_attack_connections(PlayerInfo *p1, PlayerInfo *p2, SDL_Renderer *rend
 ░░░░░░░░██████████░░░░░░░░░░░░░░██████████
 */
 
-int get_event_hit_collide_player(PlayerInfo *attacker, PlayerInfo *defender, Hitbox *hitbox, Hurtbox *hurtbox)
+int get_event_hit_collide_player(FighterInstance *attacker, FighterInstance *defender, Hitbox *hitbox, Hurtbox *hurtbox)
 {
 	//First, check if the hit and hurtboxes are even compatible
 	if (hitbox->success_hit)
@@ -545,7 +537,7 @@ int get_event_hit_collide_player(PlayerInfo *attacker, PlayerInfo *defender, Hit
 	return hitbox->id;
 }
 
-void event_hit_collide_player(PlayerInfo *p1, PlayerInfo *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox)
+void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox)
 {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
@@ -798,7 +790,7 @@ void event_hit_collide_player(PlayerInfo *p1, PlayerInfo *p2, Hitbox *p1_hitbox,
 	}
 }
 
-bool can_counterhit(PlayerInfo *defender, Hitbox *hitbox)
+bool can_counterhit(FighterInstance *defender, Hitbox *hitbox)
 {
 	if (defender->status_kind == CHARA_STATUS_HITSTUN_PARRY)
 	{
@@ -854,17 +846,17 @@ IFighter::IFighter(int chara_id, SDL_Renderer *renderer, int id)
 	{
 	case (CHARA_KIND_ROY):
 	{
-		player_info = new Roy(renderer, id);
+		fighter_instance = new Roy(renderer, id);
 	}
 	break;
 	case (CHARA_KIND_ERIC):
 	{
-		player_info = new Eric(renderer, id);
+		fighter_instance = new Eric(renderer, id);
 	}
 	break;
 	case (CHARA_KIND_MAX):
 	{
-		player_info = NULL;
+		fighter_instance = NULL;
 	}
 	break;
 	}
@@ -872,14 +864,14 @@ IFighter::IFighter(int chara_id, SDL_Renderer *renderer, int id)
 
 IFighter::~IFighter()
 {
-	if (player_info)
+	if (fighter_instance)
 	{
-		delete[] player_info;
-		player_info = NULL;
+		delete[] fighter_instance;
+		fighter_instance = NULL;
 	}
 }
 
-PlayerInfo *IFighter::get_fighter()
+FighterInstance *IFighter::get_fighter()
 {
-	return player_info;
+	return fighter_instance;
 }

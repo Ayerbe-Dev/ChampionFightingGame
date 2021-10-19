@@ -1,12 +1,12 @@
 #include "UI.h"
 
 HealthBar::HealthBar() {}
-HealthBar::HealthBar(SDL_Renderer* renderer, PlayerInfo* player_info) {
-	this->player_info = player_info;
+HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) {
+	this->fighter_instance = fighter_instance;
 	this->bar_texture = loadTexture("resource/ui/game/hp/bar.png", renderer);
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
-	this->max_health = player_info->stats.health;
-	if (player_info->id == 0) {
+	this->max_health = fighter_instance->stats.health;
+	if (fighter_instance->id == 0) {
 		this->health_rect.x = 0;
 		this->health_rect.y = 0;
 		this->health_rect.w = 400;
@@ -32,11 +32,11 @@ HealthBar::HealthBar(SDL_Renderer* renderer, PlayerInfo* player_info) {
 }
 
 PlayerIndicator::PlayerIndicator() {}
-PlayerIndicator::PlayerIndicator(SDL_Renderer* renderer, PlayerInfo* player_info, string nametag) {
-	this->player_info = player_info;
+PlayerIndicator::PlayerIndicator(SDL_Renderer* renderer, FighterInstance* fighter_instance, string nametag) {
+	this->fighter_instance = fighter_instance;
 	this->nametag = nametag;
 	string resource_dir = "resource/ui/game/tag/";
-	if (player_info->id == 0) {
+	if (fighter_instance->id == 0) {
 		resource_dir += "p1_tag";
 	}
 	else {

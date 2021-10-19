@@ -48,6 +48,11 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
 
+	for (int i = 0; i < 2; i++) {
+		fighter_instance[i]->player_info = &player_info[i];
+		fighter_instance[i]->superInit(i, pRenderer);
+	}
+
 	//init ui
 	Timer timer = Timer(pRenderer, -1);
 

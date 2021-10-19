@@ -23,14 +23,13 @@ bool PlayerInfo::check_button_on(u32 button) {
 	return button_info[button].button_on;
 }
 
-bool PlayerInfo::check_button_trigger(u32 button)
-{
-	return button_info[button].changed && button_info[button].button_on;
+bool PlayerInfo::check_button_trigger(u32 button) {
+	return  button_info[button].button_on && button_info[button].changed;
 }
 
 bool PlayerInfo::check_button_release(u32 button)
 {
-	return button_info[button].changed && !button_info[button].button_on;
+	return !button_info[button].button_on && button_info[button].changed;
 }
 
 void PlayerInfo::update_buttons(const Uint8* keyboard_state) {

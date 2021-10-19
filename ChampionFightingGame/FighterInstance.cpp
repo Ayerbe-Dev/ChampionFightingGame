@@ -412,8 +412,7 @@ bool FighterInstance::check_button_on(u32 button)
 	return player_info->check_button_on(button);
 }
 
-bool FighterInstance::check_button_trigger(u32 button)
-{
+bool FighterInstance::check_button_trigger(u32 button) {
 	return player_info->check_button_trigger(button);
 }
 

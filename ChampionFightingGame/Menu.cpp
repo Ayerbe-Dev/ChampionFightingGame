@@ -43,6 +43,10 @@ int menu_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			(&player_info[i])->update_buttons(keyboard_state);
 		}
 
+		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {
+			menuing = false;
+		}
+
 		SDL_RenderPresent(pRenderer);
 	}
 
@@ -80,6 +84,10 @@ int chara_select_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_buttons(keyboard_state);
+		}
+
+		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {
+			chara_selecting = false;
 		}
 
 		SDL_RenderPresent(pRenderer);

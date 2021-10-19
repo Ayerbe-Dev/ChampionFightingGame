@@ -29,6 +29,7 @@ typedef float f32;
 #define CAMERA_MAX_ZOOM_OUT 700
 #define CAMERA_MAX_ZOOM_IN 500
 #define BUFFER_WINDOW 3
+#define MAX_PLAYER_DISTANCE 650
 
 #define FLOOR_GAMECOORD 75.0
 
@@ -39,7 +40,6 @@ float ymlChopFloat(string line);
 string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture *loadTexture(const char *file_path, SDL_Renderer *renderer);
-SDL_GameControllerButton getSDLButtonFromMapping(u32 button);
 
 /*
 	updateCamera(); 

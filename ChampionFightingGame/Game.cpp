@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "FighterInstance.h"
+#include "FighterInstanceAccessor.h"
 #include <SDL.h>
 #include "Animation.h"
 #include "Game.h"
@@ -43,16 +44,26 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	//init players
 	FighterInstance *fighter_instance[2];
 
-	IFighter *p1 = new IFighter((&player_info[0])->chara_kind, pRenderer, 0);
+	IFighter *p1 = new IFighter((&player_info[0])->chara_kind, pRenderer, 0); 
 	IFighter *p2 = new IFighter((&player_info[1])->chara_kind, pRenderer, 1);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
 
-	for (int i = 0; i < 2; i++)
-	{
+	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
+
+	for (int i = 0; i < 2; i++) {
 		fighter_instance[i]->player_info = &player_info[i];
-		fighter_instance[i]->superInit(i, pRenderer);
+		fighter_instance[i]->pos.x = 0; //Initialize pos x for both players just for good measure
+	}
+	for (int i = 0; i < 2; i++) {
+		fighter_instance_accessor->fighter_instance[i] = fighter_instance[i]; //Write to fighter instance accessor
+	}
+	for (int i = 0; i < 2; i++) {
+		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor; //Get the pointer to fighter instance accessor
+	}
+	for (int i = 0; i < 2; i++) {
+		fighter_instance[i]->superInit(i, pRenderer); //Make the first call that relies on fighter instance accessor
 	}
 
 	//init ui
@@ -69,8 +80,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	const Uint8 *keyboard_state;
 	tick = SDL_GetTicks();
 
-	while (gaming)
-	{
+	while (gaming) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
@@ -84,15 +94,6 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			break;
 			}
 		}
-
-		//Frame delay
-
-		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS)
-		{
-			SDL_Delay(TICK_RATE_MS - tok);
-		}
-		tick = SDL_GetTicks();
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
@@ -127,13 +128,12 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
-
-		//All of the player code runs here
-
+		
 		/*
-		Start by flipping the characters.It's important that both characters get flipped before anything else happens because facing direction will affect the players'
+		Start by flipping the characters. It's important that both characters get flipped before anything else happens because facing direction will affect the players'
 		inputs
 		*/
+
 		for (int i = 0; i < 2; i++)
 		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -246,13 +246,22 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		SDL_RenderPresent(pRenderer);
+
+		//Frame delay
+
+		tok = SDL_GetTicks() - tick;
+		if (tok < TICK_RATE_MS)
+		{
+			SDL_Delay(TICK_RATE_MS - tok);
+		}
+		tick = SDL_GetTicks();
 	}
 
 	fighter_instance[0] = NULL; //These ones work fine
 	fighter_instance[1] = NULL;
 
-	p1->~IFighter(); //These ones cause the crash
-	p2->~IFighter();
+//	p1->~IFighter(); //These ones cause the crash
+//	p2->~IFighter();
 
 	delete fighter_instance_accessor;
 

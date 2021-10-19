@@ -4,9 +4,20 @@ using namespace std;
 #include <algorithm> //std::min
 #include "utils.h"
 #include <SDL_image.h>
-int clamp(int min, int value, int max)
-{
+int clamp(int min, int value, int max) {
 	if (min <= max)	{
+		if (value < min) {
+			value = min;
+		}
+		if (value > max) {
+			value = max;
+		}
+	}
+	return value;
+}
+
+float clampf(float min, float value, float max) {
+	if (min <= max) {
 		if (value < min) {
 			value = min;
 		}

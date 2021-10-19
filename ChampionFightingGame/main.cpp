@@ -12,7 +12,7 @@
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
-//#include "DebugMenu.h"
+#include "DebugMenu.h"
 #undef main
 using namespace std;
 int error_render;
@@ -27,7 +27,7 @@ int main()
 {
 	bool running = true;
 	bool visualize_boxes = true;
-	int game_state = GAME_STATE_MENU;
+	int game_state = GAME_STATE_DEBUG_MENU;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -47,25 +47,20 @@ int main()
 
 	while (running)
 	{
-		if (game_state == GAME_STATE_GAME)
-		{
+		if (game_state == GAME_STATE_GAME) {
 			game_state = game_main(pRenderer, player_info);
 		}
-		else if (game_state == GAME_STATE_MENU)
-		{
+		else if (game_state == GAME_STATE_MENU) {
 			game_state = menu_main(pRenderer, player_info);
 		}
-		else if (game_state == GAME_STATE_CHARA_SELECT)
-		{
+		else if (game_state == GAME_STATE_CHARA_SELECT) {
 			game_state = chara_select_main(pRenderer, player_info);
 		}
-		else if (game_state == GAME_STATE_CLOSE)
-		{
+		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
-		else
-		{
-//			game_state = debugMenu(game_state, pRenderer);
+		else {
+			game_state = debugMenu(pRenderer, player_info);
 		}
 	}
 

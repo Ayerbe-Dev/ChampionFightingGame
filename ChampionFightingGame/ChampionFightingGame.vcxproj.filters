@@ -60,6 +60,9 @@
     <ClCompile Include="PlayerInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DebugMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resource\chara\eric\sprite\sprite.png">
@@ -164,6 +167,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayerInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

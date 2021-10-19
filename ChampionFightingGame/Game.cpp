@@ -22,10 +22,10 @@ extern u32 tick;
 extern u32 tok;
 extern int error_render;
 
-int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2])
-{
+int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	bool gaming = true;
 	bool visualize_boxes = true;
+	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
 	debugger = Debugger();
@@ -78,7 +78,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2])
 			{
 			case SDL_QUIT:
 			{
-				return GAME_STATE_CLOSE;
+				next_state = GAME_STATE_CLOSE;
+				gaming = false;
 			}
 			break;
 			}
@@ -156,46 +157,36 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2])
 			}
 
 			//Debug mode
-			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0)
-			{
+			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
 			}
-			if (!debug)
-			{
+			if (!debug) {
 				tickOnce(fighter_instance[i], pRenderer);
 				frame_advance_entry_ms = SDL_GetTicks();
 			}
-			else if (i == 0)
-			{
+			else if (i == 0) {
 				frame_advance_ms = SDL_GetTicks() - frame_advance_entry_ms;
-				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1))
-				{
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
 					debugger.target = 0;
 				}
-				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2))
-				{
+				if (debugger.check_button_on(BUTTON_DEBUG_PICK_2)) {
 					debugger.target = 1;
 				}
-				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE))
-				{
-					for (int o = 0; o < BUTTON_MAX; o++)
-					{
-						(&player_info[i])->update_buttons(keyboard_state);
-					}
+				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+					(&player_info[i])->update_buttons(keyboard_state);
 					frame_advance_entry_ms = SDL_GetTicks();
 					tickOnce(fighter_instance[0], pRenderer);
 					tickOnce(fighter_instance[1], pRenderer);
-					if (debugger.print_frames)
-					{
+					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;
 					}
 				}
 				debug_mode(&debugger, fighter_instance[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
-				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET))
-				{
+				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
 					debug = false;
 					gaming = false;
+					next_state = GAME_STATE_DEBUG_MENU;
 				}
 			}
 
@@ -239,7 +230,6 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2])
 
 		SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
 
-		//if the static cast is so bad, just... don't do it?
 		for (int i = 0; i < 2; i++)
 		{
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -254,10 +244,11 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2])
 			SDL_RenderCopyEx(pRenderer, health_bar[i].health_texture, nullptr, &(health_bar[i].health_rect), angle, NULL, flip);
 		}
 
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		SDL_RenderPresent(pRenderer);
 	}
 
-	return GAME_STATE_MENU;
+	return next_state;
 }
 
 void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer)

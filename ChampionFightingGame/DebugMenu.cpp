@@ -24,10 +24,6 @@ int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 
     SDL_RenderClear(pRenderer);
 
-    if (TTF_Init() < 0) {
-        printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
-    }
-
     TTF_Font *font;
 
     font = TTF_OpenFont("FiraCode-Regular.ttf", 24);
@@ -35,15 +31,15 @@ int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
         printf("Failed to load font:  %s\n", TTF_GetError());
     }
 
-    SDL_Surface *text;
+//    SDL_Surface *text;
     // Set color to black
     SDL_Color color = {255, 255, 255};
-    text = TTF_RenderText_Solid(font, "menu entry int\nback", color);
+ //   text = TTF_RenderText_Solid(font, "menu entry int\nback", color);
 
-    if (!text)
-    {
-        printf("Failed to render text:  %s\n", TTF_GetError());
-    }
+ //   if (!text)
+//    {
+//        printf("Failed to render text:  %s\n", TTF_GetError());
+//    }
 
     // SDL_Texture *text_texture;
 
@@ -149,10 +145,15 @@ int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
                 }
             }
             if ((&player_info[i])->check_button_trigger(BUTTON_START)) {
-                return select;
+                debugging = false;
             }
         }
     }
+
+    for (int i = 0; i <= GAME_STATE_MAX; i++) {
+        SDL_DestroyTexture(option_texts[i]);
+    }
+    return select;
 }
 
 SDL_Texture *newFontTexture(std::string text, SDL_Renderer *pRenderer, TTF_Font *font)

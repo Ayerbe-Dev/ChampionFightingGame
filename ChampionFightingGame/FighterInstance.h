@@ -69,7 +69,6 @@ public:
 
 	FighterInstance();
 	FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info);
-	~FighterInstance();
 
 	//Setup
 

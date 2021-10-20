@@ -52,18 +52,20 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
+	//I shit you not, all 4 of these need to be separate loops in order to stop things from breaking
+
 	for (int i = 0; i < 2; i++) {
 		fighter_instance[i]->player_info = &player_info[i];
-		fighter_instance[i]->pos.x = 0; //Initialize pos x for both players just for good measure
+		fighter_instance[i]->pos.x = 0;
+		fighter_instance_accessor->fighter_instance[i] = fighter_instance[i];
+		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor;
 	}
 	for (int i = 0; i < 2; i++) {
-		fighter_instance_accessor->fighter_instance[i] = fighter_instance[i]; //Write to fighter instance accessor
-	}
-	for (int i = 0; i < 2; i++) {
-		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor; //Get the pointer to fighter instance accessor
-	}
-	for (int i = 0; i < 2; i++) {
-		fighter_instance[i]->superInit(i, pRenderer); //Make the first call that relies on fighter instance accessor
+		fighter_instance[i]->superInit(i, pRenderer); 
+		/*
+			Requires fighter instance accessor to be fully initialized since it makes a call that involves checking the other character's x pos, so we'll
+			execute this part after the first loop has finished
+		*/
 	}
 
 	//init ui
@@ -191,8 +193,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			}
 
 			SDL_Rect render_pos;
-			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXFacingDir(fighter_instance[i]->facing_dir);
-			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateY();
+			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
+			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateYAnim();
 			int width;
 			int height;
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
@@ -218,7 +220,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		{
 			player_indicator[i].indicator_rect = SDL_Rect{
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() + 20),
-				(int)(fighter_instance[i]->pos.getRenderCoodrinateY() - 33),
+				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
 				30,
 				30};
 			SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
@@ -258,8 +260,6 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	}
 
 	delete fighter_instance_accessor;
-	fighter_instance[0]->~FighterInstance();
-	fighter_instance[1]->~FighterInstance();
 
 	return next_state;
 }
@@ -294,11 +294,6 @@ void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer)
 	/*
 		Get the player's inputs and increment the frame.
 	*/
-
-	if (fighter_instance->check_button_on(BUTTON_START))
-	{
-		fighter_instance->superInit(fighter_instance->id, renderer); //Debugging
-	}
 	fighter_instance->processInput();
 	if (fighter_instance->canStep())
 	{

@@ -28,7 +28,7 @@ f32 GameCoordinate::getRenderCoodrinateX()
 	return x + x_offset - x_spr_offset;
 }
 
-f32 GameCoordinate::getRenderCoodrinateXFacingDir(f32 facing_dir)
+f32 GameCoordinate::getRenderCoodrinateXAnim()
 {
 	return x + x_offset - x_anim_offset;
 }
@@ -36,4 +36,9 @@ f32 GameCoordinate::getRenderCoodrinateXFacingDir(f32 facing_dir)
 f32 GameCoordinate::getRenderCoodrinateY()
 {
 	return (y * -1.0) + WINDOW_HEIGHT - y_spr_offset;
+}
+
+f32 GameCoordinate::getRenderCoodrinateYAnim()
+{
+	return (y * -1.0) + WINDOW_HEIGHT - y_anim_offset;
 }

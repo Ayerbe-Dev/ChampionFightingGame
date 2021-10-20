@@ -15,24 +15,6 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info
 	superInit(0, renderer);
 }
 
-FighterInstance::~FighterInstance() {
-	if (player_info) {
-		delete player_info;
-	}
-	if (fighter_instance_accessor) {
-		delete fighter_instance_accessor;
-	}
-	if (anim_kind) {
-		delete anim_kind;
-	}
-	if (animation_table) {
-		delete[] animation_table;
-	}
-	if (hitboxes) {
-		delete[] hitboxes;
-	}
-}
-
 void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 {
 	this->id = id;
@@ -79,8 +61,6 @@ void FighterInstance::load_anim_list(SDL_Renderer *renderer)
 		string name;
 		string path;
 		string frame_count;
-		string width;
-		string height;
 		string faf;
 		anim_list >> name >> path >> frame_count >> faf;
 		animation_table[i].name = ymlChopString(name);
@@ -352,6 +332,7 @@ void FighterInstance::processInput() {
 	int height;
 	SDL_QueryTexture(this->base_texture, NULL, NULL, &width, &height);
 	pos.x_spr_offset = width / 2;
+	pos.y_spr_offset = height;
 	if (get_flick_dir() == 6) {
 		chara_int[CHARA_INT_DASH_F_WINDOW] = 9;
 	}
@@ -750,7 +731,7 @@ void FighterInstance::startAnimation(Animation *animation)
 	int height;
 	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
 	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
-	pos.y_spr_offset = height;
+	pos.y_anim_offset = height;
 	last_frame_ms = SDL_GetTicks();
 	frame_rect = getFrame(frame, anim_kind);
 }

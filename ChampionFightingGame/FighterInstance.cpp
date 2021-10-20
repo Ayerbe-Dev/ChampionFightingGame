@@ -28,7 +28,9 @@ FighterInstance::~FighterInstance() {
 	if (animation_table) {
 		delete[] animation_table;
 	}
-	delete this;
+	if (hitboxes) {
+		delete[] hitboxes;
+	}
 }
 
 void FighterInstance::superInit(int id, SDL_Renderer *renderer)

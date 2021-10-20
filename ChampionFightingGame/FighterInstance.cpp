@@ -544,7 +544,7 @@ bool FighterInstance::set_pos(int x, int y)
 
 bool FighterInstance::invalid_x(float x) {
 	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
-	float x_distance = abs(opponent_x - x);
+	float x_distance = std::max(opponent_x, x) - std::min(opponent_x, x);
 
 	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > MAX_PLAYER_DISTANCE;
 }

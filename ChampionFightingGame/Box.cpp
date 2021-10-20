@@ -6,11 +6,11 @@ Hitbox::Hitbox() {
 	this->id = -1;
 }
 
-Hitbox::Hitbox(FighterInstance* fighter_instance, int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, int scale, GameCoordinate anchor,
-	GameCoordinate offset, int hitbox_kind, f32  meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, 
-	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind,
-	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y,
-	f32 launch_gravity_y, f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos) {
+Hitbox::Hitbox(FighterInstance* fighter_instance, int id, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
+	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
+	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
+	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool use_player_pos) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	if (use_player_pos) {

@@ -11,7 +11,7 @@ public:
 	SDL_Texture* bar_texture;
 	SDL_Rect health_rect;
 	SDL_Rect bar_rect;
-	f32 max_health;
+	float max_health;
 
 	HealthBar();
 	HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance);

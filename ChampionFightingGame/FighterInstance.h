@@ -22,7 +22,7 @@ public:
 	GameCoordinate pos;
 	GameCoordinate prevpos;
 	bool facing_right{ true };
-	f32 facing_dir{ 1.0 };
+	float facing_dir{ 1.0 };
 	FighterInstanceAccessor *fighter_instance_accessor;
 
 	u32 status_kind{ CHARA_STATUS_WAIT };
@@ -49,7 +49,7 @@ public:
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
-	i32 connected_hitbox;
+	int connected_hitbox;
 	
 	string resource_dir;
 	SDL_Texture* base_texture;
@@ -90,15 +90,15 @@ public:
 	bool check_button_input(u32 button);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
-	i32 get_stick_dir();
-	i32 get_flick_dir();
+	int get_stick_dir();
+	int get_flick_dir();
 
 	//Position
 
 	bool add_pos(int x, int y);
 	bool set_pos(int x, int y);
-	bool invalid_x(f32 x);
-	bool invalid_y(f32 y);
+	bool invalid_x(float x);
+	bool invalid_y(float y);
 
 	/*
 		For classes with multiple instances in the FighterInstance table, it makes sense to be able to call their methods from the FighterInstance class instead
@@ -109,11 +109,11 @@ public:
 
 	//Hitbox
 	
-	void new_hitbox(int id, f32 damage, f32 chip_damage, f32 counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset, 
-		int hitbox_kind, f32 meter_gain_on_hit, f32 meter_gain_on_counterhit, f32 meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
-		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, f32 hit_pushback, f32 block_pushback, int clank_kind, 
-		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, f32 launch_init_y, 
-		f32 launch_gravity_y, f32 launch_max_fall_speed, f32 launch_speed_x, bool use_player_pos = true);
+	void new_hitbox(int id, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset, 
+		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
+		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
+		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
+		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool use_player_pos = true);
 	void update_hitbox_pos();
 	void update_hitbox_connect();
 	void clear_hitbox(int id);

@@ -3,27 +3,27 @@
 class GameCoordinate
 {
 public:
-	f32 x;
-	f32 y;
-	f32 x_offset;
-	f32 y_offset;
-	f32 x_spr_offset;
-	f32 x_anim_offset;
-	f32 y_spr_offset;
-	f32 y_anim_offset;
+	float x;
+	float y;
+	float x_offset;
+	float y_offset;
+	float x_spr_offset;
+	float x_anim_offset;
+	float y_spr_offset;
+	float y_anim_offset;
 
 	GameCoordinate();
 
-	GameCoordinate(f32 window_width, f32 window_height);
+	GameCoordinate(float window_width, float window_height);
 
-	GameCoordinate(f32 window_width, f32 window_height, f32 start_x, f32 start_y);
+	GameCoordinate(float window_width, float window_height, float start_x, float start_y);
 
-	f32 getRenderCoodrinateX();
+	float getRenderCoodrinateX();
 
-	f32 getRenderCoodrinateXAnim();
+	float getRenderCoodrinateXAnim();
 
-	f32 getRenderCoodrinateY();
+	float getRenderCoodrinateY();
 
-	f32 getRenderCoodrinateYAnim();
+	float getRenderCoodrinateYAnim();
 };
 

@@ -175,7 +175,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 					debugger.target = 1;
 				}
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					(&player_info[i])->update_buttons(keyboard_state);
+					(&player_info[0])->update_buttons(keyboard_state);
+					(&player_info[1])->update_buttons(keyboard_state);
 					frame_advance_entry_ms = SDL_GetTicks();
 					tickOnce(fighter_instance[0], pRenderer);
 					tickOnce(fighter_instance[1], pRenderer);
@@ -324,6 +325,7 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 	for (int i = 0; i < 2; i++)
 	{ //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = HITBOX_COUNT_MAX;
+		int grabbox_to_use = HITBOX_COUNT_MAX;
 		fighter_instance[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
 		for (int i2 = 0; i2 < 10; i2++)
 		{
@@ -356,6 +358,23 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 					}
 				}
 				if (hitbox_to_use != HITBOX_COUNT_MAX)
+				{
+					break;
+				}
+				for (int i3 = 0; i3 < 10; i3++)
+				{
+					if (fighter_instance[!i]->grabboxes[i3].id != -1) {
+						SDL_Rect grabbox;
+						grabbox = fighter_instance[!i]->grabboxes[i3].rect;
+						if (is_collide(grabbox, hurtbox)) {
+								grabbox_to_use = get_event_grab_collide_player(fighter_instance[!i], fighter_instance[i], &(fighter_instance[!i]->grabboxes[i3]), &(fighter_instance[i]->hurtboxes[i2]));
+						}
+						if (grabbox_to_use != HITBOX_COUNT_MAX)	{
+							break;
+						}
+					}
+				}
+				if (grabbox_to_use != HITBOX_COUNT_MAX)
 				{
 					break;
 				}
@@ -536,8 +555,25 @@ int get_event_hit_collide_player(FighterInstance *attacker, FighterInstance *def
 	return hitbox->id;
 }
 
-void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox)
-{
+int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* defender, Grabbox* grabbox, Hurtbox* hurtbox) {
+	if (grabbox->situation_hit != SITUATION_HIT_ALL) {
+		if (grabbox->situation_hit != SITUATION_HIT_GROUND_AIR) {
+			if (grabbox->situation_hit != defender->situation_kind) {
+				return HITBOX_COUNT_MAX;
+			}
+		}
+		else if (defender->situation_kind == CHARA_SITUATION_DOWN) {
+			return HITBOX_COUNT_MAX;
+		}
+	}
+	if (hurtbox->intangible_kind == INTANGIBLE_KIND_THROW || hurtbox->intangible_kind == INTANGIBLE_KIND_ALL) {
+		return HITBOX_COUNT_MAX;
+	}
+
+	return grabbox->id;
+}
+
+void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p1_status_post_hit = p1->status_kind;
@@ -685,7 +721,7 @@ void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 			else
 			{
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
-				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * ((f32)(clamp(1, 10 - p1->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10);
+				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * ((float)(clamp(1, 10 - p1->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10);
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
 			}
@@ -771,7 +807,7 @@ void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 			else
 			{
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_hit;
-				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * ((f32)(clamp(1, 10 - p2->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10.0);
+				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * ((float)(clamp(1, 10 - p2->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10.0);
 				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = p2_hitbox->attack_level;
 				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status, p1->situation_kind);
 			}
@@ -786,6 +822,36 @@ void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 	if (p2_hit)
 	{
 		p2->change_status(p2_status_post_hit, true, false);
+	}
+}
+
+void event_grab_collide_player(FighterInstance* p1, FighterInstance* p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox) {
+	bool p1_hit = p2_grabbox->id != -1;
+	bool p2_hit = p1_grabbox->id != -1;
+	if (p1_hit && p2_hit) {
+		p1->change_status(CHARA_STATUS_THROW_TECH);
+		p2->change_status(CHARA_STATUS_THROW_TECH);
+		return;
+	}
+	if (p1_hit) {
+		if (p1->chara_flag[CHARA_FLAG_THROW_TECH]) {
+			p1->change_status(CHARA_STATUS_THROW_TECH);
+			p2->change_status(CHARA_STATUS_THROW_TECH);
+		}
+		else {
+			p2->change_status(p2_grabbox->attacker_status_if_hit);
+			p1->change_status(p2_grabbox->defender_status_if_hit);
+		}
+	}
+	if (p2_hit) {
+		if (p2->chara_flag[CHARA_FLAG_THROW_TECH]) {
+			p1->change_status(CHARA_STATUS_THROW_TECH);
+			p2->change_status(CHARA_STATUS_THROW_TECH);
+		}
+		else {
+			p1->change_status(p1_grabbox->attacker_status_if_hit);
+			p2->change_status(p1_grabbox->defender_status_if_hit);
+		}
 	}
 }
 

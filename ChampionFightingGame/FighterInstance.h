@@ -87,7 +87,7 @@ public:
 
 	void processInput();
 	bool check_button_on(u32 button);
-	bool check_button_input(u32 button);
+	bool check_button_input(u32 button, u32 button_2nd = BUTTON_MAX);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
 	int get_stick_dir();
@@ -121,6 +121,8 @@ public:
 	
 	//Grabbox
 	
+	void new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 
+		u32 defender_status_if_hit, bool use_player_pos = true);
 	void update_grabbox_pos();
 	void clear_grabbox(int id);
 	void clear_grabbox_all();

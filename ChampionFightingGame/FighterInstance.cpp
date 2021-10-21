@@ -378,20 +378,16 @@ void FighterInstance::processInput() {
 			}
 		}
 	}
-	else
-	{
+	else {
 		chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
-	for (int i = 0; i < 10; i++)
-	{
-		if (hitboxes[i].id != -1)
-		{
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1 && hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
 			chara_flag[CHARA_FLAG_HAS_ATTACK] = true;
 			chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = true;
 			break;
 		}
-		else
-		{
+		else {
 			chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
 		}
 	}
@@ -413,8 +409,8 @@ bool FighterInstance::check_button_on(u32 button) {
 	return player_info->check_button_on(button);
 }
 
-bool FighterInstance::check_button_input(u32 button) {
-	return player_info->check_button_input(button);
+bool FighterInstance::check_button_input(u32 button, u32 button_2nd) {
+	return player_info->check_button_input(button, button_2nd);
 }
 
 bool FighterInstance::check_button_trigger(u32 button) {
@@ -607,6 +603,14 @@ void FighterInstance::clear_hitbox_all()
 }
 
 //Grabbox
+
+void FighterInstance::new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
+	u32 defender_status_if_hit, bool use_player_pos) {
+	
+	if (id < 10) {
+		grabboxes[id] = Grabbox(this, id, anchor, offset, grabbox_kind, situation_hit, attacker_status_if_hit, defender_status_if_hit, use_player_pos);
+	}
+}
 
 void FighterInstance::update_grabbox_pos()
 {
@@ -811,6 +815,9 @@ void FighterInstance::playoutStatus() {
 bool FighterInstance::common_ground_status_act() {
 	if (is_actionable()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
+			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
+				return (change_status(CHARA_STATUS_GRAB));
+			}
 			if (check_button_input(BUTTON_LP)) {
 				if (get_stick_dir() < 4) {
 					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_CLP;
@@ -826,6 +833,9 @@ bool FighterInstance::common_ground_status_act() {
 				else {
 					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
 				}
+			}
+			if (check_button_input(BUTTON_MP, BUTTON_MK)) {
+				return (change_status(CHARA_STATUS_PARRY_START));
 			}
 			if (check_button_input(BUTTON_MP)) {
 				if (get_stick_dir() < 4) {
@@ -890,11 +900,17 @@ bool FighterInstance::common_ground_status_act() {
 bool FighterInstance::common_air_status_act() {
 	if (is_actionable()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
+			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
+				return (change_status(CHARA_STATUS_GRAB_AIR));
+			}
 			if (check_button_input(BUTTON_LP)) {
 				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LP;
 			}
 			if (check_button_input(BUTTON_LK)) {
 				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
+			}
+			if (check_button_input(BUTTON_MP, BUTTON_MK)) {
+				return (change_status(CHARA_STATUS_PARRY_START));
 			}
 			if (check_button_input(BUTTON_MP)) {
 				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MP;

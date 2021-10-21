@@ -289,32 +289,25 @@ void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer)
 
 	fighter_instance->prevpos = fighter_instance->pos;
 
-	//Calls the looping status function for whatever the player's current status_kind is.
-	fighter_instance->playoutStatus();
-
-	/*
-		Get the player's inputs and increment the frame.
-	*/
-	fighter_instance->processInput();
-	if (fighter_instance->canStep())
-	{
+	if (fighter_instance->canStep()) {
 		fighter_instance->stepAnimation();
 	}
+
+	fighter_instance->playoutStatus();
+
+	fighter_instance->processInput();
+	
 	fighter_instance->prev_stick_dir = fighter_instance->get_stick_dir();
-	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0)
-	{
+	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
 		fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES]--;
 	}
-	else if (fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES] != 0)
-	{
+	else if (fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES] != 0) {
 		fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES]--;
 	}
-	if (fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW] != 0)
-	{
+	if (fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW] != 0) {
 		fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW]--;
 	}
-	if (fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW] != 0)
-	{
+	if (fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW] != 0) {
 		fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW]--;
 	}
 }

@@ -24,8 +24,15 @@ bool PlayerInfo::check_button_on(u32 button) {
 	return button_info[button].button_on;
 }
 
-bool PlayerInfo::check_button_input(u32 button) {
-	return button_info[button].buffer > 0 && last_buffered_button == button;
+bool PlayerInfo::check_button_input(u32 button, u32 button_2nd) {
+	if (button_2nd == BUTTON_MAX) {
+		return button_info[button].buffer > 0 && last_buffered_button == button;
+	}
+	else {
+		bool button_check_1 = button == last_buffered_button || button_2nd == last_buffered_button;
+		bool button_check_2 = button == last_buffered_button_2nd || button_2nd == last_buffered_button_2nd;
+		return button_info[button].buffer > 0 && button_info[button_2nd].buffer > 0 && button_check_1 && button_check_2;
+	}
 }
 
 bool PlayerInfo::check_button_trigger(u32 button) {
@@ -67,6 +74,7 @@ void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 		button_info[i].changed = (old_button != new_button);
 		button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
 		if (button_info[i].changed && button_info[i].button_on && is_valid_buffer_button(i)) {
+			last_buffered_button_2nd = last_buffered_button;
 			last_buffered_button = i;
 			button_info[i].buffer = BUFFER_WINDOW;
 		}

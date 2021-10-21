@@ -131,6 +131,16 @@ void Roy::loadRoyACMD() {
 			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
 		}
 	});
+	script("grab", [this]() {
+		if (is_excute_frame(1, 0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(2, 3)) {
+			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_WAIT, CHARA_STATUS_KNOCKDOWN_START);
+		}
+	});
 }
 
 void Roy::loadRoyStatusFunctions() {

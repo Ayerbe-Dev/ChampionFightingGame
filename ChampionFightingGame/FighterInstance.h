@@ -254,7 +254,7 @@ public:
 	virtual void exit_status_knockdown();
 
 	
-	virtual void roy_status_fireball_start();
-	virtual void roy_enter_status_fireball_start();
-	virtual void roy_exit_status_fireball_start();
+	virtual void roy_status_fireball_start() {};
+	virtual void roy_enter_status_fireball_start() {};
+	virtual void roy_exit_status_fireball_start() {};
 };

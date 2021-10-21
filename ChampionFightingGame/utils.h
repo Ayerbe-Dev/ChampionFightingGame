@@ -153,29 +153,19 @@ enum
 	CHARA_STATUS_WAKEUP_SLOW,
 
 	CHARA_STATUS_START_SPECIFIC,
-	BLANK1,
-	BLANK2,
-	BLANK3, 
-	
-	//TODO: Figure out how to determine the highest value of the character-specific enums and set chara_status_max to match that value rather than
-	//having to handle it manually
 
-	CHARA_STATUS_MAX,
-};
-
-enum {
 	CHARA_ROY_STATUS_FIREBALL_START = CHARA_STATUS_START_SPECIFIC,
 	CHARA_ROY_STATUS_FIREBALL_PUNCH,
 	CHARA_ROY_STATUS_FIREBALL_KICK,
-
 	CHARA_ROY_STATUS_MAX,
-};
 
-enum {
 	CHARA_ERIC_STATUS_FIREBALL = CHARA_STATUS_START_SPECIFIC,
-
 	CHARA_ERIC_STATUS_MAX,
+
+
+	CHARA_STATUS_MAX = std::max((int)CHARA_ROY_STATUS_MAX, (int)CHARA_ERIC_STATUS_MAX),
 };
+
 
 enum
 {

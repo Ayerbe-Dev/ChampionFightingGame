@@ -768,9 +768,9 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
 			}
-			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
-			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
+		p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
+		p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 	}
 
 	if (p1_hit)
@@ -854,9 +854,9 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = p2_hitbox->attack_level;
 				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status, p1->situation_kind);
 			}
-			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
-			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
+		p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
+		p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 	}
 	if (p1_hit) {
 		p1->change_status(p1_status_post_hit, true, false);

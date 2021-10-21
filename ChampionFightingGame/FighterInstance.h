@@ -93,6 +93,8 @@ public:
 	bool check_button_release(u32 button);
 	int get_stick_dir();
 	int get_flick_dir();
+	int get_special_input(int special_kind, u32 button, int charge_frames = 0);
+
 
 	//Position
 

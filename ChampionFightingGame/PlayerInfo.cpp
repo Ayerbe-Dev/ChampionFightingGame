@@ -41,7 +41,7 @@ bool PlayerInfo::check_button_trigger(u32 button) {
 
 bool PlayerInfo::check_button_release(u32 button)
 {
-	return !button_info[button].button_on && button_info[button].changed;
+	return button_info[button].changed && (!button_info[button].button_on);
 }
 
 void PlayerInfo::update_buttons(const Uint8* keyboard_state) {

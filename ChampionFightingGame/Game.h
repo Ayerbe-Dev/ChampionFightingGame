@@ -5,6 +5,7 @@
 int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]);
 
 void tickOnce(FighterInstance* fighter_instance, SDL_Renderer* renderer);
+void decrease_common_fighter_variables(FighterInstance* fighter_instance);
 void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer* renderer, bool visualize_boxes);
 int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* defender, Hitbox *hitbox, Hurtbox *hurtbox);
 int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* defender, Grabbox *grabbox, Hurtbox *hurtbox);

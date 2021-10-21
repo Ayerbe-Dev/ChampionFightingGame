@@ -9,8 +9,8 @@ public:
 	string name;
 	Buttons button_info[BUTTON_MAX];
 	SDL_GameController* controller{ NULL };
-	u32 last_buffered_button;
-	u32 last_buffered_button_2nd;
+	u32 last_buffered_button{BUTTON_MAX};
+	u32 last_buffered_button_2nd{BUTTON_MAX};
 
 	PlayerInfo();
 	PlayerInfo(int id);

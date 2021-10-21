@@ -33,7 +33,12 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 	load_params();
 	chara_float[CHARA_FLOAT_HEALTH] = stats.health;
 	loadStatusFunctions();
-	change_status(CHARA_STATUS_WAIT, false, false);
+	pos.y = FLOOR_GAMECOORD;
+	change_anim("wait", 30, 0);
+	status_kind = CHARA_STATUS_WAIT;
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
@@ -325,14 +330,9 @@ bool FighterInstance::is_excute_wait(int excute_count, int frames) {
 //Inputs
 
 void FighterInstance::processInput() {
-	update_hitbox_pos();
-	update_grabbox_pos();
-	update_hurtbox_pos();
-	int width;
-	int height;
-	SDL_QueryTexture(this->base_texture, NULL, NULL, &width, &height);
-	pos.x_spr_offset = width / 2;
-	pos.y_spr_offset = height;
+
+	//Dash Input
+
 	if (get_flick_dir() == 6) {
 		chara_int[CHARA_INT_DASH_F_WINDOW] = 9;
 	}
@@ -340,59 +340,133 @@ void FighterInstance::processInput() {
 	{
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 9;
 	}
+
+	//Special Inputs
+
 	int stick_dir = get_stick_dir();
-	if (stick_dir < 4) { //disgusting
+
+	//Motion Inputs
+
+	if (stick_dir == 1) {
+		if (chara_int[CHARA_INT_214_STEP] == 1) {
+			chara_int[CHARA_INT_214_STEP] ++;
+			chara_int[CHARA_INT_214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_214214_STEP] == 1 || chara_int[CHARA_INT_214214_STEP] == 4) {
+			chara_int[CHARA_INT_214214_STEP] ++;
+			chara_int[CHARA_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_41236_STEP] == 1) {
+			chara_int[CHARA_INT_41236_STEP] ++;
+			chara_int[CHARA_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_63214_STEP] == 3) {
+			chara_int[CHARA_INT_63214_STEP] ++;
+			chara_int[CHARA_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+	}
+	if (stick_dir == 2) {
+		chara_int[CHARA_INT_236_STEP] = 1;
+		chara_int[CHARA_INT_236_TIMER] = MOTION_SPECIAL_TIMER;
+		chara_int[CHARA_INT_214_STEP] = 1;
+		chara_int[CHARA_INT_214_TIMER] = MOTION_SPECIAL_TIMER;
+		if (chara_int[CHARA_INT_623_STEP] == 1) {
+			chara_int[CHARA_INT_623_STEP] ++;
+			chara_int[CHARA_INT_623_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_214214_STEP] == 1) {
+			chara_int[CHARA_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_214214_STEP] == 0 || chara_int[CHARA_INT_214214_STEP] == 3) {
+			chara_int[CHARA_INT_214214_STEP] ++;
+			chara_int[CHARA_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_236236_STEP] == 1) {
+			chara_int[CHARA_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_236236_STEP] == 0 || chara_int[CHARA_INT_236236_STEP] == 3) {
+			chara_int[CHARA_INT_236236_STEP] ++;
+			chara_int[CHARA_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_41236_STEP] == 2) {
+			chara_int[CHARA_INT_41236_STEP] ++;
+			chara_int[CHARA_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_63214_STEP] == 2) {
+			chara_int[CHARA_INT_63214_STEP] ++;
+			chara_int[CHARA_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+	}
+	if (stick_dir == 3) {
+		if (chara_int[CHARA_INT_236_STEP] == 1) {
+			chara_int[CHARA_INT_236_STEP] ++;
+			chara_int[CHARA_INT_236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_623_STEP] == 2) {
+			chara_int[CHARA_INT_623_STEP] ++;
+			chara_int[CHARA_INT_623_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_236236_STEP] == 1 || chara_int[CHARA_INT_236236_STEP] == 4) {
+			chara_int[CHARA_INT_236236_STEP] ++;
+			chara_int[CHARA_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_41236_STEP] == 3) {
+			chara_int[CHARA_INT_41236_STEP] ++;
+			chara_int[CHARA_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_63214_STEP] == 1) {
+			chara_int[CHARA_INT_63214_STEP] ++;
+			chara_int[CHARA_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+	}
+	if (stick_dir == 4) {
+		chara_int[CHARA_INT_41236_STEP] = 1;
+		chara_int[CHARA_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+		if (chara_int[CHARA_INT_214_STEP] == 2) {
+			chara_int[CHARA_INT_214_STEP] ++;
+			chara_int[CHARA_INT_214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_214214_STEP] == 2 || chara_int[CHARA_INT_214214_STEP] == 5) {
+			chara_int[CHARA_INT_214214_STEP] ++;
+			chara_int[CHARA_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_63214_STEP] == 4) {
+			chara_int[CHARA_INT_63214_STEP] ++;
+			chara_int[CHARA_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+	}
+	if (stick_dir == 6) {
+		chara_int[CHARA_INT_623_STEP] = 1;
+		chara_int[CHARA_INT_623_TIMER] = MOTION_SPECIAL_TIMER;
+		chara_int[CHARA_INT_63214_STEP] = 1;
+		chara_int[CHARA_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+		if (chara_int[CHARA_INT_236_STEP] == 2) {
+			chara_int[CHARA_INT_236_STEP] ++;
+			chara_int[CHARA_INT_236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_236236_STEP] == 2 || chara_int[CHARA_INT_236236_STEP] == 5) {
+			chara_int[CHARA_INT_236236_STEP] ++;
+			chara_int[CHARA_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+		if (chara_int[CHARA_INT_41236_STEP] == 4) {
+			chara_int[CHARA_INT_41236_STEP] ++;
+			chara_int[CHARA_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+		}
+	}
+
+	//Charge Inputs (disgusting)
+
+	if (stick_dir < 4) {
 		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
 		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES]++;
 	}
-	else if (chara_int[CHARA_INT_DOWN_CHARGE_TIMER] != 0)
-	{
-		chara_int[CHARA_INT_DOWN_CHARGE_TIMER]--;
-	}
-	else
-	{
-		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
-	}
-	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7)
-	{
+	
+	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
 		chara_int[CHARA_INT_BACK_CHARGE_FRAMES]++;
 		chara_int[CHARA_INT_BACK_CHARGE_TIMER] = 6;
 	}
-	else if (chara_int[CHARA_INT_BACK_CHARGE_TIMER] != 0)
-	{
-		chara_int[CHARA_INT_BACK_CHARGE_TIMER]--;
-	}
-	else
-	{
-		chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
-	}
 
-	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
-		if (chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
-			if (situation_kind == CHARA_SITUATION_GROUND) {
-				pos.x -= chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir;
-			}
-			else {
-				pos.x -= chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir;
-				pos.y += chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME];
-			}
-		}
-	}
-	else {
-		chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
-	}
-	for (int i = 0; i < 10; i++) {
-		if (hitboxes[i].id != -1 && hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
-			chara_flag[CHARA_FLAG_HAS_ATTACK] = true;
-			chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = true;
-			break;
-		}
-		else {
-			chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
-		}
-	}
-	if (check_button_on(BUTTON_START))
-	{
+	if (check_button_on(BUTTON_START)) {
 		pos.y = FLOOR_GAMECOORD;
 		if (id == 0)
 		{
@@ -489,6 +563,99 @@ int FighterInstance::get_flick_dir()
 	else
 	{
 		return stick_dir;
+	}
+}
+
+int FighterInstance::get_special_input(int special_kind, u32 button, int charge_frames) {
+	int button_check = 0;
+	bool input_check = false;
+
+	if (check_button_input(button) || check_button_release(button)) {
+		button_check = SPECIAL_INPUT_NORMAL;
+	}
+	if (button_check) {
+		if (special_kind == SPECIAL_KIND_236) {
+			if (chara_int[CHARA_INT_236_STEP] == 2 && get_stick_dir() == 6) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else if (chara_int[CHARA_INT_236_STEP] == 3) {
+				input_check = true;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_214) {
+			if (chara_int[CHARA_INT_214_STEP] == 2 && get_stick_dir() == 4) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else  if (chara_int[CHARA_INT_214_STEP] == 3) {
+				input_check = true;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_623) {
+			if (chara_int[CHARA_INT_623_STEP] == 2 && get_stick_dir() == 3) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else if (chara_int[CHARA_INT_623_STEP] == 3) {
+				input_check = true;
+			}
+			input_check = chara_int[CHARA_INT_623_STEP] == 3;
+		}
+		else if (special_kind == SPECIAL_KIND_41236) {
+			if (chara_int[CHARA_INT_41236_STEP] == 4 && get_stick_dir() == 6) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else if (chara_int[CHARA_INT_41236_STEP] == 5) {
+				input_check = true;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_63214) {
+			if (chara_int[CHARA_INT_63214_STEP] == 4 && get_stick_dir() == 4) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else if (chara_int[CHARA_INT_63214_STEP] == 5) {
+				input_check = true;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_236236) {
+			if (chara_int[CHARA_INT_236236_STEP] == 5 && get_stick_dir() == 6) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else if (chara_int[CHARA_INT_236236_STEP] == 6) {
+				input_check = true;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_214214) {
+			if (chara_int[CHARA_INT_214214_STEP] == 5 && get_stick_dir() == 4) {
+				button_check = SPECIAL_INPUT_JUST;
+				input_check = true;
+			}
+			else if (chara_int[CHARA_INT_214214_STEP] == 6) {
+				input_check = true;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_CHARGE_DOWN) {
+			input_check = (chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 8);
+			if (input_check && get_flick_dir() == 8) {
+				button_check == SPECIAL_INPUT_JUST;
+			}
+		}
+		else if (special_kind == SPECIAL_KIND_CHARGE_BACK) {
+			input_check = (chara_int[CHARA_INT_BACK_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 6);
+			if (input_check && get_flick_dir() == 6) {
+				button_check == SPECIAL_INPUT_JUST;
+			}
+		}
+	}
+	if (input_check) {
+		return button_check;
+	}
+	else {
+		return SPECIAL_INPUT_NONE;
 	}
 }
 
@@ -676,9 +843,8 @@ bool FighterInstance::is_actionable()
 {
 	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0 && chara_int[CHARA_INT_HITLAG_FRAMES] == 0)
 	{
-		if (anim_kind->faf == -1)
-		{
-			return is_anim_end;
+		if (anim_kind->faf == -1) {
+			return render_frame >= anim_kind->length;
 		}
 		else
 		{
@@ -1013,6 +1179,7 @@ void FighterInstance::enter_status_wait()
 
 	situation_kind = CHARA_SITUATION_GROUND;
 	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
+	common_ground_status_act();
 }
 
 void FighterInstance::exit_status_wait()
@@ -1392,6 +1559,7 @@ void FighterInstance::enter_status_jump()
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed;
 	}
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = stats.jump_x_speed;
+	common_air_status_act();
 }
 
 void FighterInstance::exit_status_jump()

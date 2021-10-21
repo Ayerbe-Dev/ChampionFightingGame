@@ -265,9 +265,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	return next_state;
 }
 
-void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer)
-{
-
+void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer) {
 	/*
 				   _.-, 
               _ .-'  / .._
@@ -298,17 +296,41 @@ void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer)
 	fighter_instance->processInput();
 	
 	fighter_instance->prev_stick_dir = fighter_instance->get_stick_dir();
+
+	decrease_common_fighter_variables(fighter_instance);
+
+	int width;
+	int height;
+	SDL_QueryTexture(fighter_instance->base_texture, NULL, NULL, &width, &height);
+	fighter_instance->pos.x_spr_offset = width / 2;
+	fighter_instance->pos.y_spr_offset = height;
+
+	fighter_instance->update_hitbox_pos();
+	fighter_instance->update_grabbox_pos();
+	fighter_instance->update_hurtbox_pos();
 	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
-		fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES]--;
+		if (fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
+			if (fighter_instance->situation_kind == CHARA_SITUATION_GROUND) {
+				fighter_instance->pos.x -= fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir;
+			}
+			else {
+				fighter_instance->pos.x -= fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir;
+				fighter_instance->pos.y += fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME];
+			}
+		}
 	}
-	else if (fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES] != 0) {
-		fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES]--;
+	else {
+		fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
-	if (fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW] != 0) {
-		fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW]--;
-	}
-	if (fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW] != 0) {
-		fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW]--;
+	for (int i = 0; i < 10; i++) {
+		if (fighter_instance->hitboxes[i].id != -1 && fighter_instance->hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
+			fighter_instance->chara_flag[CHARA_FLAG_HAS_ATTACK] = true;
+			fighter_instance->chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = true;
+			break;
+		}
+		else {
+			fighter_instance->chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
+		}
 	}
 }
 
@@ -969,4 +991,73 @@ IFighter::~IFighter()
 FighterInstance *IFighter::get_fighter()
 {
 	return fighter_instance;
+}
+
+void decrease_common_fighter_variables(FighterInstance* fighter_instance) {
+	if (fighter_instance->chara_int[CHARA_INT_236_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_236_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_236_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_214_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_214_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_214_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_623_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_623_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_623_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_41236_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_41236_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_41236_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_63214_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_63214_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_63214_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_236236_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_236236_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_236236_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_214214_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_214214_TIMER] --;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_214214_STEP] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_DOWN_CHARGE_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_DOWN_CHARGE_TIMER]--;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
+		fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES]--;
+	}
+	else if (fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES] != 0) {
+		fighter_instance->chara_int[CHARA_INT_HITSTUN_FRAMES]--;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW] != 0) {
+		fighter_instance->chara_int[CHARA_INT_DASH_F_WINDOW]--;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW] != 0) {
+		fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW]--;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_BACK_CHARGE_TIMER] != 0) {
+		fighter_instance->chara_int[CHARA_INT_BACK_CHARGE_TIMER]--;
+	}
+	else {
+		fighter_instance->chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
+	}
 }

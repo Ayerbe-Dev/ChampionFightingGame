@@ -1,8 +1,8 @@
+#pragma once
 using namespace std;
 #include <iostream>
 #include "SDL.h"
 #include <sstream>
-#pragma once
 typedef char i8;
 typedef unsigned char u8;
 typedef short i16;
@@ -114,8 +114,7 @@ enum
 	CHARA_KIND_MAX,
 };
 
-enum
-{
+enum {
 	CHARA_STATUS_WAIT,
 	CHARA_STATUS_WALKF,
 	CHARA_STATUS_WALKB,
@@ -153,29 +152,29 @@ enum
 	CHARA_STATUS_WAKEUP_SLOW,
 
 	CHARA_STATUS_START_SPECIFIC,
-	BLANK1,
-	BLANK2,
-	BLANK3, 
-	
-	//TODO: Figure out how to determine the highest value of the character-specific enums and set chara_status_max to match that value rather than
-	//having to handle it manually
 
-	CHARA_STATUS_MAX,
-};
-
-enum {
 	CHARA_ROY_STATUS_FIREBALL_START = CHARA_STATUS_START_SPECIFIC,
 	CHARA_ROY_STATUS_FIREBALL_PUNCH,
 	CHARA_ROY_STATUS_FIREBALL_KICK,
-
 	CHARA_ROY_STATUS_MAX,
-};
 
-enum {
 	CHARA_ERIC_STATUS_FIREBALL = CHARA_STATUS_START_SPECIFIC,
-
 	CHARA_ERIC_STATUS_MAX,
 };
+
+
+//For this to compile, max_status needs to be defined SPECIFICALLY after all of the CHARA_X_STATUS_MAX constants are set, but before CHARA_STATUS_MAX is set.
+
+static constexpr int max_status() {
+	return max(CHARA_ROY_STATUS_MAX, CHARA_ERIC_STATUS_MAX);
+}
+
+//Yes, I did try declaring max_status and defining it in utils.cpp. No, it did not work.
+
+enum {
+	CHARA_STATUS_MAX = max_status(), //thanks cpp
+};
+
 
 enum
 {

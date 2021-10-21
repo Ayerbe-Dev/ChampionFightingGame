@@ -23,8 +23,7 @@ u32 frame_advance_entry_ms;
 u32 frame_advance_ms;
 bool debug = false;
 
-int main()
-{
+int main() {
 	bool running = true;
 	bool visualize_boxes = true;
 	int game_state = GAME_STATE_DEBUG_MENU;

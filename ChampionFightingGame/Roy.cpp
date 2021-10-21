@@ -144,7 +144,9 @@ void Roy::loadRoyACMD() {
 }
 
 void Roy::loadRoyStatusFunctions() {
-
+	pStatus[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_status_fireball_start;
+	pEnter_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_enter_status_fireball_start;
+	pExit_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_exit_status_fireball_start;
 }
 
 RoyScript::RoyScript() {};
@@ -175,4 +177,20 @@ void Roy::script(string name, function<void()> move_script) {
 			break;
 		}
 	}
+}
+
+void Roy::status_parry() {
+	change_status(CHARA_ROY_STATUS_FIREBALL_START);
+}
+
+void Roy::roy_status_fireball_start() {
+	cout << "Roy is in fireball!" << endl;
+}
+
+void Roy::roy_enter_status_fireball_start() {
+	cout << "Roy is entering fireball!" << endl;
+}
+
+void Roy::roy_exit_status_fireball_start() {
+	cout << "Roy is exiting fireball!" << endl;
 }

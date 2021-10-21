@@ -2232,3 +2232,7 @@ void FighterInstance::exit_status_knockdown() {
 	chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
 	situation_kind = CHARA_SITUATION_GROUND;
 }
+
+void FighterInstance::roy_status_fireball_start() {}
+void FighterInstance::roy_enter_status_fireball_start() {}
+void FighterInstance::roy_exit_status_fireball_start() {}

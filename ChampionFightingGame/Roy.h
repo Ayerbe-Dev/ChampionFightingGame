@@ -31,4 +31,10 @@ public:
 
 	Roy();
 	Roy(SDL_Renderer *renderer, int id);
+
+	void status_parry() override;
+
+	void roy_status_fireball_start() override;
+	void roy_enter_status_fireball_start() override;
+	void roy_exit_status_fireball_start() override;
 };

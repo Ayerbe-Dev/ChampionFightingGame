@@ -4,6 +4,7 @@ using namespace std;
 #include <algorithm> //std::min
 #include "utils.h"
 #include <SDL_image.h>
+
 int clamp(int min, int value, int max) {
 	if (min <= max)	{
 		if (value < min) {

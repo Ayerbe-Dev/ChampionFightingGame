@@ -418,9 +418,34 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 				}
 			}
 		}
+		for (int i2 = 0; i2 < 10; i2++)
+		{
+			if (fighter_instance[i]->grabboxes[i2].id != -1)
+			{
+				SDL_Rect render_pos;
+				render_pos = fighter_instance[i]->grabboxes[i2].rect;
+
+				if (visualize_boxes) {
+					Vec4f grabbox_color = { 0, 255, 0, 127 };
+					if (fighter_instance[i]->grabboxes[i2].grabbox_kind & GRABBOX_KIND_NOTECH) {
+						grabbox_color.x = 128;
+						grabbox_color.y = 0;
+						grabbox_color.z = 128;
+					}
+
+					SDL_SetRenderDrawColor(renderer, grabbox_color.x, grabbox_color.y, grabbox_color.z, 255);
+					SDL_RenderDrawRect(renderer, &render_pos);
+					SDL_SetRenderDrawColor(renderer, grabbox_color.x, grabbox_color.y, grabbox_color.z, grabbox_color.w);
+					SDL_RenderFillRect(renderer, &render_pos);
+				}
+			}
+		}
 		fighter_instance[i]->connected_hitbox = hitbox_to_use;
+		fighter_instance[i]->connected_grabbox = grabbox_to_use;
 	}
-	event_hit_collide_player(fighter_instance[0], fighter_instance[1], &(fighter_instance[0]->hitboxes[fighter_instance[1]->connected_hitbox]), &(fighter_instance[1]->hitboxes[fighter_instance[0]->connected_hitbox]));
+	if (!event_hit_collide_player(fighter_instance[0], fighter_instance[1], &(fighter_instance[0]->hitboxes[fighter_instance[1]->connected_hitbox]), &(fighter_instance[1]->hitboxes[fighter_instance[0]->connected_hitbox]))) {
+		event_grab_collide_player(fighter_instance[0], fighter_instance[1], &(fighter_instance[0]->grabboxes[fighter_instance[1]->connected_grabbox]), &(fighter_instance[1]->grabboxes[fighter_instance[0]->connected_grabbox]));
+	}
 }
 
 /*
@@ -562,11 +587,14 @@ int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* de
 	if (hurtbox->intangible_kind == INTANGIBLE_KIND_THROW || hurtbox->intangible_kind == INTANGIBLE_KIND_ALL) {
 		return HITBOX_COUNT_MAX;
 	}
+	if (defender->get_status_group(defender->status_kind) == STATUS_GROUP_HITSTUN && (grabbox->grabbox_kind & GRABBOX_KIND_HITSTUN) == 0) {
+		return HITBOX_COUNT_MAX;
+	}
 
 	return grabbox->id;
 }
 
-void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox) {
+bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p1_status_post_hit = p1->status_kind;
@@ -598,25 +626,25 @@ void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 				if (p2_hitbox->clank_kind != CLANK_KIND_CONTINUE)
 				{
 					p2->change_status(CHARA_STATUS_CLANK);
-					return;
+					return false;
 				}
 				else if (p1_hitbox->clank_kind != CLANK_KIND_CONTINUE)
 				{
 					p1->change_status(CHARA_STATUS_CLANK);
-					return;
+					return false;
 				}
 				else
 				{ //If both people have trample, it's better to make them both clank than it is to make them both ignore having just been hit
 					p1->change_status(CHARA_STATUS_CLANK);
 					p2->change_status(CHARA_STATUS_CLANK);
-					return;
+					return false;
 				}
 			}
 			else if (p1_hitbox->clank_kind == CLANK_KIND_CLANK || p2_hitbox->clank_kind == CLANK_KIND_CLANK)
 			{
 				p1->change_status(CHARA_STATUS_CLANK);
 				p2->change_status(CHARA_STATUS_CLANK);
-				return;
+				return false;
 			}
 			//if both players have CLANK_KIND_NORMAL as well as using the same attack level, they can just trade and both take damage
 		}
@@ -808,26 +836,35 @@ void event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
 	}
-	if (p1_hit)
-	{
+	if (p1_hit) {
 		p1->change_status(p1_status_post_hit, true, false);
 	}
-	if (p2_hit)
-	{
+	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
 	}
+	return (p1_hit || p2_hit);
 }
 
 void event_grab_collide_player(FighterInstance* p1, FighterInstance* p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox) {
 	bool p1_hit = p2_grabbox->id != -1;
+	bool p1_tech = p2_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH;
 	bool p2_hit = p1_grabbox->id != -1;
+	bool p2_tech = p1_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH;
 	if (p1_hit && p2_hit) {
-		p1->change_status(CHARA_STATUS_THROW_TECH);
-		p2->change_status(CHARA_STATUS_THROW_TECH);
-		return;
+		if (p1_tech == p2_tech) {
+			p1->change_status(CHARA_STATUS_THROW_TECH);
+			p2->change_status(CHARA_STATUS_THROW_TECH);
+			return;
+		}
+		else if (p1_tech) {
+			p1_hit = false;
+		}
+		else {
+			p2_hit = false;
+		}
 	}
 	if (p1_hit) {
-		if (p1->chara_flag[CHARA_FLAG_THROW_TECH]) {
+		if (p1->chara_flag[CHARA_FLAG_THROW_TECH] && p1_tech) {
 			p1->change_status(CHARA_STATUS_THROW_TECH);
 			p2->change_status(CHARA_STATUS_THROW_TECH);
 		}
@@ -837,7 +874,7 @@ void event_grab_collide_player(FighterInstance* p1, FighterInstance* p2, Grabbox
 		}
 	}
 	if (p2_hit) {
-		if (p2->chara_flag[CHARA_FLAG_THROW_TECH]) {
+		if (p2->chara_flag[CHARA_FLAG_THROW_TECH] && p2_tech) {
 			p1->change_status(CHARA_STATUS_THROW_TECH);
 			p2->change_status(CHARA_STATUS_THROW_TECH);
 		}

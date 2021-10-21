@@ -101,9 +101,9 @@ Grabbox::Grabbox() {
 
 Grabbox::Grabbox(FighterInstance* fighter_instance, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
 	u32 defender_status_if_hit, bool use_player_pos) {
-	anchor = init_anchor;
-	offset = init_offset;
-	if (this->use_player_pos) {
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	if (use_player_pos) {
 		anchor.x = ((anchor.x + (fighter_instance->pos.x * fighter_instance->facing_dir)) * fighter_instance->facing_dir) + WINDOW_WIDTH / 2;
 		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - fighter_instance->pos.y;
 		offset.x = ((offset.x + (fighter_instance->pos.x * fighter_instance->facing_dir)) * fighter_instance->facing_dir) + WINDOW_WIDTH / 2;
@@ -111,7 +111,7 @@ Grabbox::Grabbox(FighterInstance* fighter_instance, int id, GameCoordinate ancho
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
-		offset.x += WINDOW_HEIGHT / 2;
+		offset.x += WINDOW_WIDTH / 2;
 	}
 	offset.x -= anchor.x;
 	offset.y -= anchor.y;
@@ -124,6 +124,7 @@ Grabbox::Grabbox(FighterInstance* fighter_instance, int id, GameCoordinate ancho
 	this->grabbox_kind = grabbox_kind;
 	this->situation_hit = situation_hit;
 	this->attacker_status_if_hit = attacker_status_if_hit;
+	this->defender_status_if_hit = defender_status_if_hit;
 	this->use_player_pos = use_player_pos;
 }
 

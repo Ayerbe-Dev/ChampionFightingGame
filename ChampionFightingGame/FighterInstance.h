@@ -50,6 +50,7 @@ public:
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
 	int connected_hitbox;
+	int connected_grabbox;
 	
 	string resource_dir;
 	SDL_Texture* base_texture;

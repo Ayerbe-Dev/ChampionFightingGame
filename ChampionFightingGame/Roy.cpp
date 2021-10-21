@@ -179,10 +179,6 @@ void Roy::script(string name, function<void()> move_script) {
 	}
 }
 
-void Roy::status_parry() {
-	change_status(CHARA_ROY_STATUS_FIREBALL_START);
-}
-
 void Roy::roy_status_fireball_start() {
 	cout << "Roy is in fireball!" << endl;
 }

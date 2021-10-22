@@ -5,7 +5,7 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 	this->fighter_instance = fighter_instance;
 	this->bar_texture = loadTexture("resource/ui/game/hp/bar.png", renderer);
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
-	this->max_health = fighter_instance->stats.health;
+	this->max_health = fighter_instance->get_param_float("health");
 	if (fighter_instance->id == 0) {
 		this->health_rect.x = 0;
 		this->health_rect.y = 0;

@@ -16,19 +16,26 @@ public:
 
 class Eric : public FighterInstance {
 public:
-	void chara_id();
+	//Setup
+
+	virtual void chara_id();
+	Eric();
+	Eric(SDL_Renderer* renderer, int id);
+	void load_eric_params();
+	void set_current_move_script(string anim_name);
+	void script(string name, function<void()> move_script);
+	EricScript eric_scripts[256];
+	void loadEricStatusFunctions();
+	void loadEricACMD();
+
+	//Stats
+
+	bool specific_ground_status_act() override;
 
 	int eric_int[CHARA_ERIC_INT_MAX];
 	float eric_float[CHARA_ERIC_FLOAT_MAX];
 	bool eric_flag[CHARA_ERIC_FLAG_MAX];
-
-	void loadEricACMD();
-	void loadEricStatusFunctions();
-	void set_current_move_script(string anim_name);
-	void script(string name, function<void()> move_script);
-
-	EricScript eric_scripts[256];
-
-	Eric();
-	Eric(SDL_Renderer *renderer, int id);
+	Param eric_table[PARAM_TABLE_LENGTH];
+	
+	//Statuses
 };

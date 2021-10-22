@@ -31,7 +31,7 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 
 	load_anim_list(renderer);
 	load_params();
-	chara_float[CHARA_FLOAT_HEALTH] = stats.health;
+	chara_float[CHARA_FLOAT_HEALTH] = get_param_float("health");
 	loadStatusFunctions();
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait", 30, 0);
@@ -77,8 +77,7 @@ void FighterInstance::load_anim_list(SDL_Renderer *renderer)
 	anim_list.close();
 }
 
-void FighterInstance::load_params()
-{
+void FighterInstance::load_params() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
 
@@ -88,61 +87,30 @@ void FighterInstance::load_params()
 		exit(1);
 	}
 
-	string walk_f_speed;
-	string walk_b_speed;
-	string dash_f_accel_frame;
-	string dash_f_speed;
-	string dash_f_maintain_speed_frame;
-	string dash_b_accel_frame;
-	string dash_b_speed;
-	string dash_b_maintain_speed_frame;
-	string dash_cancel_kind;
-	string dash_f_cancel_frame;
-	string dash_b_cancel_frame;
-	string jump_y_init_speed;
-	string jump_y_init_speed_s;
-	string jump_x_speed;
-	string gravity;
-	string max_fall_speed;
-	string empty_landing_lag;
-	string lp_landing_lag;
-	string mp_landing_lag;
-	string hp_landing_lag;
-	string lk_landing_lag;
-	string mk_landing_lag;
-	string hk_landing_lag;
-	string health;
-	string has_airdash;
-	string meter_gain_on_parry;
-
-	stats_table >> walk_f_speed >> walk_b_speed >> dash_f_accel_frame >> dash_f_speed >> dash_f_maintain_speed_frame >> dash_b_accel_frame >> dash_b_speed >> dash_b_maintain_speed_frame >> dash_cancel_kind >> dash_f_cancel_frame >> dash_b_cancel_frame >> jump_y_init_speed >> jump_y_init_speed_s >> jump_x_speed >> gravity >> max_fall_speed >> empty_landing_lag >> lp_landing_lag >> mp_landing_lag >> hp_landing_lag >> lk_landing_lag >> mk_landing_lag >> hk_landing_lag >> health >> has_airdash >> meter_gain_on_parry;
-
-	stats.walk_f_speed = ymlChopFloat(walk_f_speed);
-	stats.walk_b_speed = ymlChopFloat(walk_b_speed);
-	stats.dash_f_accel_frame = ymlChopInt(dash_f_accel_frame);
-	stats.dash_f_speed = ymlChopFloat(dash_f_speed);
-	stats.dash_f_maintain_speed_frame = ymlChopInt(dash_f_maintain_speed_frame);
-	stats.dash_b_accel_frame = ymlChopInt(dash_b_accel_frame);
-	stats.dash_b_speed = ymlChopFloat(dash_b_speed);
-	stats.dash_b_maintain_speed_frame = ymlChopInt(dash_b_maintain_speed_frame);
-	stats.dash_cancel_kind = ymlChopInt(dash_cancel_kind);
-	stats.dash_f_cancel_frame = ymlChopInt(dash_f_cancel_frame);
-	stats.dash_b_cancel_frame = ymlChopInt(dash_b_cancel_frame);
-	stats.jump_y_init_speed = ymlChopFloat(jump_y_init_speed);
-	stats.jump_y_init_speed_s = ymlChopFloat(jump_y_init_speed_s);
-	stats.jump_x_speed = ymlChopFloat(jump_x_speed);
-	stats.gravity = ymlChopFloat(gravity);
-	stats.max_fall_speed = ymlChopFloat(max_fall_speed);
-	stats.empty_landing_lag = ymlChopInt(empty_landing_lag);
-	stats.lp_landing_lag = ymlChopInt(lp_landing_lag);
-	stats.mp_landing_lag = ymlChopInt(mp_landing_lag);
-	stats.hp_landing_lag = ymlChopInt(hp_landing_lag);
-	stats.lk_landing_lag = ymlChopInt(lk_landing_lag);
-	stats.mk_landing_lag = ymlChopInt(mk_landing_lag);
-	stats.hk_landing_lag = ymlChopInt(hk_landing_lag);
-	stats.health = ymlChopInt(health);
-	stats.has_airdash = (bool)ymlChopInt(has_airdash);
-	stats.meter_gain_on_parry = ymlChopFloat(meter_gain_on_parry);
+	int i = 0;
+	string stat;
+	while (stats_table >> stat) {
+		param_table[i].stat = stat;
+		stats_table >> param_table[i].type;
+		switch (param_table[i].type) {
+			case(PARAM_TYPE_INT): {
+				stats_table >> param_table[i].value_i;
+			} break;
+			case(PARAM_TYPE_FLOAT): {
+				stats_table >> param_table[i].value_f;
+			} break;
+			case(PARAM_TYPE_STRING): {
+				stats_table >> param_table[i].value_s;
+			} break;
+			case (PARAM_TYPE_BOOL): {
+				stats_table >> param_table[i].value_b;
+			} break;
+			default: {
+				stats_table >> param_table[i].value_i;
+			} break;
+		}
+		i++;
+	}
 
 	stats_table.close();
 }
@@ -271,6 +239,76 @@ void FighterInstance::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_KNOCKDOWN] = &FighterInstance::status_knockdown;
 	pEnter_status[CHARA_STATUS_KNOCKDOWN] = &FighterInstance::enter_status_knockdown;
 	pExit_status[CHARA_STATUS_KNOCKDOWN] = &FighterInstance::exit_status_knockdown;
+}
+
+//Params
+
+int FighterInstance::get_param_int(string param, Param param_table[]) {
+	if (!param_table) {
+		param_table = this->param_table;
+	}
+	for (int i = 0; i < PARAM_TABLE_LENGTH; i++) {
+		if (param_table[i].type == -1) {
+			cout << "Param " << param << " not found" << endl;
+			break;
+		}
+		else if (param_table[i].stat == param) {
+			return param_table[i].value_i;
+		}
+	}
+
+	return 0;
+}
+
+float FighterInstance::get_param_float(string param, Param param_table[]) {
+	if (!param_table) {
+		param_table = this->param_table;
+	}
+	for (int i = 0; i < PARAM_TABLE_LENGTH; i++) {
+		if (param_table[i].type == -1) {
+			cout << "Param " << param << " not found" << endl;
+			break;
+		}
+		else if (param_table[i].stat == param) {
+			return param_table[i].value_f;
+		}
+	}
+
+	return 0.0;
+}
+
+string FighterInstance::get_param_string(string param, Param param_table[]) {
+	if (!param_table) {
+		param_table = this->param_table;
+	}
+	for (int i = 0; i < PARAM_TABLE_LENGTH; i++) {
+		if (param_table[i].type == -1) {
+			cout << "Param " << param << " not found" << endl;
+			break;
+		}
+		else if (param_table[i].stat == param) {
+			return param_table[i].value_s;
+		}
+	}
+
+	return "";
+}
+
+bool FighterInstance::get_param_bool(string param, Param param_table[]) {
+	if (!param_table) {
+		param_table = this->param_table;
+	}
+	for (int i = 0; i < PARAM_TABLE_LENGTH; i++) {
+		if (param_table[i].type == -1) {
+			cout << "Param " << param << " not found" << endl;
+			break;
+		}
+		else if (param_table[i].stat == param) {
+			return param_table[i].value_b;
+		}
+	}
+
+	return false;
 }
 
 //Move Scripting
@@ -582,14 +620,22 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			else if (chara_int[CHARA_INT_236_STEP] == 3) {
 				input_check = true;
 			}
+			if (input_check) {
+				chara_int[CHARA_INT_236_STEP] = 0;
+				chara_int[CHARA_INT_236_TIMER] = 0;
+			}
 		}
 		else if (special_kind == SPECIAL_KIND_214) {
 			if (chara_int[CHARA_INT_214_STEP] == 2 && get_stick_dir() == 4) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
 			}
-			else  if (chara_int[CHARA_INT_214_STEP] == 3) {
+			else if (chara_int[CHARA_INT_214_STEP] == 3) {
 				input_check = true;
+			}
+			if (input_check) {
+				chara_int[CHARA_INT_214_STEP] = 0;
+				chara_int[CHARA_INT_214_TIMER] = 0;
 			}
 		}
 		else if (special_kind == SPECIAL_KIND_623) {
@@ -600,7 +646,10 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			else if (chara_int[CHARA_INT_623_STEP] == 3) {
 				input_check = true;
 			}
-			input_check = chara_int[CHARA_INT_623_STEP] == 3;
+			if (input_check) {
+				chara_int[CHARA_INT_623_STEP] = 0;
+				chara_int[CHARA_INT_623_TIMER] = 0;
+			}
 		}
 		else if (special_kind == SPECIAL_KIND_41236) {
 			if (chara_int[CHARA_INT_41236_STEP] == 4 && get_stick_dir() == 6) {
@@ -609,6 +658,10 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			}
 			else if (chara_int[CHARA_INT_41236_STEP] == 5) {
 				input_check = true;
+			}
+			if (input_check) {
+				chara_int[CHARA_INT_41236_STEP] = 0;
+				chara_int[CHARA_INT_41236_TIMER] = 0;
 			}
 		}
 		else if (special_kind == SPECIAL_KIND_63214) {
@@ -619,6 +672,10 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			else if (chara_int[CHARA_INT_63214_STEP] == 5) {
 				input_check = true;
 			}
+			if (input_check) {
+				chara_int[CHARA_INT_63214_STEP] = 0;
+				chara_int[CHARA_INT_63214_TIMER] = 0;
+			}
 		}
 		else if (special_kind == SPECIAL_KIND_236236) {
 			if (chara_int[CHARA_INT_236236_STEP] == 5 && get_stick_dir() == 6) {
@@ -627,6 +684,10 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			}
 			else if (chara_int[CHARA_INT_236236_STEP] == 6) {
 				input_check = true;
+			}
+			if (input_check) {
+				chara_int[CHARA_INT_236236_STEP] = 0;
+				chara_int[CHARA_INT_236236_TIMER] = 0;
 			}
 		}
 		else if (special_kind == SPECIAL_KIND_214214) {
@@ -637,17 +698,29 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			else if (chara_int[CHARA_INT_214214_STEP] == 6) {
 				input_check = true;
 			}
+			if (input_check) {
+				chara_int[CHARA_INT_214_STEP] = 0;
+				chara_int[CHARA_INT_214_TIMER] = 0;
+			}
 		}
 		else if (special_kind == SPECIAL_KIND_CHARGE_DOWN) {
 			input_check = (chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 8);
 			if (input_check && get_flick_dir() == 8) {
 				button_check == SPECIAL_INPUT_JUST;
 			}
+			if (input_check) {
+				chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
+				chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 0;
+			}
 		}
 		else if (special_kind == SPECIAL_KIND_CHARGE_BACK) {
 			input_check = (chara_int[CHARA_INT_BACK_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 6);
 			if (input_check && get_flick_dir() == 6) {
 				button_check == SPECIAL_INPUT_JUST;
+			}
+			if (input_check) {
+				chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
+				chara_int[CHARA_INT_BACK_CHARGE_TIMER] = 0;
 			}
 		}
 	}
@@ -876,7 +949,7 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 	excute_count = 0;
 	last_excute_frame = 0;
 	int anim_to_use = -1;
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < ANIM_TABLE_LENGTH; i++)
 	{
 		if (animation_table[i].name == animation_name)
 		{
@@ -920,8 +993,7 @@ bool FighterInstance::canStep()
 			last_frame_ms = SDL_GetTicks();
 			return true;
 		}
-		else
-		{
+		else {
 			return false;
 		}
 	}
@@ -958,6 +1030,7 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		clear_hurtbox_all();
 		kara_enabled = false;
 		chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
+		chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
 		if (call_end_status)
 		{
@@ -979,7 +1052,7 @@ void FighterInstance::playoutStatus() {
 }
 
 bool FighterInstance::common_ground_status_act() {
-	if (is_actionable()) {
+	if (is_actionable() && !specific_ground_status_act()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
 			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
 				return (change_status(CHARA_STATUS_GRAB));
@@ -1092,12 +1165,12 @@ bool FighterInstance::common_air_status_act() {
 			}
 			return change_status(CHARA_STATUS_ATTACK_AIR, false, false);
 		}
-		if (chara_int[CHARA_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6 && stats.has_airdash && !chara_flag[CHARA_FLAG_USED_AIRDASH]) {
+		if (chara_int[CHARA_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6 && get_param_bool("has_airdash") && !chara_flag[CHARA_FLAG_USED_AIRDASH]) {
 			chara_int[CHARA_INT_DASH_AIR_DIR] = 1;
 			chara_flag[CHARA_FLAG_USED_AIRDASH] = true;
 			return change_status(CHARA_STATUS_DASH_AIR);
 		}
-		if (chara_int[CHARA_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4 && stats.has_airdash && !chara_flag[CHARA_FLAG_USED_AIRDASH]) {
+		if (chara_int[CHARA_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4 && get_param_bool("has_airdash") && !chara_flag[CHARA_FLAG_USED_AIRDASH]) {
 			chara_int[CHARA_INT_DASH_AIR_DIR] = 2;
 			chara_flag[CHARA_FLAG_USED_AIRDASH] = true;
 			return change_status(CHARA_STATUS_DASH_AIR);
@@ -1108,8 +1181,8 @@ bool FighterInstance::common_air_status_act() {
 
 bool FighterInstance::common_air_status_general()
 {
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
 	if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
 		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
@@ -1197,7 +1270,7 @@ void FighterInstance::status_walkf()
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	add_pos(stats.walk_f_speed * facing_dir, 0);
+	add_pos(get_param_float("walk_f_speed") * facing_dir, 0);
 }
 
 void FighterInstance::enter_status_walkf()
@@ -1236,7 +1309,7 @@ void FighterInstance::status_walkb()
 		{
 			change_anim("walk_b");
 		}
-		add_pos(stats.walk_f_speed * facing_dir * -1, 0);
+		add_pos(get_param_float("walk_f_speed") * facing_dir * -1, 0);
 	}
 }
 
@@ -1263,25 +1336,25 @@ void FighterInstance::status_dash()
 	{
 		return;
 	}
-	int min_frame = stats.dash_f_accel_frame;
-	int max_frame = min_frame + stats.dash_f_maintain_speed_frame;
+	int min_frame = get_param_int("dash_f_accel_frame");
+	int max_frame = min_frame + get_param_int("dash_f_maintain_speed_frame");
 
 	if (frame >= min_frame && frame < max_frame)
 	{
-		add_pos(stats.dash_f_speed * facing_dir, 0);
+		add_pos(get_param_float("dash_f_speed") * facing_dir, 0);
 	}
 	else if (frame < max_frame + 2)
 	{
-		add_pos((stats.walk_f_speed + stats.dash_f_speed) * facing_dir / 2, 0);
+		add_pos((get_param_float("walk_f_speed") + get_param_float("dash_f_speed")) * facing_dir / 2, 0);
 	}
 
-	if (frame >= stats.dash_f_cancel_frame)
+	if (frame >= get_param_int("dash_f_cancel_frame"))
 	{
 		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
 		{
 			if (get_flick_dir() == 4)
 			{
-				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE)
+				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
 				{
 					chara_flag[CHARA_FLAG_DASH_CANCEL] = true;
 				}
@@ -1289,7 +1362,7 @@ void FighterInstance::status_dash()
 				return;
 			}
 		}
-		else if (stats.dash_cancel_kind == DASH_CANCEL_KIND_FOLLOWUP)
+		else if (get_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP)
 		{
 		}
 	}
@@ -1319,25 +1392,25 @@ void FighterInstance::status_dashb()
 	{
 		return;
 	}
-	int min_frame = stats.dash_b_accel_frame;
-	int max_frame = min_frame + stats.dash_b_maintain_speed_frame;
+	int min_frame = get_param_int("dash_b_accel_frame");
+	int max_frame = min_frame + get_param_int("dash_b_maintain_speed_frame");
 
 	if (frame >= min_frame && frame < max_frame)
 	{
-		add_pos(stats.dash_b_speed * facing_dir * -1, 0);
+		add_pos(get_param_float("dash_b_speed") * facing_dir * -1, 0);
 	}
 	else if (frame < max_frame + 2)
 	{
-		add_pos((stats.walk_b_speed + stats.dash_b_speed) * facing_dir / -2, 0);
+		add_pos((get_param_float("walk_b_speed") + get_param_float("dash_b_speed")) * facing_dir / -2, 0);
 	}
 
-	if (frame >= stats.dash_f_cancel_frame)
+	if (frame >= get_param_int("dash_f_cancel_frame"))
 	{
 		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
 		{
 			if (get_flick_dir() == 6)
 			{
-				if (stats.dash_cancel_kind != DASH_CANCEL_KIND_INDEFINITE)
+				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
 				{
 					chara_flag[CHARA_FLAG_DASH_CANCEL] = true;
 				}
@@ -1346,7 +1419,7 @@ void FighterInstance::status_dashb()
 			}
 		}
 	}
-	else if (stats.dash_cancel_kind == DASH_CANCEL_KIND_FOLLOWUP)
+	else if (get_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP)
 	{
 	}
 }
@@ -1376,24 +1449,24 @@ void FighterInstance::status_dash_air() {
 	if (is_actionable() && common_air_status_act()) {
 		return;
 	}
-	int min_frame = stats.dash_f_accel_frame;
-	int max_frame = min_frame + stats.dash_f_maintain_speed_frame;
+	int min_frame = get_param_int("dash_f_accel_frame");
+	int max_frame = min_frame + get_param_int("dash_f_maintain_speed_frame");
 
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
 	if (frame < max_frame) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0.0;
 	}
 	else {
 		if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
-			if (chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir > stats.jump_x_speed) {
-				chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = clampf(stats.jump_x_speed, chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * 0.95, chara_float[CHARA_FLOAT_CURRENT_X_SPEED]);
+			if (chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir > get_param_float("jump_x_speed")) {
+				chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = clampf(get_param_float("jump_x_speed"), chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * 0.95, chara_float[CHARA_FLOAT_CURRENT_X_SPEED]);
 			}
 		}
 		else if (chara_int[CHARA_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
-			if (chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir > stats.jump_x_speed * -1.0) {
-				chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = clampf(stats.jump_x_speed, chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * 0.95, chara_float[CHARA_FLOAT_CURRENT_X_SPEED]);
+			if (chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir > get_param_float("jump_x_speed") * -1.0) {
+				chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = clampf(get_param_float("jump_x_speed"), chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * 0.95, chara_float[CHARA_FLOAT_CURRENT_X_SPEED]);
 			}
 		}
 	}
@@ -1407,12 +1480,12 @@ void FighterInstance::status_dash_air() {
 
 void FighterInstance::enter_status_dash_air() {
 	if (chara_int[CHARA_INT_DASH_AIR_DIR] == 1) {
-		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = stats.dash_f_speed;
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("dash_f_speed");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
 		change_anim("dash_f", 30);
 	}
 	if (chara_int[CHARA_INT_DASH_AIR_DIR] == 2) {
-		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = stats.dash_b_speed;
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("dash_b_speed");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
 		change_anim("dash_b", 30);
 	}
@@ -1552,13 +1625,13 @@ void FighterInstance::enter_status_jump()
 	}
 	if (chara_flag[CHARA_FLAG_SHORT_HOP])
 	{
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed_s;
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("jump_y_init_speed_s");
 	}
 	else
 	{
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = stats.jump_y_init_speed;
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("jump_y_init_speed");
 	}
-	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = stats.jump_x_speed;
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("jump_x_speed");
 	common_air_status_act();
 }
 
@@ -1865,9 +1938,9 @@ void FighterInstance::status_hitstun_air()
 		change_status(CHARA_STATUS_FALL, false);
 		return;
 	}
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0)
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
 	{
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("stats.gravity");
 	}
 	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -1907,8 +1980,8 @@ void FighterInstance::status_blockstun() {
 			return;
 		}
 		if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
-			if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > stats.max_fall_speed * -1.0) {
-				chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= stats.gravity;
+			if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
+				chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 			}
 			add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.5, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 		}

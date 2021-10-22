@@ -16,23 +16,39 @@ public:
 
 class Roy : public FighterInstance {
 public:
+	//Setup
+
 	virtual void chara_id();
+	Roy();
+	Roy(SDL_Renderer* renderer, int id);
+	void load_roy_params();
+	void set_current_move_script(string anim_name);
+	void script(string name, function<void()> move_script);
+	RoyScript roy_scripts[256];
+	void loadRoyStatusFunctions();
+	void loadRoyACMD();
+
+	//Stats
 
 	int roy_int[CHARA_ROY_INT_MAX];
 	float roy_float[CHARA_ROY_FLOAT_MAX];
 	bool roy_flag[CHARA_ROY_FLAG_MAX];
+	Param roy_table[PARAM_TABLE_LENGTH];
 
-	void loadRoyACMD();
-	void loadRoyStatusFunctions();
-	void set_current_move_script(string anim_name);
-	void script(string name, function<void()> move_script);
+	bool specific_ground_status_act() override;
 
-	RoyScript roy_scripts[256];
-
-	Roy();
-	Roy(SDL_Renderer *renderer, int id);
+	//Statuses
 
 	void roy_status_fireball_start() override;
 	void roy_enter_status_fireball_start() override;
 	void roy_exit_status_fireball_start() override;
+	void roy_status_uppercut_start() override;
+	void roy_enter_status_uppercut_start() override;
+	void roy_exit_status_uppercut_start() override;
+	void roy_status_uppercut() override;
+	void roy_enter_status_uppercut() override;
+	void roy_exit_status_uppercut() override;
+	void roy_status_uppercut_fall() override;
+	void roy_enter_status_uppercut_fall() override;
+	void roy_exit_status_uppercut_fall() override;
 };

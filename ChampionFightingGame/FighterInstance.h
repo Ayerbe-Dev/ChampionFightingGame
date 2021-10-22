@@ -29,7 +29,7 @@ public:
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
 	
 	Animation* anim_kind;
-	Animation animation_table[256];
+	Animation animation_table[ANIM_TABLE_LENGTH];
 	int frame;
 	int render_frame;
 	int last_excute_frame;
@@ -41,7 +41,7 @@ public:
 	
 	int prev_stick_dir;
 	
-	StatsTable stats;
+	Param param_table[PARAM_TABLE_LENGTH];
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_flag[CHARA_FLAG_MAX];
@@ -71,12 +71,22 @@ public:
 	FighterInstance();
 	FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info);
 
+	//Child Class Entry Point
+	virtual bool specific_ground_status_act() { return false; };
+
 	//Setup
 
 	void superInit(int id, SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void loadStatusFunctions();
+
+	//Read params
+
+	int get_param_int(string param, Param param_table[] = {});
+	float get_param_float(string param, Param param_table[] = {});
+	string get_param_string(string param, Param param_table[] = {});
+	bool get_param_bool(string param, Param param_table[] = {});
 
 	//Definitely not ACMD
 
@@ -257,4 +267,23 @@ public:
 	virtual void roy_status_fireball_start() {};
 	virtual void roy_enter_status_fireball_start() {};
 	virtual void roy_exit_status_fireball_start() {};
+	virtual void roy_status_uppercut_start() {};
+	virtual void roy_enter_status_uppercut_start() {};
+	virtual void roy_exit_status_uppercut_start() {};
+	virtual void roy_status_uppercut() {};
+	virtual void roy_enter_status_uppercut() {};
+	virtual void roy_exit_status_uppercut() {};
+	virtual void roy_status_uppercut_fall() {};
+	virtual void roy_enter_status_uppercut_fall() {};
+	virtual void roy_exit_status_uppercut_fall() {};
+
+	virtual void eric_status_uppercut_start() {};
+	virtual void eric_enter_status_uppercut_start() {};
+	virtual void eric_exit_status_uppercut_start() {};
+	virtual void eric_status_uppercut() {};
+	virtual void eric_enter_uppercut() {};
+	virtual void eric_exit_uppercut() {};
+	virtual void eric_status_uppercut_fall() {};
+	virtual void eric_enter_status_uppercut_fall() {};
+	virtual void eric_exit_status_uppercut_fall() {};
 };

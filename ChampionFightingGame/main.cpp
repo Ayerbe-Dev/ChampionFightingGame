@@ -19,8 +19,6 @@ int error_render;
 
 Uint32 tick;
 Uint32 tok;
-u32 frame_advance_entry_ms;
-u32 frame_advance_ms;
 bool debug = false;
 
 int main() {

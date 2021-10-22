@@ -17,8 +17,6 @@
 #include "UI.h"
 #include "Menu.h"
 extern bool debug;
-extern u32 frame_advance_ms;
-extern u32 frame_advance_entry_ms;
 extern u32 tick;
 extern u32 tok;
 extern int error_render;
@@ -51,8 +49,6 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	fighter_instance[1] = p2->get_fighter();
 
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
-
-	//I shit you not, all 4 of these need to be separate loops in order to stop things from breaking
 
 	for (int i = 0; i < 2; i++) {
 		fighter_instance[i]->player_info = &player_info[i];
@@ -142,10 +138,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			}
 			if (!debug) {
 				tickOnce(fighter_instance[i], pRenderer);
-				frame_advance_entry_ms = SDL_GetTicks();
 			}
 			else if (i == 0) {
-				frame_advance_ms = SDL_GetTicks() - frame_advance_entry_ms;
 				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
 					debugger.target = 0;
 				}
@@ -157,7 +151,6 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 					(&player_info[1])->update_buttons(keyboard_state);
 					tickOnce(fighter_instance[0], pRenderer);
 					tickOnce(fighter_instance[1], pRenderer);
-					frame_advance_entry_ms = SDL_GetTicks();
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;

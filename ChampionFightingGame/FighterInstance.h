@@ -30,12 +30,14 @@ public:
 	
 	Animation* anim_kind;
 	Animation animation_table[ANIM_TABLE_LENGTH];
+
 	int frame;
 	int render_frame;
+	int ticks;
+	int max_ticks;
 	int last_excute_frame;
 	int excute_count;
-	u32 hold_ms;
-	u32 last_frame_ms;
+
 	bool is_anim_end{ false };
 	bool kara_enabled{ false };
 	
@@ -154,7 +156,7 @@ public:
 
 	//Animation
 	
-	void change_anim(string animation_name, int frame_rate = 60, int entry_frame = 0);
+	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
 	void startAnimation(Animation* animation);
 	bool canStep();
 	void stepAnimation();
@@ -267,23 +269,23 @@ public:
 	virtual void roy_status_fireball_start() {};
 	virtual void roy_enter_status_fireball_start() {};
 	virtual void roy_exit_status_fireball_start() {};
-	virtual void roy_status_uppercut_start() {};
-	virtual void roy_enter_status_uppercut_start() {};
-	virtual void roy_exit_status_uppercut_start() {};
-	virtual void roy_status_uppercut() {};
-	virtual void roy_enter_status_uppercut() {};
-	virtual void roy_exit_status_uppercut() {};
-	virtual void roy_status_uppercut_fall() {};
-	virtual void roy_enter_status_uppercut_fall() {};
-	virtual void roy_exit_status_uppercut_fall() {};
+	virtual void roy_status_special_uppercut_start() {};
+	virtual void roy_enter_status_special_uppercut_start() {};
+	virtual void roy_exit_status_special_uppercut_start() {};
+	virtual void roy_status_special_uppercut() {};
+	virtual void roy_enter_status_special_uppercut() {};
+	virtual void roy_exit_status_special_uppercut() {};
+	virtual void roy_status_special_uppercut_fall() {};
+	virtual void roy_enter_status_special_uppercut_fall() {};
+	virtual void roy_exit_status_special_uppercut_fall() {};
 
-	virtual void eric_status_uppercut_start() {};
-	virtual void eric_enter_status_uppercut_start() {};
-	virtual void eric_exit_status_uppercut_start() {};
-	virtual void eric_status_uppercut() {};
+	virtual void eric_status_special_uppercut_start() {};
+	virtual void eric_enter_status_special_uppercut_start() {};
+	virtual void eric_exit_status_special_uppercut_start() {};
+	virtual void eric_status_special_uppercut() {};
 	virtual void eric_enter_uppercut() {};
 	virtual void eric_exit_uppercut() {};
-	virtual void eric_status_uppercut_fall() {};
-	virtual void eric_enter_status_uppercut_fall() {};
-	virtual void eric_exit_status_uppercut_fall() {};
+	virtual void eric_status_special_uppercut_fall() {};
+	virtual void eric_enter_status_special_uppercut_fall() {};
+	virtual void eric_exit_status_special_uppercut_fall() {};
 };

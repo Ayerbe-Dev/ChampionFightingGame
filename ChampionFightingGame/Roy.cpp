@@ -91,17 +91,17 @@ void Roy::loadRoyStatusFunctions() {
 	pEnter_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_enter_status_fireball_start;
 	pExit_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_exit_status_fireball_start;
 
-	pStatus[CHARA_ROY_STATUS_UPPERCUT_START] = &FighterInstance::roy_status_uppercut_start;
-	pEnter_status[CHARA_ROY_STATUS_UPPERCUT_START] = &FighterInstance::roy_enter_status_uppercut_start;
-	pExit_status[CHARA_ROY_STATUS_UPPERCUT_START] = &FighterInstance::roy_exit_status_uppercut_start;
+	pStatus[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::roy_status_special_uppercut_start;
+	pEnter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::roy_enter_status_special_uppercut_start;
+	pExit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::roy_exit_status_special_uppercut_start;
 
-	pStatus[CHARA_ROY_STATUS_UPPERCUT] = &FighterInstance::roy_status_uppercut;
-	pEnter_status[CHARA_ROY_STATUS_UPPERCUT] = &FighterInstance::roy_enter_status_uppercut;
-	pExit_status[CHARA_ROY_STATUS_UPPERCUT] = &FighterInstance::roy_exit_status_uppercut;
+	pStatus[CHARA_ROY_STATUS_SPECIAL_UPPERCUT] = &FighterInstance::roy_status_special_uppercut;
+	pEnter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT] = &FighterInstance::roy_enter_status_special_uppercut;
+	pExit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT] = &FighterInstance::roy_exit_status_special_uppercut;
 
-	pStatus[CHARA_ROY_STATUS_UPPERCUT_FALL] = &FighterInstance::roy_status_uppercut_fall;
-	pEnter_status[CHARA_ROY_STATUS_UPPERCUT_FALL] = &FighterInstance::roy_enter_status_uppercut_fall;
-	pExit_status[CHARA_ROY_STATUS_UPPERCUT_FALL] = &FighterInstance::roy_exit_status_uppercut_fall;
+	pStatus[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_status_special_uppercut_fall;
+	pEnter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_enter_status_special_uppercut_fall;
+	pExit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_exit_status_special_uppercut_fall;
 }
 
 void Roy::loadRoyACMD() {
@@ -232,15 +232,15 @@ void Roy::loadRoyACMD() {
 bool Roy::specific_ground_status_act() {
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status(CHARA_ROY_STATUS_UPPERCUT_START);
+		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status(CHARA_ROY_STATUS_UPPERCUT_START);
+		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status(CHARA_ROY_STATUS_UPPERCUT_START);
+		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
 
 	return false;
@@ -258,48 +258,71 @@ void Roy::roy_exit_status_fireball_start() {
 
 }
 
-void Roy::roy_status_uppercut_start() {
-	if (frame >= get_param_int("uppercut_transition_frame", roy_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
-		change_status(CHARA_ROY_STATUS_UPPERCUT);
+void Roy::roy_status_special_uppercut_start() {
+	if (frame >= get_param_int("special_uppercut_transition_frame", roy_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
-	cout << "Frame: " << frame << endl;
-	cout << "Render Frame: " << render_frame << endl;
 }
 
-void Roy::roy_enter_status_uppercut_start() {
-	change_anim("uppercut_start", 30);
+void Roy::roy_enter_status_special_uppercut_start() {
+	change_anim("special_uppercut_start", 2);
 }
 
-void Roy::roy_exit_status_uppercut_start() {
+void Roy::roy_exit_status_special_uppercut_start() {
 
 }
 
-void Roy::roy_status_uppercut() {
+void Roy::roy_status_special_uppercut() {
 	if (is_anim_end) {
-		change_status(CHARA_ROY_STATUS_UPPERCUT_FALL);
+		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL);
 		return;
+	}
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("special_uppercut_fall_speed", roy_table) * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("special_uppercut_gravity", roy_table);
+	}
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+}
+
+void Roy::roy_enter_status_special_uppercut() {
+	change_anim("special_uppercut");
+	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_l", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_l", roy_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_m", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_m", roy_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_h", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_h", roy_table);
+	}
+	else { //EX HERE
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_ex", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_ex", roy_table);
 	}
 }
 
-void Roy::roy_enter_status_uppercut() {
-	change_anim("uppercut");
-}
-
-void Roy::roy_exit_status_uppercut() {
+void Roy::roy_exit_status_special_uppercut() {
 
 }
 
-void Roy::roy_status_uppercut_fall() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
+void Roy::roy_status_special_uppercut_fall() {
+	if (pos.y < FLOOR_GAMECOORD) {
+		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("special_uppercut_fall_speed", roy_table) * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("special_uppercut_gravity", roy_table);
+	}
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
-void Roy::roy_enter_status_uppercut_fall() {
-	change_anim("uppercut_fall");
+void Roy::roy_enter_status_special_uppercut_fall() {
+	change_anim("special_uppercut_fall");
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0.0;
 }
 
-void Roy::roy_exit_status_uppercut_fall() {
+void Roy::roy_exit_status_special_uppercut_fall() {
 
 }

@@ -15,6 +15,8 @@ public:
 	SDL_Rect slice_rect;
 	float max_health;
 	int scale;
+	int width;
+	int height;
 
 	HealthBar();
 	HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance);

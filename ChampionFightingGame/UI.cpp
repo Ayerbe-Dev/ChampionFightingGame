@@ -8,6 +8,8 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
 	this->max_health = fighter_instance->get_param_float("health");
 	
+	width = 294;
+	height = 31;
 	scale = 2;
 
 	this->health_rect.x = 5;
@@ -19,10 +21,10 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 	this->bar_rect.w = 294*2;
 	this->bar_rect.h = 31*2;
 
-	this->slice_rect.x = bar_rect.x;
-	this->slice_rect.y = bar_rect.y;
-	this->slice_rect.w = bar_rect.w/(scale) - 150;
-	this->slice_rect.h = bar_rect.h/(scale);
+	this->slice_rect.x = 0;
+	this->slice_rect.y = 0;
+	this->slice_rect.w = width - 150;
+	this->slice_rect.h = height;
 }
 
 void HealthBar::RenderAsP1() {

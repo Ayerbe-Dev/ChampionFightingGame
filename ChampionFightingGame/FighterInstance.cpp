@@ -521,8 +521,12 @@ bool FighterInstance::check_button_on(u32 button) {
 	return player_info->check_button_on(button);
 }
 
-bool FighterInstance::check_button_input(u32 button, u32 button_2nd) {
-	return player_info->check_button_input(button, button_2nd);
+bool FighterInstance::check_button_input(u32 button) {
+	return player_info->check_button_input(button);
+}
+
+bool FighterInstance::check_button_input(u32 button[], int length, int min_matches) {
+	return player_info->check_button_input(button, length, min_matches);
 }
 
 bool FighterInstance::check_button_trigger(u32 button) {
@@ -608,8 +612,22 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 	int button_check = 0;
 	bool input_check = false;
 
-	if (check_button_input(button) || check_button_release(button)) {
-		button_check = SPECIAL_INPUT_NORMAL;
+	if (button == BUTTON_MACRO_P) {
+		u32 ex_buttons[3] = { BUTTON_LP, BUTTON_MP, BUTTON_HP };
+		if (check_button_input(ex_buttons, 3, 2)) {
+			button_check = SPECIAL_INPUT_NORMAL;
+		}
+	}
+	else if (button == BUTTON_MACRO_K) {
+		u32 ex_buttons[3] = { BUTTON_LK, BUTTON_MK, BUTTON_HK };
+		if (check_button_input(ex_buttons, 3, 2)) {
+			button_check = SPECIAL_INPUT_NORMAL;
+		}
+	}
+	else {
+		if (check_button_input(button) || check_button_release(button)) {
+			button_check = SPECIAL_INPUT_NORMAL;
+		}
 	}
 	if (button_check) {
 		if (special_kind == SPECIAL_KIND_236) {
@@ -1041,7 +1059,8 @@ void FighterInstance::playoutStatus() {
 bool FighterInstance::common_ground_status_act() {
 	if (is_actionable() && !specific_ground_status_act()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
-			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
+			u32 grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)) {
 				return (change_status(CHARA_STATUS_GRAB));
 			}
 			if (check_button_input(BUTTON_LP)) {
@@ -1060,7 +1079,8 @@ bool FighterInstance::common_ground_status_act() {
 					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
 				}
 			}
-			if (check_button_input(BUTTON_MP, BUTTON_MK)) {
+			u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+			if (check_button_input(parry_buttons, 2)) {
 				return (change_status(CHARA_STATUS_PARRY_START));
 			}
 			if (check_button_input(BUTTON_MP)) {
@@ -1126,7 +1146,8 @@ bool FighterInstance::common_ground_status_act() {
 bool FighterInstance::common_air_status_act() {
 	if (is_actionable()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
-			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
+			u32 grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)) {
 				return (change_status(CHARA_STATUS_GRAB_AIR));
 			}
 			if (check_button_input(BUTTON_LP)) {
@@ -1135,7 +1156,8 @@ bool FighterInstance::common_air_status_act() {
 			if (check_button_input(BUTTON_LK)) {
 				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
 			}
-			if (check_button_input(BUTTON_MP, BUTTON_MK)) {
+			u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+			if (check_button_input(parry_buttons, 2)) {
 				return (change_status(CHARA_STATUS_PARRY_START));
 			}
 			if (check_button_input(BUTTON_MP)) {

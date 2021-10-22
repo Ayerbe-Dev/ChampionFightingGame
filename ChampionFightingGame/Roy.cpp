@@ -230,6 +230,10 @@ void Roy::loadRoyACMD() {
 }
 
 bool Roy::specific_ground_status_act() {
+	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
+	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
@@ -298,7 +302,7 @@ void Roy::roy_enter_status_special_uppercut() {
 		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_h", roy_table);
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_h", roy_table);
 	}
-	else { //EX HERE
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_ex", roy_table);
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_ex", roy_table);
 	}

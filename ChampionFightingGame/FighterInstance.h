@@ -100,7 +100,8 @@ public:
 
 	void processInput();
 	bool check_button_on(u32 button);
-	bool check_button_input(u32 button, u32 button_2nd = BUTTON_MAX);
+	bool check_button_input(u32 button);
+	bool check_button_input(u32 buttons[], int length, int min_matches = 0);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
 	int get_stick_dir();

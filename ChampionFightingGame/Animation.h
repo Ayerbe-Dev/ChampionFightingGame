@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <string>
 #include <functional>
+#include "utils.h"
 struct Animation {
 	SDL_Texture* SPRITESHEET;
 	std::string name;
@@ -18,4 +19,4 @@ SDL_Rect getFrame(int frame, Animation* animation);
 void loadAnimation(Animation* animation, SDL_Renderer* renderer);
 
 
-extern Animation ANIM_TABLE[60][2];
+extern Animation ANIM_TABLE[ANIM_TABLE_LENGTH][2];

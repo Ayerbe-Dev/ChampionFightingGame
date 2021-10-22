@@ -83,6 +83,14 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	tick = SDL_GetTicks();
 
 	while (gaming) {
+		//Frame delay
+
+		tok = SDL_GetTicks() - tick;
+		if (tok < TICK_RATE_MS) {
+			SDL_Delay(TICK_RATE_MS - tok);
+		}
+		tick = SDL_GetTicks();
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
@@ -101,10 +109,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		//Check the players' buttons
-		for (int i = 0; i < 2; i++)
-		{
-			if (!debug)
-			{
+		for (int i = 0; i < 2; i++) {
+			if (!debug) {
 				/*
 				Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
 				directly when the frame is advanced manually
@@ -112,8 +118,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 				(&player_info[i])->update_buttons(keyboard_state);
 			}
 		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++)
-		{
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
 			bool new_button = debugger.button_info[i].button_on;
@@ -130,35 +135,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
-		
-		/*
-		Start by flipping the characters. It's important that both characters get flipped before anything else happens because facing direction will affect the players'
-		inputs
-		*/
 
-		for (int i = 0; i < 2; i++)
-		{
-			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable())
-			{
-				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x)
-				{
-					fighter_instance[i]->facing_dir = -1.0;
-					fighter_instance[i]->facing_right = false;
-					flip = SDL_FLIP_HORIZONTAL;
-				}
-				else
-				{
-					fighter_instance[i]->facing_dir = 1.0;
-					fighter_instance[i]->facing_right = true;
-				}
-			}
-			else if (!fighter_instance[i]->facing_right)
-			{
-				flip = SDL_FLIP_HORIZONTAL;
-			}
-
-			//Debug mode
+		for (int i = 0; i < 2; i++) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
 			}
@@ -193,6 +171,22 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 				}
 			}
 
+			SDL_RendererFlip flip = SDL_FLIP_NONE;
+			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable()) {
+				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x) {
+					fighter_instance[i]->facing_dir = -1.0;
+					fighter_instance[i]->facing_right = false;
+					flip = SDL_FLIP_HORIZONTAL;
+				}
+				else {
+					fighter_instance[i]->facing_dir = 1.0;
+					fighter_instance[i]->facing_right = true;
+				}
+			}
+			else if (!fighter_instance[i]->facing_right) {
+				flip = SDL_FLIP_HORIZONTAL;
+			}
+
 			SDL_Rect render_pos;
 			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
 			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateYAnim();
@@ -203,27 +197,23 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			render_pos.h = height;
 			const double angle = 0;
 			error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
-			if (error_render != 0)
-			{
-				cout << "\n"
-					 << SDL_GetError();
+			if (error_render != 0) {
+				cout << "\n" << SDL_GetError();
 			}
 		}
-		// Main character function and textures have now been set up
-
-		//Only do this part once everything else is done
+		
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes);
 
 		//Camera things
 		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY());
 
-		for (int i = 0; i < 2; i++)
-		{
+		for (int i = 0; i < 2; i++) {
 			player_indicator[i].indicator_rect = SDL_Rect{
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() + 20),
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
 				30,
-				30};
+				30
+			};
 			SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
 		}
 
@@ -233,11 +223,9 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 		SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
 
-		for (int i = 0; i < 2; i++)
-		{
+		for (int i = 0; i < 2; i++) {
 			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (i == 1)
-			{
+			if (i == 1) {
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 			const double angle = 0;
@@ -249,15 +237,6 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		SDL_RenderPresent(pRenderer);
-
-		//Frame delay
-
-		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS)
-		{
-			SDL_Delay(TICK_RATE_MS - tok);
-		}
-		tick = SDL_GetTicks();
 	}
 
 	delete fighter_instance_accessor;
@@ -687,7 +666,7 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
 		{
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
-			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->stats.meter_gain_on_parry;
+			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->get_param_float("meter_gain_on_parry");
 			p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
 			p2_status_post_hit = CHARA_STATUS_PARRY;
 		}
@@ -704,6 +683,7 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			}
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
+			p1->chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
 		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED])
@@ -781,7 +761,7 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
 		{
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
-			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1->stats.meter_gain_on_parry;
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1->get_param_float("meter_gain_on_parry");
 			p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
 			p1_status_post_hit = CHARA_STATUS_PARRY;
 		}
@@ -798,6 +778,7 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			}
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
+			p2->chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
 		else if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED])

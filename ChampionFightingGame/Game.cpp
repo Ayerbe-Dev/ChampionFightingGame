@@ -155,9 +155,9 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 					(&player_info[0])->update_buttons(keyboard_state);
 					(&player_info[1])->update_buttons(keyboard_state);
-					frame_advance_entry_ms = SDL_GetTicks();
 					tickOnce(fighter_instance[0], pRenderer);
 					tickOnce(fighter_instance[1], pRenderer);
+					frame_advance_entry_ms = SDL_GetTicks();
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;

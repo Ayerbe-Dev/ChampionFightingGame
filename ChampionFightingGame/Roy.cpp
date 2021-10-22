@@ -263,6 +263,8 @@ void Roy::roy_status_uppercut_start() {
 		change_status(CHARA_ROY_STATUS_UPPERCUT);
 		return;
 	}
+	cout << "Frame: " << frame << endl;
+	cout << "Render Frame: " << render_frame << endl;
 }
 
 void Roy::roy_enter_status_uppercut_start() {

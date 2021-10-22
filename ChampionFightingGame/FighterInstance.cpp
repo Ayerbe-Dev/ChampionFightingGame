@@ -944,15 +944,12 @@ bool FighterInstance::can_kara()
 
 //Animations
 
-void FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame)
-{
+void FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
 	last_excute_frame = 0;
 	int anim_to_use = -1;
-	for (int i = 0; i < ANIM_TABLE_LENGTH; i++)
-	{
-		if (animation_table[i].name == animation_name)
-		{
+	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
+		if (animation_table[i].name == animation_name) {
 			render_frame = entry_frame;
 			hold_ms = (1000 / frame_rate);
 
@@ -979,17 +976,20 @@ void FighterInstance::startAnimation(Animation *animation)
 	frame_rect = getFrame(frame, anim_kind);
 }
 
-bool FighterInstance::canStep()
-{
-	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0)
-	{
+bool FighterInstance::canStep() {
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		frame++;
 		u32 delta = SDL_GetTicks() - last_frame_ms;
-
+		if (status_kind == CHARA_ROY_STATUS_UPPERCUT_START) {
+			cout << "Delta: " << delta << endl;
+			cout << "Frame Advance MS: " << frame_advance_ms << endl;
+			cout << "Last MS: " << last_frame_ms << endl;
+		}
 		if (debug) {
 			delta -= frame_advance_ms;
 		}
-		if (delta > hold_ms) {
+
+		if (delta >= hold_ms) {
 			last_frame_ms = SDL_GetTicks();
 			return true;
 		}
@@ -997,23 +997,19 @@ bool FighterInstance::canStep()
 			return false;
 		}
 	}
-	else
-	{
+	else {
 		return false;
 	}
 }
 
-void FighterInstance::stepAnimation()
-{
+void FighterInstance::stepAnimation() {
 	int last_frame = render_frame;
 	frame_rect = getFrame(render_frame, anim_kind);
-	if (render_frame == anim_kind->length)
-	{
+	if (render_frame == anim_kind->length) {
 		render_frame = 0;
 		frame = 0;
 	}
-	else
-	{
+	else {
 		render_frame++;
 	}
 	is_anim_end = last_frame > frame;

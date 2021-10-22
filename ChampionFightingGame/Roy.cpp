@@ -227,6 +227,14 @@ void Roy::loadRoyACMD() {
 			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_WAIT, CHARA_STATUS_KNOCKDOWN_START);
 		}
 	});
+	script("special_uppercut_start", [this]() {
+		if (is_excute_frame(1, 0)) {
+
+		}
+		if (is_excute_frame(2, 5)) {
+			max_ticks = 2;
+		}
+	});
 }
 
 bool Roy::specific_ground_status_act() {
@@ -270,7 +278,7 @@ void Roy::roy_status_special_uppercut_start() {
 }
 
 void Roy::roy_enter_status_special_uppercut_start() {
-	change_anim("special_uppercut_start", 2);
+	change_anim("special_uppercut_start", 1);
 }
 
 void Roy::roy_exit_status_special_uppercut_start() {

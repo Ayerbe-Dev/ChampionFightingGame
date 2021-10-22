@@ -1361,7 +1361,7 @@ void FighterInstance::status_dash()
 	{
 		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
 		{
-			if (get_flick_dir() == 4)
+			if (get_stick_dir() == 4)
 			{
 				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
 				{
@@ -1417,7 +1417,7 @@ void FighterInstance::status_dashb()
 	{
 		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
 		{
-			if (get_flick_dir() == 6)
+			if (get_stick_dir() == 6)
 			{
 				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
 				{

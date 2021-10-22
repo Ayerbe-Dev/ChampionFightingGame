@@ -194,8 +194,15 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 				cout << "\n" << SDL_GetError();
 			}
 		}
-		
+
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes);
+
+		if (debug_mode) {
+			SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+			SDL_RenderDrawRect(pRenderer, debug_rect);
+			SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
+			SDL_RenderFillRect(pRenderer, debug_rect);
+		}
 
 		//Camera things
 		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY());

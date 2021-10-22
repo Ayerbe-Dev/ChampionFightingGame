@@ -7,14 +7,14 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
 	this->max_health = fighter_instance->get_param_float("health");
 	if (fighter_instance->id == 0) {
-		this->health_rect.x = 0;
-		this->health_rect.y = 0;
-		this->health_rect.w = 400;
-		this->health_rect.h = 50;
-		this->bar_rect.x = 0;
-		this->bar_rect.y = 0;
-		this->bar_rect.w = 400;
-		this->bar_rect.h = 50;
+		this->health_rect.x = 5;
+		this->health_rect.y = 10;
+		this->health_rect.w = 294*2;
+		this->health_rect.h = 31*2;
+		this->bar_rect.x = 5;
+		this->bar_rect.y = 10;
+		this->bar_rect.w = 294*2;
+		this->bar_rect.h = 31*2;
 	}
 	else {
 		int width;
@@ -71,3 +71,87 @@ Timer::Timer(SDL_Renderer* renderer, int remaining) {
 	this->timer_rect.w = 92;
 	this->timer_rect.h = 92;
 };
+
+/*
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                  .                                                                                  
+                                                                 }ob                                                                                 
+                                                                 00O                                                                                 
+                                                                ~ZZl                                                                                 
+                                                                t00^                                                                                 
+                                                               .00Q                                                                                  
+                                                               {OZ                                                                                   
+                                                               zZC                                                                                   
+                                                              `OZn                                                                                   
+                                                              jQO`                                                                                   
+                                                              J0U                ___________________                                                                     
+                                                             :0wu               (  So, No Head?     )                        
+                                                             J0m"               (___________________)                       
+                                                            "mwz               /                        
+                                                            +0Q?              /                         
+                                                           ^pO0^     ^;      /                       
+                                                           {hhh.   Zkhaak+                                                                           
+                                                           bakX   nUtJZdhm:                                                                          
+                                                     :    |QUY)!{l^``"i|ruUX'                                                                        
+                                                       .tfZwZbpbbwYx/rXUppzX)^"II                                                                    
+                                                      .OkhbmUumOwpOpqqdkbhabbkopwmhh)                                                                
+                                                     ^vkkkpm|pqOQOdqkhkk*#%%%%#ahbXYo_                                                               
+                                                    'vphbdbpJhbbbbbbbbh#mnLmZOJfqQLXpx                                                               
+                                                  .IxkqbdbwX)ZhhkkkkkkhaqYmmmmzxzcuuw[                                                               
+                                               r^?/ffYvqkkkkkkpudbkkkhaoW*88mrr/tttvZ                                                                
+                                              `)ffffjn)dkkkkkkkJtt/1<";](]0):!<~[nJX?                                                                
+                                                .,[!^ `kkkkkkkhtttttttt///|(rmmwwwXjl                                                                
+                                                       `Zwpddd0ffftttttttttfjJwqqqqw                                                                 
+                                                          l#*%WWWW*q0vffffffrqpqpaW>                                                                 
+                                                           *BBB&&&&&WW&&WWW8%8%8WW&j"                                                                
+                                                          '##CXXLCYYYYQLYYYLd#hpwb#*                                                                 
+                                                           'wmmpkkwmmpkkwmmZ%WM##*].                                                                 
+                                                          0ahmmqppwmmqppwmZq&#h#ob.                                                                  
+                                                         XaoWmmmmmmmmmmmmmOp#Owdoac                                                                  
+                                                        -hoC:mmmmmmmmmmmwwZaMMwC|`                                                                   
+                                                            1qM##########MMM*pmQn                                                                    
+                                                           [wb*MMMMMMMMMMMMkkdqZU)                                                                   
+                                                          1wbkaaMMMMMMMWWpahkbdq0n                                                                   
+                                                         _qbhaaabLrxuUn  thkkbddmY)                                                                  
+                                                        ;mbbkkkk1         |bbdddpOu`                                                                 
+                                                       'mbbbkkk-           Odbbbbwzl                                                                 
+                                                      'Okkkkhh>            +kkkkkbOf                                                                 
+                                                      (hhhhhhI              khhhhhbCl                                                                
+                                                     !Chhhhhku.             lhhhhhkp(.                                                               
+                                                     {bkkkhhhb_              }hhhhhhZ/                                                               
+                                                     lhhhkhhhh:              Chhhhhhhp(                                                              
+                                                      )Xmhha*^              .vdhhhhhhkdt                                                             
+                                                         J###d,             `Qbahhhhhhd!                                                             
+                                                         Ohhhhx               zahhhhk?                                                               
+                                                        <phhhoY                }#M##~                                                                
+                                                       .whhh##h                 o##*                                                                 
+                                                   :/Qb*#####aa+               [Jooh,                                                                
+                                                  _p###*qQ+ '                  tkhhh~                                                                
+                                                    '`'                        tkhhh+                                                                
+                                                                               Cbhhhf                                                                
+                                                                              ?wkoooU                                                                
+                                                                              lqqakqC)                                                               
+                                                                                ]wo*#*hX                                                             
+                                                                                :UYOppm0^                                                            
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+                                                                                                                                                     
+
+*/

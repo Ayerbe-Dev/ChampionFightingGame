@@ -252,16 +252,20 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
 
 		for (int i = 0; i < 2; i++) {
-			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (i == 1) {
-				flip = SDL_FLIP_HORIZONTAL;
-			}
-			const double angle = 0;
+			switch (i){
+				case 0:
+					health_bar[i].RenderAsP1();
+					break;
 
-			health_bar[i].health_rect.w = health_bar[i].bar_rect.w * (fighter_instance[i]->chara_float[CHARA_FLOAT_HEALTH] / health_bar[i].max_health);
-			SDL_RenderCopyEx(pRenderer, health_bar[i].health_texture, nullptr, &(health_bar[i].health_rect), angle, NULL, flip);
-			SDL_RenderCopyEx(pRenderer, health_bar[i].bar_texture, nullptr, &(health_bar[i].bar_rect), angle, NULL, flip);
-			
+				case 1:
+					health_bar[i].RenderAsP2();
+					break;
+
+				default:
+					health_bar[i].RenderAsP1();
+					break;
+			}
+						
 		}
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);

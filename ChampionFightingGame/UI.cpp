@@ -2,33 +2,45 @@
 
 HealthBar::HealthBar() {}
 HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) {
+	this->pRenderer = renderer;
 	this->fighter_instance = fighter_instance;
 	this->bar_texture = loadTexture("resource/ui/game/hp/bar.png", renderer);
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
 	this->max_health = fighter_instance->get_param_float("health");
-	if (fighter_instance->id == 0) {
-		this->health_rect.x = 5;
-		this->health_rect.y = 10;
-		this->health_rect.w = 294*2;
-		this->health_rect.h = 31*2;
-		this->bar_rect.x = 5;
-		this->bar_rect.y = 10;
-		this->bar_rect.w = 294*2;
-		this->bar_rect.h = 31*2;
-	}
-	else {
-		int width;
-		int height;
-		SDL_QueryTexture(this->health_texture, NULL, NULL, &width, &height);
-		this->health_rect.x = WINDOW_WIDTH - width;
-		this->health_rect.y = 0;
-		this->health_rect.w = 400;
-		this->health_rect.h = 50;
-		this->bar_rect.x = WINDOW_WIDTH - width;
-		this->bar_rect.y = 0;
-		this->bar_rect.w = 400;
-		this->bar_rect.h = 50;
-	}
+	
+	width = 294;
+	height = 31;
+	scale = 2;
+
+	this->health_rect.x = 0;
+	this->health_rect.y = 10;  
+	//this->health_rect.w = 294*2; should be defined right before render
+	this->health_rect.h = 31*2;
+	this->bar_rect.x = 0;
+	this->bar_rect.y = 10;
+	this->bar_rect.w = 294*2;
+	this->bar_rect.h = 31*2;
+
+	this->slice_rect.x = 0;
+	this->slice_rect.y = 0;
+	this->slice_rect.w = width - 260;
+	this->slice_rect.h = height;
+}
+
+void HealthBar::RenderAsP1() {
+	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
+	health_rect.w = slice_rect.w * scale;
+	SDL_RenderCopy(this->pRenderer,health_texture,&slice_rect,&health_rect);
+	SDL_RenderCopy(this->pRenderer,bar_texture,nullptr,&bar_rect);
+}
+
+void HealthBar::RenderAsP2() {
+	bar_rect.x = WINDOW_WIDTH - width * scale;
+	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
+	health_rect.x = (WINDOW_WIDTH - width * scale) + (width - slice_rect.w) * scale;
+	health_rect.w = slice_rect.w * scale;
+	SDL_RenderCopyEx(this->pRenderer,health_texture,&slice_rect,&health_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
+	SDL_RenderCopyEx(this->pRenderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
 }
 
 PlayerIndicator::PlayerIndicator() {}

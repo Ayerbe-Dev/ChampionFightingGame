@@ -8,7 +8,9 @@
 
 class ObjectInstance {
 public:
-	int id{ -1 };
+	ObjectInstance();
+
+	int id;
 	int object_type;
 	GameCoordinate pos;
 	GameCoordinate prevpos;

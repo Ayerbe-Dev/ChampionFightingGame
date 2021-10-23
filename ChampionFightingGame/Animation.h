@@ -17,6 +17,3 @@ struct Animation {
 SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer);
 SDL_Rect getFrame(int frame, Animation* animation);
 void loadAnimation(Animation* animation, SDL_Renderer* renderer);
-
-
-extern Animation ANIM_TABLE[ANIM_TABLE_LENGTH][2];

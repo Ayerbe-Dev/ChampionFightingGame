@@ -1,5 +1,9 @@
 #include "ObjectInstance.h"
 
+ObjectInstance::ObjectInstance() {
+	this->id = -1;
+}
+
 void ObjectInstance::set_current_move_script(string anim_name) {}
 
 bool ObjectInstance::is_excute_frame(int excute_count, int frame)

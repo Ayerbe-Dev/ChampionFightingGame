@@ -40,12 +40,11 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	SDL_Texture *pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Rect camera;
 
-	ObjectInstance* object_instance[2];
-
 	//init players
 	FighterInstance *fighter_instance[2];
+	ObjectInstance* object_instance[2];
 
-	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0); 
+	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0);
 	IObject *p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1);
 
 	fighter_instance[0] = p1->get_fighter();
@@ -201,7 +200,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 			//Projectile Renders
 
-/*			for (int o = 0; o < MAX_PROJECTILES; o++) {
+			for (int o = 0; o < MAX_PROJECTILES; o++) {
 				if (fighter_instance[i]->projectile_objects[o]->id != -1) {
 					SDL_RendererFlip flip = SDL_FLIP_NONE;
 					if (fighter_instance[i]->projectile_objects[o]->facing_right) {
@@ -221,8 +220,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 						cout << "\n" << SDL_GetError();
 					}
 				}
-			}*/
-
+			}
 		}
 
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes);
@@ -1088,6 +1086,10 @@ IObject::~IObject()
 	if (projectile_instance)
 	{
 		delete[] projectile_instance;
+		projectile_instance = NULL;
+	}
+	if (object_instance) {
+		delete[] object_instance;
 		projectile_instance = NULL;
 	}
 }

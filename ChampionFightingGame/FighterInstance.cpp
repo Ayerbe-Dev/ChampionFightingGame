@@ -41,6 +41,9 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		this->projectile_objects[i] = new ObjectInstance();
+	}
 	load_anim_list(renderer);
 	load_params();
 	chara_float[CHARA_FLOAT_HEALTH] = get_param_float("health");

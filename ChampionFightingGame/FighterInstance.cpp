@@ -6,7 +6,8 @@ extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
 
-FighterInstance::FighterInstance() {}
+FighterInstance::FighterInstance() {
+}
 
 FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info) {
 	this->player_info = player_info;
@@ -41,9 +42,6 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		this->projectile_objects[i] = new ObjectInstance();
-	}
 	load_anim_list(renderer);
 	load_params();
 	chara_float[CHARA_FLOAT_HEALTH] = get_param_float("health");

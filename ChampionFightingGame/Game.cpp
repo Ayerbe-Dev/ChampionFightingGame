@@ -207,7 +207,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 						flip = SDL_FLIP_HORIZONTAL;
 					}
 					SDL_Rect render_pos;
-					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateXAnim();
+					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateXAnim() * -1;
 					render_pos.y = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateYAnim();
 					int width;
 					int height;
@@ -217,7 +217,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 					const double angle = 0;
 					int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip);
 					if (error_render != 0) {
-						cout << "\n" << SDL_GetError();
+						cout << SDL_GetError() << endl;
 					}
 				}
 			}

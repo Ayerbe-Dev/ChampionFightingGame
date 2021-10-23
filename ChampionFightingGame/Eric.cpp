@@ -24,6 +24,10 @@ Eric::Eric(SDL_Renderer *renderer, int id) {
 	this->chara_kind = CHARA_KIND_ERIC;
 	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png", renderer);
 
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		projectile_objects[i] = new ObjectInstance();
+	}
+
 	IObject* eric_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id);
 	this->projectile_objects[0] = eric_fireball->get_projectile();
 }

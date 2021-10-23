@@ -23,9 +23,12 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 	this->chara_kind = CHARA_KIND_ROY;
 	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png", renderer);
 
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		projectile_objects[i] = new ObjectInstance();
+	}
+
 	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id);
 	this->projectile_objects[0] = roy_fireball->get_projectile();
-	cout << "Fireball sprite: " << projectile_objects[0]->anim_kind->name << endl; //this works
 }
 
 RoyFireball::RoyFireball(SDL_Renderer* renderer, int id) {
@@ -178,12 +181,9 @@ void Roy::loadRoyACMD() {
 		if (is_excute_frame(1, 0)) {
 			init_projectile(0, pos);
 		}
-		if (is_anim_end) {
-			destroy_projectile(0);
-		}
 	});
 	script("stand_mk", [this]() {
-		cout << "Fireball sprite: " << projectile_objects[0]->anim_kind->name << endl; //this doesn't
+
 	});
 	script("stand_hk", [this]() {
 		if (is_excute_frame(1, 0)) {

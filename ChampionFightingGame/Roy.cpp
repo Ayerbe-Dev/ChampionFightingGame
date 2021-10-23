@@ -1,4 +1,5 @@
 #include "Roy.h"
+#include "Game.h"
 
 RoyScript::RoyScript() {};
 
@@ -21,12 +22,16 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ROY;
 	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png", renderer);
+
+	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id);
+	this->projectile_objects[0] = roy_fireball->get_projectile();
 }
 
 RoyFireball::RoyFireball(SDL_Renderer* renderer, int id) {
 	resource_dir = "resource/projectile/roy_fireball";
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png", renderer);
+	this->fighter_instance_accessor = fighter_instance_accessor;
 }
 
 void Roy::chara_id() {
@@ -113,6 +118,13 @@ void Roy::loadRoyStatusFunctions() {
 void Roy::loadRoyACMD() {
 	script("default", [this]() {
 		return;
+	});
+	script("wait", [this]() {
+		if (is_excute_frame(1, 0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
 	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(1, 0)) {

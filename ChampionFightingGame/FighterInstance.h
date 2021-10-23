@@ -23,6 +23,7 @@ public:
 	PlayerInfo* player_info;
 	int chara_kind;
 	FighterInstanceAccessor* fighter_instance_accessor;
+	ObjectInstance* projectile_objects[MAX_PROJECTILES];
 
 	bool kara_enabled{ false };
 	
@@ -47,6 +48,10 @@ public:
 
 	//Child Class Entry Point
 	virtual bool specific_ground_status_act() { return false; };
+
+	//Projectiles
+	void init_projectile(int id, GameCoordinate pos);
+	void destroy_projectile(int id);
 
 	//Setup
 

@@ -21,7 +21,6 @@
 extern bool debug;
 extern u32 tick;
 extern u32 tok;
-extern int error_render;
 
 int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	bool gaming = true;
@@ -184,7 +183,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			}
 			else if (!fighter_instance[i]->facing_right) {
 				flip = SDL_FLIP_HORIZONTAL;
-			}
+			}			
 
 			SDL_Rect render_pos;
 			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
@@ -195,10 +194,35 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
 			render_pos.h = height;
 			const double angle = 0;
-			error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
+			int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
+
+			//Projectile Renders
+
+/*			for (int o = 0; o < MAX_PROJECTILES; o++) {
+				if (fighter_instance[i]->projectile_objects[o]->id != -1) {
+					SDL_RendererFlip flip = SDL_FLIP_NONE;
+					if (fighter_instance[i]->projectile_objects[o]->facing_right) {
+						flip = SDL_FLIP_HORIZONTAL;
+					}
+					SDL_Rect render_pos;
+					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateXAnim();
+					render_pos.y = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateYAnim();
+					int width;
+					int height;
+					SDL_QueryTexture(fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
+					render_pos.w = (width / (fighter_instance[i]->projectile_objects[o]->anim_kind->length + 1));
+					render_pos.h = height;
+					const double angle = 0;
+					int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip);
+					if (error_render != 0) {
+						cout << "\n" << SDL_GetError();
+					}
+				}
+			}*/
+
 		}
 
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes);

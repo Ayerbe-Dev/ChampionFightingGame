@@ -8,7 +8,7 @@
 
 class ObjectInstance {
 public:
-	i64 id;
+	int id{ -1 };
 	int object_type;
 	GameCoordinate pos;
 	GameCoordinate prevpos;

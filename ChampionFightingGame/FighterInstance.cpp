@@ -15,6 +15,18 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info
 	superInit(0, renderer);
 }
 
+void FighterInstance::init_projectile(int id, GameCoordinate pos) {
+	projectile_objects[id]->id = this->id;
+	projectile_objects[id]->pos.x = this->pos.x + pos.x * facing_dir;
+	projectile_objects[id]->pos.y = this->pos.y + pos.y;
+	projectile_objects[id]->facing_right = facing_right;
+	projectile_objects[id]->facing_dir = facing_dir;
+}
+
+void FighterInstance::destroy_projectile(int id) {
+	projectile_objects[id]->id = -1;
+}
+
 void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 {
 	this->id = id;
@@ -36,9 +48,6 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait", 2, 0);
 	status_kind = CHARA_STATUS_WAIT;
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
@@ -81,8 +90,7 @@ void FighterInstance::load_params() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
 
-	if (stats_table.fail())
-	{
+	if (stats_table.fail()) {
 		cerr << "Could not open stats table!" << endl;
 		exit(1);
 	}

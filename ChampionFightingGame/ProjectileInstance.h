@@ -9,7 +9,9 @@ public:
 	int projectile_kind;
 	FighterInstanceAccessor* fighter_instance_accessor;
 
-	int chara_int[CHARA_INT_MAX];
-	float chara_float[CHARA_FLOAT_MAX];
-	bool chara_flag[CHARA_FLAG_MAX];
+	int projectile_int[PROJECTILE_INT_MAX];
+	float projectile_float[PROJECTILE_FLOAT_MAX];
+	bool projectile_flag[PROJECTILE_FLAG_MAX];
+
+	void load_anim_list(SDL_Renderer* renderer);
 };

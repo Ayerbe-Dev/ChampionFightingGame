@@ -322,49 +322,6 @@ bool FighterInstance::get_param_bool(string param, Param param_table[]) {
 	P.S. It's misspelled in Smash as well. You can fix it if you want, idrc
 */
 
-void FighterInstance::set_current_move_script(string anim_name) {}
-
-bool FighterInstance::is_excute_frame(int excute_count, int frame)
-{
-	if (this->frame >= frame)
-	{ //If we've reached the statement in question
-		if (this->excute_count >= excute_count)
-		{ //If we've already executed the statement
-			return false;
-		}
-		else
-		{ //If we are at the correct frame and haven't executed the statement yet
-			last_excute_frame = frame;
-			this->excute_count = excute_count;
-			return true;
-		}
-	}
-	else
-	{ //If we still haven't reached the correct frame
-		last_excute_frame = frame;
-		return false;
-	}
-}
-
-bool FighterInstance::is_excute_wait(int excute_count, int frames) {
-	if (frame >= last_excute_frame + frames) { //If it's been enough time since the last non-executed statement
-		if (this->excute_count >= excute_count)
-		{ //If we already executed the statement
-			return false;
-		}
-		else
-		{ //Success
-			last_excute_frame = frame;
-			this->excute_count = excute_count;
-			return true;
-		}
-	}
-	else
-	{ //Still waiting
-		return false;
-	}
-}
-
 //Inputs
 
 void FighterInstance::processInput() {
@@ -743,7 +700,7 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 		}
 	}
 	if (input_check) {
-		return button_check;
+		return button_check && chara_int[CHARA_INT_HITLAG_FRAMES] == 0;
 	}
 	else {
 		return SPECIAL_INPUT_NONE;
@@ -800,7 +757,7 @@ bool FighterInstance::invalid_x(float x) {
 	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
 	float x_distance = std::max(opponent_x, x) - std::min(opponent_x, x);
 
-	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > MAX_PLAYER_DISTANCE;
+	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > CAMERA_MAX_ZOOM_OUT;
 }
 
 bool FighterInstance::invalid_y(float y)
@@ -1675,8 +1632,10 @@ void FighterInstance::exit_status_fall() {
 	chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 }
 
-void FighterInstance::status_attack()
-{
+void FighterInstance::status_attack() {
+	if (specific_status_attack()) {
+		return;
+	}
 	if (is_anim_end)
 	{
 		if (get_stick_dir() < 4)
@@ -1941,7 +1900,7 @@ void FighterInstance::status_hitstun_air()
 	}
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
 	{
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("stats.gravity");
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
 	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }

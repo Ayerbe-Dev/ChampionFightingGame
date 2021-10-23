@@ -24,6 +24,12 @@ Eric::Eric(SDL_Renderer *renderer, int id) {
 	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png", renderer);
 }
 
+EricFireball::EricFireball(SDL_Renderer* renderer, int id) {
+	resource_dir = "resource/projectile/eric_fireball";
+	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
+	this->base_texture = loadTexture("resource/projectile/eric_fireball/sprite/sprite.png", renderer);
+}
+
 void Eric::chara_id() {
 /*
 ▒▒▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒

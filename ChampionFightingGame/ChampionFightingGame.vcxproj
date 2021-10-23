@@ -191,6 +191,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="ObjectInstance.cpp" />
     <ClCompile Include="ParamTable.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -202,6 +203,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="ProjectileInstance.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -244,9 +246,13 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="Leon.fwd.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="ObjectInstance.fwd.h" />
+    <ClInclude Include="ObjectInstance.h" />
     <ClInclude Include="ParamTable.h" />
     <ClInclude Include="FighterInstance.fwd.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="ProjectileInstance.fwd.h" />
+    <ClInclude Include="ProjectileInstance.h" />
     <ClInclude Include="Roy.fwd.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="Stage.h" />

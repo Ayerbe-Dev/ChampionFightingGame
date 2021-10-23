@@ -80,7 +80,8 @@ void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 			button_info[i].button_on = keyboard_state[button_info[i].mapping];
 		}
 		bool new_button = button_info[i].button_on;
-		if (i == BUTTON_MACRO_P) {
+		button_info[i].changed = (old_button != new_button);
+		if (i == BUTTON_MACRO_P && button_info[i].changed) {
 			if (new_button) {
 				for (int i = BUTTON_LP; i < BUTTON_HP + 1; i++) {
 					bool button_already_changed = button_info[i].changed;
@@ -93,7 +94,7 @@ void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 				}
 			}
 		}
-		if (i == BUTTON_MACRO_K) {
+		if (i == BUTTON_MACRO_K && button_info[i].changed) {
 			if (new_button) {
 				for (int i = BUTTON_LK; i < BUTTON_HK + 1; i++) {
 					bool button_already_changed = button_info[i].changed;
@@ -106,7 +107,6 @@ void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 				}
 			}
 		}
-		button_info[i].changed = (old_button != new_button);
 		button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
 		if (button_info[i].changed && button_info[i].button_on && is_valid_buffer_button(i)) {
 			move_to_front(buffer_order, i);

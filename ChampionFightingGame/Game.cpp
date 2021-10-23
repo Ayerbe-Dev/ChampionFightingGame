@@ -2,20 +2,22 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include "FighterInstance.h"
-#include "FighterInstanceAccessor.h"
 #include <SDL.h>
 #include "Animation.h"
 #include "Game.h"
-#include "Roy.fwd.h"
-#include "Roy.h"
-#include "Eric.fwd.h"
-#include "Eric.h"
-#include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
 #include "Menu.h"
+
+#include "ObjectInstance.h"
+#include "FighterInstance.h"
+#include "ProjectileInstance.h"
+#include "FighterInstanceAccessor.h"
+#include "Roy.fwd.h"
+#include "Roy.h"
+#include "Eric.fwd.h"
+#include "Eric.h"
 extern bool debug;
 extern u32 tick;
 extern u32 tok;
@@ -39,14 +41,18 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	SDL_Texture *pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Rect camera;
 
+	ObjectInstance* object_instance[2];
+
 	//init players
 	FighterInstance *fighter_instance[2];
 
-	IFighter *p1 = new IFighter((&player_info[0])->chara_kind, pRenderer, 0); 
-	IFighter *p2 = new IFighter((&player_info[1])->chara_kind, pRenderer, 1);
+	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0); 
+	IObject *p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
+	object_instance[0] = p1->get_object();
+	object_instance[1] = p2->get_object();
 
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
@@ -661,8 +667,6 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 	}
 	if (p2_hit)
 	{
-		p1->stepAnimation();
-		p1->frame++;
 		p1->update_hitbox_connect();
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
 		{
@@ -756,8 +760,6 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 
 	if (p1_hit)
 	{ //P1 got hit
-		p2->stepAnimation();
-		p2->frame++;
 		p2->update_hitbox_connect();
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
 		{
@@ -939,42 +941,6 @@ int get_damage_status(int hit_status, int situation_kind)
 	}
 }
 
-IFighter::IFighter(int chara_id, SDL_Renderer *renderer, int id)
-{
-	switch (chara_id)
-	{
-	case (CHARA_KIND_ROY):
-	{
-		fighter_instance = new Roy(renderer, id);
-	}
-	break;
-	case (CHARA_KIND_ERIC):
-	{
-		fighter_instance = new Eric(renderer, id);
-	}
-	break;
-	case (CHARA_KIND_MAX):
-	{
-		fighter_instance = NULL;
-	}
-	break;
-	}
-}
-
-IFighter::~IFighter()
-{
-	if (fighter_instance)
-	{
-		delete[] fighter_instance;
-		fighter_instance = NULL;
-	}
-}
-
-FighterInstance *IFighter::get_fighter()
-{
-	return fighter_instance;
-}
-
 void decrease_common_fighter_variables(FighterInstance* fighter_instance) {
 	if (fighter_instance->chara_int[CHARA_INT_236_TIMER] != 0) {
 		fighter_instance->chara_int[CHARA_INT_236_TIMER] --;
@@ -1042,4 +1008,74 @@ void decrease_common_fighter_variables(FighterInstance* fighter_instance) {
 	else {
 		fighter_instance->chara_int[CHARA_INT_BACK_CHARGE_FRAMES] = 0;
 	}
+}
+
+IObject::IObject(int object_type, int object_kind, SDL_Renderer *renderer, int id) {
+	if (object_type == OBJECT_TYPE_FIGHTER) {
+		switch (object_kind)
+		{
+		case (CHARA_KIND_ROY):
+		{
+			fighter_instance = new Roy(renderer, id);
+		}
+		break;
+		case (CHARA_KIND_ERIC):
+		{
+			fighter_instance = new Eric(renderer, id);
+		}
+		break;
+		case (CHARA_KIND_MAX):
+		{
+			fighter_instance = NULL;
+		}
+		break;
+		}
+	}
+	else if (object_type == OBJECT_TYPE_PROJECTILE) {
+		switch (object_kind)
+		{
+		case (PROJECTILE_KIND_ROY_FIREBALL):
+		{
+			projectile_instance = new RoyFireball(renderer, id);
+		}
+		break;
+		case (PROJECTILE_KIND_ERIC_FIREBALL):
+		{
+			projectile_instance = new EricFireball(renderer, id);
+		}
+		break;
+		case (PROJECTILE_KIND_MAX):
+		{
+			projectile_instance = NULL;
+		}
+		break;
+		}
+	}
+
+}
+
+IObject::~IObject()
+{
+	if (fighter_instance)
+	{
+		delete[] fighter_instance;
+		fighter_instance = NULL;
+	}
+	if (projectile_instance)
+	{
+		delete[] projectile_instance;
+		projectile_instance = NULL;
+	}
+}
+
+FighterInstance* IObject::get_fighter() {
+	return fighter_instance;
+}
+
+ProjectileInstance* IObject::get_projectile() {
+	return projectile_instance;
+}
+
+ObjectInstance* IObject::get_object() {
+	return object_instance;
 }

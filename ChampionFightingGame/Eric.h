@@ -1,6 +1,10 @@
 #pragma once
 #include "FighterInstance.fwd.h"
 #include "FighterInstance.h"
+#include "ProjectileInstance.fwd.h"
+#include "ProjectileInstance.h"
+#include "ObjectInstance.fwd.h"
+#include "ObjectInstance.h"
 #include "Eric.fwd.h"
 #include "utils.h"
 
@@ -38,4 +42,10 @@ public:
 	Param eric_table[PARAM_TABLE_LENGTH];
 	
 	//Statuses
+};
+
+class EricFireball : public ProjectileInstance {
+public:
+	EricFireball();
+	EricFireball(SDL_Renderer* renderer, int id);
 };

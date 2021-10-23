@@ -1,5 +1,6 @@
 ﻿#include "Eric.h"
 #include "utils.h"
+#include "Game.h"
 
 EricScript::EricScript() {};
 
@@ -22,6 +23,16 @@ Eric::Eric(SDL_Renderer *renderer, int id) {
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ERIC;
 	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png", renderer);
+
+	IObject* eric_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id);
+	this->projectile_objects[0] = eric_fireball->get_projectile();
+}
+
+EricFireball::EricFireball(SDL_Renderer* renderer, int id) {
+	resource_dir = "resource/projectile/eric_fireball";
+	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
+	this->base_texture = loadTexture("resource/projectile/eric_fireball/sprite/sprite.png", renderer);
+	this->fighter_instance_accessor = fighter_instance_accessor;
 }
 
 void Eric::chara_id() {
@@ -156,6 +167,13 @@ void Eric::loadEricStatusFunctions() {
 void Eric::loadEricACMD() {
 	script("default", [this]() {
 		return;
+	});
+	script("wait", [this]() {
+		if (is_excute_frame(1, 0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
 	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(1, 0)) {

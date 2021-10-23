@@ -1,4 +1,5 @@
 #include "Roy.h"
+#include "Game.h"
 
 RoyScript::RoyScript() {};
 
@@ -21,6 +22,16 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ROY;
 	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png", renderer);
+
+	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id);
+	this->projectile_objects[0] = roy_fireball->get_projectile();
+}
+
+RoyFireball::RoyFireball(SDL_Renderer* renderer, int id) {
+	resource_dir = "resource/projectile/roy_fireball";
+	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
+	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png", renderer);
+	this->fighter_instance_accessor = fighter_instance_accessor;
 }
 
 void Roy::chara_id() {
@@ -108,6 +119,13 @@ void Roy::loadRoyACMD() {
 	script("default", [this]() {
 		return;
 	});
+	script("wait", [this]() {
+		if (is_excute_frame(1, 0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(1, 0)) {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -115,7 +133,7 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hitbox(0, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 		}
-		if (is_excute_frame(2, 2)) {
+		if (is_excute_frame(2, 4)) {
 			new_hitbox(1, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 60, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 		}
 		if (is_excute_wait(3, 2)) {
@@ -129,7 +147,7 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hitbox(0, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 12, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_MEDIUM, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 		}
-		if (is_excute_frame(2, 4)) {
+		if (is_excute_frame(2, 6)) {
 			new_hitbox(1, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 60, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 12, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_MEDIUM, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 		}
 		if (is_excute_wait(3, 2)) {
@@ -141,13 +159,13 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hitbox(0, 30, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 10, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
+			new_hitbox(0, 50, 5, 1.2, 1, GameCoordinate{ 5,70 }, GameCoordinate{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 10, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 0.0, 0.0, 0.0, 0.0);
 		}
-		if (is_excute_frame(2, 8)) {
-			new_hitbox(1, 30, 5, 1.2, 1, GameCoordinate{ -5,70 }, GameCoordinate{ 60, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
+		if (is_excute_frame(2, 10)) {
+			new_hitbox(1, 50, 5, 1.2, 1, GameCoordinate{ -5,70 }, GameCoordinate{ 60, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 		}
-		if (is_excute_wait(3, 1)) {
-			new_hitbox(2, 40, 10, 1.2, 1, GameCoordinate{ 50,70 }, GameCoordinate{ 70, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 10, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
+		if (is_excute_wait(3, 2)) {
+			new_hitbox(2, 60, 10, 1.2, 1, GameCoordinate{ 50,70 }, GameCoordinate{ 70, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 10, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 		}
 		if (is_excute_wait(4, 3)) {
 			clear_hitbox_all();
@@ -160,7 +178,23 @@ void Roy::loadRoyACMD() {
 
 	});
 	script("stand_hk", [this]() {
-
+		if (is_excute_frame(1, 0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 0, 90 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(2, 2)) {
+			new_hurtbox(1, GameCoordinate{ -15, 100 }, GameCoordinate{ 25, 60 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(3, 6)) {
+			new_hitbox(1, 50, 10, 1.2, 1, GameCoordinate{ 25,60 }, GameCoordinate{ 60, 120 }, HITBOX_KIND_NORMAL, 20, 40, 10, SITUATION_HIT_GROUND_AIR, 4, 15, 12, 70, true, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 3, 3, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_AERIAL, 20.0, 0.0, 2.0, 1.0);
+		}
+		if (is_excute_frame(4, 8)) {
+			clear_hitbox_all();
+		}
+		if (is_excute_frame(5, 12)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
 	});
 	script("crouch_lp", [this]() {
 
@@ -227,9 +261,21 @@ void Roy::loadRoyACMD() {
 			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_WAIT, CHARA_STATUS_KNOCKDOWN_START);
 		}
 	});
+	script("special_uppercut_start", [this]() {
+		if (is_excute_frame(1, 0)) {
+
+		}
+		if (is_excute_frame(2, 5)) {
+			max_ticks = 2;
+		}
+	});
 }
 
 bool Roy::specific_ground_status_act() {
+	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
+	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
@@ -243,6 +289,15 @@ bool Roy::specific_ground_status_act() {
 		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
 
+	return false;
+}
+
+bool Roy::specific_status_attack() {
+	if (chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+		if (specific_ground_status_act()) {
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -266,7 +321,7 @@ void Roy::roy_status_special_uppercut_start() {
 }
 
 void Roy::roy_enter_status_special_uppercut_start() {
-	change_anim("special_uppercut_start", 2);
+	change_anim("special_uppercut_start", 1);
 }
 
 void Roy::roy_exit_status_special_uppercut_start() {
@@ -298,7 +353,7 @@ void Roy::roy_enter_status_special_uppercut() {
 		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_h", roy_table);
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_h", roy_table);
 	}
-	else { //EX HERE
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_ex", roy_table);
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_ex", roy_table);
 	}

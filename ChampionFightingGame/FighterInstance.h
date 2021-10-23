@@ -1,4 +1,5 @@
 #pragma once
+#include "ObjectInstance.h"
 #include "utils.h"
 #include <string>
 #include "GameCoordinate.h"
@@ -13,32 +14,17 @@
 #include "FighterInstanceAccessor.h"
 #include "PlayerInfo.h"
 
-class FighterInstance{
+class FighterInstance: public ObjectInstance {
 public:
-	i64 id;
-	int chara_kind;
+	//Haha interface go brrrrrrrrrrrr
+
+	virtual void chara_id() = 0;
 
 	PlayerInfo* player_info;
-	GameCoordinate pos;
-	GameCoordinate prevpos;
-	bool facing_right{ true };
-	float facing_dir{ 1.0 };
-	FighterInstanceAccessor *fighter_instance_accessor;
+	int chara_kind;
+	FighterInstanceAccessor* fighter_instance_accessor;
+	ObjectInstance* projectile_objects[MAX_PROJECTILES];
 
-	u32 status_kind{ CHARA_STATUS_WAIT };
-	u32 situation_kind{ CHARA_SITUATION_GROUND };
-	
-	Animation* anim_kind;
-	Animation animation_table[ANIM_TABLE_LENGTH];
-
-	int frame;
-	int render_frame;
-	int ticks;
-	int max_ticks;
-	int last_excute_frame;
-	int excute_count;
-
-	bool is_anim_end{ false };
 	bool kara_enabled{ false };
 	
 	int prev_stick_dir;
@@ -48,25 +34,12 @@ public:
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_flag[CHARA_FLAG_MAX];
 	
-	Hitbox hitboxes[10];
-	Grabbox grabboxes[10];
-	Hurtbox hurtboxes[10];
 	int connected_hitbox;
 	int connected_grabbox;
-	
-	string resource_dir;
-	SDL_Texture* base_texture;
-	SDL_Rect base_rect;
-	SDL_Rect frame_rect;
 
 	void (FighterInstance::* pStatus[CHARA_STATUS_MAX])();
 	void (FighterInstance::* pEnter_status[CHARA_STATUS_MAX])();
 	void (FighterInstance::* pExit_status[CHARA_STATUS_MAX])();
-	function<void()> move_script;
-
-	//Haha interface go brrrrrrrrrrrr
-
-	virtual void chara_id() = 0;
 
 	//Constructors
 
@@ -75,6 +48,10 @@ public:
 
 	//Child Class Entry Point
 	virtual bool specific_ground_status_act() { return false; };
+
+	//Projectiles
+	void init_projectile(int id, GameCoordinate pos);
+	void destroy_projectile(int id);
 
 	//Setup
 
@@ -90,17 +67,12 @@ public:
 	string get_param_string(string param, Param param_table[] = {});
 	bool get_param_bool(string param, Param param_table[] = {});
 
-	//Definitely not ACMD
-
-	virtual void set_current_move_script(string anim_name);
-	bool is_excute_frame(int excute_count, int frame);
-	bool is_excute_wait(int excute_count, int frames);
-
 	//Inputs
 
 	void processInput();
 	bool check_button_on(u32 button);
-	bool check_button_input(u32 button, u32 button_2nd = BUTTON_MAX);
+	bool check_button_input(u32 button);
+	bool check_button_input(u32 buttons[], int length, int min_matches = 0);
 	bool check_button_trigger(u32 button);
 	bool check_button_release(u32 button);
 	int get_stick_dir();
@@ -265,6 +237,7 @@ public:
 	virtual void enter_status_knockdown();
 	virtual void exit_status_knockdown();
 
+	virtual bool specific_status_attack() { return false; };
 	
 	virtual void roy_status_fireball_start() {};
 	virtual void roy_enter_status_fireball_start() {};

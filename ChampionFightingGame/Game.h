@@ -1,6 +1,7 @@
 #pragma once
 #include "PlayerInfo.h"
 #include "FighterInstance.h"
+#include "ProjectileInstance.h"
 
 int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]);
 
@@ -14,11 +15,15 @@ void event_grab_collide_player(FighterInstance *p1, FighterInstance *p2, Grabbox
 bool can_counterhit(FighterInstance* defender, Hitbox* hitbox);
 int get_damage_status(int hit_status, int situation_kind);
 
-class IFighter {
+class IObject {
 public:
-	IFighter(int chara_id, SDL_Renderer* renderer, int id);
-	~IFighter();
+	IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id);
+	~IObject();
 	FighterInstance* get_fighter();
-private:
+	ProjectileInstance* get_projectile();
+	ObjectInstance* get_object();
+private: 
 	FighterInstance* fighter_instance;
+	ProjectileInstance* projectile_instance;
+	ObjectInstance* object_instance;
 };

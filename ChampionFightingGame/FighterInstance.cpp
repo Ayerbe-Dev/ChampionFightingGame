@@ -15,6 +15,18 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info
 	superInit(0, renderer);
 }
 
+void FighterInstance::init_projectile(int id, GameCoordinate pos) {
+	projectile_objects[id]->id = this->id;
+	projectile_objects[id]->pos.x = this->pos.x + pos.x * facing_dir;
+	projectile_objects[id]->pos.y = this->pos.y + pos.y;
+	projectile_objects[id]->facing_right = facing_right;
+	projectile_objects[id]->facing_dir = facing_dir;
+}
+
+void FighterInstance::destroy_projectile(int id) {
+	projectile_objects[id]->id = -1;
+}
+
 void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 {
 	this->id = id;
@@ -36,9 +48,6 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait", 2, 0);
 	status_kind = CHARA_STATUS_WAIT;
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 
 	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
 	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
@@ -81,8 +90,7 @@ void FighterInstance::load_params() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
 
-	if (stats_table.fail())
-	{
+	if (stats_table.fail()) {
 		cerr << "Could not open stats table!" << endl;
 		exit(1);
 	}
@@ -322,49 +330,6 @@ bool FighterInstance::get_param_bool(string param, Param param_table[]) {
 	P.S. It's misspelled in Smash as well. You can fix it if you want, idrc
 */
 
-void FighterInstance::set_current_move_script(string anim_name) {}
-
-bool FighterInstance::is_excute_frame(int excute_count, int frame)
-{
-	if (this->frame >= frame)
-	{ //If we've reached the statement in question
-		if (this->excute_count >= excute_count)
-		{ //If we've already executed the statement
-			return false;
-		}
-		else
-		{ //If we are at the correct frame and haven't executed the statement yet
-			last_excute_frame = frame;
-			this->excute_count = excute_count;
-			return true;
-		}
-	}
-	else
-	{ //If we still haven't reached the correct frame
-		last_excute_frame = frame;
-		return false;
-	}
-}
-
-bool FighterInstance::is_excute_wait(int excute_count, int frames) {
-	if (frame >= last_excute_frame + frames) { //If it's been enough time since the last non-executed statement
-		if (this->excute_count >= excute_count)
-		{ //If we already executed the statement
-			return false;
-		}
-		else
-		{ //Success
-			last_excute_frame = frame;
-			this->excute_count = excute_count;
-			return true;
-		}
-	}
-	else
-	{ //Still waiting
-		return false;
-	}
-}
-
 //Inputs
 
 void FighterInstance::processInput() {
@@ -521,8 +486,12 @@ bool FighterInstance::check_button_on(u32 button) {
 	return player_info->check_button_on(button);
 }
 
-bool FighterInstance::check_button_input(u32 button, u32 button_2nd) {
-	return player_info->check_button_input(button, button_2nd);
+bool FighterInstance::check_button_input(u32 button) {
+	return player_info->check_button_input(button);
+}
+
+bool FighterInstance::check_button_input(u32 button[], int length, int min_matches) {
+	return player_info->check_button_input(button, length, min_matches);
 }
 
 bool FighterInstance::check_button_trigger(u32 button) {
@@ -608,8 +577,22 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 	int button_check = 0;
 	bool input_check = false;
 
-	if (check_button_input(button) || check_button_release(button)) {
-		button_check = SPECIAL_INPUT_NORMAL;
+	if (button == BUTTON_MACRO_P) {
+		u32 ex_buttons[3] = { BUTTON_LP, BUTTON_MP, BUTTON_HP };
+		if (check_button_input(ex_buttons, 3, 2)) {
+			button_check = SPECIAL_INPUT_NORMAL;
+		}
+	}
+	else if (button == BUTTON_MACRO_K) {
+		u32 ex_buttons[3] = { BUTTON_LK, BUTTON_MK, BUTTON_HK };
+		if (check_button_input(ex_buttons, 3, 2)) {
+			button_check = SPECIAL_INPUT_NORMAL;
+		}
+	}
+	else {
+		if (check_button_input(button) || check_button_release(button)) {
+			button_check = SPECIAL_INPUT_NORMAL;
+		}
 	}
 	if (button_check) {
 		if (special_kind == SPECIAL_KIND_236) {
@@ -725,7 +708,7 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 		}
 	}
 	if (input_check) {
-		return button_check;
+		return button_check && chara_int[CHARA_INT_HITLAG_FRAMES] == 0;
 	}
 	else {
 		return SPECIAL_INPUT_NONE;
@@ -782,7 +765,7 @@ bool FighterInstance::invalid_x(float x) {
 	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
 	float x_distance = std::max(opponent_x, x) - std::min(opponent_x, x);
 
-	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > MAX_PLAYER_DISTANCE;
+	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > CAMERA_MAX_ZOOM_OUT;
 }
 
 bool FighterInstance::invalid_y(float y)
@@ -1041,7 +1024,8 @@ void FighterInstance::playoutStatus() {
 bool FighterInstance::common_ground_status_act() {
 	if (is_actionable() && !specific_ground_status_act()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
-			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
+			u32 grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)) {
 				return (change_status(CHARA_STATUS_GRAB));
 			}
 			if (check_button_input(BUTTON_LP)) {
@@ -1060,7 +1044,8 @@ bool FighterInstance::common_ground_status_act() {
 					chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
 				}
 			}
-			if (check_button_input(BUTTON_MP, BUTTON_MK)) {
+			u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+			if (check_button_input(parry_buttons, 2)) {
 				return (change_status(CHARA_STATUS_PARRY_START));
 			}
 			if (check_button_input(BUTTON_MP)) {
@@ -1126,7 +1111,8 @@ bool FighterInstance::common_ground_status_act() {
 bool FighterInstance::common_air_status_act() {
 	if (is_actionable()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
-			if (check_button_input(BUTTON_LP, BUTTON_LK)) {
+			u32 grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)) {
 				return (change_status(CHARA_STATUS_GRAB_AIR));
 			}
 			if (check_button_input(BUTTON_LP)) {
@@ -1135,7 +1121,8 @@ bool FighterInstance::common_air_status_act() {
 			if (check_button_input(BUTTON_LK)) {
 				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_LK;
 			}
-			if (check_button_input(BUTTON_MP, BUTTON_MK)) {
+			u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+			if (check_button_input(parry_buttons, 2)) {
 				return (change_status(CHARA_STATUS_PARRY_START));
 			}
 			if (check_button_input(BUTTON_MP)) {
@@ -1339,7 +1326,7 @@ void FighterInstance::status_dash()
 	{
 		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
 		{
-			if (get_flick_dir() == 4)
+			if (get_stick_dir() == 4)
 			{
 				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
 				{
@@ -1395,7 +1382,7 @@ void FighterInstance::status_dashb()
 	{
 		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
 		{
-			if (get_flick_dir() == 6)
+			if (get_stick_dir() == 6)
 			{
 				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
 				{
@@ -1653,8 +1640,10 @@ void FighterInstance::exit_status_fall() {
 	chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 }
 
-void FighterInstance::status_attack()
-{
+void FighterInstance::status_attack() {
+	if (specific_status_attack()) {
+		return;
+	}
 	if (is_anim_end)
 	{
 		if (get_stick_dir() < 4)
@@ -1919,7 +1908,7 @@ void FighterInstance::status_hitstun_air()
 	}
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
 	{
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("stats.gravity");
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
 	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }

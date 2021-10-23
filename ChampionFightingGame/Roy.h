@@ -1,6 +1,10 @@
 #pragma once
 #include "FighterInstance.fwd.h"
 #include "FighterInstance.h"
+#include "ProjectileInstance.h"
+#include "ProjectileInstance.fwd.h"
+#include "ObjectInstance.fwd.h"
+#include "ObjectInstance.h"
 #include "Roy.fwd.h"
 #include "utils.h"
 
@@ -37,6 +41,8 @@ public:
 
 	bool specific_ground_status_act() override;
 
+	bool specific_status_attack() override;
+
 	//Statuses
 
 	void roy_status_fireball_start() override;
@@ -51,4 +57,10 @@ public:
 	void roy_status_special_uppercut_fall() override;
 	void roy_enter_status_special_uppercut_fall() override;
 	void roy_exit_status_special_uppercut_fall() override;
+};
+
+class RoyFireball : public ProjectileInstance {
+public:
+	RoyFireball();
+	RoyFireball(SDL_Renderer* renderer, int id);
 };

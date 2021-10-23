@@ -1,11 +1,11 @@
-special_uppercut_transition_frame 1 12
+special_uppercut_transition_frame 1 9
 special_uppercut_x_l 2 2.0
 special_uppercut_x_m 2 2.0
 special_uppercut_x_h 2 3.0
 special_uppercut_x_ex 2 5.0
 special_uppercut_init_y_l 2 15.0
 special_uppercut_init_y_m 2 20.0
-special_uppercut_init_y_h 2 30.0
-special_uppercut_init_y_ex 2 30.0
+special_uppercut_init_y_h 2 25.0
+special_uppercut_init_y_ex 2 25.0
 special_uppercut_gravity 2 1.0
 special_uppercut_fall_speed 2 12.0

@@ -12,31 +12,36 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 	height = 31;
 	scale = 2;
 
-	this->health_rect.x = 5;
-	this->health_rect.y = 10;
+	this->health_rect.x = 0;
+	this->health_rect.y = 10;  
 	//this->health_rect.w = 294*2; should be defined right before render
 	this->health_rect.h = 31*2;
-	this->bar_rect.x = 5;
+	this->bar_rect.x = 0;
 	this->bar_rect.y = 10;
 	this->bar_rect.w = 294*2;
 	this->bar_rect.h = 31*2;
 
 	this->slice_rect.x = 0;
 	this->slice_rect.y = 0;
-	this->slice_rect.w = width - 150;
+	this->slice_rect.w = width - 260;
 	this->slice_rect.h = height;
 }
 
 void HealthBar::RenderAsP1() {
+	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
 	health_rect.w = slice_rect.w * scale;
 	SDL_RenderCopy(this->pRenderer,health_texture,&slice_rect,&health_rect);
 	SDL_RenderCopy(this->pRenderer,bar_texture,nullptr,&bar_rect);
-	// health_bar[i].health_rect.w = health_bar[i].bar_rect.w * (fighter_instance[i]->chara_float[CHARA_FLOAT_HEALTH] / health_bar[i].max_health);
-	// SDL_RenderCopyEx(pRenderer, health_bar[i].health_texture, nullptr, &(health_bar[i].bar_rect), angle, NULL, flip);
-	// SDL_RenderCopyEx(pRenderer, health_bar[i].bar_texture, nullptr, &(health_bar[i].bar_rect), angle, NULL, flip);
 }
 
-void HealthBar::RenderAsP2() {};
+void HealthBar::RenderAsP2() {
+	bar_rect.x = WINDOW_WIDTH - width * scale;
+	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
+	health_rect.x = (WINDOW_WIDTH - width * scale) + (width - slice_rect.w) * scale;
+	health_rect.w = slice_rect.w * scale;
+	SDL_RenderCopyEx(this->pRenderer,health_texture,&slice_rect,&health_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
+	SDL_RenderCopyEx(this->pRenderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
+}
 
 PlayerIndicator::PlayerIndicator() {}
 PlayerIndicator::PlayerIndicator(SDL_Renderer* renderer, FighterInstance* fighter_instance, string nametag) {

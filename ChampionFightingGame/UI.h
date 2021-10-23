@@ -15,7 +15,7 @@ public:
 	SDL_Rect slice_rect;
 	float max_health;
 	int scale;
-	int width;
+	float width;
 	int height;
 
 	HealthBar();

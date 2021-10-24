@@ -1,5 +1,6 @@
 #pragma once
 #include "ObjectInstance.h"
+#include "ProjectileInstance.h"
 #include "utils.h"
 #include <string>
 #include "GameCoordinate.h"
@@ -24,13 +25,12 @@ public:
 	PlayerInfo* player_info;
 	int chara_kind;
 	FighterInstanceAccessor* fighter_instance_accessor;
-	ObjectInstance* projectile_objects[MAX_PROJECTILES]{};
+	ProjectileInstance* projectile_objects[MAX_PROJECTILES]{};
 
 	bool kara_enabled{ false };
 	
 	int prev_stick_dir;
 	
-	Param param_table[PARAM_TABLE_LENGTH];
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
 	bool chara_flag[CHARA_FLAG_MAX];
@@ -47,7 +47,7 @@ public:
 	FighterInstance();
 	FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info);
 
-	//Child Class Entry Point
+	//Child Class Entry Points
 	virtual bool specific_ground_status_act() { return false; };
 
 	//Projectiles
@@ -60,13 +60,6 @@ public:
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();
 	void loadStatusFunctions();
-
-	//Read params
-
-	int get_param_int(string param, Param param_table[] = {});
-	float get_param_float(string param, Param param_table[] = {});
-	string get_param_string(string param, Param param_table[] = {});
-	bool get_param_bool(string param, Param param_table[] = {});
 
 	//Inputs
 
@@ -102,25 +95,16 @@ public:
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
 		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
 		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool use_player_pos = true);
-	void update_hitbox_pos();
 	void update_hitbox_connect();
-	void clear_hitbox(int id);
-	void clear_hitbox_all();
 	
 	//Grabbox
 	
 	void new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 
 		u32 defender_status_if_hit, bool use_player_pos = true);
-	void update_grabbox_pos();
-	void clear_grabbox(int id);
-	void clear_grabbox_all();
 	
 	//Hurtbox
 	
 	void new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind);
-	void update_hurtbox_pos();
-	void clear_hurtbox(int id);
-	void clear_hurtbox_all();
 
 	//Transitions
 

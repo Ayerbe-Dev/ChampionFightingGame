@@ -51,7 +51,7 @@ SDL_Texture *loadTexture(const char *file_path, SDL_Renderer *renderer);
 	
 	What a looser.
 */
-SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y);
+SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bool no_zoom);
 
 enum
 {
@@ -114,6 +114,7 @@ enum
 	BUTTON_DEBUG_MOVE_1,
 	BUTTON_DEBUG_PRINT_POS,
 	BUTTON_DEBUG_PRINT_FRAME,
+	BUTTON_DEBUG_ZOOM_OUT,
 	BUTTON_DEBUG_RESET,
 
 	BUTTON_DEBUG_MAX,
@@ -547,6 +548,8 @@ enum
 
 enum {
 	PROJECTILE_INT_HEALTH,
+	PROJECTILE_INT_ACTIVE_TIME,
+	PROJECTILE_INT_HITLAG_FRAMES,
 	
 	PROJECTILE_INT_MAX,
 };

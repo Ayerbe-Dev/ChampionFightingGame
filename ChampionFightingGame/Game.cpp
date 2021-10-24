@@ -42,15 +42,12 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 	//init players
 	FighterInstance *fighter_instance[2];
-	ObjectInstance* object_instance[2];
 
 	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0);
 	IObject *p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
-	object_instance[0] = p1->get_object();
-	object_instance[1] = p2->get_object();
 
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
@@ -141,7 +138,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 				debug = !debug;
 			}
 			if (!debug) {
-				tickOnce(fighter_instance[i], pRenderer);
+				tickOnceFighter(fighter_instance[i]);
 			}
 			else if (i == 0) {
 				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
@@ -153,8 +150,8 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 					(&player_info[0])->update_buttons(keyboard_state);
 					(&player_info[1])->update_buttons(keyboard_state);
-					tickOnce(fighter_instance[0], pRenderer);
-					tickOnce(fighter_instance[1], pRenderer);
+					tickOnceFighter(fighter_instance[0]);
+					tickOnceFighter(fighter_instance[1]);
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;
@@ -203,12 +200,12 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			for (int o = 0; o < MAX_PROJECTILES; o++) {
 				if (fighter_instance[i]->projectile_objects[o]->id != -1) {
 					SDL_RendererFlip flip = SDL_FLIP_NONE;
-					if (fighter_instance[i]->projectile_objects[o]->facing_right) {
+					if (!fighter_instance[i]->projectile_objects[o]->facing_right) {
 						flip = SDL_FLIP_HORIZONTAL;
 					}
 					SDL_Rect render_pos;
-					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateXAnim() * -1;
-					render_pos.y = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateYAnim();
+					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.x;
+					render_pos.y = fighter_instance[i]->projectile_objects[o]->pos.y;
 					int width;
 					int height;
 					SDL_QueryTexture(fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
@@ -233,7 +230,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		}
 
 		//Camera things
-		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY());
+		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY(), debugger.zoom);
 
 		for (int i = 0; i < 2; i++) {
 			player_indicator[i].indicator_rect = SDL_Rect{
@@ -277,7 +274,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	return next_state;
 }
 
-void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer) {
+void tickOnceFighter(FighterInstance *fighter_instance) {
 	/*
 				   _.-, 
               _ .-'  / .._
@@ -301,6 +298,12 @@ void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer) {
 
 	if (fighter_instance->canStep()) {
 		fighter_instance->stepAnimation();
+	}
+
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		if (fighter_instance->projectile_objects[i]->id != -1) {
+			tickOnceProjectile(fighter_instance->projectile_objects[i]);
+		}
 	}
 
 	fighter_instance->playoutStatus();
@@ -344,6 +347,28 @@ void tickOnce(FighterInstance *fighter_instance, SDL_Renderer *renderer) {
 			fighter_instance->chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
 		}
 	}
+}
+
+void tickOnceProjectile(ProjectileInstance* projectile_instance) {
+	projectile_instance->prevpos = projectile_instance->pos;
+
+	if (projectile_instance->canStep()) {
+		projectile_instance->stepAnimation();
+	}
+
+	projectile_instance->playoutStatus();
+
+	decrease_common_projectile_variables(projectile_instance);
+
+	int width;
+	int height;
+	SDL_QueryTexture(projectile_instance->base_texture, NULL, NULL, &width, &height);
+	projectile_instance->pos.x_spr_offset = width / 2;
+	projectile_instance->pos.y_spr_offset = height;
+
+	projectile_instance->update_hitbox_pos();
+	projectile_instance->update_grabbox_pos();
+	projectile_instance->update_hurtbox_pos();
 }
 
 void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer *renderer, bool visualize_boxes)
@@ -1036,6 +1061,15 @@ void decrease_common_fighter_variables(FighterInstance* fighter_instance) {
 	}
 }
 
+void decrease_common_projectile_variables(ProjectileInstance* projectile_instance) {
+	if (projectile_instance->projectile_int[PROJECTILE_INT_ACTIVE_TIME] != 0) {
+		projectile_instance->projectile_int[PROJECTILE_INT_ACTIVE_TIME] --;
+	}
+	else {
+		projectile_instance->id = -1;
+	}
+}
+
 IObject::IObject(int object_type, int object_kind, SDL_Renderer *renderer, int id) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind)
@@ -1092,10 +1126,6 @@ IObject::~IObject()
 		delete[] projectile_instance;
 		projectile_instance = NULL;
 	}
-	if (object_instance) {
-		delete[] object_instance;
-		projectile_instance = NULL;
-	}
 }
 
 FighterInstance* IObject::get_fighter() {
@@ -1104,8 +1134,4 @@ FighterInstance* IObject::get_fighter() {
 
 ProjectileInstance* IObject::get_projectile() {
 	return projectile_instance;
-}
-
-ObjectInstance* IObject::get_object() {
-	return object_instance;
 }

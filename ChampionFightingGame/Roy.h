@@ -63,4 +63,14 @@ class RoyFireball : public ProjectileInstance {
 public:
 	RoyFireball();
 	RoyFireball(SDL_Renderer* renderer, int id);
+
+	void load_roy_fireball_params();
+	void set_current_move_script(string anim_name);
+	void script(string name, function<void()> move_script);
+	RoyScript roy_fireball_scripts[256];
+	Param roy_fireball_table[PARAM_TABLE_LENGTH];
+	void loadRoyFireballStatusFunctions();
+	void loadRoyFireballACMD();
+
+	virtual void status_default() override;
 };

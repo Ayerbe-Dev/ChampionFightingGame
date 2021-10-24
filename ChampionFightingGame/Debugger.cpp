@@ -14,6 +14,7 @@ Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_MOVE_1].mapping = SDL_SCANCODE_5;
 	button_info[BUTTON_DEBUG_PRINT_POS].mapping = SDL_SCANCODE_6;
 	button_info[BUTTON_DEBUG_PRINT_FRAME].mapping = SDL_SCANCODE_7;
+	button_info[BUTTON_DEBUG_ZOOM_OUT].mapping = SDL_SCANCODE_8;
 	button_info[BUTTON_DEBUG_RESET].mapping = SDL_SCANCODE_9;
 }
 
@@ -79,6 +80,9 @@ void debug_mode(Debugger *debugger, FighterInstance *target, SDL_Renderer *rende
 	}
 	if (debugger->check_button_trigger(BUTTON_DEBUG_PRINT_FRAME)) {
 		debugger->print_frames = !debugger->print_frames;
+	}
+	if (debugger->check_button_trigger(BUTTON_DEBUG_ZOOM_OUT)) {
+		debugger->zoom = !debugger->zoom;
 	}
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderDrawRect(renderer, debug_rect);

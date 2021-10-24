@@ -11,6 +11,7 @@ public:
 	Buttons button_info[BUTTON_DEBUG_MAX];
 	int target{ 0 };
 	bool print_frames{ false };
+	bool zoom{ false };
 	bool enabled{ true }; //Change this value to false to completely disable debug mode
 
 	bool check_button_on(u32 button);

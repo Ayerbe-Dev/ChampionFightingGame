@@ -5,7 +5,7 @@ void ProjectileInstance::superInit(SDL_Renderer* renderer) {
 	load_params();
 	loadStatusFunctions();
 	change_anim("default", 2, 0);
-	status_kind = PROJECTILE_STATUS_DEFAULT;
+	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }
 
 void ProjectileInstance::load_anim_list(SDL_Renderer* renderer)
@@ -19,21 +19,52 @@ void ProjectileInstance::load_anim_list(SDL_Renderer* renderer)
 		exit(1);
 	}
 
-	string line_1;
-	anim_list >> line_1;
-	int num_anims = ymlChopInt(line_1);
-
-	for (int i = 0; i < num_anims; i++) {
-		string name;
-		string path;
-		string frame_count;
-		anim_list >> name >> path >> frame_count;
+	string name;
+	string path;
+	string frame_count;
+	for (int i = 0; anim_list >> name; i++) {
+		anim_list >> path >> frame_count;
 		animation_table[i].name = ymlChopString(name);
 		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
 		loadAnimation(&animation_table[i], renderer);
 	}
 	anim_list.close();
+}
+
+void ProjectileInstance::load_params() {
+	ifstream stats_table;
+	stats_table.open(resource_dir + "/param/stats.yml");
+
+	if (stats_table.fail()) {
+		cerr << "Could not open stats table!" << endl;
+		exit(1);
+	}
+
+	string stat;
+	for (int i = 0; stats_table >> stat; i++) {
+		param_table[i].stat = stat;
+		stats_table >> param_table[i].type;
+		switch (param_table[i].type) {
+		case(PARAM_TYPE_INT): {
+			stats_table >> param_table[i].value_i;
+		} break;
+		case(PARAM_TYPE_FLOAT): {
+			stats_table >> param_table[i].value_f;
+		} break;
+		case(PARAM_TYPE_STRING): {
+			stats_table >> param_table[i].value_s;
+		} break;
+		case (PARAM_TYPE_BOOL): {
+			stats_table >> param_table[i].value_b;
+		} break;
+		default: {
+			stats_table >> param_table[i].value_i;
+		} break;
+		}
+	}
+
+	stats_table.close();
 }
 
 void ProjectileInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
@@ -67,47 +98,69 @@ void ProjectileInstance::startAnimation(Animation* animation)
 	frame_rect = getFrame(frame, anim_kind);
 }
 
-void ProjectileInstance::load_params() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/stats.yml");
-
-	if (stats_table.fail()) {
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	int i = 0;
-	string stat;
-	while (stats_table >> stat) {
-		param_table[i].stat = stat;
-		stats_table >> param_table[i].type;
-		switch (param_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> param_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> param_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> param_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> param_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> param_table[i].value_i;
-		} break;
-		}
-		i++;
-	}
-
-	stats_table.close();
-}
-
 void ProjectileInstance::loadStatusFunctions() {
 	pStatus[PROJECTILE_STATUS_DEFAULT] = &ProjectileInstance::status_default;
 	pEnter_status[PROJECTILE_STATUS_DEFAULT] = &ProjectileInstance::enter_status_default;
 	pExit_status[PROJECTILE_STATUS_DEFAULT] = &ProjectileInstance::exit_status_default;
+
+	pStatus[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::status_move;
+	pEnter_status[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::enter_status_move;
+	pExit_status[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::exit_status_move;
+}
+
+bool ProjectileInstance::canStep() {
+	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
+		frame++;
+		ticks++;
+
+		if (ticks >= max_ticks) {
+			ticks = 0;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
+void ProjectileInstance::stepAnimation() {
+	int last_frame = render_frame;
+	frame_rect = getFrame(render_frame, anim_kind);
+	if (render_frame == anim_kind->length) {
+		render_frame = 0;
+		frame = 0;
+	}
+	else {
+		render_frame++;
+	}
+	is_anim_end = last_frame > frame;
+}
+
+//Status
+
+bool ProjectileInstance::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+	if (new_status_kind != status_kind || !require_different_status) {
+		clear_hitbox_all();
+		clear_grabbox_all();
+		clear_hurtbox_all();
+		if (call_end_status) {
+			(this->*pExit_status[status_kind])();
+		}
+		status_kind = new_status_kind;
+		(this->*pEnter_status[status_kind])();
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void ProjectileInstance::playoutStatus() {
+	(this->*pStatus[status_kind])();
+	move_script();
 }
 
 void ProjectileInstance::status_default() {
@@ -115,9 +168,22 @@ void ProjectileInstance::status_default() {
 }
 
 void ProjectileInstance::enter_status_default() {
-
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("active_frames");
+	projectile_int[PROJECTILE_INT_HEALTH] = get_param_int("health");
 }
 
 void ProjectileInstance::exit_status_default() {
+
+}
+
+void ProjectileInstance::status_move() {
+	pos.x += get_param_float("move_x_speed") * facing_dir;
+}
+
+void ProjectileInstance::enter_status_move() {
+
+}
+
+void ProjectileInstance::exit_status_move() {
 
 }

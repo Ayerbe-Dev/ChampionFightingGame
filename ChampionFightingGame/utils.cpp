@@ -57,15 +57,15 @@ bool is_collide(SDL_Rect RectA, SDL_Rect RectB)
 	return ((ax1 >= bx0 && (ax0 <= bx0 || ax1 <= bx1)) || (bx1 >= ax0 && (bx0 <= ax0 || bx1 <= ax1))) && ((ay1 <= by0 && (ay0 >= by0 || ay1 >= by1)) || (by1 <= ay0 && (by0 >= ay0 || by1 >= ay1))) || ((ax1 >= bx1 && ax0 <= bx0 && ay1 >= by1 && ay0 <= by0) || (ax1 <= bx1 && ax0 >= bx0 && ay1 <= by1 && ay0 >= by0)) || (bx1 <= ax1 && bx0 >= ax0 && by1 >= ay1 && bx0 <= ay0);
 }
 
-SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y)
-{
+SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bool no_zoom) {
 	SDL_Rect cCamera;
 
-	cCamera.w = std::min(
-		std::max(
-			std::abs(player1X - player2X) + 150,
-			CAMERA_MAX_ZOOM_IN),
-		CAMERA_MAX_ZOOM_OUT);
+	if (no_zoom) {
+		cCamera.w = std::min(std::max(std::abs(player1X - player2X) + 150, 1280), 1280);
+	}
+	else {
+		cCamera.w = std::min(std::max(std::abs(player1X - player2X) + 150, CAMERA_MAX_ZOOM_IN), CAMERA_MAX_ZOOM_OUT);
+	}
 
 	//0.5625 = WINDOW_HEIGHT / WINDOW_WIDTH. its used to scale the camera for correct proportions
 	cCamera.h = cCamera.w * WINDOW_FACTOR;

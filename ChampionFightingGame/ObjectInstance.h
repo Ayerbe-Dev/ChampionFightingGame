@@ -5,6 +5,7 @@
 #include "ObjectInstance.fwd.h"
 #include "Box.fwd.h"
 #include "Box.h"
+#include "ParamTable.h"
 
 class ObjectInstance {
 public:
@@ -32,6 +33,22 @@ public:
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
+
+	void update_hitbox_pos();
+	void clear_hitbox(int id);
+	void clear_hitbox_all();
+	void update_grabbox_pos();
+	void clear_grabbox(int id);
+	void clear_grabbox_all();
+	void update_hurtbox_pos();
+	void clear_hurtbox(int id);
+	void clear_hurtbox_all();
+
+	Param param_table[PARAM_TABLE_LENGTH];
+	int get_param_int(string param, Param param_table[] = {});
+	float get_param_float(string param, Param param_table[] = {});
+	string get_param_string(string param, Param param_table[] = {});
+	bool get_param_bool(string param, Param param_table[] = {});
 
 	string resource_dir;
 	SDL_Texture* base_texture;

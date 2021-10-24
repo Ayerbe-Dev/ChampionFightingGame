@@ -24,7 +24,7 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png", renderer);
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectile_objects[i] = new ObjectInstance();
+		projectile_objects[i] = new ProjectileInstance();
 	}
 
 	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id);
@@ -44,65 +44,6 @@ void Roy::chara_id() {
 
 }
 
-void Roy::load_roy_params() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/params.yml");
-
-	if (stats_table.fail())
-	{
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	int i = 0;
-	string stat;
-	while (stats_table >> stat) {
-		roy_table[i].stat = stat;
-		stats_table >> roy_table[i].type;
-		switch (roy_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> roy_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> roy_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> roy_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> roy_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> roy_table[i].value_i;
-		} break;
-		}
-		i++;
-	}
-
-	stats_table.close();
-}
-
-void Roy::set_current_move_script(string anim_name) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_scripts[i].name == anim_name) {
-			move_script = roy_scripts[i].roy_script;
-			break;
-		}
-		else {
-			move_script = roy_scripts[0].roy_script;
-		}
-	}
-}
-
-void Roy::script(string name, function<void()> move_script) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_scripts[i].id == -1) {
-			roy_scripts[i] = RoyScript(name, move_script, i);
-			break;
-		}
-	}
-}
-
 void Roy::loadRoyStatusFunctions() {
 	pStatus[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_status_fireball_start;
 	pEnter_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_enter_status_fireball_start;
@@ -119,6 +60,10 @@ void Roy::loadRoyStatusFunctions() {
 	pStatus[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_status_special_uppercut_fall;
 	pEnter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_enter_status_special_uppercut_fall;
 	pExit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_exit_status_special_uppercut_fall;
+}
+
+void RoyFireball::loadRoyFireballStatusFunctions() {
+
 }
 
 void Roy::loadRoyACMD() {
@@ -179,7 +124,7 @@ void Roy::loadRoyACMD() {
 	});
 	script("stand_lk", [this]() {
 		if (is_excute_frame(1, 0)) {
-			init_projectile(0, pos);
+			init_projectile(0, GameCoordinate{ 0,50 });
 		}
 	});
 	script("stand_mk", [this]() {
@@ -237,7 +182,9 @@ void Roy::loadRoyACMD() {
 
 	});
 	script("jump_lk", [this]() {
-
+		if (is_excute_frame(1, 0)) {
+			init_projectile(0, GameCoordinate{ 0,50 });
+		}
 	});
 	script("jump_mk", [this]() {
 
@@ -388,4 +335,132 @@ void Roy::roy_enter_status_special_uppercut_fall() {
 
 void Roy::roy_exit_status_special_uppercut_fall() {
 
+}
+
+void RoyFireball::loadRoyFireballACMD() {
+	script("default", [this]() {
+		return;
+	});
+}
+
+void RoyFireball::status_default() {
+	change_status(PROJECTILE_STATUS_MOVE);
+}
+
+void Roy::load_roy_params() {
+	ifstream stats_table;
+	stats_table.open(resource_dir + "/param/params.yml");
+
+	if (stats_table.fail())
+	{
+		cerr << "Could not open stats table!" << endl;
+		exit(1);
+	}
+
+	int i = 0;
+	string stat;
+	while (stats_table >> stat) {
+		roy_table[i].stat = stat;
+		stats_table >> roy_table[i].type;
+		switch (roy_table[i].type) {
+		case(PARAM_TYPE_INT): {
+			stats_table >> roy_table[i].value_i;
+		} break;
+		case(PARAM_TYPE_FLOAT): {
+			stats_table >> roy_table[i].value_f;
+		} break;
+		case(PARAM_TYPE_STRING): {
+			stats_table >> roy_table[i].value_s;
+		} break;
+		case (PARAM_TYPE_BOOL): {
+			stats_table >> roy_table[i].value_b;
+		} break;
+		default: {
+			stats_table >> roy_table[i].value_i;
+		} break;
+		}
+		i++;
+	}
+
+	stats_table.close();
+}
+
+void Roy::set_current_move_script(string anim_name) {
+	for (int i = 0; i < 256; i++) {
+		if (roy_scripts[i].name == anim_name) {
+			move_script = roy_scripts[i].roy_script;
+			break;
+		}
+		else {
+			move_script = roy_scripts[0].roy_script;
+		}
+	}
+}
+
+void Roy::script(string name, function<void()> move_script) {
+	for (int i = 0; i < 256; i++) {
+		if (roy_scripts[i].id == -1) {
+			roy_scripts[i] = RoyScript(name, move_script, i);
+			break;
+		}
+	}
+}
+
+void RoyFireball::load_roy_fireball_params() {
+	ifstream stats_table;
+	stats_table.open(resource_dir + "/param/params.yml");
+
+	if (stats_table.fail())
+	{
+		cerr << "Could not open stats table!" << endl;
+		exit(1);
+	}
+
+	int i = 0;
+	string stat;
+	while (stats_table >> stat) {
+		roy_fireball_table[i].stat = stat;
+		stats_table >> roy_fireball_table[i].type;
+		switch (roy_fireball_table[i].type) {
+		case(PARAM_TYPE_INT): {
+			stats_table >> roy_fireball_table[i].value_i;
+		} break;
+		case(PARAM_TYPE_FLOAT): {
+			stats_table >> roy_fireball_table[i].value_f;
+		} break;
+		case(PARAM_TYPE_STRING): {
+			stats_table >> roy_fireball_table[i].value_s;
+		} break;
+		case (PARAM_TYPE_BOOL): {
+			stats_table >> roy_fireball_table[i].value_b;
+		} break;
+		default: {
+			stats_table >> roy_fireball_table[i].value_i;
+		} break;
+		}
+		i++;
+	}
+
+	stats_table.close();
+}
+
+void RoyFireball::set_current_move_script(string anim_name) {
+	for (int i = 0; i < 256; i++) {
+		if (roy_fireball_scripts[i].name == anim_name) {
+			move_script = roy_fireball_scripts[i].roy_script;
+			break;
+		}
+		else {
+			move_script = roy_fireball_scripts[0].roy_script;
+		}
+	}
+}
+
+void RoyFireball::script(string name, function<void()> move_script) {
+	for (int i = 0; i < 256; i++) {
+		if (roy_fireball_scripts[i].id == -1) {
+			roy_fireball_scripts[i] = RoyScript(name, move_script, i);
+			break;
+		}
+	}
 }

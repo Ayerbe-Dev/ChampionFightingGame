@@ -3,6 +3,7 @@
 #include "ProjectileInstance.fwd.h"
 #include "ObjectInstance.fwd.h"
 #include "ObjectInstance.h"
+#include "RoyFireball.fwd.h"
 
 class RoyFireball : public ProjectileInstance {
 public:

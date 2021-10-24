@@ -75,6 +75,9 @@
     <ClCompile Include="RoyFireball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EricFireball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resource\chara\eric\sprite\sprite.png">
@@ -203,6 +206,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RoyFireball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireball.fwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireball.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

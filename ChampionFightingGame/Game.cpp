@@ -16,8 +16,10 @@
 #include "FighterInstanceAccessor.h"
 #include "Roy.fwd.h"
 #include "Roy.h"
+#include "RoyFireball.h"
 #include "Eric.fwd.h"
 #include "Eric.h"
+#include "EricFireball.h"
 extern bool debug;
 extern u32 tick;
 extern u32 tok;

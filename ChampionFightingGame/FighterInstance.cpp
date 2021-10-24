@@ -20,6 +20,7 @@ void FighterInstance::init_projectile(int id, GameCoordinate init_pos) {
 	projectile_objects[id]->id = this->id;
 	projectile_objects[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir) + WINDOW_WIDTH / 2;
 	projectile_objects[id]->pos.y = (init_pos.y - WINDOW_HEIGHT) * -1.0 - this->pos.y;
+
 	projectile_objects[id]->facing_right = facing_right;
 	projectile_objects[id]->facing_dir = facing_dir;
 	projectile_objects[id]->change_status(PROJECTILE_STATUS_DEFAULT, false, false);
@@ -665,29 +666,18 @@ bool FighterInstance::invalid_y(float y)
 
 //Hitbox
 
-void FighterInstance::new_hitbox(int id, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
-							int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
-							int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
-							bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
-							float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool use_player_pos)
+void FighterInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, 
+	GameCoordinate offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
+	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
+	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, 
+	float launch_max_fall_speed, float launch_speed_x, bool use_player_pos)
 {
 	if (id < 10)
 	{
-		hitboxes[id] = Hitbox(this, id, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, hitbox_kind, meter_gain_on_hit,
+		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, hitbox_kind, meter_gain_on_hit,
 							  meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, attack_height,
 							  attack_level, hit_pushback, block_pushback, clank_kind, success_hit, juggle_set, max_juggle, hit_status, counterhit_status,
 							  counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, use_player_pos);
-	}
-}
-
-void FighterInstance::update_hitbox_connect()
-{
-	for (int i = 0; i < 10; i++)
-	{
-		if (hitboxes[i].id != -1)
-		{
-			hitboxes[i].update_connect();
-		}
 	}
 }
 

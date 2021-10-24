@@ -47,7 +47,8 @@ public:
 	void script(string name, function<void()> move_script);
 	MoveScript move_scripts[MOVE_SCRIPT_MAX];
 
-	void update_hitbox_pos();
+	void update_hitbox_connect(int multihit_index);
+	void update_hitbox_pos(bool add_window_width = true);
 	void clear_hitbox(int id);
 	void clear_hitbox_all();
 	void update_grabbox_pos();

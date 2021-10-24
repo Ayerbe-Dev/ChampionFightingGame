@@ -24,7 +24,7 @@ public:
 
 	virtual void chara_id();
 	Eric();
-	Eric(SDL_Renderer* renderer, int id);
+	Eric(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor);
 	void loadEricStatusFunctions();
 	void loadEricACMD();
 

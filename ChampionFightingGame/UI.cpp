@@ -65,24 +65,69 @@ PlayerIndicator::PlayerIndicator(SDL_Renderer* renderer, FighterInstance* fighte
 	this->indicator_rect.w = 92;
 	this->indicator_rect.h = 92;
 }
-
-Timer::Timer() {}
-Timer::Timer(SDL_Renderer* renderer, int remaining) {
-	this->remaining = remaining;
-	string resource_dir = "resource/ui/game/timer/";
-	if (remaining == -1) {
-		resource_dir += "infinite.png";
-	}
-	else {
-		resource_dir += "infinite.png"; //todo: Make a blank version of the timer with no infinite symbol
-	}
-	const char* file_dir = resource_dir.c_str();
-	this->texture = loadTexture(file_dir, renderer);
-	this->timer_rect.x = WINDOW_WIDTH / 2 - (92 / 2);
-	this->timer_rect.y = 0;
-	this->timer_rect.w = 92;
-	this->timer_rect.h = 92;
+GameTimer::GameTimer(){};
+GameTimer::GameTimer(SDL_Renderer* pRenderer,int time){
+    this->pRenderer = pRenderer;
+    uiDecaseconds = 9;
+    uiSeconds = 9;
+	uiDecaframes = 6;
+    uiFrames = 0;
+    pBigTypeface = loadTexture("resource/ui/game/timer/bigtypeface.png",pRenderer);
+	pSmallTypeface = loadTexture("resource/ui/game/timer/smalltypeface.png",pRenderer);
+	pClockFace= loadTexture("resource/ui/game/timer/clockface.png",pRenderer);
 };
+
+void GameTimer::Tick(){
+	printf("%d%d:%d%d\n\n",uiDecaseconds,uiSeconds,uiDecaframes,uiFrames);
+	if (uiFrames == 0 && uiDecaframes == 0 && uiSeconds == 0 && uiDecaseconds == 0){
+		//end
+		uiDecaseconds = 9;
+    	uiSeconds = 9;
+		uiDecaframes = 5;
+   		uiFrames = 9;
+		//this just resets it for now. later it will have to returns something to indicate round over
+	}
+	if (uiFrames == 0 && uiDecaframes == 0){
+		//reset frame counter
+		uiDecaframes = 5;
+   		uiFrames = 9;
+		//count down seconds
+		if (uiSeconds == 0){
+			uiSeconds = 9;
+			uiDecaseconds--;
+		} else{
+			uiSeconds--;
+		}	
+	} else{
+		if (uiFrames == 0){
+			uiFrames = 9;
+			uiDecaframes--;
+		} else{
+			uiFrames--;
+		}
+	}
+};
+
+void GameTimer::Render(){
+	SDL_Rect cClockFace{(WINDOW_WIDTH/2)-42,10,84,70};
+	SDL_RenderCopy(this->pRenderer,pClockFace,nullptr,&cClockFace);
+
+	SDL_Rect cDecaDestRect{601,15,25,59};
+	SDL_Rect cDecaSourceRect{uiDecaseconds*25,0,25,59};
+	SDL_RenderCopy(this->pRenderer,pBigTypeface,&cDecaSourceRect,&cDecaDestRect);
+
+	SDL_Rect cDestRect{628,15,25,59};
+	SDL_Rect cSourceRect{uiSeconds*25,0,25,59};
+	SDL_RenderCopy(this->pRenderer,pBigTypeface,&cSourceRect,&cDestRect);
+
+	SDL_Rect cDecaFrameDestRect{598 + 58,57,11,19};
+	SDL_Rect cFrameSourceRect{uiDecaframes*11,0,11,19};
+	SDL_RenderCopy(this->pRenderer,pSmallTypeface,&cFrameSourceRect,&cDecaFrameDestRect);
+
+	SDL_Rect cFrameDestRect{598 + 58 + 13,57,11,19};
+	SDL_Rect cFrameSourceRectOof{uiFrames*11,0,11,19};
+	SDL_RenderCopy(this->pRenderer,pSmallTypeface,&cFrameSourceRectOof,&cFrameDestRect);
+}
 
 /*
                                                                                                                                                      

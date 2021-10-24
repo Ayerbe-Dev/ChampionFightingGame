@@ -68,7 +68,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	}
 
 	//init ui
-	Timer timer = Timer(pRenderer, -1);
+	GameTimer timer = GameTimer(pRenderer, 99);
 
 	HealthBar health_bar[2];
 	health_bar[0] = HealthBar(pRenderer, fighter_instance[0]);
@@ -154,6 +154,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 					(&player_info[1])->update_buttons(keyboard_state);
 					tickOnceFighter(fighter_instance[0]);
 					tickOnceFighter(fighter_instance[1]);
+					timer.Tick();
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;
@@ -247,8 +248,10 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		SDL_SetRenderTarget(pRenderer, nullptr);
 
 		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr);
-
-		SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
+		if (!debug) timer.Tick();
+		timer.Render();
+		
+		//SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
 
 		for (int i = 0; i < 2; i++) {
 			switch (i){

@@ -36,12 +36,20 @@ public:
 	PlayerIndicator(SDL_Renderer *renderer, FighterInstance *fighter_instance, string nametag = "");
 };
 
-class Timer {
+class GameTimer{
 public:
-	int remaining;
-	SDL_Texture* texture;
-	SDL_Rect timer_rect;
+    int uiDecaseconds;
+    int uiSeconds;
+	int uiDecaframes;
+	int uiFrames;
+	
+    SDL_Texture* pBigTypeface;
+    SDL_Texture* pSmallTypeface;
+	SDL_Texture* pClockFace;
+	SDL_Renderer* pRenderer;
+    GameTimer();
+    GameTimer(SDL_Renderer* pRenderer,int time);
 
-	Timer();
-	Timer(SDL_Renderer* renderer, int remaining);
+	void Tick();
+	void Render();
 };

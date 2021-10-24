@@ -394,6 +394,8 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 									p1_hitbox = fighter_instance[0]->projectile_objects[i]->hitboxes[i3].rect;
 									p2_hitbox = fighter_instance[1]->projectile_objects[i2]->hitboxes[i4].rect;
 									if (is_collide(p1_hitbox, p2_hitbox)) {
+										fighter_instance[0]->projectile_objects[i]->clear_hitbox(i3);
+										fighter_instance[1]->projectile_objects[i2]->clear_hitbox(i4);
 										fighter_instance[0]->projectile_objects[i]->projectile_int[PROJECTILE_INT_HEALTH] --;
 										fighter_instance[1]->projectile_objects[i2]->projectile_int[PROJECTILE_INT_HEALTH] --;
 										if (fighter_instance[0]->projectile_objects[i]->projectile_int[PROJECTILE_INT_HEALTH] == 0) {

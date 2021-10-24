@@ -38,9 +38,3 @@ public:
 	
 	//Statuses
 };
-
-class EricFireball : public ProjectileInstance {
-public:
-	EricFireball();
-	EricFireball(SDL_Renderer* renderer, int id);
-};

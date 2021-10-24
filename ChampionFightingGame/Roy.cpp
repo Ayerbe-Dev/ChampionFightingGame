@@ -1,14 +1,6 @@
 #include "Roy.h"
 #include "Game.h"
 
-RoyScript::RoyScript() {};
-
-RoyScript::RoyScript(string name, function<void()> move_script, int id) {
-	this->name = name;
-	this->roy_script = move_script;
-	this->id = id;
-}
-
 Roy::Roy() {
 
 }
@@ -16,7 +8,7 @@ Roy::Roy() {
 Roy::Roy(SDL_Renderer *renderer, int id) {
 	resource_dir = "resource/chara/roy";
 	superInit(id, renderer);
-	load_roy_params();
+	load_unique_params();
 	loadRoyACMD();
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
@@ -29,15 +21,6 @@ Roy::Roy(SDL_Renderer *renderer, int id) {
 
 	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id);
 	this->projectile_objects[0] = roy_fireball->get_projectile();
-}
-
-RoyFireball::RoyFireball(SDL_Renderer* renderer, int id) {
-	this->id = -1;
-	resource_dir = "resource/projectile/roy_fireball";
-	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
-	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png", renderer);
-	this->fighter_instance_accessor = fighter_instance_accessor;
-	superInit(renderer);
 }
 
 void Roy::chara_id() {
@@ -60,10 +43,6 @@ void Roy::loadRoyStatusFunctions() {
 	pStatus[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_status_special_uppercut_fall;
 	pEnter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_enter_status_special_uppercut_fall;
 	pExit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::roy_exit_status_special_uppercut_fall;
-}
-
-void RoyFireball::loadRoyFireballStatusFunctions() {
-
 }
 
 void Roy::loadRoyACMD() {
@@ -269,7 +248,7 @@ void Roy::roy_exit_status_fireball_start() {
 }
 
 void Roy::roy_status_special_uppercut_start() {
-	if (frame >= get_param_int("special_uppercut_transition_frame", roy_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+	if (frame >= get_param_int("special_uppercut_transition_frame", unique_param_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
 		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
@@ -288,8 +267,8 @@ void Roy::roy_status_special_uppercut() {
 		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL);
 		return;
 	}
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("special_uppercut_fall_speed", roy_table) * -1.0) {
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("special_uppercut_gravity", roy_table);
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("special_uppercut_fall_speed", unique_param_table) * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("special_uppercut_gravity", unique_param_table);
 	}
 	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -297,20 +276,20 @@ void Roy::roy_status_special_uppercut() {
 void Roy::roy_enter_status_special_uppercut() {
 	change_anim("special_uppercut");
 	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_l", roy_table);
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_l", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_l", unique_param_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_l", unique_param_table);
 	}
 	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_m", roy_table);
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_m", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_m", unique_param_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_m", unique_param_table);
 	}
 	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_h", roy_table);
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_h", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_h", unique_param_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_h", unique_param_table);
 	}
 	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_ex", roy_table);
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_ex", roy_table);
+		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("special_uppercut_x_ex", unique_param_table);
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("special_uppercut_init_y_ex", unique_param_table);
 	}
 }
 
@@ -323,8 +302,8 @@ void Roy::roy_status_special_uppercut_fall() {
 		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("special_uppercut_fall_speed", roy_table) * -1.0) {
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("special_uppercut_gravity", roy_table);
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("special_uppercut_fall_speed", unique_param_table) * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("special_uppercut_gravity", unique_param_table);
 	}
 	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
@@ -335,132 +314,4 @@ void Roy::roy_enter_status_special_uppercut_fall() {
 
 void Roy::roy_exit_status_special_uppercut_fall() {
 
-}
-
-void RoyFireball::loadRoyFireballACMD() {
-	script("default", [this]() {
-		return;
-	});
-}
-
-void RoyFireball::status_default() {
-	change_status(PROJECTILE_STATUS_MOVE);
-}
-
-void Roy::load_roy_params() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/params.yml");
-
-	if (stats_table.fail())
-	{
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	int i = 0;
-	string stat;
-	while (stats_table >> stat) {
-		roy_table[i].stat = stat;
-		stats_table >> roy_table[i].type;
-		switch (roy_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> roy_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> roy_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> roy_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> roy_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> roy_table[i].value_i;
-		} break;
-		}
-		i++;
-	}
-
-	stats_table.close();
-}
-
-void Roy::set_current_move_script(string anim_name) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_scripts[i].name == anim_name) {
-			move_script = roy_scripts[i].roy_script;
-			break;
-		}
-		else {
-			move_script = roy_scripts[0].roy_script;
-		}
-	}
-}
-
-void Roy::script(string name, function<void()> move_script) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_scripts[i].id == -1) {
-			roy_scripts[i] = RoyScript(name, move_script, i);
-			break;
-		}
-	}
-}
-
-void RoyFireball::load_roy_fireball_params() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/params.yml");
-
-	if (stats_table.fail())
-	{
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	int i = 0;
-	string stat;
-	while (stats_table >> stat) {
-		roy_fireball_table[i].stat = stat;
-		stats_table >> roy_fireball_table[i].type;
-		switch (roy_fireball_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> roy_fireball_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> roy_fireball_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> roy_fireball_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> roy_fireball_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> roy_fireball_table[i].value_i;
-		} break;
-		}
-		i++;
-	}
-
-	stats_table.close();
-}
-
-void RoyFireball::set_current_move_script(string anim_name) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_fireball_scripts[i].name == anim_name) {
-			move_script = roy_fireball_scripts[i].roy_script;
-			break;
-		}
-		else {
-			move_script = roy_fireball_scripts[0].roy_script;
-		}
-	}
-}
-
-void RoyFireball::script(string name, function<void()> move_script) {
-	for (int i = 0; i < 256; i++) {
-		if (roy_fireball_scripts[i].id == -1) {
-			roy_fireball_scripts[i] = RoyScript(name, move_script, i);
-			break;
-		}
-	}
 }

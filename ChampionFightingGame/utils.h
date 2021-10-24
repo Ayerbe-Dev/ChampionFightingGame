@@ -25,6 +25,7 @@ typedef unsigned long long u64;
 
 #define PARAM_TABLE_LENGTH 256
 #define ANIM_TABLE_LENGTH 256
+#define MOVE_SCRIPT_MAX 256
 #define MAX_PROJECTILES 10
 
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH

@@ -1,11 +1,17 @@
 #include "ObjectInstance.h"
 #include "ParamTable.h"
 
+MoveScript::MoveScript() {};
+
+MoveScript::MoveScript(string name, function<void()> move_script, int id) {
+	this->name = name;
+	this->move_script = move_script;
+	this->id = id;
+}
+
 ObjectInstance::ObjectInstance() {
 	this->id = -1;
 }
-
-void ObjectInstance::set_current_move_script(string anim_name) {}
 
 int ObjectInstance::get_param_int(string param, Param param_table[]) {
 	if (!param_table) {
@@ -115,6 +121,27 @@ bool ObjectInstance::is_excute_wait(int excute_count, int frames) {
 	}
 }
 
+void ObjectInstance::script(string name, function<void()> move_script) {
+	for (int i = 0; i < MOVE_SCRIPT_MAX; i++) {
+		if (move_scripts[i].id == -1) {
+			move_scripts[i] = MoveScript(name, move_script, i);
+			break;
+		}
+	}
+}
+
+void ObjectInstance::set_current_move_script(string anim_name) {
+	for (int i = 0; i < 256; i++) {
+		if (move_scripts[i].name == anim_name) {
+			move_script = move_scripts[i].move_script;
+			break;
+		}
+		else {
+			move_script = move_scripts[0].move_script;
+		}
+	}
+}
+
 void ObjectInstance::update_hitbox_pos() {
 	for (int i = 0; i < 10; i++)
 	{
@@ -175,4 +202,74 @@ void ObjectInstance::clear_hurtbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hurtboxes[i].clear();
 	}
+}
+
+void ObjectInstance::load_params() {
+	ifstream stats_table;
+	stats_table.open(resource_dir + "/param/stats.yml");
+
+	if (stats_table.fail()) {
+		cerr << "Could not open stats table!" << endl;
+		exit(1);
+	}
+
+	string stat;
+	for (int i = 0; stats_table >> stat; i++) {
+		param_table[i].stat = stat;
+		stats_table >> param_table[i].type;
+		switch (param_table[i].type) {
+		case(PARAM_TYPE_INT): {
+			stats_table >> param_table[i].value_i;
+		} break;
+		case(PARAM_TYPE_FLOAT): {
+			stats_table >> param_table[i].value_f;
+		} break;
+		case(PARAM_TYPE_STRING): {
+			stats_table >> param_table[i].value_s;
+		} break;
+		case (PARAM_TYPE_BOOL): {
+			stats_table >> param_table[i].value_b;
+		} break;
+		default: {
+			stats_table >> param_table[i].value_i;
+		} break;
+		}
+	}
+
+	stats_table.close();
+}
+
+void ObjectInstance::load_unique_params() {
+	ifstream stats_table;
+	stats_table.open(resource_dir + "/param/params.yml");
+
+	if (stats_table.fail()) {
+		cerr << "Could not open stats table!" << endl;
+		exit(1);
+	}
+
+	string stat;
+	for (int i = 0; stats_table >> stat; i++) {
+		unique_param_table[i].stat = stat;
+		stats_table >> unique_param_table[i].type;
+		switch (unique_param_table[i].type) {
+		case(PARAM_TYPE_INT): {
+			stats_table >> unique_param_table[i].value_i;
+		} break;
+		case(PARAM_TYPE_FLOAT): {
+			stats_table >> unique_param_table[i].value_f;
+		} break;
+		case(PARAM_TYPE_STRING): {
+			stats_table >> unique_param_table[i].value_s;
+		} break;
+		case (PARAM_TYPE_BOOL): {
+			stats_table >> unique_param_table[i].value_b;
+		} break;
+		default: {
+			stats_table >> unique_param_table[i].value_i;
+		} break;
+		}
+	}
+
+	stats_table.close();
 }

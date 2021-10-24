@@ -17,7 +17,7 @@ Eric::Eric() {
 Eric::Eric(SDL_Renderer *renderer, int id) {
 	resource_dir = "resource/chara/eric";
 	superInit(id, renderer);
-	load_eric_params();
+	load_unique_params();
 	loadEricACMD();
 	loadEricStatusFunctions();
 	set_current_move_script("default");
@@ -105,65 +105,6 @@ void Eric::chara_id() {
 ▒▒▓▓▓▓▓▓▓▓▓▓▓▓██▒▒▒▒░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒
 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓▓▒▒░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓▓████▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▓▓▓▓▓▓▒▒▒▒▒▒
 */
-}
-
-void Eric::load_eric_params() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/params.yml");
-
-	if (stats_table.fail())
-	{
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	int i = 0;
-	string stat;
-	while (stats_table >> stat) {
-		eric_table[i].stat = stat;
-		stats_table >> eric_table[i].type;
-		switch (eric_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> eric_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> eric_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> eric_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> eric_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> eric_table[i].value_i;
-		} break;
-		}
-		i++;
-	}
-
-	stats_table.close();
-}
-
-void Eric::set_current_move_script(string anim_name) {
-	for (int i = 0; i < 256; i++) {
-		if (eric_scripts[i].name == anim_name) {
-			move_script = eric_scripts[i].eric_script;
-			break;
-		}
-		else {
-			move_script = eric_scripts[0].eric_script;
-		}
-	}
-}
-
-void Eric::script(string name, function<void()> move_script) {
-	for (int i = 0; i < 256; i++) {
-		if (eric_scripts[i].id == -1) {
-			eric_scripts[i] = EricScript(name, move_script, i);
-			break;
-		}
-	}
 }
 
 void Eric::loadEricStatusFunctions() {

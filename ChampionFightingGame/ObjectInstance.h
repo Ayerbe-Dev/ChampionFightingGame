@@ -7,6 +7,16 @@
 #include "Box.h"
 #include "ParamTable.h"
 
+class MoveScript {
+public:
+	string name;
+	function<void()> move_script{ []() {} };
+	int id{ -1 };
+
+	MoveScript();
+	MoveScript(string name, function<void()> move_script, int id);
+};
+
 class ObjectInstance {
 public:
 	ObjectInstance();
@@ -34,6 +44,9 @@ public:
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
 
+	void script(string name, function<void()> move_script);
+	MoveScript move_scripts[MOVE_SCRIPT_MAX];
+
 	void update_hitbox_pos();
 	void clear_hitbox(int id);
 	void clear_hitbox_all();
@@ -45,6 +58,12 @@ public:
 	void clear_hurtbox_all();
 
 	Param param_table[PARAM_TABLE_LENGTH];
+	Param unique_param_table[PARAM_TABLE_LENGTH];
+
+	void load_params();
+	void load_unique_params();
+
+
 	int get_param_int(string param, Param param_table[] = {});
 	float get_param_float(string param, Param param_table[] = {});
 	string get_param_string(string param, Param param_table[] = {});
@@ -56,7 +75,7 @@ public:
 	SDL_Rect frame_rect;
 
 	function<void()> move_script;
-	virtual void set_current_move_script(string anim_name);
+	void set_current_move_script(string anim_name);
 	bool is_excute_frame(int excute_count, int frame);
 	bool is_excute_wait(int excute_count, int frames);
 };

@@ -58,7 +58,6 @@ public:
 
 	void superInit(int id, SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
-	void load_params();
 	void loadStatusFunctions();
 
 	//Inputs

@@ -83,41 +83,6 @@ void FighterInstance::load_anim_list(SDL_Renderer *renderer)
 	anim_list.close();
 }
 
-void FighterInstance::load_params() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/stats.yml");
-
-	if (stats_table.fail()) {
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	string stat;
-	for (int i = 0; stats_table >> stat; i++) {
-		param_table[i].stat = stat;
-		stats_table >> param_table[i].type;
-		switch (param_table[i].type) {
-			case(PARAM_TYPE_INT): {
-				stats_table >> param_table[i].value_i;
-			} break;
-			case(PARAM_TYPE_FLOAT): {
-				stats_table >> param_table[i].value_f;
-			} break;
-			case(PARAM_TYPE_STRING): {
-				stats_table >> param_table[i].value_s;
-			} break;
-			case (PARAM_TYPE_BOOL): {
-				stats_table >> param_table[i].value_b;
-			} break;
-			default: {
-				stats_table >> param_table[i].value_i;
-			} break;
-		}
-	}
-
-	stats_table.close();
-}
-
 void FighterInstance::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_WAIT] = &FighterInstance::status_wait;
 	pEnter_status[CHARA_STATUS_WAIT] = &FighterInstance::enter_status_wait;

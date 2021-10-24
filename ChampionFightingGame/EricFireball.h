@@ -8,5 +8,5 @@
 class EricFireball : public ProjectileInstance {
 public:
 	EricFireball();
-	EricFireball(SDL_Renderer* renderer, int id);
+	EricFireball(SDL_Renderer* renderer, int id, FighterInstanceAccessor *fighter_instance_accessor);
 };

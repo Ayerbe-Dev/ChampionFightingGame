@@ -8,7 +8,7 @@
 class RoyFireball : public ProjectileInstance {
 public:
 	RoyFireball();
-	RoyFireball(SDL_Renderer* renderer, int id);
+	RoyFireball(SDL_Renderer* renderer, int id, FighterInstanceAccessor *fighter_instance_accessor);
 
 	void loadRoyFireballStatusFunctions();
 	void loadRoyFireballACMD();

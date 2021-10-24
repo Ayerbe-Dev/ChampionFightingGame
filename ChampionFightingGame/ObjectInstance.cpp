@@ -142,12 +142,12 @@ void ObjectInstance::set_current_move_script(string anim_name) {
 	}
 }
 
-void ObjectInstance::update_hitbox_pos() {
+void ObjectInstance::update_hitbox_pos(bool add_window_width) {
 	for (int i = 0; i < 10; i++)
 	{
 		if (hitboxes[i].id != -1)
 		{
-			hitboxes[i].update_pos(this);
+			hitboxes[i].update_pos(this, add_window_width);
 		}
 	}
 }
@@ -272,4 +272,15 @@ void ObjectInstance::load_unique_params() {
 	}
 
 	stats_table.close();
+}
+
+void ObjectInstance::update_hitbox_connect(int multihit_index)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		if (hitboxes[i].id != -1)
+		{
+			hitboxes[i].update_connect(multihit_index);
+		}
+	}
 }

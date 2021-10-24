@@ -44,14 +44,13 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 
 	//init players
 	FighterInstance *fighter_instance[2];
+	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
-	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0);
-	IObject *p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1);
+	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0, fighter_instance_accessor);
+	IObject *p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1, fighter_instance_accessor);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
-
-	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
 	for (int i = 0; i < 2; i++) {
 		fighter_instance[i]->player_info = &player_info[i];
@@ -376,50 +375,58 @@ void tickOnceProjectile(ProjectileInstance* projectile_instance) {
 	projectile_instance->update_hurtbox_pos();
 }
 
-void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer *renderer, bool visualize_boxes)
-{
+void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer *renderer, bool visualize_boxes) {
 	FighterInstance *fighter_instance[2] = {p1, p2};
-	for (int i = 0; i < 2; i++)
-	{ //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
+	for (int i = 0; i < 2; i++) { //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = HITBOX_COUNT_MAX;
+		int projectile_hitbox_to_use = HITBOX_COUNT_MAX;
 		int grabbox_to_use = HITBOX_COUNT_MAX;
 		fighter_instance[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = false;
-		for (int i2 = 0; i2 < 10; i2++)
-		{
-			if (fighter_instance[i]->hurtboxes[i2].id != -1)
-			{
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (fighter_instance[i]->hurtboxes[i2].id != -1) {
 				SDL_Rect hurtbox;
 				hurtbox = fighter_instance[i]->hurtboxes[i2].rect;
 
-				for (int i3 = 0; i3 < 10; i3++)
-				{
-					if (fighter_instance[!i]->hitboxes[i3].id != -1 && !fighter_instance[!i]->hitboxes[i3].success_hit)
-					{
+				for (int i3 = 0; i3 < 10; i3++) {
+					if (fighter_instance[!i]->hitboxes[i3].id != -1 && !fighter_instance[!i]->hitboxes[i3].success_hit) {
 						SDL_Rect hitbox;
 						hitbox = fighter_instance[!i]->hitboxes[i3].rect;
-						if (fighter_instance[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK)
-						{
-							if (is_collide(hitbox, hurtbox))
-							{
+						if (fighter_instance[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
+							if (is_collide(hitbox, hurtbox)) {
 								hitbox_to_use = get_event_hit_collide_player(fighter_instance[!i], fighter_instance[i], &(fighter_instance[!i]->hitboxes[i3]), &(fighter_instance[i]->hurtboxes[i2]));
 							}
 						}
-						else
-						{
+						else {
 							fighter_instance[i]->chara_flag[CHARA_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
 						}
-						if (hitbox_to_use != HITBOX_COUNT_MAX)
-						{
+						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
 						}
 					}
 				}
-				if (hitbox_to_use != HITBOX_COUNT_MAX)
-				{
+				for (int i3 = 0; i3 < MAX_PROJECTILES; i3++) {
+					if (fighter_instance[!i]->projectile_objects[i3]->id != -1) {
+						for (int i4 = 0; i4 < 10; i4++) {
+							if (fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4].id != -1
+							&& !fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4].success_hit) {
+								SDL_Rect hitbox;
+								hitbox = fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4].rect;
+//								cout << "Hitbox X: " << hitbox.x << endl;
+//								cout << "Hitbox Y: " << hitbox.y << endl;
+								if (is_collide(hitbox, hurtbox)) {
+									projectile_hitbox_to_use = get_event_hit_collide_projectile(fighter_instance[!i]->projectile_objects[i3], fighter_instance[i], &(fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4]), &(fighter_instance[i]->hurtboxes[i2]));
+								}
+								if (projectile_hitbox_to_use != HITBOX_COUNT_MAX) {
+									break;
+								}
+							}
+						}
+					}
+				}
+				if (hitbox_to_use != HITBOX_COUNT_MAX) {
 					break;
 				}
-				for (int i3 = 0; i3 < 10; i3++)
-				{
+				for (int i3 = 0; i3 < 10; i3++) {
 					if (fighter_instance[!i]->grabboxes[i3].id != -1) {
 						SDL_Rect grabbox;
 						grabbox = fighter_instance[!i]->grabboxes[i3].rect;
@@ -431,24 +438,19 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 						}
 					}
 				}
-				if (grabbox_to_use != HITBOX_COUNT_MAX)
-				{
+				if (grabbox_to_use != HITBOX_COUNT_MAX) {
 					break;
 				}
 			}
 		}
-		for (int i2 = 0; i2 < 10; i2++)
-		{
-			if (fighter_instance[i]->hurtboxes[i2].id != -1)
-			{
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (fighter_instance[i]->hurtboxes[i2].id != -1) {
 				SDL_Rect render_pos;
 				render_pos = fighter_instance[i]->hurtboxes[i2].rect;
 
-				if (visualize_boxes)
-				{
+				if (visualize_boxes) {
 					Vec4f hurtbox_color = {0, 0, 255, 127};
-					if (fighter_instance[i]->hurtboxes[i2].intangible_kind != INTANGIBLE_KIND_NONE)
-					{
+					if (fighter_instance[i]->hurtboxes[i2].intangible_kind != INTANGIBLE_KIND_NONE) {
 						hurtbox_color.y = 255;
 					}
 
@@ -459,18 +461,14 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 				}
 			}
 		}
-		for (int i2 = 0; i2 < 10; i2++)
-		{
-			if (fighter_instance[i]->hitboxes[i2].id != -1)
-			{
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (fighter_instance[i]->hitboxes[i2].id != -1) {
 				SDL_Rect render_pos;
 				render_pos = fighter_instance[i]->hitboxes[i2].rect;
 
-				if (visualize_boxes)
-				{
+				if (visualize_boxes) {
 					Vec4f hitbox_color = {255, 0, 0, 127};
-					if (fighter_instance[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK)
-					{
+					if (fighter_instance[i]->hitboxes[i2].hitbox_kind == HITBOX_KIND_BLOCK) {
 						hitbox_color.y = 165;
 						hitbox_color.w = 50;
 					}
@@ -481,11 +479,24 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 					SDL_RenderFillRect(renderer, &render_pos);
 				}
 			}
+			for (int i3 = 0; i3 < 10; i3++) {
+				if (fighter_instance[i]->projectile_objects[i2]->id != -1 && fighter_instance[i]->projectile_objects[i2]->hitboxes[i3].id != -1 ) {
+					SDL_Rect render_pos;
+					render_pos = fighter_instance[i]->projectile_objects[i2]->hitboxes[i3].rect;
+
+					if (visualize_boxes) {
+						Vec4f hitbox_color = { 255, 0, 0, 127 };
+
+						SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
+						SDL_RenderDrawRect(renderer, &render_pos);
+						SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, hitbox_color.w);
+						SDL_RenderFillRect(renderer, &render_pos);
+					}
+				}
+			}
 		}
-		for (int i2 = 0; i2 < 10; i2++)
-		{
-			if (fighter_instance[i]->grabboxes[i2].id != -1)
-			{
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (fighter_instance[i]->grabboxes[i2].id != -1) {
 				SDL_Rect render_pos;
 				render_pos = fighter_instance[i]->grabboxes[i2].rect;
 
@@ -658,6 +669,10 @@ int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* de
 	return grabbox->id;
 }
 
+int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox){
+	return HITBOX_COUNT_MAX;
+}
+
 bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
@@ -723,7 +738,7 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 	}
 	if (p2_hit)
 	{
-		p1->update_hitbox_connect();
+		p1->update_hitbox_connect(p1_hitbox->multihit);
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
 		{
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
@@ -816,7 +831,7 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 
 	if (p1_hit)
 	{ //P1 got hit
-		p2->update_hitbox_connect();
+		p2->update_hitbox_connect(p2_hitbox->multihit);
 		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
 		{
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
@@ -1075,18 +1090,18 @@ void decrease_common_projectile_variables(ProjectileInstance* projectile_instanc
 	}
 }
 
-IObject::IObject(int object_type, int object_kind, SDL_Renderer *renderer, int id) {
+IObject::IObject(int object_type, int object_kind, SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind)
 		{
 		case (CHARA_KIND_ROY):
 		{
-			fighter_instance = new Roy(renderer, id);
+			fighter_instance = new Roy(renderer, id, fighter_instance_accessor);
 		}
 		break;
 		case (CHARA_KIND_ERIC):
 		{
-			fighter_instance = new Eric(renderer, id);
+			fighter_instance = new Eric(renderer, id, fighter_instance_accessor);
 		}
 		break;
 		case (CHARA_KIND_MAX):
@@ -1101,12 +1116,12 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer *renderer, int i
 		{
 		case (PROJECTILE_KIND_ROY_FIREBALL):
 		{
-			projectile_instance = new RoyFireball(renderer, id);
+			projectile_instance = new RoyFireball(renderer, id, fighter_instance_accessor);
 		}
 		break;
 		case (PROJECTILE_KIND_ERIC_FIREBALL):
 		{
-			projectile_instance = new EricFireball(renderer, id);
+			projectile_instance = new EricFireball(renderer, id, fighter_instance_accessor);
 		}
 		break;
 		case (PROJECTILE_KIND_MAX):

@@ -370,7 +370,7 @@ void tickOnceProjectile(ProjectileInstance* projectile_instance) {
 	projectile_instance->pos.x_spr_offset = width / 2;
 	projectile_instance->pos.y_spr_offset = height;
 
-	projectile_instance->update_hitbox_pos();
+	projectile_instance->update_hitbox_pos(false);
 	projectile_instance->update_grabbox_pos();
 	projectile_instance->update_hurtbox_pos();
 }

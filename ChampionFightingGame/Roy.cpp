@@ -1,5 +1,7 @@
 #include "Roy.h"
 #include "Game.h"
+#include "RoyFireball.fwd.h"
+#include "RoyFireball.h"
 
 Roy::Roy() {
 
@@ -21,6 +23,8 @@ Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instan
 
 	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, fighter_instance_accessor);
 	this->projectile_objects[0] = roy_fireball->get_projectile();
+	RoyFireball* roy_fireball_instance = (RoyFireball*)projectile_objects[0];
+	roy_fireball_instance->roy = this;
 }
 
 void Roy::chara_id() {
@@ -192,7 +196,7 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		}
 		if (is_excute_frame(2, 3)) {
-			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW, CHARA_STATUS_THROWN);
+			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW, CHARA_STATUS_GRABBED);
 		}
 	});
 	script("throw_f", [this]() {
@@ -202,8 +206,41 @@ void Roy::loadRoyACMD() {
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(2, 13)) {
-			damage_opponent(30.0);
-			change_opponent_status(CHARA_STATUS_KNOCKDOWN_START);
+			damage_opponent(30.0, 2.0, 6.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
+	});
+	script("special_fireball_start", [this]() {
+		if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+			if (is_excute_frame(1, 11)) {
+				//hitbox
+				excute_count++;
+			}
+		}
+		else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+			if (is_excute_frame(1, 9)) {
+				max_ticks++;
+			}
+			if (is_excute_frame(2, 12)) {
+				//hitbox
+			}
+		}
+		else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+			if (is_excute_frame(1, 8)) {
+				max_ticks++;
+			}
+			if (is_excute_frame(2, 13)) {
+				//hitbox
+			}
+		}
+		else {
+			if (is_excute_frame(1, 11)) {
+				//hitbox
+				excute_count++;
+			}
+		}
+		if (is_excute_frame(3, 14)) {
+			max_ticks = 3;
 		}
 	});
 	script("special_fireball_punch", [this]() {
@@ -272,9 +309,35 @@ bool Roy::specific_status_attack() {
 }
 
 void Roy::roy_status_special_fireball_start() {
-	if (check_button_trigger(BUTTON_LP) || check_button_trigger(BUTTON_MP) || check_button_trigger(BUTTON_HP)) {
-		change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
-		return;
+	int trans_frame = 0;
+	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+		trans_frame = get_param_int("special_fireball_transition_frame_l", unique_param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+		trans_frame = get_param_int("special_fireball_transition_frame_m", unique_param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+		trans_frame = get_param_int("special_fireball_transition_frame_h", unique_param_table);
+	}
+	else {
+		trans_frame = get_param_int("special_fireball_transition_frame_ex", unique_param_table);
+	}
+	if (frame >= trans_frame) {
+		if (check_button_input(BUTTON_LP)) {
+			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
+			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
+			return;
+		}
+		if (check_button_input(BUTTON_MP)) {
+			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
+			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
+			return;
+		}
+		if (check_button_input(BUTTON_HP)) {
+			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
+			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
+			return;
+		}	
 	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);

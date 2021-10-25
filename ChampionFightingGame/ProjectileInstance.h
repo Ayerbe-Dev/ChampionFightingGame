@@ -7,7 +7,9 @@
 
 class ProjectileInstance: public ObjectInstance {
 public:
+
 	int projectile_kind;
+	int owner_id;
 	FighterInstanceAccessor* fighter_instance_accessor;
 
 	int projectile_int[PROJECTILE_INT_MAX];

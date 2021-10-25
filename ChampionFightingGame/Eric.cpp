@@ -1,6 +1,8 @@
 ﻿#include "Eric.h"
 #include "utils.h"
 #include "Game.h"
+#include "EricFireball.fwd.h"
+#include "EricFireball.h"
 
 EricScript::EricScript() {};
 
@@ -30,6 +32,8 @@ Eric::Eric(SDL_Renderer *renderer, int id, FighterInstanceAccessor *fighter_inst
 
 	IObject* eric_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id, fighter_instance_accessor);
 	this->projectile_objects[0] = eric_fireball->get_projectile();
+	EricFireball* eric_fireball_instance = (EricFireball*)projectile_objects[0];
+	eric_fireball_instance->eric = this;
 }
 
 void Eric::chara_id() {

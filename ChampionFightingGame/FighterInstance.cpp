@@ -165,10 +165,6 @@ void FighterInstance::loadStatusFunctions() {
 	pEnter_status[CHARA_STATUS_THROWN] = &FighterInstance::enter_status_thrown;
 	pExit_status[CHARA_STATUS_THROWN] = &FighterInstance::exit_status_thrown;
 
-	pStatus[CHARA_STATUS_THROWN_AIR] = &FighterInstance::status_thrown_air;
-	pEnter_status[CHARA_STATUS_THROWN_AIR] = &FighterInstance::enter_status_thrown_air;
-	pExit_status[CHARA_STATUS_THROWN_AIR] = &FighterInstance::exit_status_thrown_air;
-
 	pStatus[CHARA_STATUS_HITSTUN] = &FighterInstance::status_hitstun;
 	pEnter_status[CHARA_STATUS_HITSTUN] = &FighterInstance::enter_status_hitstun;
 	pExit_status[CHARA_STATUS_HITSTUN] = &FighterInstance::exit_status_hitstun;
@@ -701,8 +697,10 @@ void FighterInstance::change_opponent_status(u32 status_kind) {
 	fighter_instance_accessor->fighter_instance[!id]->change_status(status_kind);
 }
 
-void FighterInstance::damage_opponent(float damage) {
+void FighterInstance::damage_opponent(float damage, float x_speed, float y_speed) {
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_HEALTH] -= damage;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = x_speed;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = y_speed;
 }
 
 void FighterInstance::set_opponent_angle(double angle) {
@@ -1046,7 +1044,6 @@ u32 FighterInstance::get_status_group(u32 status)
 	case (CHARA_STATUS_LAUNCH):
 	case (CHARA_STATUS_CRUMPLE):
 	case (CHARA_STATUS_THROWN):
-	case (CHARA_STATUS_THROWN_AIR):
 	{
 		return STATUS_GROUP_HITSTUN;
 	}
@@ -1336,6 +1333,7 @@ void FighterInstance::status_crouchd() {
 	}
 	if (get_stick_dir() > 3) {
 		change_status(CHARA_STATUS_CROUCHU);
+		return;
 	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_CROUCH);
@@ -1633,6 +1631,18 @@ void FighterInstance::status_attack_air()
 			return;
 		}
 	}
+	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK))
+	{
+		change_status(CHARA_STATUS_GRAB_AIR);
+	}
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
+		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
+			if (!chara_flag[CHARA_FLAG_HAS_ATTACK] && !chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS]) {
+				change_status(CHARA_STATUS_PARRY_START);
+				return;
+			}
+		}
+	}
 	common_air_status_general();
 }
 
@@ -1774,26 +1784,22 @@ void FighterInstance::exit_status_grabbed() {
 }
 
 void FighterInstance::status_thrown() {
-
+	if (pos.y < FLOOR_GAMECOORD) {
+		chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
+		change_status(CHARA_STATUS_KNOCKDOWN);
+		return;
+	}
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
+	}
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void FighterInstance::enter_status_thrown() {
-
+	change_anim("knockdown_start");
 }
 
 void FighterInstance::exit_status_thrown() {
-
-}
-
-void FighterInstance::status_thrown_air() {
-
-}
-
-void FighterInstance::enter_status_thrown_air() {
-
-}
-
-void FighterInstance::exit_status_thrown_air() {
 
 }
 

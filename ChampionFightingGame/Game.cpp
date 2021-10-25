@@ -80,6 +80,12 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	const Uint8 *keyboard_state;
 	tick = SDL_GetTicks();
 
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			fighter_instance[i]->projectile_objects[i2]->owner_id = i;
+		}
+	}
+
 	while (gaming) {
 		//Frame delay
 

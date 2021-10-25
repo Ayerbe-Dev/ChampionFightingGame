@@ -207,7 +207,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 						flip = SDL_FLIP_HORIZONTAL;
 					}
 					SDL_Rect render_pos;
-					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.x;
+					render_pos.x = fighter_instance[i]->projectile_objects[o]->pos.getRenderCoodrinateX();
 					render_pos.y = fighter_instance[i]->projectile_objects[o]->pos.y;
 					int width;
 					int height;
@@ -364,6 +364,9 @@ void tickOnceProjectile(ProjectileInstance* projectile_instance) {
 	projectile_instance->playoutStatus();
 
 	decrease_common_projectile_variables(projectile_instance);
+	if (projectile_instance->projectile_int[PROJECTILE_INT_HEALTH] == 0) {
+		projectile_instance->id = -1;
+	}
 
 	int width;
 	int height;
@@ -371,13 +374,46 @@ void tickOnceProjectile(ProjectileInstance* projectile_instance) {
 	projectile_instance->pos.x_spr_offset = width / 2;
 	projectile_instance->pos.y_spr_offset = height;
 
-	projectile_instance->update_hitbox_pos();
+	projectile_instance->update_hitbox_pos(false);
 	projectile_instance->update_grabbox_pos();
 	projectile_instance->update_hurtbox_pos();
 }
 
 void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer *renderer, bool visualize_boxes) {
 	FighterInstance *fighter_instance[2] = {p1, p2};
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		if (fighter_instance[0]->projectile_objects[i]->id != -1) {
+			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+				if (fighter_instance[1]->projectile_objects[i2]->id != -1) {
+					for (int i3 = 0; i3 < 10; i3++) {
+						if (fighter_instance[0]->projectile_objects[i]->hitboxes[i3].id != -1
+							&& !fighter_instance[0]->projectile_objects[i]->hitboxes[i3].success_hit) {
+							for (int i4 = 0; i4 < 10; i4++) {
+								if (fighter_instance[1]->projectile_objects[i2]->hitboxes[i4].id != -1
+									&& !fighter_instance[1]->projectile_objects[i2]->hitboxes[i4].success_hit) {
+									SDL_Rect p1_hitbox, p2_hitbox;
+									p1_hitbox = fighter_instance[0]->projectile_objects[i]->hitboxes[i3].rect;
+									p2_hitbox = fighter_instance[1]->projectile_objects[i2]->hitboxes[i4].rect;
+									if (is_collide(p1_hitbox, p2_hitbox)) {
+										fighter_instance[0]->projectile_objects[i]->clear_hitbox(i3);
+										fighter_instance[1]->projectile_objects[i2]->clear_hitbox(i4);
+										fighter_instance[0]->projectile_objects[i]->projectile_int[PROJECTILE_INT_HEALTH] --;
+										fighter_instance[1]->projectile_objects[i2]->projectile_int[PROJECTILE_INT_HEALTH] --;
+										if (fighter_instance[0]->projectile_objects[i]->projectile_int[PROJECTILE_INT_HEALTH] == 0) {
+											fighter_instance[0]->projectile_objects[i]->id = -1;
+										}
+										if (fighter_instance[1]->projectile_objects[i2]->projectile_int[PROJECTILE_INT_HEALTH] == 0) {
+											fighter_instance[1]->projectile_objects[i2]->id = -1;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	for (int i = 0; i < 2; i++) { //Secondary loop bc otherwise P2 renders on top of P1's hitbox visuals
 		int hitbox_to_use = HITBOX_COUNT_MAX;
 		int projectile_hitbox_to_use = HITBOX_COUNT_MAX;
@@ -412,8 +448,6 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 							&& !fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4].success_hit) {
 								SDL_Rect hitbox;
 								hitbox = fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4].rect;
-//								cout << "Hitbox X: " << hitbox.x << endl;
-//								cout << "Hitbox Y: " << hitbox.y << endl;
 								if (is_collide(hitbox, hurtbox)) {
 									projectile_hitbox_to_use = get_event_hit_collide_projectile(fighter_instance[!i]->projectile_objects[i3], fighter_instance[i], &(fighter_instance[!i]->projectile_objects[i3]->hitboxes[i4]), &(fighter_instance[i]->hurtboxes[i2]));
 								}
@@ -518,9 +552,17 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 		}
 		fighter_instance[i]->connected_hitbox = hitbox_to_use;
 		fighter_instance[i]->connected_grabbox = grabbox_to_use;
+		fighter_instance[i]->connected_projectile_hitbox = projectile_hitbox_to_use;
 	}
 	if (!event_hit_collide_player(fighter_instance[0], fighter_instance[1], &(fighter_instance[0]->hitboxes[fighter_instance[1]->connected_hitbox]), &(fighter_instance[1]->hitboxes[fighter_instance[0]->connected_hitbox]))) {
 		event_grab_collide_player(fighter_instance[0], fighter_instance[1], &(fighter_instance[0]->grabboxes[fighter_instance[1]->connected_grabbox]), &(fighter_instance[1]->grabboxes[fighter_instance[0]->connected_grabbox]));
+	}
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			if (fighter_instance[i]->projectile_objects[i2]->id != -1) {
+				event_hit_collide_projectile(fighter_instance[i], fighter_instance[!i], fighter_instance[i]->projectile_objects[i2], &(fighter_instance[i]->projectile_objects[i2]->hitboxes[fighter_instance[!i]->connected_projectile_hitbox]));
+			}
+		}
 	}
 }
 
@@ -671,7 +713,79 @@ int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* de
 }
 
 int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox){
-	return HITBOX_COUNT_MAX;
+	if (hitbox->success_hit)
+	{
+		return HITBOX_COUNT_MAX;
+	}
+
+	if (hitbox->situation_hit != SITUATION_HIT_ALL)
+	{
+		if (hitbox->situation_hit != SITUATION_HIT_GROUND_AIR)
+		{
+			if (hitbox->situation_hit != defender->situation_kind)
+			{
+				return HITBOX_COUNT_MAX;
+			}
+		}
+		else if (defender->situation_kind == CHARA_SITUATION_DOWN)
+		{
+			return HITBOX_COUNT_MAX;
+		}
+	}
+	if (hurtbox->intangible_kind == INTANGIBLE_KIND_PROJECTILE || hurtbox->intangible_kind == INTANGIBLE_KIND_ALL) {
+		return HITBOX_COUNT_MAX;
+	}
+	if (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->max_juggle < defender->chara_int[CHARA_INT_JUGGLE_VALUE]) {
+		return HITBOX_COUNT_MAX;
+	}
+
+	//Then, check if the hurtbox is invincible. If it is, the attacker's entire attack has failed. This will be pretty rare tbh.
+
+	if (hurtbox->intangible_kind == INTANGIBLE_KIND_INVINCIBLE) {
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		return hitbox->id;
+	}
+
+	//If the hurtbox has armor, both parties get SOME hitlag to acknowledge the move hitting
+
+	if (hurtbox->is_armor) {
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		return hitbox->id;
+	}
+
+	bool blocking = false;
+	bool parrying = false;
+	if (defender->is_actionable() || defender->status_kind == CHARA_STATUS_BLOCKSTUN) {
+		if (defender->get_stick_dir() == 4 || defender->get_stick_dir() == 1) {
+			blocking = true;
+		}
+	}
+	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
+		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID) {
+			parrying = true;
+		}
+	}
+	if (parrying) {
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag + 12;
+		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag + 8;
+		defender->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = true;
+		return hitbox->id;
+	}
+	if (blocking && !hitbox->unblockable) {
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag;
+		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
+		defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->blockstun;
+		defender->chara_int[CHARA_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
+		defender->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = true;
+		return hitbox->id;
+	}
+
+	attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->hitstun;
+	attacker->projectile_flag[PROJECTILE_FLAG_HIT] = true;
+	return hitbox->id;
 }
 
 bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox) {
@@ -960,6 +1074,85 @@ void event_grab_collide_player(FighterInstance* p1, FighterInstance* p2, Grabbox
 			p1->change_status(p1_grabbox->attacker_status_if_hit);
 			p2->change_status(p1_grabbox->defender_status_if_hit);
 		}
+	}
+}
+
+void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, ProjectileInstance* p1_projectile, Hitbox* p1_hitbox) {
+	bool p2_hit = p1_hitbox->id != -1;
+	u32 p2_status_post_hit = p2->status_kind;
+	if (p2_hit) {
+		p1_projectile->update_hitbox_connect(p1_hitbox->multihit);
+		p1_projectile->projectile_int[PROJECTILE_INT_HEALTH] --;
+		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
+			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->get_param_float("meter_gain_on_parry");
+			p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
+			p2_status_post_hit = CHARA_STATUS_PARRY;
+		}
+		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
+			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
+			if (!p2->invalid_x(p2->pos.x - p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
+				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
+			}
+			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
+			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
+		}
+		else if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT]) {
+			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
+			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage / 2;
+		}
+		else {
+			/*
+				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
+				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
+			*/
+			if (p2->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
+					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
+				}
+			}
+			else {
+				p1->chara_int[CHARA_INT_DAMAGE_SCALE] = 0;
+			}
+			p2->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
+			p2->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
+			p2->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
+			p2->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
+			/*
+			If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise,
+			increase it by one so that the opponent's juggle value is always going up
+			*/
+			if (p2->chara_int[CHARA_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_set) {
+				p2->chara_int[CHARA_INT_JUGGLE_VALUE]++;
+			}
+			else {
+				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
+			}
+			if (!p2->invalid_x(p2->pos.x - p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
+				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
+			}
+			if (can_counterhit(p2, p1_hitbox)) {
+				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
+				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
+				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
+				p2->chara_int[CHARA_INT_HITSTUN_FRAMES] *= 1.2;
+				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
+				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);
+			}
+			else {
+				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
+				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * ((float)(clamp(1, 10 - p1->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10);
+				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
+				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
+			}
+		}
+		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT] = false;
+		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = true;
+		p1->chara_flag[CHARA_FLAG_PROJECTILE_CONNECTED_DURING_STATUS] = true;
+	}
+	if (p2_hit) {
+		p2->change_status(p2_status_post_hit, true, false);
 	}
 }
 

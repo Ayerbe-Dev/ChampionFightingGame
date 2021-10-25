@@ -17,6 +17,7 @@ int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* de
 int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox);
 bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox);
 void event_grab_collide_player(FighterInstance *p1, FighterInstance *p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox);
+void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, ProjectileInstance* p1_projectile, Hitbox* p1_hitbox);
 bool can_counterhit(FighterInstance* defender, Hitbox* hitbox);
 int get_damage_status(int hit_status, int situation_kind);
 

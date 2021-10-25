@@ -37,6 +37,7 @@ public:
 	
 	int connected_hitbox;
 	int connected_grabbox;
+	int connected_projectile_hitbox;
 
 	void (FighterInstance::* pStatus[CHARA_STATUS_MAX])();
 	void (FighterInstance::* pEnter_status[CHARA_STATUS_MAX])();

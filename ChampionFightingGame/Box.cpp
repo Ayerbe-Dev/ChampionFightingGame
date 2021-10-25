@@ -70,10 +70,10 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) - WINDOW_WIDTH / 2;
-	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-	offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) - WINDOW_WIDTH / 2;
-	offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+	anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
+	anchor.y = anchor.y + object_instance->pos.y;
+	offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
+	offset.y = offset.y + object_instance->pos.y;
 	offset.x -= anchor.x;
 	offset.y -= anchor.y;
 	this->rect.x = anchor.x;
@@ -129,10 +129,10 @@ void Hitbox::update_pos(ObjectInstance * object_instance, bool add_window_width)
 			offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
 		}
 		else {
-			anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) - WINDOW_WIDTH / 2;
-			anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-			offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) - WINDOW_WIDTH / 2;
-			offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+			anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
+			anchor.y = anchor.y + object_instance->pos.y;
+			offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
+			offset.y = offset.y + object_instance->pos.y;
 		}
 	}
 	else {

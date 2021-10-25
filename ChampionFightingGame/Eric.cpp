@@ -159,7 +159,9 @@ void Eric::loadEricACMD() {
 		}
 	});
 	script("stand_lk", [this]() {
-
+		if (is_excute_frame(1, 0)) {
+			init_projectile(0, GameCoordinate{ 0, 30 });
+		}
 	});
 	script("stand_mk", [this]() {
 

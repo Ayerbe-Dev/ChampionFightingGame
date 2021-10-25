@@ -26,10 +26,27 @@ void RoyFireball::loadRoyFireballACMD() {
 			cout << fighter_instance_accessor->fighter_instance[id]->pos.y << endl;
 			cout << pos.x << endl;
 			cout << pos.y << endl;
-			new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_KNOCKDOWN, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
+			new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0);
 		}
 	});
 }
+
+/*
+  (                                 _
+   )                               /=>
+  (  +____________________/\/\___ / /|
+   .''._____________'._____      / /|/\
+  : () :              :\ ----\|    \ )
+   '..'______________.'0|----|      \
+					0_0/____/        \
+						|----    /----\
+					   || -\\ --|      \
+					   ||   || ||\      \
+						\\____// '|      \
+Bang! Bang!                     .'/       |
+							   .:/        |
+							   :/_________|
+*/
 
 void RoyFireball::status_default() {
 	change_status(PROJECTILE_STATUS_MOVE);

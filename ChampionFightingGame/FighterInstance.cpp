@@ -2,6 +2,7 @@
 #include "GameCoordinate.h"
 #include "Animation.h"
 #include <fstream>
+#include <cmath>
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -799,7 +800,7 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 				render_frame = entry_frame;
 			}
 			else {
-				max_ticks = ceilf((float)entry_frame / (float)(animation_table[i].length));
+				max_ticks = ceil((float)entry_frame / (float)(animation_table[i].length));
 				frame = 0;
 				render_frame = 0;
 			}

@@ -17,6 +17,25 @@ public:
 	void loadRoyFireballStatusFunctions();
 	void loadRoyFireballACMD();
 
+	void tickOnceProjectileUnique() override;
+
 	void status_default() override;
-	void status_move() override;
+	void status_hit() override;
+	void enter_status_hit() override;
+	
+	void status_roy_fireball_hover() override;
+	void enter_status_roy_fireball_hover() override;
+	void exit_status_roy_fireball_hover() override;
+	void status_roy_fireball_punched() override;
+	void enter_status_roy_fireball_punched() override;
+	void exit_status_roy_fireball_punched() override;
+	void status_roy_fireball_kicked() override;
+	void enter_status_roy_fireball_kicked() override;
+	void exit_status_roy_fireball_kicked() override;
+	void status_roy_fireball_fall() override;
+	void enter_status_roy_fireball_fall() override;
+	void exit_status_roy_fireball_fall() override;
+	void status_roy_fireball_ground() override;
+	void enter_status_roy_fireball_ground() override;
+	void exit_status_roy_fireball_ground() override;
 };

@@ -43,6 +43,7 @@ public:
 	GameCoordinate init_anchor;
 	GameCoordinate init_offset;
 	bool use_player_pos;
+	bool trade;
 
 	Hitbox();
 	Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, 
@@ -53,7 +54,7 @@ public:
 	Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 		GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 		int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
-		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x);
+		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade);
 	
 	void update_connect(int multihit_index);
 	void update_pos(ObjectInstance* object_instance, bool add_window_width = true);

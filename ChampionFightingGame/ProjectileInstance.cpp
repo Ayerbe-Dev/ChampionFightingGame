@@ -106,6 +106,10 @@ void ProjectileInstance::loadStatusFunctions() {
 	pStatus[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::status_move;
 	pEnter_status[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::enter_status_move;
 	pExit_status[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::exit_status_move;
+
+	pStatus[PROJECTILE_STATUS_HIT] = &ProjectileInstance::status_hit;
+	pEnter_status[PROJECTILE_STATUS_HIT] = &ProjectileInstance::enter_status_hit;
+	pExit_status[PROJECTILE_STATUS_HIT] = &ProjectileInstance::exit_status_hit;
 }
 
 bool ProjectileInstance::canStep() {
@@ -189,14 +193,26 @@ void ProjectileInstance::exit_status_move() {
 
 }
 
+void ProjectileInstance::status_hit() {
+
+}
+
+void ProjectileInstance::enter_status_hit() {
+
+}
+
+void ProjectileInstance::exit_status_hit() {
+
+}
+
 void ProjectileInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
 	float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
-	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x) {
+	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade) {
 	if (id < 10) {
 		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, meter_gain_on_hit,
 			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, 
 			hit_pushback, block_pushback, success_hit, juggle_set, max_juggle, hit_status, counterhit_status,
-			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x);
+			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, trade);
 	}
 }

@@ -213,7 +213,7 @@ void Roy::loadRoyACMD() {
 	script("special_fireball_start", [this]() {
 		if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 			if (is_excute_frame(1, 11)) {
-				//hitbox
+				init_projectile(0, GameCoordinate{ 50,100 });
 				excute_count++;
 			}
 		}
@@ -222,7 +222,7 @@ void Roy::loadRoyACMD() {
 				max_ticks++;
 			}
 			if (is_excute_frame(2, 12)) {
-				//hitbox
+				init_projectile(0, GameCoordinate{ 50,100 });
 			}
 		}
 		else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
@@ -230,12 +230,12 @@ void Roy::loadRoyACMD() {
 				max_ticks++;
 			}
 			if (is_excute_frame(2, 13)) {
-				//hitbox
+				init_projectile(0, GameCoordinate{ 50,100 });
 			}
 		}
 		else {
 			if (is_excute_frame(1, 11)) {
-				//hitbox
+				init_projectile(0, GameCoordinate{ 50,100 });
 				excute_count++;
 			}
 		}
@@ -248,7 +248,7 @@ void Roy::loadRoyACMD() {
 
 		}
 		if (is_excute_frame(2, 12)) {
-			init_projectile(0, GameCoordinate{ 0,50 });
+			projectile_objects[0]->change_status(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED);
 		}
 	});
 	script("special_uppercut_start", [this]() {

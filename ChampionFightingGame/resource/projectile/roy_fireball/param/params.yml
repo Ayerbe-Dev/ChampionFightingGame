@@ -1,3 +1,5 @@
-move_x_speed_l 2 3.0
-move_x_speed_m 2 4.0
-move_x_speed_h 2 5.0
+hover_active_time 1 30
+punch_active_time 1 120
+punch_move_x_speed_l 2 3.0
+punch_move_x_speed_m 2 4.0
+punch_move_x_speed_h 2 5.0

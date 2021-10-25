@@ -11,7 +11,7 @@ void tickOnceFighter(FighterInstance* fighter_instance);
 void tickOnceProjectile(ProjectileInstance* projectile_instance);
 void decrease_common_fighter_variables(FighterInstance* fighter_instance);
 void decrease_common_projectile_variables(ProjectileInstance* projectile_instance);
-void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer* renderer, bool visualize_boxes);
+void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer* renderer, bool visualize_boxes, bool check);
 int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* defender, Hitbox *hitbox, Hurtbox *hurtbox);
 int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* defender, Grabbox *grabbox, Hurtbox *hurtbox);
 int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox);

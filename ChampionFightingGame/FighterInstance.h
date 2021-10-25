@@ -269,4 +269,8 @@ public:
 	virtual void eric_status_special_uppercut_fall() {};
 	virtual void eric_enter_status_special_uppercut_fall() {};
 	virtual void eric_exit_status_special_uppercut_fall() {};
+
+	virtual void chara_template_status_template() {};
+	virtual void chara_template_enter_status_template() {};
+	virtual void chara_template_exit_status_template() {};
 };

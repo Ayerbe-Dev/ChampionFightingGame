@@ -171,6 +171,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
     <ClCompile Include="Eric.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="ProjectileTemplate.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -235,6 +237,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box.fwd.h" />
+    <ClInclude Include="CharaTemplate.fwd.h" />
+    <ClInclude Include="CharaTemplate.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />
     <ClInclude Include="Eric.fwd.h" />
@@ -262,6 +266,8 @@
     <ClInclude Include="RoyFireball.fwd.h" />
     <ClInclude Include="RoyFireball.h" />
     <ClInclude Include="Stage.h" />
+    <ClInclude Include="ProjectileTemplate.fwd.h" />
+    <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="FighterInstance.h" />

@@ -682,11 +682,15 @@ bool FighterInstance::invalid_y(float y)
 
 //Opponent
 
-void FighterInstance::set_opponent_offset(GameCoordinate offset) {
+void FighterInstance::set_opponent_offset(GameCoordinate offset, int frames) {
 	GameCoordinate new_offset;
 	new_offset.x = this->pos.x + (offset.x * facing_dir);
 	new_offset.y = this->pos.y + offset.y;
-	fighter_instance_accessor->fighter_instance[!id]->set_pos(new_offset.x, new_offset.y);
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] = 
+		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / frames;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] =
+		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / frames;
+	fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] = frames;
 }
 
 void FighterInstance::change_opponent_status(u32 status_kind) {
@@ -698,7 +702,12 @@ void FighterInstance::damage_opponent(float damage) {
 }
 
 void FighterInstance::set_opponent_angle(double angle) {
-	fighter_instance_accessor->fighter_instance[!id]->angle = angle;
+	fighter_instance_accessor->fighter_instance[!id]->angle = angle * facing_dir;
+}
+
+void FighterInstance::set_opponent_thrown_ticks() {
+	fighter_instance_accessor->fighter_instance[!id]->max_ticks = (((anim_kind->length - 1) / max_ticks) / (fighter_instance_accessor->fighter_instance[!id]->anim_kind->length - 1)) - 1;
+	fighter_instance_accessor->fighter_instance[!id]->ticks = 0;
 }
 
 //Hitbox
@@ -784,7 +793,7 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 				render_frame = entry_frame;
 			}
 			else {
-				frame_rate = entry_frame / (animation_table[i].length - 1);
+				max_ticks = ceilf((float)entry_frame / (float)(animation_table[i].length));
 				frame = 0;
 				render_frame = 0;
 			}
@@ -1734,19 +1743,24 @@ void FighterInstance::enter_status_throw_air() {
 }
 
 void FighterInstance::exit_status_throw_air() {
-
 }
 
-void FighterInstance::status_thrown()
-{
+void FighterInstance::status_thrown() {
+	if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
+		add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
+		chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
+	}
+	else {
+		set_pos(pos.x, FLOOR_GAMECOORD);
+	}
 }
 
 void FighterInstance::enter_status_thrown() {
 	change_anim("stand_hitstun_m", 2);
 }
 
-void FighterInstance::exit_status_thrown()
-{
+void FighterInstance::exit_status_thrown() {
+	angle = 0;
 }
 
 void FighterInstance::status_thrown_air()

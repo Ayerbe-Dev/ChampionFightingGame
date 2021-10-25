@@ -83,10 +83,11 @@ public:
 
 	//Messing with the opponent's FighterInstance
 
-	void set_opponent_offset(GameCoordinate offset);
+	void set_opponent_offset(GameCoordinate offset, int frames = 0);
 	void change_opponent_status(u32 status_kind);
 	void damage_opponent(float damage);
 	void set_opponent_angle(double angle);
+	void set_opponent_thrown_ticks();
 
 	/*
 		For classes with multiple instances in the FighterInstance table, it makes sense to be able to call their methods from the FighterInstance class instead

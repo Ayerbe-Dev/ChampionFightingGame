@@ -197,7 +197,8 @@ void Roy::loadRoyACMD() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(1, 0)) {
-			set_opponent_offset(GameCoordinate{ 40, 0 });
+			set_opponent_offset(GameCoordinate{ 40, 0 }, 5);
+			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(2, 13)) {
 			damage_opponent(30.0);

@@ -88,6 +88,7 @@ public:
 	void damage_opponent(float damage);
 	void set_opponent_angle(double angle);
 	void set_opponent_thrown_ticks();
+	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0);
 
 	/*
 		For classes with multiple instances in the FighterInstance table, it makes sense to be able to call their methods from the FighterInstance class instead
@@ -189,6 +190,9 @@ public:
 	virtual void status_throw_air();
 	virtual void enter_status_throw_air();
 	virtual void exit_status_throw_air();
+	virtual void status_grabbed();
+	virtual void enter_status_grabbed();
+	virtual void exit_status_grabbed();
 	virtual void status_thrown();
 	virtual void enter_status_thrown();
 	virtual void exit_status_thrown();
@@ -243,9 +247,12 @@ public:
 
 	virtual bool specific_status_attack() { return false; };
 	
-	virtual void roy_status_fireball_start() {};
-	virtual void roy_enter_status_fireball_start() {};
-	virtual void roy_exit_status_fireball_start() {};
+	virtual void roy_status_special_fireball_start() {};
+	virtual void roy_enter_status_special_fireball_start() {};
+	virtual void roy_exit_status_special_fireball_start() {};
+	virtual void roy_status_special_fireball_punch() {};
+	virtual void roy_enter_status_special_fireball_punch() {};
+	virtual void roy_exit_status_special_fireball_punch() {};
 	virtual void roy_status_special_uppercut_start() {};
 	virtual void roy_enter_status_special_uppercut_start() {};
 	virtual void roy_exit_status_special_uppercut_start() {};

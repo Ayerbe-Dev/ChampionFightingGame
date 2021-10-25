@@ -662,8 +662,7 @@ int get_event_hit_collide_player(FighterInstance *attacker, FighterInstance *def
 	}
 	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE])
 	{
-		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == hitbox->attack_height)
-		{
+		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == hitbox->attack_height || defender->chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
 			parrying = true;
 		}
 	}

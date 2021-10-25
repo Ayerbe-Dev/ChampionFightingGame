@@ -28,9 +28,13 @@ void Roy::chara_id() {
 }
 
 void Roy::loadRoyStatusFunctions() {
-	pStatus[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_status_fireball_start;
-	pEnter_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_enter_status_fireball_start;
-	pExit_status[CHARA_ROY_STATUS_FIREBALL_START] = &FighterInstance::roy_exit_status_fireball_start;
+	pStatus[CHARA_ROY_STATUS_SPECIAL_FIREBALL_START] = &FighterInstance::roy_status_special_fireball_start;
+	pEnter_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_START] = &FighterInstance::roy_enter_status_special_fireball_start;
+	pExit_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_START] = &FighterInstance::roy_exit_status_special_fireball_start;
+
+	pStatus[CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH] = &FighterInstance::roy_status_special_fireball_punch;
+	pEnter_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH] = &FighterInstance::roy_enter_status_special_fireball_punch;
+	pExit_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH] = &FighterInstance::roy_exit_status_special_fireball_punch;
 
 	pStatus[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::roy_status_special_uppercut_start;
 	pEnter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::roy_enter_status_special_uppercut_start;
@@ -102,9 +106,7 @@ void Roy::loadRoyACMD() {
 		}
 	});
 	script("stand_lk", [this]() {
-		if (is_excute_frame(1, 0)) {
-			init_projectile(0, GameCoordinate{ 0,50 });
-		}
+
 	});
 	script("stand_mk", [this]() {
 
@@ -161,9 +163,7 @@ void Roy::loadRoyACMD() {
 
 	});
 	script("jump_lk", [this]() {
-		if (is_excute_frame(1, 0)) {
-			init_projectile(0, GameCoordinate{ 0,50 });
-		}
+
 	});
 	script("jump_mk", [this]() {
 
@@ -198,11 +198,20 @@ void Roy::loadRoyACMD() {
 	script("throw_f", [this]() {
 		if (is_excute_frame(1, 0)) {
 			set_opponent_offset(GameCoordinate{ 40, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(2, 13)) {
 			damage_opponent(30.0);
 			change_opponent_status(CHARA_STATUS_KNOCKDOWN_START);
+		}
+	});
+	script("special_fireball_punch", [this]() {
+		if (is_excute_frame(1, 0)) {
+
+		}
+		if (is_excute_frame(2, 12)) {
+			init_projectile(0, GameCoordinate{ 0,50 });
 		}
 	});
 	script("special_uppercut_start", [this]() {
@@ -216,6 +225,23 @@ void Roy::loadRoyACMD() {
 }
 
 bool Roy::specific_ground_status_act() {
+	if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+	}
+	if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+	}
+	if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+	}
+	if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+	}
+
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
 		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
@@ -245,15 +271,43 @@ bool Roy::specific_status_attack() {
 	return false;
 }
 
-void Roy::roy_status_fireball_start() {
+void Roy::roy_status_special_fireball_start() {
+	if (check_button_trigger(BUTTON_LP) || check_button_trigger(BUTTON_MP) || check_button_trigger(BUTTON_HP)) {
+		change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
+		return;
+	}
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+}
+
+void Roy::roy_enter_status_special_fireball_start() {
+	change_anim("special_fireball_start", 3);
+}
+
+void Roy::roy_exit_status_special_fireball_start() {
 
 }
 
-void Roy::roy_enter_status_fireball_start() {
 
+void Roy::roy_status_special_fireball_punch() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
 }
 
-void Roy::roy_exit_status_fireball_start() {
+void Roy::roy_enter_status_special_fireball_punch() {
+	change_anim("special_fireball_punch", 2);
+}
+
+void Roy::roy_exit_status_special_fireball_punch() {
 
 }
 

@@ -28,9 +28,12 @@ public:
 
 	//Statuses
 
-	void roy_status_fireball_start() override;
-	void roy_enter_status_fireball_start() override;
-	void roy_exit_status_fireball_start() override;
+	void roy_status_special_fireball_start() override;
+	void roy_enter_status_special_fireball_start() override;
+	void roy_exit_status_special_fireball_start() override;
+	void roy_status_special_fireball_punch() override;
+	void roy_enter_status_special_fireball_punch() override;
+	void roy_exit_status_special_fireball_punch() override;
 	void roy_status_special_uppercut_start() override;
 	void roy_enter_status_special_uppercut_start() override;
 	void roy_exit_status_special_uppercut_start() override;

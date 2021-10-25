@@ -137,6 +137,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		for (int i = 0; i < 2; i++) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
+				timer.ClockMode = !timer.ClockMode;
 			}
 			if (!debug) {
 				tickOnceFighter(fighter_instance[i]);

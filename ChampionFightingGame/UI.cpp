@@ -8,39 +8,43 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
 	this->max_health = fighter_instance->get_param_float("health");
 	
-	width = 294;
-	height = 31;
+	width = 596;
+	height = 70;
 	scale = 2;
 
 	this->health_rect.x = 0;
-	this->health_rect.y = 10;  
-	//this->health_rect.w = 294*2; should be defined right before render
-	this->health_rect.h = 31*2;
-	this->bar_rect.x = 0;
-	this->bar_rect.y = 10;
-	this->bar_rect.w = 294*2;
-	this->bar_rect.h = 31*2;
+	this->health_rect.y = 0;  
+
+	this->health_rect.h = height;
+	this->bar_rect.x = 2;
+	this->bar_rect.y = 0;
+	this->bar_rect.w = width;
+	this->bar_rect.h = height;
 
 	this->slice_rect.x = 0;
 	this->slice_rect.y = 0;
-	this->slice_rect.w = width - 260;
 	this->slice_rect.h = height;
 }
 
 void HealthBar::RenderAsP1() {
 	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
-	health_rect.w = slice_rect.w * scale;
-	SDL_RenderCopy(this->pRenderer,health_texture,&slice_rect,&health_rect);
+	health_rect.w = slice_rect.w;
+	health_rect.x = width - slice_rect.w + 2;
+	slice_rect.x = width - slice_rect.w;
+	
 	SDL_RenderCopy(this->pRenderer,bar_texture,nullptr,&bar_rect);
+	SDL_RenderCopy(this->pRenderer,health_texture,&slice_rect,&health_rect);
+	
 }
 
 void HealthBar::RenderAsP2() {
-	bar_rect.x = WINDOW_WIDTH - width * scale;
+	bar_rect.x = WINDOW_WIDTH - width - 2;
 	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
-	health_rect.x = (WINDOW_WIDTH - width * scale) + (width - slice_rect.w) * scale;
-	health_rect.w = slice_rect.w * scale;
-	SDL_RenderCopyEx(this->pRenderer,health_texture,&slice_rect,&health_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
+	health_rect.w = slice_rect.w;
+	health_rect.x = (WINDOW_WIDTH - width)-2;// + (width - slice_rect.w);
+	slice_rect.x = width - slice_rect.w;
 	SDL_RenderCopyEx(this->pRenderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
+	SDL_RenderCopyEx(this->pRenderer,health_texture,&slice_rect,&health_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
 }
 
 PlayerIndicator::PlayerIndicator() {}
@@ -72,13 +76,14 @@ GameTimer::GameTimer(SDL_Renderer* pRenderer,int time){
     uiSeconds = 9;
 	uiDecaframes = 6;
     uiFrames = 0;
+	ClockMode = 1;
     pBigTypeface = loadTexture("resource/ui/game/timer/bigtypeface.png",pRenderer);
 	pSmallTypeface = loadTexture("resource/ui/game/timer/smalltypeface.png",pRenderer);
 	pClockFace= loadTexture("resource/ui/game/timer/clockface.png",pRenderer);
 };
 
 void GameTimer::Tick(){
-	printf("%d%d:%d%d\n\n",uiDecaseconds,uiSeconds,uiDecaframes,uiFrames);
+	//printf("%d%d:%d%d\n\n",uiDecaseconds,uiSeconds,uiDecaframes,uiFrames);
 	if (uiFrames == 0 && uiDecaframes == 0 && uiSeconds == 0 && uiDecaseconds == 0){
 		//end
 		uiDecaseconds = 9;
@@ -109,8 +114,9 @@ void GameTimer::Tick(){
 };
 
 void GameTimer::Render(){
-	SDL_Rect cClockFace{(WINDOW_WIDTH/2)-42,10,84,70};
-	SDL_RenderCopy(this->pRenderer,pClockFace,nullptr,&cClockFace);
+	SDL_Rect cClockFace{(WINDOW_WIDTH/2)-42,10,84,87};
+	SDL_Rect cClockFaceSrc{84*ClockMode,0,84,87};
+	SDL_RenderCopy(this->pRenderer,pClockFace,&cClockFaceSrc,&cClockFace);
 
 	SDL_Rect cDecaDestRect{601,15,25,59};
 	SDL_Rect cDecaSourceRect{uiDecaseconds*25,0,25,59};

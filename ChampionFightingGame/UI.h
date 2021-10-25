@@ -42,6 +42,7 @@ public:
     int uiSeconds;
 	int uiDecaframes;
 	int uiFrames;
+	int ClockMode;
 	
     SDL_Texture* pBigTypeface;
     SDL_Texture* pSmallTypeface;

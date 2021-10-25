@@ -145,9 +145,25 @@ void FighterInstance::loadStatusFunctions() {
 	pEnter_status[CHARA_STATUS_GRAB] = &FighterInstance::enter_status_grab;
 	pExit_status[CHARA_STATUS_GRAB] = &FighterInstance::exit_status_grab;
 
+	pStatus[CHARA_STATUS_THROW] = &FighterInstance::status_throw;
+	pEnter_status[CHARA_STATUS_THROW] = &FighterInstance::enter_status_throw;
+	pExit_status[CHARA_STATUS_THROW] = &FighterInstance::exit_status_throw;
+
 	pStatus[CHARA_STATUS_GRAB_AIR] = &FighterInstance::status_grab_air;
 	pEnter_status[CHARA_STATUS_GRAB_AIR] = &FighterInstance::enter_status_grab_air;
 	pExit_status[CHARA_STATUS_GRAB_AIR] = &FighterInstance::exit_status_grab_air;
+
+	pStatus[CHARA_STATUS_THROW_AIR] = &FighterInstance::status_throw_air;
+	pEnter_status[CHARA_STATUS_THROW_AIR] = &FighterInstance::enter_status_throw_air;
+	pExit_status[CHARA_STATUS_THROW_AIR] = &FighterInstance::exit_status_throw_air;
+
+	pStatus[CHARA_STATUS_THROWN] = &FighterInstance::status_thrown;
+	pEnter_status[CHARA_STATUS_THROWN] = &FighterInstance::enter_status_thrown;
+	pExit_status[CHARA_STATUS_THROWN] = &FighterInstance::exit_status_thrown;
+
+	pStatus[CHARA_STATUS_THROWN_AIR] = &FighterInstance::status_thrown_air;
+	pEnter_status[CHARA_STATUS_THROWN_AIR] = &FighterInstance::enter_status_thrown_air;
+	pExit_status[CHARA_STATUS_THROWN_AIR] = &FighterInstance::exit_status_thrown_air;
 
 	pStatus[CHARA_STATUS_HITSTUN] = &FighterInstance::status_hitstun;
 	pEnter_status[CHARA_STATUS_HITSTUN] = &FighterInstance::enter_status_hitstun;
@@ -664,6 +680,27 @@ bool FighterInstance::invalid_y(float y)
 	return y < 0 || y > WINDOW_HEIGHT;
 }
 
+//Opponent
+
+void FighterInstance::set_opponent_offset(GameCoordinate offset) {
+	GameCoordinate new_offset;
+	new_offset.x = this->pos.x + (offset.x * facing_dir);
+	new_offset.y = this->pos.y + offset.y;
+	fighter_instance_accessor->fighter_instance[!id]->set_pos(new_offset.x, new_offset.y);
+}
+
+void FighterInstance::change_opponent_status(u32 status_kind) {
+	fighter_instance_accessor->fighter_instance[!id]->change_status(status_kind);
+}
+
+void FighterInstance::damage_opponent(float damage) {
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_HEALTH] -= damage;
+}
+
+void FighterInstance::set_opponent_angle(double angle) {
+	fighter_instance_accessor->fighter_instance[!id]->angle = angle;
+}
+
 //Hitbox
 
 void FighterInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, 
@@ -741,9 +778,16 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
-			render_frame = entry_frame;
-			frame = entry_frame;
-			max_ticks = frame_rate;
+			if (frame_rate != -1) {
+				max_ticks = frame_rate;
+				frame = entry_frame;
+				render_frame = entry_frame;
+			}
+			else {
+				frame_rate = entry_frame / (animation_table[i].length - 1);
+				frame = 0;
+				render_frame = 0;
+			}
 			ticks = 0;
       
 			set_current_move_script(animation_name);
@@ -984,6 +1028,8 @@ u32 FighterInstance::get_status_group(u32 status)
 	case (CHARA_STATUS_HITSTUN_AIR):
 	case (CHARA_STATUS_LAUNCH):
 	case (CHARA_STATUS_CRUMPLE):
+	case (CHARA_STATUS_THROWN):
+	case (CHARA_STATUS_THROWN_AIR):
 	{
 		return STATUS_GROUP_HITSTUN;
 	}
@@ -1636,8 +1682,27 @@ void FighterInstance::enter_status_grab() {
 	change_anim("grab", 2);
 }
 
-void FighterInstance::exit_status_grab()
-{
+void FighterInstance::exit_status_grab() {
+}
+
+void FighterInstance::status_throw() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
+}
+
+void FighterInstance::enter_status_throw() {
+	change_anim("throw_f", 2);
+}
+
+void FighterInstance::exit_status_throw() {
+
 }
 
 void FighterInstance::status_grab_air()
@@ -1649,6 +1714,50 @@ void FighterInstance::enter_status_grab_air()
 }
 
 void FighterInstance::exit_status_grab_air()
+{
+}
+
+void FighterInstance::status_throw_air() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
+}
+
+void FighterInstance::enter_status_throw_air() {
+	change_anim("throw", 2);
+}
+
+void FighterInstance::exit_status_throw_air() {
+
+}
+
+void FighterInstance::status_thrown()
+{
+}
+
+void FighterInstance::enter_status_thrown() {
+	change_anim("stand_hitstun_m", 2);
+}
+
+void FighterInstance::exit_status_thrown()
+{
+}
+
+void FighterInstance::status_thrown_air()
+{
+}
+
+void FighterInstance::enter_status_thrown_air()
+{
+}
+
+void FighterInstance::exit_status_thrown_air()
 {
 }
 
@@ -1677,14 +1786,14 @@ void FighterInstance::enter_status_hitstun() {
 	if (get_stick_dir() < 4) {
 		new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 70}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
-			change_anim("crouch_hitstun_l", 2);
+			change_anim("crouch_hitstun_l", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
-			change_anim("crouch_hitstun_m", 2);
+			change_anim("crouch_hitstun_m", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else
 		{
-			change_anim("crouch_hitstun_h", 2);
+			change_anim("crouch_hitstun_h", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 	}
 	else
@@ -1694,15 +1803,15 @@ void FighterInstance::enter_status_hitstun() {
 		new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT)
 		{
-			change_anim("stand_hitstun_l", 2);
+			change_anim("stand_hitstun_l", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM)
 		{
-			change_anim("stand_hitstun_m", 2);
+			change_anim("stand_hitstun_m", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else
 		{
-			change_anim("stand_hitstun_h", 2);
+			change_anim("stand_hitstun_h", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 	}
 }
@@ -1722,11 +1831,13 @@ void FighterInstance::status_hitstun_air()
 		change_status(CHARA_STATUS_FALL, false);
 		return;
 	}
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
-	{
-		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
+		{
+			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
+		}
+		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 	}
-	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void FighterInstance::enter_status_hitstun_air()
@@ -1734,7 +1845,7 @@ void FighterInstance::enter_status_hitstun_air()
 	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 70}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = chara_float[CHARA_FLOAT_LAUNCH_SPEED_X];
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
-	change_anim("jump_hitstun", 2);
+	change_anim("jump_hitstun", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 }
 
 
@@ -1781,23 +1892,23 @@ void FighterInstance::enter_status_blockstun() {
 	if (situation_kind == CHARA_SITUATION_GROUND) {
 		if (get_stick_dir() < 4) {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			change_anim("crouch_block", 2);
+			change_anim("crouch_block", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else if (chara_int[CHARA_INT_BLOCKSTUN_HEIGHT] == ATTACK_HEIGHT_HIGH) {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			change_anim("high_block", 2);
+			change_anim("high_block", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			change_anim("stand_block", 2);
+			change_anim("stand_block", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 	}
 	else {
-		change_anim("stand_block", 2);
+		change_anim("stand_block", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 	}
@@ -1979,10 +2090,10 @@ void FighterInstance::status_landing()
 
 void FighterInstance::enter_status_landing()
 {
-	change_anim("landing", 2);
+	chara_int[CHARA_INT_LANDING_LAG] = 2;
+	change_anim("landing", -1, chara_int[CHARA_INT_LANDING_LAG]);
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
-	chara_int[CHARA_INT_LANDING_LAG] = 2;
 	situation_kind = CHARA_SITUATION_GROUND;
 	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -2030,8 +2141,8 @@ void FighterInstance::status_landing_hitstun()
 void FighterInstance::enter_status_landing_hitstun() {
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
-	change_anim("landing_hitstun", 2);
 	chara_int[CHARA_INT_LANDING_LAG] = 4;
+	change_anim("landing_hitstun", -1, chara_int[CHARA_INT_LANDING_LAG]);
 	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
 	situation_kind = CHARA_SITUATION_GROUND;
 	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);

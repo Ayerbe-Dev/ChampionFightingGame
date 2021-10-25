@@ -30,6 +30,8 @@ public:
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
 
+	double angle{ 0 };
+
 	Animation* anim_kind;
 	Animation animation_table[ANIM_TABLE_LENGTH];
 

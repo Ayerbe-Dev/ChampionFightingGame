@@ -33,7 +33,7 @@ public:
 	
 	int chara_int[CHARA_INT_MAX];
 	float chara_float[CHARA_FLOAT_MAX];
-	bool chara_flag[CHARA_FLAG_MAX];
+	bool chara_flag[CHARA_FLAG_MAX];;
 	
 	int connected_hitbox;
 	int connected_grabbox;
@@ -80,6 +80,13 @@ public:
 	bool set_pos(int x, int y);
 	bool invalid_x(float x);
 	bool invalid_y(float y);
+
+	//Messing with the opponent's FighterInstance
+
+	void set_opponent_offset(GameCoordinate offset);
+	void change_opponent_status(u32 status_kind);
+	void damage_opponent(float damage);
+	void set_opponent_angle(double angle);
 
 	/*
 		For classes with multiple instances in the FighterInstance table, it makes sense to be able to call their methods from the FighterInstance class instead
@@ -172,9 +179,21 @@ public:
 	virtual void status_grab();
 	virtual void enter_status_grab();
 	virtual void exit_status_grab();
+	virtual void status_throw();
+	virtual void enter_status_throw();
+	virtual void exit_status_throw();
 	virtual void status_grab_air();
 	virtual void enter_status_grab_air();
 	virtual void exit_status_grab_air();
+	virtual void status_throw_air();
+	virtual void enter_status_throw_air();
+	virtual void exit_status_throw_air();
+	virtual void status_thrown();
+	virtual void enter_status_thrown();
+	virtual void exit_status_thrown();
+	virtual void status_thrown_air();
+	virtual void enter_status_thrown_air();
+	virtual void exit_status_thrown_air();
 	virtual void status_hitstun();
 	virtual void enter_status_hitstun();
 	virtual void exit_status_hitstun();

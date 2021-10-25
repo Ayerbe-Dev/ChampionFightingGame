@@ -191,7 +191,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
 			render_pos.h = height;
-			const double angle = 0;
+			const double angle = (const double)fighter_instance[i]->angle;
 			int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
@@ -213,7 +213,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 					SDL_QueryTexture(fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 					render_pos.w = (width / (fighter_instance[i]->projectile_objects[o]->anim_kind->length + 1));
 					render_pos.h = height;
-					const double angle = 0;
+					const double angle = (const double)fighter_instance[i]->projectile_objects[o]->angle;
 					int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip);
 					if (error_render != 0) {
 						cout << SDL_GetError() << endl;

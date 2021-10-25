@@ -192,7 +192,16 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		}
 		if (is_excute_frame(2, 3)) {
-			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_WAIT, CHARA_STATUS_KNOCKDOWN_START);
+			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW, CHARA_STATUS_THROWN);
+		}
+	});
+	script("throw_f", [this]() {
+		if (is_excute_frame(1, 0)) {
+			set_opponent_offset(GameCoordinate{ 40, 0 });
+		}
+		if (is_excute_frame(2, 13)) {
+			damage_opponent(30.0);
+			change_opponent_status(CHARA_STATUS_KNOCKDOWN_START);
 		}
 	});
 	script("special_uppercut_start", [this]() {

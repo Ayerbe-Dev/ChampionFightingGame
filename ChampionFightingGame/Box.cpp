@@ -21,7 +21,9 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0;
 		offset.x += WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0;
 	}
 	offset.x -= anchor.x;
 	offset.y -= anchor.y;
@@ -137,7 +139,9 @@ void Hitbox::update_pos(ObjectInstance * object_instance, bool add_window_width)
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
-		offset.x += WINDOW_HEIGHT / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0;
+		offset.x += WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0;
 	}
 
 	offset.x -= anchor.x;
@@ -168,7 +172,9 @@ Grabbox::Grabbox(ObjectInstance* object_instance, int id, GameCoordinate anchor,
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0;
 		offset.x += WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0;
 	}
 	offset.x -= anchor.x;
 	offset.y -= anchor.y;
@@ -198,7 +204,9 @@ void Grabbox::update_pos(ObjectInstance* object_instance) {
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
-		offset.x += WINDOW_HEIGHT / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0;
+		offset.x += WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0;
 	}
 
 	offset.x -= anchor.x;

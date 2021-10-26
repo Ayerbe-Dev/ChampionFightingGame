@@ -142,6 +142,9 @@ void RoyFireball::status_roy_fireball_punched() {
 	else {
 		pos.x += get_param_float("punch_move_x_speed_h", unique_param_table) * facing_dir;
 	}
+	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
+		change_status(PROJECTILE_STATUS_HIT);
+	}
 }
 
 void RoyFireball::enter_status_roy_fireball_punched() {

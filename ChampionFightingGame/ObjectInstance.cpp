@@ -81,11 +81,12 @@ bool ObjectInstance::get_param_bool(string param, Param param_table[]) {
 	return false;
 }
 
-bool ObjectInstance::is_excute_frame(int frame) { //One day I am going to gaslight myself into unironically not knowing how to spell "execute"
+bool ObjectInstance::is_excute_frame(int frame) {
 	bool ret = false;
 	if (this->frame >= frame) {
 		if (excute_count < attempted_excutes) {
 			excute_count++;
+			highest_successful_excute = attempted_excutes;
 			ret = true;
 		}
 	}
@@ -101,6 +102,7 @@ bool ObjectInstance::is_excute_wait(int frames) {
 	if (frame >= last_excute_frame + frames) {
 		if (excute_count < attempted_excutes) {
 			excute_count++;
+			highest_successful_excute = attempted_excutes;
 			ret = true;
 		}
 	}

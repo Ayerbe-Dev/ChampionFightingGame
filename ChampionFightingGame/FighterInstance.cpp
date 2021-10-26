@@ -602,12 +602,12 @@ bool FighterInstance::add_pos(float x, float y) {
 	bool ret = true;
 	pos.x += x;
 	pos.y += y;
-	if (pos.x > WINDOW_WIDTH / 2) {
-		pos.x = WINDOW_WIDTH / 2;
+	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
+		pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
 		ret = false;
 	}
-	if (pos.x < WINDOW_WIDTH / -2) {
-		pos.x = WINDOW_WIDTH / -2;
+	if (pos.x - pos.x_spr_offset / 2 < WINDOW_WIDTH / -2) {
+		pos.x = WINDOW_WIDTH / -2 + pos.x_spr_offset / 2;
 		ret = false;
 	}
 	if (pos.y < 0) {
@@ -618,8 +618,9 @@ bool FighterInstance::add_pos(float x, float y) {
 		pos.y = WINDOW_HEIGHT;
 		ret = false;
 	}
-	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
-	float x_distance = std::max(opponent_x, pos.x) - std::min(opponent_x, pos.x);
+	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x + (fighter_instance_accessor->fighter_instance[!id]->pos.x_spr_offset * fighter_instance_accessor->fighter_instance[!id]->facing_dir / -2);
+	float compare_x = pos.x + (pos.x_spr_offset * facing_dir / -2);
+	float x_distance = std::max(opponent_x, compare_x) - std::min(opponent_x, compare_x);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
 		pos.x = prevpos.x;
 		ret = false;
@@ -632,12 +633,12 @@ bool FighterInstance::set_pos(float x, float y) {
 	bool ret = true;
 	pos.x = x;
 	pos.y = y;
-	if (pos.x > WINDOW_WIDTH / 2) {
-		pos.x = WINDOW_WIDTH / 2;
+	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
+		pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
 		ret = false;
 	}
-	if (pos.x < WINDOW_WIDTH / -2) {
-		pos.x = WINDOW_WIDTH / -2;
+	if (pos.x - pos.x_spr_offset / 2 < WINDOW_WIDTH / -2) {
+		pos.x = WINDOW_WIDTH / -2 + pos.x_spr_offset / 2;
 		ret = false;
 	}
 	if (pos.y < 0) {
@@ -648,8 +649,9 @@ bool FighterInstance::set_pos(float x, float y) {
 		pos.y = WINDOW_HEIGHT;
 		ret = false;
 	}
-	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
-	float x_distance = std::max(opponent_x, pos.x) - std::min(opponent_x, pos.x);
+	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x + (fighter_instance_accessor->fighter_instance[!id]->pos.x_spr_offset * fighter_instance_accessor->fighter_instance[!id]->facing_dir / -2);
+	float compare_x = pos.x + (pos.x_spr_offset * facing_dir / -2);
+	float x_distance = std::max(opponent_x, compare_x) - std::min(opponent_x, compare_x);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
 		pos.x = prevpos.x;
 		ret = false;
@@ -764,6 +766,7 @@ void FighterInstance::reenter_last_anim() {
 
 void FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
+	highest_successful_excute = 1;
 	attempted_excutes = 1;
 	last_excute_frame = 0;
 
@@ -806,10 +809,10 @@ void FighterInstance::startAnimation(Animation* animation) {
 }
 
 bool FighterInstance::canStep() {
+	attempted_excutes = highest_successful_excute;
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		frame++;
 		ticks++;
-		attempted_excutes = 1;
 
 		if (ticks >= max_ticks) {
 			ticks = 0;

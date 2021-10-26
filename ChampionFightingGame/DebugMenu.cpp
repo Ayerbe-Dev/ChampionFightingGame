@@ -90,35 +90,6 @@ int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
         SDL_RenderPresent(pRenderer);
         SDL_PumpEvents();
 
-        //bro
-
-        //im just going to leave this old code here so you can look at it and think about how you handled the cycling
-
-        //no really, go sit down and think about what you've done
-
-        //shoo
-
-        //i'm not mad, i'm just disappointed
-
-        //like bro??? 10 fps????? when we have to go through this menu all the time??????????
-
-        //smh my head if i'm being tbh
-
-        //cry
-
-        /*
-        keyboard_state = SDL_GetKeyboardState(nullptr);
-        if (keyboard_state[SDL_SCANCODE_DOWN] && select < GAME_STATE_MAX - 1) {
-            select++;
-        }
-        else if (keyboard_state[SDL_SCANCODE_UP] && select > 0) {
-            select--;
-        }
-        else if (keyboard_state[SDL_SCANCODE_A]) {
-            SDL_Delay(200);
-            return select;
-        }
-        */
         keyboard_state = SDL_GetKeyboardState(nullptr);
         for (int i = 0; i < 2; i++) {
             (&player_info[i])->update_buttons(keyboard_state);

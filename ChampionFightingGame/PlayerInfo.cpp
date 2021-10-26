@@ -1,19 +1,31 @@
 #include "PlayerInfo.h"
+extern int registered_controllers[4];
 
 PlayerInfo::PlayerInfo() {}
 
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
 	SDL_GameController *new_controller;
-
 	for (int i = 0; i < SDL_NumJoysticks(); ++i) {
-		if (SDL_IsGameController(i)) {
-			new_controller = SDL_GameControllerOpen(i);
-			cout << "Controller " << i << " is open" << endl;
-			if (SDL_GameControllerGetAttached(new_controller)) {
-				cout << "Controller " << i << " is attached" << endl;
-				this->controller = new_controller;
-				SDL_GameControllerClose(new_controller);
+		if (SDL_IsGameController(i)) { 
+			//Fun Fact: SDL 1.0 actually DID have a function that let you check if a controller was already being used
+
+			//Fun Fact: They removed that, so we have to make that check ourselves
+
+			bool unregistered = true;
+			for (int i2 = 0; i2 < 4; i2++) {
+				if (registered_controllers[i2] == i) {
+					unregistered = false;
+				}
+			}
+			if (unregistered && this->controller == NULL) {
+				this->controller = SDL_GameControllerOpen(i);
+				for (int i2 = 0; i2 < 4; i2++) {
+					if (registered_controllers[i2] == -1) {
+						registered_controllers[i2] = i;
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -191,13 +203,13 @@ void PlayerInfo::set_default_buttons(int id) {
 
 	button_info[BUTTON_UP].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_UP;
 	button_info[BUTTON_LEFT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-	button_info[BUTTON_DOWN].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
-	button_info[BUTTON_RIGHT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-	button_info[BUTTON_LP].c_mapping = SDL_CONTROLLER_BUTTON_B;
-	button_info[BUTTON_MP].c_mapping = SDL_CONTROLLER_BUTTON_Y;
+	button_info[BUTTON_DOWN].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+	button_info[BUTTON_RIGHT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+	button_info[BUTTON_LP].c_mapping = SDL_CONTROLLER_BUTTON_A;
+	button_info[BUTTON_MP].c_mapping = SDL_CONTROLLER_BUTTON_X;
 	button_info[BUTTON_HP].c_mapping = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
-	button_info[BUTTON_LK].c_mapping = SDL_CONTROLLER_BUTTON_A;
-	button_info[BUTTON_MK].c_mapping = SDL_CONTROLLER_BUTTON_X;
+	button_info[BUTTON_LK].c_mapping = SDL_CONTROLLER_BUTTON_B;
+	button_info[BUTTON_MK].c_mapping = SDL_CONTROLLER_BUTTON_Y;
 	button_info[BUTTON_HK].c_mapping = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
 	button_info[BUTTON_MACRO_P].axis = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
 	button_info[BUTTON_MACRO_K].axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT;

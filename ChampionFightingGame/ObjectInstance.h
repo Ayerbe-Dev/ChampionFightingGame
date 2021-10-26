@@ -43,9 +43,10 @@ public:
 	int render_frame;
 	int ticks;
 	int max_ticks;
-	int last_excute_frame;
-	int excute_count;
-	int attempted_excutes;
+	int last_excute_frame{ 0 };
+	int highest_successful_excute{ 1 };
+	int excute_count{ 0 };
+	int attempted_excutes{ 0 };
 
 	bool is_anim_end{ false };
 	Hitbox hitboxes[10];

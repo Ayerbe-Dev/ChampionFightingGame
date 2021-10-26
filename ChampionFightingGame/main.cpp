@@ -16,6 +16,7 @@
 #undef main
 using namespace std;
 int error_render;
+int registered_controllers[4] = {-1, -1, -1, -1};
 
 Uint32 tick;
 Uint32 tok;

@@ -2044,6 +2044,7 @@ void FighterInstance::enter_status_landing() {
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	pos.y = FLOOR_GAMECOORD;
 }
 
 void FighterInstance::exit_status_landing() {}
@@ -2086,6 +2087,7 @@ void FighterInstance::enter_status_landing_attack() {
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = CHARA_SITUATION_GROUND;
+	pos.y = FLOOR_GAMECOORD;
 }
 
 void FighterInstance::exit_status_landing_attack() {}
@@ -2115,6 +2117,7 @@ void FighterInstance::enter_status_landing_hitstun() {
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	pos.y = FLOOR_GAMECOORD;
 }
 
 

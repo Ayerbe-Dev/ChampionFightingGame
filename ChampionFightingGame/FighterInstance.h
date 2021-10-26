@@ -76,10 +76,8 @@ public:
 
 	//Position
 
-	bool add_pos(int x, int y);
-	bool set_pos(int x, int y);
-	bool invalid_x(float x);
-	bool invalid_y(float y);
+	bool add_pos(float x, float y);
+	bool set_pos(float x, float y);
 
 	//Messing with the opponent's FighterInstance
 

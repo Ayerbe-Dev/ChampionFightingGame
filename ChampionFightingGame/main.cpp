@@ -59,7 +59,7 @@ int main() {
 		else {
 			game_state = debugMenu(pRenderer, player_info);
 		}
-		SDL_DestroyRenderer(pRenderer);
+		SDL_DestroyRenderer(pRenderer); 
 	}
 
 	SDL_DestroyWindow(window);

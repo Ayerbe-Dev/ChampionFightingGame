@@ -598,49 +598,64 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 
 //Position
 
-bool FighterInstance::add_pos(int x, int y) {
+bool FighterInstance::add_pos(float x, float y) {
+	bool ret = true;
 	pos.x += x;
 	pos.y += y;
-	if (invalid_x(pos.x) || invalid_y(pos.y)) {
-		if (invalid_x(pos.x)) {
-			pos.x = prevpos.x;
-		}
-		if (invalid_y(pos.x)) {
-			pos.y = prevpos.y;
-		}
-		return false;
+	if (pos.x > WINDOW_WIDTH / 2) {
+		pos.x = WINDOW_WIDTH / 2;
+		ret = false;
 	}
-	else {
-		return true;
+	if (pos.x < WINDOW_WIDTH / -2) {
+		pos.x = WINDOW_WIDTH / -2;
+		ret = false;
 	}
+	if (pos.y < 0) {
+		pos.y = 0;
+		ret = false;
+	}
+	if (pos.y > WINDOW_HEIGHT) {
+		pos.y = WINDOW_HEIGHT;
+		ret = false;
+	}
+	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
+	float x_distance = std::max(opponent_x, pos.x) - std::min(opponent_x, pos.x);
+	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
+		pos.x = prevpos.x;
+		ret = false;
+	}
+
+	return ret;
 }
 
-bool FighterInstance::set_pos(int x, int y) {
+bool FighterInstance::set_pos(float x, float y) {
+	bool ret = true;
 	pos.x = x;
 	pos.y = y;
-	if (invalid_x(pos.x) || invalid_y(pos.y)) {
-		if (invalid_x(pos.x)) {
-			pos.x = prevpos.x;
-		}
-		if (invalid_y(pos.y)) {
-			pos.y = prevpos.y;
-		}
-		return false;
+	if (pos.x > WINDOW_WIDTH / 2) {
+		pos.x = WINDOW_WIDTH / 2;
+		ret = false;
 	}
-	else {
-		return true;
+	if (pos.x < WINDOW_WIDTH / -2) {
+		pos.x = WINDOW_WIDTH / -2;
+		ret = false;
 	}
-}
-
-bool FighterInstance::invalid_x(float x) {
+	if (pos.y < 0) {
+		pos.y = 0;
+		ret = false;
+	}
+	if (pos.y > WINDOW_HEIGHT) {
+		pos.y = WINDOW_HEIGHT;
+		ret = false;
+	}
 	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x;
-	float x_distance = std::max(opponent_x, x) - std::min(opponent_x, x);
+	float x_distance = std::max(opponent_x, pos.x) - std::min(opponent_x, pos.x);
+	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
+		pos.x = prevpos.x;
+		ret = false;
+	}
 
-	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > CAMERA_MAX_ZOOM_OUT;
-}
-
-bool FighterInstance::invalid_y(float y) {
-	return y < 0 || y > WINDOW_HEIGHT;
+	return ret;
 }
 
 //Opponent

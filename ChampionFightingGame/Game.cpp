@@ -339,11 +339,13 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
 		if (fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (fighter_instance->situation_kind == CHARA_SITUATION_GROUND) {
-				fighter_instance->pos.x -= fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir;
+				if (!fighter_instance->add_pos(fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir * -1, 0)) {
+					fighter_instance->fighter_instance_accessor->fighter_instance[!fighter_instance->id]->add_pos(fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir / 2, 0);
+					//Note to self: Never try to use the FighterInstanceAccessor outside of a class method again, holy shit this is disgusting
+				}
 			}
 			else {
-				fighter_instance->pos.x -= fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir;
-				fighter_instance->pos.y += fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME];
+				fighter_instance->add_pos(fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir * -1, fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME]);
 			}
 		}
 	}
@@ -827,12 +829,7 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			if (p2->invalid_x(p2->pos.x - p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
-				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
-			}
-			else {
-				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
-			}
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p1->chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
@@ -868,12 +865,8 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			else {
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
 			}
-			if (p2->invalid_x(p2->pos.x - p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
-				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
-			}
-			else {
-				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
-			}
+			float prev_x = p2->pos.x;
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
@@ -910,12 +903,8 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
-			if (p1->invalid_x(p1->pos.x - p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir)) {
-				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
-			}
-			else {
-				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
-			}
+			float prev_x = p1->pos.x;
+			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2->chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
@@ -943,12 +932,7 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			else {
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = p2_hitbox->juggle_set;
 			}
-			if (p1->invalid_x(p1->pos.x - p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir)) {
-				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
-			}
-			else {
-				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
-			}
+			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
@@ -1037,9 +1021,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			if (!p2->invalid_x(p2->pos.x - p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
-				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
-			}
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
@@ -1074,9 +1056,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 			else {
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
 			}
-			if (!p2->invalid_x(p2->pos.x - p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
-				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
-			}
+			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;

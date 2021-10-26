@@ -72,8 +72,7 @@ void ProjectileInstance::load_params() {
 
 void ProjectileInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
-	attempted_excutes = 1;
-	highest_successful_excute = 1;
+	attempted_excutes = 0;
 	last_excute_frame = 0;
 
 	prev_anim_max_ticks = max_ticks;
@@ -122,7 +121,7 @@ void ProjectileInstance::loadStatusFunctions() {
 }
 
 bool ProjectileInstance::canStep() {
-	attempted_excutes = highest_successful_excute;
+	attempted_excutes = 0;
 	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
 		frame++;
 		ticks++;

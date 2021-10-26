@@ -95,6 +95,9 @@ void GameTimer::Tick(){
 		//reset frame counter
 		uiDecaframes = 5;
    		uiFrames = 9;
+		last_ms_60f = ms_60f;
+		ms_60f = SDL_GetTicks();
+		cout << "Framerate: " << (ms_60f - last_ms_60f) / 16.667 << endl;
 		//count down seconds
 		if (uiSeconds == 0){
 			uiSeconds = 9;

@@ -236,19 +236,24 @@ void FighterInstance::loadStatusFunctions() {
 //Inputs
 
 void FighterInstance::processInput() {
+	int stick_dir = get_stick_dir();
 
 	//Dash Input
 
-	if (get_flick_dir() == 6) {
-		chara_int[CHARA_INT_DASH_F_WINDOW] = 9;
+	if (get_flick_dir() == 6 && prev_stick_dir == 5) {
+		chara_int[CHARA_INT_DASH_F_WINDOW] = DASH_WINDOW;
 	}
-	if (get_flick_dir() == 4) {
-		chara_int[CHARA_INT_DASH_B_WINDOW] = 9;
+	if (get_flick_dir() == 4 && prev_stick_dir == 5) {
+		chara_int[CHARA_INT_DASH_B_WINDOW] = DASH_WINDOW;
+	}
+	if (stick_dir != 6 && stick_dir != 5) {
+		chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
+	}
+	if (stick_dir != 4 && stick_dir != 5) {
+		chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 	}
 
 	//Special Inputs
-
-	int stick_dir = get_stick_dir();
 
 	//Motion Inputs
 
@@ -671,6 +676,8 @@ void FighterInstance::set_opponent_offset(GameCoordinate offset, int frames) {
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] =
 		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / frames;
 	fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] = frames;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = new_offset.x;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
 }
 
 void FighterInstance::change_opponent_status(u32 status_kind) {
@@ -766,8 +773,7 @@ void FighterInstance::reenter_last_anim() {
 
 void FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
-	highest_successful_excute = 1;
-	attempted_excutes = 1;
+	attempted_excutes = 0;
 	last_excute_frame = 0;
 
 	prev_anim_max_ticks = max_ticks;
@@ -809,7 +815,7 @@ void FighterInstance::startAnimation(Animation* animation) {
 }
 
 bool FighterInstance::canStep() {
-	attempted_excutes = highest_successful_excute;
+	attempted_excutes = 0;
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		frame++;
 		ticks++;
@@ -880,7 +886,10 @@ void FighterInstance::playoutStatus() {
 }
 
 bool FighterInstance::common_ground_status_act() {
-	if (is_actionable() && !specific_ground_status_act()) {
+	if (specific_ground_status_act()) {
+		return true;
+	}
+	if (is_actionable()) {
 		if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_MP) || check_button_input(BUTTON_HP) || check_button_input(BUTTON_LK) || check_button_input(BUTTON_MK) || check_button_input(BUTTON_HK)) {
 			u32 grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
 			if (check_button_input(grab_buttons, 2)) {
@@ -1662,7 +1671,7 @@ void FighterInstance::status_grabbed() {
 		chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
 	}
 	else {
-		set_pos(fighter_instance_accessor->fighter_instance[!id]->pos.x, fighter_instance_accessor->fighter_instance[!id]->pos.y);
+		set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y]);
 	}
 }
 

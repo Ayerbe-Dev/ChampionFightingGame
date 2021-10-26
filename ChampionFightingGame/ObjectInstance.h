@@ -44,7 +44,6 @@ public:
 	int ticks;
 	int max_ticks;
 	int last_excute_frame{ 0 };
-	int highest_successful_excute{ 1 };
 	int excute_count{ 0 };
 	int attempted_excutes{ 0 };
 

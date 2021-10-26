@@ -33,7 +33,11 @@ public:
 	double angle{ 0 };
 
 	Animation* anim_kind;
+	Animation* prev_anim_kind;
 	Animation animation_table[ANIM_TABLE_LENGTH];
+	int prev_anim_max_ticks;
+	int prev_anim_frame;
+	int prev_anim_render_frame;
 
 	int frame;
 	int render_frame;
@@ -41,6 +45,8 @@ public:
 	int max_ticks;
 	int last_excute_frame;
 	int excute_count;
+	int attempted_excutes;
+
 	bool is_anim_end{ false };
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
@@ -79,6 +85,6 @@ public:
 
 	function<void()> move_script;
 	void set_current_move_script(string anim_name);
-	bool is_excute_frame(int excute_count, int frame);
-	bool is_excute_wait(int excute_count, int frames);
+	bool is_excute_frame(int frame);
+	bool is_excute_wait(int frames);
 };

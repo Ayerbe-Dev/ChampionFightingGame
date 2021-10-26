@@ -10,7 +10,7 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
 	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
-	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool use_player_pos) {
+	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	if (use_player_pos) {
@@ -63,13 +63,14 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	this->launch_gravity_y = launch_gravity_y;
 	this->launch_max_fall_speed = launch_max_fall_speed;
 	this->launch_speed_x = launch_speed_x;
+	this->continue_launch = continue_launch;
 	this->use_player_pos = use_player_pos;
 }
 
 Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
-	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade) {
+	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
@@ -111,6 +112,7 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	this->launch_max_fall_speed = launch_max_fall_speed;
 	this->launch_speed_x = launch_speed_x;
 	this->trade = trade;
+	this->continue_launch = continue_launch;
 }
 
 void Hitbox::update_connect(int multihit_index) {

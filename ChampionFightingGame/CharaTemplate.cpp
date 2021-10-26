@@ -47,6 +47,9 @@ void CharaTemplate::loadCharaTemplateACMD() { //todo: Fill this in with all of t
 	script("stand_lp", [this]() {
 
 	});
+	script("stand_mp", [this]() {
+
+	});
 }
 
 bool CharaTemplate::specific_ground_status_act() {

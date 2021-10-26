@@ -29,14 +29,14 @@ extern bool debug;
 extern u32 tick;
 extern u32 tok;
 
-int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
+int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
 	debugger = Debugger();
-	SDL_Rect debug_rect[2] = {0, 0, 0, 0};
+	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
 
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
@@ -44,15 +44,15 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	//init stage
 	Stage stage = Stage(pRenderer, "training_room");
 
-	SDL_Texture *pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Rect camera;
 
 	//init players
-	FighterInstance *fighter_instance[2];
+	FighterInstance* fighter_instance[2];
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
-	IObject *p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0, fighter_instance_accessor);
-	IObject *p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1, fighter_instance_accessor);
+	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0, fighter_instance_accessor);
+	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1, fighter_instance_accessor);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
@@ -64,7 +64,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor;
 	}
 	for (int i = 0; i < 2; i++) {
-		fighter_instance[i]->superInit(i, pRenderer); 
+		fighter_instance[i]->superInit(i, pRenderer);
 		/*
 			Requires fighter instance accessor to be fully initialized since it makes a call that involves checking the other character's x pos, so we'll
 			execute this part after the first loop has finished
@@ -82,7 +82,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	player_indicator[0] = PlayerIndicator(pRenderer, fighter_instance[0]);
 	player_indicator[1] = PlayerIndicator(pRenderer, fighter_instance[1]);
 
-	const Uint8 *keyboard_state;
+	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
 	for (int i = 0; i < 2; i++) {
@@ -101,16 +101,14 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		tick = SDL_GetTicks();
 
 		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		{
-			switch (event.type)
-			{
-			case SDL_QUIT:
-			{
-				next_state = GAME_STATE_CLOSE;
-				gaming = false;
-			}
-			break;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					next_state = GAME_STATE_CLOSE;
+					gaming = false;
+				}
+				break;
 			}
 		}
 
@@ -193,7 +191,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			}
 			else if (!fighter_instance[i]->facing_right) {
 				flip = SDL_FLIP_HORIZONTAL;
-			}			
+			}
 
 			SDL_Rect render_pos;
 			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
@@ -239,7 +237,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 			SDL_RenderDrawRect(pRenderer, debug_rect);
 			SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
 			SDL_RenderFillRect(pRenderer, debug_rect);
-			
+
 		}
 
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
@@ -262,11 +260,9 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr);
 		if (!debug) timer.Tick();
 		timer.Render();
-		
-		//SDL_RenderCopy(pRenderer, timer.texture, nullptr, &(timer.timer_rect));
 
 		for (int i = 0; i < 2; i++) {
-			switch (i){
+			switch (i) {
 				case 0:
 					health_bar[i].RenderAsP1();
 					break;
@@ -279,7 +275,7 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 					health_bar[i].RenderAsP1();
 					break;
 			}
-						
+
 		}
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
@@ -291,24 +287,24 @@ int game_main(SDL_Renderer *pRenderer, PlayerInfo player_info[2]) {
 	return next_state;
 }
 
-void tickOnceFighter(FighterInstance *fighter_instance) {
+void tickOnceFighter(FighterInstance* fighter_instance) {
 	/*
-				   _.-, 
-              _ .-'  / .._
-           .-:'/ - - \:::::-.
-         .::: '  e e  ' '-::::.
-        ::::'(    ^    )_.::::::
-       ::::.' '.  o   '.::::'.'/_
+				   _.-,
+			  _ .-'  / .._
+		   .-:'/ - - \:::::-.
+		 .::: '  e e  ' '-::::.
+		::::'(    ^    )_.::::::
+	   ::::.' '.  o   '.::::'.'/_
    .  :::.'       -  .::::'_   _.:
  .-''---' .'|      .::::'   '''::::
 '. ..-:::'  |    .::::'        ::::
  '.' ::::    \ .::::'          ::::
-      ::::   .::::'           ::::
-       ::::.::::'._          ::::
-        ::::::' /  '-      .::::
-         '::::-/__    __.-::::'
-           '-::::::::::::::-'
-               '''::::'''
+	  ::::   .::::'           ::::
+	   ::::.::::'._          ::::
+		::::::' /  '-      .::::
+		 '::::-/__    __.-::::'
+		   '-::::::::::::::-'
+			   '''::::'''
 	 */
 
 	fighter_instance->prevpos = fighter_instance->pos;
@@ -326,7 +322,7 @@ void tickOnceFighter(FighterInstance *fighter_instance) {
 	fighter_instance->playoutStatus();
 
 	fighter_instance->processInput();
-	
+
 	fighter_instance->prev_stick_dir = fighter_instance->get_stick_dir();
 
 	decrease_common_fighter_variables(fighter_instance);
@@ -389,8 +385,8 @@ void tickOnceProjectile(ProjectileInstance* projectile_instance) {
 	projectile_instance->update_hurtbox_pos();
 }
 
-void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer *renderer, bool visualize_boxes, bool check) {
-	FighterInstance *fighter_instance[2] = {p1, p2};
+void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Renderer* renderer, bool visualize_boxes, bool check) {
+	FighterInstance* fighter_instance[2] = { p1, p2 };
 	if (check) {
 		for (int i = 0; i < MAX_PROJECTILES; i++) {
 			if (fighter_instance[0]->projectile_objects[i]->id != -1) {
@@ -602,49 +598,39 @@ void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Rend
 ░░░░░░░░██████████░░░░░░░░░░░░░░██████████
 */
 
-int get_event_hit_collide_player(FighterInstance *attacker, FighterInstance *defender, Hitbox *hitbox, Hurtbox *hurtbox)
-{
+int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
-	if (hitbox->success_hit)
-	{
+	if (hitbox->success_hit) {
 		return HITBOX_COUNT_MAX;
 	}
 
-	if (hitbox->situation_hit != SITUATION_HIT_ALL)
-	{
-		if (hitbox->situation_hit != SITUATION_HIT_GROUND_AIR)
-		{
-			if (hitbox->situation_hit != defender->situation_kind)
-			{
+	if (hitbox->situation_hit != SITUATION_HIT_ALL) {
+		if (hitbox->situation_hit != SITUATION_HIT_GROUND_AIR) {
+			if (hitbox->situation_hit != defender->situation_kind) {
 				return HITBOX_COUNT_MAX;
 			}
 		}
-		else if (defender->situation_kind == CHARA_SITUATION_DOWN)
-		{
+		else if (defender->situation_kind == CHARA_SITUATION_DOWN) {
 			return HITBOX_COUNT_MAX;
 		}
 	}
-	if (hurtbox->intangible_kind == hitbox->attack_height || hurtbox->intangible_kind == INTANGIBLE_KIND_NORMAL || hurtbox->intangible_kind == INTANGIBLE_KIND_ALL)
-	{
+	if (hurtbox->intangible_kind == hitbox->attack_height || hurtbox->intangible_kind == INTANGIBLE_KIND_NORMAL || hurtbox->intangible_kind == INTANGIBLE_KIND_ALL) {
 		return HITBOX_COUNT_MAX;
 	}
-	if (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->max_juggle < defender->chara_int[CHARA_INT_JUGGLE_VALUE])
-	{
+	if (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->max_juggle < defender->chara_int[CHARA_INT_JUGGLE_VALUE]) {
 		return HITBOX_COUNT_MAX;
 	}
 
 	//Then, check if the hurtbox is invincible. If it is, the attacker's entire attack has failed. This will be pretty rare tbh.
 
-	if (hurtbox->intangible_kind == INTANGIBLE_KIND_INVINCIBLE)
-	{
+	if (hurtbox->intangible_kind == INTANGIBLE_KIND_INVINCIBLE) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 		return hitbox->id;
 	}
 
 	//If the hurtbox has armor, both parties get SOME hitlag to acknowledge the move hitting
 
-	if (hurtbox->is_armor)
-	{
+	if (hurtbox->is_armor) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 		return hitbox->id;
@@ -652,32 +638,26 @@ int get_event_hit_collide_player(FighterInstance *attacker, FighterInstance *def
 
 	bool blocking = false;
 	bool parrying = false;
-	if (defender->is_actionable() || defender->status_kind == CHARA_STATUS_BLOCKSTUN)
-	{
-		if (defender->get_stick_dir() == 4 && hitbox->attack_height != ATTACK_HEIGHT_LOW)
-		{
+	if (defender->is_actionable() || defender->status_kind == CHARA_STATUS_BLOCKSTUN) {
+		if (defender->get_stick_dir() == 4 && hitbox->attack_height != ATTACK_HEIGHT_LOW) {
 			blocking = true;
 		}
-		if (defender->get_stick_dir() == 1 && hitbox->attack_height != ATTACK_HEIGHT_HIGH)
-		{
+		if (defender->get_stick_dir() == 1 && hitbox->attack_height != ATTACK_HEIGHT_HIGH) {
 			blocking = true;
 		}
 	}
-	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE])
-	{
+	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
 		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == hitbox->attack_height || defender->chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
 			parrying = true;
 		}
 	}
-	if (parrying)
-	{
+	if (parrying) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag + 12;
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag + 8;
 		defender->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
 	}
-	if (blocking && !hitbox->unblockable)
-	{
+	if (blocking && !hitbox->unblockable) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
 		defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->blockstun;
@@ -714,23 +694,18 @@ int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* de
 	return grabbox->id;
 }
 
-int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox){
-	if (hitbox->success_hit)
-	{
+int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
+	if (hitbox->success_hit) {
 		return HITBOX_COUNT_MAX;
 	}
 
-	if (hitbox->situation_hit != SITUATION_HIT_ALL)
-	{
-		if (hitbox->situation_hit != SITUATION_HIT_GROUND_AIR)
-		{
-			if (hitbox->situation_hit != defender->situation_kind)
-			{
+	if (hitbox->situation_hit != SITUATION_HIT_ALL) {
+		if (hitbox->situation_hit != SITUATION_HIT_GROUND_AIR) {
+			if (hitbox->situation_hit != defender->situation_kind) {
 				return HITBOX_COUNT_MAX;
 			}
 		}
-		else if (defender->situation_kind == CHARA_SITUATION_DOWN)
-		{
+		else if (defender->situation_kind == CHARA_SITUATION_DOWN) {
 			return HITBOX_COUNT_MAX;
 		}
 	}
@@ -790,115 +765,93 @@ int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstan
 	return hitbox->id;
 }
 
-bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *p1_hitbox, Hitbox *p2_hitbox) {
+bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p1_status_post_hit = p1->status_kind;
 	u32 p2_status_post_hit = p2->status_kind;
-	if (p1_hit && p2_hit)
-	{ //Both players got hit
-		if (p1->situation_kind != p2->situation_kind)
-		{
-			if (p1->situation_kind == CHARA_SITUATION_GROUND)
-			{
+	if (p1_hit && p2_hit) { //Both players got hit
+		if (p1->situation_kind != p2->situation_kind) {
+			if (p1->situation_kind == CHARA_SITUATION_GROUND) {
 				/*
 					Grounded opponents will always win trades against aerial opponents. This is important for balancing because holy shit jumping is
 					gonna be busted without stuff like this
 
-					Oh also, no need to check OTG because there won't be any attacks you can use outside of CHARA_SITUATION_GROUND or 
+					Oh also, no need to check OTG because there won't be any attacks you can use outside of CHARA_SITUATION_GROUND or
 					CHARA_SITUATION_AIR
 				*/
 				p1_hit = false;
 			}
-			else
-			{
+			else {
 				p2_hit = false;
 			}
 		}
-		else if (p1_hitbox->attack_level == p2_hitbox->attack_level)
-		{
-			if (p1_hitbox->clank_kind == CLANK_KIND_CONTINUE || p2_hitbox->clank_kind == CLANK_KIND_CONTINUE)
-			{
-				if (p2_hitbox->clank_kind != CLANK_KIND_CONTINUE)
-				{
+		else if (p1_hitbox->attack_level == p2_hitbox->attack_level) {
+			if (p1_hitbox->clank_kind == CLANK_KIND_CONTINUE || p2_hitbox->clank_kind == CLANK_KIND_CONTINUE) {
+				if (p2_hitbox->clank_kind != CLANK_KIND_CONTINUE) {
 					p2->change_status(CHARA_STATUS_CLANK);
 					return false;
 				}
-				else if (p1_hitbox->clank_kind != CLANK_KIND_CONTINUE)
-				{
+				else if (p1_hitbox->clank_kind != CLANK_KIND_CONTINUE) {
 					p1->change_status(CHARA_STATUS_CLANK);
 					return false;
 				}
-				else
-				{ //If both people have trample, it's better to make them both clank than it is to make them both ignore having just been hit
+				else { //If both people have trample, it's better to make them both clank than it is to make them both ignore having just been hit
 					p1->change_status(CHARA_STATUS_CLANK);
 					p2->change_status(CHARA_STATUS_CLANK);
 					return false;
 				}
 			}
-			else if (p1_hitbox->clank_kind == CLANK_KIND_CLANK || p2_hitbox->clank_kind == CLANK_KIND_CLANK)
-			{
+			else if (p1_hitbox->clank_kind == CLANK_KIND_CLANK || p2_hitbox->clank_kind == CLANK_KIND_CLANK) {
 				p1->change_status(CHARA_STATUS_CLANK);
 				p2->change_status(CHARA_STATUS_CLANK);
 				return false;
 			}
 			//if both players have CLANK_KIND_NORMAL as well as using the same attack level, they can just trade and both take damage
 		}
-		else if (p1_hitbox->attack_level > p2_hitbox->attack_level)
-		{
+		else if (p1_hitbox->attack_level > p2_hitbox->attack_level) {
 			p1_hit = false;
 		}
-		else
-		{
+		else {
 			p2_hit = false;
 		}
 	}
-	if (p2_hit)
-	{
+	if (p2_hit) {
 		p1->update_hitbox_connect(p1_hitbox->multihit);
-		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
-		{
+		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2->get_param_float("meter_gain_on_parry");
 			p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
 			p2_status_post_hit = CHARA_STATUS_PARRY;
 		}
-		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN])
-		{
+		else if (p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			if (p2->invalid_x(p2->pos.x - p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir))
-			{
+			if (p2->invalid_x(p2->pos.x - p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
 				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
 			}
-			else
-			{
+			else {
 				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			}
 			p2->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p1->chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p2_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
-		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED])
-		{
+		else if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block / 2;
 			p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage / 2;
 		}
-		else
-		{
+		else {
 			/*
 				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 			*/
-			if (p2->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN)
-			{
-				if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS])
-				{
+			if (p2->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+				if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
 				}
 			}
-			else
-			{
+			else {
 				p1->chara_int[CHARA_INT_DAMAGE_SCALE] = 0;
 			}
 			p2->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
@@ -906,125 +859,115 @@ bool event_hit_collide_player(FighterInstance *p1, FighterInstance *p2, Hitbox *
 			p2->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
 			p2->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
 			/*
-			If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise, 
+			If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise,
 			increase it by one so that the opponent's juggle value is always going up
 			*/
-			if (p2->chara_int[CHARA_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_set)
-			{
+			if (p2->chara_int[CHARA_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_set) {
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE]++;
 			}
-			else
-			{
+			else {
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
 			}
-			if (p2->invalid_x(p2->pos.x - p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir))
-			{
+			if (p2->invalid_x(p2->pos.x - p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES] * p2->facing_dir)) {
 				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
 			}
-			else
-			{
+			else {
 				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			}
-			if (can_counterhit(p2, p1_hitbox))
-			{
+			if (can_counterhit(p2, p1_hitbox)) {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
 				p2->chara_int[CHARA_INT_HITSTUN_FRAMES] *= 1.2;
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);
+				if (p2->status_kind == CHARA_STATUS_LAUNCH && p1_hitbox->continue_launch) {
+					p2_status_post_hit = CHARA_STATUS_LAUNCH;
+				}
 			}
-			else
-			{
+			else {
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_hit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * ((float)(clamp(1, 10 - p1->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10);
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
+				if (p2->status_kind == CHARA_STATUS_LAUNCH && p1_hitbox->continue_launch) {
+					p2_status_post_hit = CHARA_STATUS_LAUNCH;
+				}
 			}
 		}
 		p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
 		p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 	}
 
-	if (p1_hit)
-	{ //P1 got hit
+	if (p1_hit) { //P1 got hit
 		p2->update_hitbox_connect(p2_hitbox->multihit);
-		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY])
-		{
+		if (p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1->get_param_float("meter_gain_on_parry");
 			p1->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = false;
 			p1_status_post_hit = CHARA_STATUS_PARRY;
 		}
-		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN])
-		{
+		else if (p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
-			if (p1->invalid_x(p1->pos.x - p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir))
-			{
+			if (p1->invalid_x(p1->pos.x - p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir)) {
 				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
 			}
-			else
-			{
+			else {
 				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			}
 			p1->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = false;
 			p2->chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p1_status_post_hit = CHARA_STATUS_BLOCKSTUN;
 		}
-		else if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED])
-		{
+		else if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED]) {
 			p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block / 2;
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
-		else
-		{
-			if (p1->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN)
-			{
-				if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS])
-				{
+		else {
+			if (p1->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+				if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 					p2->chara_int[CHARA_INT_DAMAGE_SCALE] += p2_hitbox->scale;
 				}
 			}
-			else
-			{
+			else {
 				p2->chara_int[CHARA_INT_DAMAGE_SCALE] = 0;
 			}
 			p1->chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED] = p2_hitbox->launch_init_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = p2_hitbox->launch_gravity_y;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = p2_hitbox->launch_max_fall_speed;
 			p1->chara_float[CHARA_FLOAT_LAUNCH_SPEED_X] = p2_hitbox->launch_speed_x;
-			if (p1->chara_int[CHARA_INT_JUGGLE_VALUE] >= p2_hitbox->juggle_set)
-			{
+			if (p1->chara_int[CHARA_INT_JUGGLE_VALUE] >= p2_hitbox->juggle_set) {
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE]++;
 			}
-			else
-			{
+			else {
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = p2_hitbox->juggle_set;
 			}
-			if (p1->invalid_x(p1->pos.x - p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir))
-			{
+			if (p1->invalid_x(p1->pos.x - p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES] * p1->facing_dir)) {
 				p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = (p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES]) / 2.0;
 			}
-			else
-			{
+			else {
 				p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			}
-			if (can_counterhit(p1, p2_hitbox))
-			{
+			if (can_counterhit(p1, p2_hitbox)) {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
 				p1->chara_int[CHARA_INT_HITSTUN_FRAMES] *= 1.2;
 				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p1_status_post_hit = get_damage_status(p2_hitbox->counterhit_status, p1->situation_kind);
+				if (p1->status_kind == CHARA_STATUS_LAUNCH && p2_hitbox->continue_launch) {
+					p1_status_post_hit = CHARA_STATUS_LAUNCH;
+				}
 			}
-			else
-			{
+			else {
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_hit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * ((float)(clamp(1, 10 - p2->chara_int[CHARA_INT_DAMAGE_SCALE], 15)) / 10.0);
 				p1->chara_int[CHARA_INT_HITSTUN_LEVEL] = p2_hitbox->attack_level;
 				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status, p1->situation_kind);
+				if (p1->status_kind == CHARA_STATUS_LAUNCH && p2_hitbox->continue_launch) {
+					p1_status_post_hit = CHARA_STATUS_LAUNCH;
+				}
 			}
 		}
 		p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
@@ -1148,6 +1091,9 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 				p2->chara_int[CHARA_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
 			}
+			if (p2->status_kind == CHARA_STATUS_LAUNCH && p1_hitbox->continue_launch) {
+				p2_status_post_hit = CHARA_STATUS_LAUNCH;
+			}
 		}
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT] = false;
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = true;
@@ -1158,50 +1104,39 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 	}
 }
 
-bool can_counterhit(FighterInstance *defender, Hitbox *hitbox) {
+bool can_counterhit(FighterInstance* defender, Hitbox* hitbox) {
 	if (defender->status_kind == CHARA_STATUS_HITSTUN_PARRY) {
 		hitbox->scale = -5;
 	}
-	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL 
-	|| (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));
+	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL
+																  || (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));
 }
 
-int get_damage_status(int hit_status, int situation_kind)
-{
-	if (hit_status == HIT_STATUS_CRUMPLE)
-	{
-		if (situation_kind == CHARA_SITUATION_AIR)
-		{
+int get_damage_status(int hit_status, int situation_kind) {
+	if (hit_status == HIT_STATUS_CRUMPLE) {
+		if (situation_kind == CHARA_SITUATION_AIR) {
 			return CHARA_STATUS_LAUNCH;
 		}
-		else
-		{
+		else {
 			return CHARA_STATUS_CRUMPLE;
 		}
 	}
-	else if (hit_status == HIT_STATUS_LAUNCH)
-	{
-		if (situation_kind == CHARA_SITUATION_AIR)
-		{
+	else if (hit_status == HIT_STATUS_LAUNCH) {
+		if (situation_kind == CHARA_SITUATION_AIR) {
 			return CHARA_STATUS_LAUNCH;
 		}
-		else
-		{
+		else {
 			return CHARA_STATUS_LAUNCH_START;
 		}
 	}
-	else if (hit_status == HIT_STATUS_KNOCKDOWN)
-	{
+	else if (hit_status == HIT_STATUS_KNOCKDOWN) {
 		return CHARA_STATUS_KNOCKDOWN_START;
 	}
-	else
-	{
-		if (situation_kind == CHARA_SITUATION_AIR)
-		{
+	else {
+		if (situation_kind == CHARA_SITUATION_AIR) {
 			return CHARA_STATUS_HITSTUN_AIR;
 		}
-		else
-		{
+		else {
 			return CHARA_STATUS_HITSTUN;
 		}
 	}
@@ -1285,65 +1220,62 @@ void decrease_common_projectile_variables(ProjectileInstance* projectile_instanc
 	}
 }
 
-IObject::IObject(int object_type, int object_kind, SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
+IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
-		switch (object_kind)
-		{
-		case (CHARA_KIND_ROY):
-		{
-			fighter_instance = new Roy(renderer, id, fighter_instance_accessor);
-		}
-		break;
-		case (CHARA_KIND_ERIC):
-		{
-			fighter_instance = new Eric(renderer, id, fighter_instance_accessor);
-		}
-		break;
-		case (CHARA_KIND_CHARA_TEMPLATE): {
-			fighter_instance = new CharaTemplate(renderer, id, fighter_instance_accessor);
-		} break;
-		case (CHARA_KIND_MAX):
-		{
-			fighter_instance = NULL;
-		}
-		break;
+		switch (object_kind) {
+			case (CHARA_KIND_ROY):
+			{
+				fighter_instance = new Roy(renderer, id, fighter_instance_accessor);
+			}
+			break;
+			case (CHARA_KIND_ERIC):
+			{
+				fighter_instance = new Eric(renderer, id, fighter_instance_accessor);
+			}
+			break;
+			case (CHARA_KIND_CHARA_TEMPLATE):
+			{
+				fighter_instance = new CharaTemplate(renderer, id, fighter_instance_accessor);
+			} break;
+			case (CHARA_KIND_MAX):
+			{
+				fighter_instance = NULL;
+			}
+			break;
 		}
 	}
 	else if (object_type == OBJECT_TYPE_PROJECTILE) {
-		switch (object_kind)
-		{
-		case (PROJECTILE_KIND_ROY_FIREBALL):
-		{
-			projectile_instance = new RoyFireball(renderer, id, fighter_instance_accessor);
-		}
-		break;
-		case (PROJECTILE_KIND_ERIC_FIREBALL):
-		{
-			projectile_instance = new EricFireball(renderer, id, fighter_instance_accessor);
-		}
-		break;
-		case (PROJECTILE_KIND_PROJECTILE_TEMPLATE): {
-			projectile_instance = new ProjectileTemplate(renderer, id, fighter_instance_accessor);
-		} break;
-		case (PROJECTILE_KIND_MAX):
-		{
-			projectile_instance = NULL;
-		}
-		break;
+		switch (object_kind) {
+			case (PROJECTILE_KIND_ROY_FIREBALL):
+			{
+				projectile_instance = new RoyFireball(renderer, id, fighter_instance_accessor);
+			}
+			break;
+			case (PROJECTILE_KIND_ERIC_FIREBALL):
+			{
+				projectile_instance = new EricFireball(renderer, id, fighter_instance_accessor);
+			}
+			break;
+			case (PROJECTILE_KIND_PROJECTILE_TEMPLATE):
+			{
+				projectile_instance = new ProjectileTemplate(renderer, id, fighter_instance_accessor);
+			} break;
+			case (PROJECTILE_KIND_MAX):
+			{
+				projectile_instance = NULL;
+			}
+			break;
 		}
 	}
 
 }
 
-IObject::~IObject()
-{
-	if (fighter_instance)
-	{
+IObject::~IObject() {
+	if (fighter_instance) {
 		delete[] fighter_instance;
 		fighter_instance = NULL;
 	}
-	if (projectile_instance)
-	{
+	if (projectile_instance) {
 		delete[] projectile_instance;
 		projectile_instance = NULL;
 	}

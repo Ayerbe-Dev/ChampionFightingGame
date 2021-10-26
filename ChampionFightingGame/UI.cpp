@@ -34,14 +34,13 @@ void HealthBar::RenderAsP1() {
 	
 	SDL_RenderCopy(this->pRenderer,bar_texture,nullptr,&bar_rect);
 	SDL_RenderCopy(this->pRenderer,health_texture,&slice_rect,&health_rect);
-	
 }
 
 void HealthBar::RenderAsP2() {
 	bar_rect.x = WINDOW_WIDTH - width - 2;
 	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / 1000);
 	health_rect.w = slice_rect.w;
-	health_rect.x = (WINDOW_WIDTH - width)-2;// + (width - slice_rect.w);
+	health_rect.x = (WINDOW_WIDTH - width)-2;
 	slice_rect.x = width - slice_rect.w;
 	SDL_RenderCopyEx(this->pRenderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
 	SDL_RenderCopyEx(this->pRenderer,health_texture,&slice_rect,&health_rect,0,nullptr,SDL_FLIP_HORIZONTAL);

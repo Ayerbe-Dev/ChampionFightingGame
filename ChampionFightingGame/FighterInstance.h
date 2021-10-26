@@ -103,7 +103,7 @@ public:
 		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
 		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
-		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool use_player_pos = true);
+		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos = true);
 	
 	//Grabbox
 	
@@ -121,6 +121,7 @@ public:
 
 	//Animation
 	
+	void reenter_last_anim();
 	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
 	void startAnimation(Animation* animation);
 	bool canStep();
@@ -134,6 +135,7 @@ public:
 	bool common_air_status_act();
 	bool common_air_status_general();
 	u32 get_status_group(u32 status_kind);
+	bool is_status_hitstun_enable_parry();
 
 	//don't worry, it'll get longer :)
 	virtual void status_wait();

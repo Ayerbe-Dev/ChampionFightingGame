@@ -7,10 +7,9 @@ extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
 
-FighterInstance::FighterInstance() {
-}
+FighterInstance::FighterInstance() {}
 
-FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info) {
+FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info) {
 	this->player_info = player_info;
 	// runs on creation of instance;
 		// no it doesn't
@@ -31,17 +30,15 @@ void FighterInstance::destroy_projectile(int id) {
 	projectile_objects[id]->id = -1;
 }
 
-void FighterInstance::superInit(int id, SDL_Renderer *renderer)
-{
+void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 	this->id = id;
 
 	//these initial gamecoord values get overwritten almost immediately. why are we still here, just to suffer?
-	if (id == 0)
-	{
+
+	if (id == 0) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, -200, 0);
 	}
-	else if (id == 1)
-	{
+	else if (id == 1) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 
@@ -59,13 +56,11 @@ void FighterInstance::superInit(int id, SDL_Renderer *renderer)
 
 //Setup
 
-void FighterInstance::load_anim_list(SDL_Renderer *renderer)
-{
+void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
-	if (anim_list.fail())
-	{
+	if (anim_list.fail()) {
 		cerr << "Could not open anim_list!" << endl;
 		exit(1);
 	}
@@ -247,8 +242,7 @@ void FighterInstance::processInput() {
 	if (get_flick_dir() == 6) {
 		chara_int[CHARA_INT_DASH_F_WINDOW] = 9;
 	}
-	if (get_flick_dir() == 4)
-	{
+	if (get_flick_dir() == 4) {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = 9;
 	}
 
@@ -371,7 +365,7 @@ void FighterInstance::processInput() {
 		chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 6;
 		chara_int[CHARA_INT_DOWN_CHARGE_FRAMES]++;
 	}
-	
+
 	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
 		chara_int[CHARA_INT_BACK_CHARGE_FRAMES]++;
 		chara_int[CHARA_INT_BACK_CHARGE_TIMER] = 6;
@@ -379,12 +373,10 @@ void FighterInstance::processInput() {
 
 	if (check_button_on(BUTTON_START)) {
 		pos.y = FLOOR_GAMECOORD;
-		if (id == 0)
-		{
+		if (id == 0) {
 			pos.x = -200.0;
 		}
-		else
-		{
+		else {
 			pos.x = 200.0;
 		}
 	}
@@ -410,73 +402,54 @@ bool FighterInstance::check_button_release(u32 button) {
 	return player_info->check_button_release(button);
 }
 
-int FighterInstance::get_stick_dir()
-{
-	if (check_button_on(BUTTON_UP) && !check_button_on(BUTTON_DOWN))
-	{
-		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT)))
-		{
-			if (check_button_on(BUTTON_RIGHT) == facing_right)
-			{
+int FighterInstance::get_stick_dir() {
+	if (check_button_on(BUTTON_UP) && !check_button_on(BUTTON_DOWN)) {
+		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+			if (check_button_on(BUTTON_RIGHT) == facing_right) {
 				return 9;
 			}
-			else
-			{
+			else {
 				return 7;
 			}
 		}
-		else
-		{
+		else {
 			return 8;
 		}
 	}
-	else if (check_button_on(BUTTON_DOWN) && !check_button_on(BUTTON_UP))
-	{
-		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT)))
-		{
-			if (check_button_on(BUTTON_RIGHT) == facing_right)
-			{
+	else if (check_button_on(BUTTON_DOWN) && !check_button_on(BUTTON_UP)) {
+		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+			if (check_button_on(BUTTON_RIGHT) == facing_right) {
 				return 3;
 			}
-			else
-			{
+			else {
 				return 1;
 			}
 		}
-		else
-		{
+		else {
 			return 2;
 		}
 	}
-	else
-	{
-		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT)))
-		{
-			if (check_button_on(BUTTON_RIGHT) == facing_right)
-			{
+	else {
+		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+			if (check_button_on(BUTTON_RIGHT) == facing_right) {
 				return 6;
 			}
-			else
-			{
+			else {
 				return 4;
 			}
 		}
-		else
-		{
+		else {
 			return 5;
 		}
 	}
 }
 
-int FighterInstance::get_flick_dir()
-{
+int FighterInstance::get_flick_dir() {
 	int stick_dir = get_stick_dir();
-	if (stick_dir == prev_stick_dir)
-	{
+	if (stick_dir == prev_stick_dir) {
 		return 0;
 	}
-	else
-	{
+	else {
 		return stick_dir;
 	}
 }
@@ -625,46 +598,36 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 
 //Position
 
-bool FighterInstance::add_pos(int x, int y)
-{
+bool FighterInstance::add_pos(int x, int y) {
 	pos.x += x;
 	pos.y += y;
-	if (invalid_x(pos.x) || invalid_y(pos.y))
-	{
-		if (invalid_x(pos.x))
-		{
+	if (invalid_x(pos.x) || invalid_y(pos.y)) {
+		if (invalid_x(pos.x)) {
 			pos.x = prevpos.x;
 		}
-		if (invalid_y(pos.x))
-		{
+		if (invalid_y(pos.x)) {
 			pos.y = prevpos.y;
 		}
 		return false;
 	}
-	else
-	{
+	else {
 		return true;
 	}
 }
 
-bool FighterInstance::set_pos(int x, int y)
-{
+bool FighterInstance::set_pos(int x, int y) {
 	pos.x = x;
 	pos.y = y;
-	if (invalid_x(pos.x) || invalid_y(pos.y))
-	{
-		if (invalid_x(pos.x))
-		{
+	if (invalid_x(pos.x) || invalid_y(pos.y)) {
+		if (invalid_x(pos.x)) {
 			pos.x = prevpos.x;
 		}
-		if (invalid_y(pos.y))
-		{
+		if (invalid_y(pos.y)) {
 			pos.y = prevpos.y;
 		}
 		return false;
 	}
-	else
-	{
+	else {
 		return true;
 	}
 }
@@ -676,8 +639,7 @@ bool FighterInstance::invalid_x(float x) {
 	return x > WINDOW_WIDTH / 2 || x < WINDOW_WIDTH / -2 || x_distance > CAMERA_MAX_ZOOM_OUT;
 }
 
-bool FighterInstance::invalid_y(float y)
-{
+bool FighterInstance::invalid_y(float y) {
 	return y < 0 || y > WINDOW_HEIGHT;
 }
 
@@ -687,7 +649,7 @@ void FighterInstance::set_opponent_offset(GameCoordinate offset, int frames) {
 	GameCoordinate new_offset;
 	new_offset.x = this->pos.x + (offset.x * facing_dir);
 	new_offset.y = this->pos.y + offset.y;
-	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] = 
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] =
 		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / frames;
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] =
 		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / frames;
@@ -719,26 +681,24 @@ void FighterInstance::change_opponent_anim(string anim_kind, int frame_rate, int
 
 //Hitbox
 
-void FighterInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, 
-	GameCoordinate offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
-	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
-	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, 
-	float launch_max_fall_speed, float launch_speed_x, bool use_player_pos)
-{
-	if (id < 10)
-	{
+void FighterInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+								 GameCoordinate offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag,
+								 int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
+								 bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y,
+								 float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos) {
+	if (id < 10) {
 		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, hitbox_kind, meter_gain_on_hit,
 							  meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, attack_height,
 							  attack_level, hit_pushback, block_pushback, clank_kind, success_hit, juggle_set, max_juggle, hit_status, counterhit_status,
-							  counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, use_player_pos);
+							  counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, continue_launch, use_player_pos);
 	}
 }
 
 //Grabbox
 
 void FighterInstance::new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
-	u32 defender_status_if_hit, bool use_player_pos) {
-	
+								  u32 defender_status_if_hit, bool use_player_pos) {
+
 	if (id < 10) {
 		grabboxes[id] = Grabbox(this, id, anchor, offset, grabbox_kind, situation_hit, attacker_status_if_hit, defender_status_if_hit, use_player_pos);
 	}
@@ -746,51 +706,55 @@ void FighterInstance::new_grabbox(int id, GameCoordinate anchor, GameCoordinate 
 
 //Hurtbox
 
-void FighterInstance::new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind)
-{
-	if (id < 10)
-	{
+void FighterInstance::new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind) {
+	if (id < 10) {
 		hurtboxes[id] = Hurtbox(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
 	}
 }
 
 //Transitions
 
-bool FighterInstance::is_actionable()
-{
-	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0 && chara_int[CHARA_INT_HITLAG_FRAMES] == 0)
-	{
+bool FighterInstance::is_actionable() {
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0 && chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		if (anim_kind->faf == -1) {
 			return render_frame >= anim_kind->length;
 		}
-		else
-		{
+		else {
 			return frame >= anim_kind->faf;
 		}
 	}
-	else
-	{
+	else {
 		return false;
 	}
 }
 
-bool FighterInstance::can_kara()
-{
-	if (((chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS]) || kara_enabled)
-	{
+bool FighterInstance::can_kara() {
+	if (((chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS]) || kara_enabled) {
 		return true;
 	}
-	else
-	{
+	else {
 		return false;
 	}
 }
 
 //Animations
 
+void FighterInstance::reenter_last_anim() {
+	max_ticks = prev_anim_max_ticks;
+	render_frame = prev_anim_render_frame;
+	frame = prev_anim_frame;
+	set_current_move_script(prev_anim_kind->name);
+	startAnimation(prev_anim_kind);
+}
+
 void FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
+	attempted_excutes = 1;
 	last_excute_frame = 0;
+
+	prev_anim_max_ticks = max_ticks;
+	prev_anim_frame = frame;
+	prev_anim_render_frame = render_frame;
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
@@ -805,7 +769,7 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 				render_frame = 0;
 			}
 			ticks = 0;
-      
+
 			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
 			return;
@@ -814,9 +778,9 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 	cout << "Invalid Animation '" << animation_name << "'" << endl;
 }
 
-void FighterInstance::startAnimation(Animation *animation)
-{
+void FighterInstance::startAnimation(Animation* animation) {
 	is_anim_end = false;
+	prev_anim_kind = anim_kind;
 	anim_kind = animation;
 	int width;
 	int height;
@@ -830,6 +794,7 @@ bool FighterInstance::canStep() {
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		frame++;
 		ticks++;
+		attempted_excutes = 1;
 
 		if (ticks >= max_ticks) {
 			ticks = 0;
@@ -859,10 +824,8 @@ void FighterInstance::stepAnimation() {
 
 //Status
 
-bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status)
-{
-	if (new_status_kind != status_kind || !require_different_status)
-	{
+bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+	if (new_status_kind != status_kind || !require_different_status) {
 		clear_hitbox_all();
 		clear_grabbox_all();
 		clear_hurtbox_all();
@@ -870,21 +833,30 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
-		if (call_end_status)
-		{
+		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
 		status_kind = new_status_kind;
 		(this->*pEnter_status[status_kind])();
 		return true;
 	}
-	else
-	{
+	else {
 		return false;
 	}
 }
 
 void FighterInstance::playoutStatus() {
+	if (is_status_hitstun_enable_parry()) {
+		u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+		if (check_button_input(parry_buttons, 2)) {
+			if (situation_kind == CHARA_SITUATION_GROUND) {
+				change_anim("hitstun_parry", 5);
+			}
+			else {
+				change_anim("hitstun_parry_air", 5);
+			}
+		}
+	}
 	(this->*pStatus[status_kind])();
 	move_script();
 }
@@ -1021,8 +993,7 @@ bool FighterInstance::common_air_status_act() {
 	return false;
 }
 
-bool FighterInstance::common_air_status_general()
-{
+bool FighterInstance::common_air_status_general() {
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
@@ -1036,31 +1007,44 @@ bool FighterInstance::common_air_status_general()
 	return false;
 }
 
-u32 FighterInstance::get_status_group(u32 status)
-{
-	switch (status)
-	{
-	case (CHARA_STATUS_HITSTUN):
-	case (CHARA_STATUS_HITSTUN_AIR):
-	case (CHARA_STATUS_LAUNCH):
-	case (CHARA_STATUS_CRUMPLE):
-	case (CHARA_STATUS_THROWN):
-	{
-		return STATUS_GROUP_HITSTUN;
+u32 FighterInstance::get_status_group(u32 status) {
+	switch (status) {
+		case (CHARA_STATUS_HITSTUN):
+		case (CHARA_STATUS_HITSTUN_AIR):
+		case (CHARA_STATUS_LAUNCH):
+		case (CHARA_STATUS_CRUMPLE):
+		case (CHARA_STATUS_THROWN): {
+			return STATUS_GROUP_HITSTUN;
+		}
+		break;
+		case (CHARA_STATUS_CROUCHD):
+		case (CHARA_STATUS_CROUCH):
+		case (CHARA_STATUS_CROUCHU): {
+			return STATUS_GROUP_CROUCH;
+		}
+		break;
+		default: {
+			return STATUS_GROUP_NORMAL;
+		}
+		break;
 	}
-	break;
-	case (CHARA_STATUS_CROUCHD):
-	case (CHARA_STATUS_CROUCH):
-	case (CHARA_STATUS_CROUCHU):
-	{
-		return STATUS_GROUP_CROUCH;
+}
+
+bool FighterInstance::is_status_hitstun_enable_parry() {
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0 || anim_kind->name == "hitstun_parry" || anim_kind->name == "hitstun_parry_air") {
+		return false;
 	}
-	break;
-	default:
-	{
-		return STATUS_GROUP_NORMAL;
-	}
-	break;
+	switch (status_kind) {
+		case (CHARA_STATUS_HITSTUN):
+		case (CHARA_STATUS_HITSTUN_AIR):
+		case (CHARA_STATUS_LAUNCH): {
+			return true;
+		}
+		break;
+		default: {
+			return false;
+		}
+		break;
 	}
 }
 
@@ -1092,9 +1076,7 @@ void FighterInstance::enter_status_wait() {
 	common_ground_status_act();
 }
 
-void FighterInstance::exit_status_wait()
-{
-}
+void FighterInstance::exit_status_wait() {}
 
 void FighterInstance::status_walkf() {
 	if (common_ground_status_act()) {
@@ -1109,37 +1091,28 @@ void FighterInstance::status_walkf() {
 
 void FighterInstance::enter_status_walkf() {
 	change_anim("walk_f", 2);
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_walkf()
-{
-}
+void FighterInstance::exit_status_walkf() {}
 
-void FighterInstance::status_walkb()
-{
-	if (common_ground_status_act())
-	{
+void FighterInstance::status_walkb() {
+	if (common_ground_status_act()) {
 		return;
 	}
-	if (get_stick_dir() == 5)
-	{
+	if (get_stick_dir() == 5) {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	if (chara_flag[CHARA_FLAG_PROX_GUARD])
-	{
-		if (anim_kind->name != "stand_block")
-		{
+	if (chara_flag[CHARA_FLAG_PROX_GUARD]) {
+		if (anim_kind->name != "stand_block") {
 			change_anim("stand_block");
 		}
 	}
-	else
-	{
-		if (anim_kind->name == "stand_block")
-		{
+	else {
+		if (anim_kind->name == "stand_block") {
 			change_anim("walk_b");
 		}
 		add_pos(get_param_float("walk_f_speed") * facing_dir * -1, 0);
@@ -1148,102 +1121,79 @@ void FighterInstance::status_walkb()
 
 void FighterInstance::enter_status_walkb() {
 	change_anim("walk_b", 2);
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_walkb()
-{
-}
+void FighterInstance::exit_status_walkb() {}
 
-void FighterInstance::status_dash()
-{
-	if (is_anim_end)
-	{
+void FighterInstance::status_dash() {
+	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	if (is_actionable() && common_ground_status_act())
-	{
+	if (is_actionable() && common_ground_status_act()) {
 		return;
 	}
 	int min_frame = get_param_int("dash_f_accel_frame");
 	int max_frame = min_frame + get_param_int("dash_f_maintain_speed_frame");
 
-	if (frame >= min_frame && frame < max_frame)
-	{
+	if (frame >= min_frame && frame < max_frame) {
 		add_pos(get_param_float("dash_f_speed") * facing_dir, 0);
 	}
-	else if (frame < max_frame + 2)
-	{
+	else if (frame < max_frame + 2) {
 		add_pos((get_param_float("walk_f_speed") + get_param_float("dash_f_speed")) * facing_dir / 2, 0);
 	}
 
-	if (frame >= get_param_int("dash_f_cancel_frame"))
-	{
-		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
-		{
-			if (get_stick_dir() == 4)
-			{
-				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
-				{
+	if (frame >= get_param_int("dash_f_cancel_frame")) {
+		if (!chara_flag[CHARA_FLAG_DASH_CANCEL]) {
+			if (get_stick_dir() == 4) {
+				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE) {
 					chara_flag[CHARA_FLAG_DASH_CANCEL] = true;
 				}
 				change_status(CHARA_STATUS_DASHB, false);
 				return;
 			}
 		}
-		else if (get_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP)
-		{
+		else if (get_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP) {
 		}
 	}
 }
 
-void FighterInstance::enter_status_dash()
-{
+void FighterInstance::enter_status_dash() {
 	change_anim("dash_f", 2);
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_dash()
-{
+void FighterInstance::exit_status_dash() {
 	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
 }
 
-void FighterInstance::status_dashb()
-{
-	if (is_anim_end)
-	{
+void FighterInstance::status_dashb() {
+	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	if (is_actionable() && common_ground_status_act())
-	{
+	if (is_actionable() && common_ground_status_act()) {
 		return;
 	}
 	int min_frame = get_param_int("dash_b_accel_frame");
 	int max_frame = min_frame + get_param_int("dash_b_maintain_speed_frame");
 
-	if (frame >= min_frame && frame < max_frame)
-	{
+	if (frame >= min_frame && frame < max_frame) {
 		add_pos(get_param_float("dash_b_speed") * facing_dir * -1, 0);
 	}
-	else if (frame < max_frame + 2)
-	{
+	else if (frame < max_frame + 2) {
 		add_pos((get_param_float("walk_b_speed") + get_param_float("dash_b_speed")) * facing_dir / -2, 0);
 	}
 
-	if (frame >= get_param_int("dash_f_cancel_frame"))
-	{
-		if (!chara_flag[CHARA_FLAG_DASH_CANCEL])
-		{
-			if (get_stick_dir() == 6)
-			{
-				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE)
-				{
+	if (frame >= get_param_int("dash_f_cancel_frame")) {
+		if (!chara_flag[CHARA_FLAG_DASH_CANCEL]) {
+			if (get_stick_dir() == 6) {
+				if (get_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE) {
 					chara_flag[CHARA_FLAG_DASH_CANCEL] = true;
 				}
 				change_status(CHARA_STATUS_DASH, false);
@@ -1251,21 +1201,18 @@ void FighterInstance::status_dashb()
 			}
 		}
 	}
-	else if (get_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP)
-	{
+	else if (get_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP) {
 	}
 }
 
-void FighterInstance::enter_status_dashb()
-{
+void FighterInstance::enter_status_dashb() {
 	change_anim("dash_b", 2);
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_dashb()
-{
+void FighterInstance::exit_status_dashb() {
 	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
 }
 
@@ -1342,65 +1289,49 @@ void FighterInstance::status_crouchd() {
 	}
 }
 
-void FighterInstance::enter_status_crouchd()
-{
+void FighterInstance::enter_status_crouchd() {
 	change_anim("crouch_d");
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 70}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_crouchd()
-{
-}
+void FighterInstance::exit_status_crouchd() {}
 
-void FighterInstance::status_crouch()
-{
-	if (common_ground_status_act())
-	{
+void FighterInstance::status_crouch() {
+	if (common_ground_status_act()) {
 		return;
 	}
-	if (get_stick_dir() == 5)
-	{
+	if (get_stick_dir() == 5) {
 		change_status(CHARA_STATUS_CROUCHU);
 		return;
 	}
 }
 
-void FighterInstance::enter_status_crouch()
-{
+void FighterInstance::enter_status_crouch() {
 	change_anim("crouch", 2);
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 70}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_crouch()
-{
-}
+void FighterInstance::exit_status_crouch() {}
 
-void FighterInstance::status_crouchu()
-{
-	if (common_ground_status_act())
-	{
+void FighterInstance::status_crouchu() {
+	if (common_ground_status_act()) {
 		return;
 	}
-	if (is_anim_end)
-	{
+	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
 	}
 }
 
-void FighterInstance::enter_status_crouchu()
-{
+void FighterInstance::enter_status_crouchu() {
 	change_anim("crouch_u");
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_crouchu()
-{
-}
+void FighterInstance::exit_status_crouchu() {}
 
-void FighterInstance::status_jumpsquat()
-{
+void FighterInstance::status_jumpsquat() {
 	if (frame == 4 || is_anim_end) {
 		change_status(CHARA_STATUS_JUMP);
 		return;
@@ -1411,90 +1342,75 @@ void FighterInstance::enter_status_jumpsquat() {
 	change_anim("jump_squat");
 }
 
-void FighterInstance::exit_status_jumpsquat()
-{
+void FighterInstance::exit_status_jumpsquat() {
 	chara_flag[CHARA_FLAG_SHORT_HOP] = get_stick_dir() < 7;
 	chara_flag[CHARA_FLAG_USED_AIRDASH] = false;
 	situation_kind = CHARA_SITUATION_AIR;
 }
 
-void FighterInstance::status_jump()
-{
+void FighterInstance::status_jump() {
 	if (common_air_status_act()) {
 		return;
 	}
-	if (is_anim_end)
-	{
+	if (is_anim_end) {
 		change_status(CHARA_STATUS_FALL, false);
 		return;
 	}
-	if (pos.y < FLOOR_GAMECOORD)
-	{
+	if (pos.y < FLOOR_GAMECOORD) {
 		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
 	common_air_status_general();
 }
 
-void FighterInstance::enter_status_jump()
-{
-	if (get_stick_dir() == 7 || get_stick_dir() == 4 || get_stick_dir() == 1)
-	{
+void FighterInstance::enter_status_jump() {
+	if (get_stick_dir() == 7 || get_stick_dir() == 4 || get_stick_dir() == 1) {
 		change_anim("jump_b");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
-		new_hurtbox(0, GameCoordinate{-35, 40}, GameCoordinate{35, 105}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(0, GameCoordinate{ -35, 40 }, GameCoordinate{ 35, 105 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	}
-	else if (get_stick_dir() == 9 || get_stick_dir() == 6 || get_stick_dir() == 3)
-	{
+	else if (get_stick_dir() == 9 || get_stick_dir() == 6 || get_stick_dir() == 3) {
 		change_anim("jump_f");
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
-		new_hurtbox(0, GameCoordinate{-35, 40}, GameCoordinate{35, 105}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(0, GameCoordinate{ -35, 40 }, GameCoordinate{ 35, 105 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	}
-	else
-	{
+	else {
 		change_anim("jump");
-		new_hurtbox(0, GameCoordinate{-25, 20}, GameCoordinate{20, 120}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-		new_hurtbox(1, GameCoordinate{-35, 75}, GameCoordinate{35, 115}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(0, GameCoordinate{ -25, 20 }, GameCoordinate{ 20, 120 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(1, GameCoordinate{ -35, 75 }, GameCoordinate{ 35, 115 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 	}
-	if (chara_flag[CHARA_FLAG_SHORT_HOP])
-	{
+	if (chara_flag[CHARA_FLAG_SHORT_HOP]) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("jump_y_init_speed_s");
 	}
-	else
-	{
+	else {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float("jump_y_init_speed");
 	}
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("jump_x_speed");
 	common_air_status_act();
 }
 
-void FighterInstance::exit_status_jump()
-{
+void FighterInstance::exit_status_jump() {
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 	chara_int[CHARA_INT_JUMP_KIND] = CHARA_JUMP_KIND_N;
 }
 
-void FighterInstance::status_fall()
-{
-	if (common_air_status_act())
-	{
+void FighterInstance::status_fall() {
+	if (common_air_status_act()) {
 		return;
 	}
-	if (pos.y < FLOOR_GAMECOORD)
-	{
+	if (pos.y < FLOOR_GAMECOORD) {
 		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
 	common_air_status_general();
 }
 
-void FighterInstance::enter_status_fall()
-{
+void FighterInstance::enter_status_fall() {
 	change_anim("fall");
-	new_hurtbox(0, GameCoordinate{-25, 0}, GameCoordinate{20, 120}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-35, 75}, GameCoordinate{35, 115}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 120 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -35, 75 }, GameCoordinate{ 35, 115 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 
@@ -1506,8 +1422,7 @@ void FighterInstance::status_attack() {
 	if (specific_status_attack()) {
 		return;
 	}
-	if (is_anim_end)
-	{
+	if (is_anim_end) {
 		if (get_stick_dir() < 4) {
 			if (chara_int[CHARA_INT_ATTACK_KIND] <= ATTACK_KIND_HK) {
 				if (change_status(CHARA_STATUS_CROUCHD)) {
@@ -1520,34 +1435,26 @@ void FighterInstance::status_attack() {
 				}
 			}
 		}
-		else if (change_status(CHARA_STATUS_WAIT))
-		{
+		else if (change_status(CHARA_STATUS_WAIT)) {
 			return;
 		}
 	}
-	if (is_actionable())
-	{
-		if (common_ground_status_act())
-		{
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
 			return;
 		}
 	}
-	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK))
-	{
+	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
 		change_status(CHARA_STATUS_GRAB);
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK)
-	{
-		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK))
-		{
-			if (chara_flag[CHARA_FLAG_HAS_ATTACK] && chara_float[CHARA_FLOAT_SUPER_METER] >= 30.0)
-			{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
+		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
+			if (chara_flag[CHARA_FLAG_HAS_ATTACK] && chara_float[CHARA_FLOAT_SUPER_METER] >= 30.0) {
 				chara_float[CHARA_FLOAT_SUPER_METER] -= 30.0;
 				change_status(CHARA_STATUS_PARRY_START);
 				return;
 			}
-			else if (!chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS])
-			{
+			else if (!chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS]) {
 				change_status(CHARA_STATUS_PARRY_START);
 				return;
 			}
@@ -1555,85 +1462,63 @@ void FighterInstance::status_attack() {
 	}
 }
 
-void FighterInstance::enter_status_attack()
-{
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP)
-	{
+void FighterInstance::enter_status_attack() {
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
 		change_anim("stand_lp", 2);
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP) {
 		change_anim("stand_mp", 2);
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HP)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HP) {
 		change_anim("stand_hp", 2);
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) {
 		change_anim("stand_lk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK) {
 		change_anim("stand_mk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HK) {
 		change_anim("stand_hk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CLP)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CLP) {
 		change_anim("crouch_lp");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP) {
 		change_anim("crouch_mp");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CHP)
-	{
-		change_anim("crouch_hp");
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CHP) {
+		change_anim("crouch_hp", 2);
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CLK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CLK) {
 		change_anim("crouch_lk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
 		change_anim("crouch_mk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CHK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CHK) {
 		change_anim("crouch_hk");
 	}
 }
 
-void FighterInstance::exit_status_attack()
-{
-}
+void FighterInstance::exit_status_attack() {}
 
-void FighterInstance::status_attack_air()
-{
-	if (pos.y < FLOOR_GAMECOORD)
-	{
+void FighterInstance::status_attack_air() {
+	if (pos.y < FLOOR_GAMECOORD) {
 		change_status(CHARA_STATUS_LANDING_ATTACK);
 		return;
 	}
-	if (is_anim_end)
-	{
-		if (change_status(CHARA_STATUS_FALL))
-		{
+	if (is_anim_end) {
+		if (change_status(CHARA_STATUS_FALL)) {
 			return;
 		}
 	}
-	if (is_actionable())
-	{
-		if (common_air_status_act())
-		{
+	if (is_actionable()) {
+		if (common_air_status_act()) {
 			return;
 		}
 	}
-	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK))
-	{
+	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
 		change_status(CHARA_STATUS_GRAB_AIR);
 	}
 	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMP || chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
@@ -1647,49 +1532,36 @@ void FighterInstance::status_attack_air()
 	common_air_status_general();
 }
 
-void FighterInstance::enter_status_attack_air()
-{
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP)
-	{
+void FighterInstance::enter_status_attack_air() {
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
 		change_anim("jump_lp");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP) {
 		change_anim("jump_mp");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HP)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HP) {
 		change_anim("jump_hp");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LK) {
 		change_anim("jump_lk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MK) {
 		change_anim("jump_mk");
 	}
-	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HK)
-	{
+	if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_HK) {
 		change_anim("jump_hk");
 	}
 }
 
-void FighterInstance::exit_status_attack_air()
-{
-}
+void FighterInstance::exit_status_attack_air() {}
 
-void FighterInstance::status_grab()
-{
-	if (is_anim_end)
-	{
+void FighterInstance::status_grab() {
+	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	if (is_actionable())
-	{
-		if (common_ground_status_act())
-		{
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
 			return;
 		}
 	}
@@ -1699,8 +1571,7 @@ void FighterInstance::enter_status_grab() {
 	change_anim("grab", 2);
 }
 
-void FighterInstance::exit_status_grab() {
-}
+void FighterInstance::exit_status_grab() {}
 
 void FighterInstance::status_throw() {
 	if (is_anim_end) {
@@ -1743,11 +1614,12 @@ void FighterInstance::enter_status_grab_air() {
 	change_anim("grab_air", 2);
 }
 
-void FighterInstance::exit_status_grab_air()
-{
-}
+void FighterInstance::exit_status_grab_air() {}
 
 void FighterInstance::status_throw_air() {
+	if (pos.y < FLOOR_GAMECOORD) {
+		set_pos(pos.x, FLOOR_GAMECOORD);
+	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_FALL);
 		return;
@@ -1757,14 +1629,14 @@ void FighterInstance::status_throw_air() {
 			return;
 		}
 	}
+	common_air_status_general();
 }
 
 void FighterInstance::enter_status_throw_air() {
-	change_anim("throw", 2);
+	change_anim("throw_f", 2);
 }
 
-void FighterInstance::exit_status_throw_air() {
-}
+void FighterInstance::exit_status_throw_air() {}
 
 void FighterInstance::status_grabbed() {
 	if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
@@ -1772,7 +1644,7 @@ void FighterInstance::status_grabbed() {
 		chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
 	}
 	else {
-		set_pos(pos.x, fighter_instance_accessor->fighter_instance[!id]->pos.y);
+		set_pos(fighter_instance_accessor->fighter_instance[!id]->pos.x, fighter_instance_accessor->fighter_instance[!id]->pos.y);
 	}
 }
 
@@ -1804,21 +1676,15 @@ void FighterInstance::exit_status_thrown() {
 
 }
 
-void FighterInstance::status_hitstun()
-{
-	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0)
-	{
-		if (get_stick_dir() < 4)
-		{
-			if (change_status(CHARA_STATUS_CROUCH))
-			{
+void FighterInstance::status_hitstun() {
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0) {
+		if (get_stick_dir() < 4) {
+			if (change_status(CHARA_STATUS_CROUCH)) {
 				return;
 			}
 		}
-		else
-		{
-			if (change_status(CHARA_STATUS_WAIT))
-			{
+		else {
+			if (change_status(CHARA_STATUS_WAIT)) {
 				return;
 			}
 		}
@@ -1827,40 +1693,34 @@ void FighterInstance::status_hitstun()
 
 void FighterInstance::enter_status_hitstun() {
 	if (get_stick_dir() < 4) {
-		new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 70}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
 			change_anim("crouch_hitstun_l", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
 			change_anim("crouch_hitstun_m", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
-		else
-		{
+		else {
 			change_anim("crouch_hitstun_h", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 	}
-	else
-	{
-		new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-		new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-		new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT)
-		{
+	else {
+		new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
 			change_anim("stand_hitstun_l", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
-		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM)
-		{
+		else if (chara_int[CHARA_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
 			change_anim("stand_hitstun_m", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
-		else
-		{
+		else {
 			change_anim("stand_hitstun_h", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		}
 	}
 }
 
-void FighterInstance::exit_status_hitstun() {
-}
+void FighterInstance::exit_status_hitstun() {}
 
 void FighterInstance::status_hitstun_air() {
 	if (pos.y < FLOOR_GAMECOORD) {
@@ -1872,8 +1732,7 @@ void FighterInstance::status_hitstun_air() {
 		return;
 	}
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
-		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
-		{
+		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
 			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 		}
 		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
@@ -1881,7 +1740,7 @@ void FighterInstance::status_hitstun_air() {
 }
 
 void FighterInstance::enter_status_hitstun_air() {
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 70}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = chara_float[CHARA_FLOAT_LAUNCH_SPEED_X];
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
 	change_anim("jump_hitstun", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
@@ -1953,9 +1812,7 @@ void FighterInstance::enter_status_blockstun() {
 	}
 }
 
-void FighterInstance::exit_status_blockstun()
-{
-}
+void FighterInstance::exit_status_blockstun() {}
 
 void FighterInstance::status_parry_start() {
 	if (situation_kind == CHARA_SITUATION_AIR) {
@@ -2013,8 +1870,7 @@ void FighterInstance::enter_status_parry_start() {
 	}
 }
 
-void FighterInstance::exit_status_parry_start() {
-}
+void FighterInstance::exit_status_parry_start() {}
 
 void FighterInstance::status_parry() {
 	if (is_actionable()) {
@@ -2065,9 +1921,7 @@ void FighterInstance::enter_status_parry() {
 	}
 }
 
-void FighterInstance::exit_status_parry()
-{
-}
+void FighterInstance::exit_status_parry() {}
 
 void FighterInstance::status_crumple() {
 	if (is_anim_end) {
@@ -2091,8 +1945,8 @@ void FighterInstance::status_launch_start() {
 	}
 }
 
-void FighterInstance::enter_status_launch_start()
-{
+void FighterInstance::enter_status_launch_start() {
+	change_anim("launch_start");
 }
 
 void FighterInstance::exit_status_launch_start() {
@@ -2106,8 +1960,7 @@ void FighterInstance::status_launch() {
 		return;
 	}
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
-		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0)
-		{
+		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
 			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 		}
 		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
@@ -2118,71 +1971,55 @@ void FighterInstance::enter_status_launch() {
 	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = chara_float[CHARA_FLOAT_LAUNCH_SPEED_X];
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
-	change_anim("jump_hitstun", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
+	change_anim("launch", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 }
 
 void FighterInstance::exit_status_launch() {
-	situation_kind = CHARA_SITUATION_DOWN;
+
 }
 
-void FighterInstance::status_clank()
-{
+void FighterInstance::status_clank() {
+
 }
 
-void FighterInstance::enter_status_clank()
-{
+void FighterInstance::enter_status_clank() {
+
 }
 
-void FighterInstance::exit_status_clank()
-{
-}
+void FighterInstance::exit_status_clank() {}
 
-void FighterInstance::status_throw_tech()
-{
-}
+void FighterInstance::status_throw_tech() {}
 
-void FighterInstance::enter_status_throw_tech()
-{
-}
+void FighterInstance::enter_status_throw_tech() {}
 
-void FighterInstance::exit_status_throw_tech()
-{
-}
+void FighterInstance::exit_status_throw_tech() {}
 
-void FighterInstance::status_landing()
-{
-	if (chara_int[CHARA_INT_LANDING_LAG] == 0)
-	{
-		if (common_ground_status_act())
-		{
+void FighterInstance::status_landing() {
+	if (chara_int[CHARA_INT_LANDING_LAG] == 0) {
+		if (common_ground_status_act()) {
 			return;
 		}
-		else if (change_status(CHARA_STATUS_WAIT))
-		{
+		else if (change_status(CHARA_STATUS_WAIT)) {
 			return;
 		}
 	}
-	else
-	{
+	else {
 		chara_int[CHARA_INT_LANDING_LAG]--;
 	}
 }
 
-void FighterInstance::enter_status_landing()
-{
+void FighterInstance::enter_status_landing() {
 	chara_int[CHARA_INT_LANDING_LAG] = 2;
 	change_anim("landing", -1, chara_int[CHARA_INT_LANDING_LAG]);
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = CHARA_SITUATION_GROUND;
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
-void FighterInstance::exit_status_landing()
-{
-}
+void FighterInstance::exit_status_landing() {}
 
 void FighterInstance::status_landing_attack() {
 	if (chara_int[CHARA_INT_LANDING_LAG] == 0) {
@@ -2224,25 +2061,18 @@ void FighterInstance::enter_status_landing_attack() {
 	situation_kind = CHARA_SITUATION_GROUND;
 }
 
-void FighterInstance::exit_status_landing_attack()
-{
-}
+void FighterInstance::exit_status_landing_attack() {}
 
-void FighterInstance::status_landing_hitstun()
-{
-	if (chara_int[CHARA_INT_LANDING_LAG] == 0)
-	{
-		if (common_ground_status_act())
-		{
+void FighterInstance::status_landing_hitstun() {
+	if (chara_int[CHARA_INT_LANDING_LAG] == 0) {
+		if (common_ground_status_act()) {
 			return;
 		}
-		else if (change_status(CHARA_STATUS_WAIT))
-		{
+		else if (change_status(CHARA_STATUS_WAIT)) {
 			return;
 		}
 	}
-	else
-	{
+	else {
 		chara_int[CHARA_INT_LANDING_LAG]--;
 	}
 }
@@ -2255,9 +2085,9 @@ void FighterInstance::enter_status_landing_hitstun() {
 	change_anim("landing_hitstun", -1, chara_int[CHARA_INT_LANDING_LAG]);
 	chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
 	situation_kind = CHARA_SITUATION_GROUND;
-	new_hurtbox(0, GameCoordinate{-35, 0}, GameCoordinate{37, 35}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(1, GameCoordinate{-25, 0}, GameCoordinate{20, 110}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-	new_hurtbox(2, GameCoordinate{-15, 55}, GameCoordinate{35, 95}, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 }
 
 

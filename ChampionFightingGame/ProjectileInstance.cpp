@@ -8,13 +8,11 @@ void ProjectileInstance::superInit(SDL_Renderer* renderer) {
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }
 
-void ProjectileInstance::load_anim_list(SDL_Renderer* renderer)
-{
+void ProjectileInstance::load_anim_list(SDL_Renderer* renderer) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
-	if (anim_list.fail())
-	{
+	if (anim_list.fail()) {
 		cerr << "Could not open anim_list!" << endl;
 		exit(1);
 	}
@@ -46,21 +44,26 @@ void ProjectileInstance::load_params() {
 		param_table[i].stat = stat;
 		stats_table >> param_table[i].type;
 		switch (param_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> param_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> param_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> param_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> param_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> param_table[i].value_i;
-		} break;
+			case(PARAM_TYPE_INT):
+			{
+				stats_table >> param_table[i].value_i;
+			} break;
+			case(PARAM_TYPE_FLOAT):
+			{
+				stats_table >> param_table[i].value_f;
+			} break;
+			case(PARAM_TYPE_STRING):
+			{
+				stats_table >> param_table[i].value_s;
+			} break;
+			case (PARAM_TYPE_BOOL):
+			{
+				stats_table >> param_table[i].value_b;
+			} break;
+			default:
+			{
+				stats_table >> param_table[i].value_i;
+			} break;
 		}
 	}
 
@@ -70,6 +73,11 @@ void ProjectileInstance::load_params() {
 void ProjectileInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
 	last_excute_frame = 0;
+	attempted_excutes = 1;
+
+	prev_anim_max_ticks = max_ticks;
+	prev_anim_frame = frame;
+	prev_anim_render_frame = render_frame;
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
@@ -86,9 +94,9 @@ void ProjectileInstance::change_anim(string animation_name, int frame_rate, int 
 	cout << "Invalid Animation '" << animation_name << "'" << endl;
 }
 
-void ProjectileInstance::startAnimation(Animation* animation)
-{
+void ProjectileInstance::startAnimation(Animation* animation) {
 	is_anim_end = false;
+	prev_anim_kind = anim_kind;
 	anim_kind = animation;
 	int width;
 	int height;
@@ -116,6 +124,7 @@ bool ProjectileInstance::canStep() {
 	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
 		frame++;
 		ticks++;
+		attempted_excutes = 1;
 
 		if (ticks >= max_ticks) {
 			ticks = 0;
@@ -208,11 +217,11 @@ void ProjectileInstance::exit_status_hit() {
 void ProjectileInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
 	float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
-	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade) {
+	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {
 	if (id < 10) {
 		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, meter_gain_on_hit,
-			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, 
+			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable,
 			hit_pushback, block_pushback, success_hit, juggle_set, max_juggle, hit_status, counterhit_status,
-			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, trade);
+			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, trade, continue_launch);
 	}
 }

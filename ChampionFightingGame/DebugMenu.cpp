@@ -31,19 +31,7 @@ int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
         printf("Failed to load font:  %s\n", TTF_GetError());
     }
 
-//    SDL_Surface *text;
-    // Set color to black
     SDL_Color color = {255, 255, 255};
- //   text = TTF_RenderText_Solid(font, "menu entry int\nback", color);
-
- //   if (!text)
-//    {
-//        printf("Failed to render text:  %s\n", TTF_GetError());
-//    }
-
-    // SDL_Texture *text_texture;
-
-    // text_texture = SDL_CreateTextureFromSurface(pRenderer, text);
 
     option_surfaces[0] = 280;
     lastString << "Menu Call [" << GAME_STATE_DEBUG_MENU << "] 'SPACE' or 'ENTER' to select";

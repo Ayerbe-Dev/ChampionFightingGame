@@ -81,44 +81,35 @@ bool ObjectInstance::get_param_bool(string param, Param param_table[]) {
 	return false;
 }
 
-bool ObjectInstance::is_excute_frame(int excute_count, int frame)
-{
-	if (this->frame >= frame)
-	{ //If we've reached the statement in question
-		if (this->excute_count >= excute_count)
-		{ //If we've already executed the statement
-			return false;
+bool ObjectInstance::is_excute_frame(int frame) { //One day I am going to gaslight myself into unironically not knowing how to spell "execute"
+	bool ret = false;
+	if (this->frame >= frame) {
+		if (excute_count < attempted_excutes) {
+			excute_count++;
+			ret = true;
 		}
-		else
-		{ //If we are at the correct frame and haven't executed the statement yet
-			last_excute_frame = frame;
-			this->excute_count = excute_count;
-			return true;
+	}
+	attempted_excutes++;
+
+	last_excute_frame = frame;
+
+	return ret;
+}
+
+bool ObjectInstance::is_excute_wait(int frames) {
+	bool ret = false;
+	if (frame >= last_excute_frame + frames) {
+		if (excute_count < attempted_excutes) {
+			excute_count++;
+			ret = true;
 		}
 	}
 	else {
 		last_excute_frame = frame;
-		return false;
 	}
-}
+	attempted_excutes++;
 
-bool ObjectInstance::is_excute_wait(int excute_count, int frames) {
-	if (frame >= last_excute_frame + frames) { //If it's been enough time since the last non-executed statement
-		if (this->excute_count >= excute_count)
-		{ //If we already executed the statement
-			return false;
-		}
-		else
-		{ //Success
-			last_excute_frame = frame;
-			this->excute_count = excute_count;
-			return true;
-		}
-	}
-	else
-	{ //Still waiting
-		return false;
-	}
+	return ret;
 }
 
 void ObjectInstance::script(string name, function<void()> move_script) {
@@ -143,10 +134,8 @@ void ObjectInstance::set_current_move_script(string anim_name) {
 }
 
 void ObjectInstance::update_hitbox_pos(bool add_window_width) {
-	for (int i = 0; i < 10; i++)
-	{
-		if (hitboxes[i].id != -1)
-		{
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1) {
 			hitboxes[i].update_pos(this, add_window_width);
 		}
 	}
@@ -157,17 +146,14 @@ void ObjectInstance::clear_hitbox(int id) {
 }
 
 void ObjectInstance::clear_hitbox_all() {
-	for (int i = 0; i < 10; i++)
-	{
+	for (int i = 0; i < 10; i++) {
 		hitboxes[i].clear();
 	}
 }
 
 void ObjectInstance::update_grabbox_pos() {
-	for (int i = 0; i < 10; i++)
-	{
-		if (grabboxes[i].id != -1)
-		{
+	for (int i = 0; i < 10; i++) {
+		if (grabboxes[i].id != -1) {
 			grabboxes[i].update_pos(this);
 		}
 	}
@@ -183,12 +169,9 @@ void ObjectInstance::clear_grabbox_all() {
 	}
 }
 
-void ObjectInstance::update_hurtbox_pos()
-{
-	for (int i = 0; i < 10; i++)
-	{
-		if (hurtboxes[i].id != -1)
-		{
+void ObjectInstance::update_hurtbox_pos() {
+	for (int i = 0; i < 10; i++) {
+		if (hurtboxes[i].id != -1) {
 			hurtboxes[i].update_pos(this);
 		}
 	}
@@ -218,21 +201,26 @@ void ObjectInstance::load_params() {
 		param_table[i].stat = stat;
 		stats_table >> param_table[i].type;
 		switch (param_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> param_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> param_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> param_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> param_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> param_table[i].value_i;
-		} break;
+			case(PARAM_TYPE_INT):
+			{
+				stats_table >> param_table[i].value_i;
+			} break;
+			case(PARAM_TYPE_FLOAT):
+			{
+				stats_table >> param_table[i].value_f;
+			} break;
+			case(PARAM_TYPE_STRING):
+			{
+				stats_table >> param_table[i].value_s;
+			} break;
+			case (PARAM_TYPE_BOOL):
+			{
+				stats_table >> param_table[i].value_b;
+			} break;
+			default:
+			{
+				stats_table >> param_table[i].value_i;
+			} break;
 		}
 	}
 
@@ -253,33 +241,35 @@ void ObjectInstance::load_unique_params() {
 		unique_param_table[i].stat = stat;
 		stats_table >> unique_param_table[i].type;
 		switch (unique_param_table[i].type) {
-		case(PARAM_TYPE_INT): {
-			stats_table >> unique_param_table[i].value_i;
-		} break;
-		case(PARAM_TYPE_FLOAT): {
-			stats_table >> unique_param_table[i].value_f;
-		} break;
-		case(PARAM_TYPE_STRING): {
-			stats_table >> unique_param_table[i].value_s;
-		} break;
-		case (PARAM_TYPE_BOOL): {
-			stats_table >> unique_param_table[i].value_b;
-		} break;
-		default: {
-			stats_table >> unique_param_table[i].value_i;
-		} break;
+			case(PARAM_TYPE_INT):
+			{
+				stats_table >> unique_param_table[i].value_i;
+			} break;
+			case(PARAM_TYPE_FLOAT):
+			{
+				stats_table >> unique_param_table[i].value_f;
+			} break;
+			case(PARAM_TYPE_STRING):
+			{
+				stats_table >> unique_param_table[i].value_s;
+			} break;
+			case (PARAM_TYPE_BOOL):
+			{
+				stats_table >> unique_param_table[i].value_b;
+			} break;
+			default:
+			{
+				stats_table >> unique_param_table[i].value_i;
+			} break;
 		}
 	}
 
 	stats_table.close();
 }
 
-void ObjectInstance::update_hitbox_connect(int multihit_index)
-{
-	for (int i = 0; i < 10; i++)
-	{
-		if (hitboxes[i].id != -1)
-		{
+void ObjectInstance::update_hitbox_connect(int multihit_index) {
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1) {
 			hitboxes[i].update_connect(multihit_index);
 		}
 	}

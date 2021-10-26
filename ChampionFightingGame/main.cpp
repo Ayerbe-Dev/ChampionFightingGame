@@ -26,8 +26,7 @@ int main() {
 	bool visualize_boxes = true;
 	int game_state = GAME_STATE_DEBUG_MENU;
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-	{
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
 	if (TTF_Init() < 0) {
@@ -35,14 +34,13 @@ int main() {
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
 
-	SDL_Window *window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
 
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
 
-	while (running)
-	{
+	while (running) {
 		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);

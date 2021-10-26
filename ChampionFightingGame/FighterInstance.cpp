@@ -16,6 +16,19 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info
 	superInit(0, renderer);
 }
 
+void FighterInstance::create_jostle_rect(GameCoordinate anchor, GameCoordinate offset) {
+	anchor.x = ((anchor.x + (pos.x * facing_dir)) * facing_dir) + WINDOW_WIDTH / 2;
+	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - pos.y;
+	offset.x = ((offset.x + (pos.x * facing_dir)) * facing_dir) + WINDOW_WIDTH / 2;
+	offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - pos.y;
+	offset.x -= anchor.x;
+	offset.y -= anchor.y;
+	jostle_box.x = anchor.x;
+	jostle_box.y = anchor.y;
+	jostle_box.w = offset.x;
+	jostle_box.h = offset.y;
+}
+
 void FighterInstance::init_projectile(int id, GameCoordinate init_pos) {
 	projectile_objects[id]->id = this->id;
 	projectile_objects[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir) + WINDOW_WIDTH / 2;
@@ -49,9 +62,6 @@ void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait", 2, 0);
 	status_kind = CHARA_STATUS_WAIT;
-
-	chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
-	chara_int[CHARA_INT_DASH_B_WINDOW] = 0;
 }
 
 //Setup
@@ -604,7 +614,9 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 //Position
 
 bool FighterInstance::add_pos(float x, float y) {
+	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
 	bool ret = true;
+	bool opponent_right = pos.x > that->pos.x;
 	pos.x += x;
 	pos.y += y;
 	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
@@ -623,10 +635,15 @@ bool FighterInstance::add_pos(float x, float y) {
 		pos.y = WINDOW_HEIGHT;
 		ret = false;
 	}
-	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x + (fighter_instance_accessor->fighter_instance[!id]->pos.x_spr_offset * fighter_instance_accessor->fighter_instance[!id]->facing_dir / -2);
+	float opponent_x = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
 	float compare_x = pos.x + (pos.x_spr_offset * facing_dir / -2);
 	float x_distance = std::max(opponent_x, compare_x) - std::min(opponent_x, compare_x);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
+		pos.x = prevpos.x;
+		ret = false;
+	}
+	bool new_opponent_right = pos.x > that->pos.x;
+	if (opponent_right != new_opponent_right && situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND) {
 		pos.x = prevpos.x;
 		ret = false;
 	}
@@ -635,7 +652,9 @@ bool FighterInstance::add_pos(float x, float y) {
 }
 
 bool FighterInstance::set_pos(float x, float y) {
+	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
 	bool ret = true;
+	bool opponent_right = pos.x > that->pos.x;
 	pos.x = x;
 	pos.y = y;
 	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
@@ -654,10 +673,15 @@ bool FighterInstance::set_pos(float x, float y) {
 		pos.y = WINDOW_HEIGHT;
 		ret = false;
 	}
-	float opponent_x = fighter_instance_accessor->fighter_instance[!id]->pos.x + (fighter_instance_accessor->fighter_instance[!id]->pos.x_spr_offset * fighter_instance_accessor->fighter_instance[!id]->facing_dir / -2);
+	float opponent_x = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
 	float compare_x = pos.x + (pos.x_spr_offset * facing_dir / -2);
 	float x_distance = std::max(opponent_x, compare_x) - std::min(opponent_x, compare_x);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
+		pos.x = prevpos.x;
+		ret = false;
+	}
+	bool new_opponent_right = pos.x > that->pos.x;
+	if (opponent_right != new_opponent_right && situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND) {
 		pos.x = prevpos.x;
 		ret = false;
 	}

@@ -237,8 +237,16 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			SDL_RenderDrawRect(pRenderer, debug_rect);
 			SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
 			SDL_RenderFillRect(pRenderer, debug_rect);
-
 		}
+
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+		SDL_RenderDrawRect(pRenderer, &fighter_instance[0]->jostle_box);
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
+		SDL_RenderFillRect(pRenderer, &fighter_instance[0]->jostle_box);
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+		SDL_RenderDrawRect(pRenderer, &fighter_instance[1]->jostle_box);
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
+		SDL_RenderFillRect(pRenderer, &fighter_instance[1]->jostle_box);
 
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
 
@@ -320,6 +328,15 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 	}
 
 	fighter_instance->playoutStatus();
+
+	fighter_instance->create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+	FighterInstance* that = fighter_instance->fighter_instance_accessor->fighter_instance[!fighter_instance->id];
+	if (fighter_instance->situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND
+	&& !fighter_instance->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && !that->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP]) {
+		if (is_collide(fighter_instance->jostle_box, that->jostle_box)) {
+			fighter_instance->add_pos(fighter_instance->get_param_float("walk_b_speed") / -1.5 * fighter_instance->facing_dir, 0.0);
+		}
+	}
 
 	fighter_instance->processInput();
 

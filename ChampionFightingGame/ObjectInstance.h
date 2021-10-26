@@ -32,6 +32,9 @@ public:
 
 	double angle{ 0 };
 
+	SDL_Rect jostle_box{};
+	SDL_Rect base_jostle_box{};
+
 	Animation* anim_kind;
 	Animation* prev_anim_kind;
 	Animation animation_table[ANIM_TABLE_LENGTH];

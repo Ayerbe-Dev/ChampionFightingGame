@@ -27,13 +27,14 @@ public:
 	FighterInstanceAccessor* fighter_instance_accessor;
 	ProjectileInstance* projectile_objects[MAX_PROJECTILES]{};
 
+
 	bool kara_enabled{ false };
 	
 	int prev_stick_dir;
 	
-	int chara_int[CHARA_INT_MAX];
-	float chara_float[CHARA_FLOAT_MAX];
-	bool chara_flag[CHARA_FLAG_MAX];;
+	int chara_int[CHARA_INT_MAX]{ 0 };
+	float chara_float[CHARA_FLOAT_MAX]{ 0.0 };
+	bool chara_flag[CHARA_FLAG_MAX]{false};
 	
 	int connected_hitbox;
 	int connected_grabbox;
@@ -50,6 +51,8 @@ public:
 
 	//Child Class Entry Points
 	virtual bool specific_ground_status_act() { return false; };
+
+	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset);
 
 	//Projectiles
 	void init_projectile(int id, GameCoordinate pos);

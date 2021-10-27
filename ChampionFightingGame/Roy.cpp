@@ -21,9 +21,9 @@ Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instan
 		projectile_objects[i] = new ProjectileInstance();
 	}
 
-	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, fighter_instance_accessor);
-	projectile_instances[0] = roy_fireball;
-	this->projectile_objects[0] = roy_fireball->get_projectile();
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, fighter_instance_accessor);
+	delete (projectile_objects[0]);
+	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	RoyFireball* roy_fireball_instance = (RoyFireball*)projectile_objects[0];
 	roy_fireball_instance->roy = this;
 }

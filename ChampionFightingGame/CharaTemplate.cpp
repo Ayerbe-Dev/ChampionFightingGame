@@ -21,9 +21,9 @@ CharaTemplate::CharaTemplate(SDL_Renderer* renderer, int id, FighterInstanceAcce
 		projectile_objects[i] = new ProjectileInstance();
 	}
 
-	IObject* projectile_template = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, renderer, id, fighter_instance_accessor);
-	projectile_instances[0] = projectile_template;
-	this->projectile_objects[0] = projectile_template->get_projectile();
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, renderer, id, fighter_instance_accessor);
+	delete (projectile_objects[0]);
+	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectile_objects[0];
 	projectile_template_instance->chara_template = this;
 }

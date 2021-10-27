@@ -30,9 +30,9 @@ Eric::Eric(SDL_Renderer *renderer, int id, FighterInstanceAccessor *fighter_inst
 		projectile_objects[i] = new ProjectileInstance();
 	}
 
-	IObject* eric_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id, fighter_instance_accessor);
-	projectile_instances[0] = eric_fireball;
-	this->projectile_objects[0] = eric_fireball->get_projectile();
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id, fighter_instance_accessor);
+	delete (projectile_objects[0]);
+	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	EricFireball* eric_fireball_instance = (EricFireball*)projectile_objects[0];
 	eric_fireball_instance->eric = this;
 }

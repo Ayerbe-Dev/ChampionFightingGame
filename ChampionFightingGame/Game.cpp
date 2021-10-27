@@ -96,7 +96,7 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 
 		tok = SDL_GetTicks() - tick;
 		if (tok < TICK_RATE_MS) {
-			//SDL_Delay(TICK_RATE_MS - tok);
+			SDL_Delay(TICK_RATE_MS - tok);
 		}
 		tick = SDL_GetTicks();
 
@@ -1219,15 +1219,14 @@ void cleanup(IObject *p1, IObject *p2) {
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 			if (fighter_instance[i]->projectile_instances[i2] != NULL) {
-				delete fighter_instance[i]->projectile_instances[i2]->get_projectile();
-				fighter_instance[i]->projectile_instances[i2]->~IObject();
+				delete fighter_instance[i]->projectile_instances[i2];
 			}
+			delete fighter_instance[i]->projectile_objects[i2];
 		}
+		delete fighter_instance[i];
 	}
-	delete p1->get_fighter();
-	delete p2->get_fighter();
-	p1->~IObject();
-	p2->~IObject();
+	delete p1;
+	delete p2;
 }
 
 IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {

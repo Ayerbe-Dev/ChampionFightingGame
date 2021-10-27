@@ -71,7 +71,7 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
 	if (anim_list.fail()) {
-		cerr << "Could not open anim_list!" << endl;
+		cerr << "Could not open anim_list! ->" << resource_dir + "/anims/anim_list.yml" <<endl;
 		exit(1);
 	}
 

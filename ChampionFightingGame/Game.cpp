@@ -96,7 +96,7 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 
 		tok = SDL_GetTicks() - tick;
 		if (tok < TICK_RATE_MS) {
-			SDL_Delay(TICK_RATE_MS - tok);
+			//SDL_Delay(TICK_RATE_MS - tok);
 		}
 		tick = SDL_GetTicks();
 

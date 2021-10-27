@@ -42,7 +42,7 @@ int main() {
 	player_info[1] = PlayerInfo(1);
 
 	while (running) {
-		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {

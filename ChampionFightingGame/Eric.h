@@ -37,4 +37,8 @@ public:
 	bool specific_ground_status_act() override;
 	
 	//Statuses
+	void enter_status_dash() override;
+	void exit_status_dash() override;
+	void enter_status_dashb() override;
+	void exit_status_dashb() override;
 };

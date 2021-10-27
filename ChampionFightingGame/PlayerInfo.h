@@ -14,7 +14,8 @@ public:
 	PlayerInfo();
 	PlayerInfo(int id);
 
-	void set_default_buttons(int id);
+	void update_controller();
+	void set_default_button_mappings(int id);
 	void update_buttons(const Uint8* keyboard_state);
 	bool check_button_on(u32 button);
 	bool check_button_input(u32 button);

@@ -22,6 +22,7 @@ Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instan
 	}
 
 	IObject* roy_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, fighter_instance_accessor);
+	projectile_instances[0] = roy_fireball;
 	this->projectile_objects[0] = roy_fireball->get_projectile();
 	RoyFireball* roy_fireball_instance = (RoyFireball*)projectile_objects[0];
 	roy_fireball_instance->roy = this;
@@ -230,7 +231,7 @@ void Roy::loadRoyACMD() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ 40, 0 }, 5);
+			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}

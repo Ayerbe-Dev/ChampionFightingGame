@@ -31,6 +31,7 @@ Eric::Eric(SDL_Renderer *renderer, int id, FighterInstanceAccessor *fighter_inst
 	}
 
 	IObject* eric_fireball = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id, fighter_instance_accessor);
+	projectile_instances[0] = eric_fireball;
 	this->projectile_objects[0] = eric_fireball->get_projectile();
 	EricFireball* eric_fireball_instance = (EricFireball*)projectile_objects[0];
 	eric_fireball_instance->eric = this;
@@ -213,4 +214,30 @@ void Eric::loadEricACMD() {
 
 bool Eric::specific_ground_status_act() {
 	return false;
+}
+
+void Eric::enter_status_dash() {
+	change_anim("dash_f", 2);
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+}
+
+void Eric::exit_status_dash() {
+	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+}
+
+void Eric::enter_status_dashb() {
+	change_anim("dash_b", 2);
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
+	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+}
+
+void Eric::exit_status_dashb() {
+	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
 }

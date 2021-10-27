@@ -239,15 +239,6 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			SDL_RenderFillRect(pRenderer, debug_rect);
 		}
 
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-		SDL_RenderDrawRect(pRenderer, &fighter_instance[0]->jostle_box);
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
-		SDL_RenderFillRect(pRenderer, &fighter_instance[0]->jostle_box);
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-		SDL_RenderDrawRect(pRenderer, &fighter_instance[1]->jostle_box);
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
-		SDL_RenderFillRect(pRenderer, &fighter_instance[1]->jostle_box);
-
 		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
 
 		//Camera things
@@ -290,6 +281,8 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 		SDL_RenderPresent(pRenderer);
 	}
 
+	cleanup(p1, p2);
+
 	delete fighter_instance_accessor;
 
 	return next_state;
@@ -314,6 +307,7 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 		   '-::::::::::::::-'
 			   '''::::'''
 	 */
+	fighter_instance->create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
 
 	fighter_instance->prevpos = fighter_instance->pos;
 
@@ -379,6 +373,7 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 			fighter_instance->chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
 		}
 	}
+	fighter_instance->create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
 }
 
 void tickOnceProjectile(ProjectileInstance* projectile_instance) {
@@ -1106,7 +1101,7 @@ bool can_counterhit(FighterInstance* defender, Hitbox* hitbox) {
 		hitbox->scale = -5;
 	}
 	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL
-																  || (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));
+	|| (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));
 }
 
 int get_damage_status(int hit_status, int situation_kind) {
@@ -1217,6 +1212,24 @@ void decrease_common_projectile_variables(ProjectileInstance* projectile_instanc
 	}
 }
 
+void cleanup(IObject *p1, IObject *p2) {
+	FighterInstance* fighter_instance[2];
+	fighter_instance[0] = p1->get_fighter();
+	fighter_instance[1] = p2->get_fighter();
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			if (fighter_instance[i]->projectile_instances[i2] != NULL) {
+				delete fighter_instance[i]->projectile_instances[i2]->get_projectile();
+				fighter_instance[i]->projectile_instances[i2]->~IObject();
+			}
+		}
+	}
+	delete p1->get_fighter();
+	delete p2->get_fighter();
+	p1->~IObject();
+	p2->~IObject();
+}
+
 IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind) {
@@ -1268,14 +1281,6 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int i
 }
 
 IObject::~IObject() {
-	if (fighter_instance) {
-		delete[] fighter_instance;
-		fighter_instance = NULL;
-	}
-	if (projectile_instance) {
-		delete[] projectile_instance;
-		projectile_instance = NULL;
-	}
 }
 
 FighterInstance* IObject::get_fighter() {

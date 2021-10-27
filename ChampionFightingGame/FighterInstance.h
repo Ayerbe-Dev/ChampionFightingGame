@@ -14,6 +14,7 @@
 #include "FighterInstanceAccessor.fwd.h"
 #include "FighterInstanceAccessor.h"
 #include "PlayerInfo.h"
+#include "Game.fwd.h"
 #include "Game.h"
 
 class FighterInstance: public ObjectInstance {
@@ -26,6 +27,7 @@ public:
 	int chara_kind;
 	FighterInstanceAccessor* fighter_instance_accessor;
 	ProjectileInstance* projectile_objects[MAX_PROJECTILES]{};
+	IObject* projectile_instances[MAX_PROJECTILES]{};
 
 
 	bool kara_enabled{ false };

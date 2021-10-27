@@ -643,7 +643,7 @@ bool FighterInstance::add_pos(float x, float y) {
 		ret = false;
 	}
 	bool new_opponent_right = pos.x > that->pos.x;
-	if (opponent_right != new_opponent_right && situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND) {
+	if (opponent_right != new_opponent_right && !chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND) {
 		pos.x = prevpos.x;
 		ret = false;
 	}
@@ -681,7 +681,7 @@ bool FighterInstance::set_pos(float x, float y) {
 		ret = false;
 	}
 	bool new_opponent_right = pos.x > that->pos.x;
-	if (opponent_right != new_opponent_right && situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND) {
+	if (opponent_right != new_opponent_right && !chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND) {
 		pos.x = prevpos.x;
 		ret = false;
 	}
@@ -1137,7 +1137,12 @@ void FighterInstance::status_walkf() {
 		change_status(CHARA_STATUS_WAIT);
 		return;
 	}
-	add_pos(get_param_float("walk_f_speed") * facing_dir, 0);
+	if (is_collide(jostle_box, fighter_instance_accessor->fighter_instance[!id]->jostle_box)) {
+		add_pos(get_param_float("walk_f_speed") * facing_dir / 1.5, 0);
+	}
+	else {
+		add_pos(get_param_float("walk_f_speed") * facing_dir, 0);
+	}
 }
 
 void FighterInstance::enter_status_walkf() {
@@ -1700,11 +1705,12 @@ void FighterInstance::status_grabbed() {
 }
 
 void FighterInstance::enter_status_grabbed() {
-
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
 }
 
 void FighterInstance::exit_status_grabbed() {
 	angle = 0;
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
 }
 
 void FighterInstance::status_thrown() {
@@ -1716,7 +1722,7 @@ void FighterInstance::status_thrown() {
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
-	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * fighter_instance_accessor->fighter_instance[!id]->facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void FighterInstance::enter_status_thrown() {

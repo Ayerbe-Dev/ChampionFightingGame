@@ -29,7 +29,7 @@ extern bool debug;
 extern u32 tick;
 extern u32 tok;
 
-int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
+int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
@@ -115,6 +115,15 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
+		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
+
 		//Check the players' buttons
 		for (int i = 0; i < 2; i++) {
 			if (!debug) {
@@ -197,13 +206,13 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
 			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateYAnim();
 			int width;
-			int sprite_width;
+			int sprite_width = 0;
 			int height;
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
 			if (fighter_instance[i]->anim_kind->force_center && !fighter_instance[i]->facing_right) {
 				SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &sprite_width, NULL);
-				render_pos.x -= sprite_width / 2; //I was overthinking it last time, all I had to do was compare against the other width
+				render_pos.x = (render_pos.x - (sprite_width / 2)) - 4;
 			}
 			render_pos.h = height;
 			const double angle = (const double)fighter_instance[i]->angle;
@@ -1242,7 +1251,7 @@ void decrease_common_projectile_variables(ProjectileInstance* projectile_instanc
 	}
 }
 
-void cleanup(IObject *p1, IObject *p2) {
+void cleanup(IObject* p1, IObject* p2) {
 	FighterInstance* fighter_instance[2];
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
@@ -1309,8 +1318,7 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int i
 
 }
 
-IObject::~IObject() {
-}
+IObject::~IObject() {}
 
 FighterInstance* IObject::get_fighter() {
 	return fighter_instance;

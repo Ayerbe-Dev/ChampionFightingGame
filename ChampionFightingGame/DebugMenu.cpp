@@ -10,7 +10,7 @@
 extern u32 tick;
 extern u32 tok;
 
-int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
+int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
 	const Uint8* keyboard_state;
 	int select = 0;
 	std::ostringstream lastString;
@@ -85,6 +85,15 @@ int debugMenu(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
+
+		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
 		
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_controller();

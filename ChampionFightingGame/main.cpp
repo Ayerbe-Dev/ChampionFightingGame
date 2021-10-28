@@ -35,7 +35,7 @@ int main() {
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
 
-	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
@@ -46,19 +46,19 @@ int main() {
 		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {
-			game_state = game_main(pRenderer, player_info);
+			game_state = game_main(pRenderer, window, player_info);
 		}
 		else if (game_state == GAME_STATE_MENU) {
-			game_state = menu_main(pRenderer, player_info);
+			game_state = menu_main(pRenderer, window, player_info);
 		}
 		else if (game_state == GAME_STATE_CHARA_SELECT) {
-			game_state = chara_select_main(pRenderer, player_info);
+			game_state = chara_select_main(pRenderer, window, player_info);
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
 		else {
-			game_state = debugMenu(pRenderer, player_info);
+			game_state = debugMenu(pRenderer, window, player_info);
 		}
 		SDL_DestroyRenderer(pRenderer); 
 	}

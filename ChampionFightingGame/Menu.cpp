@@ -9,7 +9,7 @@ extern u32 tick;
 extern u32 tok;
 extern int error_render;
 
-int menu_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
+int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
 	bool menuing = true;
 	
 	const Uint8* keyboard_state;
@@ -39,6 +39,15 @@ int menu_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
+		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
+
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_buttons(keyboard_state);
 		}
@@ -53,7 +62,7 @@ int menu_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 	return GAME_STATE_CHARA_SELECT;
 }
 
-int chara_select_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
+int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
 	bool chara_selecting = true;
 	
 	const Uint8* keyboard_state;
@@ -82,6 +91,16 @@ int chara_select_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
+
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_LP)) {

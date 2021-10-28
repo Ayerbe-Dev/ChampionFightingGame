@@ -7,7 +7,7 @@
 #include "FighterInstanceAccessor.h"
 #include "Game.fwd.h"
 
-int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]);
+int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]);
 
 void tickOnceFighter(FighterInstance* fighter_instance);
 void tickOnceProjectile(ProjectileInstance* projectile_instance);

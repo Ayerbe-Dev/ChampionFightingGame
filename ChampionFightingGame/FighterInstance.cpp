@@ -887,6 +887,11 @@ void FighterInstance::stepAnimation() {
 	if (render_frame == anim_kind->length) {
 		render_frame = 0;
 		frame = 0;
+		excute_count = 0;
+		clear_grabbox_all();
+		clear_hurtbox_all();
+		clear_hitbox_all();
+		kara_enabled = false;
 	}
 	else {
 		render_frame++;

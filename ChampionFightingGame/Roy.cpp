@@ -9,7 +9,6 @@ Roy::Roy() {
 
 Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
 	resource_dir = "resource/chara/roy";
-	superInit(id, renderer);
 	load_unique_params();
 	loadRoyACMD();
 	loadRoyStatusFunctions();

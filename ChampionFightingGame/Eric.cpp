@@ -18,7 +18,6 @@ Eric::Eric() {
 
 Eric::Eric(SDL_Renderer *renderer, int id, FighterInstanceAccessor *fighter_instance_accessor) {
 	resource_dir = "resource/chara/eric";
-	superInit(id, renderer);
 	load_unique_params();
 	loadEricACMD();
 	loadEricStatusFunctions();

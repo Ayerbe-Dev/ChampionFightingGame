@@ -137,7 +137,7 @@ public:
 	bool common_ground_status_act();
 	bool common_air_status_act();
 	bool common_air_status_general();
-	u32 get_status_group(u32 status_kind);
+	u32 get_status_group();
 	bool is_status_hitstun_enable_parry();
 
 	//don't worry, it'll get longer :)
@@ -246,6 +246,9 @@ public:
 	virtual void status_knockdown();
 	virtual void enter_status_knockdown();
 	virtual void exit_status_knockdown();
+	virtual void status_wakeup();
+	virtual void enter_status_wakeup();
+	virtual void exit_status_wakeup();
 
 	virtual bool specific_status_attack() { return false; };
 	

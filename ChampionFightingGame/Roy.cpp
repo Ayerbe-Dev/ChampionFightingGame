@@ -236,7 +236,7 @@ void Roy::loadRoyACMD() {
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
-			damage_opponent(30.0, 2.0, 6.0);
+			damage_opponent(30.0, 15.0, 8.0);
 			change_opponent_status(CHARA_STATUS_THROWN);
 		}
 	});

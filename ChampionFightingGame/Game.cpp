@@ -257,8 +257,6 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 		SDL_SetRenderTarget(pRenderer, nullptr);
 
 		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr);
-		if (!debug) timer.Tick();
-		timer.Render();
 
 		for (int i = 0; i < 2; i++) {
 			switch (i) {
@@ -276,6 +274,9 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			}
 
 		}
+
+		if (!debug) timer.Tick();
+		timer.Render();
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		SDL_RenderPresent(pRenderer);
@@ -337,6 +338,10 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 	fighter_instance->prev_stick_dir = fighter_instance->get_stick_dir();
 
 	decrease_common_fighter_variables(fighter_instance);
+
+	if (fighter_instance->chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] == 0 && fighter_instance->status_kind != CHARA_STATUS_KNOCKDOWN) {
+		fighter_instance->chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
+	}
 
 	int width;
 	int height;
@@ -701,7 +706,7 @@ int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* de
 	if (hurtbox->intangible_kind == INTANGIBLE_KIND_THROW || hurtbox->intangible_kind == INTANGIBLE_KIND_ALL) {
 		return HITBOX_COUNT_MAX;
 	}
-	if (defender->get_status_group(defender->status_kind) == STATUS_GROUP_HITSTUN && (grabbox->grabbox_kind & GRABBOX_KIND_HITSTUN) == 0) {
+	if (defender->get_status_group() == STATUS_GROUP_HITSTUN && (grabbox->grabbox_kind & GRABBOX_KIND_HITSTUN) == 0) {
 		return HITBOX_COUNT_MAX;
 	}
 
@@ -855,7 +860,7 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 			*/
-			if (p2->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+			if (p2->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
 				}
@@ -926,7 +931,7 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
 		else {
-			if (p1->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+			if (p1->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 					p2->chara_int[CHARA_INT_DAMAGE_SCALE] += p2_hitbox->scale;
 				}
@@ -1046,7 +1051,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 			*/
-			if (p2->get_status_group(p2->status_kind) == STATUS_GROUP_HITSTUN) {
+			if (p2->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
 					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
 				}
@@ -1194,6 +1199,9 @@ void decrease_common_fighter_variables(FighterInstance* fighter_instance) {
 	}
 	if (fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW] != 0) {
 		fighter_instance->chara_int[CHARA_INT_DASH_B_WINDOW]--;
+	}
+	if (fighter_instance->chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
+		fighter_instance->chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW]--;
 	}
 	if (fighter_instance->chara_int[CHARA_INT_BACK_CHARGE_TIMER] != 0) {
 		fighter_instance->chara_int[CHARA_INT_BACK_CHARGE_TIMER]--;

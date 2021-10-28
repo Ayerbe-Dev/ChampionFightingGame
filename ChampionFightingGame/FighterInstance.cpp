@@ -62,6 +62,7 @@ void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait", 2, 0);
 	status_kind = CHARA_STATUS_WAIT;
+	chara_flag[CHARA_FLAG_CAN_TECH] = true;
 }
 
 //Setup
@@ -230,6 +231,10 @@ void FighterInstance::loadStatusFunctions() {
 	pStatus[CHARA_STATUS_KNOCKDOWN] = &FighterInstance::status_knockdown;
 	pEnter_status[CHARA_STATUS_KNOCKDOWN] = &FighterInstance::enter_status_knockdown;
 	pExit_status[CHARA_STATUS_KNOCKDOWN] = &FighterInstance::exit_status_knockdown;
+
+	pStatus[CHARA_STATUS_WAKEUP] = &FighterInstance::status_wakeup;
+	pEnter_status[CHARA_STATUS_WAKEUP] = &FighterInstance::enter_status_wakeup;
+	pExit_status[CHARA_STATUS_WAKEUP] = &FighterInstance::exit_status_wakeup;
 }
 
 //Move Scripting
@@ -255,6 +260,16 @@ void FighterInstance::processInput() {
 	}
 	if (get_flick_dir() == 4 && prev_stick_dir == 5) {
 		chara_int[CHARA_INT_DASH_B_WINDOW] = DASH_WINDOW;
+	}
+	if (status_kind != CHARA_STATUS_KNOCKDOWN) {
+		if (get_flick_dir() == 8 && chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
+			chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] = TECH_WINDOW;
+			chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_FAST;
+		}
+		if (get_flick_dir() == 2 && chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
+			chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] = TECH_WINDOW;
+			chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
+		}
 	}
 	if (stick_dir != 6 && stick_dir != 5) {
 		chara_int[CHARA_INT_DASH_F_WINDOW] = 0;
@@ -710,7 +725,7 @@ void FighterInstance::change_opponent_status(u32 status_kind) {
 
 void FighterInstance::damage_opponent(float damage, float x_speed, float y_speed) {
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_HEALTH] -= damage;
-	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = x_speed;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = x_speed * facing_dir;
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = y_speed;
 }
 
@@ -763,7 +778,7 @@ void FighterInstance::new_hurtbox(int id, GameCoordinate anchor, GameCoordinate 
 //Transitions
 
 bool FighterInstance::is_actionable() {
-	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0 && chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+	if (chara_int[CHARA_INT_HITSTUN_FRAMES] == 0 && chara_int[CHARA_INT_HITLAG_FRAMES] == 0 && status_kind != CHARA_STATUS_GRABBED && status_kind != CHARA_STATUS_THROWN) {
 		if (anim_kind->faf == -1) {
 			return render_frame >= anim_kind->length;
 		}
@@ -992,7 +1007,7 @@ bool FighterInstance::common_ground_status_act() {
 		if (get_stick_dir() > 6) {
 			return change_status(CHARA_STATUS_JUMPSQUAT);
 		}
-		if (get_flick_dir() < 4 && get_flick_dir() != 0 && status_kind != CHARA_STATUS_CROUCH) {
+		if (get_stick_dir() < 4 && status_kind != CHARA_STATUS_CROUCH) {
 			return change_status(CHARA_STATUS_CROUCHD);
 		}
 	}
@@ -1058,10 +1073,11 @@ bool FighterInstance::common_air_status_general() {
 	return false;
 }
 
-u32 FighterInstance::get_status_group(u32 status) {
-	switch (status) {
+u32 FighterInstance::get_status_group() {
+	switch (status_kind) {
 		case (CHARA_STATUS_HITSTUN):
 		case (CHARA_STATUS_HITSTUN_AIR):
+		case (CHARA_STATUS_LAUNCH_START):
 		case (CHARA_STATUS_LAUNCH):
 		case (CHARA_STATUS_CRUMPLE):
 		case (CHARA_STATUS_THROWN): {
@@ -1673,16 +1689,27 @@ void FighterInstance::enter_status_grab_air() {
 void FighterInstance::exit_status_grab_air() {}
 
 void FighterInstance::status_throw_air() {
-	if (pos.y < FLOOR_GAMECOORD) {
+	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
-	}
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL);
-		return;
-	}
-	if (is_actionable()) {
-		if (common_air_status_act()) {
+		if (is_anim_end) {
+			change_status(CHARA_STATUS_WAIT);
 			return;
+		}
+		if (is_actionable()) {
+			if (common_ground_status_act()) {
+				return;
+			}
+		}
+	}
+	else {
+		if (is_anim_end) {
+			change_status(CHARA_STATUS_FALL);
+			return;
+		}
+		if (is_actionable()) {
+			if (common_air_status_act()) {
+				return;
+			}
 		}
 	}
 	common_air_status_general();
@@ -1715,17 +1742,17 @@ void FighterInstance::exit_status_grabbed() {
 
 void FighterInstance::status_thrown() {
 	if (pos.y < FLOOR_GAMECOORD) {
-		chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
 		change_status(CHARA_STATUS_KNOCKDOWN);
 		return;
 	}
 	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 	}
-	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * fighter_instance_accessor->fighter_instance[!id]->facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED], chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void FighterInstance::enter_status_thrown() {
+	situation_kind = CHARA_SITUATION_AIR;
 	change_anim("knockdown_start");
 }
 
@@ -1982,7 +2009,6 @@ void FighterInstance::exit_status_parry() {}
 
 void FighterInstance::status_crumple() {
 	if (is_anim_end) {
-		chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
 		change_status(CHARA_STATUS_KNOCKDOWN);
 		return;
 	}
@@ -1993,7 +2019,7 @@ void FighterInstance::enter_status_crumple() {
 }
 
 void FighterInstance::exit_status_crumple() {
-	situation_kind = CHARA_SITUATION_GROUND;
+	chara_flag[CHARA_FLAG_CAN_TECH] = false;
 }
 
 void FighterInstance::status_launch_start() {
@@ -2012,7 +2038,6 @@ void FighterInstance::exit_status_launch_start() {
 
 void FighterInstance::status_launch() {
 	if (pos.y < FLOOR_GAMECOORD) {
-		chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
 		change_status(CHARA_STATUS_KNOCKDOWN);
 		return;
 	}
@@ -2032,7 +2057,7 @@ void FighterInstance::enter_status_launch() {
 }
 
 void FighterInstance::exit_status_launch() {
-
+	chara_flag[CHARA_FLAG_CAN_TECH] = false;
 }
 
 void FighterInstance::status_clank() {
@@ -2156,17 +2181,6 @@ void FighterInstance::exit_status_landing_hitstun() {
 }
 
 void FighterInstance::status_knockdown_start() {
-	if (frame >= anim_kind->length - 10) {
-		if (get_stick_dir() == 8) {
-			chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_FAST;
-		}
-		else if (get_stick_dir() == 2) {
-			chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
-		}
-		else {
-			chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
-		}
-	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_KNOCKDOWN);
 	}
@@ -2182,8 +2196,9 @@ void FighterInstance::exit_status_knockdown_start() {
 
 void FighterInstance::status_knockdown() {
 	if (is_anim_end) {
-		if (chara_int[CHARA_INT_WAKEUP_SPEED] == WAKEUP_SPEED_MIN) {
-			change_status(CHARA_STATUS_WAIT); //this will be wakeup in the future but there's no wakeup animation atm
+		if (chara_int[CHARA_INT_WAKEUP_SPEED] == WAKEUP_SPEED_FAST) { 
+			//Hacky impl for 3 different wakeup speeds, in the future we can just make a different animation for each speed
+			change_status(CHARA_STATUS_WAKEUP);
 		}
 		else {
 			chara_int[CHARA_INT_WAKEUP_SPEED] --;
@@ -2192,11 +2207,48 @@ void FighterInstance::status_knockdown() {
 }
 
 void FighterInstance::enter_status_knockdown() {
-	change_anim("knockdown_wait");
+	if (chara_flag[CHARA_FLAG_CAN_TECH]) {
+		if (chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
+			chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
+		}
+		if (chara_int[CHARA_INT_WAKEUP_SPEED] == WAKEUP_SPEED_SLOW) {
+			change_anim("knockdown_wait");
+		}
+		if (chara_int[CHARA_INT_WAKEUP_SPEED] == WAKEUP_SPEED_DEFAULT) {
+			change_anim("knockdown_wait");
+		}
+		if (chara_int[CHARA_INT_WAKEUP_SPEED] == WAKEUP_SPEED_FAST) {
+			change_anim("knockdown_wait");
+		}
+	}
+	else {
+		change_anim("knockdown_wait");
+	}
 	situation_kind = CHARA_SITUATION_DOWN;
 }
 
 void FighterInstance::exit_status_knockdown() {
 	chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
 	situation_kind = CHARA_SITUATION_GROUND;
+	chara_flag[CHARA_FLAG_CAN_TECH] = true;
+}
+
+void FighterInstance::status_wakeup() {
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable()) {
+		if (common_ground_status_act()) {
+			return;
+		}
+	}
+}
+
+void FighterInstance::enter_status_wakeup() {
+	change_anim("wakeup", 2);
+}
+
+void FighterInstance::exit_status_wakeup() {
+
 }

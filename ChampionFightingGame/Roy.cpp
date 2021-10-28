@@ -20,7 +20,6 @@ Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instan
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();
 	}
-
 	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, fighter_instance_accessor);
 	delete (projectile_objects[0]);
 	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
@@ -63,6 +62,176 @@ void Roy::loadRoyACMD() {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("walk_f", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("walk_b", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("dash_f", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("dash_b", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_d", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_u", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_squat", [this]() {
+
+	});
+	script("jump", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -25, 20 }, GameCoordinate{ 20, 120 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -35, 75 }, GameCoordinate{ 35, 115 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_f", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 40 }, GameCoordinate{ 35, 105 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_b", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 40 }, GameCoordinate{ 35, 105 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("fall", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 120 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -35, 75 }, GameCoordinate{ 35, 115 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("stand_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("high_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("parry_start", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(1)) {
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
+		}
+		if (is_excute_wait(4)) {
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
+			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
+		}
+	});
+	script("parry_start_air", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(1)) {
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
+		}
+		if (is_excute_wait(4)) {
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
+			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
+		}
+	});
+	script("parry_mid", [this]() {
+
+	});
+	script("parry_high", [this]() {
+
+	});
+	script("parry_low", [this]() {
+
+	});
+	script("parry_air", [this]() {
+
+	});
+	script("hitstun_parry", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
+			chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+		}
+		if (is_excute_wait(2)) {
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
+			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
+		}
+		if (is_excute_wait(9)) {
+			reenter_last_anim();
+			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = false;
+		}
+	});
+	script("hitstun_parry_air", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
+			chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+		}
+		if (is_excute_wait(2)) {
+			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
+			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
+		}
+		if (is_excute_wait(9)) {
+			reenter_last_anim();
+			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = false;
 		}
 	});
 	script("stand_lp", [this]() {
@@ -159,6 +328,7 @@ void Roy::loadRoyACMD() {
 		if (is_excute_frame(6)) {
 			new_hitbox(1, 30, 5, 1.2, 1, 0, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, ATTACK_HEIGHT_LOW, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_KNOCKDOWN, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true);
 		}
+
 	});
 	script("jump_lp", [this]() {
 
@@ -178,37 +348,6 @@ void Roy::loadRoyACMD() {
 	script("jump_hk", [this]() {
 
 	});
-	script("parry_start", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-		}
-		if (is_excute_frame(1)) {
-			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
-		}
-		if (is_excute_wait(4)) {
-			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
-			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
-		}
-	});
-	script("hitstun_parry", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = true;
-			chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
-		}
-		if (is_excute_wait(2)) {
-			chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
-			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
-		}
-		if (is_excute_wait(9)) {
-			reenter_last_anim();
-			chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = false;
-		}
-	});
 	script("grab", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -217,16 +356,6 @@ void Roy::loadRoyACMD() {
 		}
 		if (is_excute_frame(3)) {
 			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW, CHARA_STATUS_GRABBED);
-		}
-	});
-	script("grab_air", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-		}
-		if (is_excute_frame(3)) {
-			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW_AIR, CHARA_STATUS_GRABBED);
 		}
 	});
 	script("throw_f", [this]() {
@@ -249,6 +378,101 @@ void Roy::loadRoyACMD() {
 		if (is_excute_frame(10)) {
 			damage_opponent(30.0, -1, -15.0, 8.0);
 			change_opponent_status(CHARA_STATUS_THROWN);
+		}
+	});
+	script("grab_air", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(3)) {
+			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW_AIR, CHARA_STATUS_GRABBED);
+		}
+	});
+	script("throw_f_air", [this]() {
+		if (is_excute_frame(0)) {
+			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(13)) {
+			damage_opponent(30.0, 1, 15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
+	});
+	script("throw_b_air", [this]() {
+		if (is_excute_frame(0)) {
+			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(10)) {
+			damage_opponent(30.0, -1, -15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
+	});
+	script("stand_hitstun_l", [this]() {
+
+	});
+	script("stand_hitstun_m", [this]() {
+
+	});
+	script("stand_hitstun_h", [this]() {
+
+	});
+	script("crouch_hitstun_l", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_hitstun_m", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_hitstun_h", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_hitstun", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("launch_start", [this]() {
+
+	});
+	script("launch", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("knockdown_start", [this]() {
+
+	});
+	script("knockdown_wait", [this]() {
+
+	});
+	script("wakeup", [this]() {
+
+	});
+	script("crumple", [this]() {
+
+	});
+	script("landing", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("landing_hitstun", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		}
 	});
 	script("special_fireball_start", [this]() {

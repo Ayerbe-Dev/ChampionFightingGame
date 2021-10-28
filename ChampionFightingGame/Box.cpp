@@ -6,6 +6,15 @@ Hitbox::Hitbox() {
 	this->id = -1;
 }
 
+/*
+	All of the functions related to Hitboxes, Grabboxesand Hurtboxes. Note: None of these functions are ever called directly, the Fighter and 
+	Projectile Instances all contain functions that call these.
+*/
+
+/*
+	The version of the Hitbox func used by players
+*/
+
 Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
@@ -67,6 +76,9 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	this->use_player_pos = use_player_pos;
 }
 
+/*
+	The version of the Hitbox func used by projectiles
+*/
 Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
@@ -115,11 +127,20 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	this->continue_launch = continue_launch;
 }
 
+/*
+	Updates whether or not a hitbox has already connected based on its multihit index
+*/
+
 void Hitbox::update_connect(int multihit_index) {
 	if (multihit == multihit_index) {
 		this->success_hit = true;
 	}
 }
+
+/*
+	Updates the position of the hitboxes relative to their owner.Projectiles already include the window width to calculate their location, so
+	they shouldn't add it a second time, hence the second arg.
+*/
 
 void Hitbox::update_pos(ObjectInstance * object_instance, bool add_window_width) {
 	GameCoordinate anchor;
@@ -155,6 +176,8 @@ void Hitbox::update_pos(ObjectInstance * object_instance, bool add_window_width)
 	this->rect.h = offset.y;
 }
 
+//Clears a hitbox. TECHNICALLY never needs to be used because the constructors already set the ids to 0 but like... gross
+
 void Hitbox::clear() {
 	this->id = -1;
 }
@@ -162,6 +185,11 @@ void Hitbox::clear() {
 Grabbox::Grabbox() {
 	this->id = -1;
 }
+
+/*
+	Grabbox. Only FighterInstances are actually designed to call these, because if we ever wanted to make a "projectile grab", we could just
+	make an unblockable projectile that tells the attacker to create a grabbox at the defender's location and handles it from there.
+*/
 
 Grabbox::Grabbox(ObjectInstance* object_instance, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
 	u32 defender_status_if_hit, bool use_player_pos) {
@@ -227,6 +255,11 @@ void Grabbox::clear() {
 Hurtbox::Hurtbox() {
 	this->id = -1;
 }
+
+/*
+	Hurtbox. Only used by FighterInstances since projectile trades work by comparing the hitboxes directly. Also I think it's safe to assume that
+	Hurtboxes will never use a global position
+*/
 
 Hurtbox::Hurtbox(ObjectInstance* object_instance, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
 	this->init_anchor = anchor;

@@ -118,6 +118,126 @@ void Eric::loadEricACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		}
 	});
+	script("walk_f", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("walk_b", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("dash_f", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("dash_b", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_d", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_u", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_squat", [this]() {
+
+	});
+	script("jump", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -25, 20 }, GameCoordinate{ 20, 120 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -35, 75 }, GameCoordinate{ 35, 115 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_f", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 40 }, GameCoordinate{ 35, 105 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_b", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 40 }, GameCoordinate{ 35, 105 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("fall", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 120 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -35, 75 }, GameCoordinate{ 35, 115 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("stand_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("high_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("parry_start", [this]() {
+
+	});
+	script("parry_start_air", [this]() {
+
+	});
+	script("parry_mid", [this]() {
+
+	});
+	script("parry_high", [this]() {
+
+	});
+	script("parry_low", [this]() {
+
+	});
+	script("parry_air", [this]() {
+
+	});
+	script("hitstun_parry", [this]() {
+
+	});
+	script("hitstun_parry_air", [this]() {
+
+	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
@@ -164,9 +284,7 @@ void Eric::loadEricACMD() {
 		}
 	});
 	script("stand_lk", [this]() {
-		if (is_excute_frame(0)) {
-			init_projectile(0, GameCoordinate{ 0, 30 });
-		}
+
 	});
 	script("stand_mk", [this]() {
 
@@ -209,6 +327,99 @@ void Eric::loadEricACMD() {
 	});
 	script("jump_hk", [this]() {
 
+	});
+	script("grab", [this]() {
+
+	});
+	script("throw_f", [this]() {
+
+	});
+	script("throw_b", [this]() {
+
+	});
+	script("grab_air", [this]() {
+
+	});
+	script("throw_f_air", [this]() {
+
+	});
+	script("throw_b_air", [this]() {
+
+	});
+	script("stand_hitstun_l", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("stand_hitstun_m", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("stand_hitstun_h", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_hitstun_l", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_hitstun_m", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("crouch_hitstun_h", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("jump_hitstun", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("launch_start", [this]() {
+
+	});
+	script("launch", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("knockdown_start", [this]() {
+
+	});
+	script("knockdown_wait", [this]() {
+
+	});
+	script("wakeup", [this]() {
+
+	});
+	script("crumple", [this]() {
+
+	});
+	script("landing", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+	});
+	script("landing_hitstun", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
 	});
 }
 

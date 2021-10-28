@@ -9,6 +9,8 @@
 
 Animation::Animation() {};
 
+//Calculates which region of the currently loaded spritesheet to render
+
 SDL_Rect getFrame(int frame, Animation* animation) {
 	int width;
 	int height;

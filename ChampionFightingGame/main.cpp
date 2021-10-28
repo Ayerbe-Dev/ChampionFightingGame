@@ -35,7 +35,7 @@ int main() {
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
 
-	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);

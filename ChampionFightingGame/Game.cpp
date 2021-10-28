@@ -200,6 +200,11 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			int height;
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
+			if (fighter_instance[i]->anim_kind->force_center && !fighter_instance[i]->facing_right) {
+				SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &width, NULL);
+				render_pos.w = width * 1.6; //Idk why these are the correct values, feel free to mess around because I can't figure it out
+				render_pos.x -= render_pos.w / 2.7;
+			}
 			render_pos.h = height;
 			const double angle = (const double)fighter_instance[i]->angle;
 			int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
@@ -329,7 +334,7 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 	if (fighter_instance->situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND
 	&& !fighter_instance->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && !that->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(fighter_instance->jostle_box, that->jostle_box)) {
-			fighter_instance->add_pos(fighter_instance->get_param_float("walk_b_speed") / -1.5 * fighter_instance->facing_dir, 0.0);
+			fighter_instance->add_pos(fighter_instance->get_param_float("jostle_walk_b_speed") * -1 * fighter_instance->facing_dir, 0.0);
 		}
 	}
 
@@ -644,6 +649,7 @@ int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* def
 
 	if (hurtbox->intangible_kind == INTANGIBLE_KIND_INVINCIBLE) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		attacker->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = attacker->chara_int[CHARA_INT_HITLAG_FRAMES];
 		return hitbox->id;
 	}
 
@@ -651,7 +657,9 @@ int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* def
 
 	if (hurtbox->is_armor) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		attacker->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = attacker->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 		return hitbox->id;
 	}
 
@@ -672,13 +680,17 @@ int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* def
 	}
 	if (parrying) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag + 12;
+		attacker->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = attacker->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag + 8;
+		defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
 	}
 	if (blocking && !hitbox->unblockable) {
 		attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
+		attacker->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = attacker->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
+		defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->blockstun;
 		defender->chara_int[CHARA_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = true;
@@ -686,7 +698,9 @@ int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* def
 	}
 
 	attacker->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	attacker->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = attacker->chara_int[CHARA_INT_HITLAG_FRAMES];
 	defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 	defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->hitstun;
 	attacker->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = true;
 	return hitbox->id;
@@ -746,7 +760,9 @@ int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstan
 
 	if (hurtbox->is_armor) {
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		attacker->projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+		defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 		return hitbox->id;
 	}
 
@@ -764,13 +780,17 @@ int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstan
 	}
 	if (parrying) {
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag + 12;
+		attacker->projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag + 8;
+		defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
 	}
 	if (blocking && !hitbox->unblockable) {
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag;
+		attacker->projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->blocklag;
+		defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 		defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->blockstun;
 		defender->chara_int[CHARA_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->chara_flag[CHARA_FLAG_ENTER_BLOCKSTUN] = true;
@@ -778,7 +798,9 @@ int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstan
 	}
 
 	attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	attacker->projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	defender->chara_int[CHARA_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	defender->chara_int[CHARA_INT_INIT_HITLAG_FRAMES] = defender->chara_int[CHARA_INT_HITLAG_FRAMES];
 	defender->chara_int[CHARA_INT_HITSTUN_FRAMES] = hitbox->hitstun;
 	attacker->projectile_flag[PROJECTILE_FLAG_HIT] = true;
 	return hitbox->id;

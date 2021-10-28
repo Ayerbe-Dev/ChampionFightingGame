@@ -143,7 +143,7 @@ void Roy::loadRoyACMD() {
 	});
 	script("crouch_hp", [this]() {
 		if (is_excute_frame(9)) {
-			new_hitbox(1, 50, 5, 1.2, 1, 0, GameCoordinate{ 25,75 }, GameCoordinate{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NONE, 14.0, 0.0, 0.0, 1.0, true);
+			new_hitbox(1, 50, 5, 1.2, 1, 0, GameCoordinate{ 25,75 }, GameCoordinate{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NONE, 14.0, 0.0, 0.0, 1.0, true);
 		}
 	});
 	script("crouch_lk", [this]() {
@@ -236,7 +236,18 @@ void Roy::loadRoyACMD() {
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
-			damage_opponent(30.0, 15.0, 8.0);
+			damage_opponent(30.0, 1, 15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
+	});
+	script("throw_b", [this]() {
+		if (is_excute_frame(0)) {
+			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(10)) {
+			damage_opponent(30.0, -1, -15.0, 8.0);
 			change_opponent_status(CHARA_STATUS_THROWN);
 		}
 	});

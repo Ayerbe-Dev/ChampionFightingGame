@@ -80,12 +80,14 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	string path;
 	string frame_count;
 	string faf;
+	string force_center;
 	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path >> frame_count >> faf;
+		anim_list >> path >> frame_count >> faf >> force_center;
 		animation_table[i].name = ymlChopString(name);
 		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
 		animation_table[i].faf = ymlChopInt(faf);
+		animation_table[i].force_center = (bool)ymlChopInt(force_center);
 		loadAnimation(&animation_table[i], renderer);
 	}
 	anim_list.close();
@@ -723,9 +725,11 @@ void FighterInstance::change_opponent_status(u32 status_kind) {
 	fighter_instance_accessor->fighter_instance[!id]->change_status(status_kind);
 }
 
-void FighterInstance::damage_opponent(float damage, float x_speed, float y_speed) {
+void FighterInstance::damage_opponent(float damage, float facing_dir, float x_speed, float y_speed) {
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_HEALTH] -= damage;
-	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = x_speed * facing_dir;
+	fighter_instance_accessor->fighter_instance[!id]->facing_dir = facing_dir * this->facing_dir * -1;
+	fighter_instance_accessor->fighter_instance[!id]->facing_right = (facing_dir * this->facing_dir * -1) > 0;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = x_speed * this->facing_dir;
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = y_speed;
 }
 
@@ -848,7 +852,12 @@ void FighterInstance::startAnimation(Animation* animation) {
 	int width;
 	int height;
 	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
-	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
+	if (anim_kind->force_center) {
+		pos.x_anim_offset = pos.x_spr_offset;
+	}
+	else {
+		pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
+	}
 	pos.y_anim_offset = height;
 	frame_rect = getFrame(frame, anim_kind);
 }
@@ -885,6 +894,22 @@ void FighterInstance::stepAnimation() {
 	is_anim_end = last_frame > frame;
 }
 
+void FighterInstance::forceStepThroughHitlag() {
+	int curr_hitlag_frames = chara_int[CHARA_INT_HITLAG_FRAMES];
+	chara_int[CHARA_INT_HITLAG_FRAMES] = 0;
+	canStep();
+	stepAnimation();
+	chara_int[CHARA_INT_HITLAG_FRAMES] = curr_hitlag_frames;
+}
+
+bool FighterInstance::beginning_hitlag(int frames) {
+	return chara_int[CHARA_INT_HITLAG_FRAMES] + frames >= chara_int[CHARA_INT_INIT_HITLAG_FRAMES] && chara_int[CHARA_INT_HITLAG_FRAMES] != 0;
+}
+
+bool FighterInstance::ending_hitlag(int frames) {
+	return chara_int[CHARA_INT_HITLAG_FRAMES] - frames <= 0 && chara_int[CHARA_INT_HITLAG_FRAMES] != 0;
+}
+ 
 //Status
 
 bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
@@ -1008,7 +1033,12 @@ bool FighterInstance::common_ground_status_act() {
 			return change_status(CHARA_STATUS_JUMPSQUAT);
 		}
 		if (get_stick_dir() < 4 && status_kind != CHARA_STATUS_CROUCH) {
-			return change_status(CHARA_STATUS_CROUCHD);
+			if (status_kind == CHARA_STATUS_ATTACK && chara_int[CHARA_INT_ATTACK_KIND] >= ATTACK_KIND_HK) {
+				return change_status(CHARA_STATUS_CROUCH);
+			}
+			else {
+				return change_status(CHARA_STATUS_CROUCHD);
+			}
 		}
 	}
 	return false;
@@ -1154,7 +1184,7 @@ void FighterInstance::status_walkf() {
 		return;
 	}
 	if (is_collide(jostle_box, fighter_instance_accessor->fighter_instance[!id]->jostle_box)) {
-		add_pos(get_param_float("walk_f_speed") * facing_dir / 1.5, 0);
+		add_pos(get_param_float("jostle_walk_f_speed") * facing_dir, 0);
 	}
 	else {
 		add_pos(get_param_float("walk_f_speed") * facing_dir, 0);
@@ -1658,7 +1688,12 @@ void FighterInstance::status_throw() {
 }
 
 void FighterInstance::enter_status_throw() {
-	change_anim("throw_f", 2);
+	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
+		change_anim("throw_b", 2);
+	}
+	else {
+		change_anim("throw_f", 2);
+	}
 }
 
 void FighterInstance::exit_status_throw() {
@@ -1716,7 +1751,12 @@ void FighterInstance::status_throw_air() {
 }
 
 void FighterInstance::enter_status_throw_air() {
-	change_anim("throw_f", 2);
+	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
+		change_anim("throw_b", 2);
+	}
+	else {
+		change_anim("throw_f", 2);
+	}
 }
 
 void FighterInstance::exit_status_throw_air() {}
@@ -1890,7 +1930,7 @@ void FighterInstance::enter_status_blockstun() {
 		}
 	}
 	else {
-		change_anim("stand_block", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
+		change_anim("jump_block", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
 		chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;
 		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = 0;
 	}
@@ -1957,6 +1997,9 @@ void FighterInstance::enter_status_parry_start() {
 void FighterInstance::exit_status_parry_start() {}
 
 void FighterInstance::status_parry() {
+	if (beginning_hitlag(1) || ending_hitlag(2)) {
+		forceStepThroughHitlag();
+	}
 	if (is_actionable()) {
 		if (situation_kind == CHARA_SITUATION_GROUND && common_ground_status_act()) {
 			return;

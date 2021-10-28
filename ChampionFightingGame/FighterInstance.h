@@ -88,7 +88,7 @@ public:
 
 	void set_opponent_offset(GameCoordinate offset, int frames = 0);
 	void change_opponent_status(u32 status_kind);
-	void damage_opponent(float damage, float x_speed = 0, float y_speed = 0);
+	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0);
 	void set_opponent_angle(double angle);
 	void set_opponent_thrown_ticks();
 	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0);
@@ -129,6 +129,9 @@ public:
 	void startAnimation(Animation* animation);
 	bool canStep();
 	void stepAnimation();
+	void forceStepThroughHitlag();
+	bool beginning_hitlag(int frames);
+	bool ending_hitlag(int frames);
 
 	//Status
 

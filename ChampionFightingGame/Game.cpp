@@ -210,9 +210,11 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			int height;
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
-			if (fighter_instance[i]->anim_kind->force_center && !fighter_instance[i]->facing_right) {
-				SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &sprite_width, NULL);
-				render_pos.x = (render_pos.x - (sprite_width / 2)) - 4;
+			if (!fighter_instance[i]->facing_right) {
+				if (fighter_instance[i]->anim_kind->force_center) {
+					SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &sprite_width, NULL);
+					render_pos.x -= (render_pos.w - sprite_width);
+				}
 			}
 			render_pos.h = height;
 			const double angle = (const double)fighter_instance[i]->angle;

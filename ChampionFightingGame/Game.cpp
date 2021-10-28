@@ -197,13 +197,13 @@ int game_main(SDL_Renderer* pRenderer, PlayerInfo player_info[2]) {
 			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
 			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateYAnim();
 			int width;
+			int sprite_width;
 			int height;
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
 			if (fighter_instance[i]->anim_kind->force_center && !fighter_instance[i]->facing_right) {
-				SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &width, NULL);
-				render_pos.w = width * 1.6; //Idk why these are the correct values, feel free to mess around because I can't figure it out
-				render_pos.x -= render_pos.w / 2.7;
+				SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &sprite_width, NULL);
+				render_pos.x -= sprite_width / 2; //I was overthinking it last time, all I had to do was compare against the other width
 			}
 			render_pos.h = height;
 			const double angle = (const double)fighter_instance[i]->angle;

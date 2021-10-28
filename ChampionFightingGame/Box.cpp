@@ -280,7 +280,7 @@ Hurtbox::Hurtbox(ObjectInstance* object_instance, int id, GameCoordinate anchor,
 	this->is_armor = is_armor;
 	this->intangible_kind = intangible_kind;
 }
- 
+
 void Hurtbox::update_pos(ObjectInstance *object_instance) {
 	GameCoordinate anchor;
 	GameCoordinate offset;

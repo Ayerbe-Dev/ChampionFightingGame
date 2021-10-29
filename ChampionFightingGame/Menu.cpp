@@ -18,18 +18,22 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	tick = SDL_GetTicks();
 
 	MenuItem menu_items[5];
-
 	menu_items[0] = MenuItem{"resource\\ui\\menu\\Online.png",pRenderer};
 	menu_items[1] = MenuItem{"resource\\ui\\menu\\SinglePlayer.png",pRenderer};
 	menu_items[2] = MenuItem{"resource\\ui\\menu\\VS.png",pRenderer};
 	menu_items[3] = MenuItem{"resource\\ui\\menu\\Options.png",pRenderer};
 	menu_items[4] = MenuItem{"resource\\ui\\menu\\Extras.png",pRenderer};
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destination = i;
+	}
 	SDL_Rect garborect = {0,0,232,32};
 
 	float theta = 0;
 	float offset = 3.14/8;
 	float magnitude = WINDOW_WIDTH/2;  //this is about 45 degrees
-	int selection = -2;
+	int top_selection = -2;
+	int sub_selection = GAME_STATE_GAME;
+	int menu_level = MENU_LEVEL_TOP;
 
 	while (menuing) {
 		SDL_RenderClear(pRenderer);
@@ -66,31 +70,49 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_buttons(keyboard_state);
-		}
-
-		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {
-			menuing = false;
-		}
-
-		if (player_info[0].check_button_trigger(BUTTON_DOWN)){
-			printf("down pressed selection:%d sz:%d\n",selection,sizeof(menu_items));
-			if (selection > -4){
-				selection --;
-			} else {
-				selection = 0;
-				theta += 5*offset;
+			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
+				menuing = false;
+				sub_selection = GAME_STATE_DEBUG_MENU;
 			}
-		}
 
-		if (player_info[0].check_button_trigger(BUTTON_UP)){
-			printf("up pressed selection:%d sz:%d\n",selection,sizeof(menu_items));
-			if (selection < 0){
-				selection ++;
-			} else {
-				selection = -4;
-				theta -= 5*offset;
+			if (menu_level == MENU_LEVEL_TOP) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+					menu_level = MENU_LEVEL_SUB;
+					break;
+				}
+				if (player_info[i].check_button_trigger(BUTTON_DOWN)) {
+					if (top_selection > -4) {
+						top_selection--;
+					}
+					else {
+						top_selection = 0;
+						theta += 5 * offset;
+					}
+				}
+
+				if (player_info[i].check_button_trigger(BUTTON_UP)) {
+					if (top_selection < 0) {
+						top_selection++;
+					}
+					else {
+						top_selection = -4;
+						theta -= 5 * offset;
+					}
+				}
 			}
-			
+
+			if (menu_level == MENU_LEVEL_SUB) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+					menu_level = MENU_LEVEL_TOP;
+					break;
+				}
+				switch (menu_items[top_selection * -1].destination) {
+					default:
+					{
+
+					} break;
+				}
+			}
 		}
 
 		//prebuffer render
@@ -124,14 +146,14 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		}	
 
 
-		theta += ((selection * offset) - theta) / 16;
+		theta += ((top_selection * offset) - theta) / 16;
 
-		//printf("selection: %d, target theta: %f, theta: %f\n",selection,(selection * offset),theta);
+		//printf("top_selection: %d, target theta: %f, theta: %f\n",top_selection,(top_selection * offset),theta);
 
 		SDL_RenderPresent(pRenderer);
 	}
 
-	return menu_items[selection*-1].destination;
+	return sub_selection;
 }
 
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {

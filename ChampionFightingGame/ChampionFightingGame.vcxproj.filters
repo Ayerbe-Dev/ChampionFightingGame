@@ -238,5 +238,8 @@
     <ClInclude Include="Game.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Menu.fwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

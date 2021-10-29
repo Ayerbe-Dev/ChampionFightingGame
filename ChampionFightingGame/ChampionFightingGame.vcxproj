@@ -254,6 +254,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="Leon.fwd.h" />
+    <ClInclude Include="Menu.fwd.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="ObjectInstance.fwd.h" />
     <ClInclude Include="ObjectInstance.h" />

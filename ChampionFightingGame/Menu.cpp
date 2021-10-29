@@ -78,6 +78,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 				selection --;
 			} else {
 				selection = 0;
+				theta += 5 * offset;
 			}
 		}
 
@@ -87,6 +88,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 				selection ++;
 			} else {
 				selection = -4;
+				theta -= 5 * offset;
 			}
 			
 		}

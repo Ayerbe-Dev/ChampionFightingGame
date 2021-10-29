@@ -636,6 +636,23 @@ enum {
 	PROJECTILE_FLAG_MAX,
 };
 
+enum {
+	MENU_LEVEL_TOP,
+	MENU_LEVEL_SUB,
+
+	MENU_LEVEL_MAX,
+};
+
+enum {
+	SUB_MENU_EXTRAS,
+	SUB_MENU_ONLINE,
+	SUB_MENU_SINGLEPLAYER,
+	SUB_MENU_VS,
+	SUB_MENU_OPTIONS,
+
+	SUB_MENU_MAX,
+};
+
 struct Offset
 {
 	int offset_x;

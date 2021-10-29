@@ -49,8 +49,10 @@ void FighterInstance::fighter_main() {
 		}
 	}
 
+	playoutStatus();
+
 	if (anim_kind->move_dir != 0) {
-		if (!add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0), true) {
+		if (!add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0, true)) {
 			/*
 			if we need to modify a player's position and the game is saying that the position is invalid, the render position won't be
 			compensated properly. In this situation, manually changing the render position every frame to look stationary would be a nightmare, so
@@ -61,23 +63,26 @@ void FighterInstance::fighter_main() {
 				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
 			}
 			else {
-				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = pos.x;
+				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
 			}
 			if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
 				chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = true;
 			}
+			else {
+				chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
+			}
 		}
-		if (anim_kind->force_center == 1) {
-			chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = false;
+		else {
+			chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
+			if (anim_kind->force_center == 1) {
+				chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = false;
+			}
 		}
 	}
 
 	if (chara_flag[CHARA_FLAG_STATIONARY_ANIMATION]) {
-		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", unique_param_table), 0);
+		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", unique_param_table), 0, true);
 	}
-
-	playoutStatus();
-
 
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
 	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
@@ -1060,7 +1065,7 @@ void FighterInstance::startAnimation(Animation* animation) {
 	chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = (anim_kind->force_center != 0);
 	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
 	pos.y_anim_offset = height;
-	frame_rect = getFrame(frame, anim_kind);
+	frame_rect = getFrame(render_frame, anim_kind);
 }
 
 bool FighterInstance::canStep() {

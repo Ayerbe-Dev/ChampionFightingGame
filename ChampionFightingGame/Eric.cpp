@@ -286,7 +286,9 @@ void Eric::loadEricACMD() {
 
 	});
 	script("stand_mk", [this]() {
-
+		if (is_excute_frame(11)) {
+			sync_pos_with_animation(6);
+		}
 	});
 	script("stand_hk", [this]() {
 
@@ -328,22 +330,69 @@ void Eric::loadEricACMD() {
 
 	});
 	script("grab", [this]() {
-
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(3)) {
+			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW, CHARA_STATUS_GRABBED);
+		}
 	});
 	script("throw_f", [this]() {
-
+		if (is_excute_frame(0)) {
+			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(13)) {
+			damage_opponent(30.0, 1, 15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
 	});
 	script("throw_b", [this]() {
-
+		if (is_excute_frame(0)) {
+			chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
+			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(10)) {
+			damage_opponent(30.0, -1, -15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
 	});
 	script("grab_air", [this]() {
-
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 }, HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}
+		if (is_excute_frame(3)) {
+			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW_AIR, CHARA_STATUS_GRABBED);
+		}
 	});
 	script("throw_f_air", [this]() {
-
+		if (is_excute_frame(0)) {
+			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(13)) {
+			damage_opponent(30.0, 1, 15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
 	});
 	script("throw_b_air", [this]() {
-
+		if (is_excute_frame(0)) {
+			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			change_opponent_anim("stand_hitstun_m", 2);
+			set_opponent_thrown_ticks();
+		}
+		if (is_excute_frame(10)) {
+			damage_opponent(30.0, -1, -15.0, 8.0);
+			change_opponent_status(CHARA_STATUS_THROWN);
+		}
 	});
 	script("stand_hitstun_l", [this]() {
 		if (is_excute_frame(0)) {

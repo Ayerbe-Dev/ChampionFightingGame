@@ -211,7 +211,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
 			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
 			if (!fighter_instance[i]->facing_right) {
-				if (fighter_instance[i]->anim_kind->force_center) {
+				if (fighter_instance[i]->anim_kind->force_center && !fighter_instance[i]->chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] && !fighter_instance[i]->chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM]) {
 					SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &sprite_width, NULL);
 					render_pos.x -= (render_pos.w - sprite_width);
 				}
@@ -336,6 +336,18 @@ void tickOnceFighter(FighterInstance* fighter_instance) {
 		if (fighter_instance->projectile_objects[i]->id != -1) {
 			tickOnceProjectile(fighter_instance->projectile_objects[i]);
 		}
+	}
+	
+	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM]) {
+	}
+	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM]) {
+		fighter_instance->add_pos((getFrame(fighter_instance->render_frame, fighter_instance->anim_kind).w / 2) / fighter_instance->anim_kind->length * fighter_instance->facing_dir * -1, 0);
+	}
+	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM]) {
+		fighter_instance->add_pos(0, (getFrame(fighter_instance->render_frame, fighter_instance->anim_kind).h / 2) / fighter_instance->anim_kind->length);
+	}
+	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM]) {
+		fighter_instance->add_pos(0, (getFrame(fighter_instance->render_frame, fighter_instance->anim_kind).h / 2) / fighter_instance->anim_kind->length * -1);
 	}
 
 	fighter_instance->playoutStatus();

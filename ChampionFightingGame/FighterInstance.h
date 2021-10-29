@@ -132,6 +132,7 @@ public:
 	void forceStepThroughHitlag();
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
+	void sync_pos_with_animation(int direction);
 
 	//Status
 

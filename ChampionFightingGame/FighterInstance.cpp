@@ -914,6 +914,56 @@ bool FighterInstance::beginning_hitlag(int frames) {
 bool FighterInstance::ending_hitlag(int frames) {
 	return chara_int[CHARA_INT_HITLAG_FRAMES] - frames <= 0 && chara_int[CHARA_INT_HITLAG_FRAMES] != 0;
 }
+
+void FighterInstance::sync_pos_with_animation(int direction) {
+	int width;
+	int height;
+	SDL_QueryTexture(anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
+	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
+	int x_move = 0;
+	int y_move = 0;
+	if (direction == 9) {
+		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = true;
+		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = true;
+	}
+	if (direction == 8) {
+		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = true;
+	}
+	if (direction == 7) {
+		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
+		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = true;
+	}
+	if (direction == 6) {
+		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = true;
+	}
+	if (direction == 4) {
+		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
+	}
+	if (direction == 3) {
+		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = true;
+		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = true;
+	}
+	if (direction == 2) {
+		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = true;
+	}
+	if (direction == 1) {
+		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
+		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = true;
+	}
+	if (chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM]) {
+		x_move = getFrame(render_frame, anim_kind).w / 4 * facing_dir;
+	}
+	if (chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM]) {
+		x_move = getFrame(render_frame, anim_kind).w / -2 * facing_dir;
+	}
+	if (chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM]) {
+		y_move = getFrame(render_frame, anim_kind).h / 2;
+	}
+	if (chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM]) {
+		y_move = getFrame(render_frame, anim_kind).h / -2;
+	}
+	add_pos(x_move, y_move);
+}
  
 //Status
 
@@ -926,6 +976,10 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
+		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = false;
+		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = false;
+		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = false;
+		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = false;
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -1708,6 +1762,7 @@ void FighterInstance::exit_status_grab_air() {}
 void FighterInstance::status_throw_air() {
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
+		situation_kind = CHARA_SITUATION_GROUND;
 		if (is_anim_end) {
 			change_status(CHARA_STATUS_WAIT);
 			return;
@@ -1734,22 +1789,24 @@ void FighterInstance::status_throw_air() {
 
 void FighterInstance::enter_status_throw_air() {
 	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
-		change_anim("throw_b", 2);
+		change_anim("throw_b_air", 2);
 	}
 	else {
-		change_anim("throw_f", 2);
+		change_anim("throw_f_air", 2);
 	}
 }
 
 void FighterInstance::exit_status_throw_air() {}
 
 void FighterInstance::status_grabbed() {
-	if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
-		add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
-		chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
-	}
-	else {
-		set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y]);
+	if (chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] != 0 || chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] != 0) {
+		if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
+			add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
+			chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
+		}
+		else {
+			set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y]);
+		}
 	}
 }
 
@@ -1760,6 +1817,8 @@ void FighterInstance::enter_status_grabbed() {
 void FighterInstance::exit_status_grabbed() {
 	angle = 0;
 	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+	chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = 0;
+	chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 }
 
 void FighterInstance::status_thrown() {

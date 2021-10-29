@@ -20,6 +20,7 @@ public:
 	void (ProjectileInstance::* pEnter_status[PROJECTILE_STATUS_MAX])();
 	void (ProjectileInstance::* pExit_status[PROJECTILE_STATUS_MAX])();
 
+	void projectile_main();
 	void superInit(SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
 	void load_params();

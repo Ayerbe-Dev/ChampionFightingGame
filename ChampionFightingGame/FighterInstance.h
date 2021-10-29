@@ -51,6 +51,8 @@ public:
 	FighterInstance();
 	FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info);
 
+	void fighter_main();
+
 	//Child Class Entry Points
 	virtual bool specific_ground_status_act() { return false; };
 
@@ -81,12 +83,13 @@ public:
 
 	//Position
 
-	bool add_pos(float x, float y);
-	bool set_pos(float x, float y);
+	bool add_pos(float x, float y, bool prev = false);
+	bool set_pos(float x, float y, bool prev = false);
 
 	//Messing with the opponent's FighterInstance
 
-	void set_opponent_offset(GameCoordinate offset, int frames = 0);
+	void set_opponent_offset(GameCoordinate offset, int frames);
+	void set_opponent_offset(GameCoordinate offset);
 	void change_opponent_status(u32 status_kind);
 	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0);
 	void set_opponent_angle(double angle);
@@ -125,14 +128,14 @@ public:
 	//Animation
 	
 	void reenter_last_anim();
-	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
+	bool change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
+	bool change_anim_inherit_attributes(string animation_name, bool verbose = true,  bool continue_script = true);
 	void startAnimation(Animation* animation);
 	bool canStep();
 	void stepAnimation();
 	void forceStepThroughHitlag();
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
-	void sync_pos_with_animation(int direction);
 
 	//Status
 

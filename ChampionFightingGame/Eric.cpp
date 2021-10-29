@@ -287,7 +287,7 @@ void Eric::loadEricACMD() {
 	});
 	script("stand_mk", [this]() {
 		if (is_excute_frame(11)) {
-			sync_pos_with_animation(6);
+
 		}
 	});
 	script("stand_hk", [this]() {
@@ -341,7 +341,9 @@ void Eric::loadEricACMD() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = -60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -352,13 +354,19 @@ void Eric::loadEricACMD() {
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
-			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = 60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 20);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(10)) {
-			damage_opponent(30.0, -1, -15.0, 8.0);
+		if (is_excute_frame(15)) {
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = -60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 7);
+		}
+		if (is_excute_frame(20)) {
+			damage_opponent(30.0, -1, -18.0, 8.0);
 			change_opponent_status(CHARA_STATUS_THROWN);
 		}
 	});
@@ -374,7 +382,9 @@ void Eric::loadEricACMD() {
 	});
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = -60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -385,12 +395,19 @@ void Eric::loadEricACMD() {
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = 60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 20);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(10)) {
-			damage_opponent(30.0, -1, -15.0, 8.0);
+		if (is_excute_frame(15)) {
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = -60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 7);
+		}
+		if (is_excute_frame(20)) {
+			damage_opponent(30.0, -1, -18.0, 8.0);
 			change_opponent_status(CHARA_STATUS_THROWN);
 		}
 	});

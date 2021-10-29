@@ -1,4 +1,28 @@
 #include "ProjectileInstance.h"
+#include "Game.h"
+
+void ProjectileInstance::projectile_main() {
+	prevpos = pos;
+
+	if (canStep()) {
+		stepAnimation();
+	}
+
+	playoutStatus();
+
+	decrease_common_projectile_variables(this);
+	tickOnceProjectileUnique();
+
+	int width;
+	int height;
+	SDL_QueryTexture(base_texture, NULL, NULL, &width, &height);
+	pos.x_spr_offset = width / 2;
+	pos.y_spr_offset = height;
+
+	update_hitbox_pos(false);
+	update_grabbox_pos();
+	update_hurtbox_pos();
+}
 
 void ProjectileInstance::superInit(SDL_Renderer* renderer) {
 	load_anim_list(renderer);

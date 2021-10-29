@@ -108,7 +108,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		SDL_RenderPresent(pRenderer);
 	}
 
-	return GAME_STATE_CHARA_SELECT;
+	return menu_items[selection*-1].destination;
 }
 
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
@@ -174,4 +174,5 @@ MenuItem::MenuItem(){};
 MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer){
 	this->texture = loadTexture(texture_dir.c_str(),pRenderer);
 	this->destRect = {0,0,232,32};
+	this->destination = 1234567;
 };

@@ -18,6 +18,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	tick = SDL_GetTicks();
 
 	MenuItem menu_items[5];
+	SubMenuTable *sub_menu_tables[5];
 	menu_items[0] = MenuItem{"resource\\ui\\menu\\Online.png",pRenderer};
 	menu_items[1] = MenuItem{"resource\\ui\\menu\\SinglePlayer.png",pRenderer};
 	menu_items[2] = MenuItem{"resource\\ui\\menu\\VS.png",pRenderer};
@@ -25,7 +26,13 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	menu_items[4] = MenuItem{"resource\\ui\\menu\\Extras.png",pRenderer};
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].destination = i;
+		sub_menu_tables[i] = new SubMenuTable(i, pRenderer);
 	}
+	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
+	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
+	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
+	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
 	SDL_Rect garborect = {0,0,232,32};
 
 	float theta = 0;
@@ -34,6 +41,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	int top_selection = -2;
 	int sub_selection = GAME_STATE_GAME;
 	int menu_level = MENU_LEVEL_TOP;
+	int sub_type = SUB_MENU_VS;
 
 	while (menuing) {
 		SDL_RenderClear(pRenderer);
@@ -78,6 +86,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			if (menu_level == MENU_LEVEL_TOP) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
 					menu_level = MENU_LEVEL_SUB;
+					sub_type = menu_items[top_selection * -1].destination;
 					break;
 				}
 				if (player_info[i].check_button_trigger(BUTTON_DOWN)) {
@@ -106,13 +115,28 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 					menu_level = MENU_LEVEL_TOP;
 					break;
 				}
-				switch (menu_items[top_selection * -1].destination) {
-					default:
-					{
 
-					} break;
+				if (player_info[i].check_button_trigger(BUTTON_UP)) {
+					if (sub_menu_tables[sub_type]->selected_item == 0) {
+						sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->item_count - 1;
+					}
+					else {
+						sub_menu_tables[sub_type]->selected_item--;
+					}
+				}
+				if (player_info[i].check_button_trigger(BUTTON_DOWN)) {
+					if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->item_count - 1) {
+						sub_menu_tables[sub_type]->selected_item = 0;
+					}
+					else {
+						sub_menu_tables[sub_type]->selected_item++;
+					}
 				}
 			}
+		}
+
+		for (int i = 0; i < 5; i++) {
+			sub_menu_tables[i]->cursor->destRect.y = WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count);
 		}
 
 		//prebuffer render
@@ -123,7 +147,9 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
 
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i-5)*offset)*180)/3.14,nullptr,flip);
-		}	
+			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
+			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
+		}
 
 		//real render
 		for (int i = 0; i < 5; i++) {
@@ -133,6 +159,8 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
 
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+i*offset)*180)/3.14,nullptr,flip);
+			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
+			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
 		}		
 
 		//postbuffer render
@@ -143,6 +171,8 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
 
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i+5)*offset)*180)/3.14,nullptr,flip);
+			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
+			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
 		}	
 
 
@@ -151,6 +181,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		//printf("top_selection: %d, target theta: %f, theta: %f\n",top_selection,(top_selection * offset),theta);
 
 		SDL_RenderPresent(pRenderer);
+	}
+
+	for (int i = 0; i < 5; i++) {
+		delete sub_menu_tables[i]->cursor;
+		delete sub_menu_tables[i];
 	}
 
 	return sub_selection;
@@ -215,9 +250,34 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	return GAME_STATE_GAME;
 }
 
-MenuItem::MenuItem(){};
+MenuItem::MenuItem(){}
 MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer){
 	this->texture = loadTexture(texture_dir.c_str(),pRenderer);
 	this->destRect = {0,0,232,32};
 	this->destination = 1234567;
-};
+}
+
+Cursor::Cursor() {}
+Cursor::Cursor(SDL_Renderer* pRenderer) {
+	SDL_Rect cursor_rect;
+	cursor_rect.x = (WINDOW_WIDTH * 0.75);
+	cursor_rect.y = WINDOW_HEIGHT * 0.18;
+	cursor_rect.w = 30;
+	cursor_rect.h = 30;
+	this->destRect = cursor_rect;
+	this->texture = loadTexture("resource/ui/menu/Cursor.png", pRenderer);
+}
+
+SubMenuTable::SubMenuTable(){}
+SubMenuTable::SubMenuTable(int selection, SDL_Renderer* pRenderer) {
+	SDL_Rect sub_rect;
+	sub_rect.x = (WINDOW_WIDTH * 0.75) - 40;
+	sub_rect.y = WINDOW_HEIGHT * 0.1;
+	sub_rect.w = WINDOW_WIDTH * 0.25;
+	sub_rect.h = WINDOW_HEIGHT * 0.75;
+	this->destRect = sub_rect;
+	this->texture = loadTexture("resource/ui/menu/SubMenu.png", pRenderer);
+	this->selection = selection;
+	this->cursor = new Cursor(pRenderer);
+	selected_item = 0;
+}

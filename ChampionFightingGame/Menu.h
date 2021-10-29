@@ -19,3 +19,26 @@ public:
     MenuItem();
     MenuItem(string texture_dir, SDL_Renderer *pRenderer);
 };
+
+class Cursor {
+public:
+    SDL_Texture* texture;
+    SDL_Rect destRect;
+    int pos_y;
+
+    Cursor();
+    Cursor(SDL_Renderer* pRenderer);
+};
+
+class SubMenuTable {
+public:
+    SDL_Texture* texture;
+    SDL_Rect destRect;
+    int selection;
+    int selected_item;
+    int item_count;
+    Cursor *cursor;
+
+    SubMenuTable();
+    SubMenuTable(int selection, SDL_Renderer* pRenderer);
+};

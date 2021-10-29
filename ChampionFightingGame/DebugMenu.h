@@ -3,5 +3,5 @@
 #include <SDL_ttf.h>
 #include <string>
 #include "PlayerInfo.h"
-int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]);
+int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate);
 SDL_Texture *newFontTexture(std::string text, SDL_Renderer *pRenderer, TTF_Font *font);

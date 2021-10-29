@@ -10,7 +10,7 @@
 extern u32 tick;
 extern u32 tok;
 
-int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
 	const Uint8* keyboard_state;
 	int select = 0;
 	std::ostringstream lastString;
@@ -33,8 +33,8 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 	SDL_Color color = { 255, 255, 255 };
 
-	option_surfaces[0] = 280;
-	lastString << "Menu Call [" << GAME_STATE_DEBUG_MENU << "] 'SPACE' or 'ENTER' to select";
+	option_surfaces[0] = 400;
+	lastString << "Menu Call [" << gamestate << "] 'SPACE' or 'ENTER' to select";
 	option_texts[0] = newFontTexture(lastString.str(), pRenderer, font);
 
 	option_surfaces[1] = 50;

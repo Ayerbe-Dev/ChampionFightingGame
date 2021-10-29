@@ -84,6 +84,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			}
 
 			if (menu_level == MENU_LEVEL_TOP) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+					menuing = false;
+					sub_selection = GAME_STATE_DEBUG_MENU;
+				}
+
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
 					menu_level = MENU_LEVEL_SUB;
 					sub_type = menu_items[top_selection * -1].destination;

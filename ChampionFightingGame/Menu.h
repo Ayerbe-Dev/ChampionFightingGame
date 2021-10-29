@@ -9,6 +9,7 @@
 
 int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]);
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]);
+int get_sub_selection(int top_selection, int sub_selection);
 
 class MenuItem{
 public:

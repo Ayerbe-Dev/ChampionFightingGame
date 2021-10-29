@@ -116,6 +116,10 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			}
 
 			if (menu_level == MENU_LEVEL_SUB) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+					menuing = false;
+					break;
+				}
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
 					menu_level = MENU_LEVEL_TOP;
 					break;
@@ -137,6 +141,8 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 						sub_menu_tables[sub_type]->selected_item++;
 					}
 				}
+
+				sub_selection = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
 			}
 		}
 
@@ -194,6 +200,78 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	}
 
 	return sub_selection;
+}
+
+int get_sub_selection(int top_selection, int sub_selection) {
+	int ret = GAME_STATE_DEBUG_MENU;
+	switch (top_selection) {
+		case(SUB_MENU_ONLINE): {
+			switch (sub_selection) {
+				case (SUB_ONLINE_LOBBY): {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+				default: {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+			}
+		} break;
+		case(SUB_MENU_SINGLEPLAYER): {
+			switch (sub_selection) {
+				case (SUB_SINGLEPLAYER_STORY): {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+				case (SUB_SINGLEPLAYER_ARCADE): {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+				case (SUB_SINGLEPLAYER_TRAINING): {
+					ret = GAME_STATE_GAME;
+				} break;
+				default: {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+			}
+		} break;
+		case(SUB_MENU_VS): {
+			switch (sub_selection) {
+				case(SUB_VS_PVP): {
+					ret = GAME_STATE_CHARA_SELECT;
+				} break;
+				case(SUB_VS_PVC): {
+					ret = GAME_STATE_CHARA_SELECT;
+				} break;
+				case(SUB_VS_TOURNAMENT): {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+				default: {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+			}
+		} break;
+		case(SUB_MENU_OPTIONS): {
+			switch (sub_selection) {
+				case (SUB_OPTIONS_CONTROLS): {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+				default: {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+			}
+		} break;
+		case(SUB_MENU_EXTRAS): {
+			switch (sub_selection) {
+				case (SUB_EXTRAS_SOUND_TEST): {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+				case (SUB_EXTRAS_GALLERY): {
+					ret = GAME_STATE_DEBUG_MENU;
+				}
+				default: {
+					ret = GAME_STATE_DEBUG_MENU;
+				} break;
+			}
+		} break;
+	}
+	return ret;
 }
 
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {

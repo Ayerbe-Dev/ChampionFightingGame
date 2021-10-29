@@ -78,6 +78,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 				selection --;
 			} else {
 				selection = 0;
+				theta += 5*offset;
 			}
 		}
 
@@ -87,10 +88,22 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 				selection ++;
 			} else {
 				selection = -4;
+				theta -= 5*offset;
 			}
 			
 		}
 
+		//prebuffer render
+		for (int i = 1; i < 5; i++) {
+			menu_items[i].destRect.x = int(magnitude*cos(theta+(i-5)*offset));
+			menu_items[i].destRect.y = int(magnitude*sin(theta+(i-5)*offset)) + WINDOW_HEIGHT/2;
+
+			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
+
+			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i-5)*offset)*180)/3.14,nullptr,flip);
+		}	
+
+		//real render
 		for (int i = 0; i < 5; i++) {
 			menu_items[i].destRect.x = int(magnitude*cos(theta+i*offset));
 			menu_items[i].destRect.y = int(magnitude*sin(theta+i*offset)) + WINDOW_HEIGHT/2;
@@ -99,6 +112,16 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+i*offset)*180)/3.14,nullptr,flip);
 		}		
+
+		//postbuffer render
+		for (int i = 0; i < 3; i++) {
+			menu_items[i].destRect.x = int(magnitude*cos(theta+(i+5)*offset));
+			menu_items[i].destRect.y = int(magnitude*sin(theta+(i+5)*offset)) + WINDOW_HEIGHT/2;
+
+			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
+
+			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i+5)*offset)*180)/3.14,nullptr,flip);
+		}	
 
 
 		theta += ((selection * offset) - theta) / 16;

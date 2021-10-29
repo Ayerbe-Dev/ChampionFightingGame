@@ -9,7 +9,8 @@ struct Animation {
 	std::string path;
 	int length;
 	int faf;
-	bool force_center;
+	int force_center;
+	int move_dir;
 
 	Animation();
 };

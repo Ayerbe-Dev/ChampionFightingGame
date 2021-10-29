@@ -158,7 +158,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				timer.ClockMode = !timer.ClockMode;
 			}
 			if (!debug) {
-				tickOnceFighter(fighter_instance[i]);
+				fighter_instance[i]->fighter_main();
 			}
 			else if (i == 0) {
 				if (debugger.check_button_on(BUTTON_DEBUG_PICK_1)) {
@@ -170,8 +170,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 					(&player_info[0])->update_buttons(keyboard_state);
 					(&player_info[1])->update_buttons(keyboard_state);
-					tickOnceFighter(fighter_instance[0]);
-					tickOnceFighter(fighter_instance[1]);
+					fighter_instance[0]->fighter_main();
+					fighter_instance[1]->fighter_main();
 					timer.Tick();
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
@@ -193,30 +193,31 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 					fighter_instance[i]->facing_right = false;
 					flip = SDL_FLIP_HORIZONTAL;
 				}
-				else {
+				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x) {
 					fighter_instance[i]->facing_dir = 1.0;
 					fighter_instance[i]->facing_right = true;
+				}
+				else { //This is incredibly rare but yes, it is possible for both players to have the exact same X coord
+					if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[!i]->situation_kind == CHARA_SITUATION_GROUND) {
+						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
+						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
+						fighter_instance[i]->add_pos(-1.0, 0);
+						fighter_instance[i]->facing_dir = 1.0;
+						fighter_instance[i]->facing_right = true;
+						fighter_instance[!i]->add_pos(1.0, 0);
+						fighter_instance[!i]->facing_dir = -1.0;
+						fighter_instance[!i]->facing_right = false;
+						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+					}
 				}
 			}
 			else if (!fighter_instance[i]->facing_right) {
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 
-			SDL_Rect render_pos;
-			render_pos.x = fighter_instance[i]->pos.getRenderCoodrinateXAnim();
-			render_pos.y = fighter_instance[i]->pos.getRenderCoodrinateYAnim();
-			int width;
-			int sprite_width = 0;
-			int height;
-			SDL_QueryTexture(fighter_instance[i]->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
-			render_pos.w = (width / (fighter_instance[i]->anim_kind->length + 1));
-			if (!fighter_instance[i]->facing_right) {
-				if (fighter_instance[i]->anim_kind->force_center && !fighter_instance[i]->chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] && !fighter_instance[i]->chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM]) {
-					SDL_QueryTexture(fighter_instance[i]->base_texture, NULL, NULL, &sprite_width, NULL);
-					render_pos.x -= (render_pos.w - sprite_width);
-				}
-			}
-			render_pos.h = height;
+			SDL_Rect render_pos = getRenderPos(fighter_instance[i], fighter_instance[i]->chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER]);
+			
 			const double angle = (const double)fighter_instance[i]->angle;
 			int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0) {
@@ -260,15 +261,26 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		//Camera things
 		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY(), debugger.zoom);
 
-		for (int i = 0; i < 2; i++) {
-			player_indicator[i].indicator_rect = SDL_Rect{
+		//The tag system doesn't play nice with the render offsets I've been working on, we can reimplement it later but for now it's easier to just not think about
+
+/*		for (int i = 0; i < 2; i++) {
+			if (fighter_instance[i]->anim_kind->move_dir) {
+				player_indicator[i].indicator_rect = SDL_Rect{
+				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() - fighter_instance[i]->get_param_float(fighter_instance[i]->anim_kind->name + "_move_offset", fighter_instance[i]->unique_param_table) * fighter_instance[i]->facing_dir + 20),
+				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
+				30,
+				30 };
+				SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
+			}
+			else {
+				player_indicator[i].indicator_rect = SDL_Rect{
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() + 20),
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
 				30,
-				30
-			};
-			SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
-		}
+				30};
+				SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
+			}
+		}*/
 
 		SDL_SetRenderTarget(pRenderer, nullptr);
 
@@ -303,133 +315,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	delete fighter_instance_accessor;
 
 	return next_state;
-}
-
-void tickOnceFighter(FighterInstance* fighter_instance) {
-	/*
-				   _.-,
-			  _ .-'  / .._
-		   .-:'/ - - \:::::-.
-		 .::: '  e e  ' '-::::.
-		::::'(    ^    )_.::::::
-	   ::::.' '.  o   '.::::'.'/_
-   .  :::.'       -  .::::'_   _.:
- .-''---' .'|      .::::'   '''::::
-'. ..-:::'  |    .::::'        ::::
- '.' ::::    \ .::::'          ::::
-	  ::::   .::::'           ::::
-	   ::::.::::'._          ::::
-		::::::' /  '-      .::::
-		 '::::-/__    __.-::::'
-		   '-::::::::::::::-'
-			   '''::::'''
-	 */
-	fighter_instance->create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-
-	fighter_instance->prevpos = fighter_instance->pos;
-
-	if (fighter_instance->canStep()) {
-		fighter_instance->stepAnimation();
-	}
-
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		if (fighter_instance->projectile_objects[i]->id != -1) {
-			tickOnceProjectile(fighter_instance->projectile_objects[i]);
-		}
-	}
-	
-	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM]) {
-	}
-	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM]) {
-		fighter_instance->add_pos((getFrame(fighter_instance->render_frame, fighter_instance->anim_kind).w / 2) / fighter_instance->anim_kind->length * fighter_instance->facing_dir * -1, 0);
-	}
-	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM]) {
-		fighter_instance->add_pos(0, (getFrame(fighter_instance->render_frame, fighter_instance->anim_kind).h / 2) / fighter_instance->anim_kind->length);
-	}
-	if (fighter_instance->chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM]) {
-		fighter_instance->add_pos(0, (getFrame(fighter_instance->render_frame, fighter_instance->anim_kind).h / 2) / fighter_instance->anim_kind->length * -1);
-	}
-
-	fighter_instance->playoutStatus();
-
-	fighter_instance->create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-	FighterInstance* that = fighter_instance->fighter_instance_accessor->fighter_instance[!fighter_instance->id];
-	if (fighter_instance->situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND
-	&& !fighter_instance->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && !that->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP]) {
-		if (is_collide(fighter_instance->jostle_box, that->jostle_box)) {
-			fighter_instance->add_pos(fighter_instance->get_param_float("jostle_walk_b_speed") * -1 * fighter_instance->facing_dir, 0.0);
-		}
-	}
-
-	fighter_instance->processInput();
-
-	fighter_instance->prev_stick_dir = fighter_instance->get_stick_dir();
-
-	decrease_common_fighter_variables(fighter_instance);
-
-	if (fighter_instance->chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] == 0 && fighter_instance->status_kind != CHARA_STATUS_KNOCKDOWN) {
-		fighter_instance->chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
-	}
-
-	int width;
-	int height;
-	SDL_QueryTexture(fighter_instance->base_texture, NULL, NULL, &width, &height);
-	fighter_instance->pos.x_spr_offset = width / 2;
-	fighter_instance->pos.y_spr_offset = height;
-
-	fighter_instance->update_hitbox_pos();
-	fighter_instance->update_grabbox_pos();
-	fighter_instance->update_hurtbox_pos();
-	if (fighter_instance->chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
-		if (fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
-			if (fighter_instance->situation_kind == CHARA_SITUATION_GROUND) {
-				if (!fighter_instance->add_pos(fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir * -1, 0)) {
-					fighter_instance->fighter_instance_accessor->fighter_instance[!fighter_instance->id]->add_pos(fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir / 2, 0);
-					//Note to self: Never try to use the FighterInstanceAccessor outside of a class method again, holy shit this is disgusting
-				}
-			}
-			else {
-				fighter_instance->add_pos(fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * fighter_instance->facing_dir * -1, fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME]);
-			}
-		}
-	}
-	else {
-		fighter_instance->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
-	}
-	for (int i = 0; i < 10; i++) {
-		if (fighter_instance->hitboxes[i].id != -1 && fighter_instance->hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
-			fighter_instance->chara_flag[CHARA_FLAG_HAS_ATTACK] = true;
-			fighter_instance->chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = true;
-			break;
-		}
-		else {
-			fighter_instance->chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
-		}
-	}
-	fighter_instance->create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-}
-
-void tickOnceProjectile(ProjectileInstance* projectile_instance) {
-	projectile_instance->prevpos = projectile_instance->pos;
-
-	if (projectile_instance->canStep()) {
-		projectile_instance->stepAnimation();
-	}
-
-	projectile_instance->playoutStatus();
-
-	decrease_common_projectile_variables(projectile_instance);
-	projectile_instance->tickOnceProjectileUnique();
-
-	int width;
-	int height;
-	SDL_QueryTexture(projectile_instance->base_texture, NULL, NULL, &width, &height);
-	projectile_instance->pos.x_spr_offset = width / 2;
-	projectile_instance->pos.y_spr_offset = height;
-
-	projectile_instance->update_hitbox_pos(false);
-	projectile_instance->update_grabbox_pos();
-	projectile_instance->update_hurtbox_pos();
 }
 
 void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Renderer* renderer, bool visualize_boxes, bool check) {
@@ -1340,4 +1225,27 @@ FighterInstance* IObject::get_fighter() {
 
 ProjectileInstance* IObject::get_projectile() {
 	return projectile_instance;
+}
+
+SDL_Rect getRenderPos(FighterInstance* fighter_instance, bool force_center) {
+	SDL_Rect render_pos;
+	if (force_center) {
+		render_pos.x = fighter_instance->pos.getRenderCoodrinateX();
+	}
+	else {
+		render_pos.x = fighter_instance->pos.getRenderCoodrinateXAnim();
+	}
+	render_pos.y = fighter_instance->pos.getRenderCoodrinateYAnim();
+	int width;
+	int sprite_width = 0;
+	int height;
+	SDL_QueryTexture(fighter_instance->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
+	render_pos.w = (width / (fighter_instance->anim_kind->length + 1));
+	if (!fighter_instance->facing_right && force_center) {
+		SDL_QueryTexture(fighter_instance->base_texture, NULL, NULL, &sprite_width, NULL);
+		render_pos.x -= (render_pos.w - sprite_width);
+	}
+	render_pos.h = height;
+
+	return render_pos;
 }

@@ -272,7 +272,7 @@ void Roy::loadRoyACMD() {
 			new_hitbox(1, 50, 5, 1.2, 1, 0, GameCoordinate{ -5,70 }, GameCoordinate{ 60, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true);
 		}
 		if (is_excute_wait(2)) {
-			new_hitbox(2, 60, 10, 1.2, 1, 0, GameCoordinate{ 50,70 }, GameCoordinate{ 70, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 20, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true);
+			new_hitbox(2, 60, 10, 1.2, 1, 0, GameCoordinate{ 50,70 }, GameCoordinate{ 70, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 20, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_CRUMPLE, HIT_STATUS_CRUMPLE, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true);
 		}
 		if (is_excute_wait(3)) {
 			clear_hitbox_all();
@@ -311,7 +311,7 @@ void Roy::loadRoyACMD() {
 	});
 	script("crouch_hp", [this]() {
 		if (is_excute_frame(9)) {
-			new_hitbox(1, 50, 5, 1.2, 1, 0, GameCoordinate{ 25,75 }, GameCoordinate{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NONE, 14.0, 0.0, 0.0, 1.0, true);
+			new_hitbox(1, 50, 5, 1.2, 1, 0, GameCoordinate{ 25,75 }, GameCoordinate{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NONE, 14.0, 0.0, 0.0, 1.0, true);
 		}
 	});
 	script("crouch_lk", [this]() {
@@ -359,7 +359,9 @@ void Roy::loadRoyACMD() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = -60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -370,7 +372,9 @@ void Roy::loadRoyACMD() {
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = 60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -391,8 +395,9 @@ void Roy::loadRoyACMD() {
 	});
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ -60, 0 }, 5);
-			change_opponent_anim("stand_hitstun_m", 2);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = -60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
@@ -402,7 +407,9 @@ void Roy::loadRoyACMD() {
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			set_opponent_offset(GameCoordinate{ 60, 0 }, 5);
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = 60;
+			chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+			set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}

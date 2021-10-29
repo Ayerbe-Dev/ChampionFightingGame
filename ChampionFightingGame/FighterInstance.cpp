@@ -16,6 +16,126 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info
 	superInit(0, renderer);
 }
 
+void FighterInstance::fighter_main() {
+	/*
+				   _.-,
+			  _ .-'  / .._
+		   .-:'/ - - \:::::-.
+		 .::: '  e e  ' '-::::.
+		::::'(    ^    )_.::::::
+	   ::::.' '.  o   '.::::'.'/_
+   .  :::.'       -  .::::'_   _.:
+ .-''---' .'|      .::::'   '''::::
+'. ..-:::'  |    .::::'        ::::
+ '.' ::::    \ .::::'          ::::
+	  ::::   .::::'           ::::
+	   ::::.::::'._          ::::
+		::::::' /  '-      .::::
+		 '::::-/__    __.-::::'
+		   '-::::::::::::::-'
+			   '''::::'''
+	 */
+	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+
+	prevpos = pos;
+
+	if (canStep()) {
+		stepAnimation();
+	}
+
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		if (projectile_objects[i]->id != -1) {
+			projectile_objects[i]->projectile_main();
+		}
+	}
+
+	if (anim_kind->move_dir != 0) {
+		if (!add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0), true) {
+			/*
+			if we need to modify a player's position and the game is saying that the position is invalid, the render position won't be
+			compensated properly. In this situation, manually changing the render position every frame to look stationary would be a nightmare, so
+			we'll just switch to a stationary version of the animation. If no such animation exists, nothing changes, which probably means it wasn't
+			enough of a problem to be worth taking a look at.
+			*/
+			if (pos.x > 0) {
+				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
+			}
+			else {
+				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = pos.x;
+			}
+			if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
+				chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = true;
+			}
+		}
+		if (anim_kind->force_center == 1) {
+			chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = false;
+		}
+	}
+
+	if (chara_flag[CHARA_FLAG_STATIONARY_ANIMATION]) {
+		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", unique_param_table), 0);
+	}
+
+	playoutStatus();
+
+
+	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
+	if (situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND
+	&& !chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && !that->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP]) {
+		if (is_collide(jostle_box, that->jostle_box)) {
+			add_pos(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0);
+		}
+	}
+
+	processInput();
+
+	prev_stick_dir = get_stick_dir();
+
+	decrease_common_fighter_variables(this);
+
+	if (chara_int[CHARA_INT_KNOCKDOWN_TECH_WINDOW] == 0 && status_kind != CHARA_STATUS_KNOCKDOWN) {
+		chara_int[CHARA_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
+	}
+
+	int width;
+	int height;
+	SDL_QueryTexture(base_texture, NULL, NULL, &width, &height);
+	pos.x_spr_offset = width / 2;
+	pos.y_spr_offset = height;
+
+	update_hitbox_pos();
+	update_grabbox_pos();
+	update_hurtbox_pos();
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0) {
+		if (chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
+			if (situation_kind == CHARA_SITUATION_GROUND) {
+				if (!add_pos(chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0)) {
+					fighter_instance_accessor->fighter_instance[!id]->add_pos(chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir / 2, 0);
+					//Note to self: Never try to use the FighterInstanceAccessor outside of a class method again, holy shit this is disgusting
+				}
+			}
+			else {
+				add_pos(chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME]);
+			}
+		}
+	}
+	else {
+		chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
+	}
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1 && hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
+			chara_flag[CHARA_FLAG_HAS_ATTACK] = true;
+			chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = true;
+			break;
+		}
+		else {
+			chara_flag[CHARA_FLAG_HAS_ATTACK] = false;
+		}
+	}
+	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+}
+
 void FighterInstance::create_jostle_rect(GameCoordinate anchor, GameCoordinate offset) {
 	anchor.x = ((anchor.x + (pos.x * facing_dir)) * facing_dir) + WINDOW_WIDTH / 2;
 	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - pos.y;
@@ -81,13 +201,15 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	string frame_count;
 	string faf;
 	string force_center;
+	string move_dir;
 	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path >> frame_count >> faf >> force_center;
+		anim_list >> path >> frame_count >> faf >> force_center >> move_dir;
 		animation_table[i].name = ymlChopString(name);
 		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
 		animation_table[i].faf = ymlChopInt(faf);
-		animation_table[i].force_center = (bool)ymlChopInt(force_center);
+		animation_table[i].force_center = ymlChopInt(force_center);
+		animation_table[i].move_dir = ymlChopInt(move_dir);
 		loadAnimation(&animation_table[i], renderer);
 	}
 	anim_list.close();
@@ -630,26 +752,53 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 
 //Position
 
-bool FighterInstance::add_pos(float x, float y) {
+bool FighterInstance::add_pos(float x, float y, bool prev) {
+	GameCoordinate prevpos = pos;
 	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
 	bool ret = true;
 	bool opponent_right = pos.x > that->pos.x;
 	pos.x += x;
 	pos.y += y;
 	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
-		pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
+		if (prev) {
+			pos.x = prevpos.x;
+		}
+		else {
+			pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
+		}
+		if (get_param_bool("has_wallbounce") && facing_right && status_kind == CHARA_STATUS_JUMP) {
+			chara_float[CHARA_FLOAT_CURRENT_X_SPEED] *= -1;
+		}
 		ret = false;
 	}
 	if (pos.x - pos.x_spr_offset / 2 < WINDOW_WIDTH / -2) {
-		pos.x = WINDOW_WIDTH / -2 + pos.x_spr_offset / 2;
+		if (prev) {
+			pos.x = prevpos.x;
+		}
+		else {
+			pos.x = WINDOW_WIDTH / -2 + pos.x_spr_offset / 2;
+		}
+		if (get_param_bool("has_wallbounce") && !facing_right && status_kind == CHARA_STATUS_JUMP) {
+			chara_float[CHARA_FLOAT_CURRENT_X_SPEED] *= -1;
+		}
 		ret = false;
 	}
 	if (pos.y < 0) {
-		pos.y = 0;
+		if (prev) {
+			pos.y = prevpos.y;
+		}
+		else {
+			pos.y = 0;
+		}
 		ret = false;
 	}
 	if (pos.y > WINDOW_HEIGHT) {
-		pos.y = WINDOW_HEIGHT;
+		if (prev) {
+			pos.y = prevpos.y;
+		}
+		else {
+			pos.y = WINDOW_HEIGHT;
+		}
 		ret = false;
 	}
 	float opponent_x = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
@@ -668,26 +817,47 @@ bool FighterInstance::add_pos(float x, float y) {
 	return ret;
 }
 
-bool FighterInstance::set_pos(float x, float y) {
+bool FighterInstance::set_pos(float x, float y, bool prev) {
+	GameCoordinate prevpos = pos;
 	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
 	bool ret = true;
 	bool opponent_right = pos.x > that->pos.x;
 	pos.x = x;
 	pos.y = y;
 	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
-		pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
+		if (prev) {
+			pos.x = prevpos.x;
+		}
+		else {
+			pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
+		}
 		ret = false;
 	}
 	if (pos.x - pos.x_spr_offset / 2 < WINDOW_WIDTH / -2) {
-		pos.x = WINDOW_WIDTH / -2 + pos.x_spr_offset / 2;
+		if (prev) {
+			pos.x = prevpos.x;
+		}
+		else {
+			pos.x = WINDOW_WIDTH / -2 + pos.x_spr_offset / 2;
+		}
 		ret = false;
 	}
 	if (pos.y < 0) {
-		pos.y = 0;
+		if (prev) {
+			pos.y = prevpos.y;
+		}
+		else {
+			pos.y = 0;
+		}
 		ret = false;
 	}
 	if (pos.y > WINDOW_HEIGHT) {
-		pos.y = WINDOW_HEIGHT;
+		if (prev) {
+			pos.y = prevpos.y;
+		}
+		else {
+			pos.y = WINDOW_HEIGHT;
+		}		
 		ret = false;
 	}
 	float opponent_x = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
@@ -721,7 +891,23 @@ void FighterInstance::set_opponent_offset(GameCoordinate offset, int frames) {
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
 }
 
+void FighterInstance::set_opponent_offset(GameCoordinate offset) {
+	GameCoordinate new_offset;
+	int frames = fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES];
+	new_offset.x = this->pos.x + (offset.x * facing_dir);
+	new_offset.y = this->pos.y + offset.y;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] =
+		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / frames;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] =
+		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / frames;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = new_offset.x;
+	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
+}
+
 void FighterInstance::change_opponent_status(u32 status_kind) {
+	if ((this->status_kind == CHARA_STATUS_THROW || this->status_kind == CHARA_STATUS_THROW_AIR) && status_kind == CHARA_STATUS_THROWN) {
+		chara_flag[CHARA_FLAG_THREW_OPPONENT] = true;
+	}
 	fighter_instance_accessor->fighter_instance[!id]->change_status(status_kind);
 }
 
@@ -814,7 +1000,7 @@ void FighterInstance::reenter_last_anim() {
 	startAnimation(prev_anim_kind);
 }
 
-void FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
+bool FighterInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
@@ -839,10 +1025,29 @@ void FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 
 			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
-			return;
+			return true;
 		}
 	}
 	cout << "Invalid Animation '" << animation_name << "'" << endl;
+	return false;
+}
+
+bool FighterInstance::change_anim_inherit_attributes(string animation_name, bool verbose, bool continue_script) {
+	int anim_to_use = -1;
+	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
+		if (animation_table[i].name == animation_name) {
+			if (!continue_script) {
+				set_current_move_script(animation_name);
+
+			}			
+			startAnimation(&animation_table[i]);
+			return true;
+		}
+	}
+	if (verbose) {
+		cout << "Invalid Animation '" << animation_name << "'" << endl;
+	}
+	return false;
 }
 
 void FighterInstance::startAnimation(Animation* animation) {
@@ -852,12 +1057,8 @@ void FighterInstance::startAnimation(Animation* animation) {
 	int width;
 	int height;
 	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
-	if (anim_kind->force_center) {
-		pos.x_anim_offset = pos.x_spr_offset;
-	}
-	else {
-		pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
-	}
+	chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = (anim_kind->force_center != 0);
+	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
 	pos.y_anim_offset = height;
 	frame_rect = getFrame(frame, anim_kind);
 }
@@ -914,56 +1115,6 @@ bool FighterInstance::beginning_hitlag(int frames) {
 bool FighterInstance::ending_hitlag(int frames) {
 	return chara_int[CHARA_INT_HITLAG_FRAMES] - frames <= 0 && chara_int[CHARA_INT_HITLAG_FRAMES] != 0;
 }
-
-void FighterInstance::sync_pos_with_animation(int direction) {
-	int width;
-	int height;
-	SDL_QueryTexture(anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
-	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
-	int x_move = 0;
-	int y_move = 0;
-	if (direction == 9) {
-		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = true;
-		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = true;
-	}
-	if (direction == 8) {
-		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = true;
-	}
-	if (direction == 7) {
-		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
-		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = true;
-	}
-	if (direction == 6) {
-		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = true;
-	}
-	if (direction == 4) {
-		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
-	}
-	if (direction == 3) {
-		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = true;
-		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = true;
-	}
-	if (direction == 2) {
-		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = true;
-	}
-	if (direction == 1) {
-		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = true;
-		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = true;
-	}
-	if (chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM]) {
-		x_move = getFrame(render_frame, anim_kind).w / 4 * facing_dir;
-	}
-	if (chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM]) {
-		x_move = getFrame(render_frame, anim_kind).w / -2 * facing_dir;
-	}
-	if (chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM]) {
-		y_move = getFrame(render_frame, anim_kind).h / 2;
-	}
-	if (chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM]) {
-		y_move = getFrame(render_frame, anim_kind).h / -2;
-	}
-	add_pos(x_move, y_move);
-}
  
 //Status
 
@@ -976,10 +1127,7 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
-		chara_flag[CHARA_FLAG_MOVE_FORWARD_WITH_ANIM] = false;
-		chara_flag[CHARA_FLAG_MOVE_BACK_WITH_ANIM] = false;
-		chara_flag[CHARA_FLAG_MOVE_UP_WITH_ANIM] = false;
-		chara_flag[CHARA_FLAG_MOVE_DOWN_WITH_ANIM] = false;
+		chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -1712,6 +1860,9 @@ void FighterInstance::enter_status_grab() {
 void FighterInstance::exit_status_grab() {}
 
 void FighterInstance::status_throw() {
+	if (!chara_flag[CHARA_FLAG_THREW_OPPONENT]) {
+		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] });
+	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
 		return;
@@ -1724,16 +1875,23 @@ void FighterInstance::status_throw() {
 }
 
 void FighterInstance::enter_status_throw() {
+	chara_flag[CHARA_FLAG_THREW_OPPONENT] = false;
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
 	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
 		change_anim("throw_b", 2);
 	}
 	else {
 		change_anim("throw_f", 2);
 	}
+	add_pos(get_param_float(anim_kind->name + "_move_offset", unique_param_table) * facing_dir, 0);
 }
 
 void FighterInstance::exit_status_throw() {
-
+	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+	if (anim_kind->name == "throw_b") {
+		facing_right = !facing_right;
+		facing_dir *= -1;
+	}
 }
 
 void FighterInstance::status_grab_air() {
@@ -1760,6 +1918,9 @@ void FighterInstance::enter_status_grab_air() {
 void FighterInstance::exit_status_grab_air() {}
 
 void FighterInstance::status_throw_air() {
+	if (!chara_flag[CHARA_FLAG_THREW_OPPONENT]) {
+		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] });
+	}
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
 		situation_kind = CHARA_SITUATION_GROUND;
@@ -1788,18 +1949,25 @@ void FighterInstance::status_throw_air() {
 }
 
 void FighterInstance::enter_status_throw_air() {
+	chara_flag[CHARA_FLAG_THREW_OPPONENT] = false;
 	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
 		change_anim("throw_b_air", 2);
 	}
 	else {
 		change_anim("throw_f_air", 2);
 	}
+	add_pos(get_param_float(anim_kind->name + "_move_offset", unique_param_table) * facing_dir, 0);
 }
 
-void FighterInstance::exit_status_throw_air() {}
+void FighterInstance::exit_status_throw_air() {
+	if (anim_kind->name == "throw_b_air") {
+		facing_dir *= -1;
+		facing_right = !facing_right;
+	}
+}
 
 void FighterInstance::status_grabbed() {
-	if (chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] != 0 || chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] != 0) {
+	if (chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] != 0 && chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] != 0) {
 		if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
 			add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
 			chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
@@ -2162,6 +2330,13 @@ void FighterInstance::status_landing() {
 }
 
 void FighterInstance::enter_status_landing() {
+	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
+	if (that->pos.x - that->pos.x_spr_offset / 2 == WINDOW_WIDTH / -2 && pos.x - pos.x_spr_offset / 2 == WINDOW_WIDTH / -2) {
+		that->pos.x += 20;
+	}
+	if (that->pos.x + that->pos.x_spr_offset / 2 == WINDOW_WIDTH / 2 && pos.x + pos.x_spr_offset / 2 == WINDOW_WIDTH / 2) {
+		that->pos.x -= 20;
+	}
 	chara_int[CHARA_INT_LANDING_LAG] = 2;
 	change_anim("landing", -1, chara_int[CHARA_INT_LANDING_LAG]);
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0;

@@ -9,8 +9,6 @@
 
 int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]);
 
-void tickOnceFighter(FighterInstance* fighter_instance);
-void tickOnceProjectile(ProjectileInstance* projectile_instance);
 void decrease_common_fighter_variables(FighterInstance* fighter_instance);
 void decrease_common_projectile_variables(ProjectileInstance* projectile_instance);
 void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer* renderer, bool visualize_boxes, bool check);
@@ -23,6 +21,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 bool can_counterhit(FighterInstance* defender, Hitbox* hitbox);
 int get_damage_status(int hit_status, int situation_kind);
 void cleanup(IObject* p1, IObject* p2);
+SDL_Rect getRenderPos(FighterInstance* fighter_instance, bool force_center);
 
 class IObject {
 public:

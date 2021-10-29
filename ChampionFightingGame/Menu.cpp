@@ -19,11 +19,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 	MenuItem menu_items[5];
 	SubMenuTable *sub_menu_tables[5];
-	menu_items[0] = MenuItem{"resource\\ui\\menu\\Online.png",pRenderer};
-	menu_items[1] = MenuItem{"resource\\ui\\menu\\SinglePlayer.png",pRenderer};
-	menu_items[2] = MenuItem{"resource\\ui\\menu\\VS.png",pRenderer};
-	menu_items[3] = MenuItem{"resource\\ui\\menu\\Options.png",pRenderer};
-	menu_items[4] = MenuItem{"resource\\ui\\menu\\Extras.png",pRenderer};
+	menu_items[0] = MenuItem{"resource/ui/menu/main/Online.png",pRenderer};
+	menu_items[1] = MenuItem{"resource/ui/menu/main/SinglePlayer.png",pRenderer};
+	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer};
+	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png",pRenderer};
+	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png",pRenderer};
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].destination = i;
 		sub_menu_tables[i] = new SubMenuTable(i, pRenderer);
@@ -265,7 +265,7 @@ Cursor::Cursor(SDL_Renderer* pRenderer) {
 	cursor_rect.w = 30;
 	cursor_rect.h = 30;
 	this->destRect = cursor_rect;
-	this->texture = loadTexture("resource/ui/menu/Cursor.png", pRenderer);
+	this->texture = loadTexture("resource/ui/menu/main/Cursor.png", pRenderer);
 }
 
 SubMenuTable::SubMenuTable(){}
@@ -276,7 +276,7 @@ SubMenuTable::SubMenuTable(int selection, SDL_Renderer* pRenderer) {
 	sub_rect.w = WINDOW_WIDTH * 0.25;
 	sub_rect.h = WINDOW_HEIGHT * 0.75;
 	this->destRect = sub_rect;
-	this->texture = loadTexture("resource/ui/menu/SubMenu.png", pRenderer);
+	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png", pRenderer);
 	this->selection = selection;
 	this->cursor = new Cursor(pRenderer);
 	selected_item = 0;

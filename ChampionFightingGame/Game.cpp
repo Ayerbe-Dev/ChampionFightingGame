@@ -1040,6 +1040,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 bool can_counterhit(FighterInstance* defender, Hitbox* hitbox) {
 	if (defender->status_kind == CHARA_STATUS_HITSTUN_PARRY) {
 		hitbox->scale = -5;
+		return true;
 	}
 	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL
 	|| (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));

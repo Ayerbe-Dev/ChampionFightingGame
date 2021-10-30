@@ -17,8 +17,11 @@ public:
     SDL_Texture* texture;
     SDL_Rect destRect;
 
+    SDL_Texture* texture_description;
+    SDL_Rect destRect_description;
+
     MenuItem();
-    MenuItem(string texture_dir, SDL_Renderer *pRenderer);
+    MenuItem(string texture_dir, SDL_Renderer *pRenderer, string texture_description_dir  = "resource\\ui\\menu\\main\\missingno.png");
 };
 
 class Cursor {

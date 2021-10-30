@@ -13,6 +13,7 @@ extern int WINDOW_WIDTH;
 extern int WINDOW_HEIGHT;
 
 int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+
 	bool menuing = true;
 	
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -21,9 +22,9 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 	MenuItem menu_items[5];
 	SubMenuTable *sub_menu_tables[5];
-	menu_items[0] = MenuItem{"resource/ui/menu/main/Online.png",pRenderer};
+	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png",pRenderer);
 	menu_items[1] = MenuItem{"resource/ui/menu/main/SinglePlayer.png",pRenderer};
-	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer};
+	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer, "resource\\ui\\menu\\main\\vsimg.png"};
 	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png",pRenderer};
 	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png",pRenderer};
 	for (int i = 0; i < 5; i++) {
@@ -184,9 +185,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		}
 
 
-		theta += ((top_selection * offset) - theta) / 16;
+		theta += ((top_selection * offset) - theta) / 16; 
 
 		//printf("top_selection: %d, target theta: %f, theta: %f\n",top_selection,(top_selection * offset),theta);
+
+		SDL_RenderCopy(pRenderer,menu_items[top_selection*-1].texture_description,nullptr,&menu_items[top_selection*-1].destRect_description);
 
 		SDL_RenderPresent(pRenderer);
 	}
@@ -331,10 +334,12 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 }
 
 MenuItem::MenuItem(){}
-MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer){
+MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer, string texture_description_dir){
 	this->texture = loadTexture(texture_dir.c_str(),pRenderer);
 	this->destRect = {0,0,232,32};
 	this->destination = 1234567;
+	this->texture_description = loadTexture(texture_description_dir.c_str(),pRenderer);
+	this->destRect_description = {0,0,520,720};
 }
 
 Cursor::Cursor() {}

@@ -4,8 +4,8 @@ using namespace std;
 #include <algorithm> //std::min
 #include "utils.h"
 #include <SDL_image.h>
-extern int WINDOW_WIDTH;
-extern int WINDOW_HEIGHT;
+
+
 
 int clamp(int min, int value, int max) {
 	if (min <= max)	{
@@ -129,7 +129,7 @@ int scale_x(int val) {
 	if (val == 0) {
 		return 0;
 	}
-	int scale_factor = DEFAULT_WINDOW_WIDTH / val;
+	int scale_factor = WINDOW_WIDTH / val;
 	return (WINDOW_WIDTH / scale_factor);
 }
 
@@ -137,6 +137,6 @@ int scale_y(int val) {
 	if (val == 0) {
 		return 0;
 	}
-	int scale_factor = DEFAULT_WINDOW_HEIGHT / val;
+	int scale_factor = WINDOW_HEIGHT / val;
 	return (WINDOW_HEIGHT / scale_factor);
 }

@@ -1,6 +1,6 @@
 #include "UI.h"
-extern int WINDOW_WIDTH;
-extern int WINDOW_HEIGHT;
+
+
 
 HealthBar::HealthBar() {}
 HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) {

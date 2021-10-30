@@ -9,8 +9,8 @@ extern u32 frame_advance_entry_ms;
 extern u32 tick;
 extern u32 tok;
 extern int error_render;
-extern int WINDOW_WIDTH;
-extern int WINDOW_HEIGHT;
+
+
 
 int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
 
@@ -28,7 +28,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	MenuItem menu_items[5];
 	SubMenuTable *sub_menu_tables[5];
 	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png",pRenderer);
-	menu_items[1] = MenuItem{"resource/ui/menu/main/SinglePlayer.png",pRenderer};
+	menu_items[1] = MenuItem{"resource/ui/menu/main/Solo.png",pRenderer};
 	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer, "resource\\ui\\menu\\main\\vsimg.png"};
 	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png",pRenderer};
 	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png",pRenderer};
@@ -37,15 +37,32 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		sub_menu_tables[i] = new SubMenuTable(i, pRenderer);
 	}
 	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
 	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Story.png", pRenderer);
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Arcade.png", pRenderer);
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Training.png", pRenderer);
 	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/PlayerVsPlayer.png", pRenderer);
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/PlayerVsCPU.png", pRenderer);
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
 	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
 	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
 	SDL_Rect garborect = {0,0,232,32};
 
 	float theta = 0;
-	float offset = 3.14/16;
-	float magnitude = DEFAULT_WINDOW_WIDTH/2;  //this is about 45 degrees
+	float offset = 3.14/13;
+	float magnitude = WINDOW_WIDTH/2;  //this is about 45 degrees
 	int top_selection = -2;
 	int sub_selection = GAME_STATE_GAME;
 	int menu_level = MENU_LEVEL_TOP;
@@ -80,13 +97,9 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
-				WINDOW_WIDTH = DEFAULT_WINDOW_HEIGHT;
-				WINDOW_HEIGHT = DEFAULT_WINDOW_HEIGHT;
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-				WINDOW_WIDTH = 1920;
-				WINDOW_HEIGHT = 1080;
 			}
 		}
 
@@ -163,6 +176,12 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 		for (int i = 0; i < 5; i++) {
 			sub_menu_tables[i]->cursor->destRect.y = WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count);
+			for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
+				sub_menu_tables[i]->sub_option_rect[i2].x = WINDOW_WIDTH * 0.78;
+				sub_menu_tables[i]->sub_option_rect[i2].y = WINDOW_HEIGHT * 0.18 + (i2 * 300 / sub_menu_tables[i]->item_count);
+				sub_menu_tables[i]->sub_option_rect[i2].w = 200;
+				sub_menu_tables[i]->sub_option_rect[i2].h = 32;
+			}
 		}
 
 		//prebuffer render
@@ -181,6 +200,9 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+i*offset)*180)/3.14,nullptr,flip);
 			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
 			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
+			for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
+				SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
+			}
 		}		
 
 		//postbuffer render

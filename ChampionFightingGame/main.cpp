@@ -17,8 +17,6 @@
 using namespace std;
 int error_render;
 int registered_controllers[2] = {-1, -1};
-int WINDOW_WIDTH = DEFAULT_WINDOW_WIDTH;
-int WINDOW_HEIGHT = DEFAULT_WINDOW_HEIGHT;
 
 Uint32 tick;
 Uint32 tok;
@@ -37,8 +35,6 @@ int main() {
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
 	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP */ );
-//	WINDOW_WIDTH = 1920;
-//	WINDOW_HEIGHT = 1080;
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);

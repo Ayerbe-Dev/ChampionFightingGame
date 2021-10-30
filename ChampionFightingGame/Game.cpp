@@ -28,8 +28,8 @@
 extern bool debug;
 extern u32 tick;
 extern u32 tok;
-extern int WINDOW_WIDTH;
-extern int WINDOW_HEIGHT;
+
+
 
 int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
 	bool gaming = true;
@@ -120,13 +120,9 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
-				WINDOW_WIDTH = DEFAULT_WINDOW_HEIGHT;
-				WINDOW_HEIGHT = DEFAULT_WINDOW_HEIGHT;
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-				WINDOW_WIDTH = 1920;
-				WINDOW_HEIGHT = 1080;
 			}
 		}
 

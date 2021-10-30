@@ -42,6 +42,9 @@ public:
     int selected_item;
     int item_count;
     Cursor *cursor;
+  
+    SDL_Texture* sub_option_text[5];
+    SDL_Rect sub_option_rect[5]{ SDL_Rect{0, 0, 0, 0} };
 
     SubMenuTable();
     SubMenuTable(int selection, SDL_Renderer* pRenderer);

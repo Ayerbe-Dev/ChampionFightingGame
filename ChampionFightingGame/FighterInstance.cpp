@@ -6,8 +6,8 @@
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
-extern int WINDOW_WIDTH;
-extern int WINDOW_HEIGHT;
+
+
 
 FighterInstance::FighterInstance() {}
 

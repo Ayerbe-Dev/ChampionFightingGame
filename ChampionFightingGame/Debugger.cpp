@@ -1,4 +1,6 @@
 #include "debugger.h"
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_ENABLE].mapping = SDL_SCANCODE_LSHIFT;

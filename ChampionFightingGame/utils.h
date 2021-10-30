@@ -16,8 +16,8 @@ typedef unsigned long long u64;
 #define global_variable static
 #define internal static
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define DEFAULT_WINDOW_WIDTH 1280
+#define DEFAULT_WINDOW_HEIGHT 720
 
 #define TICK_RATE_S 60
 #define TICK_RATE_MS 1000 / TICK_RATE_S
@@ -61,10 +61,10 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 
 enum
 {
-	GAME_STATE_CLOSE,
 	GAME_STATE_GAME,
 	GAME_STATE_MENU,
 	GAME_STATE_CHARA_SELECT,
+	GAME_STATE_CLOSE,
 	GAME_STATE_DEBUG_MENU,
 
 	GAME_STATE_MAX,

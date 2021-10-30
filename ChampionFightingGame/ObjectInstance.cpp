@@ -105,9 +105,7 @@ bool ObjectInstance::is_excute_wait(int frames) {
 			ret = true;
 		}
 	}
-	else {
-		last_excute_frame = frame;
-	}
+	last_excute_frame += frames;
 
 	return ret;
 }

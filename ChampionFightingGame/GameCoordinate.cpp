@@ -1,5 +1,7 @@
 #include "GameCoordinate.h"
 #include "utils.h"
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 GameCoordinate::GameCoordinate()
 {

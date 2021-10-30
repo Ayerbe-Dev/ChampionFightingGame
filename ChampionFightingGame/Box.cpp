@@ -1,6 +1,8 @@
 #include "Box.h"
 #include "ObjectInstance.h"
 #include "utils.h"
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 Hitbox::Hitbox() {
 	this->id = -1;

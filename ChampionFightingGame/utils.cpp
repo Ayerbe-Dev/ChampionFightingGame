@@ -4,6 +4,8 @@ using namespace std;
 #include <algorithm> //std::min
 #include "utils.h"
 #include <SDL_image.h>
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 int clamp(int min, int value, int max) {
 	if (min <= max)	{

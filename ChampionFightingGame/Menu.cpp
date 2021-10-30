@@ -9,6 +9,8 @@ extern u32 frame_advance_entry_ms;
 extern u32 tick;
 extern u32 tok;
 extern int error_render;
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
 	bool menuing = true;
@@ -70,13 +72,18 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
+				WINDOW_WIDTH = DEFAULT_WINDOW_HEIGHT;
+				WINDOW_HEIGHT = DEFAULT_WINDOW_HEIGHT;
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				WINDOW_WIDTH = 1920;
+				WINDOW_HEIGHT = 1080;
 			}
 		}
 
 		for (int i = 0; i < 2; i++) {
+			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
 				menuing = false;
@@ -155,19 +162,13 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			menu_items[i].destRect.x = int(magnitude*cos(theta+(i-5)*offset));
 			menu_items[i].destRect.y = int(magnitude*sin(theta+(i-5)*offset)) + WINDOW_HEIGHT/2;
 
-			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
-
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i-5)*offset)*180)/3.14,nullptr,flip);
-			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
-			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
 		}
 
 		//real render
 		for (int i = 0; i < 5; i++) {
 			menu_items[i].destRect.x = int(magnitude*cos(theta+i*offset));
 			menu_items[i].destRect.y = int(magnitude*sin(theta+i*offset)) + WINDOW_HEIGHT/2;
-
-			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
 
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+i*offset)*180)/3.14,nullptr,flip);
 			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
@@ -177,14 +178,10 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		//postbuffer render
 		for (int i = 0; i < 3; i++) {
 			menu_items[i].destRect.x = int(magnitude*cos(theta+(i+5)*offset));
-			menu_items[i].destRect.y = int(magnitude*sin(theta+(i+5)*offset)) + WINDOW_HEIGHT/2;
-
-			//cout << i << " " << menu_items[i].destRect.x << " "<< menu_items[i].destRect.y << endl;
+			menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
 
 			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i+5)*offset)*180)/3.14,nullptr,flip);
-			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
-			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
-		}	
+		}
 
 
 		theta += ((top_selection * offset) - theta) / 16;
@@ -354,7 +351,7 @@ Cursor::Cursor(SDL_Renderer* pRenderer) {
 SubMenuTable::SubMenuTable(){}
 SubMenuTable::SubMenuTable(int selection, SDL_Renderer* pRenderer) {
 	SDL_Rect sub_rect;
-	sub_rect.x = (WINDOW_WIDTH * 0.75) - 40;
+	sub_rect.x = (WINDOW_WIDTH * 0.72);
 	sub_rect.y = WINDOW_HEIGHT * 0.1;
 	sub_rect.w = WINDOW_WIDTH * 0.25;
 	sub_rect.h = WINDOW_HEIGHT * 0.75;

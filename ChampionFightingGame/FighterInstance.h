@@ -55,6 +55,7 @@ public:
 
 	//Child Class Entry Points
 	virtual bool specific_ground_status_act() { return false; };
+	virtual bool specific_air_status_act() { return false; };
 
 	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset);
 
@@ -79,6 +80,7 @@ public:
 	int get_stick_dir();
 	int get_flick_dir();
 	int get_special_input(int special_kind, u32 button, int charge_frames = 0);
+	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind);
 
 
 	//Position

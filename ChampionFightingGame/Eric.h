@@ -35,6 +35,9 @@ public:
 	bool eric_flag[CHARA_ERIC_FLAG_MAX];
 	
 	bool specific_ground_status_act() override;
+	bool specific_air_status_act() override;
+
+	bool specific_status_attack() override;
 	
 	//Statuses
 	void enter_status_dash() override;

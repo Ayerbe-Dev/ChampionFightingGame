@@ -17,6 +17,8 @@
 using namespace std;
 int error_render;
 int registered_controllers[2] = {-1, -1};
+int WINDOW_WIDTH = DEFAULT_WINDOW_WIDTH;
+int WINDOW_HEIGHT = DEFAULT_WINDOW_HEIGHT;
 
 Uint32 tick;
 Uint32 tok;

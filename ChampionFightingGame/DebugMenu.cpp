@@ -9,6 +9,8 @@
 #include "DebugMenu.h"
 extern u32 tick;
 extern u32 tok;
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
 	const Uint8* keyboard_state;
@@ -38,16 +40,16 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	option_texts[0] = newFontTexture(lastString.str(), pRenderer, font);
 
 	option_surfaces[1] = 50;
-	option_texts[1] = newFontTexture("CLOSE", pRenderer, font);
+	option_texts[1] = newFontTexture("GAME", pRenderer, font);
 
 	option_surfaces[2] = 50;
-	option_texts[2] = newFontTexture("GAME", pRenderer, font);
+	option_texts[2] = newFontTexture("MENU", pRenderer, font);
 
 	option_surfaces[3] = 60;
-	option_texts[3] = newFontTexture("MENU", pRenderer, font);
+	option_texts[3] = newFontTexture("CSS", pRenderer, font);
 
 	option_surfaces[4] = 60;
-	option_texts[4] = newFontTexture("CSS", pRenderer, font);
+	option_texts[4] = newFontTexture("CLOSE", pRenderer, font);
 
 	option_surfaces[5] = 120;
 	option_texts[5] = newFontTexture("DEBUG (this)", pRenderer, font);
@@ -89,9 +91,13 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
+				WINDOW_WIDTH = DEFAULT_WINDOW_HEIGHT;
+				WINDOW_HEIGHT = DEFAULT_WINDOW_HEIGHT;
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				WINDOW_WIDTH = 1920;
+				WINDOW_HEIGHT = 1080;
 			}
 		}
 		

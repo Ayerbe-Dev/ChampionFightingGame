@@ -23,6 +23,7 @@ public:
 	bool roy_flag[CHARA_ROY_FLAG_MAX];
 
 	bool specific_ground_status_act() override;
+	bool specific_air_status_act() override;
 
 	bool specific_status_attack() override;
 

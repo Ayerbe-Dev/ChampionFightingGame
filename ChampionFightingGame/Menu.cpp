@@ -44,7 +44,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	SDL_Rect garborect = {0,0,232,32};
 
 	float theta = 0;
-	float offset = 3.14/8;
+	float offset = 3.14/16;
 	float magnitude = DEFAULT_WINDOW_WIDTH/2;  //this is about 45 degrees
 	int top_selection = -2;
 	int sub_selection = GAME_STATE_GAME;
@@ -184,7 +184,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		}		
 
 		//postbuffer render
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 5; i++) {
 			menu_items[i].destRect.x = int(magnitude*cos(theta+(i+5)*offset));
 			menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
 

@@ -157,10 +157,26 @@ void RoyFireball::exit_status_roy_fireball_punched() {
 }
 
 void RoyFireball::status_roy_fireball_kicked() {
-
+	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
+		pos.x += get_param_float("kick_move_x_speed_l", unique_param_table) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_l", unique_param_table);
+	}
+	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
+		pos.x += get_param_float("kick_move_x_speed_m", unique_param_table) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_m", unique_param_table);
+	}
+	else {
+		pos.x += get_param_float("kick_move_x_speed_h", unique_param_table) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_h", unique_param_table);
+	}
+	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
+		change_status(PROJECTILE_STATUS_HIT);
+	}
 }
 
 void RoyFireball::enter_status_roy_fireball_kicked() {
+	pos.y -= 60.0;
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", unique_param_table);
 	change_anim("kicked");
 }
 

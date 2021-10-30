@@ -2281,6 +2281,7 @@ void FighterInstance::status_parry() {
 }
 
 void FighterInstance::enter_status_parry() {
+	chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
 	if (situation_kind == CHARA_SITUATION_AIR) {
 		change_anim("parry_air");
 	}

@@ -96,8 +96,8 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-				WINDOW_WIDTH = 1920;
-				WINDOW_HEIGHT = 1080;
+//				WINDOW_WIDTH = 1920;
+//				WINDOW_HEIGHT = 1080;
 			}
 		}
 		

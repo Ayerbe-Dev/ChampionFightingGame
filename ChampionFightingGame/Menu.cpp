@@ -14,11 +14,16 @@ extern int WINDOW_HEIGHT;
 
 int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
 
+	//neccesary for scaling
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+
 	bool menuing = true;
 	
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
+
+	SDL_Texture *bgTexture  = loadTexture("resource\\ui\\menu\\main\\funnybg.png",pRenderer);
 
 	MenuItem menu_items[5];
 	SubMenuTable *sub_menu_tables[5];
@@ -49,6 +54,8 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	while (menuing) {
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderDrawColor(pRenderer, 100, 100, 100, 255);
+		SDL_SetRenderTarget(pRenderer, pScreenTexture);
+		SDL_RenderCopy(pRenderer,bgTexture,nullptr,nullptr);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -190,7 +197,9 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		//printf("top_selection: %d, target theta: %f, theta: %f\n",top_selection,(top_selection * offset),theta);
 
 		SDL_RenderCopy(pRenderer,menu_items[top_selection*-1].texture_description,nullptr,&menu_items[top_selection*-1].destRect_description);
-
+		
+		SDL_SetRenderTarget(pRenderer, nullptr);
+		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(pRenderer);
 	}
 

@@ -587,7 +587,7 @@ int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* def
 			blocking = true;
 		}
 	}
-	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
+	if (defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
 		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == hitbox->attack_height || defender->chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
 			parrying = true;
 		}
@@ -687,7 +687,7 @@ int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstan
 			blocking = true;
 		}
 	}
-	if (defender->status_kind == CHARA_STATUS_PARRY_START && defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
+	if (defender->chara_flag[CHARA_FLAG_PARRY_ACTIVE]) {
 		if (defender->chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID || defender->chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
 			parrying = true;
 		}
@@ -821,6 +821,9 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			float prev_x = p2->pos.x;
 			p2->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
+				if (p1_hitbox->scale == -5) {
+					p1->chara_int[CHARA_INT_DAMAGE_SCALE] = -5;
+				}
 				p1->chara_float[CHARA_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->chara_float[CHARA_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
 				p2->chara_int[CHARA_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
@@ -887,6 +890,9 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			}
 			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p1, p2_hitbox)) {
+				if (p2_hitbox->scale == -5) {
+					p2->chara_int[CHARA_INT_DAMAGE_SCALE] = -5;
+				}
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
@@ -1038,8 +1044,9 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 }
 
 bool can_counterhit(FighterInstance* defender, Hitbox* hitbox) {
-	if (defender->status_kind == CHARA_STATUS_HITSTUN_PARRY) {
+	if (defender->anim_kind->name == "hitstun_parry" || defender->anim_kind->name == "hitstun_parry_air") {
 		hitbox->scale = -5;
+		return true;
 	}
 	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL
 	|| (defender->situation_kind == CHARA_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));

@@ -267,6 +267,9 @@ public:
 	virtual void roy_status_special_fireball_punch() {};
 	virtual void roy_enter_status_special_fireball_punch() {};
 	virtual void roy_exit_status_special_fireball_punch() {};
+	virtual void roy_status_special_fireball_kick() {};
+	virtual void roy_enter_status_special_fireball_kick() {};
+	virtual void roy_exit_status_special_fireball_kick() {};
 	virtual void roy_status_special_uppercut_start() {};
 	virtual void roy_enter_status_special_uppercut_start() {};
 	virtual void roy_exit_status_special_uppercut_start() {};

@@ -1697,6 +1697,7 @@ void FighterInstance::status_jump() {
 		return;
 	}
 	common_air_status_general();
+	chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > 0;
 }
 
 void FighterInstance::enter_status_jump() {
@@ -1720,6 +1721,7 @@ void FighterInstance::enter_status_jump() {
 	}
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float("jump_x_speed");
 	common_air_status_act();
+	chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = true;
 }
 
 void FighterInstance::exit_status_jump() {
@@ -1737,6 +1739,9 @@ void FighterInstance::status_fall() {
 		return;
 	}
 	common_air_status_general();
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] < 0) {
+		chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = false;
+	}
 }
 
 void FighterInstance::enter_status_fall() {
@@ -2276,6 +2281,7 @@ void FighterInstance::status_parry() {
 }
 
 void FighterInstance::enter_status_parry() {
+	chara_flag[CHARA_FLAG_PARRY_ACTIVE] = false;
 	if (situation_kind == CHARA_SITUATION_AIR) {
 		change_anim("parry_air");
 	}

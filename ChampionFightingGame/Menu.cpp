@@ -40,7 +40,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 	float theta = 0;
 	float offset = 3.14/8;
-	float magnitude = WINDOW_WIDTH/2;  //this is about 45 degrees
+	float magnitude = DEFAULT_WINDOW_WIDTH/2;  //this is about 45 degrees
 	int top_selection = -2;
 	int sub_selection = GAME_STATE_GAME;
 	int menu_level = MENU_LEVEL_TOP;

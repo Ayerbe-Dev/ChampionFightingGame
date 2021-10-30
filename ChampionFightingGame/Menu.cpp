@@ -365,10 +365,10 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 }
 
 MenuItem::MenuItem(){}
-MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer, string texture_description_dir){
+MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer, string texture_description_dir, int destination){
 	this->texture = loadTexture(texture_dir.c_str(),pRenderer);
 	this->destRect = {0,0,232,32};
-	this->destination = 1234567;
+	this->destination = destination;
 	this->texture_description = loadTexture(texture_description_dir.c_str(),pRenderer);
 	this->destRect_description = {0,0,520,720};
 }

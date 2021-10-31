@@ -14,13 +14,11 @@ extern u32 tok;
 
 
 int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
+	printf("Enter Debug Menu\n");
 	const Uint8* keyboard_state;
-	int select = 0;
 	std::ostringstream lastString;
 	SDL_Texture* option_texts[8];
-	SDL_Texture* crash_text[2];
 	int option_surfaces[8];
-	int crash_surfaces[2];
 	SDL_Rect dest;
 	bool debugging = true;
 	bool bPressedDown = false;
@@ -29,42 +27,50 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	Debugger debugger;
 	debugger = Debugger();
 
-	SDL_RenderClear(pRenderer);
+	//new
+	printf("Load Font\n");
+	TTF_Font* pFont = loadDebugFont();
+	printf("Create Debug List\n");
+	DebugList debugList = {pRenderer,pFont};
 
-	TTF_Font* font;
+	printf("Add Entry\n");
+	debugList.addEntry("beans");
+	//debugList.addEntry("refried beans");
+	//debugList.addEntry("omega beans");
+	//debugList.addEntry("kod3 beans");
+	//debugList.addEntry("OUR BEANS");
+	
+	//
 
-	font = TTF_OpenFont("FiraCode-Regular.ttf", 24);
-	if (!font) {
-		printf("Failed to load font:  %s\n", TTF_GetError());
-	}
+	// option_surfaces[0] = 400;
+	// lastString << "Menu Call [" << gamestate << "] 'SPACE' or 'ENTER' to select";
+	// option_texts[0] = newFontTexture(lastString.str(), pRenderer, font);
 
-	SDL_Color color = { 255, 255, 255 };
+	// option_surfaces[1] = 50;
+	// option_texts[1] = newFontTexture("GAME", pRenderer, font);
 
-	option_surfaces[0] = 400;
-	lastString << "Menu Call [" << gamestate << "] 'SPACE' or 'ENTER' to select";
-	option_texts[0] = newFontTexture(lastString.str(), pRenderer, font);
+	// option_surfaces[2] = 50;
+	// option_texts[2] = newFontTexture("MENU", pRenderer, font);
 
-	option_surfaces[1] = 50;
-	option_texts[1] = newFontTexture("GAME", pRenderer, font);
+	// option_surfaces[3] = 60;
+	// option_texts[3] = newFontTexture("CSS", pRenderer, font);
 
-	option_surfaces[2] = 50;
-	option_texts[2] = newFontTexture("MENU", pRenderer, font);
+	// option_surfaces[4] = 60;
+	// option_texts[4] = newFontTexture("CLOSE", pRenderer, font);
 
-	option_surfaces[3] = 60;
-	option_texts[3] = newFontTexture("CSS", pRenderer, font);
+	// option_surfaces[5] = 120;
+	// option_texts[5] = newFontTexture("DEBUG (this)", pRenderer, font);
 
-	option_surfaces[4] = 60;
-	option_texts[4] = newFontTexture("CLOSE", pRenderer, font);
+	// for (int i = 0; i < 2; i++) {
+	// 	option_surfaces[i+6] = player_info[i].crash_length;
+	// 	option_texts[i+6] = newFontTexture(player_info[i].crash_reason, pRenderer, font);
+	// }
 
-	option_surfaces[5] = 120;
-	option_texts[5] = newFontTexture("DEBUG (this)", pRenderer, font);
-
-	for (int i = 0; i < 2; i++) {
-		option_surfaces[i+6] = player_info[i].crash_length;
-		option_texts[i+6] = newFontTexture(player_info[i].crash_reason, pRenderer, font);
-	}
-
+	SDL_SetRenderTarget(pRenderer,nullptr);
 	while (debugging) {
+		SDL_RenderClear(pRenderer);
+
+
 		tok = SDL_GetTicks() - tick;
 		if (tok < TICK_RATE_MS) {
 			SDL_Delay(TICK_RATE_MS - tok);
@@ -82,18 +88,22 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			}
 		}
 
-		for (int i = 0; i <= 7; i++) {
-			dest = { 100, 26 * i, option_surfaces[i], 25 }; // I am so lazy oml
-			SDL_RenderCopy(pRenderer, option_texts[i], nullptr, &dest);
-		}
+		//rendering time
 
-		selectRect = { 0, 0, 100, 700 };
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderFillRect(pRenderer, &selectRect);
+		debugList.render();
+		
+		// for (int i = 0; i <= 7; i++) {
+		// 	dest = { 100, 26 * i, option_surfaces[i], 25 }; // I am so lazy oml
+		// 	SDL_RenderCopy(pRenderer, option_texts[i], nullptr, &dest);
+		// }
 
-		SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-		selectRect = { 75, (select + 1) * 26 + 5, 15, 15 };
-		SDL_RenderFillRect(pRenderer, &selectRect);
+		// selectRect = { 0, 0, 100, 700 };
+		// SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+		// SDL_RenderFillRect(pRenderer, &selectRect);
+
+		// SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+		// selectRect = { 75, (select + 1) * 26 + 5, 15, 15 };
+		// SDL_RenderFillRect(pRenderer, &selectRect);
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
@@ -117,13 +127,15 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
 			if ((&player_info[i])->check_button_trigger(BUTTON_DOWN)) {
-				if (select < GAME_STATE_MAX - 1) {
-					select++;
+				if (debugList.selection < GAME_STATE_MAX - 1) {
+					debugList.selection++;
+					printf("Selected: %d\n",debugList.selection);
 				}
 			}
 			if ((&player_info[i])->check_button_trigger(BUTTON_UP)) {
-				if (select > 0) {
-					select--;
+				if (debugList.selection > 0) {
+					printf("Selected: %d\n",debugList.selection);
+					debugList.selection--;
 				}
 			}
 			if ((&player_info[i])->check_button_trigger(BUTTON_START) || (&player_info[i])->check_button_trigger(BUTTON_LP)) {
@@ -137,19 +149,88 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	for (int i = 0; i <= GAME_STATE_MAX; i++) {
 		SDL_DestroyTexture(option_texts[i]);
 	}
-	return select;
+	return debugList.selection;
 }
 
-SDL_Texture* newFontTexture(std::string text, SDL_Renderer* pRenderer, TTF_Font* font) {
-	SDL_Surface* textSurface;
-	// Set color to black
-	SDL_Color color = { 255, 255, 255 };
-	textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+TTF_Font* loadDebugFont(string fontname){
+	TTF_Font* font = TTF_OpenFont(fontname.c_str(), DEBUG_MENU_FONT_SIZE);
+	if (!font) {
+		printf("Failed to load font:  %s\n", TTF_GetError());
+	}
+	return font;
+}
 
+DebugList::DebugList(){};
+DebugList::DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont){
+	this->pRenderer = pRenderer;
+	this->pFont = pFont;
+
+	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
+		printf("%d\n",i);
+		debugItems[i].preLoad(pRenderer,pFont);
+	}
+};
+
+void DebugList::addEntry(string message, int selectable){
+	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
+		if (debugItems[i].state == DEBUG_ITEM_NOT_ACTIVE){
+			
+			debugItems[i].generateTexture(message);
+			debugItems[i].destRect.y = (DEBUG_MENU_FONT_SIZE * i) + 5;
+			debugItems[i].state = DEBUG_ITEM_ACTIVE;
+			return;
+		
+		}
+	}
+}
+
+void DebugList::render(){
+	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
+		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
+			if (i == selection){
+				SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
+			} else{
+				SDL_RenderCopy(pRenderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
+			}
+		}
+	}
+}
+
+DebugItem::DebugItem(){};
+void DebugItem::preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont){
+	this->pRenderer = pRenderer;
+	this->pFont = pFont;
+};
+
+void DebugItem::generateTexture(string message){
+	//
+	int *pW, *pH;
+	SDL_Color color = { 200, 200, 0 };
+	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), color);
+	//
 	if (!textSurface) {
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+
+	printf("normal gen\n");
+	//normal
+	pTexture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+	
+	SDL_QueryTexture(pTexture,nullptr,nullptr,pW,pH);
+	printf("SDL MSG:  %s\n", TTF_GetError());
+	destRect.w = *pW;
+	destRect.h = *pH; 
+
+	
+
+	printf("alt gen\n");
+	//select
+	textSurface = TTF_RenderText_Solid(pFont, ("->"+message).c_str(), color);
+	pTextureSelect = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,pW,pH);
+	destRectSelect.w = *pW;
+	destRectSelect.h = *pH; 
+	printf("SDL MSG:  %s\n", TTF_GetError());
+
 	SDL_FreeSurface(textSurface);
-	return texture;
 }

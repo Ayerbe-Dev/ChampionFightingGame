@@ -3,7 +3,7 @@
 #include "Animation.h"
 #include <fstream>
 #include <cmath>
-#include <format>
+//#include <format>
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -1233,7 +1233,7 @@ int FighterInstance::get_launch_ticks() {
 	if (chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] == 0) {
 		player_info->crash_length = 500;
 		char buffer[51];
-		sprintf_s(buffer, "Player %d needs a gravity value on their launcher!", ((!id) + 1));
+		sprintf(buffer, "Player %d needs a gravity value on their launcher!", ((!id) + 1));
 		player_info->crash_reason = buffer;
 
 		crash_to_debug = true;

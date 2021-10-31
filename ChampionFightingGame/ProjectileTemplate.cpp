@@ -4,7 +4,7 @@
 ProjectileTemplate::ProjectileTemplate(SDL_Renderer * renderer, int id, FighterInstanceAccessor * fighter_instance_accessor) {
 	resource_dir = "resource/projectile/template";
 	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
-	load_unique_params();
+	load_params();
 	loadProjectileTemplateACMD();
 	loadProjectileTemplateStatusFunctions();
 	this->base_texture = loadTexture("resource/projectile/template/sprite/sprite.png", renderer);

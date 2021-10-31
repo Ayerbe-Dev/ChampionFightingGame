@@ -124,19 +124,3 @@ bool is_any_controller_input(SDL_GameController* controller) {
 	}
 	return false;
 }
-
-int scale_x(int val) {
-	if (val == 0) {
-		return 0;
-	}
-	int scale_factor = WINDOW_WIDTH / val;
-	return (WINDOW_WIDTH / scale_factor);
-}
-
-int scale_y(int val) {
-	if (val == 0) {
-		return 0;
-	}
-	int scale_factor = WINDOW_HEIGHT / val;
-	return (WINDOW_HEIGHT / scale_factor);
-}

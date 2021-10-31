@@ -3,6 +3,7 @@
 #include "Animation.h"
 #include <fstream>
 #include <cmath>
+#include <format>
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -88,7 +89,7 @@ void FighterInstance::fighter_main() {
 	}
 
 	if (chara_flag[CHARA_FLAG_STATIONARY_ANIMATION]) {
-		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", unique_param_table), 0, true);
+		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", param_table), 0, true);
 	}
 
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
@@ -188,7 +189,7 @@ void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 	}
 
 	load_anim_list(renderer);
-	load_params();
+	load_stats();
 	chara_float[CHARA_FLOAT_HEALTH] = get_param_float("health");
 	loadStatusFunctions();
 	pos.y = FLOOR_GAMECOORD;
@@ -797,6 +798,68 @@ bool FighterInstance::get_normal_cancel(int attack_kind, u32 button, int situati
 	}
 }
 
+//Param
+
+int FighterInstance::get_param_int_special(string param) {
+	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+		return get_param_int(param + "_l", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+		return get_param_int(param + "_m", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+		return get_param_int(param + "_h", param_table);
+	}
+	else {
+		return get_param_int(param + "_ex", param_table);
+	}
+}
+
+float FighterInstance::get_param_float_special(string param) {
+	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+		return get_param_float(param + "_l", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+		return get_param_float(param + "_m", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+		return get_param_float(param + "_h", param_table);
+	}
+	else {
+		return get_param_float(param + "_ex", param_table);
+	}
+}
+
+bool FighterInstance::get_param_bool_special(string param) {
+	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+		return get_param_bool(param + "_l", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+		return get_param_bool(param + "_m", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+		return get_param_bool(param + "_h", param_table);
+	}
+	else {
+		return get_param_bool(param + "_ex", param_table);
+	}
+}
+
+string FighterInstance::get_param_string_special(string param) {
+	if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+		return get_param_string(param + "_l", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+		return get_param_string(param + "_m", param_table);
+	}
+	else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+		return get_param_string(param + "_h", param_table);
+	}
+	else {
+		return get_param_string(param + "_ex", param_table);
+	}
+}
+
 //Position
 
 bool FighterInstance::add_pos(float x, float y, bool prev) {
@@ -1162,6 +1225,29 @@ bool FighterInstance::beginning_hitlag(int frames) {
 bool FighterInstance::ending_hitlag(int frames) {
 	return chara_int[CHARA_INT_HITLAG_FRAMES] - frames <= 0 && chara_int[CHARA_INT_HITLAG_FRAMES] != 0;
 }
+
+int FighterInstance::get_launch_ticks() {
+	if (chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] == 0) {
+		player_info->crash_length = 500;
+		char buffer[51];
+		sprintf_s(buffer, "Player %d needs a gravity value on their launcher!", ((!id) + 1));
+		player_info->crash_reason = buffer;
+
+		crash_to_debug = true;
+		return 1;
+	}
+	int airtime = 0;
+	int simp_y = pos.y; //haha simp
+	int sims_y = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
+	while (simp_y >= FLOOR_GAMECOORD) {
+		if (sims_y > chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1) {
+			sims_y -= chara_float[CHARA_FLOAT_LAUNCH_GRAVITY];
+		}
+		simp_y += sims_y;
+		airtime++;
+	}
+	return airtime;
+}
  
 //Status
 
@@ -1375,6 +1461,9 @@ bool FighterInstance::common_air_status_general() {
 			add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, 0);
 		}
 		add_pos(0, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+	}
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] < 0) {
+		chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = false;
 	}
 	return false;
 }
@@ -1764,9 +1853,6 @@ void FighterInstance::status_fall() {
 		return;
 	}
 	common_air_status_general();
-	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] < 0) {
-		chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] = false;
-	}
 }
 
 void FighterInstance::enter_status_fall() {
@@ -1960,7 +2046,7 @@ void FighterInstance::enter_status_throw() {
 	else {
 		change_anim("throw_f");
 	}
-	add_pos(get_param_float(anim_kind->name + "_move_offset", unique_param_table) * facing_dir, 0);
+	add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0);
 }
 
 void FighterInstance::exit_status_throw() {
@@ -2033,7 +2119,7 @@ void FighterInstance::enter_status_throw_air() {
 	else {
 		change_anim("throw_f_air");
 	}
-	add_pos(get_param_float(anim_kind->name + "_move_offset", unique_param_table) * facing_dir, 0);
+	add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0);
 }
 
 void FighterInstance::exit_status_throw_air() {
@@ -2360,8 +2446,8 @@ void FighterInstance::status_launch() {
 		return;
 	}
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
-		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
-			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
+		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
+			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= chara_float[CHARA_FLOAT_LAUNCH_GRAVITY];
 		}
 		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
 	}
@@ -2370,7 +2456,13 @@ void FighterInstance::status_launch() {
 void FighterInstance::enter_status_launch() {
 	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = chara_float[CHARA_FLOAT_LAUNCH_SPEED_X];
 	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = chara_float[CHARA_FLOAT_INIT_LAUNCH_SPEED];
-	change_anim("launch", -1, chara_int[CHARA_INT_HITSTUN_FRAMES]);
+	if (chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] == 0) {
+		chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = get_param_float("gravity");
+	}
+	if (chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
+		chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
+	}
+	change_anim("launch", -1, get_launch_ticks());
 }
 
 void FighterInstance::exit_status_launch() {

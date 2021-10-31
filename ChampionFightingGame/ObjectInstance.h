@@ -69,11 +69,11 @@ public:
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();
 
+	Param stat_table[PARAM_TABLE_LENGTH];
 	Param param_table[PARAM_TABLE_LENGTH];
-	Param unique_param_table[PARAM_TABLE_LENGTH];
 
+	void load_stats();
 	void load_params();
-	void load_unique_params();
 
 
 	int get_param_int(string param, Param param_table[] = {});

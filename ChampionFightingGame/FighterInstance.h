@@ -41,6 +41,7 @@ public:
 	int connected_hitbox;
 	int connected_grabbox;
 	int connected_projectile_hitbox;
+	bool crash_to_debug{ false };
 
 	void (FighterInstance::* pStatus[CHARA_STATUS_MAX])();
 	void (FighterInstance::* pEnter_status[CHARA_STATUS_MAX])();
@@ -82,6 +83,12 @@ public:
 	int get_special_input(int special_kind, u32 button, int charge_frames = 0);
 	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind);
 
+	//Param Helper Funcs
+
+	int get_param_int_special(string param);
+	float get_param_float_special(string param);
+	bool get_param_bool_special(string param);
+	string get_param_string_special(string param);
 
 	//Position
 
@@ -138,6 +145,7 @@ public:
 	void forceStepThroughHitlag();
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
+	int get_launch_ticks();
 
 	//Status
 

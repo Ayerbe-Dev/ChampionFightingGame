@@ -7,6 +7,7 @@ special_fireball_transition_frame_m 1 16
 special_fireball_transition_frame_h 1 21
 special_fireball_transition_frame_ex 1 13
 special_uppercut_transition_frame 1 9
+special_uppercut_move_frame 1 4
 special_uppercut_x_l 2 2.0
 special_uppercut_x_m 2 2.0
 special_uppercut_x_h 2 3.0
@@ -15,5 +16,11 @@ special_uppercut_init_y_l 2 15.0
 special_uppercut_init_y_m 2 20.0
 special_uppercut_init_y_h 2 25.0
 special_uppercut_init_y_ex 2 25.0
-special_uppercut_gravity 2 1.0
-special_uppercut_fall_speed 2 12.0
+special_uppercut_gravity_l 2 2.0
+special_uppercut_gravity_m 2 1.0
+special_uppercut_gravity_h 2 1.0
+special_uppercut_gravity_ex 2 1.0
+special_uppercut_fall_speed_l 2 12.0
+special_uppercut_fall_speed_m 2 12.0
+special_uppercut_fall_speed_h 2 12.0
+special_uppercut_fall_speed_ex 2 12.0

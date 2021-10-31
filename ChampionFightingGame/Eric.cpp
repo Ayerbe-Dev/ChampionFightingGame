@@ -18,7 +18,7 @@ Eric::Eric() {
 
 Eric::Eric(SDL_Renderer *renderer, int id, FighterInstanceAccessor *fighter_instance_accessor) {
 	resource_dir = "resource/chara/eric";
-	load_unique_params();
+	load_params();
 	loadEricACMD();
 	loadEricStatusFunctions();
 	set_current_move_script("default");
@@ -366,7 +366,7 @@ void Eric::loadEricACMD() {
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 40, 55 });
 		}
 		if (is_excute_wait(2)) {
-			new_hitbox(1, 0, 50, 5, 1.2, 1, GameCoordinate{ 25,55 }, GameCoordinate{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_AERIAL, 14.0, 0.0, 0.0, 1.0, true);
+			new_hitbox(1, 0, 50, 5, 1.2, 1, GameCoordinate{ 25,55 }, GameCoordinate{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 14.0, 0.0, 0.0, 1.0, true);
 		}
 		if (is_excute_wait(4)) {
 			clear_hitbox_all();

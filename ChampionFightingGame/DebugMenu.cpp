@@ -7,6 +7,7 @@
 #include <sstream>
 #include "utils.h"
 #include "DebugMenu.h"
+#include "Debugger.h"
 extern u32 tick;
 extern u32 tok;
 
@@ -16,13 +17,17 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	const Uint8* keyboard_state;
 	int select = 0;
 	std::ostringstream lastString;
-	SDL_Texture* option_texts[6];
-	int option_surfaces[6];
+	SDL_Texture* option_texts[8];
+	SDL_Texture* crash_text[2];
+	int option_surfaces[8];
+	int crash_surfaces[2];
 	SDL_Rect dest;
 	bool debugging = true;
 	bool bPressedDown = false;
 	bool bPressedUp = false;
 	SDL_Rect selectRect{ 0, 0, 100, 700 };
+	Debugger debugger;
+	debugger = Debugger();
 
 	SDL_RenderClear(pRenderer);
 
@@ -54,6 +59,11 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	option_surfaces[5] = 120;
 	option_texts[5] = newFontTexture("DEBUG (this)", pRenderer, font);
 
+	for (int i = 0; i < 2; i++) {
+		option_surfaces[i+6] = player_info[i].crash_length;
+		option_texts[i+6] = newFontTexture(player_info[i].crash_reason, pRenderer, font);
+	}
+
 	while (debugging) {
 		tok = SDL_GetTicks() - tick;
 		if (tok < TICK_RATE_MS) {
@@ -72,7 +82,7 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			}
 		}
 
-		for (int i = 0; i <= GAME_STATE_MAX; i++) {
+		for (int i = 0; i <= 7; i++) {
 			dest = { 100, 26 * i, option_surfaces[i], 25 }; // I am so lazy oml
 			SDL_RenderCopy(pRenderer, option_texts[i], nullptr, &dest);
 		}
@@ -88,13 +98,19 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 
-		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		
 		for (int i = 0; i < 2; i++) {

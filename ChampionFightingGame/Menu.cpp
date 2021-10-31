@@ -3,6 +3,7 @@
 #include "PlayerInfo.h"
 #include <SDL.h>
 #include <math.h>
+#include "Debugger.h"
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -13,7 +14,8 @@ extern int error_render;
 
 
 int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
-
+	Debugger debugger;
+	debugger = Debugger();
 	//neccesary for scaling
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -94,13 +96,19 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
-		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
 			}
 			else {
 				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
 		}
 
 		for (int i = 0; i < 2; i++) {
@@ -306,6 +314,8 @@ int get_sub_selection(int top_selection, int sub_selection) {
 }
 
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+	Debugger debugger;
+	debugger = Debugger();
 	bool chara_selecting = true;
 	
 	const Uint8* keyboard_state;
@@ -335,7 +345,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
-		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
 			}
@@ -352,6 +362,12 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			if (player_info[i].check_button_trigger(BUTTON_MP)) {
 				player_info[i].chara_kind = CHARA_KIND_ERIC;
 			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
 		}
 
 		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {

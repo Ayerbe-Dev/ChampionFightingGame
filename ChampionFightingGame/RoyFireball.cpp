@@ -4,7 +4,7 @@
 RoyFireball::RoyFireball(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
 	resource_dir = "resource/projectile/roy_fireball";
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
-	load_unique_params();
+	load_params();
 	loadRoyFireballACMD();
 	loadRoyFireballStatusFunctions();
 	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png", renderer);
@@ -124,7 +124,7 @@ void RoyFireball::status_roy_fireball_hover() {
 }
 
 void RoyFireball::enter_status_roy_fireball_hover() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time", unique_param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time", param_table);
 	change_anim("hover");
 }
 
@@ -134,13 +134,13 @@ void RoyFireball::exit_status_roy_fireball_hover() {
 
 void RoyFireball::status_roy_fireball_punched() {
 	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
-		pos.x += get_param_float("punch_move_x_speed_l", unique_param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_l", param_table) * facing_dir;
 	}
 	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
-		pos.x += get_param_float("punch_move_x_speed_m", unique_param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_m", param_table) * facing_dir;
 	}
 	else {
-		pos.x += get_param_float("punch_move_x_speed_h", unique_param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_h", param_table) * facing_dir;
 	}
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
@@ -148,7 +148,7 @@ void RoyFireball::status_roy_fireball_punched() {
 }
 
 void RoyFireball::enter_status_roy_fireball_punched() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time", unique_param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time", param_table);
 	change_anim("punched");
 }
 
@@ -158,16 +158,16 @@ void RoyFireball::exit_status_roy_fireball_punched() {
 
 void RoyFireball::status_roy_fireball_kicked() {
 	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
-		pos.x += get_param_float("kick_move_x_speed_l", unique_param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_l", unique_param_table);
+		pos.x += get_param_float("kick_move_x_speed_l", param_table) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_l", param_table);
 	}
 	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
-		pos.x += get_param_float("kick_move_x_speed_m", unique_param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_m", unique_param_table);
+		pos.x += get_param_float("kick_move_x_speed_m", param_table) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_m", param_table);
 	}
 	else {
-		pos.x += get_param_float("kick_move_x_speed_h", unique_param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_h", unique_param_table);
+		pos.x += get_param_float("kick_move_x_speed_h", param_table) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_h", param_table);
 	}
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
@@ -176,7 +176,7 @@ void RoyFireball::status_roy_fireball_kicked() {
 
 void RoyFireball::enter_status_roy_fireball_kicked() {
 	pos.y -= 60.0;
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", unique_param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", param_table);
 	change_anim("kicked");
 }
 

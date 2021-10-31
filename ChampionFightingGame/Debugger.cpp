@@ -18,6 +18,7 @@ Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_PRINT_FRAME].mapping = SDL_SCANCODE_7;
 	button_info[BUTTON_DEBUG_ZOOM_OUT].mapping = SDL_SCANCODE_8;
 	button_info[BUTTON_DEBUG_RESET].mapping = SDL_SCANCODE_9;
+	button_info[BUTTON_DEBUG_FULLSCREEN].mapping = SDL_SCANCODE_ESCAPE;
 }
 
 bool Debugger::check_button_on(u32 button) {

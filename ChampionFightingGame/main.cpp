@@ -34,7 +34,7 @@ int main() {
 		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
-	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP */ );
+	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
@@ -50,8 +50,6 @@ int main() {
 		// SDL_RenderSetScale(pRenderer,1.2,1.2);
 		// SDL_RenderGetScale(pRenderer,&testx,&testy);
 		// printf("Xs: %f Ys: %f\n\n",testx,testy);
-
-		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {
 			game_state = game_main(pRenderer, window, player_info);

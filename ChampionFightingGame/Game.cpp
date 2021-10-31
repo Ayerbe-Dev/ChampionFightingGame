@@ -121,7 +121,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
-		if (keyboard_state[SDL_SCANCODE_ESCAPE]) {
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(window, 0);
 			}
@@ -223,6 +223,11 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 
+			if (fighter_instance[i]->crash_to_debug) {
+				gaming = false;
+				next_state = GAME_STATE_DEBUG_MENU;
+			}
+
 			SDL_Rect render_pos = getRenderPos(fighter_instance[i], fighter_instance[i]->chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER]);
 			
 			const double angle = (const double)fighter_instance[i]->angle;
@@ -273,7 +278,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 /*		for (int i = 0; i < 2; i++) {
 			if (fighter_instance[i]->anim_kind->move_dir) {
 				player_indicator[i].indicator_rect = SDL_Rect{
-				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() - fighter_instance[i]->get_param_float(fighter_instance[i]->anim_kind->name + "_move_offset", fighter_instance[i]->unique_param_table) * fighter_instance[i]->facing_dir + 20),
+				(int)(fighter_instance[i]->pos.getRenderCoodrinateX() - fighter_instance[i]->get_param_float(fighter_instance[i]->anim_kind->name + "_move_offset", fighter_instance[i]->param_table) * fighter_instance[i]->facing_dir + 20),
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
 				30,
 				30 };
@@ -316,7 +321,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 
 		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
 
-		
 		SDL_RenderCopy(pRenderer, pGui, nullptr, nullptr); //render gui to window
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); //lmao help

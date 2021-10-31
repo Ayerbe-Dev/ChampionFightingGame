@@ -10,7 +10,7 @@ CharaTemplate::CharaTemplate() {
 CharaTemplate::CharaTemplate(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
 	resource_dir = "resource/chara/template";
 	superInit(id, renderer);
-	load_unique_params();
+	load_params();
 	loadCharaTemplateACMD();
 	loadCharaTemplateStatusFunctions();
 	set_current_move_script("default");

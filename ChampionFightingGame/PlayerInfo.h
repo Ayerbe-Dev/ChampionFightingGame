@@ -10,6 +10,8 @@ public:
 	Buttons button_info[BUTTON_MAX];
 	SDL_GameController* controller{ NULL };
 	u32 buffer_order[6]{ BUTTON_LP, BUTTON_MP, BUTTON_HP, BUTTON_LK, BUTTON_MK, BUTTON_HK };
+	string crash_reason{"Crash Message Goes Here"};
+	int crash_length = 300;
 
 	PlayerInfo();
 	PlayerInfo(int id);

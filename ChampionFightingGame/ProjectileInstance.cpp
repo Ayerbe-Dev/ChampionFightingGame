@@ -26,7 +26,7 @@ void ProjectileInstance::projectile_main() {
 
 void ProjectileInstance::superInit(SDL_Renderer* renderer) {
 	load_anim_list(renderer);
-	load_params();
+	load_stats();
 	loadStatusFunctions();
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
@@ -54,7 +54,7 @@ void ProjectileInstance::load_anim_list(SDL_Renderer* renderer) {
 	anim_list.close();
 }
 
-void ProjectileInstance::load_params() {
+void ProjectileInstance::load_stats() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
 
@@ -65,28 +65,28 @@ void ProjectileInstance::load_params() {
 
 	string stat;
 	for (int i = 0; stats_table >> stat; i++) {
-		param_table[i].stat = stat;
-		stats_table >> param_table[i].type;
-		switch (param_table[i].type) {
+		stat_table[i].stat = stat;
+		stats_table >> stat_table[i].type;
+		switch (stat_table[i].type) {
 			case(PARAM_TYPE_INT):
 			{
-				stats_table >> param_table[i].value_i;
+				stats_table >> stat_table[i].value_i;
 			} break;
 			case(PARAM_TYPE_FLOAT):
 			{
-				stats_table >> param_table[i].value_f;
+				stats_table >> stat_table[i].value_f;
 			} break;
 			case(PARAM_TYPE_STRING):
 			{
-				stats_table >> param_table[i].value_s;
+				stats_table >> stat_table[i].value_s;
 			} break;
 			case (PARAM_TYPE_BOOL):
 			{
-				stats_table >> param_table[i].value_b;
+				stats_table >> stat_table[i].value_b;
 			} break;
 			default:
 			{
-				stats_table >> param_table[i].value_i;
+				stats_table >> stat_table[i].value_i;
 			} break;
 		}
 	}

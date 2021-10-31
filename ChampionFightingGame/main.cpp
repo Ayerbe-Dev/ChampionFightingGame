@@ -43,7 +43,7 @@ int main() {
 
 	while (running) {
 		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); //I really hope this gets deleted after every function call... or ...   :/
-		
+		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 		//dont use this garbage lmao
 		// SDL_RenderGetScale(pRenderer,&testx,&testy);
 		// printf("Xs: %f Ys: %f\n",testx,testy);

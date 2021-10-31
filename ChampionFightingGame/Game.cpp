@@ -46,8 +46,12 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	//init stage
 	Stage stage = Stage(pRenderer, "training_room");
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_Rect camera;
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pGui = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
+
+	//SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
 
 	//init players
 	FighterInstance* fighter_instance[2];
@@ -151,6 +155,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		*/
 
 		SDL_RenderClear(pRenderer);
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 0);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
 
@@ -284,10 +289,11 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			}
 		}*/
 
-		SDL_SetRenderTarget(pRenderer, nullptr);
+		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
 
-		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr);
+		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr); //render scale to window
 
+		SDL_SetRenderTarget(pRenderer, pGui); //set target to gui layer
 		for (int i = 0; i < 2; i++) {
 			switch (i) {
 				case 0:
@@ -308,8 +314,13 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		if (!debug) timer.Tick();
 		timer.Render();
 
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-		SDL_RenderPresent(pRenderer);
+		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
+
+		
+		SDL_RenderCopy(pRenderer, pGui, nullptr, nullptr); //render gui to window
+
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); //lmao help
+		SDL_RenderPresent(pRenderer); //finalize
 	}
 
 	cleanup(p1, p2);

@@ -51,6 +51,11 @@ void FighterInstance::fighter_main() {
 		}
 	}
 
+	if (chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] != CHARA_STATUS_MAX && chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+		change_status(chara_int[CHARA_INT_BUFFER_HITLAG_STATUS], chara_flag[CHARA_FLAG_BUFFER_HITLAG_STATUS_END], chara_flag[CHARA_FLAG_BUFFER_HITLAG_STATUS_SEPARATE]);
+		chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] = CHARA_STATUS_MAX;
+	}
+
 	playoutStatus();
 
 	if (anim_kind->move_dir != 0) {
@@ -735,6 +740,7 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 			}
 			if (input_check) {
 				chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
+				chara_int[CHARA_INT_DOWN_CHARGE_FRAMES] = 0;
 				chara_int[CHARA_INT_DOWN_CHARGE_TIMER] = 0;
 			}
 		}
@@ -750,7 +756,7 @@ int FighterInstance::get_special_input(int special_kind, u32 button, int charge_
 		}
 	}
 	if (input_check) {
-		return button_check && chara_int[CHARA_INT_HITLAG_FRAMES] == 0;
+		return button_check;
 	}
 	else {
 		return SPECIAL_INPUT_NONE;
@@ -777,11 +783,13 @@ bool FighterInstance::get_normal_cancel(int attack_kind, u32 button, int situati
 		if (button == BUTTON_HK) {
 			chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HK;
 		}
-		if (situation_kind == CHARA_SITUATION_GROUND) {
-			return change_status(CHARA_STATUS_ATTACK, true, false);
-		}
-		else {
-			return change_status(CHARA_STATUS_ATTACK_AIR, true, false);
+		if (chara_int[CHARA_INT_HITLAG_FRAMES] <= BUFFER_WINDOW) {
+			if (situation_kind == CHARA_SITUATION_GROUND) {
+				return change_status_after_hitlag(CHARA_STATUS_ATTACK, true, false);
+			}
+			else {
+				return change_status_after_hitlag(CHARA_STATUS_ATTACK_AIR, true, false);
+			}
 		}
 	}
 	else {
@@ -1176,6 +1184,23 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 	}
 	else {
 		return false;
+	}
+}
+
+bool FighterInstance::change_status_after_hitlag(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+		return change_status(new_status_kind, call_end_status, require_different_status);
+	}
+	else {
+		if (new_status_kind != status_kind || !require_different_status) {
+			chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] = new_status_kind;
+			chara_flag[CHARA_FLAG_BUFFER_HITLAG_STATUS_END] = call_end_status;
+			chara_flag[CHARA_FLAG_BUFFER_HITLAG_STATUS_SEPARATE] = require_different_status;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 

@@ -673,36 +673,36 @@ void Roy::loadRoyACMD() {
 bool Roy::specific_ground_status_act() {
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 	}
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 	}
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 	}
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 	}
 
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
 		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
 	return false;
 }
@@ -719,7 +719,7 @@ bool Roy::specific_status_attack() {
 		else if (situation_kind == CHARA_SITUATION_AIR && specific_air_status_act()) {
 			return true;
 		}
-		else if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+		else {
 			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, CHARA_SITUATION_GROUND)) {
 				return true;
 			}

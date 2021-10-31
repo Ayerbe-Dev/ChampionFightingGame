@@ -142,6 +142,7 @@ public:
 	//Status
 
 	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status_after_hitlag(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	void playoutStatus();
 	bool common_ground_status_act();
 	bool common_air_status_act();

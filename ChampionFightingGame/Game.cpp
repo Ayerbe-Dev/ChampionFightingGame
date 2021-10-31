@@ -20,6 +20,8 @@
 #include "Eric.fwd.h"
 #include "Eric.h"
 #include "EricFireball.h"
+#include "Psychic.fwd.h"
+#include "Psychic.h"
 
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
@@ -43,15 +45,10 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
 
-	//init stage
-	Stage stage = Stage(pRenderer, "training_room");
-
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_Texture* pGui = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
 
-	//SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
+	//init stage
+	Stage stage = Stage(pRenderer, "training_room");
 
 	//init players
 	FighterInstance* fighter_instance[2];
@@ -99,12 +96,18 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 
 	while (gaming) {
 		//Frame delay
-
 		tok = SDL_GetTicks() - tick;
 		if (tok < TICK_RATE_MS) {
 			SDL_Delay(TICK_RATE_MS - tok);
 		}
 		tick = SDL_GetTicks();
+
+		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_Texture* pGui = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+		SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
+		
+		//yeah
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -154,7 +157,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			the content in pScreenTexture.
 		*/
 
-		SDL_RenderClear(pRenderer);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 0);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
@@ -325,6 +327,9 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(pRenderer); //finalize
+		
+		SDL_DestroyTexture(pGui); //ok it's on screen, now get that shit outta here
+		SDL_DestroyTexture(pScreenTexture);
 	}
 
 	cleanup(p1, p2);
@@ -1202,6 +1207,11 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int i
 			case (CHARA_KIND_ERIC):
 			{
 				fighter_instance = new Eric(renderer, id, fighter_instance_accessor);
+			}
+			break;
+			case (CHARA_KIND_PSYCHIC):
+			{
+				fighter_instance = new Psychic(renderer, id, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_CHARA_TEMPLATE):

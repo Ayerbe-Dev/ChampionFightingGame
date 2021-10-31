@@ -928,6 +928,9 @@ void Roy::roy_status_special_uppercut() {
 		if (is_anim_end) {
 			change_anim("special_uppercut");
 		}
+		if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+			add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
+		}
 	}
 }
 

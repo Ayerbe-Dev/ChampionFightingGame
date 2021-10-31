@@ -42,14 +42,8 @@ int main() {
 	float testx, testy;
 
 	while (running) {
-		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); //I really hope this gets deleted after every function call... or ...   :/
+		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED); //I really hope this gets deleted after every function call... or ...   :/
 		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
-		//dont use this garbage lmao
-		// SDL_RenderGetScale(pRenderer,&testx,&testy);
-		// printf("Xs: %f Ys: %f\n",testx,testy);
-		// SDL_RenderSetScale(pRenderer,1.2,1.2);
-		// SDL_RenderGetScale(pRenderer,&testx,&testy);
-		// printf("Xs: %f Ys: %f\n\n",testx,testy);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {
 			game_state = game_main(pRenderer, window, player_info);

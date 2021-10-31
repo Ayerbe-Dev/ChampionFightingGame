@@ -205,8 +205,11 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
 	if (anim_list.fail()) {
-		cerr << "Could not open anim_list! ->" << resource_dir + "/anims/anim_list.yml" <<endl;
-		exit(1);
+		player_info->crash_length = 1;
+		//If you got a crash that led you here, you messed up an anim_list. Make sure the resource_dir is properly set for the character you're
+		//trying to add?
+
+		return;
 	}
 
 	string name;

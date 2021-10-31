@@ -362,6 +362,9 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			if (player_info[i].check_button_trigger(BUTTON_MP)) {
 				player_info[i].chara_kind = CHARA_KIND_ERIC;
 			}
+			if (player_info[i].check_button_trigger(BUTTON_HP)) {
+				player_info[i].chara_kind = CHARA_KIND_PSYCHIC;
+			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;

@@ -25,7 +25,7 @@ bool debug = false;
 int main() {
 	bool running = true;
 	bool visualize_boxes = true;
-	int game_state = GAME_STATE_MENU;
+	int game_state = GAME_STATE_DEBUG_MENU;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());

@@ -1121,6 +1121,7 @@ bool FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 	prev_anim_max_ticks = max_ticks;
 	prev_anim_frame = frame;
 	prev_anim_render_frame = render_frame;
+
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
@@ -1151,7 +1152,6 @@ bool FighterInstance::change_anim_inherit_attributes(string animation_name, bool
 		if (animation_table[i].name == animation_name) {
 			if (!continue_script) {
 				set_current_move_script(animation_name);
-
 			}			
 			startAnimation(&animation_table[i]);
 			return true;
@@ -1165,7 +1165,9 @@ bool FighterInstance::change_anim_inherit_attributes(string animation_name, bool
 
 void FighterInstance::startAnimation(Animation* animation) {
 	is_anim_end = false;
-	prev_anim_kind = anim_kind;
+	if (anim_kind != animation) {
+		prev_anim_kind = anim_kind;
+	}
 	anim_kind = animation;
 	int width;
 	int height;
@@ -1297,6 +1299,7 @@ void FighterInstance::playoutStatus() {
 	if (is_status_hitstun_enable_parry()) {
 		u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
+			cout << "Prev Anim Kind: " << prev_anim_kind->name << endl;
 			if (situation_kind == CHARA_SITUATION_GROUND) {
 				change_anim("hitstun_parry", 5);
 			}
@@ -2450,15 +2453,18 @@ void FighterInstance::exit_status_launch_start() {
 }
 
 void FighterInstance::status_launch() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(CHARA_STATUS_KNOCKDOWN);
-		return;
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 1) {
+		max_ticks = ceil((float)get_launch_ticks() / (float)(anim_kind->length));
 	}
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
 			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= chara_float[CHARA_FLOAT_LAUNCH_GRAVITY];
 		}
 		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+		if (pos.y < FLOOR_GAMECOORD) {
+			change_status(CHARA_STATUS_KNOCKDOWN);
+			return;
+		}
 	}
 }
 

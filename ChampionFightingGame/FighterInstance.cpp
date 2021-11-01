@@ -1,3 +1,4 @@
+#pragma warning(disable : 4996)
 #include "FighterInstance.h"
 #include "GameCoordinate.h"
 #include "Animation.h"

@@ -4,7 +4,7 @@
 #include <string>
 #include "PlayerInfo.h"
 
-#define DEBUG_MENU_ITEMS_MAX 20
+#define DEBUG_MENU_ITEMS_MAX 50
 #define DEBUG_MENU_FONT_SIZE 24
 
 enum{
@@ -20,6 +20,8 @@ enum{
 class DebugItem{
 public:
     int state = DEBUG_ITEM_NOT_ACTIVE;
+    int selectable = DEBUG_LIST_SELECTABLE;
+    int destination = 999;
     SDL_Texture *pTexture;
     SDL_Rect destRect;
 
@@ -30,6 +32,7 @@ public:
     TTF_Font *pFont;
 
     DebugItem();
+    //~DebugItem();
     void preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont);
     void generateTexture(string message = "no message");
 };
@@ -41,8 +44,12 @@ public:
     TTF_Font *pFont;
     DebugList();
     DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont);
-    void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE);
+    //~DebugList();
+    void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();
+    void nextOption();
+    void previousOption();
+    int getDestination();
 };
 
 TTF_Font *loadDebugFont(string fontname = "FiraCode-Regular.ttf");

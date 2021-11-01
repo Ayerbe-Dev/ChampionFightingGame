@@ -34,8 +34,12 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	DebugList debugList = {pRenderer,pFont};
 
 	printf("Add Entry\n");
-	debugList.addEntry("beans");
-	//debugList.addEntry("refried beans");
+	debugList.addEntry("Opt1");
+	debugList.addEntry("Opt2");
+	debugList.addEntry("Opt3");
+	debugList.addEntry("Opt4");
+	debugList.addEntry("Opt5");
+	debugList.addEntry("Opt6");
 	//debugList.addEntry("omega beans");
 	//debugList.addEntry("kod3 beans");
 	//debugList.addEntry("OUR BEANS");
@@ -176,7 +180,8 @@ void DebugList::addEntry(string message, int selectable){
 		if (debugItems[i].state == DEBUG_ITEM_NOT_ACTIVE){
 			
 			debugItems[i].generateTexture(message);
-			debugItems[i].destRect.y = (DEBUG_MENU_FONT_SIZE * i) + 5;
+			debugItems[i].destRect.y = ((DEBUG_MENU_FONT_SIZE+5) * i) + 10;
+			debugItems[i].destRect.x = 0;
 			debugItems[i].state = DEBUG_ITEM_ACTIVE;
 			return;
 		
@@ -185,13 +190,15 @@ void DebugList::addEntry(string message, int selectable){
 }
 
 void DebugList::render(){
+	//printf("New Cycle\n");
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
-			if (i == selection){
-				SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
-			} else{
-				SDL_RenderCopy(pRenderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
-			}
+				//printf("drawing:%d, with properites %d,%d,%d,%d\n",i,debugItems[i].destRect.x,debugItems[i].destRect.y,debugItems[i].destRect.w,debugItems[i].destRect.h);
+				if(i == selection){
+					SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
+				} else {
+					SDL_RenderCopy(pRenderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
+				}
 		}
 	}
 }
@@ -204,33 +211,41 @@ void DebugItem::preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont){
 
 void DebugItem::generateTexture(string message){
 	//
-	int *pW, *pH;
-	SDL_Color color = { 200, 200, 0 };
-	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), color);
+	SDL_Color sky = { 200, 200, 255 };
+	SDL_Color red = { 255, 200, 200 };
+	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), sky);
 	//
 	if (!textSurface) {
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
 
-	printf("normal gen\n");
+	printf("Generating Normal...\n");
+	
 	//normal
 	pTexture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
 	
-	SDL_QueryTexture(pTexture,nullptr,nullptr,pW,pH);
-	printf("SDL MSG:  %s\n", TTF_GetError());
-	destRect.w = *pW;
-	destRect.h = *pH; 
+	SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
+	printf("%s\n", TTF_GetError());
 
-	
+	if(abs(destRect.w) > 1280){
+		printf("WARNING: width exceeds window! real w %d\n", destRect.w);
+	} else {
+		printf("Normal Gen Success real w %d\n", destRect.w);
+	}
+	//
 
-	printf("alt gen\n");
 	//select
-	textSurface = TTF_RenderText_Solid(pFont, ("->"+message).c_str(), color);
+	textSurface = TTF_RenderText_Solid(pFont, message.c_str(), red);
 	pTextureSelect = SDL_CreateTextureFromSurface(pRenderer, textSurface);
-	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,pW,pH);
-	destRectSelect.w = *pW;
-	destRectSelect.h = *pH; 
-	printf("SDL MSG:  %s\n", TTF_GetError());
+	
+	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,&destRectSelect.w,&destRectSelect.h);
+	printf("%s\n", TTF_GetError());
+
+	if(abs(destRect.w) > 1280){
+		printf("WARNING: altwidth exceeds window! real w %d\n", destRectSelect.w);
+	} else {
+		printf("Alt Gen Success real w %d\n", destRectSelect.w);
+	}
 
 	SDL_FreeSurface(textSurface);
 }

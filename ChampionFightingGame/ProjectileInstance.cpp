@@ -25,6 +25,7 @@ void ProjectileInstance::projectile_main() {
 }
 
 void ProjectileInstance::superInit(SDL_Renderer* renderer) {
+	this->renderer = renderer;
 	load_anim_list(renderer);
 	load_stats();
 	loadStatusFunctions();

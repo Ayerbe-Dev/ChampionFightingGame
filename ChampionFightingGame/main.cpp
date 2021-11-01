@@ -17,6 +17,8 @@
 using namespace std;
 int error_render;
 int registered_controllers[2] = {-1, -1};
+TTF_Font* fonts[FONT_COUNT];
+string font_names[FONT_COUNT] = { "FiraCode-Regular.ttf" };
 
 Uint32 tick;
 Uint32 tok;
@@ -38,6 +40,13 @@ int main() {
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
+
+	for (int i = 0; i < FONT_COUNT; i++) {
+		fonts[i] = TTF_OpenFont(font_names[i].c_str(), 24);
+		if (!fonts[i]) {
+			cout << "Font at index " << i << " failed!" << endl;
+		}
+	}
 
 	float testx, testy;
 

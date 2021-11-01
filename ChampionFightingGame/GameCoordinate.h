@@ -1,4 +1,5 @@
 #pragma once
+#include "GameCoordinate.fwd.h"
 #include "utils.h"
 class GameCoordinate
 {

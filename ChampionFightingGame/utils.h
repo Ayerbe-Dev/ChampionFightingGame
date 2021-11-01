@@ -4,6 +4,9 @@ using namespace std;
 #include <fstream>
 #include "SDL.h"
 #include <sstream>
+#include <SDL_ttf.h>
+#include "GameCoordinate.fwd.h"
+#include "GameCoordinate.h"
 
 typedef char i8;
 typedef unsigned char u8;
@@ -36,6 +39,7 @@ typedef unsigned long long u64;
 #define JUMP_FOLLOW_THRESHOLD 300
 #define CAMERA_MAX_ZOOM_OUT 1000
 #define CAMERA_MAX_ZOOM_IN 800
+#define FONT_COUNT 2
 #define BUFFER_WINDOW 3
 #define MOTION_SPECIAL_TIMER 11
 
@@ -50,6 +54,9 @@ bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture *loadTexture(const char *file_path, SDL_Renderer *renderer);
 bool is_any_controller_input(SDL_GameController* controller);
 string Filter(const string& to, const string& remove);
+void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, float scale_mul = 1.0, int r = 0, int g = 0, int b = 0, int a = 255);
+void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, float scale_mul = 1.0, int r = 0, int g = 0, int b = 0, int a = 255);
+TTF_Font* find_font(string font_name);
 
 /*
 	updateCamera(); 

@@ -17,6 +17,8 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info
 	this->player_info = player_info;
 	// runs on creation of instance;
 		// no it doesn't
+			// wait actually yes it does
+	this->renderer = renderer;
 	superInit(0, renderer);
 }
 
@@ -39,7 +41,7 @@ void FighterInstance::fighter_main() {
 		   '-::::::::::::::-'
 			   '''::::'''
 	 */
-	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+	create_jostle_rect(GameCoordinate{ -20, 25 }, GameCoordinate{ 20, 0 });
 
 	prevpos = pos;
 
@@ -80,7 +82,7 @@ void FighterInstance::fighter_main() {
 	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
 	if (situation_kind == CHARA_SITUATION_GROUND && that->situation_kind == CHARA_SITUATION_GROUND
 	&& !chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] && !that->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP]) {
-		if (is_collide(jostle_box, that->jostle_box)) {
+		if (is_collide(jostle_box, that->jostle_box) && that->status_kind != CHARA_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
 			add_pos(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0);
 		}
 	}
@@ -2137,7 +2139,20 @@ void FighterInstance::enter_status_throw_air() {
 	else {
 		change_anim("throw_f_air");
 	}
-	add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0);
+	if (!add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0, true)) {
+		if (pos.x > 0) {
+			chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
+		}
+		else {
+			chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
+		}
+		if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
+			chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = true;
+		}
+		else {
+			chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
+		}
+	}
 }
 
 void FighterInstance::exit_status_throw_air() {

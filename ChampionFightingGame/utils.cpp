@@ -4,7 +4,8 @@ using namespace std;
 #include <algorithm> //std::min
 #include "utils.h"
 #include <SDL_image.h>
-
+extern TTF_Font* fonts[FONT_COUNT];
+extern string font_names[FONT_COUNT];
 
 
 int clamp(int min, int value, int max) {
@@ -134,4 +135,81 @@ string Filter(const string& to, const string& remove) {
 	ret2 = to.substr(cont_index, to.length());
 
 	return ret + ret2;
+}
+
+void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, float scale_mul, int r, int g, int b, int a) {
+	TTF_Font* font = find_font(font_name);
+	SDL_Color color = { r,g,b,a };
+	cout << r << endl;
+	cout << g << endl;
+	cout << b << endl;
+	cout << a << endl;
+
+	if (!font) {
+		cout << "Font: " << font_name << " not found!" << endl;
+	}
+	
+	SDL_Surface* text_surface = TTF_RenderText_Blended(font, text.c_str(), color);
+
+	if (!text_surface) {
+		printf("Failed to render text:  %s\n", TTF_GetError());
+	}
+
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	SDL_FreeSurface(text_surface);
+
+	int text_width, text_height;
+	SDL_QueryTexture(texture, nullptr, nullptr, &text_width, &text_height);
+	text_width *= scale_mul;
+	text_height *= scale_mul;
+
+	SDL_Rect render_rect;
+	render_rect.x = pos.x + (WINDOW_WIDTH / 2);
+	render_rect.y = (WINDOW_HEIGHT + pos.y) * -1;
+	render_rect.w = text_width;
+	render_rect.h = text_height;
+
+	SDL_RenderCopy(renderer, texture, NULL, &render_rect);
+	SDL_DestroyTexture(texture);
+}
+
+void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, float scale_mul, int r, int g, int b, int a) {
+	TTF_Font* font = find_font(font_name);
+	SDL_Color color = { r,g,b,a };
+	SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), color);
+
+	if (!text_surface) {
+		printf("Failed to render text:  %s\n", TTF_GetError());
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	SDL_FreeSurface(text_surface);
+
+	int text_width, text_height;
+	SDL_QueryTexture(texture, nullptr, nullptr, &text_width, &text_height);
+	text_width *= scale_mul;
+	text_height *= scale_mul;
+
+	SDL_Rect render_rect;
+	render_rect.x = x_pos;
+	render_rect.y = y_pos;
+	render_rect.w = text_width;
+	render_rect.h = text_height;
+
+	cout << render_rect.x << endl;
+	cout << render_rect.y << endl;
+	cout << render_rect.w << endl;
+	cout << render_rect.h << endl;
+
+	SDL_RenderCopy(renderer, texture, NULL, &render_rect);
+	SDL_DestroyTexture(texture);
+}
+
+TTF_Font* find_font(string font_name) {
+	for (int i = 0; i < FONT_COUNT; i++) {
+		if (font_names[i] == font_name) {
+			return fonts[i];
+		}
+	}
+	return fonts[0];
 }

@@ -2,8 +2,8 @@ throw_f_move_offset 2 0
 throw_b_move_offset 2 -220
 throw_f_air_move_offset 2 0
 throw_b_air_move_offset 2 -220
-throw_b_stationary_frames 1 15
-throw_b_air_stationary_frames 1 15
+throw_b_stationary_frames 1 20
+throw_b_air_stationary_frames 1 20
 special_uppercut_transition_frame 1 9
 special_uppercut_move_frame 1 4
 special_uppercut_x_l 2 2.0

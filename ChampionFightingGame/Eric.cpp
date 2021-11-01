@@ -647,6 +647,12 @@ void Eric::loadEricACMD() {
 			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+			}
 			else {
 				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
@@ -724,24 +730,30 @@ bool Eric::specific_status_attack() {
 		else if (situation_kind == CHARA_SITUATION_AIR && specific_air_status_act()) {
 			return true;
 		}
-		else if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
-			if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP && check_button_input(BUTTON_MP)) {
-				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MP;
-				if (situation_kind == CHARA_SITUATION_GROUND) {
-					return change_status(CHARA_STATUS_ATTACK, true, false);
-				}
-				else {
-					return change_status(CHARA_STATUS_ATTACK_AIR, true, false);
-				}
+		else {
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, CHARA_SITUATION_GROUND)) {
+				return true;
 			}
-			if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP && check_button_input(BUTTON_HP)) {
-				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HP;
-				if (situation_kind == CHARA_SITUATION_GROUND) {
-					return change_status(CHARA_STATUS_ATTACK, true, false);
-				}
-				else {
-					return change_status(CHARA_STATUS_ATTACK_AIR, true, false);
-				}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, CHARA_SITUATION_GROUND)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, CHARA_SITUATION_GROUND)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_HP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_LP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, CHARA_SITUATION_AIR)) {
+				return true;
 			}
 		}
 	}
@@ -751,9 +763,6 @@ bool Eric::specific_status_attack() {
 void Eric::enter_status_dash() {
 	change_anim("dash_f", 2);
 	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
 }
 
 void Eric::exit_status_dash() {
@@ -764,9 +773,6 @@ void Eric::exit_status_dash() {
 void Eric::enter_status_dashb() {
 	change_anim("dash_b", 2);
 	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
 }
 
 void Eric::exit_status_dashb() {

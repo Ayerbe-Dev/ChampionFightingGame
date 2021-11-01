@@ -32,7 +32,6 @@ extern u32 tick;
 extern u32 tok;
 
 
-
 int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
 	bool gaming = true;
 	bool visualize_boxes = true;
@@ -298,10 +297,12 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		}*/
 
 		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
-
 		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr); //render scale to window
 
 		SDL_SetRenderTarget(pRenderer, pGui); //set target to gui layer
+
+		draw_text(pRenderer, "FiraCode-Regular.ttf", "lmao get fucked p2", WINDOW_WIDTH / 2, WINDOW_HEIGHT); //idk where to put this lol
+		
 		for (int i = 0; i < 2; i++) {
 			switch (i) {
 				case 0:

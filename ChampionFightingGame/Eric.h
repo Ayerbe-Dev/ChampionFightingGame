@@ -34,6 +34,8 @@ public:
 	float eric_float[CHARA_ERIC_FLOAT_MAX];
 	bool eric_flag[CHARA_ERIC_FLAG_MAX];
 	
+	void chara_main() override;
+
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;
 

@@ -55,6 +55,9 @@ public:
 	void fighter_main();
 
 	//Child Class Entry Points
+
+	virtual void chara_main() {};
+
 	virtual bool specific_ground_status_act() { return false; };
 	virtual bool specific_air_status_act() { return false; };
 
@@ -146,6 +149,8 @@ public:
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	int get_launch_ticks();
+	string get_anim();
+	string get_anim_broad();
 
 	//Status
 

@@ -22,6 +22,8 @@ public:
 	float roy_float[CHARA_ROY_FLOAT_MAX];
 	bool roy_flag[CHARA_ROY_FLAG_MAX];
 
+	void chara_main() override;
+
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;
 

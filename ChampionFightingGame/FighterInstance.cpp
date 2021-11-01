@@ -57,6 +57,9 @@ void FighterInstance::fighter_main() {
 		chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] = CHARA_STATUS_MAX;
 	}
 
+	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {
+		reenter_last_anim();
+	}
 	playoutStatus();
 
 	if (anim_kind->move_dir != 0) {
@@ -87,7 +90,6 @@ void FighterInstance::fighter_main() {
 			}
 		}
 	}
-
 	if (chara_flag[CHARA_FLAG_STATIONARY_ANIMATION]) {
 		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", param_table), 0, true);
 	}
@@ -1121,6 +1123,7 @@ bool FighterInstance::change_anim(string animation_name, int frame_rate, int ent
 	prev_anim_max_ticks = max_ticks;
 	prev_anim_frame = frame;
 	prev_anim_render_frame = render_frame;
+
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
@@ -1151,7 +1154,6 @@ bool FighterInstance::change_anim_inherit_attributes(string animation_name, bool
 		if (animation_table[i].name == animation_name) {
 			if (!continue_script) {
 				set_current_move_script(animation_name);
-
 			}			
 			startAnimation(&animation_table[i]);
 			return true;
@@ -1165,7 +1167,9 @@ bool FighterInstance::change_anim_inherit_attributes(string animation_name, bool
 
 void FighterInstance::startAnimation(Animation* animation) {
 	is_anim_end = false;
-	prev_anim_kind = anim_kind;
+	if (anim_kind != animation) {
+		prev_anim_kind = anim_kind;
+	}
 	anim_kind = animation;
 	int width;
 	int height;
@@ -1250,6 +1254,21 @@ int FighterInstance::get_launch_ticks() {
 		airtime++;
 	}
 	return airtime;
+}
+
+string FighterInstance::get_anim() {
+	return anim_kind->name;
+}
+
+string FighterInstance::get_anim_broad() {
+	string ret = anim_kind->name;
+	if (ret.find("_air") != string::npos) {
+		ret = Filter(ret, "_air");
+	}
+	if (ret.find("_stationary") != string::npos) {
+		ret = Filter(ret, "_stationary");
+	}
+	return ret;
 }
  
 //Status
@@ -2168,7 +2187,13 @@ void FighterInstance::status_thrown() {
 
 void FighterInstance::enter_status_thrown() {
 	situation_kind = CHARA_SITUATION_AIR;
-	change_anim("knockdown_start");
+	if (chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] == 0) {
+		chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = get_param_float("gravity");
+	}
+	if (chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
+		chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
+	}
+	change_anim("knockdown_start", -1, get_launch_ticks());
 }
 
 void FighterInstance::exit_status_thrown() {
@@ -2444,15 +2469,18 @@ void FighterInstance::exit_status_launch_start() {
 }
 
 void FighterInstance::status_launch() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(CHARA_STATUS_KNOCKDOWN);
-		return;
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 1) {
+		max_ticks = ceil((float)get_launch_ticks() / (float)(anim_kind->length));
 	}
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
 			chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= chara_float[CHARA_FLOAT_LAUNCH_GRAVITY];
 		}
 		add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+		if (pos.y < FLOOR_GAMECOORD) {
+			change_status(CHARA_STATUS_KNOCKDOWN);
+			return;
+		}
 	}
 }
 

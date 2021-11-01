@@ -124,3 +124,14 @@ bool is_any_controller_input(SDL_GameController* controller) {
 	}
 	return false;
 }
+
+string Filter(const string& to, const string& remove) {
+	string ret = "";
+	string ret2 = "";
+	int removal_index = to.find(remove);
+	int cont_index = removal_index + remove.length();
+	ret = to.substr(0, removal_index);
+	ret2 = to.substr(cont_index, to.length());
+
+	return ret + ret2;
+}

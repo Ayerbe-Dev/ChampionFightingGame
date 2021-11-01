@@ -29,7 +29,6 @@ public:
 	float facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
-	SDL_Renderer* renderer;
 
 	double angle{ 0 };
 

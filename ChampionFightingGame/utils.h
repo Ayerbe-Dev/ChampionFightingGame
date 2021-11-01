@@ -54,9 +54,8 @@ bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture *loadTexture(const char *file_path, SDL_Renderer *renderer);
 bool is_any_controller_input(SDL_GameController* controller);
 string Filter(const string& to, const string& remove);
-void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, float scale_mul = 1.0, int r = 0, int g = 0, int b = 0, int a = 255);
-void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, float scale_mul = 1.0, int r = 0, int g = 0, int b = 0, int a = 255);
-TTF_Font* find_font(string font_name);
+void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
+void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
 
 /*
 	updateCamera(); 
@@ -488,6 +487,7 @@ enum
 	CHARA_INT_SPECIAL_LEVEL,
 	CHARA_INT_MANUAL_POS_CHANGE_FRAMES,
 	CHARA_INT_BUFFER_HITLAG_STATUS,
+	CHARA_INT_COMBO_COUNT,
 
 	CHARA_INT_MAX,
 };

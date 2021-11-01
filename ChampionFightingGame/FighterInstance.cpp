@@ -18,7 +18,6 @@ FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info
 	// runs on creation of instance;
 		// no it doesn't
 			// wait actually yes it does
-	this->renderer = renderer;
 	superInit(0, renderer);
 }
 
@@ -58,6 +57,10 @@ void FighterInstance::fighter_main() {
 	if (chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] != CHARA_STATUS_MAX && chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
 		change_status(chara_int[CHARA_INT_BUFFER_HITLAG_STATUS], chara_flag[CHARA_FLAG_BUFFER_HITLAG_STATUS_END], chara_flag[CHARA_FLAG_BUFFER_HITLAG_STATUS_SEPARATE]);
 		chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] = CHARA_STATUS_MAX;
+	}
+
+	if (get_status_group() != STATUS_GROUP_HITSTUN) {
+		chara_int[CHARA_INT_COMBO_COUNT] = 0;
 	}
 
 	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {

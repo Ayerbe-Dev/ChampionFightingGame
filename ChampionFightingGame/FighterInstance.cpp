@@ -60,30 +60,11 @@ void FighterInstance::fighter_main() {
 	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {
 		reenter_last_anim();
 	}
+	chara_main();
 	playoutStatus();
 
 	if (anim_kind->move_dir != 0) {
-		if (!add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0, true)) {
-			/*
-			if we need to modify a player's position and the game is saying that the position is invalid, the render position won't be
-			compensated properly. In this situation, manually changing the render position every frame to look stationary would be a nightmare, so
-			we'll just switch to a stationary version of the animation. If no such animation exists, nothing changes, which probably means it wasn't
-			enough of a problem to be worth taking a look at.
-			*/
-			if (pos.x > 0) {
-				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
-			}
-			else {
-				chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
-			}
-			if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
-				chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = true;
-			}
-			else {
-				chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
-			}
-		}
-		else {
+		if (add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0, true)) {
 			chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
 			if (anim_kind->force_center == 1) {
 				chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = false;
@@ -91,7 +72,7 @@ void FighterInstance::fighter_main() {
 		}
 	}
 	if (chara_flag[CHARA_FLAG_STATIONARY_ANIMATION]) {
-		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", param_table), 0, true);
+		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", param_table), 0);
 	}
 
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
@@ -1283,6 +1264,7 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
 		chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
+		chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = 0.0;
 		if (call_end_status) {
 			(this->*pExit_status[status_kind])();
 		}
@@ -2068,7 +2050,20 @@ void FighterInstance::enter_status_throw() {
 	else {
 		change_anim("throw_f");
 	}
-	add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0);
+	if (!add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0, true)) {
+		if (pos.x > 0) {
+			chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
+		}
+		else {
+			chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
+		}
+		if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
+			chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = true;
+		}
+		else {
+			chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
+		}
+	}
 }
 
 void FighterInstance::exit_status_throw() {

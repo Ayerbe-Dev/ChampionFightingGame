@@ -48,7 +48,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
 
 	//init stage
-	Stage stage = Stage(pRenderer, "training_room");
+	int rng = rand() % 2;
+	Stage stage = Stage(pRenderer, player_info[rng].stage_kind);
 
 	//init players
 	FighterInstance* fighter_instance[2];

@@ -39,7 +39,7 @@ typedef unsigned long long u64;
 #define BUFFER_WINDOW 3
 #define MOTION_SPECIAL_TIMER 11
 
-#define FLOOR_GAMECOORD 75.0
+#define FLOOR_GAMECOORD 60.0
 
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
@@ -136,6 +136,13 @@ enum
 	CHARA_KIND_CHARA_TEMPLATE,
 
 	CHARA_KIND_MAX,
+};
+
+enum {
+	STAGE_KIND_TRAINING_ROOM,
+	STAGE_KIND_TRAINING_ROOM_OLD,
+
+	STAGE_KIND_MAX,
 };
 
 enum {

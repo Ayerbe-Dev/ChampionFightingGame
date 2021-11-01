@@ -3,7 +3,7 @@
 #include "Animation.h"
 #include <fstream>
 #include <cmath>
-#include <format>
+//#include <format>
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -2168,7 +2168,13 @@ void FighterInstance::status_thrown() {
 
 void FighterInstance::enter_status_thrown() {
 	situation_kind = CHARA_SITUATION_AIR;
-	change_anim("knockdown_start");
+	if (chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] == 0) {
+		chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] = get_param_float("gravity");
+	}
+	if (chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
+		chara_float[CHARA_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
+	}
+	change_anim("knockdown_start", -1, get_launch_ticks());
 }
 
 void FighterInstance::exit_status_thrown() {

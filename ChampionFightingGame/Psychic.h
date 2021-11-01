@@ -18,6 +18,10 @@ public:
 	float psychic_float[CHARA_PSYCHIC_FLOAT_MAX];
 	bool psychic_flag[CHARA_PSYCHIC_FLAG_MAX];
 
+	void chara_main() override;
+
 	bool specific_ground_status_act() override;
+	bool specific_air_status_act() override;
+
 	bool specific_status_attack() override;
 };

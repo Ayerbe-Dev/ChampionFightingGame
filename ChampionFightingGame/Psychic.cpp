@@ -230,13 +230,22 @@ void Psychic::loadPsychicACMD() { //todo: Fill this in with all of the common em
 	});
 }
 
+void Psychic::chara_main() {}
+
 bool Psychic::specific_ground_status_act() {
+	return false;
+}
+
+bool Psychic::specific_air_status_act() {
 	return false;
 }
 
 bool Psychic::specific_status_attack() {
 	if (chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
-		if (specific_ground_status_act()) {
+		if (situation_kind == CHARA_SITUATION_GROUND && specific_ground_status_act()) {
+			return true;
+		}
+		else if (situation_kind == CHARA_SITUATION_AIR && specific_air_status_act()) {
 			return true;
 		}
 	}

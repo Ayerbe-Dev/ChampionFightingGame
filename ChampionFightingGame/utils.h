@@ -49,6 +49,7 @@ string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture *loadTexture(const char *file_path, SDL_Renderer *renderer);
 bool is_any_controller_input(SDL_GameController* controller);
+string Filter(const string& to, const string& remove);
 
 /*
 	updateCamera(); 

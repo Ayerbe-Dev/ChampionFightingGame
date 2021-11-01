@@ -182,6 +182,10 @@ void DebugList::addEntry(string message, int selectable){
 			debugItems[i].generateTexture(message);
 			debugItems[i].destRect.y = ((DEBUG_MENU_FONT_SIZE+5) * i) + 10;
 			debugItems[i].destRect.x = 0;
+
+			debugItems[i].destRectSelect.y = debugItems[i].destRect.y;
+			debugItems[i].destRectSelect.x = debugItems[i].destRect.x;
+
 			debugItems[i].state = DEBUG_ITEM_ACTIVE;
 			return;
 		
@@ -211,9 +215,10 @@ void DebugItem::preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont){
 
 void DebugItem::generateTexture(string message){
 	//
-	SDL_Color sky = { 200, 200, 255 };
-	SDL_Color red = { 255, 200, 200 };
+	SDL_Color sky = {204,247,255};
+	SDL_Color red = { 179,0,59 };
 	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), sky);
+	SDL_Surface* textSurfaceSelect = TTF_RenderText_Solid(pFont, ("["+message+"]").c_str(), red);
 	//
 	if (!textSurface) {
 		printf("Failed to render text:  %s\n", TTF_GetError());
@@ -235,9 +240,7 @@ void DebugItem::generateTexture(string message){
 	//
 
 	//select
-	textSurface = TTF_RenderText_Solid(pFont, message.c_str(), red);
-	pTextureSelect = SDL_CreateTextureFromSurface(pRenderer, textSurface);
-	
+	pTextureSelect = SDL_CreateTextureFromSurface(pRenderer, textSurfaceSelect);
 	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,&destRectSelect.w,&destRectSelect.h);
 	printf("%s\n", TTF_GetError());
 
@@ -247,5 +250,6 @@ void DebugItem::generateTexture(string message){
 		printf("Alt Gen Success real w %d\n", destRectSelect.w);
 	}
 
+	SDL_FreeSurface(textSurfaceSelect);
 	SDL_FreeSurface(textSurface);
 }

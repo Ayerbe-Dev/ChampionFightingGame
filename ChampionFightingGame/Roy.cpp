@@ -219,10 +219,6 @@ void Roy::loadRoyACMD() {
 	});
 	script("hitstun_parry", [this]() {
 		if (is_excute_frame(0)) {
-			if (is_anim_end) {
-				reenter_last_anim();
-				return;
-			}
 			max_ticks = 5;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
@@ -241,10 +237,6 @@ void Roy::loadRoyACMD() {
 	});
 	script("hitstun_parry_air", [this]() {
 		if (is_excute_frame(0)) {
-			if (is_anim_end) {
-				reenter_last_anim();
-				return;
-			}
 			max_ticks = 5;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
@@ -723,6 +715,8 @@ void Roy::loadRoyACMD() {
 		}
 	});
 }
+
+void Roy::chara_main() {}
 
 bool Roy::specific_ground_status_act() {
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {

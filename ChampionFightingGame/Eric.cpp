@@ -626,6 +626,8 @@ void Eric::loadEricACMD() {
 	});
 }
 
+void Eric::chara_main() {}
+
 bool Eric::specific_ground_status_act() {
 	return false;
 }

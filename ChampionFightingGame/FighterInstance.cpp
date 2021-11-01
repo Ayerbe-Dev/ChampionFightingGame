@@ -57,6 +57,9 @@ void FighterInstance::fighter_main() {
 		chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] = CHARA_STATUS_MAX;
 	}
 
+	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {
+		reenter_last_anim();
+	}
 	playoutStatus();
 
 	if (anim_kind->move_dir != 0) {
@@ -87,7 +90,6 @@ void FighterInstance::fighter_main() {
 			}
 		}
 	}
-
 	if (chara_flag[CHARA_FLAG_STATIONARY_ANIMATION]) {
 		add_pos(chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", param_table), 0, true);
 	}
@@ -1253,6 +1255,21 @@ int FighterInstance::get_launch_ticks() {
 	}
 	return airtime;
 }
+
+string FighterInstance::get_anim() {
+	return anim_kind->name;
+}
+
+string FighterInstance::get_anim_broad() {
+	string ret = anim_kind->name;
+	if (ret.find("_air") != string::npos) {
+		ret = Filter(ret, "_air");
+	}
+	if (ret.find("_stationary") != string::npos) {
+		ret = Filter(ret, "_stationary");
+	}
+	return ret;
+}
  
 //Status
 
@@ -1299,7 +1316,6 @@ void FighterInstance::playoutStatus() {
 	if (is_status_hitstun_enable_parry()) {
 		u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
-			cout << "Prev Anim Kind: " << prev_anim_kind->name << endl;
 			if (situation_kind == CHARA_SITUATION_GROUND) {
 				change_anim("hitstun_parry", 5);
 			}

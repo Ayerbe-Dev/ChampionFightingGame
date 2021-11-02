@@ -7,9 +7,12 @@ Roy::Roy() {
 
 }
 
-Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
+Roy::Roy(SDL_Renderer *renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+	this->player_info = player_info;
 	resource_dir = "resource/chara/roy";
-	load_params();
+	if (!crash_to_debug) {
+		load_params();
+	}
 	loadRoyACMD();
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
@@ -19,7 +22,7 @@ Roy::Roy(SDL_Renderer *renderer, int id, FighterInstanceAccessor* fighter_instan
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();
 	}
-	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, fighter_instance_accessor);
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, player_info, fighter_instance_accessor);
 	delete (projectile_objects[0]);
 	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	RoyFireball* roy_fireball_instance = (RoyFireball*)projectile_objects[0];

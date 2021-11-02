@@ -12,7 +12,7 @@ public:
 
 	virtual void chara_id();
 	Roy();
-	Roy(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor);
+	Roy(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
 	void loadRoyStatusFunctions();
 	void loadRoyACMD();
 

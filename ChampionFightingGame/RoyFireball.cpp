@@ -1,7 +1,8 @@
 #include "RoyFireball.h"
 #include "Game.h"
 
-RoyFireball::RoyFireball(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
+RoyFireball::RoyFireball(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+	this->player_info = player_info;
 	resource_dir = "resource/projectile/roy_fireball";
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	load_params();

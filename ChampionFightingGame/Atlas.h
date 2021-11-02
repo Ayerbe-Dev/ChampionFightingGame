@@ -10,7 +10,7 @@ class Atlas : public FighterInstance {
 public:
 	virtual void chara_id();
 	Atlas();
-	Atlas(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor);
+	Atlas(SDL_Renderer* renderer, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor);
 	void loadAtlasStatusFunctions();
 	void loadAtlasACMD();
 

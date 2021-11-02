@@ -54,8 +54,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	FighterInstance* fighter_instance[2];
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
-	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0, fighter_instance_accessor);
-	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1, fighter_instance_accessor);
+	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0, &player_info[0], fighter_instance_accessor);
+	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1, &player_info[1], fighter_instance_accessor);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
@@ -72,6 +72,11 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			Requires fighter instance accessor to be fully initialized since it makes a call that involves checking the other character's x pos, so we'll
 			execute this part after the first loop has finished
 		*/
+	}
+
+	if (fighter_instance[0]->crash_to_debug || fighter_instance[1]->crash_to_debug) {
+		gaming = false;
+		next_state = GAME_STATE_DEBUG_MENU;
 	}
 
 	//init ui
@@ -1203,27 +1208,27 @@ void cleanup(IObject* p1, IObject* p2) {
 	delete p2;
 }
 
-IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
+IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind) {
 			case (CHARA_KIND_ROY):
 			{
-				fighter_instance = new Roy(renderer, id, fighter_instance_accessor);
+				fighter_instance = new Roy(renderer, id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_ERIC):
 			{
-				fighter_instance = new Eric(renderer, id, fighter_instance_accessor);
+				fighter_instance = new Eric(renderer, id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_ATLAS):
 			{
-				fighter_instance = new Atlas(renderer, id, fighter_instance_accessor);
+				fighter_instance = new Atlas(renderer, id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_CHARA_TEMPLATE):
 			{
-				fighter_instance = new CharaTemplate(renderer, id, fighter_instance_accessor);
+				fighter_instance = new CharaTemplate(renderer, id, player_info, fighter_instance_accessor);
 			} break;
 			case (CHARA_KIND_MAX):
 			{
@@ -1236,17 +1241,17 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int i
 		switch (object_kind) {
 			case (PROJECTILE_KIND_ROY_FIREBALL):
 			{
-				projectile_instance = new RoyFireball(renderer, id, fighter_instance_accessor);
+				projectile_instance = new RoyFireball(renderer, id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (PROJECTILE_KIND_ERIC_FIREBALL):
 			{
-				projectile_instance = new EricFireball(renderer, id, fighter_instance_accessor);
+				projectile_instance = new EricFireball(renderer, id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (PROJECTILE_KIND_PROJECTILE_TEMPLATE):
 			{
-				projectile_instance = new ProjectileTemplate(renderer, id, fighter_instance_accessor);
+				projectile_instance = new ProjectileTemplate(renderer, id, player_info, fighter_instance_accessor);
 			} break;
 			case (PROJECTILE_KIND_MAX):
 			{

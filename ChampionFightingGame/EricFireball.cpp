@@ -1,7 +1,8 @@
 #include "EricFireball.h"
 #include "Game.h"
 
-EricFireball::EricFireball(SDL_Renderer* renderer, int id, FighterInstanceAccessor *fighter_instance_accessor) {
+EricFireball::EricFireball(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor) {
+	this->player_info = player_info;
 	resource_dir = "resource/projectile/eric_fireball";
 	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	loadEricFireballACMD();

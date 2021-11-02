@@ -107,6 +107,8 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 		SDL_RenderPresent(pRenderer);
 	}
+	(&player_info[0])->crash_reason = "Crash Message Goes Here";
+	(&player_info[1])->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(pFont);
 	return debugList.getDestination();
 }

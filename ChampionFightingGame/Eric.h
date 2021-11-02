@@ -8,23 +8,13 @@
 #include "Eric.fwd.h"
 #include "utils.h"
 
-class EricScript {
-public:
-	string name;
-	function<void()> eric_script{ []() {} };
-	int id{ -1 };
-
-	EricScript();
-	EricScript(string name, function<void()> move_script, int id);
-};
-
 class Eric : public FighterInstance {
 public:
 	//Setup
 
 	virtual void chara_id();
 	Eric();
-	Eric(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor);
+	Eric(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
 	void loadEricStatusFunctions();
 	void loadEricACMD();
 

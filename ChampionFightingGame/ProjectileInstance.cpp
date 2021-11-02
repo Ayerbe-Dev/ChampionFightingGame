@@ -185,10 +185,20 @@ bool ProjectileInstance::change_status(u32 new_status_kind, bool call_end_status
 		clear_hurtbox_all();
 		projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = false;
 		if (call_end_status) {
-			(this->*pExit_status[status_kind])();
+			if (status_kind < PROJECTILE_STATUS_MAX) {
+				(this->*pExit_status[status_kind])();
+			}
+			else {
+				projectile_unique_exit_status();
+			}
 		}
 		status_kind = new_status_kind;
-		(this->*pEnter_status[status_kind])();
+		if (status_kind < PROJECTILE_STATUS_MAX) {
+			(this->*pEnter_status[status_kind])();
+		}
+		else {
+			projectile_unique_enter_status();
+		}
 		return true;
 	}
 	else {
@@ -197,7 +207,12 @@ bool ProjectileInstance::change_status(u32 new_status_kind, bool call_end_status
 }
 
 void ProjectileInstance::playoutStatus() {
-	(this->*pStatus[status_kind])();
+	if (status_kind < PROJECTILE_STATUS_MAX) {
+		(this->*pStatus[status_kind])();
+	}
+	else {
+		projectile_unique_status();
+	}
 	move_script();
 }
 

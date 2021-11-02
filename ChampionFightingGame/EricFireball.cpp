@@ -28,6 +28,24 @@ void EricFireball::loadEricFireballACMD() {
 	});
 }
 
+void EricFireball::tickOnceProjectileUnique() {
+	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
+		change_status(PROJECTILE_STATUS_HIT);
+	}
+}
+
+void EricFireball::projectile_unique_status() {
+	(this->*eric_fireball_status[status_kind - PROJECTILE_STATUS_MAX])();
+}
+
+void EricFireball::projectile_unique_enter_status() {
+	(this->*eric_fireball_enter_status[status_kind - PROJECTILE_STATUS_MAX])();
+}
+
+void EricFireball::projectile_unique_exit_status() {
+	(this->*eric_fireball_exit_status[status_kind - PROJECTILE_STATUS_MAX])();
+}
+
 void EricFireball::status_default() {
 	change_status(PROJECTILE_STATUS_MOVE);
 }

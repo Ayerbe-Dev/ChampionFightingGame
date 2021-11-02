@@ -206,7 +206,7 @@
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="ProjectileInstance.cpp" />
-    <ClCompile Include="Psychic.cpp" />
+    <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
     <ClCompile Include="Stage.cpp" />
@@ -265,8 +265,8 @@
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="ProjectileInstance.fwd.h" />
     <ClInclude Include="ProjectileInstance.h" />
-    <ClInclude Include="Psychic.fwd.h" />
-    <ClInclude Include="Psychic.h" />
+    <ClInclude Include="Atlas.fwd.h" />
+    <ClInclude Include="Atlas.h" />
     <ClInclude Include="Roy.fwd.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyFireball.fwd.h" />

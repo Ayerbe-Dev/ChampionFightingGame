@@ -20,8 +20,8 @@
 #include "Eric.fwd.h"
 #include "Eric.h"
 #include "EricFireball.h"
-#include "Psychic.fwd.h"
-#include "Psychic.h"
+#include "Atlas.fwd.h"
+#include "Atlas.h"
 
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
@@ -161,6 +161,36 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
 
 		for (int i = 0; i < 2; i++) {
+			SDL_RendererFlip flip = SDL_FLIP_NONE;
+			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable()) {
+				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x) {
+					fighter_instance[i]->facing_dir = -1.0;
+					fighter_instance[i]->facing_right = false;
+					flip = SDL_FLIP_HORIZONTAL;
+				}
+				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x) {
+					fighter_instance[i]->facing_dir = 1.0;
+					fighter_instance[i]->facing_right = true;
+				}
+				else { //This is incredibly rare but yes, it is possible for both players to have the exact same X coord
+					if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[!i]->situation_kind == CHARA_SITUATION_GROUND) {
+						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
+						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
+						fighter_instance[i]->add_pos(-1.0, 0);
+						fighter_instance[i]->facing_dir = 1.0;
+						fighter_instance[i]->facing_right = true;
+						fighter_instance[!i]->add_pos(1.0, 0);
+						fighter_instance[!i]->facing_dir = -1.0;
+						fighter_instance[!i]->facing_right = false;
+						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+					}
+				}
+			}
+			else if (!fighter_instance[i]->facing_right) {
+				flip = SDL_FLIP_HORIZONTAL;
+			}
+
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
 				timer.ClockMode = !timer.ClockMode;
@@ -194,36 +224,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				}
 			}
 
-			SDL_RendererFlip flip = SDL_FLIP_NONE;
-			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable()) {
-				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x) {
-					fighter_instance[i]->facing_dir = -1.0;
-					fighter_instance[i]->facing_right = false;
-					flip = SDL_FLIP_HORIZONTAL;
-				}
-				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x) {
-					fighter_instance[i]->facing_dir = 1.0;
-					fighter_instance[i]->facing_right = true;
-				}
-				else { //This is incredibly rare but yes, it is possible for both players to have the exact same X coord
-					if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[!i]->situation_kind == CHARA_SITUATION_GROUND) {
-						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
-						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
-						fighter_instance[i]->add_pos(-1.0, 0);
-						fighter_instance[i]->facing_dir = 1.0;
-						fighter_instance[i]->facing_right = true;
-						fighter_instance[!i]->add_pos(1.0, 0);
-						fighter_instance[!i]->facing_dir = -1.0;
-						fighter_instance[!i]->facing_right = false;
-						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
-						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
-					}
-				}
-			}
-			else if (!fighter_instance[i]->facing_right) {
-				flip = SDL_FLIP_HORIZONTAL;
-			}
-
 			if (fighter_instance[i]->crash_to_debug) {
 				gaming = false;
 				next_state = GAME_STATE_DEBUG_MENU;
@@ -242,7 +242,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				if (fighter_instance[i]->id == 1) {
 					id_ope *= -1;
 				}
-				draw_text(pRenderer, "FiraCode-Regular.ttf", to_string(fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT]), {id_ope * 500, 500}, 80, 255, 0, 0, 255);
+				draw_text(pRenderer, "FiraCode-Regular.ttf", to_string(fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT]), {id_ope * 500, WINDOW_HEIGHT * 0.75}, 200,  255, 0, 0, 255);
 				SDL_SetRenderTarget(pRenderer, pScreenTexture);
 			}
 
@@ -916,9 +916,6 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			}
 			p1->chara_float[CHARA_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->chara_int[CHARA_INT_HITLAG_FRAMES];
 			if (can_counterhit(p1, p2_hitbox)) {
-				if (p2_hitbox->scale == -5) {
-					p2->chara_int[CHARA_INT_DAMAGE_SCALE] = -5;
-				}
 				p2->chara_float[CHARA_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
 				p1->chara_int[CHARA_INT_JUGGLE_VALUE] = 0;
@@ -1072,7 +1069,6 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 
 bool can_counterhit(FighterInstance* defender, Hitbox* hitbox) {
 	if (defender->anim_kind->name == "hitstun_parry" || defender->anim_kind->name == "hitstun_parry_air") {
-		hitbox->scale = -5;
 		return true;
 	}
 	return defender->chara_flag[CHARA_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL
@@ -1220,9 +1216,9 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int i
 				fighter_instance = new Eric(renderer, id, fighter_instance_accessor);
 			}
 			break;
-			case (CHARA_KIND_PSYCHIC):
+			case (CHARA_KIND_ATLAS):
 			{
-				fighter_instance = new Psychic(renderer, id, fighter_instance_accessor);
+				fighter_instance = new Atlas(renderer, id, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_CHARA_TEMPLATE):

@@ -158,6 +158,8 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordi
 	render_rect.y = (pos.y - WINDOW_HEIGHT) * -1;
 	render_rect.w = text_width;
 	render_rect.h = text_height;
+	render_rect.x -= render_rect.w / 2;
+	render_rect.y -= render_rect.h / 2;
 
 	SDL_RenderCopy(renderer, texture, nullptr, &render_rect);
 	SDL_DestroyTexture(texture);
@@ -187,6 +189,8 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_po
 	render_rect.y = y_pos;
 	render_rect.w = text_width;
 	render_rect.h = text_height;
+	render_rect.x -= render_rect.w / 2;
+	render_rect.y -= render_rect.h / 2;
 
 	SDL_RenderCopy(renderer, texture, nullptr, &render_rect);
 	SDL_DestroyTexture(texture);

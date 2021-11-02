@@ -13,9 +13,9 @@ ProjectileTemplate::ProjectileTemplate(SDL_Renderer * renderer, int id, FighterI
 }
 
 void ProjectileTemplate::loadProjectileTemplateStatusFunctions() {
-	pStatus[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE] = &ProjectileInstance::projectile_template_status_template;
-	pEnter_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE] = &ProjectileInstance::projectile_template_enter_status_template;
-	pExit_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE] = &ProjectileInstance::projectile_template_exit_status_template;
+	projectile_template_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE - PROJECTILE_STATUS_MAX] = &ProjectileTemplate::projectile_template_status_template;
+	projectile_template_enter_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE - PROJECTILE_STATUS_MAX] = &ProjectileTemplate::projectile_template_enter_status_template;
+	projectile_template_exit_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE - PROJECTILE_STATUS_MAX] = &ProjectileTemplate::projectile_template_exit_status_template;
 }
 
 void ProjectileTemplate::loadProjectileTemplateACMD() {
@@ -26,6 +26,18 @@ void ProjectileTemplate::loadProjectileTemplateACMD() {
 
 void ProjectileTemplate::tickOnceProjectileUnique() {
 
+}
+
+void ProjectileTemplate::projectile_unique_status() {
+	(this->*projectile_template_status[status_kind - PROJECTILE_STATUS_MAX])();
+}
+
+void ProjectileTemplate::projectile_unique_enter_status() {
+	(this->*projectile_template_enter_status[status_kind - PROJECTILE_STATUS_MAX])();
+}
+
+void ProjectileTemplate::projectile_unique_exit_status() {
+	(this->*projectile_template_exit_status[status_kind - PROJECTILE_STATUS_MAX])();
 }
 
 void ProjectileTemplate::status_default() {

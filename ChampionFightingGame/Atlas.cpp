@@ -1,36 +1,36 @@
-#include "Psychic.h"
+#include "Atlas.h"
 #include "Game.h"
 #include "ProjectileTemplate.fwd.h"
 #include "ProjectileTemplate.h"
 
-Psychic::Psychic() {
+Atlas::Atlas() {
 
 }
 
-Psychic::Psychic(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
-	resource_dir = "resource/chara/psychic";
+Atlas::Atlas(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
+	resource_dir = "resource/chara/atlas";
 	superInit(id, renderer);
 	load_params();
-	loadPsychicACMD();
-	loadPsychicStatusFunctions();
+	loadAtlasACMD();
+	loadAtlasStatusFunctions();
 	set_current_move_script("default");
-	this->chara_kind = CHARA_KIND_PSYCHIC;
-	this->base_texture = loadTexture("resource/chara/psychic/sprite/sprite.png", renderer);
+	this->chara_kind = CHARA_KIND_ATLAS;
+	this->base_texture = loadTexture("resource/chara/atlas/sprite/sprite.png", renderer);
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();
 	}
 }
 
-void Psychic::chara_id() {
+void Atlas::chara_id() {
 
 }
 
-void Psychic::loadPsychicStatusFunctions() {
+void Atlas::loadAtlasStatusFunctions() {
 
 }
 
-void Psychic::loadPsychicACMD() { //todo: Fill this in with all of the common empty scripts
+void Atlas::loadAtlasACMD() { //todo: Fill this in with all of the common empty scripts
 	script("default", [this]() {
 		return;
 	});
@@ -230,17 +230,29 @@ void Psychic::loadPsychicACMD() { //todo: Fill this in with all of the common em
 	});
 }
 
-void Psychic::chara_main() {}
+void Atlas::chara_main() {}
 
-bool Psychic::specific_ground_status_act() {
+void Atlas::chara_status() {
+	(this->*atlas_status[status_kind - CHARA_STATUS_MAX])();
+}
+
+void Atlas::chara_enter_status() {
+	(this->*atlas_enter_status[status_kind - CHARA_STATUS_MAX])();
+}
+
+void Atlas::chara_exit_status() {
+	(this->*atlas_exit_status[status_kind - CHARA_STATUS_MAX])();
+}
+
+bool Atlas::specific_ground_status_act() {
 	return false;
 }
 
-bool Psychic::specific_air_status_act() {
+bool Atlas::specific_air_status_act() {
 	return false;
 }
 
-bool Psychic::specific_status_attack() {
+bool Atlas::specific_status_attack() {
 	if (chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 		if (situation_kind == CHARA_SITUATION_GROUND && specific_ground_status_act()) {
 			return true;

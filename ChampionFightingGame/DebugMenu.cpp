@@ -14,7 +14,6 @@ extern u32 tok;
 
 
 int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
-	printf("Enter Debug Menu\n");
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
 	bool debugging = true;
@@ -72,6 +71,7 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		debugList.render();
 
 		// end of rendering time, what a party
+			//shot, shot, shot, lots of shot, shot, shot, only one shot, shot, shot, only one shot, and i've passed out
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
@@ -107,6 +107,7 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 		SDL_RenderPresent(pRenderer);
 	}
+	TTF_CloseFont(pFont);
 	return debugList.getDestination();
 }
 
@@ -149,10 +150,8 @@ void DebugList::addEntry(string message, int selectable, int destination){
 }
 
 void DebugList::render(){
-	//printf("New Cycle\n");
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
-				//printf("drawing:%d, with properites %d,%d,%d,%d\n",i,debugItems[i].destRect.x,debugItems[i].destRect.y,debugItems[i].destRect.w,debugItems[i].destRect.h);
 				if(i == selection){
 					SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
 				} else {
@@ -200,12 +199,6 @@ int DebugList::getDestination(){
 	return debugItems[selection].destination;
 }
 
-
-//what is a memory leak anyways
-// DebugList::~DebugList(){
-// 	delete[] debugItems;
-// }
-
 DebugItem::DebugItem(){};
 void DebugItem::preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont){
 	this->pRenderer = pRenderer;
@@ -232,10 +225,3 @@ void DebugItem::generateTexture(string message){
 	SDL_FreeSurface(textSurfaceSelect);
 	SDL_FreeSurface(textSurface);
 }
-
-//Im going to leave this here for you when you realize there is a memory leak due to duplicate textures
-// DebugItem::~DebugItem(){
-// 	printf("asdasdfasdf\n");
-// 	SDL_DestroyTexture(pTexture);
-// 	SDL_DestroyTexture(pTextureSelect);
-// }

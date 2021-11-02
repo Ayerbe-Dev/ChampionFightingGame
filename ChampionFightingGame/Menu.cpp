@@ -366,7 +366,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 				player_info[i].chara_kind = CHARA_KIND_ERIC;
 			}
 			if (player_info[i].check_button_trigger(BUTTON_HP)) {
-				player_info[i].chara_kind = CHARA_KIND_PSYCHIC;
+				player_info[i].chara_kind = CHARA_KIND_ATLAS;
 			}
 			if (player_info[i].check_button_trigger(BUTTON_LK)) {
 				player_info[i].stage_kind = "training_room";

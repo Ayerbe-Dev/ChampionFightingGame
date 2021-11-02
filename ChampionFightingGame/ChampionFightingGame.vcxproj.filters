@@ -84,7 +84,7 @@
     <ClCompile Include="CharaTemplate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Psychic.cpp">
+    <ClCompile Include="Atlas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -244,10 +244,10 @@
     <ClInclude Include="Menu.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Psychic.fwd.h">
+    <ClInclude Include="Atlas.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Psychic.h">
+    <ClInclude Include="Atlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.fwd.h">

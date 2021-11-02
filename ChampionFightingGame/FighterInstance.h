@@ -57,9 +57,13 @@ public:
 	//Child Class Entry Points
 
 	virtual void chara_main() {};
+	virtual void chara_status() {};
+	virtual void chara_enter_status() {};
+	virtual void chara_exit_status() {};
 
 	virtual bool specific_ground_status_act() { return false; };
 	virtual bool specific_air_status_act() { return false; };
+	virtual bool specific_status_attack() { return false; };
 
 	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset);
 
@@ -272,37 +276,6 @@ public:
 	virtual void status_wakeup();
 	virtual void enter_status_wakeup();
 	virtual void exit_status_wakeup();
-
-	virtual bool specific_status_attack() { return false; };
-	
-	virtual void roy_status_special_fireball_start() {};
-	virtual void roy_enter_status_special_fireball_start() {};
-	virtual void roy_exit_status_special_fireball_start() {};
-	virtual void roy_status_special_fireball_punch() {};
-	virtual void roy_enter_status_special_fireball_punch() {};
-	virtual void roy_exit_status_special_fireball_punch() {};
-	virtual void roy_status_special_fireball_kick() {};
-	virtual void roy_enter_status_special_fireball_kick() {};
-	virtual void roy_exit_status_special_fireball_kick() {};
-	virtual void roy_status_special_uppercut_start() {};
-	virtual void roy_enter_status_special_uppercut_start() {};
-	virtual void roy_exit_status_special_uppercut_start() {};
-	virtual void roy_status_special_uppercut() {};
-	virtual void roy_enter_status_special_uppercut() {};
-	virtual void roy_exit_status_special_uppercut() {};
-	virtual void roy_status_special_uppercut_fall() {};
-	virtual void roy_enter_status_special_uppercut_fall() {};
-	virtual void roy_exit_status_special_uppercut_fall() {};
-
-	virtual void eric_status_special_uppercut_start() {};
-	virtual void eric_enter_status_special_uppercut_start() {};
-	virtual void eric_exit_status_special_uppercut_start() {};
-	virtual void eric_status_special_uppercut() {};
-	virtual void eric_enter_status_special_uppercut() {};
-	virtual void eric_exit_status_special_uppercut() {};
-	virtual void eric_status_special_uppercut_fall() {};
-	virtual void eric_enter_status_special_uppercut_fall() {};
-	virtual void eric_exit_status_special_uppercut_fall() {};
 
 	virtual void chara_template_status_template() {};
 	virtual void chara_template_enter_status_template() {};

@@ -59,7 +59,7 @@ void FighterInstance::fighter_main() {
 		chara_int[CHARA_INT_BUFFER_HITLAG_STATUS] = CHARA_STATUS_MAX;
 	}
 
-	if (get_status_group() != STATUS_GROUP_HITSTUN) {
+	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != CHARA_STATUS_GRABBED) {
 		chara_int[CHARA_INT_COMBO_COUNT] = 0;
 	}
 
@@ -1272,10 +1272,20 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
 		chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = 0.0;
 		if (call_end_status) {
-			(this->*pExit_status[status_kind])();
+			if (status_kind < CHARA_STATUS_MAX) {
+				(this->*pExit_status[status_kind])();
+			}
+			else {
+				chara_exit_status();
+			}
 		}
 		status_kind = new_status_kind;
-		(this->*pEnter_status[status_kind])();
+		if (status_kind < CHARA_STATUS_MAX) {
+			(this->*pEnter_status[status_kind])();
+		}
+		else {
+			chara_enter_status();
+		}
 		return true;
 	}
 	else {
@@ -1310,9 +1320,15 @@ void FighterInstance::playoutStatus() {
 			else {
 				change_anim("hitstun_parry_air", 5);
 			}
+			fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_DAMAGE_SCALE] = -5;
 		}
 	}
-	(this->*pStatus[status_kind])();
+	if (status_kind < CHARA_STATUS_MAX) {
+		(this->*pStatus[status_kind])();
+	}
+	else {
+		chara_status();
+	}
 	move_script();
 }
 
@@ -1503,7 +1519,7 @@ u32 FighterInstance::get_status_group() {
 }
 
 bool FighterInstance::is_status_hitstun_enable_parry() {
-	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0 || anim_kind->name == "hitstun_parry" || anim_kind->name == "hitstun_parry_air") {
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0 || fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_DAMAGE_SCALE] == -5) {
 		return false;
 	}
 	switch (status_kind) {

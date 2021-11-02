@@ -33,9 +33,9 @@ void CharaTemplate::chara_id() {
 }
 
 void CharaTemplate::loadCharaTemplateStatusFunctions() {
-	pStatus[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE] = &FighterInstance::chara_template_status_template;
-	pEnter_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE] = &FighterInstance::chara_template_enter_status_template;
-	pExit_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE] = &FighterInstance::chara_template_exit_status_template;
+	chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - CHARA_STATUS_MAX] = &CharaTemplate::chara_template_status_template;
+	chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - CHARA_STATUS_MAX] = &CharaTemplate::chara_template_enter_status_template;
+	chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - CHARA_STATUS_MAX] = &CharaTemplate::chara_template_exit_status_template;
 }
 
 void CharaTemplate::loadCharaTemplateACMD() { //todo: Fill this in with all of the common empty scripts
@@ -234,6 +234,20 @@ void CharaTemplate::loadCharaTemplateACMD() { //todo: Fill this in with all of t
 	script("landing_hitstun", [this]() {
 
 	});
+}
+
+void CharaTemplate::chara_main() {}
+
+void CharaTemplate::chara_status() {
+	(this->*chara_template_status[status_kind - CHARA_STATUS_MAX])();
+}
+
+void CharaTemplate::chara_enter_status() {
+	(this->*chara_template_enter_status[status_kind - CHARA_STATUS_MAX])();
+}
+
+void CharaTemplate::chara_exit_status() {
+	(this->*chara_template_exit_status[status_kind - CHARA_STATUS_MAX])();
 }
 
 bool CharaTemplate::specific_ground_status_act() {

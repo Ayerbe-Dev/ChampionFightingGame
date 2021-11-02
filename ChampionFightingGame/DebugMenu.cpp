@@ -123,6 +123,11 @@ TTF_Font* loadDebugFont(string fontname){
 
 DebugList::DebugList(){};
 DebugList::DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset){
+
+	init(pRenderer,pFont,x_offset);
+};
+
+void DebugList::init(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset){
 	this->pRenderer = pRenderer;
 	this->pFont = pFont;
 	this->x_offset = x_offset;
@@ -130,15 +135,15 @@ DebugList::DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		debugItems[i].preLoad(pRenderer,pFont);
 	}
-};
+}
 
 void DebugList::addEntry(string message, int selectable, int destination){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_NOT_ACTIVE){
 			
 			debugItems[i].generateTexture(message);
-			debugItems[i].destRect.y = ((DEBUG_MENU_FONT_SIZE+5) * i) + x_offset;
-			debugItems[i].destRect.x = 20;
+			debugItems[i].destRect.y = ((DEBUG_MENU_FONT_SIZE+5) * i) + 20;
+			debugItems[i].destRect.x = x_offset;
 
 			debugItems[i].destRectSelect.y = debugItems[i].destRect.y;
 			debugItems[i].destRectSelect.x = debugItems[i].destRect.x;

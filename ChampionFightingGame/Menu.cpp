@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <math.h>
 #include "Debugger.h"
+#include "DebugMenu.h"
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -324,9 +325,31 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
+	TTF_Font* pFont = loadDebugFont();
+	DebugList debug_css[2];
+
+
+	debug_css[0].init(pRenderer,pFont,15);
+	debug_css[1].init(pRenderer,pFont,415);
+	debug_css[0].addEntry("Player 1",DEBUG_LIST_NOT_SELECTABLE);
+	debug_css[1].addEntry("Player 2",DEBUG_LIST_NOT_SELECTABLE);
+
+	for (int i=0;i<2;i++){
+		debug_css[i].addEntry("Eric",DEBUG_LIST_SELECTABLE,CHARA_KIND_ERIC);
+		debug_css[i].addEntry("Roy",DEBUG_LIST_SELECTABLE,CHARA_KIND_ROY);
+		debug_css[i].addEntry("Atlas",DEBUG_LIST_SELECTABLE,CHARA_KIND_ATLAS);
+		debug_css[i].nextOption();
+		debug_css[i].previousOption();
+		player_info[i].chara_kind = debug_css[i].getDestination();
+	}
+
 	while (chara_selecting) {
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+
+		for (int i=0;i<2;i++){
+			debug_css[i].render();
+		}
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -357,17 +380,23 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			}
 		}
 
+
+
+
+
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_buttons(keyboard_state);
-			if (player_info[i].check_button_trigger(BUTTON_LP)) {
-				player_info[i].chara_kind = CHARA_KIND_ROY;
+			if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
+				debug_css[i].nextOption();
+				player_info[i].chara_kind = debug_css[i].getDestination();
+				//printf("player %d selected character id %d\n",i+1,debug_css[i].getDestination());
 			}
-			if (player_info[i].check_button_trigger(BUTTON_MP)) {
-				player_info[i].chara_kind = CHARA_KIND_ERIC;
+			if (player_info[i].check_button_trigger(BUTTON_MENU_UP)) {
+				debug_css[i].previousOption();
+				player_info[i].chara_kind = debug_css[i].getDestination();
+				//printf("player %d selected character id %d\n",i+1,debug_css[i].getDestination());
 			}
-			if (player_info[i].check_button_trigger(BUTTON_HP)) {
-				player_info[i].chara_kind = CHARA_KIND_ATLAS;
-			}
+			
 			if (player_info[i].check_button_trigger(BUTTON_LK)) {
 				player_info[i].stage_kind = "training_room";
 			}

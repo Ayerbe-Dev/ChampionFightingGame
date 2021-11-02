@@ -45,6 +45,7 @@ public:
     TTF_Font *pFont;
     DebugList();
     DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset = 15);
+    void init(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset = 15);
     //~DebugList();
     void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();

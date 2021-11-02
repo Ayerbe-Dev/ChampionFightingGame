@@ -38,7 +38,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
-	debugger = Debugger();
 	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
 
 	GameCoordinate debug_anchor[2];
@@ -61,7 +60,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	fighter_instance[1] = p2->get_fighter();
 
 	for (int i = 0; i < 2; i++) {
-		fighter_instance[i]->player_info = &player_info[i];
 		fighter_instance[i]->pos.x = 0;
 		fighter_instance_accessor->fighter_instance[i] = fighter_instance[i];
 		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor;
@@ -201,6 +199,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				timer.ClockMode = !timer.ClockMode;
 			}
 			if (!debug) {
+				//this is the line that gets called every frame for the fighters to do their stuff
 				fighter_instance[i]->fighter_main();
 			}
 			else if (i == 0) {
@@ -211,8 +210,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 					debugger.target = 1;
 				}
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					(&player_info[0])->update_buttons(keyboard_state);
-					(&player_info[1])->update_buttons(keyboard_state);
+					player_info[0].update_buttons(keyboard_state);
+					player_info[1].update_buttons(keyboard_state);
 					fighter_instance[0]->fighter_main();
 					fighter_instance[1]->fighter_main();
 					timer.Tick();

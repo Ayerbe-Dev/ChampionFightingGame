@@ -4,6 +4,10 @@
 #include "FighterInstanceAccessor.fwd.h"
 #include "FighterInstance.fwd.h"
 
+/*
+	This class allows one fighter to access the attributes of the other without needing a pointer to the other fighter.
+	This is mostly so we dont confuse ourselves with members.
+*/
 class FighterInstanceAccessor {
 public:
 	FighterInstance* fighter_instance[2]; 

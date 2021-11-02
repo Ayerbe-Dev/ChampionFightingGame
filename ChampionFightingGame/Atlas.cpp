@@ -7,10 +7,12 @@ Atlas::Atlas() {
 
 }
 
-Atlas::Atlas(SDL_Renderer* renderer, int id, FighterInstanceAccessor* fighter_instance_accessor) {
+Atlas::Atlas(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+	this->player_info = player_info;
 	resource_dir = "resource/chara/atlas";
-	superInit(id, renderer);
-	load_params();
+	if (!crash_to_debug) {
+		load_params();
+	}
 	loadAtlasACMD();
 	loadAtlasStatusFunctions();
 	set_current_move_script("default");

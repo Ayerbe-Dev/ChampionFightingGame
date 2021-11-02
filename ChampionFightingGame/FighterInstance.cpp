@@ -177,12 +177,18 @@ void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 		pos = GameCoordinate(WINDOW_WIDTH, WINDOW_HEIGHT, 200, 0);
 	}
 
-	load_anim_list(renderer);
-	load_stats();
+	if (!crash_to_debug) {
+		load_anim_list(renderer);
+	}
+	if (!crash_to_debug) {
+		load_stats();
+	}
 	chara_float[CHARA_FLOAT_HEALTH] = get_param_float("health");
 	loadStatusFunctions();
 	pos.y = FLOOR_GAMECOORD;
-	change_anim("wait", 2, 0);
+	if (!crash_to_debug) {
+		change_anim("wait", 2, 0);
+	}
 	status_kind = CHARA_STATUS_WAIT;
 	chara_flag[CHARA_FLAG_CAN_TECH] = true;
 }
@@ -194,9 +200,13 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
 	if (anim_list.fail()) {
-		player_info->crash_length = 1;
-		//If you got a crash that led you here, you messed up an anim_list. Make sure the resource_dir is properly set for the character you're
-		//trying to add?
+		player_info->crash_length = 500;
+		anim_list.close();
+		char buffer[55];
+		sprintf(buffer, "Character %d's resource directory was incorrectly set!", chara_kind);
+		player_info->crash_reason = buffer;
+
+		crash_to_debug = true;
 
 		return;
 	}

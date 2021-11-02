@@ -190,8 +190,8 @@ void ObjectInstance::load_stats() {
 	stats_table.open(resource_dir + "/param/stats.yml");
 
 	if (stats_table.fail()) {
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
+		stats_table.close();
+		return;
 	}
 
 	string stat;
@@ -230,8 +230,8 @@ void ObjectInstance::load_params() {
 	stats_table.open(resource_dir + "/param/params.yml");
 
 	if (stats_table.fail()) {
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
+		stats_table.close();
+		return;
 	}
 
 	string stat;

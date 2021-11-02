@@ -23,7 +23,6 @@ public:
 
 	virtual void chara_id() = 0;
 
-	PlayerInfo* player_info;
 	int chara_kind;
 	FighterInstanceAccessor* fighter_instance_accessor;
 	ProjectileInstance* projectile_objects[MAX_PROJECTILES]{};

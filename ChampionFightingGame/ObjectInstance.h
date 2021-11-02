@@ -6,6 +6,7 @@
 #include "Box.fwd.h"
 #include "Box.h"
 #include "ParamTable.h"
+#include "PlayerInfo.fwd.h"
 
 class MoveScript {
 public:
@@ -29,6 +30,8 @@ public:
 	float facing_dir{ 1.0 };
 	u32 status_kind{ CHARA_STATUS_WAIT };
 	u32 situation_kind{ CHARA_SITUATION_GROUND };
+
+	PlayerInfo* player_info;
 
 	double angle{ 0 };
 

@@ -1,7 +1,8 @@
 #include "ProjectileTemplate.h"
 #include "Game.h"
 
-ProjectileTemplate::ProjectileTemplate(SDL_Renderer * renderer, int id, FighterInstanceAccessor * fighter_instance_accessor) {
+ProjectileTemplate::ProjectileTemplate(SDL_Renderer * renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor * fighter_instance_accessor) {
+	this->player_info = player_info;
 	resource_dir = "resource/projectile/template";
 	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	load_params();

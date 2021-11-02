@@ -39,11 +39,12 @@ public:
 class DebugList{
 public:
     int selection = 0;
+    int x_offset = 15;
     DebugItem debugItems[DEBUG_MENU_ITEMS_MAX];
     SDL_Renderer *pRenderer;
     TTF_Font *pFont;
     DebugList();
-    DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont);
+    DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset = 15);
     //~DebugList();
     void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();

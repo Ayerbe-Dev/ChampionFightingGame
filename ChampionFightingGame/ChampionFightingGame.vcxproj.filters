@@ -250,5 +250,8 @@
     <ClInclude Include="Psychic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameCoordinate.fwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@ using namespace std;
 #include <SDL_image.h>
 
 
-
 int clamp(int min, int value, int max) {
 	if (min <= max)	{
 		if (value < min) {
@@ -134,4 +133,62 @@ string Filter(const string& to, const string& remove) {
 	ret2 = to.substr(cont_index, to.length());
 
 	return ret + ret2;
+}
+
+void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, int font_size, int r, int g, int b, int a) {
+	TTF_Font* font = TTF_OpenFont(font_name.c_str(), font_size);
+	if (!font) {
+		printf("Failed to load font:  %s\n", TTF_GetError());
+	}
+	SDL_Color color = { r,g,b,a };
+	SDL_Surface* text_surface = TTF_RenderText_Blended(font, text.c_str(), color);
+
+	if (!text_surface) {
+		printf("Failed to render text:  %s\n", TTF_GetError());
+	}
+
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	SDL_FreeSurface(text_surface);
+
+	int text_width, text_height;
+	SDL_QueryTexture(texture, nullptr, nullptr, &text_width, &text_height);
+
+	SDL_Rect render_rect;
+	render_rect.x = pos.x + (WINDOW_WIDTH / 2);
+	render_rect.y = (pos.y - WINDOW_HEIGHT) * -1;
+	render_rect.w = text_width;
+	render_rect.h = text_height;
+
+	SDL_RenderCopy(renderer, texture, nullptr, &render_rect);
+	SDL_DestroyTexture(texture);
+	TTF_CloseFont(font);
+}
+
+void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
+	TTF_Font* font = TTF_OpenFont(font_name.c_str(), font_size);
+	if (!font) {
+		printf("Failed to load font:  %s\n", TTF_GetError());
+	}
+	SDL_Color color = { r,g,b,a };
+	SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), color);
+
+	if (!text_surface) {
+		printf("Failed to render text:  %s\n", TTF_GetError());
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	SDL_FreeSurface(text_surface);
+
+	int text_width, text_height;
+	SDL_QueryTexture(texture, nullptr, nullptr, &text_width, &text_height);
+
+	SDL_Rect render_rect;
+	render_rect.x = x_pos;
+	render_rect.y = y_pos;
+	render_rect.w = text_width;
+	render_rect.h = text_height;
+
+	SDL_RenderCopy(renderer, texture, nullptr, &render_rect);
+	SDL_DestroyTexture(texture);
+	TTF_CloseFont(font);
 }

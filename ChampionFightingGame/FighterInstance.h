@@ -298,8 +298,8 @@ public:
 	virtual void eric_enter_status_special_uppercut_start() {};
 	virtual void eric_exit_status_special_uppercut_start() {};
 	virtual void eric_status_special_uppercut() {};
-	virtual void eric_enter_uppercut() {};
-	virtual void eric_exit_uppercut() {};
+	virtual void eric_enter_status_special_uppercut() {};
+	virtual void eric_exit_status_special_uppercut() {};
 	virtual void eric_status_special_uppercut_fall() {};
 	virtual void eric_enter_status_special_uppercut_fall() {};
 	virtual void eric_exit_status_special_uppercut_fall() {};

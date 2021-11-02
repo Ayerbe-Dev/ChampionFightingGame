@@ -32,7 +32,6 @@ extern u32 tick;
 extern u32 tok;
 
 
-
 int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
 	bool gaming = true;
 	bool visualize_boxes = true;
@@ -48,7 +47,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
 
 	//init stage
-	Stage stage = Stage(pRenderer, "training_room");
+	int rng = rand() % 2;
+	Stage stage = Stage(pRenderer, player_info[rng].stage_kind);
 
 	//init players
 	FighterInstance* fighter_instance[2];
@@ -156,8 +156,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
 			the content in pScreenTexture.
 		*/
-
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 0);
+		
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
 
@@ -237,6 +236,15 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			if (error_render != 0) {
 				cout << "\n" << SDL_GetError();
 			}
+			if (fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT] > 1) {
+				SDL_SetRenderTarget(pRenderer, pGui);
+				float id_ope = -1;
+				if (fighter_instance[i]->id == 1) {
+					id_ope *= -1;
+				}
+				draw_text(pRenderer, "FiraCode-Regular.ttf", to_string(fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT]), {id_ope * 500, 500}, 80, 255, 0, 0, 255);
+				SDL_SetRenderTarget(pRenderer, pScreenTexture);
+			}
 
 			//Projectile Renders
 
@@ -297,7 +305,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		}*/
 
 		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
-
 		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr); //render scale to window
 
 		SDL_SetRenderTarget(pRenderer, pGui); //set target to gui layer
@@ -321,8 +328,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		if (!debug) timer.Tick();
 		timer.Render();
 
-		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
 
+		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
 		SDL_RenderCopy(pRenderer, pGui, nullptr, nullptr); //render gui to window
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); //lmao help
@@ -330,6 +337,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		
 		SDL_DestroyTexture(pGui); //ok it's on screen, now get that shit outta here
 		SDL_DestroyTexture(pScreenTexture);
+
 	}
 
 	cleanup(p1, p2);
@@ -812,6 +820,7 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 			*/
+			p2->chara_int[CHARA_INT_COMBO_COUNT] ++;
 			if (p2->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
@@ -886,6 +895,7 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 			p1->chara_float[CHARA_FLOAT_HEALTH] -= p2_hitbox->damage / 2;
 		}
 		else {
+			p1->chara_int[CHARA_INT_COMBO_COUNT] ++;
 			if (p1->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 					p2->chara_int[CHARA_INT_DAMAGE_SCALE] += p2_hitbox->scale;
@@ -985,6 +995,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p2_status_post_hit = p2->status_kind;
 	if (p2_hit) {
+		p2->chara_int[CHARA_INT_COMBO_COUNT] ++;
 		p1_projectile->update_hitbox_connect(p1_hitbox->multihit);
 		p1_projectile->projectile_int[PROJECTILE_INT_HEALTH] --;
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {

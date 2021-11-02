@@ -25,13 +25,13 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
-	SDL_Texture *bgTexture  = loadTexture("resource\\ui\\menu\\main\\funnybg.png",pRenderer);
+	SDL_Texture *bgTexture  = loadTexture("resource/ui/menu/main/funnybg.png",pRenderer);
 
 	MenuItem menu_items[5];
 	SubMenuTable *sub_menu_tables[5];
 	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png",pRenderer);
 	menu_items[1] = MenuItem{"resource/ui/menu/main/Solo.png",pRenderer};
-	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer, "resource\\ui\\menu\\main\\vsimg.png"};
+	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer, "resource/ui/menu/main/vsimg.png"};
 	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png",pRenderer};
 	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png",pRenderer};
 	for (int i = 0; i < 5; i++) {
@@ -238,6 +238,9 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		delete sub_menu_tables[i];
 	}
 
+	SDL_DestroyTexture(pScreenTexture);
+	SDL_DestroyTexture(bgTexture);
+
 	return sub_selection;
 }
 
@@ -364,6 +367,12 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			}
 			if (player_info[i].check_button_trigger(BUTTON_HP)) {
 				player_info[i].chara_kind = CHARA_KIND_PSYCHIC;
+			}
+			if (player_info[i].check_button_trigger(BUTTON_LK)) {
+				player_info[i].stage_kind = "training_room";
+			}
+			if (player_info[i].check_button_trigger(BUTTON_MK)) {
+				player_info[i].stage_kind = "training_room_old";
 			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {

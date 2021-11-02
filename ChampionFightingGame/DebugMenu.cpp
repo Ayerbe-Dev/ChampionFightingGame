@@ -214,41 +214,21 @@ void DebugItem::preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont){
 };
 
 void DebugItem::generateTexture(string message){
-	//
 	SDL_Color sky = {204,247,255};
 	SDL_Color red = { 179,0,59 };
 	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), sky);
 	SDL_Surface* textSurfaceSelect = TTF_RenderText_Solid(pFont, ("["+message+"]").c_str(), red);
-	//
+
 	if (!textSurface) {
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
-
-	//printf("Generating Normal...\n");
 	
-	//normal
 	pTexture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
 	
 	SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
-	//printf("%s\n", TTF_GetError());
 
-	// if(abs(destRect.w) > 1280){
-	// 	printf("WARNING: width exceeds window! real w %d\n", destRect.w);
-	// } else {
-	// 	printf("Normal Gen Success real w %d\n", destRect.w);
-	// }
-	//
-
-	//select
 	pTextureSelect = SDL_CreateTextureFromSurface(pRenderer, textSurfaceSelect);
 	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,&destRectSelect.w,&destRectSelect.h);
-	//printf("%s\n", TTF_GetError());
-
-	// if(abs(destRect.w) > 1280){
-	// 	printf("WARNING: altwidth exceeds window! real w %d\n", destRectSelect.w);
-	// } else {
-	// 	printf("Alt Gen Success real w %d\n", destRectSelect.w);
-	// }
 
 	SDL_FreeSurface(textSurfaceSelect);
 	SDL_FreeSurface(textSurface);

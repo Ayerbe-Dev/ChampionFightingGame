@@ -46,4 +46,14 @@ public:
 	void exit_status_dash() override;
 	void enter_status_dashb() override;
 	void exit_status_dashb() override;
+
+	void eric_status_special_uppercut_start() override;
+	void eric_enter_status_special_uppercut_start() override;
+	void eric_exit_status_special_uppercut_start() override;
+	void eric_status_special_uppercut() override;
+	void eric_enter_status_special_uppercut() override;
+	void eric_exit_status_special_uppercut() override;
+	void eric_status_special_uppercut_fall() override;
+	void eric_enter_status_special_uppercut_fall() override;
+	void eric_exit_status_special_uppercut_fall() override;
 };

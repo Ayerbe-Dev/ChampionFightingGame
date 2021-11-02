@@ -249,6 +249,7 @@
     <ClInclude Include="FighterInstanceAccessor.fwd.h" />
     <ClInclude Include="FighterInstanceAccessor.h" />
     <ClInclude Include="Game.fwd.h" />
+    <ClInclude Include="GameCoordinate.fwd.h" />
     <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />

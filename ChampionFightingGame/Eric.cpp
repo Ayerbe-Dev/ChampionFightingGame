@@ -103,7 +103,17 @@ void Eric::chara_id() {
 }
 
 void Eric::loadEricStatusFunctions() {
+	pStatus[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::eric_status_special_uppercut_start;
+	pEnter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::eric_enter_status_special_uppercut_start;
+	pExit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START] = &FighterInstance::eric_exit_status_special_uppercut_start;
 
+	pStatus[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT] = &FighterInstance::eric_status_special_uppercut;
+	pEnter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT] = &FighterInstance::eric_enter_status_special_uppercut;
+	pExit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT] = &FighterInstance::eric_exit_status_special_uppercut;
+
+	pStatus[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::eric_status_special_uppercut_fall;
+	pEnter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::eric_enter_status_special_uppercut_fall;
+	pExit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL] = &FighterInstance::eric_exit_status_special_uppercut_fall;
 }
 
 void Eric::loadEricACMD() {
@@ -624,11 +634,87 @@ void Eric::loadEricACMD() {
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
 		}
 	});
+	script("special_uppercut_start", [this]() {
+		if (is_excute_frame(0)) {
+			if (chara_int[CHARA_INT_SPECIAL_LEVEL] != SPECIAL_LEVEL_EX) {
+				new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
+				new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
+				new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
+			}
+		}
+		if (is_excute_frame(4)) {
+			max_ticks = 2;
+			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+			}
+			else {
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+			}
+		}
+		if (is_excute_wait(4)) {
+			clear_hitbox_all();
+		}
+	});
+	script("special_uppercut_rise", [this]() {
+		if (is_excute_frame(4)) {
+			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ 0,5 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false);
+
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+				new_hitbox(1, 0, 40, 5, 1.2, 1, GameCoordinate{ 0,5 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false);
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+				new_hitbox(1, 0, 50, 5, 1.2, 1, GameCoordinate{ 0,5 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false);
+			}
+			else {
+				new_hitbox(1, 0, 70, 5, 1.2, 1, GameCoordinate{ 0,5 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 8, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false);
+			}
+		}
+	});
+	script("special_uppercut", [this]() {
+		if (is_excute_frame(0)) {
+			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ 0,65 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false);
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+				new_hitbox(1, 0, 40, 5, 1.2, 1, GameCoordinate{ 0,85 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false);
+			}
+			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+				new_hitbox(1, 0, 50, 5, 1.2, 1, GameCoordinate{ 0,85 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false);
+			}
+			else {
+				new_hitbox(1, 0, 70, 5, 1.2, 1, GameCoordinate{ 0,65 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 8, 7, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false);
+			}
+		}
+	});
 }
 
 void Eric::chara_main() {}
 
 bool Eric::specific_ground_status_act() {
+	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+	}
+	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+	}
+	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+	}
+	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+	}
 	return false;
 }
 
@@ -644,24 +730,30 @@ bool Eric::specific_status_attack() {
 		else if (situation_kind == CHARA_SITUATION_AIR && specific_air_status_act()) {
 			return true;
 		}
-		else if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
-			if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_LP && check_button_input(BUTTON_MP)) {
-				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_MP;
-				if (situation_kind == CHARA_SITUATION_GROUND) {
-					return change_status(CHARA_STATUS_ATTACK, true, false);
-				}
-				else {
-					return change_status(CHARA_STATUS_ATTACK_AIR, true, false);
-				}
+		else {
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, CHARA_SITUATION_GROUND)) {
+				return true;
 			}
-			if (chara_int[CHARA_INT_ATTACK_KIND] == ATTACK_KIND_MP && check_button_input(BUTTON_HP)) {
-				chara_int[CHARA_INT_ATTACK_KIND] = ATTACK_KIND_HP;
-				if (situation_kind == CHARA_SITUATION_GROUND) {
-					return change_status(CHARA_STATUS_ATTACK, true, false);
-				}
-				else {
-					return change_status(CHARA_STATUS_ATTACK_AIR, true, false);
-				}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, CHARA_SITUATION_GROUND)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, CHARA_SITUATION_GROUND)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_HP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_LP, CHARA_SITUATION_AIR)) {
+				return true;
+			}
+			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, CHARA_SITUATION_AIR)) {
+				return true;
 			}
 		}
 	}
@@ -671,9 +763,6 @@ bool Eric::specific_status_attack() {
 void Eric::enter_status_dash() {
 	change_anim("dash_f", 2);
 	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
 }
 
 void Eric::exit_status_dash() {
@@ -684,12 +773,90 @@ void Eric::exit_status_dash() {
 void Eric::enter_status_dashb() {
 	change_anim("dash_b", 2);
 	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
-	new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
-	new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
-	new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
 }
 
 void Eric::exit_status_dashb() {
 	chara_flag[CHARA_FLAG_DASH_CANCEL] = false;
 	chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = false;
+}
+
+void Eric::eric_status_special_uppercut_start() {
+	if (frame >= get_param_int("special_uppercut_transition_frame", param_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+		change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT);
+		return;
+	}
+	if (is_anim_end) {
+		change_status(CHARA_STATUS_WAIT);
+		return;
+	}
+	if (is_actionable() && common_ground_status_act()) {
+		return;
+	}
+}
+
+void Eric::eric_enter_status_special_uppercut_start() {
+	change_anim("special_uppercut_start", 1);
+}
+
+void Eric::eric_exit_status_special_uppercut_start() {
+
+}
+
+void Eric::eric_status_special_uppercut() {
+	if (anim_kind->name == "special_uppercut") {
+		if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+			if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
+				chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity");
+			}
+			situation_kind = CHARA_SITUATION_AIR;
+			add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+			if (is_anim_end) {
+				change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL);
+				return;
+			}
+		}
+	}
+	else {
+		if (is_anim_end) {
+			change_anim("special_uppercut");
+		}
+		if (chara_int[CHARA_INT_HITLAG_FRAMES] == 0) {
+			add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
+		}
+	}
+}
+
+void Eric::eric_enter_status_special_uppercut() {
+	if (situation_kind == CHARA_SITUATION_GROUND) {
+		change_anim("special_uppercut_rise", 2);
+	}
+	else {
+		change_anim("special_uppercut");
+	}
+
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = get_param_float_special("special_uppercut_x");
+	chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] = get_param_float_special("special_uppercut_init_y");
+}
+
+void Eric::eric_exit_status_special_uppercut() {
+
+}
+
+void Eric::eric_status_special_uppercut_fall() {
+	if (pos.y < FLOOR_GAMECOORD) {
+		change_status(CHARA_STATUS_LANDING);
+		return;
+	}
+	if (chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
+		chara_float[CHARA_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity");
+	}
+	add_pos(chara_float[CHARA_FLOAT_CURRENT_X_SPEED] * facing_dir, chara_float[CHARA_FLOAT_CURRENT_Y_SPEED]);
+}
+void Eric::eric_enter_status_special_uppercut_fall() {
+	change_anim("special_uppercut_fall");
+	chara_float[CHARA_FLOAT_CURRENT_X_SPEED] = 0.0;
+}
+
+void Eric::eric_exit_status_special_uppercut_fall() {
+
 }

@@ -322,6 +322,8 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	debugger = Debugger();
 	bool chara_selecting = true;
 	int next_state;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
@@ -348,6 +350,8 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	while (chara_selecting) {
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+		SDL_SetRenderTarget(pRenderer, pScreenTexture);
+		SDL_RenderClear(pRenderer);
 
 		for (int i = 0; i < css_slot_count; i++) {
 			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
@@ -489,6 +493,8 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			}
 		}
 
+		SDL_SetRenderTarget(pRenderer, nullptr);
+		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(pRenderer);
 	}
 	TTF_CloseFont(pFont);

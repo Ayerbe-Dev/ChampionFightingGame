@@ -385,6 +385,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 
 
 		for (int i = 0; i < 2; i++) {
+			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
 				debug_css[i].nextOption();

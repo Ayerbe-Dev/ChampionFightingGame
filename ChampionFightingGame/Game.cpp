@@ -38,6 +38,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
+	debugger = Debugger();
 	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
 
 	GameCoordinate debug_anchor[2];
@@ -60,6 +61,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	fighter_instance[1] = p2->get_fighter();
 
 	for (int i = 0; i < 2; i++) {
+		fighter_instance[i]->player_info = &player_info[i]; //I was wrong, we actually need this
 		fighter_instance[i]->pos.x = 0;
 		fighter_instance_accessor->fighter_instance[i] = fighter_instance[i];
 		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor;

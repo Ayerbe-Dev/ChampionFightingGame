@@ -169,9 +169,6 @@
     <ClInclude Include="Eric.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Roy.fwd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Eric.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -252,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="GameCoordinate.fwd.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Roy.fwd.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

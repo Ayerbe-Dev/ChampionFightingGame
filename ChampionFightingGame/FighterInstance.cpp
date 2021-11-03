@@ -1046,6 +1046,12 @@ void FighterInstance::change_opponent_anim(string anim_kind, int frame_rate, int
 
 //Hitbox
 
+/**
+Creates a persistent hitbox until the status for the character changes.
+\param id the uuid for the hitbox, call clear_hitbox(id) to delete it
+\param anchor the x0 y0 values for the hitbox
+\param offset the x1 y1 values for the hitbox
+*/
 void FighterInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 								 GameCoordinate offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag,
 								 int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,

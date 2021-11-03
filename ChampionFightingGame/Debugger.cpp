@@ -76,10 +76,7 @@ void debug_mode(Debugger *debugger, FighterInstance *target, SDL_Renderer *rende
 		temp_rect.y = (debug_anchor->y - WINDOW_HEIGHT) * -1.0 - target->pos.y;
 		temp_rect.w = ((debug_offset->x - (target->pos.x + WINDOW_WIDTH / 2 * target->facing_dir)));
 		temp_rect.h = (debug_offset->y - WINDOW_HEIGHT) * -1.0 - target->pos.y;
-		cout << "x0: " << temp_rect.x << endl;
-		cout << "y0: " << temp_rect.y << endl;
-		cout << "x1: " << temp_rect.w << endl;
-		cout << "y1: " << temp_rect.h << endl;
+		printf(" GameCoordinate{ %d, %d }, GameCoordinate{ %d, %d }\n",temp_rect.x,temp_rect.y,temp_rect.w,temp_rect.h);
 	}
 	if (debugger->check_button_trigger(BUTTON_DEBUG_PRINT_FRAME)) {
 		debugger->print_frames = !debugger->print_frames;

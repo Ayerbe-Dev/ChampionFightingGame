@@ -321,34 +321,47 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	Debugger debugger;
 	debugger = Debugger();
 	bool chara_selecting = true;
+	int next_state;
 	
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
 	TTF_Font* pFont = loadDebugFont();
 	DebugList debug_css[2];
+	CharaSelectSlot css_slots[32];
+	int rows;
+	int cols;
+	int css_slot_count = load_css(css_slots, &rows, &cols, pRenderer);
+	if (css_slot_count == -1) {
+		player_info[0].crash_length = 500;
+		player_info[0].crash_reason = "Could not open CSS file!";
 
-
-	debug_css[0].init(pRenderer,pFont,15);
-	debug_css[1].init(pRenderer,pFont,415);
-	debug_css[0].addEntry("Player 1",DEBUG_LIST_NOT_SELECTABLE);
-	debug_css[1].addEntry("Player 2",DEBUG_LIST_NOT_SELECTABLE);
-
-	for (int i=0;i<2;i++){
-		debug_css[i].addEntry("Eric",DEBUG_LIST_SELECTABLE,CHARA_KIND_ERIC);
-		debug_css[i].addEntry("Roy",DEBUG_LIST_SELECTABLE,CHARA_KIND_ROY);
-		debug_css[i].addEntry("Atlas",DEBUG_LIST_SELECTABLE,CHARA_KIND_ATLAS);
-		debug_css[i].nextOption();
-		debug_css[i].previousOption();
-		player_info[i].chara_kind = debug_css[i].getDestination();
+		return GAME_STATE_DEBUG_MENU;
+	}
+	PlayerCursor player_cursor[2];
+	PlayerCSSInfo player_css_info[2];
+	for (int i = 0; i < 2; i++) {
+		player_cursor[i] = PlayerCursor(pRenderer, &player_info[i], css_slots[0].textRect.x, css_slots[0].textRect.y);
+		player_css_info[i] = PlayerCSSInfo(pRenderer, &player_info[i]);
 	}
 
 	while (chara_selecting) {
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 
-		for (int i=0;i<2;i++){
-			debug_css[i].render();
+		for (int i = 0; i < css_slot_count; i++) {
+			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
+			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 24, 255, 255, 255, 255);
+		}
+		for (int i = 0; i < 2; i++) {
+			SDL_RenderCopy(pRenderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
+			SDL_RenderCopy(pRenderer, player_css_info[i].texture, NULL, &player_css_info[i].destRect);
+			if (!player_css_info[i].selected) {
+				SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 127);
+			}
+			SDL_RenderCopy(pRenderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
+			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h, 24, 255, 255, 255, player_css_info[i].selected?255:128);
+			SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 255);
 		}
 
 		SDL_Event event;
@@ -380,22 +393,79 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			}
 		}
 
-
-
-
-
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
-				debug_css[i].nextOption();
-				player_info[i].chara_kind = debug_css[i].getDestination();
-				//printf("player %d selected character id %d\n",i+1,debug_css[i].getDestination());
+				if (!player_css_info[i].selected) {
+					if (player_cursor[i].my_row != rows) {
+						player_cursor[i].my_row++;
+					}
+				}
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_UP)) {
-				debug_css[i].previousOption();
-				player_info[i].chara_kind = debug_css[i].getDestination();
-				//printf("player %d selected character id %d\n",i+1,debug_css[i].getDestination());
+				if (!player_css_info[i].selected) {
+					if (player_cursor[i].my_row != 0) {
+						player_cursor[i].my_row--;
+					}
+				}
+			}
+			if (player_info[i].check_button_trigger(BUTTON_MENU_RIGHT)) {
+				if (!player_css_info[i].selected) {
+					if (player_cursor[i].my_row != rows) {
+						if (player_cursor[i].my_col != CHARAS_PER_ROW) {
+							player_cursor[i].my_col++;
+						}
+					}
+					else {
+						if (player_cursor[i].my_col != cols) {
+							player_cursor[i].my_col++;
+						}
+					}
+				}
+			}
+			if (player_info[i].check_button_trigger(BUTTON_MENU_LEFT)) {
+				if (!player_css_info[i].selected) {
+					if (player_cursor[i].my_row != rows) {
+						if (player_cursor[i].my_col != 0) {
+							player_cursor[i].my_col--;
+						}
+					}
+					else {
+						if (player_cursor[i].my_col != 1) { //idk but we do need it
+							player_cursor[i].my_col--;
+						}
+					}
+				}
+			}
+			if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+				if (!player_css_info[i].selected) {
+					if (css_slots[player_css_info[i].selected_slot].selectable) {
+						player_css_info[i].selected = true;
+					}
+				}
+			}
+			if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+				if (player_css_info[i].selected) {
+					player_css_info[i].selected = false;
+				}
+				else {
+					next_state = GAME_STATE_MENU;
+					chara_selecting = false;
+				}
+			}
+			for (int i2 = 0; i2 < css_slot_count; i2++) {
+				player_info[i].chara_kind = CHARA_KIND_ROY;
+				if (player_cursor[i].my_col == css_slots[i2].my_col
+				&& player_cursor[i].my_row == css_slots[i2].my_row) {
+					player_cursor[i].pos_x = css_slots[i2].textRect.x - 30;
+					player_cursor[i].pos_y = css_slots[i2].textRect.y + 10;
+					player_cursor[i].destRect.x = player_cursor[i].pos_x;
+					player_cursor[i].destRect.y = player_cursor[i].pos_y;
+					player_info[i].chara_kind = css_slots[i2].chara_kind;
+					player_css_info[i].selected_slot = i2;
+					break;
+				}
 			}
 			
 			if (player_info[i].check_button_trigger(BUTTON_LK)) {
@@ -412,14 +482,72 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 
-		if (player_info[0].check_button_trigger(BUTTON_MENU_START)) {
-			chara_selecting = false;
+		if (player_info[0].check_button_trigger(BUTTON_MENU_START) || player_info[1].check_button_trigger(BUTTON_MENU_START)) {
+			if (player_css_info[0].selected && player_css_info[1].selected) {
+				next_state = GAME_STATE_GAME;
+				chara_selecting = false;
+			}
 		}
 
 		SDL_RenderPresent(pRenderer);
 	}
-	
-	return GAME_STATE_GAME;
+	TTF_CloseFont(pFont);
+	return next_state;
+}
+
+int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *renderer) {
+	ifstream css_table;
+	css_table.open("resource/ui/menu/css/css_param.yml");
+
+	if (css_table.fail()) {
+		css_table.close();
+		return -1;
+	}
+
+	int col = 0;
+	int row = 0;
+	int chara_max = 0;
+	string chara_name;
+	for (int i = 0; css_table >> chara_name; i++) {
+		int chara_kind;
+		string chara_dir;
+		bool selectable;
+
+		css_table >> chara_kind >> chara_dir >> selectable;
+		if (col == CHARAS_PER_ROW) {
+			row++;
+			col = 0;
+		}
+		else {
+			col++;
+		}
+		css[i] = CharaSelectSlot(renderer, chara_kind, chara_name, chara_dir, col, row, selectable);
+		chara_max++;
+	}
+	for (int i = 0; i < chara_max; i++) {
+		SDL_Rect css_rect;
+		if (css[i].my_row == row) { //Check if we're on the only row which may be incomplete
+			css_rect.w = CSS_WIDTH / (col + 1); //Don't divide by 0 if we're at the beginning of a row
+		}
+		else { //There will always be 9 columns, all of which have a character in them
+			css_rect.w = CSS_WIDTH / CHARAS_PER_ROW; 
+		}
+		css_rect.x = css[i].my_col * css_rect.w;
+		css_rect.h = CSS_HEIGHT / (row + 1); //There are no differences between a complete and incomplete column's height
+		css_rect.y = css[i].my_row * css_rect.h;
+		css[i].destRect = css_rect;
+
+		//Now that we know where each CSS slot is, we can center the text at the bottom center of that slot
+
+		css[i].textRect.x = css[i].destRect.x + css[i].destRect.w / 2;
+		css[i].textRect.y = css[i].destRect.y + css[i].destRect.h;
+		css[i].textRect.w = 30;
+		css[i].textRect.h = 30;
+	}
+
+	*rows = row;
+	*cols = col;
+	return chara_max;
 }
 
 MenuItem::MenuItem(){}
@@ -429,6 +557,31 @@ MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer, string texture_d
 	this->destination = destination;
 	this->texture_description = loadTexture(texture_description_dir.c_str(),pRenderer);
 	this->destRect_description = {0,0,520,720};
+}
+
+SubMenuTable::SubMenuTable() {}
+SubMenuTable::SubMenuTable(int selection, SDL_Renderer* pRenderer) {
+	SDL_Rect sub_rect;
+	sub_rect.x = (WINDOW_WIDTH * 0.72);
+	sub_rect.y = WINDOW_HEIGHT * 0.1;
+	sub_rect.w = WINDOW_WIDTH * 0.25;
+	sub_rect.h = WINDOW_HEIGHT * 0.75;
+	this->destRect = sub_rect;
+	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png", pRenderer);
+	this->selection = selection;
+	this->cursor = new Cursor(pRenderer);
+	selected_item = 0;
+}
+
+CharaSelectSlot::CharaSelectSlot() {
+	this->chara_kind = CHARA_KIND_MAX;
+}
+CharaSelectSlot::CharaSelectSlot(SDL_Renderer* pRenderer, int chara_kind, string chara_name, string chara_dir, int my_col, int my_row, bool selectable) {
+	this->chara_kind = chara_kind;
+	this->chara_name = chara_name;
+	this->my_col = my_col;
+	this->my_row = my_row;
+	this->texture = loadTexture(("resource/ui/menu/css/chara/" + chara_dir + "/render.png").c_str(), pRenderer);
 }
 
 Cursor::Cursor() {}
@@ -442,16 +595,40 @@ Cursor::Cursor(SDL_Renderer* pRenderer) {
 	this->texture = loadTexture("resource/ui/menu/main/Cursor.png", pRenderer);
 }
 
-SubMenuTable::SubMenuTable(){}
-SubMenuTable::SubMenuTable(int selection, SDL_Renderer* pRenderer) {
-	SDL_Rect sub_rect;
-	sub_rect.x = (WINDOW_WIDTH * 0.72);
-	sub_rect.y = WINDOW_HEIGHT * 0.1;
-	sub_rect.w = WINDOW_WIDTH * 0.25;
-	sub_rect.h = WINDOW_HEIGHT * 0.75;
-	this->destRect = sub_rect;
-	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png", pRenderer);
-	this->selection = selection;
-	this->cursor = new Cursor(pRenderer);
-	selected_item = 0;
+PlayerCursor::PlayerCursor() {}
+PlayerCursor::PlayerCursor(SDL_Renderer* pRenderer, PlayerInfo* player_info, int init_x, int init_y) {
+	this->player_info = player_info;
+	if (player_info->id == 0) {
+		this->texture = loadTexture("resource/ui/menu/css/p1_cursor.png", pRenderer);
+	}
+	else {
+		this->texture = loadTexture("resource/ui/menu/css/p2_cursor.png", pRenderer);
+	}
+	pos_x = init_x - 30;
+	pos_y = init_y + 10;
+	this->my_col = 0;
+	this->my_row = 0;
+	SDL_Rect cursor_rect;
+	cursor_rect.x = pos_x;
+	cursor_rect.y = pos_y;
+	cursor_rect.w = 60;
+	cursor_rect.h = 60;
+	this->destRect = cursor_rect;
+}
+
+PlayerCSSInfo::PlayerCSSInfo() {}
+PlayerCSSInfo::PlayerCSSInfo(SDL_Renderer *pRenderer, PlayerInfo *player_info) {
+	this->player_info = player_info;
+	this->texture = loadTexture("resource/ui/menu/css/deck.png", pRenderer);
+	this->selected = false;
+	this->selected_slot = 0;
+	destRect.w = 160;
+	if (player_info->id == 0) {
+		destRect.x = 30;
+	}
+	else {
+		destRect.x = WINDOW_WIDTH - destRect.w - 30;
+	}
+	destRect.y = WINDOW_HEIGHT - 220;
+	destRect.h = 200;
 }

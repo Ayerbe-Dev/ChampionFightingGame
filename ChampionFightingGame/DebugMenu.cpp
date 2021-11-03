@@ -160,11 +160,11 @@ void DebugList::addEntry(string message, int selectable, int destination){
 void DebugList::render(){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
-				if(i == selection){
-					SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
-				} else {
-					SDL_RenderCopy(pRenderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
-				}
+			if(i == selection){
+				SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
+			} else {
+				SDL_RenderCopy(pRenderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
+			}
 		}
 	}
 }

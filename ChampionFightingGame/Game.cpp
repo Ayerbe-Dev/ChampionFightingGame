@@ -163,19 +163,24 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
 
+		/*
+		Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
+		P2 moves such that P1 crosses them up, it can cause both characters to face the same direction for a frame which can break stuff. Make sure the
+		facing direction of each character is locked in before any movement for that frame takes place.
+		*/
+
 		for (int i = 0; i < 2; i++) {
-			SDL_RendererFlip flip = SDL_FLIP_NONE;
 			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable()) {
-				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x) {
+				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x + 5) { //If you only crossed someone up by 5 pixels, don't worry about turning
+					//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
 					fighter_instance[i]->facing_dir = -1.0;
 					fighter_instance[i]->facing_right = false;
-					flip = SDL_FLIP_HORIZONTAL;
 				}
-				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x) {
+				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x - 5) {
 					fighter_instance[i]->facing_dir = 1.0;
 					fighter_instance[i]->facing_right = true;
 				}
-				else { //This is incredibly rare but yes, it is possible for both players to have the exact same X coord
+				else { //If both players are stuck inside each other, stop that !
 					if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[!i]->situation_kind == CHARA_SITUATION_GROUND) {
 						fighter_instance[i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
 						fighter_instance[!i]->chara_flag[CHARA_FLAG_ALLOW_GROUND_CROSSUP] = true;
@@ -190,10 +195,9 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 					}
 				}
 			}
-			else if (!fighter_instance[i]->facing_right) {
-				flip = SDL_FLIP_HORIZONTAL;
-			}
+		}
 
+		for (int i = 0; i < 2; i++) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
 				timer.ClockMode = !timer.ClockMode;
@@ -234,7 +238,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			}
 
 			SDL_Rect render_pos = getRenderPos(fighter_instance[i], fighter_instance[i]->chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER]);
-			
+			SDL_RendererFlip flip = fighter_instance[i]->facing_right ? SDL_FLIP_NONE:SDL_FLIP_HORIZONTAL;
 			const double angle = (const double)fighter_instance[i]->angle;
 			int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
 			if (error_render != 0) {

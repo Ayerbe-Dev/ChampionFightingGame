@@ -122,13 +122,14 @@ void Atlas::loadAtlasACMD() { //todo: Fill this in with all of the common empty 
 	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 1;
+			new_hurtbox(0, GameCoordinate{ -52, 32 }, GameCoordinate{ -44, 190 });
+			new_hurtbox(1, GameCoordinate{ 44, 182 }, GameCoordinate{ -34, 198 });
 		}
 		if (is_excute_frame(2)) {
 			max_ticks = 4;
-			new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -28,183 }, GameCoordinate{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
-			new_hurtbox(0, GameCoordinate{ -52, 32 }, GameCoordinate{ -44, 190 });//body
-			new_hurtbox(1, GameCoordinate{ 44, 182 }, GameCoordinate{ -34, 1980 });//shoulders
+			new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ -28,183 }, GameCoordinate{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
+			new_hurtbox(2, GameCoordinate{ -52, 32 }, GameCoordinate{ -44, 190 });//body
+			new_hurtbox(2, GameCoordinate{ 44, 182 }, GameCoordinate{ -34, 198 });//shoulders
 		}
 	});
 	script("stand_mp", [this]() {

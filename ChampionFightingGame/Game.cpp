@@ -247,10 +247,9 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			}
 
 			SDL_Rect render_pos = getRenderPos(fighter_instance[i], fighter_instance[i]->chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER]);
-			SDL_RendererFlip flip = fighter_instance[i]->facing_right ? SDL_FLIP_NONE:SDL_FLIP_HORIZONTAL;
 			const double angle = (const double)fighter_instance[i]->angle;
-			int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip);
-			if (error_render != 0) {
+			SDL_RendererFlip flip = fighter_instance[i]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+			if (SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip)) {
 				cout << "\n" << SDL_GetError();
 			}
 			if (fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT] > 1) {
@@ -280,8 +279,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 					render_pos.w = (width / (fighter_instance[i]->projectile_objects[o]->anim_kind->length + 1));
 					render_pos.h = height;
 					const double angle = (const double)fighter_instance[i]->projectile_objects[o]->angle;
-					int error_render = SDL_RenderCopyEx(pRenderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip);
-					if (error_render != 0) {
+					if (SDL_RenderCopyEx(pRenderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip)) {
 						cout << SDL_GetError() << endl;
 					}
 				}

@@ -14,27 +14,27 @@ extern int error_render;
 
 
 
-int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+int menu_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
 	Debugger debugger;
 	debugger = Debugger();
 	//neccesary for scaling
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	bool menuing = true;
-	
+
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
-	SDL_Texture *bgTexture  = loadTexture("resource/ui/menu/main/funnybg.png",pRenderer);
+	SDL_Texture* bgTexture = loadTexture("resource/ui/menu/main/funnybg.png", pRenderer);
 
 	MenuItem menu_items[5];
-	SubMenuTable *sub_menu_tables[5];
-	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png",pRenderer);
-	menu_items[1] = MenuItem{"resource/ui/menu/main/Solo.png",pRenderer};
-	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png",pRenderer, "resource/ui/menu/main/vsimg.png"};
-	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png",pRenderer};
-	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png",pRenderer};
+	SubMenuTable* sub_menu_tables[5];
+	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png", pRenderer);
+	menu_items[1] = MenuItem{ "resource/ui/menu/main/Solo.png",pRenderer };
+	menu_items[2] = MenuItem{ "resource/ui/menu/main/VS.png",pRenderer, "resource/ui/menu/main/vsimg.png" };
+	menu_items[3] = MenuItem{ "resource/ui/menu/main/Options.png",pRenderer };
+	menu_items[4] = MenuItem{ "resource/ui/menu/main/Extras.png",pRenderer };
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].destination = i;
 		sub_menu_tables[i] = new SubMenuTable(i, pRenderer);
@@ -61,11 +61,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	SDL_Rect garborect = {0,0,232,32};
+	SDL_Rect garborect = { 0,0,232,32 };
 
 	float theta = 0;
-	float offset = 3.14/13;
-	float magnitude = WINDOW_WIDTH/2;  //this is about 45 degrees
+	float offset = 3.14 / 13;
+	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
 	int top_selection = -2;
 	int sub_selection = GAME_STATE_GAME;
 	int menu_level = MENU_LEVEL_TOP;
@@ -75,12 +75,13 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		SDL_RenderClear(pRenderer);
 		SDL_SetRenderDrawColor(pRenderer, 100, 100, 100, 255);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
-		SDL_RenderCopy(pRenderer,bgTexture,nullptr,nullptr);
+		SDL_RenderCopy(pRenderer, bgTexture, nullptr, nullptr);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT: {
+				case SDL_QUIT:
+				{
 					return GAME_STATE_CLOSE;
 				} break;
 			}
@@ -131,7 +132,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 					sub_type = menu_items[top_selection * -1].destination;
 					break;
 				}
-				if (player_info[i].check_button_trigger(BUTTON_DOWN)) {
+				if (player_info[i].vertical_input(true)) {
 					if (top_selection > -4) {
 						top_selection--;
 					}
@@ -141,7 +142,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 					}
 				}
 
-				if (player_info[i].check_button_trigger(BUTTON_UP)) {
+				if (player_info[i].vertical_input(false)) {
 					if (top_selection < 0) {
 						top_selection++;
 					}
@@ -162,7 +163,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 					break;
 				}
 
-				if (player_info[i].check_button_trigger(BUTTON_UP)) {
+				if (player_info[i].vertical_input(false)) {
 					if (sub_menu_tables[sub_type]->selected_item == 0) {
 						sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->item_count - 1;
 					}
@@ -170,7 +171,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 						sub_menu_tables[sub_type]->selected_item--;
 					}
 				}
-				if (player_info[i].check_button_trigger(BUTTON_DOWN)) {
+				if (player_info[i].vertical_input(true)) {
 					if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->item_count - 1) {
 						sub_menu_tables[sub_type]->selected_item = 0;
 					}
@@ -195,40 +196,40 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 		//prebuffer render
 		for (int i = 1; i < 5; i++) {
-			menu_items[i].destRect.x = int(magnitude*cos(theta+(i-5)*offset));
-			menu_items[i].destRect.y = int(magnitude*sin(theta+(i-5)*offset)) + WINDOW_HEIGHT/2;
+			menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
+			menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
 
-			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i-5)*offset)*180)/3.14,nullptr,flip);
+			SDL_RenderCopyEx(pRenderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, flip);
 		}
 
 		//real render
 		for (int i = 0; i < 5; i++) {
-			menu_items[i].destRect.x = int(magnitude*cos(theta+i*offset));
-			menu_items[i].destRect.y = int(magnitude*sin(theta+i*offset)) + WINDOW_HEIGHT/2;
+			menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
+			menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
 
-			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+i*offset)*180)/3.14,nullptr,flip);
+			SDL_RenderCopyEx(pRenderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, flip);
 			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
 			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
 			for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
 				SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
 			}
-		}		
+		}
 
 		//postbuffer render
 		for (int i = 0; i < 5; i++) {
-			menu_items[i].destRect.x = int(magnitude*cos(theta+(i+5)*offset));
+			menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
 			menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
 
-			SDL_RenderCopyEx(pRenderer,menu_items[i].texture,&garborect,&menu_items[i].destRect,((theta+(i+5)*offset)*180)/3.14,nullptr,flip);
+			SDL_RenderCopyEx(pRenderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, flip);
 		}
 
 
-		theta += ((top_selection * offset) - theta) / 16; 
+		theta += ((top_selection * offset) - theta) / 16;
 
 		//printf("top_selection: %d, target theta: %f, theta: %f\n",top_selection,(top_selection * offset),theta);
 
-		SDL_RenderCopy(pRenderer,menu_items[top_selection*-1].texture_description,nullptr,&menu_items[top_selection*-1].destRect_description);
-		
+		SDL_RenderCopy(pRenderer, menu_items[top_selection * -1].texture_description, nullptr, &menu_items[top_selection * -1].destRect_description);
+
 		SDL_SetRenderTarget(pRenderer, nullptr);
 		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(pRenderer);
@@ -386,17 +387,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
-			if (player_info[i].check_button_on(BUTTON_MENU_DOWN)) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
-					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_TIMER;
-				}
-				else if (player_info[i].stick_hold_v_timer == 0) {
-					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
-				}
-				else {
-					player_info[i].stick_hold_v_timer--;
-					goto SKIP_D;
-				}
+			if (player_info[i].vertical_input(true)) {
 				if (!player_css_info[i].selected) {
 					if (player_cursor[i].my_row != rows) {
 						int prev_col = player_cursor[i].my_col;
@@ -404,20 +395,8 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 						find_nearest_css_slot(css_slots, css_slot_count, player_cursor[i].pos_x, &player_cursor[i]);
 					}
 				}
-				SKIP_D:
-				string msg = "hi fez";
 			}
-			if (player_info[i].check_button_on(BUTTON_MENU_UP)) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_UP)) {
-					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_TIMER;
-				}
-				else if (player_info[i].stick_hold_v_timer == 0) {
-					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
-				}
-				else {
-					player_info[i].stick_hold_v_timer--;
-					goto SKIP_U;
-				}
+			if (player_info[i].vertical_input(false)) {
 				if (!player_css_info[i].selected) {
 					if (player_cursor[i].my_row != 0) {
 						int prev_col = player_cursor[i].my_col;
@@ -425,20 +404,8 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 						find_nearest_css_slot(css_slots, css_slot_count, player_cursor[i].pos_x, &player_cursor[i]);
 					}
 				}
-				SKIP_U:
-				string msg = "it's me sans undertale";
 			}
-			if (player_info[i].check_button_on(BUTTON_MENU_RIGHT)) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_RIGHT)) {
-					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_TIMER;
-				}
-				else if (player_info[i].stick_hold_h_timer == 0) {
-					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
-				}
-				else {
-					player_info[i].stick_hold_h_timer--;
-					goto SKIP_R;
-				}
+			if (player_info[i].horizontal_input(true)) {
 				if (!player_css_info[i].selected) {
 					player_cursor[i].prev_side = true;
 					if (player_cursor[i].my_row != rows) {
@@ -452,29 +419,14 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 						}
 					}
 				}
-				SKIP_R:
-				string msg = "doo doo doo, doo";
 			}
-			if (player_info[i].check_button_on(BUTTON_MENU_LEFT)) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_LEFT)) {
-					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_TIMER;
-				}
-				else if (player_info[i].stick_hold_h_timer == 0) {
-					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
-				}
-				else {
-					player_info[i].stick_hold_h_timer--;
-					goto SKIP_L;
-				}
+			if (player_info[i].horizontal_input(false)) {
 				if (!player_css_info[i].selected) {
 					player_cursor[i].prev_side = false;
 					if (player_cursor[i].my_col != 0) {
 						player_cursor[i].my_col--;
 					}
-
 				}
-				SKIP_L:
-				string msg = "it's called skip L because i skip all of my Ls";
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
 				if (!player_css_info[i].selected) {
@@ -534,7 +486,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 
 		for (int i = 0; i < css_slot_count; i++) {
 			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
-			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 20, 255, 255, 255, 255);
+			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 20, 0, 0, 0, 255);
 		}
 		for (int i = 0; i < 2; i++) {
 			SDL_RenderCopy(pRenderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
@@ -543,7 +495,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 				SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 127);
 			}
 			SDL_RenderCopy(pRenderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
-			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h + 5, 24, 255, 255, 255, player_css_info[i].selected ? 255 : 127);
+			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h + 5, 24, 0, 0, 0, player_css_info[i].selected ? 255 : 127);
 			SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 255);
 		}
 

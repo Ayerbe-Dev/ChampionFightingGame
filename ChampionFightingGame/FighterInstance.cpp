@@ -15,9 +15,8 @@ FighterInstance::FighterInstance() {}
 
 FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	// runs on creation of instance;
-		// no it doesn't
-			// wait actually yes it does
+	// runs
+		// yeah
 	superInit(0, renderer);
 }
 

@@ -28,4 +28,6 @@ public:
 	bool check_button_release(u32 button);
 	bool is_valid_buffer_button(u32 button);
 	void move_to_front(u32 buttons[6], u32 button);
+	bool horizontal_input(bool right);
+	bool vertical_input(bool down);
 };

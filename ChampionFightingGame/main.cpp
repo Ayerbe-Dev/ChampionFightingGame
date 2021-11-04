@@ -15,7 +15,6 @@
 #include "DebugMenu.h"
 #undef main
 using namespace std;
-int error_render;
 int registered_controllers[2] = {-1, -1};
 
 Uint32 tick;
@@ -43,6 +42,7 @@ int main() {
 
 	while (running) {
 		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED); //I really hope this gets deleted after every function call... or ...   :/
+																																//well boy have i got news for you
 		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {

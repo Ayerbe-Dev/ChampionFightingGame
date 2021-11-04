@@ -200,6 +200,13 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_po
 	TTF_CloseFont(font);
 }
 
+void frameTimeDelay(Uint32 *tick, Uint32 *tok){
+	*tok = SDL_GetTicks() - *tick;
+	if (*tok < TICK_RATE_MS) {
+		SDL_Delay(TICK_RATE_MS - *tok);
+	}
+	*tick = SDL_GetTicks();
+};
 //Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
 void draw_text_multi_lines(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
 	int blank_pos = get_blank(text);

@@ -51,6 +51,10 @@ typedef unsigned long long u64;
 
 #define FLOOR_GAMECOORD 60.0
 
+/*
+	Locks the app to 60tps. tick and tok should be 2 Uint32s initialized to 0;
+*/
+void frameTimeDelay(Uint32 *tick, Uint32 *tok);
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
 int ymlChopInt(string line);

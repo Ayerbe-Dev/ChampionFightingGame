@@ -14,7 +14,9 @@ extern int error_render;
 
 
 
-int menu_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
+int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+	Uint32 tick;
+	Uint32 tok;
 	Debugger debugger;
 	debugger = Debugger();
 	//neccesary for scaling
@@ -319,20 +321,19 @@ int get_sub_selection(int top_selection, int sub_selection) {
 }
 
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+	Uint32 tick=0,tok=0;
 	Debugger debugger;
 	debugger = Debugger();
 	bool chara_selecting = true;
 	int next_state;
-
+	
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_Texture* pCSSBackgroundTexture = loadTexture("resource/ui/menu/css/CSSbackground.png",pRenderer);
 	SDL_Texture* pCSSBottomBarTexture = loadTexture("resource/ui/menu/css/CSSbottombar.png",pRenderer);
 
 	const Uint8* keyboard_state;
-	tick = SDL_GetTicks();
 
 	TTF_Font* pFont = loadDebugFont();
-	DebugList debug_css[2];
 	CharaSelectSlot css_slots[32];
 	int rows;
 	int cols;
@@ -366,11 +367,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 
 		//Frame delay
 
-		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS) {
-			SDL_Delay(TICK_RATE_MS - tok);
-		}
-		tick = SDL_GetTicks();
+		frameTimeDelay(&tick,&tok);
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);

@@ -16,9 +16,6 @@
 #undef main
 using namespace std;
 int registered_controllers[2] = {-1, -1};
-
-Uint32 tick;
-Uint32 tok;
 bool debug = false;
 
 int main() {

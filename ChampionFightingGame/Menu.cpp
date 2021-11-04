@@ -324,7 +324,9 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	int next_state;
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	
+	SDL_Texture* pCSSBackgroundTexture = loadTexture("resource/ui/menu/css/CSSbackground.png",pRenderer);
+	SDL_Texture* pCSSBottomBarTexture = loadTexture("resource/ui/menu/css/CSSbottombar.png",pRenderer);
+
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
@@ -525,6 +527,10 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 				chara_selecting = false;
 			}
 		}
+
+		//Background
+		SDL_RenderCopy(pRenderer, pCSSBackgroundTexture, NULL, nullptr);
+		SDL_RenderCopy(pRenderer, pCSSBottomBarTexture, NULL, nullptr);
 
 		for (int i = 0; i < css_slot_count; i++) {
 			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);

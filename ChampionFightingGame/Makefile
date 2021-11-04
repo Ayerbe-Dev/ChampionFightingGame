@@ -1,6 +1,6 @@
 CWD = $(shell cd)
 TARGET=ChampionFightingGame.exe
-OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o Menu.o FighterInstance.o DebugMenu.o FighterInstanceAccessor.o ObjectInstance.o ProjectileInstance.o RoyFireball.o EricFireball.o CharaTemplate.o ProjectileTemplate.o Atlas.o
+OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o Menu.o FighterInstance.o DebugMenu.o FighterInstanceAccessor.o ObjectInstance.o ProjectileInstance.o RoyFireball.o EricFireball.o CharaTemplate.o ProjectileTemplate.o Atlas.o MenuHandler.o
 OBJECT_FILES=$(patsubst %,$(CWD)/%,$(OBJECT_NAMES))
 INCLUDE_DIR=../SDL2/include
 LIB_DIR=../SDL2/lib/x86

@@ -17,7 +17,9 @@ enum{
     DEBUG_ITEM_ACTIVE
 };
 
-class DebugItem{
+class GameMenu{};
+
+class DebugItem: public GameMenu{
 public:
     int state = DEBUG_ITEM_NOT_ACTIVE;
     int selectable = DEBUG_LIST_SELECTABLE;
@@ -51,9 +53,10 @@ public:
     void render();
     void nextOption();
     void previousOption();
+    void finisher();
     int getDestination();
+    bool debugging = true;
 };
 
 TTF_Font *loadDebugFont(string fontname = "FiraCode-Regular.ttf");
 int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate);
-

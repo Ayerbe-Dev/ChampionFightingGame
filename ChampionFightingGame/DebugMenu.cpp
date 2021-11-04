@@ -8,20 +8,17 @@
 #include "utils.h"
 #include "DebugMenu.h"
 #include "Debugger.h"
+#include "MenuHandler.h"
 
 int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
 	Uint32 tick=0,tok=0;
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
-	bool debugging = true;
-	bool bPressedDown = false;
-	bool bPressedUp = false;
 	Debugger debugger;
-	debugger = Debugger();
 
-	//new
 	TTF_Font* pFont = loadDebugFont();
 	DebugList debugList = {pRenderer,pFont};
+
 	lastString << "This menu was called from the destination [" << gamestate << "]";
 
 	debugList.addEntry("Welcome to the debug menu!",DEBUG_LIST_NOT_SELECTABLE);
@@ -40,7 +37,14 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	debugList.nextOption();
 	debugList.previousOption();
 
-	while (debugging) {
+	//handler
+	MenuHandler menuHandler(&debugList,&player_info[0],&player_info[1]);
+
+	menuHandler.mapDown(&DebugList::nextOption);
+	menuHandler.mapUp(&DebugList::previousOption);
+	menuHandler.mapFinisher(&DebugList::finisher);
+
+	while (debugList.debugging) {
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 
@@ -83,19 +87,9 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		
-		for (int i = 0; i < 2; i++) {
-			(&player_info[i])->update_controller();
-			(&player_info[i])->update_buttons(keyboard_state);
-			if ((&player_info[i])->check_button_trigger(BUTTON_DOWN)) {
-					debugList.nextOption();
-			}
-			if ((&player_info[i])->check_button_trigger(BUTTON_UP)) {
-					debugList.previousOption();
-			}
-			if ((&player_info[i])->check_button_trigger(BUTTON_START) || (&player_info[i])->check_button_trigger(BUTTON_LP)) {
-				debugging = false;
-			}
-		}
+		//ooh menu handling
+		menuHandler.handleMenu();
+		//what if the only purpose of his 1 line was to hide 12 lines
 
 		SDL_SetRenderTarget(pRenderer, nullptr);
 		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
@@ -200,6 +194,10 @@ void DebugList::previousOption(){
 
 int DebugList::getDestination(){
 	return debugItems[selection].destination;
+}
+
+void DebugList::finisher(){
+	debugging = false;
 }
 
 DebugItem::DebugItem(){};

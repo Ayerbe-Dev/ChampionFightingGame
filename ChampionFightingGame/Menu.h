@@ -96,3 +96,4 @@ public:
     PlayerCSSInfo();
     PlayerCSSInfo(SDL_Renderer* pRenderer, PlayerInfo* player_info);
 };
+

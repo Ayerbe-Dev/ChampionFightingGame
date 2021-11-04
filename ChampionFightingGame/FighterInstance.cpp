@@ -40,6 +40,11 @@ void FighterInstance::fighter_main() {
 		   '-::::::::::::::-'
 			   '''::::'''
 	 */
+
+	if (isnan(pos.y)) {
+		pos.y = 0;
+	}
+	
 	create_jostle_rect(GameCoordinate{ -20, 25 }, GameCoordinate{ 20, 0 });
 
 	prevpos = pos;
@@ -200,7 +205,6 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
 	if (anim_list.fail()) {
-		player_info->crash_length = 500;
 		anim_list.close();
 		char buffer[55];
 		sprintf(buffer, "Character %d's resource directory was incorrectly set!", chara_kind);
@@ -865,8 +869,28 @@ string FighterInstance::get_param_string_special(string param) {
 //Position
 
 bool FighterInstance::add_pos(float x, float y, bool prev) {
-	GameCoordinate prevpos = pos;
 	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
+	float prev_x = x;
+	if (x == -0.0) {
+		x = 0.0;
+	}
+	int prev_y = y;
+	if (y == -0.0) {
+		y = 0.0;
+	}
+	if (isnan(x) || isnan(y)) {
+		char buffer_1[82];
+		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f. You probably", (id + 1), status_kind, prev_x, (float)prev_y);
+		char buffer_2[89];
+		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Add)", ((!id) + 1), that->status_kind);
+		fighter_instance_accessor->fighter_instance[0]->player_info->crash_reason = buffer_1;
+		fighter_instance_accessor->fighter_instance[1]->player_info->crash_reason = buffer_2;
+
+		crash_to_debug = true;
+		return false;
+	}
+
+	GameCoordinate prevpos = pos;
 	bool ret = true;
 	bool opponent_right = pos.x > that->pos.x;
 	pos.x += x;
@@ -930,8 +954,27 @@ bool FighterInstance::add_pos(float x, float y, bool prev) {
 }
 
 bool FighterInstance::set_pos(float x, float y, bool prev) {
-	GameCoordinate prevpos = pos;
 	FighterInstance* that = fighter_instance_accessor->fighter_instance[!id];
+	float prev_x = x;
+	if (x == -0.0) {
+		x = 0.0;
+	}
+	int prev_y = y;
+	if (y == -0.0) {
+		y = 0.0;
+	}
+	if (isnan(x) || isnan(y) || y != prev_y) {
+		char buffer_1[82];
+		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f. You probably", (id + 1), status_kind, prev_x, (float)prev_y);
+		char buffer_2[89];
+		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Set)", ((!id) + 1), that->status_kind);
+		fighter_instance_accessor->fighter_instance[0]->player_info->crash_reason = buffer_1;
+		fighter_instance_accessor->fighter_instance[1]->player_info->crash_reason = buffer_2;
+
+		crash_to_debug = true;
+		return false;
+	}
+	GameCoordinate prevpos = pos;
 	bool ret = true;
 	bool opponent_right = pos.x > that->pos.x;
 	pos.x = x;
@@ -994,11 +1037,14 @@ void FighterInstance::set_opponent_offset(GameCoordinate offset, int frames) {
 	GameCoordinate new_offset;
 	new_offset.x = this->pos.x + (offset.x * facing_dir);
 	new_offset.y = this->pos.y + offset.y;
+
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] =
-		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / frames;
+		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / (frames + 1);
+
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] =
-		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / frames;
-	fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] = frames;
+		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / (frames + 1);
+
+	fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] = frames + 1;
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = new_offset.x;
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
 }
@@ -1008,10 +1054,13 @@ void FighterInstance::set_opponent_offset(GameCoordinate offset) {
 	int frames = fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES];
 	new_offset.x = this->pos.x + (offset.x * facing_dir);
 	new_offset.y = this->pos.y + offset.y;
+
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] =
-		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / frames;
+		(fighter_instance_accessor->fighter_instance[!id]->pos.x - new_offset.x) * fighter_instance_accessor->fighter_instance[!id]->facing_dir / (frames + 1);
+
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] =
-		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / frames;
+		(fighter_instance_accessor->fighter_instance[!id]->pos.y - new_offset.y) / (frames + 1);
+
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] = new_offset.x;
 	fighter_instance_accessor->fighter_instance[!id]->chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
 }
@@ -1238,7 +1287,6 @@ bool FighterInstance::ending_hitlag(int frames) {
 
 int FighterInstance::get_launch_ticks() {
 	if (chara_float[CHARA_FLOAT_LAUNCH_GRAVITY] == 0) {
-		player_info->crash_length = 500;
 		char buffer[51];
 		sprintf(buffer, "Player %d needs a gravity value on their launcher!", ((!id) + 1));
 		player_info->crash_reason = buffer;
@@ -1286,6 +1334,7 @@ bool FighterInstance::change_status(u32 new_status_kind, bool call_end_status, b
 		chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		chara_flag[CHARA_FLAG_HAD_ATTACK_IN_STATUS] = false;
 		chara_flag[CHARA_FLAG_STATIONARY_ANIMATION] = false;
+		chara_flag[CHARA_FLAG_THROW_TECH] = false;
 		chara_float[CHARA_FLOAT_DISTANCE_TO_WALL] = 0.0;
 		if (call_end_status) {
 			if (status_kind < CHARA_STATUS_MAX) {
@@ -2059,6 +2108,7 @@ void FighterInstance::status_grab() {
 }
 
 void FighterInstance::enter_status_grab() {
+	chara_flag[CHARA_FLAG_THROW_TECH] = true;
 	change_anim("grab");
 }
 
@@ -2066,7 +2116,7 @@ void FighterInstance::exit_status_grab() {}
 
 void FighterInstance::status_throw() {
 	if (!chara_flag[CHARA_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] });
+		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
 	if (is_anim_end) {
 		change_status(CHARA_STATUS_WAIT);
@@ -2130,6 +2180,7 @@ void FighterInstance::status_grab_air() {
 }
 
 void FighterInstance::enter_status_grab_air() {
+	chara_flag[CHARA_FLAG_THROW_TECH] = true;
 	change_anim("grab_air");
 }
 
@@ -2137,7 +2188,7 @@ void FighterInstance::exit_status_grab_air() {}
 
 void FighterInstance::status_throw_air() {
 	if (!chara_flag[CHARA_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] });
+		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
@@ -2200,11 +2251,15 @@ void FighterInstance::exit_status_throw_air() {
 void FighterInstance::status_grabbed() {
 	if (chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] != 0 && chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] != 0) {
 		if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
-			add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
+			if (!add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1)) {
+//				cout << chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] << endl;
+			}
 			chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
 		}
 		else {
-			set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y]);
+			if (!set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y])) {
+//				cout << chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] << endl;
+			}
 		}
 	}
 }
@@ -2556,9 +2611,25 @@ void FighterInstance::enter_status_clank() {
 
 void FighterInstance::exit_status_clank() {}
 
-void FighterInstance::status_throw_tech() {}
+void FighterInstance::status_throw_tech() {
+	if (chara_int[CHARA_INT_HITLAG_FRAMES] == 15 || chara_int[CHARA_INT_HITLAG_FRAMES] == 16) {
+		forceStepThroughHitlag();
+	}
+	else if (chara_int[CHARA_INT_HITLAG_FRAMES] < 15) {
+		add_pos(-4 * facing_dir, 0);
+	}
+	else {
+		add_pos(-1 * facing_dir, 0);
+	}
+	if (is_anim_end) {
+		change_status(situation_kind == CHARA_SITUATION_GROUND ? CHARA_STATUS_WAIT : CHARA_STATUS_FALL); //woah i can do this
+	}
+}
 
-void FighterInstance::enter_status_throw_tech() {}
+void FighterInstance::enter_status_throw_tech() {
+	change_anim("throw_tech");
+	chara_int[CHARA_INT_HITLAG_FRAMES] = 20;
+}
 
 void FighterInstance::exit_status_throw_tech() {}
 

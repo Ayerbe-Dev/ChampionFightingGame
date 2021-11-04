@@ -33,20 +33,19 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	debugList.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
 	debugList.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_GAME);
 	debugList.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
-	debugList.addEntry(player_info[0].crash_reason,DEBUG_LIST_NOT_SELECTABLE);
-	debugList.addEntry(player_info[1].crash_reason,DEBUG_LIST_NOT_SELECTABLE);
 	debugList.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
 	debugList.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
+	debugList.addEntry(player_info[0].crash_reason, DEBUG_LIST_NOT_SELECTABLE);
+	debugList.addEntry(player_info[1].crash_reason, DEBUG_LIST_NOT_SELECTABLE);
 	
-
-	SDL_SetRenderTarget(pRenderer,nullptr);
 
 	//these make sure that the selector doesnt start on an unselectable row
 	debugList.nextOption();
 	debugList.previousOption();
 
 	while (debugging) {
-		SDL_RenderClear(pRenderer);
+		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 
 
 		tok = SDL_GetTicks() - tick;
@@ -105,7 +104,10 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			}
 		}
 
+		SDL_SetRenderTarget(pRenderer, nullptr);
+		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(pRenderer);
+		SDL_DestroyTexture(pScreenTexture);
 	}
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
 	(&player_info[1])->crash_reason = "Crash Message Goes Here";

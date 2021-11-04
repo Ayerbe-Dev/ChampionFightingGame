@@ -29,11 +29,8 @@
 #include "ProjectileTemplate.h"
 
 extern bool debug;
-extern u32 tick;
-extern u32 tok;
-
-
 int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
+	Uint32 tick=0,tok=0;
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
@@ -92,7 +89,6 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	player_indicator[1] = PlayerIndicator(pRenderer, fighter_instance[1]);
 
 	const Uint8* keyboard_state;
-	tick = SDL_GetTicks();
 
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
@@ -101,12 +97,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	}
 
 	while (gaming) {
-		//Frame delay
-		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS) {
-			SDL_Delay(TICK_RATE_MS - tok);
-		}
-		tick = SDL_GetTicks();
+
+		frameTimeDelay(&tick,&tok);
 
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_Texture* pGui = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -196,3 +196,11 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_po
 	SDL_DestroyTexture(texture);
 	TTF_CloseFont(font);
 }
+
+void frameTimeDelay(Uint32 *tick, Uint32 *tok){
+	*tok = SDL_GetTicks() - *tick;
+	if (*tok < TICK_RATE_MS) {
+		SDL_Delay(TICK_RATE_MS - *tok);
+	}
+	*tick = SDL_GetTicks();
+};

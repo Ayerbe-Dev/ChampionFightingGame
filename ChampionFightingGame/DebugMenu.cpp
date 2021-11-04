@@ -8,12 +8,9 @@
 #include "utils.h"
 #include "DebugMenu.h"
 #include "Debugger.h"
-extern u32 tick;
-extern u32 tok;
-
-
 
 int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
+	Uint32 tick=0,tok=0;
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
 	bool debugging = true;
@@ -49,11 +46,7 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		SDL_RenderClear(pRenderer);
 
 
-		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS) {
-			SDL_Delay(TICK_RATE_MS - tok);
-		}
-		tick = SDL_GetTicks();
+		frameTimeDelay(&tick,&tok);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {

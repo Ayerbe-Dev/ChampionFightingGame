@@ -411,6 +411,10 @@ void Eric::loadEricACMD() {
 		if (is_excute_frame(3)) {
 			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW, CHARA_STATUS_GRABBED);
 		}
+		if (is_excute_wait(2)) {
+			clear_grabbox_all();
+			chara_flag[CHARA_FLAG_THROW_TECH] = false;
+		}
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
@@ -454,6 +458,10 @@ void Eric::loadEricACMD() {
 		}
 		if (is_excute_frame(3)) {
 			new_grabbox(0, GameCoordinate{ 15, 55 }, GameCoordinate{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, CHARA_STATUS_THROW_AIR, CHARA_STATUS_GRABBED);
+		}
+		if (is_excute_wait(2)) {
+			clear_grabbox_all();
+			chara_flag[CHARA_FLAG_THROW_TECH] = false;
 		}
 	});
 	script("throw_f_air", [this]() {

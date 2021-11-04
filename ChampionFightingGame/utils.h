@@ -66,6 +66,8 @@ bool is_any_controller_input(SDL_GameController* controller);
 string Filter(const string& to, const string& remove);
 void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
 void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
+void draw_text_multi_lines(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r = 0, int g = 0, int b = 0, int a = 0);
+int get_blank(string s);
 
 /*
 	updateCamera(); 

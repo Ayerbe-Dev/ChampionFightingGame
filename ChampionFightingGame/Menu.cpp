@@ -338,7 +338,6 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	int cols;
 	int css_slot_count = load_css(css_slots, &rows, &cols, pRenderer);
 	if (css_slot_count == -1) {
-		player_info[0].crash_length = 500;
 		player_info[0].crash_reason = "Could not open CSS file!";
 
 		return GAME_STATE_DEBUG_MENU;
@@ -532,7 +531,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 
 		for (int i = 0; i < css_slot_count; i++) {
 			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
-			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 24, 255, 255, 255, 255);
+			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 20, 255, 255, 255, 255);
 		}
 		for (int i = 0; i < 2; i++) {
 			SDL_RenderCopy(pRenderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
@@ -541,7 +540,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 				SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 127);
 			}
 			SDL_RenderCopy(pRenderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
-			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h, 24, 255, 255, 255, player_css_info[i].selected ? 255 : 128);
+			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h + 5, 24, 255, 255, 255, player_css_info[i].selected ? 255 : 127);
 			SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 255);
 		}
 
@@ -566,13 +565,16 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *render
 	int row = 0;
 	int chara_max = 0;
 	string chara_name;
-	for (int i = 0; css_table >> chara_name; i++) {
+	for (int i = 0; getline(css_table, chara_name); i++) {
 		int chara_kind;
 		string chara_dir;
 		bool selectable;
 
 		css_table >> chara_kind >> chara_dir >> selectable;
 		css[i] = CharaSelectSlot(renderer, chara_kind, chara_name, chara_dir, col, row, selectable);
+
+		getline(css_table, chara_name); //If we don't include this line, getline will read from the previous line at the beginning of the next iteration
+
 		if (col == CHARAS_PER_ROW) {
 			row++;
 			col = 0;
@@ -615,7 +617,7 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *render
 		//Now that we know where each CSS slot is, we can center the text at the bottom center of that slot
 
 		css[i].textRect.x = css[i].destRect.x + css[i].destRect.w / 2;
-		css[i].textRect.y = css[i].destRect.y + css[i].destRect.h * 1.1;
+		css[i].textRect.y = css[i].destRect.y + css[i].destRect.h * 1.05;
 		css[i].textRect.w = 30;
 		css[i].textRect.h = 30;
 	}
@@ -728,6 +730,6 @@ PlayerCSSInfo::PlayerCSSInfo(SDL_Renderer *pRenderer, PlayerInfo *player_info) {
 	else {
 		destRect.x = WINDOW_WIDTH - destRect.w - 30;
 	}
-	destRect.y = WINDOW_HEIGHT - 220;
+	destRect.y = WINDOW_HEIGHT - 250;
 	destRect.h = 200;
 }

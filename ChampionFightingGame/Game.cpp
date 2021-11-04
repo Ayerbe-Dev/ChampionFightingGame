@@ -166,12 +166,16 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 
 		for (int i = 0; i < 2; i++) {
 			if (fighter_instance[i]->situation_kind == CHARA_SITUATION_GROUND && fighter_instance[i]->is_actionable()) {
-				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x + 5) { //If you only crossed someone up by 5 pixels, don't worry about turning
+				int pos_threshold = 0;
+				if (fighter_instance[!i]->situation_kind == CHARA_SITUATION_AIR) {
+					pos_threshold = 5;
+				}
+				if (fighter_instance[i]->pos.x > fighter_instance[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
 					//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
 					fighter_instance[i]->facing_dir = -1.0;
 					fighter_instance[i]->facing_right = false;
 				}
-				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x - 5) {
+				else if (fighter_instance[i]->pos.x < fighter_instance[!i]->pos.x - pos_threshold) {
 					fighter_instance[i]->facing_dir = 1.0;
 					fighter_instance[i]->facing_right = true;
 				}
@@ -217,6 +221,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter_instance[debugger.target]->frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter_instance[debugger.target]->render_frame - 1 << endl;
+						cout << "Player " << debugger.target + 1 << " Pos X: " << fighter_instance[debugger.target]->pos.x << endl;
+						cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter_instance[debugger.target]->pos.y << endl;
 					}
 				}
 				debug_mode(&debugger, fighter_instance[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);

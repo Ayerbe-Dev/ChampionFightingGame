@@ -124,6 +124,7 @@ bool is_any_controller_input(SDL_GameController* controller) {
 	return false;
 }
 
+
 string Filter(const string& to, const string& remove) {
 	string ret = "";
 	string ret2 = "";
@@ -135,6 +136,7 @@ string Filter(const string& to, const string& remove) {
 	return ret + ret2;
 }
 
+//Draw text, center-oriented, based on 0,0 = Bottom middle coords
 void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, int font_size, int r, int g, int b, int a) {
 	TTF_Font* font = TTF_OpenFont(font_name.c_str(), font_size);
 	if (!font) {
@@ -166,6 +168,7 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordi
 	TTF_CloseFont(font);
 }
 
+//Draw text, center-oriented, based on 0,0 = Top left corner coords
 void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
 	TTF_Font* font = TTF_OpenFont(font_name.c_str(), font_size);
 	if (!font) {
@@ -204,3 +207,27 @@ void frameTimeDelay(Uint32 *tick, Uint32 *tok){
 	}
 	*tick = SDL_GetTicks();
 };
+//Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
+void draw_text_multi_lines(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
+	int blank_pos = get_blank(text);
+	if (blank_pos) {
+		string first_text = text.substr(0, blank_pos);
+		string second_text = text.substr(blank_pos + 1);
+		draw_text(renderer, font_name, first_text, x_pos, y_pos, font_size, r, g, b, a);
+		draw_text_multi_lines(renderer, font_name, second_text, x_pos, y_pos + font_size, font_size, r, g, b, a);
+	}
+	else {
+		draw_text(renderer, font_name, text, x_pos, y_pos, font_size, r, g, b, a);
+	}
+}
+
+//Check the first character in a string that is a space
+int get_blank(string s) {
+	const char *c = s.c_str();
+	for (int i = 0; i < s.length(); i++) {
+		if (isblank(c[i])) {
+			return i;
+		}
+	}
+	return 0;
+}

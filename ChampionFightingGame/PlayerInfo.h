@@ -13,6 +13,8 @@ public:
 	u32 buffer_order[6]{ BUTTON_LP, BUTTON_MP, BUTTON_HP, BUTTON_LK, BUTTON_MK, BUTTON_HK };
 	string crash_reason{"Crash Message Goes Here"};
 	int crash_length = 300;
+	int stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
+	int stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
 
 	PlayerInfo();
 	PlayerInfo(int id);

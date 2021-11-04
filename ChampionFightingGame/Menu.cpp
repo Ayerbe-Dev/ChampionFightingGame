@@ -385,7 +385,17 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 		for (int i = 0; i < 2; i++) {
 			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
-			if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
+			if (player_info[i].check_button_on(BUTTON_MENU_DOWN)) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
+					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_TIMER;
+				}
+				else if (player_info[i].stick_hold_v_timer == 0) {
+					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
+				}
+				else {
+					player_info[i].stick_hold_v_timer--;
+					goto SKIP_D;
+				}
 				if (!player_css_info[i].selected) {
 					if (player_cursor[i].my_row != rows) {
 						int prev_col = player_cursor[i].my_col;
@@ -393,8 +403,20 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 						find_nearest_css_slot(css_slots, css_slot_count, player_cursor[i].pos_x, &player_cursor[i]);
 					}
 				}
+				SKIP_D:
+				string msg = "hi fez";
 			}
-			if (player_info[i].check_button_trigger(BUTTON_MENU_UP)) {
+			if (player_info[i].check_button_on(BUTTON_MENU_UP)) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_UP)) {
+					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_TIMER;
+				}
+				else if (player_info[i].stick_hold_v_timer == 0) {
+					player_info[i].stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
+				}
+				else {
+					player_info[i].stick_hold_v_timer--;
+					goto SKIP_U;
+				}
 				if (!player_css_info[i].selected) {
 					if (player_cursor[i].my_row != 0) {
 						int prev_col = player_cursor[i].my_col;
@@ -402,8 +424,20 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 						find_nearest_css_slot(css_slots, css_slot_count, player_cursor[i].pos_x, &player_cursor[i]);
 					}
 				}
+				SKIP_U:
+				string msg = "it's me sans undertale";
 			}
-			if (player_info[i].check_button_trigger(BUTTON_MENU_RIGHT)) {
+			if (player_info[i].check_button_on(BUTTON_MENU_RIGHT)) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_RIGHT)) {
+					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_TIMER;
+				}
+				else if (player_info[i].stick_hold_h_timer == 0) {
+					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
+				}
+				else {
+					player_info[i].stick_hold_h_timer--;
+					goto SKIP_R;
+				}
 				if (!player_css_info[i].selected) {
 					player_cursor[i].prev_side = true;
 					if (player_cursor[i].my_row != rows) {
@@ -417,8 +451,20 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 						}
 					}
 				}
+				SKIP_R:
+				string msg = "doo doo doo, doo";
 			}
-			if (player_info[i].check_button_trigger(BUTTON_MENU_LEFT)) {
+			if (player_info[i].check_button_on(BUTTON_MENU_LEFT)) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_LEFT)) {
+					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_TIMER;
+				}
+				else if (player_info[i].stick_hold_h_timer == 0) {
+					player_info[i].stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
+				}
+				else {
+					player_info[i].stick_hold_h_timer--;
+					goto SKIP_L;
+				}
 				if (!player_css_info[i].selected) {
 					player_cursor[i].prev_side = false;
 					if (player_cursor[i].my_col != 0) {
@@ -426,6 +472,8 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 					}
 
 				}
+				SKIP_L:
+				string msg = "it's called skip L because i skip all of my Ls";
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
 				if (!player_css_info[i].selected) {
@@ -590,7 +638,7 @@ void find_nearest_css_slot(CharaSelectSlot css[32], int slot_count, int pos_x, P
 		nearest++;
 	}
 	player_cursor->my_col = css[nearest].my_col;
-	if (lowest_distance < 15 && prev_col != 0) { //I'm so dumb I was trying to compare columns from differently sized rows LMAO
+	if (lowest_distance < 15 && prev_col != 0) {
 		player_cursor->prev_side = !player_cursor->prev_side;
 	}
 

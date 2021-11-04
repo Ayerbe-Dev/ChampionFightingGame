@@ -35,6 +35,8 @@ typedef unsigned long long u64;
 #define CSS_HEIGHT WINDOW_HEIGHT / 2.5
 #define MOVE_SCRIPT_MAX 256
 #define MAX_PROJECTILES 10
+#define MENU_STICK_HOLD_TIMER 20
+#define MENU_STICK_HOLD_INTERVAL 2
 
 #define DASH_WINDOW 14
 #define TECH_WINDOW 8

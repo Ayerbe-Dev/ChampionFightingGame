@@ -9,6 +9,7 @@
 #include "Stage.h"
 #include "UI.h"
 #include "Menu.h"
+#include "SoundManager.h"
 
 #include "ObjectInstance.h"
 #include "FighterInstance.h"

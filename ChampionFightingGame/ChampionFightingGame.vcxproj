@@ -209,6 +209,7 @@
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -271,6 +272,8 @@
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyFireball.fwd.h" />
     <ClInclude Include="RoyFireball.h" />
+    <ClInclude Include="SoundManager.fwd.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="ProjectileTemplate.fwd.h" />
     <ClInclude Include="ProjectileTemplate.h" />

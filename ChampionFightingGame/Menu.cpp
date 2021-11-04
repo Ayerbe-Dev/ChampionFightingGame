@@ -353,21 +353,6 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 		SDL_SetRenderTarget(pRenderer, pScreenTexture);
 		SDL_RenderClear(pRenderer);
 
-		for (int i = 0; i < css_slot_count; i++) {
-			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
-			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 24, 255, 255, 255, 255);
-		}
-		for (int i = 0; i < 2; i++) {
-			SDL_RenderCopy(pRenderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
-			SDL_RenderCopy(pRenderer, player_css_info[i].texture, NULL, &player_css_info[i].destRect);
-			if (!player_css_info[i].selected) {
-				SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 127);
-			}
-			SDL_RenderCopy(pRenderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
-			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h, 24, 255, 255, 255, player_css_info[i].selected?255:128);
-			SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 255);
-		}
-
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -403,26 +388,31 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			if (player_info[i].check_button_trigger(BUTTON_MENU_DOWN)) {
 				if (!player_css_info[i].selected) {
 					if (player_cursor[i].my_row != rows) {
+						int prev_col = player_cursor[i].my_col;
 						player_cursor[i].my_row++;
+						find_nearest_css_slot(css_slots, css_slot_count, player_cursor[i].pos_x, &player_cursor[i]);
 					}
 				}
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_UP)) {
 				if (!player_css_info[i].selected) {
 					if (player_cursor[i].my_row != 0) {
+						int prev_col = player_cursor[i].my_col;
 						player_cursor[i].my_row--;
+						find_nearest_css_slot(css_slots, css_slot_count, player_cursor[i].pos_x, &player_cursor[i]);
 					}
 				}
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_RIGHT)) {
 				if (!player_css_info[i].selected) {
+					player_cursor[i].prev_side = true;
 					if (player_cursor[i].my_row != rows) {
 						if (player_cursor[i].my_col != CHARAS_PER_ROW) {
 							player_cursor[i].my_col++;
 						}
 					}
 					else {
-						if (player_cursor[i].my_col != cols) {
+						if (player_cursor[i].my_col != cols - 1) {
 							player_cursor[i].my_col++;
 						}
 					}
@@ -430,16 +420,11 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_LEFT)) {
 				if (!player_css_info[i].selected) {
-					if (player_cursor[i].my_row != rows) {
-						if (player_cursor[i].my_col != 0) {
-							player_cursor[i].my_col--;
-						}
+					player_cursor[i].prev_side = false;
+					if (player_cursor[i].my_col != 0) {
+						player_cursor[i].my_col--;
 					}
-					else {
-						if (player_cursor[i].my_col != 1) { //idk but we do need it
-							player_cursor[i].my_col--;
-						}
-					}
+
 				}
 			}
 			if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
@@ -458,6 +443,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 					chara_selecting = false;
 				}
 			}
+
 			for (int i2 = 0; i2 < css_slot_count; i2++) {
 				player_info[i].chara_kind = CHARA_KIND_ROY;
 				if (player_cursor[i].my_col == css_slots[i2].my_col
@@ -493,6 +479,21 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 			}
 		}
 
+		for (int i = 0; i < css_slot_count; i++) {
+			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
+			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 24, 255, 255, 255, 255);
+		}
+		for (int i = 0; i < 2; i++) {
+			SDL_RenderCopy(pRenderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
+			SDL_RenderCopy(pRenderer, player_css_info[i].texture, NULL, &player_css_info[i].destRect);
+			if (!player_css_info[i].selected) {
+				SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 127);
+			}
+			SDL_RenderCopy(pRenderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
+			draw_text(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h, 24, 255, 255, 255, player_css_info[i].selected ? 255 : 128);
+			SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 255);
+		}
+
 		SDL_SetRenderTarget(pRenderer, nullptr);
 		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(pRenderer);
@@ -520,6 +521,7 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *render
 		bool selectable;
 
 		css_table >> chara_kind >> chara_dir >> selectable;
+		css[i] = CharaSelectSlot(renderer, chara_kind, chara_name, chara_dir, col, row, selectable);
 		if (col == CHARAS_PER_ROW) {
 			row++;
 			col = 0;
@@ -527,26 +529,42 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *render
 		else {
 			col++;
 		}
-		css[i] = CharaSelectSlot(renderer, chara_kind, chara_name, chara_dir, col, row, selectable);
 		chara_max++;
 	}
 	for (int i = 0; i < chara_max; i++) {
+		int swidth;
+		int sheight;
+		SDL_QueryTexture(css[i].texture, NULL, NULL, &swidth, &sheight); 
+		/*
+			We want the actual dimensions of the base sprite so the proportions of our CSS slot will always be the same even regardless of how we
+			calculated the width. The base sprite is tall and ugly so we aren't actually maintaining the BASE proportion, but we are maintaining
+			a proportion.
+		*/
 		SDL_Rect css_rect;
-		if (css[i].my_row == row) { //Check if we're on the only row which may be incomplete
-			css_rect.w = CSS_WIDTH / (col + 1); //Don't divide by 0 if we're at the beginning of a row
+		if (row == 0) { //If we only have one row, we can upscale all of the slots and get free extra vertical space for it
+			css_rect.w = CSS_WIDTH / col;
+			css_rect.x = (css[i].my_col * css_rect.w) + (WINDOW_WIDTH / 10);
 		}
-		else { //There will always be 9 columns, all of which have a character in them
-			css_rect.w = CSS_WIDTH / CHARAS_PER_ROW; 
+		else {
+			//If we have multiple rows, we need all of our slots to be the same size no matter what row they're on
+			css_rect.w = CSS_WIDTH / CHARAS_PER_ROW;
+			if (css[i].my_row == row) { //If we're on the bottom row, we want to orient our positions to the center of the row
+				css_rect.x = ((css[i].my_col + (float)(CHARAS_PER_ROW - col + 1) / (float)2.0) * css_rect.w) + (WINDOW_WIDTH / 15);
+			}
+			else { //If we're on a filled row, it's literally the same calculation as if we only have one row but not as wide
+				css_rect.x = (css[i].my_col * css_rect.w) + (WINDOW_WIDTH / 15);
+			}
 		}
-		css_rect.x = css[i].my_col * css_rect.w;
-		css_rect.h = CSS_HEIGHT / (row + 1); //There are no differences between a complete and incomplete column's height
-		css_rect.y = css[i].my_row * css_rect.h;
+		int factor = swidth / css_rect.w;
+		css_rect.h = sheight / (factor * 1.5);
+		css_rect.y = css[i].my_row * 1.2 * css_rect.h;
+
 		css[i].destRect = css_rect;
 
 		//Now that we know where each CSS slot is, we can center the text at the bottom center of that slot
 
 		css[i].textRect.x = css[i].destRect.x + css[i].destRect.w / 2;
-		css[i].textRect.y = css[i].destRect.y + css[i].destRect.h;
+		css[i].textRect.y = css[i].destRect.y + css[i].destRect.h * 1.1;
 		css[i].textRect.w = 30;
 		css[i].textRect.h = 30;
 	}
@@ -554,6 +572,29 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *render
 	*rows = row;
 	*cols = col;
 	return chara_max;
+}
+
+void find_nearest_css_slot(CharaSelectSlot css[32], int slot_count, int pos_x, PlayerCursor *player_cursor) {
+	int nearest = 0;
+	int i = 10 * player_cursor->my_row;
+	int lowest_distance = abs((css[i].textRect.x + css[i].textRect.w / 2) - pos_x);
+	int prev_col = player_cursor->my_col;
+	while (i < slot_count) {
+		if (abs((css[i].textRect.x + css[i].textRect.w / 2) - pos_x) < lowest_distance) {
+			lowest_distance = abs((css[i].textRect.x + css[i].textRect.w / 2) - pos_x);
+			nearest = i;
+		}
+		i++;
+	}
+	if (player_cursor->prev_side && slot_count % 2 == 1 && nearest != slot_count - 1) {
+		nearest++;
+	}
+	player_cursor->my_col = css[nearest].my_col;
+	if (lowest_distance < 15 && prev_col != 0) { //I'm so dumb I was trying to compare columns from differently sized rows LMAO
+		player_cursor->prev_side = !player_cursor->prev_side;
+	}
+
+	return;
 }
 
 MenuItem::MenuItem(){}
@@ -612,6 +653,7 @@ PlayerCursor::PlayerCursor(SDL_Renderer* pRenderer, PlayerInfo* player_info, int
 	}
 	pos_x = init_x - 30;
 	pos_y = init_y + 10;
+	this->prev_side = false;
 	this->my_col = 0;
 	this->my_row = 0;
 	SDL_Rect cursor_rect;

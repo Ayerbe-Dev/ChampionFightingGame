@@ -12,6 +12,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]);
 int get_sub_selection(int top_selection, int sub_selection);
 int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *renderer);
+void find_nearest_css_slot(CharaSelectSlot css[32], int slot_count, int pos_x, PlayerCursor *player_cursor);
 
 class MenuItem{
 public:
@@ -75,6 +76,8 @@ public:
     PlayerInfo* player_info;
     int my_col;
     int my_row;
+    bool prev_side;
+    bool last_input_was_up_down;
     int pos_x;
     int pos_y;
 

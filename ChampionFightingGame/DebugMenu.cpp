@@ -39,9 +39,9 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	//handler
 	MenuHandler menuHandler(&debugList,&player_info[0],&player_info[1]);
 
-	menuHandler.mapDown(&DebugList::nextOption);
-	menuHandler.mapUp(&DebugList::previousOption);
-	menuHandler.mapFinisher(&DebugList::finisher);
+	menuHandler.setEventMenuDown(&DebugList::nextOption);
+	menuHandler.setEventMenuUp(&DebugList::previousOption);
+	menuHandler.setEventMenuFinish(&DebugList::finisher);
 
 	menuHandler.setInitialDelay(70);
 	menuHandler.setRepeatDelay(20);

@@ -9,15 +9,15 @@ public:
     MenuHandler();
     MenuHandler(DebugList *pHandlerTarget, PlayerInfo *pPlayerInfo1, PlayerInfo *pPlayerInfo2);
 
-    void mapUp(DBMtraversalFunction traversal);
-    void mapDown(DBMtraversalFunction traversal);
-    void mapLeft(DBMtraversalFunction traversal);
-    void mapRight(DBMtraversalFunction traversal);
+    void setEventMenuUp(DBMtraversalFunction traversal);
+    void setEventMenuDown(DBMtraversalFunction traversal);
+    void setEventMenuLeft(DBMtraversalFunction traversal);
+    void setEventMenuRight(DBMtraversalFunction traversal);
     /*
         Each menu has a finisher function which will be responsible for deciding if its ok for the menu to exit.
         Then it will run the last scripts it needs to exit properly
     */
-    void mapFinisher(DBMtraversalFunction traversal);
+    void setEventMenuFinish(DBMtraversalFunction traversal);
     
     //requires SDL_PumpEvents(); to be called before this function.
     void handleMenu();

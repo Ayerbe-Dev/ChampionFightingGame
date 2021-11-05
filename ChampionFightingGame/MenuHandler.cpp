@@ -19,6 +19,7 @@ void MenuHandler::handleMenu(){
         pPlayerInfoArray[i]->update_controller();
         pPlayerInfoArray[i]->update_buttons(SDL_GetKeyboardState(nullptr));
         
+        //On Press
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_UP) && bUpDefined){
             (pHandlerTarget->*(nsmfUpTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_DOWN) && bDownDefined){
@@ -30,5 +31,43 @@ void MenuHandler::handleMenu(){
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_LP) && bUpDefined){
             (pHandlerTarget->*(nsmfFinisher))();
         }
+
+        //On hold
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_RIGHT)){
+            iHoldFrames++;
+            printf("+");
+        } else {
+            iHoldFrames=0;
+        }
+
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) && bUpDefined && canRepeatKeys()){
+            (pHandlerTarget->*(nsmfUpTraversal))();
+            iHoldFrames = iInitialDelay - iRepeatDelay;
+        }
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) && bDownDefined && canRepeatKeys()){
+             (pHandlerTarget->*(nsmfDownTraversal))();
+             iHoldFrames = iInitialDelay - iRepeatDelay;
+        } 
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) && bLeftDefined && canRepeatKeys()){
+             (pHandlerTarget->*(nsmfLeftTraversal))();
+             iHoldFrames = iInitialDelay - iRepeatDelay;
+        } 
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_RIGHT) && bRightDefined && canRepeatKeys()){
+             (pHandlerTarget->*(nsmfRightTraversal))();
+             iHoldFrames = iInitialDelay - iRepeatDelay;
+        }
+
 	}
 };
+
+bool MenuHandler::canRepeatKeys(){
+    return (iHoldFrames > iInitialDelay);
+}
+
+void MenuHandler::setRepeatDelay(unsigned int delay){
+    iRepeatDelay = delay;
+}
+
+void MenuHandler::setInitialDelay(unsigned int delay){
+    iInitialDelay = delay;
+}

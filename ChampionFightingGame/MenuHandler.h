@@ -21,6 +21,18 @@ public:
     
     //requires SDL_PumpEvents(); to be called before this function.
     void handleMenu();
+
+    /*
+        Sets the number of frames before repeat mode starts
+        \param delay Number of frames
+    */
+    void setInitialDelay(unsigned int delay);
+
+    /*
+        Sets the number of frames between each key press
+        \param delay Number of frames
+    */
+    void setRepeatDelay(unsigned int delay);
 private:
     PlayerInfo *pPlayerInfoArray[2];
     DBMtraversalFunction nsmfUpTraversal;
@@ -32,4 +44,8 @@ private:
     bool bUpDefined=false, bDownDefined=false, bLeftDefined=false, bRightDefined=false, bFinisherDefined=false;
 
     DebugList *pHandlerTarget;
+
+    unsigned int iHoldFrames=0, iInitialDelay = 70, iRepeatDelay = 20;
+
+    bool canRepeatKeys();
 };

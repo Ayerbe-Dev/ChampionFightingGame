@@ -35,7 +35,6 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 	//these make sure that the selector doesnt start on an unselectable row
 	debugList.nextOption();
-	debugList.previousOption();
 
 	//handler
 	MenuHandler menuHandler(&debugList,&player_info[0],&player_info[1]);
@@ -43,6 +42,9 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	menuHandler.mapDown(&DebugList::nextOption);
 	menuHandler.mapUp(&DebugList::previousOption);
 	menuHandler.mapFinisher(&DebugList::finisher);
+
+	menuHandler.setInitialDelay(70);
+	menuHandler.setRepeatDelay(20);
 
 	while (debugList.debugging) {
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);

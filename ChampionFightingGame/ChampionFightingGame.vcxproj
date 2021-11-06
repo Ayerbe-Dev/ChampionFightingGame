@@ -193,6 +193,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MenuHandler.cpp" />
     <ClCompile Include="ObjectInstance.cpp" />
     <ClCompile Include="ParamTable.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -259,6 +260,7 @@
     <ClInclude Include="Leon.fwd.h" />
     <ClInclude Include="Menu.fwd.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="MenuHandler.h" />
     <ClInclude Include="ObjectInstance.fwd.h" />
     <ClInclude Include="ObjectInstance.h" />
     <ClInclude Include="ParamTable.h" />

@@ -15,11 +15,13 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 	int width;
 	int height;
 	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
-	SDL_Rect frame_rect;
-	frame_rect.x = frame * (width / (animation->length + 1));
-	frame_rect.y = 0;
-	frame_rect.w = width / (animation->length + 1);
-	frame_rect.h = height;
+	SDL_Rect frame_rect = animation->anim_map[frame];
+	if (frame_rect.x == 0 && frame_rect.y == 0 && frame_rect.w == 0 && frame_rect.h == 0) {
+		frame_rect.x = frame * (width / (animation->length + 1));
+		frame_rect.y = 0;
+		frame_rect.w = width / (animation->length + 1);
+		frame_rect.h = height;
+	}
 
 	/* 
 

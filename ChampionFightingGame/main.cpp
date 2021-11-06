@@ -20,8 +20,14 @@ bool debug = false;
 
 int main() {
 	bool running = true;
-	bool visualize_boxes = true;
 	int game_state = GAME_STATE_DEBUG_MENU;
+	SDL_AudioSpec format;
+	format.freq = 22050;
+	format.format = AUDIO_S16;
+	format.channels = 2;
+	format.samples = 512;
+	format.callback = audio_callback;
+	format.userdata = NULL;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
@@ -29,11 +35,16 @@ int main() {
 	if (TTF_Init() < 0) {
 		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
 	}
+	if (SDL_OpenAudio(&format, NULL) < 0) {
+		printf("Error opening SDL_audio: %s\n", SDL_GetError());
+	}
+	SDL_PauseAudio(0);
 	SDL_GameControllerEventState(SDL_ENABLE);
 	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
+
 
 	float testx, testy;
 

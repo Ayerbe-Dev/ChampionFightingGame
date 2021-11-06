@@ -228,9 +228,46 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 		animation_table[i].faf = ymlChopInt(faf);
 		animation_table[i].force_center = ymlChopInt(force_center);
 		animation_table[i].move_dir = ymlChopInt(move_dir);
+		load_anim_map(animation_table[i].anim_map, animation_table[i].name);
 		loadAnimation(&animation_table[i], renderer);
 	}
 	anim_list.close();
+}
+
+/*
+	Check the map file matching the current animation.If no such map exists, we'll calculate the frame's position the way we've been doing. If it
+	DOES exist, open it and read where each frame's render position will be.
+*/
+void FighterInstance::load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir) {
+	ifstream anim_map;
+	anim_map.open(resource_dir + "/anims/" + anim_dir + ".yml");
+
+	if (anim_map.fail()) { //If the map for that animation doesn't exist, don't worry about it. The code can still function without one, it just 
+		//needs one if we want a spritesheet to be across multiple lines
+		SDL_Rect empty_rect[MAX_ANIM_LENGTH];
+		for (int i = 0; i < MAX_ANIM_LENGTH; i++) {
+			empty_rect[i] = { 0, 0, 0, 0 };
+		}
+		ret = empty_rect;
+	}
+	else {
+		for (int i = 0; anim_map >> i; i) { //The map files are 1-indexed, so we subtract 1 from the line we're on to get the index we actually want to write to
+			i--;
+			string equal_sign;
+			anim_map >> equal_sign; //It is followed by a single equal sign. We can use this to make sure we're looking at the right fields.
+			//If for whatever reason it's missing, that means the file got messed up somewhere, so we'll just crash to the debug menu with the 
+			if (equal_sign != "=") {
+				char buffer[58];
+				sprintf(buffer, "Error at line %d of %s.yml: Expected equal sign, found %s", i, anim_dir.c_str(), equal_sign.c_str());
+				player_info->crash_reason = buffer;
+				crash_to_debug = true;
+				anim_map.close();
+				return;
+			}
+			anim_map >> ret[i].x >> ret[i].y >> ret[i].w >> ret[i].h;
+		}
+	}
+	anim_map.close();
 }
 
 void FighterInstance::loadStatusFunctions() {
@@ -1222,13 +1259,10 @@ void FighterInstance::startAnimation(Animation* animation) {
 		prev_anim_kind = anim_kind;
 	}
 	anim_kind = animation;
-	int width;
-	int height;
-	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
 	chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER] = (anim_kind->force_center != 0);
-	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
-	pos.y_anim_offset = height;
 	frame_rect = getFrame(render_frame, anim_kind);
+	pos.x_anim_offset = frame_rect.w / 2;
+	pos.y_anim_offset = frame_rect.h;
 }
 
 bool FighterInstance::canStep() {

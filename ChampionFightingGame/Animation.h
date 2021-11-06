@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include "utils.h"
+
 struct Animation {
 	SDL_Texture* SPRITESHEET;
 	std::string name{ "default"};
@@ -11,6 +12,7 @@ struct Animation {
 	int faf{ -1 };
 	int force_center{ 0 };
 	int move_dir{ 0 };
+	SDL_Rect anim_map[MAX_ANIM_LENGTH] = {};
 
 	Animation();
 };

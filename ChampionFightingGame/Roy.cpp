@@ -671,7 +671,6 @@ void Roy::loadRoyACMD() {
 			}
 		}
 		if (is_excute_frame(4)) {
-			max_ticks = 2;
 			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
@@ -703,7 +702,7 @@ void Roy::loadRoyACMD() {
 	script("special_uppercut", [this]() {
 		if (is_excute_frame(0)) {
 			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ 0,65 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false);
+				new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ 0,65 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false);
 			}
 			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
 				new_hitbox(1, 0, 40, 5, 1.2, 1, GameCoordinate{ 0,85 }, GameCoordinate{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false);
@@ -907,8 +906,8 @@ void Roy::roy_exit_status_special_fireball_kick() {
 }
 
 void Roy::roy_status_special_uppercut_start() {
-	if (frame >= get_param_int("special_uppercut_transition_frame", param_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
-		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
+	if (chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_param_int("special_uppercut_transition_frame", param_table) && !chara_flag[CHARA_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
+		change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
 	if (is_anim_end) {
@@ -954,7 +953,12 @@ void Roy::roy_status_special_uppercut() {
 
 void Roy::roy_enter_status_special_uppercut() {
 	if (situation_kind == CHARA_SITUATION_GROUND) { //Not sure if we want air dp to be a thing but if we do, this is designed to account for it
-		change_anim("special_uppercut_rise", 2);
+		if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+			change_anim("special_uppercut_rise");
+		}
+		else {
+			change_anim("special_uppercut_rise", 2, 1);
+		}
 	}
 	else {
 		change_anim("special_uppercut");

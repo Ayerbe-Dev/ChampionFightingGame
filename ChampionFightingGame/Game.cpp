@@ -32,7 +32,7 @@ extern bool debug;
 int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
 	Uint32 tick=0,tok=0;
 	bool gaming = true;
-	bool visualize_boxes = false;
+	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;

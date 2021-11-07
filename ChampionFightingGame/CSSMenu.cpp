@@ -2,8 +2,10 @@
 #include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
+extern SDL_Renderer* g_renderer;
+extern SDL_Window* g_window;
 
-CSSMenu::CSSMenu(SDL_Renderer *pRenderer){
+CSSMenu::CSSMenu(){
     
     //temp vars
     ifstream fileCssTable;
@@ -15,10 +17,13 @@ CSSMenu::CSSMenu(SDL_Renderer *pRenderer){
     int iRowXdelta=0;
     //
 
-    this->pRenderer = pRenderer;
-
     //initialize other textures
-    backgroundTexture.init("resource/ui/menu/css/CSSbackground.png",pRenderer);
+    backgroundTexture.init("resource/ui/menu/css/CSSbackground.png");
+    backgroundTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+    bigBarTexture.init("resource/ui/menu/css/CSSbottombar.png");
+    bigBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+    topBarTexture.init("resource/ui/menu/css/CSStopbar.png");
+    topBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
 	if (fileCssTable.fail()) {
         //it crashes anyways lol
@@ -32,7 +37,7 @@ CSSMenu::CSSMenu(SDL_Renderer *pRenderer){
         printf("Line %d, found %s\n",i,sCharacterName.c_str());
         fileCssTable >> iCharacterKind >> sCharacterDir >> bSelectable;
         if (bSelectable){
-            addFixedCharacter(iCharacterKind, pRenderer);
+            addFixedCharacter(iCharacterKind);
         }
         getline(fileCssTable, sCharacterName);// 100% authentic jank code
     }
@@ -84,11 +89,11 @@ CSSMenu::CSSMenu(SDL_Renderer *pRenderer){
     }
 };
 
-void CSSMenu::addFixedCharacter(int id, SDL_Renderer *pRenderer){
+void CSSMenu::addFixedCharacter(int id){
     //32 is the length of aFixedCharacterSlots
     for (int i=0; i < 32;i++){
         if (!aFixedCharacterSlots[i].isInitialized()){
-            aFixedCharacterSlots[i].init(id, pRenderer);
+            aFixedCharacterSlots[i].init(id);
             return;
         }
     }
@@ -106,6 +111,8 @@ int CSSMenu::getSlotsLength(){
 
 void CSSMenu::render(){
     backgroundTexture.render();
+    bigBarTexture.render();
+    topBarTexture.render();
 
     for (int i=0; i < 32;i++){
         //printf("#%d is %d\n",i,aFixedCharacterSlots[i].isInitialized());
@@ -119,8 +126,8 @@ bool FixedCharacterSlot::isInitialized(){
     return bInitialized;
 }
 
-void FixedCharacterSlot::init(int id, SDL_Renderer *pRenderer){
-    gameTexture.init("resource/ui/menu/css/chara/default/render.png", pRenderer);
+void FixedCharacterSlot::init(int id){
+    gameTexture.init("resource/ui/menu/css/chara/default/render.png");
     iCharacterId = id;
     printf("Character Id %d was initialized!\n",id);
     bInitialized = true;
@@ -145,14 +152,15 @@ void FixedCharacterSlot::render(){
 
 
 
-int cssMenu(SDL_Renderer *pRenderer, SDL_Window *pWindow, PlayerInfo aPlayerInfo[2]){
+int cssMenu(PlayerInfo aPlayerInfo[2]){
     printf("Entering CSS Menu\n");
     bool bSelecting = true;
     Uint32 tick=0,tok=0;
     const Uint8* keyboard_state;
 	Debugger debugger;
+    SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
     printf("Initializing Menu\n");
-    CSSMenu cssMenuInstance(pRenderer);
+    CSSMenu cssMenuInstance;
 
     printf("Entering loop\n");
     while (bSelecting){
@@ -165,6 +173,7 @@ int cssMenu(SDL_Renderer *pRenderer, SDL_Window *pWindow, PlayerInfo aPlayerInfo
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
         /* spaghetti time */
+        { 
         SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -180,20 +189,24 @@ int cssMenu(SDL_Renderer *pRenderer, SDL_Window *pWindow, PlayerInfo aPlayerInfo
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(pWindow, 0);
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
 			}
 			else {
-				SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
+        }
         /*End Of Spaghetti Time*/
         
-        SDL_RenderClear(pRenderer);
-        
+        SDL_SetRenderTarget(g_renderer,pScreenTexture);
+        SDL_RenderClear(g_renderer);
         cssMenuInstance.render();
         
-        SDL_RenderPresent(pRenderer);
+        SDL_SetRenderTarget(g_renderer,nullptr);
+        SDL_RenderClear(g_renderer);
+        SDL_RenderCopy(g_renderer,pScreenTexture,nullptr,nullptr);
+        SDL_RenderPresent(g_renderer);
     }
 
     return 333;

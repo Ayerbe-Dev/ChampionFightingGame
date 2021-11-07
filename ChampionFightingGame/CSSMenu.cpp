@@ -1,3 +1,4 @@
+#include <cmath>
 #include "CSSMenu.h"
 #include "utils.h"
 #include "Debugger.h"
@@ -25,6 +26,8 @@ CSSMenu::CSSMenu(){
     bigBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
     topBarTexture.init("resource/ui/menu/css/CSStopbar.png");
     topBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+    aMobileCharacterSlots[0].gameTexture.init("resource/ui/menu/css/chara/default/render.png");
+    aMobileCharacterSlots[0].gameTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 	if (fileCssTable.fail()) {
         //it crashes anyways lol
@@ -35,7 +38,7 @@ CSSMenu::CSSMenu(){
     //Initialize fixed slots
     string sCharacterName;
 	for (int i = 0; getline(fileCssTable, sCharacterName); i++) {
-        printf("Line %d, found %s\n",i,sCharacterName.c_str());
+        //printf("Line %d, found %s\n",i,sCharacterName.c_str());
         fileCssTable >> iCharacterKind >> sCharacterDir >> bSelectable;
         if (bSelectable){
             addFixedCharacter(iCharacterKind);
@@ -48,12 +51,12 @@ CSSMenu::CSSMenu(){
         //big scaling code
     } else {
         for (int iRow=1; iRow < 4;iRow++){
-            printf("Row: %d\n",iRow);
+           // printf("Row: %d\n",iRow);
             //Following line checks if the row is filled (the tenth item in the row is filled)
             if (aFixedCharacterSlots[iRow * 10 - 1].isInitialized()){
                 //row filled code
                 for (int iColumn=0; iColumn < 10;iColumn++){
-                    printf("Column: %d\n",iColumn+1);
+                    //printf("Column: %d\n",iColumn+1);
                     tmpSlot = &aFixedCharacterSlots[((iRow-1) * 10)+iColumn];
                     
                     tmpSlot->gameTexture.setScaleFactor(.8);
@@ -69,7 +72,7 @@ CSSMenu::CSSMenu(){
             } else {
                 //row not filled code
                 for (int iColumn=0; iColumn < getSlotsLength() % 10;iColumn++){
-                    printf("funky Column: %d\n",iColumn+1);
+                    //printf("funky Column: %d\n",iColumn+1);
                     tmpSlot = &aFixedCharacterSlots[((iRow-1) * 10)+iColumn];
                     
                     tmpSlot->gameTexture.setScaleFactor(.8);
@@ -121,6 +124,14 @@ void CSSMenu::render(){
             aFixedCharacterSlots[i].render();
         }
     }
+
+    
+    for (int i=0;i<2;i++){
+        
+        aMobileCharacterSlots[i].playAnim();
+        aMobileCharacterSlots[i].gameTexture.render();
+        //printf("id %d, is %d\n",i,b);
+    }
 }
 
 void CSSMenu::traverseRight(){
@@ -153,9 +164,9 @@ void CSSMenu::traverseDown(){
         return;
     }
 
-    printf("Querrying with LP:%d FV: %d\n",iLazyPassthrough,aPlayerSelectionIndex[iLazyPassthrough]);
+    //printf("Querrying with LP:%d FV: %d\n",iLazyPassthrough,aPlayerSelectionIndex[iLazyPassthrough]);
     querryFixedCssSlotPosition(aPlayerSelectionIndex[iLazyPassthrough],&tmpCurrentX,&tmpCurrentY);
-    printf("Passed Querry\n");
+    //printf("Passed Querry\n");
     
     tmpCurrentX+= 30; //magic sauce
 
@@ -164,26 +175,26 @@ void CSSMenu::traverseDown(){
     //Go through every possible card, if they are initialized and below the current pos the add them to the list
     for (int i=0; i < 32;i++){
         if (aFixedCharacterSlots[i].isInitialized() && aFixedCharacterSlots[i].isBelow(tmpCurrentY)){
-            printf("Card %d passed\n",i);
+            //printf("Card %d passed\n",i);
 
             tot++;
 
             distanceNew = twoPointDistance(aFixedCharacterSlots[i].gameTexture.destRect.x,aFixedCharacterSlots[i].gameTexture.destRect.y,tmpCurrentX,tmpCurrentY);
             distanceCurrent = twoPointDistance(closestX,closestY,tmpCurrentX,tmpCurrentY);
 
-            printf("With a distance of %d, fighting %d\n",distanceNew,distanceCurrent);
+            //printf("With a distance of %d, fighting %d\n",distanceNew,distanceCurrent);
 
             if (distanceNew < distanceCurrent){
                 
                 closestX = aFixedCharacterSlots[i].gameTexture.destRect.x;
                 closestY = aFixedCharacterSlots[i].gameTexture.destRect.y;
-                printf("player %d set to %d\n",iLazyPassthrough,i);
+                //printf("player %d set to %d\n",iLazyPassthrough,i);
                 aPlayerSelectionIndex[iLazyPassthrough] = i;
                 iLastDown[iLazyPassthrough] = i;
             }
         }
     }
-    printf("Found %d cards below\n",tot);
+    //printf("Found %d cards below\n",tot);
 }
 
 void CSSMenu::traverseUp(){
@@ -207,26 +218,26 @@ void CSSMenu::traverseUp(){
     //Go through every possible card, if they are initialized and below the current pos the add them to the list
     for (int i=0; i < 32;i++){
         if (aFixedCharacterSlots[i].isInitialized() && aFixedCharacterSlots[i].isAbove(tmpCurrentY)){
-            printf("Card %d passed\n",i);
+            //printf("Card %d passed\n",i);
 
             tot++;
 
             distanceNew = twoPointDistance(aFixedCharacterSlots[i].gameTexture.destRect.x,aFixedCharacterSlots[i].gameTexture.destRect.y,tmpCurrentX,tmpCurrentY);
             distanceCurrent = twoPointDistance(closestX,closestY,tmpCurrentX,tmpCurrentY);
 
-            printf("With a distance of %d, fighting %d\n",distanceNew,distanceCurrent);
+            //printf("With a distance of %d, fighting %d\n",distanceNew,distanceCurrent);
 
             if (distanceNew < distanceCurrent){
                 
                 closestX = aFixedCharacterSlots[i].gameTexture.destRect.x;
                 closestY = aFixedCharacterSlots[i].gameTexture.destRect.y;
-                printf("player %d set to %d\n",iLazyPassthrough,i);
+                //printf("player %d set to %d\n",iLazyPassthrough,i);
                 aPlayerSelectionIndex[iLazyPassthrough] = i;
                 iLastUp[iLazyPassthrough] = i;
             }
         }
     }
-    printf("Found %d cards Above\n",tot);
+    //printf("Found %d cards Above\n",tot);
 }
 
 void CSSMenu::querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr){
@@ -238,6 +249,35 @@ void CSSMenu::querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr
     }
 }
 
+void CSSMenu::select(){
+    MobileCharacterSlot tmpSlot;
+    tmpSlot.gameTexture = aFixedCharacterSlots[aPlayerSelectionIndex[iLazyPassthrough]].gameTexture;
+    
+    switch (iLazyPassthrough)
+    {
+    case 0:
+        printf("P1 selected %f\n",tmpSlot.gameTexture.getScaledWidth());
+        tmpSlot.gameTexture.destRect.y = 603;
+        tmpSlot.gameTexture.destRect.x = 77;
+        break;
+    case 1:
+        printf("P2 selected\n");
+        tmpSlot.gameTexture.destRect.y = 602;
+        tmpSlot.gameTexture.destRect.x = 1204;
+        break;
+    default:
+        printf("oof\n");
+        break;
+    }
+    tmpSlot.gameTexture.setScaleFactor(1);
+    aMobileCharacterSlots[iLazyPassthrough] = tmpSlot;
+}
+
+void CSSMenu::back(){
+    MobileCharacterSlot tmpSlot;
+    aMobileCharacterSlots[iLazyPassthrough] = tmpSlot;
+}
+
 bool FixedCharacterSlot::isInitialized(){
     return bInitialized;
 }
@@ -245,7 +285,7 @@ bool FixedCharacterSlot::isInitialized(){
 void FixedCharacterSlot::init(int id){
     gameTexture.init("resource/ui/menu/css/chara/default/render.png");
     iCharacterId = id;
-    printf("Character Id %d was initialized!\n",id);
+    //printf("Character Id %d was initialized!\n",id);
     bInitialized = true;
 }
 
@@ -255,7 +295,7 @@ void FixedCharacterSlot::setYPosition(int y){
 
 void FixedCharacterSlot::setXPosition(int x){
     gameTexture.destRect.x = x;
-    printf("X Set to:%d\n",x);
+    //printf("X Set to:%d\n",x);
 }
 
 int FixedCharacterSlot::getTextureWidth(){
@@ -298,6 +338,16 @@ void CssCursor::setTarget(int x, int y){
     iYTarget = y;
 }
 
+void MobileCharacterSlot::playAnim(){
+    yesIndeedIamAspinnyTracker += .02;
+    if (yesIndeedIamAspinnyTracker >= (3.14)){
+        yesIndeedIamAspinnyTracker = 0;
+    }
+    gameTexture.setHorizontalScaleFactor(sin(yesIndeedIamAspinnyTracker));
+    //if (fScale<1){
+    //    fScale += .001;
+    //}
+}
 
 
 int cssMenu(PlayerInfo aPlayerInfo[2]){
@@ -325,7 +375,8 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
 	menuHandler.setEventMenuRight(&CSSMenu::traverseRight);
     menuHandler.setEventMenuDown(&CSSMenu::traverseDown);
     menuHandler.setEventMenuUp(&CSSMenu::traverseUp);
-
+    menuHandler.setEventMenuFinish(&CSSMenu::select);
+    menuHandler.setEventMenuBack(&CSSMenu::back);
 
 	menuHandler.setInitialDelay(70);
 	menuHandler.setRepeatDelay(20);
@@ -374,6 +425,7 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
         SDL_RenderClear(g_renderer);
 
         cssMenuInstance.render();
+
         //printf("Cursor Render\n");
         for (int i=0;i<2;i++){
             cssMenuInstance.querryFixedCssSlotPosition(cssMenuInstance.aPlayerSelectionIndex[i], &cursors[i].iXTarget,&cursors[i].iYTarget);

@@ -26,6 +26,7 @@ void MenuHandler::setEventMenuDown(CSStraversalFunction traversal){this->nsmfCss
 void MenuHandler::setEventMenuLeft(CSStraversalFunction traversal){this->nsmfCssLeftTraversal = traversal; bLeftDefined=true;};
 void MenuHandler::setEventMenuRight(CSStraversalFunction traversal){this->nsmfCssRightTraversal = traversal; bRightDefined=true;};
 void MenuHandler::setEventMenuFinish(CSStraversalFunction traversal){this->nsmfCssFinisher = traversal; bFinisherDefined=true;};
+void MenuHandler::setEventMenuBack(CSStraversalFunction traversal){this->nsmfCssBack = traversal; bBackDefined=true;};
 
 void MenuHandler::handleMenu(){
     for (int i = 0; i < 2; i++) {
@@ -87,16 +88,19 @@ void MenuHandler::handleCSSMenu(){
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_LEFT) && bLeftDefined){
              pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssLeftTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_RIGHT) && bRightDefined){
+        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_RIGHT) && bRightDefined){
             pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssRightTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)){
              pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssFinisher))();
+        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_BACK)  && bBackDefined){
+             pCssHandlerTarget->iLazyPassthrough = i;
+            (pCssHandlerTarget->*(nsmfCssBack))();
         }
 
         //On hold
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_RIGHT)){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_RIGHT)){
             iHoldFrames++;
         } else {
             iHoldFrames=0;
@@ -114,7 +118,7 @@ void MenuHandler::handleCSSMenu(){
              (pCssHandlerTarget->*(nsmfCssLeftTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         } 
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_RIGHT) && bRightDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_RIGHT) && bRightDefined && canRepeatKeys()){
              (pCssHandlerTarget->*(nsmfCssRightTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         }

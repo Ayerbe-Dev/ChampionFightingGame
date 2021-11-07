@@ -6,17 +6,22 @@ bool GameTexture::init(string sTexturePath){
         printf("GameTexture already initialized!\n");
         return false;
     }
-    //this->pRenderer = pRenderer;
+
+    bIsInitialized = true;
     pTexture = loadTexture(sTexturePath.c_str());
     SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
     destRect.x=0;
     destRect.y=0;
 }
 
-void GameTexture::render(){
+bool GameTexture::render(){
+    if (!bIsInitialized){
+        return false;
+    }
+
     SDL_Rect tmpDestRect = destRect;
-    tmpDestRect.w *= fScaleFactor;
-    tmpDestRect.h *= fScaleFactor;
+    tmpDestRect.w *= fHorizontalScaleFactor;
+    tmpDestRect.h *= fVerticalScaleFactor;
 
     switch (iAnchorMode)
     {
@@ -34,18 +39,24 @@ void GameTexture::render(){
         break;
     }
     //printf("Width: %d, Height: %d\n", tmpDestRect.w, tmpDestRect.h);
+    return true;
 }
 
 void GameTexture::setScaleFactor(float fScaleFactor){
-    this->fScaleFactor = fScaleFactor;
+    this->fVerticalScaleFactor = fScaleFactor;
+    this->fHorizontalScaleFactor = fScaleFactor;
+}
+
+void GameTexture::setHorizontalScaleFactor(float fScaleFactor){
+    this->fHorizontalScaleFactor = fScaleFactor;
 }
 
 float GameTexture::getScaledWidth(){
-    return destRect.w * fScaleFactor;
+    return destRect.w * fHorizontalScaleFactor;
 }
 
 float GameTexture::getScaledHeight(){
-    return destRect.h * fScaleFactor;
+    return destRect.h * fVerticalScaleFactor;
 }
 
 void GameTexture::setAnchorMode(int iMode){

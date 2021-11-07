@@ -20,6 +20,17 @@ private:
     bool bInitialized = false;
 };
 
+class MobileCharacterSlot{
+public:
+    GameTexture gameTexture;
+    void playAnim();
+private:
+    int iAnimationSpeed=0;
+    int targetX=0,targetY=0;
+    float yesIndeedIamAspinnyTracker=0;
+    float fScale=.2;
+};
+
 class CSSMenu{
 public:
     CSSMenu();
@@ -27,6 +38,8 @@ public:
     void traverseDown();
     void traverseLeft();
     void traverseRight();
+    void select();
+    void back();
     int getSlotsLength();
     void render();
     void querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr);
@@ -35,6 +48,7 @@ public:
 
     int iLazyPassthrough = 0; //dont ask, im lazy
 private:
+    MobileCharacterSlot aMobileCharacterSlots[2];
     int iLastUp[2] = {-1,-1};
     int iLastDown[2] = {-1,-1};
     GameTexture backgroundTexture;

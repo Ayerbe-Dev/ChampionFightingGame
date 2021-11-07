@@ -13,18 +13,24 @@ public:
     SDL_Rect destRect;
     SDL_Rect srcRect;
 
-    void render();
+    bool render();
     bool init(string sTexturePath);
+    
+    //sets both x and y scale equally
     void setScaleFactor(float fScaleFactor);
+
+    void setHorizontalScaleFactor(float fScaleFactor);
+
     void setAnchorMode(int iMode);
     float getScaledWidth();
     float getScaledHeight();
-    
+    bool bIsInitialized = false;
 private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
-    float fScaleFactor = 1.0;
-    //SDL_Renderer *pRenderer;
-    bool bIsInitialized = false;
+    float fVerticalScaleFactor = 1.0;
+    float fHorizontalScaleFactor = 1.0;
+    //float fScaleFactor = 1.0;
+    
     SDL_Texture *pTexture;
 
 };

@@ -7,6 +7,7 @@ using namespace std;
 #include <cstring>
 #include <iostream>
 #include <cstdint>
+#include <cmath>
 SoundInfo sounds[MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
@@ -294,4 +295,15 @@ void PlaySound(char* file) {
 void refreshRenderer() {
 	SDL_DestroyRenderer(g_renderer);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+}
+
+/*
+mankind knew that they cannot change find_nearest_css_slot. So instead of reflecting on themselves, they blamed std
+\param heaven
+\param or
+\param hell
+\param LET'S_ROCK!!
+*/
+int twoPointDistance(int x0, int y0, int x1, int y1){
+	return std::sqrt(std::pow(x0-x1,2) + std::pow(y0-y1,2));
 }

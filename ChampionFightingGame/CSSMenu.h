@@ -12,6 +12,9 @@ public:
     void setYPosition(int iY);
     int getTextureWidth();
     void render();
+
+    bool isBelow(int y);
+    bool isAbove(int y);
 private:
     int iCharacterId = -1;
     bool bInitialized = false;
@@ -29,8 +32,11 @@ public:
     void querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr);
 
     int aPlayerSelectionIndex[2] = {0,0};
+
+    int iLazyPassthrough = 0; //dont ask, im lazy
 private:
-   
+    int iLastUp[2] = {-1,-1};
+    int iLastDown[2] = {-1,-1};
     GameTexture backgroundTexture;
     GameTexture bigBarTexture;
     GameTexture topBarTexture;

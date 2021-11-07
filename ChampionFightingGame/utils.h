@@ -59,6 +59,8 @@ struct SoundInfo {
 	u32 dlen;
 };
 
+
+int twoPointDistance(int x0, int y0, int x1, int y1);
 /*
 	Locks the app to 60tps. tick and tok should be 2 Uint32s initialized to 0;
 */

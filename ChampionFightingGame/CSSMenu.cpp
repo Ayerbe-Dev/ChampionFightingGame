@@ -124,11 +124,109 @@ void CSSMenu::render(){
 }
 
 void CSSMenu::traverseRight(){
-    aPlayerSelectionIndex[0]++;
+    if (aPlayerSelectionIndex[iLazyPassthrough] % 10 <= 8 && aPlayerSelectionIndex[iLazyPassthrough]+1 < getSlotsLength() && aFixedCharacterSlots[aPlayerSelectionIndex[iLazyPassthrough]+1].isInitialized()) {
+        aPlayerSelectionIndex[iLazyPassthrough]++;
+    }
+    iLastUp[iLazyPassthrough] = -1;
+    iLastDown[iLazyPassthrough] = -1;
 }
 
 void CSSMenu::traverseLeft(){
-    aPlayerSelectionIndex[0]--;
+    if (aPlayerSelectionIndex[iLazyPassthrough] % 10 >=1) {
+        aPlayerSelectionIndex[iLazyPassthrough]--;
+    }
+    iLastDown[iLazyPassthrough] = -1;
+    iLastUp[iLazyPassthrough] = -1;
+}
+
+void CSSMenu::traverseDown(){
+    int tmpCurrentX;
+    int tmpCurrentY; // we need to know where the current location is
+
+    int closestX=9999;
+    int closestY=9999;
+
+    int distanceNew, distanceCurrent;
+
+    if (iLastDown[iLazyPassthrough] != -1){
+        aPlayerSelectionIndex[iLazyPassthrough] = iLastDown[iLazyPassthrough];
+        return;
+    }
+
+    printf("Querrying with LP:%d FV: %d\n",iLazyPassthrough,aPlayerSelectionIndex[iLazyPassthrough]);
+    querryFixedCssSlotPosition(aPlayerSelectionIndex[iLazyPassthrough],&tmpCurrentX,&tmpCurrentY);
+    printf("Passed Querry\n");
+    
+    tmpCurrentX+= 30; //magic sauce
+
+    int tot=0;
+
+    //Go through every possible card, if they are initialized and below the current pos the add them to the list
+    for (int i=0; i < 32;i++){
+        if (aFixedCharacterSlots[i].isInitialized() && aFixedCharacterSlots[i].isBelow(tmpCurrentY)){
+            printf("Card %d passed\n",i);
+
+            tot++;
+
+            distanceNew = twoPointDistance(aFixedCharacterSlots[i].gameTexture.destRect.x,aFixedCharacterSlots[i].gameTexture.destRect.y,tmpCurrentX,tmpCurrentY);
+            distanceCurrent = twoPointDistance(closestX,closestY,tmpCurrentX,tmpCurrentY);
+
+            printf("With a distance of %d, fighting %d\n",distanceNew,distanceCurrent);
+
+            if (distanceNew < distanceCurrent){
+                
+                closestX = aFixedCharacterSlots[i].gameTexture.destRect.x;
+                closestY = aFixedCharacterSlots[i].gameTexture.destRect.y;
+                printf("player %d set to %d\n",iLazyPassthrough,i);
+                aPlayerSelectionIndex[iLazyPassthrough] = i;
+                iLastDown[iLazyPassthrough] = i;
+            }
+        }
+    }
+    printf("Found %d cards below\n",tot);
+}
+
+void CSSMenu::traverseUp(){
+    int tmpCurrentX;
+    int tmpCurrentY; // we need to know where the current location is
+
+    int closestX=9999;
+    int closestY=9999;
+
+    int distanceNew, distanceCurrent;
+
+    if (iLastUp[iLazyPassthrough] != -1){
+        aPlayerSelectionIndex[iLazyPassthrough] = iLastUp[iLazyPassthrough];
+        return;
+    }
+
+    querryFixedCssSlotPosition(aPlayerSelectionIndex[iLazyPassthrough],&tmpCurrentX,&tmpCurrentY);
+
+    int tot=0;
+
+    //Go through every possible card, if they are initialized and below the current pos the add them to the list
+    for (int i=0; i < 32;i++){
+        if (aFixedCharacterSlots[i].isInitialized() && aFixedCharacterSlots[i].isAbove(tmpCurrentY)){
+            printf("Card %d passed\n",i);
+
+            tot++;
+
+            distanceNew = twoPointDistance(aFixedCharacterSlots[i].gameTexture.destRect.x,aFixedCharacterSlots[i].gameTexture.destRect.y,tmpCurrentX,tmpCurrentY);
+            distanceCurrent = twoPointDistance(closestX,closestY,tmpCurrentX,tmpCurrentY);
+
+            printf("With a distance of %d, fighting %d\n",distanceNew,distanceCurrent);
+
+            if (distanceNew < distanceCurrent){
+                
+                closestX = aFixedCharacterSlots[i].gameTexture.destRect.x;
+                closestY = aFixedCharacterSlots[i].gameTexture.destRect.y;
+                printf("player %d set to %d\n",iLazyPassthrough,i);
+                aPlayerSelectionIndex[iLazyPassthrough] = i;
+                iLastUp[iLazyPassthrough] = i;
+            }
+        }
+    }
+    printf("Found %d cards Above\n",tot);
 }
 
 void CSSMenu::querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr){
@@ -166,6 +264,22 @@ int FixedCharacterSlot::getTextureWidth(){
 
 void FixedCharacterSlot::render(){
     gameTexture.render();
+}
+
+bool FixedCharacterSlot::isBelow(int y){
+    if (gameTexture.destRect.y > y){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool FixedCharacterSlot::isAbove(int y){
+    if (gameTexture.destRect.y < y){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void CssCursor::render(){
@@ -209,6 +323,8 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
 
     menuHandler.setEventMenuLeft(&CSSMenu::traverseLeft);
 	menuHandler.setEventMenuRight(&CSSMenu::traverseRight);
+    menuHandler.setEventMenuDown(&CSSMenu::traverseDown);
+    menuHandler.setEventMenuUp(&CSSMenu::traverseUp);
 
 
 	menuHandler.setInitialDelay(70);
@@ -260,7 +376,7 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
         cssMenuInstance.render();
         //printf("Cursor Render\n");
         for (int i=0;i<2;i++){
-            cssMenuInstance.querryFixedCssSlotPosition(cssMenuInstance.aPlayerSelectionIndex[0], &cursors[i].iXTarget,&cursors[i].iYTarget);
+            cssMenuInstance.querryFixedCssSlotPosition(cssMenuInstance.aPlayerSelectionIndex[i], &cursors[i].iXTarget,&cursors[i].iYTarget);
             cursors[i].render();
         }
         //printf("Ending Loop\n");

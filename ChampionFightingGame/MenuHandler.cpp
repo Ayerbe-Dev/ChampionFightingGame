@@ -79,14 +79,19 @@ void MenuHandler::handleCSSMenu(){
         
         //On Press
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_UP) && bUpDefined){
+             pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssUpTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_DOWN) && bDownDefined){
+             pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssDownTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_LEFT) && bLeftDefined){
+             pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssLeftTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_RIGHT) && bRightDefined){
+            pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssRightTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)){
+             pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssFinisher))();
         }
 

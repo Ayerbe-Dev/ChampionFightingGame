@@ -324,7 +324,6 @@ int get_sub_selection(int top_selection, int sub_selection) {
 int chara_select_main(PlayerInfo player_info[2]) {
 	Uint32 tick=0,tok=0;
 	Debugger debugger;
-	debugger = Debugger();
 	bool chara_selecting = true;
 	int next_state;
 	
@@ -541,29 +540,31 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols) {
 		int swidth;
 		int sheight;
 		SDL_QueryTexture(css[i].texture, NULL, NULL, &swidth, &sheight); 
+		
 		/*
 			We want the actual dimensions of the base sprite so the proportions of our CSS slot will always be the same even regardless of how we
 			calculated the width. The base sprite is tall and ugly so we aren't actually maintaining the BASE proportion, but we are maintaining
 			a proportion.
 		*/
 		SDL_Rect css_rect;
+		SDL_QueryTexture(css[i].texture,nullptr,nullptr,&css_rect.w,&css_rect.h);
 		if (row == 0) { //If we only have one row, we can upscale all of the slots and get free extra vertical space for it
 			css_rect.w = CSS_WIDTH / col;
 			css_rect.x = (css[i].my_col * css_rect.w) + (WINDOW_WIDTH / 10);
 		}
 		else {
 			//If we have multiple rows, we need all of our slots to be the same size no matter what row they're on
-			css_rect.w = CSS_WIDTH / CHARAS_PER_ROW;
+			//css_rect.w = CSS_WIDTH / CHARAS_PER_ROW;
 			if (css[i].my_row == row) { //If we're on the bottom row, we want to orient our positions to the center of the row
 				css_rect.x = ((css[i].my_col + (float)(CHARAS_PER_ROW - col + 1) / (float)2.0) * css_rect.w) + (WINDOW_WIDTH / 15);
 			}
 			else { //If we're on a filled row, it's literally the same calculation as if we only have one row but not as wide
-				css_rect.x = (css[i].my_col * css_rect.w) + (WINDOW_WIDTH / 15);
+				css_rect.x = (WINDOW_WIDTH / 10) * (i+1) - (css_rect.w);
 			}
 		}
-		int factor = swidth / css_rect.w;
-		css_rect.h = sheight / (factor * 1.5);
-		css_rect.y = css[i].my_row * 1.2 * css_rect.h;
+		//int factor = swidth / css_rect.w;
+		//css_rect.h = sheight / factor;
+		css_rect.y = css[i].my_row * (css_rect.h + 25) + 20; // 25 is height of text
 
 		css[i].destRect = css_rect;
 

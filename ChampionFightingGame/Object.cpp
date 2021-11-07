@@ -139,13 +139,34 @@ void Object::update_hitbox_pos(bool add_window_width) {
 	}
 }
 
+bool Object::is_hitbox_active(int multihit) {
+	for (int i = 0; i < 10; i++) {
+		if (hitboxes[i].id != -1) {
+			if (hitboxes[i].multihit == multihit) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void Object::clear_hitbox(int id) {
+	int multihit = hitboxes[id].multihit;
 	hitboxes[id].clear();
+	hitboxes[id].multihit = 0;
+	for (int i = 0; i < 10; i++) { 
+		if (hitboxes[i].id != -1 && hitboxes[i].multihit == multihit) {
+			return;
+		}
+	}
+	multihit_connected[multihit] = false;
 }
 
 void Object::clear_hitbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].clear();
+		hitboxes[i].multihit = 0;
+		multihit_connected[i] = false;
 	}
 }
 
@@ -266,9 +287,5 @@ void Object::load_params() {
 }
 
 void Object::update_hitbox_connect(int multihit_index) {
-	for (int i = 0; i < 10; i++) {
-		if (hitboxes[i].id != -1) {
-			hitboxes[i].update_connect(multihit_index);
-		}
-	}
+	multihit_connected[multihit_index] = true;
 }

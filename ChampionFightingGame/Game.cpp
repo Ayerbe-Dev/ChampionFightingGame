@@ -249,27 +249,15 @@ int game_main(PlayerInfo player_info[2]) {
 
 		int render_priority = 0;
 		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
-			if (!debug) {
-				cout << "Both players requesting priority!" << endl;
-			}
 			render_priority = fighter_accessor->render_priority;
 		}
 		else if (fighter[0]->requesting_priority) {
-			if (!debug) {
-				cout << "Player 1 requesting priority!" << endl;
-			}
 			render_priority = 0;
 		}
 		else if (fighter[1]->requesting_priority) {
-			if (!debug) {
-				cout << "Player 2 requesting priority!" << endl;
-			}
 			render_priority = 1;
 		}
 		else {
-			if (!debug) {
-//				cout << "No players requesting priority!" << endl;
-			}
 			render_priority = fighter_accessor->render_priority_no_req;
 		}
 		SDL_Rect render_pos;
@@ -407,11 +395,9 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					if (fighter[1]->projectiles[i2]->id != -1) {
 						for (int i3 = 0; i3 < 10; i3++) {
 							if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1
-								&& !fighter[0]->projectiles[i]->hitboxes[i3].success_hit
 								&& fighter[0]->projectiles[i]->hitboxes[i3].trade) {
 								for (int i4 = 0; i4 < 10; i4++) {
 									if (fighter[1]->projectiles[i2]->hitboxes[i4].id != -1
-										&& !fighter[1]->projectiles[i2]->hitboxes[i4].success_hit
 										&& fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
 										SDL_Rect p1_hitbox, p2_hitbox;
 										p1_hitbox = fighter[0]->projectiles[i]->hitboxes[i3].rect;
@@ -441,7 +427,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					hurtbox = fighter[i]->hurtboxes[i2].rect;
 
 					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[!i]->hitboxes[i3].id != -1 && !fighter[!i]->hitboxes[i3].success_hit) {
+						if (fighter[!i]->hitboxes[i3].id != -1) {
 							SDL_Rect hitbox;
 							hitbox = fighter[!i]->hitboxes[i3].rect;
 							if (fighter[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
@@ -460,8 +446,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					for (int i3 = 0; i3 < MAX_PROJECTILES; i3++) {
 						if (fighter[!i]->projectiles[i3]->id != -1) {
 							for (int i4 = 0; i4 < 10; i4++) {
-								if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1
-									&& !fighter[!i]->projectiles[i3]->hitboxes[i4].success_hit) {
+								if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1) {
 									SDL_Rect hitbox;
 									hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
 									if (is_collide(hitbox, hurtbox)) {
@@ -613,7 +598,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 
 int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
-	if (hitbox->success_hit) {
+	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
 	}
 
@@ -717,7 +702,7 @@ int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox*
 }
 
 int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
-	if (hitbox->success_hit) {
+	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
 	}
 

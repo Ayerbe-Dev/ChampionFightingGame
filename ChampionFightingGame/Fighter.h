@@ -79,44 +79,90 @@ public:
 	void processInput(); //Manages specific inputs such as special motions and dashes
 	bool check_button_on(u32 button); //Checks if a button is being pressed
 	bool check_button_input(u32 button); //Checks if a button was pressed within the buffer window
-	bool check_button_input(u32 buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least min_matches buttons were pressed
+	bool check_button_input(u32 buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least 
+		//min_matches buttons were pressed
 	bool check_button_trigger(u32 button); //Checks if a button was pressed on that frame
 	bool check_button_release(u32 button); //Checks if a button was released on that frame
 	int get_stick_dir(); //Stick direction, relative to your facing direction. Returns num pad notation.
 	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
 	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
-	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind); //Attempts to cancel attack_kind into a normal based on button if the situation_kind is correct
+	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind); //Attempts to cancel attack_kind into a normal based on button if the 
+		//situation_kind is correct
 
-	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the 
+	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
 	int get_param_int_special(string param);
 	float get_param_float_special(string param);
 	bool get_param_bool_special(string param);
 	string get_param_string_special(string param);
 
-	//Position
+	//Position - For both of these functions, the "prev" arg determines what to do if the position is invalid. If prev is true, you'll go to the last
+		//position on each coordinate, so an invalid x but valid y will only modify your x. If prev is false, you'll go to the closest valid position
+		//to where you want to go to, so if your x would be higher than the window bounds, your x position would be set to the window bounds.
 
 	bool add_pos(float x, float y, bool prev = false);
 	bool set_pos(float x, float y, bool prev = false);
 
-	//Messing with the opponent's Fighter
+	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
+		//can get really hard to follow
 
-	void set_opponent_offset(GameCoordinate offset, int frames);
-	void set_opponent_offset(GameCoordinate offset);
-	void change_opponent_status(u32 status_kind);
-	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0);
-	void set_opponent_angle(double angle);
-	void set_opponent_thrown_ticks();
-	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0);
+	void set_opponent_offset(GameCoordinate offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
+		//long it should take
+	void set_opponent_offset(GameCoordinate offset); //The above, but it leaves the time it should take alone. 
+	void change_opponent_status(u32 status_kind); //Wild guess.
+	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0); //Damage the opponent, set their speed and direction. 
+		//Use in combination with change_opponent_status to throw someone.
+	void set_opponent_angle(double angle); //Sets the opponent's angle relative to their facing dir.
+	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
+	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0); //Changes the opponent's animation
 
 	//Hitbox
 	
 	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset, 
 		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
-		bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
+		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
 		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos = true);
-	
+	//ID: A value of 0-9. Each ID can store exactly 1 hitbox, and overwriting a pre-existing ID will remove the hitbox originally mapped to that ID
+	//Multihit: A secondary ID. When a hitbox connects, all hitboxes that share the multihit value will be marked as having successfully hit
+	//Damage/Chip Damage: How much damage the move deals on hit/block
+	//Counterhit Damage Mul: How much the move's damage is multiplied by on counterhit, usually 1.2x
+	//Scale: How much damage scaling is added if the opponent is hit during a combo. SCALING IS NOT ADDED IF THE OPPONENT ISN'T IN HITSTUN.
+	//Anchor/Offset: The bottom left and top right corners of the hitbox
+	//Hitbox Kind: Either NORMAL or BLOCK. NORMAL puts the opponent into hitstun on hit, BLOCK just makes them enter the stand block anim instead of 
+		//walking backwards
+	//Meter Gain On Hit/Counterhit/Block: How much meter the attacker gains for hitting the move. On parry/hitting an armored opponent, meter gain on 
+		//block / 2 is added to the attacker.
+	//Situation Hit: The types of situations this hitbox is allowed to work on. SITUATION_HIT_GROUND_AIR hits aerial and grounded opponents but not 
+		//OTG, SITUATION_HIT_ALL hits everything including OTG, SITUATION_HIT_DOWN only hits OTG, etc.
+	//Hitlag/Blocklag: Period where both the attacker and defender are frozen after a hitbox connects
+	//Hitstun/Blockstun: Period where only the defender can't act after a hitbox connects
+	//Unblockable: Can they block it. Note: You can parry an unblockable hitbox
+	//Attack Height: If the move has to be blocked high/low, and what direction it needs to be parried in.
+	//Attack Level: Is the move Light, Medium, or Heavy. Affects the defender's hitstun animation and which hitbox will have priority in the event of 
+		//a trade
+	//Hit/Block Pushback: How far the defender is pushed during their hitlag period. Note: If the defender hits a wall during hitlag, the attacker 
+		//will be moved instead.
+	//Clank Kind: What to do if two people hit each other at the same time with hitboxes of the same Attack Level. NORMAL = Both get hit, CLANK = 
+		//Both go into a clank animation and get pushed away, CONTINUE = The other player goes into a clank animation, while your hitbox gets canceled
+		// but the animation for your current move continues
+	//Juggle Set: What the defender's juggle value is set to if they get hit. If the defender's juggle value < the hitbox's juggle set, the defender's
+		//juggle value is raised to match. Otherwise, it's just raised by 1.
+	//Max Juggle: The highest juggle value that an aerial opponent can have before this hitbox automatically whiffs.
+	//Hit/Counterhit Status: What status to put the defender in on hit/counterhit. Passing HIT_STATUS_NORMAL will automatically use the standard regular
+		//hitstun status based on the opponent's situation.
+	//Counterhit Type: The situations under which this hitbox can counterhit. NONE = Can't counterhit, NORMAL = Can counterhit if the defender's
+		//counterhitable flag is on, AERIAL = Can counterhit if the defender's counterhit flag is on and they're in the air.
+	//Launch Init Y: The initial vertical speed to set an aerial opponent to
+	//Launch Gravity Y: The gravity to set an aerial opponent to. Note: This value is ignored during normal air hitstun and is only used during launches.
+	//Launch Max Fall Speed: The max fall speed to give to the opponent. Note: This value is also ignored during normal air hitstun.
+	//Launch Speed X: The horizontal speed ot set an aerial opponent to
+	//Continue Launch: If the opponent is currently in the launch status, but this hitbox does not have its hit status set to HIT_STATUS_LAUNCH, do we
+		//force them to restart the launch status anyway, or do we just put them in regular air hitstun. Generally this should be true for heavies,
+		//false for lights, and case-by-case for mediums. 
+	//Use Player Pos: Are the Anchor and Offset coords based on the player's position, or are they static coordinates on the screen. True by default,
+		//and will only be false in extremely rare situations.
+
 	//Grabbox
 	
 	void new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 

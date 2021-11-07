@@ -20,7 +20,7 @@ Hitbox::Hitbox() {
 Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
-	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
+	int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
 	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
@@ -62,7 +62,6 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	this->blockstun = blockstun;
 	this->attack_height = attack_height;
 	this->unblockable = unblockable;
-	this->success_hit = success_hit;
 	this->juggle_set = juggle_set;
 	this->max_juggle = max_juggle;
 	this->hit_status = hit_status;
@@ -83,7 +82,7 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 */
 Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
-	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
+	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
@@ -113,7 +112,6 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	this->blocklag = blocklag;
 	this->blockstun = blockstun;
 	this->unblockable = unblockable;
-	this->success_hit = success_hit;
 	this->juggle_set = juggle_set;
 	this->max_juggle = max_juggle;
 	this->hit_status = hit_status;
@@ -127,16 +125,6 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	this->launch_speed_x = launch_speed_x;
 	this->trade = trade;
 	this->continue_launch = continue_launch;
-}
-
-/*
-	Updates whether or not a hitbox has already connected based on its multihit index
-*/
-
-void Hitbox::update_connect(int multihit_index) {
-	if (multihit == multihit_index) {
-		this->success_hit = true;
-	}
 }
 
 /*
@@ -181,7 +169,9 @@ void Hitbox::update_pos(Object * object, bool add_window_width) {
 //Clears a hitbox. TECHNICALLY never needs to be used because the constructors already set the ids to 0 but like... gross
 
 void Hitbox::clear() {
-	this->id = -1;
+	if (id != -1) {
+		this->id = -1;
+	}
 }
 
 Grabbox::Grabbox() {

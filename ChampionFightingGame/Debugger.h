@@ -18,4 +18,4 @@ public:
 	bool check_button_trigger(u32 button);
 };
 
-void debug_mode(Debugger* debugger, FighterInstance* target, SDL_Renderer *renderer, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset);
+void debug_mode(Debugger* debugger, FighterInstance* target, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset);

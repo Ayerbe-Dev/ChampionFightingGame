@@ -10,5 +10,5 @@ public:
 	SDL_Texture* pBackgroundTexture;
 
 	Stage();
-	Stage(SDL_Renderer* renderer, string stage_id);
+	Stage(string stage_id);
 };

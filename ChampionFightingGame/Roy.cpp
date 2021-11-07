@@ -7,7 +7,7 @@ Roy::Roy() {
 
 }
 
-Roy::Roy(SDL_Renderer *renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+Roy::Roy(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/roy";
 	if (!crash_to_debug) {
@@ -17,12 +17,12 @@ Roy::Roy(SDL_Renderer *renderer, int id, PlayerInfo* player_info, FighterInstanc
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ROY;
-	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png", renderer);
+	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();
 	}
-	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, renderer, id, player_info, fighter_instance_accessor);
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, id, player_info, fighter_instance_accessor);
 	delete (projectile_objects[0]);
 	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	RoyFireball* roy_fireball_instance = (RoyFireball*)projectile_objects[0];
@@ -65,9 +65,9 @@ void Roy::loadRoyACMD() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
-			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
-			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
+			new_hurtbox(0, GameCoordinate{ -42, 0 }, GameCoordinate{ 62, 38 });
+			new_hurtbox(1, GameCoordinate{ -29, 39 }, GameCoordinate{ 33, 141 });
+			new_hurtbox(2, GameCoordinate{ 17, 82 }, GameCoordinate{ 54, 104 });
 		}
 	});
 	script("walk_f", [this]() {
@@ -686,7 +686,6 @@ void Roy::loadRoyACMD() {
 		if (is_excute_frame(4)) {
 			if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ 0,5 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false);
-
 			}
 			else if (chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
 				new_hitbox(1, 0, 40, 5, 1.2, 1, GameCoordinate{ 0,5 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 6, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false);
@@ -866,14 +865,8 @@ void Roy::roy_exit_status_special_fireball_start() {
 
 
 void Roy::roy_status_special_fireball_punch() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
+	if (is_status_end()) {
 		return;
-	}
-	if (is_actionable()) {
-		if (common_ground_status_act()) {
-			return;
-		}
 	}
 }
 
@@ -886,18 +879,13 @@ void Roy::roy_exit_status_special_fireball_punch() {
 }
 
 void Roy::roy_status_special_fireball_kick() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL);
+	if (is_status_end()) {
 		return;
-	}
-	if (is_actionable()) {
-		if (common_ground_status_act()) {
-			return;
-		}
 	}
 }
 
 void Roy::roy_enter_status_special_fireball_kick() {
+	situation_kind = CHARA_SITUATION_AIR;
 	change_anim("special_fireball_kick", 2);
 }
 
@@ -910,11 +898,7 @@ void Roy::roy_status_special_uppercut_start() {
 		change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
-		return;
-	}
-	if (is_actionable() && common_ground_status_act()) {
+	if (is_status_end()) {
 		return;
 	}
 }

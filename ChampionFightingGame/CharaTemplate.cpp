@@ -7,7 +7,7 @@ CharaTemplate::CharaTemplate() {
 
 }
 
-CharaTemplate::CharaTemplate(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/template";
 	if (!crash_to_debug) {
@@ -17,13 +17,13 @@ CharaTemplate::CharaTemplate(SDL_Renderer* renderer, int id, PlayerInfo* player_
 	loadCharaTemplateStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_CHARA_TEMPLATE;
-	this->base_texture = loadTexture("resource/chara/template/sprite/sprite.png", renderer);
+	this->base_texture = loadTexture("resource/chara/template/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();
 	}
 
-	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, renderer, id, player_info, fighter_instance_accessor);
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, id, player_info, fighter_instance_accessor);
 	delete (projectile_objects[0]);
 	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectile_objects[0];

@@ -17,6 +17,8 @@
 using namespace std;
 int registered_controllers[2] = {-1, -1};
 bool debug = false;
+SDL_Window* g_window;
+SDL_Renderer* g_renderer;
 
 int main() {
 	bool running = true;
@@ -29,7 +31,7 @@ int main() {
 	format.callback = audio_callback;
 	format.userdata = NULL;
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
 	if (TTF_Init() < 0) {
@@ -40,7 +42,8 @@ int main() {
 	}
 	SDL_PauseAudio(0);
 	SDL_GameControllerEventState(SDL_ENABLE);
-	SDL_Window* window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
@@ -49,29 +52,27 @@ int main() {
 	float testx, testy;
 
 	while (running) {
-		SDL_Renderer* pRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED); //I really hope this gets deleted after every function call... or ...   :/
-																																//well boy have i got news for you
-		SDL_SetRenderDrawBlendMode(pRenderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+		refreshRenderer();
+		SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {
-			game_state = game_main(pRenderer, window, player_info);
+			game_state = game_main(player_info);
 		}
 		else if (game_state == GAME_STATE_MENU) {
-			game_state = menu_main(pRenderer, window, player_info);
+			game_state = menu_main(player_info);
 		}
 		else if (game_state == GAME_STATE_CHARA_SELECT) {
-			game_state = chara_select_main(pRenderer, window, player_info);
+			game_state = chara_select_main(player_info);
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
 		else {
-			game_state = debugMenu(pRenderer, window, player_info, game_state);
+			game_state = debugMenu(player_info, game_state);
 		}
-		SDL_DestroyRenderer(pRenderer); 
 	}
 
-	SDL_DestroyWindow(window);
+	SDL_DestroyWindow(g_window);
 
 	SDL_Quit();
 

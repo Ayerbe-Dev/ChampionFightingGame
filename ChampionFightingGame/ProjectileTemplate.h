@@ -10,7 +10,7 @@
 class ProjectileTemplate : public ProjectileInstance {
 public:
 	ProjectileTemplate();
-	ProjectileTemplate(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	ProjectileTemplate(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
 
 	CharaTemplate* chara_template;
 

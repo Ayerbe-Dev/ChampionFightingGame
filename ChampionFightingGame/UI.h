@@ -6,7 +6,6 @@
 
 class HealthBar {
 public:
-	SDL_Renderer* pRenderer;
 	FighterInstance* fighter_instance;
 	SDL_Texture* health_texture;
 	SDL_Texture* bar_texture;
@@ -19,7 +18,7 @@ public:
 	int height;
 
 	HealthBar();
-	HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance);
+	HealthBar(FighterInstance* fighter_instance);
 
 	void RenderAsP1();
 	void RenderAsP2();
@@ -33,7 +32,7 @@ public:
 	string nametag;
 
 	PlayerIndicator();
-	PlayerIndicator(SDL_Renderer *renderer, FighterInstance *fighter_instance, string nametag = "");
+	PlayerIndicator(FighterInstance *fighter_instance, string nametag = "");
 };
 
 class GameTimer{
@@ -47,9 +46,8 @@ public:
     SDL_Texture* pBigTypeface;
     SDL_Texture* pSmallTypeface;
 	SDL_Texture* pClockFace;
-	SDL_Renderer* pRenderer;
     GameTimer();
-    GameTimer(SDL_Renderer* pRenderer,int time);
+    GameTimer(int time);
 
 	void Tick();
 	void Render();

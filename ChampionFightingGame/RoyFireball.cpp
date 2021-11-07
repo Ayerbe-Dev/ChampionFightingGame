@@ -1,16 +1,16 @@
 #include "RoyFireball.h"
 #include "Game.h"
 
-RoyFireball::RoyFireball(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/projectile/roy_fireball";
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	load_params();
 	loadRoyFireballACMD();
 	loadRoyFireballStatusFunctions();
-	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png", renderer);
+	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png");
 	this->fighter_instance_accessor = fighter_instance_accessor;
-	superInit(renderer);
+	superInit();
 }
 
 void RoyFireball::loadRoyFireballStatusFunctions() {

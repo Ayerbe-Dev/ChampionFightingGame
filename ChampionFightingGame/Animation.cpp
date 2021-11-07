@@ -6,6 +6,7 @@
 #include <iostream>
 #include <functional>
 #include "Animation.h"
+extern SDL_Renderer* g_renderer;
 
 Animation::Animation() {};
 
@@ -46,6 +47,6 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 	return frame_rect;
 }
 
-void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
-	animation->SPRITESHEET = loadTexture((animation->path).c_str(), renderer);
+void loadAnimation(Animation* animation) {
+	animation->SPRITESHEET = loadTexture((animation->path).c_str());
 }

@@ -10,7 +10,7 @@ class CharaTemplate : public FighterInstance {
 public:
 	virtual void chara_id();
 	CharaTemplate();
-	CharaTemplate(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	CharaTemplate(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
 	void loadCharaTemplateStatusFunctions();
 	void loadCharaTemplateACMD();
 

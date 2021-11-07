@@ -10,7 +10,7 @@
 class RoyFireball : public ProjectileInstance {
 public:
 	RoyFireball();
-	RoyFireball(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor);
+	RoyFireball(int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor);
 
 	Roy* roy;
 

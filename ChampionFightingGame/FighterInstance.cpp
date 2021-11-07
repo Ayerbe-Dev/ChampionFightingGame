@@ -13,11 +13,11 @@ extern u32 frame_advance_entry_ms;
 
 FighterInstance::FighterInstance() {}
 
-FighterInstance::FighterInstance(SDL_Renderer* renderer, PlayerInfo* player_info) {
+FighterInstance::FighterInstance(PlayerInfo* player_info) {
 	this->player_info = player_info;
 	// runs
 		// yeah
-	superInit(0, renderer);
+	superInit(0);
 }
 
 void FighterInstance::fighter_main() {
@@ -169,7 +169,7 @@ void FighterInstance::destroy_projectile(int id) {
 	projectile_objects[id]->id = -1;
 }
 
-void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
+void FighterInstance::superInit(int id) {
 	this->id = id;
 
 	//these initial gamecoord values get overwritten almost immediately. why are we still here, just to suffer?
@@ -182,7 +182,7 @@ void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 	}
 
 	if (!crash_to_debug) {
-		load_anim_list(renderer);
+		load_anim_list();
 	}
 	if (!crash_to_debug) {
 		load_stats();
@@ -199,7 +199,7 @@ void FighterInstance::superInit(int id, SDL_Renderer* renderer) {
 
 //Setup
 
-void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
+void FighterInstance::load_anim_list() {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
@@ -229,7 +229,7 @@ void FighterInstance::load_anim_list(SDL_Renderer* renderer) {
 		animation_table[i].force_center = ymlChopInt(force_center);
 		animation_table[i].move_dir = ymlChopInt(move_dir);
 		load_anim_map(animation_table[i].anim_map, animation_table[i].name);
-		loadAnimation(&animation_table[i], renderer);
+		loadAnimation(&animation_table[i]);
 	}
 	anim_list.close();
 }
@@ -251,8 +251,12 @@ void FighterInstance::load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_d
 		ret = empty_rect;
 	}
 	else {
-		for (int i = 0; anim_map >> i; i) { //The map files are 1-indexed, so we subtract 1 from the line we're on to get the index we actually want to write to
-			i--;
+		int initial_index = anim_map.peek() - 48;
+		for (int i = 0; anim_map >> i; i) { //The map files are based on the sprite names given. Since Blender outputs 1-indexed sprites and Piskel 
+			//outputs 0-indexed sprites, we can peek at the first line of the file to figure out how the file is indexed. Long term they'll probably
+			//all go through Piskel anyway but if not, this will handle it.
+
+			i -= initial_index;
 			string equal_sign;
 			anim_map >> equal_sign; //It is followed by a single equal sign. We can use this to make sure we're looking at the right fields.
 			//If for whatever reason it's missing, that means the file got messed up somewhere, so we'll just crash to the debug menu with the 
@@ -1616,6 +1620,26 @@ u32 FighterInstance::get_status_group() {
 	}
 }
 
+/// When it's time to transition out of the current status, this changes to the proper status. If no arg is given, this will change status to wait or
+/// fall based on your situation_kind
+bool FighterInstance::is_status_end(u32 post_status_kind, bool call_end_status, bool require_different_status) {
+	if (is_anim_end) {
+		if (situation_kind == CHARA_SITUATION_AIR && post_status_kind == CHARA_STATUS_WAIT) {
+			post_status_kind = CHARA_STATUS_FALL;
+		}
+		return change_status(post_status_kind, call_end_status, require_different_status);
+	}
+	else if (is_actionable()) {
+		if (situation_kind == CHARA_SITUATION_GROUND) {
+			return common_ground_status_act();
+		}
+		else {
+			return common_air_status_act();
+		}
+	}
+	return false;
+}
+
 bool FighterInstance::is_status_hitstun_enable_parry() {
 	if (chara_int[CHARA_INT_HITLAG_FRAMES] != 0 || fighter_instance_accessor->fighter_instance[!id]->chara_int[CHARA_INT_DAMAGE_SCALE] == -5) {
 		return false;
@@ -1714,11 +1738,7 @@ void FighterInstance::enter_status_walkb() {
 void FighterInstance::exit_status_walkb() {}
 
 void FighterInstance::status_dash() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
-		return;
-	}
-	if (is_actionable() && common_ground_status_act()) {
+	if (is_status_end()) {
 		return;
 	}
 	int min_frame = get_param_int("dash_f_accel_frame");
@@ -1755,11 +1775,7 @@ void FighterInstance::exit_status_dash() {
 }
 
 void FighterInstance::status_dashb() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
-		return;
-	}
-	if (is_actionable() && common_ground_status_act()) {
+	if (is_status_end()) {
 		return;
 	}
 	int min_frame = get_param_int("dash_b_accel_frame");
@@ -1800,11 +1816,7 @@ void FighterInstance::status_dash_air() {
 		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL);
-		return;
-	}
-	if (is_actionable() && common_air_status_act()) {
+	if (is_status_end()) {
 		return;
 	}
 	int min_frame = get_param_int("dash_f_accel_frame");
@@ -1923,11 +1935,7 @@ void FighterInstance::exit_status_jumpsquat() {
 }
 
 void FighterInstance::status_jump() {
-	if (common_air_status_act()) {
-		return;
-	}
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL, false);
+	if (is_status_end(CHARA_STATUS_FALL, false)) {
 		return;
 	}
 	if (pos.y < FLOOR_GAMECOORD) {
@@ -1992,25 +2000,13 @@ void FighterInstance::status_attack() {
 	if (specific_status_attack()) {
 		return;
 	}
-	if (is_anim_end) {
-		if (get_stick_dir() < 4) {
-			if (chara_int[CHARA_INT_ATTACK_KIND] <= ATTACK_KIND_HK) {
-				if (change_status(CHARA_STATUS_CROUCHD)) {
-					return;
-				}
-			}
-			else {
-				if (change_status(CHARA_STATUS_CROUCH)) {
-					return;
-				}
-			}
-		}
-		else if (change_status(CHARA_STATUS_WAIT)) {
+	if (chara_int[CHARA_INT_ATTACK_KIND] > ATTACK_KIND_HK) { //If we're in a crouching attack, change to the crouch animation on animation end. 
+		if (is_status_end(CHARA_STATUS_CROUCH)) {
 			return;
 		}
 	}
-	if (is_actionable()) {
-		if (common_ground_status_act()) {
+	else { //Otherwise, just transition to wait
+		if (is_status_end()) {
 			return;
 		}
 	}
@@ -2081,15 +2077,8 @@ void FighterInstance::status_attack_air() {
 		change_status(CHARA_STATUS_LANDING_ATTACK);
 		return;
 	}
-	if (is_anim_end) {
-		if (change_status(CHARA_STATUS_FALL)) {
-			return;
-		}
-	}
-	if (is_actionable()) {
-		if (common_air_status_act()) {
-			return;
-		}
+	if (is_status_end()) {
+		return;
 	}
 	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
 		change_status(CHARA_STATUS_GRAB_AIR);
@@ -2129,14 +2118,8 @@ void FighterInstance::enter_status_attack_air() {
 void FighterInstance::exit_status_attack_air() {}
 
 void FighterInstance::status_grab() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
+	if (is_status_end()) {
 		return;
-	}
-	if (is_actionable()) {
-		if (common_ground_status_act()) {
-			return;
-		}
 	}
 }
 
@@ -2151,14 +2134,8 @@ void FighterInstance::status_throw() {
 	if (!chara_flag[CHARA_FLAG_THREW_OPPONENT]) {
 		set_opponent_offset(GameCoordinate{ chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
+	if (is_status_end()) {
 		return;
-	}
-	if (is_actionable()) {
-		if (common_ground_status_act()) {
-			return;
-		}
 	}
 }
 
@@ -2200,14 +2177,8 @@ void FighterInstance::status_grab_air() {
 		change_status(CHARA_STATUS_LANDING);
 		return;
 	}
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_FALL);
+	if (is_status_end()) {
 		return;
-	}
-	if (is_actionable()) {
-		if (common_air_status_act()) {
-			return;
-		}
 	}
 	common_air_status_general();
 }
@@ -2226,26 +2197,9 @@ void FighterInstance::status_throw_air() {
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
 		situation_kind = CHARA_SITUATION_GROUND;
-		if (is_anim_end) {
-			change_status(CHARA_STATUS_WAIT);
-			return;
-		}
-		if (is_actionable()) {
-			if (common_ground_status_act()) {
-				return;
-			}
-		}
 	}
-	else {
-		if (is_anim_end) {
-			change_status(CHARA_STATUS_FALL);
-			return;
-		}
-		if (is_actionable()) {
-			if (common_air_status_act()) {
-				return;
-			}
-		}
+	if (is_status_end()) {
+		return;
 	}
 	common_air_status_general();
 }
@@ -2284,15 +2238,11 @@ void FighterInstance::exit_status_throw_air() {
 void FighterInstance::status_grabbed() {
 	if (chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X] != 0 && chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y] != 0) {
 		if (chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
-			if (!add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1)) {
-//				cout << chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] << endl;
-			}
+			add_pos(chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
 			chara_int[CHARA_INT_MANUAL_POS_CHANGE_FRAMES]--;
 		}
 		else {
-			if (!set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y])) {
-//				cout << chara_float[CHARA_FLOAT_MANUAL_POS_CHANGE_Y] << endl;
-			}
+			set_pos(chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_X], chara_float[CHARA_FLOAT_MANUAL_POS_OFFSET_Y]);
 		}
 	}
 }
@@ -2466,35 +2416,10 @@ void FighterInstance::status_parry_start() {
 			change_status(CHARA_STATUS_LANDING);
 			return;
 		}
-		if (is_actionable()) {
-			if (common_air_status_act()) {
-				return;
-			}
-		}
-		if (is_anim_end) {
-			if (change_status(CHARA_STATUS_FALL)) {
-				return;
-			}
-		}
 		chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
 		common_air_status_general();
 	}
 	else {
-		if (is_actionable()) {
-			if (common_ground_status_act()) {
-				return;
-			}
-		}
-		if (is_anim_end) {
-			if (get_stick_dir() < 4) {
-				if (change_status(CHARA_STATUS_CROUCH)) {
-					return;
-				}
-			}
-			else if (change_status(CHARA_STATUS_WAIT)) {
-				return;
-			}
-		}
 		if (get_stick_dir() < 4) {
 			chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
 		}
@@ -2504,6 +2429,9 @@ void FighterInstance::status_parry_start() {
 		else {
 			chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
 		}
+	}
+	if (is_status_end()) {
+		return;
 	}
 }
 
@@ -2522,33 +2450,14 @@ void FighterInstance::status_parry() {
 	if (beginning_hitlag(1) || ending_hitlag(2)) {
 		forceStepThroughHitlag();
 	}
-	if (is_actionable()) {
-		if (situation_kind == CHARA_SITUATION_GROUND && common_ground_status_act()) {
-			return;
-		}
-		if (situation_kind == CHARA_SITUATION_AIR && common_air_status_act()) {
+	if (situation_kind == CHARA_SITUATION_GROUND && chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
+		if (is_status_end(CHARA_STATUS_CROUCH)) {
 			return;
 		}
 	}
-	if (is_anim_end) {
-		if (situation_kind == CHARA_SITUATION_AIR) {
-			change_status(CHARA_STATUS_FALL);
+	else {
+		if (is_status_end()) {
 			return;
-		}
-		else {
-			if (get_stick_dir() < 4) {
-				if (chara_int[CHARA_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
-					if (change_status(CHARA_STATUS_CROUCH)) {
-						return;
-					}
-				}
-				else if (change_status(CHARA_STATUS_CROUCHD)) {
-					return;
-				}
-			}
-			else if (change_status(CHARA_STATUS_WAIT)) {
-				return;
-			}
 		}
 	}
 }
@@ -2571,7 +2480,9 @@ void FighterInstance::enter_status_parry() {
 	}
 }
 
-void FighterInstance::exit_status_parry() {}
+void FighterInstance::exit_status_parry() {
+	chara_int[CHARA_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MAX;
+}
 
 void FighterInstance::status_crumple() {
 	if (is_anim_end) {
@@ -2599,7 +2510,7 @@ void FighterInstance::enter_status_launch_start() {
 }
 
 void FighterInstance::exit_status_launch_start() {
-	situation_kind = CHARA_SITUATION_AIR; //I love pretending the exit statuses are actually useful :)
+	situation_kind = CHARA_SITUATION_AIR;
 }
 
 void FighterInstance::status_launch() {
@@ -2824,14 +2735,8 @@ void FighterInstance::exit_status_knockdown() {
 }
 
 void FighterInstance::status_wakeup() {
-	if (is_anim_end) {
-		change_status(CHARA_STATUS_WAIT);
+	if (is_status_end()) {
 		return;
-	}
-	if (is_actionable()) {
-		if (common_ground_status_act()) {
-			return;
-		}
 	}
 }
 

@@ -3,12 +3,13 @@
 #include "Game.h"
 #include "EricFireball.fwd.h"
 #include "EricFireball.h"
+extern SDL_Renderer* g_renderer;
 
 Eric::Eric() {
 	
 }
 
-Eric::Eric(SDL_Renderer *renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor) {
+Eric::Eric(int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor) {
 	resource_dir = "resource/chara/eric";
 	if (!crash_to_debug) {
 		load_params();
@@ -17,13 +18,13 @@ Eric::Eric(SDL_Renderer *renderer, int id, PlayerInfo* player_info, FighterInsta
 	loadEricStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ERIC;
-	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png", renderer);
+	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();
 	}
 
-	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, renderer, id, player_info, fighter_instance_accessor);
+	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, id, player_info, fighter_instance_accessor);
 	delete (projectile_objects[0]);
 	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
 	EricFireball* eric_fireball_instance = (EricFireball*)projectile_objects[0];

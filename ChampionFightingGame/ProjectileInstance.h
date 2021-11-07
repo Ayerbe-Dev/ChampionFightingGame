@@ -21,8 +21,8 @@ public:
 	void (ProjectileInstance::* pExit_status[PROJECTILE_STATUS_MAX])();
 
 	void projectile_main();
-	void superInit(SDL_Renderer* renderer);
-	void load_anim_list(SDL_Renderer* renderer);
+	void superInit();
+	void load_anim_list();
 	void load_stats();
 	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
 	void startAnimation(Animation* animation);

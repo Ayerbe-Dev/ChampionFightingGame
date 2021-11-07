@@ -7,11 +7,11 @@
 #include "FighterInstanceAccessor.h"
 #include "Game.fwd.h"
 
-int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]);
+int game_main(PlayerInfo player_info[2]);
 
 void decrease_common_fighter_variables(FighterInstance* fighter_instance);
 void decrease_common_projectile_variables(ProjectileInstance* projectile_instance);
-void check_attack_connections(FighterInstance *p1, FighterInstance *p2, SDL_Renderer* renderer, bool visualize_boxes, bool check);
+void check_attack_connections(FighterInstance *p1, FighterInstance *p2, bool visualize_boxes, bool check);
 int get_event_hit_collide_player(FighterInstance* attacker, FighterInstance* defender, Hitbox *hitbox, Hurtbox *hurtbox);
 int get_event_grab_collide_player(FighterInstance* attacker, FighterInstance* defender, Grabbox *grabbox, Hurtbox *hurtbox);
 int get_event_hit_collide_projectile(ProjectileInstance* attacker, FighterInstance* defender, Hitbox* hitbox, Hurtbox* hurtbox);
@@ -25,7 +25,7 @@ SDL_Rect getRenderPos(FighterInstance* fighter_instance, bool force_center);
 
 class IObject {
 public:
-	IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	IObject(int object_type, int object_kind, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor);
 	~IObject();
 	FighterInstance* get_fighter();
 	ProjectileInstance* get_projectile();

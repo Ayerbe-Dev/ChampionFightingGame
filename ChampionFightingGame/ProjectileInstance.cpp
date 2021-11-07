@@ -1,6 +1,8 @@
 #include "ProjectileInstance.h"
 #include "Game.h"
 
+extern SDL_Renderer* g_renderer;
+
 void ProjectileInstance::projectile_main() {
 	prevpos = pos;
 
@@ -24,15 +26,15 @@ void ProjectileInstance::projectile_main() {
 	update_hurtbox_pos();
 }
 
-void ProjectileInstance::superInit(SDL_Renderer* renderer) {
-	load_anim_list(renderer);
+void ProjectileInstance::superInit() {
+	load_anim_list();
 	load_stats();
 	loadStatusFunctions();
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }
 
-void ProjectileInstance::load_anim_list(SDL_Renderer* renderer) {
+void ProjectileInstance::load_anim_list() {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
@@ -49,7 +51,7 @@ void ProjectileInstance::load_anim_list(SDL_Renderer* renderer) {
 		animation_table[i].name = ymlChopString(name);
 		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
-		loadAnimation(&animation_table[i], renderer);
+		loadAnimation(&animation_table[i]);
 	}
 	anim_list.close();
 }

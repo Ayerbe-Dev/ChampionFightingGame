@@ -10,7 +10,7 @@
 class EricFireball : public ProjectileInstance {
 public:
 	EricFireball();
-	EricFireball(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor);
+	EricFireball(int id, PlayerInfo* player_info, FighterInstanceAccessor *fighter_instance_accessor);
 
 	Eric* eric;
 

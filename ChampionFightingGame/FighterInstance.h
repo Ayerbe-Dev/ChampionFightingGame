@@ -49,7 +49,7 @@ public:
 	//Constructors
 
 	FighterInstance();
-	FighterInstance(SDL_Renderer* renderer, PlayerInfo *player_info);
+	FighterInstance(PlayerInfo *player_info);
 
 	void fighter_main();
 
@@ -72,8 +72,8 @@ public:
 
 	//Setup
 
-	void superInit(int id, SDL_Renderer* renderer);
-	void load_anim_list(SDL_Renderer* renderer);
+	void superInit(int id);
+	void load_anim_list();
 	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
 	void loadStatusFunctions();
 
@@ -164,6 +164,7 @@ public:
 	bool common_ground_status_act();
 	bool common_air_status_act();
 	bool common_air_status_general();
+	bool is_status_end(u32 status_kind = CHARA_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
 	u32 get_status_group();
 	bool is_status_hitstun_enable_parry();
 

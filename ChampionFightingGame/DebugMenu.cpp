@@ -9,15 +9,17 @@
 #include "DebugMenu.h"
 #include "Debugger.h"
 #include "MenuHandler.h"
+extern SDL_Window* g_window;
+extern SDL_Renderer* g_renderer;
 
-int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2], int gamestate) {
+int debugMenu(PlayerInfo player_info[2], int gamestate) {
 	Uint32 tick=0,tok=0;
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
 	Debugger debugger;
 
 	TTF_Font* pFont = loadDebugFont();
-	DebugList debugList = {pRenderer,pFont};
+	DebugList debugList = {pFont};
 
 	lastString << "This menu was called from the destination [" << gamestate << "]";
 
@@ -47,8 +49,8 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	menuHandler.setRepeatDelay(20);
 
 	while (debugList.debugging) {
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetRenderTarget(pRenderer, pScreenTexture);
+		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 
 
 		frameTimeDelay(&tick,&tok);
@@ -75,11 +77,11 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(window, 0);
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
 			}
 			else {
-				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
@@ -93,9 +95,9 @@ int debugMenu(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		menuHandler.handleMenu();
 		//what if the only purpose of his 1 line was to hide 12 lines
 
-		SDL_SetRenderTarget(pRenderer, nullptr);
-		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(pRenderer);
+		SDL_SetRenderTarget(g_renderer, nullptr);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(g_renderer);
 		SDL_DestroyTexture(pScreenTexture);
 	}
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
@@ -113,18 +115,17 @@ TTF_Font* loadDebugFont(string fontname){
 }
 
 DebugList::DebugList(){};
-DebugList::DebugList(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset){
+DebugList::DebugList(TTF_Font *pFont, int x_offset){
 
-	init(pRenderer,pFont,x_offset);
+	init(pFont,x_offset);
 };
 
-void DebugList::init(SDL_Renderer *pRenderer, TTF_Font *pFont, int x_offset){
-	this->pRenderer = pRenderer;
+void DebugList::init(TTF_Font *pFont, int x_offset){
 	this->pFont = pFont;
 	this->x_offset = x_offset;
 
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
-		debugItems[i].preLoad(pRenderer,pFont);
+		debugItems[i].preLoad(pFont);
 	}
 }
 
@@ -152,9 +153,9 @@ void DebugList::render(){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
 			if(i == selection){
-				SDL_RenderCopy(pRenderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
+				SDL_RenderCopy(g_renderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
 			} else {
-				SDL_RenderCopy(pRenderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
+				SDL_RenderCopy(g_renderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
 			}
 		}
 	}
@@ -203,8 +204,7 @@ void DebugList::finisher(){
 }
 
 DebugItem::DebugItem(){};
-void DebugItem::preLoad(SDL_Renderer *pRenderer, TTF_Font *pFont){
-	this->pRenderer = pRenderer;
+void DebugItem::preLoad(TTF_Font *pFont){
 	this->pFont = pFont;
 };
 
@@ -218,11 +218,11 @@ void DebugItem::generateTexture(string message){
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
 	
-	pTexture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+	pTexture = SDL_CreateTextureFromSurface(g_renderer, textSurface);
 	
 	SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
 
-	pTextureSelect = SDL_CreateTextureFromSurface(pRenderer, textSurfaceSelect);
+	pTextureSelect = SDL_CreateTextureFromSurface(g_renderer, textSurfaceSelect);
 	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,&destRectSelect.w,&destRectSelect.h);
 
 	SDL_FreeSurface(textSurfaceSelect);

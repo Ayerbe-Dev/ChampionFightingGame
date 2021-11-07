@@ -5,6 +5,8 @@ using namespace std;
 #include "utils.h"
 #include <SDL_image.h>
 SoundInfo sounds[MAX_SOUNDS];
+extern SDL_Window* g_window;
+extern SDL_Renderer* g_renderer;
 
 
 int clamp(int min, int value, int max) {
@@ -101,12 +103,12 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 	return cCamera;
 }
 
-SDL_Texture* loadTexture(const char* file_path, SDL_Renderer* renderer) {
+SDL_Texture* loadTexture(const char* file_path) {
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {
 		cout << "Error loading image: " << IMG_GetError() << endl;
 	}
-	SDL_Texture* ret = SDL_CreateTextureFromSurface(renderer, image_surface);
+	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
 	return ret;
 }
@@ -138,7 +140,7 @@ string Filter(const string& to, const string& remove) {
 }
 
 //Draw text, center-oriented, based on 0,0 = Bottom middle coords
-void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordinate pos, int font_size, int r, int g, int b, int a) {
+void draw_text(string font_name, string text, GameCoordinate pos, int font_size, int r, int g, int b, int a) {
 	TTF_Font* font = TTF_OpenFont(font_name.c_str(), font_size);
 	if (!font) {
 		printf("Failed to load font:  %s\n", TTF_GetError());
@@ -150,7 +152,7 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordi
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
 
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(g_renderer, text_surface);
 	SDL_FreeSurface(text_surface);
 
 	int text_width, text_height;
@@ -164,13 +166,13 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordi
 	render_rect.x -= render_rect.w / 2;
 	render_rect.y -= render_rect.h / 2;
 
-	SDL_RenderCopy(renderer, texture, nullptr, &render_rect);
+	SDL_RenderCopy(g_renderer, texture, nullptr, &render_rect);
 	SDL_DestroyTexture(texture);
 	TTF_CloseFont(font);
 }
 
 //Draw text, center-oriented, based on 0,0 = Top left corner coords
-void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
+void draw_text(string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
 	TTF_Font* font = TTF_OpenFont(font_name.c_str(), font_size);
 	if (!font) {
 		printf("Failed to load font:  %s\n", TTF_GetError());
@@ -182,7 +184,7 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_po
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(g_renderer, text_surface);
 	SDL_FreeSurface(text_surface);
 
 	int text_width, text_height;
@@ -196,7 +198,7 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_po
 	render_rect.x -= render_rect.w / 2;
 	render_rect.y -= render_rect.h / 2;
 
-	SDL_RenderCopy(renderer, texture, nullptr, &render_rect);
+	SDL_RenderCopy(g_renderer, texture, nullptr, &render_rect);
 	SDL_DestroyTexture(texture);
 	TTF_CloseFont(font);
 }
@@ -209,16 +211,16 @@ void frameTimeDelay(Uint32 *tick, Uint32 *tok){
 	*tick = SDL_GetTicks();
 };
 //Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
-void draw_text_multi_lines(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
+void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
 	int blank_pos = get_blank(text);
 	if (blank_pos) {
 		string first_text = text.substr(0, blank_pos);
 		string second_text = text.substr(blank_pos + 1);
-		draw_text(renderer, font_name, first_text, x_pos, y_pos, font_size, r, g, b, a);
-		draw_text_multi_lines(renderer, font_name, second_text, x_pos, y_pos + font_size, font_size, r, g, b, a);
+		draw_text(font_name, first_text, x_pos, y_pos, font_size, r, g, b, a);
+		draw_text_multi_lines(font_name, second_text, x_pos, y_pos + font_size, font_size, r, g, b, a);
 	}
 	else {
-		draw_text(renderer, font_name, text, x_pos, y_pos, font_size, r, g, b, a);
+		draw_text(font_name, text, x_pos, y_pos, font_size, r, g, b, a);
 	}
 }
 
@@ -284,4 +286,9 @@ void PlaySound(char* file) {
 	sounds[index].dlen = cvt.len_cvt;
 	sounds[index].dpos = 0;
 	SDL_UnlockAudio();
+}
+
+void refreshRenderer() {
+	SDL_DestroyRenderer(g_renderer);
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 }

@@ -7,7 +7,7 @@ Atlas::Atlas() {
 
 }
 
-Atlas::Atlas(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+Atlas::Atlas(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/atlas";
 	if (!crash_to_debug) {
@@ -17,7 +17,7 @@ Atlas::Atlas(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterIns
 	loadAtlasStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ATLAS;
-	this->base_texture = loadTexture("resource/chara/atlas/sprite/sprite.png", renderer);
+	this->base_texture = loadTexture("resource/chara/atlas/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectile_objects[i] = new ProjectileInstance();

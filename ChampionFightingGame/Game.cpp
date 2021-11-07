@@ -27,12 +27,14 @@
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
 #include "ProjectileTemplate.h"
+extern SDL_Renderer* g_renderer;
+extern SDL_Window* g_window;
 
 extern bool debug;
-int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_info[2]) {
+int game_main(PlayerInfo player_info[2]) {
 	Uint32 tick=0,tok=0;
 	bool gaming = true;
-	bool visualize_boxes = true;
+	bool visualize_boxes = false;
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
@@ -46,14 +48,14 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 
 	//init stage
 	int rng = rand() % 2;
-	Stage stage = Stage(pRenderer, player_info[rng].stage_kind);
+	Stage stage = Stage(player_info[rng].stage_kind);
 
 	//init players
 	FighterInstance* fighter_instance[2];
 	FighterInstanceAccessor* fighter_instance_accessor = new FighterInstanceAccessor;
 
-	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, pRenderer, 0, &player_info[0], fighter_instance_accessor);
-	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, pRenderer, 1, &player_info[1], fighter_instance_accessor);
+	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, 0, &player_info[0], fighter_instance_accessor);
+	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, 1, &player_info[1], fighter_instance_accessor);
 
 	fighter_instance[0] = p1->get_fighter();
 	fighter_instance[1] = p2->get_fighter();
@@ -65,7 +67,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		fighter_instance[i]->fighter_instance_accessor = fighter_instance_accessor;
 	}
 	for (int i = 0; i < 2; i++) {
-		fighter_instance[i]->superInit(i, pRenderer);
+		fighter_instance[i]->superInit(i);
 		/*
 			Requires fighter instance accessor to be fully initialized since it makes a call that involves checking the other character's x pos, so we'll
 			execute this part after the first loop has finished
@@ -78,15 +80,15 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	}
 
 	//init ui
-	GameTimer timer = GameTimer(pRenderer, 99);
+	GameTimer timer = GameTimer(99);
 
 	HealthBar health_bar[2];
-	health_bar[0] = HealthBar(pRenderer, fighter_instance[0]);
-	health_bar[1] = HealthBar(pRenderer, fighter_instance[1]);
+	health_bar[0] = HealthBar(fighter_instance[0]);
+	health_bar[1] = HealthBar(fighter_instance[1]);
 
 	PlayerIndicator player_indicator[2];
-	player_indicator[0] = PlayerIndicator(pRenderer, fighter_instance[0]);
-	player_indicator[1] = PlayerIndicator(pRenderer, fighter_instance[1]);
+	player_indicator[0] = PlayerIndicator(fighter_instance[0]);
+	player_indicator[1] = PlayerIndicator(fighter_instance[1]);
 
 	const Uint8* keyboard_state;
 
@@ -102,8 +104,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 
 		frameTimeDelay(&tick,&tok);
 
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_Texture* pGui = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
 		
@@ -125,11 +127,11 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(window, 0);
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
 			}
 			else {
-				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
 
@@ -157,8 +159,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			the content in pScreenTexture.
 		*/
 		
-		SDL_SetRenderTarget(pRenderer, pScreenTexture);
-		SDL_RenderCopy(pRenderer, stage.pBackgroundTexture, nullptr, nullptr);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, nullptr, nullptr);
 
 		/*
 		Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
@@ -227,7 +229,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 						cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter_instance[debugger.target]->pos.y << endl;
 					}
 				}
-				debug_mode(&debugger, fighter_instance[debugger.target], pRenderer, &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
+				debug_mode(&debugger, fighter_instance[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
 				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
 					debug = false;
 					gaming = false;
@@ -243,17 +245,17 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 			SDL_Rect render_pos = getRenderPos(fighter_instance[i], fighter_instance[i]->chara_flag[CHARA_FLAG_FORCE_ANIM_CENTER]);
 			const double angle = (const double)fighter_instance[i]->angle;
 			SDL_RendererFlip flip = fighter_instance[i]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-			if (SDL_RenderCopyEx(pRenderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip)) {
+			if (SDL_RenderCopyEx(g_renderer, fighter_instance[i]->anim_kind->SPRITESHEET, &(fighter_instance[i]->frame_rect), &render_pos, angle, NULL, flip)) {
 				cout << "\n" << SDL_GetError();
 			}
 			if (fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT] > 1) {
-				SDL_SetRenderTarget(pRenderer, pGui);
+				SDL_SetRenderTarget(g_renderer, pGui);
 				float id_ope = -1;
 				if (fighter_instance[i]->id == 1) {
 					id_ope *= -1;
 				}
-				draw_text(pRenderer, "FiraCode-Regular.ttf", to_string(fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT]), {id_ope * 500, WINDOW_HEIGHT * 0.75}, 200,  255, 0, 0, 255);
-				SDL_SetRenderTarget(pRenderer, pScreenTexture);
+				draw_text("FiraCode-Regular.ttf", to_string(fighter_instance[i]->chara_int[CHARA_INT_COMBO_COUNT]), {id_ope * 500, WINDOW_HEIGHT * 0.75}, 200,  255, 0, 0, 255);
+				SDL_SetRenderTarget(g_renderer, pScreenTexture);
 			}
 
 			//Projectile Renders
@@ -273,7 +275,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 					render_pos.w = (width / (fighter_instance[i]->projectile_objects[o]->anim_kind->length + 1));
 					render_pos.h = height;
 					const double angle = (const double)fighter_instance[i]->projectile_objects[o]->angle;
-					if (SDL_RenderCopyEx(pRenderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip)) {
+					if (SDL_RenderCopyEx(g_renderer, fighter_instance[i]->projectile_objects[o]->anim_kind->SPRITESHEET, &(fighter_instance[i]->projectile_objects[o]->frame_rect), &render_pos, angle, NULL, flip)) {
 						cout << SDL_GetError() << endl;
 					}
 				}
@@ -281,13 +283,13 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		}
 
 		if (debug) {
-			SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-			SDL_RenderDrawRect(pRenderer, debug_rect);
-			SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 127);
-			SDL_RenderFillRect(pRenderer, debug_rect);
+			SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+			SDL_RenderDrawRect(g_renderer, debug_rect);
+			SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 127);
+			SDL_RenderFillRect(g_renderer, debug_rect);
 		}
 
-		check_attack_connections(fighter_instance[0], fighter_instance[1], pRenderer, visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
+		check_attack_connections(fighter_instance[0], fighter_instance[1], visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
 
 		//Camera things
 		camera = updateCamera(fighter_instance[0]->pos.getRenderCoodrinateX(), fighter_instance[0]->pos.getRenderCoodrinateY(), fighter_instance[1]->pos.getRenderCoodrinateX(), fighter_instance[1]->pos.getRenderCoodrinateY(), debugger.zoom);
@@ -301,7 +303,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
 				30,
 				30 };
-				SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
+				SDL_RenderCopy(g_renderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
 			}
 			else {
 				player_indicator[i].indicator_rect = SDL_Rect{
@@ -309,14 +311,14 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 				(int)(fighter_instance[i]->pos.getRenderCoodrinateYAnim() - 33),
 				30,
 				30};
-				SDL_RenderCopy(pRenderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
+				SDL_RenderCopy(g_renderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
 			}
 		}*/
 
-		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
-		SDL_RenderCopy(pRenderer, pScreenTexture, &camera, nullptr); //render scale to window
+		SDL_SetRenderTarget(g_renderer, nullptr); //set target to the window
+		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, nullptr); //render scale to window
 
-		SDL_SetRenderTarget(pRenderer, pGui); //set target to gui layer
+		SDL_SetRenderTarget(g_renderer, pGui); //set target to gui layer
 		for (int i = 0; i < 2; i++) {
 			switch (i) {
 				case 0:
@@ -338,11 +340,11 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		timer.Render();
 
 
-		SDL_SetRenderTarget(pRenderer, nullptr); //set target to the window
-		SDL_RenderCopy(pRenderer, pGui, nullptr, nullptr); //render gui to window
+		SDL_SetRenderTarget(g_renderer, nullptr); //set target to the window
+		SDL_RenderCopy(g_renderer, pGui, nullptr, nullptr); //render gui to window
 
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); //lmao help
-		SDL_RenderPresent(pRenderer); //finalize
+		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
+		SDL_RenderPresent(g_renderer); //finalize
 		
 		SDL_DestroyTexture(pGui); //ok it's on screen, now get that shit outta here
 		SDL_DestroyTexture(pScreenTexture);
@@ -356,7 +358,7 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 	return next_state;
 }
 
-void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Renderer* renderer, bool visualize_boxes, bool check) {
+void check_attack_connections(FighterInstance* p1, FighterInstance* p2, bool visualize_boxes, bool check) {
 	FighterInstance* fighter_instance[2] = { p1, p2 };
 	if (check) {
 		for (int i = 0; i < MAX_PROJECTILES; i++) {
@@ -478,10 +480,10 @@ void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Rend
 						hurtbox_color.y = 255;
 					}
 
-					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, 255);
-					SDL_RenderDrawRect(renderer, &render_pos);
-					SDL_SetRenderDrawColor(renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, hurtbox_color.w);
-					SDL_RenderFillRect(renderer, &render_pos);
+					SDL_SetRenderDrawColor(g_renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, 255);
+					SDL_RenderDrawRect(g_renderer, &render_pos);
+					SDL_SetRenderDrawColor(g_renderer, hurtbox_color.x, hurtbox_color.y, hurtbox_color.z, hurtbox_color.w);
+					SDL_RenderFillRect(g_renderer, &render_pos);
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
@@ -495,10 +497,10 @@ void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Rend
 						hitbox_color.w = 50;
 					}
 
-					SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
-					SDL_RenderDrawRect(renderer, &render_pos);
-					SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, hitbox_color.w);
-					SDL_RenderFillRect(renderer, &render_pos);
+					SDL_SetRenderDrawColor(g_renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
+					SDL_RenderDrawRect(g_renderer, &render_pos);
+					SDL_SetRenderDrawColor(g_renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, hitbox_color.w);
+					SDL_RenderFillRect(g_renderer, &render_pos);
 				}
 				for (int i3 = 0; i3 < 10; i3++) {
 					if (fighter_instance[i]->projectile_objects[i2]->id != -1 && fighter_instance[i]->projectile_objects[i2]->hitboxes[i3].id != -1) {
@@ -507,10 +509,10 @@ void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Rend
 
 						Vec4f hitbox_color = { 255, 0, 0, 127 };
 
-						SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
-						SDL_RenderDrawRect(renderer, &render_pos);
-						SDL_SetRenderDrawColor(renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, hitbox_color.w);
-						SDL_RenderFillRect(renderer, &render_pos);
+						SDL_SetRenderDrawColor(g_renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, 255);
+						SDL_RenderDrawRect(g_renderer, &render_pos);
+						SDL_SetRenderDrawColor(g_renderer, hitbox_color.x, hitbox_color.y, hitbox_color.z, hitbox_color.w);
+						SDL_RenderFillRect(g_renderer, &render_pos);
 					}
 				}
 			}
@@ -526,10 +528,10 @@ void check_attack_connections(FighterInstance* p1, FighterInstance* p2, SDL_Rend
 						grabbox_color.z = 128;
 					}
 
-					SDL_SetRenderDrawColor(renderer, grabbox_color.x, grabbox_color.y, grabbox_color.z, 255);
-					SDL_RenderDrawRect(renderer, &render_pos);
-					SDL_SetRenderDrawColor(renderer, grabbox_color.x, grabbox_color.y, grabbox_color.z, grabbox_color.w);
-					SDL_RenderFillRect(renderer, &render_pos);
+					SDL_SetRenderDrawColor(g_renderer, grabbox_color.x, grabbox_color.y, grabbox_color.z, 255);
+					SDL_RenderDrawRect(g_renderer, &render_pos);
+					SDL_SetRenderDrawColor(g_renderer, grabbox_color.x, grabbox_color.y, grabbox_color.z, grabbox_color.w);
+					SDL_RenderFillRect(g_renderer, &render_pos);
 				}
 			}
 		}
@@ -877,9 +879,9 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 					p2_status_post_hit = CHARA_STATUS_LAUNCH;
 				}
 			}
+			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
+			p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
-		p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
-		p1->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 	}
 
 	if (p1_hit) { //P1 got hit
@@ -944,9 +946,9 @@ bool event_hit_collide_player(FighterInstance* p1, FighterInstance* p2, Hitbox* 
 					p1_status_post_hit = CHARA_STATUS_LAUNCH;
 				}
 			}
+			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
+			p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
-		p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED] = false;
-		p2->chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 	}
 	if (p1_hit) {
 		p1->change_status(p1_status_post_hit, true, false);
@@ -1001,7 +1003,6 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p2_status_post_hit = p2->status_kind;
 	if (p2_hit) {
-		p2->chara_int[CHARA_INT_COMBO_COUNT] ++;
 		p1_projectile->update_hitbox_connect(p1_hitbox->multihit);
 		p1_projectile->projectile_int[PROJECTILE_INT_HEALTH] --;
 		if (p2->chara_flag[CHARA_FLAG_SUCCESSFUL_PARRY]) {
@@ -1026,6 +1027,7 @@ void event_hit_collide_projectile(FighterInstance* p1, FighterInstance* p2, Proj
 				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 			*/
+			p2->chara_int[CHARA_INT_COMBO_COUNT] ++;
 			if (p2->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
 					p1->chara_int[CHARA_INT_DAMAGE_SCALE] += p1_hitbox->scale;
@@ -1212,27 +1214,27 @@ void cleanup(IObject* p1, IObject* p2) {
 	delete p2;
 }
 
-IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+IObject::IObject(int object_type, int object_kind, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind) {
 			case (CHARA_KIND_ROY):
 			{
-				fighter_instance = new Roy(renderer, id, player_info, fighter_instance_accessor);
+				fighter_instance = new Roy(id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_ERIC):
 			{
-				fighter_instance = new Eric(renderer, id, player_info, fighter_instance_accessor);
+				fighter_instance = new Eric(id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_ATLAS):
 			{
-				fighter_instance = new Atlas(renderer, id, player_info, fighter_instance_accessor);
+				fighter_instance = new Atlas(id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (CHARA_KIND_CHARA_TEMPLATE):
 			{
-				fighter_instance = new CharaTemplate(renderer, id, player_info, fighter_instance_accessor);
+				fighter_instance = new CharaTemplate(id, player_info, fighter_instance_accessor);
 			} break;
 			case (CHARA_KIND_MAX):
 			{
@@ -1245,17 +1247,17 @@ IObject::IObject(int object_type, int object_kind, SDL_Renderer* renderer, int i
 		switch (object_kind) {
 			case (PROJECTILE_KIND_ROY_FIREBALL):
 			{
-				projectile_instance = new RoyFireball(renderer, id, player_info, fighter_instance_accessor);
+				projectile_instance = new RoyFireball(id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (PROJECTILE_KIND_ERIC_FIREBALL):
 			{
-				projectile_instance = new EricFireball(renderer, id, player_info, fighter_instance_accessor);
+				projectile_instance = new EricFireball(id, player_info, fighter_instance_accessor);
 			}
 			break;
 			case (PROJECTILE_KIND_PROJECTILE_TEMPLATE):
 			{
-				projectile_instance = new ProjectileTemplate(renderer, id, player_info, fighter_instance_accessor);
+				projectile_instance = new ProjectileTemplate(id, player_info, fighter_instance_accessor);
 			} break;
 			case (PROJECTILE_KIND_MAX):
 			{

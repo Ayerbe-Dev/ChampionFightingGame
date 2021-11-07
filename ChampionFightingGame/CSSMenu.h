@@ -11,6 +11,7 @@ public:
     void setXPosition(int iX);
     void setYPosition(int iY);
     int getTextureWidth();
+    int getCharacterId();
     void render();
 
     bool isBelow(int y);
@@ -53,14 +54,20 @@ public:
     void traverseRight();
     void select();
     void back();
+    void start();
     int getSlotsLength();
     void render();
     void querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr);
+    int getExitCode();
+    int getCharacterKind(int player);
 
     int aPlayerSelectionIndex[2] = {0,0};
 
     int iLazyPassthrough = 0; //dont ask, im lazy
+    bool bSelecting = true;
 private:
+
+    int iExitCode = GAME_STATE_DEBUG_MENU;
     MobileCharacterSlot aMobileCharacterSlots[2];
     int iLastUp[2] = {-1,-1};
     int iLastDown[2] = {-1,-1};

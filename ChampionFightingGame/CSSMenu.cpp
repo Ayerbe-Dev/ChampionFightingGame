@@ -274,6 +274,29 @@ void CSSMenu::back(){
     aMobileCharacterSlots[iLazyPassthrough] = tmpSlot;
 }
 
+void CSSMenu::start(){
+    bSelecting = false;
+
+    //yes Im checking the textures for this shaddup
+    if (aMobileCharacterSlots[0].gameTexture.bIsInitialized && aMobileCharacterSlots[1].gameTexture.bIsInitialized){
+        iExitCode = GAME_STATE_GAME;
+    } else {
+        iExitCode = GAME_STATE_MENU;
+    }
+}
+
+int CSSMenu::getExitCode(){
+    return iExitCode;
+}
+
+int CSSMenu::getCharacterKind(int player){
+    return aFixedCharacterSlots[aPlayerSelectionIndex[player]].getCharacterId();
+}
+
+int FixedCharacterSlot::getCharacterId(){
+    return iCharacterId;
+}
+
 bool FixedCharacterSlot::isInitialized(){
     return bInitialized;
 }
@@ -375,7 +398,6 @@ void MobileCharacterSlot::setTarget(int x, int y, float w, float h){
 
 int cssMenu(PlayerInfo aPlayerInfo[2]){
     printf("Entering CSS Menu\n");
-    bool bSelecting = true;
     Uint32 tick=0,tok=0;
     const Uint8* keyboard_state;
 	Debugger debugger;
@@ -398,14 +420,15 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
 	menuHandler.setEventMenuRight(&CSSMenu::traverseRight);
     menuHandler.setEventMenuDown(&CSSMenu::traverseDown);
     menuHandler.setEventMenuUp(&CSSMenu::traverseUp);
-    menuHandler.setEventMenuFinish(&CSSMenu::select);
+    menuHandler.setEventMenuFinish(&CSSMenu::start);
+    menuHandler.setEventMenuSelect(&CSSMenu::select);
     menuHandler.setEventMenuBack(&CSSMenu::back);
 
 	menuHandler.setInitialDelay(70);
 	menuHandler.setRepeatDelay(20);
 
     printf("Entering loop\n");
-    while (bSelecting){
+    while (cssMenuInstance.bSelecting){
         //bSelecting=false;
         //printf("Loop Start\n");
         
@@ -455,7 +478,6 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
             cursors[i].render();
         }
         //printf("Ending Loop\n");
-
         {   
         SDL_SetRenderTarget(g_renderer,nullptr);
         SDL_RenderClear(g_renderer);
@@ -464,5 +486,7 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
         }
     }
 
-    return 333;
+    aPlayerInfo[0].chara_kind = cssMenuInstance.getCharacterKind(0);
+    aPlayerInfo[1].chara_kind = cssMenuInstance.getCharacterKind(1);
+    return cssMenuInstance.getExitCode();
 }

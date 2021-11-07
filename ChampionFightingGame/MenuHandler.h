@@ -27,6 +27,7 @@ public:
     void setEventMenuRight(CSStraversalFunction traversal);
     void setEventMenuFinish(CSStraversalFunction traversal);
     void setEventMenuBack(CSStraversalFunction traversal);
+    void setEventMenuSelect(CSStraversalFunction traversal);
 
     //requires SDL_PumpEvents(); to be called before this function.
     void handleMenu();
@@ -56,9 +57,10 @@ private:
     CSStraversalFunction nsmfCssLeftTraversal;
     CSStraversalFunction nsmfCssRightTraversal;
     CSStraversalFunction nsmfCssFinisher;
+    CSStraversalFunction nsmfCssSelect;
     CSStraversalFunction nsmfCssBack;
 
-    bool bUpDefined=false, bDownDefined=false, bLeftDefined=false, bRightDefined=false, bFinisherDefined=false, bBackDefined=false;
+    bool bUpDefined=false, bDownDefined=false, bLeftDefined=false, bRightDefined=false, bFinisherDefined=false, bBackDefined=false, bSelectDefined=false;
 
     CSSMenu * pCssHandlerTarget;
     DebugList *pHandlerTarget;

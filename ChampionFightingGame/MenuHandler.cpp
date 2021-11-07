@@ -27,6 +27,7 @@ void MenuHandler::setEventMenuLeft(CSStraversalFunction traversal){this->nsmfCss
 void MenuHandler::setEventMenuRight(CSStraversalFunction traversal){this->nsmfCssRightTraversal = traversal; bRightDefined=true;};
 void MenuHandler::setEventMenuFinish(CSStraversalFunction traversal){this->nsmfCssFinisher = traversal; bFinisherDefined=true;};
 void MenuHandler::setEventMenuBack(CSStraversalFunction traversal){this->nsmfCssBack = traversal; bBackDefined=true;};
+void MenuHandler::setEventMenuSelect(CSStraversalFunction traversal){this->nsmfCssSelect = traversal; bSelectDefined=true;};
 
 void MenuHandler::handleMenu(){
     for (int i = 0; i < 2; i++) {
@@ -91,12 +92,15 @@ void MenuHandler::handleCSSMenu(){
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_RIGHT) && bRightDefined){
             pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssRightTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)){
+        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) && bFinisherDefined){
              pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssFinisher))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_BACK)  && bBackDefined){
              pCssHandlerTarget->iLazyPassthrough = i;
             (pCssHandlerTarget->*(nsmfCssBack))();
+        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)  && bSelectDefined){
+             pCssHandlerTarget->iLazyPassthrough = i;
+            (pCssHandlerTarget->*(nsmfCssSelect))();
         }
 
         //On hold

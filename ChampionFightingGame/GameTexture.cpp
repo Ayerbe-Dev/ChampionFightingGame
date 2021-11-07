@@ -7,7 +7,7 @@ bool GameTexture::init(string sTexturePath, SDL_Renderer *pRenderer){
         return false;
     }
     this->pRenderer = pRenderer;
-    pTexture = loadTexture(sTexturePath.c_str(),pRenderer);
+    pTexture = loadTexture(sTexturePath.c_str());
     SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
     destRect.x=0;
     destRect.y=0;

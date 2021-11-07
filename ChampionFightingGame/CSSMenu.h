@@ -26,7 +26,11 @@ public:
     void traverseRight();
     int getSlotsLength();
     void render();
+    void querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr);
+
+    int aPlayerSelectionIndex[2] = {0,0};
 private:
+   
     GameTexture backgroundTexture;
     GameTexture bigBarTexture;
     GameTexture topBarTexture;
@@ -34,6 +38,19 @@ private:
     void addFixedCharacter(int id);
     PlayerInfo aPlayerInfos[2];
     FixedCharacterSlot aFixedCharacterSlots[32];
+};
+
+class CssCursor{
+public:
+    void init(string sTexturePath);
+    void setTarget(int x, int y);
+    void render();
+    GameTexture cursorTexture;
+    int iXTarget = 0;
+    int iYTarget = 0;
+private:
+    float partialX=0;
+    float partialY=0;
 };
 
 int cssMenu(PlayerInfo aPlayerInfo[2]);

@@ -1,13 +1,15 @@
 #pragma once
 #include "DebugMenu.h"
 #include "PlayerInfo.h"
+#include "CSSMenu.h"
 
 typedef void (DebugList::*DBMtraversalFunction)();
-
+typedef void (CSSMenu::*CSStraversalFunction)();
 class MenuHandler{
 public:
     MenuHandler();
     MenuHandler(DebugList *pHandlerTarget, PlayerInfo *pPlayerInfo1, PlayerInfo *pPlayerInfo2);
+    MenuHandler(CSSMenu *pHandlerTarget, PlayerInfo aPlayerInfo[2]);
 
     void setEventMenuUp(DBMtraversalFunction traversal);
     void setEventMenuDown(DBMtraversalFunction traversal);
@@ -19,8 +21,15 @@ public:
     */
     void setEventMenuFinish(DBMtraversalFunction traversal);
     
+    void setEventMenuUp(CSStraversalFunction traversal);
+    void setEventMenuDown(CSStraversalFunction traversal);
+    void setEventMenuLeft(CSStraversalFunction traversal);
+    void setEventMenuRight(CSStraversalFunction traversal);
+    void setEventMenuFinish(CSStraversalFunction traversal);
+
     //requires SDL_PumpEvents(); to be called before this function.
     void handleMenu();
+    void handleCSSMenu();
 
     /*
         Sets the number of frames before repeat mode starts
@@ -41,8 +50,15 @@ private:
     DBMtraversalFunction nsmfRightTraversal;
     DBMtraversalFunction nsmfFinisher;
 
+    CSStraversalFunction nsmfCssUpTraversal;
+    CSStraversalFunction nsmfCssDownTraversal;
+    CSStraversalFunction nsmfCssLeftTraversal;
+    CSStraversalFunction nsmfCssRightTraversal;
+    CSStraversalFunction nsmfCssFinisher;
+
     bool bUpDefined=false, bDownDefined=false, bLeftDefined=false, bRightDefined=false, bFinisherDefined=false;
 
+    CSSMenu * pCssHandlerTarget;
     DebugList *pHandlerTarget;
 
     unsigned int iHoldFrames=0, iInitialDelay = 70, iRepeatDelay = 20;

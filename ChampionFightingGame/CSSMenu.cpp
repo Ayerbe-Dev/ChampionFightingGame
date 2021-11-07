@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
+#include "MenuHandler.h"
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
@@ -122,6 +123,23 @@ void CSSMenu::render(){
     }
 }
 
+void CSSMenu::traverseRight(){
+    aPlayerSelectionIndex[0]++;
+}
+
+void CSSMenu::traverseLeft(){
+    aPlayerSelectionIndex[0]--;
+}
+
+void CSSMenu::querryFixedCssSlotPosition(int indexLocation, int *xptr, int *yptr){
+    if (indexLocation < getSlotsLength()){
+        *xptr = aFixedCharacterSlots[indexLocation].gameTexture.destRect.x;
+        *yptr = aFixedCharacterSlots[indexLocation].gameTexture.destRect.y;
+    } else {
+        printf("CSSMenu::querryFixedCssSlotPosition --> Index out of range!\n");
+    }
+}
+
 bool FixedCharacterSlot::isInitialized(){
     return bInitialized;
 }
@@ -150,6 +168,22 @@ void FixedCharacterSlot::render(){
     gameTexture.render();
 }
 
+void CssCursor::render(){
+    partialX += (iXTarget-partialX)/8;
+    partialY += (iYTarget-partialY)/8;
+    cursorTexture.destRect.x = partialX;
+    cursorTexture.destRect.y = partialY;
+    cursorTexture.render();
+};
+void CssCursor::init(string sTexturePath){
+    cursorTexture.init(sTexturePath);
+};
+
+void CssCursor::setTarget(int x, int y){
+    iXTarget = x;
+    iYTarget = y;
+}
+
 
 
 int cssMenu(PlayerInfo aPlayerInfo[2]){
@@ -161,6 +195,24 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
     SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
     printf("Initializing Menu\n");
     CSSMenu cssMenuInstance;
+
+    printf("Init Cursors\n");
+    CssCursor cursors[2];
+    cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+    cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+    cursors[0].cursorTexture.setScaleFactor(.8);
+    cursors[0].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+    cursors[1].cursorTexture.setScaleFactor(.8);
+    cursors[1].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+
+    MenuHandler menuHandler(&cssMenuInstance,aPlayerInfo);
+
+    menuHandler.setEventMenuLeft(&CSSMenu::traverseLeft);
+	menuHandler.setEventMenuRight(&CSSMenu::traverseRight);
+
+
+	menuHandler.setInitialDelay(70);
+	menuHandler.setRepeatDelay(20);
 
     printf("Entering loop\n");
     while (bSelecting){
@@ -199,14 +251,26 @@ int cssMenu(PlayerInfo aPlayerInfo[2]){
         }
         /*End Of Spaghetti Time*/
         
+        //printf("CssHandler\n");
+        menuHandler.handleCSSMenu();
+
         SDL_SetRenderTarget(g_renderer,pScreenTexture);
         SDL_RenderClear(g_renderer);
+
         cssMenuInstance.render();
-        
+        //printf("Cursor Render\n");
+        for (int i=0;i<2;i++){
+            cssMenuInstance.querryFixedCssSlotPosition(cssMenuInstance.aPlayerSelectionIndex[0], &cursors[i].iXTarget,&cursors[i].iYTarget);
+            cursors[i].render();
+        }
+        //printf("Ending Loop\n");
+
+        {   
         SDL_SetRenderTarget(g_renderer,nullptr);
         SDL_RenderClear(g_renderer);
         SDL_RenderCopy(g_renderer,pScreenTexture,nullptr,nullptr);
         SDL_RenderPresent(g_renderer);
+        }
     }
 
     return 333;

@@ -29,6 +29,7 @@ void GameTexture::render(){
         SDL_RenderCopy(g_renderer,pTexture,nullptr,nullptr);
         break;
     default:
+        //printf("Default Render mode\n");
         SDL_RenderCopy(g_renderer,pTexture,nullptr,&tmpDestRect);
         break;
     }

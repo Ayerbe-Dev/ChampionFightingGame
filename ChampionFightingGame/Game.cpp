@@ -96,6 +96,8 @@ int game_main(SDL_Renderer* pRenderer, SDL_Window* window, PlayerInfo player_inf
 		}
 	}
 
+//	PlaySound((char *)"resource/sound/bgm/Atlas_Theme.wav");
+
 	while (gaming) {
 
 		frameTimeDelay(&tick,&tok);
@@ -1276,7 +1278,7 @@ ProjectileInstance* IObject::get_projectile() {
 }
 
 SDL_Rect getRenderPos(FighterInstance* fighter_instance, bool force_center) {
-	SDL_Rect render_pos;
+	SDL_Rect render_pos = fighter_instance->anim_kind->anim_map[fighter_instance->render_frame];
 	if (force_center) {
 		render_pos.x = fighter_instance->pos.getRenderCoodrinateX();
 	}
@@ -1284,16 +1286,18 @@ SDL_Rect getRenderPos(FighterInstance* fighter_instance, bool force_center) {
 		render_pos.x = fighter_instance->pos.getRenderCoodrinateXAnim();
 	}
 	render_pos.y = fighter_instance->pos.getRenderCoodrinateYAnim();
-	int width;
-	int sprite_width = 0;
-	int height;
-	SDL_QueryTexture(fighter_instance->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
-	render_pos.w = (width / (fighter_instance->anim_kind->length + 1));
-	if (!fighter_instance->facing_right && force_center) {
-		SDL_QueryTexture(fighter_instance->base_texture, NULL, NULL, &sprite_width, NULL);
-		render_pos.x -= (render_pos.w - sprite_width);
+	if (render_pos.w == 0 && render_pos.h == 0) {
+		int width;
+		int sprite_width = 0;
+		int height;
+		SDL_QueryTexture(fighter_instance->anim_kind->SPRITESHEET, NULL, NULL, &width, &height);
+		render_pos.w = (width / (fighter_instance->anim_kind->length + 1));
+		if (!fighter_instance->facing_right && force_center) {
+			SDL_QueryTexture(fighter_instance->base_texture, NULL, NULL, &sprite_width, NULL);
+			render_pos.x -= (render_pos.w - sprite_width);
+		}
+		render_pos.h = height;
 	}
-	render_pos.h = height;
 
 	return render_pos;
 }

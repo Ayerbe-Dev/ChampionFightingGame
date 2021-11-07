@@ -74,6 +74,7 @@ public:
 
 	void superInit(int id, SDL_Renderer* renderer);
 	void load_anim_list(SDL_Renderer* renderer);
+	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
 	void loadStatusFunctions();
 
 	//Inputs

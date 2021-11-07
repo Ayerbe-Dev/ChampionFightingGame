@@ -37,6 +37,7 @@ typedef unsigned long long u64;
 #define MAX_PROJECTILES 10
 #define MENU_STICK_HOLD_TIMER 20
 #define MENU_STICK_HOLD_INTERVAL 2
+#define MAX_ANIM_LENGTH 256
 
 #define DASH_WINDOW 14
 #define TECH_WINDOW 8
@@ -48,8 +49,15 @@ typedef unsigned long long u64;
 #define FONT_COUNT 2
 #define BUFFER_WINDOW 3
 #define MOTION_SPECIAL_TIMER 11
+#define MAX_SOUNDS 20
 
 #define FLOOR_GAMECOORD 60.0
+
+struct SoundInfo {
+	u8* data;
+	u32 dpos;
+	u32 dlen;
+};
 
 /*
 	Locks the app to 60tps. tick and tok should be 2 Uint32s initialized to 0;
@@ -68,6 +76,9 @@ void draw_text(SDL_Renderer* renderer, string font_name, string text, GameCoordi
 void draw_text(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
 void draw_text_multi_lines(SDL_Renderer* renderer, string font_name, string text, float x_pos, float y_pos, int font_size, int r = 0, int g = 0, int b = 0, int a = 0);
 int get_blank(string s);
+void audio_callback(void* unused, Uint8* stream, int len);
+void PlaySound(char* file);
+
 
 /*
 	updateCamera(); 

@@ -1,12 +1,12 @@
-
 #include "GameTexture.h"
+extern SDL_Renderer* g_renderer;
 
-bool GameTexture::init(string sTexturePath, SDL_Renderer *pRenderer){
+bool GameTexture::init(string sTexturePath){
     if (bIsInitialized){
         printf("GameTexture already initialized!\n");
         return false;
     }
-    this->pRenderer = pRenderer;
+    //this->pRenderer = pRenderer;
     pTexture = loadTexture(sTexturePath.c_str());
     SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
     destRect.x=0;
@@ -23,11 +23,13 @@ void GameTexture::render(){
     case GAME_TEXTURE_ANCHOR_MODE_CENTER:
         tmpDestRect.x -= tmpDestRect.w/2;
         tmpDestRect.y -= tmpDestRect.h/2;
-        SDL_RenderCopy(pRenderer,pTexture,nullptr,&tmpDestRect);
+        SDL_RenderCopy(g_renderer,pTexture,nullptr,&tmpDestRect);
         break;
-    
+    case GAME_TEXTURE_ANCHOR_MODE_BACKGROUND:
+        SDL_RenderCopy(g_renderer,pTexture,nullptr,nullptr);
+        break;
     default:
-        SDL_RenderCopy(pRenderer,pTexture,nullptr,&tmpDestRect);
+        SDL_RenderCopy(g_renderer,pTexture,nullptr,&tmpDestRect);
         break;
     }
     //printf("Width: %d, Height: %d\n", tmpDestRect.w, tmpDestRect.h);

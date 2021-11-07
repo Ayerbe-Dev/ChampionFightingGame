@@ -4,7 +4,8 @@
 
 enum{
     GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
-    GAME_TEXTURE_ANCHOR_MODE_CENTER
+    GAME_TEXTURE_ANCHOR_MODE_CENTER,
+    GAME_TEXTURE_ANCHOR_MODE_BACKGROUND
 };
 
 class GameTexture{
@@ -13,7 +14,7 @@ public:
     SDL_Rect srcRect;
 
     void render();
-    bool init(string sTexturePath, SDL_Renderer *pRenderer);
+    bool init(string sTexturePath);
     void setScaleFactor(float fScaleFactor);
     void setAnchorMode(int iMode);
     float getScaledWidth();
@@ -22,7 +23,7 @@ public:
 private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
     float fScaleFactor = 1.0;
-    SDL_Renderer *pRenderer;
+    //SDL_Renderer *pRenderer;
     bool bIsInitialized = false;
     SDL_Texture *pTexture;
 

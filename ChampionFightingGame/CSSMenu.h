@@ -7,7 +7,7 @@ class FixedCharacterSlot{
 public:
     GameTexture gameTexture;
     bool isInitialized();
-    void init(int id, SDL_Renderer *pRenderer);
+    void init(int id);
     void setXPosition(int iX);
     void setYPosition(int iY);
     int getTextureWidth();
@@ -19,7 +19,7 @@ private:
 
 class CSSMenu{
 public:
-    CSSMenu(SDL_Renderer *pRenderer);
+    CSSMenu();
     void traverseUp();
     void traverseDown();
     void traverseLeft();
@@ -28,10 +28,12 @@ public:
     void render();
 private:
     GameTexture backgroundTexture;
+    GameTexture bigBarTexture;
+    GameTexture topBarTexture;
     SDL_Renderer *pRenderer;
-    void addFixedCharacter(int id, SDL_Renderer *pRenderer);
+    void addFixedCharacter(int id);
     PlayerInfo aPlayerInfos[2];
     FixedCharacterSlot aFixedCharacterSlots[32];
 };
 
-int cssMenu(SDL_Renderer *pRrenderer, SDL_Window *pWindow, PlayerInfo aPlayerInfo[2]);
+int cssMenu(PlayerInfo aPlayerInfo[2]);

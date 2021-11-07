@@ -1,22 +1,22 @@
 #pragma once
-#include "FighterInstance.fwd.h"
-#include "FighterInstance.h"
-#include "ObjectInstance.fwd.h"
-#include "ObjectInstance.h"
+#include "Fighter.fwd.h"
+#include "Fighter.h"
+#include "Object.fwd.h"
+#include "Object.h"
 #include "Atlas.fwd.h"
 #include "utils.h"
 
-class Atlas : public FighterInstance {
+class Atlas : public Fighter {
 public:
 	virtual void chara_id();
 	Atlas();
-	Atlas(SDL_Renderer* renderer, int id, PlayerInfo *player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	Atlas(int id, PlayerInfo *player_info, FighterAccessor* fighter_accessor);
 	void loadAtlasStatusFunctions();
 	void loadAtlasACMD();
 
-	void (Atlas::* atlas_status[CHARA_ATLAS_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (Atlas::* atlas_enter_status[CHARA_ATLAS_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (Atlas::* atlas_exit_status[CHARA_ATLAS_STATUS_MAX - CHARA_STATUS_MAX])();
+	void (Atlas::* atlas_status[CHARA_ATLAS_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (Atlas::* atlas_enter_status[CHARA_ATLAS_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (Atlas::* atlas_exit_status[CHARA_ATLAS_STATUS_MAX - FIGHTER_STATUS_MAX])();
 
 	int atlas_int[CHARA_ATLAS_INT_MAX];
 	float atlas_float[CHARA_ATLAS_FLOAT_MAX];

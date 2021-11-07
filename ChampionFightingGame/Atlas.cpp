@@ -7,7 +7,7 @@ Atlas::Atlas() {
 
 }
 
-Atlas::Atlas(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+Atlas::Atlas(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/atlas";
 	if (!crash_to_debug) {
@@ -17,10 +17,10 @@ Atlas::Atlas(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterIns
 	loadAtlasStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ATLAS;
-	this->base_texture = loadTexture("resource/chara/atlas/sprite/sprite.png", renderer);
+	this->base_texture = loadTexture("resource/chara/atlas/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectile_objects[i] = new ProjectileInstance();
+		projectiles[i] = new Projectile();
 	}
 }
 
@@ -133,7 +133,7 @@ void Atlas::loadAtlasACMD() { //todo: Fill this in with all of the common empty 
 		}
 		if (is_excute_frame(2)) {
 			max_ticks = 4;
-			new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ -28,183 }, GameCoordinate{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
+			new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ -28,183 }, GameCoordinate{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
 		}
 		if (is_excute_wait(3)) {
 			clear_hitbox_all();
@@ -258,15 +258,15 @@ void Atlas::loadAtlasACMD() { //todo: Fill this in with all of the common empty 
 void Atlas::chara_main() {}
 
 void Atlas::chara_status() {
-	(this->*atlas_status[status_kind - CHARA_STATUS_MAX])();
+	(this->*atlas_status[status_kind - FIGHTER_STATUS_MAX])();
 }
 
 void Atlas::chara_enter_status() {
-	(this->*atlas_enter_status[status_kind - CHARA_STATUS_MAX])();
+	(this->*atlas_enter_status[status_kind - FIGHTER_STATUS_MAX])();
 }
 
 void Atlas::chara_exit_status() {
-	(this->*atlas_exit_status[status_kind - CHARA_STATUS_MAX])();
+	(this->*atlas_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }
 
 bool Atlas::specific_ground_status_act() {
@@ -278,11 +278,11 @@ bool Atlas::specific_air_status_act() {
 }
 
 bool Atlas::specific_status_attack() {
-	if (chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
-		if (situation_kind == CHARA_SITUATION_GROUND && specific_ground_status_act()) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+		if (situation_kind == FIGHTER_SITUATION_GROUND && specific_ground_status_act()) {
 			return true;
 		}
-		else if (situation_kind == CHARA_SITUATION_AIR && specific_air_status_act()) {
+		else if (situation_kind == FIGHTER_SITUATION_AIR && specific_air_status_act()) {
 			return true;
 		}
 	}

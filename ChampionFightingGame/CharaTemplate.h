@@ -1,22 +1,22 @@
 #pragma once
-#include "FighterInstance.fwd.h"
-#include "FighterInstance.h"
-#include "ObjectInstance.fwd.h"
-#include "ObjectInstance.h"
+#include "Fighter.fwd.h"
+#include "Fighter.h"
+#include "Object.fwd.h"
+#include "Object.h"
 #include "CharaTemplate.fwd.h"
 #include "utils.h"
 
-class CharaTemplate : public FighterInstance {
+class CharaTemplate : public Fighter {
 public:
 	virtual void chara_id();
 	CharaTemplate();
-	CharaTemplate(SDL_Renderer* renderer, int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadCharaTemplateStatusFunctions();
 	void loadCharaTemplateACMD();
 
-	void (CharaTemplate::* chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (CharaTemplate::* chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (CharaTemplate::* chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - CHARA_STATUS_MAX])();
+	void (CharaTemplate::* chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (CharaTemplate::* chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (CharaTemplate::* chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
 
 	int chara_template_int[CHARA_CHARA_TEMPLATE_INT_MAX];
 	float chara_template_float[CHARA_CHARA_TEMPLATE_FLOAT_MAX];

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <functional>
 #include "Animation.h"
+extern SDL_Renderer* g_renderer;
 
 Animation::Animation() {};
 
@@ -14,7 +15,7 @@ Animation::Animation() {};
 SDL_Rect getFrame(int frame, Animation* animation) {
 	int width;
 	int height;
-	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
+	SDL_QueryTexture(animation->spritesheet, NULL, NULL, &width, &height);
 	SDL_Rect frame_rect = animation->anim_map[frame];
 	if (frame_rect.x == 0 && frame_rect.y == 0 && frame_rect.w == 0 && frame_rect.h == 0) {
 		frame_rect.x = frame * (width / (animation->length + 1));
@@ -46,6 +47,6 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 	return frame_rect;
 }
 
-void loadAnimation(Animation* animation, SDL_Renderer* renderer) {
-	animation->SPRITESHEET = loadTexture((animation->path).c_str(), renderer);
+void loadAnimation(Animation* animation) {
+	animation->spritesheet = loadTexture((animation->path).c_str());
 }

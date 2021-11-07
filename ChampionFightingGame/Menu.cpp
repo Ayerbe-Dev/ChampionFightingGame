@@ -11,16 +11,17 @@ extern u32 frame_advance_entry_ms;
 extern u32 tick;
 extern u32 tok;
 extern int error_render;
+extern SDL_Window* g_window;
+extern SDL_Renderer* g_renderer;
 
 
-
-int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+int menu_main(PlayerInfo player_info[2]) {
 	Uint32 tick;
 	Uint32 tok;
 	Debugger debugger;
 	debugger = Debugger();
 	//neccesary for scaling
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	bool menuing = true;
 
@@ -28,41 +29,41 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
-	SDL_Texture* bgTexture = loadTexture("resource/ui/menu/main/funnybg.png", pRenderer);
+	SDL_Texture* bgTexture = loadTexture("resource/ui/menu/main/funnybg.png");
 
 	MenuItem menu_items[5];
 	SubMenuTable* sub_menu_tables[5];
-	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png", pRenderer);
-	menu_items[1] = MenuItem{ "resource/ui/menu/main/Solo.png",pRenderer };
-	menu_items[2] = MenuItem{ "resource/ui/menu/main/VS.png",pRenderer, "resource/ui/menu/main/vsimg.png" };
-	menu_items[3] = MenuItem{ "resource/ui/menu/main/Options.png",pRenderer };
-	menu_items[4] = MenuItem{ "resource/ui/menu/main/Extras.png",pRenderer };
+	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png");
+	menu_items[1] = MenuItem{ "resource/ui/menu/main/Solo.png"};
+	menu_items[2] = MenuItem{ "resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png" };
+	menu_items[3] = MenuItem{ "resource/ui/menu/main/Options.png" };
+	menu_items[4] = MenuItem{ "resource/ui/menu/main/Extras.png" };
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].destination = i;
-		sub_menu_tables[i] = new SubMenuTable(i, pRenderer);
+		sub_menu_tables[i] = new SubMenuTable(i);
 	}
 	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Story.png", pRenderer);
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Arcade.png", pRenderer);
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Training.png", pRenderer);
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Story.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Arcade.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Training.png");
 	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/PlayerVsPlayer.png", pRenderer);
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/PlayerVsCPU.png", pRenderer);
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/PlayerVsPlayer.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/PlayerVsCPU.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadTexture("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png", pRenderer);
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
 	SDL_Rect garborect = { 0,0,232,32 };
 
 	float theta = 0;
@@ -74,10 +75,10 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 	int sub_type = SUB_MENU_VS;
 
 	while (menuing) {
-		SDL_RenderClear(pRenderer);
-		SDL_SetRenderDrawColor(pRenderer, 100, 100, 100, 255);
-		SDL_SetRenderTarget(pRenderer, pScreenTexture);
-		SDL_RenderCopy(pRenderer, bgTexture, nullptr, nullptr);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderCopy(g_renderer, bgTexture, nullptr, nullptr);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -101,11 +102,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(window, 0);
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
 			}
 			else {
-				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
@@ -201,7 +202,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
 			menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
 
-			SDL_RenderCopyEx(pRenderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, flip);
+			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, flip);
 		}
 
 		//real render
@@ -209,11 +210,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
 			menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
 
-			SDL_RenderCopyEx(pRenderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, flip);
-			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
-			SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
+			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, flip);
+			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
+			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
 			for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
-				SDL_RenderCopy(pRenderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
+				SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
 			}
 		}
 
@@ -222,7 +223,7 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 			menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
 			menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
 
-			SDL_RenderCopyEx(pRenderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, flip);
+			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, flip);
 		}
 
 
@@ -230,11 +231,11 @@ int menu_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_inf
 
 		//printf("top_selection: %d, target theta: %f, theta: %f\n",top_selection,(top_selection * offset),theta);
 
-		SDL_RenderCopy(pRenderer, menu_items[top_selection * -1].texture_description, nullptr, &menu_items[top_selection * -1].destRect_description);
+		SDL_RenderCopy(g_renderer, menu_items[top_selection * -1].texture_description, nullptr, &menu_items[top_selection * -1].destRect_description);
 
-		SDL_SetRenderTarget(pRenderer, nullptr);
-		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(pRenderer);
+		SDL_SetRenderTarget(g_renderer, nullptr);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(g_renderer);
 	}
 
 	for (int i = 0; i < 5; i++) {
@@ -320,15 +321,15 @@ int get_sub_selection(int top_selection, int sub_selection) {
 	return ret;
 }
 
-int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo player_info[2]) {
+int chara_select_main(PlayerInfo player_info[2]) {
 	Uint32 tick=0,tok=0;
 	Debugger debugger;
 	bool chara_selecting = true;
 	int next_state;
 	
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_Texture* pCSSBackgroundTexture = loadTexture("resource/ui/menu/css/CSSbackground.png",pRenderer);
-	SDL_Texture* pCSSBottomBarTexture = loadTexture("resource/ui/menu/css/CSSbottombar.png",pRenderer);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pCSSBackgroundTexture = loadTexture("resource/ui/menu/css/CSSbackground.png");
+	SDL_Texture* pCSSBottomBarTexture = loadTexture("resource/ui/menu/css/CSSbottombar.png");
 
 	const Uint8* keyboard_state;
 
@@ -336,7 +337,7 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	CharaSelectSlot css_slots[32];
 	int rows;
 	int cols;
-	int css_slot_count = load_css(css_slots, &rows, &cols, pRenderer);
+	int css_slot_count = load_css(css_slots, &rows, &cols);
 	if (css_slot_count == -1) {
 		player_info[0].crash_reason = "Could not open CSS file!";
 
@@ -345,15 +346,15 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 	PlayerCursor player_cursor[2];
 	PlayerCSSInfo player_css_info[2];
 	for (int i = 0; i < 2; i++) {
-		player_cursor[i] = PlayerCursor(pRenderer, &player_info[i], css_slots[0].textRect.x, css_slots[0].textRect.y);
-		player_css_info[i] = PlayerCSSInfo(pRenderer, &player_info[i]);
+		player_cursor[i] = PlayerCursor(&player_info[i], css_slots[0].textRect.x, css_slots[0].textRect.y);
+		player_css_info[i] = PlayerCSSInfo(&player_info[i]);
 	}
 
 	while (chara_selecting) {
-		SDL_RenderClear(pRenderer);
-		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-		SDL_SetRenderTarget(pRenderer, pScreenTexture);
-		SDL_RenderClear(pRenderer);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderClear(g_renderer);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -372,11 +373,11 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(window, 0);
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
 			}
 			else {
-				SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
 
@@ -477,33 +478,33 @@ int chara_select_main(SDL_Renderer* pRenderer, SDL_Window *window, PlayerInfo pl
 		}
 
 		//Background
-		SDL_RenderCopy(pRenderer, pCSSBackgroundTexture, NULL, nullptr);
-		SDL_RenderCopy(pRenderer, pCSSBottomBarTexture, NULL, nullptr);
+		SDL_RenderCopy(g_renderer, pCSSBackgroundTexture, NULL, nullptr);
+		SDL_RenderCopy(g_renderer, pCSSBottomBarTexture, NULL, nullptr);
 
 		for (int i = 0; i < css_slot_count; i++) {
-			SDL_RenderCopy(pRenderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
-			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 20, 0, 0, 0, 255);
+			SDL_RenderCopy(g_renderer, css_slots[i].texture, NULL, &css_slots[i].destRect);
+			draw_text_multi_lines("FiraCode-Regular.ttf", css_slots[i].chara_name, css_slots[i].textRect.x, css_slots[i].textRect.y, 20, 0, 0, 0, 255);
 		}
 		for (int i = 0; i < 2; i++) {
-			SDL_RenderCopy(pRenderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
-			SDL_RenderCopy(pRenderer, player_css_info[i].texture, NULL, &player_css_info[i].destRect);
+			SDL_RenderCopy(g_renderer, player_cursor[i].texture, NULL, &player_cursor[i].destRect);
+			SDL_RenderCopy(g_renderer, player_css_info[i].texture, NULL, &player_css_info[i].destRect);
 			if (!player_css_info[i].selected) {
 				SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 127);
 			}
-			SDL_RenderCopy(pRenderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
-			draw_text_multi_lines(pRenderer, "FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h + 5, 24, 0, 0, 0, player_css_info[i].selected ? 255 : 127);
+			SDL_RenderCopy(g_renderer, css_slots[player_css_info[i].selected_slot].texture, NULL, &player_css_info[i].destRect);
+			draw_text_multi_lines("FiraCode-Regular.ttf", css_slots[player_css_info[i].selected_slot].chara_name, player_css_info[i].destRect.x + player_css_info[i].destRect.w / 2, player_css_info[i].destRect.y + player_css_info[i].destRect.h + 5, 24, 0, 0, 0, player_css_info[i].selected ? 255 : 127);
 			SDL_SetTextureAlphaMod(css_slots[player_css_info[i].selected_slot].texture, 255);
 		}
 
-		SDL_SetRenderTarget(pRenderer, nullptr);
-		SDL_RenderCopy(pRenderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(pRenderer);
+		SDL_SetRenderTarget(g_renderer, nullptr);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(g_renderer);
 	}
 	TTF_CloseFont(pFont);
 	return next_state;
 }
 
-int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *renderer) {
+int load_css(CharaSelectSlot css[32], int *rows, int *cols) {
 	ifstream css_table;
 	css_table.open("resource/ui/menu/css/css_param.yml");
 
@@ -522,7 +523,7 @@ int load_css(CharaSelectSlot css[32], int *rows, int *cols, SDL_Renderer *render
 		bool selectable;
 
 		css_table >> chara_kind >> chara_dir >> selectable;
-		css[i] = CharaSelectSlot(renderer, chara_kind, chara_name, chara_dir, col, row, selectable);
+		css[i] = CharaSelectSlot(chara_kind, chara_name, chara_dir, col, row, selectable);
 
 		getline(css_table, chara_name); //If we don't include this line, getline will read from the previous line at the beginning of the next iteration
 
@@ -604,58 +605,57 @@ void find_nearest_css_slot(CharaSelectSlot css[32], int slot_count, int pos_x, P
 }
 
 MenuItem::MenuItem(){}
-MenuItem::MenuItem(string texture_dir, SDL_Renderer *pRenderer, string texture_description_dir, int destination){
-	this->texture = loadTexture(texture_dir.c_str(),pRenderer);
+MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination){
+	this->texture = loadTexture(texture_dir.c_str());
 	this->destRect = {0,0,232,32};
 	this->destination = destination;
-	this->texture_description = loadTexture(texture_description_dir.c_str(),pRenderer);
+	this->texture_description = loadTexture(texture_description_dir.c_str());
 	this->destRect_description = {0,0,520,720};
 }
 
 SubMenuTable::SubMenuTable() {}
-SubMenuTable::SubMenuTable(int selection, SDL_Renderer* pRenderer) {
+SubMenuTable::SubMenuTable(int selection) {
 	SDL_Rect sub_rect;
 	sub_rect.x = (WINDOW_WIDTH * 0.72);
 	sub_rect.y = WINDOW_HEIGHT * 0.1;
 	sub_rect.w = WINDOW_WIDTH * 0.25;
 	sub_rect.h = WINDOW_HEIGHT * 0.75;
 	this->destRect = sub_rect;
-	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png", pRenderer);
+	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png");
 	this->selection = selection;
-	this->cursor = new Cursor(pRenderer);
+	this->cursor = new Cursor();
 	selected_item = 0;
 }
 
 CharaSelectSlot::CharaSelectSlot() {
 	this->chara_kind = CHARA_KIND_MAX;
 }
-CharaSelectSlot::CharaSelectSlot(SDL_Renderer* pRenderer, int chara_kind, string chara_name, string chara_dir, int my_col, int my_row, bool selectable) {
+CharaSelectSlot::CharaSelectSlot(int chara_kind, string chara_name, string chara_dir, int my_col, int my_row, bool selectable) {
 	this->chara_kind = chara_kind;
 	this->chara_name = chara_name;
 	this->my_col = my_col;
 	this->my_row = my_row;
-	this->texture = loadTexture(("resource/ui/menu/css/chara/" + chara_dir + "/render.png").c_str(), pRenderer);
+	this->texture = loadTexture(("resource/ui/menu/css/chara/" + chara_dir + "/render.png").c_str());
 }
 
-Cursor::Cursor() {}
-Cursor::Cursor(SDL_Renderer* pRenderer) {
+Cursor::Cursor() {
 	SDL_Rect cursor_rect;
 	cursor_rect.x = (WINDOW_WIDTH * 0.75);
 	cursor_rect.y = WINDOW_HEIGHT * 0.18;
 	cursor_rect.w = 30;
 	cursor_rect.h = 30;
 	this->destRect = cursor_rect;
-	this->texture = loadTexture("resource/ui/menu/main/Cursor.png", pRenderer);
+	this->texture = loadTexture("resource/ui/menu/main/Cursor.png");
 }
 
 PlayerCursor::PlayerCursor() {}
-PlayerCursor::PlayerCursor(SDL_Renderer* pRenderer, PlayerInfo* player_info, int init_x, int init_y) {
+PlayerCursor::PlayerCursor(PlayerInfo* player_info, int init_x, int init_y) {
 	this->player_info = player_info;
 	if (player_info->id == 0) {
-		this->texture = loadTexture("resource/ui/menu/css/p1_cursor.png", pRenderer);
+		this->texture = loadTexture("resource/ui/menu/css/p1_cursor.png");
 	}
 	else {
-		this->texture = loadTexture("resource/ui/menu/css/p2_cursor.png", pRenderer);
+		this->texture = loadTexture("resource/ui/menu/css/p2_cursor.png");
 	}
 	pos_x = init_x - 30;
 	pos_y = init_y + 10;
@@ -671,9 +671,9 @@ PlayerCursor::PlayerCursor(SDL_Renderer* pRenderer, PlayerInfo* player_info, int
 }
 
 PlayerCSSInfo::PlayerCSSInfo() {}
-PlayerCSSInfo::PlayerCSSInfo(SDL_Renderer *pRenderer, PlayerInfo *player_info) {
+PlayerCSSInfo::PlayerCSSInfo(PlayerInfo *player_info) {
 	this->player_info = player_info;
-	this->texture = loadTexture("resource/ui/menu/css/deck.png", pRenderer);
+	this->texture = loadTexture("resource/ui/menu/css/deck.png");
 	this->selected = false;
 	this->selected_slot = 0;
 	destRect.w = 160;

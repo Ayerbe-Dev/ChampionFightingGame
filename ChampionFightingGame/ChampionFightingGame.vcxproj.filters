@@ -27,7 +27,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FighterInstance.cpp">
+    <ClCompile Include="Fighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameCoordinate.cpp">
@@ -63,13 +63,13 @@
     <ClCompile Include="DebugMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FighterInstanceAccessor.cpp">
+    <ClCompile Include="FighterAccessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectileInstance.cpp">
+    <ClCompile Include="Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectInstance.cpp">
+    <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RoyFireball.cpp">
@@ -139,7 +139,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FighterInstance.h">
+    <ClInclude Include="Fighter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.h">
@@ -163,7 +163,7 @@
     <ClInclude Include="Box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FighterInstance.fwd.h">
+    <ClInclude Include="Fighter.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Box.fwd.h">
@@ -199,22 +199,22 @@
     <ClInclude Include="DebugMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FighterInstanceAccessor.h">
+    <ClInclude Include="FighterAccessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FighterInstanceAccessor.fwd.h">
+    <ClInclude Include="FighterAccessor.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectileInstance.h">
+    <ClInclude Include="Projectile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectInstance.h">
+    <ClInclude Include="Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectInstance.fwd.h">
+    <ClInclude Include="Object.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectileInstance.fwd.h">
+    <ClInclude Include="Projectile.fwd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RoyFireball.h">

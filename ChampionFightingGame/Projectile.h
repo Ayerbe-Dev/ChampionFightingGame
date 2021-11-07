@@ -1,28 +1,28 @@
 #pragma once
-#include "ObjectInstance.h"
+#include "Object.h"
 #include "utils.h"
-#include "FighterInstanceAccessor.fwd.h"
-#include "FighterInstanceAccessor.h"
+#include "FighterAccessor.fwd.h"
+#include "FighterAccessor.h"
 #include "ParamTable.h"
 
-class ProjectileInstance: public ObjectInstance {
+class Projectile: public Object {
 public:
 
 	int projectile_kind;
 	int owner_id;
-	FighterInstanceAccessor* fighter_instance_accessor;
+	FighterAccessor* fighter_accessor;
 
 	int projectile_int[PROJECTILE_INT_MAX];
 	float projectile_float[PROJECTILE_FLOAT_MAX];
 	bool projectile_flag[PROJECTILE_FLAG_MAX];
 
-	void (ProjectileInstance::* pStatus[PROJECTILE_STATUS_MAX])();
-	void (ProjectileInstance::* pEnter_status[PROJECTILE_STATUS_MAX])();
-	void (ProjectileInstance::* pExit_status[PROJECTILE_STATUS_MAX])();
+	void (Projectile::* pStatus[PROJECTILE_STATUS_MAX])();
+	void (Projectile::* pEnter_status[PROJECTILE_STATUS_MAX])();
+	void (Projectile::* pExit_status[PROJECTILE_STATUS_MAX])();
 
 	void projectile_main();
-	void superInit(SDL_Renderer* renderer);
-	void load_anim_list(SDL_Renderer* renderer);
+	void superInit();
+	void load_anim_list();
 	void load_stats();
 	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
 	void startAnimation(Animation* animation);

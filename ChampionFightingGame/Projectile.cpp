@@ -1,7 +1,9 @@
-#include "ProjectileInstance.h"
+#include "Projectile.h"
 #include "Game.h"
 
-void ProjectileInstance::projectile_main() {
+extern SDL_Renderer* g_renderer;
+
+void Projectile::projectile_main() {
 	prevpos = pos;
 
 	if (canStep()) {
@@ -24,15 +26,15 @@ void ProjectileInstance::projectile_main() {
 	update_hurtbox_pos();
 }
 
-void ProjectileInstance::superInit(SDL_Renderer* renderer) {
-	load_anim_list(renderer);
+void Projectile::superInit() {
+	load_anim_list();
 	load_stats();
 	loadStatusFunctions();
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }
 
-void ProjectileInstance::load_anim_list(SDL_Renderer* renderer) {
+void Projectile::load_anim_list() {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
@@ -49,12 +51,12 @@ void ProjectileInstance::load_anim_list(SDL_Renderer* renderer) {
 		animation_table[i].name = ymlChopString(name);
 		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
 		animation_table[i].length = ymlChopInt(frame_count) - 1;
-		loadAnimation(&animation_table[i], renderer);
+		loadAnimation(&animation_table[i]);
 	}
 	anim_list.close();
 }
 
-void ProjectileInstance::load_stats() {
+void Projectile::load_stats() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
 
@@ -94,7 +96,7 @@ void ProjectileInstance::load_stats() {
 	stats_table.close();
 }
 
-void ProjectileInstance::change_anim(string animation_name, int frame_rate, int entry_frame) {
+void Projectile::change_anim(string animation_name, int frame_rate, int entry_frame) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
@@ -118,33 +120,33 @@ void ProjectileInstance::change_anim(string animation_name, int frame_rate, int 
 	cout << "Invalid Animation '" << animation_name << "'" << endl;
 }
 
-void ProjectileInstance::startAnimation(Animation* animation) {
+void Projectile::startAnimation(Animation* animation) {
 	is_anim_end = false;
 	prev_anim_kind = anim_kind;
 	anim_kind = animation;
 	int width;
 	int height;
-	SDL_QueryTexture(animation->SPRITESHEET, NULL, NULL, &width, &height);
+	SDL_QueryTexture(animation->spritesheet, NULL, NULL, &width, &height);
 	pos.x_anim_offset = width / (anim_kind->length + 1) / 2;
 	pos.y_anim_offset = height;
 	frame_rect = getFrame(frame, anim_kind);
 }
 
-void ProjectileInstance::loadStatusFunctions() {
-	pStatus[PROJECTILE_STATUS_DEFAULT] = &ProjectileInstance::status_default;
-	pEnter_status[PROJECTILE_STATUS_DEFAULT] = &ProjectileInstance::enter_status_default;
-	pExit_status[PROJECTILE_STATUS_DEFAULT] = &ProjectileInstance::exit_status_default;
+void Projectile::loadStatusFunctions() {
+	pStatus[PROJECTILE_STATUS_DEFAULT] = &Projectile::status_default;
+	pEnter_status[PROJECTILE_STATUS_DEFAULT] = &Projectile::enter_status_default;
+	pExit_status[PROJECTILE_STATUS_DEFAULT] = &Projectile::exit_status_default;
 
-	pStatus[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::status_move;
-	pEnter_status[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::enter_status_move;
-	pExit_status[PROJECTILE_STATUS_MOVE] = &ProjectileInstance::exit_status_move;
+	pStatus[PROJECTILE_STATUS_MOVE] = &Projectile::status_move;
+	pEnter_status[PROJECTILE_STATUS_MOVE] = &Projectile::enter_status_move;
+	pExit_status[PROJECTILE_STATUS_MOVE] = &Projectile::exit_status_move;
 
-	pStatus[PROJECTILE_STATUS_HIT] = &ProjectileInstance::status_hit;
-	pEnter_status[PROJECTILE_STATUS_HIT] = &ProjectileInstance::enter_status_hit;
-	pExit_status[PROJECTILE_STATUS_HIT] = &ProjectileInstance::exit_status_hit;
+	pStatus[PROJECTILE_STATUS_HIT] = &Projectile::status_hit;
+	pEnter_status[PROJECTILE_STATUS_HIT] = &Projectile::enter_status_hit;
+	pExit_status[PROJECTILE_STATUS_HIT] = &Projectile::exit_status_hit;
 }
 
-bool ProjectileInstance::canStep() {
+bool Projectile::canStep() {
 	attempted_excutes = 0;
 	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
 		frame++;
@@ -163,7 +165,7 @@ bool ProjectileInstance::canStep() {
 	}
 }
 
-void ProjectileInstance::stepAnimation() {
+void Projectile::stepAnimation() {
 	int last_frame = render_frame;
 	frame_rect = getFrame(render_frame, anim_kind);
 	if (render_frame == anim_kind->length) {
@@ -178,7 +180,7 @@ void ProjectileInstance::stepAnimation() {
 
 //Status
 
-bool ProjectileInstance::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+bool Projectile::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
 	if (new_status_kind != status_kind || !require_different_status) {
 		clear_hitbox_all();
 		clear_grabbox_all();
@@ -206,7 +208,7 @@ bool ProjectileInstance::change_status(u32 new_status_kind, bool call_end_status
 	}
 }
 
-void ProjectileInstance::playoutStatus() {
+void Projectile::playoutStatus() {
 	if (status_kind < PROJECTILE_STATUS_MAX) {
 		(this->*pStatus[status_kind])();
 	}
@@ -216,44 +218,44 @@ void ProjectileInstance::playoutStatus() {
 	move_script();
 }
 
-void ProjectileInstance::status_default() {
+void Projectile::status_default() {
 
 }
 
-void ProjectileInstance::enter_status_default() {
+void Projectile::enter_status_default() {
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("active_frames");
 	projectile_int[PROJECTILE_INT_HEALTH] = get_param_int("health");
 }
 
-void ProjectileInstance::exit_status_default() {
+void Projectile::exit_status_default() {
 
 }
 
-void ProjectileInstance::status_move() {
+void Projectile::status_move() {
 	pos.x += get_param_float("move_x_speed") * facing_dir;
 }
 
-void ProjectileInstance::enter_status_move() {
+void Projectile::enter_status_move() {
 	change_anim("move");
 }
 
-void ProjectileInstance::exit_status_move() {
+void Projectile::exit_status_move() {
 
 }
 
-void ProjectileInstance::status_hit() {
+void Projectile::status_hit() {
 
 }
 
-void ProjectileInstance::enter_status_hit() {
+void Projectile::enter_status_hit() {
 
 }
 
-void ProjectileInstance::exit_status_hit() {
+void Projectile::exit_status_hit() {
 
 }
 
-void ProjectileInstance::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
+void Projectile::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
 	float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {

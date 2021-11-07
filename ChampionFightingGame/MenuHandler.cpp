@@ -28,7 +28,7 @@ void MenuHandler::handleMenu(){
             (pHandlerTarget->*(nsmfLeftTraversal))();
         } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_RIGHT) && bRightDefined){
             (pHandlerTarget->*(nsmfRightTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_LP)){
+        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)){
             (pHandlerTarget->*(nsmfFinisher))();
         }
 

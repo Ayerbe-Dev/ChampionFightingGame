@@ -1,14 +1,13 @@
 #include "UI.h"
-
+extern SDL_Renderer* g_renderer;
 
 
 HealthBar::HealthBar() {}
-HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) {
-	this->pRenderer = renderer;
-	this->fighter_instance = fighter_instance;
-	this->bar_texture = loadTexture("resource/ui/game/hp/bar.png", renderer);
-	this->health_texture = loadTexture("resource/ui/game/hp/health.png", renderer);
-	this->max_health = fighter_instance->get_param_float("health");
+HealthBar::HealthBar(Fighter* fighter) {
+	this->fighter = fighter;
+	this->bar_texture = loadTexture("resource/ui/game/hp/bar.png");
+	this->health_texture = loadTexture("resource/ui/game/hp/health.png");
+	this->max_health = fighter->get_param_float("health");
 	
 	width = 596;
 	height = 70;
@@ -29,31 +28,31 @@ HealthBar::HealthBar(SDL_Renderer* renderer, FighterInstance* fighter_instance) 
 }
 
 void HealthBar::RenderAsP1() {
-	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / max_health);
+	slice_rect.w = width * (fighter->fighter_float[FIGHTER_FLOAT_HEALTH] / max_health);
 	health_rect.w = slice_rect.w;
 	health_rect.x = width - slice_rect.w + (bar_rect.x + 15);
 	slice_rect.x = width - slice_rect.w;
 	
-	SDL_RenderCopy(this->pRenderer, health_texture, &slice_rect, &health_rect);
-	SDL_RenderCopy(this->pRenderer,bar_texture,nullptr,&bar_rect);
+	SDL_RenderCopy(g_renderer, health_texture, &slice_rect, &health_rect);
+	SDL_RenderCopy(g_renderer,bar_texture,nullptr,&bar_rect);
 }
 
 void HealthBar::RenderAsP2() {
 	bar_rect.x = WINDOW_WIDTH - width - 2;
-	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / max_health);
+	slice_rect.w = width * (fighter->fighter_float[FIGHTER_FLOAT_HEALTH] / max_health);
 	health_rect.w = slice_rect.w;
 	health_rect.x = (WINDOW_WIDTH - width) - 17;
 	slice_rect.x = width - slice_rect.w;
-	SDL_RenderCopyEx(this->pRenderer, health_texture, &slice_rect, &health_rect, 0, nullptr, SDL_FLIP_HORIZONTAL);
-	SDL_RenderCopyEx(this->pRenderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
+	SDL_RenderCopyEx(g_renderer, health_texture, &slice_rect, &health_rect, 0, nullptr, SDL_FLIP_HORIZONTAL);
+	SDL_RenderCopyEx(g_renderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
 }
 
 PlayerIndicator::PlayerIndicator() {}
-PlayerIndicator::PlayerIndicator(SDL_Renderer* renderer, FighterInstance* fighter_instance, string nametag) {
-	this->fighter_instance = fighter_instance;
+PlayerIndicator::PlayerIndicator(Fighter* fighter, string nametag) {
+	this->fighter = fighter;
 	this->nametag = nametag;
 	string resource_dir = "resource/ui/game/tag/";
-	if (fighter_instance->id == 0) {
+	if (fighter->id == 0) {
 		resource_dir += "p1_tag";
 	}
 	else {
@@ -64,23 +63,22 @@ PlayerIndicator::PlayerIndicator(SDL_Renderer* renderer, FighterInstance* fighte
 	}
 	resource_dir += ".png";
 	const char* file_dir = resource_dir.c_str();
-	this->texture = loadTexture(file_dir, renderer);
+	this->texture = loadTexture(file_dir);
 	this->indicator_rect.x = 0;
 	this->indicator_rect.y = 0;
 	this->indicator_rect.w = 92;
 	this->indicator_rect.h = 92;
 }
 GameTimer::GameTimer(){};
-GameTimer::GameTimer(SDL_Renderer* pRenderer,int time){
-    this->pRenderer = pRenderer;
+GameTimer::GameTimer(int time){
     uiDecaseconds = 9;
     uiSeconds = 9;
 	uiDecaframes = 6;
     uiFrames = 0;
 	ClockMode = 1;
-    pBigTypeface = loadTexture("resource/ui/game/timer/bigtypeface.png",pRenderer);
-	pSmallTypeface = loadTexture("resource/ui/game/timer/smalltypeface.png",pRenderer);
-	pClockFace= loadTexture("resource/ui/game/timer/clockface.png",pRenderer);
+    pBigTypeface = loadTexture("resource/ui/game/timer/bigtypeface.png");
+	pSmallTypeface = loadTexture("resource/ui/game/timer/smalltypeface.png");
+	pClockFace= loadTexture("resource/ui/game/timer/clockface.png");
 };
 
 void GameTimer::Tick(){
@@ -117,23 +115,23 @@ void GameTimer::Tick(){
 void GameTimer::Render(){
 	SDL_Rect cClockFace{(WINDOW_WIDTH/2)-42,10,84,87};
 	SDL_Rect cClockFaceSrc{84*ClockMode,0,84,87};
-	SDL_RenderCopy(this->pRenderer,pClockFace,&cClockFaceSrc,&cClockFace);
+	SDL_RenderCopy(g_renderer,pClockFace,&cClockFaceSrc,&cClockFace);
 
 	SDL_Rect cDecaDestRect{601,15,25,59};
 	SDL_Rect cDecaSourceRect{uiDecaseconds*25,0,25,59};
-	SDL_RenderCopy(this->pRenderer,pBigTypeface,&cDecaSourceRect,&cDecaDestRect);
+	SDL_RenderCopy(g_renderer,pBigTypeface,&cDecaSourceRect,&cDecaDestRect);
 
 	SDL_Rect cDestRect{628,15,25,59};
 	SDL_Rect cSourceRect{uiSeconds*25,0,25,59};
-	SDL_RenderCopy(this->pRenderer,pBigTypeface,&cSourceRect,&cDestRect);
+	SDL_RenderCopy(g_renderer,pBigTypeface,&cSourceRect,&cDestRect);
 
 	SDL_Rect cDecaFrameDestRect{598 + 58,57,11,19};
 	SDL_Rect cFrameSourceRect{uiDecaframes*11,0,11,19};
-	SDL_RenderCopy(this->pRenderer,pSmallTypeface,&cFrameSourceRect,&cDecaFrameDestRect);
+	SDL_RenderCopy(g_renderer,pSmallTypeface,&cFrameSourceRect,&cDecaFrameDestRect);
 
 	SDL_Rect cFrameDestRect{598 + 58 + 13,57,11,19};
 	SDL_Rect cFrameSourceRectOof{uiFrames*11,0,11,19};
-	SDL_RenderCopy(this->pRenderer,pSmallTypeface,&cFrameSourceRectOof,&cFrameDestRect);
+	SDL_RenderCopy(g_renderer,pSmallTypeface,&cFrameSourceRectOof,&cFrameDestRect);
 }
 
 /*

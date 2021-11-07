@@ -7,7 +7,7 @@ CharaTemplate::CharaTemplate() {
 
 }
 
-CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/template";
 	if (!crash_to_debug) {
@@ -20,13 +20,13 @@ CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterInstanceAcc
 	this->base_texture = loadTexture("resource/chara/template/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectile_objects[i] = new ProjectileInstance();
+		projectiles[i] = new Projectile();
 	}
 
-	projectile_instances[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, id, player_info, fighter_instance_accessor);
-	delete (projectile_objects[0]);
-	this->projectile_objects[0] = projectile_instances[0]->get_projectile();
-	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectile_objects[0];
+	projectile_objects[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, id, player_info, fighter_accessor);
+	delete (projectiles[0]);
+	this->projectiles[0] = projectile_objects[0]->get_projectile();
+	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectiles[0];
 	projectile_template_instance->chara_template = this;
 }
 
@@ -35,9 +35,9 @@ void CharaTemplate::chara_id() {
 }
 
 void CharaTemplate::loadCharaTemplateStatusFunctions() {
-	chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - CHARA_STATUS_MAX] = &CharaTemplate::chara_template_status_template;
-	chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - CHARA_STATUS_MAX] = &CharaTemplate::chara_template_enter_status_template;
-	chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - CHARA_STATUS_MAX] = &CharaTemplate::chara_template_exit_status_template;
+	chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_status_template;
+	chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_enter_status_template;
+	chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_exit_status_template;
 }
 
 void CharaTemplate::loadCharaTemplateACMD() { //todo: Fill this in with all of the common empty scripts
@@ -241,66 +241,66 @@ void CharaTemplate::loadCharaTemplateACMD() { //todo: Fill this in with all of t
 void CharaTemplate::chara_main() {}
 
 void CharaTemplate::chara_status() {
-	(this->*chara_template_status[status_kind - CHARA_STATUS_MAX])();
+	(this->*chara_template_status[status_kind - FIGHTER_STATUS_MAX])();
 }
 
 void CharaTemplate::chara_enter_status() {
-	(this->*chara_template_enter_status[status_kind - CHARA_STATUS_MAX])();
+	(this->*chara_template_enter_status[status_kind - FIGHTER_STATUS_MAX])();
 }
 
 void CharaTemplate::chara_exit_status() {
-	(this->*chara_template_exit_status[status_kind - CHARA_STATUS_MAX])();
+	(this->*chara_template_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }
 
 bool CharaTemplate::specific_ground_status_act() {
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 
 	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		chara_int[CHARA_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
 	}
 
@@ -310,7 +310,7 @@ bool CharaTemplate::specific_ground_status_act() {
 }
 
 bool CharaTemplate::specific_status_attack() {
-	if (chara_flag[CHARA_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 		if (specific_ground_status_act()) {
 			return true;
 		}

@@ -1,28 +1,28 @@
 #pragma once
-#include "FighterInstance.fwd.h"
-#include "FighterInstance.h"
-#include "ProjectileInstance.fwd.h"
-#include "ProjectileInstance.h"
-#include "ObjectInstance.fwd.h"
-#include "ObjectInstance.h"
+#include "Fighter.fwd.h"
+#include "Fighter.h"
+#include "Projectile.fwd.h"
+#include "Projectile.h"
+#include "Object.fwd.h"
+#include "Object.h"
 #include "Eric.fwd.h"
 #include "utils.h"
 
-class Eric : public FighterInstance {
+class Eric : public Fighter {
 public:
 	//Setup
 
 	virtual void chara_id();
 	Eric();
-	Eric(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	Eric(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadEricStatusFunctions();
 	void loadEricACMD();
 
 	//Stats
 
-	void (Eric::* eric_status[CHARA_ERIC_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (Eric::* eric_enter_status[CHARA_ERIC_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (Eric::* eric_exit_status[CHARA_ERIC_STATUS_MAX - CHARA_STATUS_MAX])();
+	void (Eric::* eric_status[CHARA_ERIC_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (Eric::* eric_enter_status[CHARA_ERIC_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (Eric::* eric_exit_status[CHARA_ERIC_STATUS_MAX - FIGHTER_STATUS_MAX])();
 
 	int eric_int[CHARA_ERIC_INT_MAX];
 	float eric_float[CHARA_ERIC_FLOAT_MAX];

@@ -1,4 +1,4 @@
-#include "ObjectInstance.h"
+#include "Object.h"
 #include "ParamTable.h"
 
 MoveScript::MoveScript() {};
@@ -9,11 +9,11 @@ MoveScript::MoveScript(string name, function<void()> move_script, int id) {
 	this->id = id;
 }
 
-ObjectInstance::ObjectInstance() {
+Object::Object() {
 	this->id = -1;
 }
 
-int ObjectInstance::get_param_int(string param, Param param_table[]) {
+int Object::get_param_int(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -30,7 +30,7 @@ int ObjectInstance::get_param_int(string param, Param param_table[]) {
 	return 0;
 }
 
-float ObjectInstance::get_param_float(string param, Param param_table[]) {
+float Object::get_param_float(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -47,7 +47,7 @@ float ObjectInstance::get_param_float(string param, Param param_table[]) {
 	return 0.0;
 }
 
-string ObjectInstance::get_param_string(string param, Param param_table[]) {
+string Object::get_param_string(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -64,7 +64,7 @@ string ObjectInstance::get_param_string(string param, Param param_table[]) {
 	return "";
 }
 
-bool ObjectInstance::get_param_bool(string param, Param param_table[]) {
+bool Object::get_param_bool(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -81,7 +81,7 @@ bool ObjectInstance::get_param_bool(string param, Param param_table[]) {
 	return false;
 }
 
-bool ObjectInstance::is_excute_frame(int frame) {
+bool Object::is_excute_frame(int frame) {
 	bool ret = false;
 	attempted_excutes++;
 	if (this->frame >= frame) {
@@ -96,7 +96,7 @@ bool ObjectInstance::is_excute_frame(int frame) {
 	return ret;
 }
 
-bool ObjectInstance::is_excute_wait(int frames) {
+bool Object::is_excute_wait(int frames) {
 	bool ret = false;
 	attempted_excutes++;
 	if (frame >= last_excute_frame + frames) {
@@ -110,7 +110,7 @@ bool ObjectInstance::is_excute_wait(int frames) {
 	return ret;
 }
 
-void ObjectInstance::script(string name, function<void()> move_script) {
+void Object::script(string name, function<void()> move_script) {
 	for (int i = 0; i < MOVE_SCRIPT_MAX; i++) {
 		if (move_scripts[i].id == -1) {
 			move_scripts[i] = MoveScript(name, move_script, i);
@@ -119,7 +119,7 @@ void ObjectInstance::script(string name, function<void()> move_script) {
 	}
 }
 
-void ObjectInstance::set_current_move_script(string anim_name) {
+void Object::set_current_move_script(string anim_name) {
 	for (int i = 0; i < 256; i++) {
 		if (move_scripts[i].name == anim_name) {
 			move_script = move_scripts[i].move_script;
@@ -131,7 +131,7 @@ void ObjectInstance::set_current_move_script(string anim_name) {
 	}
 }
 
-void ObjectInstance::update_hitbox_pos(bool add_window_width) {
+void Object::update_hitbox_pos(bool add_window_width) {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
 			hitboxes[i].update_pos(this, add_window_width);
@@ -139,17 +139,17 @@ void ObjectInstance::update_hitbox_pos(bool add_window_width) {
 	}
 }
 
-void ObjectInstance::clear_hitbox(int id) {
+void Object::clear_hitbox(int id) {
 	hitboxes[id].clear();
 }
 
-void ObjectInstance::clear_hitbox_all() {
+void Object::clear_hitbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].clear();
 	}
 }
 
-void ObjectInstance::update_grabbox_pos() {
+void Object::update_grabbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (grabboxes[i].id != -1) {
 			grabboxes[i].update_pos(this);
@@ -157,17 +157,17 @@ void ObjectInstance::update_grabbox_pos() {
 	}
 }
 
-void ObjectInstance::clear_grabbox(int id) {
+void Object::clear_grabbox(int id) {
 	grabboxes[id].clear();
 }
 
-void ObjectInstance::clear_grabbox_all() {
+void Object::clear_grabbox_all() {
 	for (int i = 0; i < 10; i++) {
 		grabboxes[i].clear();
 	}
 }
 
-void ObjectInstance::update_hurtbox_pos() {
+void Object::update_hurtbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (hurtboxes[i].id != -1) {
 			hurtboxes[i].update_pos(this);
@@ -175,17 +175,17 @@ void ObjectInstance::update_hurtbox_pos() {
 	}
 }
 
-void ObjectInstance::clear_hurtbox(int id) {
+void Object::clear_hurtbox(int id) {
 	hurtboxes[id].clear();
 }
 
-void ObjectInstance::clear_hurtbox_all() {
+void Object::clear_hurtbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hurtboxes[i].clear();
 	}
 }
 
-void ObjectInstance::load_stats() {
+void Object::load_stats() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
 
@@ -225,7 +225,7 @@ void ObjectInstance::load_stats() {
 	stats_table.close();
 }
 
-void ObjectInstance::load_params() {
+void Object::load_params() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/params.yml");
 
@@ -265,7 +265,7 @@ void ObjectInstance::load_params() {
 	stats_table.close();
 }
 
-void ObjectInstance::update_hitbox_connect(int multihit_index) {
+void Object::update_hitbox_connect(int multihit_index) {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
 			hitboxes[i].update_connect(multihit_index);

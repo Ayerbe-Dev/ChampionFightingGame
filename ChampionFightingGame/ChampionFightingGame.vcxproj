@@ -194,7 +194,7 @@
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuHandler.cpp" />
-    <ClCompile Include="ObjectInstance.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="ParamTable.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -206,7 +206,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp" />
-    <ClCompile Include="ProjectileInstance.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
@@ -248,8 +248,8 @@
     <ClInclude Include="Eric.h" />
     <ClInclude Include="EricFireball.fwd.h" />
     <ClInclude Include="EricFireball.h" />
-    <ClInclude Include="FighterInstanceAccessor.fwd.h" />
-    <ClInclude Include="FighterInstanceAccessor.h" />
+    <ClInclude Include="FighterAccessor.fwd.h" />
+    <ClInclude Include="FighterAccessor.h" />
     <ClInclude Include="Game.fwd.h" />
     <ClInclude Include="GameCoordinate.fwd.h" />
     <ClInclude Include="GameCoordinate.h" />
@@ -261,13 +261,13 @@
     <ClInclude Include="Menu.fwd.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuHandler.h" />
-    <ClInclude Include="ObjectInstance.fwd.h" />
-    <ClInclude Include="ObjectInstance.h" />
+    <ClInclude Include="Object.fwd.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="ParamTable.h" />
-    <ClInclude Include="FighterInstance.fwd.h" />
+    <ClInclude Include="Fighter.fwd.h" />
     <ClInclude Include="PlayerInfo.h" />
-    <ClInclude Include="ProjectileInstance.fwd.h" />
-    <ClInclude Include="ProjectileInstance.h" />
+    <ClInclude Include="Projectile.fwd.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Atlas.fwd.h" />
     <ClInclude Include="Atlas.h" />
     <ClInclude Include="Roy.fwd.h" />
@@ -281,7 +281,7 @@
     <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
-    <ClInclude Include="FighterInstance.h" />
+    <ClInclude Include="Fighter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

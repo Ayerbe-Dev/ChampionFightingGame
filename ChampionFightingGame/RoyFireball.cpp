@@ -1,7 +1,7 @@
 #include "RoyFireball.h"
 #include "Game.h"
 
-RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor) {
+RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/projectile/roy_fireball";
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
@@ -9,7 +9,7 @@ RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterInstanceAccesso
 	loadRoyFireballACMD();
 	loadRoyFireballStatusFunctions();
 	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png");
-	this->fighter_instance_accessor = fighter_instance_accessor;
+	this->fighter_accessor = fighter_accessor;
 	superInit();
 }
 
@@ -44,16 +44,16 @@ void RoyFireball::loadRoyFireballACMD() {
 	});
 	script("punched", [this]() {
 		if (is_excute_frame(0)) {
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
 				new_hitbox(0, 0, 40, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
 				new_hitbox(0, 0, 50, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 				new_hitbox(1, 1, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
@@ -61,16 +61,16 @@ void RoyFireball::loadRoyFireballACMD() {
 	});
 	script("kicked", [this]() {
 		if (is_excute_frame(0)) {
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
 				new_hitbox(0, 0, 40, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
 				new_hitbox(0, 0, 50, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
-			if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 				new_hitbox(1, 1, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true);
 			}
@@ -114,7 +114,7 @@ void RoyFireball::projectile_unique_exit_status() {
 }
 
 void RoyFireball::status_default() {
-	if (fighter_instance_accessor->fighter_instance[owner_id]->chara_int[CHARA_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+	if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 		projectile_int[PROJECTILE_INT_HEALTH] = 2;
 	}
 	change_status(PROJECTILE_ROY_FIREBALL_STATUS_HOVER);

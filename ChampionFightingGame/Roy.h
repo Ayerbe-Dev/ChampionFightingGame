@@ -1,26 +1,26 @@
 #pragma once
-#include "FighterInstance.fwd.h"
-#include "FighterInstance.h"
-#include "ObjectInstance.fwd.h"
-#include "ObjectInstance.h"
+#include "Fighter.fwd.h"
+#include "Fighter.h"
+#include "Object.fwd.h"
+#include "Object.h"
 #include "Roy.fwd.h"
 #include "utils.h"
 
-class Roy : public FighterInstance {
+class Roy : public Fighter {
 public:
 	//Setup
 
 	virtual void chara_id();
 	Roy();
-	Roy(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadRoyStatusFunctions();
 	void loadRoyACMD();
 
 	//Stats
 
-	void (Roy::* roy_status[CHARA_ROY_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (Roy::* roy_enter_status[CHARA_ROY_STATUS_MAX - CHARA_STATUS_MAX])();
-	void (Roy::* roy_exit_status[CHARA_ROY_STATUS_MAX - CHARA_STATUS_MAX])();
+	void (Roy::* roy_status[CHARA_ROY_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (Roy::* roy_enter_status[CHARA_ROY_STATUS_MAX - FIGHTER_STATUS_MAX])();
+	void (Roy::* roy_exit_status[CHARA_ROY_STATUS_MAX - FIGHTER_STATUS_MAX])();
 
 	int roy_int[CHARA_ROY_INT_MAX];
 	float roy_float[CHARA_ROY_FLOAT_MAX];

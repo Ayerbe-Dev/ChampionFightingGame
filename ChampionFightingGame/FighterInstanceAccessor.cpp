@@ -1,8 +1,8 @@
-#include "FighterInstanceAccessor.h"
+#include "FighterAccessor.h"
 
-FighterInstanceAccessor::FighterInstanceAccessor() {}
+FighterAccessor::FighterAccessor() {}
 
-FighterInstanceAccessor::FighterInstanceAccessor(FighterInstance* p1, FighterInstance* p2) {
-	this->fighter_instance[0] = p1;
-	this->fighter_instance[1] = p2;
+FighterAccessor::FighterAccessor(Fighter* p1, Fighter* p2) {
+	this->fighter[0] = p1;
+	this->fighter[1] = p2;
 }

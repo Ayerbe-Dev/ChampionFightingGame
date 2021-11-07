@@ -29,7 +29,7 @@ bool Debugger::check_button_trigger(u32 button) {
 	return button_info[button].changed && button_info[button].button_on && enabled;
 }
 
-void debug_mode(Debugger *debugger, FighterInstance *target, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset) {
+void debug_mode(Debugger *debugger, Fighter *target, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset) {
 	if (debugger->check_button_trigger(BUTTON_DEBUG_CENTER_BOX)) {
 		debug_anchor->x = (((target->pos.x * target->facing_dir)) * target->facing_dir) + WINDOW_WIDTH / 2;
 		debug_anchor->y = WINDOW_HEIGHT - target->pos.y;

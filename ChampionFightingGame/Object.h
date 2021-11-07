@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "Animation.h"
 #include "GameCoordinate.h"
-#include "ObjectInstance.fwd.h"
+#include "Object.fwd.h"
 #include "Box.fwd.h"
 #include "Box.h"
 #include "ParamTable.h"
@@ -18,9 +18,9 @@ public:
 	MoveScript(string name, function<void()> move_script, int id);
 };
 
-class ObjectInstance {
+class Object {
 public:
-	ObjectInstance();
+	Object();
 
 	int id;
 	int object_type;
@@ -28,8 +28,8 @@ public:
 	GameCoordinate prevpos;
 	bool facing_right{ true };
 	float facing_dir{ 1.0 };
-	u32 status_kind{ CHARA_STATUS_WAIT };
-	u32 situation_kind{ CHARA_SITUATION_GROUND };
+	u32 status_kind{ FIGHTER_STATUS_WAIT };
+	u32 situation_kind{ FIGHTER_SITUATION_GROUND };
 
 	PlayerInfo* player_info;
 

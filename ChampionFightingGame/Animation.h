@@ -5,9 +5,9 @@
 #include "utils.h"
 
 struct Animation {
-	SDL_Texture* SPRITESHEET;
-	std::string name{ "default"};
-	std::string path{ "default.png" };
+	SDL_Texture* spritesheet;
+	string name{ "default"};
+	string path{ "default.png" };
 	int length{ -1 };
 	int faf{ -1 };
 	int force_center{ 0 };

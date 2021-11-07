@@ -1,5 +1,5 @@
 #include "Box.h"
-#include "ObjectInstance.h"
+#include "Object.h"
 #include "utils.h"
 
 
@@ -17,7 +17,7 @@ Hitbox::Hitbox() {
 	The version of the Hitbox func used by players
 */
 
-Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
 	bool success_hit, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
@@ -25,10 +25,10 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	if (use_player_pos) {
-		anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-		anchor.y = (anchor.y - WINDOW_HEIGHT) * - 1.0 - object_instance->pos.y;
-		offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+		anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * - 1.0 - object->pos.y;
+		offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
@@ -42,7 +42,7 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 	this->rect.y = anchor.y;
 	this->rect.w = offset.x;
 	this->rect.h = offset.y;
-	this->object_instance = object_instance;
+	this->object = object;
 	this->id = id;
 	this->multihit = multihit;
 	this->hitbox_kind = hitbox_kind;
@@ -81,23 +81,23 @@ Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float dama
 /*
 	The version of the Hitbox func used by projectiles
 */
-Hitbox::Hitbox(ObjectInstance* object_instance, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
-	anchor.y = anchor.y + object_instance->pos.y;
-	offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
-	offset.y = offset.y + object_instance->pos.y;
+	anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir);
+	anchor.y = anchor.y + object->pos.y;
+	offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir);
+	offset.y = offset.y + object->pos.y;
 	offset.x -= anchor.x;
 	offset.y -= anchor.y;
 	this->rect.x = anchor.x;
 	this->rect.y = anchor.y;
 	this->rect.w = offset.x;
 	this->rect.h = offset.y;
-	this->object_instance = object_instance;
+	this->object = object;
 	this->id = id;
 	this->multihit = multihit;
 	this->situation_hit = situation_hit;
@@ -144,23 +144,23 @@ void Hitbox::update_connect(int multihit_index) {
 	they shouldn't add it a second time, hence the second arg.
 */
 
-void Hitbox::update_pos(ObjectInstance * object_instance, bool add_window_width) {
+void Hitbox::update_pos(Object * object, bool add_window_width) {
 	GameCoordinate anchor;
 	GameCoordinate offset;
 	anchor = init_anchor;
 	offset = init_offset;
 	if (this->use_player_pos) {
 		if (add_window_width) {
-			anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-			anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-			offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-			offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+			anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+			anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
+			offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+			offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
 		}
 		else {
-			anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
-			anchor.y = anchor.y + object_instance->pos.y;
-			offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir);
-			offset.y = offset.y + object_instance->pos.y;
+			anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir);
+			anchor.y = anchor.y + object->pos.y;
+			offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir);
+			offset.y = offset.y + object->pos.y;
 		}
 	}
 	else {
@@ -189,19 +189,19 @@ Grabbox::Grabbox() {
 }
 
 /*
-	Grabbox. Only FighterInstances are actually designed to call these, because if we ever wanted to make a "projectile grab", we could just
+	Grabbox. Only Fighters are actually designed to call these, because if we ever wanted to make a "projectile grab", we could just
 	make an unblockable projectile that tells the attacker to create a grabbox at the defender's location and handles it from there.
 */
 
-Grabbox::Grabbox(ObjectInstance* object_instance, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
+Grabbox::Grabbox(Object* object, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
 	u32 defender_status_if_hit, bool use_player_pos) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	if (use_player_pos) {
-		anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-		offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+		anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
+		offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
@@ -215,7 +215,7 @@ Grabbox::Grabbox(ObjectInstance* object_instance, int id, GameCoordinate anchor,
 	this->rect.y = anchor.y;
 	this->rect.w = offset.x;
 	this->rect.h = offset.y;
-	this->object_instance = object_instance;
+	this->object = object;
 	this->id = id;
 	this->grabbox_kind = grabbox_kind;
 	this->situation_hit = situation_hit;
@@ -224,16 +224,16 @@ Grabbox::Grabbox(ObjectInstance* object_instance, int id, GameCoordinate anchor,
 	this->use_player_pos = use_player_pos;
 }
 
-void Grabbox::update_pos(ObjectInstance* object_instance) {
+void Grabbox::update_pos(Object* object) {
 	GameCoordinate anchor;
 	GameCoordinate offset;
 	anchor = init_anchor;
 	offset = init_offset;
 	if (this->use_player_pos) {
-		anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-		offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+		anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+		anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
+		offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+		offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
 	}
 	else {
 		anchor.x += WINDOW_WIDTH / 2;
@@ -259,39 +259,39 @@ Hurtbox::Hurtbox() {
 }
 
 /*
-	Hurtbox. Only used by FighterInstances since projectile trades work by comparing the hitboxes directly. Also I think it's safe to assume that
+	Hurtbox. Only used by Fighters since projectile trades work by comparing the hitboxes directly. Also I think it's safe to assume that
 	Hurtboxes will never use a global position
 */
 
-Hurtbox::Hurtbox(ObjectInstance* object_instance, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
+Hurtbox::Hurtbox(Object* object, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-	offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-	offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+	anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
+	offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+	offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
 	offset.x -= anchor.x;
 	offset.y += anchor.y;
 	this->rect.x = anchor.x;
 	this->rect.y = anchor.y;
 	this->rect.w = offset.x;
 	this->rect.h = offset.y;
-	this->object_instance = object_instance;
+	this->object = object;
 	this->id = id;
 	this->hurtbox_kind = hurtbox_kind;
 	this->is_armor = is_armor;
 	this->intangible_kind = intangible_kind;
 }
 
-void Hurtbox::update_pos(ObjectInstance *object_instance) {
+void Hurtbox::update_pos(Object *object) {
 	GameCoordinate anchor;
 	GameCoordinate offset;
 	anchor = init_anchor;
 	offset = init_offset;
-	anchor.x = ((anchor.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
-	offset.x = ((offset.x + (object_instance->pos.x * object_instance->facing_dir)) * object_instance->facing_dir) + WINDOW_WIDTH / 2;
-	offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object_instance->pos.y;
+	anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+	anchor.y = (anchor.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
+	offset.x = ((offset.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
+	offset.y = (offset.y - WINDOW_HEIGHT) * -1.0 - object->pos.y;
 	offset.x -= anchor.x;
 	offset.y -= anchor.y;
 	this->rect.x = anchor.x;

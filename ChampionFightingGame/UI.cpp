@@ -3,11 +3,11 @@ extern SDL_Renderer* g_renderer;
 
 
 HealthBar::HealthBar() {}
-HealthBar::HealthBar(FighterInstance* fighter_instance) {
-	this->fighter_instance = fighter_instance;
+HealthBar::HealthBar(Fighter* fighter) {
+	this->fighter = fighter;
 	this->bar_texture = loadTexture("resource/ui/game/hp/bar.png");
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png");
-	this->max_health = fighter_instance->get_param_float("health");
+	this->max_health = fighter->get_param_float("health");
 	
 	width = 596;
 	height = 70;
@@ -28,7 +28,7 @@ HealthBar::HealthBar(FighterInstance* fighter_instance) {
 }
 
 void HealthBar::RenderAsP1() {
-	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / max_health);
+	slice_rect.w = width * (fighter->fighter_float[FIGHTER_FLOAT_HEALTH] / max_health);
 	health_rect.w = slice_rect.w;
 	health_rect.x = width - slice_rect.w + (bar_rect.x + 15);
 	slice_rect.x = width - slice_rect.w;
@@ -39,7 +39,7 @@ void HealthBar::RenderAsP1() {
 
 void HealthBar::RenderAsP2() {
 	bar_rect.x = WINDOW_WIDTH - width - 2;
-	slice_rect.w = width * (fighter_instance->chara_float[CHARA_FLOAT_HEALTH] / max_health);
+	slice_rect.w = width * (fighter->fighter_float[FIGHTER_FLOAT_HEALTH] / max_health);
 	health_rect.w = slice_rect.w;
 	health_rect.x = (WINDOW_WIDTH - width) - 17;
 	slice_rect.x = width - slice_rect.w;
@@ -48,11 +48,11 @@ void HealthBar::RenderAsP2() {
 }
 
 PlayerIndicator::PlayerIndicator() {}
-PlayerIndicator::PlayerIndicator(FighterInstance* fighter_instance, string nametag) {
-	this->fighter_instance = fighter_instance;
+PlayerIndicator::PlayerIndicator(Fighter* fighter, string nametag) {
+	this->fighter = fighter;
 	this->nametag = nametag;
 	string resource_dir = "resource/ui/game/tag/";
-	if (fighter_instance->id == 0) {
+	if (fighter->id == 0) {
 		resource_dir += "p1_tag";
 	}
 	else {

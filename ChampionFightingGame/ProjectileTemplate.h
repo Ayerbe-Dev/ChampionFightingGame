@@ -1,16 +1,16 @@
 #pragma once
-#include "ProjectileInstance.h"
-#include "ProjectileInstance.fwd.h"
-#include "ObjectInstance.fwd.h"
-#include "ObjectInstance.h"
+#include "Projectile.h"
+#include "Projectile.fwd.h"
+#include "Object.fwd.h"
+#include "Object.h"
 #include "ProjectileTemplate.fwd.h"
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
 
-class ProjectileTemplate : public ProjectileInstance {
+class ProjectileTemplate : public Projectile {
 public:
 	ProjectileTemplate();
-	ProjectileTemplate(int id, PlayerInfo* player_info, FighterInstanceAccessor* fighter_instance_accessor);
+	ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 
 	CharaTemplate* chara_template;
 

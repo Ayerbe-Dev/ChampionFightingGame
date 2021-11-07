@@ -1,7 +1,7 @@
 #pragma once
 #include "utils.h"
 #include "Button.h"
-#include "FighterInstance.h"
+#include "Fighter.h"
 #include "SDL_rect.h"
 
 class Debugger {
@@ -18,4 +18,4 @@ public:
 	bool check_button_trigger(u32 button);
 };
 
-void debug_mode(Debugger* debugger, FighterInstance* target, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset);
+void debug_mode(Debugger* debugger, Fighter* target, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset);

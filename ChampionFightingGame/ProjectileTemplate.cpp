@@ -1,7 +1,7 @@
 #include "ProjectileTemplate.h"
 #include "Game.h"
 
-ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterInstanceAccessor * fighter_instance_accessor) {
+ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor * fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/projectile/template";
 	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
@@ -9,7 +9,7 @@ ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterI
 	loadProjectileTemplateACMD();
 	loadProjectileTemplateStatusFunctions();
 	this->base_texture = loadTexture("resource/projectile/template/sprite/sprite.png");
-	this->fighter_instance_accessor = fighter_instance_accessor;
+	this->fighter_accessor = fighter_accessor;
 	superInit();
 }
 

@@ -23,74 +23,71 @@ public:
 
 	virtual void chara_id() = 0;
 
+	//Most variables are handled by the Fighter arrays, but if something is primarily used outside of the Fighter class, it is a direct member
+
+	//Misc important data
+
 	int chara_kind;
 	FighterAccessor* fighter_accessor;
-	Projectile* projectiles[MAX_PROJECTILES]{};
-	IObject* projectile_objects[MAX_PROJECTILES]{};
-
-
-	bool kara_enabled{ false };
-	
+	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
+	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
+	bool requesting_priority = false; //Checked by the fighter_accessor to determine which render priority value to use
+	bool crash_to_debug{ false };
 	int prev_stick_dir;
 	
 	int fighter_int[FIGHTER_INT_MAX]{ 0 };
 	float fighter_float[FIGHTER_FLOAT_MAX]{ 0.0 };
 	bool fighter_flag[FIGHTER_FLAG_MAX]{false};
+	bool kara_enabled{ false }; //Should be made into a Fighter Flag tbh, never used outside of status scripts
 	
-	int connected_hitbox;
-	int connected_grabbox;
-	int connected_projectile_hitbox;
-	bool crash_to_debug{ false };
+	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
+	int connected_hitbox = -1;
+	int connected_grabbox = -1;
+	int connected_projectile_hitbox = -1;
 
-	void (Fighter::* pStatus[FIGHTER_STATUS_MAX])();
-	void (Fighter::* pEnter_status[FIGHTER_STATUS_MAX])();
-	void (Fighter::* pExit_status[FIGHTER_STATUS_MAX])();
+	//Array of pointers to the corressponding function for each status
+	void (Fighter::* status_script[FIGHTER_STATUS_MAX])(); //Runs every frame for the status you're in
+	void (Fighter::* enter_status_script[FIGHTER_STATUS_MAX])(); //While your status is being changed, runs for the status you're going into
+	void (Fighter::* exit_status_script[FIGHTER_STATUS_MAX])(); //While your status is being changed, runs for the status you're going out of
+
+	/*
+		FUNCTIONS
+	*/
 
 	//Constructors
 
 	Fighter();
 	Fighter(PlayerInfo *player_info);
 
-	void fighter_main();
-
-	//Child Class Entry Points
-
-	virtual void chara_main() {};
-	virtual void chara_status() {};
-	virtual void chara_enter_status() {};
-	virtual void chara_exit_status() {};
-
-	virtual bool specific_ground_status_act() { return false; };
-	virtual bool specific_air_status_act() { return false; };
-	virtual bool specific_status_attack() { return false; };
-
-	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset);
+	void fighter_main(); //Runs during every frame of gameplay
+	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
+	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset); //Sets up the player's jostle box, called multiple times every frame
 
 	//Projectiles
-	void init_projectile(int id, GameCoordinate pos);
-	void destroy_projectile(int id);
+	void init_projectile(int id, GameCoordinate pos); //Marks a projectile as active and moves it to the given position relative to the player
+	void destroy_projectile(int id); //Marks a projectile as inactive
 
 	//Setup
 
 	void superInit(int id);
 	void load_anim_list();
 	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
-	void loadStatusFunctions();
+	void loadStatusScripts();
 
 	//Inputs
 
-	void processInput();
-	bool check_button_on(u32 button);
-	bool check_button_input(u32 button);
-	bool check_button_input(u32 buttons[], int length, int min_matches = 0);
-	bool check_button_trigger(u32 button);
-	bool check_button_release(u32 button);
-	int get_stick_dir();
-	int get_flick_dir();
-	int get_special_input(int special_kind, u32 button, int charge_frames = 0);
-	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind);
+	void processInput(); //Manages specific inputs such as special motions and dashes
+	bool check_button_on(u32 button); //Checks if a button is being pressed
+	bool check_button_input(u32 button); //Checks if a button was pressed within the buffer window
+	bool check_button_input(u32 buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least min_matches buttons were pressed
+	bool check_button_trigger(u32 button); //Checks if a button was pressed on that frame
+	bool check_button_release(u32 button); //Checks if a button was released on that frame
+	int get_stick_dir(); //Stick direction, relative to your facing direction. Returns num pad notation.
+	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
+	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
+	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind); //Attempts to cancel attack_kind into a normal based on button if the situation_kind is correct
 
-	//Param Helper Funcs
+	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the 
 
 	int get_param_int_special(string param);
 	float get_param_float_special(string param);
@@ -111,13 +108,6 @@ public:
 	void set_opponent_angle(double angle);
 	void set_opponent_thrown_ticks();
 	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0);
-
-	/*
-		For classes with multiple instances in the Fighter table, it makes sense to be able to call their methods from the Fighter class instead
-		of needing to manually iterate through all of them. It's technically bad practice to do these for ALL of these methods but it's more streamlined
-		than, for example, having a "clear_hitbox_all" macro that clears the hitboxes from the Fighter, and having a "clear_hitbox" that can only
-		be called from the Hitbox class
-	*/
 
 	//Hitbox
 	
@@ -161,9 +151,15 @@ public:
 	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	bool change_status_after_hitlag(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	void playoutStatus();
+	virtual void chara_status() {};
+	virtual void chara_enter_status() {};
+	virtual void chara_exit_status() {};
 	bool common_ground_status_act();
 	bool common_air_status_act();
 	bool common_air_status_general();
+	virtual bool specific_ground_status_act() { return false; };
+	virtual bool specific_air_status_act() { return false; };
+	virtual bool specific_status_attack() { return false; };
 	bool is_status_end(u32 status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
 	u32 get_status_group();
 	bool is_status_hitstun_enable_parry();

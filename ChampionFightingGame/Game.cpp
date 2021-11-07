@@ -34,7 +34,7 @@ extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
 	Uint32 tick=0,tok=0;
 	bool gaming = true;
-	bool visualize_boxes = false;
+	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
@@ -200,6 +200,8 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 
+		//Main tick loop
+
 		for (int i = 0; i < 2; i++) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
@@ -241,13 +243,51 @@ int game_main(PlayerInfo player_info[2]) {
 				gaming = false;
 				next_state = GAME_STATE_DEBUG_MENU;
 			}
+		}
 
-			SDL_Rect render_pos = getRenderPos(fighter[i], fighter[i]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
-			const double angle = (const double)fighter[i]->angle;
-			SDL_RendererFlip flip = fighter[i]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-			if (SDL_RenderCopyEx(g_renderer, fighter[i]->anim_kind->spritesheet, &(fighter[i]->frame_rect), &render_pos, angle, NULL, flip)) {
-				cout << "\n" << SDL_GetError();
+		//Render loop
+
+		int render_priority = 0;
+		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
+			if (!debug) {
+				cout << "Both players requesting priority!" << endl;
 			}
+			render_priority = fighter_accessor->render_priority;
+		}
+		else if (fighter[0]->requesting_priority) {
+			if (!debug) {
+				cout << "Player 1 requesting priority!" << endl;
+			}
+			render_priority = 0;
+		}
+		else if (fighter[1]->requesting_priority) {
+			if (!debug) {
+				cout << "Player 2 requesting priority!" << endl;
+			}
+			render_priority = 1;
+		}
+		else {
+			if (!debug) {
+//				cout << "No players requesting priority!" << endl;
+			}
+			render_priority = fighter_accessor->render_priority_no_req;
+		}
+		SDL_Rect render_pos;
+		SDL_RendererFlip flip;
+		
+		render_pos = getRenderPos(fighter[!render_priority], fighter[!render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
+		flip = fighter[!render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+		if (SDL_RenderCopyEx(g_renderer, fighter[!render_priority]->anim_kind->spritesheet, &(fighter[!render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
+			cout << "\n" << SDL_GetError();
+		}
+
+		render_pos = getRenderPos(fighter[render_priority], fighter[render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
+		flip = fighter[render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+		if (SDL_RenderCopyEx(g_renderer, fighter[render_priority]->anim_kind->spritesheet, &(fighter[render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
+			cout << "\n" << SDL_GetError();
+		}
+
+		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 				SDL_SetRenderTarget(g_renderer, pGui);
 				float id_ope = -1;

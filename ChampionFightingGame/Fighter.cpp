@@ -188,7 +188,7 @@ void Fighter::superInit(int id) {
 		load_stats();
 	}
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
-	loadStatusFunctions();
+	loadStatusScripts();
 	pos.y = FLOOR_GAMECOORD;
 	if (!crash_to_debug) {
 		change_anim("wait", 2, 0);
@@ -281,150 +281,150 @@ void Fighter::load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir) {
 	anim_map.close();
 }
 
-void Fighter::loadStatusFunctions() {
-	pStatus[FIGHTER_STATUS_WAIT] = &Fighter::status_wait;
-	pEnter_status[FIGHTER_STATUS_WAIT] = &Fighter::enter_status_wait;
-	pExit_status[FIGHTER_STATUS_WAIT] = &Fighter::exit_status_wait;
+void Fighter::loadStatusScripts() {
+	status_script[FIGHTER_STATUS_WAIT] = &Fighter::status_wait;
+	enter_status_script[FIGHTER_STATUS_WAIT] = &Fighter::enter_status_wait;
+	exit_status_script[FIGHTER_STATUS_WAIT] = &Fighter::exit_status_wait;
 
-	pStatus[FIGHTER_STATUS_WALKF] = &Fighter::status_walkf;
-	pEnter_status[FIGHTER_STATUS_WALKF] = &Fighter::enter_status_walkf;
-	pExit_status[FIGHTER_STATUS_WALKF] = &Fighter::exit_status_walkf;
+	status_script[FIGHTER_STATUS_WALKF] = &Fighter::status_walkf;
+	enter_status_script[FIGHTER_STATUS_WALKF] = &Fighter::enter_status_walkf;
+	exit_status_script[FIGHTER_STATUS_WALKF] = &Fighter::exit_status_walkf;
 
-	pStatus[FIGHTER_STATUS_WALKB] = &Fighter::status_walkb;
-	pEnter_status[FIGHTER_STATUS_WALKB] = &Fighter::enter_status_walkb;
-	pExit_status[FIGHTER_STATUS_WALKB] = &Fighter::exit_status_walkb;
+	status_script[FIGHTER_STATUS_WALKB] = &Fighter::status_walkb;
+	enter_status_script[FIGHTER_STATUS_WALKB] = &Fighter::enter_status_walkb;
+	exit_status_script[FIGHTER_STATUS_WALKB] = &Fighter::exit_status_walkb;
 
-	pStatus[FIGHTER_STATUS_DASH] = &Fighter::status_dash;
-	pEnter_status[FIGHTER_STATUS_DASH] = &Fighter::enter_status_dash;
-	pExit_status[FIGHTER_STATUS_DASH] = &Fighter::exit_status_dash;
+	status_script[FIGHTER_STATUS_DASH] = &Fighter::status_dash;
+	enter_status_script[FIGHTER_STATUS_DASH] = &Fighter::enter_status_dash;
+	exit_status_script[FIGHTER_STATUS_DASH] = &Fighter::exit_status_dash;
 
-	pStatus[FIGHTER_STATUS_DASHB] = &Fighter::status_dashb;
-	pEnter_status[FIGHTER_STATUS_DASHB] = &Fighter::enter_status_dashb;
-	pExit_status[FIGHTER_STATUS_DASHB] = &Fighter::exit_status_dashb;
+	status_script[FIGHTER_STATUS_DASHB] = &Fighter::status_dashb;
+	enter_status_script[FIGHTER_STATUS_DASHB] = &Fighter::enter_status_dashb;
+	exit_status_script[FIGHTER_STATUS_DASHB] = &Fighter::exit_status_dashb;
 
-	pStatus[FIGHTER_STATUS_DASH_AIR] = &Fighter::status_dash_air;
-	pEnter_status[FIGHTER_STATUS_DASH_AIR] = &Fighter::enter_status_dash_air;
-	pExit_status[FIGHTER_STATUS_DASH_AIR] = &Fighter::exit_status_dash_air;
+	status_script[FIGHTER_STATUS_DASH_AIR] = &Fighter::status_dash_air;
+	enter_status_script[FIGHTER_STATUS_DASH_AIR] = &Fighter::enter_status_dash_air;
+	exit_status_script[FIGHTER_STATUS_DASH_AIR] = &Fighter::exit_status_dash_air;
 
-	pStatus[FIGHTER_STATUS_CROUCHD] = &Fighter::status_crouchd;
-	pEnter_status[FIGHTER_STATUS_CROUCHD] = &Fighter::enter_status_crouchd;
-	pExit_status[FIGHTER_STATUS_CROUCHD] = &Fighter::exit_status_crouchd;
+	status_script[FIGHTER_STATUS_CROUCHD] = &Fighter::status_crouchd;
+	enter_status_script[FIGHTER_STATUS_CROUCHD] = &Fighter::enter_status_crouchd;
+	exit_status_script[FIGHTER_STATUS_CROUCHD] = &Fighter::exit_status_crouchd;
 
-	pStatus[FIGHTER_STATUS_CROUCH] = &Fighter::status_crouch;
-	pEnter_status[FIGHTER_STATUS_CROUCH] = &Fighter::enter_status_crouch;
-	pExit_status[FIGHTER_STATUS_CROUCH] = &Fighter::exit_status_crouch;
+	status_script[FIGHTER_STATUS_CROUCH] = &Fighter::status_crouch;
+	enter_status_script[FIGHTER_STATUS_CROUCH] = &Fighter::enter_status_crouch;
+	exit_status_script[FIGHTER_STATUS_CROUCH] = &Fighter::exit_status_crouch;
 
-	pStatus[FIGHTER_STATUS_CROUCHU] = &Fighter::status_crouchu;
-	pEnter_status[FIGHTER_STATUS_CROUCHU] = &Fighter::enter_status_crouchu;
-	pExit_status[FIGHTER_STATUS_CROUCHU] = &Fighter::exit_status_crouchu;
+	status_script[FIGHTER_STATUS_CROUCHU] = &Fighter::status_crouchu;
+	enter_status_script[FIGHTER_STATUS_CROUCHU] = &Fighter::enter_status_crouchu;
+	exit_status_script[FIGHTER_STATUS_CROUCHU] = &Fighter::exit_status_crouchu;
 
-	pStatus[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::status_jumpsquat;
-	pEnter_status[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::enter_status_jumpsquat;
-	pExit_status[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::exit_status_jumpsquat;
+	status_script[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::status_jumpsquat;
+	enter_status_script[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::enter_status_jumpsquat;
+	exit_status_script[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::exit_status_jumpsquat;
 
-	pStatus[FIGHTER_STATUS_JUMP] = &Fighter::status_jump;
-	pEnter_status[FIGHTER_STATUS_JUMP] = &Fighter::enter_status_jump;
-	pExit_status[FIGHTER_STATUS_JUMP] = &Fighter::exit_status_jump;
+	status_script[FIGHTER_STATUS_JUMP] = &Fighter::status_jump;
+	enter_status_script[FIGHTER_STATUS_JUMP] = &Fighter::enter_status_jump;
+	exit_status_script[FIGHTER_STATUS_JUMP] = &Fighter::exit_status_jump;
 
-	pStatus[FIGHTER_STATUS_FALL] = &Fighter::status_fall;
-	pEnter_status[FIGHTER_STATUS_FALL] = &Fighter::enter_status_fall;
-	pExit_status[FIGHTER_STATUS_FALL] = &Fighter::exit_status_fall;
+	status_script[FIGHTER_STATUS_FALL] = &Fighter::status_fall;
+	enter_status_script[FIGHTER_STATUS_FALL] = &Fighter::enter_status_fall;
+	exit_status_script[FIGHTER_STATUS_FALL] = &Fighter::exit_status_fall;
 
-	pStatus[FIGHTER_STATUS_ATTACK] = &Fighter::status_attack;
-	pEnter_status[FIGHTER_STATUS_ATTACK] = &Fighter::enter_status_attack;
-	pExit_status[FIGHTER_STATUS_ATTACK] = &Fighter::exit_status_attack;
+	status_script[FIGHTER_STATUS_ATTACK] = &Fighter::status_attack;
+	enter_status_script[FIGHTER_STATUS_ATTACK] = &Fighter::enter_status_attack;
+	exit_status_script[FIGHTER_STATUS_ATTACK] = &Fighter::exit_status_attack;
 
-	pStatus[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::status_attack_air;
-	pEnter_status[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::enter_status_attack_air;
-	pExit_status[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::exit_status_attack_air;
+	status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::status_attack_air;
+	enter_status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::enter_status_attack_air;
+	exit_status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::exit_status_attack_air;
 
-	pStatus[FIGHTER_STATUS_GRAB] = &Fighter::status_grab;
-	pEnter_status[FIGHTER_STATUS_GRAB] = &Fighter::enter_status_grab;
-	pExit_status[FIGHTER_STATUS_GRAB] = &Fighter::exit_status_grab;
+	status_script[FIGHTER_STATUS_GRAB] = &Fighter::status_grab;
+	enter_status_script[FIGHTER_STATUS_GRAB] = &Fighter::enter_status_grab;
+	exit_status_script[FIGHTER_STATUS_GRAB] = &Fighter::exit_status_grab;
 
-	pStatus[FIGHTER_STATUS_THROW] = &Fighter::status_throw;
-	pEnter_status[FIGHTER_STATUS_THROW] = &Fighter::enter_status_throw;
-	pExit_status[FIGHTER_STATUS_THROW] = &Fighter::exit_status_throw;
+	status_script[FIGHTER_STATUS_THROW] = &Fighter::status_throw;
+	enter_status_script[FIGHTER_STATUS_THROW] = &Fighter::enter_status_throw;
+	exit_status_script[FIGHTER_STATUS_THROW] = &Fighter::exit_status_throw;
 
-	pStatus[FIGHTER_STATUS_GRAB_AIR] = &Fighter::status_grab_air;
-	pEnter_status[FIGHTER_STATUS_GRAB_AIR] = &Fighter::enter_status_grab_air;
-	pExit_status[FIGHTER_STATUS_GRAB_AIR] = &Fighter::exit_status_grab_air;
+	status_script[FIGHTER_STATUS_GRAB_AIR] = &Fighter::status_grab_air;
+	enter_status_script[FIGHTER_STATUS_GRAB_AIR] = &Fighter::enter_status_grab_air;
+	exit_status_script[FIGHTER_STATUS_GRAB_AIR] = &Fighter::exit_status_grab_air;
 
-	pStatus[FIGHTER_STATUS_THROW_AIR] = &Fighter::status_throw_air;
-	pEnter_status[FIGHTER_STATUS_THROW_AIR] = &Fighter::enter_status_throw_air;
-	pExit_status[FIGHTER_STATUS_THROW_AIR] = &Fighter::exit_status_throw_air;
+	status_script[FIGHTER_STATUS_THROW_AIR] = &Fighter::status_throw_air;
+	enter_status_script[FIGHTER_STATUS_THROW_AIR] = &Fighter::enter_status_throw_air;
+	exit_status_script[FIGHTER_STATUS_THROW_AIR] = &Fighter::exit_status_throw_air;
 
-	pStatus[FIGHTER_STATUS_GRABBED] = &Fighter::status_grabbed;
-	pEnter_status[FIGHTER_STATUS_GRABBED] = &Fighter::enter_status_grabbed;
-	pExit_status[FIGHTER_STATUS_GRABBED] = &Fighter::exit_status_grabbed;
+	status_script[FIGHTER_STATUS_GRABBED] = &Fighter::status_grabbed;
+	enter_status_script[FIGHTER_STATUS_GRABBED] = &Fighter::enter_status_grabbed;
+	exit_status_script[FIGHTER_STATUS_GRABBED] = &Fighter::exit_status_grabbed;
 
-	pStatus[FIGHTER_STATUS_THROWN] = &Fighter::status_thrown;
-	pEnter_status[FIGHTER_STATUS_THROWN] = &Fighter::enter_status_thrown;
-	pExit_status[FIGHTER_STATUS_THROWN] = &Fighter::exit_status_thrown;
+	status_script[FIGHTER_STATUS_THROWN] = &Fighter::status_thrown;
+	enter_status_script[FIGHTER_STATUS_THROWN] = &Fighter::enter_status_thrown;
+	exit_status_script[FIGHTER_STATUS_THROWN] = &Fighter::exit_status_thrown;
 
-	pStatus[FIGHTER_STATUS_HITSTUN] = &Fighter::status_hitstun;
-	pEnter_status[FIGHTER_STATUS_HITSTUN] = &Fighter::enter_status_hitstun;
-	pExit_status[FIGHTER_STATUS_HITSTUN] = &Fighter::exit_status_hitstun;
+	status_script[FIGHTER_STATUS_HITSTUN] = &Fighter::status_hitstun;
+	enter_status_script[FIGHTER_STATUS_HITSTUN] = &Fighter::enter_status_hitstun;
+	exit_status_script[FIGHTER_STATUS_HITSTUN] = &Fighter::exit_status_hitstun;
 
-	pStatus[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::status_hitstun_air;
-	pEnter_status[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::enter_status_hitstun_air;
-	pExit_status[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::exit_status_hitstun_air;
+	status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::status_hitstun_air;
+	enter_status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::enter_status_hitstun_air;
+	exit_status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::exit_status_hitstun_air;
 
-	pStatus[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::status_blockstun;
-	pEnter_status[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::enter_status_blockstun;
-	pExit_status[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::exit_status_blockstun;
+	status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::status_blockstun;
+	enter_status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::enter_status_blockstun;
+	exit_status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::exit_status_blockstun;
 
-	pStatus[FIGHTER_STATUS_PARRY_START] = &Fighter::status_parry_start;
-	pEnter_status[FIGHTER_STATUS_PARRY_START] = &Fighter::enter_status_parry_start;
-	pExit_status[FIGHTER_STATUS_PARRY_START] = &Fighter::exit_status_parry_start;
+	status_script[FIGHTER_STATUS_PARRY_START] = &Fighter::status_parry_start;
+	enter_status_script[FIGHTER_STATUS_PARRY_START] = &Fighter::enter_status_parry_start;
+	exit_status_script[FIGHTER_STATUS_PARRY_START] = &Fighter::exit_status_parry_start;
 
-	pStatus[FIGHTER_STATUS_PARRY] = &Fighter::status_parry;
-	pEnter_status[FIGHTER_STATUS_PARRY] = &Fighter::enter_status_parry;
-	pExit_status[FIGHTER_STATUS_PARRY] = &Fighter::exit_status_parry;
+	status_script[FIGHTER_STATUS_PARRY] = &Fighter::status_parry;
+	enter_status_script[FIGHTER_STATUS_PARRY] = &Fighter::enter_status_parry;
+	exit_status_script[FIGHTER_STATUS_PARRY] = &Fighter::exit_status_parry;
 
-	pStatus[FIGHTER_STATUS_CRUMPLE] = &Fighter::status_crumple;
-	pEnter_status[FIGHTER_STATUS_CRUMPLE] = &Fighter::enter_status_crumple;
-	pExit_status[FIGHTER_STATUS_CRUMPLE] = &Fighter::exit_status_crumple;
+	status_script[FIGHTER_STATUS_CRUMPLE] = &Fighter::status_crumple;
+	enter_status_script[FIGHTER_STATUS_CRUMPLE] = &Fighter::enter_status_crumple;
+	exit_status_script[FIGHTER_STATUS_CRUMPLE] = &Fighter::exit_status_crumple;
 
-	pStatus[FIGHTER_STATUS_LAUNCH_START] = &Fighter::status_launch_start;
-	pEnter_status[FIGHTER_STATUS_LAUNCH_START] = &Fighter::enter_status_launch_start;
-	pExit_status[FIGHTER_STATUS_LAUNCH_START] = &Fighter::exit_status_launch_start;
+	status_script[FIGHTER_STATUS_LAUNCH_START] = &Fighter::status_launch_start;
+	enter_status_script[FIGHTER_STATUS_LAUNCH_START] = &Fighter::enter_status_launch_start;
+	exit_status_script[FIGHTER_STATUS_LAUNCH_START] = &Fighter::exit_status_launch_start;
 
-	pStatus[FIGHTER_STATUS_LAUNCH] = &Fighter::status_launch;
-	pEnter_status[FIGHTER_STATUS_LAUNCH] = &Fighter::enter_status_launch;
-	pExit_status[FIGHTER_STATUS_LAUNCH] = &Fighter::exit_status_launch;
+	status_script[FIGHTER_STATUS_LAUNCH] = &Fighter::status_launch;
+	enter_status_script[FIGHTER_STATUS_LAUNCH] = &Fighter::enter_status_launch;
+	exit_status_script[FIGHTER_STATUS_LAUNCH] = &Fighter::exit_status_launch;
 
-	pStatus[FIGHTER_STATUS_CLANK] = &Fighter::status_clank;
-	pEnter_status[FIGHTER_STATUS_CLANK] = &Fighter::enter_status_clank;
-	pExit_status[FIGHTER_STATUS_CLANK] = &Fighter::exit_status_clank;
+	status_script[FIGHTER_STATUS_CLANK] = &Fighter::status_clank;
+	enter_status_script[FIGHTER_STATUS_CLANK] = &Fighter::enter_status_clank;
+	exit_status_script[FIGHTER_STATUS_CLANK] = &Fighter::exit_status_clank;
 
-	pStatus[FIGHTER_STATUS_THROW_TECH] = &Fighter::status_throw_tech;
-	pEnter_status[FIGHTER_STATUS_THROW_TECH] = &Fighter::enter_status_throw_tech;
-	pExit_status[FIGHTER_STATUS_THROW_TECH] = &Fighter::exit_status_throw_tech;
+	status_script[FIGHTER_STATUS_THROW_TECH] = &Fighter::status_throw_tech;
+	enter_status_script[FIGHTER_STATUS_THROW_TECH] = &Fighter::enter_status_throw_tech;
+	exit_status_script[FIGHTER_STATUS_THROW_TECH] = &Fighter::exit_status_throw_tech;
 
-	pStatus[FIGHTER_STATUS_LANDING] = &Fighter::status_landing;
-	pEnter_status[FIGHTER_STATUS_LANDING] = &Fighter::enter_status_landing;
-	pExit_status[FIGHTER_STATUS_LANDING] = &Fighter::exit_status_landing;
+	status_script[FIGHTER_STATUS_LANDING] = &Fighter::status_landing;
+	enter_status_script[FIGHTER_STATUS_LANDING] = &Fighter::enter_status_landing;
+	exit_status_script[FIGHTER_STATUS_LANDING] = &Fighter::exit_status_landing;
 
-	pStatus[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::status_landing_attack;
-	pEnter_status[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::enter_status_landing_attack;
-	pExit_status[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::exit_status_landing_attack;
+	status_script[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::status_landing_attack;
+	enter_status_script[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::enter_status_landing_attack;
+	exit_status_script[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::exit_status_landing_attack;
 
-	pStatus[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::status_landing_hitstun;
-	pEnter_status[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::enter_status_landing_hitstun;
-	pExit_status[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::exit_status_landing_hitstun;
+	status_script[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::status_landing_hitstun;
+	enter_status_script[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::enter_status_landing_hitstun;
+	exit_status_script[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::exit_status_landing_hitstun;
 
-	pStatus[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::status_knockdown_start;
-	pEnter_status[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::enter_status_knockdown_start;
-	pExit_status[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::exit_status_knockdown_start;
+	status_script[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::status_knockdown_start;
+	enter_status_script[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::enter_status_knockdown_start;
+	exit_status_script[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::exit_status_knockdown_start;
 
-	pStatus[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::status_knockdown;
-	pEnter_status[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::enter_status_knockdown;
-	pExit_status[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::exit_status_knockdown;
+	status_script[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::status_knockdown;
+	enter_status_script[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::enter_status_knockdown;
+	exit_status_script[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::exit_status_knockdown;
 
-	pStatus[FIGHTER_STATUS_WAKEUP] = &Fighter::status_wakeup;
-	pEnter_status[FIGHTER_STATUS_WAKEUP] = &Fighter::enter_status_wakeup;
-	pExit_status[FIGHTER_STATUS_WAKEUP] = &Fighter::exit_status_wakeup;
+	status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::status_wakeup;
+	enter_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::enter_status_wakeup;
+	exit_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::exit_status_wakeup;
 }
 
 //Move Scripting
@@ -1265,6 +1265,15 @@ bool Fighter::change_anim_inherit_attributes(string animation_name, bool verbose
 }
 
 void Fighter::startAnimation(Animation* animation) {
+	int group = get_status_group();
+	if (group != STATUS_GROUP_NO_RENDER_PRIORITY && group != STATUS_GROUP_CROUCH && group != STATUS_GROUP_HITSTUN) {
+		fighter_accessor->render_priority = id;
+		requesting_priority = true;
+	}
+	else {
+		fighter_accessor->render_priority_no_req = id;
+		requesting_priority = false;
+	}
 	is_anim_end = false;
 	if (anim_kind != animation) {
 		prev_anim_kind = anim_kind;
@@ -1306,6 +1315,12 @@ void Fighter::stepAnimation() {
 		clear_hurtbox_all();
 		clear_hitbox_all();
 		kara_enabled = false;
+		if (id == 0) {
+			int group = get_status_group();
+			if (group == STATUS_GROUP_NO_RENDER_PRIORITY || group == STATUS_GROUP_CROUCH) {
+				fighter_accessor->render_priority_no_req = !fighter_accessor->render_priority_no_req;
+			}
+		}
 	}
 	else {
 		render_frame++;
@@ -1382,7 +1397,7 @@ bool Fighter::change_status(u32 new_status_kind, bool call_end_status, bool requ
 		fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = 0.0;
 		if (call_end_status) {
 			if (status_kind < FIGHTER_STATUS_MAX) {
-				(this->*pExit_status[status_kind])();
+				(this->*exit_status_script[status_kind])();
 			}
 			else {
 				chara_exit_status();
@@ -1390,7 +1405,7 @@ bool Fighter::change_status(u32 new_status_kind, bool call_end_status, bool requ
 		}
 		status_kind = new_status_kind;
 		if (status_kind < FIGHTER_STATUS_MAX) {
-			(this->*pEnter_status[status_kind])();
+			(this->*enter_status_script[status_kind])();
 		}
 		else {
 			chara_enter_status();
@@ -1433,7 +1448,7 @@ void Fighter::playoutStatus() {
 		}
 	}
 	if (status_kind < FIGHTER_STATUS_MAX) {
-		(this->*pStatus[status_kind])();
+		(this->*status_script[status_kind])();
 	}
 	else {
 		chara_status();
@@ -1619,6 +1634,15 @@ u32 Fighter::get_status_group() {
 		case (FIGHTER_STATUS_CROUCHU): {
 			return STATUS_GROUP_CROUCH;
 		}
+		break;
+		case (FIGHTER_STATUS_WAIT):
+		case (FIGHTER_STATUS_FALL):
+		case (FIGHTER_STATUS_WALKF):
+		case (FIGHTER_STATUS_WALKB):
+		case (FIGHTER_STATUS_JUMP):
+		{
+			return STATUS_GROUP_NO_RENDER_PRIORITY;
+		} 
 		break;
 		default: {
 			return STATUS_GROUP_NORMAL;

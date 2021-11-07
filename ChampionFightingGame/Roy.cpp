@@ -65,6 +65,7 @@ void Roy::loadRoyACMD() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
+			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -42, 0 }, GameCoordinate{ 62, 38 });
 			new_hurtbox(1, GameCoordinate{ -29, 39 }, GameCoordinate{ 33, 141 });
 			new_hurtbox(2, GameCoordinate{ 17, 82 }, GameCoordinate{ 54, 104 });

@@ -7,7 +7,7 @@ class FixedCharacterSlot{
 public:
     GameTexture gameTexture;
     bool isInitialized();
-    void init(int id);
+    void init(int id, string textureDir);
     void setXPosition(int iX);
     void setYPosition(int iY);
     int getTextureWidth();
@@ -75,7 +75,7 @@ private:
     GameTexture bigBarTexture;
     GameTexture topBarTexture;
     SDL_Renderer *pRenderer;
-    void addFixedCharacter(int id);
+    void addFixedCharacter(int id, string cardDir);
     PlayerInfo aPlayerInfos[2];
     FixedCharacterSlot aFixedCharacterSlots[32];
 };

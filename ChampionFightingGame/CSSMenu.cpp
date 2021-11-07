@@ -26,8 +26,6 @@ CSSMenu::CSSMenu(){
     bigBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
     topBarTexture.init("resource/ui/menu/css/CSStopbar.png");
     topBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-    //aMobileCharacterSlots[0].gameTexture.init("resource/ui/menu/css/chara/default/render.png");
-    //aMobileCharacterSlots[0].gameTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 	if (fileCssTable.fail()) {
         //it crashes anyways lol
@@ -41,7 +39,7 @@ CSSMenu::CSSMenu(){
         //printf("Line %d, found %s\n",i,sCharacterName.c_str());
         fileCssTable >> iCharacterKind >> sCharacterDir >> bSelectable;
         if (bSelectable){
-            addFixedCharacter(iCharacterKind);
+            addFixedCharacter(iCharacterKind, sCharacterDir);
         }
         getline(fileCssTable, sCharacterName);// 100% authentic jank code
     }
@@ -93,11 +91,11 @@ CSSMenu::CSSMenu(){
     }
 };
 
-void CSSMenu::addFixedCharacter(int id){
+void CSSMenu::addFixedCharacter(int id, string cardDir){
     //32 is the length of aFixedCharacterSlots
     for (int i=0; i < 32;i++){
         if (!aFixedCharacterSlots[i].isInitialized()){
-            aFixedCharacterSlots[i].init(id);
+            aFixedCharacterSlots[i].init(id,cardDir);
             return;
         }
     }
@@ -301,8 +299,12 @@ bool FixedCharacterSlot::isInitialized(){
     return bInitialized;
 }
 
-void FixedCharacterSlot::init(int id){
-    gameTexture.init("resource/ui/menu/css/chara/default/render.png");
+void FixedCharacterSlot::init(int id, string textureDir){
+    if (textureDir == "default"){
+        gameTexture.init("resource/ui/menu/css/chara/default/render.png");
+    } else {
+        gameTexture.init(textureDir.c_str());
+    }
     iCharacterId = id;
     //printf("Character Id %d was initialized!\n",id);
     bInitialized = true;

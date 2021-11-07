@@ -27,7 +27,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FighterInstance.cpp">
+    <ClCompile Include="Fighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameCoordinate.cpp">
@@ -63,7 +63,7 @@
     <ClCompile Include="DebugMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FighterInstanceAccessor.cpp">
+    <ClCompile Include="FighterAccessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Projectile.cpp">

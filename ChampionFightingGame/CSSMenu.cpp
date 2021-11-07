@@ -26,8 +26,8 @@ CSSMenu::CSSMenu(){
     bigBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
     topBarTexture.init("resource/ui/menu/css/CSStopbar.png");
     topBarTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-    aMobileCharacterSlots[0].gameTexture.init("resource/ui/menu/css/chara/default/render.png");
-    aMobileCharacterSlots[0].gameTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+    //aMobileCharacterSlots[0].gameTexture.init("resource/ui/menu/css/chara/default/render.png");
+    //aMobileCharacterSlots[0].gameTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 	if (fileCssTable.fail()) {
         //it crashes anyways lol
@@ -256,14 +256,10 @@ void CSSMenu::select(){
     switch (iLazyPassthrough)
     {
     case 0:
-        printf("P1 selected %f\n",tmpSlot.gameTexture.getScaledWidth());
-        tmpSlot.gameTexture.destRect.y = 603;
-        tmpSlot.gameTexture.destRect.x = 77;
+        tmpSlot.setTarget(78,604,.8,.8);
         break;
     case 1:
-        printf("P2 selected\n");
-        tmpSlot.gameTexture.destRect.y = 602;
-        tmpSlot.gameTexture.destRect.x = 1204;
+        tmpSlot.setTarget(1204,604,.8,.8);
         break;
     default:
         printf("oof\n");
@@ -333,20 +329,47 @@ void CssCursor::init(string sTexturePath){
     cursorTexture.init(sTexturePath);
 };
 
+
 void CssCursor::setTarget(int x, int y){
     iXTarget = x;
     iYTarget = y;
 }
 
 void MobileCharacterSlot::playAnim(){
-    yesIndeedIamAspinnyTracker += .02;
-    if (yesIndeedIamAspinnyTracker >= (3.14)){
-        yesIndeedIamAspinnyTracker = 0;
+
+    //spaghetti code which makes it rotate once
+    iAnimTime++;
+    if(cos(fTheta) < 0){
+        fTheta = -3.14/2;
     }
-    gameTexture.setHorizontalScaleFactor(sin(yesIndeedIamAspinnyTracker));
-    //if (fScale<1){
-    //    fScale += .001;
-    //}
+    if (iAnimTime < iAnimationSpeed){
+        fTheta += (3.14)/iAnimationSpeed;
+        gameTexture.setHorizontalScaleFactor(cos(fTheta) + fHorizontalscaleOffset);
+        gameTexture.setVerticalScaleFactor(fVerticalscale);
+    } else {
+        gameTexture.setScaleFactor(1);
+    }
+    //
+
+    fVerticalscale += (1 - fVerticalscale) / (iAnimationSpeed/3);
+    fHorizontalscaleOffset += (0 - fHorizontalscaleOffset) / (iAnimationSpeed/3);
+    fPosX += (targetX - fPosX) / (iAnimationSpeed/2);
+    fPosY += (targetY - fPosY) / (iAnimationSpeed/2);
+
+    gameTexture.destRect.x = fPosX;
+    gameTexture.destRect.y = fPosY;
+   
+}
+
+void MobileCharacterSlot::setTarget(int x, int y, float w, float h){
+    targetX = x;
+    targetY = y;
+
+    fPosX = gameTexture.destRect.x;
+    fPosY = gameTexture.destRect.y;
+
+    fHorizontalscaleOffset = w - 1;
+    fVerticalscale = h;
 }
 
 

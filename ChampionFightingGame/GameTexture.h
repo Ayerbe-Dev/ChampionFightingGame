@@ -20,6 +20,7 @@ public:
     void setScaleFactor(float fScaleFactor);
 
     void setHorizontalScaleFactor(float fScaleFactor);
+    void setVerticalScaleFactor(float fScaleFactor);
 
     void setAnchorMode(int iMode);
     float getScaledWidth();

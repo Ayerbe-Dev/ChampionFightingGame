@@ -51,6 +51,10 @@ void GameTexture::setHorizontalScaleFactor(float fScaleFactor){
     this->fHorizontalScaleFactor = fScaleFactor;
 }
 
+void GameTexture::setVerticalScaleFactor(float fScaleFactor){
+    this->fVerticalScaleFactor = fScaleFactor;
+}
+
 float GameTexture::getScaledWidth(){
     return destRect.w * fHorizontalScaleFactor;
 }

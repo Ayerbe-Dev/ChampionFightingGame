@@ -24,11 +24,24 @@ class MobileCharacterSlot{
 public:
     GameTexture gameTexture;
     void playAnim();
+
+    /*
+        Sets the glide target
+        \param x the x target
+        \param y the y target
+        \param w the starting width
+        \param h the starting height
+    */
+    void setTarget(int x, int y, float w, float h);
 private:
-    int iAnimationSpeed=0;
+    int iAnimationSpeed=16;
     int targetX=0,targetY=0;
-    float yesIndeedIamAspinnyTracker=0;
+    float fPosX=0,fPosY=0;
+    float fTheta=0;
+    int iAnimTime=0;
     float fScale=.2;
+
+    float fHorizontalscaleOffset=0,fVerticalscale=0;
 };
 
 class CSSMenu{

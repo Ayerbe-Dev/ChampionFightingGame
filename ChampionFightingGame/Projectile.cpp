@@ -29,7 +29,7 @@ void Projectile::projectile_main() {
 void Projectile::superInit() {
 	load_anim_list();
 	load_stats();
-	loadStatusFunctions();
+	loadStatusScripts();
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }
@@ -132,18 +132,18 @@ void Projectile::startAnimation(Animation* animation) {
 	frame_rect = getFrame(frame, anim_kind);
 }
 
-void Projectile::loadStatusFunctions() {
-	pStatus[PROJECTILE_STATUS_DEFAULT] = &Projectile::status_default;
-	pEnter_status[PROJECTILE_STATUS_DEFAULT] = &Projectile::enter_status_default;
-	pExit_status[PROJECTILE_STATUS_DEFAULT] = &Projectile::exit_status_default;
+void Projectile::loadStatusScripts() {
+	status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::status_default;
+	enter_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::enter_status_default;
+	exit_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::exit_status_default;
 
-	pStatus[PROJECTILE_STATUS_MOVE] = &Projectile::status_move;
-	pEnter_status[PROJECTILE_STATUS_MOVE] = &Projectile::enter_status_move;
-	pExit_status[PROJECTILE_STATUS_MOVE] = &Projectile::exit_status_move;
+	status_script[PROJECTILE_STATUS_MOVE] = &Projectile::status_move;
+	enter_status_script[PROJECTILE_STATUS_MOVE] = &Projectile::enter_status_move;
+	exit_status_script[PROJECTILE_STATUS_MOVE] = &Projectile::exit_status_move;
 
-	pStatus[PROJECTILE_STATUS_HIT] = &Projectile::status_hit;
-	pEnter_status[PROJECTILE_STATUS_HIT] = &Projectile::enter_status_hit;
-	pExit_status[PROJECTILE_STATUS_HIT] = &Projectile::exit_status_hit;
+	status_script[PROJECTILE_STATUS_HIT] = &Projectile::status_hit;
+	enter_status_script[PROJECTILE_STATUS_HIT] = &Projectile::enter_status_hit;
+	exit_status_script[PROJECTILE_STATUS_HIT] = &Projectile::exit_status_hit;
 }
 
 bool Projectile::canStep() {
@@ -188,7 +188,7 @@ bool Projectile::change_status(u32 new_status_kind, bool call_end_status, bool r
 		projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = false;
 		if (call_end_status) {
 			if (status_kind < PROJECTILE_STATUS_MAX) {
-				(this->*pExit_status[status_kind])();
+				(this->*exit_status_script[status_kind])();
 			}
 			else {
 				projectile_unique_exit_status();
@@ -196,7 +196,7 @@ bool Projectile::change_status(u32 new_status_kind, bool call_end_status, bool r
 		}
 		status_kind = new_status_kind;
 		if (status_kind < PROJECTILE_STATUS_MAX) {
-			(this->*pEnter_status[status_kind])();
+			(this->*enter_status_script[status_kind])();
 		}
 		else {
 			projectile_unique_enter_status();
@@ -210,7 +210,7 @@ bool Projectile::change_status(u32 new_status_kind, bool call_end_status, bool r
 
 void Projectile::playoutStatus() {
 	if (status_kind < PROJECTILE_STATUS_MAX) {
-		(this->*pStatus[status_kind])();
+		(this->*status_script[status_kind])();
 	}
 	else {
 		projectile_unique_status();
@@ -257,12 +257,12 @@ void Projectile::exit_status_hit() {
 
 void Projectile::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
 	float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
-	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status,
+	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {
 	if (id < 10) {
 		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, meter_gain_on_hit,
 			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable,
-			hit_pushback, block_pushback, success_hit, juggle_set, max_juggle, hit_status, counterhit_status,
+			hit_pushback, block_pushback, juggle_set, max_juggle, hit_status, counterhit_status,
 			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, trade, continue_launch);
 	}
 }

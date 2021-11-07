@@ -16,9 +16,9 @@ public:
 	float projectile_float[PROJECTILE_FLOAT_MAX];
 	bool projectile_flag[PROJECTILE_FLAG_MAX];
 
-	void (Projectile::* pStatus[PROJECTILE_STATUS_MAX])();
-	void (Projectile::* pEnter_status[PROJECTILE_STATUS_MAX])();
-	void (Projectile::* pExit_status[PROJECTILE_STATUS_MAX])();
+	void (Projectile::* status_script[PROJECTILE_STATUS_MAX])();
+	void (Projectile::* enter_status_script[PROJECTILE_STATUS_MAX])();
+	void (Projectile::* exit_status_script[PROJECTILE_STATUS_MAX])();
 
 	void projectile_main();
 	void superInit();
@@ -26,7 +26,7 @@ public:
 	void load_stats();
 	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
 	void startAnimation(Animation* animation);
-	void loadStatusFunctions();
+	void loadStatusScripts();
 
 	bool canStep();
 	void stepAnimation();
@@ -35,7 +35,7 @@ public:
 
 	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
 		float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
-		int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, bool success_hit, int juggle_set, int max_juggle, int hit_status, 
+		int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status, 
 		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch);
 
 	virtual void tickOnceProjectileUnique() {};

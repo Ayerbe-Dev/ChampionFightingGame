@@ -271,7 +271,7 @@ int get_sub_selection(int top_selection, int sub_selection) {
 					ret = GAME_STATE_DEBUG_MENU;
 				} break;
 				case (SUB_SINGLEPLAYER_TRAINING): {
-					ret = GAME_STATE_GAME;
+					ret = GAME_STATE_CHARA_SELECT;
 				} break;
 				default: {
 					ret = GAME_STATE_DEBUG_MENU;

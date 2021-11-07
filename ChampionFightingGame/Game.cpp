@@ -34,7 +34,7 @@ extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
 	Uint32 tick=0,tok=0;
 	bool gaming = true;
-	bool visualize_boxes = false;
+	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
 
 	Debugger debugger;
@@ -200,6 +200,8 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 
+		//Main tick loop
+
 		for (int i = 0; i < 2; i++) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
@@ -241,13 +243,39 @@ int game_main(PlayerInfo player_info[2]) {
 				gaming = false;
 				next_state = GAME_STATE_DEBUG_MENU;
 			}
+		}
 
-			SDL_Rect render_pos = getRenderPos(fighter[i], fighter[i]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
-			const double angle = (const double)fighter[i]->angle;
-			SDL_RendererFlip flip = fighter[i]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-			if (SDL_RenderCopyEx(g_renderer, fighter[i]->anim_kind->spritesheet, &(fighter[i]->frame_rect), &render_pos, angle, NULL, flip)) {
-				cout << "\n" << SDL_GetError();
-			}
+		//Render loop
+
+		int render_priority = 0;
+		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
+			render_priority = fighter_accessor->render_priority;
+		}
+		else if (fighter[0]->requesting_priority) {
+			render_priority = 0;
+		}
+		else if (fighter[1]->requesting_priority) {
+			render_priority = 1;
+		}
+		else {
+			render_priority = fighter_accessor->render_priority_no_req;
+		}
+		SDL_Rect render_pos;
+		SDL_RendererFlip flip;
+		
+		render_pos = getRenderPos(fighter[!render_priority], fighter[!render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
+		flip = fighter[!render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+		if (SDL_RenderCopyEx(g_renderer, fighter[!render_priority]->anim_kind->spritesheet, &(fighter[!render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
+			cout << "\n" << SDL_GetError();
+		}
+
+		render_pos = getRenderPos(fighter[render_priority], fighter[render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
+		flip = fighter[render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+		if (SDL_RenderCopyEx(g_renderer, fighter[render_priority]->anim_kind->spritesheet, &(fighter[render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
+			cout << "\n" << SDL_GetError();
+		}
+
+		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 				SDL_SetRenderTarget(g_renderer, pGui);
 				float id_ope = -1;
@@ -367,11 +395,9 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					if (fighter[1]->projectiles[i2]->id != -1) {
 						for (int i3 = 0; i3 < 10; i3++) {
 							if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1
-								&& !fighter[0]->projectiles[i]->hitboxes[i3].success_hit
 								&& fighter[0]->projectiles[i]->hitboxes[i3].trade) {
 								for (int i4 = 0; i4 < 10; i4++) {
 									if (fighter[1]->projectiles[i2]->hitboxes[i4].id != -1
-										&& !fighter[1]->projectiles[i2]->hitboxes[i4].success_hit
 										&& fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
 										SDL_Rect p1_hitbox, p2_hitbox;
 										p1_hitbox = fighter[0]->projectiles[i]->hitboxes[i3].rect;
@@ -401,7 +427,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					hurtbox = fighter[i]->hurtboxes[i2].rect;
 
 					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[!i]->hitboxes[i3].id != -1 && !fighter[!i]->hitboxes[i3].success_hit) {
+						if (fighter[!i]->hitboxes[i3].id != -1) {
 							SDL_Rect hitbox;
 							hitbox = fighter[!i]->hitboxes[i3].rect;
 							if (fighter[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
@@ -420,8 +446,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					for (int i3 = 0; i3 < MAX_PROJECTILES; i3++) {
 						if (fighter[!i]->projectiles[i3]->id != -1) {
 							for (int i4 = 0; i4 < 10; i4++) {
-								if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1
-									&& !fighter[!i]->projectiles[i3]->hitboxes[i4].success_hit) {
+								if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1) {
 									SDL_Rect hitbox;
 									hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
 									if (is_collide(hitbox, hurtbox)) {
@@ -573,7 +598,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 
 int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
-	if (hitbox->success_hit) {
+	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
 	}
 
@@ -677,7 +702,7 @@ int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox*
 }
 
 int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
-	if (hitbox->success_hit) {
+	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
 	}
 

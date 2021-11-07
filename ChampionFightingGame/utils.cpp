@@ -4,6 +4,9 @@ using namespace std;
 #include <algorithm> //std::min
 #include "utils.h"
 #include <SDL_image.h>
+#include <cstring>
+#include <iostream>
+#include <cstdint>
 SoundInfo sounds[MAX_SOUNDS];
 
 
@@ -270,7 +273,7 @@ void PlaySound(char* file) {
 	}
 	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
 	cvt.buf = (Uint8 *)malloc(dlen * cvt.len_mult);
-	memcpy(cvt.buf, data, dlen);
+	std::memcpy(cvt.buf, data, dlen);
 	cvt.len = dlen;
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);

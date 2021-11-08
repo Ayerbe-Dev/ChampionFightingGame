@@ -13,7 +13,7 @@
 #include "Stage.h"
 #include "UI.h"
 #include "DebugMenu.h"
-#include "CSSMenu.h"
+#include "CharaSelect.h"
 #undef main
 using namespace std;
 int registered_controllers[2] = {-1, -1};
@@ -63,7 +63,7 @@ int main() {
 			game_state = menu_main(player_info);
 		}
 		else if (game_state == GAME_STATE_CHARA_SELECT) {
-			game_state = cssMenu(player_info);//chara_select_main(pRenderer, window, player_info);
+			game_state = chara_select_main(player_info);
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;

@@ -1,15 +1,15 @@
 #pragma once
 #include "DebugMenu.h"
 #include "PlayerInfo.h"
-#include "CSSMenu.h"
+#include "CharaSelect.h"
 
 typedef void (DebugList::*DBMtraversalFunction)();
-typedef void (CSSMenu::*CSStraversalFunction)();
+typedef void (CSS::*CSStraversalFunction)();
 class MenuHandler{
 public:
     MenuHandler();
     MenuHandler(DebugList *pHandlerTarget, PlayerInfo *pPlayerInfo1, PlayerInfo *pPlayerInfo2);
-    MenuHandler(CSSMenu *pHandlerTarget, PlayerInfo aPlayerInfo[2]);
+    MenuHandler(CSS *pHandlerTarget, PlayerInfo aPlayerInfo[2]);
 
     void setEventMenuUp(DBMtraversalFunction traversal);
     void setEventMenuDown(DBMtraversalFunction traversal);
@@ -31,7 +31,7 @@ public:
 
     //requires SDL_PumpEvents(); to be called before this function.
     void handleMenu();
-    void handleCSSMenu();
+    void handleCSS();
 
     /*
         Sets the number of frames before repeat mode starts
@@ -62,7 +62,7 @@ private:
 
     bool bUpDefined=false, bDownDefined=false, bLeftDefined=false, bRightDefined=false, bFinisherDefined=false, bBackDefined=false, bSelectDefined=false;
 
-    CSSMenu * pCssHandlerTarget;
+    CSS * pCssHandlerTarget;
     DebugList *pHandlerTarget;
 
     unsigned int iHoldFrames=0, iInitialDelay = 70, iRepeatDelay = 20;

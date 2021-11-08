@@ -913,6 +913,10 @@ void Roy::roy_exit_status_special_uppercut_start() {
 }
 
 void Roy::roy_status_special_uppercut() {
+	if (pos.y < FLOOR_GAMECOORD) {
+		change_status(FIGHTER_STATUS_LANDING);
+		return;
+	}
 	if (anim_kind->name == "special_uppercut") {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {

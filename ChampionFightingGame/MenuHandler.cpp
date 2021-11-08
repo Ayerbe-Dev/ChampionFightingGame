@@ -1,6 +1,6 @@
 #include "MenuHandler.h"
 #include "DebugMenu.h"
-#include "CSSMenu.h"
+#include "CharaSelect.h"
 
 MenuHandler::MenuHandler(){};
 MenuHandler::MenuHandler(DebugList *pHandlerTarget, PlayerInfo *pPlayerInfo1, PlayerInfo *pPlayerInfo2){
@@ -9,7 +9,7 @@ MenuHandler::MenuHandler(DebugList *pHandlerTarget, PlayerInfo *pPlayerInfo1, Pl
     this->pPlayerInfoArray[1] = pPlayerInfo1;
 };
 
-MenuHandler::MenuHandler(CSSMenu *pHandlerTarget, PlayerInfo aPlayerInfo[2]){
+MenuHandler::MenuHandler(CSS *pHandlerTarget, PlayerInfo aPlayerInfo[2]){
     this->pCssHandlerTarget = pHandlerTarget;
     this->pPlayerInfoArray[0] = &aPlayerInfo[0];
     this->pPlayerInfoArray[1] = &aPlayerInfo[1];
@@ -37,36 +37,41 @@ void MenuHandler::handleMenu(){
         //On Press
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_UP) && bUpDefined){
             (pHandlerTarget->*(nsmfUpTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_DOWN) && bDownDefined){
+        } 
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_DOWN) && bDownDefined){
             (pHandlerTarget->*(nsmfDownTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_LEFT) && bLeftDefined){
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_LEFT) && bLeftDefined){
             (pHandlerTarget->*(nsmfLeftTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_RIGHT) && bRightDefined){
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_RIGHT) && bRightDefined){
             (pHandlerTarget->*(nsmfRightTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)){
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) || pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)){
             (pHandlerTarget->*(nsmfFinisher))();
         }
 
         //On hold
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_RIGHT)){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_RIGHT)){
             iHoldFrames++;
-        } else {
+        } 
+        else {
             iHoldFrames=0;
         }
 
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) && bUpDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_UP) && bUpDefined && canRepeatKeys()){
             (pHandlerTarget->*(nsmfUpTraversal))();
             iHoldFrames = iInitialDelay - iRepeatDelay;
         }
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) && bDownDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_DOWN) && bDownDefined && canRepeatKeys()){
              (pHandlerTarget->*(nsmfDownTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         } 
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) && bLeftDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_LEFT) && bLeftDefined && canRepeatKeys()){
              (pHandlerTarget->*(nsmfLeftTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         } 
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_RIGHT) && bRightDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_RIGHT) && bRightDefined && canRepeatKeys()){
              (pHandlerTarget->*(nsmfRightTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         }
@@ -74,51 +79,57 @@ void MenuHandler::handleMenu(){
 	}
 };
 
-void MenuHandler::handleCSSMenu(){
+void MenuHandler::handleCSS(){
     for (int i = 0; i < 2; i++) {
         pPlayerInfoArray[i]->update_controller();
         pPlayerInfoArray[i]->update_buttons(SDL_GetKeyboardState(nullptr));
         
         //On Press
-        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_UP) && bUpDefined){
-             pCssHandlerTarget->iLazyPassthrough = i;
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_UP) && bUpDefined){
+             pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssUpTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_DOWN) && bDownDefined){
-             pCssHandlerTarget->iLazyPassthrough = i;
+        } 
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_DOWN) && bDownDefined){
+             pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssDownTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_LEFT) && bLeftDefined){
-             pCssHandlerTarget->iLazyPassthrough = i;
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_LEFT) && bLeftDefined){
+             pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssLeftTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_RIGHT) && bRightDefined){
-            pCssHandlerTarget->iLazyPassthrough = i;
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_RIGHT) && bRightDefined){
+            pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssRightTraversal))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) && bFinisherDefined){
-             pCssHandlerTarget->iLazyPassthrough = i;
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) && bFinisherDefined){
+             pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssFinisher))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_BACK)  && bBackDefined){
-             pCssHandlerTarget->iLazyPassthrough = i;
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_BACK)  && bBackDefined){
+             pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssBack))();
-        } else if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)  && bSelectDefined){
-             pCssHandlerTarget->iLazyPassthrough = i;
+        }
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_SELECT)  && bSelectDefined){
+             pCssHandlerTarget->playerID = i;
             (pCssHandlerTarget->*(nsmfCssSelect))();
         }
 
         //On hold
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_RIGHT)){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_UP) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_DOWN) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_LEFT) || pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_RIGHT)){
             iHoldFrames++;
         } else {
             iHoldFrames=0;
         }
 
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_UP) && bUpDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_UP) && bUpDefined && canRepeatKeys()){
             (pCssHandlerTarget->*(nsmfCssUpTraversal))();
             iHoldFrames = iInitialDelay - iRepeatDelay;
         }
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_DOWN) && bDownDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_DOWN) && bDownDefined && canRepeatKeys()){
              (pCssHandlerTarget->*(nsmfCssDownTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         } 
-        if (pPlayerInfoArray[i]->check_button_on(BUTTON_LEFT) && bLeftDefined && canRepeatKeys()){
+        if (pPlayerInfoArray[i]->check_button_on(BUTTON_MENU_LEFT) && bLeftDefined && canRepeatKeys()){
              (pCssHandlerTarget->*(nsmfCssLeftTraversal))();
              iHoldFrames = iInitialDelay - iRepeatDelay;
         } 

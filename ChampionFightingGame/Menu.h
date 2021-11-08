@@ -9,10 +9,7 @@
 #include "Menu.fwd.h"
 
 int menu_main(PlayerInfo player_info[2]);
-int chara_select_main(PlayerInfo player_info[2]);
 int get_sub_selection(int top_selection, int sub_selection);
-int load_css(CharaSelectSlot css[32], int *rows, int *cols);
-void find_nearest_css_slot(CharaSelectSlot css[32], int slot_count, int pos_x, PlayerCursor *player_cursor);
 
 class MenuItem{
 public:
@@ -43,22 +40,6 @@ public:
     SubMenuTable(int selection);
 };
 
-class CharaSelectSlot {
-public:
-    SDL_Texture* texture;
-    SDL_Rect destRect;
-    SDL_Rect textRect;
-    int chara_kind;
-    string chara_name;
-    string chara_dir;
-    int my_col;
-    int my_row;
-    bool selectable;
-
-    CharaSelectSlot();
-    CharaSelectSlot(int chara_kind, string chara_name, string chara_dir, int my_col, int my_row, bool selectable);
-};
-
 class Cursor {
 public:
     SDL_Texture* texture;
@@ -67,32 +48,3 @@ public:
 
     Cursor();
 };
-
-class PlayerCursor {
-public:
-    SDL_Texture* texture;
-    SDL_Rect destRect;
-    PlayerInfo* player_info;
-    int my_col;
-    int my_row;
-    bool prev_side;
-    bool last_input_was_up_down;
-    int pos_x;
-    int pos_y;
-
-    PlayerCursor();
-    PlayerCursor(PlayerInfo* player_info, int init_x, int init_y);
-};
-
-class PlayerCSSInfo {
-public:
-    SDL_Texture* texture;
-    SDL_Rect destRect;
-    PlayerInfo* player_info;
-    bool selected;
-    int selected_slot;
-
-    PlayerCSSInfo();
-    PlayerCSSInfo(PlayerInfo* player_info);
-};
-

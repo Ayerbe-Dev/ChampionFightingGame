@@ -80,6 +80,7 @@ public:
     int getCharacterKind(int player);
     void centerSlots();
     void selectIndex();
+    void findPrevChara(int chara_kind);
 
     int aPlayerSelectionIndex[2] = { 0,0 };
     int myCol[2]{0, 0};

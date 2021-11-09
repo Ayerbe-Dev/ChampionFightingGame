@@ -10,7 +10,6 @@ Roy::Roy() {
 Roy::Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/roy";
-	chara_name = "roy";
 	if (!crash_to_debug) {
 		load_params();
 	}

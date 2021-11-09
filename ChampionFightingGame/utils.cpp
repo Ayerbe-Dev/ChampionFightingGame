@@ -10,10 +10,10 @@ using namespace std;
 #include <cmath>
 #include<fstream>
 
-SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
-
+extern SDL_AudioSpec format;
+SoundInfo sounds[3][MAX_SOUNDS];
 
 int clamp(int min, int value, int max) {
 	if (min <= max)	{
@@ -241,13 +241,13 @@ int get_blank(string s) {
 	return 0;
 }
 
+//Called by the SDL audio system when it is ready to buffer more of a piece of audio. 
 void audio_callback(void* unused, Uint8* stream, int len) {
-	int i;
 	Uint32 amount;
 	SDL_memset(stream, 0, len);
 
-	for (i = 0; i < MAX_SOUNDS; ++i) {
-		for (int i2 = 0; i2 < 3; ++i2) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		for (int i2 = 0; i2 < 3; i2++) {
 			amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
 			if (amount > len) {
 				amount = len;
@@ -265,8 +265,8 @@ void addSoundToIndex(char* file, int *ret, int id) {
 	Uint32 dlen;
 	SDL_AudioCVT cvt;
 
+	for (index = 0; index < MAX_SOUNDS; index++) {
 	/* Look for an empty (or finished) sound slot */
-	for (index = 0; index < MAX_SOUNDS; ++index) {
 		if (sounds[id][index].dpos == sounds[id][index].dlen) {
 			break;
 		}
@@ -283,7 +283,7 @@ void addSoundToIndex(char* file, int *ret, int id) {
 	}
 	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
 	cvt.len = dlen;
-	cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
+	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
 	std::memcpy(cvt.buf, data, dlen);
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);

@@ -9,6 +9,7 @@ Atlas::Atlas() {
 
 Atlas::Atlas(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
+	chara_name = "atlas";
 	resource_dir = "resource/chara/atlas";
 	if (!crash_to_debug) {
 		load_params();

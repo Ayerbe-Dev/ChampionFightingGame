@@ -75,6 +75,7 @@ int game_main(PlayerInfo player_info[2]) {
 			execute this part after the first loop has finished
 		*/
 	}
+	g_soundmanager->fighter_accessor = fighter_accessor;
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
@@ -99,7 +100,6 @@ int game_main(PlayerInfo player_info[2]) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
 	}
-
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
 		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
 		player_info[1].crash_reason = "Oh, nothing's playing?";
@@ -386,10 +386,11 @@ int game_main(PlayerInfo player_info[2]) {
 
 	}
 
+  g_soundmanager.endSoundAll();
 	cleanup(p1, p2);
-	g_soundmanager.endSoundAll();
 
 	delete fighter_accessor;
+	g_soundmanager->fighter_accessor = NULL;
 
 	return next_state;
 }

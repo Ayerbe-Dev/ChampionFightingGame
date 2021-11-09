@@ -11,6 +11,7 @@ Eric::Eric() {
 
 Eric::Eric(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 	resource_dir = "resource/chara/eric";
+	chara_name = "eric";
 	if (!crash_to_debug) {
 		load_params();
 	}

@@ -256,6 +256,8 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 		SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
 		sounds[i].dpos += amount;
 	}
+
+	cout << stream << ", " << len << endl;
 }
 
 void PlaySound(char* file) {

@@ -30,6 +30,7 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
+extern SoundInfo sounds[MAX_SOUNDS];
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
@@ -388,6 +389,9 @@ int game_main(PlayerInfo player_info[2]) {
 	}
 
 	cleanup(p1, p2);
+	sounds[0].data = 0;
+	sounds[0].dpos = 0;
+	sounds[0].dlen = 0;
 
 	delete fighter_accessor;
 

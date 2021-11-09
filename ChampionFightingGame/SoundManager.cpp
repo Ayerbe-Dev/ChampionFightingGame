@@ -186,6 +186,66 @@ void SoundManager::endMusic(int music_kind) {
 	endSound(dir, 2);
 }
 
+void SoundManager::endCommonSE(int se, int id) {
+	string file = common_se[se];
+	string dir = "resource/sound/se/common/" + file + ".wav";
+	endSound(dir, id);
+}
+
+void SoundManager::endCharaSE(int se, int id) {
+	string file = "";
+	switch (fighter_accessor->fighter[id]->chara_kind) {
+		case(CHARA_KIND_ROY):
+		{
+			file = roy_se[se];
+		} break;
+		case(CHARA_KIND_ERIC):
+		{
+			file = eric_se[se];
+		} break;
+		case(CHARA_KIND_ATLAS):
+		{
+			file = atlas_se[se];
+		} break;
+		default: {} break;
+	}
+	string dir = "resource/sound/se/" + fighter_accessor->fighter[id]->chara_name + "/" + file + ".wav";
+	endSound(dir, id);
+}
+
+void SoundManager::endVoice(int voice, int id) {
+	string file = "";
+	switch (fighter_accessor->fighter[id]->chara_kind) {
+		case(CHARA_KIND_ROY):
+		{
+			file = roy_voice[voice];
+		} break;
+		case(CHARA_KIND_ERIC):
+		{
+			file = eric_voice[voice];
+		} break;
+		case(CHARA_KIND_ATLAS):
+		{
+			file = atlas_voice[voice];
+		} break;
+		default: {} break;
+	}
+	string dir = "resource/sound/voice/" + fighter_accessor->fighter[id]->chara_name + "/" + file + ".wav";
+	endSound(dir, id);
+}
+
+void SoundManager::endStageMusic(int stage_kind) {
+	string file = stage_music[stage_kind];
+	string dir = "resource/sound/bgm/stage/" + file + ".wav";
+	endSound(dir, 2);
+}
+
+void SoundManager::endMusic(int music_kind) {
+	string file = music[music_kind];
+	string dir = "resource/sound/bgm/common/" + file + ".wav";
+	endSound(dir, 2);
+}
+
 void SoundManager::endSound(string dir, int id) {
 	int clear_index = findSoundIndex(dir, id);
 	sounds[id][clear_index].dpos = 0;

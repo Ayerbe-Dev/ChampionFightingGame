@@ -8,6 +8,7 @@
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
+extern SoundManager* g_soundmanager;
 
 
 
@@ -427,16 +428,31 @@ void Fighter::loadStatusScripts() {
 	exit_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::exit_status_wakeup;
 }
 
-//Move Scripting
+//Sound
 
-/*
-	Basically, each instruction in move scripts should only be running once, so if the number of executed statements >= the one we're currently trying
-	to execute, whatever's inside of the block won't run. Smash does something similar except it doesn't need to specify the number of executed
-	statements, and I'm not entirely sure how that works, but this approach is still pretty solid. (It'll make more sense when we start putting more
-	instructions outside of status scripts and inside of move scripts)
+int Fighter::playCommonSE(int se) {
+	return g_soundmanager->playCommonSE(se, id);
+}
 
-	P.S. It's misspelled in Smash as well. You can fix it if you want, idrc
-*/
+int Fighter::playCharaSE(int se) {
+	return g_soundmanager->playCharaSE(se, id);
+}
+
+int Fighter::playVoice(int voice) {
+	return g_soundmanager->playVoice(voice, id);
+}
+
+void Fighter::endCommonSE(int se) {
+	g_soundmanager->endCommonSE(se, id);
+}
+
+void Fighter::endCharaSE(int se) {
+	g_soundmanager->endCharaSE(se, id);
+}
+
+void Fighter::endVoice(int voice) {
+	g_soundmanager->endVoice(voice, id);
+}
 
 //Inputs
 

@@ -16,6 +16,7 @@
 #include "PlayerInfo.h"
 #include "Game.fwd.h"
 #include "Game.h"
+#include "SoundManager.h"
 
 class Fighter: public Object {
 public:
@@ -28,6 +29,7 @@ public:
 	//Misc important data
 
 	int chara_kind;
+	string chara_name;
 	FighterAccessor* fighter_accessor;
 	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
 	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
@@ -88,6 +90,15 @@ public:
 	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
 	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind); //Attempts to cancel attack_kind into a normal based on button if the 
 		//situation_kind is correct
+
+	//Sound - All of these just call the SoundManager versions of these functions except they pass their own ID as an arg
+
+	int playCommonSE(int se);
+	int playCharaSE(int se);
+	int playVoice(int voice);
+	void endCommonSE(int se);
+	void endCharaSE(int se);
+	void endVoice(int voice);
 
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 

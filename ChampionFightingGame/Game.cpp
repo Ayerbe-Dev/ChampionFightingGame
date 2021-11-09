@@ -99,12 +99,14 @@ int game_main(PlayerInfo player_info[2]) {
 		}
 	}
 
-	if (g_soundmanager.playStageMusic(0) == -1) {
-		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
-		player_info[1].crash_reason = "Oh, nothing's playing?";
-		gaming = false;
-		next_state = GAME_STATE_DEBUG_MENU;
-	}
+	PlaySound((char*)"resource/sound/bgm/stage/Atlas_Theme.wav");
+
+//	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
+//		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
+//		player_info[1].crash_reason = "Oh, nothing's playing?";
+//		gaming = false;
+//		next_state = GAME_STATE_DEBUG_MENU;
+//	}
 
 	while (gaming) {
 

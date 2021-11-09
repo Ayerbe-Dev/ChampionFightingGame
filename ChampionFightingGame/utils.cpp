@@ -244,6 +244,8 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	Uint32 amount;
 	SDL_memset(stream, 0, len);
 
+	cout << stream << ", " << len << endl;
+
 	for (i = 0; i < MAX_SOUNDS; ++i) {
 		amount = (sounds[i].dlen - sounds[i].dpos);
 		if (amount > len) {

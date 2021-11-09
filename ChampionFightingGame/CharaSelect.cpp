@@ -24,6 +24,12 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		cssMenuInstance.myCol[0] = 1;
 		cssMenuInstance.myCol[1] = 1;
 	}
+	for (int i = 0; i < 2; i++) {
+		cssMenuInstance.playerID = i;
+		if (cssMenuInstance.aPlayerInfos[i]->chara_kind != CHARA_KIND_MAX) {
+			cssMenuInstance.findPrevChara(cssMenuInstance.aPlayerInfos[i]->chara_kind);
+		}
+	}
 
 
 	CssCursor cursors[2];
@@ -376,11 +382,9 @@ void CSS::traverseUp() {
 }
 
 void CSS::selectIndex() {
-	cout << myCol[playerID] << ", " << myRow[playerID] << endl;
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (myCol[playerID] == aFixedCharacterSlots[i].myCol
 		&& myRow[playerID] == aFixedCharacterSlots[i].myRow) {
-			cout << aFixedCharacterSlots[i].myCol << ", " << aFixedCharacterSlots[i].myRow << ", " << i << endl;
 			aPlayerSelectionIndex[playerID] = i;
 			break;
 		}
@@ -454,7 +458,9 @@ void CSS::centerSlots() {
 		- 7: we then iterate back through every single aFixedCharaSlots entry and set the correct charaSlotOrdered entry to match it
 
 		So basically, we create a list, then another list copies it, then the first list uses the copy to figure out some stuff, then the
-		second gets fucking obliterated, then the second list is immediately forced to copy the first one again
+		second gets fucking obliterated, then the second list is immediately forced to copy the first one again.
+
+		Many cards were annihilated in the making of this Character Select Screen.
 	*/
 
 /*	for (int i = NUM_COLS - 1; i > empty_cols; i--) {
@@ -489,6 +495,19 @@ void CSS::centerSlots() {
 	}
 }
 
+void CSS::findPrevChara(int chara_kind) {
+	for (int i = 0; i < CSS_SLOTS; i++) {
+		if (aFixedCharacterSlots[i].iCharacterId == chara_kind) {
+			aPlayerInfos[playerID]->chara_kind = CHARA_KIND_MAX;
+			myCol[playerID] = aFixedCharacterSlots[playerID].myCol;
+			myRow[playerID] = aFixedCharacterSlots[playerID].myRow;
+			selectIndex();
+			select();
+			return;
+		}
+	}
+}
+
 int FixedCharacterSlot::getCharacterId() {
 	return iCharacterId;
 }
@@ -517,7 +536,6 @@ int FixedCharacterSlot::getTextureWidth() {
 
 void FixedCharacterSlot::render() {
 	gameTexture.render();
-	draw_text("FiraCode-Regular.ttf", to_string(myCol) + to_string(myRow), (float)gameTexture.destRect.x, (float)gameTexture.destRect.y, 24, 255, 0, 0, 255);
 }
 
 bool FixedCharacterSlot::isBelow(int y) {

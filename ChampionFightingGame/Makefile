@@ -1,9 +1,9 @@
 CWD = $(shell cd)
 TARGET=ChampionFightingGame.exe
-OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o Menu.o Fighter.o DebugMenu.o FighterAccessor.o Object.o Projectile.o RoyFireball.o EricFireball.o CharaTemplate.o ProjectileTemplate.o Atlas.o MenuHandler.o CSSMenu.o GameTexture.o
+OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o Menu.o Fighter.o DebugMenu.o FighterAccessor.o Object.o Projectile.o RoyFireball.o EricFireball.o CharaTemplate.o ProjectileTemplate.o Atlas.o MenuHandler.o CharaSelect.o GameTexture.o SoundManager.o
 OBJECT_FILES=$(patsubst %,$(CWD)/%,$(OBJECT_NAMES))
 INCLUDE_DIR=../SDL2/include
-LIB_DIR=../SDL2/lib/x86
+LIB_DIR=../SDL2/lib/x64
 LIB_FILES=-lSDL2 -lSDL2main -llibpng16-16 -lSDL2_image -lSDL2_ttf -llibtiff-5
 OBJ_FILE_DIR=Debug/
 CFLAGS=-I $(INCLUDE_DIR) -L $(LIB_DIR) -static-libgcc -static-libstdc++

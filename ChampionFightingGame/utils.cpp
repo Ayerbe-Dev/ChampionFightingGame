@@ -8,6 +8,8 @@ using namespace std;
 #include <iostream>
 #include <cstdint>
 #include <cmath>
+#include<fstream>
+
 SoundInfo sounds[MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;

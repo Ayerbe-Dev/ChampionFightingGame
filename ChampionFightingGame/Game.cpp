@@ -29,6 +29,7 @@
 #include "ProjectileTemplate.h"
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
+extern SoundManager g_soundmanager;
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
@@ -98,7 +99,12 @@ int game_main(PlayerInfo player_info[2]) {
 		}
 	}
 
-//	PlaySound((char *)"resource/sound/bgm/Atlas_Theme.wav");
+	if (g_soundmanager.playStageMusic(0) == -1) {
+		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
+		player_info[1].crash_reason = "Oh, nothing's playing?";
+		gaming = false;
+		next_state = GAME_STATE_DEBUG_MENU;
+	}
 
 	while (gaming) {
 

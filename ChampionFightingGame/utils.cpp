@@ -242,6 +242,7 @@ int get_blank(string s) {
 void audio_callback(void* unused, Uint8* stream, int len) {
 	int i;
 	Uint32 amount;
+	SDL_memset(stream, 0, len);
 
 	for (i = 0; i < MAX_SOUNDS; ++i) {
 		amount = (sounds[i].dlen - sounds[i].dpos);

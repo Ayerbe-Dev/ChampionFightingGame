@@ -705,6 +705,55 @@ enum {
 	SUB_EXTRAS_MAX,
 };
 
+enum {
+	COMMON_SE_START,
+	COMMON_SE_MAX,
+};
+
+enum {
+	ROY_SE_START,
+	ROY_SE_MAX,
+};
+
+enum {
+	ROY_VOICE_START,
+	ROY_VOICE_MAX,
+};
+
+enum {
+	ERIC_SE_START,
+	ERIC_SE_MAX,
+};
+
+enum {
+	ERIC_VOICE_START,
+	ERIC_VOICE_MAX,
+};
+
+enum {
+	ATLAS_SE_START,
+	ATLAS_SE_MAX,
+};
+
+enum {
+	ATLAS_VOICE_START,
+	ATLAS_VOICE_MAX,
+};
+
+enum {
+	STAGE_MUSIC_TRAINING,
+	STAGE_MUSIC_ROY,
+	STAGE_MUSIC_ERIC,
+	STAGE_MUSIC_ATLAS,
+
+	STAGE_MUSIC_MAX,
+};
+
+enum {
+	MUSIC_KIND_START,
+	MUSIC_KIND_MAX,
+};
+
 struct Offset
 {
 	int offset_x;

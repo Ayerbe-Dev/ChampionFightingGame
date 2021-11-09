@@ -14,12 +14,14 @@
 #include "UI.h"
 #include "DebugMenu.h"
 #include "CharaSelect.h"
+#include "SoundManager.h"
 #undef main
 using namespace std;
 int registered_controllers[2] = {-1, -1};
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
+SoundManager g_soundmanager;
 
 int main() {
 	bool running = true;
@@ -28,7 +30,7 @@ int main() {
 	format.freq = 22050;
 	format.format = AUDIO_S16;
 	format.channels = 2;
-	format.samples = 512;
+	format.samples = 4096;
 	format.callback = audio_callback;
 	format.userdata = NULL;
 
@@ -43,12 +45,12 @@ int main() {
 	}
 	SDL_PauseAudio(0);
 	SDL_GameControllerEventState(SDL_ENABLE);
-	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	g_soundmanager = SoundManager(true);
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
-
 
 	float testx, testy;
 

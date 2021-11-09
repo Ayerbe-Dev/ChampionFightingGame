@@ -41,10 +41,11 @@ int main() {
 	if (TTF_Init() < 0) {
 		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
 	}
-	if (SDL_OpenAudioDevice(NULL, 0, &format, NULL, SDL_AUDIO_ALLOW_ANY_CHANGE) < 0) {
+	SDL_AudioDeviceID dev_id = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(0, 0), 0, &format, NULL, 0);
+	if (dev_id < 0) {
 		printf("Error opening SDL_audio: %s\n", SDL_GetError());
 	}
-	SDL_PauseAudio(0);
+	SDL_PauseAudioDevice(dev_id, 0);
 	SDL_GameControllerEventState(SDL_ENABLE);
 	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);

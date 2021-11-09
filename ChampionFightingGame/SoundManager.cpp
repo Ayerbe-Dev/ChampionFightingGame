@@ -1,5 +1,5 @@
 ﻿#include "SoundManager.h"
-extern SoundInfo sounds[2][MAX_SOUNDS];
+extern SoundInfo sounds[3][MAX_SOUNDS];
 
 SoundManager::SoundManager() {}
 

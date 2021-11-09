@@ -1243,6 +1243,7 @@ IObject::IObject(int object_type, int object_kind, int id, PlayerInfo *player_in
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind) {
 			case (CHARA_KIND_ROY):
+			case (CHARA_KIND_MAX):
 			{
 				fighter = new Roy(id, player_info, fighter_accessor);
 			}
@@ -1261,7 +1262,7 @@ IObject::IObject(int object_type, int object_kind, int id, PlayerInfo *player_in
 			{
 				fighter = new CharaTemplate(id, player_info, fighter_accessor);
 			} break;
-			case (CHARA_KIND_MAX):
+			default:
 			{
 				fighter = NULL;
 			}

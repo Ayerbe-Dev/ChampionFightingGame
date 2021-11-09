@@ -5,30 +5,6 @@
 
 int chara_select_main(PlayerInfo aPlayerInfo[2]);
 
-class MobileCharacterSlot{
-public:
-    GameTexture gameTexture;
-    void playAnim();
-
-    /*
-        Sets the glide target
-        \param x the x target
-        \param y the y target
-        \param w the starting width
-        \param h the starting height
-    */
-    void setTarget(int x, int y, float w, float h);
-private:
-    int iAnimationSpeed=16;
-    int targetX=0,targetY=0;
-    float fPosX=0,fPosY=0;
-    float fTheta=0;
-    int iAnimTime=0;
-    float fScale=.2;
-
-    float fHorizontalscaleOffset=0,fVerticalscale=0;
-};
-
 class FixedCharacterSlot {
 public:
     GameTexture gameTexture;
@@ -42,11 +18,35 @@ public:
 
     bool isBelow(int y);
     bool isAbove(int y);
-private:
-    int iCharacterId = -1;
+    int myCol{ -1 };
+    int myRow{ -1 };
+    int iCharacterId = CHARA_KIND_MAX;
     bool bInitialized = false;
 };
 
+class MobileCharacterSlot {
+public:
+    GameTexture gameTexture;
+    void playAnim();
+
+    /*
+        Sets the glide target
+        \param x the x target
+        \param y the y target
+        \param w the starting width
+        \param h the starting height
+    */
+    void setTarget(int x, int y, float w, float h);
+private:
+    int iAnimationSpeed = 16;
+    int targetX = 0, targetY = 0;
+    float fPosX = 0, fPosY = 0;
+    float fTheta = 0;
+    int iAnimTime = 0;
+    float fScale = .2;
+
+    float fHorizontalscaleOffset = 0, fVerticalscale = 0;
+};
 
 class CssCursor{
 public:
@@ -78,21 +78,28 @@ public:
     void queryFixedCssSlotPosition(int indexLocation, int* xptr, int* yptr);
     int getExitCode();
     int getCharacterKind(int player);
+    void centerSlots();
+    void selectIndex();
 
     int aPlayerSelectionIndex[2] = { 0,0 };
+    int myCol[2]{0, 0};
+    int myRow[2]{ 0, 0 };
 
-    int playerID = 0; //dont ask, im lazy
+    int numCols;
+    int numRows;
+    int colsOffset;
+
+    int playerID = 0;
     bool bSelecting = true;
+    PlayerInfo *aPlayerInfos[2];
 private:
 
     int iExitCode = GAME_STATE_DEBUG_MENU;
     MobileCharacterSlot aMobileCharacterSlots[2];
-    int iLastUp[2] = { -1,-1 };
-    int iLastDown[2] = { -1,-1 };
     GameTexture backgroundTexture;
     GameTexture bigBarTexture;
     GameTexture topBarTexture;
-    PlayerInfo aPlayerInfos[2];
     FixedCharacterSlot aFixedCharacterSlots[CSS_SLOTS];
+    FixedCharacterSlot charaSlotsOrdered[10][4];
     bool isLastRight[2]{ false };
 };

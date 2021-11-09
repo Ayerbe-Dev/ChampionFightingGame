@@ -30,7 +30,8 @@ typedef unsigned long long u64;
 #define PARAM_TABLE_LENGTH 256
 #define ANIM_TABLE_LENGTH 256
 #define CSS_SLOTS 32
-#define CHARAS_PER_ROW 9
+#define NUM_COLS 10
+#define NUM_ROWS 4
 #define CSS_WIDTH WINDOW_WIDTH * 0.8
 #define CSS_HEIGHT WINDOW_HEIGHT / 2.5
 #define MOVE_SCRIPT_MAX 256

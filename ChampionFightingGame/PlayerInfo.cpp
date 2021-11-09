@@ -1,10 +1,12 @@
 #include "PlayerInfo.h"
 extern int registered_controllers[4];
 
-PlayerInfo::PlayerInfo() {}
+PlayerInfo::PlayerInfo() {
+}
 
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
+	this->chara_kind = CHARA_KIND_MAX;
 	update_controller();
 	set_default_button_mappings(id);
 }

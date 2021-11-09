@@ -10,7 +10,7 @@ using namespace std;
 #include <cmath>
 #include<fstream>
 
-SoundInfo sounds[MAX_SOUNDS];
+SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
@@ -246,21 +246,19 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	Uint32 amount;
 	SDL_memset(stream, 0, len);
 
-	cout << stream << ", " << len << endl;
-
 	for (i = 0; i < MAX_SOUNDS; ++i) {
-		amount = (sounds[i].dlen - sounds[i].dpos);
-		if (amount > len) {
-			amount = len;
+		for (int i2 = 0; i2 < 3; ++i2) {
+			amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
+			if (amount > len) {
+				amount = len;
+			}
+			SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
+			sounds[i2][i].dpos += amount;
 		}
-		SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
-		sounds[i].dpos += amount;
 	}
-
-	cout << stream << ", " << len << endl;
 }
 
-void PlaySound(char* file) {
+void addSoundToIndex(char* file, int *ret, int id) {
 	int index;
 	SDL_AudioSpec wave;
 	Uint8* data;
@@ -269,12 +267,14 @@ void PlaySound(char* file) {
 
 	/* Look for an empty (or finished) sound slot */
 	for (index = 0; index < MAX_SOUNDS; ++index) {
-		if (sounds[index].dpos == sounds[index].dlen) {
+		if (sounds[id][index].dpos == sounds[id][index].dlen) {
 			break;
 		}
 	}
-	if (index == MAX_SOUNDS)
+	*ret = index;
+	if (index == MAX_SOUNDS) {
 		return;
+	}
 
 	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
 	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) {
@@ -289,13 +289,13 @@ void PlaySound(char* file) {
 	SDL_FreeWAV(data);
 
 	/* Put the sound data in the slot (it starts playing immediately) */
-	if (sounds[index].data) {
-		free(sounds[index].data);
+	if (sounds[id][index].data) {
+		free(sounds[id][index].data);
 	}
 	SDL_LockAudio();
-	sounds[index].data = cvt.buf;
-	sounds[index].dlen = cvt.len_cvt;
-	sounds[index].dpos = 0;
+	sounds[id][index].data = cvt.buf;
+	sounds[id][index].dlen = cvt.len_cvt;
+	sounds[id][index].dpos = 0;
 	SDL_UnlockAudio();
 }
 

@@ -6,6 +6,7 @@ class SoundManager {
 public:
 	SoundManager();
 	SoundManager(bool initiate);
+	string active_sounds[3][MAX_SOUNDS];
 
 	string common_se[COMMON_SE_MAX];
 	string roy_se[ROY_SE_MAX];
@@ -19,9 +20,13 @@ public:
 
 	void hyperInit();
 
-	int playCommonSE(int se);
-	int playCharaSE(int se, int chara_kind);
-	int playVoice(int voice, int chara_kind);
+	int playCommonSE(int se, int id);
+	int playCharaSE(int se, int chara_kind, int id);
+	int playVoice(int voice, int chara_kind, int id);
 	int playStageMusic(int stage_kind);
 	int playMusic(int music);
+	void playSound(string file, int id);
+	int findSoundIndex(string file, int id);
+	void endSound(string file, int id);
+	void endSoundAll();
 };

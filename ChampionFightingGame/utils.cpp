@@ -278,9 +278,9 @@ void PlaySound(char* file) {
 		return;
 	}
 	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
-	cvt.buf = (Uint8 *)malloc(dlen * cvt.len_mult);
-	std::memcpy(cvt.buf, data, dlen);
 	cvt.len = dlen;
+	cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
+	std::memcpy(cvt.buf, data, dlen);
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);
 

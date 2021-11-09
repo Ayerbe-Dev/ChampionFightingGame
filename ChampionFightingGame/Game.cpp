@@ -75,7 +75,7 @@ int game_main(PlayerInfo player_info[2]) {
 			execute this part after the first loop has finished
 		*/
 	}
-	g_soundmanager->fighter_accessor = fighter_accessor;
+	g_soundmanager.fighter_accessor = fighter_accessor;
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
@@ -390,7 +390,7 @@ int game_main(PlayerInfo player_info[2]) {
 	cleanup(p1, p2);
 
 	delete fighter_accessor;
-	g_soundmanager->fighter_accessor = NULL;
+	g_soundmanager.fighter_accessor = NULL;
 
 	return next_state;
 }

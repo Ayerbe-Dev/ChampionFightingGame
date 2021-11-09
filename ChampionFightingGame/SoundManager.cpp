@@ -188,6 +188,7 @@ void SoundManager::endMusic(int music_kind) {
 
 void SoundManager::endSound(string dir, int id) {
 	int clear_index = findSoundIndex(dir, id);
+
 	sounds[id][clear_index].dpos = 0;
 	sounds[id][clear_index].dlen = 0;
 	sounds[id][clear_index].data = 0;

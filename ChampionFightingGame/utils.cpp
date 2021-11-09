@@ -8,6 +8,8 @@ using namespace std;
 #include <iostream>
 #include <cstdint>
 #include <cmath>
+#include<fstream>
+
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern SDL_AudioSpec format;
@@ -264,11 +266,12 @@ void addSoundToIndex(char* file, int *ret, int id) {
 	SDL_AudioCVT cvt;
 
 	for (index = 0; index < MAX_SOUNDS; index++) {
+	/* Look for an empty (or finished) sound slot */
 		if (sounds[id][index].dpos == sounds[id][index].dlen) {
 			break;
 		}
 	}
-	ret = &index;
+	*ret = index;
 	if (index == MAX_SOUNDS) {
 		return;
 	}

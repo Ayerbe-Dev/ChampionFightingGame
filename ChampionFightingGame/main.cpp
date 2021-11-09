@@ -21,12 +21,13 @@ int registered_controllers[2] = {-1, -1};
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
-SoundManager g_soundmanager;
+SoundManager* g_soundmanager;
+SDL_AudioSpec format;
 
 int main() {
 	bool running = true;
 	int game_state = GAME_STATE_DEBUG_MENU;
-	SDL_AudioSpec format;
+
 	format.freq = 22050;
 	format.format = AUDIO_S16;
 	format.channels = 2;
@@ -40,19 +41,17 @@ int main() {
 	if (TTF_Init() < 0) {
 		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
 	}
-	if (SDL_OpenAudio(&format, NULL) < 0) {
+	if (SDL_OpenAudioDevice(NULL, 0, &format, NULL, SDL_AUDIO_ALLOW_ANY_CHANGE) < 0) {
 		printf("Error opening SDL_audio: %s\n", SDL_GetError());
 	}
 	SDL_PauseAudio(0);
 	SDL_GameControllerEventState(SDL_ENABLE);
 	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
-	g_soundmanager = SoundManager(true);
+	g_soundmanager = new SoundManager(true);
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
-
-	float testx, testy;
 
 	while (running) {
 		refreshRenderer();
@@ -75,6 +74,7 @@ int main() {
 		}
 	}
 
+	delete g_soundmanager;
 	SDL_DestroyWindow(g_window);
 
 	SDL_Quit();

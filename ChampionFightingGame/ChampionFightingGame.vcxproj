@@ -164,6 +164,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Alejandro.cpp" />
+    <ClCompile Include="Angelica.cpp" />
     <ClCompile Include="Animation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -171,6 +173,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Aziel.cpp" />
+    <ClCompile Include="Bruno.cpp" />
     <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
     <ClCompile Include="Debugger.cpp" />
@@ -188,6 +192,8 @@
     </ClCompile>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="GameTexture.cpp" />
+    <ClCompile Include="Julius.cpp" />
+    <ClCompile Include="Leon.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -196,6 +202,8 @@
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuHandler.cpp" />
+    <ClCompile Include="Nightsaber.cpp" />
+    <ClCompile Include="Norman.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ParamTable.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -208,13 +216,17 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="Priest.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
+    <ClCompile Include="Ramona.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
+    <ClCompile Include="Sully.cpp" />
+    <ClCompile Include="Tessa.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -223,25 +235,19 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Vesuvius.cpp" />
+    <ClCompile Include="Zyair.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resource\chara\eric\sprite\sprite.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_0.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_1.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_2.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_3.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_4.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_5.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_6.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_7.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_8.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\idle_9.png" />
-    <Image Include="resource\chara\not_ryu\animation_idle\spritesheet.png" />
-    <Image Include="resource\chara\not_ryu\animation_walk\spritesheet.png" />
-    <Image Include="resource\chara\roy\sprite\sprite.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="Alejandro.fwd.h" />
+    <ClInclude Include="Alejandro.h" />
+    <ClInclude Include="Angelica.fwd.h" />
+    <ClInclude Include="Angelica.h" />
+    <ClInclude Include="Aziel.fwd.h" />
+    <ClInclude Include="Aziel.h" />
     <ClInclude Include="Box.fwd.h" />
+    <ClInclude Include="Bruno.fwd.h" />
+    <ClInclude Include="Bruno.h" />
     <ClInclude Include="CharaTemplate.fwd.h" />
     <ClInclude Include="CharaTemplate.h" />
     <ClInclude Include="CharaSelect.h" />
@@ -261,19 +267,30 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameTexture.h" />
+    <ClInclude Include="Julius.fwd.h" />
+    <ClInclude Include="Julius.h" />
     <ClInclude Include="Leon.fwd.h" />
+    <ClInclude Include="Leon.h" />
     <ClInclude Include="Menu.fwd.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuHandler.h" />
+    <ClInclude Include="Nightsaber.fwd.h" />
+    <ClInclude Include="Nightsaber.h" />
+    <ClInclude Include="Norman.fwd.h" />
+    <ClInclude Include="Norman.h" />
     <ClInclude Include="Object.fwd.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ParamTable.h" />
     <ClInclude Include="Fighter.fwd.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="Priest.fwd.h" />
+    <ClInclude Include="Priest.h" />
     <ClInclude Include="Projectile.fwd.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Atlas.fwd.h" />
     <ClInclude Include="Atlas.h" />
+    <ClInclude Include="Ramona.fwd.h" />
+    <ClInclude Include="Ramona.h" />
     <ClInclude Include="Roy.fwd.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyFireball.fwd.h" />
@@ -283,9 +300,17 @@
     <ClInclude Include="Stage.h" />
     <ClInclude Include="ProjectileTemplate.fwd.h" />
     <ClInclude Include="ProjectileTemplate.h" />
+    <ClInclude Include="Sully.fwd.h" />
+    <ClInclude Include="Sully.h" />
+    <ClInclude Include="Tessa.fwd.h" />
+    <ClInclude Include="Tessa.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Fighter.h" />
+    <ClInclude Include="Vesuvius.fwd.h" />
+    <ClInclude Include="Vesuvius.h" />
+    <ClInclude Include="Zyair.fwd.h" />
+    <ClInclude Include="Zyair.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

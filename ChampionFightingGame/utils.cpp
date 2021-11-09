@@ -244,8 +244,6 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	Uint32 amount;
 	SDL_memset(stream, 0, len);
 
-	cout << *stream << ", " << len << endl;
-
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
 			amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
@@ -256,7 +254,6 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 			sounds[i2][i].dpos += amount;
 		}
 	}
-	cout << *stream << ", " << len << endl;
 }
 
 void addSoundToIndex(char* file, int *ret, int id) {
@@ -280,9 +277,6 @@ void addSoundToIndex(char* file, int *ret, int id) {
 	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) {
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
 		return;
-	}
-	else {
-		cout << "Loaded Wav: " << file << endl;
 	}
 	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
 	cvt.len = dlen;

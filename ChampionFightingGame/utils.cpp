@@ -252,10 +252,11 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 			if (amount > len) {
 				amount = len;
 			}
-			SDL_MixAudioFormat(stream, &sounds[i2][i].data[sounds[i2][i].dpos], format.format, amount, SDL_MIX_MAXVOLUME);
+			SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
 			sounds[i2][i].dpos += amount;
 		}
 	}
+	cout << *stream << ", " << len << endl;
 }
 
 void addSoundToIndex(char* file, int *ret, int id) {

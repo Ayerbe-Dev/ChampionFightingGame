@@ -10,7 +10,6 @@ CharaTemplate::CharaTemplate() {
 CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/chara/template";
-	chara_name = "template";
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -41,7 +40,7 @@ void CharaTemplate::loadCharaTemplateStatusFunctions() {
 	chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_exit_status_template;
 }
 
-void CharaTemplate::loadCharaTemplateACMD() { 
+void CharaTemplate::loadCharaTemplateACMD() { //todo: Fill this in with all of the common empty scripts
 	script("default", [this]() {
 		return;
 	});

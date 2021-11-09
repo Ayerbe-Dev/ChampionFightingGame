@@ -266,7 +266,7 @@ void addSoundToIndex(char* file, int *ret, int id) {
 	Uint32 dlen;
 	SDL_AudioCVT cvt;
 
-	for (index = 0; index < MAX_SOUNDS; ++index) {
+	for (index = 0; index < MAX_SOUNDS; index++) {
 		if (sounds[id][index].dpos == sounds[id][index].dlen) {
 			break;
 		}
@@ -287,6 +287,7 @@ void addSoundToIndex(char* file, int *ret, int id) {
 	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
 	cvt.len = dlen;
 	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
+	std::memcpy(cvt.buf, data, dlen);
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);
 

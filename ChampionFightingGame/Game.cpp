@@ -10,6 +10,7 @@
 #include "UI.h"
 #include "Menu.h"
 #include "SoundManager.h"
+#include "GameTexture.h"
 
 #include "Object.h"
 #include "Fighter.h"
@@ -38,6 +39,18 @@ int game_main(PlayerInfo player_info[2]) {
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
+
+	//we loading boys
+	{
+	GameTexture loadingSplash;
+	loadingSplash.init("resource/ui/menu/css/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	SDL_SetRenderTarget(g_renderer,nullptr);
+	SDL_RenderClear(g_renderer);
+	loadingSplash.render();
+	SDL_RenderPresent(g_renderer);
+	}
+
 
 	Debugger debugger;
 	debugger = Debugger();

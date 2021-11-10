@@ -24,11 +24,11 @@ CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* f
 		projectiles[i] = new Projectile();
 	}
 
-	projectile_objects[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, id, player_info, fighter_accessor);
-	delete (projectiles[0]);
-	this->projectiles[0] = projectile_objects[0]->get_projectile();
-	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectiles[0];
-	projectile_template_instance->chara_template = this;
+//	projectile_objects[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, id, player_info, fighter_accessor);
+//	delete (projectiles[0]);
+//	this->projectiles[0] = projectile_objects[0]->get_projectile();
+//	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectiles[0];
+//	projectile_template_instance->chara_template = this;
 }
 
 void CharaTemplate::chara_id() {
@@ -36,9 +36,7 @@ void CharaTemplate::chara_id() {
 }
 
 void CharaTemplate::loadCharaTemplateStatusFunctions() {
-	chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_status_template;
-	chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_enter_status_template;
-	chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE - FIGHTER_STATUS_MAX] = &CharaTemplate::chara_template_exit_status_template;
+
 }
 
 void CharaTemplate::loadCharaTemplateACMD() { 
@@ -268,16 +266,4 @@ bool CharaTemplate::specific_status_attack() {
 		}
 	}
 	return false;
-}
-
-void CharaTemplate::chara_template_status_template() {
-
-}
-
-void CharaTemplate::chara_template_enter_status_template() {
-
-}
-
-void CharaTemplate::chara_template_exit_status_template() {
-
 }

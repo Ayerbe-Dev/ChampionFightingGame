@@ -30,8 +30,4 @@ public:
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;
 	bool specific_status_attack() override;
-
-	void chara_template_status_template();
-	void chara_template_enter_status_template();
-	void chara_template_exit_status_template();
 };

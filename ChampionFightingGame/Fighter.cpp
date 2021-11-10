@@ -862,9 +862,8 @@ bool Fighter::get_normal_cancel(int attack_kind, u32 button, int situation_kind)
 			}
 		}
 	}
-	else {
-		return false;
-	}
+	
+	return false;
 }
 
 //Param

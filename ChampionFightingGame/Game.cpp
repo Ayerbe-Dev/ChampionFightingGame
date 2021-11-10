@@ -30,10 +30,11 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
+extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
-	Uint32 tick=0,tok=0;
+	Uint32 tick = 0, tok = 0;
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
@@ -74,7 +75,6 @@ int game_main(PlayerInfo player_info[2]) {
 			execute this part after the first loop has finished
 		*/
 	}
-	g_soundmanager.fighter_accessor = fighter_accessor;
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
@@ -99,6 +99,7 @@ int game_main(PlayerInfo player_info[2]) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
 	}
+
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
 		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
 		player_info[1].crash_reason = "Oh, nothing's playing?";
@@ -108,13 +109,13 @@ int game_main(PlayerInfo player_info[2]) {
 
 	while (gaming) {
 
-		frameTimeDelay(&tick,&tok);
+		frameTimeDelay(&tick, &tok);
 
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
-		
+
 		//yeah
 
 		SDL_Event event;
@@ -164,7 +165,7 @@ int game_main(PlayerInfo player_info[2]) {
 			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
 			the content in pScreenTexture.
 		*/
-		
+
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, nullptr, nullptr);
 
@@ -268,7 +269,7 @@ int game_main(PlayerInfo player_info[2]) {
 		}
 		SDL_Rect render_pos;
 		SDL_RendererFlip flip;
-		
+
 		render_pos = getRenderPos(fighter[!render_priority], fighter[!render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
 		flip = fighter[!render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 		if (SDL_RenderCopyEx(g_renderer, fighter[!render_priority]->anim_kind->spritesheet, &(fighter[!render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
@@ -288,7 +289,7 @@ int game_main(PlayerInfo player_info[2]) {
 				if (fighter[i]->id == 1) {
 					id_ope *= -1;
 				}
-				draw_text("FiraCode-Regular.ttf", to_string(fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), {id_ope * 500, WINDOW_HEIGHT * 0.75}, 200,  255, 0, 0, 255);
+				draw_text("FiraCode-Regular.ttf", to_string(fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), { id_ope * 500, WINDOW_HEIGHT * 0.75 }, 200, 255, 0, 0, 255);
 				SDL_SetRenderTarget(g_renderer, pScreenTexture);
 			}
 
@@ -379,16 +380,15 @@ int game_main(PlayerInfo player_info[2]) {
 
 		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(g_renderer); //finalize
-		
+
 		SDL_DestroyTexture(pGui); //ok it's on screen, now get that shit outta here
 		SDL_DestroyTexture(pScreenTexture);
 
 	}
+
+	cleanup(p1, p2);
 	g_soundmanager.endSoundAll();
 
-
-
-	g_soundmanager.fighter_accessor = NULL;
 	delete fighter_accessor;
 
 	return next_state;
@@ -799,7 +799,6 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 				/*
 					Grounded opponents will always win trades against aerial opponents. This is important for balancing because holy shit jumping is
 					gonna be busted without stuff like this
-
 					Oh also, no need to check OTG because there won't be any attacks you can use outside of FIGHTER_SITUATION_GROUND or
 					FIGHTER_SITUATION_AIR
 				*/
@@ -1247,7 +1246,7 @@ void cleanup(IObject* p1, IObject* p2) {
 	delete p2;
 }
 
-IObject::IObject(int object_type, int object_kind, int id, PlayerInfo *player_info, FighterAccessor* fighter_accessor) {
+IObject::IObject(int object_type, int object_kind, int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind) {
 			case (CHARA_KIND_ROY):

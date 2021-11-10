@@ -254,59 +254,10 @@ void CharaTemplate::chara_exit_status() {
 }
 
 bool CharaTemplate::specific_ground_status_act() {
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
+	return false;
+}
 
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-
-	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_EX;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-	if (get_special_input(SPECIAL_KIND_CHARGE_DOWN, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status(CHARA_CHARA_TEMPLATE_STATUS_TEMPLATE);
-	}
-
-	//etc.
-
+bool CharaTemplate::specific_air_status_act() {
 	return false;
 }
 

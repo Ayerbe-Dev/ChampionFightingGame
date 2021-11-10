@@ -59,6 +59,10 @@ void GameTexture::setAlpha(int alpha) {
     SDL_SetTextureAlphaMod(pTexture, alpha);
 }
 
+void GameTexture::clearTexture() {
+    SDL_DestroyTexture(pTexture);
+}
+
 float GameTexture::getScaledWidth(){
     return destRect.w * fHorizontalScaleFactor;
 }

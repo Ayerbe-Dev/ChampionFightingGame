@@ -8,6 +8,7 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 int chara_select_main(PlayerInfo player_info[2]) {
+	displayLoadingScreen();
 	Uint32 tick = 0, tok = 0;
 	const Uint8* keyboard_state;
 	Debugger debugger;
@@ -17,6 +18,7 @@ int chara_select_main(PlayerInfo player_info[2]) {
 	cssMenuInstance.aPlayerInfos[0] = &player_info[0];
 	cssMenuInstance.aPlayerInfos[1] = &player_info[1];
 	if (cssMenuInstance.loadCSS()) {
+		displayLoadingScreen();
 		player_info[0].crash_reason = "Could not open CSS file!";
 		return GAME_STATE_DEBUG_MENU;
 	}
@@ -100,6 +102,9 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
+		if (cssMenuInstance.bSelecting) {
+			checkLoadTime();
+		}
 	}
 
 	return cssMenuInstance.getExitCode();
@@ -251,6 +256,7 @@ void CSS::back() {
 		aPlayerInfos[playerID]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
+		displayLoadingScreen();
 		iExitCode = GAME_STATE_MENU;
 		bSelecting = false;
 	}
@@ -258,6 +264,7 @@ void CSS::back() {
 
 void CSS::start() {
 	if (aPlayerInfos[0]->chara_kind != CHARA_KIND_MAX && aPlayerInfos[1]->chara_kind != CHARA_KIND_MAX) {
+		displayLoadingScreen();
 		iExitCode = GAME_STATE_GAME;
 		bSelecting = false;
 	}

@@ -273,6 +273,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameTexture.fwd.h" />
     <ClInclude Include="GameTexture.h" />
     <ClInclude Include="Julius.fwd.h" />
     <ClInclude Include="Julius.h" />

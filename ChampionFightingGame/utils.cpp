@@ -1,20 +1,21 @@
 using namespace std;
 #include <iostream>
 #include <sstream>
-#include <algorithm> //std::min
+#include <algorithm>
 #include "utils.h"
 #include <SDL_image.h>
 #include <cstring>
 #include <iostream>
 #include <cstdint>
 #include <cmath>
-#include<fstream>
+#include <fstream>
 
 
 SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
-
+bool g_loading;
+int g_loadtime;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -306,4 +307,29 @@ mankind knew that they cannot change find_nearest_css_slot. So instead of reflec
 */
 int twoPointDistance(int x0, int y0, int x1, int y1) {
 	return std::sqrt(std::pow(x0 - x1, 2) + std::pow(y0 - y1, 2));
+}
+
+void displayLoadingScreen() {
+	GameTexture loadingSplash;
+	loadingSplash.init("resource/ui/menu/css/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	SDL_SetRenderTarget(g_renderer, nullptr);
+	SDL_RenderClear(g_renderer);
+	loadingSplash.render();
+	SDL_RenderPresent(g_renderer);
+	loadingSplash.clearTexture();
+	if (!g_loading) {
+		g_loadtime = SDL_GetTicks();
+	}
+	g_loading = true;
+}
+
+//Called whenever SDL_RenderPresent is called. If the thing we last presented was a loading screen, this function will print the time between the
+//loading screen being displayed and the next thing that was rendered
+void checkLoadTime() {
+	if (g_loading) {
+		g_loading = false;
+		g_loadtime = SDL_GetTicks() - g_loadtime;
+		cout << "It took " << g_loadtime << "ms to load the current game state" << endl;
+	}
 }

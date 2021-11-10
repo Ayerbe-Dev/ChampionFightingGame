@@ -1,8 +1,9 @@
 #pragma once
 #include <SDL.h>
-#include "PlayerInfo.h"
+#include "PlayerInfo.fwd.h"
+#include "utils.h"
 
-enum{
+enum {
     GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
     GAME_TEXTURE_ANCHOR_MODE_CENTER,
     GAME_TEXTURE_ANCHOR_MODE_BACKGROUND
@@ -26,6 +27,7 @@ public:
     float getScaledWidth();
     float getScaledHeight();
     void setAlpha(int alpha);
+    void clearTexture();
     bool bIsInitialized = false;
 private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;

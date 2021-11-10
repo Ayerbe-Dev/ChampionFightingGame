@@ -452,5 +452,8 @@
     <ClInclude Include="Music.h">
       <Filter>Header Files\Enum</Filter>
     </ClInclude>
+    <ClInclude Include="GameTexture.fwd.h">
+      <Filter>Forward Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

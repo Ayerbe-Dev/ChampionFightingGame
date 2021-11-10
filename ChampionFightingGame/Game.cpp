@@ -64,21 +64,11 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
+	displayLoadingScreen();
 	Uint32 tick = 0, tok = 0;
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
-
-	//we loading boys
-	{
-	GameTexture loadingSplash;
-	loadingSplash.init("resource/ui/menu/css/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-	SDL_SetRenderTarget(g_renderer,nullptr);
-	SDL_RenderClear(g_renderer);
-	loadingSplash.render();
-	SDL_RenderPresent(g_renderer);
-	}
 
 
 	Debugger debugger;
@@ -145,6 +135,7 @@ int game_main(PlayerInfo player_info[2]) {
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
 		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
 		player_info[1].crash_reason = "Oh, nothing's playing?";
+		displayLoadingScreen();
 		gaming = false;
 		next_state = GAME_STATE_DEBUG_MENU;
 	}
@@ -422,6 +413,10 @@ int game_main(PlayerInfo player_info[2]) {
 
 		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(g_renderer); //finalize
+
+		if (gaming) {
+			checkLoadTime();
+		}
 
 		SDL_DestroyTexture(pGui); //ok it's on screen, now get that shit outta here
 		SDL_DestroyTexture(pScreenTexture);

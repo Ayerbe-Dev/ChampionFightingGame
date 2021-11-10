@@ -25,6 +25,7 @@ using namespace std;
 #include "SE.h"
 #include "Voice.h"
 #include "Music.h"
+#include "GameTexture.h"
 
 typedef char i8;
 typedef unsigned char u8;
@@ -100,6 +101,8 @@ int get_blank(string s);
 void audio_callback(void* unused, Uint8* stream, int len);
 void addSoundToIndex(char* file, int *ret, int id);
 void refreshRenderer();
+void displayLoadingScreen();
+void checkLoadTime();
 
 
 /*

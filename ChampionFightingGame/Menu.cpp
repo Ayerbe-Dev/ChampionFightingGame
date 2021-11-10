@@ -16,6 +16,7 @@ extern SDL_Renderer* g_renderer;
 
 
 int menu_main(PlayerInfo player_info[2]) {
+	displayLoadingScreen();
 	Uint32 tick;
 	Uint32 tok;
 	Debugger debugger;
@@ -120,12 +121,14 @@ int menu_main(PlayerInfo player_info[2]) {
 			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
+				displayLoadingScreen();
 				menuing = false;
 				sub_selection = GAME_STATE_DEBUG_MENU;
 			}
 
 			if (menu_level == MENU_LEVEL_TOP) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+					displayLoadingScreen();
 					menuing = false;
 					sub_selection = GAME_STATE_DEBUG_MENU;
 				}
@@ -158,6 +161,7 @@ int menu_main(PlayerInfo player_info[2]) {
 
 			if (menu_level == MENU_LEVEL_SUB) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+					displayLoadingScreen();
 					menuing = false;
 					break;
 				}
@@ -236,6 +240,9 @@ int menu_main(PlayerInfo player_info[2]) {
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
+		if (menuing) {
+			checkLoadTime();
+		}
 	}
 
 	for (int i = 0; i < 5; i++) {

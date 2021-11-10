@@ -13,6 +13,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
 int debugMenu(PlayerInfo player_info[2], int gamestate) {
+	displayLoadingScreen();
 	Uint32 tick=0,tok=0;
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
@@ -98,6 +99,9 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
+		if (debugList.debugging) {
+			checkLoadTime();
+		}
 		SDL_DestroyTexture(pScreenTexture);
 	}
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
@@ -200,6 +204,7 @@ int DebugList::getDestination(){
 }
 
 void DebugList::finisher(){
+	displayLoadingScreen();
 	debugging = false;
 }
 

@@ -6,7 +6,7 @@ INCLUDE_DIR=../SDL2/include
 LIB_DIR=../SDL2/lib/x86
 LIB_FILES=-lSDL2 -lSDL2main -llibpng16-16 -lSDL2_image -lSDL2_ttf -llibtiff-5
 OBJ_FILE_DIR=Debug/
-CFLAGS=-I $(INCLUDE_DIR) -L $(LIB_DIR) -static-libgcc -static-libstdc++
+CFLAGS=-I $(SDL_INCLUDE_DIR) -L $(SDL_LIB_DIR) -static-libgcc -static-libstdc++
 
 
 all: $(CWD)/$(TARGET)
@@ -27,3 +27,6 @@ package: all
 	xcopy resource prebuild\resource /I /E /H /C /Y 
 	copy /y /v ChampionFightingGame.exe prebuild
 	7z a -tzip prebuild.zip prebuild
+
+launch: all
+	./$(CWD)/$(TARGET)

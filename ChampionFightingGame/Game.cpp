@@ -248,7 +248,6 @@ int game_main(PlayerInfo player_info[2]) {
 				timer.ClockMode = !timer.ClockMode;
 			}
 			if (!debug) {
-				//this is the line that gets called every frame for the fighters to do their stuff
 				fighter[i]->fighter_main();
 			}
 			else if (i == 0) {
@@ -276,12 +275,18 @@ int game_main(PlayerInfo player_info[2]) {
 					debug = false;
 					gaming = false;
 					next_state = GAME_STATE_DEBUG_MENU;
+					SDL_DestroyTexture(pGui);
+					SDL_DestroyTexture(pScreenTexture);
+					goto SKIP_RENDER;
 				}
 			}
 
 			if (fighter[i]->crash_to_debug) {
 				gaming = false;
 				next_state = GAME_STATE_DEBUG_MENU;
+				SDL_DestroyTexture(pGui);
+				SDL_DestroyTexture(pScreenTexture);
+				goto SKIP_RENDER;
 			}
 		}
 
@@ -305,15 +310,11 @@ int game_main(PlayerInfo player_info[2]) {
 
 		render_pos = getRenderPos(fighter[!render_priority], fighter[!render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
 		flip = fighter[!render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-		if (SDL_RenderCopyEx(g_renderer, fighter[!render_priority]->anim_kind->spritesheet, &(fighter[!render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
-			cout << "\n" << SDL_GetError();
-		}
+		SDL_RenderCopyEx(g_renderer, fighter[!render_priority]->anim_kind->spritesheet, &(fighter[!render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip);
 
 		render_pos = getRenderPos(fighter[render_priority], fighter[render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
 		flip = fighter[render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-		if (SDL_RenderCopyEx(g_renderer, fighter[render_priority]->anim_kind->spritesheet, &(fighter[render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip)) {
-			cout << "\n" << SDL_GetError();
-		}
+		SDL_RenderCopyEx(g_renderer, fighter[render_priority]->anim_kind->spritesheet, &(fighter[render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip);
 
 		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
@@ -343,9 +344,7 @@ int game_main(PlayerInfo player_info[2]) {
 					render_pos.w = (width / (fighter[i]->projectiles[o]->anim_kind->length + 1));
 					render_pos.h = height;
 					const double angle = (const double)fighter[i]->projectiles[o]->angle;
-					if (SDL_RenderCopyEx(g_renderer, fighter[i]->projectiles[o]->anim_kind->spritesheet, &(fighter[i]->projectiles[o]->frame_rect), &render_pos, angle, NULL, flip)) {
-						cout << SDL_GetError() << endl;
-					}
+					SDL_RenderCopyEx(g_renderer, fighter[i]->projectiles[o]->anim_kind->spritesheet, &(fighter[i]->projectiles[o]->frame_rect), &render_pos, angle, NULL, flip);
 				}
 			}
 		}
@@ -414,14 +413,15 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(g_renderer); //finalize
 
-		if (gaming) {
-			checkLoadTime();
-		}
 
-		SDL_DestroyTexture(pGui); //ok it's on screen, now get that shit outta here
+		checkLoadTime();
+
+		SDL_DestroyTexture(pGui);
 		SDL_DestroyTexture(pScreenTexture);
 
 	}
+	SKIP_RENDER:
+	displayLoadingScreen();
 
 	cleanup(p1, p2);
 	g_soundmanager.endSoundAll();

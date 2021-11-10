@@ -73,8 +73,6 @@ int main() {
 
 	while (running) {
 		refreshRenderer();
-		SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 		if (game_state == GAME_STATE_GAME) {
 			game_state = game_main(player_info);
 		}

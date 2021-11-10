@@ -296,6 +296,8 @@ void addSoundToIndex(char* file, int* ret, int id) {
 void refreshRenderer() {
 	SDL_DestroyRenderer(g_renderer);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 }
 
 /*
@@ -310,11 +312,10 @@ int twoPointDistance(int x0, int y0, int x1, int y1) {
 }
 
 void displayLoadingScreen() {
+	refreshRenderer();
 	GameTexture loadingSplash;
-	loadingSplash.init("resource/ui/menu/css/splashload.png");
+	loadingSplash.init("resource/ui/menu/splashload.png");
 	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-	SDL_SetRenderTarget(g_renderer, nullptr);
-	SDL_RenderClear(g_renderer);
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);
 	loadingSplash.clearTexture();

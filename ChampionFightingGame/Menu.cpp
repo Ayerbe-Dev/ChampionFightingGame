@@ -121,16 +121,16 @@ int menu_main(PlayerInfo player_info[2]) {
 			(&player_info[i])->update_controller();
 			(&player_info[i])->update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
-				displayLoadingScreen();
 				menuing = false;
 				sub_selection = GAME_STATE_DEBUG_MENU;
+				goto SKIP_RENDER;
 			}
 
 			if (menu_level == MENU_LEVEL_TOP) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
-					displayLoadingScreen();
 					menuing = false;
 					sub_selection = GAME_STATE_DEBUG_MENU;
+					goto SKIP_RENDER;
 				}
 
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
@@ -161,9 +161,8 @@ int menu_main(PlayerInfo player_info[2]) {
 
 			if (menu_level == MENU_LEVEL_SUB) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
-					displayLoadingScreen();
 					menuing = false;
-					break;
+					goto SKIP_RENDER;
 				}
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
 					menu_level = MENU_LEVEL_TOP;
@@ -240,10 +239,13 @@ int menu_main(PlayerInfo player_info[2]) {
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-		if (menuing) {
-			checkLoadTime();
-		}
+
+		checkLoadTime();
 	}
+
+	SKIP_RENDER:
+
+	displayLoadingScreen();
 
 	for (int i = 0; i < 5; i++) {
 		delete sub_menu_tables[i]->cursor;

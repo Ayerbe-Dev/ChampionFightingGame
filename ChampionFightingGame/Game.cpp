@@ -135,7 +135,6 @@ int game_main(PlayerInfo player_info[2]) {
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
 		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
 		player_info[1].crash_reason = "Oh, nothing's playing?";
-		displayLoadingScreen();
 		gaming = false;
 		next_state = GAME_STATE_DEBUG_MENU;
 	}
@@ -275,18 +274,16 @@ int game_main(PlayerInfo player_info[2]) {
 					debug = false;
 					gaming = false;
 					next_state = GAME_STATE_DEBUG_MENU;
-					SDL_DestroyTexture(pGui);
-					SDL_DestroyTexture(pScreenTexture);
-					goto SKIP_RENDER;
+					displayLoadingScreen();
+					goto DONE_GAMING;
 				}
 			}
 
 			if (fighter[i]->crash_to_debug) {
 				gaming = false;
 				next_state = GAME_STATE_DEBUG_MENU;
-				SDL_DestroyTexture(pGui);
-				SDL_DestroyTexture(pScreenTexture);
-				goto SKIP_RENDER;
+				displayLoadingScreen();
+				goto DONE_GAMING;
 			}
 		}
 
@@ -420,8 +417,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_DestroyTexture(pScreenTexture);
 
 	}
-	SKIP_RENDER:
-	displayLoadingScreen();
+	DONE_GAMING:
 
 	cleanup(p1, p2);
 	g_soundmanager.endSoundAll();

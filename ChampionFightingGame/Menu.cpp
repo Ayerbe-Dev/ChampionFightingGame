@@ -130,6 +130,7 @@ int menu_main(PlayerInfo player_info[2]) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
 					menuing = false;
 					sub_selection = GAME_STATE_DEBUG_MENU;
+					displayLoadingScreen();
 					goto SKIP_RENDER;
 				}
 
@@ -162,6 +163,7 @@ int menu_main(PlayerInfo player_info[2]) {
 			if (menu_level == MENU_LEVEL_SUB) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
 					menuing = false;
+					displayLoadingScreen();
 					goto SKIP_RENDER;
 				}
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
@@ -244,8 +246,6 @@ int menu_main(PlayerInfo player_info[2]) {
 	}
 
 	SKIP_RENDER:
-
-	displayLoadingScreen();
 
 	for (int i = 0; i < 5; i++) {
 		delete sub_menu_tables[i]->cursor;

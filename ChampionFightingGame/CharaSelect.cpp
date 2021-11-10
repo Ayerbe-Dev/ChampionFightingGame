@@ -133,7 +133,7 @@ int CSS::loadCSS() {
 	for (int i = 0; getline(fileCssTable, sCharacterName); i++) {
 		fileCssTable >> iCharacterKind >> sCharacterDir >> bSelectable;
 		if (bSelectable) {
-			addFixedCharacter(iCharacterKind, sCharacterDir);
+			addFixedCharacter(iCharacterKind, sCharacterDir, sCharacterName);
 		}
 		getline(fileCssTable, sCharacterName); //100% authentic jank code
 	}
@@ -204,10 +204,10 @@ int CSS::loadCSS() {
 	return 0;
 }
 
-void CSS::addFixedCharacter(int id, string cardDir) {
+void CSS::addFixedCharacter(int id, string cardDir, string cardName) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (!aFixedCharacterSlots[i].isInitialized()) {
-			aFixedCharacterSlots[i].init(id, cardDir);
+			aFixedCharacterSlots[i].init(id, cardDir, cardName);
 			return;
 		}
 	}
@@ -404,6 +404,31 @@ void CSS::render() {
 
 
 	for (int i = 0; i < 2; i++) {
+		FixedCharacterSlot tmpSlot;
+		tmpSlot.gameTexture = aFixedCharacterSlots[aPlayerSelectionIndex[i]].gameTexture;
+		tmpSlot.name = aFixedCharacterSlots[aPlayerSelectionIndex[i]].name;
+		tmpSlot.textureDir = aFixedCharacterSlots[aPlayerSelectionIndex[i]].textureDir;
+
+		switch (i) {
+			case 0:
+				tmpSlot.gameTexture.destRect.x = 78;
+				tmpSlot.gameTexture.destRect.y = 604;
+				break;
+			case 1:
+				tmpSlot.gameTexture.destRect.x = 1204;
+				tmpSlot.gameTexture.destRect.y = 604;
+				break;
+			default:
+				cout << "How the fuck" << endl;
+				break;
+		}
+		tmpSlot.gameTexture.setScaleFactor(1);
+		tmpSlot.gameTexture.setAlpha(127);
+		tmpSlot.gameTexture.render();
+		tmpSlot.gameTexture.setAlpha(255);
+		if (tmpSlot.textureDir == "default") {
+			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.gameTexture.destRect.x, tmpSlot.gameTexture.destRect.y + 70, 24, 255, 255, 255, 255);
+		}
 
 		aMobileCharacterSlots[i].playAnim();
 		aMobileCharacterSlots[i].gameTexture.render();
@@ -516,8 +541,10 @@ bool FixedCharacterSlot::isInitialized() {
 	return bInitialized;
 }
 
-void FixedCharacterSlot::init(int id, string textureDir) {
+void FixedCharacterSlot::init(int id, string textureDir, string name) {
 	gameTexture.init("resource/ui/menu/css/chara/" + textureDir + "/render.png");
+	this->name = name;
+	this->textureDir = textureDir;
 	iCharacterId = id;
 	bInitialized = true;
 }

@@ -43,9 +43,6 @@
     <Filter Include="Source Files\Objects">
       <UniqueIdentifier>{c730743e-4260-48c8-be3f-91ebcb61c776}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Helper Classes">
-      <UniqueIdentifier>{d403677a-879e-45cb-9fc6-0c0df220f49f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Helper Classes">
       <UniqueIdentifier>{8f8b02cc-7eb9-4544-8436-1060b3f3a0a0}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,9 @@
     </Filter>
     <Filter Include="Header Files\Enum">
       <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper Classes">
+      <UniqueIdentifier>{d403677a-879e-45cb-9fc6-0c0df220f49f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

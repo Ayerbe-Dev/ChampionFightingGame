@@ -9,7 +9,7 @@ class FixedCharacterSlot {
 public:
     GameTexture gameTexture;
     bool isInitialized();
-    void init(int id, string textureDir);
+    void init(int id, string textureDir, string name);
     void setXPosition(int iX);
     void setYPosition(int iY);
     int getTextureWidth();
@@ -22,6 +22,8 @@ public:
     int myRow{ -1 };
     int iCharacterId = CHARA_KIND_MAX;
     bool bInitialized = false;
+    string textureDir = "";
+    string name = "";
 };
 
 class MobileCharacterSlot {
@@ -65,7 +67,7 @@ class CSS {
 public:
     CSS();
     int loadCSS();
-    void addFixedCharacter(int id, string cardDir);
+    void addFixedCharacter(int id, string cardDir, string cardName);
     int getSlotsLength();
     void select();
     void back();

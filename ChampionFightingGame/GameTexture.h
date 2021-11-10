@@ -25,6 +25,7 @@ public:
     void setAnchorMode(int iMode);
     float getScaledWidth();
     float getScaledHeight();
+    void setAlpha(int alpha);
     bool bIsInitialized = false;
 private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;

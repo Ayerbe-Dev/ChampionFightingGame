@@ -13,16 +13,45 @@
 
 #include "Object.h"
 #include "Fighter.h"
-#include "Projectile.h"
 #include "FighterAccessor.h"
 #include "Roy.fwd.h"
 #include "Roy.h"
-#include "RoyFireball.h"
 #include "Eric.fwd.h"
 #include "Eric.h"
-#include "EricFireball.h"
+#include "Leon.fwd.h"
+#include "Leon.h"
+#include "Angelica.fwd.h"
+#include "Angelica.h"
+#include "Nightsaber.fwd.h"
+#include "Nightsaber.h"
+#include "Sully.fwd.h"
+#include "Sully.h"
+#include "Priest.fwd.h"
+#include "Priest.h"
+#include "Aziel.fwd.h"
+#include "Aziel.h"
+#include "Bruno.fwd.h"
+#include "Bruno.h"
+#include "Tessa.fwd.h"
+#include "Tessa.h"
+#include "Alejandro.fwd.h"
+#include "Alejandro.h"
+#include "Norman.fwd.h"
+#include "Norman.h"
 #include "Atlas.fwd.h"
 #include "Atlas.h"
+#include "Julius.fwd.h"
+#include "Julius.h"
+#include "Ramona.fwd.h"
+#include "Ramona.h"
+#include "Zyair.fwd.h"
+#include "Zyair.h"
+#include "Vesuvius.fwd.h"
+#include "Vesuvius.h"
+
+#include "Projectile.h"
+#include "RoyFireball.h"
+#include "EricFireball.h"
 
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
@@ -1250,8 +1279,7 @@ IObject::IObject(int object_type, int object_kind, int id, PlayerInfo* player_in
 	if (object_type == OBJECT_TYPE_FIGHTER) {
 		switch (object_kind) {
 			case (CHARA_KIND_ROY):
-			case (CHARA_KIND_MAX):
-			{
+			default: {
 				fighter = new Roy(id, player_info, fighter_accessor);
 			}
 			break;
@@ -1260,20 +1288,69 @@ IObject::IObject(int object_type, int object_kind, int id, PlayerInfo* player_in
 				fighter = new Eric(id, player_info, fighter_accessor);
 			}
 			break;
+			case (CHARA_KIND_LEON):
+			case (CHARA_KIND_CHAMELEON): //Leon and Chameleon are the same character, but the specifics on where to get resources are in the constructor
+			{
+				fighter = new Leon(id, player_info, fighter_accessor);
+			}
+			break;
+			case (CHARA_KIND_ANGELICA):
+			{
+				fighter = new Angelica(id, player_info, fighter_accessor);
+			} 
+			break;
+			case (CHARA_KIND_NIGHTSABER):
+			{
+				fighter = new Nightsaber(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_SULLY):
+			{
+				fighter = new Sully(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_PRIEST):
+			{
+				fighter = new Priest(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_AZIEL):
+			{
+				fighter = new Aziel(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_BRUNO):
+			{
+				fighter = new Bruno(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_TESSA):
+			{
+				fighter = new Tessa(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_ALEJANDRO):
+			{
+				fighter = new Alejandro(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_NORMAN):
+			{
+				fighter = new Norman(id, player_info, fighter_accessor);
+			} break;
 			case (CHARA_KIND_ATLAS):
 			{
 				fighter = new Atlas(id, player_info, fighter_accessor);
-			}
-			break;
-			case (CHARA_KIND_CHARA_TEMPLATE):
-			{
-				fighter = new CharaTemplate(id, player_info, fighter_accessor);
 			} break;
-			default:
+			case (CHARA_KIND_JULIUS):
 			{
-				fighter = NULL;
-			}
-			break;
+				fighter = new Julius(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_RAMONA):
+			{
+				fighter = new Ramona(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_ZYAIR):
+			{
+				fighter = new Zyair(id, player_info, fighter_accessor);
+			} break;
+			case (CHARA_KIND_VESUVIUS):
+			{
+				fighter = new Vesuvius(id, player_info, fighter_accessor);
+			} break;
 		}
 	}
 	else if (object_type == OBJECT_TYPE_PROJECTILE) {

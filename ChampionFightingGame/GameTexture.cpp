@@ -55,6 +55,10 @@ void GameTexture::setVerticalScaleFactor(float fScaleFactor){
     this->fVerticalScaleFactor = fScaleFactor;
 }
 
+void GameTexture::setAlpha(int alpha) {
+    SDL_SetTextureAlphaMod(pTexture, alpha);
+}
+
 float GameTexture::getScaledWidth(){
     return destRect.w * fHorizontalScaleFactor;
 }

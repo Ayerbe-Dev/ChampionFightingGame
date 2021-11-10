@@ -9,8 +9,8 @@ Aziel::Aziel() {
 
 Aziel::Aziel(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/chara/template";
-	chara_name = "template";
+	resource_dir = "resource/chara/aziel";
+	chara_name = "aziel";
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -18,7 +18,7 @@ Aziel::Aziel(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	loadAzielStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_AZIEL;
-	this->base_texture = loadTexture("resource/chara/template/sprite/sprite.png");
+	this->base_texture = loadTexture("resource/chara/aziel/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

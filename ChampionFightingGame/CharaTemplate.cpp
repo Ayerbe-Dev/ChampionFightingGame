@@ -9,8 +9,8 @@ CharaTemplate::CharaTemplate() {
 
 CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/chara/template";
-	chara_name = "template";
+	resource_dir = "resource/chara/chara_template";
+	chara_name = "chara_template";
 	if (!crash_to_debug) {
 		load_params();
 	}

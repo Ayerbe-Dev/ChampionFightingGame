@@ -97,7 +97,7 @@ int game_main(PlayerInfo player_info[2]) {
 	while (loading) {
 		SDL_Delay(333);
 		cout << game_loader->loaded_items << endl;
-		if (game_loader->loaded_items >= 18) {
+		if (game_loader->loaded_items >= 21) {
 			SDL_WaitThread(loading_thread, &thread_ret);
 			loading = false;
 		}
@@ -1480,6 +1480,6 @@ static int LoadGame(void* void_gameloader) {
 		game_loader->player_indicator[i] = player_indicator[i];
 		game_loader->health_bar[i] = health_bar[i];
 	}
-
+	cout << "Finished loading with " << game_loader->loaded_items << "items" << endl;
 	return 0;
 }

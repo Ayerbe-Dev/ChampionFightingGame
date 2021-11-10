@@ -10,13 +10,13 @@ using namespace std;
 #include <cmath>
 #include<fstream>
 
-SoundInfo sounds[MAX_SOUNDS];
+SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
 
 int clamp(int min, int value, int max) {
-	if (min <= max)	{
+	if (min <= max) {
 		if (value < min) {
 			value = min;
 		}
@@ -39,23 +39,19 @@ float clampf(float min, float value, float max) {
 	return value;
 }
 
-int ymlChopInt(string line)
-{
+int ymlChopInt(string line) {
 	return stoi(line.substr(line.find("=") + 1));
 }
 
-float ymlChopFloat(string line)
-{
+float ymlChopFloat(string line) {
 	return stof(line.substr(line.find("=") + 1));
 }
 
-string ymlChopString(string line)
-{
+string ymlChopString(string line) {
 	return line.substr(line.find("=") + 1);
 }
 
-bool is_collide(SDL_Rect RectA, SDL_Rect RectB)
-{
+bool is_collide(SDL_Rect RectA, SDL_Rect RectB) {
 	int ax0 = RectA.x;
 	int ax1 = RectA.x + RectA.w;
 	int ay0 = RectA.y;
@@ -85,24 +81,20 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 	//78 is the current average size of the character.
 	cCamera.x = ((player1X + player2X) / 2) - (cCamera.w / 2) + (78 / 2);
 
-	if (cCamera.x + cCamera.w > WINDOW_WIDTH)
-	{
+	if (cCamera.x + cCamera.w > WINDOW_WIDTH) {
 		cCamera.x = WINDOW_WIDTH - cCamera.w;
 	}
-	else if (cCamera.x < 0)
-	{
+	else if (cCamera.x < 0) {
 		cCamera.x = 0;
 	}
 
 	//559 is the absolute y value of the floor
 	//JUMP_FOLLOW_THRESHOLD is the jump line before the camera starts moving
 	int iYdelta = (559 - std::min(player2Y, player1Y));
-	if (iYdelta >= JUMP_FOLLOW_THRESHOLD)
-	{
+	if (iYdelta >= JUMP_FOLLOW_THRESHOLD) {
 		cCamera.y = WINDOW_HEIGHT - cCamera.h - iYdelta + JUMP_FOLLOW_THRESHOLD - 50;
 	}
-	else
-	{
+	else {
 		cCamera.y = WINDOW_HEIGHT - cCamera.h - 50;
 	}
 
@@ -158,7 +150,7 @@ void draw_text(string font_name, string text, GameCoordinate pos, int font_size,
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
 
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(g_renderer, text_surface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(g_renderer, text_surface);
 	SDL_FreeSurface(text_surface);
 
 	int text_width, text_height;
@@ -209,7 +201,7 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 	TTF_CloseFont(font);
 }
 
-void frameTimeDelay(Uint32 *tick, Uint32 *tok){
+void frameTimeDelay(Uint32* tick, Uint32* tok) {
 	*tok = SDL_GetTicks() - *tick;
 	if (*tok < TICK_RATE_MS) {
 		SDL_Delay(TICK_RATE_MS - *tok);
@@ -232,7 +224,7 @@ void draw_text_multi_lines(string font_name, string text, float x_pos, float y_p
 
 //Check the first character in a string that is a space
 int get_blank(string s) {
-	const char *c = s.c_str();
+	const char* c = s.c_str();
 	for (int i = 0; i < s.length(); i++) {
 		if (isblank(c[i])) {
 			return i;
@@ -246,19 +238,19 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	Uint32 amount;
 	SDL_memset(stream, 0, len);
 
-	cout << stream << ", " << len << endl;
-
 	for (i = 0; i < MAX_SOUNDS; ++i) {
-		amount = (sounds[i].dlen - sounds[i].dpos);
-		if (amount > len) {
-			amount = len;
+		for (int i2 = 0; i2 < 3; ++i2) {
+			amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
+			if (amount > len) {
+				amount = len;
+			}
+			SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
+			sounds[i2][i].dpos += amount;
 		}
-		SDL_MixAudio(stream, &sounds[i].data[sounds[i].dpos], amount, SDL_MIX_MAXVOLUME);
-		sounds[i].dpos += amount;
 	}
 }
 
-void PlaySound(char* file) {
+void addSoundToIndex(char* file, int* ret, int id) {
 	int index;
 	SDL_AudioSpec wave;
 	Uint8* data;
@@ -267,12 +259,14 @@ void PlaySound(char* file) {
 
 	/* Look for an empty (or finished) sound slot */
 	for (index = 0; index < MAX_SOUNDS; ++index) {
-		if (sounds[index].dpos == sounds[index].dlen) {
+		if (sounds[id][index].dpos == sounds[id][index].dlen) {
 			break;
 		}
 	}
-	if (index == MAX_SOUNDS)
+	*ret = index;
+	if (index == MAX_SOUNDS) {
 		return;
+	}
 
 	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
 	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) {
@@ -281,19 +275,19 @@ void PlaySound(char* file) {
 	}
 	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
 	cvt.len = dlen;
-	cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
+	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
 	std::memcpy(cvt.buf, data, dlen);
 	SDL_ConvertAudio(&cvt);
 	SDL_FreeWAV(data);
 
 	/* Put the sound data in the slot (it starts playing immediately) */
-	if (sounds[index].data) {
-		free(sounds[index].data);
+	if (sounds[id][index].data) {
+		free(sounds[id][index].data);
 	}
 	SDL_LockAudio();
-	sounds[index].data = cvt.buf;
-	sounds[index].dlen = cvt.len_cvt;
-	sounds[index].dpos = 0;
+	sounds[id][index].data = cvt.buf;
+	sounds[id][index].dlen = cvt.len_cvt;
+	sounds[id][index].dpos = 0;
 	SDL_UnlockAudio();
 }
 
@@ -309,6 +303,6 @@ mankind knew that they cannot change find_nearest_css_slot. So instead of reflec
 \param hell
 \param LET'S_ROCK!!
 */
-int twoPointDistance(int x0, int y0, int x1, int y1){
-	return std::sqrt(std::pow(x0-x1,2) + std::pow(y0-y1,2));
+int twoPointDistance(int x0, int y0, int x1, int y1) {
+	return std::sqrt(std::pow(x0 - x1, 2) + std::pow(y0 - y1, 2));
 }

@@ -80,7 +80,7 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r = 0, int g = 0, int b = 0, int a = 0);
 int get_blank(string s);
 void audio_callback(void* unused, Uint8* stream, int len);
-void PlaySound(char* file);
+void addSoundToIndex(char* file, int *ret, int id);
 void refreshRenderer();
 
 
@@ -165,7 +165,22 @@ enum
 {
 	CHARA_KIND_ROY,
 	CHARA_KIND_ERIC,
+	CHARA_KIND_LEON,
+	CHARA_KIND_CHAMELEON,
+	CHARA_KIND_ANGELICA,
+	CHARA_KIND_NIGHTSABER,
+	CHARA_KIND_SULLY,
+	CHARA_KIND_PRIEST,
+	CHARA_KIND_AZIEL,
+	CHARA_KIND_BRUNO,
+	CHARA_KIND_TESSA,
+	CHARA_KIND_ALEJANDRO,
+	CHARA_KIND_NORMAN,
 	CHARA_KIND_ATLAS,
+	CHARA_KIND_JULIUS,
+	CHARA_KIND_RAMONA,
+	CHARA_KIND_ZYAIR,
+	CHARA_KIND_VESUVIUS,
 	CHARA_KIND_CHARA_TEMPLATE,
 
 	CHARA_KIND_MAX,
@@ -738,6 +753,14 @@ enum {
 enum {
 	ATLAS_VOICE_START,
 	ATLAS_VOICE_MAX,
+};
+
+enum {
+	SOUND_TYPE_NORMAL,
+	SOUND_TYPE_END_STATUS,
+	SOUND_TYPE_OVERWRITABLE,
+
+	SOUND_TYPE_MAX,
 };
 
 enum {

@@ -17,7 +17,7 @@
 #include "SoundManager.h"
 #undef main
 using namespace std;
-int registered_controllers[2] = {-1, -1};
+int registered_controllers[2] = { -1, -1 };
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;

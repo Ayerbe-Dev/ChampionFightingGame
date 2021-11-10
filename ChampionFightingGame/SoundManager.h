@@ -1,11 +1,16 @@
 #pragma once
 #include "SDL_audio.h"
+#include "FighterAccessor.h"
+#include "Fighter.h"
 #include "utils.h"
 
 class SoundManager {
 public:
 	SoundManager();
 	SoundManager(bool initiate);
+	FighterAccessor *fighter_accessor;
+
+	string active_sounds[3][MAX_SOUNDS];
 
 	string common_se[COMMON_SE_MAX];
 	string roy_se[ROY_SE_MAX];
@@ -19,9 +24,18 @@ public:
 
 	void hyperInit();
 
-	int playCommonSE(int se);
-	int playCharaSE(int se, int chara_kind);
-	int playVoice(int voice, int chara_kind);
+	int playCommonSE(int se, int id);
+	int playCharaSE(int se, int id);
+	int playVoice(int voice, int id);
 	int playStageMusic(int stage_kind);
-	int playMusic(int music);
+	int playMusic(int music_kind);
+	void playSound(string file, int id);
+	void endCommonSE(int se, int id);
+	void endCharaSE(int se, int id);
+	void endVoice(int voice, int id);
+	void endStageMusic(int stage_kind);
+	void endMusic(int music_kind);
+	int findSoundIndex(string file, int id);
+	void endSound(string file, int id);
+	void endSoundAll();
 };

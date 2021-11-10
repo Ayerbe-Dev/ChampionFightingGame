@@ -8,7 +8,7 @@
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
-extern SoundManager* g_soundmanager;
+extern SoundManager g_soundmanager;
 
 
 
@@ -431,27 +431,27 @@ void Fighter::loadStatusScripts() {
 //Sound
 
 int Fighter::playCommonSE(int se) {
-	return g_soundmanager->playCommonSE(se, id);
+	return g_soundmanager.playCommonSE(se, id);
 }
 
 int Fighter::playCharaSE(int se) {
-	return g_soundmanager->playCharaSE(se, id);
+	return g_soundmanager.playCharaSE(se, id);
 }
 
 int Fighter::playVoice(int voice) {
-	return g_soundmanager->playVoice(voice, id);
+	return g_soundmanager.playVoice(voice, id);
 }
 
 void Fighter::endCommonSE(int se) {
-	g_soundmanager->endCommonSE(se, id);
+	g_soundmanager.endCommonSE(se, id);
 }
 
 void Fighter::endCharaSE(int se) {
-	g_soundmanager->endCharaSE(se, id);
+	g_soundmanager.endCharaSE(se, id);
 }
 
 void Fighter::endVoice(int voice) {
-	g_soundmanager->endVoice(voice, id);
+	g_soundmanager.endVoice(voice, id);
 }
 
 //Inputs

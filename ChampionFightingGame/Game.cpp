@@ -29,7 +29,7 @@
 #include "ProjectileTemplate.h"
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
-extern SoundManager* g_soundmanager;
+extern SoundManager g_soundmanager;
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
@@ -99,7 +99,6 @@ int game_main(PlayerInfo player_info[2]) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
 	}
-	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
 		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
 		player_info[1].crash_reason = "Oh, nothing's playing?";
@@ -385,7 +384,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_DestroyTexture(pScreenTexture);
 
 	}
-  g_soundmanager.endSoundAll();
+	g_soundmanager.endSoundAll();
 
 
 

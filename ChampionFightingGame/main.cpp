@@ -21,7 +21,7 @@ int registered_controllers[2] = {-1, -1};
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
-SoundManager* g_soundmanager;
+SoundManager g_soundmanager;
 SDL_AudioSpec format;
 
 int main() {
@@ -49,7 +49,7 @@ int main() {
 	SDL_GameControllerEventState(SDL_ENABLE);
 	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
-	g_soundmanager = new SoundManager(true);
+	g_soundmanager = SoundManager(true);
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
@@ -75,7 +75,6 @@ int main() {
 		}
 	}
 
-	delete g_soundmanager;
 	SDL_DestroyWindow(g_window);
 
 	SDL_Quit();

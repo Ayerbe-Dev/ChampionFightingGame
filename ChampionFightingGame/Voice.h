@@ -1,0 +1,16 @@
+#pragma once
+
+enum {
+	ROY_VOICE_START,
+	ROY_VOICE_MAX,
+};
+
+enum {
+	ERIC_VOICE_START,
+	ERIC_VOICE_MAX,
+};
+
+enum {
+	ATLAS_VOICE_START,
+	ATLAS_VOICE_MAX,
+};

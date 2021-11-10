@@ -52,6 +52,9 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{31489a1a-b655-4abe-939e-7c025d68ad6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Enum">
+      <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils.cpp">
@@ -397,6 +400,57 @@
     </ClInclude>
     <ClInclude Include="UI.h">
       <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterStatus.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterInt.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterFloat.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterFlag.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileStatus.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileInt.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileFloat.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileFlag.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxConstants.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonConstants.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuConstants.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterAttribute.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectKind.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="SE.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="Voice.h">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="Music.h">
+      <Filter>Header Files\Enum</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

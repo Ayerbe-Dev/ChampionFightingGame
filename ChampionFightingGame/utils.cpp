@@ -10,6 +10,7 @@ using namespace std;
 #include <cmath>
 #include<fstream>
 
+
 SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;

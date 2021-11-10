@@ -194,6 +194,7 @@
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="Leon.cpp" />
+    <ClCompile Include="Loader.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -279,6 +280,7 @@
     <ClInclude Include="Julius.h" />
     <ClInclude Include="Leon.fwd.h" />
     <ClInclude Include="Leon.h" />
+    <ClInclude Include="Loader.h" />
     <ClInclude Include="Menu.fwd.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />

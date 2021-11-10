@@ -57,6 +57,10 @@
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
 #include "ProjectileTemplate.h"
+#include "Loader.h"
+
+static int LoadGame(void* game_loader);
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
@@ -65,6 +69,7 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
 	displayLoadingScreen();
+
 	Uint32 tick = 0, tok = 0;
 	bool gaming = true;
 	bool visualize_boxes = true;
@@ -78,58 +83,44 @@ int game_main(PlayerInfo player_info[2]) {
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
 
-	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
+	const Uint8* keyboard_state;
 
-	//init stage
-	int rng = rand() % 2;
-	Stage stage = Stage(player_info[rng].stage_kind);
+	GameLoader *game_loader = new GameLoader(player_info);
 
-	//init players
+	bool loading = true;
+
+	SDL_Thread *loading_thread;
+	int thread_ret;
+
+	loading_thread = SDL_CreateThread(LoadGame, "Game Loader", (void*)game_loader);
+
+	while (loading) {
+		SDL_Delay(333);
+		cout << game_loader->loaded_items << endl;
+		if (game_loader->loaded_items >= 18) {
+			SDL_WaitThread(loading_thread, &thread_ret);
+			loading = false;
+		}
+	}
+
 	Fighter* fighter[2];
-	FighterAccessor* fighter_accessor = new FighterAccessor;
-
-	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, 0, &player_info[0], fighter_accessor);
-	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, 1, &player_info[1], fighter_accessor);
-
-	fighter[0] = p1->get_fighter();
-	fighter[1] = p2->get_fighter();
-
+	HealthBar health_bar[2];
+	Stage stage = game_loader->stage;
+	GameTimer timer = game_loader->timer;
+	FighterAccessor *fighter_accessor = game_loader->fighter_accessor;
+	IObject* p1 = game_loader->p1;
+	IObject* p2 = game_loader->p2;
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = &player_info[i]; //I was wrong, we actually need this
-		fighter[i]->pos.x = 0;
-		fighter_accessor->fighter[i] = fighter[i];
-		fighter[i]->fighter_accessor = fighter_accessor;
+		fighter[i] = game_loader->fighter[i];
+		health_bar[i] = game_loader->health_bar[i];
 	}
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->superInit(i);
-		/*
-			Requires fighter instance accessor to be fully initialized since it makes a call that involves checking the other character's x pos, so we'll
-			execute this part after the first loop has finished
-		*/
-	}
+
+
+	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
 		next_state = GAME_STATE_DEBUG_MENU;
-	}
-
-	//init ui
-	GameTimer timer = GameTimer(99);
-
-	HealthBar health_bar[2];
-	health_bar[0] = HealthBar(fighter[0]);
-	health_bar[1] = HealthBar(fighter[1]);
-
-	PlayerIndicator player_indicator[2];
-	player_indicator[0] = PlayerIndicator(fighter[0]);
-	player_indicator[1] = PlayerIndicator(fighter[1]);
-
-	const Uint8* keyboard_state;
-
-	for (int i = 0; i < 2; i++) {
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			fighter[i]->projectiles[i2]->owner_id = i;
-		}
 	}
 
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
@@ -418,11 +409,11 @@ int game_main(PlayerInfo player_info[2]) {
 
 	}
 	DONE_GAMING:
-
 	cleanup(p1, p2);
 	g_soundmanager.endSoundAll();
 
 	delete fighter_accessor;
+	delete game_loader;
 
 	return next_state;
 }
@@ -1416,4 +1407,79 @@ SDL_Rect getRenderPos(Fighter* fighter, bool force_center) {
 	}
 
 	return render_pos;
+}
+
+static int LoadGame(void* void_gameloader) {
+	GameLoader* game_loader = (GameLoader*)void_gameloader;
+	PlayerInfo player_info[2];
+	player_info[0] = game_loader->player_info[0];
+	game_loader->loaded_items++;
+	player_info[1] = game_loader->player_info[1];
+	game_loader->loaded_items++;
+
+	//init stage
+	int rng = rand() % 2;
+	Stage stage = Stage(player_info[rng].stage_kind);
+	game_loader->loaded_items++;
+
+	//init players
+	Fighter* fighter[2];
+	game_loader->loaded_items += 2;
+	FighterAccessor* fighter_accessor = new FighterAccessor;
+	game_loader->loaded_items++;
+
+	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, 0, &player_info[0], fighter_accessor);
+	game_loader->loaded_items++;
+	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, 1, &player_info[1], fighter_accessor);
+	game_loader->loaded_items++;
+
+	fighter[0] = p1->get_fighter();
+	game_loader->loaded_items++;
+	fighter[1] = p2->get_fighter();
+	game_loader->loaded_items++;
+
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->player_info = &player_info[i];
+		fighter[i]->pos.x = 0;
+		fighter_accessor->fighter[i] = fighter[i];
+		fighter[i]->fighter_accessor = fighter_accessor;
+		game_loader->loaded_items++;
+	}
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->superInit(i);
+		game_loader->loaded_items++;
+	}
+
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			fighter[i]->projectiles[i2]->owner_id = i;
+		}
+		game_loader->loaded_items++;
+	}
+
+	//init ui
+	GameTimer timer = GameTimer(99);
+	game_loader->loaded_items++;
+
+	HealthBar health_bar[2];
+	health_bar[0] = HealthBar(fighter[0]);
+	health_bar[1] = HealthBar(fighter[1]);
+	game_loader->loaded_items += 2;
+
+	PlayerIndicator player_indicator[2];
+	player_indicator[0] = PlayerIndicator(fighter[0]);
+	player_indicator[1] = PlayerIndicator(fighter[1]);
+	game_loader->loaded_items += 2;
+
+	game_loader->stage = stage;
+	game_loader->fighter_accessor = fighter_accessor;
+	game_loader->p1 = p1;
+	game_loader->p2 = p2;
+	for (int i = 0; i < 2; i++) {
+		game_loader->fighter[i] = fighter[i];
+		game_loader->player_indicator[i] = player_indicator[i];
+		game_loader->health_bar[i] = health_bar[i];
+	}
+
+	return 0;
 }

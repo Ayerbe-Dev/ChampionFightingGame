@@ -87,6 +87,10 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		}
 
 		menuHandler.handleCSS();
+		if (!cssMenuInstance.bSelecting) {
+			displayLoadingScreen();
+			break;
+		}
 
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
@@ -102,9 +106,8 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-		if (cssMenuInstance.bSelecting) {
-			checkLoadTime();
-		}
+
+		checkLoadTime();
 	}
 
 	return cssMenuInstance.getExitCode();

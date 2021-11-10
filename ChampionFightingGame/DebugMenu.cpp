@@ -92,17 +92,18 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		
-		//ooh menu handling
 		menuHandler.handleMenu();
-		//what if the only purpose of his 1 line was to hide 12 lines
+		if (!debugList.debugging) {
+			displayLoadingScreen();
+			break;
+		}
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-		if (debugList.debugging) {
-			checkLoadTime();
-		}
 		SDL_DestroyTexture(pScreenTexture);
+
+		checkLoadTime();
 	}
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
 	(&player_info[1])->crash_reason = "Crash Message Goes Here";

@@ -125,13 +125,13 @@ int game_main(PlayerInfo player_info[2]) {
 		load_icon.texture.render();
 		SDL_SetRenderTarget(g_renderer, NULL);
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-		SDL_DestroyTexture(pScreenTexture);
 
 		if (game_loader->finished) {
 			if (thread_ret == 0) {
 				SDL_WaitThread(loading_thread, &thread_ret);
 			}
+			draw_text("FiraCode-Regular.ttf", "Press any button to continue!", { -200, 50 }, 24, 255, 255, 255, 255);
+
 
 			for (int i = 0; i < 2; i++) {
 				player_info[i].update_buttons(keyboard_state);
@@ -140,6 +140,8 @@ int game_main(PlayerInfo player_info[2]) {
 				}
 			}
 		}
+		SDL_RenderPresent(g_renderer);
+		SDL_DestroyTexture(pScreenTexture);
 	}
 	GameTimer timer = GameTimer(99);
 	Stage stage = game_loader->stage;

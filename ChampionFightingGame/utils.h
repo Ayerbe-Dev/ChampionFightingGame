@@ -71,7 +71,7 @@ typedef unsigned long long u64;
 #define FONT_COUNT 2
 #define BUFFER_WINDOW 3
 #define MOTION_SPECIAL_TIMER 11
-#define MAX_SOUNDS 20
+#define MAX_SOUNDS 2
 
 #define FLOOR_GAMECOORD 60.0
 
@@ -105,6 +105,7 @@ void addSoundToIndex(char* file, int *ret, int id);
 void refreshRenderer();
 void displayLoadingScreen();
 void print_func(string statement, function<void()> func);
+void fillLoader(SDL_mutex* mutex, function<void()> func);
 
 
 /*

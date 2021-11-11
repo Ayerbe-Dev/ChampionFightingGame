@@ -323,3 +323,9 @@ void print_func(string statement, function<void()> func) {
 	func;
 	cout << "Success!" << endl;
 }
+
+void fillLoader(SDL_mutex* mutex, function<void()> func) {
+	SDL_LockMutex(mutex);
+	func;
+	SDL_UnlockMutex(mutex);
+}

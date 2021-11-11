@@ -25,6 +25,7 @@ SDL_Rect getRenderPos(Fighter* fighter, bool force_center);
 
 class IObject {
 public:
+	IObject();
 	IObject(int object_type, int object_kind, int id, PlayerInfo *player_info, FighterAccessor* fighter_accessor);
 	~IObject();
 	Fighter* get_fighter();

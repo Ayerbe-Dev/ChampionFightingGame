@@ -87,15 +87,29 @@ int game_main(PlayerInfo player_info[2]) {
 	game_loader->player_info[0] = player_info[0];
 	game_loader->player_info[1] = player_info[1];
 	bool loading = true;
+	bool setOnce = false;
 
 	SDL_Thread *loading_thread;
-	int thread_ret = 0; //If someone ever plays the game on a computer fast enough to call WaitThread more than once and crash because of it, change this value to a -1
+	int thread_ret = 0;
 
 	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
 	LoadIcon load_icon;
 	GameTexture loadingSplash;
 	loadingSplash.init("resource/ui/menu/splashload.png");
 	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	GameTimer timer;
+	Stage stage;
+	IObject* p1 = NULL;
+	IObject* p2 = NULL;
+	Fighter* fighter[2] = {NULL, NULL};
+	HealthBar health_bar[2];
+	PlayerIndicator player_indicator[2];
+	FighterAccessor* fighter_accessor = NULL;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+
 
 	while (loading) {
 		frameTimeDelay(&tick, &tok);
@@ -118,8 +132,6 @@ int game_main(PlayerInfo player_info[2]) {
 		load_icon.move();
 
 		SDL_RenderClear(g_renderer);
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
 		load_icon.texture.render();
@@ -130,8 +142,22 @@ int game_main(PlayerInfo player_info[2]) {
 			if (thread_ret == 0) {
 				SDL_WaitThread(loading_thread, &thread_ret);
 			}
-			draw_text("FiraCode-Regular.ttf", "Press any button to continue!", { -200, 50 }, 24, 255, 255, 255, 255);
+			if (!setOnce) {
+				timer = game_loader->timer;
+				stage = game_loader->stage;
 
+				p1 = game_loader->p1;
+				p2 = game_loader->p2;
+				fighter_accessor = game_loader->fighter_accessor;
+				for (int i = 0; i < 2; i++) {
+					health_bar[i] = game_loader->health_bar[i];
+					player_indicator[i] = game_loader->player_indicator[i];
+					fighter[i] = game_loader->fighter[i];
+					fighter[i]->player_info = &player_info[i];
+
+				}
+			}
+			setOnce = true;
 
 			for (int i = 0; i < 2; i++) {
 				player_info[i].update_buttons(keyboard_state);
@@ -141,23 +167,8 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 		SDL_RenderPresent(g_renderer);
-		SDL_DestroyTexture(pScreenTexture);
 	}
-	GameTimer timer = GameTimer(99);
-	Stage stage = game_loader->stage;
-
-	IObject* p1 = game_loader->p1;
-	IObject* p2 = game_loader->p2;
-	Fighter* fighter[2];
-	HealthBar health_bar[2];
-	PlayerIndicator player_indicator[2];
-	FighterAccessor *fighter_accessor = game_loader->fighter_accessor;
-	for (int i = 0; i < 2; i++) {
-		fighter[i] = game_loader->fighter[i];
-		fighter[i]->player_info = &player_info[i];
-		health_bar[i] = game_loader->health_bar[i];
-		player_indicator[i] = game_loader->player_indicator[i];
-	}
+	SDL_DestroyTexture(pScreenTexture);
 
 
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
@@ -1312,6 +1323,8 @@ void cleanup(IObject* p1, IObject* p2) {
 	delete p1;
 	delete p2;
 }
+
+IObject::IObject() {}
 
 IObject::IObject(int object_type, int object_kind, int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	if (object_type == OBJECT_TYPE_FIGHTER) {

@@ -102,7 +102,6 @@ void audio_callback(void* unused, Uint8* stream, int len);
 void addSoundToIndex(char* file, int *ret, int id);
 void refreshRenderer();
 void displayLoadingScreen();
-void checkLoadTime();
 
 
 /*

@@ -57,6 +57,8 @@
 #include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
 #include "ProjectileTemplate.h"
+#include "Loader.h"
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
@@ -64,7 +66,8 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
-	displayLoadingScreen();
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	Uint32 tick = 0, tok = 0;
 	bool gaming = true;
 	bool visualize_boxes = true;
@@ -78,58 +81,88 @@ int game_main(PlayerInfo player_info[2]) {
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
 
-	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
+	const Uint8* keyboard_state;
 
-	//init stage
-	int rng = rand() % 2;
-	Stage stage = Stage(player_info[rng].stage_kind);
+	GameLoader *game_loader = new GameLoader;
+	game_loader->player_info[0] = player_info[0];
+	game_loader->player_info[1] = player_info[1];
+	bool loading = true;
 
-	//init players
+	SDL_Thread *loading_thread;
+	int thread_ret = 0; //If someone ever plays the game on a computer fast enough to call WaitThread more than once and crash because of it, change this value to a -1
+
+	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
+	LoadIcon load_icon;
+	GameTexture loadingSplash;
+	loadingSplash.init("resource/ui/menu/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	while (loading) {
+		frameTimeDelay(&tick, &tok);
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT: {
+					if (thread_ret == 0) {
+						SDL_WaitThread(loading_thread, &thread_ret);
+					}
+					return GAME_STATE_CLOSE;
+				}
+				break;
+			}
+		}
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		load_icon.move();
+
+		SDL_RenderClear(g_renderer);
+		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		load_icon.texture.render();
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+		SDL_DestroyTexture(pScreenTexture);
+
+		if (game_loader->finished) {
+			if (thread_ret == 0) {
+				SDL_WaitThread(loading_thread, &thread_ret);
+			}
+
+			for (int i = 0; i < 2; i++) {
+				player_info[i].update_buttons(keyboard_state);
+				if (player_info[i].is_any_inputs()) {
+					loading = false;
+				}
+			}
+		}
+	}
+	GameTimer timer = GameTimer(99);
+	Stage stage = game_loader->stage;
+
+	IObject* p1 = game_loader->p1;
+	IObject* p2 = game_loader->p2;
 	Fighter* fighter[2];
-	FighterAccessor* fighter_accessor = new FighterAccessor;
-
-	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, 0, &player_info[0], fighter_accessor);
-	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, 1, &player_info[1], fighter_accessor);
-
-	fighter[0] = p1->get_fighter();
-	fighter[1] = p2->get_fighter();
-
+	HealthBar health_bar[2];
+	PlayerIndicator player_indicator[2];
+	FighterAccessor *fighter_accessor = game_loader->fighter_accessor;
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = &player_info[i]; //I was wrong, we actually need this
-		fighter[i]->pos.x = 0;
-		fighter_accessor->fighter[i] = fighter[i];
-		fighter[i]->fighter_accessor = fighter_accessor;
+		fighter[i] = game_loader->fighter[i];
+		fighter[i]->player_info = &player_info[i];
+		health_bar[i] = game_loader->health_bar[i];
+		player_indicator[i] = game_loader->player_indicator[i];
 	}
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->superInit(i);
-		/*
-			Requires fighter instance accessor to be fully initialized since it makes a call that involves checking the other character's x pos, so we'll
-			execute this part after the first loop has finished
-		*/
-	}
+
+
+	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
 		next_state = GAME_STATE_DEBUG_MENU;
-	}
-
-	//init ui
-	GameTimer timer = GameTimer(99);
-
-	HealthBar health_bar[2];
-	health_bar[0] = HealthBar(fighter[0]);
-	health_bar[1] = HealthBar(fighter[1]);
-
-	PlayerIndicator player_indicator[2];
-	player_indicator[0] = PlayerIndicator(fighter[0]);
-	player_indicator[1] = PlayerIndicator(fighter[1]);
-
-	const Uint8* keyboard_state;
-
-	for (int i = 0; i < 2; i++) {
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			fighter[i]->projectiles[i2]->owner_id = i;
-		}
 	}
 
 	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
@@ -181,7 +214,7 @@ int game_main(PlayerInfo player_info[2]) {
 				Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
 				directly when the frame is advanced manually
 				*/
-				(&player_info[i])->update_buttons(keyboard_state);
+				player_info[i].update_buttons(keyboard_state);
 			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
@@ -226,12 +259,15 @@ int game_main(PlayerInfo player_info[2]) {
 					if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
 						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-						fighter[i]->add_pos(-1.0, 0);
-						fighter[i]->facing_dir = 1.0;
-						fighter[i]->facing_right = true;
-						fighter[!i]->add_pos(1.0, 0);
-						fighter[!i]->facing_dir = -1.0;
-						fighter[!i]->facing_right = false;
+						if (fighter[i]->pos.x == fighter[!i]->pos.x) {
+							fighter[i]->facing_dir = 1.0;
+							fighter[i]->facing_right = true;
+							fighter[!i]->facing_dir = -1.0;
+							fighter[!i]->facing_right = false;
+						}
+						fighter[i]->add_pos(-1.0 * fighter[i]->facing_dir, 0);
+						fighter[!i]->add_pos(-1.0 * fighter[i]->facing_dir, 0);
+
 						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 					}
@@ -410,19 +446,15 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(g_renderer); //finalize
 
-
-		checkLoadTime();
-
 		SDL_DestroyTexture(pGui);
 		SDL_DestroyTexture(pScreenTexture);
-
 	}
 	DONE_GAMING:
-
 	cleanup(p1, p2);
 	g_soundmanager.endSoundAll();
 
 	delete fighter_accessor;
+	delete game_loader;
 
 	return next_state;
 }

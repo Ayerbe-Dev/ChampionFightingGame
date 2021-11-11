@@ -294,3 +294,17 @@ bool PlayerInfo::vertical_input(bool down) {
 		}
 	}
 }
+
+bool PlayerInfo::is_any_inputs() {
+	if (controller != NULL) {
+		return is_any_controller_input(controller);
+	}
+	else {
+		for (int i = 0; i < BUTTON_MAX; i++) {
+			if (check_button_trigger(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+}

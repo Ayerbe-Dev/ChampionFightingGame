@@ -90,9 +90,9 @@ int game_main(PlayerInfo player_info[2]) {
 	bool setOnce = false;
 
 	SDL_Thread *loading_thread;
-	int thread_ret = 0;
 
 	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
 	LoadIcon load_icon;
 	GameTexture loadingSplash;
 	loadingSplash.init("resource/ui/menu/splashload.png");
@@ -117,9 +117,6 @@ int game_main(PlayerInfo player_info[2]) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT: {
-					if (thread_ret == 0) {
-						SDL_WaitThread(loading_thread, &thread_ret);
-					}
 					return GAME_STATE_CLOSE;
 				}
 				break;
@@ -140,9 +137,6 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_UnlockMutex(mutex);
 
 		if (game_loader->finished) {
-			if (thread_ret == 0) {
-				SDL_WaitThread(loading_thread, &thread_ret);
-			}
 			if (!setOnce) {
 				timer = game_loader->timer;
 				stage = game_loader->stage;

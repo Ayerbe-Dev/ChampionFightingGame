@@ -136,4 +136,4 @@ static int LoadGame(void* void_gameloader) {
 	game_loader->finished = true;
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
 	return 1; 
-}
+} 

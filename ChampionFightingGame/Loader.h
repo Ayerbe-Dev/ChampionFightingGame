@@ -107,7 +107,7 @@ static int LoadGame(void* void_gameloader) {
 	for (int i = 0; i < 2; i++) {
 		SDL_LockMutex(mutex);
 		cout << fighter[i]->chara_kind << endl;
-			health_bar[1] = HealthBar(fighter[i]);
+			health_bar[i] = HealthBar(fighter[i]);
 			game_loader->loaded_items++;
 		SDL_UnlockMutex(mutex);
 	}
@@ -136,4 +136,4 @@ static int LoadGame(void* void_gameloader) {
 	game_loader->finished = true;
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
 	return 1; 
-}
+} 

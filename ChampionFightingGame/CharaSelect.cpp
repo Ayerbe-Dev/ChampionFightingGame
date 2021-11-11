@@ -8,6 +8,8 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 int chara_select_main(PlayerInfo player_info[2]) {
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	displayLoadingScreen();
 	Uint32 tick = 0, tok = 0;
 	const Uint8* keyboard_state;
@@ -106,8 +108,6 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-
-		checkLoadTime();
 	}
 
 	return cssMenuInstance.getExitCode();

@@ -14,7 +14,6 @@ public:
 	FighterAccessor* fighter_accessor;
 	IObject* p1;
 	IObject* p2;
-	GameTimer timer;
 	HealthBar health_bar[2];
 	PlayerIndicator player_indicator[2];
 	int loaded_items = 0;
@@ -24,7 +23,25 @@ public:
 	PlayerInfo player_info[2];
 };
 
+class LoadIcon {
+public:
+	LoadIcon();
+
+	GameTexture texture;
+	bool move_right;
+	bool move_down;
+	bool panic_v;
+	bool panic_mode;
+	float panic_speed;
+	float panic_add;
+
+	void move();
+	void set_attributes();
+	bool check_corner_distance(bool init);
+};
+
 static int LoadGame(void* void_gameloader) {
+	int time = SDL_GetTicks();
 	GameLoader* game_loader = (GameLoader*)void_gameloader;
 	//init stage
 	int rng = rand() % 2;
@@ -47,6 +64,8 @@ static int LoadGame(void* void_gameloader) {
 	fighter[1] = p2->get_fighter();
 	game_loader->loaded_items++;
 
+	PlayerInfo* player_info = &game_loader->player_info[0];
+
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->player_info = &game_loader->player_info[i];
 		fighter[i]->pos.x = 0;
@@ -65,10 +84,6 @@ static int LoadGame(void* void_gameloader) {
 		}
 		game_loader->loaded_items++;
 	}
-
-	//init ui
-	GameTimer timer = GameTimer(99);
-	game_loader->loaded_items++;
 
 	HealthBar health_bar[2];
 	health_bar[0] = HealthBar(fighter[0]);
@@ -90,5 +105,6 @@ static int LoadGame(void* void_gameloader) {
 		game_loader->health_bar[i] = health_bar[i];
 	}
 	game_loader->finished = true;
-	return 0;
+	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
+	return 1; 
 }

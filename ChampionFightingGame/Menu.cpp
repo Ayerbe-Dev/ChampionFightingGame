@@ -17,6 +17,9 @@ extern SDL_Renderer* g_renderer;
 
 int menu_main(PlayerInfo player_info[2]) {
 	displayLoadingScreen();
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+
 	Uint32 tick;
 	Uint32 tok;
 	Debugger debugger;
@@ -241,8 +244,6 @@ int menu_main(PlayerInfo player_info[2]) {
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-
-		checkLoadTime();
 	}
 
 	SKIP_RENDER:

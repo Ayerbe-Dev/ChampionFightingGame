@@ -14,8 +14,6 @@ using namespace std;
 SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
-bool g_loading;
-int g_loadtime;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -296,8 +294,6 @@ void addSoundToIndex(char* file, int* ret, int id) {
 void refreshRenderer() {
 	SDL_DestroyRenderer(g_renderer);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 }
 
 /*
@@ -319,18 +315,4 @@ void displayLoadingScreen() {
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);
 	loadingSplash.clearTexture();
-	if (!g_loading) {
-		g_loadtime = SDL_GetTicks();
-	}
-	g_loading = true;
-}
-
-//Called whenever SDL_RenderPresent is called. If the thing we last presented was a loading screen, this function will print the time between the
-//loading screen being displayed and the next thing that was rendered
-void checkLoadTime() {
-	if (g_loading) {
-		g_loading = false;
-		g_loadtime = SDL_GetTicks() - g_loadtime;
-		cout << "It took " << g_loadtime << "ms to load the current game state" << endl;
-	}
 }

@@ -22,6 +22,7 @@ bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SoundManager g_soundmanager;
+
 int main() {	
 
 	//Initialize SDL
@@ -73,20 +74,33 @@ int main() {
 
 	while (running) {
 		refreshRenderer();
+
 		if (game_state == GAME_STATE_GAME) {
 			game_state = game_main(player_info);
+			if (game_state == GAME_STATE_CLOSE) {
+				running = false;
+			}
 		}
 		else if (game_state == GAME_STATE_MENU) {
 			game_state = menu_main(player_info);
+			if (game_state == GAME_STATE_CLOSE) {
+				running = false;
+			}
 		}
 		else if (game_state == GAME_STATE_CHARA_SELECT) {
 			game_state = chara_select_main(player_info);
+			if (game_state == GAME_STATE_CLOSE) {
+				running = false;
+			}
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
 		else {
 			game_state = debugMenu(player_info, game_state);
+			if (game_state == GAME_STATE_CLOSE) {
+				running = false;
+			}
 		}
 	}
 

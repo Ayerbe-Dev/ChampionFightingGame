@@ -102,8 +102,6 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
 		SDL_DestroyTexture(pScreenTexture);
-
-		checkLoadTime();
 	}
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
 	(&player_info[1])->crash_reason = "Crash Message Goes Here";

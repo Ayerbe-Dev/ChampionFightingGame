@@ -30,4 +30,5 @@ public:
 	void move_to_front(u32 buttons[6], u32 button);
 	bool horizontal_input(bool right);
 	bool vertical_input(bool down);
+	bool is_any_inputs();
 };

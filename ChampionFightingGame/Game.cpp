@@ -728,10 +728,10 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 		}
 	}
 	if (parrying) {
-		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag + 12;
-		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag + 8;
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14 + PARRY_ADVANTAGE_FRAMES - hitbox->blockstun;
+		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
 	}
@@ -828,10 +828,10 @@ int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hi
 		}
 	}
 	if (parrying) {
-		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag + 12;
-		attacker->projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag + 8;
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 6;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 6 + PARRY_ADVANTAGE_FRAMES - hitbox->blockstun;
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
 	}

@@ -22,6 +22,7 @@ Fighter::Fighter(PlayerInfo* player_info) {
 }
 
 void Fighter::fighter_main() {
+	Fighter* that = fighter_accessor->fighter[!id];
 	/*
 				   _.-,
 			  _ .-'  / .._
@@ -64,15 +65,18 @@ void Fighter::fighter_main() {
 		fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] = FIGHTER_STATUS_MAX;
 	}
 
-	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
-		fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
-	}
-
 	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {
 		reenter_last_anim();
 	}
 	chara_main();
 	playoutStatus();
+
+	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
+		fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
+	}
+	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
+		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
+	}
 
 	if (anim_kind->move_dir != 0) {
 		if (add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0, true)) {
@@ -87,11 +91,15 @@ void Fighter::fighter_main() {
 	}
 
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-	Fighter* that = fighter_accessor->fighter[!id];
 	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
-		if (is_collide(jostle_box, that->jostle_box) && that->status_kind != FIGHTER_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
-			add_pos(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0);
+		if (is_collide(jostle_box, that->jostle_box)) {
+			if (that->status_kind != FIGHTER_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
+				add_pos(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0);
+			}
+			else {
+				that->add_pos(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0);
+			}
 		}
 	}
 
@@ -833,26 +841,58 @@ int Fighter::get_special_input(int special_kind, u32 button, int charge_frames) 
 	}
 }
 
-bool Fighter::get_normal_cancel(int attack_kind, u32 button, int situation_kind) {
+bool Fighter::get_normal_cancel(int attack_kind, u32 button, int situation_kind, int stick) {
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == attack_kind && check_button_input(button) && situation_kind == this->situation_kind) {
+		int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
 		if (button == BUTTON_LP) {
-			fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LP;
+			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CLP;
+			}
+			else {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LP;
+			}
 		}
 		if (button == BUTTON_MP) {
-			fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MP;
+			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CMP;
+			}
+			else {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MP;
+			}
 		}
 		if (button == BUTTON_HP) {
-			fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HP;
+			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CHP;
+			}
+			else {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HP;
+			}
 		}
 		if (button == BUTTON_LK) {
-			fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LK;
+			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CLK;
+			}
+			else {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LK;
+			}
 		}
 		if (button == BUTTON_MK) {
-			fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MK;
+			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CMK;
+			}
+			else {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MK;
+			}
 		}
 		if (button == BUTTON_HK) {
-			fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HK;
+			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CHK;
+			}
+			else {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HK;
+			}
 		}
+		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= BUFFER_WINDOW) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
 				return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
@@ -931,8 +971,10 @@ string Fighter::get_param_string_special(string param) {
 //Position
 
 bool Fighter::add_pos(float x, float y, bool prev) {
-	Fighter* that = fighter_accessor->fighter[!id];
-	float prev_x = x;
+	Fighter* that = fighter_accessor->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	float prev_x = x; 
+	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
+	//still helpful to know for debugging
 	if (x == -0.0) {
 		x = 0.0;
 	}
@@ -940,7 +982,8 @@ bool Fighter::add_pos(float x, float y, bool prev) {
 	if (y == -0.0) {
 		y = 0.0;
 	}
-	if (isnan(x) || isnan(y)) {
+	if (isnan(x) || isnan(y)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
+		//previous X/Y coords. This will make debugging easier.
 		char buffer_1[82];
 		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f. You probably", (id + 1), status_kind, prev_x, (float)prev_y);
 		char buffer_2[89];
@@ -952,19 +995,35 @@ bool Fighter::add_pos(float x, float y, bool prev) {
 		return false;
 	}
 
-	GameCoordinate prevpos = pos;
+	//Ok now to actually set some positions
+
+	GameCoordinate prevpos = pos; //Get the previous position
 	bool ret = true;
-	bool opponent_right = pos.x > that->pos.x;
+
+	//Check if the front quarter or so of our sprite is inside of the front quarter of the opponent's BEFORE we changed the position. We'll check this
+	//again after and compare the values. Note: The reason we divide by 4 for the offset and not 2 is because we want the sprites to be able to partly 
+	//overlap and let the jostle boxes create a more natural looking pushback. 
+
+	float this_x_front = pos.x + (pos.x_spr_offset * facing_dir / 4);
+	float that_x_front = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / 4);
+	bool opponent_right = this_x_front > that_x_front; 
+
+	//Add positions, then do a whole bunch of checks to see if we'll need to change to a different position.
+
 	pos.x += x;
 	pos.y += y;
-	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
+
+	//Note: The prev arg determines what should happen should a position check fail. If it's true, the changes to position on that axis are canceled
+	//completely. If not, the position is moved to the closest valid position.
+	
+	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) { //If you went out of the horizontal bounds
 		if (prev) {
 			pos.x = prevpos.x;
 		}
 		else {
 			pos.x = WINDOW_WIDTH / 2 - pos.x_spr_offset / 2;
 		}
-		if (get_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) {
+		if (get_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
 		}
 		ret = false;
@@ -981,12 +1040,12 @@ bool Fighter::add_pos(float x, float y, bool prev) {
 		}
 		ret = false;
 	}
-	if (pos.y < 0) {
+	if (pos.y < 0) { //If you're about to land in the floor
 		if (prev) {
 			pos.y = prevpos.y;
 		}
 		else {
-			pos.y = 0;
+			pos.y = 0; //Pretty sure this will get autocorrected to FLOOR_GAMECOORD on the next frame anyway
 		}
 		ret = false;
 	}
@@ -999,15 +1058,25 @@ bool Fighter::add_pos(float x, float y, bool prev) {
 		}
 		ret = false;
 	}
-	float opponent_x = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
-	float compare_x = pos.x + (pos.x_spr_offset * facing_dir / -2);
-	float x_distance = std::max(opponent_x, compare_x) - std::min(opponent_x, compare_x);
+
+	//Check if a player is about to walk out of the camera range even if they would stay in bounds.
+
+	float this_x_back = pos.x + (pos.x_spr_offset * facing_dir / -2);
+	float that_x_back = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
+	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
-		pos.x = prevpos.x;
+		pos.x = prevpos.x; //I don't know what the calculation for "make it so you're as close as possible to the max distance without going over" would
+		//look like, and frankly I don't care enough to do it
 		ret = false;
 	}
-	bool new_opponent_right = pos.x > that->pos.x;
-	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND) {
+
+	//Check to see if you crossed up the opponent by changing positions
+	
+	float new_this_x_front = pos.x + (pos.x_spr_offset * facing_dir / 4);
+	float new_that_x_front = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / 4);
+	bool new_opponent_right = new_this_x_front > new_that_x_front;
+	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND 
+		&& that->situation_kind == FIGHTER_SITUATION_GROUND && x * facing_dir > 0) {
 		pos.x = prevpos.x;
 		ret = false;
 	}
@@ -1038,7 +1107,9 @@ bool Fighter::set_pos(float x, float y, bool prev) {
 	}
 	GameCoordinate prevpos = pos;
 	bool ret = true;
-	bool opponent_right = pos.x > that->pos.x;
+	float this_x_front = pos.x + (pos.x_spr_offset * facing_dir / 2);
+	float that_x_front = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / 2);
+	bool opponent_right = this_x_front > that_x_front;
 	pos.x = x;
 	pos.y = y;
 	if (pos.x + pos.x_spr_offset / 2 > WINDOW_WIDTH / 2) {
@@ -1077,14 +1148,16 @@ bool Fighter::set_pos(float x, float y, bool prev) {
 		}		
 		ret = false;
 	}
-	float opponent_x = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
-	float compare_x = pos.x + (pos.x_spr_offset * facing_dir / -2);
-	float x_distance = std::max(opponent_x, compare_x) - std::min(opponent_x, compare_x);
+	float this_x_back = pos.x + (pos.x_spr_offset * facing_dir / -2);
+	float that_x_back = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / -2);
+	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
 		pos.x = prevpos.x;
 		ret = false;
 	}
-	bool new_opponent_right = pos.x > that->pos.x;
+	float new_this_x_front = pos.x + (pos.x_spr_offset * facing_dir / 2);
+	float new_that_x_front = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / 2);
+	bool new_opponent_right = new_this_x_front > new_that_x_front;
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND) {
 		pos.x = prevpos.x;
 		ret = false;
@@ -1654,11 +1727,14 @@ u32 Fighter::get_status_group() {
 		case (FIGHTER_STATUS_FALL):
 		case (FIGHTER_STATUS_WALKF):
 		case (FIGHTER_STATUS_WALKB):
-		case (FIGHTER_STATUS_JUMP):
-		{
+		case (FIGHTER_STATUS_JUMP): {
 			return STATUS_GROUP_NO_RENDER_PRIORITY;
 		} 
 		break;
+		case (FIGHTER_STATUS_ATTACK):
+		case (FIGHTER_STATUS_ATTACK_AIR): {
+			return STATUS_GROUP_ATTACK;
+		} break;
 		default: {
 			return STATUS_GROUP_NORMAL;
 		}

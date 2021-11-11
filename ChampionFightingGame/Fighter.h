@@ -88,8 +88,8 @@ public:
 	int get_stick_dir(); //Stick direction, relative to your facing direction. Returns num pad notation.
 	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
 	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
-	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind); //Attempts to cancel attack_kind into a normal based on button if the 
-		//situation_kind is correct
+	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
+	//button if the situation_kind is correct
 
 	//Sound - All of these just call the SoundManager versions of these functions except they pass their own ID as an arg
 

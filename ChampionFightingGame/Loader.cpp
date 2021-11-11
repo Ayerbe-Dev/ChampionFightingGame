@@ -4,7 +4,7 @@ GameLoader::GameLoader() {
 
 }
 
-GameLoader::GameLoader(PlayerInfo player_info[2]) {
-	this->player_info[0] = player_info[0];
-	this->player_info[1] = player_info[1];
+GameLoader::GameLoader(PlayerInfo p1, PlayerInfo p2) {
+	this->player_info[0] = p1;
+	this->player_info[1] = p2;
 }

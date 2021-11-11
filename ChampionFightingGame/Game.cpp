@@ -59,8 +59,6 @@
 #include "ProjectileTemplate.h"
 #include "Loader.h"
 
-static int LoadGame(void* game_loader);
-
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
@@ -85,19 +83,17 @@ int game_main(PlayerInfo player_info[2]) {
 
 	const Uint8* keyboard_state;
 
-	GameLoader *game_loader = new GameLoader(player_info);
-
+	GameLoader *game_loader = new GameLoader(player_info[0], player_info[1]);
 	bool loading = true;
 
 	SDL_Thread *loading_thread;
 	int thread_ret;
 
-	loading_thread = SDL_CreateThread(LoadGame, "Game Loader", (void*)game_loader);
+	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
 
 	while (loading) {
-		SDL_Delay(333);
-		cout << game_loader->loaded_items << endl;
-		if (game_loader->loaded_items >= 21) {
+		frameTimeDelay(&tick, &tok);
+		if (game_loader->finished) {
 			SDL_WaitThread(loading_thread, &thread_ret);
 			loading = false;
 		}
@@ -1409,79 +1405,4 @@ SDL_Rect getRenderPos(Fighter* fighter, bool force_center) {
 	}
 
 	return render_pos;
-}
-
-static int LoadGame(void* void_gameloader) {
-	GameLoader* game_loader = (GameLoader*)void_gameloader;
-	PlayerInfo player_info[2];
-	player_info[0] = game_loader->player_info[0];
-	game_loader->loaded_items++;
-	player_info[1] = game_loader->player_info[1];
-	game_loader->loaded_items++;
-
-	//init stage
-	int rng = rand() % 2;
-	Stage stage = Stage(player_info[rng].stage_kind);
-	game_loader->loaded_items++;
-
-	//init players
-	Fighter* fighter[2];
-	game_loader->loaded_items += 2;
-	FighterAccessor* fighter_accessor = new FighterAccessor;
-	game_loader->loaded_items++;
-
-	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[0])->chara_kind, 0, &player_info[0], fighter_accessor);
-	game_loader->loaded_items++;
-	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, (&player_info[1])->chara_kind, 1, &player_info[1], fighter_accessor);
-	game_loader->loaded_items++;
-
-	fighter[0] = p1->get_fighter();
-	game_loader->loaded_items++;
-	fighter[1] = p2->get_fighter();
-	game_loader->loaded_items++;
-
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = &player_info[i];
-		fighter[i]->pos.x = 0;
-		fighter_accessor->fighter[i] = fighter[i];
-		fighter[i]->fighter_accessor = fighter_accessor;
-		game_loader->loaded_items++;
-	}
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->superInit(i);
-		game_loader->loaded_items++;
-	}
-
-	for (int i = 0; i < 2; i++) {
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			fighter[i]->projectiles[i2]->owner_id = i;
-		}
-		game_loader->loaded_items++;
-	}
-
-	//init ui
-	GameTimer timer = GameTimer(99);
-	game_loader->loaded_items++;
-
-	HealthBar health_bar[2];
-	health_bar[0] = HealthBar(fighter[0]);
-	health_bar[1] = HealthBar(fighter[1]);
-	game_loader->loaded_items += 2;
-
-	PlayerIndicator player_indicator[2];
-	player_indicator[0] = PlayerIndicator(fighter[0]);
-	player_indicator[1] = PlayerIndicator(fighter[1]);
-	game_loader->loaded_items += 2;
-
-	game_loader->stage = stage;
-	game_loader->fighter_accessor = fighter_accessor;
-	game_loader->p1 = p1;
-	game_loader->p2 = p2;
-	for (int i = 0; i < 2; i++) {
-		game_loader->fighter[i] = fighter[i];
-		game_loader->player_indicator[i] = player_indicator[i];
-		game_loader->health_bar[i] = health_bar[i];
-	}
-	cout << "Finished loading with " << game_loader->loaded_items << "items" << endl;
-	return 0;
 }

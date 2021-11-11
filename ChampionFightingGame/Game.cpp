@@ -105,6 +105,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 	Fighter* fighter[2];
 	HealthBar health_bar[2];
+	PlayerIndicator player_indicator[2];
 	Stage stage = game_loader->stage;
 	GameTimer timer = game_loader->timer;
 	FighterAccessor *fighter_accessor = game_loader->fighter_accessor;
@@ -113,6 +114,7 @@ int game_main(PlayerInfo player_info[2]) {
 	for (int i = 0; i < 2; i++) {
 		fighter[i] = game_loader->fighter[i];
 		health_bar[i] = game_loader->health_bar[i];
+		player_indicator[i] = game_loader->player_indicator[i];
 	}
 
 

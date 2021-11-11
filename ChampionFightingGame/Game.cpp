@@ -126,9 +126,7 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
+		SDL_LockMutex(mutex);
 		load_icon.move();
 
 		SDL_RenderClear(g_renderer);
@@ -137,6 +135,9 @@ int game_main(PlayerInfo player_info[2]) {
 		load_icon.texture.render();
 		SDL_SetRenderTarget(g_renderer, NULL);
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(mutex);
 
 		if (game_loader->finished) {
 			if (thread_ret == 0) {
@@ -159,6 +160,9 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 			setOnce = true;
 
+			SDL_PumpEvents();
+			keyboard_state = SDL_GetKeyboardState(NULL);
+
 			for (int i = 0; i < 2; i++) {
 				player_info[i].update_buttons(keyboard_state);
 				if (player_info[i].is_any_inputs()) {
@@ -166,7 +170,6 @@ int game_main(PlayerInfo player_info[2]) {
 				}
 			}
 		}
-		SDL_RenderPresent(g_renderer);
 	}
 	SDL_DestroyTexture(pScreenTexture);
 

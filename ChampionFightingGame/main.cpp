@@ -22,6 +22,7 @@ bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SoundManager g_soundmanager;
+SDL_mutex* mutex;
 
 int main() {	
 
@@ -38,6 +39,7 @@ int main() {
 
 	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	mutex = SDL_CreateMutex();
 
 	//Display the loading screen before anything else can happen
 
@@ -105,6 +107,7 @@ int main() {
 	}
 
 	SDL_DestroyWindow(g_window);
+	SDL_DestroyMutex(mutex);
 
 	SDL_Quit();
 

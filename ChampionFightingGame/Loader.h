@@ -5,6 +5,8 @@
 #include "FighterAccessor.h"
 #include "UI.h"
 
+extern SDL_mutex* mutex;
+
 class GameLoader {
 public:
 	GameLoader();
@@ -43,7 +45,6 @@ public:
 
 static int LoadGame(void* void_gameloader) {
 	int time = SDL_GetTicks();
-	SDL_mutex *mutex = SDL_CreateMutex();
 	GameLoader* game_loader = (GameLoader*)void_gameloader;
 	GameTimer timer;
 	Stage stage;
@@ -52,72 +53,74 @@ static int LoadGame(void* void_gameloader) {
 	Fighter* fighter[2];
 	HealthBar health_bar[2];
 	PlayerIndicator player_indicator[2];
-	FighterAccessor* fighter_accessor;
-
-	cout << "Player Info Character: " << game_loader->player_info[0].chara_kind << endl;
+	FighterAccessor* fighter_accessor = new FighterAccessor;
 
 	int rng = rand() % 2;
-	fillLoader(mutex, [&]() {	
+	SDL_LockMutex(mutex);	
 		stage = Stage(game_loader->player_info[rng].stage_kind); 
 		game_loader->loaded_items++;
-	});
+	SDL_UnlockMutex(mutex);
 
-	cout << "Stage: " << stage.stage_id << endl;
-
-	fillLoader(mutex, [&]() {
+	SDL_LockMutex(mutex);
 		p1 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[0])->chara_kind, 0, &game_loader->player_info[0], fighter_accessor);
 		game_loader->loaded_items++;
-	});
-	fillLoader(mutex, [&]() {
+	SDL_UnlockMutex(mutex);
+
+	SDL_LockMutex(mutex);
 		p2 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[1])->chara_kind, 1, &game_loader->player_info[1], fighter_accessor);
 		game_loader->loaded_items++;
-	});
-	fillLoader(mutex, [&]() {
+	SDL_UnlockMutex(mutex);
+
+	SDL_LockMutex(mutex);
 		fighter[0] = p1->get_fighter();
 		game_loader->loaded_items++;
-	});
-	fillLoader(mutex, [&]() {
+	SDL_UnlockMutex(mutex);
+
+	SDL_LockMutex(mutex);
 		fighter[1] = p2->get_fighter();
 		game_loader->loaded_items++;
-	});
+	SDL_UnlockMutex(mutex);
 
 	for (int i = 0; i < 2; i++) {
-		fillLoader(mutex, [&]() {
+		SDL_LockMutex(mutex);
 			fighter[i]->player_info = &game_loader->player_info[i];
 			fighter[i]->pos.x = 0;
 			fighter_accessor->fighter[i] = fighter[i];
 			fighter[i]->fighter_accessor = fighter_accessor;
 			game_loader->loaded_items++;
-		});
+		SDL_UnlockMutex(mutex);
 	}
 	for (int i = 0; i < 2; i++) {
-		fillLoader(mutex, [&]() {
+		SDL_LockMutex(mutex);
 			fighter[i]->superInit(i);
 			game_loader->loaded_items++;
-		});
+		SDL_UnlockMutex(mutex);
 	}
 	for (int i = 0; i < 2; i++) {
-		fillLoader(mutex, [&]() {
+		SDL_LockMutex(mutex);
 			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 				fighter[i]->projectiles[i2]->owner_id = i;
 			}
 			game_loader->loaded_items++;
-		});
+		SDL_UnlockMutex(mutex);
 	}
 	for (int i = 0; i < 2; i++) {
-		fillLoader(mutex, [&]() {
+		SDL_LockMutex(mutex);
+		cout << fighter[i]->chara_kind << endl;
 			health_bar[1] = HealthBar(fighter[i]);
 			game_loader->loaded_items++;
-		});
+		SDL_UnlockMutex(mutex);
 	}
-	fillLoader(mutex, [&]() {
+
+	SDL_LockMutex(mutex);
 		timer = GameTimer(99);
 		game_loader->loaded_items++;
-	});
+	SDL_UnlockMutex(mutex);
+
 	for (int i = 0; i < 2; i++) {
-		fillLoader(mutex, [&]() {
+		SDL_LockMutex(mutex);
 			player_indicator[i] = PlayerIndicator(fighter[i]);
-		});
+		SDL_UnlockMutex(mutex);
 	}
 
 	game_loader->stage = stage;
@@ -131,7 +134,6 @@ static int LoadGame(void* void_gameloader) {
 	}
 	game_loader->timer = timer;
 	game_loader->finished = true;
-	SDL_DestroyMutex(mutex);
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
 	return 1; 
 }

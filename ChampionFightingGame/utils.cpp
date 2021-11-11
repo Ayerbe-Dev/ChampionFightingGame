@@ -292,8 +292,9 @@ void addSoundToIndex(char* file, int* ret, int id) {
 }
 
 void refreshRenderer() {
-	SDL_DestroyRenderer(g_renderer);
-	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	print_func("Render Clear", []() {	SDL_RenderClear(g_renderer); });
+	print_func("Destroy Renderer", []() {	SDL_DestroyRenderer(g_renderer); });
+	print_func("Create Renderer", []() {	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED); });
 }
 
 /*
@@ -308,11 +309,17 @@ int twoPointDistance(int x0, int y0, int x1, int y1) {
 }
 
 void displayLoadingScreen() {
-	refreshRenderer();
+	print_func("Render Clear", []() {	SDL_RenderClear(g_renderer); });
 	GameTexture loadingSplash;
-	loadingSplash.init("resource/ui/menu/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-	loadingSplash.render();
-	SDL_RenderPresent(g_renderer);
-	loadingSplash.clearTexture();
+	print_func("Loading Splash Init", [&loadingSplash]() {	loadingSplash.init("resource/ui/menu/splashload.png"); });
+	print_func("Loading Splash Anchor", [&loadingSplash]() {  loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND); });
+	print_func("Loading Splash Render", [&loadingSplash]() {  loadingSplash.render(); });
+	print_func("Render Present", []() {  	SDL_RenderPresent(g_renderer); });
+	print_func("Loading Splash Clear Texture", [&loadingSplash]() {  loadingSplash.clearTexture(); });
+}
+
+void print_func(string statement, function<void()> func) {
+	cout << "About to execute " << statement << ": ";
+	func;
+	cout << "Success!" << endl;
 }

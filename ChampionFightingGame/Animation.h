@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL.h>
 #include <string>
-#include <functional>
 #include "utils.h"
 
 struct Animation {

@@ -1,5 +1,6 @@
 #pragma once
 using namespace std;
+#include <functional>
 #include <iostream>
 #include <fstream>
 #include "SDL.h"
@@ -103,6 +104,7 @@ void audio_callback(void* unused, Uint8* stream, int len);
 void addSoundToIndex(char* file, int *ret, int id);
 void refreshRenderer();
 void displayLoadingScreen();
+void print_func(string statement, function<void()> func);
 
 
 /*

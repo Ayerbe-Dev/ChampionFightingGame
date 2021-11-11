@@ -452,8 +452,8 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_DestroyTexture(pScreenTexture);
 	}
 	DONE_GAMING:
-	cleanup(p1, p2);
 	g_soundmanager.endSoundAll();
+	cleanup(p1, p2);
 
 	delete fighter_accessor;
 	delete game_loader;

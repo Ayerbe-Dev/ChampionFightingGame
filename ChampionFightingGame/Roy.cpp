@@ -673,17 +673,18 @@ void Roy::loadRoyACMD() {
 	script("special_uppercut_start", [this]() {
 		if (is_excute_frame(0)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
-				new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
-				new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
+				new_hurtbox(0, GameCoordinate{ -82, 8 }, GameCoordinate{ 34, 41 });
+				new_hurtbox(1, GameCoordinate{ -65, 36 }, GameCoordinate{ 17, 95 });
 			}
 		}
 		if (is_excute_frame(4)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+				new_hurtbox(0, GameCoordinate{ -82, 8 }, GameCoordinate{ 50, 41 });
+				new_hurtbox(1, GameCoordinate{ -18, 37 }, GameCoordinate{ 46, 132 });
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 34, 77 }, GameCoordinate{ 87, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
 			else {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 34, 77 }, GameCoordinate{ 87, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
 		}
 		if (is_excute_wait(4)) {
@@ -950,7 +951,7 @@ void Roy::roy_status_special_uppercut() {
 void Roy::roy_enter_status_special_uppercut() {
 	if (situation_kind == FIGHTER_SITUATION_GROUND) { //Not sure if we want air dp to be a thing but if we do, this is designed to account for it
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			change_anim("special_uppercut_rise");
+			change_anim("special_uppercut_rise", 1, 1);
 		}
 		else {
 			change_anim("special_uppercut_rise", 2, 1);

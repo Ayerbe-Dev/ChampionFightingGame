@@ -258,7 +258,8 @@ void addSoundToIndex(char* file, int* ret, int id) {
 	SDL_AudioCVT cvt;
 
 	/* Look for an empty (or finished) sound slot */
-	for (index = 0; index < MAX_SOUNDS; ++index) {
+	for (index = 0; index < MAX_SOUNDS; index++) {
+		*ret = index;
 		if (sounds[id][index].dpos == sounds[id][index].dlen) {
 			break;
 		}
@@ -268,26 +269,32 @@ void addSoundToIndex(char* file, int* ret, int id) {
 		return;
 	}
 
-	/* Load the sound file and convert it to 16-bit stereo at 22kHz */
-	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) {
+	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) { //Load the WAV
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
 		return;
 	}
-	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
-	cvt.len = dlen;
-	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
-	std::memcpy(cvt.buf, data, dlen);
-	SDL_ConvertAudio(&cvt);
-	SDL_FreeWAV(data);
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050); //Build the converter using the WAV
 
-	/* Put the sound data in the slot (it starts playing immediately) */
-	if (sounds[id][index].data) {
+	cvt.len = dlen; //Set the converter's length
+	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Create a buffer that is as big as the largest possible pass for the audio
+	std::memcpy(cvt.buf, data, dlen); //Copy dlen bytes of data into the buffer
+
+	SDL_ConvertAudio(&cvt); //Ok we have a finished converter now
+	SDL_FreeWAV(data); //We're done with the wave, get that shit outta here
+
+	if (sounds[id][index].data) { //If there was already some audio data in there from the last time the slot was filled, free it.
+		//This is a really shitty way of handling audio memory since it doesn't try to free any unused memory that happens to be filled, but it doesn't
+		//matter because trying to free the sounds[id][index].data causes a crash
 		free(sounds[id][index].data);
+		//Ideally we include this line in the function that stops a sound from playing (currently it just sets the audio to 0 which is even more 
+		//irresponsible because it makes it impossible to clean up the data next time we're writing to that slot either way, but the
+		//program in its current state will crash LONG before we reach that point, so fixing this part is still a priority.
 	}
-	SDL_LockAudio();
-	sounds[id][index].data = cvt.buf;
-	sounds[id][index].dlen = cvt.len_cvt;
-	sounds[id][index].dpos = 0;
+
+	SDL_LockAudio(); //Idk why locking the audio is important but I'm not going to question it
+	sounds[id][index].data = cvt.buf; //The audio
+	sounds[id][index].dlen = cvt.len_cvt; //How long the audio is
+	sounds[id][index].dpos = 0; //The point in the audio we're at
 	SDL_UnlockAudio();
 }
 

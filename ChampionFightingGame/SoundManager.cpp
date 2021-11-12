@@ -190,15 +190,25 @@ void SoundManager::endSound(string dir, int id) {
 	int clear_index = findSoundIndex(dir, id);
 	sounds[id][clear_index].dpos = 0;
 	sounds[id][clear_index].dlen = 0;
-	sounds[id][clear_index].data = 0;
+	free(sounds[id][clear_index].data);
+	sounds[id][clear_index].data = NULL;
 }
 
 void SoundManager::endSoundAll() {
+	SDL_LockAudio();
 	for (int i = 0; i < 3; i++) {
 		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+			if (sounds[i][i2].data) {
+				free(sounds[i][i2].data); //Why the hell does this give me a read access violation
+
+				//As in, NOT a write access violation
+
+				//lmao?????
+				sounds[i][i2].data = NULL;
+			}
 			sounds[i][i2].dpos = 0;
 			sounds[i][i2].dlen = 0;
-			sounds[i][i2].data = 0;
 		}
 	}
+	SDL_UnlockAudio();
 }

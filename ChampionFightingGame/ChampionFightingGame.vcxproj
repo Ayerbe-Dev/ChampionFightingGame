@@ -328,7 +328,7 @@
     <ClInclude Include="Fighter.h" />
     <ClInclude Include="Vesuvius.fwd.h" />
     <ClInclude Include="Vesuvius.h" />
-    <ClInclude Include="Voice.h" />
+    <ClInclude Include="VC.h" />
     <ClInclude Include="Zyair.fwd.h" />
     <ClInclude Include="Zyair.h" />
   </ItemGroup>

@@ -95,10 +95,12 @@ public:
 
 	int playCommonSE(int se);
 	int playCharaSE(int se);
-	int playVoice(int voice);
+	int playVC(int vc);
 	void endCommonSE(int se);
 	void endCharaSE(int se);
-	void endVoice(int voice);
+	void endVC(int vc);
+	void endSEAll();
+	void endVCAll();
 
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 

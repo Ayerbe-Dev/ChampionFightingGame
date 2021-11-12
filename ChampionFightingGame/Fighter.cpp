@@ -446,8 +446,8 @@ int Fighter::playCharaSE(int se) {
 	return g_soundmanager.playCharaSE(se, id);
 }
 
-int Fighter::playVoice(int voice) {
-	return g_soundmanager.playVoice(voice, id);
+int Fighter::playVC(int vc) {
+	return g_soundmanager.playVC(vc, id);
 }
 
 void Fighter::endCommonSE(int se) {
@@ -458,8 +458,16 @@ void Fighter::endCharaSE(int se) {
 	g_soundmanager.endCharaSE(se, id);
 }
 
-void Fighter::endVoice(int voice) {
-	g_soundmanager.endVoice(voice, id);
+void Fighter::endVC(int vc) {
+	g_soundmanager.endVC(vc, id);
+}
+
+void Fighter::endSEAll() {
+	g_soundmanager.endSEAll(id);
+}
+
+void Fighter::endVCAll() {
+	g_soundmanager.endVCAll(id);
 }
 
 //Inputs
@@ -2189,7 +2197,9 @@ void Fighter::enter_status_attack() {
 	}
 }
 
-void Fighter::exit_status_attack() {}
+void Fighter::exit_status_attack() {
+	endVCAll();
+}
 
 void Fighter::status_attack_air() {
 	if (specific_status_attack()) {

@@ -259,6 +259,7 @@ void Roy::loadRoyACMD() {
 	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
+			playVC(ROY_VC_ATTACK_01);
 			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });

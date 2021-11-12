@@ -14,6 +14,7 @@ using namespace std;
 SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
+extern bool debug;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -234,18 +235,22 @@ int get_blank(string s) {
 }
 
 void audio_callback(void* unused, Uint8* stream, int len) {
+
 	int i;
 	Uint32 amount;
 	SDL_memset(stream, 0, len);
 
-	for (i = 0; i < MAX_SOUNDS; ++i) {
-		for (int i2 = 0; i2 < 3; ++i2) {
-			amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
-			if (amount > len) {
-				amount = len;
+	for (i = 0; i < MAX_SOUNDS; i++) {
+		for (int i2 = 0; i2 < 3; i2++) {
+			if (sounds[i2][i].data) {
+				cout << i2 << ", " << i << endl;
+				amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
+				if (amount > len) {
+					amount = len;
+				}
+				SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
+				sounds[i2][i].dpos += amount;
 			}
-			SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
-			sounds[i2][i].dpos += amount;
 		}
 	}
 }
@@ -257,10 +262,8 @@ void addSoundToIndex(char* file, int* ret, int id) {
 	Uint32 dlen;
 	SDL_AudioCVT cvt;
 
-	/* Look for an empty (or finished) sound slot */
 	for (index = 0; index < MAX_SOUNDS; index++) {
-		*ret = index;
-		if (sounds[id][index].dpos == sounds[id][index].dlen) {
+		if (!sounds[id][index].data) {
 			break;
 		}
 	}
@@ -273,28 +276,20 @@ void addSoundToIndex(char* file, int* ret, int id) {
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
 		return;
 	}
-	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050); //Build the converter using the WAV
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
 
-	cvt.len = dlen; //Set the converter's length
-	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Create a buffer that is as big as the largest possible pass for the audio
-	std::memcpy(cvt.buf, data, dlen); //Copy dlen bytes of data into the buffer
+	cvt.len = dlen;
+	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Converting the audio goes through multiple passes, some of which increase the size, so
+	//we allocate enough memory to handle the size during the largest pass
+	SDL_memcpy(cvt.buf, data, dlen);
 
-	SDL_ConvertAudio(&cvt); //Ok we have a finished converter now
-	SDL_FreeWAV(data); //We're done with the wave, get that shit outta here
+	SDL_ConvertAudio(&cvt);
+	SDL_FreeWAV(data);
 
-	if (sounds[id][index].data) { //If there was already some audio data in there from the last time the slot was filled, free it.
-		//This is a really shitty way of handling audio memory since it doesn't try to free any unused memory that happens to be filled, but it doesn't
-		//matter because trying to free the sounds[id][index].data causes a crash
-		free(sounds[id][index].data);
-		//Ideally we include this line in the function that stops a sound from playing (currently it just sets the audio to 0 which is even more 
-		//irresponsible because it makes it impossible to clean up the data next time we're writing to that slot either way, but the
-		//program in its current state will crash LONG before we reach that point, so fixing this part is still a priority.
-	}
-
-	SDL_LockAudio(); //Idk why locking the audio is important but I'm not going to question it
-	sounds[id][index].data = cvt.buf; //The audio
-	sounds[id][index].dlen = cvt.len_cvt; //How long the audio is
-	sounds[id][index].dpos = 0; //The point in the audio we're at
+	SDL_LockAudio();
+	sounds[id][index].data = cvt.buf;
+	sounds[id][index].dlen = cvt.len_cvt;
+	sounds[id][index].dpos = 0;
 	SDL_UnlockAudio();
 }
 

@@ -24,7 +24,7 @@ using namespace std;
 #include "FighterAttribute.h"
 #include "ObjectKind.h"
 #include "SE.h"
-#include "Voice.h"
+#include "VC.h"
 #include "Music.h"
 #include "GameTexture.h"
 
@@ -71,7 +71,7 @@ typedef unsigned long long u64;
 #define FONT_COUNT 2
 #define BUFFER_WINDOW 3
 #define MOTION_SPECIAL_TIMER 11
-#define MAX_SOUNDS 2
+#define MAX_SOUNDS 20
 
 #define FLOOR_GAMECOORD 60.0
 
@@ -124,6 +124,22 @@ enum { //This is the only enum in all of our source code that I couldn't figure 
 	PARAM_TYPE_BOOL,
 
 	PARAM_TYPE_MAX,
+};
+
+enum {
+	SOUND_KIND_SE,
+	SOUND_KIND_VC,
+	SOUND_KIND_MUSIC,
+	SOUND_KIND_STAGE_MUSIC,
+
+	SOUND_KIND_MAX,
+};
+
+enum { //jk
+	SOUND_TYPE_NORMAL,
+	SOUND_TYPE_LOOP,
+
+	SOUND_TYPE_MAX,
 };
 
 struct Offset

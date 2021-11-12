@@ -449,7 +449,7 @@
     <ClInclude Include="SE.h">
       <Filter>Header Files\Enum</Filter>
     </ClInclude>
-    <ClInclude Include="Voice.h">
+    <ClInclude Include="VC.h">
       <Filter>Header Files\Enum</Filter>
     </ClInclude>
     <ClInclude Include="Music.h">

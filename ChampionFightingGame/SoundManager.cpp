@@ -19,107 +19,97 @@ SoundManager::SoundManager(bool init) {
 	hyperInit();
 }
 
-void SoundManager::hyperInit() {//The string names for all audio go here
-	stage_music[STAGE_MUSIC_ATLAS] = "Atlas_Theme";
+void SoundManager::hyperInit() {
+	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
+	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0);
 }
 
 int SoundManager::playCommonSE(int se, int id) {
-	string file = common_se[se];
-	string dir = "resource/sound/se/common/" + file + ".wav";
-	if (file == "") {
+	Sound sound = common_se[se];
+	if (sound.name == "") {
 		return -1;
 	}
-	playSound(dir, id);
+	playSound(sound, id);
 	return 0; 
 }
 
 int SoundManager::playCharaSE(int se, int id) {
-	string file = "";
+	Sound sound;
 	switch (fighter_accessor->fighter[id]->chara_kind) {
 		case(CHARA_KIND_ROY): {
-			file = roy_se[se];
+			sound = roy_se[se];
 		} break;
 		case(CHARA_KIND_ERIC):{
-			file = eric_se[se];
+			sound = eric_se[se];
 		} break;
 		case(CHARA_KIND_ATLAS): {
-			file = atlas_se[se];
+			sound = atlas_se[se];
 		} break;
 		default: {} break;
 	}
-	if (file == "") {
+	if (sound.name == "") {
 		return -1;
 	}
-	string dir = "resource/sound/se/" + fighter_accessor->fighter[id]->chara_name + "/" + file + ".wav";
-	playSound(dir, id);
+	playSound(sound, id);
 	return 0;
 }
 
-int SoundManager::playVoice(int voice, int id) {
-	string file = "";
+int SoundManager::playVC(int vc, int id) {
+	Sound sound;
 	switch (fighter_accessor->fighter[id]->chara_kind) {
 		case(CHARA_KIND_ROY):
 		{
-			file = roy_voice[voice];
+			sound = roy_vc[vc];
 		} break;
 		case(CHARA_KIND_ERIC):
 		{
-			file = eric_voice[voice];
+			sound = eric_vc[vc];
 		} break;
 		case(CHARA_KIND_ATLAS):
 		{
-			file = atlas_voice[voice];
+			sound = atlas_vc[vc];
 		} break;
 		default: {} break;
 	}
-	if (file == "") {
+	if (sound.name == "") {
 		return -1;
 	}
-	string dir = "resource/sound/voice/" + fighter_accessor->fighter[id]->chara_name + "/" + file + ".wav";
-	playSound(dir, id);
+	playSound(sound, id);
 	return 0;
 }
 
 int SoundManager::playStageMusic(int stage_kind) {
-	string file = stage_music[stage_kind];
-	string dir = "resource/sound/bgm/stage/" + file + ".wav";
-	if (file == "") {
+	Sound sound = stage_music[stage_kind];
+	if (sound.name == "") {
 		return -1;
 	}
-	playSound(dir, 2);
+	playSound(sound, 2);
 	return 0;
 }
 
 int SoundManager::playMusic(int music_kind) {
-	string file = music[music_kind];
-	string dir = "resource/sound/bgm/common/" + file + ".wav";
-	if (file == "") {
+	Sound sound = music[music_kind];
+	if (sound.name == "") {
 		return -1;
 	}
-	playSound(dir, 2);
+	playSound(sound, 2);
 	return 0;
 }
 
-/*
-	Create a pointer to figure out where the sound will be put on the list, then pass it to a real sound function over in utils. 
-	
-	To clarify, the reason that the actual addSoundToIndex function is not a member of SoundManager is because it would require some things to be 
-	defined in this file rather than in utils, and doing that makes it so the audio_callback function doesn't work because of some scope shenanigans.
-
-	If you can figure out how to make that work then go ahead, personally I think this approach is ok
-*/
-void SoundManager::playSound(string dir, int id) {
+void SoundManager::playSound(Sound sound, int id) {
 	int index = 0;
-	addSoundToIndex((char*)dir.c_str(), &index, id);
+	const char* dir = (sound.dir).c_str();
+	addSoundToIndex((char*)dir, &index, id);
 	if (index != MAX_SOUNDS) {
-		active_sounds[id][index] = dir;
+		active_sounds[id][index] = sound;
 	}
 }
 
-int SoundManager::findSoundIndex(string file, int id) {
+int SoundManager::findSoundIndex(Sound sound, int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
-		if (active_sounds[id][i] == file) {
+		if (active_sounds[id][i].name == sound.dir) {
+			cout << i << endl;
 			return i;
 		}
 	}
@@ -127,70 +117,81 @@ int SoundManager::findSoundIndex(string file, int id) {
 }
 
 void SoundManager::endCommonSE(int se, int id) {
-	string file = common_se[se];
-	string dir = "resource/sound/se/common/" + file + ".wav";
-	endSound(dir, id);
+	Sound sound = common_se[se];
+	endSound(sound, id);
 }
 
 void SoundManager::endCharaSE(int se, int id) {
-	string file = "";
+	Sound sound;
 	switch (fighter_accessor->fighter[id]->chara_kind) {
 		case(CHARA_KIND_ROY):
 		{
-			file = roy_se[se];
+			sound = roy_se[se];
 		} break;
 		case(CHARA_KIND_ERIC):
 		{
-			file = eric_se[se];
+			sound = eric_se[se];
 		} break;
 		case(CHARA_KIND_ATLAS):
 		{
-			file = atlas_se[se];
+			sound = atlas_se[se];
 		} break;
 		default: {} break;
 	}
-	string dir = "resource/sound/se/" + fighter_accessor->fighter[id]->chara_name + "/" + file + ".wav";
-	endSound(dir, id);
+	endSound(sound, id);
 }
 
-void SoundManager::endVoice(int voice, int id) {
-	string file = "";
+void SoundManager::endVC(int vc, int id) {
+	Sound sound;
 	switch (fighter_accessor->fighter[id]->chara_kind) {
 		case(CHARA_KIND_ROY):
 		{
-			file = roy_voice[voice];
+			sound = roy_vc[vc];
 		} break;
 		case(CHARA_KIND_ERIC):
 		{
-			file = eric_voice[voice];
+			sound = eric_vc[vc];
 		} break;
 		case(CHARA_KIND_ATLAS):
 		{
-			file = atlas_voice[voice];
+			sound = atlas_vc[vc];
 		} break;
 		default: {} break;
 	}
-	string dir = "resource/sound/voice/" + fighter_accessor->fighter[id]->chara_name + "/" + file + ".wav";
-	endSound(dir, id);
+	endSound(sound, id);
+}
+
+void SoundManager::endSEAll(int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (active_sounds[id][i].sound_kind == SOUND_KIND_SE) {
+			endSound(active_sounds[id][i], id);
+		}
+	}
+}
+
+void SoundManager::endVCAll(int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (active_sounds[id][i].sound_kind == SOUND_KIND_VC) {
+			endSound(active_sounds[id][i], id);
+		}
+	}
 }
 
 void SoundManager::endStageMusic(int stage_kind) {
-	string file = stage_music[stage_kind];
-	string dir = "resource/sound/bgm/stage/" + file + ".wav";
-	endSound(dir, 2);
+	Sound sound = stage_music[stage_kind];
+	endSound(sound, 2);
 }
 
 void SoundManager::endMusic(int music_kind) {
-	string file = music[music_kind];
-	string dir = "resource/sound/bgm/common/" + file + ".wav";
-	endSound(dir, 2);
+	Sound sound = music[music_kind];
+	endSound(sound, 2);
 }
 
-void SoundManager::endSound(string dir, int id) {
-	int clear_index = findSoundIndex(dir, id);
+void SoundManager::endSound(Sound sound, int id) {
+	int clear_index = findSoundIndex(sound, id);
 	sounds[id][clear_index].dpos = 0;
 	sounds[id][clear_index].dlen = 0;
-	free(sounds[id][clear_index].data);
+	SDL_free(sounds[id][clear_index].data);
 	sounds[id][clear_index].data = NULL;
 }
 
@@ -199,16 +200,93 @@ void SoundManager::endSoundAll() {
 	for (int i = 0; i < 3; i++) {
 		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
 			if (sounds[i][i2].data) {
-				free(sounds[i][i2].data); //Why the hell does this give me a read access violation
+				SDL_free(sounds[i][i2].data);
 
-				//As in, NOT a write access violation
-
-				//lmao?????
 				sounds[i][i2].data = NULL;
+				sounds[i][i2].dpos = 0;
+				sounds[i][i2].dlen = 0;
 			}
-			sounds[i][i2].dpos = 0;
-			sounds[i][i2].dlen = 0;
 		}
 	}
 	SDL_UnlockAudio();
+}
+
+void SoundManager::checkSoundEnd() {
+	SDL_LockAudio();
+	for (int i = 0; i < 3; i++) {
+		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+			if (sounds[i][i2].data) {
+				if (sounds[i][i2].dpos >= sounds[i][i2].dlen) {
+					if (active_sounds[i][i2].sound_type == SOUND_TYPE_LOOP) {
+						sounds[i][i2].dpos = active_sounds[i][i2].loop_point;
+					}
+					else {
+						if (sounds[i][i2].data) {
+							SDL_free(sounds[i][i2].data);
+
+							sounds[i][i2].data = NULL;
+							sounds[i][i2].dpos = 0;
+							sounds[i][i2].dlen = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+	SDL_UnlockAudio();
+}
+
+Sound::Sound() {
+	sound_kind = SOUND_KIND_MAX;
+}
+
+Sound::Sound(string name, int sound_kind, int chara_kind, int sound_type, int loop_point) {
+	this->name = name;
+	this->sound_kind = sound_kind;
+	this->sound_type = sound_type;
+	this->loop_point = loop_point;
+	switch (sound_kind) {
+		case (SOUND_KIND_MUSIC):
+		{
+			this->dir = "resource/sound/bgm/common/" + name + ".wav";
+		} break;
+		case (SOUND_KIND_STAGE_MUSIC):
+		{
+			this->dir = "resource/sound/bgm/stage/" + name + ".wav";
+		} break;
+		case (SOUND_KIND_SE): {
+			switch (chara_kind) {
+				default: {
+					this->dir = "resource/sound/se/common/" + name + ".wav";
+				} break;
+				case (CHARA_KIND_ROY): {
+					this->dir = "resource/sound/se/roy/" + name + ".wav";
+				} break;
+				case (CHARA_KIND_ERIC):	{
+					this->dir = "resource/sound/se/eric/" + name + ".wav";
+				} break;
+				case (CHARA_KIND_ATLAS): {
+					this->dir = "resource/sound/se/atlas/" + name + ".wav";
+				} break;
+			}
+		} break;
+		case (SOUND_KIND_VC): {
+			switch (chara_kind) {
+				default: {} break;
+				case (CHARA_KIND_ROY):
+				{
+					this->dir = "resource/sound/vc/roy/" + name + ".wav";
+				} break;
+				case (CHARA_KIND_ERIC):
+				{
+					this->dir = "resource/sound/vc/eric/" + name + ".wav";
+				} break;
+				case (CHARA_KIND_ATLAS):
+				{
+					this->dir = "resource/sound/vc/atlas/" + name + ".wav";
+				} break;
+
+			}
+		} break;
+	}
 }

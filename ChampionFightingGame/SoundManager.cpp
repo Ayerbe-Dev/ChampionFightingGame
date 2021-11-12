@@ -164,7 +164,10 @@ void SoundManager::endVC(int vc, int id) {
 void SoundManager::endSEAll(int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		if (active_sounds[id][i].sound_kind == SOUND_KIND_SE) {
-			endSound(active_sounds[id][i], id);
+			sounds[id][i].dpos = 0;
+			sounds[id][i].dlen = 0;
+			SDL_free(sounds[id][i].data);
+			sounds[id][i].data = NULL;
 		}
 	}
 }
@@ -172,7 +175,10 @@ void SoundManager::endSEAll(int id) {
 void SoundManager::endVCAll(int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		if (active_sounds[id][i].sound_kind == SOUND_KIND_VC) {
-			endSound(active_sounds[id][i], id);
+			sounds[id][i].dpos = 0;
+			sounds[id][i].dlen = 0;
+			SDL_free(sounds[id][i].data);
+			sounds[id][i].data = NULL;
 		}
 	}
 }

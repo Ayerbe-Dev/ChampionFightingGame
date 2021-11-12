@@ -21,6 +21,7 @@ public:
 	GameTimer timer;
 	int loaded_items = 0;
 	bool finished = false;
+	bool can_ret = false;
 	Stage stage;
 
 	PlayerInfo player_info[2];
@@ -135,5 +136,7 @@ static int LoadGame(void* void_gameloader) {
 	game_loader->timer = timer;
 	game_loader->finished = true;
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
+	while (!game_loader->can_ret) {
+	}
 	return 1; 
 } 

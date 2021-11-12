@@ -66,6 +66,18 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
+	const Uint8* keyboard_state;
+
+	GameLoader *game_loader = new GameLoader;
+	game_loader->player_info[0] = player_info[0];
+	game_loader->player_info[1] = player_info[1];
+	bool loading = true;
+
+	SDL_Thread *loading_thread;
+
+	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
+
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	Uint32 tick = 0, tok = 0;
@@ -81,18 +93,6 @@ int game_main(PlayerInfo player_info[2]) {
 	GameCoordinate debug_anchor[2];
 	GameCoordinate debug_offset[2];
 
-	const Uint8* keyboard_state;
-
-	GameLoader *game_loader = new GameLoader;
-	game_loader->player_info[0] = player_info[0];
-	game_loader->player_info[1] = player_info[1];
-	bool loading = true;
-	bool setOnce = false;
-
-	SDL_Thread *loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
 	LoadIcon load_icon;
 	GameTexture loadingSplash;
 	loadingSplash.init("resource/ui/menu/splashload.png");
@@ -137,7 +137,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_UnlockMutex(mutex);
 
 		if (game_loader->finished) {
-			if (!setOnce) {
+			if (!game_loader->can_ret) {
 				timer = game_loader->timer;
 				stage = game_loader->stage;
 
@@ -152,7 +152,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 				}
 			}
-			setOnce = true;
+			game_loader->can_ret = true;
 
 			SDL_PumpEvents();
 			keyboard_state = SDL_GetKeyboardState(NULL);
@@ -465,6 +465,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_DestroyTexture(pScreenTexture);
 	}
 	DONE_GAMING:
+
 	g_soundmanager.endSoundAll();
 	cleanup(p1, p2);
 

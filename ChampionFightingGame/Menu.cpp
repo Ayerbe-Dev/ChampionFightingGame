@@ -33,7 +33,7 @@ int menu_main(PlayerInfo player_info[2]) {
 	const Uint8* keyboard_state;
 	tick = SDL_GetTicks();
 
-	SDL_Texture* bgTexture = loadTexture("resource/ui/menu/main/funnybg.png");
+	SDL_Texture* bgTexture = loadTexture("resource/ui/menu/main/bg.png");
 
 	MenuItem menu_items[5];
 	SubMenuTable* sub_menu_tables[5];

@@ -243,7 +243,6 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	for (i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
 			if (sounds[i2][i].data) {
-				cout << i2 << ", " << i << endl;
 				amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
 				if (amount > len) {
 					amount = len;
@@ -294,9 +293,9 @@ void addSoundToIndex(char* file, int* ret, int id) {
 }
 
 void refreshRenderer() {
-	print_func("Render Clear", []() {	SDL_RenderClear(g_renderer); });
-	print_func("Destroy Renderer", []() {	SDL_DestroyRenderer(g_renderer); });
-	print_func("Create Renderer", []() {	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED); });
+	SDL_RenderClear(g_renderer);
+	SDL_DestroyRenderer(g_renderer);
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 }
 
 /*
@@ -311,23 +310,11 @@ int twoPointDistance(int x0, int y0, int x1, int y1) {
 }
 
 void displayLoadingScreen() {
-	print_func("Render Clear", []() {	SDL_RenderClear(g_renderer); });
+	SDL_RenderClear(g_renderer);
 	GameTexture loadingSplash;
-	print_func("Loading Splash Init", [&loadingSplash]() {	loadingSplash.init("resource/ui/menu/splashload.png"); });
-	print_func("Loading Splash Anchor", [&loadingSplash]() {  loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND); });
-	print_func("Loading Splash Render", [&loadingSplash]() {  loadingSplash.render(); });
-	print_func("Render Present", []() {  	SDL_RenderPresent(g_renderer); });
-	print_func("Loading Splash Clear Texture", [&loadingSplash]() {  loadingSplash.clearTexture(); });
-}
-
-void print_func(string statement, function<void()> func) {
-	cout << "About to execute " << statement << ": ";
-	func;
-	cout << "Success!" << endl;
-}
-
-void fillLoader(SDL_mutex* mutex, function<void()> func) {
-	SDL_LockMutex(mutex);
-	func;
-	SDL_UnlockMutex(mutex);
+	loadingSplash.init("resource/ui/menu/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	loadingSplash.render();
+	SDL_RenderPresent(g_renderer);
+	loadingSplash.clearTexture();
 }

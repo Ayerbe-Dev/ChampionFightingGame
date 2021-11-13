@@ -16,6 +16,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern bool debug;
 extern bool can_play_non_music;
+extern auto g_chron;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -206,9 +207,14 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 void frameTimeDelay() {
 	auto current_time = chrono::steady_clock::now();
 	auto future_time = chrono::steady_clock::now() + 16.667ms;
+	
+	//reduce the future time to account for processing time
+	future_time = future_time - (current_time - g_chron);
+
 	while (current_time < future_time) {
 		current_time = chrono::steady_clock::now();
 	}
+	g_chron = chrono::steady_clock::now();
 };
 //Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {

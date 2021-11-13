@@ -23,6 +23,7 @@ bool can_play_non_music = true;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SoundManager g_soundmanager;
+auto g_chron = chrono::steady_clock::now();
 SDL_mutex* mutex;
 
 int main() {	

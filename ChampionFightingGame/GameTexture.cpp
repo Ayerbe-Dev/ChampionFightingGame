@@ -55,10 +55,6 @@ void GameTexture::setVerticalScaleFactor(float fScaleFactor){
     this->fVerticalScaleFactor = fScaleFactor;
 }
 
-void GameTexture::setAlpha(int alpha) {
-    SDL_SetTextureAlphaMod(pTexture, alpha);
-}
-
 void GameTexture::clearTexture() {
     SDL_DestroyTexture(pTexture);
 }
@@ -73,4 +69,8 @@ float GameTexture::getScaledHeight(){
 
 void GameTexture::setAnchorMode(int iMode){
     iAnchorMode = iMode;
+}
+
+void GameTexture::setAlpha(Uint8 alpha){
+    SDL_SetTextureAlphaMod(pTexture,alpha);
 }

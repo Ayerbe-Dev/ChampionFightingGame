@@ -81,7 +81,8 @@ struct SoundInfo {
 	u32 dlen;
 };
 
-
+void fadeOutOpeningSplash();
+void displayOpeningSplash();
 int twoPointDistance(int x0, int y0, int x1, int y1);
 void frameTimeDelay();
 int clamp(int min, int value, int max);

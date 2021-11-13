@@ -26,7 +26,7 @@ public:
     void setAnchorMode(int iMode);
     float getScaledWidth();
     float getScaledHeight();
-    void setAlpha(int alpha);
+    void setAlpha(Uint8 alpha);
     void clearTexture();
     bool bIsInitialized = false;
 private:

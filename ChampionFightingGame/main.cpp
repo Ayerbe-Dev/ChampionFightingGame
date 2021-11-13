@@ -45,7 +45,8 @@ int main() {
 
 	//Display the loading screen before anything else can happen
 
-	displayLoadingScreen();
+	//displayLoadingScreen();
+	displayOpeningSplash();
 
 	bool running = true;
 	int game_state = GAME_STATE_DEBUG_MENU;
@@ -80,6 +81,8 @@ int main() {
 	PlayerInfo player_info[2];
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
+
+	fadeOutOpeningSplash();
 
 	while (running) {
 		refreshRenderer();

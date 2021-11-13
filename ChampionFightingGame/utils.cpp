@@ -16,7 +16,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern bool debug;
 extern bool can_play_non_music;
-extern auto g_chron;
+extern std::chrono::_V2::steady_clock::time_point g_chron;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -204,9 +204,10 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 	TTF_CloseFont(font);
 }
 
+
 void frameTimeDelay() {
 	auto current_time = chrono::steady_clock::now();
-	auto future_time = chrono::steady_clock::now() + 16.667ms;
+	auto future_time = chrono::steady_clock::now() + 16.666ms;
 	
 	//reduce the future time to account for processing time
 	future_time = future_time - (current_time - g_chron);
@@ -216,6 +217,7 @@ void frameTimeDelay() {
 	}
 	g_chron = chrono::steady_clock::now();
 };
+
 //Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
 	int blank_pos = get_blank(text);
@@ -327,4 +329,76 @@ void displayLoadingScreen() {
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);
 	loadingSplash.clearTexture();
+}
+
+void displayOpeningSplash(){
+	SDL_RenderClear(g_renderer);
+	GameTexture titleSplash;
+	titleSplash.init("resource/ui/menu/game-splash-background.png");
+	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	GameTexture textSplash;
+	textSplash.init("resource/ui/menu/game-splash-text.png");
+	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	
+	Uint8 tmp_alpha = 0;
+	for (int i=0;i<25;i++){
+		SDL_RenderClear(g_renderer);
+		tmp_alpha += 10;
+		titleSplash.setAlpha(tmp_alpha);
+		titleSplash.render();
+		SDL_RenderPresent(g_renderer);
+		frameTimeDelay();
+		frameTimeDelay(); //do it again
+		frameTimeDelay(); //and again
+		frameTimeDelay(); //YET AGAIN
+	}
+
+	titleSplash.setAlpha((Uint8)255);
+	tmp_alpha = 0;
+	for (int i=0;i<51;i++){
+		SDL_RenderClear(g_renderer);
+		tmp_alpha += 5;
+		textSplash.setAlpha(tmp_alpha);
+		titleSplash.render();
+		textSplash.render();
+		SDL_RenderPresent(g_renderer);
+		frameTimeDelay();
+		frameTimeDelay(); //do it again
+		frameTimeDelay(); //and again
+		frameTimeDelay(); //YET AGAIN
+	}
+
+	textSplash.clearTexture();
+	titleSplash.clearTexture();
+}
+
+void fadeOutOpeningSplash(){
+	SDL_RenderClear(g_renderer);
+	GameTexture titleSplash;
+	titleSplash.init("resource/ui/menu/game-splash-background.png");
+	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	GameTexture textSplash;
+	textSplash.init("resource/ui/menu/game-splash-text.png");
+	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	
+	Uint8 tmp_alpha = 255;
+
+	for (int i=0;i<25;i++){
+		SDL_RenderClear(g_renderer);
+		tmp_alpha -= 10;
+		textSplash.setAlpha(tmp_alpha);
+		titleSplash.setAlpha(tmp_alpha);
+		titleSplash.render();
+		textSplash.render();
+		SDL_RenderPresent(g_renderer);
+		frameTimeDelay();
+		frameTimeDelay(); //do it again
+		frameTimeDelay(); //and again
+		frameTimeDelay(); //YET AGAIN
+	}
+
+	textSplash.clearTexture();
+	titleSplash.clearTexture();
 }

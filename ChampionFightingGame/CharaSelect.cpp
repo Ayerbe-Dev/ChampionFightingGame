@@ -432,9 +432,9 @@ void CSS::render() {
 				break;
 		}
 		tmpSlot.gameTexture.setScaleFactor(1);
-		tmpSlot.gameTexture.setAlpha(127);
+		tmpSlot.gameTexture.setAlpha((Uint8)127);
 		tmpSlot.gameTexture.render();
-		tmpSlot.gameTexture.setAlpha(255);
+		tmpSlot.gameTexture.setAlpha((Uint8)255);
 		if (tmpSlot.textureDir == "default") {
 			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.gameTexture.destRect.x, tmpSlot.gameTexture.destRect.y + 70, 24, 255, 255, 255, 255);
 		}

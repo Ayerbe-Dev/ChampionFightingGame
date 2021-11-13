@@ -58,10 +58,10 @@ int main() {
 	//Initialize audio
 
 	SDL_AudioSpec format;
-	format.freq = 22050;
+	format.freq = 44100;
 	format.format = AUDIO_F32SYS;
 	format.channels = 2;
-	format.samples = 361; 
+	format.samples = 729; 
 	/*
 	The number of samples needs to be a perfect square, and that value represents how much data will go into each iteration of the callback. Since the
 	callback only runs when the program determines it is time to load in more audio data, this value also effectively sets how often the callback will

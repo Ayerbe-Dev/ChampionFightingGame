@@ -254,6 +254,7 @@
     <ClInclude Include="CharaTemplate.fwd.h" />
     <ClInclude Include="CharaTemplate.h" />
     <ClInclude Include="CharaSelect.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />
     <ClInclude Include="Eric.fwd.h" />

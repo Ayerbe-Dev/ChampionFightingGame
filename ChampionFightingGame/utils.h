@@ -9,23 +9,7 @@ using namespace std;
 #include "GameCoordinate.fwd.h"
 #include "GameCoordinate.h"
 
-#include "FighterStatus.h"
-#include "FighterInt.h"
-#include "FighterFloat.h"
-#include "FighterFlag.h"
-#include "ProjectileStatus.h"
-#include "ProjectileInt.h"
-#include "ProjectileFloat.h"
-#include "ProjectileFlag.h"
-#include "BoxConstants.h"
-#include "ButtonConstants.h"
-#include "GameState.h"
-#include "MenuConstants.h"
-#include "FighterAttribute.h"
-#include "ObjectKind.h"
-#include "SE.h"
-#include "VC.h"
-#include "Music.h"
+#include "Constants.h"
 #include "GameTexture.h"
 
 typedef char i8;
@@ -75,12 +59,6 @@ typedef unsigned long long u64;
 
 #define FLOOR_GAMECOORD 60.0
 
-struct SoundInfo {
-	u8* data;
-	u32 dpos;
-	u32 dlen;
-};
-
 void fadeOutOpeningSplash();
 void displayOpeningSplash();
 int twoPointDistance(int x0, int y0, int x1, int y1);
@@ -98,8 +76,6 @@ void draw_text(string font_name, string text, GameCoordinate pos, int font_size 
 void draw_text(string font_name, string text, float x_pos, float y_pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r = 0, int g = 0, int b = 0, int a = 0);
 int get_blank(string s);
-void audio_callback(void* unused, Uint8* stream, int len);
-void addSoundToIndex(char* file, int *ret, int id);
 void refreshRenderer();
 void displayLoadingScreen();
 

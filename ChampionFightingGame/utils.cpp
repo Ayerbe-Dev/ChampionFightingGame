@@ -11,12 +11,9 @@ using namespace std;
 #include <fstream>
 #include <chrono>
 
-SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
-extern bool debug;
-extern bool can_play_non_music;
-extern std::chrono::_V2::steady_clock::time_point g_chron;
+extern std::chrono::steady_clock::time_point g_chron;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -241,67 +238,6 @@ int get_blank(string s) {
 		}
 	}
 	return 0;
-}
-
-void audio_callback(void* unused, Uint8* stream, int len) {
-
-	int i;
-	Uint32 amount;
-	SDL_memset(stream, 0, len);
-
-	for (i = 0; i < MAX_SOUNDS; i++) {
-		for (int i2 = 0; i2 < 3; i2++) {
-			if (sounds[i2][i].data) {
-				if (can_play_non_music  || (i == 0 && i2 == 2) ) { //The music should always be put into the first spot of sound id 2, so this statement 
-						//basically serves to check "are we looking at the music"
-					amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
-					if (amount > len) {
-						amount = len;
-					}
-					SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
-					sounds[i2][i].dpos += amount;
-				}
-			}
-		}
-	}
-}
-
-void addSoundToIndex(char* file, int* ret, int id) {
-	int index;
-	SDL_AudioSpec wave;
-	Uint8* data;
-	Uint32 dlen;
-	SDL_AudioCVT cvt;
-
-	for (index = 0; index < MAX_SOUNDS; index++) {
-		if (!sounds[id][index].data) {
-			break;
-		}
-	}
-	*ret = index;
-	if (index == MAX_SOUNDS) {
-		return;
-	}
-
-	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) { //Load the WAV
-		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
-		return;
-	}
-	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_F32SYS, 2, 22050);
-
-	cvt.len = dlen;
-	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Converting the audio goes through multiple passes, some of which increase the size, so
-	//we allocate enough memory to handle the size during the largest pass
-	SDL_memcpy(cvt.buf, data, dlen);
-
-	SDL_ConvertAudio(&cvt);
-	SDL_FreeWAV(data);
-
-	SDL_LockAudio();
-	sounds[id][index].data = cvt.buf;
-	sounds[id][index].dlen = cvt.len_cvt;
-	sounds[id][index].dpos = 0;
-	SDL_UnlockAudio();
 }
 
 void refreshRenderer() {

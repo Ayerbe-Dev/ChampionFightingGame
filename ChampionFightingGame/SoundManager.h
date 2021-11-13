@@ -4,6 +4,7 @@
 #include "Fighter.h"
 #include "utils.h"
 
+
 class Sound {
 public:
 	Sound();
@@ -14,6 +15,13 @@ public:
 	int loop_point;
 	int sound_kind;
 	int sound_type;
+};
+
+struct SoundInfo {
+	u8* data;
+	u32 dpos;
+	u32 dlen;
+	Sound sound;
 };
 
 class SoundManager {
@@ -57,3 +65,6 @@ public:
 	void endSoundAll();
 	void checkSoundEnd();
 };
+
+void audio_callback(void* unused, Uint8* stream, int len);
+void addSoundToIndex(Sound sound, int* ret, int id);

@@ -1,5 +1,7 @@
 ﻿#include "SoundManager.h"
-extern SoundInfo sounds[3][MAX_SOUNDS];
+SoundInfo sounds[3][MAX_SOUNDS];
+extern bool debug;
+extern bool can_play_non_music;
 
 SoundManager::SoundManager() {}
 
@@ -22,7 +24,7 @@ SoundManager::SoundManager(bool init) {
 void SoundManager::hyperInit() {
 	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
-	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0, SOUND_TYPE_LOOP, 1025200);
+	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0, SOUND_TYPE_LOOP, 1162500);
 }
 
 int SoundManager::playCommonSE(int se, int id) {
@@ -100,7 +102,7 @@ int SoundManager::playMusic(int music_kind) {
 void SoundManager::playSound(Sound sound, int id) {
 	int index = 0;
 	const char* dir = (sound.dir).c_str();
-	addSoundToIndex((char*)dir, &index, id);
+	addSoundToIndex(sound, &index, id);
 	if (index != MAX_SOUNDS) {
 		active_sounds[id][index] = sound;
 	}
@@ -295,4 +297,82 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int sound_type, int lo
 			}
 		} break;
 	}
+}
+
+void audio_callback(void* unused, Uint8* stream, int len) {
+
+	int i;
+	u32 amount;
+	u32 diff = 0;
+	SDL_memset(stream, 0, len);
+
+	for (i = 0; i < MAX_SOUNDS; i++) {
+		for (int i2 = 0; i2 < 3; i2++) {
+			if (sounds[i2][i].data) {
+				if (can_play_non_music 
+					|| sounds[i2][i].sound.sound_kind == SOUND_KIND_MUSIC 
+					|| sounds[i2][i].sound.sound_kind == SOUND_KIND_STAGE_MUSIC) {
+					amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
+					if (amount > len) {
+						amount = len;
+					}
+					if (sounds[i2][i].dpos + amount > sounds[i2][i].dlen) {
+						diff = (sounds[i2][i].dpos + amount) - sounds[i2][i].dlen;
+						amount -= diff;
+					}
+
+					SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
+					sounds[i2][i].dpos += amount;
+					if (debug) {
+						sounds[i2][i].dpos += amount * 3;
+					}
+					if (diff != 0) {
+						sounds[i2][i].dpos = sounds[i2][i].sound.loop_point;
+						SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], diff, SDL_MIX_MAXVOLUME);
+						sounds[i2][i].dpos += diff;
+					}
+				}
+			}
+		}
+	}
+}
+
+void addSoundToIndex(Sound sound, int* ret, int id) {
+	int index;
+	SDL_AudioSpec wave;
+	Uint8* data;
+	Uint32 dlen;
+	SDL_AudioCVT cvt;
+	const char* file = (sound.dir).c_str();
+
+	for (index = 0; index < MAX_SOUNDS; index++) {
+		if (!sounds[id][index].data) {
+			break;
+		}
+	}
+	*ret = index;
+	if (index == MAX_SOUNDS) {
+		return;
+	}
+
+	if (SDL_LoadWAV(file, &wave, &data, &dlen) == NULL) { //Load the WAV
+		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
+		return;
+	}
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_F32SYS, 2, 44100);
+
+	cvt.len = dlen;
+	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Converting the audio goes through multiple passes, some of which increase the size, so
+	//we allocate enough memory to handle the size during the largest pass
+	SDL_memcpy(cvt.buf, data, dlen);
+
+	SDL_ConvertAudio(&cvt);
+	SDL_FreeWAV(data);
+
+	SDL_LockAudio();
+	sounds[id][index].data = cvt.buf;
+	sounds[id][index].dlen = cvt.len_cvt;
+	sounds[id][index].dpos = 0;
+	sounds[id][index].sound = sound;
+	SDL_UnlockAudio();
 }

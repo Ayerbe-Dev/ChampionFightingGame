@@ -49,11 +49,11 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{31489a1a-b655-4abe-939e-7c025d68ad6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Enum">
-      <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Helper Classes">
       <UniqueIdentifier>{d403677a-879e-45cb-9fc6-0c0df220f49f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Constants">
+      <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -405,61 +405,64 @@
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="FighterStatus.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="FighterInt.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="FighterFloat.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="FighterFlag.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileStatus.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileInt.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileFloat.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileFlag.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="BoxConstants.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ButtonConstants.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="MenuConstants.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="FighterAttribute.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ObjectKind.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="SE.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="VC.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="Music.h">
-      <Filter>Header Files\Enum</Filter>
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="GameTexture.fwd.h">
       <Filter>Forward Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Loader.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\Constants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

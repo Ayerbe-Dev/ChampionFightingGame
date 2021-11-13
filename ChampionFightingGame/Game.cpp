@@ -66,6 +66,7 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool can_play_non_music;
 extern bool debug;
+
 int game_main(PlayerInfo player_info[2]) {
 	const Uint8* keyboard_state;
 

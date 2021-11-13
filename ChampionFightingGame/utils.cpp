@@ -246,7 +246,6 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 			if (sounds[i2][i].data) {
 				if (can_play_non_music  || (i == 0 && i2 == 2) ) { //The music should always be put into the first spot of sound id 2, so this statement 
 						//basically serves to check "are we looking at the music"
-					cout << "Position in song: " << sounds[i2][i].dpos << endl;
 					amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
 					if (amount > len) {
 						amount = len;
@@ -280,7 +279,7 @@ void addSoundToIndex(char* file, int* ret, int id) {
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
 		return;
 	}
-	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_S16, 2, 22050);
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_F32SYS, 2, 22050);
 
 	cvt.len = dlen;
 	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Converting the audio goes through multiple passes, some of which increase the size, so

@@ -57,7 +57,7 @@ int main() {
 
 	SDL_AudioSpec format;
 	format.freq = 22050;
-	format.format = AUDIO_S16;
+	format.format = AUDIO_F32SYS;
 	format.channels = 2;
 	format.samples = 361; 
 	/*

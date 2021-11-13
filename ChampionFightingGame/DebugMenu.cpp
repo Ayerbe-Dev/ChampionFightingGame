@@ -14,7 +14,6 @@ extern SDL_Renderer* g_renderer;
 
 int debugMenu(PlayerInfo player_info[2], int gamestate) {
 	displayLoadingScreen();
-	Uint32 tick=0,tok=0;
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
 	Debugger debugger;
@@ -54,7 +53,7 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 
 
-		frameTimeDelay(&tick,&tok);
+		frameTimeDelay();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {

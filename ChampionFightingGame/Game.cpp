@@ -64,6 +64,7 @@ extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
 extern SoundInfo sounds[3][MAX_SOUNDS];
 
+extern bool can_play_non_music;
 extern bool debug;
 int game_main(PlayerInfo player_info[2]) {
 	const Uint8* keyboard_state;
@@ -80,7 +81,6 @@ int game_main(PlayerInfo player_info[2]) {
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	Uint32 tick = 0, tok = 0;
 	bool gaming = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
@@ -112,7 +112,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 
 	while (loading) {
-		frameTimeDelay(&tick, &tok);
+		frameTimeDelay();	
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -183,11 +183,10 @@ int game_main(PlayerInfo player_info[2]) {
 		next_state = GAME_STATE_DEBUG_MENU;
 	}
 	while (gaming) {
-		frameTimeDelay(&tick, &tok);
+		frameTimeDelay();
 		g_soundmanager.checkSoundEnd();
-		SDL_PauseAudio(debug); //No audio may play while in debug mode, but later on if you advance the frame, audio will be unpaused for the rest of the
-		//frame
-
+		can_play_non_music = !debug;
+		
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
@@ -305,9 +304,7 @@ int game_main(PlayerInfo player_info[2]) {
 					debugger.target = 1;
 				}
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					SDL_PauseAudio(0); 
-					//Unpause audio. It will be left unpaused until the frame delay at the beginning of the next frame, and since the audio callback runs
-					//roughly once per frame, that essentially allows us to listen to audio frame-by-frame. This will be important for timing audio cues.
+					can_play_non_music = true;
 					player_info[0].update_buttons(keyboard_state);
 					player_info[1].update_buttons(keyboard_state);
 					fighter[0]->fighter_main();

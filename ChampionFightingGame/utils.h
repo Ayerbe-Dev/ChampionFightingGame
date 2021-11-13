@@ -83,10 +83,7 @@ struct SoundInfo {
 
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
-/*
-	Locks the app to 60tps. tick and tok should be 2 Uint32s initialized to 0;
-*/
-void frameTimeDelay(Uint32 *tick, Uint32 *tok);
+void frameTimeDelay();
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
 int ymlChopInt(string line);

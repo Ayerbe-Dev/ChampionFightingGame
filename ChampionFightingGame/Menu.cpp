@@ -8,8 +8,6 @@
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
-extern u32 tick;
-extern u32 tok;
 extern int error_render;
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
@@ -20,8 +18,6 @@ int menu_main(PlayerInfo player_info[2]) {
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 
-	Uint32 tick;
-	Uint32 tok;
 	Debugger debugger;
 	debugger = Debugger();
 	//neccesary for scaling
@@ -31,7 +27,6 @@ int menu_main(PlayerInfo player_info[2]) {
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	const Uint8* keyboard_state;
-	tick = SDL_GetTicks();
 
 	SDL_Texture* bgTexture = loadTexture("resource/ui/menu/main/bg.png");
 
@@ -96,11 +91,7 @@ int menu_main(PlayerInfo player_info[2]) {
 
 		//Frame delay
 
-		tok = SDL_GetTicks() - tick;
-		if (tok < TICK_RATE_MS) {
-			SDL_Delay(TICK_RATE_MS - tok);
-		}
-		tick = SDL_GetTicks();
+		frameTimeDelay();
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);

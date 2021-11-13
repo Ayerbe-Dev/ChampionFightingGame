@@ -38,6 +38,7 @@ public:
 	bool panic_mode;
 	float panic_speed;
 	float panic_add;
+	bool panic_setting; //True = Gradually slows down to a stop, False = Goes flying
 
 	void move();
 	void set_attributes();

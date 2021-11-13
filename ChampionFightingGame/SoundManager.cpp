@@ -22,7 +22,7 @@ SoundManager::SoundManager(bool init) {
 void SoundManager::hyperInit() {
 	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
-	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0);
+	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0, SOUND_TYPE_LOOP, 1055240);
 }
 
 int SoundManager::playCommonSE(int se, int id) {

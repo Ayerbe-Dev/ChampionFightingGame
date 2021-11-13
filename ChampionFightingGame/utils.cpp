@@ -9,12 +9,13 @@ using namespace std;
 #include <cstdint>
 #include <cmath>
 #include <fstream>
-
+#include <chrono>
 
 SoundInfo sounds[3][MAX_SOUNDS];
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern bool debug;
+extern bool can_play_non_music;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -202,12 +203,12 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 	TTF_CloseFont(font);
 }
 
-void frameTimeDelay(Uint32* tick, Uint32* tok) {
-	*tok = SDL_GetTicks() - *tick;
-	if (*tok < TICK_RATE_MS) {
-		SDL_Delay(TICK_RATE_MS - *tok);
+void frameTimeDelay() {
+	auto current_time = chrono::steady_clock::now();
+	auto future_time = chrono::steady_clock::now() + 16.667ms;
+	while (current_time < future_time) {
+		current_time = chrono::steady_clock::now();
 	}
-	*tick = SDL_GetTicks();
 };
 //Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
@@ -243,12 +244,16 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	for (i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
 			if (sounds[i2][i].data) {
-				amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
-				if (amount > len) {
-					amount = len;
+				if (can_play_non_music  || (i == 0 && i2 == 2) ) { //The music should always be put into the first spot of sound id 2, so this statement 
+						//basically serves to check "are we looking at the music"
+					cout << "Position in song: " << sounds[i2][i].dpos << endl;
+					amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
+					if (amount > len) {
+						amount = len;
+					}
+					SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
+					sounds[i2][i].dpos += amount;
 				}
-				SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
-				sounds[i2][i].dpos += amount;
 			}
 		}
 	}

@@ -19,6 +19,7 @@
 using namespace std;
 int registered_controllers[2] = { -1, -1 };
 bool debug = false;
+bool can_play_non_music = true;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SoundManager g_soundmanager;

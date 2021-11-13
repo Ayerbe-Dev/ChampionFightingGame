@@ -11,7 +11,6 @@ int chara_select_main(PlayerInfo player_info[2]) {
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	displayLoadingScreen();
-	Uint32 tick = 0, tok = 0;
 	const Uint8* keyboard_state;
 	Debugger debugger;
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -58,7 +57,7 @@ int chara_select_main(PlayerInfo player_info[2]) {
 	menuHandler.setRepeatDelay(20);
 
 	while (cssMenuInstance.bSelecting) {
-		frameTimeDelay(&tick, &tok);
+		frameTimeDelay();
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);

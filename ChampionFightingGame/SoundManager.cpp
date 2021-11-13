@@ -24,7 +24,8 @@ SoundManager::SoundManager(bool init) {
 void SoundManager::hyperInit() {
 	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
-	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0, SOUND_TYPE_LOOP, 1162500);
+	stage_music[STAGE_MUSIC_ATLAS] = Sound("Atlas_Theme", SOUND_KIND_STAGE_MUSIC, 0, SOUND_TYPE_LOOP, 2050480);
+//2062032
 }
 
 int SoundManager::playCommonSE(int se, int id) {
@@ -302,35 +303,37 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int sound_type, int lo
 void audio_callback(void* unused, Uint8* stream, int len) {
 
 	int i;
-	u32 amount;
 	u32 diff = 0;
+	u8* source;
 	SDL_memset(stream, 0, len);
+	int unfreeze_music = 1; //Debugging. 0 = Music is frozen during debug mode, 1 = Normal, 2 = Print Music position, 3 = Music sped up 8x during debug mode
 
 	for (i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
 			if (sounds[i2][i].data) {
-				if (can_play_non_music 
-					|| sounds[i2][i].sound.sound_kind == SOUND_KIND_MUSIC 
-					|| sounds[i2][i].sound.sound_kind == SOUND_KIND_STAGE_MUSIC) {
-					amount = (sounds[i2][i].dlen - sounds[i2][i].dpos);
-					if (amount > len) {
-						amount = len;
-					}
-					if (sounds[i2][i].dpos + amount > sounds[i2][i].dlen) {
-						diff = (sounds[i2][i].dpos + amount) - sounds[i2][i].dlen;
-						amount -= diff;
+				if (can_play_non_music || 
+					((sounds[i2][i].sound.sound_kind == SOUND_KIND_MUSIC || sounds[i2][i].sound.sound_kind == SOUND_KIND_STAGE_MUSIC)
+					&& unfreeze_music)) {
+					if (unfreeze_music == 2) {
+						cout << "Music Pos: " << sounds[i2][i].dpos << endl;
 					}
 
-					SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], amount, SDL_MIX_MAXVOLUME);
-					sounds[i2][i].dpos += amount;
-					if (debug) {
-						sounds[i2][i].dpos += amount * 3;
+					source = (u8*)SDL_malloc(len); //Allocate the length we're gonna use for the sound
+					if (sounds[i2][i].dpos + len > sounds[i2][i].dlen) {
+						diff = (sounds[i2][i].dpos + len) - sounds[i2][i].dlen;
+					}
+					SDL_memcpy(source, &sounds[i2][i].data[sounds[i2][i].dpos], len);
+					sounds[i2][i].dpos += len;
+					if (debug && unfreeze_music == 3) {
+						sounds[i2][i].dpos += len * 7;
 					}
 					if (diff != 0) {
 						sounds[i2][i].dpos = sounds[i2][i].sound.loop_point;
-						SDL_MixAudio(stream, &sounds[i2][i].data[sounds[i2][i].dpos], diff, SDL_MIX_MAXVOLUME);
 						sounds[i2][i].dpos += diff;
+						SDL_memcpy(&source[len - diff], &sounds[i2][i].data[sounds[i2][i].dpos], diff);
 					}
+					SDL_MixAudio(stream, source, len, SDL_MIX_MAXVOLUME);
+					SDL_free(source);
 				}
 			}
 		}
@@ -359,7 +362,7 @@ void addSoundToIndex(Sound sound, int* ret, int id) {
 		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
 		return;
 	}
-	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_F32SYS, 2, 44100);
+	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_F32SYS, 2, 22050);
 
 	cvt.len = dlen;
 	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult); //Converting the audio goes through multiple passes, some of which increase the size, so

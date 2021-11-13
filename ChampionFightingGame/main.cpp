@@ -46,7 +46,7 @@ int main() {
 	//Display the loading screen before anything else can happen
 
 	//displayLoadingScreen();
-	displayOpeningSplash();
+//	displayOpeningSplash();
 
 	bool running = true;
 	int game_state = GAME_STATE_DEBUG_MENU;
@@ -58,10 +58,10 @@ int main() {
 	//Initialize audio
 
 	SDL_AudioSpec format;
-	format.freq = 44100;
+	format.freq = 22050;
 	format.format = AUDIO_F32SYS;
 	format.channels = 2;
-	format.samples = 729; 
+	format.samples = 361; 
 	/*
 	The number of samples needs to be a perfect square, and that value represents how much data will go into each iteration of the callback. Since the
 	callback only runs when the program determines it is time to load in more audio data, this value also effectively sets how often the callback will

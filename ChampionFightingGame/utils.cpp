@@ -15,6 +15,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern std::chrono::steady_clock::time_point g_chron;
 extern SDL_mutex* mutex;
+extern bool threadRender;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -111,6 +112,7 @@ SDL_Texture* loadTexture(const char* file_path) {
 	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
 	SDL_UnlockMutex(mutex);
+	frameTimeDelay();
 	return ret;
 }
 

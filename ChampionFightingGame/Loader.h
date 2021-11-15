@@ -61,14 +61,19 @@ static int LoadGame(void* void_gameloader) {
 	int rng = rand() % 2;
 	stage = Stage(game_loader->player_info[rng].stage_kind); 
 	game_loader->loaded_items++;
+
 	p1 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[0])->chara_kind, 0, &game_loader->player_info[0], fighter_accessor);
 	game_loader->loaded_items++;
+
 	p2 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[1])->chara_kind, 1, &game_loader->player_info[1], fighter_accessor);
 	game_loader->loaded_items++;
+
 	fighter[0] = p1->get_fighter();
 	game_loader->loaded_items++;
+
 	fighter[1] = p2->get_fighter();
 	game_loader->loaded_items++;
+
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->player_info = &game_loader->player_info[i];
 		fighter[i]->pos.x = 0;
@@ -76,16 +81,19 @@ static int LoadGame(void* void_gameloader) {
 		fighter[i]->fighter_accessor = fighter_accessor;
 		game_loader->loaded_items++;
 	}
+
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->superInit(i);
 		game_loader->loaded_items++;
 	}
+
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
 		game_loader->loaded_items++;
 	}
+
 	for (int i = 0; i < 2; i++) {
 		cout << fighter[i]->chara_kind << endl;
 		health_bar[i] = HealthBar(fighter[i]);
@@ -108,6 +116,7 @@ static int LoadGame(void* void_gameloader) {
 	game_loader->p2 = p2;
 	for (int i = 0; i < 2; i++) {
 		game_loader->fighter[i] = fighter[i];
+		game_loader->fighter[i]->loadCharaSounds();
 		game_loader->player_indicator[i] = player_indicator[i];
 		game_loader->health_bar[i] = health_bar[i];
 	}

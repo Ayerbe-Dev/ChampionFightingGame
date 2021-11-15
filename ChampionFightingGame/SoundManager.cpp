@@ -248,8 +248,10 @@ void SoundManager::unloadSEAll(int id) {
 		if (sounds[id][i].sound.sound_kind == SOUND_KIND_SE) {
 			sounds[id][i].dpos = 0;
 			sounds[id][i].dlen = 0;
+			SDL_LockAudio();
 			SDL_free(sounds[id][i].data);
 			sounds[id][i].data = NULL;
+			SDL_UnlockAudio();
 		}
 	}
 }
@@ -259,8 +261,10 @@ void SoundManager::unloadVCAll(int id) {
 		if (sounds[id][i].sound.sound_kind == SOUND_KIND_VC) {
 			sounds[id][i].dpos = 0;
 			sounds[id][i].dlen = 0;
+			SDL_LockAudio();
 			SDL_free(sounds[id][i].data);
 			sounds[id][i].data = NULL;
+			SDL_UnlockAudio();
 		}
 	}
 }
@@ -275,22 +279,34 @@ void SoundManager::unloadSound(Sound sound, int id) {
 	sounds[id][clear_index].dpos = 0;
 	sounds[id][clear_index].dlen = 0;
 	sounds[id][clear_index].loop_dlen = 0;
+	sounds[id][clear_index].sound.active = false;
+	SDL_LockAudio();
 	SDL_free(sounds[id][clear_index].data);
+	SDL_free(sounds[id][clear_index].loop_data);
 	sounds[id][clear_index].data = NULL;
-	sounds[id][clear_index].loop_data = NULL;
+	if (sounds[id][clear_index].loop_data) {
+		sounds[id][clear_index].loop_data = NULL;
+	}
+	SDL_UnlockAudio();
 }
 
 void SoundManager::unloadSoundAll() {
 	for (int i = 0; i < 3; i++) {
 		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
 			if (sounds[i][i2].data) {
+				SDL_LockAudio();
 				SDL_free(sounds[i][i2].data);
+				if (sounds[i][i2].loop_data) {
+					SDL_free(sounds[i][i2].loop_data);
+				}
 
+				sounds[i][i2].sound.active = false;
 				sounds[i][i2].data = NULL;
 				sounds[i][i2].loop_data = NULL;
 				sounds[i][i2].dpos = 0;
 				sounds[i][i2].dlen = 0;
 				sounds[i][i2].loop_dlen = 0;
+				SDL_UnlockAudio();
 			}
 		}
 	}
@@ -298,7 +314,7 @@ void SoundManager::unloadSoundAll() {
 
 int SoundManager::findSoundIndex(Sound sound, int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
-		if (sounds[id][i].sound.name == sound.dir) {
+		if (sounds[id][i].sound.dir == sound.dir) {
 			return i;
 		}
 	}
@@ -493,10 +509,9 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 						sounds[i2][i].dpos = 0;
 						sounds[i2][i].dlen = 0;
 					}
-
-					SDL_MixAudio(stream, source, len, sounds[i2][i].sound.volume);
-					SDL_free(source);
 				}
+				SDL_MixAudio(stream, source, len, sounds[i2][i].sound.volume);
+				SDL_free(source);
 			}
 		}
 	}

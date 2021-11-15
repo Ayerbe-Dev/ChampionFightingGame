@@ -111,7 +111,7 @@ int game_main(PlayerInfo player_info[2]) {
 	SDL_DetachThread(loading_thread);
 	
 	while (loading) {
-		frameTimeDelay();	
+		frameTimeDelay();
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -121,10 +121,9 @@ int game_main(PlayerInfo player_info[2]) {
 				break;
 			}
 		}
-
-		SDL_LockMutex(mutex);
+		
 		load_icon.move();
-
+		SDL_LockMutex(mutex);
 
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -177,7 +176,13 @@ int game_main(PlayerInfo player_info[2]) {
 
 	while (gaming) {
 		frameTimeDelay();
-		
+		if (debug) {
+			g_soundmanager.pauseSEAll(0);
+			g_soundmanager.pauseSEAll(1);
+			g_soundmanager.pauseVCAll(0);
+			g_soundmanager.pauseVCAll(1);
+		}
+
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
@@ -282,6 +287,12 @@ int game_main(PlayerInfo player_info[2]) {
 		for (int i = 0; i < 2; i++) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
+				if (!debug) {
+					g_soundmanager.resumeSEAll(0);
+					g_soundmanager.resumeSEAll(1);
+					g_soundmanager.resumeVCAll(0);
+					g_soundmanager.resumeVCAll(1);
+				}
 				timer.ClockMode = !timer.ClockMode;
 			}
 			if (!debug) {
@@ -295,6 +306,11 @@ int game_main(PlayerInfo player_info[2]) {
 					debugger.target = 1;
 				}
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+					g_soundmanager.resumeSEAll(0);
+					g_soundmanager.resumeSEAll(1);
+					g_soundmanager.resumeVCAll(0);
+					g_soundmanager.resumeVCAll(1);
+
 					player_info[0].update_buttons(keyboard_state);
 					player_info[1].update_buttons(keyboard_state);
 					fighter[0]->fighter_main();

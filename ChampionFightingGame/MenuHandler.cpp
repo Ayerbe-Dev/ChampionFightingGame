@@ -41,7 +41,7 @@ void MenuHandler::handleMenu(){
             (menu_target->*(&GameMenu::GAME_MENU_traverse_select))();
         }
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_BACK)){
-            menu_target->id_player_last_input = i;
+            menu_target->player_id = i;
             (menu_target->*(&GameMenu::GAME_MENU_traverse_back))();
         }
 

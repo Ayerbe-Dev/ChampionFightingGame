@@ -45,8 +45,8 @@ int chara_select_main(PlayerInfo player_info[2]) {
 
 	MenuHandler menuHandler(&cssMenuInstance, player_info);
 
-	menuHandler.setInitialDelay(70);
-	menuHandler.setRepeatDelay(20);
+	menuHandler.setInitialDelay(20);
+	menuHandler.setRepeatDelay(4);
 
 	while (cssMenuInstance.bSelecting) {
 		frameTimeDelay();

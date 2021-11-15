@@ -34,7 +34,7 @@ private:
     PlayerInfo *pPlayerInfoArray[2];
     GameMenu *menu_target;
 
-    int iHoldFrames[2]{0,0}, iInitialDelay{70}, iRepeatDelay{20};
+    int iHoldFrames[2]{0,0}, iInitialDelay{20}, iRepeatDelay{3};
 
     bool canRepeatKeys();
 };

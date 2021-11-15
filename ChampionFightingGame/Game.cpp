@@ -177,7 +177,7 @@ int game_main(PlayerInfo player_info[2]) {
 		next_state = GAME_STATE_DEBUG_MENU;
 	}
 
-	if (g_soundmanager.playStageMusic(STAGE_MUSIC_ATLAS) == -1) {
+	if (g_soundmanager.playMusic(MUSIC_KIND_ATLAS_STAGE) == -1) {
 		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
 		player_info[1].crash_reason = "Oh, nothing's playing?";
 		gaming = false;

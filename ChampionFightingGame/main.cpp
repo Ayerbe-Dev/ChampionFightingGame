@@ -69,6 +69,7 @@ int main() {
 	*/
 	format.callback = audio_callback;
 	format.userdata = NULL;
+
 	if (SDL_OpenAudio(&format, NULL) < 0) {
 		printf("Error opening SDL_audio: %s\n", SDL_GetError());
 	}
@@ -116,6 +117,7 @@ int main() {
 		}
 	}
 
+	g_soundmanager.endSoundAll();
 	SDL_DestroyWindow(g_window);
 	SDL_DestroyMutex(mutex);
 

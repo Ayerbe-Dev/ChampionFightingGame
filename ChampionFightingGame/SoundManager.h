@@ -8,13 +8,14 @@
 class Sound {
 public:
 	Sound();
-	Sound(string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int sound_type = SOUND_TYPE_NORMAL, int loop_point = 0);
+	Sound(string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int sound_type = SOUND_TYPE_NORMAL);
 
 	string name;
 	string dir;
-	int loop_point;
+	string loop_dir;
 	int sound_kind;
 	int sound_type;
+	bool looped;
 };
 
 struct SoundInfo {
@@ -39,11 +40,7 @@ public:
 	Sound eric_vc[ERIC_VC_MAX];
 	Sound atlas_se[ATLAS_SE_MAX];
 	Sound atlas_vc[ATLAS_VC_MAX];
-	Sound stage_music[STAGE_MUSIC_MAX];
 	Sound music[MUSIC_KIND_MAX];
-
-	int stage_loop_point[STAGE_MUSIC_MAX] = { 0 };
-	int music_loop_point[MUSIC_KIND_MAX] = { 0 };
 
 	void hyperInit();
 

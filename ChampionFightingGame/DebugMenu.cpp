@@ -26,6 +26,7 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 	debugList.addEntry("Welcome to the debug menu!",DEBUG_LIST_NOT_SELECTABLE);
 	debugList.addEntry("Use 'SPACE' or 'ENTER' to select an option.",DEBUG_LIST_NOT_SELECTABLE);
 	debugList.addEntry(lastString.str(),DEBUG_LIST_NOT_SELECTABLE);
+	debugList.addEntry("Title Screen", DEBUG_LIST_SELECTABLE, GAME_STATE_SIGLA_INIZIALE);
 	debugList.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
 	debugList.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_GAME);
 	debugList.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);

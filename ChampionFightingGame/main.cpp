@@ -15,6 +15,7 @@
 #include "DebugMenu.h"
 #include "CharaSelect.h"
 #include "SoundManager.h"
+#include "TitleScreen.h"
 #undef main
 using namespace std;
 int registered_controllers[2] = { -1, -1 };
@@ -108,6 +109,12 @@ int main() {
 		}
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
+		}
+		else if (game_state == GAME_STATE_SIGLA_INIZIALE) {
+			game_state = title_screen();
+			if (game_state == GAME_STATE_CLOSE) {
+				running = false;
+			}
 		}
 		else {
 			game_state = debugMenu(player_info, game_state);

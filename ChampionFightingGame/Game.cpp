@@ -73,11 +73,6 @@ int game_main(PlayerInfo player_info[2]) {
 	game_loader->player_info[0] = player_info[0];
 	game_loader->player_info[1] = player_info[1];
 
-	SDL_Thread *loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
-
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	bool gaming = true;
@@ -110,7 +105,11 @@ int game_main(PlayerInfo player_info[2]) {
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
+	SDL_Thread* loading_thread;
 
+	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
+	
 	while (loading) {
 		frameTimeDelay();	
 		SDL_Event event;
@@ -125,6 +124,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 		SDL_LockMutex(mutex);
 		load_icon.move();
+
 
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -149,7 +149,6 @@ int game_main(PlayerInfo player_info[2]) {
 					player_indicator[i] = game_loader->player_indicator[i];
 					fighter[i] = game_loader->fighter[i];
 					fighter[i]->player_info = &player_info[i];
-
 				}
 			}
 			game_loader->can_ret = true;

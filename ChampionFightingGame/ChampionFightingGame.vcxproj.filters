@@ -192,6 +192,9 @@
     <ClCompile Include="FighterStatus.cpp">
       <Filter>Source Files\Objects\Fighter</Filter>
     </ClCompile>
+    <ClCompile Include="TitleScreen.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -469,6 +472,9 @@
     </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Header Files\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScreen.h">
+      <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

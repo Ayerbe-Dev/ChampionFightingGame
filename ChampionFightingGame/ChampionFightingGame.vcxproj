@@ -229,6 +229,7 @@
     <ClCompile Include="ProjectileTemplate.cpp" />
     <ClCompile Include="Sully.cpp" />
     <ClCompile Include="Tessa.cpp" />
+    <ClCompile Include="TitleScreen.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -325,6 +326,7 @@
     <ClInclude Include="Sully.h" />
     <ClInclude Include="Tessa.fwd.h" />
     <ClInclude Include="Tessa.h" />
+    <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Fighter.h" />

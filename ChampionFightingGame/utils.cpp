@@ -14,6 +14,7 @@ using namespace std;
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern std::chrono::steady_clock::time_point g_chron;
+extern SDL_mutex* mutex;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -102,12 +103,14 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 }
 
 SDL_Texture* loadTexture(const char* file_path) {
+	SDL_LockMutex(mutex);
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {
 		cout << "Error loading image: " << IMG_GetError() << endl;
 	}
 	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
+	SDL_UnlockMutex(mutex);
 	return ret;
 }
 

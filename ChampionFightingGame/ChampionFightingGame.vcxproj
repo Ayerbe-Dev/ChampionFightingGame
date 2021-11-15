@@ -192,6 +192,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="Leon.cpp" />
@@ -277,6 +278,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameTexture.fwd.h" />
     <ClInclude Include="GameTexture.h" />

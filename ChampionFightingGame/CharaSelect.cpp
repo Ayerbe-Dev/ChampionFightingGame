@@ -28,7 +28,7 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		cssMenuInstance.myCol[1] = 1;
 	}
 	for (int i = 0; i < 2; i++) {
-		cssMenuInstance.id_player_last_input = i;
+		cssMenuInstance.player_id = i;
 		if (cssMenuInstance.aPlayerInfos[i]->chara_kind != CHARA_KIND_MAX) {
 			cssMenuInstance.findPrevChara(cssMenuInstance.aPlayerInfos[i]->chara_kind);
 		}
@@ -224,13 +224,18 @@ int CSS::getSlotsLength() {
 }
 
 void CSS::GAME_MENU_traverse_select() {
+<<<<<<< HEAD
+	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+		aPlayerInfos[player_id]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].getCharacterId();
+=======
 	printf("aaaah\n");
 	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
 		aPlayerInfos[id_player_last_input]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[id_player_last_input]].getCharacterId();
+>>>>>>> 41cd2783c2fa926c7984a55378d66478d4fa3a72
 		MobileCharacterSlot tmpSlot;
-		tmpSlot.gameTexture = aFixedCharacterSlots[aPlayerSelectionIndex[id_player_last_input]].gameTexture;
+		tmpSlot.gameTexture = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].gameTexture;
 
-		switch (id_player_last_input) {
+		switch (player_id) {
 			case 0:
 				tmpSlot.setTarget(117, 906, 1.5, 1.5);
 				break;
@@ -241,15 +246,15 @@ void CSS::GAME_MENU_traverse_select() {
 				printf("oof\n");
 				break;
 		}
-		tmpSlot.gameTexture.setScaleFactor(1);
-		aMobileCharacterSlots[id_player_last_input] = tmpSlot;
+		tmpSlot.gameTexture.setScaleFactor(1.5);
+		aMobileCharacterSlots[player_id] = tmpSlot;
 	}
 }
 void CSS::GAME_MENU_traverse_back() {
-	if (aPlayerInfos[id_player_last_input]->chara_kind != CHARA_KIND_MAX) {
+	if (aPlayerInfos[player_id]->chara_kind != CHARA_KIND_MAX) {
 		MobileCharacterSlot tmpSlot;
-		aMobileCharacterSlots[id_player_last_input] = tmpSlot;
-		aPlayerInfos[id_player_last_input]->chara_kind = CHARA_KIND_MAX;
+		aMobileCharacterSlots[player_id] = tmpSlot;
+		aPlayerInfos[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
 		displayLoadingScreen();
@@ -267,36 +272,36 @@ void CSS::GAME_MENU_traverse_start() {
 }
 
 void CSS::GAME_MENU_traverse_right() {
-	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
-		if (myCol[id_player_last_input] != 9 && charaSlotsOrdered[myCol[id_player_last_input] + 1][myRow[id_player_last_input]].isInitialized()) {
-			myCol[id_player_last_input]++;
+	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+		if (myCol[player_id] != 9 && charaSlotsOrdered[myCol[player_id] + 1][myRow[player_id]].isInitialized()) {
+			myCol[player_id]++;
 		}
-		isLastRight[id_player_last_input] = true;
+		isLastRight[player_id] = true;
 		selectIndex();
 	}
 }
 
 void CSS::GAME_MENU_traverse_left() {
-	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
-		if (myCol[id_player_last_input] != 0 && charaSlotsOrdered[myCol[id_player_last_input] - 1][myRow[id_player_last_input]].isInitialized()) {
-			myCol[id_player_last_input]--;
+	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+		if (myCol[player_id] != 0 && charaSlotsOrdered[myCol[player_id] - 1][myRow[player_id]].isInitialized()) {
+			myCol[player_id]--;
 		}
-		isLastRight[id_player_last_input] = false;
+		isLastRight[player_id] = false;
 		selectIndex();
 	}
 }
 
 void CSS::GAME_MENU_traverse_down() {
 	bool jump = false;
-	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
-		if (myRow[id_player_last_input] < numRows) {
-			if (!charaSlotsOrdered[myCol[id_player_last_input]][myRow[id_player_last_input] + 1].isInitialized()) {
+	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+		if (myRow[player_id] < numRows) {
+			if (!charaSlotsOrdered[myCol[player_id]][myRow[player_id] + 1].isInitialized()) {
 				jump = true;
 				bool valid_col = false;
-				if (myCol[id_player_last_input] >= 5) {
+				if (myCol[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (charaSlotsOrdered[i][myRow[id_player_last_input] + 1].isInitialized()) {
-							myCol[id_player_last_input] = i;
+						if (charaSlotsOrdered[i][myRow[player_id] + 1].isInitialized()) {
+							myCol[player_id] = i;
 							valid_col = true;
 							break;
 						}
@@ -304,29 +309,29 @@ void CSS::GAME_MENU_traverse_down() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (charaSlotsOrdered[i][myRow[id_player_last_input] + 1].isInitialized()) {
-							myCol[id_player_last_input] = i;
+						if (charaSlotsOrdered[i][myRow[player_id] + 1].isInitialized()) {
+							myCol[player_id] = i;
 							valid_col = true;
 							break;
 						}
 					}
 				}
 				if (!valid_col) {
-					aPlayerInfos[id_player_last_input]->crash_reason = "Couldn't find a valid column!";
+					aPlayerInfos[player_id]->crash_reason = "Couldn't find a valid column!";
 					bSelecting = false;
 					iExitCode = GAME_STATE_DEBUG_MENU;
 					return;
 				}
 			}
-			myRow[id_player_last_input]++;
-			bool min = myCol[id_player_last_input] <= colsOffset / 2;
+			myRow[player_id]++;
+			bool min = myCol[player_id] <= colsOffset / 2;
 
 			if (numCols % 2) {
-				if (!isLastRight[id_player_last_input] && myRow[id_player_last_input] == numRows && !min) {
-					myCol[id_player_last_input]--;
+				if (!isLastRight[player_id] && myRow[player_id] == numRows && !min) {
+					myCol[player_id]--;
 				}
 				if (!jump) {
-					isLastRight[id_player_last_input] = !isLastRight[id_player_last_input];
+					isLastRight[player_id] = !isLastRight[player_id];
 				}
 			}
 		}
@@ -337,15 +342,15 @@ void CSS::GAME_MENU_traverse_down() {
 
 void CSS::GAME_MENU_traverse_up() {
 	bool jump = false;
-	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
-		if (myRow[id_player_last_input] != 0) {
-			if (!charaSlotsOrdered[myCol[id_player_last_input]][myRow[id_player_last_input] - 1].isInitialized()) {
+	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+		if (myRow[player_id] != 0) {
+			if (!charaSlotsOrdered[myCol[player_id]][myRow[player_id] - 1].isInitialized()) {
 				jump = true;
 				bool valid_col = false;
-				if (myCol[id_player_last_input] >= 5) {
+				if (myCol[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (charaSlotsOrdered[i][myRow[id_player_last_input] - 1].isInitialized()) {
-							myCol[id_player_last_input] = i;
+						if (charaSlotsOrdered[i][myRow[player_id] - 1].isInitialized()) {
+							myCol[player_id] = i;
 							valid_col = true;
 							break;
 						}
@@ -353,29 +358,29 @@ void CSS::GAME_MENU_traverse_up() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (charaSlotsOrdered[i][myRow[id_player_last_input] - 1].isInitialized()) {
-							myCol[id_player_last_input] = i;
+						if (charaSlotsOrdered[i][myRow[player_id] - 1].isInitialized()) {
+							myCol[player_id] = i;
 							valid_col = true;
 							break;
 						}
 					}
 				}
 				if (!valid_col) {
-					aPlayerInfos[id_player_last_input]->crash_reason = "Couldn't find a valid column!";
+					aPlayerInfos[player_id]->crash_reason = "Couldn't find a valid column!";
 					bSelecting = false;
 					iExitCode = GAME_STATE_DEBUG_MENU;
 					return;
 				}
 			}
-			myRow[id_player_last_input]--;
-			bool max = myCol[id_player_last_input] >= NUM_COLS - 1;
+			myRow[player_id]--;
+			bool max = myCol[player_id] >= NUM_COLS - 1;
 
 			if (numCols % 2) {
-				if (isLastRight[id_player_last_input] && myRow[id_player_last_input] == numRows - 1 && !max) {
-					myCol[id_player_last_input]++;
+				if (isLastRight[player_id] && myRow[player_id] == numRows - 1 && !max) {
+					myCol[player_id]++;
 				}
 				if (!jump) {
-					isLastRight[id_player_last_input] = !isLastRight[id_player_last_input];
+					isLastRight[player_id] = !isLastRight[player_id];
 				}
 			}
 		}
@@ -386,9 +391,9 @@ void CSS::GAME_MENU_traverse_up() {
 
 void CSS::selectIndex() {
 	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (myCol[id_player_last_input] == aFixedCharacterSlots[i].myCol
-		&& myRow[id_player_last_input] == aFixedCharacterSlots[i].myRow) {
-			aPlayerSelectionIndex[id_player_last_input] = i;
+		if (myCol[player_id] == aFixedCharacterSlots[i].myCol
+		&& myRow[player_id] == aFixedCharacterSlots[i].myRow) {
+			aPlayerSelectionIndex[player_id] = i;
 			break;
 		}
 	}
@@ -526,9 +531,9 @@ void CSS::centerSlots() {
 void CSS::findPrevChara(int chara_kind) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (aFixedCharacterSlots[i].iCharacterId == chara_kind) {
-			aPlayerInfos[id_player_last_input]->chara_kind = CHARA_KIND_MAX;
-			myCol[id_player_last_input] = aFixedCharacterSlots[id_player_last_input].myCol;
-			myRow[id_player_last_input] = aFixedCharacterSlots[id_player_last_input].myRow;
+			aPlayerInfos[player_id]->chara_kind = CHARA_KIND_MAX;
+			myCol[player_id] = aFixedCharacterSlots[player_id].myCol;
+			myRow[player_id] = aFixedCharacterSlots[player_id].myRow;
 			selectIndex();
 			GAME_MENU_traverse_select();
 			return;

@@ -10,5 +10,5 @@ public:
     virtual void GAME_MENU_traverse_back();
     virtual void GAME_MENU_traverse_start();
 
-    int id_player_last_input{0};
+    int player_id{0};
 };

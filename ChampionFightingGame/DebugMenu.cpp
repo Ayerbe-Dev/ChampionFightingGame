@@ -37,14 +37,10 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 	
 
 	//these make sure that the selector doesnt start on an unselectable row
-	debugList.nextOption();
+	debugList.GAME_MENU_traverse_down();
 
 	//handler
-	MenuHandler menuHandler(&debugList,&player_info[0],&player_info[1]);
-
-	menuHandler.setEventMenuDown(&DebugList::nextOption);
-	menuHandler.setEventMenuUp(&DebugList::previousOption);
-	menuHandler.setEventMenuFinish(&DebugList::finisher);
+	MenuHandler menuHandler(&debugList,player_info);
 
 	menuHandler.setInitialDelay(70);
 	menuHandler.setRepeatDelay(20);
@@ -119,7 +115,6 @@ TTF_Font* loadDebugFont(string fontname){
 
 DebugList::DebugList(){};
 DebugList::DebugList(TTF_Font *pFont, int x_offset){
-
 	init(pFont,x_offset);
 };
 
@@ -164,7 +159,7 @@ void DebugList::render(){
 	}
 }
 
-void DebugList::nextOption(){
+void DebugList::GAME_MENU_traverse_down(){
 	//printf("next option\n");
 	int pre = selection;
 	selection ++;
@@ -181,7 +176,7 @@ void DebugList::nextOption(){
 	}
 }
 
-void DebugList::previousOption(){
+void DebugList::GAME_MENU_traverse_up(){
 	//printf("previous option\n");
 	int pre = selection;
 	selection --;
@@ -202,7 +197,7 @@ int DebugList::getDestination(){
 	return debugItems[selection].destination;
 }
 
-void DebugList::finisher(){
+void DebugList::GAME_MENU_traverse_start(){
 	displayLoadingScreen();
 	debugging = false;
 }

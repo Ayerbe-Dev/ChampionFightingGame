@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "PlayerInfo.h"
 #include "GameTexture.h"
+#include "GameMenu.h"
 
 int chara_select_main(PlayerInfo aPlayerInfo[2]);
 
@@ -63,19 +64,19 @@ private:
     float partialY=0;
 };
 
-class CSS {
+class CSS: public GameMenu{
 public:
     CSS();
     int loadCSS();
     void addFixedCharacter(int id, string cardDir, string cardName);
     int getSlotsLength();
-    void select();
-    void back();
-    void start();
-    void traverseUp();
-    void traverseDown();
-    void traverseLeft();
-    void traverseRight();
+    void GAME_MENU_traverse_select();
+    void GAME_MENU_traverse_back();
+    void GAME_MENU_traverse_start();
+    void GAME_MENU_traverse_up();
+    void GAME_MENU_traverse_down();
+    void GAME_MENU_traverse_left();
+    void GAME_MENU_traverse_right();
     void render();
     void queryFixedCssSlotPosition(int indexLocation, int* xptr, int* yptr);
     int getExitCode();
@@ -92,7 +93,6 @@ public:
     int numRows;
     int colsOffset;
 
-    int playerID = 0;
     bool bSelecting = true;
     PlayerInfo *aPlayerInfos[2];
 private:

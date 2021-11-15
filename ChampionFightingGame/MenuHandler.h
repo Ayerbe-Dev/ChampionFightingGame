@@ -3,43 +3,21 @@
 #include "PlayerInfo.h"
 #include "CharaSelect.h"
 #include "TitleScreen.h"
+#include "GameMenu.h"
 
 typedef void (DebugList::*DBMtraversalFunction)();
 typedef void (CSS::*CSStraversalFunction)();
 typedef void (TitleScreen::*TitleTraversalFunction)();
+
+typedef void (GameMenu::*MenuTraversalFunction)();
+
 class MenuHandler{
 public:
-    MenuHandler();
-    MenuHandler(DebugList *pHandlerTarget, PlayerInfo *pPlayerInfo1, PlayerInfo *pPlayerInfo2);
-    MenuHandler(CSS *pHandlerTarget, PlayerInfo aPlayerInfo[2]);
-    MenuHandler(TitleScreen *p_title_target, PlayerInfo a_player_info[2]);
-
-    void setEventMenuUp(DBMtraversalFunction traversal);
-    void setEventMenuDown(DBMtraversalFunction traversal);
-    void setEventMenuLeft(DBMtraversalFunction traversal);
-    void setEventMenuRight(DBMtraversalFunction traversal);
+    MenuHandler(GameMenu *menu_target, PlayerInfo player_info[2]);
     /*
-        Each menu has a finisher function which will be responsible for deciding if its ok for the menu to exit.
-        Then it will run the last scripts it needs to exit properly
+        requires SDL_PumpEvents(); to be called before this function.
     */
-    void setEventMenuFinish(DBMtraversalFunction traversal);
-    
-
-    void setEventMenuUp(CSStraversalFunction traversal);
-    void setEventMenuDown(CSStraversalFunction traversal);
-    void setEventMenuLeft(CSStraversalFunction traversal);
-    void setEventMenuRight(CSStraversalFunction traversal);
-    void setEventMenuFinish(CSStraversalFunction traversal);
-    void setEventMenuBack(CSStraversalFunction traversal);
-    void setEventMenuSelect(CSStraversalFunction traversal);
-
-
-    void setEventMenuFinish(TitleTraversalFunction traversal);
-
-    //requires SDL_PumpEvents(); to be called before this function.
     void handleMenu();
-    void handleCSS();
-    void handleTitle();
 
     /*
         Sets the number of frames before repeat mode starts
@@ -54,29 +32,9 @@ public:
     void setRepeatDelay(unsigned int delay);
 private:
     PlayerInfo *pPlayerInfoArray[2];
-    DBMtraversalFunction nsmfUpTraversal;
-    DBMtraversalFunction nsmfDownTraversal;
-    DBMtraversalFunction nsmfLeftTraversal;
-    DBMtraversalFunction nsmfRightTraversal;
-    DBMtraversalFunction nsmfFinisher;
+    GameMenu *menu_target;
 
-    CSStraversalFunction nsmfCssUpTraversal;
-    CSStraversalFunction nsmfCssDownTraversal;
-    CSStraversalFunction nsmfCssLeftTraversal;
-    CSStraversalFunction nsmfCssRightTraversal;
-    CSStraversalFunction nsmfCssFinisher;
-    CSStraversalFunction nsmfCssSelect;
-    CSStraversalFunction nsmfCssBack;
-
-    TitleTraversalFunction nsmfTitleFinisher;
-
-    bool bUpDefined=false, bDownDefined=false, bLeftDefined=false, bRightDefined=false, bFinisherDefined=false, bBackDefined=false, bSelectDefined=false;
-
-    CSS * pCssHandlerTarget;
-    DebugList *pHandlerTarget;
-    TitleScreen *p_title_target;
-
-    unsigned int iHoldFrames=0, iInitialDelay = 70, iRepeatDelay = 20;
+    int iHoldFrames[2]{0,0}, iInitialDelay{70}, iRepeatDelay{20};
 
     bool canRepeatKeys();
 };

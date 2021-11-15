@@ -9,15 +9,15 @@ HealthBar::HealthBar(Fighter* fighter) {
 	this->health_texture = loadTexture("resource/ui/game/hp/health.png");
 	this->max_health = fighter->get_param_float("health");
 	
-	width = 596;
-	height = 70;
+	width = 894;
+	height = 105;
 	scale = 2;
 
 	this->health_rect.x = 0;
 	this->health_rect.y = 0;  
 
 	this->health_rect.h = height;
-	this->bar_rect.x = 2;
+	this->bar_rect.x = 3;
 	this->bar_rect.y = 0;
 	this->bar_rect.w = width;
 	this->bar_rect.h = height;
@@ -30,7 +30,7 @@ HealthBar::HealthBar(Fighter* fighter) {
 void HealthBar::RenderAsP1() {
 	slice_rect.w = width * (fighter->fighter_float[FIGHTER_FLOAT_HEALTH] / max_health);
 	health_rect.w = slice_rect.w;
-	health_rect.x = width - slice_rect.w + (bar_rect.x + 15);
+	health_rect.x = width - slice_rect.w + (bar_rect.x + 22.5);
 	slice_rect.x = width - slice_rect.w;
 	
 	SDL_RenderCopy(g_renderer, health_texture, &slice_rect, &health_rect);
@@ -38,10 +38,10 @@ void HealthBar::RenderAsP1() {
 }
 
 void HealthBar::RenderAsP2() {
-	bar_rect.x = WINDOW_WIDTH - width - 2;
+	bar_rect.x = WINDOW_WIDTH - width - 3;
 	slice_rect.w = width * (fighter->fighter_float[FIGHTER_FLOAT_HEALTH] / max_health);
 	health_rect.w = slice_rect.w;
-	health_rect.x = (WINDOW_WIDTH - width) - 17;
+	health_rect.x = (WINDOW_WIDTH - width) - 25.5;
 	slice_rect.x = width - slice_rect.w;
 	SDL_RenderCopyEx(g_renderer, health_texture, &slice_rect, &health_rect, 0, nullptr, SDL_FLIP_HORIZONTAL);
 	SDL_RenderCopyEx(g_renderer,bar_texture,nullptr,&bar_rect,0,nullptr,SDL_FLIP_HORIZONTAL);
@@ -113,23 +113,23 @@ void GameTimer::Tick(){
 };
 
 void GameTimer::Render(){
-	SDL_Rect cClockFace{(WINDOW_WIDTH/2)-42,10,84,87};
+	SDL_Rect cClockFace{(WINDOW_WIDTH/2)-63,15,126,130};
 	SDL_Rect cClockFaceSrc{84*ClockMode,0,84,87};
 	SDL_RenderCopy(g_renderer,pClockFace,&cClockFaceSrc,&cClockFace);
 
-	SDL_Rect cDecaDestRect{601,15,25,59};
+	SDL_Rect cDecaDestRect{ 901.5,22,37.5,88.5 };
 	SDL_Rect cDecaSourceRect{uiDecaseconds*25,0,25,59};
 	SDL_RenderCopy(g_renderer,pBigTypeface,&cDecaSourceRect,&cDecaDestRect);
 
-	SDL_Rect cDestRect{628,15,25,59};
+	SDL_Rect cDestRect{942,22,37.5,88.5};
 	SDL_Rect cSourceRect{uiSeconds*25,0,25,59};
 	SDL_RenderCopy(g_renderer,pBigTypeface,&cSourceRect,&cDestRect);
 
-	SDL_Rect cDecaFrameDestRect{598 + 58,57,11,19};
+	SDL_Rect cDecaFrameDestRect{984,85,16.5,28.5};
 	SDL_Rect cFrameSourceRect{uiDecaframes*11,0,11,19};
 	SDL_RenderCopy(g_renderer,pSmallTypeface,&cFrameSourceRect,&cDecaFrameDestRect);
 
-	SDL_Rect cFrameDestRect{598 + 58 + 13,57,11,19};
+	SDL_Rect cFrameDestRect{1003.5,85,16.5,28.5};
 	SDL_Rect cFrameSourceRectOof{uiFrames*11,0,11,19};
 	SDL_RenderCopy(g_renderer,pSmallTypeface,&cFrameSourceRectOof,&cFrameDestRect);
 }

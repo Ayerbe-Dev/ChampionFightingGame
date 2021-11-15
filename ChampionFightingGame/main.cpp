@@ -40,12 +40,12 @@ int main() {
 
 	//Create the window and the renderer
 
-	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE /* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
+	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
 
 	bool running = true;
-	int game_state = GAME_STATE_SIGLA_INIZIALE;
+	int game_state = GAME_STATE_SIGLA_INIZIALE; //classy
 
 	//Initialize controller input
 

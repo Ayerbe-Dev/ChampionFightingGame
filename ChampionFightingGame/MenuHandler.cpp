@@ -15,6 +15,12 @@ MenuHandler::MenuHandler(CSS *pHandlerTarget, PlayerInfo aPlayerInfo[2]){
     this->pPlayerInfoArray[1] = &aPlayerInfo[1];
 };
 
+MenuHandler::MenuHandler(TitleScreen *p_title_target, PlayerInfo a_player_info[2]){
+    this->p_title_target = p_title_target;
+    this->pPlayerInfoArray[0] = &a_player_info[0];
+    this->pPlayerInfoArray[1] = &a_player_info[1];
+}
+
 void MenuHandler::setEventMenuUp(DBMtraversalFunction traversal){this->nsmfUpTraversal = traversal; bUpDefined=true;};
 void MenuHandler::setEventMenuDown(DBMtraversalFunction traversal){this->nsmfDownTraversal = traversal; bDownDefined=true;};
 void MenuHandler::setEventMenuLeft(DBMtraversalFunction traversal){this->nsmfLeftTraversal = traversal; bLeftDefined=true;};
@@ -28,6 +34,8 @@ void MenuHandler::setEventMenuRight(CSStraversalFunction traversal){this->nsmfCs
 void MenuHandler::setEventMenuFinish(CSStraversalFunction traversal){this->nsmfCssFinisher = traversal; bFinisherDefined=true;};
 void MenuHandler::setEventMenuBack(CSStraversalFunction traversal){this->nsmfCssBack = traversal; bBackDefined=true;};
 void MenuHandler::setEventMenuSelect(CSStraversalFunction traversal){this->nsmfCssSelect = traversal; bSelectDefined=true;};
+
+void MenuHandler::setEventMenuFinish(TitleTraversalFunction traversal){this->nsmfTitleFinisher = traversal; bFinisherDefined=true;};
 
 void MenuHandler::handleMenu(){
     for (int i = 0; i < 2; i++) {
@@ -138,6 +146,18 @@ void MenuHandler::handleCSS(){
              iHoldFrames = iInitialDelay - iRepeatDelay;
         }
 
+	}
+};
+
+void MenuHandler::handleTitle(){
+    for (int i = 0; i < 2; i++) {
+        pPlayerInfoArray[i]->update_controller();
+        pPlayerInfoArray[i]->update_buttons(SDL_GetKeyboardState(nullptr));
+        
+        //On Press
+        if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START) && bFinisherDefined){
+            (p_title_target->*(nsmfTitleFinisher))();
+        }
 	}
 };
 

@@ -185,7 +185,7 @@ int game_main(PlayerInfo player_info[2]) {
 	}
 	while (gaming) {
 		frameTimeDelay();
-		g_soundmanager.checkSoundEnd();
+//		g_soundmanager.checkSoundEnd();
 		can_play_non_music = !debug;
 		
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);

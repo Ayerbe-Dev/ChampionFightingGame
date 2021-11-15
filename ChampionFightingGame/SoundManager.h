@@ -8,20 +8,23 @@
 class Sound {
 public:
 	Sound();
-	Sound(string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int sound_type = SOUND_TYPE_NORMAL);
+	Sound(string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int volume = 32, int sound_type = SOUND_TYPE_NORMAL);
 
 	string name;
 	string dir;
 	string loop_dir;
 	int sound_kind;
 	int sound_type;
+	int volume;
 	bool looped;
 };
 
 struct SoundInfo {
 	u8* data;
+	u8* loop_data;
 	u32 dpos;
 	u32 dlen;
+	u32 loop_dlen;
 	Sound sound;
 };
 
@@ -30,8 +33,6 @@ public:
 	SoundManager();
 	SoundManager(bool initiate);
 	FighterAccessor *fighter_accessor;
-
-	Sound active_sounds[3][MAX_SOUNDS];
 
 	Sound common_se[COMMON_SE_MAX];
 	Sound roy_se[ROY_SE_MAX];
@@ -60,8 +61,7 @@ public:
 	int findSoundIndex(Sound sound, int id);
 	void endSound(Sound sound, int id);
 	void endSoundAll();
-	void checkSoundEnd();
 };
 
 void audio_callback(void* unused, Uint8* stream, int len);
-void addSoundToIndex(Sound sound, int* ret, int id);
+void addSoundToIndex(Sound sound, int id);

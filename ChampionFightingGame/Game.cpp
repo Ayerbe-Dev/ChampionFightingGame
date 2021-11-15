@@ -64,7 +64,6 @@ extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
 extern SoundInfo sounds[3][MAX_SOUNDS];
 
-extern bool can_play_non_music;
 extern bool debug;
 
 int game_main(PlayerInfo player_info[2]) {
@@ -73,7 +72,6 @@ int game_main(PlayerInfo player_info[2]) {
 	GameLoader *game_loader = new GameLoader;
 	game_loader->player_info[0] = player_info[0];
 	game_loader->player_info[1] = player_info[1];
-	bool loading = true;
 
 	SDL_Thread *loading_thread;
 
@@ -83,6 +81,7 @@ int game_main(PlayerInfo player_info[2]) {
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	bool gaming = true;
+	bool loading = true;
 	bool visualize_boxes = true;
 	int next_state = GAME_STATE_MENU;
 
@@ -167,7 +166,7 @@ int game_main(PlayerInfo player_info[2]) {
 		}
 	}
 	SDL_DestroyTexture(pScreenTexture);
-	g_soundmanager.fighter_accessor = fighter_accessor;
+	g_soundmanager.playMusic(MUSIC_KIND_ATLAS_STAGE);
 
 
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
@@ -177,16 +176,8 @@ int game_main(PlayerInfo player_info[2]) {
 		next_state = GAME_STATE_DEBUG_MENU;
 	}
 
-	if (g_soundmanager.playMusic(MUSIC_KIND_ATLAS_STAGE) == -1) {
-		player_info[0].crash_reason = "Is this music? I can't get enough of that sweet music";
-		player_info[1].crash_reason = "Oh, nothing's playing?";
-		gaming = false;
-		next_state = GAME_STATE_DEBUG_MENU;
-	}
 	while (gaming) {
 		frameTimeDelay();
-//		g_soundmanager.checkSoundEnd();
-		can_play_non_music = !debug;
 		
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -305,7 +296,6 @@ int game_main(PlayerInfo player_info[2]) {
 					debugger.target = 1;
 				}
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					can_play_non_music = true;
 					player_info[0].update_buttons(keyboard_state);
 					player_info[1].update_buttons(keyboard_state);
 					fighter[0]->fighter_main();
@@ -464,7 +454,7 @@ int game_main(PlayerInfo player_info[2]) {
 	}
 	DONE_GAMING:
 
-	g_soundmanager.endSoundAll();
+	g_soundmanager.unloadSoundAll();
 	cleanup(p1, p2);
 
 	delete fighter_accessor;

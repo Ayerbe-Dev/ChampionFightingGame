@@ -1,7 +1,6 @@
 ﻿#include "SoundManager.h"
 SoundInfo sounds[3][MAX_SOUNDS];
 extern bool debug;
-extern bool can_play_non_music;
 
 SoundManager::SoundManager() {}
 
@@ -27,130 +26,224 @@ void SoundManager::hyperInit() {
 	music[MUSIC_KIND_ATLAS_STAGE] = Sound("Atlas_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
 }
 
-int SoundManager::playCommonSE(int se, int id) {
+void SoundManager::playCommonSE(int se, int id) {
+	Sound sound = common_se[se];
+	playSound(sound, id);
+}
+
+void SoundManager::playCharaSE(int se, int id) {
+	Sound sound = getCharaSound(se, id, true);
+	playSound(sound, id);
+}
+
+void SoundManager::playVC(int vc, int id) {
+	Sound sound = getCharaSound(vc, id, false);
+	playSound(sound, id);
+}
+
+void SoundManager::playMusic(int music_kind) {
+	Sound sound = music[music_kind];
+	playSound(sound, 2);
+}
+
+void SoundManager::playSound(Sound sound, int id) {
+	int index = findSoundIndex(sound, id);
+	sounds[id][index].sound.active = true;
+}
+
+void SoundManager::pauseCommonSE(int se, int id) {
+	Sound sound = common_se[se];
+	pauseSound(sound, id);
+}
+
+void SoundManager::pauseCharaSE(int se, int id) {
+	Sound sound = getCharaSound(se, id, true);
+	pauseSound(sound, id);
+}
+
+void SoundManager::pauseVC(int vc, int id) {
+	Sound sound = getCharaSound(vc, id, false);
+	pauseSound(sound, id);
+}
+
+void SoundManager::pauseSEAll(int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (sounds[id][i].sound.sound_kind == SOUND_KIND_SE) {
+			sounds[id][i].sound.active = false;
+		}
+	}
+}
+
+void SoundManager::pauseVCAll(int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (sounds[id][i].sound.sound_kind == SOUND_KIND_VC) {
+			sounds[id][i].sound.active = false;
+		}
+	}
+}
+
+void SoundManager::pauseMusic(int music_kind) {
+	Sound sound = music[music_kind];
+	pauseSound(sound, 2);
+}
+
+void SoundManager::pauseSound(Sound sound, int id) {
+	int index = findSoundIndex(sound, id);
+	sounds[id][index].sound.active = false;
+}
+
+void SoundManager::pauseSoundAll() {
+	for (int i = 0; i < 3; i++) {
+		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+			sounds[i][i2].sound.active = false;
+		}
+	}
+}
+
+void SoundManager::resumeSEAll(int id) {
+	for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+		if (!sounds[id][i2].sound.active && sounds[id][i2].dpos != 0 && sounds[id][i2].sound.sound_kind == SOUND_KIND_SE) {
+			sounds[id][i2].sound.active = true;
+		}
+	}
+}
+
+void SoundManager::resumeVCAll(int id) {
+	for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+		if (!sounds[id][i2].sound.active && sounds[id][i2].dpos != 0 && sounds[id][i2].sound.sound_kind == SOUND_KIND_VC) {
+			sounds[id][i2].sound.active = true;
+		}
+	}
+}
+
+void SoundManager::resumeMusicAll() {
+	for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+		if (!sounds[2][i2].sound.active && sounds[2][i2].dpos != 0 && sounds[2][i2].sound.sound_kind == SOUND_KIND_MUSIC) {
+			sounds[2][i2].sound.active = true;
+		}
+	}
+}
+
+void SoundManager::resumeSoundAll(int id) {
+	for (int i = 0; i < 3; i++) {
+		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+			if (!sounds[i][i2].sound.active && sounds[i][i2].dpos != 0) {
+				sounds[i][i2].sound.active = true;
+			}
+		}
+	}
+}
+
+void SoundManager::stopCommonSE(int se, int id) {
+	Sound sound = common_se[se];
+	stopSound(sound, id);
+}
+
+void SoundManager::stopCharaSE(int se, int id) {
+	Sound sound = getCharaSound(se, id, true);
+	stopSound(sound, id);
+}
+
+void SoundManager::stopVC(int vc, int id) {
+	Sound sound = getCharaSound(vc, id, false);
+	stopSound(sound, id);
+}
+
+void SoundManager::stopSEAll(int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (sounds[id][i].sound.sound_kind == SOUND_KIND_SE) {
+			sounds[id][i].sound.active = false;
+			sounds[id][i].dpos = 0;
+		}
+	}
+}
+
+void SoundManager::stopVCAll(int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (sounds[id][i].sound.sound_kind == SOUND_KIND_VC) {
+			sounds[id][i].sound.active = false;
+			sounds[id][i].dpos = 0;
+		}
+	}
+}
+
+void SoundManager::stopMusic(int music_kind) {
+	Sound sound = music[music_kind];
+	stopSound(sound, 2);
+}
+
+void SoundManager::stopSound(Sound sound, int id) {
+	int index = findSoundIndex(sound, id);
+	sounds[id][index].sound.active = false;
+	sounds[id][index].dpos = 0;
+}
+
+void SoundManager::stopSoundAll() {
+	for (int i = 0; i < 3; i++) {
+		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
+			sounds[i][i2].sound.active = false;
+			sounds[i][i2].dpos = 0;
+		}
+	}
+}
+
+int SoundManager::loadCommonSE(int se, int id) {
 	Sound sound = common_se[se];
 	if (sound.name == "") {
 		return -1;
 	}
-	playSound(sound, id);
+	loadSound(sound, id);
 	return 0;
 }
 
-int SoundManager::playCharaSE(int se, int id) {
-	Sound sound;
-	switch (fighter_accessor->fighter[id]->chara_kind) {
-		case(CHARA_KIND_ROY): {
-			sound = roy_se[se];
-		} break;
-		case(CHARA_KIND_ERIC):{
-			sound = eric_se[se];
-		} break;
-		case(CHARA_KIND_ATLAS): {
-			sound = atlas_se[se];
-		} break;
-		default: {} break;
-	}
+int SoundManager::loadCharaSE(int se, int id) {
+	Sound sound = getCharaSound(se, id, true);
 	if (sound.name == "") {
 		return -1;
 	}
-	playSound(sound, id);
+	loadSound(sound, id);
 	return 0;
 }
 
-int SoundManager::playVC(int vc, int id) {
-	Sound sound;
-	switch (fighter_accessor->fighter[id]->chara_kind) {
-		case(CHARA_KIND_ROY):
-		{
-			sound = roy_vc[vc];
-		} break;
-		case(CHARA_KIND_ERIC):
-		{
-			sound = eric_vc[vc];
-		} break;
-		case(CHARA_KIND_ATLAS):
-		{
-			sound = atlas_vc[vc];
-		} break;
-		default: {} break;
-	}
+int SoundManager::loadVC(int vc, int id) {
+	Sound sound = getCharaSound(vc, id, false);
 	if (sound.name == "") {
 		return -1;
 	}
-	playSound(sound, id);
+	loadSound(sound, id);
 	return 0;
 }
 
-int SoundManager::playMusic(int music_kind) {
+int SoundManager::loadMusic(int music_kind) {
 	Sound sound = music[music_kind];
 	if (sound.name == "") {
 		return -1;
 	}
-	playSound(sound, 2);
+	loadSound(sound, 2);
 	return 0;
 }
 
-void SoundManager::playSound(Sound sound, int id) {
+void SoundManager::loadSound(Sound sound, int id) {
 	const char* dir = (sound.dir).c_str();
 	addSoundToIndex(sound, id);
 }
 
-int SoundManager::findSoundIndex(Sound sound, int id) {
-	for (int i = 0; i < MAX_SOUNDS; i++) {
-		if (sounds[id][i].sound.name == sound.dir) {
-			cout << i << endl;
-			return i;
-		}
-	}
-	return MAX_SOUNDS;
-}
-
-void SoundManager::endCommonSE(int se, int id) {
+void SoundManager::unloadCommonSE(int se, int id) {
 	Sound sound = common_se[se];
-	endSound(sound, id);
+	unloadSound(sound, id);
 }
 
-void SoundManager::endCharaSE(int se, int id) {
-	Sound sound;
-	switch (fighter_accessor->fighter[id]->chara_kind) {
-		case(CHARA_KIND_ROY):
-		{
-			sound = roy_se[se];
-		} break;
-		case(CHARA_KIND_ERIC):
-		{
-			sound = eric_se[se];
-		} break;
-		case(CHARA_KIND_ATLAS):
-		{
-			sound = atlas_se[se];
-		} break;
-		default: {} break;
-	}
-	endSound(sound, id);
+void SoundManager::unloadCharaSE(int se, int id) {
+	Sound sound = getCharaSound(se, id, true);
+	unloadSound(sound, id);
 }
 
-void SoundManager::endVC(int vc, int id) {
-	Sound sound;
-	switch (fighter_accessor->fighter[id]->chara_kind) {
-		case(CHARA_KIND_ROY):
-		{
-			sound = roy_vc[vc];
-		} break;
-		case(CHARA_KIND_ERIC):
-		{
-			sound = eric_vc[vc];
-		} break;
-		case(CHARA_KIND_ATLAS):
-		{
-			sound = atlas_vc[vc];
-		} break;
-		default: {} break;
-	}
-	endSound(sound, id);
+void SoundManager::unloadVC(int vc, int id) {
+	Sound sound = getCharaSound(vc, id, false);
+	unloadSound(sound, id);
 }
 
-void SoundManager::endSEAll(int id) {
+void SoundManager::unloadSEAll(int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		if (sounds[id][i].sound.sound_kind == SOUND_KIND_SE) {
 			sounds[id][i].dpos = 0;
@@ -161,7 +254,7 @@ void SoundManager::endSEAll(int id) {
 	}
 }
 
-void SoundManager::endVCAll(int id) {
+void SoundManager::unloadVCAll(int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		if (sounds[id][i].sound.sound_kind == SOUND_KIND_VC) {
 			sounds[id][i].dpos = 0;
@@ -172,12 +265,12 @@ void SoundManager::endVCAll(int id) {
 	}
 }
 
-void SoundManager::endMusic(int music_kind) {
+void SoundManager::unloadMusic(int music_kind) {
 	Sound sound = music[music_kind];
-	endSound(sound, 2);
+	unloadSound(sound, 2);
 }
 
-void SoundManager::endSound(Sound sound, int id) {
+void SoundManager::unloadSound(Sound sound, int id) {
 	int clear_index = findSoundIndex(sound, id);
 	sounds[id][clear_index].dpos = 0;
 	sounds[id][clear_index].dlen = 0;
@@ -187,8 +280,7 @@ void SoundManager::endSound(Sound sound, int id) {
 	sounds[id][clear_index].loop_data = NULL;
 }
 
-void SoundManager::endSoundAll() {
-	SDL_LockAudio();
+void SoundManager::unloadSoundAll() {
 	for (int i = 0; i < 3; i++) {
 		for (int i2 = 0; i2 < MAX_SOUNDS; i2++) {
 			if (sounds[i][i2].data) {
@@ -202,7 +294,35 @@ void SoundManager::endSoundAll() {
 			}
 		}
 	}
-	SDL_UnlockAudio();
+}
+
+int SoundManager::findSoundIndex(Sound sound, int id) {
+	for (int i = 0; i < MAX_SOUNDS; i++) {
+		if (sounds[id][i].sound.name == sound.dir) {
+			return i;
+		}
+	}
+	return MAX_SOUNDS;
+}
+
+Sound SoundManager::getCharaSound(int index, int id, bool se) {
+	Sound sound;
+	switch (fighter_accessor->fighter[id]->chara_kind) {
+		case(CHARA_KIND_ROY):
+		{
+			sound = se ? roy_se[index] : roy_vc[index];
+		} break;
+		case(CHARA_KIND_ERIC):
+		{
+			sound = se ? eric_se[index] : eric_vc[index];
+		} break;
+		case(CHARA_KIND_ATLAS):
+		{
+			sound = se ? atlas_se[index] : atlas_vc[index];
+		} break;
+		default: {} break;
+	}
+	return sound;
 }
 
 Sound::Sound() {
@@ -214,6 +334,7 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int volume, int sound_
 	this->sound_kind = sound_kind;
 	this->sound_type = sound_type;
 	this->volume = volume;
+	active = false;
 	looped = false;
 	switch (sound_kind) {
 		case (SOUND_KIND_MUSIC):
@@ -335,44 +456,42 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
-			if (sounds[i2][i].data) { //Tbh we should probably be preloading EVERYTHING and just having an "active" field in the Sound class, but 
-				//for now we can just check to see if the slot is empty
-				if (can_play_non_music || ((sounds[i2][i].sound.sound_kind == SOUND_KIND_MUSIC))) { //Can Play Non Music is just "Are we in debug mode"
-					data = sounds[i2][i].data;
-					dlen = sounds[i2][i].dlen;
-					if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP && sounds[i2][i].sound.looped) { 
-						data = sounds[i2][i].loop_data;
-						dlen = sounds[i2][i].loop_dlen;
-					}
+			if (sounds[i2][i].sound.active) {
 
-					source = (u8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
-					if (sounds[i2][i].dpos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
-						diff = (sounds[i2][i].dpos + len) - dlen;
-					}
+				data = sounds[i2][i].data;
+				dlen = sounds[i2][i].dlen;
+				if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP && sounds[i2][i].sound.looped) { 
+					data = sounds[i2][i].loop_data;
+					dlen = sounds[i2][i].loop_dlen;
+				}
 
-					//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
+				source = (u8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
+				if (sounds[i2][i].dpos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
+					diff = (sounds[i2][i].dpos + len) - dlen;
+				}
 
-					SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(len, len, dlen));
+				//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
+
+				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(len, len, dlen));
 	
-					sounds[i2][i].dpos += len; //Add the length of the stream to the audio's position.
+				sounds[i2][i].dpos += len; //Add the length of the stream to the audio's position.
 
-					if (diff != 0) { //If we went over
-						if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP) { 
-							if (!sounds[i2][i].sound.looped) { //If we've never looped before, clarify that we're getting the rest of our
-								//data from the looped version, and that we are now in the loop state.
-								sounds[i2][i].sound.looped = true;
-								data = sounds[i2][i].loop_data;
-							}
-							sounds[i2][i].dpos = 0;
-							SDL_memcpy(&source[len - diff], &data[sounds[i2][i].dpos], diff);
-							sounds[i2][i].dpos += diff;
+				if (diff != 0) { //If we went over
+					if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP) { 
+						if (!sounds[i2][i].sound.looped) { //If we've never looped before, clarify that we're getting the rest of our
+							//data from the looped version, and that we are now in the loop state.
+							sounds[i2][i].sound.looped = true;
+							data = sounds[i2][i].loop_data;
+						}
+						sounds[i2][i].dpos = 0;
+						SDL_memcpy(&source[len - diff], &data[sounds[i2][i].dpos], diff);
+						sounds[i2][i].dpos += diff;
 
-						}
-						else { //Otherwise just get that shit outta here
-							sounds[i2][i].data = NULL;
-							sounds[i2][i].dpos = 0;
-							sounds[i2][i].dlen = 0;
-						}
+					}
+					else { //Otherwise just get that shit outta here
+						sounds[i2][i].sound.active = false;
+						sounds[i2][i].dpos = 0;
+						sounds[i2][i].dlen = 0;
 					}
 
 					SDL_MixAudio(stream, source, len, sounds[i2][i].sound.volume);

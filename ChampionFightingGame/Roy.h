@@ -14,6 +14,7 @@ public:
 	Roy();
 	Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadRoyStatusFunctions();
+	void loadRoySounds();
 	void loadRoyACMD();
 
 	//Stats

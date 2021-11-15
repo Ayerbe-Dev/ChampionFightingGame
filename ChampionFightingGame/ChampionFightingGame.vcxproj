@@ -182,6 +182,7 @@
     <ClCompile Include="Eric.cpp" />
     <ClCompile Include="EricFireball.cpp" />
     <ClCompile Include="FighterAccessor.cpp" />
+    <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="GameCoordinate.cpp" />
     <ClCompile Include="Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

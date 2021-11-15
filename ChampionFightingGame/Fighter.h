@@ -75,6 +75,7 @@ public:
 	void load_anim_list();
 	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
 	void loadStatusScripts();
+	void loadFighterSounds();
 
 	//Inputs
 
@@ -93,14 +94,35 @@ public:
 
 	//Sound - All of these just call the SoundManager versions of these functions except they pass their own ID as an arg
 
-	int playCommonSE(int se);
-	int playCharaSE(int se);
-	int playVC(int vc);
-	void endCommonSE(int se);
-	void endCharaSE(int se);
-	void endVC(int vc);
-	void endSEAll();
-	void endVCAll();
+	void playCommonSE(int se);
+	void playCharaSE(int se);
+	void playVC(int vc);
+
+	void pauseCommonSE(int se);
+	void pauseCharaSE(int se);
+	void pauseVC(int vc);
+	void pauseSEAll();
+	void pauseVCAll();
+
+	void resumeSEAll();
+	void resumeVCAll();
+	
+	void stopCommonSE(int se);
+	void stopCharaSE(int se);
+	void stopVC(int vc);
+	void stopSEAll();
+	void stopVCAll();
+
+	int loadCommonSE(int se);
+	int loadCharaSE(int se);
+	int loadVC(int vc);
+
+	void unloadCommonSE(int se);
+	void unloadCharaSE(int se);
+	void unloadVC(int vc);
+	void unloadSEAll();
+	void unloadVCAll();
+
 
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 

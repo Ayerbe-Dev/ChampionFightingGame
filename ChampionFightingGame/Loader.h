@@ -6,6 +6,7 @@
 #include "UI.h"
 
 extern SDL_mutex* mutex;
+extern SoundManager g_soundmanager;
 
 class GameLoader {
 public:
@@ -124,6 +125,11 @@ static int LoadGame(void* void_gameloader) {
 			player_indicator[i] = PlayerIndicator(fighter[i]);
 		SDL_UnlockMutex(mutex);
 	}
+
+	SDL_LockMutex(mutex);
+	g_soundmanager.fighter_accessor = fighter_accessor;
+	g_soundmanager.loadMusic(MUSIC_KIND_ATLAS_STAGE);
+	SDL_LockMutex(mutex);
 
 	game_loader->stage = stage;
 	game_loader->fighter_accessor = fighter_accessor;

@@ -60,6 +60,10 @@ void Roy::loadRoyStatusFunctions() {
 	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL- FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_uppercut_fall;
 }
 
+void Roy::loadRoySounds() {
+	loadVC(ROY_VC_ATTACK_01);
+}
+
 void Roy::loadRoyACMD() {
 	script("default", [this]() {
 		return;

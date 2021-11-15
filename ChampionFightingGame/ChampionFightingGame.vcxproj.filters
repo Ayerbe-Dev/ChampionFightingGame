@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Constants">
       <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Objects\Fighter">
+      <UniqueIdentifier>{00821d86-045e-4d64-8e30-5bf362f4deb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils.cpp">
@@ -147,9 +150,6 @@
     <ClCompile Include="Debugger.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Fighter.cpp">
-      <Filter>Source Files\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="FighterAccessor.cpp">
       <Filter>Source Files\Helper Classes</Filter>
     </ClCompile>
@@ -185,6 +185,12 @@
     </ClCompile>
     <ClCompile Include="Loader.cpp">
       <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Fighter.cpp">
+      <Filter>Source Files\Objects\Fighter</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterStatus.cpp">
+      <Filter>Source Files\Objects\Fighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

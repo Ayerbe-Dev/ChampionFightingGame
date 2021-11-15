@@ -195,6 +195,9 @@
     <ClCompile Include="TitleScreen.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
+    <ClCompile Include="Opening.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -474,6 +477,9 @@
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="TitleScreen.h">
+      <Filter>Header Files\Game State</Filter>
+    </ClInclude>
+    <ClInclude Include="Opening.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>

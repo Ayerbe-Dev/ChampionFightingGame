@@ -59,8 +59,6 @@ typedef unsigned long long u64;
 
 #define FLOOR_GAMECOORD 60.0
 
-void fadeOutOpeningSplash();
-void displayOpeningSplash();
 int twoPointDistance(int x0, int y0, int x1, int y1);
 void frameTimeDelay();
 int clamp(int min, int value, int max);

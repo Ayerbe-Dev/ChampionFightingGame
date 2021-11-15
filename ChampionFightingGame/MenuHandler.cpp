@@ -17,23 +17,23 @@ void MenuHandler::handleMenu(){
         
         //On Press
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_UP)){
-            menu_target->id_player_last_input = i;
+            menu_target->player_id = i;
             (menu_target->*(&GameMenu::GAME_MENU_traverse_up))();
         } 
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_DOWN)){
-            menu_target->id_player_last_input = i;
+            menu_target->player_id = i;
             (menu_target->*(&GameMenu::GAME_MENU_traverse_down))();
         }
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_LEFT)){
-            menu_target->id_player_last_input = i;
+            menu_target->player_id = i;
             (menu_target->*(&GameMenu::GAME_MENU_traverse_left))();
         }
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_RIGHT)){
-            menu_target->id_player_last_input = i;
+            menu_target->player_id = i;
             (menu_target->*(&GameMenu::GAME_MENU_traverse_right))();
         }
         if (pPlayerInfoArray[i]->check_button_trigger(BUTTON_MENU_START)){
-            menu_target->id_player_last_input = i;
+            menu_target->player_id = i;
             (menu_target->*(&GameMenu::GAME_MENU_traverse_start))();
         }
 
@@ -68,7 +68,7 @@ void MenuHandler::handleMenu(){
 };
 
 bool MenuHandler::canRepeatKeys(){
-    return (iHoldFrames[menu_target->id_player_last_input] > iInitialDelay);
+    return (iHoldFrames[menu_target->player_id] > iInitialDelay);
 }
 
 void MenuHandler::setRepeatDelay(unsigned int delay){

@@ -1,6 +1,6 @@
 CWD = $(shell cd)
 TARGET=ChampionFightingGame.exe
-OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o Menu.o Fighter.o DebugMenu.o FighterAccessor.o Object.o Projectile.o RoyFireball.o EricFireball.o CharaTemplate.o ProjectileTemplate.o Atlas.o MenuHandler.o CharaSelect.o GameTexture.o SoundManager.o Angelica.o Nightsaber.o Sully.o Priest.o Aziel.o Bruno.o Tessa.o Alejandro.o Norman.o Julius.o Ramona.o Zyair.o Vesuvius.o Leon.o Loader.o TitleScreen.o FighterStatus.o GameMenu.o
+OBJECT_NAMES=main.o Animation.o Box.o GameCoordinate.o Game.o ParamTable.o PlayerInfo.o utils.o Roy.o Eric.o Debugger.o UI.o Stage.o Menu.o Fighter.o DebugMenu.o FighterAccessor.o Object.o Projectile.o RoyFireball.o EricFireball.o CharaTemplate.o ProjectileTemplate.o Atlas.o MenuHandler.o CharaSelect.o GameTexture.o SoundManager.o Angelica.o Nightsaber.o Sully.o Priest.o Aziel.o Bruno.o Tessa.o Alejandro.o Norman.o Julius.o Ramona.o Zyair.o Vesuvius.o Leon.o Loader.o TitleScreen.o FighterStatus.o GameMenu.o Opening.o
 OBJECT_FILES=$(patsubst %,$(CWD)/%,$(OBJECT_NAMES))
 INCLUDE_DIR=-I ../SDL2/include -I C:/MinGW/include/
 LIB_DIR=-L ../SDL2/lib/x64 -L C:/MinGW/lib/

@@ -224,6 +224,7 @@ int CSS::getSlotsLength() {
 }
 
 void CSS::GAME_MENU_traverse_select() {
+	printf("aaaah\n");
 	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
 		aPlayerInfos[id_player_last_input]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[id_player_last_input]].getCharacterId();
 		MobileCharacterSlot tmpSlot;

@@ -117,19 +117,19 @@ void GameTimer::Render(){
 	SDL_Rect cClockFaceSrc{84*ClockMode,0,84,87};
 	SDL_RenderCopy(g_renderer,pClockFace,&cClockFaceSrc,&cClockFace);
 
-	SDL_Rect cDecaDestRect{ 901.5,22,37.5,88.5 };
+	SDL_Rect cDecaDestRect{ 901,22,37,88 };
 	SDL_Rect cDecaSourceRect{uiDecaseconds*25,0,25,59};
 	SDL_RenderCopy(g_renderer,pBigTypeface,&cDecaSourceRect,&cDecaDestRect);
 
-	SDL_Rect cDestRect{942,22,37.5,88.5};
+	SDL_Rect cDestRect{942,22,37,88};
 	SDL_Rect cSourceRect{uiSeconds*25,0,25,59};
 	SDL_RenderCopy(g_renderer,pBigTypeface,&cSourceRect,&cDestRect);
 
-	SDL_Rect cDecaFrameDestRect{984,85,16.5,28.5};
+	SDL_Rect cDecaFrameDestRect{984,85,16,28};
 	SDL_Rect cFrameSourceRect{uiDecaframes*11,0,11,19};
 	SDL_RenderCopy(g_renderer,pSmallTypeface,&cFrameSourceRect,&cDecaFrameDestRect);
 
-	SDL_Rect cFrameDestRect{1003.5,85,16.5,28.5};
+	SDL_Rect cFrameDestRect{1003,85,16,28};
 	SDL_Rect cFrameSourceRectOof{uiFrames*11,0,11,19};
 	SDL_RenderCopy(g_renderer,pSmallTypeface,&cFrameSourceRectOof,&cFrameDestRect);
 }

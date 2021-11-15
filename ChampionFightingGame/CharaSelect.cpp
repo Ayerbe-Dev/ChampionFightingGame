@@ -224,14 +224,8 @@ int CSS::getSlotsLength() {
 }
 
 void CSS::GAME_MENU_traverse_select() {
-<<<<<<< HEAD
 	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
 		aPlayerInfos[player_id]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].getCharacterId();
-=======
-	printf("aaaah\n");
-	if (aPlayerInfos[id_player_last_input]->chara_kind == CHARA_KIND_MAX) {
-		aPlayerInfos[id_player_last_input]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[id_player_last_input]].getCharacterId();
->>>>>>> 41cd2783c2fa926c7984a55378d66478d4fa3a72
 		MobileCharacterSlot tmpSlot;
 		tmpSlot.gameTexture = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].gameTexture;
 

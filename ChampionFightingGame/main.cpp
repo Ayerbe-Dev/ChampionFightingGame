@@ -111,7 +111,7 @@ int main() {
 			running = false;
 		}
 		else if (game_state == GAME_STATE_SIGLA_INIZIALE) {
-			game_state = title_screen();
+			game_state = title_screen(player_info);
 			if (game_state == GAME_STATE_CLOSE) {
 				running = false;
 			}

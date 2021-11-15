@@ -14,8 +14,6 @@ int title_screen(PlayerInfo player_info[2]){
     const Uint8 *keyboard_state;
     Debugger debugger;
     MenuHandler menu_handler(&title_screen, player_info);
-
-    menu_handler.setEventMenuFinish(&TitleScreen::start);
     
     while (title_screen.titleing) {
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -59,7 +57,7 @@ int title_screen(PlayerInfo player_info[2]){
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		
-		menu_handler.handleTitle();
+		menu_handler.handleMenu();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
@@ -94,6 +92,6 @@ void TitleScreen::render(){
     text.render();
 }
 
-void TitleScreen::start(){
+void TitleScreen::GAME_MENU_traverse_start(){
     titleing = false;
 }

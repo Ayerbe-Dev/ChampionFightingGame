@@ -81,7 +81,7 @@ bool LoadIcon::check_corner_distance(bool init) {
 	|| texture.destRect.y > WINDOW_HEIGHT - panic_distance && move_down) {
 		will_hit_ceiling = true;
 	}
-	bool close_enough = abs((texture.destRect.y * 1.78) - texture.destRect.x) < 50 || abs((texture.destRect.y * 1.78) - texture.destRect.x) > (WINDOW_WIDTH - 50);
+	bool close_enough = abs((texture.destRect.y * 1.78) - texture.destRect.x) < 75 || abs((texture.destRect.y * 1.78) - texture.destRect.x) > (WINDOW_WIDTH - 75);
 	
 	if (!init && (will_hit_wall && will_hit_ceiling) && close_enough) {
 		if (panic_setting) {

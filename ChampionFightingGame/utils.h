@@ -23,8 +23,11 @@ typedef unsigned long long u64;
 #define global_variable static
 #define internal static
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define BASE_WINDOW_WIDTH 1280
+#define BASE_WINDOW_HEIGHT 720
+
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 
 #define TICK_RATE_S 60
 #define TICK_RATE_MS 1000 / TICK_RATE_S

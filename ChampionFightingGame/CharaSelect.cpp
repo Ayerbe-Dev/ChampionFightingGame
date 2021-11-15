@@ -38,9 +38,9 @@ int chara_select_main(PlayerInfo player_info[2]) {
 	CssCursor cursors[2];
 	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
 	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	cursors[0].cursorTexture.setScaleFactor(0.8);
+	cursors[0].cursorTexture.setScaleFactor(1.2);
 	cursors[0].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-	cursors[1].cursorTexture.setScaleFactor(0.8);
+	cursors[1].cursorTexture.setScaleFactor(1.2);
 	cursors[1].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 	MenuHandler menuHandler(&cssMenuInstance, player_info);
@@ -146,7 +146,7 @@ int CSS::loadCSS() {
 			for (int iColumn = 0; iColumn < 10; iColumn++) {
 				tmpSlot = &aFixedCharacterSlots[((iRow - 1) * 10) + iColumn];
 
-				tmpSlot->gameTexture.setScaleFactor(0.8);
+				tmpSlot->gameTexture.setScaleFactor(1.2);
 				tmpSlot->gameTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 				/*
@@ -163,7 +163,7 @@ int CSS::loadCSS() {
 			for (int iColumn = 0; iColumn < getSlotsLength() % 10; iColumn++) {
 				tmpSlot = &aFixedCharacterSlots[((iRow - 1) * 10) + iColumn];
 
-				tmpSlot->gameTexture.setScaleFactor(0.8);
+				tmpSlot->gameTexture.setScaleFactor(1.2);
 				tmpSlot->gameTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 				/*
@@ -232,10 +232,10 @@ void CSS::GAME_MENU_traverse_select() {
 
 		switch (id_player_last_input) {
 			case 0:
-				tmpSlot.setTarget(78, 604, .8, .8);
+				tmpSlot.setTarget(117, 906, 1.5, 1.5);
 				break;
 			case 1:
-				tmpSlot.setTarget(1204, 604, .8, .8);
+				tmpSlot.setTarget(1806, 906, 1.5, 1.5);
 				break;
 			default:
 				printf("oof\n");
@@ -414,18 +414,18 @@ void CSS::render() {
 
 		switch (i) {
 			case 0:
-				tmpSlot.gameTexture.destRect.x = 78;
-				tmpSlot.gameTexture.destRect.y = 604;
+				tmpSlot.gameTexture.destRect.x = 117;
+				tmpSlot.gameTexture.destRect.y = 906;
 				break;
 			case 1:
-				tmpSlot.gameTexture.destRect.x = 1204;
-				tmpSlot.gameTexture.destRect.y = 604;
+				tmpSlot.gameTexture.destRect.x = 1806;
+				tmpSlot.gameTexture.destRect.y = 906;
 				break;
 			default:
 				cout << "How the fuck" << endl;
 				break;
 		}
-		tmpSlot.gameTexture.setScaleFactor(1);
+		tmpSlot.gameTexture.setScaleFactor(1.5);
 		tmpSlot.gameTexture.setAlpha((Uint8)127);
 		tmpSlot.gameTexture.render();
 		tmpSlot.gameTexture.setAlpha((Uint8)255);
@@ -615,10 +615,10 @@ void MobileCharacterSlot::playAnim() {
 		gameTexture.setVerticalScaleFactor(fVerticalscale);
 	}
 	else {
-		gameTexture.setScaleFactor(1);
+		gameTexture.setScaleFactor(1.5);
 	}
 
-	fVerticalscale += (1 - fVerticalscale) / (iAnimationSpeed / 3);
+	fVerticalscale += (1.5 - fVerticalscale) / (iAnimationSpeed / 3);
 	fHorizontalscaleOffset += (0 - fHorizontalscaleOffset) / (iAnimationSpeed / 3);
 	fPosX += (targetX - fPosX) / (iAnimationSpeed / 2);
 	fPosY += (targetY - fPosY) / (iAnimationSpeed / 2);
@@ -635,6 +635,6 @@ void MobileCharacterSlot::setTarget(int x, int y, float w, float h) {
 	fPosX = gameTexture.destRect.x;
 	fPosY = gameTexture.destRect.y;
 
-	fHorizontalscaleOffset = w - 1;
+	fHorizontalscaleOffset = w - 1.5;
 	fVerticalscale = h;
 }

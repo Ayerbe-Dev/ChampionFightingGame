@@ -326,10 +326,10 @@ int get_sub_selection(int top_selection, int sub_selection) {
 MenuItem::MenuItem() {}
 MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
 	this->texture = loadTexture(texture_dir.c_str());
-	this->destRect = { 0,0,232,32 };
+	this->destRect = { 0,0, 348,48 };
 	this->destination = destination;
 	this->texture_description = loadTexture(texture_description_dir.c_str());
-	this->destRect_description = { 0,0,520,720 };
+	this->destRect_description = { 0,0,780,1080 };
 }
 
 SubMenuTable::SubMenuTable() {}
@@ -350,8 +350,8 @@ Cursor::Cursor() {
 	SDL_Rect cursor_rect;
 	cursor_rect.x = (WINDOW_WIDTH * 0.75);
 	cursor_rect.y = WINDOW_HEIGHT * 0.18;
-	cursor_rect.w = 30;
-	cursor_rect.h = 30;
+	cursor_rect.w = 45;
+	cursor_rect.h = 45;
 	this->destRect = cursor_rect;
 	this->texture = loadTexture("resource/ui/menu/main/Cursor.png");
 }

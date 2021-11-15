@@ -78,7 +78,6 @@ void Roy::loadRoyACMD() {
 	});
 	script("walk_f", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });

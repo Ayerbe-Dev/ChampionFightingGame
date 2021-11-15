@@ -15,6 +15,7 @@
 #include "DebugMenu.h"
 #include "CharaSelect.h"
 #include "SoundManager.h"
+#include "Opening.h"
 #include "TitleScreen.h"
 #undef main
 using namespace std;
@@ -43,13 +44,8 @@ int main() {
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
 
-	//Display the loading screen before anything else can happen
-
-	//displayLoadingScreen();
-//	displayOpeningSplash();
-
 	bool running = true;
-	int game_state = GAME_STATE_DEBUG_MENU;
+	int game_state = GAME_STATE_SIGLA_INIZIALE;
 
 	//Initialize controller input
 
@@ -83,7 +79,7 @@ int main() {
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
 
-	fadeOutOpeningSplash();
+	opening_main(player_info);
 
 	while (running) {
 		refreshRenderer();

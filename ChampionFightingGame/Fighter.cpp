@@ -439,6 +439,8 @@ void Fighter::loadFighterSounds() {
 
 }
 
+void Fighter::loadCharaSounds() {}
+
 //Sound
 
 void Fighter::playCommonSE(int se) {

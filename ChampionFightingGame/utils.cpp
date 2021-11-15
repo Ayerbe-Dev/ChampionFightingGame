@@ -15,6 +15,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern std::chrono::steady_clock::time_point g_chron;
 extern SDL_mutex* mutex;
+extern bool threadRender;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -111,6 +112,7 @@ SDL_Texture* loadTexture(const char* file_path) {
 	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
 	SDL_UnlockMutex(mutex);
+	frameTimeDelay();
 	return ret;
 }
 
@@ -268,76 +270,4 @@ void displayLoadingScreen() {
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);
 	loadingSplash.clearTexture();
-}
-
-void displayOpeningSplash(){
-	SDL_RenderClear(g_renderer);
-	GameTexture titleSplash;
-	titleSplash.init("resource/ui/menu/game-splash-background.png");
-	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	GameTexture textSplash;
-	textSplash.init("resource/ui/menu/game-splash-text.png");
-	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-	
-	Uint8 tmp_alpha = 0;
-	for (int i=0;i<25;i++){
-		SDL_RenderClear(g_renderer);
-		tmp_alpha += 10;
-		titleSplash.setAlpha(tmp_alpha);
-		titleSplash.render();
-		SDL_RenderPresent(g_renderer);
-		frameTimeDelay();
-		frameTimeDelay(); //do it again
-		frameTimeDelay(); //and again
-		frameTimeDelay(); //YET AGAIN
-	}
-
-	titleSplash.setAlpha((Uint8)255);
-	tmp_alpha = 0;
-	for (int i=0;i<51;i++){
-		SDL_RenderClear(g_renderer);
-		tmp_alpha += 5;
-		textSplash.setAlpha(tmp_alpha);
-		titleSplash.render();
-		textSplash.render();
-		SDL_RenderPresent(g_renderer);
-		frameTimeDelay();
-		frameTimeDelay(); //do it again
-		frameTimeDelay(); //and again
-		frameTimeDelay(); //YET AGAIN
-	}
-
-	textSplash.clearTexture();
-	titleSplash.clearTexture();
-}
-
-void fadeOutOpeningSplash(){
-	SDL_RenderClear(g_renderer);
-	GameTexture titleSplash;
-	titleSplash.init("resource/ui/menu/game-splash-background.png");
-	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	GameTexture textSplash;
-	textSplash.init("resource/ui/menu/game-splash-text.png");
-	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-	
-	Uint8 tmp_alpha = 255;
-
-	for (int i=0;i<25;i++){
-		SDL_RenderClear(g_renderer);
-		tmp_alpha -= 10;
-		textSplash.setAlpha(tmp_alpha);
-		titleSplash.setAlpha(tmp_alpha);
-		titleSplash.render();
-		textSplash.render();
-		SDL_RenderPresent(g_renderer);
-		frameTimeDelay();
-		frameTimeDelay(); //do it again
-		frameTimeDelay(); //and again
-		frameTimeDelay(); //YET AGAIN
-	}
-
-	textSplash.clearTexture();
-	titleSplash.clearTexture();
 }

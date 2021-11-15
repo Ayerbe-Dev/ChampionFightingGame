@@ -207,6 +207,7 @@
     <ClCompile Include="Nightsaber.cpp" />
     <ClCompile Include="Norman.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Opening.cpp" />
     <ClCompile Include="ParamTable.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -296,6 +297,7 @@
     <ClInclude Include="Object.fwd.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectKind.h" />
+    <ClInclude Include="Opening.h" />
     <ClInclude Include="ParamTable.h" />
     <ClInclude Include="Fighter.fwd.h" />
     <ClInclude Include="PlayerInfo.h" />

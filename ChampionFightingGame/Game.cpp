@@ -90,13 +90,13 @@ int game_main(PlayerInfo player_info[2]) {
 
 	LoadIcon load_icon;
 	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/splashload.png");
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
 	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
-	loadingFlavor.init("resource/ui/menu/FlavorBar.png");
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
 	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
-	loadingBar.init("resource/ui/menu/loadingbar.png");
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
 	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
 	loadingBar.setPercent(75);
 

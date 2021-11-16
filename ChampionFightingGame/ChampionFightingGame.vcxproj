@@ -193,6 +193,7 @@
     </ClCompile>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="GameMenu.cpp" />
+    <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="Leon.cpp" />
@@ -280,6 +281,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameMenu.h" />
+    <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameTexture.fwd.h" />
     <ClInclude Include="GameTexture.h" />
@@ -322,6 +324,7 @@
     <ClInclude Include="RoyFireball.fwd.h" />
     <ClInclude Include="RoyFireball.h" />
     <ClInclude Include="SE.h" />
+    <ClInclude Include="SettingConstants.h" />
     <ClInclude Include="SoundManager.fwd.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stage.h" />

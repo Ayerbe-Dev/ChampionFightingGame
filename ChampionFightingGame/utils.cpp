@@ -10,6 +10,7 @@ using namespace std;
 #include <cmath>
 #include <fstream>
 #include <chrono>
+#include "GameSettings.h"
 
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
@@ -270,4 +271,24 @@ void displayLoadingScreen() {
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);
 	loadingSplash.clearTexture();
+}
+
+float get_relative_one_percent(float val, float denom) {
+	float mul = denom / 100.0;
+	return (val / 100.0) * mul;
+}
+
+GameSettings g_settings;
+
+int getGameSetting(string setting) {
+	for (int i = 0; i < SETTING_KIND_MAX; i++) {
+		if (g_settings.settings[i].name == setting) {
+			return g_settings.settings[i].val;
+		}
+	}
+	return 0;
+}
+
+int getGameSetting(int setting) {
+	return g_settings.settings[setting].val;
 }

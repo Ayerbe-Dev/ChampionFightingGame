@@ -111,6 +111,8 @@ int game_main(PlayerInfo player_info[2]) {
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
 
 	SDL_Thread* loading_thread;
 
@@ -174,8 +176,20 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 	}
-	SDL_DestroyTexture(pScreenTexture);
-	g_soundmanager.playMusic(game_loader->stage.default_music_kind);
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+	
+	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+		g_soundmanager.playMusic(stage.default_music_kind);
+	}
+	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
+		//randomly play the theme of one of the characters. if online, always play the opponent's theme
+	}
+	else {
+		//randomly play the theme for one of the players' tags. if online, always play the user's theme
+	}
 
 
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
@@ -188,19 +202,12 @@ int game_main(PlayerInfo player_info[2]) {
 	while (gaming) {
 		frameTimeDelay();
 		if (debug) {
-			g_soundmanager.pauseSEAll(0);
-			g_soundmanager.pauseSEAll(1);
-			g_soundmanager.pauseVCAll(0);
-			g_soundmanager.pauseVCAll(1);
+			for (int i = 0; i < 2; i++) {
+				g_soundmanager.pauseSEAll(i);
+				g_soundmanager.pauseVCAll(i);
+			}
 		}
-
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-		SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
-
-		//yeah
-
+	
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -241,16 +248,6 @@ int game_main(PlayerInfo player_info[2]) {
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
-
-		/*
-			Rendering. The method for rendering relies on setting render targets. pScreenTexture is where all the scalable
-			textures are rendered. The GUI will be applied after the render target has been set back to the window.
-			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
-			the content in pScreenTexture.
-		*/
-
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, nullptr, nullptr);
 
 		/*
 		Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
@@ -352,7 +349,24 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 
-		//Render loop
+		/*
+			Rendering. The method for rendering relies on setting render targets. pScreenTexture is where all the scalable
+			textures are rendered. The GUI will be applied after the render target has been set back to the window.
+			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
+			the content in pScreenTexture.
+		*/
+
+		SDL_SetRenderTarget(g_renderer, pGui);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderClear(g_renderer);
+
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+
+		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, NULL, NULL);
 
 		int render_priority = 0;
 		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
@@ -420,6 +434,8 @@ int game_main(PlayerInfo player_info[2]) {
 
 		check_attack_connections(fighter[0], fighter[1], visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
 
+		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 0);
+
 		//Camera things
 		camera = updateCamera(fighter[0]->pos.getRenderCoodrinateX(), fighter[0]->pos.getRenderCoodrinateY(), fighter[1]->pos.getRenderCoodrinateX(), fighter[1]->pos.getRenderCoodrinateY(), debugger.zoom);
 
@@ -444,9 +460,6 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}*/
 
-		SDL_SetRenderTarget(g_renderer, nullptr); //set target to the window
-		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, nullptr); //render scale to window
-
 		SDL_SetRenderTarget(g_renderer, pGui); //set target to gui layer
 		for (int i = 0; i < 2; i++) {
 			switch (i) {
@@ -468,15 +481,11 @@ int game_main(PlayerInfo player_info[2]) {
 		if (!debug) timer.Tick();
 		timer.Render();
 
+		SDL_SetRenderTarget(g_renderer, NULL); //set target to the window
+		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, NULL); //render scale to window
+		SDL_RenderCopy(g_renderer, pGui, NULL, NULL); //render gui to window
 
-		SDL_SetRenderTarget(g_renderer, nullptr); //set target to the window
-		SDL_RenderCopy(g_renderer, pGui, nullptr, nullptr); //render gui to window
-
-		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(g_renderer); //finalize
-
-		SDL_DestroyTexture(pGui);
-		SDL_DestroyTexture(pScreenTexture);
 	}
 	DONE_GAMING:
 

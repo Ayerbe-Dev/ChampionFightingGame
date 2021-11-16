@@ -61,6 +61,9 @@ static int LoadGame(void* void_gameloader) {
 	int rng = rand() % 2;
 	stage = game_loader->player_info[rng].stage; 
 	game_loader->loaded_items++;
+	string background_texture = stage.resource_dir + "background.png";
+	stage.pBackgroundTexture = loadTexture(background_texture.c_str());
+	game_loader->loaded_items++;
 
 	p1 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[0])->chara_kind, 0, &game_loader->player_info[0], fighter_accessor);
 	game_loader->loaded_items++;
@@ -95,7 +98,6 @@ static int LoadGame(void* void_gameloader) {
 	}
 
 	for (int i = 0; i < 2; i++) {
-		cout << fighter[i]->chara_kind << endl;
 		health_bar[i] = HealthBar(fighter[i]);
 		game_loader->loaded_items++;
 	}
@@ -108,7 +110,16 @@ static int LoadGame(void* void_gameloader) {
 	}
 
 	g_soundmanager.fighter_accessor = fighter_accessor;
-	g_soundmanager.loadMusic(stage.default_music_kind);
+
+	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+		g_soundmanager.playMusic(stage.default_music_kind);
+	}
+	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
+		//randomly play the theme of one of the characters. if online, always play the opponent's theme
+	}
+	else {
+		//randomly play the theme for one of the players' tags. if online, always play the user's theme
+	}
 
 	game_loader->stage = stage;
 	game_loader->fighter_accessor = fighter_accessor;

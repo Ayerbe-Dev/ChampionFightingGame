@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 #include <SDL_timer.h>
 #include "utils.h"
+#include "GameSettings.h"
 #include "Game.h"
 #include "Menu.h"
 #include "Animation.h"
@@ -19,6 +20,7 @@
 #include "TitleScreen.h"
 #undef main
 using namespace std;
+
 int registered_controllers[2] = { -1, -1 };
 bool debug = false;
 SDL_Window* g_window;
@@ -40,7 +42,13 @@ int main() {
 
 	//Create the window and the renderer
 
-	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
+	if (getGameSetting("fullscreen")) {
+		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting(SETTING_KIND_RES_X), getGameSetting(SETTING_KIND_RES_Y), SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	else {
+		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting(SETTING_KIND_RES_X), getGameSetting(SETTING_KIND_RES_Y), SDL_WINDOW_RESIZABLE);
+	}
+
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
 	int game_state = GAME_STATE_TITLE_SCREEN;

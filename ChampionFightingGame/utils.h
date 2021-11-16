@@ -23,9 +23,6 @@ typedef unsigned long long u64;
 #define global_variable static
 #define internal static
 
-#define BASE_WINDOW_WIDTH 1280
-#define BASE_WINDOW_HEIGHT 720
-
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
@@ -54,7 +51,7 @@ typedef unsigned long long u64;
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
 #define JUMP_FOLLOW_THRESHOLD 300
 #define CAMERA_MAX_ZOOM_OUT 1000
-#define CAMERA_MAX_ZOOM_IN 1000
+#define CAMERA_MAX_ZOOM_IN 800
 #define FONT_COUNT 2
 #define BUFFER_WINDOW 3
 #define MOTION_SPECIAL_TIMER 11
@@ -79,6 +76,9 @@ void draw_text_multi_lines(string font_name, string text, float x_pos, float y_p
 int get_blank(string s);
 void refreshRenderer();
 void displayLoadingScreen();
+float get_relative_one_percent(float val, float denom);
+int getGameSetting(string setting);
+int getGameSetting(int setting);
 
 
 /*

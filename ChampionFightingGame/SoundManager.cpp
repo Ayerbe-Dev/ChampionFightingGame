@@ -467,7 +467,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	u8* source; //Audio data that will be filled by a given track
 	u8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
 	u32 dlen; //Ditto for length
-
+	int vol; //Volume value to be multiplied by the values in the user's settings
 	SDL_memset(stream, 0, len); //Clear the stream
 
 	for (int i = 0; i < MAX_SOUNDS; i++) {
@@ -476,6 +476,16 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 
 				data = sounds[i2][i].data;
 				dlen = sounds[i2][i].dlen;
+				if (sounds[i2][i].sound.sound_kind == SOUND_KIND_SE) {
+					vol = getGameSetting("se_vol") * get_relative_one_percent(sounds[i2][i].sound.volume, 128);
+				}
+				else if (sounds[i2][i].sound.sound_kind == SOUND_KIND_VC) {
+					vol = getGameSetting("vc_vol") * get_relative_one_percent(sounds[i2][i].sound.volume, 128);
+				}
+				else {
+					vol = getGameSetting("music_vol") * get_relative_one_percent(sounds[i2][i].sound.volume, 128);
+				}
+
 				if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP && sounds[i2][i].sound.looped) { 
 					data = sounds[i2][i].loop_data;
 					dlen = sounds[i2][i].loop_dlen;
@@ -510,7 +520,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 						sounds[i2][i].dlen = 0;
 					}
 				}
-				SDL_MixAudio(stream, source, len, sounds[i2][i].sound.volume);
+				SDL_MixAudio(stream, source, len, vol);
 				SDL_free(source);
 			}
 		}

@@ -16,3 +16,4 @@
 #include "SE.h"
 #include "VC.h"
 #include "Music.h"
+#include "SettingConstants.h"

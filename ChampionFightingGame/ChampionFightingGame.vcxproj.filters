@@ -201,6 +201,9 @@
     <ClCompile Include="GameMenu.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -487,6 +490,9 @@
     </ClInclude>
     <ClInclude Include="GameMenu.h">
       <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,24 +1,34 @@
 #include "Opening.h"
 extern SDL_Renderer* g_renderer;
 
-void opening_main(PlayerInfo player_info[2]) {
-	displayOpeningSplash(player_info);
+bool opening_main(PlayerInfo player_info[2]) {
+	return displayOpeningSplash(player_info);
 }
 
-void displayOpeningSplash(PlayerInfo player_info[2]) {
+bool displayOpeningSplash(PlayerInfo player_info[2]) {
 	const Uint8* keyboard_state;
 	SDL_RenderClear(g_renderer);
 	GameTexture titleSplash;
-	titleSplash.init("resource/ui/menu/game-splash-background.png");
+	titleSplash.init("resource/ui/menu/opening/game-splash-background.png");
 	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
 	GameTexture textSplash;
-	textSplash.init("resource/ui/menu/game-splash-text.png");
+	textSplash.init("resource/ui/menu/opening/game-splash-text.png");
 	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
 
 	Uint8 tmp_alpha = 0;
 	for (int i = 0; i < 25; i++) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return false;
+				}
+				break;
+			}
+		}
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
@@ -42,6 +52,16 @@ void displayOpeningSplash(PlayerInfo player_info[2]) {
 	titleSplash.setAlpha((Uint8)255);
 	tmp_alpha = 0;
 	for (int i = 0; i < 51; i++) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return false;
+				}
+				break;
+			}
+		}
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
@@ -63,6 +83,16 @@ void displayOpeningSplash(PlayerInfo player_info[2]) {
 		frameTimeDelay(); //YET AGAIN
 	}
 	for (int i = 0; i < 25; i++) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return false;
+				}
+				break;
+			}
+		}
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
@@ -87,4 +117,5 @@ void displayOpeningSplash(PlayerInfo player_info[2]) {
 	SKIP_INTRO:
 	textSplash.clearTexture();
 	titleSplash.clearTexture();
+	return true;
 }

@@ -43,9 +43,7 @@ int main() {
 	g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
-
-	bool running = true;
-	int game_state = GAME_STATE_SIGLA_INIZIALE; //classy
+	int game_state = GAME_STATE_TITLE_SCREEN;
 
 	//Initialize controller input
 
@@ -79,7 +77,7 @@ int main() {
 	player_info[0] = PlayerInfo(0);
 	player_info[1] = PlayerInfo(1);
 
-	opening_main(player_info);
+	bool running = opening_main(player_info);
 
 	while (running) {
 		refreshRenderer();
@@ -105,8 +103,8 @@ int main() {
 		else if (game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
-		else if (game_state == GAME_STATE_SIGLA_INIZIALE) {
-			game_state = title_screen(player_info);
+		else if (game_state == GAME_STATE_TITLE_SCREEN) {
+			game_state = title_screen_main(player_info);
 			if (game_state == GAME_STATE_CLOSE) {
 				running = false;
 			}

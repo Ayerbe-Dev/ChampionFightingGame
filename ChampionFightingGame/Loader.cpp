@@ -1,7 +1,7 @@
 #include "Loader.h"
 
 LoadIcon::LoadIcon() {
-	texture.init("resource/ui/menu/loadicon.png");
+	texture.init("resource/ui/menu/loading/loadicon.png");
 	texture.setScaleFactor(0.2);
 
 	panic_setting = rand() % 2;

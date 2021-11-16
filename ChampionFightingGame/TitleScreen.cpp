@@ -9,7 +9,7 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-int title_screen(PlayerInfo player_info[2]){
+int title_screen_main(PlayerInfo player_info[2]) {
     TitleScreen title_screen;
     const Uint8 *keyboard_state;
     Debugger debugger;

@@ -20,10 +20,10 @@ public:
 	HealthBar health_bar[2];
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;
+	Stage stage;
 	int loaded_items = 0;
 	bool finished = false;
 	bool can_ret = false;
-	Stage stage;
 
 	PlayerInfo player_info[2];
 };
@@ -59,7 +59,7 @@ static int LoadGame(void* void_gameloader) {
 	FighterAccessor* fighter_accessor = new FighterAccessor;
 
 	int rng = rand() % 2;
-	stage = Stage(game_loader->player_info[rng].stage_kind); 
+	stage = game_loader->player_info[rng].stage; 
 	game_loader->loaded_items++;
 
 	p1 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[0])->chara_kind, 0, &game_loader->player_info[0], fighter_accessor);
@@ -108,7 +108,7 @@ static int LoadGame(void* void_gameloader) {
 	}
 
 	g_soundmanager.fighter_accessor = fighter_accessor;
-	g_soundmanager.loadMusic(MUSIC_KIND_ATLAS_STAGE);
+	g_soundmanager.loadMusic(stage.default_music_kind);
 
 	game_loader->stage = stage;
 	game_loader->fighter_accessor = fighter_accessor;

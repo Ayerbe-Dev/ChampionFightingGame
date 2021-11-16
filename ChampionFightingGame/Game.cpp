@@ -175,7 +175,7 @@ int game_main(PlayerInfo player_info[2]) {
 		}
 	}
 	SDL_DestroyTexture(pScreenTexture);
-//	g_soundmanager.playMusic(MUSIC_KIND_ATLAS_STAGE);
+	g_soundmanager.playMusic(game_loader->stage.default_music_kind);
 
 
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture

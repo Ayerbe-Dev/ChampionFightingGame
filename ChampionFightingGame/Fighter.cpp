@@ -126,7 +126,6 @@ void Fighter::fighter_main() {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
 				if (!add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0)) {
 					fighter_accessor->fighter[!id]->add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir / 2, 0);
-					//Note to self: Never try to use the FighterAccessor outside of a class method again, holy shit this is disgusting
 				}
 			}
 			else {

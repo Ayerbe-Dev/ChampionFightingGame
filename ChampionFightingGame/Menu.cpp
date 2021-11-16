@@ -6,6 +6,8 @@
 #include "Debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
+#include "MenuHandler.h"
+
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -20,8 +22,9 @@ int menu_main(PlayerInfo player_info[2]) {
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 
 	Debugger debugger;
-	debugger = Debugger();
-	//neccesary for scaling
+	MainMenu main_menu;
+	MenuHandler main_handler(&main_menu, player_info);
+
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	bool menuing = true;
@@ -361,3 +364,44 @@ Cursor::Cursor() {
 	this->destRect = cursor_rect;
 	this->texture = loadTexture("resource/ui/menu/main/Cursor.png");
 }
+
+MainMenu::MainMenu(){
+	background_texture.init("resource/ui/menu/main/bg.png");
+
+	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png");
+	menu_items[1] = MenuItem{ "resource/ui/menu/main/Solo.png"};
+	menu_items[2] = MenuItem{ "resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png" };
+	menu_items[3] = MenuItem{ "resource/ui/menu/main/Options.png" };
+	menu_items[4] = MenuItem{ "resource/ui/menu/main/Extras.png" };
+
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destination = i;
+		sub_menu_tables[i] = new SubMenuTable(i);
+	}
+	
+	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Story.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Arcade.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Training.png");
+	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/PlayerVsPlayer.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/PlayerVsCPU.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
+};
+
+void MainMenu::GAME_MENU_traverse_up(){};
+void MainMenu::GAME_MENU_traverse_down(){};

@@ -89,9 +89,16 @@ int game_main(PlayerInfo player_info[2]) {
 	GameCoordinate debug_offset[2];
 
 	LoadIcon load_icon;
-	GameTexture loadingSplash;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
 	loadingSplash.init("resource/ui/menu/splashload.png");
 	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+	loadingBar.setPercent(75);
 
 	GameTimer timer;
 	Stage stage;
@@ -128,7 +135,11 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
+		loadingBar.setPercent(((float)game_loader->loaded_items/14));
+		loadingBar.render();
+		loadingFlavor.render();
 		load_icon.texture.render();
+		
 		SDL_SetRenderTarget(g_renderer, NULL);
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);

@@ -7,6 +7,7 @@ enum {
     GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
     GAME_TEXTURE_ANCHOR_MODE_CENTER,
     GAME_TEXTURE_ANCHOR_MODE_BACKGROUND,
+    GAME_TEXTURE_ANCHOR_MODE_METER,
 };
 
 class GameTexture{
@@ -29,7 +30,9 @@ public:
     void setAlpha(Uint8 alpha);
     void clearTexture();
     bool bIsInitialized = false;
+    void setPercent(float percent);
 private:
+    float percent;
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
     float fVerticalScaleFactor = 1.0;
     float fHorizontalScaleFactor = 1.0;

@@ -12,6 +12,11 @@ bool GameTexture::init(string sTexturePath){
     SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
     destRect.x=0;
     destRect.y=0;
+
+    srcRect.x=0;
+    srcRect.y=0;
+    srcRect.h=destRect.h;
+    srcRect.w=destRect.w;
 }
 
 bool GameTexture::render(){
@@ -33,12 +38,15 @@ bool GameTexture::render(){
     case GAME_TEXTURE_ANCHOR_MODE_BACKGROUND:
         SDL_RenderCopy(g_renderer,pTexture,nullptr,nullptr);
         break;
+    case GAME_TEXTURE_ANCHOR_MODE_METER:
+        tmpDestRect.w = destRect.w * (percent);
+        srcRect.w = tmpDestRect.w;
+        SDL_RenderCopy(g_renderer,pTexture,&srcRect,&tmpDestRect);
+        break;
     default:
-        //printf("Default Render mode\n");
         SDL_RenderCopy(g_renderer,pTexture,nullptr,&tmpDestRect);
         break;
     }
-    //printf("Width: %d, Height: %d\n", tmpDestRect.w, tmpDestRect.h);
     return true;
 }
 
@@ -73,4 +81,11 @@ void GameTexture::setAnchorMode(int iMode){
 
 void GameTexture::setAlpha(Uint8 alpha){
     SDL_SetTextureAlphaMod(pTexture,alpha);
+}
+
+void GameTexture::setPercent(float percent){
+    this->percent = percent;
+    if (iAnchorMode != GAME_TEXTURE_ANCHOR_MODE_METER){
+        printf("WARNING: GameTexture is using the setPercent() function but its not in the correct mode!\n");
+    }
 }

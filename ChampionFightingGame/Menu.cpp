@@ -5,6 +5,7 @@
 #include <math.h>
 #include "Debugger.h"
 #include "DebugMenu.h"
+#include "Options.h"
 extern bool debug;
 extern u32 frame_advance_ms;
 extern u32 frame_advance_entry_ms;
@@ -156,9 +157,14 @@ int menu_main(PlayerInfo player_info[2]) {
 
 			if (menu_level == MENU_LEVEL_SUB) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
-					menuing = false;
-					displayLoadingScreen();
-					goto SKIP_RENDER;
+					if (sub_selection == GAME_STATE_CONTROLS) {
+						controls_main(player_info);
+					}
+					else {
+						menuing = false;
+						displayLoadingScreen();
+						goto SKIP_RENDER;
+					}
 				}
 				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
 					menu_level = MENU_LEVEL_TOP;
@@ -299,7 +305,7 @@ int get_sub_selection(int top_selection, int sub_selection) {
 		case(SUB_MENU_OPTIONS): {
 			switch (sub_selection) {
 				case (SUB_OPTIONS_CONTROLS): {
-					ret = GAME_STATE_DEBUG_MENU;
+					ret = GAME_STATE_CONTROLS;
 				} break;
 				default: {
 					ret = GAME_STATE_DEBUG_MENU;

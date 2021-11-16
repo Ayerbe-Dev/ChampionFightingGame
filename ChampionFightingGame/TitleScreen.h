@@ -3,7 +3,8 @@
 #include "GameTexture.h"
 #include "GameMenu.h"
 
-int title_screen(PlayerInfo player_info[2]);
+int title_screen_main(PlayerInfo player_info[2]);
+
 class TitleScreen: public GameMenu{
 public:
     TitleScreen();

@@ -265,7 +265,7 @@ int twoPointDistance(int x0, int y0, int x1, int y1) {
 void displayLoadingScreen() {
 	SDL_RenderClear(g_renderer);
 	GameTexture loadingSplash;
-	loadingSplash.init("resource/ui/menu/splashload.png");
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
 	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);

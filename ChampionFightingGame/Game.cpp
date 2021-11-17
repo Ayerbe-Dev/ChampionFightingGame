@@ -98,7 +98,6 @@ int game_main(PlayerInfo player_info[2]) {
 
 	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
 	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	loadingBar.setPercent(75);
 
 	GameTimer timer;
 	Stage stage;
@@ -118,7 +117,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
-	
+
 	while (loading) {
 		frameTimeDelay();
 		SDL_Event event;
@@ -137,7 +136,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		loadingBar.setPercent(((float)game_loader->loaded_items/15));
+		loadingBar.setTargetPercent(((float)game_loader->loaded_items / 15), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();

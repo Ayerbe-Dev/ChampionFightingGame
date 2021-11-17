@@ -24,6 +24,10 @@ bool GameTexture::render(){
         return false;
     }
 
+    if (target_percent != -1.0) {
+        changePercent();
+    }
+
     SDL_Rect tmpDestRect = destRect;
     tmpDestRect.w *= fHorizontalScaleFactor;
     tmpDestRect.h *= fVerticalScaleFactor;
@@ -87,5 +91,36 @@ void GameTexture::setPercent(float percent){
     this->percent = percent;
     if (iAnchorMode != GAME_TEXTURE_ANCHOR_MODE_METER){
         printf("WARNING: GameTexture is using the setPercent() function but its not in the correct mode!\n");
+    }
+}
+
+void GameTexture::setTargetPercent(float percent, float rate, int frames) {
+    target_percent = percent;
+    target_rate = rate;
+    target_frames = frames;
+    if (iAnchorMode != GAME_TEXTURE_ANCHOR_MODE_METER) {
+        printf("WARNING: GameTexture is using the setTargetPercent() function but its not in the correct mode!\n");
+    }
+}
+
+void GameTexture::changePercent(float rate) {
+    if (rate == -1.0) {
+        rate = target_rate;
+    }
+    if (rate == -1.0) {
+        cout << "WARNING: Target rate was not set through setTargetPercent, but rate was not given a non-default arg!" << endl;
+    }
+
+    if (target_percent != percent) {
+        if (target_percent < percent) {
+            percent = clampf(target_percent, percent - (rate / target_frames), percent);
+        }
+        else {
+            percent = clampf(percent, percent + (rate / target_frames), target_percent);
+        }
+    }
+    else {
+        target_percent = -1.0;
+        target_rate = -1.0;
     }
 }

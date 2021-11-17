@@ -64,18 +64,23 @@ static int LoadGame(void* void_gameloader) {
 	string background_texture = stage.resource_dir + "background.png";
 	stage.pBackgroundTexture = loadTexture(background_texture.c_str());
 	game_loader->loaded_items++;
+	frameTimeDelay();
 
 	p1 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[0])->chara_kind, 0, &game_loader->player_info[0], fighter_accessor);
 	game_loader->loaded_items++;
+	frameTimeDelay();
 
 	p2 = new IObject(OBJECT_TYPE_FIGHTER, (&game_loader->player_info[1])->chara_kind, 1, &game_loader->player_info[1], fighter_accessor);
 	game_loader->loaded_items++;
+	frameTimeDelay();
 
 	fighter[0] = p1->get_fighter();
 	game_loader->loaded_items++;
+	frameTimeDelay();
 
 	fighter[1] = p2->get_fighter();
 	game_loader->loaded_items++;
+	frameTimeDelay();
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->player_info = &game_loader->player_info[i];
@@ -83,11 +88,13 @@ static int LoadGame(void* void_gameloader) {
 		fighter_accessor->fighter[i] = fighter[i];
 		fighter[i]->fighter_accessor = fighter_accessor;
 		game_loader->loaded_items++;
+		frameTimeDelay();
 	}
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->superInit(i);
 		game_loader->loaded_items++;
+		frameTimeDelay();
 	}
 
 	for (int i = 0; i < 2; i++) {
@@ -95,16 +102,19 @@ static int LoadGame(void* void_gameloader) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
 		game_loader->loaded_items++;
+		frameTimeDelay();
 	}
 
 	for (int i = 0; i < 2; i++) {
 		health_bar[i] = HealthBar(fighter[i]);
 		game_loader->loaded_items++;
+		frameTimeDelay();
 	}
 
 	timer = GameTimer(99);
 	game_loader->loaded_items++;
-	
+	frameTimeDelay();
+
 	for (int i = 0; i < 2; i++) {
 		player_indicator[i] = PlayerIndicator(fighter[i]);
 	}
@@ -112,7 +122,7 @@ static int LoadGame(void* void_gameloader) {
 	g_soundmanager.fighter_accessor = fighter_accessor;
 
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
-		g_soundmanager.playMusic(stage.default_music_kind);
+		g_soundmanager.loadMusic(stage.default_music_kind);
 	}
 	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
 		//randomly play the theme of one of the characters. if online, always play the opponent's theme

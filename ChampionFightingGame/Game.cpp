@@ -137,7 +137,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		loadingBar.setPercent(((float)game_loader->loaded_items/14));
+		loadingBar.setPercent(((float)game_loader->loaded_items/15));
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();

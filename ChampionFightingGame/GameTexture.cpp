@@ -10,12 +10,11 @@ bool GameTexture::init(string sTexturePath){
 
 	bIsInitialized = true;
 	pTexture = loadTexture(sTexturePath.c_str());
+	destRect.x = 0;
+	destRect.y = 0;
+	srcRect.x = 0;
+	srcRect.y = 0;
 	SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
-	destRect.x=0;
-	destRect.y=0;
-
-	srcRect.x=0;
-	srcRect.y=0;
 	srcRect.h=destRect.h;
 	srcRect.w=destRect.w;
 }
@@ -51,19 +50,12 @@ bool GameTexture::render() {
 			tmpDestRect.w = destRect.w * (percent);
 			tmpDestRect.h *= fVerticalScaleFactor;
 			tmpSrcRect.w = tmpDestRect.w;
-			if (drain_kind == METER_DRAIN_KIND_RIGHT) {
+			if (drain_kind != METER_DRAIN_KIND_NONE) {
 				tmpDestRect.x += WINDOW_WIDTH / 2;
-				tmpDestRect.x -= tmpSrcRect.w; //Decrease our health bar's position so we start at the front of our health bar
-				tmpSrcRect.x += destRect.w - tmpSrcRect.w; //Change our Source Rect not to include the part of it that got cut from the %
-				//The last line also causes the health bars to completely disappear when your health drops to around 35%, but only when the resolution
-				//is set to 1080p. The same problem was happening with the old healthbar system, and it isn't specific to one side. Gaming.
-			}
-			else if (drain_kind == METER_DRAIN_KIND_LEFT) {
-				tmpDestRect.x += WINDOW_WIDTH / 2 - 14;
-				tmpDestRect.w += 51; //Increase our health bar's width so we start at the front of our health bar. Seems to be resolution-specific,
-				//but I haven't gotten around to figuring out what the pattern is.
-				tmpSrcRect.w += 51;
-				tmpSrcRect.x += tmpDestRect.x - tmpSrcRect.w;
+				if (drain_kind == METER_DRAIN_KIND_RIGHT) {
+					tmpDestRect.x -= tmpSrcRect.w;
+				}
+				tmpSrcRect.x += destRect.w - tmpSrcRect.w;
 			}
 			else {
 				if (flip == TEXTURE_FLIP_KIND_DRAIN) {

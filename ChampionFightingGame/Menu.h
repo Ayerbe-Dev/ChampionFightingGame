@@ -7,6 +7,7 @@
 #include "Button.h"
 #include "PlayerInfo.h"
 #include "Menu.fwd.h"
+#include "GameMenu.h"
 
 int menu_main(PlayerInfo player_info[2]);
 int get_sub_selection(int top_selection, int sub_selection);
@@ -47,4 +48,28 @@ public:
     int pos_y;
 
     Cursor();
+};
+
+class MainMenu: public GameMenu{
+public:
+    MainMenu();
+    void GAME_MENU_traverse_up();
+    void GAME_MENU_traverse_down();
+    //void GAME_MENU_traverse_select();
+    //void GAME_MENU_traverse_back();
+    //void GAME_MENU_traverse_start();
+    bool menuing = true;
+private:
+    MenuItem menu_items[5];
+    GameTexture background_texture;
+    SubMenuTable* sub_menu_tables[5];
+
+    
+	float theta = 0;
+	float offset = 3.14 / 13;
+	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
+	int top_selection = -2; //first option, dont ask; 5 opts --> -2 -1 0 1 2 represen them
+	int sub_selection = GAME_STATE_GAME;
+	int menu_level = MENU_LEVEL_TOP;
+	int sub_type = SUB_MENU_VS;
 };

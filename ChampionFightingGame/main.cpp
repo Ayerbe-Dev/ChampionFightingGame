@@ -51,7 +51,7 @@ int main() {
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
-	int game_state = GAME_STATE_TITLE_SCREEN;
+	int game_state = GAME_STATE_GAME;
 
 	//Initialize controller input
 

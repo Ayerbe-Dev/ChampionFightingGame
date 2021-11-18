@@ -7,21 +7,12 @@
 class HealthBar {
 public:
 	Fighter* fighter;
-	SDL_Texture* health_texture;
-	SDL_Texture* bar_texture;
-	SDL_Rect health_rect;
-	SDL_Rect bar_rect;
-	SDL_Rect slice_rect;
+	GameTexture health_texture;
+	GameTexture bar_texture;
 	float max_health;
-	int scale;
-	float width;
-	int height;
 
 	HealthBar();
 	HealthBar(Fighter* fighter);
-
-	void RenderAsP1();
-	void RenderAsP2();
 };
 
 class PlayerIndicator {

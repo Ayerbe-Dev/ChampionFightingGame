@@ -88,18 +88,6 @@ int game_main(PlayerInfo player_info[2]) {
 	GameCoordinate debug_anchor[2] = {{0,0}};
 	GameCoordinate debug_offset[2] = {{0,0}};
 
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	loadingBar.setFlip(TEXTURE_FLIP_KIND_BASED);
-
 	GameTimer timer;
 	Stage stage;
 	IObject* p1 = NULL;
@@ -118,6 +106,17 @@ int game_main(PlayerInfo player_info[2]) {
 
 	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
 
 	while (loading) {
 		frameTimeDelay();
@@ -460,20 +459,11 @@ int game_main(PlayerInfo player_info[2]) {
 
 		SDL_SetRenderTarget(g_renderer, pGui); //set target to gui layer
 		for (int i = 0; i < 2; i++) {
-			switch (i) {
-				case 0:
-					health_bar[i].RenderAsP1();
-					break;
-
-				case 1:
-					health_bar[i].RenderAsP2();
-					break;
-
-				default:
-					health_bar[i].RenderAsP1();
-					break;
-			}
-
+			float health = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
+			float max_health = health_bar[i].max_health;
+			health_bar[i].health_texture.setPercent(health / max_health);
+			health_bar[i].health_texture.render();
+			health_bar[i].bar_texture.render();
 		}
 
 		if (!debug) timer.Tick();

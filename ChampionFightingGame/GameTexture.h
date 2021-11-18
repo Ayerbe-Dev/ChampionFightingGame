@@ -18,6 +18,12 @@ enum {
     TEXTURE_FLIP_KIND_MAX,
 };
 
+enum {
+    METER_DRAIN_KIND_RIGHT,
+    METER_DRAIN_KIND_LEFT,
+    METER_DRAIN_KIND_NONE,
+};
+
 class GameTexture{
 public:
     SDL_Rect destRect;
@@ -26,7 +32,6 @@ public:
     bool render();
     bool init(string sTexturePath);
     
-    //sets both x and y scale equally
     void setScaleFactor(float fScaleFactor);
 
     void setHorizontalScaleFactor(float fScaleFactor);
@@ -43,6 +48,7 @@ public:
     void changePercent(float rate = -1.0);
     void setFlip(int flip);
     int getFlipKind();
+    void setDrainKind(int drain_kind);
 private:
     float percent{ 0 };
     float target_percent{ -1 };
@@ -52,8 +58,7 @@ private:
     float fVerticalScaleFactor = 1.0;
     float fHorizontalScaleFactor = 1.0;
     int flip{ TEXTURE_FLIP_KIND_CRINGE }; 
-    //float fScaleFactor = 1.0;
+    int drain_kind{ METER_DRAIN_KIND_NONE };
     
     SDL_Texture *pTexture;
-
 };

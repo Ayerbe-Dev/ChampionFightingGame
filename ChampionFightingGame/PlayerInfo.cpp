@@ -6,7 +6,8 @@ PlayerInfo::PlayerInfo() {
 
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
-	this->chara_kind = CHARA_KIND_MAX;
+	chara_kind = CHARA_KIND_MAX;
+	stage = Stage(STAGE_KIND_TRAINING_OLD, "training_room_old", MUSIC_KIND_ATLAS_STAGE); //Todo: Overwrite this value while on the stage select
 	update_controller();
 	set_default_button_mappings(id);
 }

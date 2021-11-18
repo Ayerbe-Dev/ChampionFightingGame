@@ -37,11 +37,21 @@ void debug_mode(Debugger *debugger, Fighter *target, SDL_Rect *debug_rect, GameC
 		debug_offset->y = WINDOW_HEIGHT - target->pos.y;
 	}
 	if (debugger->check_button_on(BUTTON_DEBUG_MOVE_0)) {
-		if (debugger->check_button_on(BUTTON_DEBUG_RIGHT)) {
-			debug_anchor->x += 1;
+		if (target->facing_right) {
+			if (debugger->check_button_on(BUTTON_DEBUG_RIGHT)) {
+				debug_anchor->x += 1;
+			}
+			if (debugger->check_button_on(BUTTON_DEBUG_LEFT)) {
+				debug_anchor->x -= 1;
+			}
 		}
-		if (debugger->check_button_on(BUTTON_DEBUG_LEFT)) {
-			debug_anchor->x -= 1;
+		else {
+			if (debugger->check_button_on(BUTTON_DEBUG_RIGHT)) {
+				debug_offset->x += 1;
+			}
+			if (debugger->check_button_on(BUTTON_DEBUG_LEFT)) {
+				debug_offset->x -= 1;
+			}
 		}
 		if (debugger->check_button_on(BUTTON_DEBUG_UP)) {
 			debug_anchor->y -= 1;
@@ -51,11 +61,21 @@ void debug_mode(Debugger *debugger, Fighter *target, SDL_Rect *debug_rect, GameC
 		}
 	}
 	if (debugger->check_button_on(BUTTON_DEBUG_MOVE_1)) {
-		if (debugger->check_button_on(BUTTON_DEBUG_RIGHT)) {
-			debug_offset->x += 1;
+		if (target->facing_right) {
+			if (debugger->check_button_on(BUTTON_DEBUG_RIGHT)) {
+				debug_offset->x += 1;
+			}
+			if (debugger->check_button_on(BUTTON_DEBUG_LEFT)) {
+				debug_offset->x -= 1;
+			}
 		}
-		if (debugger->check_button_on(BUTTON_DEBUG_LEFT)) {
-			debug_offset->x -= 1;
+		else {
+			if (debugger->check_button_on(BUTTON_DEBUG_RIGHT)) {
+				debug_anchor->x += 1;
+			}
+			if (debugger->check_button_on(BUTTON_DEBUG_LEFT)) {
+				debug_anchor->x -= 1;
+			}
 		}
 		if (debugger->check_button_on(BUTTON_DEBUG_UP)) {
 			debug_offset->y -= 1;
@@ -72,10 +92,19 @@ void debug_mode(Debugger *debugger, Fighter *target, SDL_Rect *debug_rect, GameC
 	debug_rect->h -= debug_rect->y;
 	if (debugger->check_button_on(BUTTON_DEBUG_PRINT_POS)) {
 		SDL_Rect temp_rect;
-		temp_rect.x = ((debug_anchor->x - (target->pos.x + WINDOW_WIDTH / 2 * target->facing_dir)));
+		int x_anchor = (debug_anchor->x - (target->pos.x + WINDOW_WIDTH / 2)) * target->facing_dir;
+		int x_offset = (debug_offset->x - (target->pos.x + WINDOW_WIDTH / 2)) * target->facing_dir;
 		temp_rect.y = (debug_anchor->y - WINDOW_HEIGHT) * -1.0 - target->pos.y;
-		temp_rect.w = ((debug_offset->x - (target->pos.x + WINDOW_WIDTH / 2 * target->facing_dir)));
 		temp_rect.h = (debug_offset->y - WINDOW_HEIGHT) * -1.0 - target->pos.y;
+		if (target->facing_right) {
+			temp_rect.x = x_anchor;
+			temp_rect.w = x_offset;
+		}
+		else {
+			temp_rect.x = x_offset;
+			temp_rect.w = x_anchor;
+		}
+
 		printf(" GameCoordinate{ %d, %d }, GameCoordinate{ %d, %d }\n",temp_rect.x,temp_rect.y,temp_rect.w,temp_rect.h);
 	}
 	if (debugger->check_button_trigger(BUTTON_DEBUG_PRINT_FRAME)) {
@@ -84,8 +113,4 @@ void debug_mode(Debugger *debugger, Fighter *target, SDL_Rect *debug_rect, GameC
 	if (debugger->check_button_trigger(BUTTON_DEBUG_ZOOM_OUT)) {
 		debugger->zoom = !debugger->zoom;
 	}
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	SDL_RenderDrawRect(g_renderer, debug_rect);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 127);
-	SDL_RenderFillRect(g_renderer, debug_rect);
 }

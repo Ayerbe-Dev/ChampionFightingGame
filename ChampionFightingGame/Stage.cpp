@@ -2,9 +2,9 @@
 
 Stage::Stage() {}
 
-Stage::Stage(string stage_id) {
-	this->stage_id = stage_id;
-	this->resource_dir = "resource/stage/" + stage_id + "/";
-	string background_texture = this->resource_dir + "/background.png";
-	this->pBackgroundTexture = loadTexture((background_texture).c_str());
+Stage::Stage(int stage_kind, string stage_name, int music_index) {
+	this->stage_kind = stage_kind;
+	resource_dir = "resource/stage/" + stage_name + "/";
+
+	default_music_kind = music_index; //By default, the song at this index = The stage music
 }

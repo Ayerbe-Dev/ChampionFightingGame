@@ -30,6 +30,7 @@ public:
 
 	int chara_kind;
 	string chara_name;
+	int music_kind;
 	FighterAccessor* fighter_accessor;
 	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
 	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 

@@ -14,11 +14,11 @@ int title_screen_main(PlayerInfo player_info[2]) {
     const Uint8 *keyboard_state;
     Debugger debugger;
     MenuHandler menu_handler(&title_screen, player_info);
-    
-    while (title_screen.titleing) {
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    while (title_screen.titleing) {
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderClear(g_renderer);
 		frameTimeDelay();
 
 		SDL_Event event;
@@ -32,16 +32,17 @@ int title_screen_main(PlayerInfo player_info[2]) {
 			}
 		}
 
-		//rendering time
-
-		title_screen.render();
-
-		// end of rendering time, what a party
-			//shot, shot, shot, lots of shot, shot, shot, only one shot, shot, shot, only one shot, and i've passed out
+		menu_handler.handleMenu();
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
+		}
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(g_window, 0);
@@ -50,20 +51,14 @@ int title_screen_main(PlayerInfo player_info[2]) {
 				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
-			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
-			bool new_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].changed = (old_button != new_button);
-		}
-		
-		menu_handler.handleMenu();
+
+		title_screen.render();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-		SDL_DestroyTexture(pScreenTexture);
 	}
+	SDL_DestroyTexture(pScreenTexture);
 
     return GAME_STATE_MENU;
 }

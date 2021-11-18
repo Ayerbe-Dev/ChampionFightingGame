@@ -85,8 +85,8 @@ int game_main(PlayerInfo player_info[2]) {
 	debugger = Debugger();
 	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
 
-	GameCoordinate debug_anchor[2];
-	GameCoordinate debug_offset[2];
+	GameCoordinate debug_anchor[2] = {{0,0}};
+	GameCoordinate debug_offset[2] = {{0,0}};
 
 	LoadIcon load_icon;
 	GameTexture loadingSplash, loadingFlavor, loadingBar;
@@ -98,7 +98,6 @@ int game_main(PlayerInfo player_info[2]) {
 
 	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
 	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	loadingBar.setPercent(75);
 
 	GameTimer timer;
 	Stage stage;
@@ -111,12 +110,14 @@ int game_main(PlayerInfo player_info[2]) {
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
 
 	SDL_Thread* loading_thread;
 
 	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
-	
+
 	while (loading) {
 		frameTimeDelay();
 		SDL_Event event;
@@ -135,7 +136,7 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		loadingBar.setPercent(((float)game_loader->loaded_items/14));
+		loadingBar.setTargetPercent(((float)game_loader->loaded_items / 15), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();
@@ -174,8 +175,20 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 	}
-	SDL_DestroyTexture(pScreenTexture);
-//	g_soundmanager.playMusic(MUSIC_KIND_ATLAS_STAGE);
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+	
+	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+		g_soundmanager.playMusic(stage.default_music_kind);
+	}
+	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
+		//randomly play the theme of one of the characters. if online, always play the opponent's theme
+	}
+	else {
+		//randomly play the theme for one of the players' tags. if online, always play the user's theme
+	}
 
 
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
@@ -188,19 +201,12 @@ int game_main(PlayerInfo player_info[2]) {
 	while (gaming) {
 		frameTimeDelay();
 		if (debug) {
-			g_soundmanager.pauseSEAll(0);
-			g_soundmanager.pauseSEAll(1);
-			g_soundmanager.pauseVCAll(0);
-			g_soundmanager.pauseVCAll(1);
+			for (int i = 0; i < 2; i++) {
+				g_soundmanager.pauseSEAll(i);
+				g_soundmanager.pauseVCAll(i);
+			}
 		}
-
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-		SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
-
-		//yeah
-
+	
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -241,16 +247,6 @@ int game_main(PlayerInfo player_info[2]) {
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
-
-		/*
-			Rendering. The method for rendering relies on setting render targets. pScreenTexture is where all the scalable
-			textures are rendered. The GUI will be applied after the render target has been set back to the window.
-			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
-			the content in pScreenTexture.
-		*/
-
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, nullptr, nullptr);
 
 		/*
 		Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
@@ -299,10 +295,10 @@ int game_main(PlayerInfo player_info[2]) {
 			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
 				debug = !debug;
 				if (!debug) {
-					g_soundmanager.resumeSEAll(0);
-					g_soundmanager.resumeSEAll(1);
-					g_soundmanager.resumeVCAll(0);
-					g_soundmanager.resumeVCAll(1);
+					for (int i = 0; i < 2; i++) {
+						g_soundmanager.resumeSEAll(i);
+						g_soundmanager.resumeVCAll(i);
+					}
 				}
 				timer.ClockMode = !timer.ClockMode;
 			}
@@ -332,6 +328,7 @@ int game_main(PlayerInfo player_info[2]) {
 						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter[debugger.target]->render_frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
 						cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
+						cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
 					}
 				}
 				debug_mode(&debugger, fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
@@ -352,7 +349,23 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}
 
-		//Render loop
+		/*
+			Rendering. The method for rendering relies on setting render targets. pScreenTexture is where all the scalable
+			textures are rendered. The GUI will be applied after the render target has been set back to the window.
+			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
+			the content in pScreenTexture.
+		*/
+
+		SDL_SetRenderTarget(g_renderer, pGui);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderClear(g_renderer);
+
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+
+		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, NULL, NULL);
 
 		int render_priority = 0;
 		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
@@ -413,9 +426,9 @@ int game_main(PlayerInfo player_info[2]) {
 
 		if (debug) {
 			SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-			SDL_RenderDrawRect(g_renderer, debug_rect);
+			SDL_RenderDrawRect(g_renderer, &debug_rect[debugger.target]);
 			SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 127);
-			SDL_RenderFillRect(g_renderer, debug_rect);
+			SDL_RenderFillRect(g_renderer, &debug_rect[debugger.target]);
 		}
 
 		check_attack_connections(fighter[0], fighter[1], visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
@@ -444,9 +457,6 @@ int game_main(PlayerInfo player_info[2]) {
 			}
 		}*/
 
-		SDL_SetRenderTarget(g_renderer, nullptr); //set target to the window
-		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, nullptr); //render scale to window
-
 		SDL_SetRenderTarget(g_renderer, pGui); //set target to gui layer
 		for (int i = 0; i < 2; i++) {
 			switch (i) {
@@ -468,15 +478,12 @@ int game_main(PlayerInfo player_info[2]) {
 		if (!debug) timer.Tick();
 		timer.Render();
 
+		SDL_SetRenderTarget(g_renderer, NULL); //set target to the window
+		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 0);
+		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, NULL); //render scale to window
+		SDL_RenderCopy(g_renderer, pGui, NULL, NULL); //render gui to window
 
-		SDL_SetRenderTarget(g_renderer, nullptr); //set target to the window
-		SDL_RenderCopy(g_renderer, pGui, nullptr, nullptr); //render gui to window
-
-		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255); //lmao help
 		SDL_RenderPresent(g_renderer); //finalize
-
-		SDL_DestroyTexture(pGui);
-		SDL_DestroyTexture(pScreenTexture);
 	}
 	DONE_GAMING:
 
@@ -769,6 +776,7 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->blockstun;
+		defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 		return hitbox->id;
@@ -776,9 +784,11 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 
 	attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+	attacker->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = 14;
 	defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->hitstun;
+	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
 	return hitbox->id;
 }
@@ -869,6 +879,7 @@ int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hi
 		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->blockstun;
+		defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 		return hitbox->id;
@@ -879,6 +890,7 @@ int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hi
 	defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->hitstun;
+	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 	attacker->projectile_flag[PROJECTILE_FLAG_HIT] = true;
 	return hitbox->id;
 }
@@ -944,7 +956,7 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 		else if (p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
 			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->fighter_float[FIGHTER_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p1->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p2_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
@@ -982,7 +994,7 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
 			}
 			float prev_x = p2->pos.x;
-			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				if (p1_hitbox->scale == -5) {
 					p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
@@ -1023,7 +1035,7 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_block;
 			p1->fighter_float[FIGHTER_FLOAT_HEALTH] -= p2_hitbox->chip_damage;
 			float prev_x = p1->pos.x;
-			p1->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+			p1->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->block_pushback / p1->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			p1->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p2->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
 			p1_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
@@ -1052,7 +1064,7 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 			else {
 				p1->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p2_hitbox->juggle_set;
 			}
-			p1->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+			p1->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p2_hitbox->hit_pushback / p1->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			if (can_counterhit(p1, p2_hitbox)) {
 				p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] += p2_hitbox->meter_gain_on_counterhit;
 				p1->fighter_float[FIGHTER_FLOAT_HEALTH] -= p2_hitbox->damage * p2_hitbox->counterhit_damage_mul;
@@ -1141,7 +1153,7 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 		else if (p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
 			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_block;
 			p2->fighter_float[FIGHTER_FLOAT_HEALTH] -= p1_hitbox->chip_damage;
-			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
 		}
@@ -1177,7 +1189,7 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 			else {
 				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
 			}
-			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] += p1_hitbox->meter_gain_on_counterhit;
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] -= p1_hitbox->damage * p1_hitbox->counterhit_damage_mul;
@@ -1295,8 +1307,13 @@ void decrease_common_fighter_variables(Fighter* fighter) {
 	if (fighter->fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		fighter->fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
 	}
-	else if (fighter->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
-		fighter->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
+	else { 
+		if (fighter->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
+			fighter->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
+		}
+		if (fighter->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
+			fighter->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]--;
+		}
 	}
 	if (fighter->fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0) {
 		fighter->fighter_int[FIGHTER_INT_DASH_F_WINDOW]--;

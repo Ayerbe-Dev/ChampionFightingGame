@@ -5,10 +5,11 @@
 
 class Stage {
 public:
-	string stage_id;
+	int stage_kind;
+	int default_music_kind;
 	string resource_dir;
 	SDL_Texture* pBackgroundTexture;
 
 	Stage();
-	Stage(string stage_id);
+	Stage(int stage_kind, string stage_name, int music_index);
 };

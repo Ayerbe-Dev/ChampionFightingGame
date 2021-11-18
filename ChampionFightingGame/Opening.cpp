@@ -16,73 +16,18 @@ bool displayOpeningSplash(PlayerInfo player_info[2]) {
 	textSplash.init("resource/ui/menu/opening/game-splash-text.png");
 	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
+	u8 title_alpha = 0;
+	u8 text_alpha = 0;
+	bool opening = true;
+	int fade_count = 0;
+	int fade_state = 0;
 
-	Uint8 tmp_alpha = 0;
-	for (int i = 0; i < 25; i++) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return false;
-				}
-				break;
-			}
-		}
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
-		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
-			if (player_info[i].is_any_inputs()) {
-				goto SKIP_INTRO;
-			}
-		}
-		SDL_RenderClear(g_renderer);
-		tmp_alpha += 10;
-		titleSplash.setAlpha(tmp_alpha);
-		titleSplash.render();
-		SDL_RenderPresent(g_renderer);
+	while (opening) {
 		frameTimeDelay();
-		frameTimeDelay(); //do it again
-		frameTimeDelay(); //and again
-		frameTimeDelay(); //YET AGAIN
-	}
-
-	titleSplash.setAlpha((Uint8)255);
-	tmp_alpha = 0;
-	for (int i = 0; i < 51; i++) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return false;
-				}
-				break;
-			}
-		}
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
-		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
-			if (player_info[i].is_any_inputs()) {
-				goto SKIP_INTRO;
-			}
-		}
-		SDL_RenderClear(g_renderer);
-		tmp_alpha += 5;
-		textSplash.setAlpha(tmp_alpha);
-		titleSplash.render();
-		textSplash.render();
-		SDL_RenderPresent(g_renderer);
 		frameTimeDelay();
-		frameTimeDelay(); //do it again
-		frameTimeDelay(); //and again
-		frameTimeDelay(); //YET AGAIN
-	}
-	for (int i = 0; i < 25; i++) {
+		frameTimeDelay();
+		frameTimeDelay();
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -102,18 +47,43 @@ bool displayOpeningSplash(PlayerInfo player_info[2]) {
 				goto SKIP_INTRO;
 			}
 		}
+
 		SDL_RenderClear(g_renderer);
-		tmp_alpha -= 10;
-		textSplash.setAlpha(tmp_alpha);
-		titleSplash.setAlpha(tmp_alpha);
+
+		if (fade_state == 0) {
+			title_alpha += 10;
+			fade_count++;
+			if (fade_count == 24) {
+				fade_state++;
+				fade_count = 0;
+			}
+		}
+		else if (fade_state == 1) {
+			text_alpha += 5;
+			fade_count++;
+			if (fade_count == 50) {
+				fade_state++;
+				fade_count = 0;
+			}
+		}
+		else {
+			title_alpha -= 10;
+			text_alpha -= 10;
+			fade_count++;
+			if (fade_count == 24) {
+				opening = false;
+			}
+		}
+
+		titleSplash.setAlpha(title_alpha);
+		textSplash.setAlpha(text_alpha);
 		titleSplash.render();
 		textSplash.render();
+
 		SDL_RenderPresent(g_renderer);
-		frameTimeDelay();
-		frameTimeDelay(); //do it again
-		frameTimeDelay(); //and again
-		frameTimeDelay(); //YET AGAIN
 	}
+
+
 	SKIP_INTRO:
 	textSplash.clearTexture();
 	titleSplash.clearTexture();

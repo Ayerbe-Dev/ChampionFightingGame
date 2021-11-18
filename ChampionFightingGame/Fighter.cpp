@@ -121,12 +121,11 @@ void Fighter::fighter_main() {
 	update_hitbox_pos();
 	update_grabbox_pos();
 	update_hurtbox_pos();
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		if (fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
+	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
 				if (!add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0)) {
 					fighter_accessor->fighter[!id]->add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir / 2, 0);
-					//Note to self: Never try to use the FighterAccessor outside of a class method again, holy shit this is disgusting
 				}
 			}
 			else {
@@ -137,6 +136,7 @@ void Fighter::fighter_main() {
 	else {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
+
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1 && hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
 			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = true;

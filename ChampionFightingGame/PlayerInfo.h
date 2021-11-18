@@ -1,12 +1,13 @@
 #pragma once
 #include "utils.h"
 #include "Button.h"
+#include "Stage.h"
 
 class PlayerInfo {
 public:
 	int id;
 	int chara_kind{ 0 };
-	string stage_kind{ "training_room_old"};
+	Stage stage;
 	string name;
 	Buttons button_info[BUTTON_MAX];
 	SDL_GameController* controller{ NULL };

@@ -10,6 +10,7 @@ using namespace std;
 #include <cmath>
 #include <fstream>
 #include <chrono>
+#include "GameSettings.h"
 
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
@@ -270,4 +271,43 @@ void displayLoadingScreen() {
 	loadingSplash.render();
 	SDL_RenderPresent(g_renderer);
 	loadingSplash.clearTexture();
+}
+
+float get_relative_one_percent(float val, float denom) {
+	float mul = denom / 100.0;
+	return (val / 100.0) * mul;
+}
+
+//These aren't member funcs because this way even though we technically use a global var, it's entirely used in this file
+
+GameSettings g_settings;
+
+int getGameSetting(string setting) {
+	for (int i = 0; i < SETTING_KIND_MAX; i++) {
+		if (g_settings.settings[i].name == setting) {
+			return g_settings.settings[i].val;
+		}
+	}
+	return 0;
+}
+
+void setGameSetting(string setting, int val) {
+	for (int i = 0; i < SETTING_KIND_MAX; i++) {
+		if (g_settings.settings[i].name == setting) {
+			g_settings.settings[i].val = val;
+			return;
+		}
+	}
+}
+
+void updateGameSettings() {
+	ofstream settings;
+	settings.open("resource/save/game_settings.yml", std::ofstream::trunc);
+	for (int i = 0; i < SETTING_KIND_MAX; i++) {
+		settings << g_settings.settings[i].name << " " << g_settings.settings[i].val << endl;
+	}
+}
+
+int round_up_odd(int val) {
+	return (val / 2) + (val % 2);
 }

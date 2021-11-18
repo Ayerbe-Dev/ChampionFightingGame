@@ -2,7 +2,7 @@
 
 LoadIcon::LoadIcon() {
 	texture.init("resource/ui/menu/loading/loadicon.png");
-	texture.setScaleFactor(0.2);
+	texture.setScaleFactor(0.4);
 
 	panic_setting = rand() % 2;
 
@@ -26,8 +26,8 @@ void LoadIcon::set_attributes() {
 
 void LoadIcon::move() {
 	if (!panic_mode) {
-		texture.destRect.x += 5 * (move_right ? 1 : -1);
-		texture.destRect.y += 5 * (move_down ? 1 : -1);
+		texture.destRect.x += 7 * (move_right ? 1 : -1);
+		texture.destRect.y += 7 * (move_down ? 1 : -1);
 	}
 	else if (panic_setting) {
 		if (panic_v) {
@@ -46,7 +46,7 @@ void LoadIcon::move() {
 	else {
 		texture.destRect.x += panic_speed * (move_right ? 1 : -1);
 		texture.destRect.y += panic_speed * (move_down ? 1 : -1);
-		panic_speed = clampf(0.0, panic_speed - 0.2, panic_speed);
+		panic_speed = clampf(0.0, panic_speed - 0.4, panic_speed);
 	}
 
 	if (texture.destRect.x > WINDOW_WIDTH || texture.destRect.x < 0) {

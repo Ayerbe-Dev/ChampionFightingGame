@@ -11,9 +11,9 @@ enum {
 };
 
 enum {
-    TEXTURE_FLIP_KIND_CRINGE,
-    TEXTURE_FLIP_KIND_SWAG,
-    TEXTURE_FLIP_KIND_BASED,
+    TEXTURE_FLIP_KIND_NONE,
+    TEXTURE_FLIP_KIND_DRAIN,
+    TEXTURE_FLIP_KIND_NO_DRAIN,
     
     TEXTURE_FLIP_KIND_MAX,
 };
@@ -57,7 +57,7 @@ private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
     float fVerticalScaleFactor = 1.0;
     float fHorizontalScaleFactor = 1.0;
-    int flip{ TEXTURE_FLIP_KIND_CRINGE }; 
+    int flip{ TEXTURE_FLIP_KIND_NONE }; 
     int drain_kind{ METER_DRAIN_KIND_NONE };
     
     SDL_Texture *pTexture;

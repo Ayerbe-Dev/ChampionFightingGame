@@ -1,5 +1,6 @@
 #include "GameTexture.h"
 extern SDL_Renderer* g_renderer;
+extern bool debug;
 
 bool GameTexture::init(string sTexturePath){
 	if (bIsInitialized){
@@ -52,24 +53,30 @@ bool GameTexture::render() {
 			tmpSrcRect.w = tmpDestRect.w;
 			if (drain_kind == METER_DRAIN_KIND_RIGHT) {
 				tmpDestRect.x += WINDOW_WIDTH / 2;
-				tmpDestRect.x -= tmpSrcRect.w;
-				tmpSrcRect.x += destRect.w - tmpSrcRect.w; //This is the line that makes the health bars go crazy with low enough health, 
-				//but idk what about it causes issues
+				tmpDestRect.x -= tmpSrcRect.w; //Decrease our health bar's position so we start at the front of our health bar
+				tmpSrcRect.x += destRect.w - tmpSrcRect.w; //Change our Source Rect not to include the part of it that got cut from the %
+				//The last line also causes the health bars to completely disappear when your health drops to around 35%, but only when the resolution
+				//is set to 1080p. The same problem was happening with the old healthbar system, and it isn't specific to one side. Gaming.
 			}
 			else if (drain_kind == METER_DRAIN_KIND_LEFT) {
-				tmpDestRect.w += 51;
-				tmpSrcRect.w += 51;
 				tmpDestRect.x += WINDOW_WIDTH / 2 - 14;
+				tmpDestRect.w += 51; //Increase our health bar's width so we start at the front of our health bar. Seems to be resolution-specific,
+				//but I haven't gotten around to figuring out what the pattern is.
+				tmpSrcRect.w += 51;
 				tmpSrcRect.x += tmpDestRect.x - tmpSrcRect.w;
+				if (!debug) {
+					cout << "Percent: " << percent << ", DX: " << tmpDestRect.x << ", DW: " << tmpDestRect.w
+						<< ", SX: " << tmpSrcRect.x << ", SW: " << tmpSrcRect.w << endl;
+				}
 			}
 			else {
-				if (flip == TEXTURE_FLIP_KIND_SWAG) {
+				if (flip == TEXTURE_FLIP_KIND_DRAIN) {
 					tmpDestRect.x += WINDOW_WIDTH;
 					tmpSrcRect.x += WINDOW_WIDTH;
 					tmpDestRect.x -= tmpDestRect.w;
 					tmpSrcRect.x -= tmpSrcRect.w;
 				}
-				if (flip == TEXTURE_FLIP_KIND_BASED) {
+				if (flip == TEXTURE_FLIP_KIND_NO_DRAIN) {
 					tmpDestRect.x += WINDOW_WIDTH;
 					tmpDestRect.x -= tmpDestRect.w;
 				}

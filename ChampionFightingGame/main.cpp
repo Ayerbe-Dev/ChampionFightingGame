@@ -18,6 +18,7 @@
 #include "SoundManager.h"
 #include "Opening.h"
 #include "TitleScreen.h"
+#include <Windows.h>
 #undef main
 using namespace std;
 
@@ -30,6 +31,10 @@ auto g_chron = chrono::steady_clock::now();
 SDL_mutex* mutex;
 
 int main() {	
+	//Hide the console window. It'll be a LONG time before we get to uncomment these lines
+
+//	HWND windowHandle = GetConsoleWindow();
+//	ShowWindow(windowHandle, SW_HIDE);
 
 	//Initialize SDL
 
@@ -131,5 +136,6 @@ int main() {
 
 	SDL_Quit();
 
+//	ShowWindow(windowHandle, SW_SHOW);
 	return 0;
 }

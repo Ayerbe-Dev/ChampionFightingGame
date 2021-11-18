@@ -16,8 +16,8 @@ HealthBar::HealthBar(Fighter* fighter) {
 	if (fighter->id == 1) {
 		health_texture.destRect.x = 3;
 		bar_texture.destRect.x = -3;
-		health_texture.setFlip(TEXTURE_FLIP_KIND_BASED);
-		bar_texture.setFlip(TEXTURE_FLIP_KIND_BASED);
+		health_texture.setFlip(TEXTURE_FLIP_KIND_DRAIN);
+		bar_texture.setFlip(TEXTURE_FLIP_KIND_NO_DRAIN);
 		health_texture.setDrainKind(METER_DRAIN_KIND_LEFT);
 	}
 	else {

@@ -98,6 +98,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
 	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+	loadingBar.setFlip(TEXTURE_FLIP_KIND_BASED);
 
 	GameTimer timer;
 	Stage stage;
@@ -313,10 +314,10 @@ int game_main(PlayerInfo player_info[2]) {
 					debugger.target = 1;
 				}
 				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					g_soundmanager.resumeSEAll(0);
-					g_soundmanager.resumeSEAll(1);
-					g_soundmanager.resumeVCAll(0);
-					g_soundmanager.resumeVCAll(1);
+					for (int i = 0; i < 2; i++) {
+						g_soundmanager.resumeSEAll(i);
+						g_soundmanager.resumeVCAll(i);
+					}
 
 					player_info[0].update_buttons(keyboard_state);
 					player_info[1].update_buttons(keyboard_state);

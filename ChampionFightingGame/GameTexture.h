@@ -10,6 +10,14 @@ enum {
     GAME_TEXTURE_ANCHOR_MODE_METER,
 };
 
+enum {
+    TEXTURE_FLIP_KIND_CRINGE,
+    TEXTURE_FLIP_KIND_SWAG,
+    TEXTURE_FLIP_KIND_BASED,
+    
+    TEXTURE_FLIP_KIND_MAX,
+};
+
 class GameTexture{
 public:
     SDL_Rect destRect;
@@ -33,8 +41,8 @@ public:
     void setPercent(float percent);
     void setTargetPercent(float percent, float rate = 0.2, int frames = 15);
     void changePercent(float rate = -1.0);
-    void setFlip(bool flip);
-    bool isFlip();
+    void setFlip(int flip);
+    int getFlipKind();
 private:
     float percent{ 0 };
     float target_percent{ -1 };
@@ -43,7 +51,7 @@ private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
     float fVerticalScaleFactor = 1.0;
     float fHorizontalScaleFactor = 1.0;
-    bool flip{ false }; 
+    int flip{ TEXTURE_FLIP_KIND_CRINGE }; 
     //float fScaleFactor = 1.0;
     
     SDL_Texture *pTexture;

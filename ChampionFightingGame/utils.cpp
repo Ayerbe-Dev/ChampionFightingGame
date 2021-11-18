@@ -307,3 +307,7 @@ void updateGameSettings() {
 		settings << g_settings.settings[i].name << " " << g_settings.settings[i].val << endl;
 	}
 }
+
+int round_up_odd(int val) {
+	return (val / 2) + (val % 2);
+}

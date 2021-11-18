@@ -19,8 +19,8 @@ bool GameTexture::init(string sTexturePath){
     srcRect.w=destRect.w;
 }
 
-bool GameTexture::render(){
-    if (!bIsInitialized){
+bool GameTexture::render() {
+    if (!bIsInitialized) {
         return false;
     }
 
@@ -32,27 +32,73 @@ bool GameTexture::render(){
     tmpDestRect.w *= fHorizontalScaleFactor;
     tmpDestRect.h *= fVerticalScaleFactor;
 
-    switch (iAnchorMode)
-    {
-    case GAME_TEXTURE_ANCHOR_MODE_CENTER:
-        tmpDestRect.x -= tmpDestRect.w/2;
-        tmpDestRect.y -= tmpDestRect.h/2;
-        SDL_RenderCopy(g_renderer,pTexture,nullptr,&tmpDestRect);
-        break;
-    case GAME_TEXTURE_ANCHOR_MODE_BACKGROUND:
-        SDL_RenderCopy(g_renderer,pTexture,nullptr,nullptr);
-        break;
-    case GAME_TEXTURE_ANCHOR_MODE_METER:
-        tmpDestRect.w = destRect.w * (percent);
-        srcRect.w = tmpDestRect.w;
-        SDL_RenderCopy(g_renderer,pTexture,&srcRect,&tmpDestRect);
-        break;
-    default:
-        SDL_RenderCopy(g_renderer,pTexture,nullptr,&tmpDestRect);
-        break;
+    switch (iAnchorMode) {
+        case GAME_TEXTURE_ANCHOR_MODE_CENTER:
+            tmpDestRect.x -= tmpDestRect.w / 2;
+            tmpDestRect.y -= tmpDestRect.h / 2;
+            SDL_RenderCopy(g_renderer, pTexture, nullptr, &tmpDestRect);
+            break;
+        case GAME_TEXTURE_ANCHOR_MODE_BACKGROUND:
+            SDL_RenderCopy(g_renderer, pTexture, nullptr, nullptr);
+            break;
+        case GAME_TEXTURE_ANCHOR_MODE_METER:
+            tmpDestRect.w = destRect.w * (percent);
+            srcRect.w = tmpDestRect.w;
+            SDL_RenderCopy(g_renderer, pTexture, &srcRect, &tmpDestRect);
+            break;
+        default:
+            SDL_RenderCopy(g_renderer, pTexture, nullptr, &tmpDestRect);
+            break;
     }
     return true;
 }
+
+/*bool GameTexture::render() {
+    if (!bIsInitialized){
+        return false;
+    }
+
+    if (target_percent != -1.0) {
+        changePercent();
+    }
+
+    SDL_Rect* tmpDestRect = nullptr;
+    SDL_Rect* tmpSrcRect = nullptr;
+
+
+    switch (iAnchorMode) {
+        case (GAME_TEXTURE_ANCHOR_MODE_CENTER): {
+            tmpDestRect = &destRect;
+            tmpDestRect->w *= fHorizontalScaleFactor;
+            tmpDestRect->h *= fVerticalScaleFactor;
+            tmpDestRect->x -= tmpDestRect->w / 2;
+            tmpDestRect->y -= tmpDestRect->h / 2;
+        }
+        break;
+        case (GAME_TEXTURE_ANCHOR_MODE_METER): {
+            tmpDestRect = &destRect;
+            tmpDestRect->w = destRect.w * (percent);
+            tmpDestRect->h *= fVerticalScaleFactor;
+            tmpSrcRect = &srcRect;
+            tmpSrcRect->w = tmpDestRect->w;
+        }
+        break;
+        case (GAME_TEXTURE_ANCHOR_MODE_BACKGROUND): {} break;
+        default: {
+            tmpDestRect = &destRect;
+        }
+        break;
+    }
+    if (tmpSrcRect == nullptr && tmpDestRect != nullptr) {
+        cout << "Yeet" << endl;
+    }
+    if (tmpDestRect == nullptr && tmpSrcRect != nullptr) {
+        cout << "Yort" << endl;
+    }
+    SDL_RenderCopyEx(g_renderer, pTexture, tmpSrcRect, tmpDestRect, 0, NULL, flip?SDL_FLIP_HORIZONTAL:SDL_FLIP_NONE);
+
+    return true;
+}*/
 
 void GameTexture::setScaleFactor(float fScaleFactor){
     this->fVerticalScaleFactor = fScaleFactor;
@@ -123,4 +169,12 @@ void GameTexture::changePercent(float rate) {
         target_percent = -1.0;
         target_rate = -1.0;
     }
+}
+
+void GameTexture::setFlip(bool flip) {
+    this->flip = flip;
+}
+
+bool GameTexture::isFlip() {
+    return flip;
 }

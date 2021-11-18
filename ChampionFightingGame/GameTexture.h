@@ -33,6 +33,8 @@ public:
     void setPercent(float percent);
     void setTargetPercent(float percent, float rate = 0.2, int frames = 15);
     void changePercent(float rate = -1.0);
+    void setFlip(bool flip);
+    bool isFlip();
 private:
     float percent{ 0 };
     float target_percent{ -1 };
@@ -41,6 +43,7 @@ private:
     int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
     float fVerticalScaleFactor = 1.0;
     float fHorizontalScaleFactor = 1.0;
+    bool flip{ false }; 
     //float fScaleFactor = 1.0;
     
     SDL_Texture *pTexture;

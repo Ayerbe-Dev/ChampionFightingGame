@@ -80,7 +80,7 @@ float get_relative_one_percent(float val, float denom);
 int getGameSetting(string setting);
 void setGameSetting(string setting, int val);
 void updateGameSettings();
-
+int round_up_odd(int val);
 
 /*
 	updateCamera(); 

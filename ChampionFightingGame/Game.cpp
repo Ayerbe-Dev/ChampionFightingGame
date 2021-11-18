@@ -478,6 +478,10 @@ int game_main(PlayerInfo player_info[2]) {
 	}
 	DONE_GAMING:
 
+	for (int i = 0; i < 2; i++) {
+		health_bar[i].bar_texture.clearTexture();
+		health_bar[i].health_texture.clearTexture();
+	}
 	g_soundmanager.unloadSoundAll();
 	cleanup(p1, p2);
 
@@ -735,6 +739,12 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		return hitbox->id;
+	}
+
+	if (hurtbox->hurtbox_kind == HURTBOX_KIND_RIGHT_OF_WAY) {
+		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
+		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		return hitbox->id;
 	}
 
@@ -1080,11 +1090,15 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 			p2->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
 		}
 	}
-	if (p1_hit) {
+	if (p1_hit) { //Rerunning move scripts to put up the first frame of the defender's hurtbox on the frame they get hit
 		p1->change_status(p1_status_post_hit, true, false);
+		p1->move_script();
+		p1->update_hurtbox_pos();
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
+		p2->move_script();
+		p2->update_hurtbox_pos();
 	}
 	return (p1_hit || p2_hit);
 }
@@ -1116,6 +1130,8 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 			p2->change_status(p2_grabbox->attacker_status_if_hit);
 			p1->change_status(p2_grabbox->defender_status_if_hit);
 		}
+		p1->move_script();
+		p1->update_hurtbox_pos();
 	}
 	if (p2_hit) {
 		if (p2->fighter_flag[FIGHTER_FLAG_THROW_TECH] && p2_tech) {
@@ -1126,6 +1142,8 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 			p1->change_status(p1_grabbox->attacker_status_if_hit);
 			p2->change_status(p1_grabbox->defender_status_if_hit);
 		}
+		p2->move_script();
+		p2->update_hurtbox_pos();
 	}
 }
 
@@ -1205,6 +1223,8 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
+		p2->move_script();
+		p2->update_hurtbox_pos();
 	}
 }
 

@@ -64,10 +64,6 @@ bool GameTexture::render() {
 				//but I haven't gotten around to figuring out what the pattern is.
 				tmpSrcRect.w += 51;
 				tmpSrcRect.x += tmpDestRect.x - tmpSrcRect.w;
-				if (!debug) {
-					cout << "Percent: " << percent << ", DX: " << tmpDestRect.x << ", DW: " << tmpDestRect.w
-						<< ", SX: " << tmpSrcRect.x << ", SW: " << tmpSrcRect.w << endl;
-				}
 			}
 			else {
 				if (flip == TEXTURE_FLIP_KIND_DRAIN) {

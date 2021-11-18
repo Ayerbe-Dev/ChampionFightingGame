@@ -11,6 +11,81 @@ enum {
 };
 
 enum {
+	LEON_VC_START,
+	LEON_VC_MAX,
+};
+
+enum {
+	CHAMELEON_VC_START, //does it even have voice clips tbh
+	CHAMELEON_VC_MAX,
+};
+
+enum {
+	ANGELICA_VC_START,
+	ANGELICA_VC_MAX,
+};
+
+enum {
+	NIGHTSABER_VC_START,
+	NIGHTSABER_VC_MAX,
+};
+
+enum {
+	SULLY_VC_START,
+	SULLY_VC_MAX,
+};
+
+enum {
+	PRIEST_VC_START,
+	PRIEST_VC_MAX,
+};
+
+enum {
+	AZIEL_VC_START,
+	AZIEL_VC_MAX,
+};
+
+enum {
+	BRUNO_VC_START,
+	BRUNO_VC_MAX,
+};
+
+enum {
+	TESSA_VC_START,
+	TESSA_VC_MAX,
+};
+
+enum {
+	ALEJANDRO_VC_START,
+	ALEJANDRO_VC_MAX,
+};
+
+enum {
+	NORMAN_VC_START,
+	NORMAN_VC_MAX,
+};
+
+enum {
 	ATLAS_VC_START,
 	ATLAS_VC_MAX,
+};
+
+enum {
+	JULIUS_VC_START,
+	JULIUS_VC_MAX,
+};
+
+enum {
+	RAMONA_VC_START,
+	RAMONA_VC_MAX,
+};
+
+enum {
+	ZYAIR_VC_START,
+	ZYAIR_VC_MAX,
+};
+
+enum {
+	VESUVIUS_VC_START,
+	VESUVIUS_VC_MAX,
 };

@@ -72,6 +72,7 @@ void Fighter::fighter_main() {
 
 	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
 		fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
+		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;

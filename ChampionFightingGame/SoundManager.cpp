@@ -332,9 +332,69 @@ Sound SoundManager::getCharaSound(int index, int id, bool se) {
 		{
 			sound = se ? eric_se[index] : eric_vc[index];
 		} break;
+		case(CHARA_KIND_LEON):
+		{
+			sound = se ? leon_se[index] : leon_vc[index];
+		} break;
+		case(CHARA_KIND_CHAMELEON):
+		{
+			sound = se ? chameleon_se[index] : chameleon_vc[index];
+		} break;
+		case(CHARA_KIND_ANGELICA):
+		{
+			sound = se ? angelica_se[index] : angelica_vc[index];
+		} break;
+		case(CHARA_KIND_NIGHTSABER):
+		{
+			sound = se ? nightsaber_se[index] : nightsaber_vc[index];
+		} break;
+		case(CHARA_KIND_SULLY):
+		{
+			sound = se ? sully_se[index] : sully_vc[index];
+		} break;
+		case(CHARA_KIND_PRIEST):
+		{
+			sound = se ? priest_se[index] : priest_vc[index];
+		} break;
+		case(CHARA_KIND_AZIEL):
+		{
+			sound = se ? aziel_se[index] : aziel_vc[index];
+		} break;
+		case(CHARA_KIND_BRUNO):
+		{
+			sound = se ? bruno_se[index] : bruno_vc[index];
+		} break;
+		case(CHARA_KIND_TESSA):
+		{
+			sound = se ? tessa_se[index] : tessa_vc[index];
+		} break;
+		case(CHARA_KIND_ALEJANDRO):
+		{
+			sound = se ? alejandro_se[index] : alejandro_vc[index];
+		} break;
+		case(CHARA_KIND_NORMAN):
+		{
+			sound = se ? norman_se[index] : norman_vc[index];
+		} break;
 		case(CHARA_KIND_ATLAS):
 		{
 			sound = se ? atlas_se[index] : atlas_vc[index];
+		} break;
+		case(CHARA_KIND_JULIUS):
+		{
+			sound = se ? julius_se[index] : julius_vc[index];
+		} break;
+		case(CHARA_KIND_RAMONA):
+		{
+			sound = se ? ramona_se[index] : ramona_vc[index];
+		} break;
+		case(CHARA_KIND_ZYAIR):
+		{
+			sound = se ? zyair_se[index] : zyair_vc[index];
+		} break;
+		case(CHARA_KIND_VESUVIUS):
+		{
+			sound = se ? vesuvius_se[index] : vesuvius_vc[index];
 		} break;
 		default: {} break;
 	}
@@ -369,8 +429,68 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int volume, int sound_
 				case (CHARA_KIND_ERIC):	{
 					this->dir = "resource/sound/se/eric/" + name + ".wav";
 				} break;
-				case (CHARA_KIND_ATLAS): {
+				case(CHARA_KIND_LEON): {
+					this->dir = "resource/sound/se/leon/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_CHAMELEON):
+				{
+					this->dir = "resource/sound/se/chameleon/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ANGELICA):
+				{
+					this->dir = "resource/sound/se/angelica/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_NIGHTSABER):
+				{
+					this->dir = "resource/sound/se/nightsaber/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_SULLY):
+				{
+					this->dir = "resource/sound/se/sully/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_PRIEST):
+				{
+					this->dir = "resource/sound/se/priest/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_AZIEL):
+				{
+					this->dir = "resource/sound/se/aziel/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_BRUNO):
+				{
+					this->dir = "resource/sound/se/bruno/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_TESSA):
+				{
+					this->dir = "resource/sound/se/tessa/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ALEJANDRO):
+				{
+					this->dir = "resource/sound/se/alejandro/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_NORMAN):
+				{
+					this->dir = "resource/sound/se/norman/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ATLAS):
+				{
 					this->dir = "resource/sound/se/atlas/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_JULIUS):
+				{
+					this->dir = "resource/sound/se/julius/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_RAMONA):
+				{
+					this->dir = "resource/sound/se/ramona/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ZYAIR):
+				{
+					this->dir = "resource/sound/se/zyair/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_VESUVIUS):
+				{
+					this->dir = "resource/sound/se/vesuvius/" + name + ".wav";
 				} break;
 			}
 		} break;
@@ -385,11 +505,70 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int volume, int sound_
 				{
 					this->dir = "resource/sound/vc/eric/" + name + ".wav";
 				} break;
-				case (CHARA_KIND_ATLAS):
+				case(CHARA_KIND_LEON):
+				{
+					this->dir = "resource/sound/vc/leon/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_CHAMELEON):
+				{
+					this->dir = "resource/sound/vc/chameleon/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ANGELICA):
+				{
+					this->dir = "resource/sound/vc/angelica/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_NIGHTSABER):
+				{
+					this->dir = "resource/sound/vc/nightsaber/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_SULLY):
+				{
+					this->dir = "resource/sound/vc/sully/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_PRIEST):
+				{
+					this->dir = "resource/sound/vc/priest/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_AZIEL):
+				{
+					this->dir = "resource/sound/vc/aziel/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_BRUNO):
+				{
+					this->dir = "resource/sound/vc/bruno/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_TESSA):
+				{
+					this->dir = "resource/sound/vc/tessa/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ALEJANDRO):
+				{
+					this->dir = "resource/sound/vc/alejandro/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_NORMAN):
+				{
+					this->dir = "resource/sound/vc/norman/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ATLAS):
 				{
 					this->dir = "resource/sound/vc/atlas/" + name + ".wav";
 				} break;
-
+				case(CHARA_KIND_JULIUS):
+				{
+					this->dir = "resource/sound/vc/julius/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_RAMONA):
+				{
+					this->dir = "resource/sound/vc/ramona/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_ZYAIR):
+				{
+					this->dir = "resource/sound/vc/zyair/" + name + ".wav";
+				} break;
+				case(CHARA_KIND_VESUVIUS):
+				{
+					this->dir = "resource/sound/vc/vesuvius/" + name + ".wav";
+				} break;
 			}
 		} break;
 	}

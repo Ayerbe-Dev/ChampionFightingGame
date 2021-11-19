@@ -14,22 +14,19 @@ HealthBar::HealthBar(Fighter* fighter) {
 	bar_texture.setPercent(1);
 
 	if (fighter->id == 1) {
-//		health_texture.destRect.x = 3;
-//		bar_texture.destRect.x = -3;
 		health_texture.setFlip(TEXTURE_FLIP_KIND_DRAIN);
 		bar_texture.setFlip(TEXTURE_FLIP_KIND_NO_DRAIN);
 		health_texture.setDrainKind(METER_DRAIN_KIND_LEFT);
+		health_texture.destRect.x = 46;
+		bar_texture.destRect.x = -42;
 	}
 	else {
-//		health_texture.destRect.x = -39;
-//		bar_texture.destRect.x = 3;
 		health_texture.setDrainKind(METER_DRAIN_KIND_RIGHT);
+		health_texture.destRect.x = -46;
+		bar_texture.destRect.x = 42;
 	}
-
-//	health_texture.destRect.w = 870;
-//	health_texture.destRect.h = 70;
-//	bar_texture.destRect.w = 875;
-//	bar_texture.destRect.h = 70;
+	health_texture.destRect.y = 35;
+	bar_texture.destRect.y = 35;
 }
 
 PlayerIndicator::PlayerIndicator() {}

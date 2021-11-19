@@ -42,6 +42,7 @@ bool displayOpeningSplash(PlayerInfo player_info[2]) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
+			player_info[i].update_controller();
 			player_info[i].update_buttons(keyboard_state);
 			if (player_info[i].is_any_inputs()) {
 				goto SKIP_INTRO;

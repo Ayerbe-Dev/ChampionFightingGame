@@ -369,10 +369,10 @@ MainMenu::MainMenu(){
 	background_texture.init("resource/ui/menu/main/bg.png");
 
 	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png");
-	menu_items[1] = MenuItem{ "resource/ui/menu/main/Solo.png"};
-	menu_items[2] = MenuItem{ "resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png" };
-	menu_items[3] = MenuItem{ "resource/ui/menu/main/Options.png" };
-	menu_items[4] = MenuItem{ "resource/ui/menu/main/Extras.png" };
+	menu_items[1] = MenuItem{"resource/ui/menu/main/Solo.png"};
+	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png"};
+	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png"};
+	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png"};
 
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].destination = i;

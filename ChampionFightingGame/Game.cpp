@@ -785,11 +785,10 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 
 	attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-	attacker->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = 14;
 	defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->hitstun;
-	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
 	return hitbox->id;
 }

@@ -571,6 +571,12 @@ void Fighter::exit_status_throw_air() {
 	if (anim_kind->name == "throw_b_air") {
 		facing_dir *= -1;
 		facing_right = !facing_right;
+		if (fighter_int[FIGHTER_INT_JUMP_KIND] == CHARA_JUMP_KIND_F) {
+			fighter_int[FIGHTER_INT_JUMP_KIND] = CHARA_JUMP_KIND_B;
+		}
+		else if (fighter_int[FIGHTER_INT_JUMP_KIND] == CHARA_JUMP_KIND_B) {
+			fighter_int[FIGHTER_INT_JUMP_KIND] = CHARA_JUMP_KIND_F;
+		}
 	}
 }
 

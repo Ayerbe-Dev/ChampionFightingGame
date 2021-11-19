@@ -685,10 +685,12 @@ void Roy::loadRoyACMD() {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hurtbox(0, GameCoordinate{ -82, 8 }, GameCoordinate{ 50, 41 });
 				new_hurtbox(1, GameCoordinate{ -18, 37 }, GameCoordinate{ 46, 132 });
-				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 34, 77 }, GameCoordinate{ 87, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 34, 77 }, GameCoordinate{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+				new_hitbox(2, 0, 60, 5, 1.2, 1, GameCoordinate{ 51, 77 }, GameCoordinate{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -90, 4, CLANK_KIND_NORMAL, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
 			else {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 34, 77 }, GameCoordinate{ 87, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 34, 77 }, GameCoordinate{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
+				new_hitbox(2, 0, 60, 5, 1.2, 1, GameCoordinate{ 51, 77 }, GameCoordinate{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -90, 4, CLANK_KIND_NORMAL, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false);
 			}
 		}
 		if (is_excute_wait(4)) {

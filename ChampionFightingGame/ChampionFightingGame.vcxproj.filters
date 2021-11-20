@@ -25,14 +25,8 @@
     <Filter Include="Header Files\Projectile">
       <UniqueIdentifier>{5b4bff21-f5d5-4204-9716-2bba4f73f723}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Character">
-      <UniqueIdentifier>{c368130f-c59e-48fe-8264-b00e9460586f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game State">
       <UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Projectile">
-      <UniqueIdentifier>{b97d7459-b817-43f8-920b-bbe72f22989e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Managers">
       <UniqueIdentifier>{1641a8cd-bdb3-4a90-aa04-4245f391f8c7}</UniqueIdentifier>
@@ -58,6 +52,12 @@
     <Filter Include="Source Files\Objects\Fighter">
       <UniqueIdentifier>{00821d86-045e-4d64-8e30-5bf362f4deb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Projectiles">
+      <UniqueIdentifier>{b97d7459-b817-43f8-920b-bbe72f22989e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Characters">
+      <UniqueIdentifier>{c368130f-c59e-48fe-8264-b00e9460586f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils.cpp">
@@ -67,79 +67,79 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Alejandro.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Angelica.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Atlas.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Aziel.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Bruno.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="CharaSelect.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="CharaTemplate.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="DebugMenu.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="Eric.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="EricFireball.cpp">
-      <Filter>Source Files\Projectile</Filter>
+      <Filter>Source Files\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="Julius.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Leon.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Nightsaber.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Norman.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Menu.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="Priest.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileTemplate.cpp">
-      <Filter>Source Files\Projectile</Filter>
+      <Filter>Source Files\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Roy.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="RoyFireball.cpp">
-      <Filter>Source Files\Projectile</Filter>
+      <Filter>Source Files\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Sully.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Tessa.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Zyair.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Vesuvius.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Ramona.cpp">
-      <Filter>Source Files\Character</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Helper Classes</Filter>

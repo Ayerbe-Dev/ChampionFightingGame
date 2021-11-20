@@ -47,6 +47,8 @@ typedef unsigned long long u64;
 #define DASH_WINDOW 14
 #define TECH_WINDOW 8
 #define PARRY_ADVANTAGE_FRAMES 4
+#define EX_METER_SIZE 300
+#define EX_METER_BARS 6
 
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
 #define JUMP_FOLLOW_THRESHOLD 300

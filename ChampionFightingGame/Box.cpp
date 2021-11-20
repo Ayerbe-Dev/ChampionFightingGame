@@ -21,7 +21,7 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
 	int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
-	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos) {
+	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	if (use_player_pos) {
@@ -74,6 +74,7 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	this->launch_max_fall_speed = launch_max_fall_speed;
 	this->launch_speed_x = launch_speed_x;
 	this->continue_launch = continue_launch;
+	this->can_chip_ko = can_chip_ko;
 	this->use_player_pos = use_player_pos;
 }
 
@@ -83,7 +84,8 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
-	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, bool continue_launch) {
+	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, 
+	bool continue_launch, bool can_chip_ko) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir);
@@ -124,6 +126,7 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	this->launch_max_fall_speed = launch_max_fall_speed;
 	this->launch_speed_x = launch_speed_x;
 	this->trade = trade;
+	this->can_chip_ko = can_chip_ko;
 	this->continue_launch = continue_launch;
 }
 

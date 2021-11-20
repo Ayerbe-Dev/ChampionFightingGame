@@ -18,6 +18,7 @@ public:
 	IObject* p1;
 	IObject* p2;
 	HealthBar health_bar[2];
+	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;
 	Stage stage;
@@ -55,6 +56,7 @@ static int LoadGame(void* void_gameloader) {
 	IObject* p2;
 	Fighter* fighter[2];
 	HealthBar health_bar[2];
+	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 	FighterAccessor* fighter_accessor = new FighterAccessor;
 
@@ -111,6 +113,12 @@ static int LoadGame(void* void_gameloader) {
 		frameTimeDelay();
 	}
 
+	for (int i = 0; i < 2; i++) {
+		ex_bar[i] = ExBar(fighter[i]);
+		game_loader->loaded_items++;
+		frameTimeDelay();
+	}
+
 	timer = GameTimer(99);
 	game_loader->loaded_items++;
 	frameTimeDelay();
@@ -140,6 +148,7 @@ static int LoadGame(void* void_gameloader) {
 		game_loader->fighter[i]->loadCharaSounds();
 		game_loader->player_indicator[i] = player_indicator[i];
 		game_loader->health_bar[i] = health_bar[i];
+		game_loader->ex_bar[i] = ex_bar[i];
 	}
 	game_loader->timer = timer;
 	game_loader->finished = true;

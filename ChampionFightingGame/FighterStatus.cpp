@@ -352,8 +352,8 @@ void Fighter::status_attack() {
 	}
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MK || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
 		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
-			if (fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && fighter_float[FIGHTER_FLOAT_SUPER_METER] >= 30.0) {
-				fighter_float[FIGHTER_FLOAT_SUPER_METER] -= 30.0;
+			if (fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && fighter_float[FIGHTER_FLOAT_SUPER_METER] >= EX_METER_SIZE / EX_METER_BARS) {
+				fighter_float[FIGHTER_FLOAT_SUPER_METER] -= EX_METER_SIZE / EX_METER_BARS;
 				change_status(FIGHTER_STATUS_PARRY_START);
 				return;
 			}

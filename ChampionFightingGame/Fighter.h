@@ -92,7 +92,9 @@ public:
 	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
 	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
 	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
-	//button if the situation_kind is correct
+		//button if the situation_kind is correct
+	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
+		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
 
 	//Sound - All of these just call the SoundManager versions of these functions except they pass their own ID as an arg
 
@@ -159,7 +161,7 @@ public:
 		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
 		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
-		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool use_player_pos = true);
+		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos = true);
 	//ID: A value of 0-9. Each ID can store exactly 1 hitbox, and overwriting a pre-existing ID will remove the hitbox originally mapped to that ID
 	//Multihit: A secondary ID. When a hitbox connects, all hitboxes that share the multihit value will be marked as having successfully hit
 	//Damage/Chip Damage: How much damage the move deals on hit/block
@@ -197,6 +199,8 @@ public:
 	//Continue Launch: If the opponent is currently in the launch status, but this hitbox does not have its hit status set to HIT_STATUS_LAUNCH, do we
 		//force them to restart the launch status anyway, or do we just put them in regular air hitstun. Generally this should be true for heavies,
 		//false for lights, and case-by-case for mediums. 
+	//Can Chip KO: Whether or not this move can KO an opponent using its chip damage. If false, chip damage will be able to lower an opponent's HP to
+		//1, but will not be able to change it to 0
 	//Use Player Pos: Are the Anchor and Offset coords based on the player's position, or are they static coordinates on the screen. True by default,
 		//and will only be false in extremely rare situations.
 

@@ -16,6 +16,8 @@ public:
 
 	bool check_button_on(u32 button);
 	bool check_button_trigger(u32 button);
-};
 
-void debug_mode(Debugger* debugger, Fighter* target, SDL_Rect *debug_rect, GameCoordinate *debug_anchor, GameCoordinate *debug_offset);
+	void debug_mode(Fighter* target, SDL_Rect* debug_rect, GameCoordinate* debug_anchor, GameCoordinate* debug_offset);
+	void print_commands();
+	void debug_query(string command, Fighter* target, Fighter* other);
+};

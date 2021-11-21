@@ -481,7 +481,7 @@ int game_main(PlayerInfo player_info[2]) {
 					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments));
 				}
 				else if (!(segments % 2)) { //If it went up, and the number of segments is even, increase the segmented bar really fast
-					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 0.2, 2);
+					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 0.2, 1);
 				}
 			}
 			

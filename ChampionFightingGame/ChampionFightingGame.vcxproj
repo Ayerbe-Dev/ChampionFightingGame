@@ -165,7 +165,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alejandro.cpp" />
+    <ClCompile Include="AlejandroMoves.cpp" />
+    <ClCompile Include="AlejandroStatus.cpp" />
     <ClCompile Include="Angelica.cpp" />
+    <ClCompile Include="AngelicaMoves.cpp" />
+    <ClCompile Include="AngelicaStatus.cpp" />
     <ClCompile Include="Animation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -173,16 +177,41 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="AtlasMoves.cpp" />
+    <ClCompile Include="AtlasStatus.cpp" />
     <ClCompile Include="Aziel.cpp" />
+    <ClCompile Include="AzielMoves.cpp" />
+    <ClCompile Include="AzielStatus.cpp" />
     <ClCompile Include="Bruno.cpp" />
+    <ClCompile Include="BrunoMoves.cpp" />
+    <ClCompile Include="BrunoStatus.cpp" />
     <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
+    <ClCompile Include="CharaTemplateMoves.cpp" />
+    <ClCompile Include="CharaTemplateStatus.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
     <ClCompile Include="Eric.cpp" />
     <ClCompile Include="EricFireball.cpp" />
+    <ClCompile Include="EricMoves.cpp" />
+    <ClCompile Include="EricStatus.cpp" />
     <ClCompile Include="FighterAccessor.cpp" />
+    <ClCompile Include="FighterActionabilityFunctions.cpp" />
+    <ClCompile Include="FighterAnimationFunctions.cpp" />
+    <ClCompile Include="GrabboxFunctions.cpp" />
+    <ClCompile Include="HitboxFunctions.cpp" />
+    <ClCompile Include="HurtboxFunctions.cpp" />
+    <ClCompile Include="FighterInputFunctions.cpp" />
+    <ClCompile Include="FighterJostleFunctions.cpp" />
+    <ClCompile Include="FighterLoadingFunctions.cpp" />
+    <ClCompile Include="FighterOpponentFunctions.cpp" />
+    <ClCompile Include="LoadingFunctions.cpp" />
+    <ClCompile Include="ParamFunctions.cpp" />
+    <ClCompile Include="FighterPositionFunctions.cpp" />
+    <ClCompile Include="FighterProjectileFunctions.cpp" />
+    <ClCompile Include="FighterSoundFunctions.cpp" />
     <ClCompile Include="FighterStatus.cpp" />
+    <ClCompile Include="FighterStatusFunctions.cpp" />
     <ClCompile Include="GameCoordinate.cpp" />
     <ClCompile Include="Game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -196,7 +225,11 @@
     <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
+    <ClCompile Include="JuliusMoves.cpp" />
+    <ClCompile Include="JuliusStatus.cpp" />
     <ClCompile Include="Leon.cpp" />
+    <ClCompile Include="LeonMoves.cpp" />
+    <ClCompile Include="LeonStatus.cpp" />
     <ClCompile Include="Loader.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -207,7 +240,11 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuHandler.cpp" />
     <ClCompile Include="Nightsaber.cpp" />
+    <ClCompile Include="NightsaberMoves.cpp" />
+    <ClCompile Include="NightsaberStatus.cpp" />
     <ClCompile Include="Norman.cpp" />
+    <ClCompile Include="NormanMoves.cpp" />
+    <ClCompile Include="NormanStatus.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Opening.cpp" />
     <ClCompile Include="Options.cpp" />
@@ -223,16 +260,31 @@
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Priest.cpp" />
+    <ClCompile Include="PriestMoves.cpp" />
+    <ClCompile Include="PriestStatus.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
+    <ClCompile Include="ProjectileAnimationFunctions.cpp" />
+    <ClCompile Include="ProjectileLoadingFunctions.cpp" />
+    <ClCompile Include="ProjectileStatus.cpp" />
+    <ClCompile Include="ProjectileStatusFunctions.cpp" />
     <ClCompile Include="Ramona.cpp" />
+    <ClCompile Include="RamonaMoves.cpp" />
+    <ClCompile Include="RamonaStatus.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
+    <ClCompile Include="RoyMoves.cpp" />
+    <ClCompile Include="RoyStatus.cpp" />
+    <ClCompile Include="ScriptFunctions.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
     <ClCompile Include="Sully.cpp" />
+    <ClCompile Include="SullyMoves.cpp" />
+    <ClCompile Include="SullyStatus.cpp" />
     <ClCompile Include="Tessa.cpp" />
+    <ClCompile Include="TessaMoves.cpp" />
+    <ClCompile Include="TessaStatus.cpp" />
     <ClCompile Include="TitleScreen.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp">
@@ -243,7 +295,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Vesuvius.cpp" />
+    <ClCompile Include="VesuviusMoves.cpp" />
+    <ClCompile Include="VesuviusStatus.cpp" />
     <ClCompile Include="Zyair.cpp" />
+    <ClCompile Include="ZyairMoves.cpp" />
+    <ClCompile Include="ZyairStatus.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Alejandro.fwd.h" />

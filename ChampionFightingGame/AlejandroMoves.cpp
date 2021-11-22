@@ -1,6 +1,6 @@
 #include "Alejandro.h"
 
-void Alejandro::loadAlejandroACMD() {
+void Alejandro::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

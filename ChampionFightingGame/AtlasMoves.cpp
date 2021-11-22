@@ -1,6 +1,6 @@
 #include "Atlas.h"
 
-void Atlas::loadAtlasACMD() {
+void Atlas::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

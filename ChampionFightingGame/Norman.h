@@ -12,7 +12,7 @@ public:
 	Norman();
 	Norman(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadNormanStatusFunctions();
-	void loadNormanACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Norman::* norman_status[CHARA_NORMAN_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Norman::* norman_enter_status[CHARA_NORMAN_STATUS_MAX - FIGHTER_STATUS_MAX])();

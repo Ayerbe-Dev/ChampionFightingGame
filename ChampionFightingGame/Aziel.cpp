@@ -14,7 +14,7 @@ Aziel::Aziel(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	if (!crash_to_debug) {
 		load_params();
 	}
-	loadAzielACMD();
+	loadCharaMoveScripts();
 	loadAzielStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_AZIEL;

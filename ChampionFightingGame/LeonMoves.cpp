@@ -1,6 +1,6 @@
 #include "Leon.h"
 
-void Leon::loadLeonACMD() {
+void Leon::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

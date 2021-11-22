@@ -14,7 +14,7 @@ Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_a
 	if (!crash_to_debug) {
 		load_params();
 	}
-	loadAlejandroACMD();
+	loadCharaMoveScripts();
 	loadAlejandroStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ALEJANDRO;

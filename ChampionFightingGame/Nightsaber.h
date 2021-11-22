@@ -12,7 +12,7 @@ public:
 	Nightsaber();
 	Nightsaber(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadNightsaberStatusFunctions();
-	void loadNightsaberACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Nightsaber::* nightsaber_status[CHARA_NIGHTSABER_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Nightsaber::* nightsaber_enter_status[CHARA_NIGHTSABER_STATUS_MAX - FIGHTER_STATUS_MAX])();

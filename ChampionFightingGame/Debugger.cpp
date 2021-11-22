@@ -122,10 +122,11 @@ void Debugger::print_commands() {
 	cout << "set_hp: Set the target's HP" << endl;
 	cout << "max_hp: Max out the target's HP" << endl;
 	cout << "max_hp_all: Max out all fighters' HP" << endl;
-	cout << "add_meter: Add to the EX Meter for the current target by a specified amount" << endl;
-	cout << "set_meter: Set the EX Meter for the current target" << endl;
-	cout << "max_meter: Max out the EX Meter for the current target" << endl;
-	cout << "max_meter_all: Max out the EX Meter for all fighters" << endl;
+	cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << endl;
+	cout << "set_ex: Set the EX Meter for the current target" << endl;
+	cout << "max_ex: Max out the EX Meter for the current target" << endl;
+	cout << "max_ex_all: Max out the EX Meter for all fighters" << endl;
+	cout << "reload_moves: Apply any changes to move scripts for all fighters" << endl;
 
 	cout << endl << "Enter Command: ";
 }
@@ -150,23 +151,29 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 		target->fighter_float[FIGHTER_FLOAT_HEALTH] = target->get_param_float("health");
 		not_target->fighter_float[FIGHTER_FLOAT_HEALTH] = not_target->get_param_float("health");
 	}
-	if (command == "add_meter") {
+	if (command == "add_ex") {
 		float add;
 		cout << "Enter Meter Difference: ";
 		cin >> add;
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, EX_METER_SIZE);
 	}
-	if (command == "set_meter") {
+	if (command == "set_ex") {
 		float set;
 		cout << "Enter New Meter Amount: ";
 		cin >> set;
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, EX_METER_SIZE);
 	}
-	if (command == "max_meter") {
+	if (command == "max_ex") {
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = EX_METER_SIZE;
 	}
-	if (command == "max_meter_all") {
+	if (command == "max_ex_all") {
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = EX_METER_SIZE;
 		not_target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = EX_METER_SIZE;
+	}
+	if (command == "reload_moves") {
+		target->wipe_scripts();
+		not_target->wipe_scripts();
+		target->loadCharaMoveScripts();
+		not_target->loadCharaMoveScripts();
 	}
 }

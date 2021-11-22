@@ -16,7 +16,7 @@ public:
 	Eric();
 	Eric(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadEricStatusFunctions();
-	void loadEricACMD();
+	void loadCharaMoveScripts() override;
 
 	//Stats
 

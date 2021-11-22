@@ -1,6 +1,6 @@
 #include "Aziel.h"
 
-void Aziel::loadAzielACMD() {
+void Aziel::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

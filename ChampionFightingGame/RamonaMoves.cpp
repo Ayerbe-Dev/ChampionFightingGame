@@ -1,6 +1,6 @@
 #include "Ramona.h"
 
-void Ramona::loadRamonaACMD() {
+void Ramona::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

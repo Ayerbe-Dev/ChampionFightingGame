@@ -59,6 +59,7 @@ public:
 	Hurtbox hurtboxes[10];
 
 	void script(string name, function<void()> move_script);
+	void wipe_scripts();
 	MoveScript move_scripts[MOVE_SCRIPT_MAX];
 	
 	bool multihit_connected[10] = {false};

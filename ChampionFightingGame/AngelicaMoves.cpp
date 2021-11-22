@@ -1,6 +1,6 @@
 #include "Angelica.h"
 
-void Angelica::loadAngelicaACMD() {
+void Angelica::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

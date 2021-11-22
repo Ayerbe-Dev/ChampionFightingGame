@@ -1,7 +1,9 @@
 #include "Object.h"
 #include "ParamTable.h"
 
-MoveScript::MoveScript() {};
+MoveScript::MoveScript() {
+	id = -1;
+};
 
 MoveScript::MoveScript(string name, function<void()> move_script, int id) {
 	this->name = name;

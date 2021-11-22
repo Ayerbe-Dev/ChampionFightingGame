@@ -38,6 +38,12 @@ void Object::script(string name, function<void()> move_script) {
 	}
 }
 
+void Object::wipe_scripts() {
+	for (int i = 0; i < MOVE_SCRIPT_MAX; i++) {
+		move_scripts[i] = MoveScript();
+	}
+}
+
 void Object::set_current_move_script(string anim_name) {
 	for (int i = 0; i < 256; i++) {
 		if (move_scripts[i].name == anim_name) {

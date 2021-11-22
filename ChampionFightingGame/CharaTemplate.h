@@ -12,7 +12,7 @@ public:
 	CharaTemplate();
 	CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadCharaTemplateStatusFunctions();
-	void loadCharaTemplateACMD();
+	void loadCharaMoveScripts() override;
 
 	void (CharaTemplate::* chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (CharaTemplate::* chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();

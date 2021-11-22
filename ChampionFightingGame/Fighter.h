@@ -76,6 +76,7 @@ public:
 	void load_anim_list();
 	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
 	void loadStatusScripts();
+	void virtual loadCharaMoveScripts() {};
 	void loadFighterSounds();
 	virtual void loadCharaSounds() {};
 

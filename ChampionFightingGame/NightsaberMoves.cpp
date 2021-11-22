@@ -1,6 +1,6 @@
 #include "Nightsaber.h"
 
-void Nightsaber::loadNightsaberACMD() {
+void Nightsaber::loadCharaMoveScripts() {
 	script("default", [this]() {
 		return;
 	});

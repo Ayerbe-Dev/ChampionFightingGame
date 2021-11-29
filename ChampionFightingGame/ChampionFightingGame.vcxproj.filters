@@ -447,7 +447,7 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="Battle.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
@@ -455,6 +455,9 @@
     </ClCompile>
     <ClCompile Include="StageSelect.cpp">
       <Filter>Source Files\Game State</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files\Global</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -518,7 +521,7 @@
     <ClInclude Include="Julius.fwd.h">
       <Filter>Forward Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game.fwd.h">
+    <ClInclude Include="Battle.fwd.h">
       <Filter>Forward Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EricFireball.fwd.h">
@@ -554,7 +557,7 @@
     <ClInclude Include="CharaSelect.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="Battle.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
@@ -753,6 +756,12 @@
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="StageSelect.h">
+      <Filter>Header Files\Game State</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #include "RoyFireball.h"
-#include "Game.h"
+#include "Battle.h"
 
 RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;

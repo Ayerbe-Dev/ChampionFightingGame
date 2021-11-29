@@ -4,7 +4,7 @@
 #include <string>
 #include <SDL.h>
 #include "Animation.h"
-#include "Game.h"
+#include "Battle.h"
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
@@ -66,7 +66,11 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 
-int game_main(PlayerInfo player_info[2]) {
+void battle_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	const Uint8* keyboard_state;
 
 	GameLoader *game_loader = new GameLoader;
@@ -125,7 +129,8 @@ int game_main(PlayerInfo player_info[2]) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT: {
-					return GAME_STATE_CLOSE;
+					game_manager->game_state = GAME_STATE_CLOSE;
+					return;
 				}
 				break;
 			}
@@ -516,7 +521,7 @@ int game_main(PlayerInfo player_info[2]) {
 	delete fighter_accessor;
 	delete game_loader;
 
-	return next_state;
+	return game_manager->update(player_info, next_state);
 }
 
 void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bool check) {

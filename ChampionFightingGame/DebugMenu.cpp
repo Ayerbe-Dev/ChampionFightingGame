@@ -12,7 +12,12 @@
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
-int debugMenu(PlayerInfo player_info[2], int gamestate) {
+void debugMenu(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+	int gamestate = game_manager->prev_game_state;
+
 	displayLoadingScreen();
 	const Uint8* keyboard_state;
 	std::ostringstream lastString;
@@ -28,7 +33,7 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 	debugList.addEntry(lastString.str(),DEBUG_LIST_NOT_SELECTABLE);
 	debugList.addEntry("Title Screen", DEBUG_LIST_SELECTABLE, GAME_STATE_TITLE_SCREEN);
 	debugList.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
-	debugList.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_GAME);
+	debugList.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_BATTLE);
 	debugList.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
 	debugList.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
 	debugList.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
@@ -57,7 +62,7 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -102,7 +107,8 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
 	(&player_info[1])->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(pFont);
-	return debugList.getDestination();
+
+	return game_manager->update(player_info, debugList.getDestination());
 }
 
 TTF_Font* loadDebugFont(string fontname){

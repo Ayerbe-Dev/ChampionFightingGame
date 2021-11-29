@@ -2,7 +2,11 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-int controls_main(PlayerInfo player_info[2]) {
+void controls_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 
 	const Uint8* keyboard_state;
@@ -29,7 +33,7 @@ int controls_main(PlayerInfo player_info[2]) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -49,8 +53,6 @@ int controls_main(PlayerInfo player_info[2]) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);
 	}
-
-	return 0;
 }
 
 OptionsOverlay::OptionsOverlay() {

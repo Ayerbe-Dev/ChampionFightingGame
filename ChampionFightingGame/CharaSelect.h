@@ -3,8 +3,9 @@
 #include "PlayerInfo.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
-int chara_select_main(PlayerInfo aPlayerInfo[2]);
+void chara_select_main(GameManager *game_manager);
 
 class FixedCharacterSlot {
 public:

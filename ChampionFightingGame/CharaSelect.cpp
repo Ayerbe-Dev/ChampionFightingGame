@@ -7,7 +7,11 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-int chara_select_main(PlayerInfo player_info[2]) {
+void chara_select_main(GameManager *game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	displayLoadingScreen();
@@ -21,7 +25,7 @@ int chara_select_main(PlayerInfo player_info[2]) {
 	if (cssMenuInstance.loadCSS()) {
 		displayLoadingScreen();
 		player_info[0].crash_reason = "Could not open CSS file!";
-		return GAME_STATE_DEBUG_MENU;
+		return game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 	}
 	if (cssMenuInstance.numRows == 0) {
 		cssMenuInstance.myCol[0] = 1;
@@ -59,7 +63,7 @@ int chara_select_main(PlayerInfo player_info[2]) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				} 
 				break;
 			}
@@ -102,7 +106,7 @@ int chara_select_main(PlayerInfo player_info[2]) {
 		SDL_RenderPresent(g_renderer);
 	}
 
-	return cssMenuInstance.getExitCode();
+	return game_manager->update(player_info, cssMenuInstance.getExitCode());
 }
 
 CSS::CSS() {
@@ -260,7 +264,7 @@ void CSS::GAME_MENU_traverse_back() {
 void CSS::GAME_MENU_traverse_start() {
 	if (aPlayerInfos[0]->chara_kind != CHARA_KIND_MAX && aPlayerInfos[1]->chara_kind != CHARA_KIND_MAX) {
 		displayLoadingScreen();
-		iExitCode = GAME_STATE_GAME;
+		iExitCode = GAME_STATE_BATTLE;
 		bSelecting = false;
 	}
 }

@@ -1,5 +1,5 @@
 #include "ProjectileTemplate.h"
-#include "Game.h"
+#include "Battle.h"
 
 ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor * fighter_accessor) {
 	this->player_info = player_info;

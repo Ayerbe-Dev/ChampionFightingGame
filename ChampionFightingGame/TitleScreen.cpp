@@ -9,7 +9,11 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-int title_screen_main(PlayerInfo player_info[2]) {
+void title_screen_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
     TitleScreen title_screen;
     const Uint8 *keyboard_state;
     Debugger debugger;
@@ -26,13 +30,11 @@ int title_screen_main(PlayerInfo player_info[2]) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
 		}
-
-		menu_handler.handleMenu();
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
@@ -52,6 +54,8 @@ int title_screen_main(PlayerInfo player_info[2]) {
 			}
 		}
 
+		menu_handler.handleMenu();
+
 		title_screen.render();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
@@ -60,7 +64,7 @@ int title_screen_main(PlayerInfo player_info[2]) {
 	}
 	SDL_DestroyTexture(pScreenTexture);
 
-    return GAME_STATE_MENU;
+	return game_manager->update(player_info, GAME_STATE_MENU);
 }
 
 TitleScreen::TitleScreen(){

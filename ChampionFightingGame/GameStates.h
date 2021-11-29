@@ -1,0 +1,9 @@
+#pragma once
+#include "CharaSelect.h"
+#include "DebugMenu.h"
+#include "Battle.h"
+#include "Menu.h"
+#include "Opening.h"
+#include "Options.h"
+#include "StageSelect.h"
+#include "TitleScreen.h"

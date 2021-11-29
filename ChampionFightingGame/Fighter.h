@@ -14,8 +14,8 @@
 #include "FighterAccessor.fwd.h"
 #include "FighterAccessor.h"
 #include "PlayerInfo.h"
-#include "Game.fwd.h"
-#include "Game.h"
+#include "Battle.fwd.h"
+#include "Battle.h"
 #include "SoundManager.h"
 
 class Fighter: public Object {

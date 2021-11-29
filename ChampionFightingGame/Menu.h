@@ -8,8 +8,9 @@
 #include "PlayerInfo.h"
 #include "Menu.fwd.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
-int menu_main(PlayerInfo player_info[2]);
+void menu_main(GameManager *game_manager);
 int get_sub_selection(int top_selection, int sub_selection);
 
 class MenuItem{
@@ -69,7 +70,7 @@ private:
 	float offset = 3.14 / 13;
 	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
 	int top_selection = -2; //first option, dont ask; 5 opts --> -2 -1 0 1 2 represen them
-	int sub_selection = GAME_STATE_GAME;
+	int sub_selection = GAME_STATE_BATTLE;
 	int menu_level = MENU_LEVEL_TOP;
 	int sub_type = SUB_MENU_VS;
 };

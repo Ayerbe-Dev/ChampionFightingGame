@@ -16,7 +16,11 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
 
-int menu_main(PlayerInfo player_info[2]) {
+void menu_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	displayLoadingScreen();
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
@@ -73,7 +77,7 @@ int menu_main(PlayerInfo player_info[2]) {
 	float offset = 3.14 / 13;
 	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
 	int top_selection = -2;
-	int sub_selection = GAME_STATE_GAME;
+	int sub_selection = GAME_STATE_BATTLE;
 	int menu_level = MENU_LEVEL_TOP;
 	int sub_type = SUB_MENU_VS;
 
@@ -88,7 +92,7 @@ int menu_main(PlayerInfo player_info[2]) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				} break;
 			}
 		}
@@ -161,7 +165,7 @@ int menu_main(PlayerInfo player_info[2]) {
 			if (menu_level == MENU_LEVEL_SUB) {
 				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
 					if (sub_selection == GAME_STATE_CONTROLS) {
-						controls_main(player_info);
+						controls_main(game_manager);
 					}
 					else {
 						menuing = false;
@@ -257,7 +261,7 @@ int menu_main(PlayerInfo player_info[2]) {
 	SDL_DestroyTexture(pScreenTexture);
 	SDL_DestroyTexture(bgTexture);
 
-	return sub_selection;
+	return game_manager->update(player_info, sub_selection);
 }
 
 int get_sub_selection(int top_selection, int sub_selection) {

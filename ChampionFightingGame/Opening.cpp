@@ -1,7 +1,11 @@
 #include "Opening.h"
 extern SDL_Renderer* g_renderer;
 
-bool opening_main(PlayerInfo player_info[2]) {
+bool opening_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	return displayOpeningSplash(player_info);
 }
 

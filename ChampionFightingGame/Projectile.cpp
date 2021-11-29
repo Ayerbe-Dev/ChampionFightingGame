@@ -1,5 +1,5 @@
 #include "Projectile.h"
-#include "Game.h"
+#include "Battle.h"
 
 extern SDL_Renderer* g_renderer;
 

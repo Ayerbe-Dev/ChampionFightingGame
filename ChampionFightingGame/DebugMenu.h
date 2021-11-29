@@ -5,6 +5,7 @@
 
 #include "PlayerInfo.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
 #define DEBUG_MENU_FONT_SIZE 24
@@ -57,4 +58,4 @@ public:
 };
 
 TTF_Font *loadDebugFont(string fontname = "FiraCode-Regular.ttf");
-int debugMenu(PlayerInfo player_info[2], int gamestate);
+void debugMenu(GameManager *game_manager);

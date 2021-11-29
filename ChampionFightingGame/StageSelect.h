@@ -4,8 +4,9 @@
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "Stage.h"
+#include "GameManager.h"
 
-int stage_select_main(PlayerInfo player_info[2]);
+void stage_select_main(GameManager *game_manager);
 
 class SSSSlot {
 public:

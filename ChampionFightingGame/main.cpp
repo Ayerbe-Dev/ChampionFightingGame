@@ -1,3 +1,4 @@
+#pragma warning(disable : 4996)
 #include <windows.h>
 #include <chrono>
 #include <thread>
@@ -7,19 +8,15 @@
 #include <SDL_timer.h>
 #include "utils.h"
 #include "GameSettings.h"
-#include "Game.h"
-#include "Menu.h"
+#include "GameStates.h"
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
-#include "DebugMenu.h"
-#include "CharaSelect.h"
 #include "SoundManager.h"
-#include "Opening.h"
-#include "TitleScreen.h"
-#include <Windows.h>
+#include "GameManager.h"
 #undef main
+
 using namespace std;
 
 int registered_controllers[2] = { -1, -1 };
@@ -56,7 +53,6 @@ int main() {
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
-	int game_state = GAME_STATE_GAME;
 
 	//Initialize controller input
 
@@ -84,49 +80,25 @@ int main() {
 
 	g_soundmanager = SoundManager(true);
 
-	//Initialize player info
+	GameManager game_manager;
 
-	PlayerInfo player_info[2];
-	player_info[0] = PlayerInfo(0);
-	player_info[1] = PlayerInfo(1);
-
-	bool running = opening_main(player_info);
+	bool running = opening_main(&game_manager);
 
 	while (running) {
 		refreshRenderer();
 
-		if (game_state == GAME_STATE_GAME) {
-			game_state = game_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
+		if (game_manager.game_main[game_manager.game_state] != nullptr) {
+			game_manager.game_main[game_manager.game_state](&game_manager);
 		}
-		else if (game_state == GAME_STATE_MENU) {
-			game_state = menu_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
+		else if (game_manager.game_state != GAME_STATE_CLOSE) {
+			char buffer[86];
+			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", game_manager.game_state);
+			game_manager.player_info[0].crash_reason = buffer;
+			game_manager.game_main[GAME_STATE_DEBUG_MENU](&game_manager);
 		}
-		else if (game_state == GAME_STATE_CHARA_SELECT) {
-			game_state = chara_select_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
-		}
-		else if (game_state == GAME_STATE_CLOSE) {
+
+		if (game_manager.game_state == GAME_STATE_CLOSE) {
 			running = false;
-		}
-		else if (game_state == GAME_STATE_TITLE_SCREEN) {
-			game_state = title_screen_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
-		}
-		else {
-			game_state = debugMenu(player_info, game_state);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
 		}
 	}
 

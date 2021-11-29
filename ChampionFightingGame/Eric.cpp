@@ -1,6 +1,6 @@
 ﻿#include "Eric.h"
 #include "utils.h"
-#include "Game.h"
+#include "Battle.h"
 #include "EricFireball.fwd.h"
 #include "EricFireball.h"
 extern SDL_Renderer* g_renderer;

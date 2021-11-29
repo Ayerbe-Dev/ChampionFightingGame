@@ -7,7 +7,11 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-int stage_select_main(PlayerInfo player_info[2]) {
+void stage_select_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	bool stage_selecting = true;
 	displayLoadingScreen();
 	int* next_state = (int*)GAME_STATE_DEBUG_MENU;
@@ -27,7 +31,7 @@ int stage_select_main(PlayerInfo player_info[2]) {
 
 	}
 
-	return *next_state;
+	return game_manager->update(player_info, *next_state);
 }
 
 StageSelect::StageSelect() {

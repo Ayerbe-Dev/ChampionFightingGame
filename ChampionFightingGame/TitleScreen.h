@@ -2,8 +2,9 @@
 #include "GameState.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
-int title_screen_main(PlayerInfo player_info[2]);
+void title_screen_main(GameManager *game_manager);
 
 class TitleScreen: public GameMenu{
 public:

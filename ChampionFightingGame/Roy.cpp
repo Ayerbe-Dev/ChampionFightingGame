@@ -1,5 +1,5 @@
 #include "Roy.h"
-#include "Game.h"
+#include "Battle.h"
 #include "RoyFireball.fwd.h"
 #include "RoyFireball.h"
 

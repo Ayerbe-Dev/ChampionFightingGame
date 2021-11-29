@@ -1,5 +1,5 @@
 #include "Bruno.h"
-#include "Game.h"
+#include "Battle.h"
 #include "ProjectileTemplate.fwd.h"
 #include "ProjectileTemplate.h"
 

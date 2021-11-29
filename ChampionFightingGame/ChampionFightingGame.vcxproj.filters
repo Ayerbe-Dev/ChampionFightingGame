@@ -138,9 +138,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -148,9 +145,6 @@
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="DebugMenu.cpp">
-      <Filter>Source Files\Game State</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="Menu.cpp">
@@ -260,9 +254,6 @@
     </ClCompile>
     <ClCompile Include="Projectile.cpp">
       <Filter>Source Files\Objects\Projectile\Projectile</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="Box.cpp">
       <Filter>Source Files\Member</Filter>
@@ -452,6 +443,15 @@
     </ClCompile>
     <ClCompile Include="ProjectileStatus.cpp">
       <Filter>Source Files\Objects\Projectile\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Member</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

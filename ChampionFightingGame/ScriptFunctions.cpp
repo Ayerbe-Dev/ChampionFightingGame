@@ -47,11 +47,11 @@ void Object::wipe_scripts() {
 void Object::set_current_move_script(string anim_name) {
 	for (int i = 0; i < 256; i++) {
 		if (move_scripts[i].name == anim_name) {
-			move_script = move_scripts[i].move_script;
+			move_script = move_scripts[i];
 			break;
 		}
 		else {
-			move_script = move_scripts[0].move_script;
+			move_script = move_scripts[0];
 		}
 	}
 }

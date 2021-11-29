@@ -17,6 +17,7 @@ bool GameTexture::init(string sTexturePath){
 	SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
 	srcRect.h=destRect.h;
 	srcRect.w=destRect.w;
+	return true;
 }
 
 bool GameTexture::render() {

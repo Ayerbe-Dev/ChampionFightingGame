@@ -1128,12 +1128,12 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 	}
 	if (p1_hit) { //Rerunning move scripts to put up the first frame of the defender's hurtbox on the frame they get hit
 		p1->change_status(p1_status_post_hit, true, false);
-		p1->move_script();
+		p1->move_script.move_script();
 		p1->update_hurtbox_pos();
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
-		p2->move_script();
+		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 	return (p1_hit || p2_hit);
@@ -1166,7 +1166,7 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 			p2->change_status(p2_grabbox->attacker_status_if_hit);
 			p1->change_status(p2_grabbox->defender_status_if_hit);
 		}
-		p1->move_script();
+		p1->move_script.move_script();
 		p1->update_hurtbox_pos();
 	}
 	if (p2_hit) {
@@ -1178,7 +1178,7 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 			p1->change_status(p1_grabbox->attacker_status_if_hit);
 			p2->change_status(p1_grabbox->defender_status_if_hit);
 		}
-		p2->move_script();
+		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 }
@@ -1259,7 +1259,7 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
-		p2->move_script();
+		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 }

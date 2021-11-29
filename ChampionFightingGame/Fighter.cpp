@@ -329,7 +329,7 @@ void Fighter::playoutStatus() {
 	else {
 		chara_status();
 	}
-	move_script();
+	move_script.move_script();
 }
 
 /*

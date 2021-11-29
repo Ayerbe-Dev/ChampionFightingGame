@@ -277,6 +277,9 @@ bool PlayerInfo::vertical_input(bool down) {
 				return false;
 			}
 		}
+		else {
+			return false;
+		}
 	}
 	else {
 		if (check_button_on(BUTTON_MENU_UP)) {
@@ -292,6 +295,9 @@ bool PlayerInfo::vertical_input(bool down) {
 				stick_hold_v_timer--;
 				return false;
 			}
+		}
+		else {
+			return false;
 		}
 	}
 }

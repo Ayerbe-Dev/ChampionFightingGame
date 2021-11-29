@@ -41,5 +41,5 @@ void Projectile::playoutStatus() {
 	else {
 		projectile_unique_status();
 	}
-	move_script();
+	move_script.move_script();
 }

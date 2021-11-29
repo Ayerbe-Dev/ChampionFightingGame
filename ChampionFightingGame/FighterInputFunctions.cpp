@@ -188,7 +188,7 @@ int Fighter::get_special_input(int special_kind, u32 button, int charge_frames) 
 		else if (special_kind == SPECIAL_KIND_CHARGE_DOWN) {
 			input_check = (fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 8);
 			if (input_check && get_flick_dir() == 8) {
-				button_check == SPECIAL_INPUT_JUST;
+				button_check = SPECIAL_INPUT_JUST;
 			}
 			if (input_check) {
 				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
@@ -199,7 +199,7 @@ int Fighter::get_special_input(int special_kind, u32 button, int charge_frames) 
 		else if (special_kind == SPECIAL_KIND_CHARGE_BACK) {
 			input_check = (fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 6);
 			if (input_check && get_flick_dir() == 6) {
-				button_check == SPECIAL_INPUT_JUST;
+				button_check = SPECIAL_INPUT_JUST;
 			}
 			if (input_check) {
 				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;

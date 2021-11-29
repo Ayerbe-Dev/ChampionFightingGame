@@ -170,13 +170,7 @@
     <ClCompile Include="Angelica.cpp" />
     <ClCompile Include="AngelicaMoves.cpp" />
     <ClCompile Include="AngelicaStatus.cpp" />
-    <ClCompile Include="Animation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AtlasMoves.cpp" />
     <ClCompile Include="AtlasStatus.cpp" />
     <ClCompile Include="Aziel.cpp" />
@@ -198,6 +192,7 @@
     <ClCompile Include="FighterAccessor.cpp" />
     <ClCompile Include="FighterActionabilityFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GrabboxFunctions.cpp" />
     <ClCompile Include="HitboxFunctions.cpp" />
     <ClCompile Include="HurtboxFunctions.cpp" />
@@ -213,13 +208,6 @@
     <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="FighterStatusFunctions.cpp" />
     <ClCompile Include="GameCoordinate.cpp" />
-    <ClCompile Include="Game.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameSettings.cpp" />
@@ -287,13 +275,7 @@
     <ClCompile Include="TessaStatus.cpp" />
     <ClCompile Include="TitleScreen.cpp" />
     <ClCompile Include="UI.cpp" />
-    <ClCompile Include="utils.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="Vesuvius.cpp" />
     <ClCompile Include="VesuviusMoves.cpp" />
     <ClCompile Include="VesuviusStatus.cpp" />

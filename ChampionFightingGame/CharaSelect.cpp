@@ -473,40 +473,12 @@ void CSS::centerSlots() {
 	
 	colsOffset = empty_cols;
 
-	/*The commented out version of this code is by all accounts the correct way to do it. However, Karl Marx failed to consider that I am stupid,
-		so instead, we're going to do what is most likely the worst way to do it. Here's a summary of the way the dual CSS system is set up:
-
-		- 1: aFixedCharacterSlots is initialized. It reads all of its data from css_param.yml
-		- 2: For each valid css slot, the row and column is increased by 1. myRow and myCol are set for aFixedCharacterSlots
-		- 3: charaSlotsOrdered at the current row and column are then set to match aFixedCharacterSlots
-		- 4: centerSlots reads through charaSlotsOrdered to figure out where our first incomplete row is, and how much of it is incomplete
-		- 5: the column value for all aFixedCharaSlots entries on the incomplete row are increased by half of the row offset
-		- 6: the entirety of charaSlotOrdered is then marked as uninitialized, and its rows and columns set to the default value (-1)
-		- 7: we then iterate back through every single aFixedCharaSlots entry and set the correct charaSlotOrdered entry to match it
-
-		So basically, we create a list, then another list copies it, then the first list uses the copy to figure out some stuff, then the
-		second gets fucking obliterated, then the second list is immediately forced to copy the first one again.
-
-		Many cards were annihilated in the making of this Character Select Screen.
-	*/
-
-/*	for (int i = NUM_COLS - 1; i > empty_cols; i--) {
-		cout << charaSlotsOrdered[i][empty_row].myCol << endl;
-		charaSlotsOrdered[i][empty_row] = charaSlotsOrdered[i - empty_cols / 2][empty_row];
-		charaSlotsOrdered[i][empty_row].myCol += empty_cols / 2;
-		cout << charaSlotsOrdered[i][empty_row].myCol << endl;
-	}
-	for (int i = empty_cols; i >= 0; i--) {
-		charaSlotsOrdered[i][empty_row].bInitialized = false;
-		charaSlotsOrdered[i][empty_row].myRow = -1;
-		charaSlotsOrdered[i][empty_row].myCol = -1;
-	}*/
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (aFixedCharacterSlots[i].myRow == empty_row) {
 			aFixedCharacterSlots[i].myCol += (empty_cols / 2);
 		}
 	}
-	for (int i = 0; i < NUM_COLS; i++) { //I don't wanna talk about it
+	for (int i = 0; i < NUM_COLS; i++) {
 		for (int i2 = 0; i2 < NUM_ROWS; i2++) {
 			charaSlotsOrdered[i][i2].myCol = -1;
 			charaSlotsOrdered[i][i2].myRow = -1;

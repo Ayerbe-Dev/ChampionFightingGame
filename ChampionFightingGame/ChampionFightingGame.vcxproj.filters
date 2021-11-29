@@ -453,6 +453,9 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
+    <ClCompile Include="StageSelect.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -748,6 +751,9 @@
     </ClInclude>
     <ClInclude Include="UI.h">
       <Filter>Header Files\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="StageSelect.h">
+      <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -267,6 +267,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
+    <ClCompile Include="StageSelect.cpp" />
     <ClCompile Include="Sully.cpp" />
     <ClCompile Include="SullyMoves.cpp" />
     <ClCompile Include="SullyStatus.cpp" />
@@ -369,6 +370,7 @@
     <ClInclude Include="ProjectileTemplate.fwd.h" />
     <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="FighterStatus.h" />
+    <ClInclude Include="StageSelect.h" />
     <ClInclude Include="Sully.fwd.h" />
     <ClInclude Include="Sully.h" />
     <ClInclude Include="Tessa.fwd.h" />

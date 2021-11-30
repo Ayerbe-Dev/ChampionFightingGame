@@ -8,7 +8,14 @@
 extern SDL_mutex* mutex;
 extern SoundManager g_soundmanager;
 
-class GameLoader {
+class Loader {
+public:
+	int loaded_items = 0;
+	bool finished = false;
+	bool can_ret = false;
+};
+
+class GameLoader : public Loader {
 public:
 	GameLoader();
 	GameLoader(PlayerInfo p1, PlayerInfo p2);
@@ -22,9 +29,6 @@ public:
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;
 	Stage stage;
-	int loaded_items = 0;
-	bool finished = false;
-	bool can_ret = false;
 
 	PlayerInfo player_info[2];
 };
@@ -46,6 +50,10 @@ public:
 	void set_attributes();
 	bool check_corner_distance(bool init);
 };
+
+static int LoadExample(void* void_loader) {
+	return 0;
+}
 
 static int LoadGame(void* void_gameloader) {
 	int time = SDL_GetTicks();

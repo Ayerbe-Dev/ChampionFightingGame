@@ -92,6 +92,11 @@ void battle_main(GameManager* game_manager) {
 	GameCoordinate debug_anchor[2] = {{0,0}};
 	GameCoordinate debug_offset[2] = {{0,0}};
 
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
+
 	GameTimer timer;
 	Stage stage;
 	IObject* p1 = NULL;
@@ -101,11 +106,6 @@ void battle_main(GameManager* game_manager) {
 	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 	FighterAccessor* fighter_accessor = NULL;
-
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
 
 	SDL_Thread* loading_thread;
 

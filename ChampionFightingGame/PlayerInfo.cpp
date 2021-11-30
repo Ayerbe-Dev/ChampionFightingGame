@@ -36,6 +36,7 @@ void PlayerInfo::update_controller() {
 }
 
 void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
+	update_controller();
 	for (int i = 0; i < BUTTON_MAX; i++) {
 		bool old_button = button_info[i].button_on;
 		if (controller != NULL) {

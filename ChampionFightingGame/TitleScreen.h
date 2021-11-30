@@ -10,7 +10,7 @@ class TitleScreen: public GameMenu{
 public:
     TitleScreen();
     void render();
-    void event_start_press();
+    void event_any_press();
 private:
     GameTexture title_l1;
     GameTexture title_l2;

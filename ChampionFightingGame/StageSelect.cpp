@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
+#include "Loader.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -11,35 +12,169 @@ void stage_select_main(GameManager* game_manager) {
 	PlayerInfo player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
+	const Uint8* keyboard_state;
+	Debugger debugger;
+	debugger = Debugger();
 
-	displayLoadingScreen();
-	int* next_state = (int*)GAME_STATE_DEBUG_MENU;
-	StageSelect stage_select(next_state);
-	stage_select.looping = game_manager->looping;
 
-	stage_select.player_info[0] = &player_info[0];
-	stage_select.player_info[1] = &player_info[1];
-	
-	if (stage_select.load_stage_select()) {
-		displayLoadingScreen();
-		player_info[0].crash_reason = "Could not open Stage Select file!";
-		*game_manager->looping = false;
-		*next_state = GAME_STATE_DEBUG_MENU;
+	StageSelectLoader* stage_select_loader = new StageSelectLoader;
+	stage_select_loader->player_info[0] = player_info[0];
+	stage_select_loader->player_info[1] = player_info[1];
+
+
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	bool loading = true;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+
+	StageSelect stage_select;
+
+	SDL_Thread* loading_thread;
+
+	loading_thread = SDL_CreateThread(LoadStageSelect, "Init.rar", (void*)stage_select_loader);
+	SDL_DetachThread(loading_thread);
+
+	game_manager->set_menu_info(nullptr);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+
+	while (loading) {
+		frameTimeDelay();
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					*game_manager->game_state = GAME_STATE_CLOSE;
+					return;
+				}
+				break;
+			}
+		}
+
+		load_icon.move();
+		SDL_LockMutex(mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		int total_items = 1;
+		loadingBar.setTargetPercent(((float)stage_select_loader->loaded_items / total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(mutex);
+
+		if (stage_select_loader->finished) {
+			if (!stage_select_loader->can_ret) {
+				stage_select = stage_select_loader->stage_select;
+
+				game_manager->set_menu_info(&stage_select);
+				stage_select.looping = game_manager->looping;
+				stage_select.game_state = game_manager->game_state;
+			}
+			stage_select_loader->can_ret = true;
+
+			loading = false;
+		}
 	}
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	while (*game_manager->looping) {
+		frameTimeDelay();
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
 
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
+				} break;
+			}
+		}
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
+		}
+		for (int i = 0; i < 2; i++) {
+			player_info[i].update_buttons(keyboard_state);
+		}
+
+		game_manager->handle_menus();
+
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+
+/*
+		 /$$$$$$$                            /$$                            /$$$$$$                  /$$
+		| $$__  $$                          | $$                           /$$__  $$                | $$
+		| $$  \ $$  /$$$$$$  /$$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$       | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$
+		| $$$$$$$/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$ /$$__  $$ /$$__  $$
+		| $$__  $$| $$$$$$$$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/      | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+		| $$  \ $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$            | $$    $$| $$  | $$| $$  | $$| $$_____/
+		| $$  | $$|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+		|__/  |__/ \_______/|__/  |__/ \_______/ \_______/|__/             \______/  \______/  \_______/ \_______/
+
+
+
+		  /$$$$$$                                      /$$   /$$
+		 /$$__  $$                                    | $$  | $$
+		| $$  \__/  /$$$$$$   /$$$$$$   /$$$$$$$      | $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
+		| $$ /$$$$ /$$__  $$ /$$__  $$ /$$_____/      | $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
+		| $$|_  $$| $$  \ $$| $$$$$$$$|  $$$$$$       | $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
+		| $$  \ $$| $$  | $$| $$_____/ \____  $$      | $$  | $$| $$_____/| $$      | $$_____/
+		|  $$$$$$/|  $$$$$$/|  $$$$$$$ /$$$$$$$/      | $$  | $$|  $$$$$$$| $$      |  $$$$$$$
+		 \______/  \______/  \_______/|_______/       |__/  |__/ \_______/|__/       \_______/
+*/
+
+		SDL_SetRenderTarget(g_renderer, nullptr);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(g_renderer);
 	}
 
-	return game_manager->update(player_info, *next_state);
+	delete stage_select_loader;
+
+	return game_manager->update(player_info, *game_manager->game_state);
 }
 
 StageSelect::StageSelect() {
 
-}
-
-StageSelect::StageSelect(int* next_state) {
-	this->next_state = next_state;
 }
 
 int StageSelect::load_stage_select() {

@@ -30,8 +30,7 @@ public:
 class StageSelect : public GameMenu {
 public:
 	StageSelect();
-	StageSelect(int* next_state);
-
+	
 	int load_stage_select();
 
 	void event_select_press();
@@ -46,8 +45,6 @@ public:
 	void centerSlots();
 
 	void render();
-
-	int* next_state{ (int*)GAME_STATE_DEBUG_MENU };
 
 	int cursor_index{ 0 };
 	int myCol{ 0 };

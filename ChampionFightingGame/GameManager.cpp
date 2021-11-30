@@ -64,6 +64,9 @@ void GameManager::handle_menus() {
 		if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
 			event_back_press();
 		}
+		if (is_any_menu_input(i)) {
+			event_any_press();
+		}
 	}
 }
 
@@ -147,6 +150,15 @@ bool GameManager::is_left_press(int id) {
 	return ret;
 }
 
+bool GameManager::is_any_menu_input(int id) {
+	for (int i = 0; i < BUTTON_MAX; i++) {
+		if (player_info[id].check_button_trigger(i)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void GameManager::event_up_press() {
 	(menu_target->*(&GameMenu::event_up_press))();
 }
@@ -173,4 +185,8 @@ void GameManager::event_select_press() {
 
 void GameManager::event_back_press() {
 	(menu_target->*(&GameMenu::event_back_press))();
+}
+
+void GameManager::event_any_press() {
+	(menu_target->*(&GameMenu::event_any_press))();
 }

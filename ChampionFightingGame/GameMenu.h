@@ -9,6 +9,7 @@ public:
     virtual void event_select_press();
     virtual void event_start_press();
     virtual void event_back_press();
+    virtual void event_any_press();
 
     bool* looping;
     int* game_state;

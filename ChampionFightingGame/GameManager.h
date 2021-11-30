@@ -29,6 +29,7 @@ public:
 	void event_start_press();
 	void event_select_press();
 	void event_back_press();
+	void event_any_press();
 private:
 	GameMenu* menu_target;
 
@@ -36,6 +37,8 @@ private:
 	bool is_down_press(int id);
 	bool is_left_press(int id);
 	bool is_right_press(int id);
+
+	bool is_any_menu_input(int id);
 
 	int init_hold_frames = 20;
 	int hold_rate = 4;

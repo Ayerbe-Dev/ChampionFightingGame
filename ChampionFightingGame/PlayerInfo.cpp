@@ -41,13 +41,13 @@ void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
 		bool old_button = button_info[i].button_on;
 		if (controller != NULL) {
 			if (i < 8) {
-				if (i == 0 || i == 4) { //Up
+				if (i == BUTTON_UP || i == BUTTON_MENU_UP) { //Up
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);
 				}
-				else if (i == 1 || i == 5) { //Down
+				else if (i == BUTTON_DOWN || i == BUTTON_MENU_DOWN) { //Down
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) >= 13106);
 				}
-				else if (i == 2 || i == 6) { //Left
+				else if (i == BUTTON_LEFT || i == BUTTON_MENU_LEFT) { //Left
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) <= -13106);
 				}
 				else { //Right

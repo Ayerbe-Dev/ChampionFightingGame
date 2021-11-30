@@ -72,11 +72,11 @@ void title_screen_main(GameManager* game_manager) {
 }
 
 TitleScreen::TitleScreen(){
-    title_l1.init("resource\\ui\\title\\title-l1.png");
-    title_l2.init("resource\\ui\\title\\title-l2.png");
-    title_l3.init("resource\\ui\\title\\title-l3.png");
-    title_l4.init("resource\\ui\\title\\title-l4.png");
-    text.init("resource\\ui\\title\\Praeiudicium.png");
+    title_l1.init("resource/ui/title/title-l1.png");
+    title_l2.init("resource/ui/title/title-l2.png");
+    title_l3.init("resource/ui/title/title-l3.png");
+    title_l4.init("resource/ui/title/title-l4.png");
+    text.init("resource/ui/title/Praeiudicium.png");
 
     title_l1.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
     title_l2.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
@@ -95,6 +95,6 @@ void TitleScreen::render(){
     text.render();
 }
 
-void TitleScreen::event_start_press(){
+void TitleScreen::event_any_press(){
 	*looping = false;
 }

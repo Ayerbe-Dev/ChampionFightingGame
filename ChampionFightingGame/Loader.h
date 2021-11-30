@@ -34,6 +34,7 @@ public:
 	PlayerInfo player_info[2];
 
 	int loaded_items = 0;
+	int ret = 0;
 	bool finished = false;
 	bool can_ret = false;
 };
@@ -174,7 +175,7 @@ static int LoadBattle(void* void_BattleLoader) {
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
 	while (!battle_loader->can_ret) {
 	}
-	return 1; 
+	return 0; 
 }
 
 class CharaSelectLoader : public GameLoader {
@@ -198,7 +199,7 @@ static int LoadCharaSelect(void* void_CharaSelectLoader) {
 	if (css.loadCSS()) {
 		displayLoadingScreen();
 		chara_select_loader->player_info[0].crash_reason = "Could not open CSS file!";
-		return 0;
+		return 1;
 	}
 	chara_select_loader->loaded_items++;
 	if (css.numRows == 0) {
@@ -230,7 +231,7 @@ static int LoadCharaSelect(void* void_CharaSelectLoader) {
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
 	while (!chara_select_loader->can_ret) {
 	}
-	return 1;
+	return 0;
 }
 
 class DebugLoader : public GameLoader {
@@ -416,5 +417,35 @@ static int LoadMenu(void* void_MenuLoader) {
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
 	while (!menu_loader->can_ret) {
 	}
-	return 1;
+	return 0;
+}
+
+class StageSelectLoader : public GameLoader {
+public:
+	StageSelectLoader() {};
+
+	StageSelect stage_select;
+};
+
+static int LoadStageSelect(void* void_StageSelectLoader) {
+	int time = SDL_GetTicks();
+	GameLoader* stage_select_loader = (GameLoader*)void_StageSelectLoader;
+
+	StageSelect stage_select;
+
+	stage_select.player_info[0] = &stage_select_loader->player_info[0];
+	stage_select.player_info[1] = &stage_select_loader->player_info[1];
+
+	if (stage_select.load_stage_select()) {
+		displayLoadingScreen();
+		stage_select_loader->player_info[0].crash_reason = "Could not open Stage Select file!";
+		return 1;
+	}
+	stage_select_loader->loaded_items++;
+	frameTimeDelay();
+
+	stage_select_loader->finished = true;
+	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
+	while (!stage_select_loader->can_ret) {}
+	return 0;
 }

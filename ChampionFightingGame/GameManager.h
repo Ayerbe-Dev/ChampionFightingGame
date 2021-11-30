@@ -7,10 +7,10 @@ public:
 	GameManager();
 
 	PlayerInfo player_info[2];
-	int prev_game_state;
-	int game_state = GAME_STATE_MENU;
 	int game_context = GAME_CONTEXT_NORMAL;
 	int overlay_layer = 0;
+	int* game_state;
+	int prev_game_state;
 	bool* looping;
 
 	void (*game_main[GAME_STATE_MAX])(GameManager* game_manager);

@@ -6,6 +6,7 @@
 #include "Debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
+#include "Loader.h"
 
 extern bool debug;
 extern u32 frame_advance_ms;
@@ -14,8 +15,294 @@ extern int error_render;
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
-
 void menu_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+	const Uint8* keyboard_state;
+	Debugger debugger;
+	debugger = Debugger();
+
+	MenuLoader* menu_loader = new MenuLoader;
+
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	bool loading = true;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+
+	MainMenu main_menu;
+	SDL_Texture* bgTexture = NULL;
+	MenuItem menu_items[5];
+	SubMenuTable* sub_menu_tables[5] = { NULL };
+
+	SDL_Thread* loading_thread;
+
+	loading_thread = SDL_CreateThread(LoadMenu, "Init.rar", (void*)menu_loader);
+	SDL_DetachThread(loading_thread);
+
+	game_manager->set_menu_info(nullptr);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+
+	while (loading) {
+		frameTimeDelay();
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					*game_manager->game_state = GAME_STATE_CLOSE;
+					return;
+				}
+				break;
+			}
+		}
+
+		load_icon.move();
+		SDL_LockMutex(mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		int total_items = 38;
+		loadingBar.setTargetPercent(((float)menu_loader->loaded_items / total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(mutex);
+
+		if (menu_loader->finished) {
+			if (!menu_loader->can_ret) {
+				main_menu = menu_loader->main_menu;
+				bgTexture = menu_loader->bgTexture;
+				for (int i = 0; i < 5; i++) {
+					menu_items[i] = menu_loader->menu_items[i];
+					sub_menu_tables[i] = menu_loader->sub_menu_tables[i];
+				}
+				game_manager->set_menu_info(&main_menu);
+				main_menu.looping = game_manager->looping;
+				main_menu.game_state = game_manager->game_state;
+			}
+			menu_loader->can_ret = true;
+
+			loading = false;
+		}
+	}
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+	SDL_Rect garborect = { 0,0,232,32 };
+
+	float theta = 0;
+	float offset = 3.14 / 13;
+	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
+	int top_selection = -2;
+	int sub_selection = GAME_STATE_BATTLE;
+	int menu_level = MENU_LEVEL_TOP;
+	int sub_type = SUB_MENU_VS;
+
+	while (*game_manager->looping) {
+		frameTimeDelay();
+		SDL_RenderClear(g_renderer);
+
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
+				} break;
+			}
+		}
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
+		}
+		
+
+		for (int i = 0; i < 2; i++) {
+			player_info[i].update_buttons(keyboard_state);
+			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
+				*game_manager->looping = false;
+				*game_manager->game_state = GAME_STATE_DEBUG_MENU;
+				goto SKIP_RENDER;
+			}
+
+			if (menu_level == MENU_LEVEL_TOP) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+					*game_manager->looping = false;
+					*game_manager->game_state = GAME_STATE_DEBUG_MENU;
+					displayLoadingScreen();
+					goto SKIP_RENDER;
+				}
+
+				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+					menu_level = MENU_LEVEL_SUB;
+					sub_type = menu_items[top_selection * -1].destination;
+					break;
+				}
+				if (player_info[i].vertical_input(true)) {
+					if (top_selection > -4) {
+						top_selection--;
+					}
+					else {
+						top_selection = 0;
+						theta += 5 * offset;
+					}
+				}
+
+				if (player_info[i].vertical_input(false)) {
+					if (top_selection < 0) {
+						top_selection++;
+					}
+					else {
+						top_selection = -4;
+						theta -= 5 * offset;
+					}
+				}
+			}
+
+			if (menu_level == MENU_LEVEL_SUB) {
+				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+					if (sub_selection == GAME_STATE_CONTROLS) {
+						controls_main(game_manager);
+					}
+					else {
+						*game_manager->looping = false;
+						displayLoadingScreen();
+						goto SKIP_RENDER;
+					}
+				}
+				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+					menu_level = MENU_LEVEL_TOP;
+					break;
+				}
+
+				if (player_info[i].vertical_input(false)) {
+					if (sub_menu_tables[sub_type]->selected_item == 0) {
+						sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->item_count - 1;
+					}
+					else {
+						sub_menu_tables[sub_type]->selected_item--;
+					}
+				}
+				if (player_info[i].vertical_input(true)) {
+					if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->item_count - 1) {
+						sub_menu_tables[sub_type]->selected_item = 0;
+					}
+					else {
+						sub_menu_tables[sub_type]->selected_item++;
+					}
+				}
+
+				sub_selection = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
+				*game_manager->game_state = sub_selection;
+			}
+		}
+
+
+		for (int i = 0; i < 5; i++) {
+			sub_menu_tables[i]->cursor->destRect.y = WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count);
+			for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
+				sub_menu_tables[i]->sub_option_rect[i2].x = WINDOW_WIDTH * 0.78;
+				sub_menu_tables[i]->sub_option_rect[i2].y = WINDOW_HEIGHT * 0.18 + (i2 * 300 / sub_menu_tables[i]->item_count);
+				sub_menu_tables[i]->sub_option_rect[i2].w = 200;
+				sub_menu_tables[i]->sub_option_rect[i2].h = 32;
+			}
+		}
+
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderCopy(g_renderer, bgTexture, nullptr, nullptr);
+
+		for (int i = 1; i < 5; i++) {
+			menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
+			menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
+			menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
+			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, flip);
+
+		}
+
+		//real render
+		for (int i = 0; i < 5; i++) {
+			menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
+			menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
+			menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
+			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, flip);
+			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
+			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
+			for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
+				SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
+			}
+		}
+
+		//postbuffer render
+		for (int i = 0; i < 5; i++) {
+			menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
+			menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
+
+			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, flip);
+		}
+
+
+		theta += ((top_selection * offset) - theta) / 16;
+
+		SDL_RenderCopy(g_renderer, menu_items[top_selection * -1].texture_description, nullptr, &menu_items[top_selection * -1].destRect_description);
+
+		SDL_SetRenderTarget(g_renderer, nullptr);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(g_renderer);
+	}
+
+	SKIP_RENDER:
+
+	for (int i = 0; i < 5; i++) {
+		delete sub_menu_tables[i]->cursor;
+		delete sub_menu_tables[i];
+	}
+
+	SDL_DestroyTexture(pScreenTexture);
+	SDL_DestroyTexture(bgTexture);
+
+	delete menu_loader;
+
+	return game_manager->update(player_info, *game_manager->game_state);
+}
+
+void _menu_main(GameManager* game_manager) {
 	PlayerInfo player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -118,96 +405,6 @@ void menu_main(GameManager* game_manager) {
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
-		}
-
-		for (int i = 0; i < 2; i++) {
-			(&player_info[i])->update_controller();
-			(&player_info[i])->update_buttons(keyboard_state);
-			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
-				menuing = false;
-				sub_selection = GAME_STATE_DEBUG_MENU;
-				goto SKIP_RENDER;
-			}
-
-			if (menu_level == MENU_LEVEL_TOP) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
-					menuing = false;
-					sub_selection = GAME_STATE_DEBUG_MENU;
-					displayLoadingScreen();
-					goto SKIP_RENDER;
-				}
-
-				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
-					menu_level = MENU_LEVEL_SUB;
-					sub_type = menu_items[top_selection * -1].destination;
-					break;
-				}
-				if (player_info[i].vertical_input(true)) {
-					if (top_selection > -4) {
-						top_selection--;
-					}
-					else {
-						top_selection = 0;
-						theta += 5 * offset;
-					}
-				}
-
-				if (player_info[i].vertical_input(false)) {
-					if (top_selection < 0) {
-						top_selection++;
-					}
-					else {
-						top_selection = -4;
-						theta -= 5 * offset;
-					}
-				}
-			}
-
-			if (menu_level == MENU_LEVEL_SUB) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
-					if (sub_selection == GAME_STATE_CONTROLS) {
-						controls_main(game_manager);
-					}
-					else {
-						menuing = false;
-						displayLoadingScreen();
-						goto SKIP_RENDER;
-					}
-				}
-				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
-					menu_level = MENU_LEVEL_TOP;
-					break;
-				}
-
-				if (player_info[i].vertical_input(false)) {
-					if (sub_menu_tables[sub_type]->selected_item == 0) {
-						sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->item_count - 1;
-					}
-					else {
-						sub_menu_tables[sub_type]->selected_item--;
-					}
-				}
-				if (player_info[i].vertical_input(true)) {
-					if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->item_count - 1) {
-						sub_menu_tables[sub_type]->selected_item = 0;
-					}
-					else {
-						sub_menu_tables[sub_type]->selected_item++;
-					}
-				}
-
-				sub_selection = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
-			}
-		}
-
-		for (int i = 0; i < 5; i++) {
-			sub_menu_tables[i]->cursor->destRect.y = WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count);
-			for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
-				sub_menu_tables[i]->sub_option_rect[i2].x = WINDOW_WIDTH * 0.78;
-				sub_menu_tables[i]->sub_option_rect[i2].y = WINDOW_HEIGHT * 0.18 + (i2 * 300 / sub_menu_tables[i]->item_count);
-				sub_menu_tables[i]->sub_option_rect[i2].w = 200;
-				sub_menu_tables[i]->sub_option_rect[i2].h = 32;
-			}
 		}
 
 		//prebuffer render

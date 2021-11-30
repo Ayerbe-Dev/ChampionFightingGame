@@ -80,7 +80,6 @@ public:
     void event_right_press();
     void render();
     void queryFixedCssSlotPosition(int indexLocation, int* xptr, int* yptr);
-    int getExitCode();
     int getCharacterKind(int player);
     void centerSlots();
     void selectIndex();
@@ -96,8 +95,6 @@ public:
 
     PlayerInfo *player_info[2];
 private:
-
-    int iExitCode = GAME_STATE_DEBUG_MENU;
     MobileCharacterSlot aMobileCharacterSlots[2];
     GameTexture backgroundTexture;
     GameTexture bigBarTexture;

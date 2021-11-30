@@ -11,5 +11,6 @@ public:
     virtual void event_back_press();
 
     bool* looping;
+    int* game_state;
     int player_id{0};
 };

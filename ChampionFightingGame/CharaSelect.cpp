@@ -3,60 +3,109 @@
 #include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
+#include "Loader.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-void chara_select_main(GameManager *game_manager) {
+void chara_select_main(GameManager* game_manager) {
 	PlayerInfo player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
+	const Uint8* keyboard_state;
+	Debugger debugger;
+	debugger = Debugger();
+
+
+	CharaSelectLoader* chara_select_loader = new CharaSelectLoader;
+	chara_select_loader->player_info[0] = player_info[0];
+	chara_select_loader->player_info[1] = player_info[1];
+
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	displayLoadingScreen();
-	const Uint8* keyboard_state;
-	Debugger debugger;
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	bool loading = true;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	CSS css;
-	css.player_info[0] = &player_info[0];
-	css.player_info[1] = &player_info[1];
+	CssCursor cursors[2];
 
-	css.looping = game_manager->looping;
+	SDL_Thread* loading_thread;
 
-	if (css.loadCSS()) {
-		displayLoadingScreen();
-		player_info[0].crash_reason = "Could not open CSS file!";
-		return game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
-	}
-	if (css.numRows == 0) {
-		css.myCol[0] = 1;
-		css.myCol[1] = 1;
-	}
-	for (int i = 0; i < 2; i++) {
-		css.player_id = i;
-		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css.findPrevChara(css.player_info[i]->chara_kind);
+	loading_thread = SDL_CreateThread(LoadCharaSelect, "Init.rar", (void*)chara_select_loader);
+	SDL_DetachThread(loading_thread);
+
+	game_manager->set_menu_info(nullptr);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+
+	while (loading) {
+		frameTimeDelay();
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return;
+				}
+				break;
+			}
+		}
+
+		load_icon.move();
+		SDL_LockMutex(mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		int total_items = 3;
+		loadingBar.setTargetPercent(((float)chara_select_loader->loaded_items / total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(mutex);
+
+		if (chara_select_loader->finished) {
+			if (!chara_select_loader->can_ret) {
+				css = chara_select_loader->css;
+				cursors[0] = chara_select_loader->css_cursor[0];
+				cursors[1] = chara_select_loader->css_cursor[1];
+				game_manager->set_menu_info(&css);
+				css.looping = game_manager->looping;
+				css.game_state = game_manager->game_state;
+			}
+			chara_select_loader->can_ret = true;	
+			loading = false;
 		}
 	}
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 
-
-	CssCursor cursors[2];
-	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	cursors[0].cursorTexture.setScaleFactor(1.2);
-	cursors[0].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-	cursors[1].cursorTexture.setScaleFactor(1.2);
-	cursors[1].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-
-	game_manager->set_menu_info(&css);
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	while (*game_manager->looping) {
 		frameTimeDelay();
-
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -64,16 +113,13 @@ void chara_select_main(GameManager *game_manager) {
 				case SDL_QUIT:
 				{
 					return game_manager->update(player_info, GAME_STATE_CLOSE);
-				} 
-				break;
+				} break;
 			}
 		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
-			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
-			bool new_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].changed = (old_button != new_button);
-		}
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(g_window, 0);
@@ -82,13 +128,17 @@ void chara_select_main(GameManager *game_manager) {
 				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
+		}
+		for (int i = 0; i < 2; i++) {
+			player_info[i].update_buttons(keyboard_state);
+		}
 
 		game_manager->handle_menus();
-
-		if (!*game_manager->looping) {
-			displayLoadingScreen();
-			break;
-		}
 
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
@@ -106,7 +156,9 @@ void chara_select_main(GameManager *game_manager) {
 		SDL_RenderPresent(g_renderer);
 	}
 
-	return game_manager->update(player_info, css.getExitCode());
+	delete chara_select_loader;
+
+	return game_manager->update(player_info, *game_manager->game_state);
 }
 
 CSS::CSS() {
@@ -256,7 +308,7 @@ void CSS::event_back_press() {
 	}
 	else {
 		displayLoadingScreen();
-		iExitCode = GAME_STATE_MENU;
+		*game_state = GAME_STATE_MENU;
 		*looping = false;
 	}
 }
@@ -264,7 +316,7 @@ void CSS::event_back_press() {
 void CSS::event_start_press() {
 	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
 		displayLoadingScreen();
-		iExitCode = GAME_STATE_BATTLE;
+		*game_state = GAME_STATE_BATTLE;
 		*looping = false;
 	}
 }
@@ -317,7 +369,7 @@ void CSS::event_down_press() {
 				if (!valid_col) {
 					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
 					*looping = false;
-					iExitCode = GAME_STATE_DEBUG_MENU;
+					*game_state = GAME_STATE_DEBUG_MENU;
 					return;
 				}
 			}
@@ -366,7 +418,7 @@ void CSS::event_up_press() {
 				if (!valid_col) {
 					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
 					*looping = false;
-					iExitCode = GAME_STATE_DEBUG_MENU;
+					*game_state = GAME_STATE_DEBUG_MENU;
 					return;
 				}
 			}
@@ -449,10 +501,6 @@ void CSS::queryFixedCssSlotPosition(int indexLocation, int* xptr, int* yptr) {
 	else {
 		printf("CSS::queryFixedCssSlotPosition --> Index out of range!\n");
 	}
-}
-
-int CSS::getExitCode() {
-	return iExitCode;
 }
 
 int CSS::getCharacterKind(int player) {

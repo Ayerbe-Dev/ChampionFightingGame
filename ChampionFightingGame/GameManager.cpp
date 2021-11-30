@@ -8,6 +8,7 @@ GameManager::GameManager() {
 		game_main[i] = nullptr;
 	}
 	set_game_state_functions();
+	game_state = new int;
 }
 
 void GameManager::set_game_state_functions() {
@@ -22,9 +23,9 @@ void GameManager::set_game_state_functions() {
 void GameManager::update(PlayerInfo player_info[2], int game_state, int game_context) {
 	this->player_info[0] = player_info[0];
 	this->player_info[1] = player_info[1];
-	prev_game_state = this->game_state;
+	prev_game_state = *this->game_state;
 	if (game_state != GAME_STATE_MAX) {
-		this->game_state = game_state;
+		*this->game_state = game_state;
 	}
 	if (game_context != GAME_CONTEXT_MAX) {
 		this->game_context = game_context;

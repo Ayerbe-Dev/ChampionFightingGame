@@ -129,8 +129,7 @@ void battle_main(GameManager* game_manager) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT: {
-					game_manager->game_state = GAME_STATE_CLOSE;
-					return;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -203,7 +202,7 @@ void battle_main(GameManager* game_manager) {
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
-		next_state = GAME_STATE_DEBUG_MENU;
+		game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 	}
 
 	while (gaming) {
@@ -220,8 +219,7 @@ void battle_main(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					next_state = GAME_STATE_CLOSE;
-					gaming = false;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -346,7 +344,7 @@ void battle_main(GameManager* game_manager) {
 				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
 					debug = false;
 					gaming = false;
-					next_state = GAME_STATE_DEBUG_MENU;
+					game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 					displayLoadingScreen();
 					goto DONE_GAMING;
 				}
@@ -354,7 +352,7 @@ void battle_main(GameManager* game_manager) {
 
 			if (fighter[i]->crash_to_debug) {
 				gaming = false;
-				next_state = GAME_STATE_DEBUG_MENU;
+				game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 				displayLoadingScreen();
 				goto DONE_GAMING;
 			}

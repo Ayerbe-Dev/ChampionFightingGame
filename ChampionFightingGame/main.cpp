@@ -88,29 +88,31 @@ int main() {
 	g_soundmanager = SoundManager(true);
 
 	GameManager game_manager;
+	*game_manager.game_state = GAME_STATE_DEBUG_MENU;
 
 	bool running = opening_main(&game_manager);
+	bool correct;
+	game_manager.looping = &correct;
 
 	while (running) {
 		refreshRenderer();
-
-		if (game_manager.game_main[game_manager.game_state] != nullptr) {
-			game_manager.game_main[game_manager.game_state](&game_manager);
+		*game_manager.looping = true;
+		if (game_manager.game_main[*game_manager.game_state] != nullptr) {
+			game_manager.game_main[*game_manager.game_state](&game_manager);
 		}
-		else if (game_manager.game_state != GAME_STATE_CLOSE) {
+		else if (*game_manager.game_state != GAME_STATE_CLOSE) {
 			char buffer[86];
-			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", game_manager.game_state);
+			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager.game_state);
 			game_manager.player_info[0].crash_reason = buffer;
 			game_manager.game_main[GAME_STATE_DEBUG_MENU](&game_manager);
 		}
 
-		if (game_manager.game_state == GAME_STATE_CLOSE) {
+		if (*game_manager.game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
-		bool correct = true;
-		game_manager.looping = &correct;
 	}
 
+	delete game_manager.game_state;
 	g_soundmanager.unloadSoundAll();
 	SDL_DestroyWindow(g_window);
 	SDL_DestroyMutex(mutex);
@@ -131,6 +133,8 @@ void example_main(GameManager* game_manager) {
 
 	
 	GameLoader *game_loader = new GameLoader;
+	game_loader->player_info[0] = player_info[0];
+	game_loader->player_info[1] = player_info[1];
 
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
@@ -139,8 +143,6 @@ void example_main(GameManager* game_manager) {
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
 
 /*
 
@@ -202,7 +204,7 @@ void example_main(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					game_manager->game_state = GAME_STATE_CLOSE;
+					*game_manager->game_state = GAME_STATE_CLOSE;
 					return;
 				}
 				break;
@@ -261,6 +263,12 @@ void example_main(GameManager* game_manager) {
 |__/  |__/ \_______/|__/       \_______/
 
 */
+
+//				game_manager->set_menu_info(&menu);
+//				menu.looping = game_manager->looping;
+//				menu.game_state = game_manager->game_state;
+
+//				These lines are applicable to all game states where the GameManager is in charge of menus, just replace "menu" with the actual class
 			}
 			game_loader->can_ret = true;
 

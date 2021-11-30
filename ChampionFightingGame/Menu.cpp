@@ -1,3 +1,4 @@
+#pragma warning(disable : 4996)
 #include "Menu.h"
 #include "utils.h"
 #include "PlayerInfo.h"
@@ -35,7 +36,6 @@ void menu_main(GameManager* game_manager) {
 	MainMenu main_menu;
 	SDL_Texture* bgTexture = NULL;
 	MenuItem menu_items[5];
-	SubMenuTable* sub_menu_tables[5] = { NULL };
 
 	SDL_Thread* loading_thread;
 
@@ -75,7 +75,7 @@ void menu_main(GameManager* game_manager) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		int total_items = 38;
+		int total_items = 2;
 		loadingBar.setTargetPercent(((float)menu_loader->loaded_items / total_items), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
@@ -91,10 +91,6 @@ void menu_main(GameManager* game_manager) {
 			if (!menu_loader->can_ret) {
 				main_menu = menu_loader->main_menu;
 				bgTexture = menu_loader->bgTexture;
-				for (int i = 0; i < 5; i++) {
-					menu_items[i] = menu_loader->menu_items[i];
-					sub_menu_tables[i] = menu_loader->sub_menu_tables[i];
-				}
 				game_manager->set_menu_info(&main_menu);
 				main_menu.looping = game_manager->looping;
 				main_menu.game_state = game_manager->game_state;
@@ -109,17 +105,7 @@ void menu_main(GameManager* game_manager) {
 	SDL_SetRenderTarget(g_renderer, NULL);
 	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
-
 	SDL_Rect garborect = { 0,0,232,32 };
-
-	float theta = 0;
-	float offset = 3.14 / 13;
-	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
-	int top_selection = -2;
-	int sub_selection = GAME_STATE_BATTLE;
-	int menu_level = MENU_LEVEL_TOP;
-	int sub_type = SUB_MENU_VS;
 
 	while (*game_manager->looping) {
 		frameTimeDelay();
@@ -153,153 +139,143 @@ void menu_main(GameManager* game_manager) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		
-
-		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
-			if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
-				*game_manager->looping = false;
-				*game_manager->game_state = GAME_STATE_DEBUG_MENU;
-				goto SKIP_RENDER;
-			}
-
-			if (menu_level == MENU_LEVEL_TOP) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
-					*game_manager->looping = false;
-					*game_manager->game_state = GAME_STATE_DEBUG_MENU;
-					displayLoadingScreen();
-					goto SKIP_RENDER;
-				}
-
-				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
-					menu_level = MENU_LEVEL_SUB;
-					sub_type = menu_items[top_selection * -1].destination;
-					break;
-				}
-				if (player_info[i].vertical_input(true)) {
-					if (top_selection > -4) {
-						top_selection--;
-					}
-					else {
-						top_selection = 0;
-						theta += 5 * offset;
-					}
-				}
-
-				if (player_info[i].vertical_input(false)) {
-					if (top_selection < 0) {
-						top_selection++;
-					}
-					else {
-						top_selection = -4;
-						theta -= 5 * offset;
-					}
-				}
-			}
-
-			if (menu_level == MENU_LEVEL_SUB) {
-				if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
-					if (sub_selection == GAME_STATE_CONTROLS) {
-						controls_main(game_manager);
-					}
-					else {
-						*game_manager->looping = false;
-						displayLoadingScreen();
-						goto SKIP_RENDER;
-					}
-				}
-				if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
-					menu_level = MENU_LEVEL_TOP;
-					break;
-				}
-
-				if (player_info[i].vertical_input(false)) {
-					if (sub_menu_tables[sub_type]->selected_item == 0) {
-						sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->item_count - 1;
-					}
-					else {
-						sub_menu_tables[sub_type]->selected_item--;
-					}
-				}
-				if (player_info[i].vertical_input(true)) {
-					if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->item_count - 1) {
-						sub_menu_tables[sub_type]->selected_item = 0;
-					}
-					else {
-						sub_menu_tables[sub_type]->selected_item++;
-					}
-				}
-
-				sub_selection = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
-				*game_manager->game_state = sub_selection;
-			}
-		}
-
-
-		for (int i = 0; i < 5; i++) {
-			sub_menu_tables[i]->cursor->destRect.y = WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count);
-			for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
-				sub_menu_tables[i]->sub_option_rect[i2].x = WINDOW_WIDTH * 0.78;
-				sub_menu_tables[i]->sub_option_rect[i2].y = WINDOW_HEIGHT * 0.18 + (i2 * 300 / sub_menu_tables[i]->item_count);
-				sub_menu_tables[i]->sub_option_rect[i2].w = 200;
-				sub_menu_tables[i]->sub_option_rect[i2].h = 32;
-			}
-		}
+		game_manager->handle_menus();
+		main_menu.process_submenu_tables();
 
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderCopy(g_renderer, bgTexture, nullptr, nullptr);
 
-		for (int i = 1; i < 5; i++) {
-			menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
-			menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
-			menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
-			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, flip);
-
-		}
-
-		//real render
-		for (int i = 0; i < 5; i++) {
-			menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
-			menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
-			menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
-			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, flip);
-			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
-			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
-			for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
-				SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
-			}
-		}
-
-		//postbuffer render
-		for (int i = 0; i < 5; i++) {
-			menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
-			menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
-
-			SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, flip);
-		}
-
-
-		theta += ((top_selection * offset) - theta) / 16;
-
-		SDL_RenderCopy(g_renderer, menu_items[top_selection * -1].texture_description, nullptr, &menu_items[top_selection * -1].destRect_description);
+		main_menu.render(garborect);
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+
+		/*
+			This next part is called after everything is rendered because I wanted to make sure we had the most up-to-date snapshot of the menu we're
+			leaving. Feel free to move this somewhere else, idrc, but your options in that case would be to either:
+			A. Render everything inside of the block immediately before calling the substate function, which leads to duplicated code
+			B. Create a separate function for calling the sub menu, which requires passing the substate, game_manager, main menu, and screen_texture.
+			That approach is better than A but idk if it's worth overall, your call.
+		*/
+		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
+			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {
+				SDL_Texture* background = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+				SDL_SetTextureBlendMode(background, SDL_BLENDMODE_BLEND);
+
+				SDL_SetRenderTarget(g_renderer, background);
+				SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+
+				game_manager->game_substate_main[main_menu.sub_state](game_manager, background);
+			}
+			else {
+				char buffer[91];
+				sprintf(buffer, "Error: Game Substate was %d (not GAME_SUBSTATE_NONE) but there was no associated function!", main_menu.sub_state);
+				player_info[0].crash_reason = buffer;
+				*game_manager->looping = false;
+				*game_manager->game_state = GAME_STATE_DEBUG_MENU;
+			}
+			main_menu.sub_state = GAME_SUBSTATE_NONE;
+		}
+
 		SDL_RenderPresent(g_renderer);
 	}
 
 	SKIP_RENDER:
 
-	for (int i = 0; i < 5; i++) {
-		delete sub_menu_tables[i]->cursor;
-		delete sub_menu_tables[i];
-	}
-
 	SDL_DestroyTexture(pScreenTexture);
 	SDL_DestroyTexture(bgTexture);
+
+	for (int i = 0; i < 5; i++) {
+		delete main_menu.sub_menu_tables[i]->cursor;
+		delete main_menu.sub_menu_tables[i];
+	}
 
 	delete menu_loader;
 
 	return game_manager->update(player_info, *game_manager->game_state);
+}
+
+void MainMenu::event_up_press() {
+	if (menu_level == MENU_LEVEL_TOP) {
+		if (top_selection < 0) {
+			top_selection++;
+		}
+		else {
+			top_selection = -4;
+			theta -= 5 * offset;
+		}
+	}
+	else {
+		if (sub_menu_tables[sub_type]->selected_item == 0) {
+			sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->item_count - 1;
+		}
+		else {
+			sub_menu_tables[sub_type]->selected_item--;
+		}
+	}
+}
+
+void MainMenu::event_down_press() {
+	if (menu_level == MENU_LEVEL_TOP) {
+		if (top_selection > -4) {
+			top_selection--;
+		}
+		else {
+			top_selection = 0;
+			theta += 5 * offset;
+		}
+	}
+	else {
+		if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->item_count - 1) {
+			sub_menu_tables[sub_type]->selected_item = 0;
+		}
+		else {
+			sub_menu_tables[sub_type]->selected_item++;
+		}
+	}
+}
+
+void MainMenu::event_left_press() {
+	if (menu_level == MENU_LEVEL_SUB) {
+		event_back_press();
+	}
+}
+
+void MainMenu::event_right_press() {
+	if (menu_level == MENU_LEVEL_TOP) {
+		event_select_press();
+	}
+}
+
+void MainMenu::event_start_press() {
+	*game_state = GAME_STATE_DEBUG_MENU;
+	*looping = false;
+}
+
+void MainMenu::event_select_press() {
+	if (menu_level == MENU_LEVEL_TOP) {
+		menu_level = MENU_LEVEL_SUB;
+		sub_type = menu_items[top_selection * -1].destination;
+	}
+	else {
+		if (sub_type == SUB_MENU_OPTIONS) {
+			sub_state = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
+		}
+		else {
+			*game_state = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
+			*looping = false;
+		}
+	}
+}
+
+void MainMenu::event_back_press() {
+	if (menu_level == MENU_LEVEL_TOP) {
+		*game_state = GAME_STATE_TITLE_SCREEN;
+		*looping = false;
+	}
+	else {
+		menu_level = MENU_LEVEL_TOP;
+	}
 }
 
 int get_sub_selection(int top_selection, int sub_selection) {
@@ -350,10 +326,10 @@ int get_sub_selection(int top_selection, int sub_selection) {
 		case(SUB_MENU_OPTIONS): {
 			switch (sub_selection) {
 				case (SUB_OPTIONS_CONTROLS): {
-					ret = GAME_STATE_CONTROLS;
+					ret = GAME_SUBSTATE_CONTROLS;
 				} break;
 				default: {
-					ret = GAME_STATE_DEBUG_MENU;
+					ret = GAME_SUBSTATE_NONE;
 				} break;
 			}
 		} break;
@@ -374,40 +350,9 @@ int get_sub_selection(int top_selection, int sub_selection) {
 	return ret;
 }
 
-MenuItem::MenuItem() {}
-MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
-	this->texture = loadTexture(texture_dir.c_str());
-	this->destRect = { 0,0, 348,48 };
-	this->destination = destination;
-	this->texture_description = loadTexture(texture_description_dir.c_str());
-	this->destRect_description = { 0,0,780,1080 };
-}
+MainMenu::MainMenu(){}
 
-SubMenuTable::SubMenuTable() {}
-SubMenuTable::SubMenuTable(int selection) {
-	SDL_Rect sub_rect;
-	sub_rect.x = (WINDOW_WIDTH * 0.72);
-	sub_rect.y = WINDOW_HEIGHT * 0.1;
-	sub_rect.w = WINDOW_WIDTH * 0.25;
-	sub_rect.h = WINDOW_HEIGHT * 0.75;
-	this->destRect = sub_rect;
-	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png");
-	this->selection = selection;
-	this->cursor = new Cursor();
-	selected_item = 0;
-}
-
-Cursor::Cursor() {
-	SDL_Rect cursor_rect;
-	cursor_rect.x = (WINDOW_WIDTH * 0.75);
-	cursor_rect.y = WINDOW_HEIGHT * 0.18;
-	cursor_rect.w = 45;
-	cursor_rect.h = 45;
-	this->destRect = cursor_rect;
-	this->texture = loadTexture("resource/ui/menu/main/Cursor.png");
-}
-
-MainMenu::MainMenu(){
+void MainMenu::init(){
 	background_texture.init("resource/ui/menu/main/bg.png");
 
 	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png");
@@ -445,5 +390,83 @@ MainMenu::MainMenu(){
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
 };
 
-void MainMenu::event_up_press(){};
-void MainMenu::event_down_press(){};
+void MainMenu::render(SDL_Rect garborect) {
+	for (int i = 1; i < 5; i++) {
+		menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
+		menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
+		menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
+		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+
+	}
+
+	//real render
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
+		menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
+		menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
+		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
+		SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
+		for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
+			SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_text[i2], NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->sub_option_rect[i2]);
+		}
+	}
+
+	//postbuffer render
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
+		menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
+
+		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+	}
+
+
+	theta += ((top_selection * offset) - theta) / 16;
+
+	SDL_RenderCopy(g_renderer, menu_items[top_selection * -1].texture_description, nullptr, &menu_items[top_selection * -1].destRect_description);
+}
+
+void MainMenu::process_submenu_tables() {
+	for (int i = 0; i < 5; i++) {
+		sub_menu_tables[i]->cursor->destRect.y = WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count);
+		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
+			sub_menu_tables[i]->sub_option_rect[i2].x = WINDOW_WIDTH * 0.78;
+			sub_menu_tables[i]->sub_option_rect[i2].y = WINDOW_HEIGHT * 0.18 + (i2 * 300 / sub_menu_tables[i]->item_count);
+			sub_menu_tables[i]->sub_option_rect[i2].w = 200;
+			sub_menu_tables[i]->sub_option_rect[i2].h = 32;
+		}
+	}
+}
+
+MenuItem::MenuItem() {}
+MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
+	this->texture = loadTexture(texture_dir.c_str());
+	this->destRect = { 0,0, 348,48 };
+	this->destination = destination;
+	this->texture_description = loadTexture(texture_description_dir.c_str());
+	this->destRect_description = { 0,0,780,1080 };
+}
+
+SubMenuTable::SubMenuTable() {}
+SubMenuTable::SubMenuTable(int selection) {
+	SDL_Rect sub_rect;
+	sub_rect.x = (WINDOW_WIDTH * 0.72);
+	sub_rect.y = WINDOW_HEIGHT * 0.1;
+	sub_rect.w = WINDOW_WIDTH * 0.25;
+	sub_rect.h = WINDOW_HEIGHT * 0.75;
+	this->destRect = sub_rect;
+	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png");
+	this->selection = selection;
+	this->cursor = new Cursor();
+	selected_item = 0;
+}
+
+Cursor::Cursor() {
+	SDL_Rect cursor_rect;
+	cursor_rect.x = (WINDOW_WIDTH * 0.75);
+	cursor_rect.y = WINDOW_HEIGHT * 0.18;
+	cursor_rect.w = 45;
+	cursor_rect.h = 45;
+	this->destRect = cursor_rect;
+	this->texture = loadTexture("resource/ui/menu/main/Cursor.png");
+}

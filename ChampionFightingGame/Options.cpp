@@ -2,8 +2,8 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-void controls_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+void controls_main(GameManager* game_manager, SDL_Texture *background) {
+/*	PlayerInfo player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
@@ -51,7 +51,7 @@ void controls_main(GameManager* game_manager) {
 		SDL_SetRenderTarget(g_renderer, NULL);
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);
-	}
+	}*/
 }
 
 OptionsOverlay::OptionsOverlay() {

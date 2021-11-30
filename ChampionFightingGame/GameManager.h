@@ -14,6 +14,8 @@ public:
 	bool* looping;
 
 	void (*game_main[GAME_STATE_MAX])(GameManager* game_manager);
+	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager, SDL_Texture* background);
+
 	void set_game_state_functions(); //Assigns a function to each index of game_main
 
 	void update(PlayerInfo player_info[2], int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX); //Updates game_manager->player_info

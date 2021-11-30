@@ -7,6 +7,9 @@ GameManager::GameManager() {
 	for (int i = 0; i < GAME_STATE_MAX; i++) {
 		game_main[i] = nullptr;
 	}
+	for (int i = 0; i < GAME_SUBSTATE_MAX; i++) {
+		game_substate_main[i] = nullptr;
+	}
 	set_game_state_functions();
 	game_state = new int;
 }
@@ -14,10 +17,12 @@ GameManager::GameManager() {
 void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_BATTLE] = &battle_main;
 	game_main[GAME_STATE_CHARA_SELECT] = &chara_select_main;
-	game_main[GAME_STATE_CONTROLS] = &controls_main;
 	game_main[GAME_STATE_DEBUG_MENU] = &debugMenu;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
+
+	game_substate_main[GAME_SUBSTATE_CONTROLS] = &controls_main;
+
 }
 
 void GameManager::update(PlayerInfo player_info[2], int game_state, int game_context) {

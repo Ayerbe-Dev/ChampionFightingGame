@@ -5,6 +5,7 @@
 #include "FighterAccessor.h"
 #include "UI.h"
 #include "CharaSelect.h"
+#include "StageSelect.h"
 #include "DebugMenu.h"
 #include "Menu.h"
 
@@ -310,8 +311,6 @@ public:
 
 	MainMenu main_menu;
 	SDL_Texture* bgTexture;
-	MenuItem menu_items[5];
-	SubMenuTable* sub_menu_tables[5];
 };
 
 static int LoadMenu(void* void_MenuLoader) {
@@ -320,98 +319,15 @@ static int LoadMenu(void* void_MenuLoader) {
 
 	MainMenu main_menu;
 	SDL_Texture* bgTexture;
-	MenuItem menu_items[5];
-	SubMenuTable* sub_menu_tables[5];
 
 	bgTexture = loadTexture("resource/ui/menu/main/bg.png");
 	menu_loader->loaded_items++;
-	frameTimeDelay();
-	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png");
+
+	main_menu.init();
 	menu_loader->loaded_items++;
-	frameTimeDelay();
-	menu_items[1] = MenuItem{ "resource/ui/menu/main/Solo.png" };
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	menu_items[2] = MenuItem{ "resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png" };
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	menu_items[3] = MenuItem{ "resource/ui/menu/main/Options.png" };
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	menu_items[4] = MenuItem{ "resource/ui/menu/main/Extras.png" };
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	for (int i = 0; i < 5; i++) {
-		menu_items[i].destination = i;
-		sub_menu_tables[i] = new SubMenuTable(i);
-		menu_loader->loaded_items++;
-		frameTimeDelay();
-	}
-	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Story.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Arcade.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Training.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/PlayerVsPlayer.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/PlayerVsCPU.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	menu_loader->loaded_items++;
-	frameTimeDelay();
 
 	menu_loader->main_menu = main_menu;
 	menu_loader->bgTexture = bgTexture;
-	for (int i = 0; i < 5; i++) {
-		menu_loader->menu_items[i] = menu_items[i];
-		menu_loader->sub_menu_tables[i] = sub_menu_tables[i];
-		menu_loader->loaded_items+=2;
-		frameTimeDelay();
-	}
 	
 	menu_loader->finished = true;
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;

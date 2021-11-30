@@ -1,7 +1,9 @@
 #pragma once
+#include "utils.h"
 
 class GameMenu{
 public:
+    GameMenu();
     virtual void event_up_press();
     virtual void event_down_press();
     virtual void event_left_press();
@@ -13,5 +15,7 @@ public:
 
     bool* looping;
     int* game_state;
+    int sub_state;
     int player_id{0};
+    SDL_Texture* background_layer[MAX_LAYERS];
 };

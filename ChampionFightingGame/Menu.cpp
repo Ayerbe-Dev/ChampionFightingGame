@@ -6,7 +6,6 @@
 #include "Debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
-#include "MenuHandler.h"
 
 extern bool debug;
 extern u32 frame_advance_ms;
@@ -27,7 +26,8 @@ void menu_main(GameManager* game_manager) {
 
 	Debugger debugger;
 	MainMenu main_menu;
-	MenuHandler main_handler(&main_menu, player_info);
+
+	game_manager->set_menu_info(&main_menu);
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -407,5 +407,5 @@ MainMenu::MainMenu(){
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
 };
 
-void MainMenu::GAME_MENU_traverse_up(){};
-void MainMenu::GAME_MENU_traverse_down(){};
+void MainMenu::event_up_press(){};
+void MainMenu::event_down_press(){};

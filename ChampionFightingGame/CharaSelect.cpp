@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
-#include "MenuHandler.h"
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
@@ -19,22 +19,22 @@ void chara_select_main(GameManager *game_manager) {
 	Debugger debugger;
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	
-	CSS cssMenuInstance;
-	cssMenuInstance.aPlayerInfos[0] = &player_info[0];
-	cssMenuInstance.aPlayerInfos[1] = &player_info[1];
-	if (cssMenuInstance.loadCSS()) {
+	CSS css;
+	css.player_info[0] = &player_info[0];
+	css.player_info[1] = &player_info[1];
+	if (css.loadCSS()) {
 		displayLoadingScreen();
 		player_info[0].crash_reason = "Could not open CSS file!";
 		return game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 	}
-	if (cssMenuInstance.numRows == 0) {
-		cssMenuInstance.myCol[0] = 1;
-		cssMenuInstance.myCol[1] = 1;
+	if (css.numRows == 0) {
+		css.myCol[0] = 1;
+		css.myCol[1] = 1;
 	}
 	for (int i = 0; i < 2; i++) {
-		cssMenuInstance.player_id = i;
-		if (cssMenuInstance.aPlayerInfos[i]->chara_kind != CHARA_KIND_MAX) {
-			cssMenuInstance.findPrevChara(cssMenuInstance.aPlayerInfos[i]->chara_kind);
+		css.player_id = i;
+		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
+			css.findPrevChara(css.player_info[i]->chara_kind);
 		}
 	}
 
@@ -47,12 +47,9 @@ void chara_select_main(GameManager *game_manager) {
 	cursors[1].cursorTexture.setScaleFactor(1.2);
 	cursors[1].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
-	MenuHandler menuHandler(&cssMenuInstance, player_info);
+	game_manager->set_menu_info(&css);
 
-	menuHandler.setInitialDelay(20);
-	menuHandler.setRepeatDelay(4);
-
-	while (cssMenuInstance.bSelecting) {
+	while (*css.bSelecting) {
 		frameTimeDelay();
 
 		SDL_PumpEvents();
@@ -83,9 +80,9 @@ void chara_select_main(GameManager *game_manager) {
 			}
 		}
 
-		menuHandler.handleMenu();
+		game_manager->handle_menus();
 
-		if (!cssMenuInstance.bSelecting) {
+		if (!css.bSelecting) {
 			displayLoadingScreen();
 			break;
 		}
@@ -93,10 +90,10 @@ void chara_select_main(GameManager *game_manager) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 
-		cssMenuInstance.render();
+		css.render();
 
 		for (int i = 0; i < 2; i++) {
-			cssMenuInstance.queryFixedCssSlotPosition(cssMenuInstance.aPlayerSelectionIndex[i], &cursors[i].iXTarget, &cursors[i].iYTarget);
+			css.queryFixedCssSlotPosition(css.aPlayerSelectionIndex[i], &cursors[i].iXTarget, &cursors[i].iYTarget);
 			cursors[i].render();
 		}
 
@@ -106,7 +103,7 @@ void chara_select_main(GameManager *game_manager) {
 		SDL_RenderPresent(g_renderer);
 	}
 
-	return game_manager->update(player_info, cssMenuInstance.getExitCode());
+	return game_manager->update(player_info, css.getExitCode());
 }
 
 CSS::CSS() {
@@ -227,9 +224,9 @@ int CSS::getSlotsLength() {
 	return size;
 }
 
-void CSS::GAME_MENU_traverse_select() {
-	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
-		aPlayerInfos[player_id]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].getCharacterId();
+void CSS::event_select_press() {
+	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+		player_info[player_id]->chara_kind = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].getCharacterId();
 		MobileCharacterSlot tmpSlot;
 		tmpSlot.gameTexture = aFixedCharacterSlots[aPlayerSelectionIndex[player_id]].gameTexture;
 
@@ -248,29 +245,29 @@ void CSS::GAME_MENU_traverse_select() {
 		aMobileCharacterSlots[player_id] = tmpSlot;
 	}
 }
-void CSS::GAME_MENU_traverse_back() {
-	if (aPlayerInfos[player_id]->chara_kind != CHARA_KIND_MAX) {
+void CSS::event_back_press() {
+	if (player_info[player_id]->chara_kind != CHARA_KIND_MAX) {
 		MobileCharacterSlot tmpSlot;
 		aMobileCharacterSlots[player_id] = tmpSlot;
-		aPlayerInfos[player_id]->chara_kind = CHARA_KIND_MAX;
+		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
 		displayLoadingScreen();
 		iExitCode = GAME_STATE_MENU;
-		bSelecting = false;
+		*bSelecting = false;
 	}
 }
 
-void CSS::GAME_MENU_traverse_start() {
-	if (aPlayerInfos[0]->chara_kind != CHARA_KIND_MAX && aPlayerInfos[1]->chara_kind != CHARA_KIND_MAX) {
+void CSS::event_start_press() {
+	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
 		displayLoadingScreen();
 		iExitCode = GAME_STATE_BATTLE;
-		bSelecting = false;
+		*bSelecting = false;
 	}
 }
 
-void CSS::GAME_MENU_traverse_right() {
-	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+void CSS::event_right_press() {
+	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (myCol[player_id] != 9 && charaSlotsOrdered[myCol[player_id] + 1][myRow[player_id]].isInitialized()) {
 			myCol[player_id]++;
 		}
@@ -279,8 +276,8 @@ void CSS::GAME_MENU_traverse_right() {
 	}
 }
 
-void CSS::GAME_MENU_traverse_left() {
-	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+void CSS::event_left_press() {
+	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (myCol[player_id] != 0 && charaSlotsOrdered[myCol[player_id] - 1][myRow[player_id]].isInitialized()) {
 			myCol[player_id]--;
 		}
@@ -289,9 +286,9 @@ void CSS::GAME_MENU_traverse_left() {
 	}
 }
 
-void CSS::GAME_MENU_traverse_down() {
+void CSS::event_down_press() {
 	bool jump = false;
-	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (myRow[player_id] < numRows) {
 			if (!charaSlotsOrdered[myCol[player_id]][myRow[player_id] + 1].isInitialized()) {
 				jump = true;
@@ -315,8 +312,8 @@ void CSS::GAME_MENU_traverse_down() {
 					}
 				}
 				if (!valid_col) {
-					aPlayerInfos[player_id]->crash_reason = "Couldn't find a valid column!";
-					bSelecting = false;
+					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
+					*bSelecting = false;
 					iExitCode = GAME_STATE_DEBUG_MENU;
 					return;
 				}
@@ -338,9 +335,9 @@ void CSS::GAME_MENU_traverse_down() {
 	}
 }
 
-void CSS::GAME_MENU_traverse_up() {
+void CSS::event_up_press() {
 	bool jump = false;
-	if (aPlayerInfos[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (myRow[player_id] != 0) {
 			if (!charaSlotsOrdered[myCol[player_id]][myRow[player_id] - 1].isInitialized()) {
 				jump = true;
@@ -364,8 +361,8 @@ void CSS::GAME_MENU_traverse_up() {
 					}
 				}
 				if (!valid_col) {
-					aPlayerInfos[player_id]->crash_reason = "Couldn't find a valid column!";
-					bSelecting = false;
+					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
+					*bSelecting = false;
 					iExitCode = GAME_STATE_DEBUG_MENU;
 					return;
 				}
@@ -501,11 +498,11 @@ void CSS::centerSlots() {
 void CSS::findPrevChara(int chara_kind) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (aFixedCharacterSlots[i].iCharacterId == chara_kind) {
-			aPlayerInfos[player_id]->chara_kind = CHARA_KIND_MAX;
+			player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 			myCol[player_id] = aFixedCharacterSlots[player_id].myCol;
 			myRow[player_id] = aFixedCharacterSlots[player_id].myRow;
 			selectIndex();
-			GAME_MENU_traverse_select();
+			event_select_press();
 			return;
 		}
 	}

@@ -71,13 +71,13 @@ public:
     int loadCSS();
     void addFixedCharacter(int id, string cardDir, string cardName);
     int getSlotsLength();
-    void GAME_MENU_traverse_select();
-    void GAME_MENU_traverse_back();
-    void GAME_MENU_traverse_start();
-    void GAME_MENU_traverse_up();
-    void GAME_MENU_traverse_down();
-    void GAME_MENU_traverse_left();
-    void GAME_MENU_traverse_right();
+    void event_select_press();
+    void event_back_press();
+    void event_start_press();
+    void event_up_press();
+    void event_down_press();
+    void event_left_press();
+    void event_right_press();
     void render();
     void queryFixedCssSlotPosition(int indexLocation, int* xptr, int* yptr);
     int getExitCode();
@@ -94,8 +94,8 @@ public:
     int numRows;
     int colsOffset;
 
-    bool bSelecting = true;
-    PlayerInfo *aPlayerInfos[2];
+    bool *bSelecting;
+    PlayerInfo *player_info[2];
 private:
 
     int iExitCode = GAME_STATE_DEBUG_MENU;

@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "DebugMenu.h"
 #include "Debugger.h"
-#include "MenuHandler.h"
+
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
@@ -42,13 +42,10 @@ void debugMenu(GameManager* game_manager) {
 	
 
 	//these make sure that the selector doesnt start on an unselectable row
-	debugList.GAME_MENU_traverse_down();
+	debugList.event_down_press();
 
 	//handler
-	MenuHandler menuHandler(&debugList,player_info);
-
-	menuHandler.setInitialDelay(70);
-	menuHandler.setRepeatDelay(20);
+	game_manager->set_menu_info(&debugList);
 
 	while (debugList.debugging) {
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -93,7 +90,8 @@ void debugMenu(GameManager* game_manager) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		
-		menuHandler.handleMenu();
+		game_manager->handle_menus();
+
 		if (!debugList.debugging) {
 			displayLoadingScreen();
 			break;
@@ -165,7 +163,7 @@ void DebugList::render(){
 	}
 }
 
-void DebugList::GAME_MENU_traverse_down(){
+void DebugList::event_down_press(){
 	//printf("next option\n");
 	int pre = selection;
 	selection ++;
@@ -182,7 +180,7 @@ void DebugList::GAME_MENU_traverse_down(){
 	}
 }
 
-void DebugList::GAME_MENU_traverse_up(){
+void DebugList::event_up_press(){
 	//printf("previous option\n");
 	int pre = selection;
 	selection --;
@@ -203,7 +201,7 @@ int DebugList::getDestination(){
 	return debugItems[selection].destination;
 }
 
-void DebugList::GAME_MENU_traverse_start(){
+void DebugList::event_start_press(){
 	displayLoadingScreen();
 	debugging = false;
 }

@@ -50,9 +50,9 @@ public:
     //~DebugList();
     void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();
-    void GAME_MENU_traverse_down();
-    void GAME_MENU_traverse_up();
-    void GAME_MENU_traverse_start();
+    void event_down_press();
+    void event_up_press();
+    void event_start_press();
     int getDestination();
     bool debugging = true;
 };

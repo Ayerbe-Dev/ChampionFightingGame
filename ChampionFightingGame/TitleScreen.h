@@ -10,7 +10,7 @@ class TitleScreen: public GameMenu{
 public:
     TitleScreen();
     void render();
-    void GAME_MENU_traverse_start();
+    void event_start_press();
     bool titleing = true;
 private:
     GameTexture title_l1;

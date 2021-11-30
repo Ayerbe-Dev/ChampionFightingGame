@@ -54,11 +54,11 @@ public:
 class MainMenu: public GameMenu{
 public:
     MainMenu();
-    void GAME_MENU_traverse_up();
-    void GAME_MENU_traverse_down();
-    //void GAME_MENU_traverse_select();
-    //void GAME_MENU_traverse_back();
-    //void GAME_MENU_traverse_start();
+    void event_up_press();
+    void event_down_press();
+    //void event_select();
+    //void event_back();
+    //void event_start();
     bool menuing = true;
 private:
     MenuItem menu_items[5];

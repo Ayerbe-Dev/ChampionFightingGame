@@ -128,7 +128,7 @@ void example_main(GameManager* game_manager) {
 	debugger = Debugger();
 
 	
-	Loader *loader = new Loader;
+	GameLoader *game_loader = new GameLoader;
 
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
@@ -178,9 +178,10 @@ void example_main(GameManager* game_manager) {
 
 	SDL_Thread* loading_thread;
 
-	loading_thread = SDL_CreateThread(LoadExample, "Init.rar", (void*)loader);
+	loading_thread = SDL_CreateThread(LoadGame, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
-
+	
+	game_manager->set_menu_info(nullptr);
 
 	LoadIcon load_icon;
 	GameTexture loadingSplash, loadingFlavor, loadingBar;
@@ -213,7 +214,8 @@ void example_main(GameManager* game_manager) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		loadingBar.setTargetPercent(((float)loader->loaded_items / 17), 0.3);
+		int total_items = 17; //Change to reflect the actual number of items
+		loadingBar.setTargetPercent(((float)game_loader->loaded_items / total_items), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();
@@ -224,8 +226,8 @@ void example_main(GameManager* game_manager) {
 
 		SDL_UnlockMutex(mutex);
 
-		if (loader->finished) {
-			if (!loader->can_ret) {
+		if (game_loader->finished) {
+			if (!game_loader->can_ret) {
 /*
 
  /$$$$$$$$             /$$                                    /$$           /$$                                 /$$ /$$
@@ -259,7 +261,7 @@ void example_main(GameManager* game_manager) {
 
 */
 			}
-			loader->can_ret = true;
+			game_loader->can_ret = true;
 
 			//For most game_main functions, this entire section can be replaced with just "loading = false;"
 
@@ -367,7 +369,7 @@ void example_main(GameManager* game_manager) {
 		SDL_RenderPresent(g_renderer);
 	}
 
-	delete loader;
+	delete game_loader;
 
 	return game_manager->update(player_info);
 }

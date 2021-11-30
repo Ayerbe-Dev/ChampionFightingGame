@@ -34,13 +34,13 @@ public:
 
 	int load_stage_select();
 
-	void GAME_MENU_traverse_select();
-	void GAME_MENU_traverse_back();
-	void GAME_MENU_traverse_start();
-	void GAME_MENU_traverse_up();
-	void GAME_MENU_traverse_down();
-	void GAME_MENU_traverse_left();
-	void GAME_MENU_traverse_right();
+	void event_select_press();
+	void event_back_press();
+	void event_start_press();
+	void event_up_press();
+	void event_down_press();
+	void event_left_press();
+	void event_right_press();
 
 	void add_stage_slot(int stage_kind, string stage_name_dir, string stage_name_ui, bool selectable);
 	void centerSlots();

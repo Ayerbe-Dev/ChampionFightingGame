@@ -227,7 +227,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="MenuHandler.cpp" />
     <ClCompile Include="Nightsaber.cpp" />
     <ClCompile Include="NightsaberMoves.cpp" />
     <ClCompile Include="NightsaberStatus.cpp" />
@@ -335,7 +334,6 @@
     <ClInclude Include="Menu.fwd.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />
-    <ClInclude Include="MenuHandler.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Nightsaber.fwd.h" />
     <ClInclude Include="Nightsaber.h" />

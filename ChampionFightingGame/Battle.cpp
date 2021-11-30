@@ -73,9 +73,9 @@ void battle_main(GameManager* game_manager) {
 
 	const Uint8* keyboard_state;
 
-	GameLoader *game_loader = new GameLoader;
-	game_loader->player_info[0] = player_info[0];
-	game_loader->player_info[1] = player_info[1];
+	BattleLoader *battle_loader = new BattleLoader;
+	battle_loader->player_info[0] = player_info[0];
+	battle_loader->player_info[1] = player_info[1];
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
@@ -109,7 +109,7 @@ void battle_main(GameManager* game_manager) {
 
 	SDL_Thread* loading_thread;
 
-	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
+	loading_thread = SDL_CreateThread(LoadBattle, "Init.zip", (void*)battle_loader);
 	SDL_DetachThread(loading_thread);
 
 	LoadIcon load_icon;
@@ -142,7 +142,8 @@ void battle_main(GameManager* game_manager) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		loadingBar.setTargetPercent(((float)game_loader->loaded_items / 17), 0.3);
+		int total_items = 17;
+		loadingBar.setTargetPercent(((float)battle_loader->loaded_items / total_items), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();
@@ -153,23 +154,23 @@ void battle_main(GameManager* game_manager) {
 
 		SDL_UnlockMutex(mutex);
 
-		if (game_loader->finished) {
-			if (!game_loader->can_ret) {
-				timer = game_loader->timer;
-				stage = game_loader->stage;
+		if (battle_loader->finished) {
+			if (!battle_loader->can_ret) {
+				timer = battle_loader->timer;
+				stage = battle_loader->stage;
 
-				p1 = game_loader->p1;
-				p2 = game_loader->p2;
-				fighter_accessor = game_loader->fighter_accessor;
+				p1 = battle_loader->p1;
+				p2 = battle_loader->p2;
+				fighter_accessor = battle_loader->fighter_accessor;
 				for (int i = 0; i < 2; i++) {
-					health_bar[i] = game_loader->health_bar[i];
-					ex_bar[i] = game_loader->ex_bar[i];
-					player_indicator[i] = game_loader->player_indicator[i];
-					fighter[i] = game_loader->fighter[i];
+					health_bar[i] = battle_loader->health_bar[i];
+					ex_bar[i] = battle_loader->ex_bar[i];
+					player_indicator[i] = battle_loader->player_indicator[i];
+					fighter[i] = battle_loader->fighter[i];
 					fighter[i]->player_info = &player_info[i];
 				}
 			}
-			game_loader->can_ret = true;
+			battle_loader->can_ret = true;
 
 			SDL_PumpEvents();
 			keyboard_state = SDL_GetKeyboardState(NULL);
@@ -519,7 +520,7 @@ void battle_main(GameManager* game_manager) {
 	cleanup(p1, p2);
 
 	delete fighter_accessor;
-	delete game_loader;
+	delete battle_loader;
 
 	return game_manager->update(player_info, next_state);
 }

@@ -153,9 +153,6 @@
     <ClCompile Include="Debugger.cpp">
       <Filter>Source Files\Global</Filter>
     </ClCompile>
-    <ClCompile Include="MenuHandler.cpp">
-      <Filter>Source Files\Global</Filter>
-    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
@@ -717,9 +714,6 @@
       <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="Loader.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuHandler.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="PlayerInfo.h">

@@ -112,11 +112,11 @@ bool LoadIcon::check_corner_distance(bool init) {
 	return will_hit_wall && will_hit_ceiling && close_enough;
 }
 
-GameLoader::GameLoader() {
+BattleLoader::BattleLoader() {
 
 }
 
-GameLoader::GameLoader(PlayerInfo p1, PlayerInfo p2) {
+BattleLoader::BattleLoader(PlayerInfo p1, PlayerInfo p2) {
 	this->player_info[0] = p1;
 	this->player_info[1] = p2;
 }

@@ -4,7 +4,6 @@
 
 #include "GameTexture.h"
 #include "Debugger.h"
-#include "MenuHandler.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -17,7 +16,9 @@ void title_screen_main(GameManager* game_manager) {
     TitleScreen title_screen;
     const Uint8 *keyboard_state;
     Debugger debugger;
-    MenuHandler menu_handler(&title_screen, player_info);
+
+	game_manager->set_menu_info(&title_screen);
+
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     while (title_screen.titleing) {
@@ -54,7 +55,7 @@ void title_screen_main(GameManager* game_manager) {
 			}
 		}
 
-		menu_handler.handleMenu();
+		game_manager->handle_menus();
 
 		title_screen.render();
 
@@ -91,6 +92,6 @@ void TitleScreen::render(){
     text.render();
 }
 
-void TitleScreen::GAME_MENU_traverse_start(){
+void TitleScreen::event_start_press(){
     titleing = false;
 }

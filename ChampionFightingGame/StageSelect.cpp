@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
-#include "MenuHandler.h"
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
@@ -141,30 +141,30 @@ void StageSelect::add_stage_slot(int stage_kind, string stage_name_dir, string s
 	}
 }
 
-void StageSelect::GAME_MENU_traverse_select() {
+void StageSelect::event_select_press() {
 
 }
-void StageSelect::GAME_MENU_traverse_back() {
-
-}
-
-void StageSelect::GAME_MENU_traverse_start() {
+void StageSelect::event_back_press() {
 
 }
 
-void StageSelect::GAME_MENU_traverse_up() {
+void StageSelect::event_start_press() {
 
 }
 
-void StageSelect::GAME_MENU_traverse_down() {
+void StageSelect::event_up_press() {
 
 }
 
-void StageSelect::GAME_MENU_traverse_left() {
+void StageSelect::event_down_press() {
 
 }
 
-void StageSelect::GAME_MENU_traverse_right() {
+void StageSelect::event_left_press() {
+
+}
+
+void StageSelect::event_right_press() {
 
 }
 

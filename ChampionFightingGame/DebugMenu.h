@@ -47,14 +47,12 @@ public:
     DebugList();
     DebugList(TTF_Font *pFont, int x_offset = 15);
     void init(TTF_Font *pFont, int x_offset = 15);
-    //~DebugList();
     void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();
     void event_down_press();
     void event_up_press();
     void event_start_press();
     int getDestination();
-    bool debugging = true;
 };
 
 TTF_Font *loadDebugFont(string fontname = "FiraCode-Regular.ttf");

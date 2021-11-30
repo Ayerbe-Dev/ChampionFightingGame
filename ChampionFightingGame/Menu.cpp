@@ -27,6 +27,7 @@ void menu_main(GameManager* game_manager) {
 	Debugger debugger;
 	MainMenu main_menu;
 
+	main_menu.looping = game_manager->looping;
 	game_manager->set_menu_info(&main_menu);
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -14,13 +14,12 @@ void controls_main(GameManager* game_manager) {
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 	SDL_Texture* overlayTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH * 0.6, WINDOW_HEIGHT * 0.6);
 	SDL_SetTextureBlendMode(overlayTexture, SDL_BLENDMODE_BLEND);
-	bool controlling = true;
 
 	OptionsOverlay options_overlay = OptionsOverlay(500, 300, "resource/ui/menu/options/overlay.png");
 	options_overlay.player_info[0] = &player_info[0];
 	options_overlay.player_info[1] = &player_info[1];
 
-	while (controlling) {
+	while (*game_manager->looping) {
 		SDL_SetRenderTarget(g_renderer, overlayTexture);
 //		SDL_RenderClear(g_renderer);
 		frameTimeDelay();
@@ -42,7 +41,7 @@ void controls_main(GameManager* game_manager) {
 			player_info[i].update_controller();
 			player_info[i].update_buttons(keyboard_state);
 			if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
-				controlling = false;
+				*game_manager->looping = false;
 			}
 		}
 

@@ -10,5 +10,6 @@ public:
     virtual void event_start_press();
     virtual void event_back_press();
 
+    bool* looping;
     int player_id{0};
 };

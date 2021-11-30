@@ -12,10 +12,10 @@ void stage_select_main(GameManager* game_manager) {
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
-	bool stage_selecting = true;
 	displayLoadingScreen();
 	int* next_state = (int*)GAME_STATE_DEBUG_MENU;
 	StageSelect stage_select(next_state);
+	stage_select.looping = game_manager->looping;
 
 	stage_select.player_info[0] = &player_info[0];
 	stage_select.player_info[1] = &player_info[1];
@@ -23,11 +23,11 @@ void stage_select_main(GameManager* game_manager) {
 	if (stage_select.load_stage_select()) {
 		displayLoadingScreen();
 		player_info[0].crash_reason = "Could not open Stage Select file!";
-		stage_selecting = false;
+		*game_manager->looping = false;
 		*next_state = GAME_STATE_DEBUG_MENU;
 	}
 
-	while (stage_selecting) {
+	while (*game_manager->looping) {
 
 	}
 

@@ -94,7 +94,6 @@ public:
     int numRows;
     int colsOffset;
 
-    bool *bSelecting;
     PlayerInfo *player_info[2];
 private:
 

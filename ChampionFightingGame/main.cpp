@@ -107,6 +107,8 @@ int main() {
 		if (game_manager.game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
+		bool correct = true;
+		game_manager.looping = &correct;
 	}
 
 	g_soundmanager.unloadSoundAll();
@@ -133,7 +135,6 @@ void example_main(GameManager* game_manager) {
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	bool exampleing = true;
 	bool loading = true;
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -283,7 +284,7 @@ void example_main(GameManager* game_manager) {
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	while (exampleing) {
+	while (*game_manager->looping) {
 		frameTimeDelay();
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);

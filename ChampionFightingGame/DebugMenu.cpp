@@ -26,6 +26,8 @@ void debugMenu(GameManager* game_manager) {
 	TTF_Font* pFont = loadDebugFont();
 	DebugList debugList = {pFont};
 
+	debugList.looping = game_manager->looping;
+
 	lastString << "This menu was called from the destination [" << gamestate << "]";
 
 	debugList.addEntry("Welcome to the debug menu!",DEBUG_LIST_NOT_SELECTABLE);
@@ -47,7 +49,7 @@ void debugMenu(GameManager* game_manager) {
 	//handler
 	game_manager->set_menu_info(&debugList);
 
-	while (debugList.debugging) {
+	while (*game_manager->looping) {
 		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 
@@ -92,7 +94,7 @@ void debugMenu(GameManager* game_manager) {
 		
 		game_manager->handle_menus();
 
-		if (!debugList.debugging) {
+		if (!*game_manager->looping) {
 			displayLoadingScreen();
 			break;
 		}
@@ -203,7 +205,7 @@ int DebugList::getDestination(){
 
 void DebugList::event_start_press(){
 	displayLoadingScreen();
-	debugging = false;
+	*looping = false;
 }
 
 DebugItem::DebugItem(){};

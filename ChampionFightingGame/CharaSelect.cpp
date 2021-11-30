@@ -18,10 +18,13 @@ void chara_select_main(GameManager *game_manager) {
 	const Uint8* keyboard_state;
 	Debugger debugger;
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	
+
 	CSS css;
 	css.player_info[0] = &player_info[0];
 	css.player_info[1] = &player_info[1];
+
+	css.looping = game_manager->looping;
+
 	if (css.loadCSS()) {
 		displayLoadingScreen();
 		player_info[0].crash_reason = "Could not open CSS file!";
@@ -49,7 +52,7 @@ void chara_select_main(GameManager *game_manager) {
 
 	game_manager->set_menu_info(&css);
 
-	while (*css.bSelecting) {
+	while (*game_manager->looping) {
 		frameTimeDelay();
 
 		SDL_PumpEvents();
@@ -82,7 +85,7 @@ void chara_select_main(GameManager *game_manager) {
 
 		game_manager->handle_menus();
 
-		if (!css.bSelecting) {
+		if (!*game_manager->looping) {
 			displayLoadingScreen();
 			break;
 		}
@@ -254,7 +257,7 @@ void CSS::event_back_press() {
 	else {
 		displayLoadingScreen();
 		iExitCode = GAME_STATE_MENU;
-		*bSelecting = false;
+		*looping = false;
 	}
 }
 
@@ -262,7 +265,7 @@ void CSS::event_start_press() {
 	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
 		displayLoadingScreen();
 		iExitCode = GAME_STATE_BATTLE;
-		*bSelecting = false;
+		*looping = false;
 	}
 }
 
@@ -313,7 +316,7 @@ void CSS::event_down_press() {
 				}
 				if (!valid_col) {
 					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
-					*bSelecting = false;
+					*looping = false;
 					iExitCode = GAME_STATE_DEBUG_MENU;
 					return;
 				}
@@ -362,7 +365,7 @@ void CSS::event_up_press() {
 				}
 				if (!valid_col) {
 					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
-					*bSelecting = false;
+					*looping = false;
 					iExitCode = GAME_STATE_DEBUG_MENU;
 					return;
 				}

@@ -11,7 +11,6 @@ public:
     TitleScreen();
     void render();
     void event_start_press();
-    bool titleing = true;
 private:
     GameTexture title_l1;
     GameTexture title_l2;

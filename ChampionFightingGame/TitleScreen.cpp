@@ -14,6 +14,9 @@ void title_screen_main(GameManager* game_manager) {
 	player_info[1] = game_manager->player_info[1];
 
     TitleScreen title_screen;
+
+	title_screen.looping = game_manager->looping;
+
     const Uint8 *keyboard_state;
     Debugger debugger;
 
@@ -21,7 +24,7 @@ void title_screen_main(GameManager* game_manager) {
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    while (title_screen.titleing) {
+    while (*game_manager->looping) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 		frameTimeDelay();
@@ -93,5 +96,5 @@ void TitleScreen::render(){
 }
 
 void TitleScreen::event_start_press(){
-    titleing = false;
+	*looping = false;
 }

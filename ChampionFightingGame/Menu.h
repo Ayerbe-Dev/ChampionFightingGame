@@ -59,7 +59,6 @@ public:
     //void event_select();
     //void event_back();
     //void event_start();
-    bool menuing = true;
 private:
     MenuItem menu_items[5];
     GameTexture background_texture;

@@ -63,8 +63,10 @@ public:
     void event_back_press();
     void event_start_press();
 
+    void process_background(SDL_Texture *background);
+
     void init();
-    void render(SDL_Rect garborect);
+    void render();
     void process_submenu_tables();
     SubMenuTable* sub_menu_tables[5];
 private:

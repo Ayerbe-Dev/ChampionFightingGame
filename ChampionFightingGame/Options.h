@@ -4,7 +4,7 @@
 #include "PlayerInfo.h"
 #include "GameManager.h"
 
-void controls_main(GameManager *game_manager, SDL_Texture *background);
+void controls_main(GameManager *game_manager, SDL_Texture *background, GameMenu *background_menu);
 
 class OptionsMenu : public GameMenu {
 public:

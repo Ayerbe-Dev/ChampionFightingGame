@@ -13,6 +13,8 @@ public:
     virtual void event_back_press();
     virtual void event_any_press();
 
+    virtual void process_background(SDL_Texture* background);
+
     bool* looping;
     int* game_state;
     int sub_state;

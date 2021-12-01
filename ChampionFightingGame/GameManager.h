@@ -14,7 +14,7 @@ public:
 	bool* looping;
 
 	void (*game_main[GAME_STATE_MAX])(GameManager* game_manager);
-	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager, SDL_Texture* background);
+	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager, SDL_Texture* background, GameMenu *game_menu);
 
 	void set_game_state_functions(); //Assigns a function to each index of game_main
 

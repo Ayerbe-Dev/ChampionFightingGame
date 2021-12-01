@@ -105,8 +105,6 @@ void menu_main(GameManager* game_manager) {
 	SDL_SetRenderTarget(g_renderer, NULL);
 	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 
-	SDL_Rect garborect = { 0,0,232,32 };
-
 	while (*game_manager->looping) {
 		frameTimeDelay();
 		SDL_RenderClear(g_renderer);
@@ -145,18 +143,11 @@ void menu_main(GameManager* game_manager) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderCopy(g_renderer, bgTexture, nullptr, nullptr);
 
-		main_menu.render(garborect);
+		main_menu.render();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 
-		/*
-			This next part is called after everything is rendered because I wanted to make sure we had the most up-to-date snapshot of the menu we're
-			leaving. Feel free to move this somewhere else, idrc, but your options in that case would be to either:
-			A. Render everything inside of the block immediately before calling the substate function, which leads to duplicated code
-			B. Create a separate function for calling the sub menu, which requires passing the substate, game_manager, main menu, and screen_texture.
-			That approach is better than A but idk if it's worth overall, your call.
-		*/
 		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
 			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {
 				SDL_Texture* background = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -165,7 +156,7 @@ void menu_main(GameManager* game_manager) {
 				SDL_SetRenderTarget(g_renderer, background);
 				SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 
-				game_manager->game_substate_main[main_menu.sub_state](game_manager, background);
+				game_manager->game_substate_main[main_menu.sub_state](game_manager, background, &main_menu);
 			}
 			else {
 				char buffer[91];
@@ -276,6 +267,14 @@ void MainMenu::event_back_press() {
 	else {
 		menu_level = MENU_LEVEL_TOP;
 	}
+}
+
+void MainMenu::process_background(SDL_Texture *background) {
+	SDL_SetRenderTarget(g_renderer, background);
+	SDL_RenderClear(g_renderer);
+	process_submenu_tables();
+	background_texture.render();
+	render();
 }
 
 int get_sub_selection(int top_selection, int sub_selection) {
@@ -390,7 +389,9 @@ void MainMenu::init(){
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
 };
 
-void MainMenu::render(SDL_Rect garborect) {
+void MainMenu::render() {
+	SDL_Rect garborect = { 0,0,232,32 };
+
 	for (int i = 1; i < 5; i++) {
 		menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
 		menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;

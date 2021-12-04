@@ -2,6 +2,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <cmath>
 #include <SDL.h>
 #include "Animation.h"
 #include "Game.h"

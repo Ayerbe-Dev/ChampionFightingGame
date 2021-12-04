@@ -12,7 +12,7 @@ public:
 	Vesuvius();
 	Vesuvius(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadVesuviusStatusFunctions();
-	void loadVesuviusACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Vesuvius::* vesuvius_status[CHARA_VESUVIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Vesuvius::* vesuvius_enter_status[CHARA_VESUVIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();

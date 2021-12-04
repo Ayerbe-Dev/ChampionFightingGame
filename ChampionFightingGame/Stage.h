@@ -11,5 +11,7 @@ public:
 	SDL_Texture* pBackgroundTexture;
 
 	Stage();
-	Stage(int stage_kind, string stage_name, int music_index);
+	Stage(int stage_kind, string stage_name);
+
+	int get_stage_music();
 };

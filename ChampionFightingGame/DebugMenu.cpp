@@ -8,70 +8,127 @@
 #include "utils.h"
 #include "DebugMenu.h"
 #include "Debugger.h"
-#include "MenuHandler.h"
+#include "Loader.h"
+
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
-int debugMenu(PlayerInfo player_info[2], int gamestate) {
-	displayLoadingScreen();
+void debugMenu(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
-	std::ostringstream lastString;
 	Debugger debugger;
-
-	TTF_Font* pFont = loadDebugFont();
-	DebugList debugList = {pFont};
-
-	lastString << "This menu was called from the destination [" << gamestate << "]";
-
-	debugList.addEntry("Welcome to the debug menu!",DEBUG_LIST_NOT_SELECTABLE);
-	debugList.addEntry("Use 'SPACE' or 'ENTER' to select an option.",DEBUG_LIST_NOT_SELECTABLE);
-	debugList.addEntry(lastString.str(),DEBUG_LIST_NOT_SELECTABLE);
-	debugList.addEntry("Title Screen", DEBUG_LIST_SELECTABLE, GAME_STATE_TITLE_SCREEN);
-	debugList.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
-	debugList.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_GAME);
-	debugList.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
-	debugList.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
-	debugList.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
-	debugList.addEntry(player_info[0].crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	debugList.addEntry(player_info[1].crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	
-
-	//these make sure that the selector doesnt start on an unselectable row
-	debugList.GAME_MENU_traverse_down();
-
-	//handler
-	MenuHandler menuHandler(&debugList,player_info);
-
-	menuHandler.setInitialDelay(70);
-	menuHandler.setRepeatDelay(20);
-
-	while (debugList.debugging) {
-		SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	debugger = Debugger();
 
 
+	DebugLoader* debug_loader = new DebugLoader;
+	debug_loader->player_info[0] = player_info[0];
+	debug_loader->player_info[1] = player_info[1];
+
+	debug_loader->lastString << "This menu was called from the destination [" << game_manager->prev_game_state << "]";
+
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	bool loading = true;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+
+	std::ostringstream lastString;
+	TTF_Font* debug_font = NULL;
+	debug_list debug_list;
+
+	SDL_Thread* loading_thread;
+
+	loading_thread = SDL_CreateThread(LoadDebug, "Init.rar", (void*)debug_loader);
+	SDL_DetachThread(loading_thread);
+
+	game_manager->set_menu_info(nullptr);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+
+	while (loading) {
 		frameTimeDelay();
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					*game_manager->game_state = GAME_STATE_CLOSE;
+					return;
+				}
+				break;
+			}
+		}
+
+		load_icon.move();
+		SDL_LockMutex(mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		int total_items = 16; //Don't ask me why but I made every single line of the debug menu count as a separate item to load
+		loadingBar.setTargetPercent(((float)debug_loader->loaded_items / total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(mutex);
+
+		if (debug_loader->finished) {
+			if (!debug_loader->can_ret) {
+				debug_font = debug_loader->debug_font;
+				debug_list = debug_loader->debug_list;
+
+				game_manager->set_menu_info(&debug_list);
+				debug_list.looping = game_manager->looping;
+				debug_list.game_state = game_manager->game_state;
+			}
+			debug_loader->can_ret = true;
+
+			loading = false;
+		}
+	}
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+	while (*game_manager->looping) {
+		frameTimeDelay();
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
-				}
-				break;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
+				} break;
 			}
 		}
 
-		//rendering time
-
-		debugList.render();
-
-		// end of rendering time, what a party
-			//shot, shot, shot, lots of shot, shot, shot, only one shot, shot, shot, only one shot, and i've passed out
-
 		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(nullptr);
+		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
@@ -87,22 +144,26 @@ int debugMenu(PlayerInfo player_info[2], int gamestate) {
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
-		
-		menuHandler.handleMenu();
-		if (!debugList.debugging) {
-			displayLoadingScreen();
-			break;
+		for (int i = 0; i < 2; i++) {
+			player_info[i].update_buttons(keyboard_state);
 		}
+
+		game_manager->handle_menus();
+		*game_manager->game_state = debug_list.getDestination();
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		debug_list.render();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
-		SDL_DestroyTexture(pScreenTexture);
 	}
+
 	(&player_info[0])->crash_reason = "Crash Message Goes Here";
 	(&player_info[1])->crash_reason = "Crash Message Goes Here";
-	TTF_CloseFont(pFont);
-	return debugList.getDestination();
+	TTF_CloseFont(debug_font);
+	delete debug_loader;
+
+	return game_manager->update(player_info, *game_manager->game_state);
 }
 
 TTF_Font* loadDebugFont(string fontname){
@@ -113,12 +174,12 @@ TTF_Font* loadDebugFont(string fontname){
 	return font;
 }
 
-DebugList::DebugList(){};
-DebugList::DebugList(TTF_Font *pFont, int x_offset){
+debug_list::debug_list(){};
+debug_list::debug_list(TTF_Font *pFont, int x_offset){
 	init(pFont,x_offset);
 };
 
-void DebugList::init(TTF_Font *pFont, int x_offset){
+void debug_list::init(TTF_Font *pFont, int x_offset){
 	this->pFont = pFont;
 	this->x_offset = x_offset;
 
@@ -127,7 +188,7 @@ void DebugList::init(TTF_Font *pFont, int x_offset){
 	}
 }
 
-void DebugList::addEntry(string message, int selectable, int destination){
+void debug_list::addEntry(string message, int selectable, int destination){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_NOT_ACTIVE){
 			
@@ -147,7 +208,7 @@ void DebugList::addEntry(string message, int selectable, int destination){
 	}
 }
 
-void DebugList::render(){
+void debug_list::render(){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
 			if(i == selection){
@@ -159,7 +220,7 @@ void DebugList::render(){
 	}
 }
 
-void DebugList::GAME_MENU_traverse_down(){
+void debug_list::event_down_press(){
 	//printf("next option\n");
 	int pre = selection;
 	selection ++;
@@ -176,7 +237,7 @@ void DebugList::GAME_MENU_traverse_down(){
 	}
 }
 
-void DebugList::GAME_MENU_traverse_up(){
+void debug_list::event_up_press(){
 	//printf("previous option\n");
 	int pre = selection;
 	selection --;
@@ -193,13 +254,12 @@ void DebugList::GAME_MENU_traverse_up(){
 	}
 }
 
-int DebugList::getDestination(){
+int debug_list::getDestination(){
 	return debugItems[selection].destination;
 }
 
-void DebugList::GAME_MENU_traverse_start(){
-	displayLoadingScreen();
-	debugging = false;
+void debug_list::event_start_press(){
+	*looping = false;
 }
 
 DebugItem::DebugItem(){};
@@ -208,6 +268,7 @@ void DebugItem::preLoad(TTF_Font *pFont){
 };
 
 void DebugItem::generateTexture(string message){
+	SDL_LockMutex(mutex);
 	SDL_Color sky = {204,247,255};
 	SDL_Color red = { 179,0,59 };
 	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), sky);
@@ -226,4 +287,5 @@ void DebugItem::generateTexture(string message){
 
 	SDL_FreeSurface(textSurfaceSelect);
 	SDL_FreeSurface(textSurface);
+	SDL_UnlockMutex(mutex);
 }

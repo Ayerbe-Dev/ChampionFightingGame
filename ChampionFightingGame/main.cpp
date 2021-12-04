@@ -1,4 +1,4 @@
-#include <windows.h>
+#pragma warning(disable : 4996)
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -7,19 +7,23 @@
 #include <SDL_timer.h>
 #include "utils.h"
 #include "GameSettings.h"
-#include "Game.h"
-#include "Menu.h"
+#include "GameStates.h"
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
-#include "DebugMenu.h"
-#include "CharaSelect.h"
 #include "SoundManager.h"
-#include "Opening.h"
-#include "TitleScreen.h"
+#include "GameManager.h"
+
+//Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
+//undefine it before we include Loader.h.
+
 #include <Windows.h>
+#undef LoadIcon
+#include "Loader.h"
+
 #undef main
+
 using namespace std;
 
 int registered_controllers[2] = { -1, -1 };
@@ -56,7 +60,6 @@ int main() {
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	mutex = SDL_CreateMutex();
-	int game_state = GAME_STATE_GAME;
 
 	//Initialize controller input
 
@@ -84,52 +87,32 @@ int main() {
 
 	g_soundmanager = SoundManager(true);
 
-	//Initialize player info
+	GameManager game_manager;
+	*game_manager.game_state = GAME_STATE_DEBUG_MENU;
 
-	PlayerInfo player_info[2];
-	player_info[0] = PlayerInfo(0);
-	player_info[1] = PlayerInfo(1);
-
-	bool running = opening_main(player_info);
+	bool running = opening_main(&game_manager);
+	bool correct;
+	game_manager.looping = &correct;
 
 	while (running) {
 		refreshRenderer();
+		*game_manager.looping = true;
+		if (game_manager.game_main[*game_manager.game_state] != nullptr) {
+			game_manager.game_main[*game_manager.game_state](&game_manager);
+		}
+		else if (*game_manager.game_state != GAME_STATE_CLOSE) {
+			char buffer[86];
+			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager.game_state);
+			game_manager.player_info[0].crash_reason = buffer;
+			game_manager.game_main[GAME_STATE_DEBUG_MENU](&game_manager);
+		}
 
-		if (game_state == GAME_STATE_GAME) {
-			game_state = game_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
-		}
-		else if (game_state == GAME_STATE_MENU) {
-			game_state = menu_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
-		}
-		else if (game_state == GAME_STATE_CHARA_SELECT) {
-			game_state = chara_select_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
-		}
-		else if (game_state == GAME_STATE_CLOSE) {
+		if (*game_manager.game_state == GAME_STATE_CLOSE) {
 			running = false;
-		}
-		else if (game_state == GAME_STATE_TITLE_SCREEN) {
-			game_state = title_screen_main(player_info);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
-		}
-		else {
-			game_state = debugMenu(player_info, game_state);
-			if (game_state == GAME_STATE_CLOSE) {
-				running = false;
-			}
 		}
 	}
 
+	delete game_manager.game_state;
 	g_soundmanager.unloadSoundAll();
 	SDL_DestroyWindow(g_window);
 	SDL_DestroyMutex(mutex);
@@ -138,4 +121,264 @@ int main() {
 
 //	ShowWindow(windowHandle, SW_SHOW);
 	return 0;
+}
+
+void example_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+	const Uint8* keyboard_state;
+	Debugger debugger;
+	debugger = Debugger();
+
+	
+	GameLoader *game_loader = new GameLoader;
+	game_loader->player_info[0] = player_info[0];
+	game_loader->player_info[1] = player_info[1];
+
+
+	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	bool loading = true;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+
+/*
+
+ /$$$$$$$                      /$$                                     /$$                                 /$$ /$$
+| $$__  $$                    | $$                                    | $$                                | $$|__/
+| $$  \ $$  /$$$$$$   /$$$$$$$| $$  /$$$$$$   /$$$$$$   /$$$$$$       | $$        /$$$$$$   /$$$$$$   /$$$$$$$ /$$ /$$$$$$$   /$$$$$$
+| $$  | $$ /$$__  $$ /$$_____/| $$ |____  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$ |____  $$ /$$__  $$| $$| $$__  $$ /$$__  $$
+| $$  | $$| $$$$$$$$| $$      | $$  /$$$$$$$| $$  \__/| $$$$$$$$      | $$      | $$  \ $$  /$$$$$$$| $$  | $$| $$| $$  \ $$| $$  \ $$
+| $$  | $$| $$_____/| $$      | $$ /$$__  $$| $$      | $$_____/      | $$      | $$  | $$ /$$__  $$| $$  | $$| $$| $$  | $$| $$  | $$
+| $$$$$$$/|  $$$$$$$|  $$$$$$$| $$|  $$$$$$$| $$      |  $$$$$$$      | $$$$$$$$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$| $$  | $$|  $$$$$$$
+|_______/  \_______/ \_______/|__/ \_______/|__/       \_______/      |________/ \______/  \_______/ \_______/|__/|__/  |__/ \____  $$
+																															 /$$  \ $$
+																															|  $$$$$$/
+																															 \______/
+ /$$$$$$$$ /$$                                           /$$       /$$    /$$                    /$$           /$$       /$$
+|__  $$__/| $$                                          | $$      | $$   | $$                   |__/          | $$      | $$
+   | $$   | $$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$      | $$   | $$ /$$$$$$   /$$$$$$  /$$  /$$$$$$ | $$$$$$$ | $$  /$$$$$$   /$$$$$$$
+   | $$   | $$__  $$ /$$__  $$ /$$__  $$ |____  $$ /$$__  $$      |  $$ / $$/|____  $$ /$$__  $$| $$ |____  $$| $$__  $$| $$ /$$__  $$ /$$_____/
+   | $$   | $$  \ $$| $$  \__/| $$$$$$$$  /$$$$$$$| $$  | $$       \  $$ $$/  /$$$$$$$| $$  \__/| $$  /$$$$$$$| $$  \ $$| $$| $$$$$$$$|  $$$$$$
+   | $$   | $$  | $$| $$      | $$_____/ /$$__  $$| $$  | $$        \  $$$/  /$$__  $$| $$      | $$ /$$__  $$| $$  | $$| $$| $$_____/ \____  $$
+   | $$   | $$  | $$| $$      |  $$$$$$$|  $$$$$$$|  $$$$$$$         \  $/  |  $$$$$$$| $$      | $$|  $$$$$$$| $$$$$$$/| $$|  $$$$$$$ /$$$$$$$/
+   |__/   |__/  |__/|__/       \_______/ \_______/ \_______/          \_/    \_______/|__/      |__/ \_______/|_______/ |__/ \_______/|_______/
+
+
+
+ /$$   /$$
+| $$  | $$
+| $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
+| $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
+| $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
+| $$  | $$| $$_____/| $$      | $$_____/
+| $$  | $$|  $$$$$$$| $$      |  $$$$$$$
+|__/  |__/ \_______/|__/       \_______/
+
+*/
+
+	SDL_Thread* loading_thread;
+
+	loading_thread = SDL_CreateThread(LoadGame, "Init.rar", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
+	
+	game_manager->set_menu_info(nullptr);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+
+	while (loading) {
+		frameTimeDelay();
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					*game_manager->game_state = GAME_STATE_CLOSE;
+					return;
+				}
+				break;
+			}
+		}
+
+		load_icon.move();
+		SDL_LockMutex(mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		int total_items = 17; //Change to reflect the actual number of items
+		loadingBar.setTargetPercent(((float)game_loader->loaded_items / total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(mutex);
+
+		if (game_loader->finished) {
+			if (!game_loader->can_ret) {
+/*
+
+ /$$$$$$$$             /$$                                    /$$           /$$                                 /$$ /$$
+| $$_____/            | $$                                   | $$          | $$                                | $$|__/
+| $$       /$$   /$$ /$$$$$$    /$$$$$$  /$$$$$$   /$$$$$$$ /$$$$$$        | $$        /$$$$$$   /$$$$$$   /$$$$$$$ /$$ /$$$$$$$   /$$$$$$
+| $$$$$   |  $$ /$$/|_  $$_/   /$$__  $$|____  $$ /$$_____/|_  $$_/        | $$       /$$__  $$ |____  $$ /$$__  $$| $$| $$__  $$ /$$__  $$
+| $$__/    \  $$$$/   | $$    | $$  \__/ /$$$$$$$| $$        | $$          | $$      | $$  \ $$  /$$$$$$$| $$  | $$| $$| $$  \ $$| $$  \ $$
+| $$        >$$  $$   | $$ /$$| $$      /$$__  $$| $$        | $$ /$$      | $$      | $$  | $$ /$$__  $$| $$  | $$| $$| $$  | $$| $$  | $$
+| $$$$$$$$ /$$/\  $$  |  $$$$/| $$     |  $$$$$$$|  $$$$$$$  |  $$$$/      | $$$$$$$$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$| $$  | $$|  $$$$$$$
+|________/|__/  \__/   \___/  |__/      \_______/ \_______/   \___/        |________/ \______/  \_______/ \_______/|__/|__/  |__/ \____  $$
+																																  /$$  \ $$
+																																 |  $$$$$$/
+																																  \______/
+ /$$$$$$$$ /$$                                           /$$       /$$    /$$                    /$$           /$$       /$$
+|__  $$__/| $$                                          | $$      | $$   | $$                   |__/          | $$      | $$
+   | $$   | $$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$      | $$   | $$ /$$$$$$   /$$$$$$  /$$  /$$$$$$ | $$$$$$$ | $$  /$$$$$$   /$$$$$$$
+   | $$   | $$__  $$ /$$__  $$ /$$__  $$ |____  $$ /$$__  $$      |  $$ / $$/|____  $$ /$$__  $$| $$ |____  $$| $$__  $$| $$ /$$__  $$ /$$_____/
+   | $$   | $$  \ $$| $$  \__/| $$$$$$$$  /$$$$$$$| $$  | $$       \  $$ $$/  /$$$$$$$| $$  \__/| $$  /$$$$$$$| $$  \ $$| $$| $$$$$$$$|  $$$$$$
+   | $$   | $$  | $$| $$      | $$_____/ /$$__  $$| $$  | $$        \  $$$/  /$$__  $$| $$      | $$ /$$__  $$| $$  | $$| $$| $$_____/ \____  $$
+   | $$   | $$  | $$| $$      |  $$$$$$$|  $$$$$$$|  $$$$$$$         \  $/  |  $$$$$$$| $$      | $$|  $$$$$$$| $$$$$$$/| $$|  $$$$$$$ /$$$$$$$/
+   |__/   |__/  |__/|__/       \_______/ \_______/ \_______/          \_/    \_______/|__/      |__/ \_______/|_______/ |__/ \_______/|_______/
+
+ /$$   /$$
+| $$  | $$
+| $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
+| $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
+| $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
+| $$  | $$| $$_____/| $$      | $$_____/
+| $$  | $$|  $$$$$$$| $$      |  $$$$$$$
+|__/  |__/ \_______/|__/       \_______/
+
+*/
+
+//				game_manager->set_menu_info(&menu);
+//				menu.looping = game_manager->looping;
+//				menu.game_state = game_manager->game_state;
+
+//				These lines are applicable to all game states where the GameManager is in charge of menus, just replace "menu" with the actual class
+			}
+			game_loader->can_ret = true;
+
+			//For most game_main functions, this entire section can be replaced with just "loading = false;"
+
+			SDL_PumpEvents();
+			keyboard_state = SDL_GetKeyboardState(NULL);
+
+			for (int i = 0; i < 2; i++) {
+				player_info[i].update_buttons(keyboard_state);
+				if (player_info[i].is_any_inputs()) {
+					loading = false;
+				}
+			}
+		}
+	}
+	SDL_SetRenderTarget(g_renderer, pScreenTexture);
+	SDL_RenderClear(g_renderer);
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+	while (*game_manager->looping) {
+		frameTimeDelay();
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
+
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT: {
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
+				} break;
+			}
+		}
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
+			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+				SDL_SetWindowFullscreen(g_window, 0);
+			}
+			else {
+				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			}
+		}
+		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+			bool old_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			bool new_button = debugger.button_info[i].button_on;
+			debugger.button_info[i].changed = (old_button != new_button);
+		}
+		for (int i = 0; i < 2; i++) {
+			player_info[i].update_buttons(keyboard_state);
+		}
+
+/*
+		 /$$   /$$           /$$                                      /$$$$$$                  /$$
+		| $$  | $$          |__/                                     /$$__  $$                | $$
+		| $$  | $$ /$$$$$$$  /$$  /$$$$$$  /$$   /$$  /$$$$$$       | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$
+		| $$  | $$| $$__  $$| $$ /$$__  $$| $$  | $$ /$$__  $$      | $$       /$$__  $$ /$$__  $$ /$$__  $$
+		| $$  | $$| $$  \ $$| $$| $$  \ $$| $$  | $$| $$$$$$$$      | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+		| $$  | $$| $$  | $$| $$| $$  | $$| $$  | $$| $$_____/      | $$    $$| $$  | $$| $$  | $$| $$_____/
+		|  $$$$$$/| $$  | $$| $$|  $$$$$$$|  $$$$$$/|  $$$$$$$      |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+		 \______/ |__/  |__/|__/ \____  $$ \______/  \_______/       \______/  \______/  \_______/ \_______/
+									  | $$
+									  | $$
+									  |__/
+		  /$$$$$$                                      /$$   /$$
+		 /$$__  $$                                    | $$  | $$
+		| $$  \__/  /$$$$$$   /$$$$$$   /$$$$$$$      | $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
+		| $$ /$$$$ /$$__  $$ /$$__  $$ /$$_____/      | $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
+		| $$|_  $$| $$  \ $$| $$$$$$$$|  $$$$$$       | $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
+		| $$  \ $$| $$  | $$| $$_____/ \____  $$      | $$  | $$| $$_____/| $$      | $$_____/
+		|  $$$$$$/|  $$$$$$/|  $$$$$$$ /$$$$$$$/      | $$  | $$|  $$$$$$$| $$      |  $$$$$$$
+		 \______/  \______/  \_______/|_______/       |__/  |__/ \_______/|__/       \_______/
+*/
+
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+
+/*
+		 /$$$$$$$                            /$$                            /$$$$$$                  /$$
+		| $$__  $$                          | $$                           /$$__  $$                | $$
+		| $$  \ $$  /$$$$$$  /$$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$       | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$
+		| $$$$$$$/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$ /$$__  $$ /$$__  $$
+		| $$__  $$| $$$$$$$$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/      | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+		| $$  \ $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$            | $$    $$| $$  | $$| $$  | $$| $$_____/
+		| $$  | $$|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+		|__/  |__/ \_______/|__/  |__/ \_______/ \_______/|__/             \______/  \______/  \_______/ \_______/
+
+
+
+		  /$$$$$$                                      /$$   /$$
+		 /$$__  $$                                    | $$  | $$
+		| $$  \__/  /$$$$$$   /$$$$$$   /$$$$$$$      | $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
+		| $$ /$$$$ /$$__  $$ /$$__  $$ /$$_____/      | $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
+		| $$|_  $$| $$  \ $$| $$$$$$$$|  $$$$$$       | $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
+		| $$  \ $$| $$  | $$| $$_____/ \____  $$      | $$  | $$| $$_____/| $$      | $$_____/
+		|  $$$$$$/|  $$$$$$/|  $$$$$$$ /$$$$$$$/      | $$  | $$|  $$$$$$$| $$      |  $$$$$$$
+		 \______/  \______/  \_______/|_______/       |__/  |__/ \_______/|__/       \_______/
+*/
+
+		SDL_SetRenderTarget(g_renderer, nullptr);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(g_renderer);
+	}
+
+	delete game_loader;
+
+	return game_manager->update(player_info);
 }

@@ -7,7 +7,7 @@ PlayerInfo::PlayerInfo() {
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
 	chara_kind = CHARA_KIND_MAX;
-	stage = Stage(STAGE_KIND_TRAINING_OLD, "training_room_old", MUSIC_KIND_ATLAS_STAGE); //Todo: Overwrite this value while on the stage select
+	stage = Stage(STAGE_KIND_TRAINING_OLD, "training_room_old"); //Todo: Overwrite this value while on the stage select
 	update_controller();
 	set_default_button_mappings(id);
 }
@@ -36,17 +36,18 @@ void PlayerInfo::update_controller() {
 }
 
 void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
+	update_controller();
 	for (int i = 0; i < BUTTON_MAX; i++) {
 		bool old_button = button_info[i].button_on;
 		if (controller != NULL) {
 			if (i < 8) {
-				if (i == 0 || i == 4) { //Up
+				if (i == BUTTON_UP || i == BUTTON_MENU_UP) { //Up
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);
 				}
-				else if (i == 1 || i == 5) { //Down
+				else if (i == BUTTON_DOWN || i == BUTTON_MENU_DOWN) { //Down
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) >= 13106);
 				}
-				else if (i == 2 || i == 6) { //Left
+				else if (i == BUTTON_LEFT || i == BUTTON_MENU_LEFT) { //Left
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) <= -13106);
 				}
 				else { //Right
@@ -277,6 +278,9 @@ bool PlayerInfo::vertical_input(bool down) {
 				return false;
 			}
 		}
+		else {
+			return false;
+		}
 	}
 	else {
 		if (check_button_on(BUTTON_MENU_UP)) {
@@ -292,6 +296,9 @@ bool PlayerInfo::vertical_input(bool down) {
 				stick_hold_v_timer--;
 				return false;
 			}
+		}
+		else {
+			return false;
 		}
 	}
 }

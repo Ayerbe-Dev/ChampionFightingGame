@@ -12,7 +12,7 @@ public:
 	Zyair();
 	Zyair(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadZyairStatusFunctions();
-	void loadZyairACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Zyair::* zyair_status[CHARA_ZYAIR_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Zyair::* zyair_enter_status[CHARA_ZYAIR_STATUS_MAX - FIGHTER_STATUS_MAX])();

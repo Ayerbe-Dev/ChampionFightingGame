@@ -12,7 +12,7 @@ public:
 	Aziel();
 	Aziel(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadAzielStatusFunctions();
-	void loadAzielACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Aziel::* aziel_status[CHARA_AZIEL_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Aziel::* aziel_enter_status[CHARA_AZIEL_STATUS_MAX - FIGHTER_STATUS_MAX])();

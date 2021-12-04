@@ -12,7 +12,7 @@ public:
 	Ramona();
 	Ramona(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadRamonaStatusFunctions();
-	void loadRamonaACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Ramona::* ramona_status[CHARA_RAMONA_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Ramona::* ramona_enter_status[CHARA_RAMONA_STATUS_MAX - FIGHTER_STATUS_MAX])();

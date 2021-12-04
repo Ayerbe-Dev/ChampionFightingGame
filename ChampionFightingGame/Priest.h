@@ -12,7 +12,7 @@ public:
 	Priest();
 	Priest(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadPriestStatusFunctions();
-	void loadPriestACMD();
+	void loadCharaMoveScripts() override;
 
 	void (Priest::* priest_status[CHARA_PRIEST_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Priest::* priest_enter_status[CHARA_PRIEST_STATUS_MAX - FIGHTER_STATUS_MAX])();

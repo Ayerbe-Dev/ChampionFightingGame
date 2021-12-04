@@ -15,7 +15,7 @@ public:
 	Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadRoyStatusFunctions();
 	void loadCharaSounds() override;
-	void loadRoyACMD();
+	void loadCharaMoveScripts() override;
 
 	//Stats
 

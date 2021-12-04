@@ -59,7 +59,9 @@ public:
 	Hurtbox hurtboxes[10];
 
 	void script(string name, function<void()> move_script);
+	void wipe_scripts();
 	MoveScript move_scripts[MOVE_SCRIPT_MAX];
+	MoveScript move_script;
 	
 	bool multihit_connected[10] = {false};
 
@@ -92,7 +94,6 @@ public:
 	SDL_Rect base_rect;
 	SDL_Rect frame_rect;
 
-	function<void()> move_script;
 	void set_current_move_script(string anim_name);
 	bool is_excute_frame(int frame);
 	bool is_excute_wait(int frames);

@@ -5,6 +5,7 @@
 
 #include "PlayerInfo.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
 #define DEBUG_MENU_FONT_SIZE 24
@@ -37,24 +38,22 @@ public:
     void preLoad(TTF_Font *pFont);
     void generateTexture(string message = "no message");
 };
-class DebugList: public GameMenu{
+class debug_list: public GameMenu{
 public:
     int selection = 0;
     int x_offset = 15;
     DebugItem debugItems[DEBUG_MENU_ITEMS_MAX];
     TTF_Font *pFont;
-    DebugList();
-    DebugList(TTF_Font *pFont, int x_offset = 15);
+    debug_list();
+    debug_list(TTF_Font *pFont, int x_offset = 15);
     void init(TTF_Font *pFont, int x_offset = 15);
-    //~DebugList();
     void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();
-    void GAME_MENU_traverse_down();
-    void GAME_MENU_traverse_up();
-    void GAME_MENU_traverse_start();
+    void event_down_press();
+    void event_up_press();
+    void event_start_press();
     int getDestination();
-    bool debugging = true;
 };
 
 TTF_Font *loadDebugFont(string fontname = "FiraCode-Regular.ttf");
-int debugMenu(PlayerInfo player_info[2], int gamestate);
+void debugMenu(GameManager *game_manager);

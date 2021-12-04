@@ -2,15 +2,15 @@
 #include "GameState.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
-int title_screen_main(PlayerInfo player_info[2]);
+void title_screen_main(GameManager *game_manager);
 
 class TitleScreen: public GameMenu{
 public:
     TitleScreen();
     void render();
-    void GAME_MENU_traverse_start();
-    bool titleing = true;
+    void event_any_press();
 private:
     GameTexture title_l1;
     GameTexture title_l2;

@@ -14,8 +14,8 @@
 #include "FighterAccessor.fwd.h"
 #include "FighterAccessor.h"
 #include "PlayerInfo.h"
-#include "Game.fwd.h"
-#include "Game.h"
+#include "Battle.fwd.h"
+#include "Battle.h"
 #include "SoundManager.h"
 
 class Fighter: public Object {
@@ -76,8 +76,9 @@ public:
 	void load_anim_list();
 	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
 	void loadStatusScripts();
+	void virtual loadCharaMoveScripts() {};
 	void loadFighterSounds();
-	virtual void loadCharaSounds();
+	virtual void loadCharaSounds() {};
 
 	//Inputs
 

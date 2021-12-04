@@ -4,19 +4,27 @@
 
 #include "GameTexture.h"
 #include "Debugger.h"
-#include "MenuHandler.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-int title_screen_main(PlayerInfo player_info[2]) {
+void title_screen_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
     TitleScreen title_screen;
+
+	title_screen.looping = game_manager->looping;
+
     const Uint8 *keyboard_state;
     Debugger debugger;
-    MenuHandler menu_handler(&title_screen, player_info);
+
+	game_manager->set_menu_info(&title_screen);
+
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    while (title_screen.titleing) {
+    while (*game_manager->looping) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 		frameTimeDelay();
@@ -26,13 +34,11 @@ int title_screen_main(PlayerInfo player_info[2]) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
 		}
-
-		menu_handler.handleMenu();
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
@@ -52,6 +58,8 @@ int title_screen_main(PlayerInfo player_info[2]) {
 			}
 		}
 
+		game_manager->handle_menus();
+
 		title_screen.render();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
@@ -60,15 +68,15 @@ int title_screen_main(PlayerInfo player_info[2]) {
 	}
 	SDL_DestroyTexture(pScreenTexture);
 
-    return GAME_STATE_MENU;
+	return game_manager->update(player_info, GAME_STATE_MENU);
 }
 
 TitleScreen::TitleScreen(){
-    title_l1.init("resource\\ui\\title\\title-l1.png");
-    title_l2.init("resource\\ui\\title\\title-l2.png");
-    title_l3.init("resource\\ui\\title\\title-l3.png");
-    title_l4.init("resource\\ui\\title\\title-l4.png");
-    text.init("resource\\ui\\title\\Praeiudicium.png");
+    title_l1.init("resource/ui/title/title-l1.png");
+    title_l2.init("resource/ui/title/title-l2.png");
+    title_l3.init("resource/ui/title/title-l3.png");
+    title_l4.init("resource/ui/title/title-l4.png");
+    text.init("resource/ui/title/Praeiudicium.png");
 
     title_l1.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
     title_l2.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
@@ -87,6 +95,6 @@ void TitleScreen::render(){
     text.render();
 }
 
-void TitleScreen::GAME_MENU_traverse_start(){
-    titleing = false;
+void TitleScreen::event_any_press(){
+	*looping = false;
 }

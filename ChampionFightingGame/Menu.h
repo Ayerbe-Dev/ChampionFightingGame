@@ -8,8 +8,9 @@
 #include "PlayerInfo.h"
 #include "Menu.fwd.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
-int menu_main(PlayerInfo player_info[2]);
+void menu_main(GameManager *game_manager);
 int get_sub_selection(int top_selection, int sub_selection);
 
 class MenuItem{
@@ -53,23 +54,29 @@ public:
 class MainMenu: public GameMenu{
 public:
     MainMenu();
-    void GAME_MENU_traverse_up();
-    void GAME_MENU_traverse_down();
-    //void GAME_MENU_traverse_select();
-    //void GAME_MENU_traverse_back();
-    //void GAME_MENU_traverse_start();
-    bool menuing = true;
+
+    void event_up_press();
+    void event_down_press();
+    void event_left_press();
+    void event_right_press();
+    void event_select_press();
+    void event_back_press();
+    void event_start_press();
+
+    void process_background(SDL_Texture *background);
+
+    void init();
+    void render();
+    void process_submenu_tables();
+    SubMenuTable* sub_menu_tables[5];
 private:
+    float theta = 0;
+    float offset = 3.14 / 13;
+    float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
+    int top_selection = -2; //first option, dont ask; 5 opts --> -2 -1 0 1 2 represen them
+    int sub_selection = GAME_STATE_BATTLE;
+    int menu_level = MENU_LEVEL_TOP;
+    int sub_type = SUB_MENU_VS;
     MenuItem menu_items[5];
     GameTexture background_texture;
-    SubMenuTable* sub_menu_tables[5];
-
-    
-	float theta = 0;
-	float offset = 3.14 / 13;
-	float magnitude = WINDOW_WIDTH / 2;  //this is about 45 degrees
-	int top_selection = -2; //first option, dont ask; 5 opts --> -2 -1 0 1 2 represen them
-	int sub_selection = GAME_STATE_GAME;
-	int menu_level = MENU_LEVEL_TOP;
-	int sub_type = SUB_MENU_VS;
 };

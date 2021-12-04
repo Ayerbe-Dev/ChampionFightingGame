@@ -5,7 +5,7 @@
 #include <cmath>
 #include <SDL.h>
 #include "Animation.h"
-#include "Game.h"
+#include "Battle.h"
 #include "Debugger.h"
 #include "Stage.h"
 #include "UI.h"
@@ -67,12 +67,16 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 
-int game_main(PlayerInfo player_info[2]) {
+void battle_main(GameManager* game_manager) {
+	PlayerInfo player_info[2];
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
 	const Uint8* keyboard_state;
 
-	GameLoader *game_loader = new GameLoader;
-	game_loader->player_info[0] = player_info[0];
-	game_loader->player_info[1] = player_info[1];
+	BattleLoader *battle_loader = new BattleLoader;
+	battle_loader->player_info[0] = player_info[0];
+	battle_loader->player_info[1] = player_info[1];
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
@@ -89,6 +93,11 @@ int game_main(PlayerInfo player_info[2]) {
 	GameCoordinate debug_anchor[2] = {{0,0}};
 	GameCoordinate debug_offset[2] = {{0,0}};
 
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
+
 	GameTimer timer;
 	Stage stage;
 	IObject* p1 = NULL;
@@ -99,14 +108,9 @@ int game_main(PlayerInfo player_info[2]) {
 	PlayerIndicator player_indicator[2];
 	FighterAccessor* fighter_accessor = NULL;
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
-
 	SDL_Thread* loading_thread;
 
-	loading_thread = SDL_CreateThread(LoadGame, "Init.zip", (void*)game_loader);
+	loading_thread = SDL_CreateThread(LoadBattle, "Init.zip", (void*)battle_loader);
 	SDL_DetachThread(loading_thread);
 
 	LoadIcon load_icon;
@@ -126,7 +130,7 @@ int game_main(PlayerInfo player_info[2]) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT: {
-					return GAME_STATE_CLOSE;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -138,7 +142,8 @@ int game_main(PlayerInfo player_info[2]) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		loadingBar.setTargetPercent(((float)game_loader->loaded_items / 17), 0.3);
+		int total_items = 17;
+		loadingBar.setTargetPercent(((float)battle_loader->loaded_items / total_items), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();
@@ -149,23 +154,23 @@ int game_main(PlayerInfo player_info[2]) {
 
 		SDL_UnlockMutex(mutex);
 
-		if (game_loader->finished) {
-			if (!game_loader->can_ret) {
-				timer = game_loader->timer;
-				stage = game_loader->stage;
+		if (battle_loader->finished) {
+			if (!battle_loader->can_ret) {
+				timer = battle_loader->timer;
+				stage = battle_loader->stage;
 
-				p1 = game_loader->p1;
-				p2 = game_loader->p2;
-				fighter_accessor = game_loader->fighter_accessor;
+				p1 = battle_loader->p1;
+				p2 = battle_loader->p2;
+				fighter_accessor = battle_loader->fighter_accessor;
 				for (int i = 0; i < 2; i++) {
-					health_bar[i] = game_loader->health_bar[i];
-					ex_bar[i] = game_loader->ex_bar[i];
-					player_indicator[i] = game_loader->player_indicator[i];
-					fighter[i] = game_loader->fighter[i];
+					health_bar[i] = battle_loader->health_bar[i];
+					ex_bar[i] = battle_loader->ex_bar[i];
+					player_indicator[i] = battle_loader->player_indicator[i];
+					fighter[i] = battle_loader->fighter[i];
 					fighter[i]->player_info = &player_info[i];
 				}
 			}
-			game_loader->can_ret = true;
+			battle_loader->can_ret = true;
 
 			SDL_PumpEvents();
 			keyboard_state = SDL_GetKeyboardState(NULL);
@@ -198,7 +203,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
 		gaming = false;
-		next_state = GAME_STATE_DEBUG_MENU;
+		game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 	}
 
 	while (gaming) {
@@ -215,8 +220,7 @@ int game_main(PlayerInfo player_info[2]) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					next_state = GAME_STATE_CLOSE;
-					gaming = false;
+					return game_manager->update(player_info, GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -341,7 +345,7 @@ int game_main(PlayerInfo player_info[2]) {
 				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
 					debug = false;
 					gaming = false;
-					next_state = GAME_STATE_DEBUG_MENU;
+					game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 					displayLoadingScreen();
 					goto DONE_GAMING;
 				}
@@ -349,7 +353,7 @@ int game_main(PlayerInfo player_info[2]) {
 
 			if (fighter[i]->crash_to_debug) {
 				gaming = false;
-				next_state = GAME_STATE_DEBUG_MENU;
+				game_manager->update(player_info, GAME_STATE_DEBUG_MENU);
 				displayLoadingScreen();
 				goto DONE_GAMING;
 			}
@@ -482,7 +486,7 @@ int game_main(PlayerInfo player_info[2]) {
 					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments));
 				}
 				else if (!(segments % 2)) { //If it went up, and the number of segments is even, increase the segmented bar really fast
-					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 0.2, 2);
+					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 0.2, 1);
 				}
 			}
 			
@@ -515,9 +519,9 @@ int game_main(PlayerInfo player_info[2]) {
 	cleanup(p1, p2);
 
 	delete fighter_accessor;
-	delete game_loader;
+	delete battle_loader;
 
-	return next_state;
+	return game_manager->update(player_info, next_state);
 }
 
 void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bool check) {
@@ -1129,12 +1133,12 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 	}
 	if (p1_hit) { //Rerunning move scripts to put up the first frame of the defender's hurtbox on the frame they get hit
 		p1->change_status(p1_status_post_hit, true, false);
-		p1->move_script();
+		p1->move_script.move_script();
 		p1->update_hurtbox_pos();
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
-		p2->move_script();
+		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 	return (p1_hit || p2_hit);
@@ -1167,7 +1171,7 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 			p2->change_status(p2_grabbox->attacker_status_if_hit);
 			p1->change_status(p2_grabbox->defender_status_if_hit);
 		}
-		p1->move_script();
+		p1->move_script.move_script();
 		p1->update_hurtbox_pos();
 	}
 	if (p2_hit) {
@@ -1179,7 +1183,7 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 			p1->change_status(p1_grabbox->attacker_status_if_hit);
 			p2->change_status(p1_grabbox->defender_status_if_hit);
 		}
-		p2->move_script();
+		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 }
@@ -1260,7 +1264,7 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
-		p2->move_script();
+		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 }

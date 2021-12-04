@@ -3,8 +3,9 @@
 #include "PlayerInfo.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
+#include "GameManager.h"
 
-int chara_select_main(PlayerInfo aPlayerInfo[2]);
+void chara_select_main(GameManager *game_manager);
 
 class FixedCharacterSlot {
 public:
@@ -70,16 +71,15 @@ public:
     int loadCSS();
     void addFixedCharacter(int id, string cardDir, string cardName);
     int getSlotsLength();
-    void GAME_MENU_traverse_select();
-    void GAME_MENU_traverse_back();
-    void GAME_MENU_traverse_start();
-    void GAME_MENU_traverse_up();
-    void GAME_MENU_traverse_down();
-    void GAME_MENU_traverse_left();
-    void GAME_MENU_traverse_right();
+    void event_select_press();
+    void event_back_press();
+    void event_start_press();
+    void event_up_press();
+    void event_down_press();
+    void event_left_press();
+    void event_right_press();
     void render();
     void queryFixedCssSlotPosition(int indexLocation, int* xptr, int* yptr);
-    int getExitCode();
     int getCharacterKind(int player);
     void centerSlots();
     void selectIndex();
@@ -93,11 +93,8 @@ public:
     int numRows;
     int colsOffset;
 
-    bool bSelecting = true;
-    PlayerInfo *aPlayerInfos[2];
+    PlayerInfo *player_info[2];
 private:
-
-    int iExitCode = GAME_STATE_DEBUG_MENU;
     MobileCharacterSlot aMobileCharacterSlots[2];
     GameTexture backgroundTexture;
     GameTexture bigBarTexture;

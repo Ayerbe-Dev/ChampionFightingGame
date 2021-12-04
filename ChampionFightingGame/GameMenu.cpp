@@ -1,9 +1,18 @@
 #include "GameMenu.h"
 
-void GameMenu::GAME_MENU_traverse_up(){};
-void GameMenu::GAME_MENU_traverse_down(){};
-void GameMenu::GAME_MENU_traverse_left(){};
-void GameMenu::GAME_MENU_traverse_right(){};
-void GameMenu::GAME_MENU_traverse_select(){};
-void GameMenu::GAME_MENU_traverse_back(){};
-void GameMenu::GAME_MENU_traverse_start(){};
+void GameMenu::event_up_press(){};
+void GameMenu::event_down_press(){};
+void GameMenu::event_left_press(){};
+void GameMenu::event_right_press(){};
+void GameMenu::event_start_press(){};
+void GameMenu::event_select_press(){};
+void GameMenu::event_back_press(){};
+void GameMenu::event_any_press() {};
+
+void GameMenu::process_background(SDL_Texture *background) {};
+
+GameMenu::GameMenu() {
+	for (int i = 0; i < MAX_LAYERS; i++) {
+		background_layer[i] = nullptr;
+	}
+}

@@ -1,5 +1,5 @@
 #include "EricFireball.h"
-#include "Game.h"
+#include "Battle.h"
 
 EricFireball::EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 	this->player_info = player_info;

@@ -9,7 +9,7 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 void title_screen_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
@@ -28,6 +28,9 @@ void title_screen_main(GameManager* game_manager) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 		frameTimeDelay();
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+		}
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -42,6 +45,9 @@ void title_screen_main(GameManager* game_manager) {
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->poll_buttons(keyboard_state);
+		}
 
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;

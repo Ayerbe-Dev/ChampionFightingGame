@@ -9,7 +9,7 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 void stage_select_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
@@ -51,6 +51,9 @@ void stage_select_main(GameManager* game_manager) {
 
 	while (loading) {
 		frameTimeDelay();
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+		}
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -134,7 +137,7 @@ void stage_select_main(GameManager* game_manager) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
+			player_info[i]->poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();

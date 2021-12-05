@@ -19,9 +19,9 @@ public:
 	PlayerInfo();
 	PlayerInfo(int id);
 
-	void update_controller();
+	void poll_buttons(const Uint8* keyboard_state);
+	void check_controllers();
 	void set_default_button_mappings(int id);
-	void update_buttons(const Uint8* keyboard_state);
 	bool check_button_on(u32 button);
 	bool check_button_input(u32 button);
 	bool check_button_input(u32 button[], int length, int min_matches);

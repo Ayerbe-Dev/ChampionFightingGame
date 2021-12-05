@@ -17,7 +17,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
 void menu_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
@@ -34,7 +34,6 @@ void menu_main(GameManager* game_manager) {
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	MainMenu main_menu;
-	SDL_Texture* bgTexture = NULL;
 	MenuItem menu_items[5];
 
 	SDL_Thread* loading_thread;
@@ -75,8 +74,7 @@ void menu_main(GameManager* game_manager) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		int total_items = 2;
-		loadingBar.setTargetPercent(((float)menu_loader->loaded_items / total_items), 0.3);
+		loadingBar.setTargetPercent(1, 0.3, 10);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();
@@ -90,7 +88,6 @@ void menu_main(GameManager* game_manager) {
 		if (menu_loader->finished) {
 			if (!menu_loader->can_ret) {
 				main_menu = menu_loader->main_menu;
-				bgTexture = menu_loader->bgTexture;
 				game_manager->set_menu_info(&main_menu);
 				main_menu.looping = game_manager->looping;
 				main_menu.game_state = game_manager->game_state;
@@ -107,6 +104,9 @@ void menu_main(GameManager* game_manager) {
 
 	while (*game_manager->looping) {
 		frameTimeDelay();
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+		}
 		SDL_RenderClear(g_renderer);
 
 		SDL_Event event;
@@ -121,6 +121,9 @@ void menu_main(GameManager* game_manager) {
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->poll_buttons(keyboard_state);
+		}
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
@@ -141,7 +144,6 @@ void menu_main(GameManager* game_manager) {
 		main_menu.process_submenu_tables();
 
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderCopy(g_renderer, bgTexture, nullptr, nullptr);
 
 		main_menu.render();
 
@@ -150,18 +152,12 @@ void menu_main(GameManager* game_manager) {
 
 		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
 			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {
-				SDL_Texture* background = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-				SDL_SetTextureBlendMode(background, SDL_BLENDMODE_BLEND);
-
-				SDL_SetRenderTarget(g_renderer, background);
-				SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-
-				game_manager->game_substate_main[main_menu.sub_state](game_manager, background, &main_menu);
+				game_manager->game_substate_main[main_menu.sub_state](game_manager, pScreenTexture, &main_menu);
 			}
 			else {
 				char buffer[91];
 				sprintf(buffer, "Error: Game Substate was %d (not GAME_SUBSTATE_NONE) but there was no associated function!", main_menu.sub_state);
-				player_info[0].crash_reason = buffer;
+				player_info[0]->crash_reason = buffer;
 				*game_manager->looping = false;
 				*game_manager->game_state = GAME_STATE_DEBUG_MENU;
 			}
@@ -174,7 +170,6 @@ void menu_main(GameManager* game_manager) {
 	SKIP_RENDER:
 
 	SDL_DestroyTexture(pScreenTexture);
-	SDL_DestroyTexture(bgTexture);
 
 	for (int i = 0; i < 5; i++) {
 		delete main_menu.sub_menu_tables[i]->cursor;
@@ -392,6 +387,9 @@ void MainMenu::init(){
 void MainMenu::render() {
 	SDL_Rect garborect = { 0,0,232,32 };
 
+	background_texture.render();
+
+	//prebuffer render
 	for (int i = 1; i < 5; i++) {
 		menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
 		menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;

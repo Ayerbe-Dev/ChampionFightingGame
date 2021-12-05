@@ -2,14 +2,14 @@
 extern SDL_Renderer* g_renderer;
 
 bool opening_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
 	return displayOpeningSplash(player_info);
 }
 
-bool displayOpeningSplash(PlayerInfo player_info[2]) {
+bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 	const Uint8* keyboard_state;
 	SDL_RenderClear(g_renderer);
 	GameTexture titleSplash;
@@ -46,9 +46,9 @@ bool displayOpeningSplash(PlayerInfo player_info[2]) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i].update_controller();
-			player_info[i].update_buttons(keyboard_state);
-			if (player_info[i].is_any_inputs()) {
+			player_info[i]->check_controllers();
+			player_info[i]->poll_buttons(keyboard_state);
+			if (player_info[i]->is_any_inputs()) {
 				goto SKIP_INTRO;
 			}
 		}

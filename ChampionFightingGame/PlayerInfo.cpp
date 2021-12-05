@@ -8,11 +8,11 @@ PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
 	chara_kind = CHARA_KIND_MAX;
 	stage = Stage(STAGE_KIND_TRAINING_OLD, "training_room_old"); //Todo: Overwrite this value while on the stage select
-	update_controller();
+	check_controllers();
 	set_default_button_mappings(id);
 }
 
-void PlayerInfo::update_controller() {
+void PlayerInfo::check_controllers() {
 	SDL_GameController* new_controller;
 	for (int i = 0; i < SDL_NumJoysticks(); ++i) { //Check all plugged in controllers
 		if (SDL_IsGameController(i)) {
@@ -35,8 +35,7 @@ void PlayerInfo::update_controller() {
 	}
 }
 
-void PlayerInfo::update_buttons(const Uint8* keyboard_state) {
-	update_controller();
+void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
 	for (int i = 0; i < BUTTON_MAX; i++) {
 		bool old_button = button_info[i].button_on;
 		if (controller != NULL) {

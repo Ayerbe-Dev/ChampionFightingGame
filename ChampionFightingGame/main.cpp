@@ -103,7 +103,7 @@ int main() {
 		else if (*game_manager.game_state != GAME_STATE_CLOSE) {
 			char buffer[86];
 			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager.game_state);
-			game_manager.player_info[0].crash_reason = buffer;
+			game_manager.player_info[0]->crash_reason = buffer;
 			game_manager.game_main[GAME_STATE_DEBUG_MENU](&game_manager);
 		}
 
@@ -113,6 +113,8 @@ int main() {
 	}
 
 	delete game_manager.game_state;
+	delete game_manager.player_info[0];
+	delete game_manager.player_info[1];
 	g_soundmanager.unloadSoundAll();
 	SDL_DestroyWindow(g_window);
 	SDL_DestroyMutex(mutex);
@@ -124,7 +126,7 @@ int main() {
 }
 
 void example_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
@@ -278,8 +280,8 @@ void example_main(GameManager* game_manager) {
 			keyboard_state = SDL_GetKeyboardState(NULL);
 
 			for (int i = 0; i < 2; i++) {
-				player_info[i].update_buttons(keyboard_state);
-				if (player_info[i].is_any_inputs()) {
+				player_info[i]->poll_buttons(keyboard_state);
+				if (player_info[i]->is_any_inputs()) {
 					loading = false;
 				}
 			}
@@ -324,7 +326,7 @@ void example_main(GameManager* game_manager) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
+			player_info[i]->poll_buttons(keyboard_state);
 		}
 
 /*

@@ -14,7 +14,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
 void debugMenu(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
@@ -112,6 +112,9 @@ void debugMenu(GameManager* game_manager) {
 
 	while (*game_manager->looping) {
 		frameTimeDelay();
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+		}
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, NULL);
@@ -145,7 +148,7 @@ void debugMenu(GameManager* game_manager) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
+			player_info[i]->poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();
@@ -158,12 +161,12 @@ void debugMenu(GameManager* game_manager) {
 		SDL_RenderPresent(g_renderer);
 	}
 
-	(&player_info[0])->crash_reason = "Crash Message Goes Here";
-	(&player_info[1])->crash_reason = "Crash Message Goes Here";
+	player_info[0]->crash_reason = "Crash Message Goes Here";
+	player_info[1]->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(debug_font);
 	delete debug_loader;
 
-	return game_manager->update(player_info, *game_manager->game_state);
+//	return game_manager->update(player_info, *game_manager->game_state);
 }
 
 TTF_Font* loadDebugFont(string fontname){

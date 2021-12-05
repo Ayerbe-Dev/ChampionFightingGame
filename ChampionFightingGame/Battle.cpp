@@ -67,7 +67,7 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 extern bool debug;
 
 void battle_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
@@ -166,7 +166,7 @@ void battle_main(GameManager* game_manager) {
 					ex_bar[i] = battle_loader->ex_bar[i];
 					player_indicator[i] = battle_loader->player_indicator[i];
 					fighter[i] = battle_loader->fighter[i];
-					fighter[i]->player_info = &player_info[i];
+					fighter[i]->player_info = player_info[i];
 				}
 			}
 			battle_loader->can_ret = true;
@@ -175,9 +175,21 @@ void battle_main(GameManager* game_manager) {
 			keyboard_state = SDL_GetKeyboardState(NULL);
 
 			for (int i = 0; i < 2; i++) {
-				player_info[i].update_buttons(keyboard_state);
-				if (player_info[i].is_any_inputs()) {
+				player_info[i]->check_controllers();
+				player_info[i]->poll_buttons(keyboard_state);
+				if (player_info[i]->is_any_inputs()) {
 					loading = false;
+
+					//We don't want the option the player uses to exit the loading screen to also be capable of updating the buffer
+
+					player_info[i]->poll_buttons(keyboard_state);
+					player_info[i]->poll_buttons(keyboard_state);
+					player_info[i]->poll_buttons(keyboard_state);
+					player_info[i]->poll_buttons(keyboard_state);
+					player_info[!i]->poll_buttons(keyboard_state);
+					player_info[!i]->poll_buttons(keyboard_state);
+					player_info[!i]->poll_buttons(keyboard_state);
+					player_info[!i]->poll_buttons(keyboard_state);
 				}
 			}
 		}
@@ -207,13 +219,14 @@ void battle_main(GameManager* game_manager) {
 
 	while (gaming) {
 		frameTimeDelay();
-		if (debug) {
-			for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+			if (debug) {
 				g_soundmanager.pauseSEAll(i);
 				g_soundmanager.pauseVCAll(i);
 			}
-		}
-	
+		}	
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -244,7 +257,7 @@ void battle_main(GameManager* game_manager) {
 				Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
 				directly when the frame is advanced manually
 				*/
-				player_info[i].update_buttons(keyboard_state);
+				player_info[i]->poll_buttons(keyboard_state);
 			}
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
@@ -327,8 +340,8 @@ void battle_main(GameManager* game_manager) {
 						g_soundmanager.resumeVCAll(i);
 					}
 
-					player_info[0].update_buttons(keyboard_state);
-					player_info[1].update_buttons(keyboard_state);
+					player_info[0]->poll_buttons(keyboard_state);
+					player_info[1]->poll_buttons(keyboard_state);
 					fighter[0]->fighter_main();
 					fighter[1]->fighter_main();
 					timer.Tick();

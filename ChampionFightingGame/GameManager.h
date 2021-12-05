@@ -6,7 +6,7 @@ class GameManager {
 public:
 	GameManager();
 
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	int game_context = GAME_CONTEXT_NORMAL;
 	int overlay_layer = 0;
 	int* game_state;
@@ -18,7 +18,7 @@ public:
 
 	void set_game_state_functions(); //Assigns a function to each index of game_main
 
-	void update(PlayerInfo player_info[2], int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX); //Updates game_manager->player_info
+	void update(PlayerInfo *player_info[2], int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX); //Updates game_manager->player_info
 	//to match the local one modified by the function
 	void set_menu_info(GameMenu *menu_target, int init_hold_frames = 20, int hold_rate = 4);
 

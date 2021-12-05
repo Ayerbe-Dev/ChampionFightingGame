@@ -2,8 +2,8 @@
 #include "GameStates.h"
 
 GameManager::GameManager() {
-	player_info[0] = PlayerInfo(0);
-	player_info[1] = PlayerInfo(1);
+	player_info[0] = new PlayerInfo(0);
+	player_info[1] = new PlayerInfo(1);
 	for (int i = 0; i < GAME_STATE_MAX; i++) {
 		game_main[i] = nullptr;
 	}
@@ -25,7 +25,7 @@ void GameManager::set_game_state_functions() {
 
 }
 
-void GameManager::update(PlayerInfo player_info[2], int game_state, int game_context) {
+void GameManager::update(PlayerInfo *player_info[2], int game_state, int game_context) {
 	this->player_info[0] = player_info[0];
 	this->player_info[1] = player_info[1];
 	prev_game_state = *this->game_state;
@@ -45,8 +45,6 @@ void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int
 
 void GameManager::handle_menus() {
 	for (int i = 0; i < 2; i++) {
-		(&player_info[i])->update_controller();
-		(&player_info[i])->update_buttons(SDL_GetKeyboardState(NULL));
 		menu_target->player_id = i;
 		if (is_up_press(i)) {
 			event_up_press();
@@ -60,13 +58,13 @@ void GameManager::handle_menus() {
 		if (is_right_press(i)) {
 			event_right_press();
 		}
-		if (player_info[i].check_button_trigger(BUTTON_MENU_START)) {
+		if (player_info[i]->check_button_trigger(BUTTON_MENU_START)) {
 			event_start_press();
 		}
-		if (player_info[i].check_button_trigger(BUTTON_MENU_SELECT)) {
+		if (player_info[i]->check_button_trigger(BUTTON_MENU_SELECT)) {
 			event_select_press();
 		}
-		if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+		if (player_info[i]->check_button_trigger(BUTTON_MENU_BACK)) {
 			event_back_press();
 		}
 		if (is_any_menu_input(i)) {
@@ -77,7 +75,7 @@ void GameManager::handle_menus() {
 
 bool GameManager::is_up_press(int id) {
 	bool ret = false;
-	if (player_info[id].check_button_on(BUTTON_MENU_UP)) {
+	if (player_info[id]->check_button_on(BUTTON_MENU_UP)) {
 		if (u_hold_frames[id] == init_hold_frames) {
 			u_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -97,7 +95,7 @@ bool GameManager::is_up_press(int id) {
 
 bool GameManager::is_down_press(int id) {
 	bool ret = false;
-	if (player_info[id].check_button_on(BUTTON_MENU_DOWN)) {
+	if (player_info[id]->check_button_on(BUTTON_MENU_DOWN)) {
 		if (d_hold_frames[id] == init_hold_frames) {
 			d_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -117,7 +115,7 @@ bool GameManager::is_down_press(int id) {
 
 bool GameManager::is_right_press(int id) {
 	bool ret = false;
-	if (player_info[id].check_button_on(BUTTON_MENU_RIGHT)) {
+	if (player_info[id]->check_button_on(BUTTON_MENU_RIGHT)) {
 		if (r_hold_frames[id] == init_hold_frames) {
 			r_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -137,7 +135,7 @@ bool GameManager::is_right_press(int id) {
 
 bool GameManager::is_left_press(int id) {
 	bool ret = false;
-	if (player_info[id].check_button_on(BUTTON_MENU_LEFT)) {
+	if (player_info[id]->check_button_on(BUTTON_MENU_LEFT)) {
 		if (l_hold_frames[id] == init_hold_frames) {
 			l_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -157,7 +155,7 @@ bool GameManager::is_left_press(int id) {
 
 bool GameManager::is_any_menu_input(int id) {
 	for (int i = 0; i < BUTTON_MAX; i++) {
-		if (player_info[id].check_button_trigger(i)) {
+		if (player_info[id]->check_button_trigger(i)) {
 			return true;
 		}
 	}

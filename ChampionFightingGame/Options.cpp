@@ -3,7 +3,7 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu *background_menu) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
@@ -14,8 +14,8 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	OptionsOverlay options_overlay = OptionsOverlay(500, 300, "resource/ui/menu/options/overlay.png");
-	options_overlay.player_info[0] = &player_info[0];
-	options_overlay.player_info[1] = &player_info[1];
+	options_overlay.player_info[0] = player_info[0];
+	options_overlay.player_info[1] = player_info[1];
 	
 	bool substate_loop = true;
 	while (substate_loop) {
@@ -37,9 +37,9 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 			}
 		}
 		for (int i = 0; i < 2; i++) {
-			player_info[i].update_controller();
-			player_info[i].update_buttons(keyboard_state);
-			if (player_info[i].check_button_trigger(BUTTON_MENU_BACK)) {
+			player_info[i]->check_controllers();
+			player_info[i]->poll_buttons(keyboard_state);
+			if (player_info[i]->check_button_trigger(BUTTON_MENU_BACK)) {
 				substate_loop = false;
 			}
 		}

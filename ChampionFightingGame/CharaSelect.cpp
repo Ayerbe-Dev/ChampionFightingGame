@@ -9,7 +9,7 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 void chara_select_main(GameManager* game_manager) {
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
@@ -85,8 +85,11 @@ void chara_select_main(GameManager* game_manager) {
 		if (chara_select_loader->finished) {
 			if (!chara_select_loader->can_ret) {
 				css = chara_select_loader->css;
-				cursors[0] = chara_select_loader->css_cursor[0];
-				cursors[1] = chara_select_loader->css_cursor[1];
+				for (int i = 0; i < 2; i++) {
+					cursors[i] = chara_select_loader->css_cursor[i];
+					player_info[i] = chara_select_loader->player_info[i];
+				}
+				game_manager->update(player_info);
 				game_manager->set_menu_info(&css);
 				css.looping = game_manager->looping;
 				css.game_state = game_manager->game_state;
@@ -104,6 +107,9 @@ void chara_select_main(GameManager* game_manager) {
 
 	while (*game_manager->looping) {
 		frameTimeDelay();
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+		}
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
 
@@ -119,7 +125,9 @@ void chara_select_main(GameManager* game_manager) {
 
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
-
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->poll_buttons(keyboard_state);
+		}
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(g_window, 0);
@@ -133,9 +141,6 @@ void chara_select_main(GameManager* game_manager) {
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
-		}
-		for (int i = 0; i < 2; i++) {
-			player_info[i].update_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();

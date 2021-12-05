@@ -32,7 +32,7 @@ public:
 
 class GameLoader {
 public:
-	PlayerInfo player_info[2];
+	PlayerInfo *player_info[2];
 
 	int loaded_items = 0;
 	int ret = 0;
@@ -82,18 +82,18 @@ static int LoadBattle(void* void_BattleLoader) {
 	FighterAccessor* fighter_accessor = new FighterAccessor;
 
 	int rng = rand() % 2;
-	stage = battle_loader->player_info[rng].stage; 
+	stage = battle_loader->player_info[rng]->stage; 
 	battle_loader->loaded_items++;
 	string background_texture = stage.resource_dir + "background.png";
 	stage.pBackgroundTexture = loadTexture(background_texture.c_str());
 	battle_loader->loaded_items++;
 	frameTimeDelay();
 
-	p1 = new IObject(OBJECT_TYPE_FIGHTER, (&battle_loader->player_info[0])->chara_kind, 0, &battle_loader->player_info[0], fighter_accessor);
+	p1 = new IObject(OBJECT_TYPE_FIGHTER, battle_loader->player_info[0]->chara_kind, 0, battle_loader->player_info[0], fighter_accessor);
 	battle_loader->loaded_items++;
 	frameTimeDelay();
 
-	p2 = new IObject(OBJECT_TYPE_FIGHTER, (&battle_loader->player_info[1])->chara_kind, 1, &battle_loader->player_info[1], fighter_accessor);
+	p2 = new IObject(OBJECT_TYPE_FIGHTER, battle_loader->player_info[1]->chara_kind, 1, battle_loader->player_info[1], fighter_accessor);
 	battle_loader->loaded_items++;
 	frameTimeDelay();
 
@@ -106,7 +106,7 @@ static int LoadBattle(void* void_BattleLoader) {
 	frameTimeDelay();
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = &battle_loader->player_info[i];
+		fighter[i]->player_info = battle_loader->player_info[i];
 		fighter[i]->pos.x = 0;
 		fighter_accessor->fighter[i] = fighter[i];
 		fighter[i]->fighter_accessor = fighter_accessor;
@@ -194,12 +194,12 @@ static int LoadCharaSelect(void* void_CharaSelectLoader) {
 	CSS css;
 	CssCursor cursors[2];
 
-	css.player_info[0] = &chara_select_loader->player_info[0];
-	css.player_info[1] = &chara_select_loader->player_info[1];
+	css.player_info[0] = chara_select_loader->player_info[0];
+	css.player_info[1] = chara_select_loader->player_info[1];
 
 	if (css.loadCSS()) {
 		displayLoadingScreen();
-		chara_select_loader->player_info[0].crash_reason = "Could not open CSS file!";
+		chara_select_loader->player_info[0]->crash_reason = "Could not open CSS file!";
 		return 1;
 	}
 	chara_select_loader->loaded_items++;
@@ -280,10 +280,10 @@ static int LoadDebug(void* void_DebugLoader) {
 	debug_list.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
 	debug_loader->loaded_items++;
 	frameTimeDelay();
-	debug_list.addEntry(debug_loader->player_info[0].crash_reason, DEBUG_LIST_NOT_SELECTABLE);
+	debug_list.addEntry(debug_loader->player_info[0]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
 	debug_loader->loaded_items++;
 	frameTimeDelay();
-	debug_list.addEntry(debug_loader->player_info[1].crash_reason, DEBUG_LIST_NOT_SELECTABLE);
+	debug_list.addEntry(debug_loader->player_info[1]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
 	debug_loader->loaded_items++;
 	frameTimeDelay();
 
@@ -310,7 +310,6 @@ public:
 	MenuLoader() {};
 
 	MainMenu main_menu;
-	SDL_Texture* bgTexture;
 };
 
 static int LoadMenu(void* void_MenuLoader) {
@@ -318,16 +317,10 @@ static int LoadMenu(void* void_MenuLoader) {
 	MenuLoader* menu_loader = (MenuLoader*)void_MenuLoader;
 
 	MainMenu main_menu;
-	SDL_Texture* bgTexture;
-
-	bgTexture = loadTexture("resource/ui/menu/main/bg.png");
-	menu_loader->loaded_items++;
 
 	main_menu.init();
-	menu_loader->loaded_items++;
 
 	menu_loader->main_menu = main_menu;
-	menu_loader->bgTexture = bgTexture;
 	
 	menu_loader->finished = true;
 	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
@@ -349,12 +342,12 @@ static int LoadStageSelect(void* void_StageSelectLoader) {
 
 	StageSelect stage_select;
 
-	stage_select.player_info[0] = &stage_select_loader->player_info[0];
-	stage_select.player_info[1] = &stage_select_loader->player_info[1];
+	stage_select.player_info[0] = stage_select_loader->player_info[0];
+	stage_select.player_info[1] = stage_select_loader->player_info[1];
 
 	if (stage_select.load_stage_select()) {
 		displayLoadingScreen();
-		stage_select_loader->player_info[0].crash_reason = "Could not open Stage Select file!";
+		stage_select_loader->player_info[0]->crash_reason = "Could not open Stage Select file!";
 		return 1;
 	}
 	stage_select_loader->loaded_items++;

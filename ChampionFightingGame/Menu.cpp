@@ -89,8 +89,6 @@ void menu_main(GameManager* game_manager) {
 			if (!menu_loader->can_ret) {
 				main_menu = menu_loader->main_menu;
 				game_manager->set_menu_info(&main_menu);
-				main_menu.looping = game_manager->looping;
-				main_menu.game_state = game_manager->game_state;
 			}
 			menu_loader->can_ret = true;
 
@@ -114,7 +112,7 @@ void menu_main(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 			}
 		}
@@ -159,7 +157,7 @@ void menu_main(GameManager* game_manager) {
 				sprintf(buffer, "Error: Game Substate was %d (not GAME_SUBSTATE_NONE) but there was no associated function!", main_menu.sub_state);
 				player_info[0]->crash_reason = buffer;
 				*game_manager->looping = false;
-				*game_manager->game_state = GAME_STATE_DEBUG_MENU;
+				game_manager->update_state(GAME_STATE_DEBUG_MENU);
 			}
 			main_menu.sub_state = GAME_SUBSTATE_NONE;
 		}
@@ -177,8 +175,6 @@ void menu_main(GameManager* game_manager) {
 	}
 
 	delete menu_loader;
-
-	return game_manager->update(player_info, *game_manager->game_state);
 }
 
 void MainMenu::event_up_press() {
@@ -248,7 +244,7 @@ void MainMenu::event_select_press() {
 			sub_state = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
 		}
 		else {
-			*game_state = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
+			update_state(get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item));
 			*looping = false;
 		}
 	}
@@ -256,7 +252,7 @@ void MainMenu::event_select_press() {
 
 void MainMenu::event_back_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		*game_state = GAME_STATE_TITLE_SCREEN;
+		update_state(GAME_STATE_TITLE_SCREEN);
 		*looping = false;
 	}
 	else {

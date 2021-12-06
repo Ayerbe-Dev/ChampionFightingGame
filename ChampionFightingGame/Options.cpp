@@ -31,7 +31,7 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;
 			}

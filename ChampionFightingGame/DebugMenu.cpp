@@ -95,8 +95,6 @@ void debugMenu(GameManager* game_manager) {
 				debug_list = debug_loader->debug_list;
 
 				game_manager->set_menu_info(&debug_list);
-				debug_list.looping = game_manager->looping;
-				debug_list.game_state = game_manager->game_state;
 			}
 			debug_loader->can_ret = true;
 
@@ -125,7 +123,7 @@ void debugMenu(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 			}
 		}

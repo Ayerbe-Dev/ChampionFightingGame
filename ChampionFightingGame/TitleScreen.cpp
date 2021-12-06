@@ -15,8 +15,6 @@ void title_screen_main(GameManager* game_manager) {
 
     TitleScreen title_screen;
 
-	title_screen.looping = game_manager->looping;
-
     const Uint8 *keyboard_state;
     Debugger debugger;
 
@@ -37,7 +35,7 @@ void title_screen_main(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -74,7 +72,7 @@ void title_screen_main(GameManager* game_manager) {
 	}
 	SDL_DestroyTexture(pScreenTexture);
 
-	return game_manager->update(player_info, GAME_STATE_MENU);
+	return game_manager->update_state(GAME_STATE_MENU);
 }
 
 TitleScreen::TitleScreen(){

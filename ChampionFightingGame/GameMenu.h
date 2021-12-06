@@ -14,9 +14,14 @@ public:
     virtual void event_any_press();
 
     virtual void process_background(SDL_Texture* background);
+    void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
 
-    bool* looping;
     int* game_state;
+    int* prev_game_state;
+    int* game_context;
+    int* prev_game_context;
+    bool* looping;
+
     int sub_state;
     int player_id{0};
     SDL_Texture* background_layer[MAX_LAYERS];

@@ -12,6 +12,25 @@ GameManager::GameManager() {
 	}
 	set_game_state_functions();
 	game_state = new int;
+	prev_game_state = new int;
+	game_context = new int;
+	prev_game_context = new int;
+	looping = new bool;
+
+	*game_state = GAME_STATE_DEBUG_MENU;
+	*prev_game_state = *game_state;
+	*game_context = GAME_CONTEXT_NORMAL;
+	*prev_game_context = *game_context;
+}
+
+GameManager::~GameManager() {
+	delete player_info[0];
+	delete player_info[1];
+	delete game_state;
+	delete prev_game_state;
+	delete game_context;
+	delete prev_game_context;
+	delete looping;
 }
 
 void GameManager::set_game_state_functions() {
@@ -25,22 +44,31 @@ void GameManager::set_game_state_functions() {
 
 }
 
-void GameManager::update(PlayerInfo *player_info[2], int game_state, int game_context) {
-	this->player_info[0] = player_info[0];
-	this->player_info[1] = player_info[1];
-	prev_game_state = *this->game_state;
+void GameManager::update_state(int game_state, int game_context) {
 	if (game_state != GAME_STATE_MAX) {
+		*prev_game_state = *this->game_state;
 		*this->game_state = game_state;
 	}
 	if (game_context != GAME_CONTEXT_MAX) {
-		this->game_context = game_context;
+		*prev_game_context = *this->game_context;
+		*this->game_context = game_context;
 	}
 }
 
 void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int hold_rate) {
+	//Initialize GameManager values, assign the GameManager a target
 	this->init_hold_frames = init_hold_frames;
 	this->hold_rate = hold_rate;
 	this->menu_target = menu_target;
+
+	//Assign a few pointers from the current target to match the GameManager
+	if (this->menu_target != nullptr) {
+		this->menu_target->game_state = game_state;
+		this->menu_target->prev_game_state = game_state;
+		this->menu_target->game_context = game_context;
+		this->menu_target->prev_game_context = prev_game_context;
+		this->menu_target->looping = looping;
+	}
 }
 
 void GameManager::handle_menus() {

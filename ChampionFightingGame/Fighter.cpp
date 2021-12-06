@@ -3,7 +3,6 @@
 #include "GameCoordinate.h"
 #include "Animation.h"
 #include <fstream>
-#include <cmath>
 
 Fighter::Fighter() {}
 

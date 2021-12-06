@@ -88,11 +88,8 @@ int main() {
 	g_soundmanager = SoundManager(true);
 
 	GameManager game_manager;
-	*game_manager.game_state = GAME_STATE_DEBUG_MENU;
 
 	bool running = opening_main(&game_manager);
-	bool correct;
-	game_manager.looping = &correct;
 
 	while (running) {
 		refreshRenderer();
@@ -112,9 +109,7 @@ int main() {
 		}
 	}
 
-	delete game_manager.game_state;
-	delete game_manager.player_info[0];
-	delete game_manager.player_info[1];
+	game_manager.~GameManager();
 	g_soundmanager.unloadSoundAll();
 	SDL_DestroyWindow(g_window);
 	SDL_DestroyMutex(mutex);
@@ -122,7 +117,10 @@ int main() {
 	SDL_Quit();
 
 //	ShowWindow(windowHandle, SW_SHOW);
-	return 0;
+//	If we try to end the program without putting the window back up, it technically causes a crash. Program was about to end anyway so it doesn't really
+//	matter but ehhhhhhhhh, clean exits are nice
+
+	exit(0); //i play by my own rules
 }
 
 void example_main(GameManager* game_manager) {
@@ -303,7 +301,7 @@ void example_main(GameManager* game_manager) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT: {
-					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 			}
 		}
@@ -381,6 +379,4 @@ void example_main(GameManager* game_manager) {
 	}
 
 	delete game_loader;
-
-	return game_manager->update(player_info);
 }

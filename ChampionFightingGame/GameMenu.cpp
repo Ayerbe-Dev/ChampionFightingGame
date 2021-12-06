@@ -16,3 +16,14 @@ GameMenu::GameMenu() {
 		background_layer[i] = nullptr;
 	}
 }
+
+void GameMenu::update_state(int game_state, int game_context) {
+	if (game_state != GAME_STATE_MAX) {
+		*prev_game_state = *this->game_state;
+		*this->game_state = game_state;
+	}
+	if (game_context != GAME_CONTEXT_MAX) {
+		*prev_game_context = *this->game_context;
+		*this->game_context = game_context;
+	}
+}

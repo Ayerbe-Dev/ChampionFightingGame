@@ -89,8 +89,6 @@ void stage_select_main(GameManager* game_manager) {
 				stage_select = stage_select_loader->stage_select;
 
 				game_manager->set_menu_info(&stage_select);
-				stage_select.looping = game_manager->looping;
-				stage_select.game_state = game_manager->game_state;
 			}
 			stage_select_loader->can_ret = true;
 
@@ -114,7 +112,7 @@ void stage_select_main(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
-					return game_manager->update(player_info, GAME_STATE_CLOSE);
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 			}
 		}
@@ -172,8 +170,6 @@ void stage_select_main(GameManager* game_manager) {
 	}
 
 	delete stage_select_loader;
-
-	return game_manager->update(player_info, *game_manager->game_state);
 }
 
 StageSelect::StageSelect() {

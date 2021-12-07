@@ -341,10 +341,10 @@ void battle_main(GameManager* game_manager) {
 						g_soundmanager.resumeVCAll(i);
 					}
 
-					player_info[0]->poll_buttons(keyboard_state);
-					player_info[1]->poll_buttons(keyboard_state);
-					fighter[0]->fighter_main();
-					fighter[1]->fighter_main();
+					for (int i = 0; i < 2; i++) {
+						player_info[i]->poll_buttons(keyboard_state);
+						fighter[i]->fighter_main();
+					}
 					timer.Tick();
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame - 1 << endl;

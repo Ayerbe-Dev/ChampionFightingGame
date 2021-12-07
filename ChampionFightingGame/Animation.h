@@ -16,7 +16,6 @@ struct Animation {
 	Animation();
 };
 
-
 SDL_Texture* loadTexture(const char* file_path);
 SDL_Rect getFrame(int frame, Animation* animation);
 void loadAnimation(Animation* animation);

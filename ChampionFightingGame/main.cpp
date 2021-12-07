@@ -202,10 +202,8 @@ void example_main(GameManager* game_manager) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT:
-				{
-					*game_manager->game_state = GAME_STATE_CLOSE;
-					return;
+				case SDL_QUIT: {
+					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;
 			}
@@ -265,8 +263,6 @@ void example_main(GameManager* game_manager) {
 */
 
 //				game_manager->set_menu_info(&menu);
-//				menu.looping = game_manager->looping;
-//				menu.game_state = game_manager->game_state;
 
 //				These lines are applicable to all game states where the GameManager is in charge of menus, just replace "menu" with the actual class
 			}

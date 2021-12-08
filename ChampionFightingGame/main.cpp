@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <Windows.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
@@ -14,14 +15,10 @@
 #include "UI.h"
 #include "SoundManager.h"
 #include "GameManager.h"
-
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
 //undefine it before we include Loader.h.
-
-#include <Windows.h>
 #undef LoadIcon
 #include "Loader.h"
-
 #undef main
 
 using namespace std;

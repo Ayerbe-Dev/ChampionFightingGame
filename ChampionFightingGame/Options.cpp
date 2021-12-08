@@ -5,7 +5,6 @@ extern SDL_Window* g_window;
 void controls_main(GameManager* game_manager) {
 	GameMenu* background_menu = game_manager->get_target();
 	SDL_Texture *background = game_manager->background[game_manager->layer];
-	SDL_SetTextureBlendMode(background, SDL_BLENDMODE_BLEND);
 
 	game_manager->layer++;
 	PlayerInfo *player_info[2];

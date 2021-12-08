@@ -22,7 +22,7 @@ public:
     int* prev_game_context;
     bool* looping;
 
-    int sub_state;
+    int sub_state = GAME_SUBSTATE_NONE;
     int player_id{0};
     SDL_Texture* background_layer[MAX_LAYERS];
 };

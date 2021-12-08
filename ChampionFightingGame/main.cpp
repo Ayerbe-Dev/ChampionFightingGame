@@ -93,7 +93,9 @@ int main() {
 
 	while (running) {
 		refreshRenderer();
-		*game_manager.looping = true;
+		for (int i = 0; i < MAX_LAYERS; i++) {
+			*game_manager.looping[i] = true;
+		}
 		if (game_manager.game_main[*game_manager.game_state] != nullptr) {
 			game_manager.game_main[*game_manager.game_state](&game_manager);
 		}
@@ -120,7 +122,9 @@ int main() {
 //	If we try to end the program without putting the window back up, it technically causes a crash. Program was about to end anyway so it doesn't really
 //	matter but ehhhhhhhhh, clean exits are nice
 
-	exit(0); //i play by my own rules
+	exit(0);
+//	Same goes for this line; causes a crash on exit if we return 0 normally which wouldn't normally be a problem but again, clean exits
+//	Don't ask me why exit(0) is ok but return 0 isn't, I cannot answer that question.
 }
 
 void example_main(GameManager* game_manager) {

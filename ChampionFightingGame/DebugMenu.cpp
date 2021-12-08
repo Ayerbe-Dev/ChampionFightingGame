@@ -26,7 +26,7 @@ void debugMenu(GameManager* game_manager) {
 	debug_loader->player_info[0] = player_info[0];
 	debug_loader->player_info[1] = player_info[1];
 
-	debug_loader->lastString << "This menu was called from the destination [" << game_manager->prev_game_state << "]";
+	debug_loader->lastString << "This menu was called from the destination [" << *game_manager->prev_game_state << "]";
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
@@ -108,7 +108,7 @@ void debugMenu(GameManager* game_manager) {
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	while (*game_manager->looping) {
+	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();

@@ -22,7 +22,7 @@ void title_screen_main(GameManager* game_manager) {
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    while (*game_manager->looping) {
+    while (*game_manager->looping[game_manager->layer]) {
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 		frameTimeDelay();

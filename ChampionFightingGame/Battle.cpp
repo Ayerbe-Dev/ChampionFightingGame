@@ -183,14 +183,10 @@ void battle_main(GameManager* game_manager) {
 
 					//We don't want the option the player uses to exit the loading screen to also be capable of updating the buffer
 
-					player_info[i]->poll_buttons(keyboard_state);
-					player_info[i]->poll_buttons(keyboard_state);
-					player_info[i]->poll_buttons(keyboard_state);
-					player_info[i]->poll_buttons(keyboard_state);
-					player_info[!i]->poll_buttons(keyboard_state);
-					player_info[!i]->poll_buttons(keyboard_state);
-					player_info[!i]->poll_buttons(keyboard_state);
-					player_info[!i]->poll_buttons(keyboard_state);
+					for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
+						player_info[i]->poll_buttons(keyboard_state);
+						player_info[!i]->poll_buttons(keyboard_state);
+					}
 				}
 			}
 		}

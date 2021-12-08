@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "GameStates.h"
+extern SDL_Renderer* g_renderer;
 
 GameManager::GameManager() {
 	player_info[0] = new PlayerInfo(0);
@@ -15,7 +16,11 @@ GameManager::GameManager() {
 	prev_game_state = new int;
 	game_context = new int;
 	prev_game_context = new int;
-	looping = new bool;
+	for (int i = 0; i < MAX_LAYERS; i++) {
+		looping[i] = new bool;
+		background[i] = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+		SDL_SetTextureBlendMode(background[i], SDL_BLENDMODE_BLEND);
+	}
 
 	*game_state = GAME_STATE_DEBUG_MENU;
 	*prev_game_state = *game_state;
@@ -30,7 +35,10 @@ GameManager::~GameManager() {
 	delete prev_game_state;
 	delete game_context;
 	delete prev_game_context;
-	delete looping;
+	for (int i = 0; i < MAX_LAYERS; i++) {
+		delete looping[i];
+		SDL_DestroyTexture(background[i]);
+	}
 }
 
 void GameManager::set_game_state_functions() {
@@ -59,21 +67,36 @@ void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int
 	//Initialize GameManager values, assign the GameManager a target
 	this->init_hold_frames = init_hold_frames;
 	this->hold_rate = hold_rate;
-	this->menu_target = menu_target;
+	this->menu_target[layer] = menu_target;
+
+	*looping[layer] = true;
 
 	//Assign a few pointers from the current target to match the GameManager
-	if (this->menu_target != nullptr) {
-		this->menu_target->game_state = game_state;
-		this->menu_target->prev_game_state = game_state;
-		this->menu_target->game_context = game_context;
-		this->menu_target->prev_game_context = prev_game_context;
-		this->menu_target->looping = looping;
+	if (this->menu_target[layer] != nullptr) {
+		this->menu_target[layer]->game_state = game_state;
+		this->menu_target[layer]->prev_game_state = game_state;
+		this->menu_target[layer]->game_context = game_context;
+		this->menu_target[layer]->prev_game_context = prev_game_context;
+		this->menu_target[layer]->looping = looping[layer];
+	}
+}
+
+GameMenu* GameManager::get_target(int layer) {
+	if (layer == -1) {
+		return menu_target[this->layer];
+	}
+	else if (layer > MAX_LAYERS) {
+		cout << "Tried to get invalid layer target: " << layer << endl;
+		return menu_target[this->layer];
+	}
+	else {
+		return menu_target[layer];
 	}
 }
 
 void GameManager::handle_menus() {
 	for (int i = 0; i < 2; i++) {
-		menu_target->player_id = i;
+		menu_target[layer]->player_id = i;
 		if (is_up_press(i)) {
 			event_up_press();
 		}
@@ -191,33 +214,33 @@ bool GameManager::is_any_menu_input(int id) {
 }
 
 void GameManager::event_up_press() {
-	(menu_target->*(&GameMenu::event_up_press))();
+	(menu_target[layer]->*(&GameMenu::event_up_press))();
 }
 
 void GameManager::event_down_press() {
-	(menu_target->*(&GameMenu::event_down_press))();
+	(menu_target[layer]->*(&GameMenu::event_down_press))();
 }
 
 void GameManager::event_left_press() {
-	(menu_target->*(&GameMenu::event_left_press))();
+	(menu_target[layer]->*(&GameMenu::event_left_press))();
 }
 
 void GameManager::event_right_press() {
-	(menu_target->*(&GameMenu::event_right_press))();
+	(menu_target[layer]->*(&GameMenu::event_right_press))();
 }
 
 void GameManager::event_start_press() {
-	(menu_target->*(&GameMenu::event_start_press))();
+	(menu_target[layer]->*(&GameMenu::event_start_press))();
 }
 
 void GameManager::event_select_press() {
-	(menu_target->*(&GameMenu::event_select_press))();
+	(menu_target[layer]->*(&GameMenu::event_select_press))();
 }
 
 void GameManager::event_back_press() {
-	(menu_target->*(&GameMenu::event_back_press))();
+	(menu_target[layer]->*(&GameMenu::event_back_press))();
 }
 
 void GameManager::event_any_press() {
-	(menu_target->*(&GameMenu::event_any_press))();
+	(menu_target[layer]->*(&GameMenu::event_any_press))();
 }

@@ -8,20 +8,21 @@ public:
 	~GameManager();
 
 	PlayerInfo *player_info[2];
-	int overlay_layer = 0;
+	int layer = 0;
 	int* game_state;
 	int* prev_game_state;
 	int* game_context;
 	int* prev_game_context;
-	bool* looping;
+	bool* looping[MAX_LAYERS];
 
 	void (*game_main[GAME_STATE_MAX])(GameManager* game_manager);
-	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager, SDL_Texture* background, GameMenu *game_menu);
+	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager);
 
 	void set_game_state_functions(); //Assigns a function to each index of game_main
 
 	void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
 	void set_menu_info(GameMenu *menu_target, int init_hold_frames = 20, int hold_rate = 4);
+	GameMenu *get_target(int layer = -1);
 
 	void handle_menus();
 
@@ -33,8 +34,10 @@ public:
 	void event_select_press();
 	void event_back_press();
 	void event_any_press();
+
+	SDL_Texture* background[MAX_LAYERS];
 private:
-	GameMenu* menu_target;
+	GameMenu* menu_target[MAX_LAYERS];
 
 	bool is_up_press(int id);
 	bool is_down_press(int id);

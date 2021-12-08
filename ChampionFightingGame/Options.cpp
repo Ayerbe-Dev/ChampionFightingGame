@@ -2,7 +2,12 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu *background_menu) {
+void controls_main(GameManager* game_manager) {
+	GameMenu* background_menu = game_manager->get_target();
+	SDL_Texture *background = game_manager->background[game_manager->layer];
+	SDL_SetTextureBlendMode(background, SDL_BLENDMODE_BLEND);
+
+	game_manager->layer++;
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -16,9 +21,11 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 	OptionsOverlay options_overlay = OptionsOverlay(500, 300, "resource/ui/menu/options/overlay.png");
 	options_overlay.player_info[0] = player_info[0];
 	options_overlay.player_info[1] = player_info[1];
+
+	game_manager->set_menu_info(&options_overlay);
 	
 	bool substate_loop = true;
-	while (substate_loop) {
+	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
 		SDL_SetRenderTarget(g_renderer, NULL);
 		SDL_RenderClear(g_renderer);
@@ -31,6 +38,7 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 			switch (event.type) {
 				case SDL_QUIT:
 				{
+					game_manager->layer--;
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;
@@ -40,7 +48,7 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 			player_info[i]->check_controllers();
 			player_info[i]->poll_buttons(keyboard_state);
 			if (player_info[i]->check_button_trigger(BUTTON_MENU_BACK)) {
-				substate_loop = false;
+				*game_manager->looping[game_manager->layer] = false;
 			}
 		}
 		background_menu->process_background(background);
@@ -54,6 +62,7 @@ void controls_main(GameManager* game_manager, SDL_Texture *background, GameMenu 
 	}
 
 	SDL_DestroyTexture(pScreenTexture);
+	game_manager->layer--;
 }
 
 OptionsOverlay::OptionsOverlay() {

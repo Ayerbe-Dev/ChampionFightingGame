@@ -1,6 +1,9 @@
 #pragma warning(disable : 4996)
 #include "Object.h"
 
+/// <summary>
+/// Load all entries for this object's stats table.
+/// </summary>
 void Object::load_stats() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/stats.yml");
@@ -41,6 +44,9 @@ void Object::load_stats() {
 	stats_table.close();
 }
 
+/// <summary>
+/// Load all entries for this object's param table.
+/// </summary>
 void Object::load_params() {
 	ifstream stats_table;
 	stats_table.open(resource_dir + "/param/params.yml");

@@ -56,6 +56,11 @@ void GameManager::update_state(int game_state, int game_context) {
 	if (game_state != GAME_STATE_MAX) {
 		*prev_game_state = *this->game_state;
 		*this->game_state = game_state;
+		if (game_state == GAME_STATE_CLOSE) {
+			for (int i = 0; i < MAX_LAYERS; i++) {
+				*looping[i] = false;
+			}
+		}
 	}
 	if (game_context != GAME_CONTEXT_MAX) {
 		*prev_game_context = *this->game_context;

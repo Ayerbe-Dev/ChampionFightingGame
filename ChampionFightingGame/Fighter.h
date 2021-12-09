@@ -163,47 +163,6 @@ public:
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
 		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
 		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos = true);
-	//ID: A value of 0-9. Each ID can store exactly 1 hitbox, and overwriting a pre-existing ID will remove the hitbox originally mapped to that ID
-	//Multihit: A secondary ID. When a hitbox connects, all hitboxes that share the multihit value will be marked as having successfully hit
-	//Damage/Chip Damage: How much damage the move deals on hit/block
-	//Counterhit Damage Mul: How much the move's damage is multiplied by on counterhit, usually 1.2x
-	//Scale: How much damage scaling is added if the opponent is hit during a combo. SCALING IS NOT ADDED IF THE OPPONENT ISN'T IN HITSTUN.
-	//Anchor/Offset: The bottom left and top right corners of the hitbox
-	//Hitbox Kind: Either NORMAL or BLOCK. NORMAL puts the opponent into hitstun on hit, BLOCK just makes them enter the stand block anim instead of 
-		//walking backwards
-	//Meter Gain On Hit/Counterhit/Block: How much meter the attacker gains for hitting the move. On parry/hitting an armored opponent, meter gain on 
-		//block / 2 is added to the attacker.
-	//Situation Hit: The types of situations this hitbox is allowed to work on. SITUATION_HIT_GROUND_AIR hits aerial and grounded opponents but not 
-		//OTG, SITUATION_HIT_ALL hits everything including OTG, SITUATION_HIT_DOWN only hits OTG, etc.
-	//Hitlag/Blocklag: Period where both the attacker and defender are frozen after a hitbox connects
-	//Hitstun/Blockstun: Period where only the defender can't act after a hitbox connects
-	//Unblockable: Can they block it. Note: You can parry an unblockable hitbox
-	//Attack Height: If the move has to be blocked high/low, and what direction it needs to be parried in.
-	//Attack Level: Is the move Light, Medium, or Heavy. Affects the defender's hitstun animation and which hitbox will have priority in the event of 
-		//a trade
-	//Hit/Block Pushback: How far the defender is pushed during their hitlag period. Note: If the defender hits a wall during hitlag, the attacker 
-		//will be moved instead.
-	//Clank Kind: What to do if two people hit each other at the same time with hitboxes of the same Attack Level. NORMAL = Both get hit, CLANK = 
-		//Both go into a clank animation and get pushed away, CONTINUE = The other player goes into a clank animation, while your hitbox gets canceled
-		// but the animation for your current move continues
-	//Juggle Set: What the defender's juggle value is set to if they get hit. If the defender's juggle value < the hitbox's juggle set, the defender's
-		//juggle value is raised to match. Otherwise, it's just raised by 1.
-	//Max Juggle: The highest juggle value that an aerial opponent can have before this hitbox automatically whiffs.
-	//Hit/Counterhit Status: What status to put the defender in on hit/counterhit. Passing HIT_STATUS_NORMAL will automatically use the standard regular
-		//hitstun status based on the opponent's situation.
-	//Counterhit Type: The situations under which this hitbox can counterhit. NONE = Can't counterhit, NORMAL = Can counterhit if the defender's
-		//counterhitable flag is on, AERIAL = Can counterhit if the defender's counterhit flag is on and they're in the air.
-	//Launch Init Y: The initial vertical speed to set an aerial opponent to
-	//Launch Gravity Y: The gravity to set an aerial opponent to. Note: This value is ignored during normal air hitstun and is only used during launches.
-	//Launch Max Fall Speed: The max fall speed to give to the opponent. Note: This value is also ignored during normal air hitstun.
-	//Launch Speed X: The horizontal speed ot set an aerial opponent to
-	//Continue Launch: If the opponent is currently in the launch status, but this hitbox does not have its hit status set to HIT_STATUS_LAUNCH, do we
-		//force them to restart the launch status anyway, or do we just put them in regular air hitstun. Generally this should be true for heavies,
-		//false for lights, and case-by-case for mediums. 
-	//Can Chip KO: Whether or not this move can KO an opponent using its chip damage. If false, chip damage will be able to lower an opponent's HP to
-		//1, but will not be able to change it to 0
-	//Use Player Pos: Are the Anchor and Offset coords based on the player's position, or are they static coordinates on the screen. True by default,
-		//and will only be false in extremely rare situations.
 
 	//Grabbox
 	

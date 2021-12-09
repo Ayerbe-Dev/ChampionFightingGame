@@ -22,8 +22,7 @@ void controls_main(GameManager* game_manager) {
 	options_overlay.player_info[1] = player_info[1];
 
 	game_manager->set_menu_info(&options_overlay);
-	
-	bool substate_loop = true;
+
 	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
 		SDL_SetRenderTarget(g_renderer, NULL);
@@ -69,7 +68,7 @@ OptionsOverlay::OptionsOverlay() {
 }
 
 OptionsOverlay::OptionsOverlay(int width, int height, string dir) {
-	panel.init(dir);
+	panel.init(dir, false);
 	panel.destRect.w = width;
 	panel.destRect.h = height;
 	panel.destRect.x = WINDOW_WIDTH / 2;

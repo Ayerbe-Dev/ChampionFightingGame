@@ -30,7 +30,7 @@ public:
     SDL_Rect srcRect;
 
     bool render();
-    bool init(string sTexturePath);
+    bool init(string sTexturePath, bool delay = true);
     
     void setScaleFactor(float fScaleFactor);
 

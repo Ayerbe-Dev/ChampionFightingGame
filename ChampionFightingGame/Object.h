@@ -67,7 +67,7 @@ public:
 
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos(bool add_window_width = true);
-	bool is_hitbox_active(int multihit);
+	bool is_hitbox_active(int multihit = -1);
 	void clear_hitbox(int id);
 	void clear_hitbox_all();
 	void update_grabbox_pos();

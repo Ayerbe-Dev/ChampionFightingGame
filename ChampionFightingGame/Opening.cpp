@@ -13,11 +13,11 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 	const Uint8* keyboard_state;
 	SDL_RenderClear(g_renderer);
 	GameTexture titleSplash;
-	titleSplash.init("resource/ui/menu/opening/game-splash-background.png");
+	titleSplash.init("resource/ui/menu/opening/game-splash-background.png", false);
 	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
 	GameTexture textSplash;
-	textSplash.init("resource/ui/menu/opening/game-splash-text.png");
+	textSplash.init("resource/ui/menu/opening/game-splash-text.png", false);
 	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
 	u8 title_alpha = 0;

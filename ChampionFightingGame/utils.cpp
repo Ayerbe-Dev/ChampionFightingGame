@@ -54,6 +54,12 @@ string ymlChopString(string line) {
 	return line.substr(line.find("=") + 1);
 }
 
+/// <summary>
+/// SDL's rectangle collision function sucks so I made a better one.
+/// </summary>
+/// <param name="RectA">: The first rectangle</param>
+/// <param name="RectB">: The second rectangle</param>
+/// <returns>Whether or not any part of the two rectangles are touching</returns>
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB) {
 	int ax0 = RectA.x;
 	int ax1 = RectA.x + RectA.w;
@@ -104,7 +110,14 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 	return cCamera;
 }
 
-SDL_Texture* loadTexture(const char* file_path) {
+/// <summary>
+/// Loads textures. This should generally be avoided during normal gameplay as everything should be loaded beforehand.
+/// </summary>
+/// <param name="file_path">: File path from the game's directory</param>
+/// <param name="delay">: Whether or not to wait 1 frame after running, for loading thread purposes. True by default, set to false if
+/// using this function to load something with no loading screen.</param>
+/// <returns> The loaded texture</returns>
+SDL_Texture* loadTexture(const char* file_path, bool delay) {
 	SDL_LockMutex(mutex);
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {
@@ -113,10 +126,20 @@ SDL_Texture* loadTexture(const char* file_path) {
 	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
 	SDL_UnlockMutex(mutex);
-	frameTimeDelay();
+	if (delay) {
+		frameTimeDelay();
+	}
 	return ret;
 }
 
+/// <summary>
+/// Checks if a controller is making any inputs. Used for mapping a controller to a player who has none, as well as allowing any controller input to
+/// skip the opening/exit certain loading screens.
+/// 
+/// NOTE: This function is a helper function called by PlayerInfo::is_any_inputs. That function should always be called instead of this one.
+/// </summary>
+/// <param name="controller">: The controller being checked.</param>
+/// <returns>Whether or not the controller is making any inputs.</returns>
 bool is_any_controller_input(SDL_GameController* controller) {
 	for (int i = 1; i < 16; i++) {
 		if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)i)) {
@@ -131,7 +154,12 @@ bool is_any_controller_input(SDL_GameController* controller) {
 	return false;
 }
 
-
+/// <summary>
+/// Takes a string and removes a filtered version of it.
+/// </summary>
+/// <param name="to">: Base string</param>
+/// <param name="remove">: Part of the string to remove</param>
+/// <returns>Filtered string</returns>
 string Filter(const string& to, const string& remove) {
 	string ret = "";
 	string ret2 = "";
@@ -142,6 +170,23 @@ string Filter(const string& to, const string& remove) {
 
 	return ret + ret2;
 }
+
+/// <summary>
+/// Pauses the current thread until 1 frame since the last time this function was called. Also called by loadTexture in order to pause the loading
+/// thread long enough for the main thread to consistently render.
+/// </summary>
+void frameTimeDelay() {
+	auto current_time = chrono::steady_clock::now();
+	auto future_time = chrono::steady_clock::now() + 16.666ms;
+
+	//reduce the future time to account for processing time
+	future_time -= (current_time - g_chron);
+
+	while (current_time < future_time) {
+		current_time = chrono::steady_clock::now();
+	}
+	g_chron = chrono::steady_clock::now();
+};
 
 //Draw text, center-oriented, based on 0,0 = Bottom middle coords
 void draw_text(string font_name, string text, GameCoordinate pos, int font_size, int r, int g, int b, int a) {
@@ -207,20 +252,6 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 	TTF_CloseFont(font);
 }
 
-
-void frameTimeDelay() {
-	auto current_time = chrono::steady_clock::now();
-	auto future_time = chrono::steady_clock::now() + 16.666ms;
-	
-	//reduce the future time to account for processing time
-	future_time = future_time - (current_time - g_chron);
-
-	while (current_time < future_time) {
-		current_time = chrono::steady_clock::now();
-	}
-	g_chron = chrono::steady_clock::now();
-};
-
 //Take a string and divide each word from it into multiple lines (Planned to be used for the CSS)
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r, int g, int b, int a) {
 	int blank_pos = get_blank(text);
@@ -246,6 +277,9 @@ int get_blank(string s) {
 	return 0;
 }
 
+/// <summary>
+/// T H E   C Y C L E   O F   D E S T R U C T I O N   A N D   R E C R E A T I O N
+/// </summary>
 void refreshRenderer() {
 	SDL_RenderClear(g_renderer);
 	SDL_DestroyRenderer(g_renderer);
@@ -282,6 +316,11 @@ float get_relative_one_percent(float val, float denom) {
 
 GameSettings g_settings;
 
+/// <summary>
+/// Check the value of a specific setting. If the user passes an invalid setting, return 0. TODO: Make this a GameManager member function.
+/// </summary>
+/// <param name="setting">: The setting to check.</param>
+/// <returns>Value of a setting</returns>
 int getGameSetting(string setting) {
 	for (int i = 0; i < SETTING_KIND_MAX; i++) {
 		if (g_settings.settings[i].name == setting) {
@@ -291,6 +330,13 @@ int getGameSetting(string setting) {
 	return 0;
 }
 
+/// <summary>
+/// Change the setting value on the settings table to the specified value. Does NOT update the settings param file.
+/// 
+/// Use this function when the user has set a value (such as screen resolution), but has not confirmed their selection yet.
+/// </summary>
+/// <param name="setting">: The setting to change.</param>
+/// <param name="val">: What to change the new value to.</param>
 void setGameSetting(string setting, int val) {
 	for (int i = 0; i < SETTING_KIND_MAX; i++) {
 		if (g_settings.settings[i].name == setting) {
@@ -300,6 +346,9 @@ void setGameSetting(string setting, int val) {
 	}
 }
 
+/// <summary>
+/// Update the settings file to match our current list of settings. Use this whenever settings are confirmed.
+/// </summary>
 void updateGameSettings() {
 	ofstream settings;
 	settings.open("resource/save/game_settings.yml", std::ofstream::trunc);

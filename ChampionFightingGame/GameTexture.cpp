@@ -2,14 +2,14 @@
 extern SDL_Renderer* g_renderer;
 extern bool debug;
 
-bool GameTexture::init(string sTexturePath){
+bool GameTexture::init(string sTexturePath, bool delay){
 	if (bIsInitialized){
 		printf("GameTexture already initialized!\n");
 		return false;
 	}
 
 	bIsInitialized = true;
-	pTexture = loadTexture(sTexturePath.c_str());
+	pTexture = loadTexture(sTexturePath.c_str(), delay);
 	destRect.x = 0;
 	destRect.y = 0;
 	srcRect.x = 0;

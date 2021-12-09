@@ -549,9 +549,6 @@ void CSS::centerSlots() {
 void CSS::findPrevChara(int chara_kind) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (aFixedCharacterSlots[i].iCharacterId == chara_kind) {
-			cout << "Player ID: " << player_id << endl;
-			cout << "Chara Kind: " << chara_kind << endl;
-			cout << "Index: " << i << endl;
 			player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 			myCol[player_id] = aFixedCharacterSlots[i].myCol;
 			myRow[player_id] = aFixedCharacterSlots[i].myRow;

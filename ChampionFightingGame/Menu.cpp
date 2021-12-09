@@ -148,6 +148,8 @@ void menu_main(GameManager* game_manager) {
 		SDL_SetRenderTarget(g_renderer, nullptr);
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 
+		SDL_RenderPresent(g_renderer);
+
 		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
 			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {
 				game_manager->background[game_manager->layer] = pScreenTexture;
@@ -162,8 +164,6 @@ void menu_main(GameManager* game_manager) {
 			}
 			main_menu.sub_state = GAME_SUBSTATE_NONE;
 		}
-
-		SDL_RenderPresent(g_renderer);
 	}
 
 	SKIP_RENDER:

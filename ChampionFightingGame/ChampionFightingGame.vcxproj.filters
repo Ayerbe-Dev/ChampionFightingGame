@@ -456,6 +456,9 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>Source Files\Global</Filter>
     </ClCompile>
+    <ClCompile Include="3DRenderingExample.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -756,6 +759,9 @@
       <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="GameStates.h">
+      <Filter>Header Files\Game State</Filter>
+    </ClInclude>
+    <ClInclude Include="3DRenderingExample.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>

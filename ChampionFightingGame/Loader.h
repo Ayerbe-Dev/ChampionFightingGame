@@ -274,6 +274,9 @@ static int LoadDebug(void* void_DebugLoader) {
 	debug_list.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
 	debug_loader->loaded_items++;
 	frameTimeDelay();
+	debug_list.addEntry("3D Test", DEBUG_LIST_SELECTABLE, GAME_STATE_3D);
+	debug_loader->loaded_items++;
+	frameTimeDelay();
 	debug_list.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
 	debug_loader->loaded_items++;
 	frameTimeDelay();

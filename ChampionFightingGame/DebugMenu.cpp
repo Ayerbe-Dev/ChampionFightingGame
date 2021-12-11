@@ -77,7 +77,7 @@ void debugMenu(GameManager* game_manager) {
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		loadingSplash.render();
-		int total_items = 16; //Don't ask me why but I made every single line of the debug menu count as a separate item to load
+		int total_items = 17; //Don't ask me why but I made every single line of the debug menu count as a separate item to load
 		loadingBar.setTargetPercent(((float)debug_loader->loaded_items / total_items), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();

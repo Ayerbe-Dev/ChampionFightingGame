@@ -59,7 +59,7 @@ int main() {
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	g_context = SDL_GL_CreateContext(g_window);
 
-	glewExperimental = GL_TRUE;
+	glewExperimental = GL_TRUE; 
 	if (glewInit != GLEW_OK) {
 		cout << "Failed to initialize GLEW!" << endl;
 	}

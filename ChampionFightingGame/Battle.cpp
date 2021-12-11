@@ -534,6 +534,13 @@ void battle_main(GameManager* game_manager) {
 	delete battle_loader;
 }
 
+/// <summary>
+/// Compares all active hitboxes, grabboxes and hurtboxes against each other and/or renders visualizations for all boxes.
+/// </summary>
+/// <param name="p1">: Player 1 and any projectiles they may have.</param>
+/// <param name="p2">: Player 2 and any projectiles they may have.</param>
+/// <param name="visualize_boxes">: Whether or not to visualize hit/hurt/grabboxes.</param>
+/// <param name="check">: Whether or not to check collisions (This arg is false during frame advance).</param>
 void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bool check) {
 	Fighter* fighter[2] = { p1, p2 };
 	if (check) {
@@ -744,6 +751,15 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 ░░░░░░░░██████████░░░░░░░░░░░░░░██████████
 */
 
+/// <summary>
+/// Checks if any of the attacker's hitboxes have connected with any of the defender's hurtboxes, and sets up values based on what type of event the
+/// connection should trigger.
+/// </summary>
+/// <param name="attacker">: The attacker.</param>
+/// <param name="defender">: The defender.</param>
+/// <param name="hitbox">: The hitbox that connected.</param>
+/// <param name="hurtbox">: The hurtbox that connected.</param>
+/// <returns>Either the first hitbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different hitbox ID must be checked.</returns>
 int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
 	if (attacker->multihit_connected[hitbox->multihit]) {
@@ -836,6 +852,15 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 	return hitbox->id;
 }
 
+/// <summary>
+/// Checks if any of the attacker's grabboxes have connected with any of the defender's hurtboxes, and sets up values based on what type of event the
+/// connection should trigger.
+/// </summary>
+/// <param name="attacker">: The attacker.</param>
+/// <param name="defender">: The defender.</param>
+/// <param name="grabbox">: The grabbox that connected.</param>
+/// <param name="hurtbox">: The hurtbox that connected.</param>
+/// <returns>Either the first grabbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different grabbox ID must be checked.</returns>
 int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox) {
 	if (grabbox->situation_hit != SITUATION_HIT_ALL) {
 		if (grabbox->situation_hit != SITUATION_HIT_GROUND_AIR) {
@@ -857,6 +882,15 @@ int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox*
 	return grabbox->id;
 }
 
+/// <summary>
+/// Checks if any of the projectile's hitboxes have connected with any of the defender's hurtboxes, and sets up values based on what type of event the
+/// connection should trigger.
+/// </summary>
+/// <param name="attacker">: The projectile.</param>
+/// <param name="defender">: The defender.</param>
+/// <param name="hitbox">: The hitbox that connected.</param>
+/// <param name="hurtbox">: The hurtbox that connected.</param>
+/// <returns>Either the first hitbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different hitbox ID must be checked.</returns>
 int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
@@ -938,6 +972,14 @@ int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hi
 	return hitbox->id;
 }
 
+/// <summary>
+/// Handle any potential hitbox collision events between two Fighters on this frame and change statuses/decrease health accordingly.
+/// </summary>
+/// <param name="p1">: Player 1</param>
+/// <param name="p2">: Player 2</param>
+/// <param name="p1_hitbox">: Which of P1's hitboxes (if any) first connected with P2.</param>
+/// <param name="p2_hitbox">: Which of P2's hitboxes (if any) first connected with P1.</param>
+/// <returns>Whether or not any kind of collision event occured.</returns>
 bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
@@ -1154,6 +1196,14 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 	return (p1_hit || p2_hit);
 }
 
+/// <summary>
+/// Handle any potential grabbox collision events between two Fighters on this frame and change statuses accordingly.
+/// </summary>
+/// <param name="p1">: Player 1</param>
+/// <param name="p2">: Player 2</param>
+/// <param name="p1_hitbox">: Which of P1's grabboxes (if any) first connected with P2.</param>
+/// <param name="p2_hitbox">: Which of P2's grabboxes (if any) first connected with P1.</param>
+/// <returns>Whether or not any kind of collision event occured.</returns>
 void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox) {
 	bool p1_hit = p2_grabbox->id != -1;
 	bool p1_tech = p2_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH;
@@ -1198,6 +1248,14 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 	}
 }
 
+/// <summary>
+/// Handle any potential projectile collision events between two Fighters on this frame and change statuses/decrease health accordingly.
+/// </summary>
+/// <param name="p1">: Player 1</param>
+/// <param name="p2">: Player 2</param>
+/// <param name="p1_projectile">: Which of P1's projectiles (if any) first connected with P2.</param>
+/// <param name="p1_hitbox">: Which of P1's projectile's hitboxes (if any) first connected with P1.</param>
+/// <returns>Whether or not any kind of collision event occured.</returns>
 void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox) {
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p2_status_post_hit = p2->status_kind;
@@ -1279,6 +1337,12 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="defender"></param>
+/// <param name="hitbox"></param>
+/// <returns></returns>
 bool can_counterhit(Fighter* defender, Hitbox* hitbox) {
 	if (defender->anim_kind->name == "hitstun_parry" || defender->anim_kind->name == "hitstun_parry_air") {
 		return true;
@@ -1287,6 +1351,12 @@ bool can_counterhit(Fighter* defender, Hitbox* hitbox) {
 	|| (defender->situation_kind == FIGHTER_SITUATION_AIR && hitbox->counterhit_type == COUNTERHIT_TYPE_AERIAL));
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="hit_status"></param>
+/// <param name="situation_kind"></param>
+/// <returns></returns>
 int get_damage_status(int hit_status, int situation_kind) {
 	if (hit_status == HIT_STATUS_CRUMPLE) {
 		if (situation_kind == FIGHTER_SITUATION_AIR) {
@@ -1317,6 +1387,10 @@ int get_damage_status(int hit_status, int situation_kind) {
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="fighter"></param>
 void decrease_common_fighter_variables(Fighter* fighter) {
 	if (fighter->fighter_int[FIGHTER_INT_236_TIMER] != 0) {
 		fighter->fighter_int[FIGHTER_INT_236_TIMER] --;
@@ -1394,6 +1468,10 @@ void decrease_common_fighter_variables(Fighter* fighter) {
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="projectile"></param>
 void decrease_common_projectile_variables(Projectile* projectile) {
 	if (projectile->projectile_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {
 		projectile->projectile_int[PROJECTILE_INT_ACTIVE_TIME] --;
@@ -1403,6 +1481,11 @@ void decrease_common_projectile_variables(Projectile* projectile) {
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="p1"></param>
+/// <param name="p2"></param>
 void cleanup(IObject* p1, IObject* p2) {
 	Fighter* fighter[2];
 	fighter[0] = p1->get_fighter();

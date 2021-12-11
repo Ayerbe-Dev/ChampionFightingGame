@@ -32,65 +32,19 @@ SoundManager g_soundmanager;
 auto g_chron = chrono::steady_clock::now();
 SDL_mutex* mutex;
 
-int main() {	
+void initialize_SDL();
+void initialize_GLEW();
+void initialize_GLFW();
+
+int main() {
 	//Hide the console window. It'll be a LONG time before we get to uncomment these lines
 
 //	HWND windowHandle = GetConsoleWindow();
 //	ShowWindow(windowHandle, SW_HIDE);
 
-	//Initialize SDL
-
-	if (SDL_Init(SDL_INIT_EVERYTHING)) {
-		printf("Error initializing SDL: %s\n", SDL_GetError());
-	}
-	if (TTF_Init() < 0) {
-		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
-	}
-
-	//Create the window and the renderer
-
-	if (getGameSetting("fullscreen")) {
-		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
-	}
-	else {
-		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	}
-
-	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
-	g_context = SDL_GL_CreateContext(g_window);
-
-	glewExperimental = GL_TRUE; 
-	if (glewInit != GLEW_OK) {
-		cout << "Failed to initialize GLEW!" << endl;
-	}
-
-	mutex = SDL_CreateMutex();
-
-	//Initialize controller input
-
-	SDL_GameControllerEventState(SDL_ENABLE);
-
-	//Initialize audio
-
-	SDL_AudioSpec format;
-	format.freq = 22050;
-	format.format = AUDIO_F32SYS;
-	format.channels = 2;
-	format.samples = 361; 
-	/*
-	The number of samples needs to be a perfect square, and that value represents how much data will go into each iteration of the callback. Since the
-	callback only runs when the program determines it is time to load in more audio data, this value also effectively sets how often the callback will
-	run. The value of 361 (19*19) causes the callback to run ~61 times per second, which allows it to sync up with frame advance.
-	*/
-	format.callback = audio_callback;
-	format.userdata = NULL;
-
-	if (SDL_OpenAudio(&format, NULL) < 0) {
-		printf("Error opening SDL_audio: %s\n", SDL_GetError());
-	}
-	SDL_PauseAudio(0);
-
-	g_soundmanager = SoundManager(true);
+	initialize_SDL();
+	initialize_GLEW();
+	initialize_GLFW();
 
 	GameManager game_manager;
 
@@ -130,6 +84,75 @@ int main() {
 	exit(0);
 //	Same goes for this line; causes a crash on exit if we return 0 normally which wouldn't normally be a problem but again, clean exits
 //	Don't ask me why exit(0) is ok but return 0 isn't, I cannot answer that question.
+}
+
+void initialize_SDL() {
+	//Initialize Most of SDL
+
+	if (SDL_Init(SDL_INIT_EVERYTHING)) {
+		printf("Error initializing SDL: %s\n", SDL_GetError());
+	}
+
+	//Initialize TTF
+
+	if (TTF_Init() < 0) {
+		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
+	}
+
+	//Initialize Controllers
+
+	SDL_GameControllerEventState(SDL_ENABLE);
+
+
+	//Create the window
+
+	if (getGameSetting("fullscreen")) {
+		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	else {
+		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	}
+
+	//Initialize a bunch of globals
+
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	g_context = SDL_GL_CreateContext(g_window);
+	mutex = SDL_CreateMutex();
+
+	//Initialize Audio
+
+	SDL_AudioSpec format;
+	format.freq = 22050;
+	format.format = AUDIO_F32SYS;
+	format.channels = 2;
+	format.samples = 361;
+	/*
+	The number of samples needs to be a perfect square, and that value represents how much data will go into each iteration of the callback. Since the
+	callback only runs when the program determines it is time to load in more audio data, this value also effectively sets how often the callback will
+	run. The value of 361 (19*19) causes the callback to run ~61 times per second, which allows it to sync up with frame advance.
+	*/
+	format.callback = audio_callback;
+	format.userdata = NULL;
+
+	if (SDL_OpenAudio(&format, NULL) < 0) {
+		printf("Error opening SDL_audio: %s\n", SDL_GetError());
+	}
+	SDL_PauseAudio(0);
+
+	g_soundmanager = SoundManager(true);
+}
+
+void initialize_GLEW() {
+	glewExperimental = GL_TRUE;
+	if (glewInit() != GLEW_OK) {
+		cout << "Failed to initialize GLEW!" << endl;
+	}
+}
+
+void initialize_GLFW() {
+	if (!glfwInit()) {
+		cout << "Failed to initialize GLFW!" << endl;
+	}
 }
 
 void example_main(GameManager* game_manager) {

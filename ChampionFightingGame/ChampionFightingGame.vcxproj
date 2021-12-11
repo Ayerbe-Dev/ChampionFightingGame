@@ -96,17 +96,25 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;$(SolutionDir)\dependencies\x86\glfw-3.3.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\SDL2\lib;$(SolutionDir)\dependencies\x86\glew-2.1.0\lib;$(SolutionDir)\dependencies\x86\glfw-3.3.6\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libwebp-4.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libtiff-5.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libpng16-16.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\zlib1.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\glfw-3.3.6\bin\glfw3.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\glew-2.1.0\bin\glew32.dll" "$(TargetDir)</Command>
       <Message>Copies neccesary DLL files on successful build</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -118,16 +126,28 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;$(SolutionDir)\dependencies\x86\glfw-3.3.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\SDL2\lib;$(SolutionDir)\dependencies\x86\glew-2.1.0\lib;$(SolutionDir)\dependencies\x86\glfw-3.3.6\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libwebp-4.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libtiff-5.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libpng16-16.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\zlib1.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\glfw-3.3.6\bin\glfw3.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\glew-2.1.0\bin\glew32.dll" "$(TargetDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -135,14 +155,26 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;$(SolutionDir)\dependencies\x64\glfw-3.3.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>SDL2_image.lib;SDL2.lib;SDL2main.lib;libpng16-16.lib;SDL2_ttf.lib;libtiff-5.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\SDL2\lib;$(SolutionDir)\dependencies\x64\glew-2.1.0\lib;$(SolutionDir)\dependencies\x64\glfw-3.3.6\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libwebp-4.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libtiff-5.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libpng16-16.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\zlib1.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\glfw-3.3.6\bin\glfw3.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,18 +184,31 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;$(SolutionDir)\dependencies\x64\glfw-3.3.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\SDL2\lib;$(SolutionDir)\dependencies\x64\glew-2.1.0\lib;$(SolutionDir)\dependencies\x64\glfw-3.3.6\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libwebp-4.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libtiff-5.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libpng16-16.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\zlib1.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\glfw-3.3.6\bin\glfw3.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="3DRenderingExample.cpp" />
     <ClCompile Include="Alejandro.cpp" />
     <ClCompile Include="AlejandroMoves.cpp" />
     <ClCompile Include="AlejandroStatus.cpp" />
@@ -285,6 +330,7 @@
     <ClCompile Include="ZyairStatus.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3DRenderingExample.h" />
     <ClInclude Include="Alejandro.fwd.h" />
     <ClInclude Include="Alejandro.h" />
     <ClInclude Include="Angelica.fwd.h" />

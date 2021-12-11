@@ -4,6 +4,7 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include "SDL.h"
+#include <glew.h>
 #include <sstream>
 #include <SDL_ttf.h>
 #include "GameCoordinate.fwd.h"

@@ -27,6 +27,7 @@ int registered_controllers[2] = { -1, -1 };
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
+SDL_GLContext g_context;
 SoundManager g_soundmanager;
 auto g_chron = chrono::steady_clock::now();
 SDL_mutex* mutex;
@@ -49,13 +50,20 @@ int main() {
 	//Create the window and the renderer
 
 	if (getGameSetting("fullscreen")) {
-		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
-		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_RESIZABLE);
+		g_window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	g_context = SDL_GL_CreateContext(g_window);
+
+	glewExperimental = GL_TRUE;
+	if (glewInit != GLEW_OK) {
+		cout << "Failed to initialize GLEW!" << endl;
+	}
+
 	mutex = SDL_CreateMutex();
 
 	//Initialize controller input

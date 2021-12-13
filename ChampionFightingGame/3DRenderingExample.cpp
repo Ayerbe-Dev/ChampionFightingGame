@@ -11,9 +11,24 @@ void three_d_rendering_main(GameManager* game_manager) {
 
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
+
+	float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
 	
 	while (three_deeing) {
 		frameTimeDelay();
+		glClearColor(1, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		unsigned int VBO;
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -38,8 +53,6 @@ void three_d_rendering_main(GameManager* game_manager) {
 			}
 		}
 
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		SDL_GL_SwapWindow(g_window);
 	}
 	game_manager->update_state(GAME_STATE_DEBUG_MENU);

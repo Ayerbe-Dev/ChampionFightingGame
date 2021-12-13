@@ -34,7 +34,6 @@ SDL_mutex* mutex;
 
 void initialize_SDL();
 void initialize_GLEW();
-void initialize_GLFW();
 
 int main() {
 	//Hide the console window. It'll be a LONG time before we get to uncomment these lines
@@ -44,7 +43,6 @@ int main() {
 
 	initialize_SDL();
 	initialize_GLEW();
-	initialize_GLFW();
 
 	GameManager game_manager;
 
@@ -147,12 +145,7 @@ void initialize_GLEW() {
 	if (glewInit() != GLEW_OK) {
 		cout << "Failed to initialize GLEW!" << endl;
 	}
-}
-
-void initialize_GLFW() {
-	if (!glfwInit()) {
-		cout << "Failed to initialize GLFW!" << endl;
-	}
+	SDL_GL_SetSwapInterval(1);
 }
 
 void example_main(GameManager* game_manager) {

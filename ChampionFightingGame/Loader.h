@@ -197,31 +197,31 @@ static int LoadCharaSelect(void* void_CharaSelectLoader) {
 	css.player_info[0] = chara_select_loader->player_info[0];
 	css.player_info[1] = chara_select_loader->player_info[1];
 
-	if (css.loadCSS()) {
+	if (css.load_css()) {
 		displayLoadingScreen();
 		chara_select_loader->player_info[0]->crash_reason = "Could not open CSS file!";
 		return 1;
 	}
 	chara_select_loader->loaded_items++;
-	if (css.numRows == 0) {
-		css.myCol[0] = 1;
-		css.myCol[1] = 1;
+	if (css.num_rows == 0) {
+		css.my_col[0] = 1;
+		css.my_col[1] = 1;
 	}
 	for (int i = 0; i < 2; i++) {
 		css.player_id = i;
 		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css.findPrevChara(css.player_info[i]->chara_kind);
+			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
 		}
 	}
 
 	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	cursors[0].cursorTexture.setScaleFactor(1.2);
-	cursors[0].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+	cursors[0].texture.setScaleFactor(1.2);
+	cursors[0].texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 	chara_select_loader->loaded_items++;
 
 	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	cursors[1].cursorTexture.setScaleFactor(1.2);
-	cursors[1].cursorTexture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+	cursors[1].texture.setScaleFactor(1.2);
+	cursors[1].texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 	chara_select_loader->loaded_items++;
 
 	chara_select_loader->css = css;

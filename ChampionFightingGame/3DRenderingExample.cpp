@@ -2,6 +2,10 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
+/// <summary>
+/// Environment for learning and testing 3D rendering with OpenGL. Not to actually be used in the finished product.
+/// </summary>
+/// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
 void three_d_rendering_main(GameManager* game_manager) {
 	PlayerInfo* player_info[2];
 	player_info[0] = game_manager->player_info[0];

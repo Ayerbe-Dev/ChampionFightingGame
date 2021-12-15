@@ -71,6 +71,8 @@ int main() {
 	game_manager.~GameManager();
 	g_soundmanager.unloadSoundAll();
 	SDL_DestroyWindow(g_window);
+	SDL_GL_DeleteContext(g_context);
+	SDL_DestroyRenderer(g_renderer);
 	SDL_DestroyMutex(mutex);
 
 	SDL_Quit();

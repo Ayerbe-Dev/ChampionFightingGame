@@ -67,6 +67,10 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 
+/// <summary>
+/// The main function for normal gameplay
+/// </summary>
+/// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
 void battle_main(GameManager* game_manager) {
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];

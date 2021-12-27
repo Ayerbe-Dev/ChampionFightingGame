@@ -145,6 +145,9 @@
     <Filter Include="resource\shaders">
       <UniqueIdentifier>{e3539569-39ad-4e94-8d61-0fb3f3d108bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Deps">
+      <UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -783,14 +786,32 @@
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Zyair.fwd.h">
-      <Filter>Header Files</Filter>
+      <Filter>Forward Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files\Deps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\vertex_core.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\fragment_col_blend.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
     <None Include="resource\shaders\fragment_core.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_tex_blend.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_tex_col_blend.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_model.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_model_col.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

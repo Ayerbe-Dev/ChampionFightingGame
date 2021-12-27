@@ -1,6 +1,7 @@
 #include "RenderManager.h"
+using namespace glm;
 
-bool load_shaders(u32 *program) {
+Shader::Shader(string vertex_dir, string fragment_dir) {
 	char info_log[512];
 	int success;
 
@@ -9,10 +10,10 @@ bool load_shaders(u32 *program) {
 
 	ifstream shader_file;
 
-	shader_file.open("resource/shaders/vertex_core.glsl");
+	shader_file.open("resource/shaders/" + vertex_dir);
 	if (shader_file.fail()) {
 		cout << "Could not open Vertex Core Shader File!" << endl;
-		return false;
+		return;
 	}
 
 	while (getline(shader_file, input)) {
@@ -30,16 +31,15 @@ bool load_shaders(u32 *program) {
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
 		cout << "Could not compile Vertex Core!" << info_log << endl;
-		return false;
 	}
 
 	input = "";
 	source = "";
 
-	shader_file.open("resource/shaders/fragment_core.glsl");
+	shader_file.open("resource/shaders/" + fragment_dir);
 	if (shader_file.fail()) {
 		cout << "Could not open Fragment Core Shader File!" << endl;
-		return false;
+		return;
 	}
 
 	while (getline(shader_file, input)) {
@@ -57,24 +57,115 @@ bool load_shaders(u32 *program) {
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, info_log);
 		cout << "Could not compile Fragment Core!" << info_log << endl;
-		return false;
+		return;
 	}
 
-	*program = glCreateProgram();
-	glAttachShader(*program, vertexShader);
-	glAttachShader(*program, fragmentShader);
-	glLinkProgram(*program);
+	program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+	glLinkProgram(program);
 
-	glGetShaderiv(*program, GL_LINK_STATUS, &success);
+	glGetShaderiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(*program, 512, NULL, info_log);
+		glGetProgramInfoLog(program, 512, NULL, info_log);
 		cout << "Could not link Program!" << info_log << endl;
-		return false;
 	}
 
 	glUseProgram(0);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+}
 
-	return true;
+Shader::~Shader() {
+	glDeleteProgram(program);
+}
+
+void Shader::use() {
+	glUseProgram(program);
+}
+
+void Shader::set_bool(const string& name, bool value) const {
+	glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
+}
+
+void Shader::set_int(const string& name, int value) const {
+	glUniform1i(glGetUniformLocation(program, name.c_str()), value);
+}
+
+void Shader::set_float(const string& name, float value) const {
+	glUniform1f(glGetUniformLocation(program, name.c_str()), value);
+}
+
+void Shader::set_vec2(const string& name, const vec2& value) const {
+	glUniform2fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
+}
+
+void Shader::set_vec2(const string& name, float x, float y) const {
+	glUniform2f(glGetUniformLocation(program, name.c_str()), x, y);
+}
+
+void Shader::set_vec3(const string& name, const vec3& value) const {
+	glUniform3fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
+}
+
+void Shader::set_vec3(const string& name, float x, float y, float z) const {
+	glUniform3f(glGetUniformLocation(program, name.c_str()), x, y, z);
+}
+
+void Shader::set_vec4(const string& name, const vec4& value) const {
+	glUniform4fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
+}
+void Shader::set_vec4(const string& name, float x, float y, float z, float w) {
+	glUniform4f(glGetUniformLocation(program, name.c_str()), x, y, z, w);
+}
+
+void Shader::set_mat2(const string& name, const mat2& mat) const {
+	glUniformMatrix2fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_mat3(const string& name, const mat3& mat) const {
+	glUniformMatrix3fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_mat4(const string& name, const mat4& mat) const {
+	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+Camera::Camera() {}
+
+mat4 Camera::get_view() {
+	return lookAt(pos, pos + front, up);
+}
+
+void Camera::add_pos(float x, float y, float z, float speed) {
+	if (speed == 0.0) {
+		speed = cam_speed;
+	}
+
+	pos.x += x * speed;
+	pos.y += y * speed;
+	pos.z += z * speed;
+	update_view();
+}
+
+void Camera::adjust_view(float x, float y, float z, float speed) {
+	if (speed == 0.0) {
+		speed = cam_sens;
+	}
+
+	yaw += x * speed;
+	pitch = clampf(-89.0, pitch + (y * speed), 89.0);
+	fov = clampf(1.0, fov + (z * speed), 45.0);
+	update_view();
+}
+
+void Camera::update_view() {
+	glm::vec3 new_front;
+	new_front.x = cos(radians(yaw)) * cos(radians(pitch));
+	new_front.y = sin(radians(pitch));
+	new_front.z = sin(radians(yaw)) * cos(radians(pitch));
+	front = normalize(new_front);
+
+	right = normalize(cross(front, world_up));
+	up = normalize(cross(right, front));
 }

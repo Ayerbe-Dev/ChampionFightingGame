@@ -111,7 +111,7 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 }
 
 /// <summary>
-/// Loads textures. This should generally be avoided during normal gameplay as everything should be loaded beforehand.
+/// Loads SDL textures. This should generally be avoided during normal gameplay as everything should be loaded beforehand.
 /// </summary>
 /// <param name="file_path">: File path from the game's directory</param>
 /// <param name="delay">: Whether or not to wait 1 frame after running, for loading thread purposes. True by default, set to false if

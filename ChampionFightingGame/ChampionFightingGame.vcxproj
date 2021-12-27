@@ -422,6 +422,7 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
     <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="FighterStatus.h" />
     <ClInclude Include="StageSelect.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Sully.fwd.h" />
     <ClInclude Include="Sully.h" />
     <ClInclude Include="Tessa.fwd.h" />
@@ -437,8 +438,13 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
     <ClInclude Include="Zyair.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resource\shaders\fragment_col_blend.glsl" />
     <None Include="resource\shaders\fragment_core.glsl" />
+    <None Include="resource\shaders\fragment_tex_blend.glsl" />
+    <None Include="resource\shaders\fragment_tex_col_blend.glsl" />
     <None Include="resource\shaders\vertex_core.glsl" />
+    <None Include="resource\shaders\vertex_model.glsl" />
+    <None Include="resource\shaders\vertex_model_col.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -136,6 +136,15 @@
     <Filter Include="Source Files\Objects\Projectile\Projectile\Functions">
       <UniqueIdentifier>{fdc28fee-9043-4574-a07b-55b992826cbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Managers">
+      <UniqueIdentifier>{60c88659-286b-4c67-a538-a286b56bb0e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\shaders">
+      <UniqueIdentifier>{e3539569-39ad-4e94-8d61-0fb3f3d108bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -156,12 +165,6 @@
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>Source Files\Global</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
-      <Filter>Source Files\Global</Filter>
-    </ClCompile>
     <ClCompile Include="Stage.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
@@ -176,9 +179,6 @@
     </ClCompile>
     <ClCompile Include="Options.cpp">
       <Filter>Source Files\Game State</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSettings.cpp">
-      <Filter>Source Files\Global</Filter>
     </ClCompile>
     <ClCompile Include="Fighter.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter</Filter>
@@ -453,19 +453,31 @@
     <ClCompile Include="StageSelect.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager.cpp">
-      <Filter>Source Files\Global</Filter>
-    </ClCompile>
     <ClCompile Include="3DRenderingExample.cpp">
       <Filter>Source Files\Game State</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSettings.cpp">
+      <Filter>Source Files\Member</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>Source Files\Member</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Zyair.fwd.h">
-      <Filter>Forward Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vesuvius.fwd.h">
       <Filter>Forward Header Files</Filter>
@@ -713,16 +725,7 @@
     <ClInclude Include="Debugger.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
     <ClInclude Include="Loader.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundManager.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="GameMenu.h">
@@ -755,14 +758,40 @@
     <ClInclude Include="StageSelect.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
-      <Filter>Header Files\Global</Filter>
-    </ClInclude>
     <ClInclude Include="GameStates.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="3DRenderingExample.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Header Files\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>Header Files\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Zyair.fwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource\shaders\vertex_core.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_core.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ using namespace std;
 #include <SDL_ttf.h>
 #include "GameCoordinate.fwd.h"
 #include "GameCoordinate.h"
-
+#include <glm.hpp>
 #include "Constants.h"
 #include "GameTexture.h"
 
@@ -124,10 +124,15 @@ struct Offset
 	int offset_y;
 };
 
-struct Vec4f
-{
-	int x;
-	int y;
-	int z;
-	int w;
+struct Vec4f {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
+struct Vertex {
+	glm::vec3 pos;
+	glm::vec3 col;
+	glm::vec2 tex_coord;
 };

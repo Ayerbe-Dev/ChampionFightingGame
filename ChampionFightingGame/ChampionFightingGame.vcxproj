@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;$(SolutionDir)\dependencies\x86\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,7 @@ copy /Y "$(SolutionDir)dependencies\x86\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;$(SolutionDir)\dependencies\x86\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +155,7 @@ copy /Y "$(SolutionDir)dependencies\x86\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;$(SolutionDir)\dependencies\x64\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,7 +184,7 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;$(SolutionDir)\dependencies\x64\glm\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -304,6 +304,8 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
     <ClCompile Include="Ramona.cpp" />
     <ClCompile Include="RamonaMoves.cpp" />
     <ClCompile Include="RamonaStatus.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
     <ClCompile Include="RoyMoves.cpp" />
@@ -405,6 +407,8 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
     <ClInclude Include="ProjectileStatus.h" />
     <ClInclude Include="Ramona.fwd.h" />
     <ClInclude Include="Ramona.h" />
+    <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="RenderObject.h" />
     <ClInclude Include="Roy.fwd.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyFireball.fwd.h" />
@@ -431,6 +435,10 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
     <ClInclude Include="VC.h" />
     <ClInclude Include="Zyair.fwd.h" />
     <ClInclude Include="Zyair.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource\shaders\fragment_core.glsl" />
+    <None Include="resource\shaders\vertex_core.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

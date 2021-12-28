@@ -27,6 +27,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 	//the ones used in the shader constructor. You need one vertex shader and one fragment shader, and the constructor will look for whatever you 
 	//give it within resource/shaders/
 	Shader shader("vertex_model_col.glsl", "fragment_tex_col_blend.glsl");
+	Shader color_shader("vertex_lighting.glsl", "fragment_lighting.glsl");
+	Shader light_source("vertex_lighting.glsl", "fragment_light_source.glsl");
 
 	//Each of these represents the face of a cube. We're gonna pull this info directly from model files in the future.
 
@@ -77,6 +79,49 @@ void three_d_rendering_main(GameManager* game_manager) {
 		-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 0.0f,	0.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	0.0f, 1.0f
 	};
+	float light_vertices[] = {
+	   -0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+	   -0.5f,  0.5f, -0.5f,
+	   -0.5f, -0.5f, -0.5f,
+
+	   -0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+	   -0.5f,  0.5f,  0.5f,
+	   -0.5f, -0.5f,  0.5f,
+
+	   -0.5f,  0.5f,  0.5f,
+	   -0.5f,  0.5f, -0.5f,
+	   -0.5f, -0.5f, -0.5f,
+	   -0.5f, -0.5f, -0.5f,
+	   -0.5f, -0.5f,  0.5f,
+	   -0.5f,  0.5f,  0.5f,
+
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+
+	   -0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+	   -0.5f, -0.5f,  0.5f,
+	   -0.5f, -0.5f, -0.5f,
+
+	   -0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+	   -0.5f,  0.5f,  0.5f,
+	   -0.5f,  0.5f, -0.5f,
+	};
 
 	//Creating multiple cubes, these are just offsets for each one.
 	vec3 cubePositions[] = {
@@ -91,6 +136,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	vec3(1.5f,  0.2f, -1.5f),
 	vec3(-1.3f,  1.0f, -1.5f)
 	};
+	vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 	//Basically a rendering context for vertices. This is what the vertices get rendered to.
 	unsigned int VAO;
@@ -103,23 +149,48 @@ void three_d_rendering_main(GameManager* game_manager) {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	//Color time
+
+	unsigned int cubeVAO;
+	glGenVertexArrays(1, &cubeVAO);
+	glBindVertexArray(cubeVAO);
+
+	unsigned int lightCubeVAO;
+	glGenVertexArrays(1, &lightCubeVAO);
+	glBindVertexArray(lightCubeVAO);
+
+	unsigned int lightVBO;
+	glGenBuffers(1, &lightVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(light_vertices), light_vertices, GL_STATIC_DRAW);
+
 	//Helps the GPU understand which part of that vertices array corresponds to what.
 
 	//I can't add comments to the shader code because it is interpreted as raw text, call me if you can't figure that part out.
-
+	
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); //The part of each vertex that corresponds to position
 	glEnableVertexAttribArray(0);
-
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); //The part of each vertex that corresponds to color
 	glEnableVertexAttribArray(1);
-
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); //The part of each vertex that corresponds to tex coords
 	glEnableVertexAttribArray(2);
 
-	glBindVertexArray(0); //Make sure none of the vertex arrays are currently bound
+	glBindVertexArray(cubeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 
+	glBindVertexArray(lightCubeVAO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0); //Make sure none of the vertex arrays are currently bound
+						  
 	//A bunch of textures, I believe loaded into the current VBO
 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	unsigned int texture1;
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);	
@@ -162,9 +233,12 @@ void three_d_rendering_main(GameManager* game_manager) {
 	}
 	stbi_image_free(data);
 
-	shader.use(); //Set that shader from earlier to the active one
 	shader.set_int("texture1", 0); //"texture1" and "texture2" are variable names in the fragment shader, and the 0 and 1 specify which actual textures
 	shader.set_int("texture2", 1); //that will be bound in a sec to use
+
+	color_shader.use();
+	color_shader.set_vec3("object_col", 1.0f, 0.5f, 0.31f);
+	color_shader.set_vec3("light_col", 1.0f, 1.0f, 1.0f);
 
 	Camera camera; //No constructor needed
 
@@ -173,14 +247,6 @@ void three_d_rendering_main(GameManager* game_manager) {
 
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		glActiveTexture(GL_TEXTURE0); //Set texture0 to the target texture
-		glBindTexture(GL_TEXTURE_2D, texture1); //Bind "texture1" (the crate texture) to it
-		glActiveTexture(GL_TEXTURE1); //Repeat for the Ryu texture
-		glBindTexture(GL_TEXTURE_2D, texture2);
-
-		shader.use(); //If we're gonna be bouncing between shaders a lot, then we need to switch the active shader to whatever is relevant, it all depends.
-		
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -239,12 +305,28 @@ void three_d_rendering_main(GameManager* game_manager) {
 		mat4 view = camera.get_view();
 		mat4 projection = perspective(radians(camera.fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glActiveTexture(GL_TEXTURE0); //Set texture0 to the target texture
+		glBindTexture(GL_TEXTURE_2D, texture1); //Bind "texture1" (the crate texture) to it
+		glActiveTexture(GL_TEXTURE1); //Repeat for the Ryu texture
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 		//setting variables within the vertex shaders 
 
+		shader.use(); //If we're gonna be bouncing between shaders a lot, then we need to switch the active shader to whatever is relevant, it all depends.
 		shader.set_mat4("view", view);
 		shader.set_mat4("projection", projection);
 
-		glBindVertexArray(VAO); //Setting the current vertex array
+		color_shader.use();
+		color_shader.set_mat4("view", view);
+		color_shader.set_mat4("projection", projection);
+
+		light_source.use();
+		light_source.set_mat4("view", view);
+		light_source.set_mat4("projection", projection);
+
+/*		glBindVertexArray(VAO); //Setting the current vertex array
+		shader.use();
 		for (unsigned int i = 0; i < 10; i++) {
 			mat4 model = mat4(1.0f); //Setting up each of the cubes
 			model = translate(model, cubePositions[i]); //Translating them based on those offsets from earlier
@@ -254,7 +336,24 @@ void three_d_rendering_main(GameManager* game_manager) {
 			shader.set_mat4("model", model); //Set another vertex shader var
 
 			glDrawArrays(GL_TRIANGLES, 0, 36); //Draw vertices 0-36 from the current VAO and VBO (the faces)
-		}
+		}*/
+
+		color_shader.use();
+		glBindVertexArray(cubeVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+		mat4 model = mat4(1.0);
+		color_shader.set_mat4("model", model);
+		color_shader.use();
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		light_source.use();
+		glBindVertexArray(lightCubeVAO);
+		model = mat4(1.0);
+		model = translate(model, lightPos);
+		model = scale(model, vec3(0.2f));
+		light_source.set_mat4("model", model);
+		light_source.use();
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		SDL_GL_SwapWindow(g_window);
 	}

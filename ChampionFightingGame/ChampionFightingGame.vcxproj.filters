@@ -814,5 +814,14 @@
     <None Include="resource\shaders\vertex_model_col.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\vertex_lighting.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_lighting.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_light_source.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

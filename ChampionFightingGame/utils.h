@@ -13,6 +13,7 @@ using namespace std;
 #include "Constants.h"
 #include "GameTexture.h"
 
+
 typedef char i8;
 typedef unsigned char u8;
 typedef short i16;
@@ -70,7 +71,8 @@ int ymlChopInt(string line);
 float ymlChopFloat(string line);
 string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
-SDL_Texture *loadTexture(const char *file_path, bool delay = true);
+SDL_Texture *loadSDLTexture(const char *file_path, bool delay = true);
+unsigned int loadGLTexture(const char* file_path);
 bool is_any_controller_input(SDL_GameController* controller);
 string Filter(const string& to, const string& remove);
 void draw_text(string font_name, string text, GameCoordinate pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);

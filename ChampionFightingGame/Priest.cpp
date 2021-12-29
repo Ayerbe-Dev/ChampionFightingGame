@@ -18,7 +18,7 @@ Priest::Priest(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 	loadPriestStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_PRIEST;
-	this->base_texture = loadTexture("resource/chara/priest/sprite/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/priest/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

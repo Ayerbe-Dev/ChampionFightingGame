@@ -18,7 +18,7 @@ Angelica::Angelica(int id, PlayerInfo* player_info, FighterAccessor* fighter_acc
 	loadAngelicaStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_CHARA_TEMPLATE;
-	this->base_texture = loadTexture("resource/chara/angelica/sprite/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/angelica/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

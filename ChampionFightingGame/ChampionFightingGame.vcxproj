@@ -442,10 +442,13 @@ copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
     <None Include="resource\shaders\fragment_core.glsl" />
     <None Include="resource\shaders\fragment_lighting.glsl" />
     <None Include="resource\shaders\fragment_light_source.glsl" />
+    <None Include="resource\shaders\fragment_mat.glsl" />
     <None Include="resource\shaders\fragment_tex_blend.glsl" />
     <None Include="resource\shaders\fragment_tex_col_blend.glsl" />
     <None Include="resource\shaders\vertex_core.glsl" />
     <None Include="resource\shaders\vertex_lighting.glsl" />
+    <None Include="resource\shaders\vertex_light_source.glsl" />
+    <None Include="resource\shaders\vertex_mat.glsl" />
     <None Include="resource\shaders\vertex_model.glsl" />
     <None Include="resource\shaders\vertex_model_col.glsl" />
   </ItemGroup>

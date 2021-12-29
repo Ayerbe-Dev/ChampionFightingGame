@@ -18,7 +18,7 @@ Roy::Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ROY;
-	this->base_texture = loadTexture("resource/chara/roy/sprite/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/roy/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

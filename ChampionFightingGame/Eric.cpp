@@ -19,7 +19,7 @@ Eric::Eric(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 	loadEricStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ERIC;
-	this->base_texture = loadTexture("resource/chara/eric/sprite/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/eric/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

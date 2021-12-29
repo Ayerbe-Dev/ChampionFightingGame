@@ -358,27 +358,27 @@ void MainMenu::init(){
 	}
 	
 	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[0] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_option_text[1] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Story.png");
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Arcade.png");
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Training.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[0] = loadSDLTexture("resource/ui/menu/main/Story.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[1] = loadSDLTexture("resource/ui/menu/main/Arcade.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_option_text[2] = loadSDLTexture("resource/ui/menu/main/Training.png");
 	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/PlayerVsPlayer.png");
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/PlayerVsCPU.png");
-	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[0] = loadSDLTexture("resource/ui/menu/main/PlayerVsPlayer.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[1] = loadSDLTexture("resource/ui/menu/main/PlayerVsCPU.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_option_text[2] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[0] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[1] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[2] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[3] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_option_text[4] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadTexture("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[0] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[1] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[2] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_option_text[3] = loadSDLTexture("resource/ui/menu/main/Placeholder.png");
 };
 
 void MainMenu::render() {
@@ -436,10 +436,10 @@ void MainMenu::process_submenu_tables() {
 
 MenuItem::MenuItem() {}
 MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
-	this->texture = loadTexture(texture_dir.c_str());
+	this->texture = loadSDLTexture(texture_dir.c_str());
 	this->destRect = { 0,0, 348,48 };
 	this->destination = destination;
-	this->texture_description = loadTexture(texture_description_dir.c_str());
+	this->texture_description = loadSDLTexture(texture_description_dir.c_str());
 	this->destRect_description = { 0,0,780,1080 };
 }
 
@@ -451,7 +451,7 @@ SubMenuTable::SubMenuTable(int selection) {
 	sub_rect.w = WINDOW_WIDTH * 0.25;
 	sub_rect.h = WINDOW_HEIGHT * 0.75;
 	this->destRect = sub_rect;
-	this->texture = loadTexture("resource/ui/menu/main/SubMenu.png");
+	this->texture = loadSDLTexture("resource/ui/menu/main/SubMenu.png");
 	this->selection = selection;
 	this->cursor = new Cursor();
 	selected_item = 0;
@@ -464,5 +464,5 @@ Cursor::Cursor() {
 	cursor_rect.w = 45;
 	cursor_rect.h = 45;
 	this->destRect = cursor_rect;
-	this->texture = loadTexture("resource/ui/menu/main/Cursor.png");
+	this->texture = loadSDLTexture("resource/ui/menu/main/Cursor.png");
 }

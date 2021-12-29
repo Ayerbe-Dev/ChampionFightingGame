@@ -823,5 +823,14 @@
     <None Include="resource\shaders\fragment_light_source.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\vertex_light_source.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_mat.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_mat.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

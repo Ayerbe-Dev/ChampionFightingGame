@@ -18,7 +18,7 @@ Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_a
 	loadAlejandroStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ALEJANDRO;
-	this->base_texture = loadTexture("resource/chara/alejandro/sprite/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/alejandro/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

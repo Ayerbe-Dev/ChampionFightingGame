@@ -18,7 +18,7 @@ Vesuvius::Vesuvius(int id, PlayerInfo* player_info, FighterAccessor* fighter_acc
 	loadVesuviusStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_VESUVIUS;
-	this->base_texture = loadTexture("resource/chara/vesuvius/sprite/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/vesuvius/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

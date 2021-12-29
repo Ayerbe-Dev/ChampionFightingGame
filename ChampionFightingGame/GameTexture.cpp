@@ -9,7 +9,7 @@ bool GameTexture::init(string sTexturePath, bool delay){
 	}
 
 	bIsInitialized = true;
-	pTexture = loadTexture(sTexturePath.c_str(), delay);
+	pTexture = loadSDLTexture(sTexturePath.c_str(), delay);
 	destRect.x = 0;
 	destRect.y = 0;
 	srcRect.x = 0;

@@ -13,13 +13,13 @@ Leon::Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 		this->chara_kind = CHARA_KIND_LEON;
 		resource_dir = "resource/chara/leon";
 		chara_name = "leon";
-		this->base_texture = loadTexture("resource/chara/leon/sprite/sprite.png");
+		this->base_texture = loadSDLTexture("resource/chara/leon/sprite/sprite.png");
 	}
 	else {
 		this->chara_kind = CHARA_KIND_CHAMELEON;
 		resource_dir = "resource/chara/chameleon";
 		chara_name = "chameleon";
-		this->base_texture = loadTexture("resource/chara/chameleon/sprite/sprite.png");
+		this->base_texture = loadSDLTexture("resource/chara/chameleon/sprite/sprite.png");
 	}
 	if (!crash_to_debug) {
 		load_params();

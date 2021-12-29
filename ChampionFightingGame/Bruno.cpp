@@ -18,7 +18,7 @@ Bruno::Bruno(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	loadBrunoStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_BRUNO;
-	this->base_texture = loadTexture("resource/chara/template/bruno/sprite.png");
+	this->base_texture = loadSDLTexture("resource/chara/template/bruno/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

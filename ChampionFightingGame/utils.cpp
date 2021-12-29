@@ -11,6 +11,8 @@ using namespace std;
 #include <fstream>
 #include <chrono>
 #include "GameSettings.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
@@ -117,7 +119,7 @@ SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bo
 /// <param name="delay">: Whether or not to wait 1 frame after running, for loading thread purposes. True by default, set to false if
 /// using this function to load something with no loading screen.</param>
 /// <returns> The loaded texture</returns>
-SDL_Texture* loadTexture(const char* file_path, bool delay) {
+SDL_Texture* loadSDLTexture(const char* file_path, bool delay) {
 	SDL_LockMutex(mutex);
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {
@@ -130,6 +132,45 @@ SDL_Texture* loadTexture(const char* file_path, bool delay) {
 		frameTimeDelay();
 	}
 	return ret;
+}
+
+unsigned int loadGLTexture(char const* file_path) {
+	unsigned int texture_id;
+	glGenTextures(1, &texture_id);
+
+	int width;
+	int height;
+	int num_components;
+	unsigned char* data = stbi_load(file_path, &width, &height, &num_components, 0);
+	if (data) {
+		GLenum format;
+		if (num_components == 3) {
+			format = GL_RGB;
+		}
+		else if (num_components == 4) {
+			format = GL_RGBA;
+		}
+		else {
+			format = GL_RED;
+		}
+
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else {
+		std::cout << "Texture failed to load at path: " << file_path << std::endl;
+		stbi_image_free(data);
+	}
+
+	return texture_id;
 }
 
 /// <summary>
@@ -172,7 +213,7 @@ string Filter(const string& to, const string& remove) {
 }
 
 /// <summary>
-/// Pauses the current thread until 1 frame since the last time this function was called. Also called by loadTexture in order to pause the loading
+/// Pauses the current thread until 1 frame since the last time this function was called. Also called by loadSDLTexture in order to pause the loading
 /// thread long enough for the main thread to consistently render.
 /// </summary>
 void frameTimeDelay() {

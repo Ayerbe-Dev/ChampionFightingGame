@@ -85,7 +85,7 @@ PlayerIndicator::PlayerIndicator(Fighter* fighter, string nametag) {
 	}
 	resource_dir += ".png";
 	const char* file_dir = resource_dir.c_str();
-	this->texture = loadTexture(file_dir);
+	this->texture = loadSDLTexture(file_dir);
 	this->indicator_rect.x = 0;
 	this->indicator_rect.y = 0;
 	this->indicator_rect.w = 92;
@@ -98,9 +98,9 @@ GameTimer::GameTimer(int time) {
 	uiDecaframes = 6;
 	uiFrames = 0;
 	ClockMode = 1;
-	pBigTypeface = loadTexture("resource/ui/game/timer/bigtypeface.png");
-	pSmallTypeface = loadTexture("resource/ui/game/timer/smalltypeface.png");
-	pClockFace = loadTexture("resource/ui/game/timer/clockface.png");
+	pBigTypeface = loadSDLTexture("resource/ui/game/timer/bigtypeface.png");
+	pSmallTypeface = loadSDLTexture("resource/ui/game/timer/smalltypeface.png");
+	pClockFace = loadSDLTexture("resource/ui/game/timer/clockface.png");
 };
 
 void GameTimer::Tick() {

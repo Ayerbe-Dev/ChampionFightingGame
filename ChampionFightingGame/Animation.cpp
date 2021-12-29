@@ -48,5 +48,5 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 }
 
 void loadAnimation(Animation* animation) {
-	animation->spritesheet = loadTexture((animation->path).c_str());
+	animation->spritesheet = loadSDLTexture((animation->path).c_str());
 }

@@ -73,6 +73,7 @@ string ymlChopString(string line);
 bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture *loadSDLTexture(const char *file_path, bool delay = true);
 unsigned int loadGLTexture(const char* file_path);
+unsigned int loadGLTextureFromFile(const char* file_path, const string& directory, bool gamma = false);
 bool is_any_controller_input(SDL_GameController* controller);
 string Filter(const string& to, const string& remove);
 void draw_text(string font_name, string text, GameCoordinate pos, int font_size = 24, int r = 0, int g = 0, int b = 0, int a = 255);
@@ -131,10 +132,4 @@ struct Vec4f {
 	float y;
 	float z;
 	float w;
-};
-
-struct Vertex {
-	glm::vec3 pos;
-	glm::vec3 col;
-	glm::vec2 tex_coord;
 };

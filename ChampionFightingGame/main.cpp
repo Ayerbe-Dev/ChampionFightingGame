@@ -15,6 +15,7 @@
 #include "UI.h"
 #include "SoundManager.h"
 #include "GameManager.h"
+#include "stb_image.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
 //undefine it before we include Loader.h.
 #undef LoadIcon
@@ -150,6 +151,7 @@ void initialize_GLEW() {
 	SDL_GL_SetSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
+	stbi_set_flip_vertically_on_load(true);
 }
 
 void example_main(GameManager* game_manager) {

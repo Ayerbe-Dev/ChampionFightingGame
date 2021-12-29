@@ -474,7 +474,13 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="RenderObject.cpp">
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Member</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Member</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -782,54 +788,33 @@
     <ClInclude Include="RenderManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="RenderObject.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Zyair.fwd.h">
       <Filter>Forward Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\Deps</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource\shaders\vertex_core.glsl">
+    <None Include="resource\shaders\fragment_main.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_col_blend.glsl">
+    <None Include="resource\shaders\vertex_main.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_core.glsl">
+    <None Include="resource\shaders\fragment_no_light.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_tex_blend.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_tex_col_blend.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_model.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_model_col.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_lighting.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_lighting.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_light_source.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_light_source.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_mat.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_mat.glsl">
+    <None Include="resource\shaders\vertex_no_light.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

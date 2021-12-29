@@ -151,7 +151,6 @@ void initialize_GLEW() {
 	SDL_GL_SetSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
-	stbi_set_flip_vertically_on_load(true);
 }
 
 void example_main(GameManager* game_manager) {

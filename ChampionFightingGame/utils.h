@@ -62,6 +62,7 @@ typedef unsigned long long u64;
 #define MAX_SOUNDS 20
 #define MAX_LAYERS 5
 #define FLOOR_GAMECOORD 60.0
+#define MAX_BONE_INFLUENCE 4
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
 void frameTimeDelay();

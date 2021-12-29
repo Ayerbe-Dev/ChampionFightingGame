@@ -11,6 +11,10 @@ struct Vertex {
 	vec3 position;
 	vec3 normal;
 	vec2 tex_coords;
+	vec3 tangent;
+	vec3 bitangent;
+	int bone_ids[MAX_BONE_INFLUENCE];
+	float weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
@@ -37,14 +41,17 @@ private:
 
 class Model {
 public:
+
 	Model(string path);
     void render(Shader& shader);
-private:
 	vector<Texture> textures_loaded;
-    vector<Mesh> meshes;
-    string directory;
+	vector<Mesh> meshes;
+	string directory;
+	bool gamma_correct;
 
-    void load_model(string path);
+private:
+
+	void load_model(string path);
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
     vector<Texture> load_material_textures(aiMaterial* mat, aiTextureType type, string type_name);

@@ -86,7 +86,7 @@ void battle_main(GameManager* game_manager) {
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 	bool gaming = true;
 	bool loading = true;
-	bool visualize_boxes = true;
+	bool visualize_boxes = false;
 	int next_state = GAME_STATE_MENU;
 
 

@@ -27,32 +27,48 @@ void Mesh::init() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
-
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 	glBindVertexArray(0);
 }
 
 void Mesh::render(Shader& shader) {
     unsigned int diffuse_count = 1;
     unsigned int specular_count = 1;
-    for (unsigned int i = 0; i < textures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + i);
-        string number;
-        string name = textures[i].type;
+	unsigned int normal_count = 1;
+	unsigned int height_count = 1;
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		string number;
+		string name = textures[i].type;
 		if (name == "texture_diffuse") {
 			number = to_string(diffuse_count++);
 		}
 		else if (name == "texture_specular") {
 			number = to_string(specular_count++);
 		}
+		else if (name == "texture_normal") {
+			number = to_string(normal_count++);
+		}
+		else if (name == "texture_height") {
+			number = to_string(height_count++);
+		}
 
-        shader.set_float(("material." + name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    }
-    glActiveTexture(GL_TEXTURE0);
+		shader.set_float(("material." + name + number).c_str(), i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+	}
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
 }
 
 Model::Model(string path) {
@@ -67,7 +83,7 @@ void Model::render(Shader& shader) {
 
 void Model::load_model(string path) {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
@@ -79,12 +95,10 @@ void Model::load_model(string path) {
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene) {
-	// process all the node's meshes (if any)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(process_mesh(mesh, scene));
 	}
-	// then do the same for each of its children
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
 		process_node(node->mChildren[i], scene);
 	}
@@ -101,31 +115,43 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
-		vector.x = mesh->mNormals[i].x;
-		vector.y = mesh->mNormals[i].y;
-		vector.z = mesh->mNormals[i].z;
+		vertex.position = vector;
 
-		if (mesh->mTextureCoords[0]) { //Assimp allows for a texture to have up to 8 texture coords per vertex. The guide I'm following says we'll only
-			//need to take a look at the first one, but if we ever want/need to change that, here's where that'd be.
+		if (mesh->HasNormals()) {
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].y;
+			vector.z = mesh->mNormals[i].z;
+			vertex.normal = vector;
+		}
+
+		if (mesh->mTextureCoords[0]) { 
+			//Assimp allows for a texture to have up to 8 texture coords per vertex. The guide I'm following says we'll only need to take a look at 
+			//the first one, but if we ever want/need to change that, here's where that'd be.
 			vec2 vec;
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.tex_coords = vec;
+/*			vector.x = mesh->mTangents[i].x;
+			vector.y = mesh->mTangents[i].y;
+			vector.z = mesh->mTangents[i].z;
+			vertex.tangent = vector;
+			vector.x = mesh->mBitangents[i].x;
+			vector.y = mesh->mBitangents[i].y;
+			vector.z = mesh->mBitangents[i].z;
+			vertex.bitangent = vector;*/
 		}
 		else {
 			vertex.tex_coords = glm::vec2(0.0f, 0.0f);
 		}
-
-		vertex.position = vector;
-		vertex.normal = vector;
 
 		vertices.push_back(vertex);
 	}
 
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
-		for (unsigned int j = 0; j < face.mNumIndices; j++)
-			indices.push_back(face.mIndices[j]);
+		for (unsigned int i2 = 0; i2 < face.mNumIndices; i2++) {
+			indices.push_back(face.mIndices[i2]);
+		}
 	}
 
 	if (mesh->mMaterialIndex >= 0) {
@@ -134,6 +160,10 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		vector<Texture> specularMaps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		vector<Texture> normalMaps = load_material_textures(material, aiTextureType_HEIGHT, "texture_normal");
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+		vector<Texture> heightMaps = load_material_textures(material, aiTextureType_AMBIENT, "texture_height");
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 
 	return Mesh(vertices, indices, textures);

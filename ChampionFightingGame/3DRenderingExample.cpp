@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Model.h"
 #include "utils.h"
+#include "stb_image.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -23,9 +24,17 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	Shader shader("vertex_no_light.glsl", "fragment_no_light.glsl");
 	Camera camera;
-	Model backpack("resource/chara/roy/model/backpack.obj");
+	Shader shader("vertex_no_light.glsl", "fragment_no_light.glsl", &camera);
+	Model backpack("resource/chara/roy/model/model.dae");
+
+	vec3 pointLightPositions[] = {
+	   vec3(0.7f,  0.2f,  2.0f),
+	   vec3(2.3f, -3.3f, -4.0f),
+	   vec3(-4.0f,  2.0f, -12.0f),
+	   vec3(0.0f,  0.0f, -3.0f)
+	};
+	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 	shader.use();
 
@@ -99,12 +108,21 @@ void three_d_rendering_main(GameManager* game_manager) {
 		mat4 view = camera.get_view();
 		mat4 projection = perspective(radians(camera.fov), 800.0f / 600.0f, 0.1f, 100.0f);
 		mat4 model = mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
+
+		shader.set_vec3("view_pos", camera.pos);
+		shader.set_float("material.shininess", 64.0f);
 
 		shader.set_mat4("projection", projection);
 		shader.set_mat4("view", view);
 		shader.set_mat4("model", model);
+
+		shader.use_default_dir_light(true);
+		shader.set_point_lights(vec3(0.7, 0.2, 2.0));
+		shader.use_default_point_light(1);
+		shader.use_default_spot_light(true);
+		shader.update_active_lights();
 
 		backpack.render(shader);
 

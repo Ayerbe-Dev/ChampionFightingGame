@@ -1,7 +1,8 @@
 #include "Shader.h"
 
-Shader::Shader(string vertex_dir, string fragment_dir, Camera* camera) {
-	this->camera = camera;
+Shader::Shader() {}
+
+Shader::Shader(string vertex_dir, string fragment_dir) {
 	char info_log[512];
 	int success;
 
@@ -82,56 +83,6 @@ Shader::~Shader() {
 
 void Shader::use() {
 	glUseProgram(program);
-}
-
-void Shader::use_default_dir_light(bool enable) {
-	active_dir_light = enable;
-
-	set_vec3("dir_light.direction", -0.2f, -1.0f, -0.3f);
-	set_vec3("dir_light.ambient", 0.05f, 0.05f, 0.05f);
-	set_vec3("dir_light.diffuse", 0.4f, 0.4f, 0.4f);
-	set_vec3("dir_light.specular", 0.5f, 0.5f, 0.5f);
-}
-
-void Shader::use_default_point_light(int num) {
-	active_point_lights = num;
-
-	for (int i = 0; i < num; i++) {
-		string point_lights = ("point_lights[" + to_string(i) + "].");
-		set_vec3((point_lights + "position").c_str(), this->point_lights[i]);
-		set_vec3((point_lights + "ambient").c_str(), 0.05, 0.05, 0.05);
-		set_vec3((point_lights + "diffuse").c_str(), 0.8, 0.8, 0.8);
-		set_vec3((point_lights + "specular").c_str(), 1.0, 1.0, 1.0);
-		set_float((point_lights + "constant").c_str(), 1.0);
-		set_float((point_lights + "constant").c_str(), 1.0);
-		set_float((point_lights + "linear").c_str(), 0.09);
-		set_float((point_lights + "quadratic").c_str(), 0.032);
-	}
-}
-void Shader::use_default_spot_light(bool enable) {
-	active_spot_light = enable;
-
-	set_vec3("spot_light.position", camera->pos);
-	set_vec3("spot_light.direction", camera->front);
-	set_vec3("spot_light.ambient", 0.0f, 0.0f, 0.0f);
-	set_vec3("spot_light.diffuse", 1.0f, 1.0f, 1.0f);
-	set_vec3("spot_light.specular", 1.0f, 1.0f, 1.0f);
-	set_float("spot_light.constant", 1.0f);
-	set_float("spot_light.linear", 0.09);
-	set_float("spot_light.quadratic", 0.032);
-	set_float("spot_light.cutoff", cos(radians(12.5f)));
-	set_float("spot_light.outer_cutoff", cos(radians(15.0f)));
-}
-
-void Shader::set_point_lights(vec3 p1, vec3 p2, vec3 p3, vec3 p4) {
-	point_lights[0] = p1;
-	point_lights[1] = p2;
-	point_lights[2] = p3;
-	point_lights[3] = p4;
-}
-
-void Shader::update_active_lights() {
-	set_vec3("active_vec_types", vec3((float)active_dir_light, (float)active_point_lights, (float)active_spot_light));
 }
 
 void Shader::set_bool(const string& name, bool value) const {

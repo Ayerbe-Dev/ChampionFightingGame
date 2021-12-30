@@ -8,26 +8,11 @@ using namespace glm;
 
 class Shader {
 public:
-	Shader(string vertexPath, string fragmentPath, Camera* camera);
+	Shader();
+	Shader(string vertexPath, string fragmentPath);
 	~Shader();
 	unsigned int program;
-
-	vec3 point_lights[4] = { vec3(0.0, 0.0, 0.0) };
-	Camera* camera;
-
-	bool active_dir_light = false;
-	int active_point_lights = 0;
-	bool active_spot_light = false;
-
 	void use();
-
-	void use_default_dir_light(bool enable);
-	void use_default_point_light(int num);
-	void use_default_spot_light(bool enable);
-	
-	void update_active_lights();
-
-	void set_point_lights(vec3 p1 = vec3(0.0, 0.0, 0.0), vec3 p2 = vec3(0.0, 0.0, 0.0), vec3 p3 = vec3(0.0, 0.0, 0.0), vec3 p4 = vec3(0.0, 0.0, 0.0));
 
 	void set_bool(const std::string& name, bool value) const;
 	void set_int(const std::string& name, int value) const;

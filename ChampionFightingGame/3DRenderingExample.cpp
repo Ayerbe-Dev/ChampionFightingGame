@@ -8,6 +8,7 @@
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
+extern RenderManager g_rendermanager;
 using namespace glm;
 
 /// <summary>
@@ -24,19 +25,12 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	Camera camera;
-	Shader shader("vertex_no_light.glsl", "fragment_no_light.glsl", &camera);
 	Model backpack("resource/chara/roy/model/model.dae");
+	Shader shader("vertex_main.glsl", "fragment_main.glsl");
 
-	vec3 pointLightPositions[] = {
-	   vec3(0.7f,  0.2f,  2.0f),
-	   vec3(2.3f, -3.3f, -4.0f),
-	   vec3(-4.0f,  2.0f, -12.0f),
-	   vec3(0.0f,  0.0f, -3.0f)
-	};
-	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
-	shader.use();
+	vec3 model_pos = vec3(0.0, 0.0, -3.0);
+	vec3 model_rot = vec3(0.0, 0.0, 0.0);
+	vec3 model_scale = vec3(0.0, 0.0, 0.0);
 
 	while (three_deeing) {
 		frameTimeDelay();
@@ -61,70 +55,70 @@ void three_d_rendering_main(GameManager* game_manager) {
 			player_info[i]->poll_buttons(keyboard_state);
 		}
 
-		for (int i = 0; i < 2; i++) {
-			if (player_info[i]->check_button_on(BUTTON_MENU_BACK)) {
-				three_deeing = false;
-			}
+		if (player_info[0]->check_button_on(BUTTON_MENU_START)) {
+			three_deeing = false;
 		}
-		if (player_info[0]->check_button_on(BUTTON_UP)) { //Move the camera forward
-			camera.add_pos(0.0, 0.0, -1.0);
+		if (player_info[0]->check_button_on(BUTTON_UP)) {
+			model_pos.y += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
-			camera.add_pos(1.0, 0.0, 0.0);
+			model_pos.x += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
-			camera.add_pos(-1.0, 0.0, 0.0);
+			model_pos.x -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
-			camera.add_pos(0.0, 0.0, 1.0);
+			model_pos.y -= 0.1;
+		}		
+		if (player_info[1]->check_button_on(BUTTON_UP)) {
+			model_pos.z += 0.1;
+		}
+		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
+			model_pos.z -= 0.1;
+		}
+		if (player_info[0]->check_button_on(BUTTON_LP)) {
+			model_rot.x += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_LK)) {
-			camera.add_pos(0.0, 1.0, 0.0);
+			model_rot.x -= 0.1;
+		}
+		if (player_info[0]->check_button_on(BUTTON_MP)) {
+			model_rot.y += 0.1;
+		}
+		if (player_info[0]->check_button_on(BUTTON_MK)) {
+			model_rot.y -= 0.1;
+		}
+		if (player_info[0]->check_button_on(BUTTON_HP)) {
+			model_rot.z += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_HK)) {
-			camera.add_pos(0.0, -1.0, 0.0);
+			model_rot.z -= 0.1;
 		}
-		if (player_info[0]->check_button_on(BUTTON_LP)) { //Zoom the camera in
-			camera.adjust_view(0.0, 0.0, -1.0);
+		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
+			model_scale.x += 0.01;
+			model_scale.y += 0.01;
+			model_scale.z += 0.01;
 		}
-		if (player_info[0]->check_button_on(BUTTON_HP)) { //Out
-			camera.adjust_view(0.0, 0.0, 1.0);
-		}
-		if (player_info[1]->check_button_on(BUTTON_UP)) { //Rotate the camera up
-			camera.adjust_view(0.0, 1.0, 0.0);
-		}
-		if (player_info[1]->check_button_on(BUTTON_RIGHT)) { //Right
-			camera.adjust_view(1.0, 0.0, 0.0);
-		}
-		if (player_info[1]->check_button_on(BUTTON_LEFT)) { //Left
-			camera.adjust_view(-1.0, 0.0, 0.0);
-		}
-		if (player_info[1]->check_button_on(BUTTON_DOWN)) { //Down
-			camera.adjust_view(0.0, -1.0, 0.0);
+		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
+			model_scale.x -= 0.01;
+			model_scale.y -= 0.01;
+			model_scale.z -= 0.01;
 		}
 
-		shader.use();
-		camera.update_view();
-		mat4 view = camera.get_view();
-		mat4 projection = perspective(radians(camera.fov), 800.0f / 600.0f, 0.1f, 100.0f);
-		mat4 model = mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
+		if (player_info[1]->check_button_trigger(BUTTON_START)) {
+			backpack.reset_skeleton();
+/*			cout << "Model Position: " << model_pos.x << ", " << model_pos.y << ", " << model_pos.z << endl;
+			cout << "Model Rotation: " << model_rot.x << ", " << model_rot.y << ", " << model_rot.z << endl;
+			cout << "Model Scale: " << model_scale.x << ", " << model_scale.y << ", " << model_scale.z << endl;
+			cout << "All instances of ClavicleL Bone: ";
+			vector<Bone*> clavicle_l_bones = backpack.find_all_matching_bones("ClavicleL");
+			for (int i = 0; i < clavicle_l_bones.size(); i++) {
+				cout << clavicle_l_bones[i] << ", " << clavicle_l_bones[i]->name << endl;
+			}*/
+		}
 
-		shader.set_vec3("view_pos", camera.pos);
-		shader.set_float("material.shininess", 64.0f);
 
-		shader.set_mat4("projection", projection);
-		shader.set_mat4("view", view);
-		shader.set_mat4("model", model);
-
-		shader.use_default_dir_light(true);
-		shader.set_point_lights(vec3(0.7, 0.2, 2.0));
-		shader.use_default_point_light(1);
-		shader.use_default_spot_light(true);
-		shader.update_active_lights();
-
-		backpack.render(shader);
+		g_rendermanager.render(backpack, shader, model_pos, model_rot, model_scale);
 
 		SDL_GL_SwapWindow(g_window);
 	}

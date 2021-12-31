@@ -36,7 +36,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	int ticks = SDL_GetTicks();
 	float frame = 0.0;
 	while (three_deeing) {
-//		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
+		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
 		frameTimeDelay();
 		ticks = SDL_GetTicks();
 
@@ -109,13 +109,14 @@ void three_d_rendering_main(GameManager* game_manager) {
 			model_scale.y -= 0.01;
 			model_scale.z -= 0.01;
 		}
-
-		if (player_info[1]->check_button_trigger(BUTTON_START)) {
-			cout << "Arm Pre X Rotation: " << backpack.bones[backpack.get_bone_id("ArmR")].rot.x << endl;
-			backpack.set_bones(frame, &test_anim);
-			cout << "Arm Post X Rotation: " << backpack.bones_anim[backpack.get_bone_id("ArmR")].rot.x << endl;
+		
+		if (frame == test_anim.length) {
+			frame = 0.0;
+		}
+		else {
 			frame += 1.0;
 		}
+		backpack.set_bones(frame, &test_anim);
 
 		g_rendermanager.render(&backpack, &shader, &model_pos, &model_rot, &model_scale);
 

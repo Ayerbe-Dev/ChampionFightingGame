@@ -225,6 +225,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Aziel.cpp" />
     <ClCompile Include="AzielMoves.cpp" />
     <ClCompile Include="AzielStatus.cpp" />
+    <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Bruno.cpp" />
     <ClCompile Include="BrunoMoves.cpp" />
     <ClCompile Include="BrunoStatus.cpp" />

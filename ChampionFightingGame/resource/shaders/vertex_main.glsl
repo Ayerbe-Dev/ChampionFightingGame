@@ -1,4 +1,5 @@
 #version 330 core
+
 layout (location = 0) in vec3 v_pos;
 layout (location = 1) in vec3 v_nor;
 layout (location = 2) in vec2 v_texcoords;
@@ -20,7 +21,7 @@ uniform mat4 projection;
 uniform mat4 final_bones_matrices[MAX_BONES];
 
 void main() {
-    vec4 total_pos = vec4(0.0);
+    vec4 total_pos = vec4(0.0f);
     for (int i = 0 ; i < MAX_BONE_INFLUENCE; i++) {
         if (v_boneids[i] == -1) {
             continue;
@@ -36,7 +37,7 @@ void main() {
 
     FragPos = vec3(model * vec4(v_pos, 1.0));
     Normal = mat3(transpose(inverse(model))) * v_nor;  
+    mat4 viewmodel = view * model;
+    gl_Position = projection * viewmodel * total_pos;
     TexCoords = v_texcoords;
-
-    gl_Position = projection * view * model * total_pos;
 } 

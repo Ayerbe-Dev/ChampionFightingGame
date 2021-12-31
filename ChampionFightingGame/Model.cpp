@@ -182,8 +182,8 @@ void Model::load_model(string path) {
 
 void Model::set_bones(float frame, Animation3D *anim_kind) {
 	bones_anim = bones;
-	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size()); //All keyframes for the current frame
-	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size()); //All keyframes for the next frame
+	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size() - 1); //All keyframes for the current frame
+	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1); //All keyframes for the next frame
 	vector<Bone> keyframes = anim_kind->keyframes[frame_index];
 	vector<Bone> next_keyframes = anim_kind->keyframes[next_frame_index];
 
@@ -209,13 +209,18 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//to be filled by the time we look at it
 
 		if (curr_frame_offsets.parent_id != -1) {
-			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id];
+			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id]; //Get the parent bone coords
+			offset_base_bone(&bones[curr_frame_offsets.parent_id], &parent_offsets); //Subtract the base bone coords from the parent ones since we already factor them into the child
 			curr_frame_offsets.pos += parent_offsets.pos;
 			curr_frame_offsets.rot += parent_offsets.rot;
 			curr_frame_offsets.scale += parent_offsets.scale;
 		}
 
-		bones_anim[i] = curr_frame_offsets;
+		bones_anim[i].pos += curr_frame_offsets.pos;
+		bones_anim[i].rot += curr_frame_offsets.rot;
+		bones_anim[i].scale += curr_frame_offsets.scale;
+
+//		bones_anim[i] = curr_frame_offsets;
 	}
 
 	for (int i = 0; i < matching_bones.size(); i++) {

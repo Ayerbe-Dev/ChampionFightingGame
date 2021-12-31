@@ -44,6 +44,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir) {
 	smd >> filler >> filler;
 	while (smd >> filler) { //Until we hit the end of the file, we'll read each string of the file
 		if (filler == "end") { //If we just read in "end", we reached the end of the file. Thanks Valve.
+			this->length = keyframes.size();
 			smd.close();
 			return;
 		}

@@ -24,6 +24,7 @@ public:
 	Animation3D(string anim_kind, string anim_dir);
 	string name;
 	vector<vector<Bone>> keyframes;
+	int length;
 };
 
 SDL_Rect getFrame(int frame, Animation* animation);

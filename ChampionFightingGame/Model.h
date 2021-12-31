@@ -6,6 +6,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "Bone.h"
+#include "Animation.h"
 using namespace glm;
 
 struct Vertex {
@@ -24,25 +26,19 @@ struct Texture {
 	string path;
 };
 
-struct Bone {
-	string name;
-	int parent_id;
-	vec3 pos;
-	vec4 rot;
-	vec3 scale;
-};
-
 class Mesh {
 public:
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	vector<Texture> textures;
 	vector<Bone> bones;
-
-	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, vector<Bone> bones, string name);
-	void render(Shader& shader);
 	bool visible = true;
 	string name;
+
+	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, vector<Bone> bones, string name);
+	void render(Shader *shader);
+	Bone find_bone(int id);
+	
 private:
 	u32 VAO;
 	u32 VBO;
@@ -54,20 +50,24 @@ private:
 class Model {
 public:
 	Model(string path);
-    void render(Shader& shader);
+    void render(Shader *shader);
 	vector<Texture> textures_loaded;
 	vector<Mesh> meshes;
 	vector<Bone> bones;
+	vector<Bone> bones_anim;
 
 	string directory;
 	bool gamma_correct;
 	int vertex_count = 0;
+	vector<vector<Bone*>> matching_bones;
+
+
 
 	int get_mesh_id(string mesh_name);
 	int get_bone_id(string bone_name);
 	vector<Bone*> find_all_matching_bones(string name);
-	void reset_skeleton();
-	vector<vector<Bone*>> matching_bones;
+	void set_bones(float frame, Animation3D *anim_kind);
+
 private:
 	void load_model(string path);
 	void load_skeleton(string path);

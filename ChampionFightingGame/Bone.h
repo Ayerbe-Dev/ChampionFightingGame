@@ -1,0 +1,11 @@
+#pragma once
+#include "utils.h"
+using namespace glm;
+struct Bone {
+	string name = "";
+	int id = 0;
+	int parent_id = -1;
+	vec3 pos = vec3(0.0, 0.0, 0.0);
+	vec3 rot = vec3(0.0, 0.0, 0.0);
+	vec3 scale = vec3(0.0, 0.0, 0.0);
+};

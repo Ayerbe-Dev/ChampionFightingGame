@@ -31,17 +31,13 @@ void Mesh::init() {
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+	glVertexAttribIPointer(3, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
-	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 	glBindVertexArray(0);
 }
 
-void Mesh::render(Shader& shader) {
+void Mesh::render(Shader *shader) {
     unsigned int diffuse_count = 1;
     unsigned int specular_count = 1;
 	unsigned int normal_count = 1;
@@ -63,7 +59,7 @@ void Mesh::render(Shader& shader) {
 			number = to_string(height_count++);
 		}
 
-		shader.set_float(("material." + name + number).c_str(), i);
+		shader->set_float(("material." + name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 
@@ -72,6 +68,15 @@ void Mesh::render(Shader& shader) {
     glBindVertexArray(0);
 
 	glActiveTexture(GL_TEXTURE0);
+}
+
+Bone Mesh::find_bone(int id) {
+	for (int i = 0; i < bones.size(); i++) {
+		if (bones[i].id == id) {
+			return bones[i];
+		}
+	}
+	return Bone();
 }
 
 Model::Model(string path) {
@@ -125,6 +130,7 @@ void Model::load_skeleton(string path) {
 		Bone new_bone;
 		bone_name = Filter(Filter(bone_name, "\""), "\""); //Remove the "s from the SMD's bone names
 		new_bone.name = bone_name;
+		new_bone.id = bone_id;
 		new_bone.parent_id = parent_id;
 		bones.push_back(new_bone);
 	}
@@ -132,7 +138,20 @@ void Model::load_skeleton(string path) {
 	smd.close();
 }
 
-void Model::render(Shader& shader) {
+void Model::render(Shader *shader) {
+	for (int i = 0; i < bones_anim.size(); i++) {
+		string final_mat = "final_bones_matrices[" + to_string(i) + "]";
+		mat4 mat_pos = mat4(1.0);
+		mat4 mat_rot = mat4(1.0);
+		mat4 mat_scale = mat4(1.0);
+		mat_scale = scale(mat_scale, bones_anim[i].scale);
+		mat_pos = translate(mat_pos, bones_anim[i].pos);
+		mat_rot = rotate(mat_rot, radians(bones_anim[i].rot.x), vec3(1.0, 0.0, 0.0));
+		mat_rot = rotate(mat_rot, radians(bones_anim[i].rot.y), vec3(0.0, 1.0, 0.0));
+		mat_rot = rotate(mat_rot, radians(bones_anim[i].rot.z), vec3(0.0, 0.0, 1.0));
+		shader->set_mat4(final_mat, mat_pos * mat_rot * mat_scale);
+	}
+
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].render(shader);
 	}
@@ -157,15 +176,50 @@ void Model::load_model(string path) {
 	}
 }
 
-void Model::reset_skeleton() {
-	int start_time = SDL_GetTicks();
+void Model::set_bones(float frame, Animation3D *anim_kind) {
+	bones_anim = bones;
+	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size()); //All keyframes for the current frame
+	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size()); //All keyframes for the next frame
+	vector<Bone> keyframes = anim_kind->keyframes[frame_index];
+	vector<Bone> next_keyframes = anim_kind->keyframes[next_frame_index];
+
+	for (int i = 0; i < keyframes.size(); i++) { //Iterate through all bones
+		Bone curr_frame_offsets = keyframes[i]; //Get the bone offsets for the current bone on this frame
+		Bone next_frame_offsets = next_keyframes[i]; //Do the same for the next frame
+		float decimal = frame - (float)frame_index; //Decimal place for the next frame
+
+		//Calculate the difference in offset between the current frame and the next frame, then multiply said difference by the decimal place. This will
+		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
+		//keyframes
+
+		next_frame_offsets.pos = decimal * (next_frame_offsets.pos - curr_frame_offsets.pos); 
+		next_frame_offsets.rot = decimal * (next_frame_offsets.rot - curr_frame_offsets.rot);
+		next_frame_offsets.scale = decimal * (next_frame_offsets.scale - curr_frame_offsets.scale);
+		
+		curr_frame_offsets.pos += next_frame_offsets.pos;
+		curr_frame_offsets.rot += next_frame_offsets.rot;
+		curr_frame_offsets.scale += next_frame_offsets.scale;
+
+		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
+		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
+		//to be filled by the time we look at it
+
+		if (curr_frame_offsets.parent_id != -1) {
+			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id];
+			curr_frame_offsets.pos += parent_offsets.pos;
+			curr_frame_offsets.rot += parent_offsets.rot;
+			curr_frame_offsets.scale += parent_offsets.scale;
+		}
+
+		bones_anim[i] = curr_frame_offsets;
+	}
+
 	for (int i = 0; i < matching_bones.size(); i++) {
 		vector<Bone*> target_bones = matching_bones[i];
 		for (int i2 = 0; i2 < target_bones.size(); i2++) {
-			*target_bones[i2] = bones[i];
+			*target_bones[i2] = bones_anim[i];
 		}
 	}
-	cout << "Time to execute this function: " << SDL_GetTicks() - start_time;
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene) {
@@ -265,18 +319,20 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.scale.z = base_scale.z;
 			//For the bone's name, we just derive it like this
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
+			bone.id = get_bone_id(bone.name);
 
 			//Iterate through all of the vertices that this bone influences and set that vertex data accordingly
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
 				int index = ai_bone->mWeights[i2].mVertexId; //Note that our vertex list gets updated in the exact order of the bones
 				for (int i3 = 0; i3 < MAX_BONE_INFLUENCE; i3++) {
 					if (vertices[index].weights[i3] == 0.0) {
-						vertices[index].bone_ids[i3] = get_bone_id(bone.name);
+						vertices[index].bone_ids[i3] = bone.id;
 						vertices[index].weights[i3] = ai_bone->mWeights[i2].mWeight;
 						break;
 					}
 				}
 			}
+
 			bones.push_back(bone); //Add our generated bone structure to our vector that will be added to the mesh
 
 			//And finally, for the MODEL'S bone structure, we already generated the bone list, but it doesn't have positions, so for the sake of

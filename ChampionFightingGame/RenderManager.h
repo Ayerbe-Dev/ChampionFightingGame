@@ -34,5 +34,5 @@ public:
 
 	void update_shader(Shader *shader);
 
-	void render(Model model, Shader shader, vec3 pos, vec3 rot, vec3 scale);
+	void render(Model *model, Shader *shader, vec3 *pos, vec3 *rot, vec3 *scale);
 };

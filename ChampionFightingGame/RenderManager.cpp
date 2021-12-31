@@ -77,15 +77,17 @@ void RenderManager::update_shader(Shader *shader) {
 
 }
 
-void RenderManager::render(Model model, Shader shader, vec3 model_pos, vec3 model_rot, vec3 model_scale) {
-	shader.use();
-	update_shader(&shader);
+void RenderManager::render(Model *model, Shader *shader, vec3 *model_pos, vec3 *model_rot, vec3 *model_scale) {
+	int exe_time = SDL_GetTicks();
+	shader->use();
+	update_shader(shader);
 	mat4 model_mat = mat4(1.0);
-	model_mat = scale(model_mat, model_scale);
-	model_mat = translate(model_mat, model_pos);
-	model_mat = rotate(model_mat, radians(model_rot.x), vec3(1.0, 0.0, 0.0));
-	model_mat = rotate(model_mat, radians(model_rot.y), vec3(0.0, 1.0, 0.0));
-	model_mat = rotate(model_mat, radians(model_rot.z), vec3(0.0, 0.0, 1.0));
-	shader.set_mat4("model", model_mat);
-	model.render(shader);
+	model_mat = scale(model_mat, *model_scale);	
+	model_mat = translate(model_mat, *model_pos);
+	model_mat = rotate(model_mat, radians(model_rot->x), vec3(1.0, 0.0, 0.0));
+	model_mat = rotate(model_mat, radians(model_rot->y), vec3(0.0, 1.0, 0.0));
+	model_mat = rotate(model_mat, radians(model_rot->z), vec3(0.0, 0.0, 1.0));
+	shader->set_mat4("model", model_mat);
+	model->render(shader);
+//	cout << "Time to execute function: " << SDL_GetTicks() - exe_time << endl;
 }

@@ -10,6 +10,64 @@ extern SDL_Renderer* g_renderer;
 
 Animation::Animation() {};
 
+Animation3D::Animation3D() {}
+
+Animation3D::Animation3D(string anim_kind, string anim_dir) {
+	this->name = anim_kind;
+	ifstream smd;
+	smd.open(anim_dir);
+	if (smd.fail()) {
+		cout << "Failed to open SMD!" << endl;
+		smd.close();
+		return;
+	}
+
+	string filler;
+	getline(smd, filler);
+	getline(smd, filler);
+
+	int bone_id;
+	string bone_name;
+	int parent_id;
+
+	vector<Bone> base_bones;
+
+	while (smd >> bone_id) { //Eventually smd will try to fit the string "end" into the int bone_id. When this fails, we're at the end.
+		smd >> bone_name >> parent_id;
+		Bone new_bone;
+		new_bone.name = bone_name;
+		new_bone.parent_id = parent_id;
+		base_bones.push_back(new_bone);
+	}
+	smd.clear();
+
+	smd >> filler >> filler;
+	while (smd >> filler) { //Until we hit the end of the file, we'll read each string of the file
+		if (filler == "end") { //If we just read in "end", we reached the end of the file. Thanks Valve.
+			smd.close();
+			return;
+		}
+		int frame;
+		smd >> frame; //Each frame declaration begins with "Time X". If filler wasn't end, it will be time, so the next thing smd reads will be the
+		//frame.
+		vector<Bone> new_vec = base_bones;
+		while (smd >> bone_id) { //When it tries to read "Time" as an int, this will fail
+			vec3 pos = vec3(0.0, 0.0, 0.0);
+			vec4 rot = vec4(0.0, 0.0, 0.0, 0.0);
+			vec3 scale = vec3(0.0, 0.0, 0.0);
+
+			smd >> pos.x >> pos.y >> pos.z >> rot.x >> rot.y >> rot.z; //Read in the contents of the line
+			Bone new_bone = base_bones[bone_id];
+			new_bone.pos = pos;
+			new_bone.rot = rot;
+			new_bone.scale = scale;
+			new_vec[bone_id] = new_bone;
+		}
+		smd.clear();
+		keyframes.push_back(new_vec);
+	}
+}
+
 //Calculates which region of the currently loaded spritesheet to render
 
 SDL_Rect getFrame(int frame, Animation* animation) {

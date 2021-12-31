@@ -218,8 +218,12 @@ void battle_main(GameManager* game_manager) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 
+	int ticks = SDL_GetTicks();
 	while (gaming) {
+		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
 		frameTimeDelay();
+		ticks = SDL_GetTicks();
+
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 			if (debug) {

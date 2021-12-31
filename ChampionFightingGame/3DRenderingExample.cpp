@@ -25,8 +25,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	Model backpack("resource/chara/roy/model/model.dae");
 	Shader shader("vertex_main.glsl", "fragment_main.glsl");
+	Model backpack("resource/chara/roy/model/model.dae");
 	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd");
 
 	vec3 model_pos = vec3(0.0, 0.0, -3.0);
@@ -34,8 +34,9 @@ void three_d_rendering_main(GameManager* game_manager) {
 	vec3 model_scale = vec3(0.0, 0.0, 0.0);
 
 	int ticks = SDL_GetTicks();
+	float frame = 0.0;
 	while (three_deeing) {
-		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
+//		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
 		frameTimeDelay();
 		ticks = SDL_GetTicks();
 
@@ -110,7 +111,10 @@ void three_d_rendering_main(GameManager* game_manager) {
 		}
 
 		if (player_info[1]->check_button_trigger(BUTTON_START)) {
-			backpack.set_bones(3.5, &test_anim);
+			cout << "Arm Pre X Rotation: " << backpack.bones[backpack.get_bone_id("ArmR")].rot.x << endl;
+			backpack.set_bones(frame, &test_anim);
+			cout << "Arm Post X Rotation: " << backpack.bones_anim[backpack.get_bone_id("ArmR")].rot.x << endl;
+			frame += 1.0;
 		}
 
 		g_rendermanager.render(&backpack, &shader, &model_pos, &model_rot, &model_scale);

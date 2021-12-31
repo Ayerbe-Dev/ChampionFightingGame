@@ -20,7 +20,7 @@ uniform mat4 projection;
 uniform mat4 final_bones_matrices[MAX_BONES];
 
 void main() {
-    vec4 total_pos = vec4(0.0f);
+    vec4 total_pos = vec4(0.0);
     for (int i = 0 ; i < MAX_BONE_INFLUENCE; i++) {
         if (v_boneids[i] == -1) {
             continue;
@@ -38,5 +38,5 @@ void main() {
     Normal = mat3(transpose(inverse(model))) * v_nor;  
     TexCoords = v_texcoords;
 
-    gl_Position = projection * view * model * vec4(FragPos, 1.0);
+    gl_Position = projection * view * model * total_pos;
 } 

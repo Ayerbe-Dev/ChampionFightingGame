@@ -10,7 +10,7 @@ using namespace glm;
 
 class Camera {
 public:
-	vec3 pos = vec3(0.0, 0.0, 0.0);
+	vec3 pos = vec3(0.0, 0.0, 3.0);
 	vec3 front = vec3(0.0, 0.0, 1.0);
 	vec3 world_up = vec3(0.0, 1.0, 0.0);
 	vec3 up;

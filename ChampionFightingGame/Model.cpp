@@ -31,9 +31,13 @@ void Mesh::init() {
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
 	glEnableVertexAttribArray(3);
-	glVertexAttribIPointer(3, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 	glBindVertexArray(0);
 }
 
@@ -136,20 +140,19 @@ void Model::load_skeleton(string path) {
 	}
 
 	smd.close();
+	bones_anim = bones;
 }
 
 void Model::render(Shader *shader) {
 	for (int i = 0; i < bones_anim.size(); i++) {
 		string final_mat = "final_bones_matrices[" + to_string(i) + "]";
-		mat4 mat_pos = mat4(1.0);
-		mat4 mat_rot = mat4(1.0);
-		mat4 mat_scale = mat4(1.0);
-		mat_scale = scale(mat_scale, bones_anim[i].scale);
-		mat_pos = translate(mat_pos, bones_anim[i].pos);
-		mat_rot = rotate(mat_rot, radians(bones_anim[i].rot.x), vec3(1.0, 0.0, 0.0));
-		mat_rot = rotate(mat_rot, radians(bones_anim[i].rot.y), vec3(0.0, 1.0, 0.0));
-		mat_rot = rotate(mat_rot, radians(bones_anim[i].rot.z), vec3(0.0, 0.0, 1.0));
-		shader->set_mat4(final_mat, mat_pos * mat_rot * mat_scale);
+		mat4 model_mat = mat4(1.0);
+		model_mat = scale(model_mat, bones_anim[i].scale);
+		model_mat = translate(model_mat, bones_anim[i].pos);
+		model_mat = rotate(model_mat, radians(bones_anim[i].rot.x), vec3(1.0, 0.0, 0.0));
+		model_mat = rotate(model_mat, radians(bones_anim[i].rot.y), vec3(0.0, 1.0, 0.0));
+		model_mat = rotate(model_mat, radians(bones_anim[i].rot.z), vec3(0.0, 0.0, 1.0));
+		shader->set_mat4(final_mat, model_mat);
 	}
 
 	for (unsigned int i = 0; i < meshes.size(); i++) {
@@ -174,6 +177,7 @@ void Model::load_model(string path) {
 		vector<Bone*> matching_bones = find_all_matching_bones(bones[i].name);
 		this->matching_bones.push_back(matching_bones);
 	}
+	bones_anim = bones;
 }
 
 void Model::set_bones(float frame, Animation3D *anim_kind) {

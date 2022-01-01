@@ -12,6 +12,8 @@ using namespace std;
 #include <glm.hpp>
 #include "Constants.h"
 #include "GameTexture.h"
+using namespace glm;
+#include <assimp/scene.h>
 
 
 typedef char i8;
@@ -53,6 +55,7 @@ typedef unsigned long long u64;
 #define EX_METER_BARS 6
 
 #define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
+#define WINDOW_W_FACTOR WINDOW_WIDTH / WINDOW_HEIGHT
 #define JUMP_FOLLOW_THRESHOLD 300
 #define CAMERA_MAX_ZOOM_OUT 1000
 #define CAMERA_MAX_ZOOM_IN 800
@@ -90,6 +93,7 @@ int getGameSetting(string setting);
 void setGameSetting(string setting, int val);
 void updateGameSettings();
 int round_up_odd(int val);
+mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
 
 /*
 	updateCamera(); 

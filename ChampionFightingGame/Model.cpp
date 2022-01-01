@@ -147,11 +147,10 @@ void Model::render(Shader *shader) {
 	for (int i = 0; i < bones_anim.size(); i++) {
 		string final_mat = "final_bones_matrices[" + to_string(i) + "]";
 		mat4 model_mat = mat4(1.0);
-		model_mat = scale(model_mat, bones_anim[i].scale);
-		model_mat = translate(model_mat, bones_anim[i].pos);
-		model_mat = rotate(model_mat, radians(bones_anim[i].rot.x), vec3(1.0, 0.0, 0.0));
-		model_mat = rotate(model_mat, radians(bones_anim[i].rot.y), vec3(0.0, 1.0, 0.0));
-		model_mat = rotate(model_mat, radians(bones_anim[i].rot.z), vec3(0.0, 0.0, 1.0));
+		mat4 pos_mat = translate(model_mat, bones_anim[i].pos - bones[i].pos);
+		mat4 rot_mat = orientate4(bones_anim[i].rot - bones[i].rot);
+		mat4 scale_mat = scale(model_mat, bones_anim[i].scale - bones[i].scale);
+		model_mat *= rot_mat * pos_mat * scale_mat;
 		shader->set_mat4(final_mat, model_mat);
 	}
 
@@ -180,8 +179,12 @@ void Model::load_model(string path) {
 	bones_anim = bones;
 }
 
-void Model::set_bones(float frame, Animation3D *anim_kind) {
+void Model::reset_bones() {
 	bones_anim = bones;
+}
+
+void Model::set_bones(float frame, Animation3D *anim_kind) {
+	reset_bones();
 	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size() - 1); //All keyframes for the current frame
 	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1); //All keyframes for the next frame
 	vector<Bone> keyframes = anim_kind->keyframes[frame_index];
@@ -190,7 +193,7 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 	for (int i = 0; i < keyframes.size(); i++) { //Iterate through all bones
 		Bone curr_frame_offsets = keyframes[i]; //Get the bone offsets for the current bone on this frame
 		Bone next_frame_offsets = next_keyframes[i]; //Do the same for the next frame
-		float decimal = frame - (float)frame_index; //Decimal place for the next frame
+		float decimal = (float)frame_index - frame; //Decimal place for the next frame
 
 		//Calculate the difference in offset between the current frame and the next frame, then multiply said difference by the decimal place. This will
 		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
@@ -219,16 +222,14 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		bones_anim[i].pos += curr_frame_offsets.pos;
 		bones_anim[i].rot += curr_frame_offsets.rot;
 		bones_anim[i].scale += curr_frame_offsets.scale;
-
-//		bones_anim[i] = curr_frame_offsets;
 	}
 
-	for (int i = 0; i < matching_bones.size(); i++) {
-		vector<Bone*> target_bones = matching_bones[i];
-		for (int i2 = 0; i2 < target_bones.size(); i2++) {
-			*target_bones[i2] = bones_anim[i];
-		}
-	}
+//	for (int i = 0; i < matching_bones.size(); i++) {
+//		vector<Bone*> target_bones = matching_bones[i];
+//		for (int i2 = 0; i2 < target_bones.size(); i2++) {
+//			*target_bones[i2] = bones_anim[i];
+//		}
+//	}
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene) {
@@ -316,6 +317,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			aiVector3D base_pos;
 			aiVector3D base_rot;
 			aiVector3D base_scale;
+			mat4 base_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix);
 			ai_bone->mOffsetMatrix.Decompose(base_scale, base_rot, base_pos);
 			bone.pos.x = base_pos.x;
 			bone.pos.y = base_pos.y;
@@ -352,6 +354,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 			this->bones[get_bone_id(bone.name)] = bone;
 			this->bones[get_bone_id(bone.name)].parent_id = parent_id;
+			this->bones[get_bone_id(bone.name)].base_matrix = base_matrix;
 		}
 	}
 

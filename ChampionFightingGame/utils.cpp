@@ -242,6 +242,9 @@ string Filter(const string& to, const string& remove) {
 	string ret = "";
 	string ret2 = "";
 	int removal_index = to.find(remove);
+	if (removal_index == -1) {
+		return to;
+	}
 	int cont_index = removal_index + remove.length();
 	ret = to.substr(0, removal_index);
 	ret2 = to.substr(cont_index, to.length());
@@ -481,4 +484,13 @@ void updateGameSettings() {
 
 int round_up_odd(int val) {
 	return (val / 2) + (val % 2);
+}
+
+mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from) {
+	mat4 to;
+	to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
+	to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
+	to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
+	to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
+	return to;
 }

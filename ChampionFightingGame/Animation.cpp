@@ -34,7 +34,9 @@ Animation3D::Animation3D(string anim_kind, string anim_dir) {
 
 	while (smd >> bone_id) { //Eventually smd will try to fit the string "end" into the int bone_id. When this fails, we're at the end.
 		smd >> bone_name >> parent_id;
+		bone_name = Filter(Filter(bone_name, "\""), "\"");
 		Bone new_bone;
+		new_bone.id = bone_id;
 		new_bone.name = bone_name;
 		new_bone.parent_id = parent_id;
 		base_bones.push_back(new_bone);
@@ -54,7 +56,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir) {
 		vector<Bone> new_vec = base_bones;
 		while (smd >> bone_id) { //When it tries to read "Time" as an int, this will fail
 			vec3 pos = vec3(0.0, 0.0, 0.0);
-			vec4 rot = vec4(0.0, 0.0, 0.0, 0.0);
+			vec3 rot = vec3(0.0, 0.0, 0.0);
 			vec3 scale = vec3(0.0, 0.0, 0.0);
 
 			smd >> pos.x >> pos.y >> pos.z >> rot.x >> rot.y >> rot.z; //Read in the contents of the line

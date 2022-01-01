@@ -53,7 +53,7 @@ void RenderManager::remove_light(int target) {
 
 void RenderManager::update_shader(Shader *shader) {
 	shader->use();
-	shader->set_float("material.shininess", 32.0f);
+	shader->set_float("material.shininess", 16.0f);
 
 	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
 		string light = "light[" + to_string(i) + "].";
@@ -69,7 +69,7 @@ void RenderManager::update_shader(Shader *shader) {
 
 	camera.update_view();
 	mat4 view = camera.get_view();
-	mat4 projection = perspective(radians(camera.fov), 800.0f / 600.0f, 0.1f, 100.0f);
+	mat4 projection = perspective(radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
 	shader->set_vec3("view_pos", camera.pos);
 
 	shader->set_mat4("projection", projection);

@@ -6,6 +6,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <gtx/euler_angles.hpp>
 #include "Bone.h"
 #include "Animation.h"
 using namespace glm;
@@ -55,6 +56,7 @@ public:
 	vector<Mesh> meshes;
 	vector<Bone> bones;
 	vector<Bone> bones_anim;
+	vector<Bone> empty_skeleton;
 
 	string directory;
 	bool gamma_correct;
@@ -67,6 +69,7 @@ public:
 	int get_bone_id(string bone_name);
 	vector<Bone*> find_all_matching_bones(string name);
 	void set_bones(float frame, Animation3D *anim_kind);
+	void reset_bones();
 
 private:
 	void load_model(string path);

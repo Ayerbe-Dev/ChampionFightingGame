@@ -145,6 +145,11 @@ void Model::load_skeleton(string path) {
 
 void Model::render(Shader *shader) {
 	for (int i = 0; i < bones_anim.size(); i++) {
+		if (bones[i].pos == bones_anim[i].pos
+		&& bones[i].rot == bones_anim[i].pos
+		&& bones[i].scale == bones_anim[i].pos) {
+			continue;
+		}
 		string final_mat = "final_bones_matrices[" + to_string(i) + "]";
 		mat4 model_mat = mat4(1.0);
 		mat4 pos_mat = translate(model_mat, bones_anim[i].pos - bones[i].pos);

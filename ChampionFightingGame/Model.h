@@ -56,7 +56,6 @@ public:
 	vector<Mesh> meshes;
 	vector<Bone> bones;
 	vector<Bone> bones_anim;
-	vector<Bone> empty_skeleton;
 
 	string directory;
 	bool gamma_correct;

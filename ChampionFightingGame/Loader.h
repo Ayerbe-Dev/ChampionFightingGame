@@ -9,7 +9,7 @@
 #include "DebugMenu.h"
 #include "Menu.h"
 
-extern SDL_mutex* mutex;
+extern SDL_mutex* file_mutex;
 extern SoundManager g_soundmanager;
 
 class LoadIcon {

@@ -33,7 +33,8 @@ SDL_GLContext g_context;
 SoundManager g_soundmanager;
 RenderManager g_rendermanager;
 auto g_chron = chrono::steady_clock::now();
-SDL_mutex* mutex;
+SDL_mutex* file_mutex;
+SDL_mutex* render_mutex;
 
 void initialize_SDL();
 void initialize_GLEW();
@@ -76,7 +77,7 @@ int main() {
 	SDL_DestroyWindow(g_window);
 	SDL_GL_DeleteContext(g_context);
 	SDL_DestroyRenderer(g_renderer);
-	SDL_DestroyMutex(mutex);
+	SDL_DestroyMutex(file_mutex);
 
 	SDL_Quit();
 
@@ -120,7 +121,7 @@ void initialize_SDL() {
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	g_context = SDL_GL_CreateContext(g_window);
-	mutex = SDL_CreateMutex();
+	file_mutex = SDL_CreateMutex();
 
 	//Initialize Audio
 
@@ -244,7 +245,7 @@ void example_main(GameManager* game_manager) {
 		}
 
 		load_icon.move();
-		SDL_LockMutex(mutex);
+		SDL_LockMutex(file_mutex);
 
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -259,7 +260,7 @@ void example_main(GameManager* game_manager) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);
 
-		SDL_UnlockMutex(mutex);
+		SDL_UnlockMutex(file_mutex);
 
 		if (game_loader->finished) {
 			if (!game_loader->can_ret) {

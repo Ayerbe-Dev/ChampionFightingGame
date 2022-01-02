@@ -72,7 +72,7 @@ void debugMenu(GameManager* game_manager) {
 		}
 
 		load_icon.move();
-		SDL_LockMutex(mutex);
+		SDL_LockMutex(file_mutex);
 
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -87,7 +87,7 @@ void debugMenu(GameManager* game_manager) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);
 
-		SDL_UnlockMutex(mutex);
+		SDL_UnlockMutex(file_mutex);
 
 		if (debug_loader->finished) {
 			if (!debug_loader->can_ret) {
@@ -269,7 +269,7 @@ void DebugItem::preLoad(TTF_Font *pFont){
 };
 
 void DebugItem::generateTexture(string message){
-	SDL_LockMutex(mutex);
+	SDL_LockMutex(file_mutex);
 	SDL_Color sky = {204,247,255};
 	SDL_Color red = { 179,0,59 };
 	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), sky);
@@ -288,5 +288,5 @@ void DebugItem::generateTexture(string message){
 
 	SDL_FreeSurface(textSurfaceSelect);
 	SDL_FreeSurface(textSurface);
-	SDL_UnlockMutex(mutex);
+	SDL_UnlockMutex(file_mutex);
 }

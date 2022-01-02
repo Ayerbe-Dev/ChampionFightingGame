@@ -32,7 +32,8 @@ public:
 	void add_light(Light light, int target = -1);
 	void remove_light(int target = -1);
 
-	void update_shader(Shader *shader);
+	void update_shader_lights(Shader *shader);
+	void update_shader_cam(Shader* shader);
 
 	void render(Model *model, Shader *shader, vec3 *pos, vec3 *rot, vec3 *scale);
 };

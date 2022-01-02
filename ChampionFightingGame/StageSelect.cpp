@@ -67,7 +67,7 @@ void stage_select_main(GameManager* game_manager) {
 		}
 
 		load_icon.move();
-		SDL_LockMutex(mutex);
+		SDL_LockMutex(file_mutex);
 
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -82,7 +82,7 @@ void stage_select_main(GameManager* game_manager) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);
 
-		SDL_UnlockMutex(mutex);
+		SDL_UnlockMutex(file_mutex);
 
 		if (stage_select_loader->finished) {
 			if (!stage_select_loader->can_ret) {

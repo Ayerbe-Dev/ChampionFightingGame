@@ -51,7 +51,7 @@ void RenderManager::remove_light(int target) {
 	}
 }
 
-void RenderManager::update_shader(Shader *shader) {
+void RenderManager::update_shader_lights(Shader *shader) {
 	shader->use();
 	shader->set_float("material.shininess", 16.0f);
 
@@ -66,7 +66,9 @@ void RenderManager::update_shader(Shader *shader) {
 		shader->set_float(light + "quadratic", lights[i].quadratic);
 		shader->set_bool(light + "enabled", lights[i].enabled);
 	}
+}
 
+void RenderManager::update_shader_cam(Shader* shader) {
 	camera.update_view();
 	mat4 view = camera.get_view();
 	mat4 projection = perspective(radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
@@ -74,20 +76,16 @@ void RenderManager::update_shader(Shader *shader) {
 
 	shader->set_mat4("projection", projection);
 	shader->set_mat4("view", view);
-
 }
 
 void RenderManager::render(Model *model, Shader *shader, vec3 *model_pos, vec3 *model_rot, vec3 *model_scale) {
-	int exe_time = SDL_GetTicks();
-	shader->use();
-	update_shader(shader);
-	mat4 model_mat = mat4(1.0);
-	model_mat = scale(model_mat, *model_scale);	
-	model_mat = translate(model_mat, *model_pos);
-	model_mat = rotate(model_mat, radians(model_rot->x), vec3(1.0, 0.0, 0.0));
-	model_mat = rotate(model_mat, radians(model_rot->y), vec3(0.0, 1.0, 0.0));
-	model_mat = rotate(model_mat, radians(model_rot->z), vec3(0.0, 0.0, 1.0));
-	shader->set_mat4("model", model_mat);
-	model->render(shader);
-//	cout << "Time to execute function: " << SDL_GetTicks() - exe_time << endl;
+	shader->use(); //Because each shader is model specific, we need to set this no matter what
+	update_shader_cam(shader);
+	mat4 model_mat = mat4(1.0); //MAYBE we can make this a member of Model and just reset it every frame so there's no new mat4 being generated
+	model_mat = scale(model_mat, *model_scale);	//Derefing takes less time than putting an entire vec3 on the stack
+	model_mat = translate(model_mat, *model_pos); //Ditto
+	model_mat *= orientate4(*model_rot); //Ditto and also using orientate4 here means it's only derefed once instead of 3 times as opposed to 3 calls
+	//to rotate() which all require the rotation to be derefed again
+	shader->set_mat4("model", model_mat); //Can't be avoided, maybe set_mat4 can be overloaded to take a pointer since a mat4 is bigger than a &mat4
+	model->render(shader); //2-3 ms to execute, definitely the biggest part of this
 }

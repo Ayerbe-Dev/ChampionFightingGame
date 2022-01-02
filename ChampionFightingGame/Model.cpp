@@ -158,15 +158,17 @@ void Model::render(Shader *shader) {
 		model_mat *= rot_mat * pos_mat * scale_mat;
 		shader->set_mat4(final_mat, model_mat);
 	}
+	//1-2 ms even with the function skipping over every single bone
 
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].render(shader);
 	}
+	//1-2 ms but everything in there is necessary
 }
 
 void Model::load_model(string path) {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;

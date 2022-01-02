@@ -25,13 +25,13 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	Shader shader_1("vertex_no_anim.glsl", "fragment_main.glsl");
+	Shader shader_1("vertex_main.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&shader_1);
 	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&shader_2);
 	Model model_1("resource/chara/roy/model/model.dae");
 	Model model_2("resource/chara/roy/model/model.dae");
-	Animation3D test_anim("idle", "resource/chara/roy/anims/apose.smd");
+	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd");
 
 	vec3 model_pos = vec3(0.0, 0.0, -3.0);
 	vec3 model_rot = vec3(0.0, 0.0, 0.0);
@@ -123,11 +123,9 @@ void three_d_rendering_main(GameManager* game_manager) {
 		else {
 			frame += 1.0;
 		}
-//		model_1.set_bones(0.0, &test_anim);
+		model_1.set_bones(frame, &test_anim);
 
-		int ticks2 = SDL_GetTicks();
 		g_rendermanager.render(&model_1, &shader_1, &model_pos, &model_rot, &model_scale);
-		cout << "Function executed in: " << SDL_GetTicks() - ticks2 << "ms" << endl;
 //		g_rendermanager.render(&model_2, &shader_2, &model_pos, &model_rot, &model_scale);
 
 		SDL_GL_SwapWindow(g_window);

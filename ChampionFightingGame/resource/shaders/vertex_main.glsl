@@ -32,7 +32,6 @@ void main() {
         }
         vec4 local_pos = final_bones_matrices[v_boneids[i]] * vec4(v_pos, 1.0f);
         total_pos += local_pos * v_weights[i];
-        vec3 local_nor = mat3(final_bones_matrices[v_boneids[i]]) * v_nor;
     }
 
     FragPos = vec3(model * total_pos);

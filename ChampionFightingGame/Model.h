@@ -32,13 +32,11 @@ public:
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	vector<Texture> textures;
-	vector<Bone> bones;
 	bool visible = true;
 	string name;
 
-	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, vector<Bone> bones, string name);
+	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name);
 	void render(Shader *shader);
-	Bone find_bone(int id);
 	
 private:
 	u32 VAO;
@@ -60,13 +58,10 @@ public:
 	string directory;
 	bool gamma_correct;
 	int vertex_count = 0;
-	vector<vector<Bone*>> matching_bones;
-
 
 
 	int get_mesh_id(string mesh_name);
 	int get_bone_id(string bone_name);
-	vector<Bone*> find_all_matching_bones(string name);
 	void set_bones(float frame, Animation3D *anim_kind);
 	void reset_bones();
 

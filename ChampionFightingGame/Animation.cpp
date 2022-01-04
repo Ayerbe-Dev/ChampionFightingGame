@@ -64,6 +64,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir) {
 			new_bone.pos = pos;
 			new_bone.rot = rot;
 			new_bone.scale = scale;
+			new_bone.keyframed = true;
 			new_vec[bone_id] = new_bone;
 		}
 		smd.clear();

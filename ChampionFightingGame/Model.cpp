@@ -1,11 +1,10 @@
 #include "Model.h"
 using namespace glm;
 
-Mesh::Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, vector<Bone> bones, string name) {
+Mesh::Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name) {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
-	this->bones = bones;
 	this->name = name;
 
 	init();
@@ -74,15 +73,6 @@ void Mesh::render(Shader *shader) {
 	glActiveTexture(GL_TEXTURE0);
 }
 
-Bone Mesh::find_bone(int id) {
-	for (int i = 0; i < bones.size(); i++) {
-		if (bones[i].id == id) {
-			return bones[i];
-		}
-	}
-	return Bone();
-}
-
 Model::Model(string path) {
 	load_model(path);
 }
@@ -103,18 +93,6 @@ int Model::get_bone_id(string bone_name) {
 		}
 	}
 	return -1;
-}
-
-vector<Bone*> Model::find_all_matching_bones(string bone_name) {
-	vector<Bone*> ret;
-	for (int i = 0; i < meshes.size(); i++) {
-		for (int i2 = 0; i2 < meshes[i].bones.size(); i2++) {
-			if (meshes[i].bones[i2].name == bone_name) {
-				ret.push_back(&meshes[i].bones[i2]);
-			}
-		}
-	}
-	return ret;
 }
 
 void Model::load_skeleton(string path) {
@@ -179,11 +157,12 @@ void Model::load_model(string path) {
 	load_skeleton(skeleton_path);
 
 	process_node(scene->mRootNode, scene);
-	for (int i = 0; i < bones.size(); i++) {
-		vector<Bone*> matching_bones = find_all_matching_bones(bones[i].name);
-		this->matching_bones.push_back(matching_bones);
-	}
+
 	bones_anim = bones;
+	for (int i = 0; i < bones.size(); i++) {
+		cout << "Bone: " << bones[i].name << ", X Pos: " << bones[i].pos.x << ", Y Pos: " << bones[i].pos.y << ", Z Pos: " << bones[i].pos.z << ", X Rot: "
+			<< bones[i].rot.x << ", Y Rot: " << bones[i].rot.y << ", Z Rot: " << bones[i].rot.z << endl;
+	}
 }
 
 void Model::reset_bones() {
@@ -221,9 +200,27 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		if (curr_frame_offsets.parent_id != -1) {
 			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id]; //Get the parent bone coords
 			offset_base_bone(&bones[curr_frame_offsets.parent_id], &parent_offsets); //Subtract the base bone coords from the parent ones since we already factor them into the child
-			curr_frame_offsets.pos += parent_offsets.pos;
-			curr_frame_offsets.rot += parent_offsets.rot;
-			curr_frame_offsets.scale += parent_offsets.scale;
+			
+			if (curr_frame_offsets.pos * parent_offsets.pos != vec3(0.0, 0.0, 0.0)) {
+				curr_frame_offsets.pos *= parent_offsets.pos;
+			}
+			else if (curr_frame_offsets.pos == vec3(0.0, 0.0, 0.0)) {
+				curr_frame_offsets.pos = parent_offsets.pos;
+			}
+
+			if (curr_frame_offsets.rot * parent_offsets.rot != vec3(0.0, 0.0, 0.0)) {
+				curr_frame_offsets.rot *= parent_offsets.rot;
+			}
+			else if (curr_frame_offsets.rot == vec3(0.0, 0.0, 0.0)) {
+				curr_frame_offsets.rot = parent_offsets.rot;
+			}
+
+			if (curr_frame_offsets.scale * parent_offsets.scale != vec3(0.0, 0.0, 0.0)) {
+				curr_frame_offsets.scale *= parent_offsets.scale;
+			}
+			else if (curr_frame_offsets.scale == vec3(0.0, 0.0, 0.0)) {
+				curr_frame_offsets.scale = parent_offsets.scale;
+			}
 		}
 
 		bones_anim[i].pos += curr_frame_offsets.pos;
@@ -253,7 +250,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	vector<Texture> textures;
-	vector<Bone> bones;
+	vector<Bone> bones = this->bones;
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
@@ -335,9 +332,11 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.scale.x = base_scale.x;
 			bone.scale.y = base_scale.y;
 			bone.scale.z = base_scale.z;
+			bone.base_matrix = base_matrix;
 			//For the bone's name, we just derive it like this
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
 			bone.id = get_bone_id(bone.name);
+			bone.parent_id = this->bones[bone.id].parent_id;
 
 			//Iterate through all of the vertices that this bone influences and set that vertex data accordingly
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
@@ -351,21 +350,12 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 				}
 			}
 
-			bones.push_back(bone); //Add our generated bone structure to our vector that will be added to the mesh
-
-			//And finally, for the MODEL'S bone structure, we already generated the bone list, but it doesn't have positions, so for the sake of
-			//keeping them all in one place, we'll copy our generated bone data over to the skeleton. This is hilariously inefficient but it happens
-			//only while loading so it SHOULD be alright for now.
-
-			int parent_id = this->bones[get_bone_id(bone.name)].parent_id;
-
-			this->bones[get_bone_id(bone.name)] = bone;
-			this->bones[get_bone_id(bone.name)].parent_id = parent_id;
-			this->bones[get_bone_id(bone.name)].base_matrix = base_matrix;
+			this->bones[bone.id] = bone; //This keeps the model's bone coords up to date by grabbing that data when we can find it. Probably could be
+			//optimized since there's no check to make sure the bone is empty, but fixing that is a pretty low priority rn
 		}
 	}
 
-	return Mesh(vertices, indices, textures, bones, name);
+	return Mesh(vertices, indices, textures, name);
 }
 
 vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, string typeName) {

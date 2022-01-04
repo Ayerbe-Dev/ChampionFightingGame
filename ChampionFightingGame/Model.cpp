@@ -201,26 +201,9 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id]; //Get the parent bone coords
 			offset_base_bone(&bones[curr_frame_offsets.parent_id], &parent_offsets); //Subtract the base bone coords from the parent ones since we already factor them into the child
 			
-			if (curr_frame_offsets.pos * parent_offsets.pos != vec3(0.0, 0.0, 0.0)) {
-				curr_frame_offsets.pos *= parent_offsets.pos;
-			}
-			else if (curr_frame_offsets.pos == vec3(0.0, 0.0, 0.0)) {
-				curr_frame_offsets.pos = parent_offsets.pos;
-			}
-
-			if (curr_frame_offsets.rot * parent_offsets.rot != vec3(0.0, 0.0, 0.0)) {
-				curr_frame_offsets.rot *= parent_offsets.rot;
-			}
-			else if (curr_frame_offsets.rot == vec3(0.0, 0.0, 0.0)) {
-				curr_frame_offsets.rot = parent_offsets.rot;
-			}
-
-			if (curr_frame_offsets.scale * parent_offsets.scale != vec3(0.0, 0.0, 0.0)) {
-				curr_frame_offsets.scale *= parent_offsets.scale;
-			}
-			else if (curr_frame_offsets.scale == vec3(0.0, 0.0, 0.0)) {
-				curr_frame_offsets.scale = parent_offsets.scale;
-			}
+			curr_frame_offsets.pos += parent_offsets.pos;
+			curr_frame_offsets.rot += parent_offsets.rot;
+			curr_frame_offsets.scale += parent_offsets.scale;
 		}
 
 		bones_anim[i].pos += curr_frame_offsets.pos;

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <functional>
 #include "Animation.h"
+#include "Model.h"
 #include <gtx/euler_angles.hpp>
 extern SDL_Renderer* g_renderer;
 
@@ -13,7 +14,7 @@ Animation::Animation() {};
 
 Animation3D::Animation3D() {}
 
-Animation3D::Animation3D(string anim_kind, string anim_dir) {
+Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 	this->name = anim_kind;
 	ifstream smd;
 	smd.open(anim_dir);
@@ -56,16 +57,16 @@ Animation3D::Animation3D(string anim_kind, string anim_dir) {
 		//frame.
 		vector<Bone> new_vec = base_bones;
 		while (smd >> bone_id) { //When it tries to read "Time" as an int, this will fail
-			mat4 matrix = mat4(1.0);
-			vec3 pos = vec3(0.0, 0.0, 0.0);
-			vec3 rot = vec3(0.0, 0.0, 0.0);
-			vec3 smd_scale = vec3(0.0, 0.0, 0.0);
+			mat4 matrix = model->bones[bone_id].matrix;
+			vec3 pos = model->bones[bone_id].pos;
+			vec3 rot = model->bones[bone_id].rot;
+			vec3 smd_scale = model->bones[bone_id].scale;
 
 			smd >> pos.x >> pos.y >> pos.z >> rot.x >> rot.y >> rot.z; //Read in the contents of the line
 			matrix = translate(matrix, pos);
 			mat4 mat_rot = orientate4(rot);
 			matrix *= mat_rot;
-			matrix = scale(matrix, smd_scale);
+//			matrix = scale(matrix, smd_scale);
 			Bone new_bone = base_bones[bone_id];
 			new_bone.pos = pos;
 			new_bone.rot = rot;

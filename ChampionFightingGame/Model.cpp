@@ -123,7 +123,7 @@ void Model::load_skeleton(string path) {
 
 void Model::load_model(string path) {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
@@ -144,19 +144,19 @@ void Model::reset_bones() {
 
 void Model::render(Shader* shader) {
 	for (int i = 0; i < bones_anim.size(); i++) {
-		if (bones[i].pos == bones_anim[i].pos
-		&& bones[i].rot == bones_anim[i].pos
-		&& bones[i].scale == bones_anim[i].pos) {
-			continue;
-		}
+//		if (bones[i].pos == bones_anim[i].pos
+//		&& bones[i].rot == bones_anim[i].rot
+//		&& bones[i].scale == bones_anim[i].scale) {
+//			continue;
+//		}
 		string final_mat = "bone_matrix[" + to_string(i) + "]";
-		mat4 model_mat = mat4(1.0);
-		mat4 pos_mat = translate(model_mat, bones_anim[i].pos - bones[i].pos);
-		mat4 rot_mat = orientate4(bones_anim[i].rot - bones[i].rot);
-		mat4 scale_mat = scale(model_mat, bones_anim[i].scale - bones[i].scale);
-		model_mat *= rot_mat * pos_mat * scale_mat;
-		shader->set_mat4(final_mat, model_mat);
-//		shader->set_mat4(final_mat, bones_anim[i].matrix);
+//		mat4 model_mat = mat4(1.0);
+//		mat4 pos_mat = translate(model_mat, bones_anim[i].pos - bones[i].pos);
+//		mat4 rot_mat = orientate4(bones_anim[i].rot - bones[i].rot);
+//		mat4 scale_mat = scale(model_mat, bones_anim[i].scale - bones[i].scale);
+//		model_mat *= rot_mat * pos_mat * scale_mat;
+//		shader->set_mat4(final_mat, model_mat);
+		shader->set_mat4(final_mat, bones_anim[i].matrix);
 	}
 	//1-2 ms even with the function skipping over every single bone
 
@@ -182,34 +182,34 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
 		//keyframes
 
-		next_frame_offsets.pos = decimal * (next_frame_offsets.pos - curr_frame_offsets.pos);
-		next_frame_offsets.rot = decimal * (next_frame_offsets.rot - curr_frame_offsets.rot);
-		next_frame_offsets.scale = decimal * (next_frame_offsets.scale - curr_frame_offsets.scale);
+//		next_frame_offsets.pos = decimal * (next_frame_offsets.pos - curr_frame_offsets.pos);
+//		next_frame_offsets.rot = decimal * (next_frame_offsets.rot - curr_frame_offsets.rot);
+//		next_frame_offsets.scale = decimal * (next_frame_offsets.scale - curr_frame_offsets.scale);
 		next_frame_offsets.matrix = decimal * (next_frame_offsets.matrix - curr_frame_offsets.matrix);
 		
-		curr_frame_offsets.pos += next_frame_offsets.pos;
-		curr_frame_offsets.rot += next_frame_offsets.rot;
-		curr_frame_offsets.scale += next_frame_offsets.scale;
+//		curr_frame_offsets.pos += next_frame_offsets.pos;
+//		curr_frame_offsets.rot += next_frame_offsets.rot;
+//		curr_frame_offsets.scale += next_frame_offsets.scale;
 		curr_frame_offsets.matrix += next_frame_offsets.matrix;
 
 		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
 		//to be filled by the time we look at it
 
-		if (curr_frame_offsets.parent_id != -1) {
-			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id]; //Get the parent bone coords
-			offset_base_bone(&bones[curr_frame_offsets.parent_id], &parent_offsets); //Subtract the base bone coords from the parent ones since we already factor them into the child
-	
-			curr_frame_offsets.pos += parent_offsets.pos;
-			curr_frame_offsets.rot += parent_offsets.rot;
-			curr_frame_offsets.scale += parent_offsets.scale;
-			curr_frame_offsets.matrix = parent_offsets.matrix * curr_frame_offsets.matrix;
-		}
+//		if (curr_frame_offsets.parent_id != -1) {
+//			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id]; //Get the parent bone coords
+//			offset_base_bone(&bones[curr_frame_offsets.parent_id], &parent_offsets); //Subtract the base bone coords from the parent ones since we already factor them into the child
+//	
+//			curr_frame_offsets.pos += parent_offsets.pos;
+//			curr_frame_offsets.rot += parent_offsets.rot;
+//			curr_frame_offsets.scale += parent_offsets.scale;
+//			curr_frame_offsets.matrix = parent_offsets.matrix * curr_frame_offsets.matrix;
+//		}
 
-		bones_anim[i].pos += curr_frame_offsets.pos;
-		bones_anim[i].rot += curr_frame_offsets.rot;
-		bones_anim[i].scale += curr_frame_offsets.scale;
-		bones_anim[i].matrix *= curr_frame_offsets.matrix;
+//		bones_anim[i].pos += curr_frame_offsets.pos;
+//		bones_anim[i].rot += curr_frame_offsets.rot;
+//		bones_anim[i].scale += curr_frame_offsets.scale;
+		bones_anim[i].matrix = curr_frame_offsets.matrix;
 	}
 }
 
@@ -295,20 +295,21 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			//First, we split up the offset_matrix into its pos, rot and scale
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
+			aiNode* ai_node = ai_bone->mArmature;
 			aiVector3D base_pos;
 			aiVector3D base_rot;
 			aiVector3D base_scale;
-			mat4 base_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix);
-			ai_bone->mOffsetMatrix.Decompose(base_scale, base_rot, base_pos);
-			bone.pos.x = base_pos.x;
-			bone.pos.y = base_pos.y;
-			bone.pos.z = base_pos.z;
-			bone.rot.x = base_rot.x;
-			bone.rot.y = base_rot.y;
-			bone.rot.z = base_rot.z;
-			bone.scale.x = base_scale.x;
-			bone.scale.y = base_scale.y;
-			bone.scale.z = base_scale.z;
+			mat4 base_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
+			ai_node->mTransformation.Decompose(base_scale, base_rot, base_pos);
+//			bone.pos.x = base_pos.x;
+//			bone.pos.y = base_pos.y;
+//			bone.pos.z = base_pos.z;
+//			bone.rot.x = base_rot.x;
+//			bone.rot.y = base_rot.y;
+//			bone.rot.z = base_rot.z;
+//			bone.scale.x = base_scale.x;
+//			bone.scale.y = base_scale.y;
+//			bone.scale.z = base_scale.z;
 			bone.matrix = base_matrix;
 			//For the bone's name, we just derive it like this
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");

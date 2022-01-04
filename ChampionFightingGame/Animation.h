@@ -6,6 +6,8 @@
 #include "Bone.h"
 #include <assimp/Importer.hpp>
 
+class Model;
+
 struct Animation {
 	SDL_Texture* spritesheet;
 	string name{ "default"};
@@ -22,7 +24,7 @@ struct Animation {
 class Animation3D {
 public:
 	Animation3D();
-	Animation3D(string anim_kind, string anim_dir);
+	Animation3D(string anim_kind, string anim_dir, Model* model);
 	string name;
 	vector<vector<Bone>> keyframes;
 	int length;

@@ -18,7 +18,7 @@ out vec2 TexCoords;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 final_bones_matrices[MAX_BONES];
+uniform mat4 bone_matrix[MAX_BONES];
 
 void main() {
     vec4 total_pos = vec4(v_pos, 1.0);
@@ -30,7 +30,7 @@ void main() {
             total_pos = vec4(v_pos, 1.0f);
             break;
         }
-        vec4 local_pos = final_bones_matrices[v_boneids[i]] * vec4(v_pos, 1.0f);
+        vec4 local_pos = bone_matrix[v_boneids[i]] * vec4(v_pos, 1.0f);
         total_pos += local_pos * v_weights[i];
     }
 

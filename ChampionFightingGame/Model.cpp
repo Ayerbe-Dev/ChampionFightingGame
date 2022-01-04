@@ -121,29 +121,6 @@ void Model::load_skeleton(string path) {
 	bones_anim = bones;
 }
 
-void Model::render(Shader *shader) {
-	for (int i = 0; i < bones_anim.size(); i++) {
-		if (bones[i].pos == bones_anim[i].pos
-		&& bones[i].rot == bones_anim[i].pos
-		&& bones[i].scale == bones_anim[i].pos) {
-			continue;
-		}
-		string final_mat = "final_bones_matrices[" + to_string(i) + "]";
-		mat4 model_mat = mat4(1.0);
-		mat4 pos_mat = translate(model_mat, bones_anim[i].pos - bones[i].pos);
-		mat4 rot_mat = orientate4(bones_anim[i].rot - bones[i].rot);
-		mat4 scale_mat = scale(model_mat, bones_anim[i].scale - bones[i].scale);
-		model_mat *= rot_mat * pos_mat * scale_mat;
-		shader->set_mat4(final_mat, model_mat);
-	}
-	//1-2 ms even with the function skipping over every single bone
-
-	for (unsigned int i = 0; i < meshes.size(); i++) {
-		meshes[i].render(shader);
-	}
-	//1-2 ms but everything in there is necessary
-}
-
 void Model::load_model(string path) {
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -159,14 +136,34 @@ void Model::load_model(string path) {
 	process_node(scene->mRootNode, scene);
 
 	bones_anim = bones;
-	for (int i = 0; i < bones.size(); i++) {
-		cout << "Bone: " << bones[i].name << ", X Pos: " << bones[i].pos.x << ", Y Pos: " << bones[i].pos.y << ", Z Pos: " << bones[i].pos.z << ", X Rot: "
-			<< bones[i].rot.x << ", Y Rot: " << bones[i].rot.y << ", Z Rot: " << bones[i].rot.z << endl;
-	}
 }
 
 void Model::reset_bones() {
 	bones_anim = bones;
+}
+
+void Model::render(Shader* shader) {
+	for (int i = 0; i < bones_anim.size(); i++) {
+		if (bones[i].pos == bones_anim[i].pos
+		&& bones[i].rot == bones_anim[i].pos
+		&& bones[i].scale == bones_anim[i].pos) {
+			continue;
+		}
+		string final_mat = "bone_matrix[" + to_string(i) + "]";
+		mat4 model_mat = mat4(1.0);
+		mat4 pos_mat = translate(model_mat, bones_anim[i].pos - bones[i].pos);
+		mat4 rot_mat = orientate4(bones_anim[i].rot - bones[i].rot);
+		mat4 scale_mat = scale(model_mat, bones_anim[i].scale - bones[i].scale);
+		model_mat *= rot_mat * pos_mat * scale_mat;
+		shader->set_mat4(final_mat, model_mat);
+//		shader->set_mat4(final_mat, bones_anim[i].matrix);
+	}
+	//1-2 ms even with the function skipping over every single bone
+
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		meshes[i].render(shader);
+	}
+	//1-2 ms but everything in there is necessary
 }
 
 void Model::set_bones(float frame, Animation3D *anim_kind) {
@@ -185,13 +182,15 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
 		//keyframes
 
-		next_frame_offsets.pos = decimal * (next_frame_offsets.pos - curr_frame_offsets.pos); 
+		next_frame_offsets.pos = decimal * (next_frame_offsets.pos - curr_frame_offsets.pos);
 		next_frame_offsets.rot = decimal * (next_frame_offsets.rot - curr_frame_offsets.rot);
 		next_frame_offsets.scale = decimal * (next_frame_offsets.scale - curr_frame_offsets.scale);
+		next_frame_offsets.matrix = decimal * (next_frame_offsets.matrix - curr_frame_offsets.matrix);
 		
 		curr_frame_offsets.pos += next_frame_offsets.pos;
 		curr_frame_offsets.rot += next_frame_offsets.rot;
 		curr_frame_offsets.scale += next_frame_offsets.scale;
+		curr_frame_offsets.matrix += next_frame_offsets.matrix;
 
 		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
@@ -200,23 +199,18 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		if (curr_frame_offsets.parent_id != -1) {
 			Bone parent_offsets = bones_anim[curr_frame_offsets.parent_id]; //Get the parent bone coords
 			offset_base_bone(&bones[curr_frame_offsets.parent_id], &parent_offsets); //Subtract the base bone coords from the parent ones since we already factor them into the child
-			
+	
 			curr_frame_offsets.pos += parent_offsets.pos;
 			curr_frame_offsets.rot += parent_offsets.rot;
 			curr_frame_offsets.scale += parent_offsets.scale;
+			curr_frame_offsets.matrix = parent_offsets.matrix * curr_frame_offsets.matrix;
 		}
 
 		bones_anim[i].pos += curr_frame_offsets.pos;
 		bones_anim[i].rot += curr_frame_offsets.rot;
 		bones_anim[i].scale += curr_frame_offsets.scale;
+		bones_anim[i].matrix *= curr_frame_offsets.matrix;
 	}
-
-//	for (int i = 0; i < matching_bones.size(); i++) {
-//		vector<Bone*> target_bones = matching_bones[i];
-//		for (int i2 = 0; i2 < target_bones.size(); i2++) {
-//			*target_bones[i2] = bones_anim[i];
-//		}
-//	}
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene) {
@@ -315,7 +309,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.scale.x = base_scale.x;
 			bone.scale.y = base_scale.y;
 			bone.scale.z = base_scale.z;
-			bone.base_matrix = base_matrix;
+			bone.matrix = base_matrix;
 			//For the bone's name, we just derive it like this
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
 			bone.id = get_bone_id(bone.name);

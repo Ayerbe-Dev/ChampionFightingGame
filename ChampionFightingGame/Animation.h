@@ -4,6 +4,7 @@
 #include <vector>
 #include "utils.h"
 #include "Bone.h"
+#include <assimp/Importer.hpp>
 
 struct Animation {
 	SDL_Texture* spritesheet;

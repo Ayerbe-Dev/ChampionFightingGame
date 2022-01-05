@@ -52,8 +52,8 @@ public:
     void render(Shader *shader);
 	vector<Texture> textures_loaded;
 	vector<Mesh> meshes;
+
 	vector<Bone> bones;
-	vector<Bone> bones_anim;
 
 	string directory;
 	bool gamma_correct;
@@ -63,7 +63,6 @@ public:
 	int get_mesh_id(string mesh_name);
 	int get_bone_id(string bone_name);
 	void set_bones(float frame, Animation3D *anim_kind);
-	void reset_bones();
 
 private:
 	void load_model(string path);

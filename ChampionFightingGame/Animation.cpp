@@ -57,7 +57,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 		//frame.
 		vector<Bone> new_vec = base_bones;
 		while (smd >> bone_id) { //When it tries to read "Time" as an int, this will fail
-			mat4 matrix = model->bones[bone_id].matrix;
+			mat4 matrix = model->bones[bone_id].anim_rest_matrix;
 			vec3 pos = model->bones[bone_id].pos;
 			vec3 rot = model->bones[bone_id].rot;
 			vec3 smd_scale = model->bones[bone_id].scale;
@@ -66,12 +66,12 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 			matrix = translate(matrix, pos);
 			mat4 mat_rot = orientate4(rot);
 			matrix *= mat_rot;
-//			matrix = scale(matrix, smd_scale);
+			matrix = scale(matrix, smd_scale);
 			Bone new_bone = base_bones[bone_id];
 			new_bone.pos = pos;
 			new_bone.rot = rot;
 			new_bone.scale = smd_scale;
-			new_bone.matrix = matrix;
+			new_bone.anim_matrix = matrix;
 			new_bone.keyframed = true;
 			new_vec[bone_id] = new_bone;
 		}

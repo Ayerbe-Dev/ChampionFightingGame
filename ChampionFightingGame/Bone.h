@@ -9,7 +9,10 @@ struct Bone {
 	vec3 pos = vec3(0.0, 0.0, 0.0);
 	vec3 rot = vec3(0.0, 0.0, 0.0);
 	vec3 scale = vec3(0.0, 0.0, 0.0);
-	mat4 matrix;
+	mat4 model_matrix;
+	mat4 anim_matrix;
+	mat4 anim_rest_matrix;
+	mat4 final_matrix;
 	bool keyframed = false;
 };
 

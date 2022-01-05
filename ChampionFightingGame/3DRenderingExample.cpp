@@ -37,8 +37,6 @@ void three_d_rendering_main(GameManager* game_manager) {
 	vec3 model_rot = vec3(0.0, 0.0, 0.0);
 	vec3 model_scale = vec3(0.0, 0.0, 0.0);
 
-	model_1.reset_bones();
-
 	int ticks = SDL_GetTicks();
 	float frame = 0.0;
 	while (three_deeing) {
@@ -118,7 +116,6 @@ void three_d_rendering_main(GameManager* game_manager) {
 		
 		if (frame == test_anim.length) {
 			frame = 0.0;
-			model_1.reset_bones();
 		}
 		else {
 			frame += 1.0;

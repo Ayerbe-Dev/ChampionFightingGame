@@ -22,16 +22,20 @@ uniform mat4 bone_matrix[MAX_BONES];
 
 void main() {
     mat4 bone_transform = bone_matrix[v_boneids[0]] * v_weights[0];
-    bone_transform += bone_matrix[v_boneids[1]] * v_weights[1];
-    bone_transform += bone_matrix[v_boneids[2]] * v_weights[2];
-    bone_transform += bone_matrix[v_boneids[3]] * v_weights[3];
+    float total_weights = v_weights[0];
+    for (int i = 1; i < MAX_BONE_INFLUENCE; i++) {
+        bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
+        total_weights += v_weights[i];
+    }
+    if (total_weights != 1.0) {
+        bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
+    }
 
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
     
     FragPos = vec3(model * total_pos);
     Normal = mat3(transpose(inverse(model))) * v_nor;  
     TexCoords = v_texcoords;
-    mat4 viewmodel = view * model;
 
-    gl_Position = projection * viewmodel * total_pos;
+    gl_Position = projection * view * model * total_pos;
 } 

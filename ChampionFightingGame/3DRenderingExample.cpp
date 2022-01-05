@@ -29,16 +29,17 @@ void three_d_rendering_main(GameManager* game_manager) {
 	g_rendermanager.update_shader_lights(&shader_1);
 	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&shader_2);
-	Model model_1("resource/chara/roy/model/model.dae");
-	Model model_2("resource/chara/roy/model/model.dae");
+	Model model_1("resource/chara/roy/model/terry.dae");
+	Model model_2("resource/chara/roy/model/terry.dae");
 	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model_1);
 
-	vec3 model_pos = vec3(0.0, 0.0, -3.0);
+	vec3 model_pos = vec3(0.0, -6.0, -6.0);
 	vec3 model_rot = vec3(0.0, 0.0, 0.0);
-	vec3 model_scale = vec3(0.0, 0.0, 0.0);
+	vec3 model_scale = vec3(0.05, 0.05, 0.05);
 
 	int ticks = SDL_GetTicks();
 	float frame = 0.0;
+	float angle = 0.0;
 	while (three_deeing) {
 //		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
 		frameTimeDelay();
@@ -104,14 +105,10 @@ void three_d_rendering_main(GameManager* game_manager) {
 			model_rot.z -= 0.1;
 		}
 		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
-			model_scale.x += 0.01;
-			model_scale.y += 0.01;
-			model_scale.z += 0.01;
+
 		}
 		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
-			model_scale.x -= 0.01;
-			model_scale.y -= 0.01;
-			model_scale.z -= 0.01;
+
 		}
 		
 		if (frame == test_anim.length) {

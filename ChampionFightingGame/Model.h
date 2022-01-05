@@ -53,6 +53,8 @@ public:
 	vector<Texture> textures_loaded;
 	vector<Mesh> meshes;
 
+	mat4 global_transform;
+
 	vector<Bone> bones;
 
 	string directory;

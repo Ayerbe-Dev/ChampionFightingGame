@@ -110,7 +110,7 @@ void Model::load_skeleton(string path) {
 	while (smd >> bone_id) {
 		smd >> bone_name >> parent_id;
 		Bone new_bone;
-		bone_name = Filter(Filter(bone_name, "\""), "\""); //Remove the "s from the SMD's bone names
+		bone_name = Filter(bone_name, "\""); //Remove the "s from the SMD's bone names
 		new_bone.name = bone_name;
 		new_bone.id = bone_id;
 		new_bone.parent_id = parent_id;
@@ -122,13 +122,14 @@ void Model::load_skeleton(string path) {
 
 void Model::load_model(string path) {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/')) + "/";
+	global_transform = inverse(ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation));
 	string skeleton_path = directory + "skeleton.smd";
 	load_skeleton(skeleton_path);
 
@@ -149,34 +150,48 @@ void Model::render(Shader* shader) {
 }
 
 void Model::set_bones(float frame, Animation3D *anim_kind) {
-	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size() - 1); //All keyframes for the current frame
-	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1); //All keyframes for the next frame
+	//First, we get all of the keyframes for both the current frame and the next frame (Note: For now this assumes every frame is baked, in the future
+	//I'll change this to use interpolation
+
+	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size() - 1); 
+	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1);
 	vector<Bone> keyframes = anim_kind->keyframes[frame_index];
 	vector<Bone> next_keyframes = anim_kind->keyframes[next_frame_index];
+	float decimal = (float)frame_index - frame;
 
 	for (int i = 0; i < keyframes.size(); i++) { //Iterate through all bones
-		Bone curr_frame_offsets = keyframes[i]; //Get the bone offsets for the current bone on this frame
-		Bone next_frame_offsets = next_keyframes[i]; //Do the same for the next frame
-		float decimal = (float)frame_index - frame; //Decimal place for the next frame
+		Bone curr_frame_offsets = keyframes[i];
+		Bone next_frame_offsets = next_keyframes[i];
 
 		//Calculate the difference in offset between the current frame and the next frame, then multiply said difference by the decimal place. This will
 		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
 		//keyframes
 
-		next_frame_offsets.anim_matrix = decimal * (next_frame_offsets.anim_matrix - curr_frame_offsets.anim_matrix);
-		curr_frame_offsets.anim_matrix += next_frame_offsets.anim_matrix;
+		next_frame_offsets.anim_matrix -= curr_frame_offsets.anim_matrix;
+		curr_frame_offsets.anim_matrix += decimal * next_frame_offsets.anim_matrix;
 
 		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
 		//to be filled by the time we look at it
 
-//		if (curr_frame_offsets.parent_id != -1) {
-//			Bone parent_offsets = bones[curr_frame_offsets.parent_id]; //Get the parent bone coords
-//			curr_frame_offsets.anim_matrix += curr_frame_offsets.anim_matrix;
-//		}
+		mat4 parent_matrix = mat4(1.0);
+		if (curr_frame_offsets.parent_id != -1) {
+			parent_matrix = bones[curr_frame_offsets.parent_id].anim_matrix;
+		}
+
+		//Update our anim_matrix so child bones can use it in future iterations
 
 		bones[i].anim_matrix = curr_frame_offsets.anim_matrix;
-		bones[i].final_matrix = bones[i].anim_rest_matrix;
+
+		//This equation is probably wrong
+
+		bones[i].final_matrix = global_transform * parent_matrix * bones[i].anim_matrix * bones[i].anim_rest_matrix * bones[i].model_matrix;
+
+		if (bones[i].model_matrix != inverse(bones[i].anim_rest_matrix)) {
+			//cout << "Because that makes sense" << endl;
+
+			//Yeah so for some reason they were equal earlier but they aren't equal now. I swear I didn't touch the model_matrix.
+		}
 	}
 }
 
@@ -257,17 +272,29 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 	string name = mesh->mName.C_Str();
 
-	if (mesh->HasBones()) { //Check if the mesh has any bones
+	if (mesh->HasBones()) {
 		for (int i = 0; i < mesh->mNumBones; i++) {
-			//First, we split up the offset_matrix into its pos, rot and scale
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
 			aiNode* ai_node = ai_bone->mArmature;
-			aiVector3D base_pos;
+			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation); //Bone matrix in Bone Space (rest position)
+			mat4 model_matrix = inverse(anim_matrix); //Bone matrix in Model Space. I store this separately because, for whatever reason, by the time
+			//I'm adjusting the skeleton, bones[i].anim_rest_matrix * inverse(bones[i].anim_rest_matrix) will not equate to mat4(1.0). Make it make sense.
+
+			//mat4 model_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix); I THOUGHT this would be the Bone matrix in Model Space (and 
+			//therefore equivalent to inverse(anim_matrix), but it didn't seem to be usable for anything even though I've seen other tutorials use
+			//it as the offset matrix
+
+			bone.model_matrix = model_matrix;
+			bone.anim_rest_matrix = anim_matrix;
+			bone.anim_matrix = anim_matrix;
+
+			//Note: These vectors are only used so that empty keyframe data can be filled in properly (mostly scale, since SMD doesn't actually support
+			//that). Will be removed in the future, but it isn't the cause of the current problem.
+
+			aiVector3D base_pos; 
 			aiVector3D base_rot;
 			aiVector3D base_scale;
-			mat4 model_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix);
-			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 			ai_node->mTransformation.Decompose(base_scale, base_rot, base_pos);
 			bone.pos.x = base_pos.x;
 			bone.pos.y = base_pos.y;
@@ -278,17 +305,14 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.scale.x = base_scale.x;
 			bone.scale.y = base_scale.y;
 			bone.scale.z = base_scale.z;
-			bone.model_matrix = model_matrix;
-			bone.anim_rest_matrix = anim_matrix;
-			bone.anim_matrix = anim_matrix;
-			//For the bone's name, we just derive it like this
-			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
-			bone.id = get_bone_id(bone.name);
-			bone.parent_id = this->bones[bone.id].parent_id;
 
-			//Iterate through all of the vertices that this bone influences and set that vertex data accordingly
+			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_"); //Blender be like
+			bone.id = get_bone_id(bone.name);
+			bone.parent_id = this->bones[bone.id].parent_id; //this->bones is already initialized to contain the name, ID and parent ID of each bone,
+			//but since we generate the rest of the info here, we need to copy over the one thing that isn't able to be derived
+
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
-				int index = ai_bone->mWeights[i2].mVertexId; //Note that our vertex list gets updated in the exact order of the bones
+				int index = ai_bone->mWeights[i2].mVertexId;
 				for (int i3 = 0; i3 < MAX_BONE_INFLUENCE; i3++) {
 					if (vertices[index].weights[i3] == 0.0) {
 						vertices[index].bone_ids[i3] = bone.id;
@@ -298,7 +322,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 				}
 			}
 
-			this->bones[bone.id] = bone; //This keeps the model's bone coords up to date by grabbing that data when we can find it. Probably could be
+			this->bones[bone.id] = bone; //This keeps the model's bone coords up to date by grabbing that data once we can find it. Probably could be
 			//optimized since there's no check to make sure the bone is empty, but fixing that is a pretty low priority rn
 		}
 	}

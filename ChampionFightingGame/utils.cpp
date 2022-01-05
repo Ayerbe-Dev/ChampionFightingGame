@@ -249,7 +249,7 @@ string Filter(const string& to, const string& remove) {
 	ret = to.substr(0, removal_index);
 	ret2 = to.substr(cont_index, to.length());
 
-	return ret + ret2;
+	return Filter(ret + ret2, remove);
 }
 
 /// <summary>

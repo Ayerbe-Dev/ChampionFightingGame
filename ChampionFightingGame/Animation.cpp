@@ -36,7 +36,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 
 	while (smd >> bone_id) { //Eventually smd will try to fit the string "end" into the int bone_id. When this fails, we're at the end.
 		smd >> bone_name >> parent_id;
-		bone_name = Filter(Filter(bone_name, "\""), "\"");
+		bone_name = Filter(bone_name, "\"");
 		Bone new_bone;
 		new_bone.id = bone_id;
 		new_bone.name = bone_name;
@@ -64,6 +64,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 
 			smd >> pos.x >> pos.y >> pos.z >> rot.x >> rot.y >> rot.z; //Read in the contents of the line
 			matrix = translate(matrix, pos);
+			rot = normalize(rot);
 			mat4 mat_rot = orientate4(rot);
 			matrix *= mat_rot;
 			matrix = scale(matrix, smd_scale);

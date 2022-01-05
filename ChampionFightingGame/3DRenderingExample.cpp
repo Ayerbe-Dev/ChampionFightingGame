@@ -29,8 +29,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 	g_rendermanager.update_shader_lights(&shader_1);
 	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&shader_2);
-	Model model_1("resource/chara/roy/model/terry.dae");
-	Model model_2("resource/chara/roy/model/terry.dae");
+	Model model_1("resource/chara/roy/model/model.dae");
+	Model model_2("resource/chara/roy/model/model.dae");
 	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model_1);
 
 	vec3 model_pos = vec3(0.0, -6.0, -6.0);

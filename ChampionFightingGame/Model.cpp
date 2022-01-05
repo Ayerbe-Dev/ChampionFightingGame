@@ -128,10 +128,15 @@ void Model::load_model(string path) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
 		return;
 	}
-	directory = path.substr(0, path.find_last_of('/')) + "/";
+
 	global_transform = inverse(ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation));
+
+	directory = path.substr(0, path.find_last_of('/')) + "/";
 	string skeleton_path = directory + "skeleton.smd";
-	load_skeleton(skeleton_path);
+	load_skeleton(skeleton_path); 
+	
+	//Note: skeleton.smd is just an smd file stripped down to the bone list. Since bones are processed in a specific order during set_bones, I want to
+	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
 
 	process_node(scene->mRootNode, scene);
 }
@@ -172,7 +177,10 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 
 		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
-		//to be filled by the time we look at it
+		//to be filled by the time we look at it.
+
+		//There might be a better way to do this but if I DON'T factor in the parent matrix, the issues in bone placement are still a lot worse than just
+		//not including the parent
 
 		mat4 parent_matrix = mat4(1.0);
 		if (curr_frame_offsets.parent_id != -1) {
@@ -185,7 +193,8 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 
 		//This equation is probably wrong
 
-		bones[i].final_matrix = global_transform * parent_matrix * bones[i].anim_matrix * bones[i].anim_rest_matrix * bones[i].model_matrix;
+//		bones[i].final_matrix = global_transform * parent_matrix * bones[i].anim_matrix * bones[i].anim_rest_matrix * bones[i].model_matrix;
+		bones[i].final_matrix = mat4(1.0);
 
 		if (bones[i].model_matrix != inverse(bones[i].anim_rest_matrix)) {
 			//cout << "Because that makes sense" << endl;

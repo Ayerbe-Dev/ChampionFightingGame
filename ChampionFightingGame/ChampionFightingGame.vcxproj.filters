@@ -826,5 +826,11 @@
     <None Include="resource\shaders\vertex_no_anim.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\fragment_sdl_overlay.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_sdl_overlay.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

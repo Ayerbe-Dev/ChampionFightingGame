@@ -60,9 +60,13 @@
 #include "ProjectileTemplate.h"
 #include "Loader.h"
 
+#include "Model.h"
+#include "RenderManager.h"
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundManager g_soundmanager;
+extern RenderManager g_rendermanager;
 extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
@@ -72,6 +76,14 @@ extern bool debug;
 /// </summary>
 /// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
 void battle_main(GameManager* game_manager) {
+/*	Shader shader("vertex_no_anim.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&shader);
+	Model model("resource/chara/roy/model/model.dae");
+
+	vec3 model_pos = vec3(0.0, -6.0, -6.0);
+	vec3 model_rot = vec3(0.0, 0.0, 0.0);
+	vec3 model_scale = vec3(0.05, 0.05, 0.05);*/
+
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -218,11 +230,8 @@ void battle_main(GameManager* game_manager) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 
-	int ticks = SDL_GetTicks();
 	while (gaming) {
-		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
 		frameTimeDelay();
-		ticks = SDL_GetTicks();
 
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
@@ -383,6 +392,9 @@ void battle_main(GameManager* game_manager) {
 			the content in pScreenTexture.
 		*/
 
+//		glClearColor(0.1, 0.1, 0.1, 1);
+//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		SDL_SetRenderTarget(g_renderer, pGui);
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -417,6 +429,8 @@ void battle_main(GameManager* game_manager) {
 		render_pos = getRenderPos(fighter[render_priority], fighter[render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
 		flip = fighter[render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 		SDL_RenderCopyEx(g_renderer, fighter[render_priority]->anim_kind->spritesheet, &(fighter[render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip);
+
+//		g_rendermanager.render(&model, &shader, &model_pos, &model_rot, &model_scale);
 
 		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
@@ -522,6 +536,9 @@ void battle_main(GameManager* game_manager) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, NULL); //render scale to window
 		SDL_RenderCopy(g_renderer, pGui, NULL, NULL); //render gui to window
 
+		g_rendermanager.render_sdl_as_gl(pGui);
+
+//		SDL_GL_SwapWindow(g_window);
 		SDL_RenderPresent(g_renderer); //finalize
 	}
 

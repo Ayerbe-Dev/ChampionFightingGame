@@ -25,9 +25,22 @@ public:
 	Camera camera;
 	Light lights[MAX_LIGHT_SOURCES];
 	int num_lights;
-	Shader shaders[MAX_SHADERS];
+
+	Shader bg_shader;
+	unsigned int bg_texture;
+	unsigned int VAO;
+	unsigned int VBO;
+
+	const float screen_coords[8] = {
+		0.0, 0.0,
+		0.0, 1.0,
+		1.0, 1.0,
+		1.0, 0.0
+	};
 
 	RenderManager();
+
+	void init();
 
 	void add_light(Light light, int target = -1);
 	void remove_light(int target = -1);
@@ -35,5 +48,6 @@ public:
 	void update_shader_lights(Shader *shader);
 	void update_shader_cam(Shader* shader);
 
+	void render_sdl_as_gl(SDL_Texture* background);
 	void render(Model *model, Shader *shader, vec3 *pos, vec3 *rot, vec3 *scale);
 };

@@ -14,6 +14,20 @@ Light::Light(vec3 pos) {
 
 RenderManager::RenderManager() {}
 
+void RenderManager::init() {
+	bg_shader = Shader("vertex_sdl_overlay.glsl", "fragment_sdl_overlay.glsl");
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(screen_coords), screen_coords, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+}
+
 void RenderManager::add_light(Light light, int target) {
 	if (target == -1) {
 		if (num_lights == MAX_LIGHT_SOURCES) {
@@ -76,6 +90,21 @@ void RenderManager::update_shader_cam(Shader* shader) {
 
 	shader->set_mat4("projection", projection);
 	shader->set_mat4("view", view);
+}
+
+void RenderManager::render_sdl_as_gl(SDL_Texture* background) {
+	bg_shader.use();
+	bg_shader.set_int("texture_diffuse1", 0);
+	
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_2D);
+	SDL_GL_BindTexture(background, nullptr, nullptr);
+	auto test = SDL_GetError();
+	cout << test << endl;
+	glDrawArrays(GL_TRIANGLES, 0, 1);
 }
 
 void RenderManager::render(Model *model, Shader *shader, vec3 *model_pos, vec3 *model_rot, vec3 *model_scale) {

@@ -151,10 +151,12 @@ void initialize_GLEW() {
 	if (glewInit() != GLEW_OK) {
 		cout << "Failed to initialize GLEW!" << endl;
 	}
+	SDL_GL_MakeCurrent(g_window, g_context);
 	SDL_GL_SetSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
 
+	g_rendermanager.init();
 	g_rendermanager.add_light(vec3(1.0, 0.0, 1.2));
 }
 
@@ -165,7 +167,6 @@ void example_main(GameManager* game_manager) {
 	const Uint8* keyboard_state;
 	Debugger debugger;
 	debugger = Debugger();
-
 	
 	GameLoader *game_loader = new GameLoader;
 	game_loader->player_info[0] = player_info[0];

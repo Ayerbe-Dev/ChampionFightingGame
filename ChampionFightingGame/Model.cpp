@@ -122,7 +122,7 @@ void Model::load_skeleton(string path) {
 
 void Model::load_model(string path) {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData);
+	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
@@ -194,7 +194,7 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//This equation is probably wrong
 
 //		bones[i].final_matrix = global_transform * parent_matrix * bones[i].anim_matrix * bones[i].anim_rest_matrix * bones[i].model_matrix;
-		bones[i].final_matrix = mat4(1.0);
+		bones[i].final_matrix = bones[i].anim_rest_matrix;
 
 		if (bones[i].model_matrix != inverse(bones[i].anim_rest_matrix)) {
 			//cout << "Because that makes sense" << endl;

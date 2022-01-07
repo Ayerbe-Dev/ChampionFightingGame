@@ -2,6 +2,292 @@
 extern SDL_Renderer* g_renderer;
 extern bool debug;
 
+GameTextureNew::GameTextureNew(string path) {
+	pos = vec3(0.0, 0.0, 0.0);
+	rot = vec3(0.0, 0.0, 0.0);
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { vec3(0.0, 0.0, 0.0), vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { vec3(1.0, 0.0, 0.0), vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { vec3(1.0, 1.0, 0.0), vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { vec3(0.0, 1.0, 0.0), vec2(0.0, 1.0) };
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GameTextureCoord), &tex_data[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)offsetof(GameTextureCoord, tex_coord));
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width;
+	int height;
+	int num_channels;
+	unsigned char* data = stbi_load(path.c_str(), &width, &height, &num_channels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "Failed to load texture at path: " << path << endl;
+	}
+	stbi_image_free(data);
+	this->width = width;
+	this->height = height;
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void GameTextureNew::set_pos(vec3 pos) {
+	this->pos = pos;
+}
+
+void GameTextureNew::add_pos(vec3 pos) {
+	this->pos += pos;
+}
+
+void GameTextureNew::set_rot(vec3 rot) {
+	this->rot = rot;
+}
+
+void GameTextureNew::add_rot(vec3 rot) {
+	this->rot += rot;
+}
+
+void GameTextureNew::set_orientation(int orientation) {
+	if (orientation != GAME_TEXTURE_ORIENTATION_MAX) {
+		this->orientation = orientation;
+	}
+}
+
+void GameTextureNew::attach_shader(Shader* shader) {
+	this->shader = shader;
+}
+
+void GameTextureNew::crop_left_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_BOTTOM_LEFT].pos.x += percent;
+	tex_data[TEX_COORD_TOP_LEFT].pos.x += percent;
+}
+
+void GameTextureNew::crop_right_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x -= percent;
+	tex_data[TEX_COORD_TOP_RIGHT].pos.x -= percent;
+}
+
+void GameTextureNew::crop_top_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_TOP_LEFT].pos.y -= percent;
+	tex_data[TEX_COORD_TOP_RIGHT].pos.y -= percent;
+}
+
+void GameTextureNew::crop_bottom_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_BOTTOM_LEFT].pos.y += percent;
+	tex_data[TEX_COORD_BOTTOM_RIGHT].pos.y += percent;
+}
+
+void GameTextureNew::scale_left_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_BOTTOM_LEFT].pos.x += percent;
+	tex_data[TEX_COORD_TOP_LEFT].pos.x += percent;
+	tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x += percent;
+	tex_data[TEX_COORD_TOP_LEFT].tex_coord.x += percent;
+}
+
+void GameTextureNew::scale_right_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x -= percent;
+	tex_data[TEX_COORD_TOP_RIGHT].pos.x -= percent;
+	tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x -= percent;
+	tex_data[TEX_COORD_TOP_RIGHT].tex_coord.x -= percent;
+}
+
+void GameTextureNew::scale_top_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_TOP_LEFT].pos.y -= percent;
+	tex_data[TEX_COORD_TOP_RIGHT].pos.y -= percent;
+	tex_data[TEX_COORD_TOP_LEFT].tex_coord.y -= percent;
+	tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y -= percent;
+}
+
+void GameTextureNew::scale_bottom_percent(float percent) {
+	if (percent > 1.0) {
+		percent /= 100.0;
+	}
+	tex_data[TEX_COORD_BOTTOM_LEFT].pos.y += percent;
+	tex_data[TEX_COORD_BOTTOM_RIGHT].pos.y += percent;
+	tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.y += percent;
+	tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y += percent;
+}
+
+void GameTextureNew::set_left_target(float percent, float max_change) {
+	this->target_left_crop = percent;
+	this->target_left_max_change = max_change;
+}
+
+void GameTextureNew::set_right_target(float percent, float max_change) {
+	this->target_right_crop = percent;
+	this->target_right_max_change = max_change;
+}
+
+void GameTextureNew::set_top_target(float percent, float max_change) {
+	this->target_top_crop = percent;
+	this->target_top_max_change = max_change;
+}
+
+void GameTextureNew::set_bottom_target(float percent, float max_change) {
+	this->target_bottom_crop = percent;
+	this->target_bottom_max_change = max_change;
+}
+
+void GameTextureNew::flip_h() {
+	float left_coord = tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x;
+	tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x = tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x;
+	tex_data[TEX_COORD_TOP_LEFT].tex_coord.x = tex_data[TEX_COORD_TOP_RIGHT].tex_coord.x;
+	tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x = left_coord;
+	tex_data[TEX_COORD_TOP_RIGHT].tex_coord.x = left_coord;
+}
+
+void GameTextureNew::flip_v() {
+	float bottom_coord = tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.y;
+	tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.y = tex_data[TEX_COORD_TOP_LEFT].tex_coord.y;
+	tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y = tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y;
+	tex_data[TEX_COORD_TOP_LEFT].tex_coord.y = bottom_coord;
+	tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y = bottom_coord;
+}
+
+void GameTextureNew::render() {
+	if (target_bottom_crop != -1.0) {
+		if (target_bottom_crop > tex_data[TEX_COORD_BOTTOM_LEFT].pos.y) {
+			tex_data[TEX_COORD_BOTTOM_LEFT].pos.y = clampf(0.0, tex_data[TEX_COORD_BOTTOM_LEFT].pos.y + target_bottom_max_change, target_bottom_crop);
+			tex_data[TEX_COORD_BOTTOM_RIGHT].pos.y = clampf(0.0, tex_data[TEX_COORD_BOTTOM_RIGHT].pos.y + target_bottom_max_change, target_bottom_crop);
+		}
+		else if (target_bottom_crop < tex_data[TEX_COORD_BOTTOM_LEFT].pos.y) {
+			tex_data[TEX_COORD_BOTTOM_LEFT].pos.y = clampf(target_bottom_crop, tex_data[TEX_COORD_BOTTOM_LEFT].pos.y - target_bottom_max_change, 1.0);
+			tex_data[TEX_COORD_BOTTOM_RIGHT].pos.y = clampf(target_bottom_crop, tex_data[TEX_COORD_BOTTOM_RIGHT].pos.y - target_bottom_max_change, 1.0);
+		}
+		else {
+			target_bottom_crop = -1.0;
+		}
+	}
+	if (target_top_crop != -1.0) {
+		if (target_top_crop > tex_data[TEX_COORD_TOP_LEFT].pos.y) {
+			tex_data[TEX_COORD_TOP_LEFT].pos.y = clampf(0.0, tex_data[TEX_COORD_TOP_LEFT].pos.y + target_top_max_change, target_top_crop);
+			tex_data[TEX_COORD_TOP_RIGHT].pos.y = clampf(0.0, tex_data[TEX_COORD_TOP_RIGHT].pos.y + target_top_max_change, target_top_crop);
+		}
+		else if (target_top_crop < tex_data[TEX_COORD_TOP_LEFT].pos.y) {
+			tex_data[TEX_COORD_TOP_LEFT].pos.y = clampf(target_top_crop, tex_data[TEX_COORD_TOP_LEFT].pos.y - target_top_max_change, 1.0);
+			tex_data[TEX_COORD_TOP_RIGHT].pos.y = clampf(target_top_crop, tex_data[TEX_COORD_TOP_RIGHT].pos.y - target_top_max_change, 1.0);
+		}
+		else {
+			target_top_crop = -1.0;
+		}
+	}
+	if (target_left_crop != -1.0) {
+		if (target_left_crop > tex_data[TEX_COORD_BOTTOM_LEFT].pos.x) {
+			tex_data[TEX_COORD_BOTTOM_LEFT].pos.x = clampf(0.0, tex_data[TEX_COORD_BOTTOM_LEFT].pos.x + target_left_max_change, target_left_crop);
+			tex_data[TEX_COORD_TOP_LEFT].pos.x = clampf(0.0, tex_data[TEX_COORD_TOP_LEFT].pos.x + target_left_max_change, target_left_crop);
+		}
+		else if (target_left_crop < tex_data[TEX_COORD_BOTTOM_LEFT].pos.x) {
+			tex_data[TEX_COORD_BOTTOM_LEFT].pos.x = clampf(target_left_crop, tex_data[TEX_COORD_BOTTOM_LEFT].pos.x - target_left_max_change, 1.0);
+			tex_data[TEX_COORD_TOP_LEFT].pos.x = clampf(target_left_crop, tex_data[TEX_COORD_TOP_LEFT].pos.x - target_left_max_change, 1.0);
+		}
+		else {
+			target_left_crop = -1.0;
+		}
+	}
+	if (target_right_crop != -1.0) {
+		if (target_right_crop > tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x) {
+			tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x = clampf(0.0, tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x + target_right_max_change, target_right_crop);
+			tex_data[TEX_COORD_TOP_RIGHT].pos.x = clampf(0.0, tex_data[TEX_COORD_TOP_RIGHT].pos.x + target_right_max_change, target_right_crop);
+		}
+		else if (target_right_crop < tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x) {
+			tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x = clampf(target_right_crop, tex_data[TEX_COORD_BOTTOM_RIGHT].pos.x - target_right_max_change, 1.0);
+			tex_data[TEX_COORD_TOP_RIGHT].pos.x = clampf(target_right_crop, tex_data[TEX_COORD_TOP_RIGHT].pos.x - target_right_max_change, 1.0);
+		}
+		else {
+			target_right_crop = -1.0;
+		}
+	}
+
+	shader->use();
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	vec3 gl_pos = pos;
+	gl_pos.x /= (float)WINDOW_WIDTH;
+	gl_pos.y /= (float)WINDOW_HEIGHT;
+	switch (orientation) {
+		default:
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE): {} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
+			gl_pos.x -= width / 2;
+			gl_pos.y -= height / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
+			gl_pos.y -= height / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
+			gl_pos.x += width / 2;
+			gl_pos.y -= height / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
+			gl_pos.x -= width / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
+			gl_pos.x += width / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT): {
+			gl_pos.x -= width / 2;
+			gl_pos.y += height / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE): {
+			gl_pos.y += height / 2;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT): {
+			gl_pos.x += width / 2;
+			gl_pos.y += height / 2;
+		} break;
+	}
+	mat4 matrix = mat4(1.0);
+	matrix = translate(matrix, gl_pos);
+	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
+	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
+	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
+	shader->set_mat4("matrix", matrix);
+	glDrawArrays(GL_TRIANGLES, 0, 4);
+}
+
 bool GameTexture::init(string sTexturePath, bool delay){
 	if (bIsInitialized){
 		printf("GameTexture already initialized!\n");

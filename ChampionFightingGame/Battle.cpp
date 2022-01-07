@@ -392,8 +392,8 @@ void battle_main(GameManager* game_manager) {
 			the content in pScreenTexture.
 		*/
 
-//		glClearColor(0.1, 0.1, 0.1, 1);
-//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_SetRenderTarget(g_renderer, pGui);
 		SDL_RenderClear(g_renderer);
@@ -535,6 +535,7 @@ void battle_main(GameManager* game_manager) {
 		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 0);
 		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, NULL); //render scale to window
 		SDL_RenderCopy(g_renderer, pGui, NULL, NULL); //render gui to window
+
 
 		g_rendermanager.render_sdl_as_gl(pGui);
 

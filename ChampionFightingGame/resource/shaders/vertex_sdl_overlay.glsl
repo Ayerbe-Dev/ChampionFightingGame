@@ -1,10 +1,13 @@
 #version 330 core
 
-layout (location = 0) in vec2 v_info;
+layout (location = 0) in vec3 v_pos;
+layout (location = 1) in vec2 v_texcoords;
+
+uniform mat4 matrix;
 
 out vec2 tex_coords;
 
 void main() {
-    gl_Position = vec4(v_info, 0.0, 1.0);
-    tex_coords = v_info;
+    gl_Position = matrix * vec4(v_pos, 1.0f);
+    TexCoord = vec2(v_texcoords.x, 1.0 - v_texcoords.y);
 } 

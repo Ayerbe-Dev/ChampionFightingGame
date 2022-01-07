@@ -36,7 +36,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	Shader tex_shader("vertex_sdl_overlay.glsl", "fragment_sdl_overlay.glsl");
 	GameTextureNew my_texture("resource/ui/game/hp/health.png");
 	my_texture.attach_shader(&tex_shader);
-	my_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+//	my_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 
 
 	vec3 model_pos = vec3(0.0, -6.0, -6.0);

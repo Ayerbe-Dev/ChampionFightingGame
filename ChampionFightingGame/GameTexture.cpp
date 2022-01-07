@@ -17,12 +17,12 @@ GameTextureNew::GameTextureNew(string path) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GameTextureCoord), &tex_data[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)0);
-	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)offsetof(GameTextureCoord, tex_coord));
+	glEnableVertexAttribArray(1);
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -246,9 +246,11 @@ void GameTextureNew::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	vec3 gl_pos = pos;
-	switch (orientation) {
+/*	switch (orientation) {
 		default:
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE): {} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE): {
+		
+		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
 			gl_pos.x -= width / 2;
 			gl_pos.y -= height / 2;
@@ -277,9 +279,9 @@ void GameTextureNew::render() {
 			gl_pos.x += width / 2;
 			gl_pos.y += height / 2;
 		} break;
-	}
-	gl_pos.x /= (float)WINDOW_WIDTH;
-	gl_pos.y /= (float)WINDOW_HEIGHT;
+	}*/
+//	gl_pos.x /= (float)WINDOW_WIDTH;
+//	gl_pos.y /= (float)WINDOW_HEIGHT;
 	mat4 matrix = mat4(1.0);
 	matrix = translate(matrix, gl_pos);
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));

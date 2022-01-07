@@ -1,4 +1,5 @@
 #include "GameTexture.h"
+#include "Shader.h"
 extern SDL_Renderer* g_renderer;
 extern bool debug;
 
@@ -36,7 +37,7 @@ GameTextureNew::GameTextureNew(string path) {
 	int num_channels;
 	unsigned char* data = stbi_load(path.c_str(), &width, &height, &num_channels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
@@ -245,8 +246,6 @@ void GameTextureNew::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	vec3 gl_pos = pos;
-	gl_pos.x /= (float)WINDOW_WIDTH;
-	gl_pos.y /= (float)WINDOW_HEIGHT;
 	switch (orientation) {
 		default:
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE): {} break;
@@ -279,11 +278,14 @@ void GameTextureNew::render() {
 			gl_pos.y += height / 2;
 		} break;
 	}
+	gl_pos.x /= (float)WINDOW_WIDTH;
+	gl_pos.y /= (float)WINDOW_HEIGHT;
 	mat4 matrix = mat4(1.0);
 	matrix = translate(matrix, gl_pos);
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
+	shader->set_int("f_texture", 0);
 	shader->set_mat4("matrix", matrix);
 	glDrawArrays(GL_TRIANGLES, 0, 4);
 }

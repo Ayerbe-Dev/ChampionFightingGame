@@ -3,7 +3,9 @@
 #include "PlayerInfo.fwd.h"
 #include "utils.h"
 #include "stb_image.h"
-#include "Shader.h"
+using namespace glm;
+
+class Shader;
 
 enum {
     GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
@@ -94,7 +96,7 @@ public:
     float target_bottom_max_change = 0.0;
 
 
-    Shader* shader;
+    Shader *shader;
     u32 texture;
     GameTextureCoord tex_data[4];
     vec3 pos;

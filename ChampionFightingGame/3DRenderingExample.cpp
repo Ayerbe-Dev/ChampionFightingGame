@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "utils.h"
 #include "stb_image.h"
+#include "GameTexture.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -25,13 +26,18 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	Shader shader_1("vertex_main.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&shader_1);
-	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&shader_2);
-	Model model_1("resource/chara/roy/model/model.dae");
-	Model model_2("resource/chara/roy/model/model.dae");
-	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model_1);
+//	Shader shader_1("vertex_main.glsl", "fragment_main.glsl");
+//	g_rendermanager.update_shader_lights(&shader_1);
+//	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
+//	g_rendermanager.update_shader_lights(&shader_2);
+//	Model model_1("resource/chara/roy/model/model.dae");
+//	Model model_2("resource/chara/roy/model/model.dae");
+//	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model_1);
+	Shader tex_shader("vertex_sdl_overlay.glsl", "fragment_sdl_overlay.glsl");
+	GameTextureNew my_texture("resource/ui/game/hp/health.png");
+	my_texture.attach_shader(&tex_shader);
+	my_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+
 
 	vec3 model_pos = vec3(0.0, -6.0, -6.0);
 	vec3 model_rot = vec3(0.0, 0.0, 0.0);
@@ -65,7 +71,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 			player_info[i]->poll_buttons(keyboard_state);
 		}
 
-		if (player_info[0]->check_button_on(BUTTON_MENU_START)) {
+		if (player_info[0]->check_button_trigger(BUTTON_MENU_START)) {
 			three_deeing = false;
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
@@ -111,15 +117,17 @@ void three_d_rendering_main(GameManager* game_manager) {
 
 		}
 		
-		if (frame == test_anim.length) {
-			frame = 0.0;
-		}
-		else {
-			frame += 1.0;
-		}
-		model_1.set_bones(frame, &test_anim);
+//		if (frame == test_anim.length) {
+//			frame = 0.0;
+//		}
+//		else {
+//			frame += 1.0;
+//		}
+//		model_1.set_bones(frame, &test_anim);
 
-		g_rendermanager.render(&model_1, &shader_1, &model_pos, &model_rot, &model_scale);
+		my_texture.render();
+
+//		g_rendermanager.render(&model_1, &shader_1, &model_pos, &model_rot, &model_scale);
 //		g_rendermanager.render(&model_2, &shader_2, &model_pos, &model_rot, &model_scale);
 
 		SDL_GL_SwapWindow(g_window);

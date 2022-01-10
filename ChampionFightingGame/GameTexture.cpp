@@ -97,6 +97,10 @@ void GameTextureNew::scale_left_percent(float percent, bool crop) {
 	if (percent < 0.0) {
 		return;
 	}
+	bool flipped = tex_accessor[TEX_COORD_BOTTOM_LEFT] != &tex_data[TEX_COORD_BOTTOM_LEFT] && tex_accessor[TEX_COORD_BOTTOM_LEFT] != &tex_data[TEX_COORD_TOP_LEFT];
+	if (flipped) {
+		flip_h();
+	}
 	if (crop) {
 		if (1.0 - percent <= percent) {
 			tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x = clampf(0.0, 1.0 - percent, 1.0);
@@ -109,13 +113,22 @@ void GameTextureNew::scale_left_percent(float percent, bool crop) {
 	}
 	tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x = clampf(-1.0, percent * width_scale * -1.0, 1.0);
 	tex_accessor[TEX_COORD_TOP_LEFT]->pos.x = clampf(-1.0, percent * width_scale * -1.0, 1.0);
-	update_buffer_data();
+	if (flipped) {
+		flip_h();
+	}
+	else {
+		update_buffer_data();
+	}
 }
 
 void GameTextureNew::scale_right_percent(float percent, bool crop) {
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (percent < 0.0) {
 		return;
+	}
+	bool flipped = tex_accessor[TEX_COORD_BOTTOM_RIGHT] != &tex_data[TEX_COORD_BOTTOM_RIGHT] && tex_accessor[TEX_COORD_BOTTOM_RIGHT] != &tex_data[TEX_COORD_TOP_RIGHT];
+	if (flipped) {
+		flip_h();
 	}
 	if (crop) {
 		if (1.0 - percent >= percent) {
@@ -129,13 +142,22 @@ void GameTextureNew::scale_right_percent(float percent, bool crop) {
 	}
 	tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x = clampf(-1.0, percent * width_scale, 1.0);
 	tex_accessor[TEX_COORD_TOP_RIGHT]->pos.x = clampf(-1.0, percent * width_scale, 1.0);
-	update_buffer_data();
+	if (flipped) {
+		flip_h();
+	}
+	else {
+		update_buffer_data();
+	}
 }
 
 void GameTextureNew::scale_top_percent(float percent, bool crop) {
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (percent < 0.0) {
 		return;
+	}
+	bool flipped = tex_accessor[TEX_COORD_TOP_LEFT] != &tex_data[TEX_COORD_TOP_LEFT] && tex_accessor[TEX_COORD_TOP_LEFT] != &tex_data[TEX_COORD_TOP_RIGHT];
+	if (flipped) {
+		flip_v();
 	}
 	if (crop) {
 		if (1.0 - percent >= percent) {
@@ -149,13 +171,22 @@ void GameTextureNew::scale_top_percent(float percent, bool crop) {
 	}
 	tex_accessor[TEX_COORD_TOP_LEFT]->pos.y = clampf(-1.0, percent * height_scale, 1.0);
 	tex_accessor[TEX_COORD_TOP_RIGHT]->pos.y = clampf(-1.0, percent * height_scale, 1.0);
-	update_buffer_data();
+	if (flipped) {
+		flip_v();
+	}
+	else {
+		update_buffer_data();
+	}
 }
 
 void GameTextureNew::scale_bottom_percent(float percent, bool crop) {
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (percent < 0.0) {
 		return;
+	}
+	bool flipped = tex_accessor[TEX_COORD_BOTTOM_LEFT] != &tex_data[TEX_COORD_BOTTOM_LEFT] && tex_accessor[TEX_COORD_BOTTOM_LEFT] != &tex_data[TEX_COORD_BOTTOM_RIGHT];
+	if (flipped) {
+		flip_v();
 	}
 	if (crop) {
 		if (1.0 - percent <= percent) {
@@ -169,7 +200,12 @@ void GameTextureNew::scale_bottom_percent(float percent, bool crop) {
 	}
 	tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y = clampf(-1.0, percent * height_scale * -1.0, 1.0);
 	tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.y = clampf(-1.0, percent * height_scale * -1.0, 1.0);
-	update_buffer_data();
+	if (flipped) {
+		flip_v();
+	}
+	else {
+		update_buffer_data();
+	}
 }
 
 void GameTextureNew::set_left_target(float percent, float max_change) {
@@ -334,7 +370,8 @@ void GameTextureNew::render() {
 			target_right_max_change = 0.0;
 		}
 	}
-
+	float width_post_scale = width * (tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x);
+	float height_post_scale = height * (tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y + tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	vec3 gl_pos = pos;
@@ -352,7 +389,7 @@ void GameTextureNew::render() {
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
 			gl_pos.x *= -1.0;
-			gl_pos.x += WINDOW_WIDTH - width;
+			gl_pos.x += WINDOW_WIDTH - width_post_scale;
 			gl_pos.y -= WINDOW_HEIGHT - height;
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
@@ -360,22 +397,22 @@ void GameTextureNew::render() {
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
 			gl_pos.x *= -1.0;
-			gl_pos.x += WINDOW_WIDTH - width;
+			gl_pos.x += WINDOW_WIDTH - width_post_scale;
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT): {
 			gl_pos.y *= -1.0;
 			gl_pos.x -= WINDOW_WIDTH - width;
-			gl_pos.y += WINDOW_HEIGHT - height;
+			gl_pos.y += WINDOW_HEIGHT - height_post_scale;
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE): {
 			gl_pos.y *= -1.0;
-			gl_pos.y += WINDOW_HEIGHT - height;
+			gl_pos.y += WINDOW_HEIGHT - height_post_scale;
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT): {
 			gl_pos.x *= -1.0;
 			gl_pos.y *= -1.0;
-			gl_pos.x += WINDOW_WIDTH - width;
-			gl_pos.y += WINDOW_HEIGHT - height;
+			gl_pos.x += WINDOW_WIDTH - width_post_scale;
+			gl_pos.y += WINDOW_HEIGHT - height_post_scale;
 		} break;
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;

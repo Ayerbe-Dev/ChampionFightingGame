@@ -28,14 +28,19 @@ void three_d_rendering_main(GameManager* game_manager) {
 
 //	Shader shader_1("vertex_main.glsl", "fragment_main.glsl");
 //	g_rendermanager.update_shader_lights(&shader_1);
-//	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
-//	g_rendermanager.update_shader_lights(&shader_2);
+	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&shader_2);
 //	Model model_1("resource/chara/roy/model/model.dae");
-//	Model model_2("resource/chara/roy/model/model.dae");
+	Model model_2("resource/chara/roy/model/model.dae");
 //	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model_1);
 	Shader tex_shader("vertex_sdl_overlay.glsl", "fragment_sdl_overlay.glsl");
-	GameTextureNew my_texture("resource/ui/game/hp/health.png");
-	my_texture.attach_shader(&tex_shader);
+	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
+	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
+	p1_healthbar.attach_shader(&tex_shader);
+	p2_healthbar.attach_shader(&tex_shader);
+	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	p2_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+	p2_healthbar.flip_h();
 
 
 	vec3 model_pos = vec3(0.0, -6.0, -6.0);
@@ -84,85 +89,28 @@ void three_d_rendering_main(GameManager* game_manager) {
 			three_deeing = false;
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
-			my_texture.add_pos(vec3(0.0, 1.0, 0.0));
-			model_pos.y += 0.1;
+			p1_healthbar.add_pos(vec3(0.0, 1.0, 0.0));
+			p2_healthbar.add_pos(vec3(0.0, 1.0, 0.0));
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
-			my_texture.add_pos(vec3(1.0, 0.0, 0.0));
-			model_pos.x += 0.1;
+			p1_healthbar.add_pos(vec3(1.0, 0.0, 0.0));
+			p2_healthbar.add_pos(vec3(1.0, 0.0, 0.0));
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
-			my_texture.add_pos(vec3(-1.0, 0.0, 0.0));
-			model_pos.x -= 0.1;
+			p1_healthbar.add_pos(vec3(-1.0, 0.0, 0.0));
+			p2_healthbar.add_pos(vec3(-1.0, 0.0, 0.0));
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
-			my_texture.add_pos(vec3(0.0, -1.0, 0.0));
-			model_pos.y -= 0.1;
+			p1_healthbar.add_pos(vec3(0.0, -1.0, 0.0));
+			p2_healthbar.add_pos(vec3(0.0, -1.0, 0.0));
 		}		
-		if (player_info[1]->check_button_trigger(BUTTON_UP)) {
-			my_texture.scale_bottom_percent(0.8);
-			model_pos.z += 0.1;
+		if (player_info[1]->check_button_on(BUTTON_UP)) {
+			p1_healthbar.scale_left_percent(0.8);
+			p2_healthbar.scale_left_percent(0.8);
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
-			my_texture.scale_bottom_percent(1.0);
-			model_pos.z -= 0.1;
-		}
-		if (player_info[0]->check_button_on(BUTTON_LP)) {
-			my_texture.flip_v();
-			model_rot.x += 0.1;
-		}
-		if (player_info[0]->check_button_on(BUTTON_LK)) {
-			my_texture.flip_h();
-			model_rot.x -= 0.1;
-		}
-		if (player_info[0]->check_button_on(BUTTON_MP)) {
-			my_texture.scale_top_percent(0.6);
-			model_rot.y += 0.1;
-		}
-		if (player_info[0]->check_button_on(BUTTON_MK)) {
-			my_texture.scale_top_percent(1.0);
-			model_rot.y -= 0.1;
-		}
-		if (player_info[0]->check_button_on(BUTTON_HP)) {
-			my_texture.scale_right_percent(0.4);
-			model_rot.z += 0.1;
-		}
-		if (player_info[0]->check_button_on(BUTTON_HK)) {
-			my_texture.scale_right_percent(1.0);
-			model_rot.z -= 0.1;
-		}
-		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
-			my_texture.scale_left_percent(0.2, false);
-		}
-		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
-			my_texture.scale_left_percent(1.0, false);
-		}
-		if (keyboard_state[SDL_SCANCODE_0]) {
-			my_texture.set_orientation(0);
-		}
-		if (keyboard_state[SDL_SCANCODE_1]) {
-			my_texture.set_orientation(1);
-		}
-		if (keyboard_state[SDL_SCANCODE_2]) {
-			my_texture.set_orientation(2);
-		}
-		if (keyboard_state[SDL_SCANCODE_3]) {
-			my_texture.set_orientation(3);
-		}
-		if (keyboard_state[SDL_SCANCODE_4]) {
-			my_texture.set_orientation(4);
-		}
-		if (keyboard_state[SDL_SCANCODE_5]) {
-			my_texture.set_orientation(5);
-		}
-		if (keyboard_state[SDL_SCANCODE_6]) {
-			my_texture.set_orientation(6);
-		}
-		if (keyboard_state[SDL_SCANCODE_7]) {
-			my_texture.set_orientation(7);
-		}
-		if (keyboard_state[SDL_SCANCODE_8]) {
-			my_texture.set_orientation(8);
+			p1_healthbar.scale_left_percent(1.0);
+			p2_healthbar.scale_left_percent(1.0);
 		}
 		
 //		if (frame == test_anim.length) {
@@ -173,10 +121,11 @@ void three_d_rendering_main(GameManager* game_manager) {
 //		}
 //		model_1.set_bones(frame, &test_anim);
 
-		my_texture.render();
+		p1_healthbar.render();
+		p2_healthbar.render();
 
 //		g_rendermanager.render(&model_1, &shader_1, &model_pos, &model_rot, &model_scale);
-//		g_rendermanager.render(&model_2, &shader_2, &model_pos, &model_rot, &model_scale);
+		g_rendermanager.render(&model_2, &shader_2, &model_pos, &model_rot, &model_scale);
 
 		SDL_GL_SwapWindow(g_window);
 	}

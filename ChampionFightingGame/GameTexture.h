@@ -59,6 +59,7 @@ struct GameTextureCoord {
 class GameTextureNew {
 public:
     GameTextureNew(string path);
+    ~GameTextureNew();
     void set_pos(vec3 pos);
     void add_pos(vec3 pos);
     void set_rot(vec3 rot);
@@ -66,14 +67,10 @@ public:
     void set_orientation(int orientation);
     void attach_shader(Shader* shader);
 
-    void crop_left_percent(float percent);
-    void crop_right_percent(float percent);
-    void crop_top_percent(float percent);
-    void crop_bottom_percent(float percent);
-    void scale_left_percent(float percent);
-    void scale_right_percent(float percent);
-    void scale_top_percent(float percent);
-    void scale_bottom_percent(float percent);
+    void scale_left_percent(float percent, bool crop = true);
+    void scale_right_percent(float percent, bool crop = true);
+    void scale_top_percent(float percent, bool crop = true);
+    void scale_bottom_percent(float percent, bool crop = true);
 
     void set_left_target(float percent, float max_change);
     void set_right_target(float percent, float max_change);
@@ -82,13 +79,14 @@ public:
 
     void flip_h();
     void flip_v();
+    void reorient();
 
     void render();
     
-    float target_left_crop = -1.0;
-    float target_right_crop = -1.0;
-    float target_top_crop = -1.0;
-    float target_bottom_crop = -1.0;
+    float target_left_crop = -2.0;
+    float target_right_crop = -2.0;
+    float target_top_crop = -2.0;
+    float target_bottom_crop = -2.0;
 
     float target_left_max_change = 0.0;
     float target_right_max_change = 0.0;
@@ -99,15 +97,18 @@ public:
     Shader *shader;
     u32 texture;
     GameTextureCoord tex_data[4];
+    GameTextureCoord* tex_accessor[4];
     vec3 pos;
     vec3 rot;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
 
 private:
+    void update_buffer_data();
+
     u32 VAO;
     u32 VBO;
-    int width;
-    int height;
+    float width;
+    float height;
 };
 
 class GameTexture{

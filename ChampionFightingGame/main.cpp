@@ -155,6 +155,9 @@ void initialize_GLEW() {
 	SDL_GL_SetSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+
+	stbi_set_flip_vertically_on_load(true);
 
 	g_rendermanager.init();
 	g_rendermanager.add_light(vec3(1.0, 0.0, 1.2));

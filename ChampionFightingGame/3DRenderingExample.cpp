@@ -36,20 +36,16 @@ void three_d_rendering_main(GameManager* game_manager) {
 	Shader tex_shader("vertex_sdl_overlay.glsl", "fragment_sdl_overlay.glsl");
 	GameTextureNew my_texture("resource/ui/game/hp/health.png");
 	my_texture.attach_shader(&tex_shader);
-//	my_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 
 
 	vec3 model_pos = vec3(0.0, -6.0, -6.0);
 	vec3 model_rot = vec3(0.0, 0.0, 0.0);
 	vec3 model_scale = vec3(0.05, 0.05, 0.05);
 
-	int ticks = SDL_GetTicks();
 	float frame = 0.0;
-	float angle = 0.0;
+	
 	while (three_deeing) {
-//		cout << "Time to execute this iteration of the loop: " << SDL_GetTicks() - ticks << endl;
 		frameTimeDelay();
-		ticks = SDL_GetTicks();
 
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -60,6 +56,19 @@ void three_d_rendering_main(GameManager* game_manager) {
 				case SDL_QUIT:
 				{
 					return game_manager->update_state(GAME_STATE_CLOSE);
+				} break;
+				case SDL_WINDOWEVENT:
+				{
+					switch (event.window.event) {
+						case SDL_WINDOWEVENT_RESIZED:
+						case SDL_WINDOWEVENT_SIZE_CHANGED:
+						case SDL_WINDOWEVENT_MAXIMIZED: {
+							int width;
+							int height;
+							SDL_GetWindowSize(g_window, &width, &height);
+							glViewport(0, 0, width, height);
+						} break;
+					}
 				} break;
 			}
 		}
@@ -75,46 +84,85 @@ void three_d_rendering_main(GameManager* game_manager) {
 			three_deeing = false;
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
+			my_texture.add_pos(vec3(0.0, 1.0, 0.0));
 			model_pos.y += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
+			my_texture.add_pos(vec3(1.0, 0.0, 0.0));
 			model_pos.x += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
+			my_texture.add_pos(vec3(-1.0, 0.0, 0.0));
 			model_pos.x -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
+			my_texture.add_pos(vec3(0.0, -1.0, 0.0));
 			model_pos.y -= 0.1;
 		}		
-		if (player_info[1]->check_button_on(BUTTON_UP)) {
+		if (player_info[1]->check_button_trigger(BUTTON_UP)) {
+			my_texture.scale_bottom_percent(0.8);
 			model_pos.z += 0.1;
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
+			my_texture.scale_bottom_percent(1.0);
 			model_pos.z -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_LP)) {
+			my_texture.flip_v();
 			model_rot.x += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_LK)) {
+			my_texture.flip_h();
 			model_rot.x -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_MP)) {
+			my_texture.scale_top_percent(0.6);
 			model_rot.y += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_MK)) {
+			my_texture.scale_top_percent(1.0);
 			model_rot.y -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_HP)) {
+			my_texture.scale_right_percent(0.4);
 			model_rot.z += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_HK)) {
+			my_texture.scale_right_percent(1.0);
 			model_rot.z -= 0.1;
 		}
 		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
-
+			my_texture.scale_left_percent(0.2, false);
 		}
 		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
-
+			my_texture.scale_left_percent(1.0, false);
+		}
+		if (keyboard_state[SDL_SCANCODE_0]) {
+			my_texture.set_orientation(0);
+		}
+		if (keyboard_state[SDL_SCANCODE_1]) {
+			my_texture.set_orientation(1);
+		}
+		if (keyboard_state[SDL_SCANCODE_2]) {
+			my_texture.set_orientation(2);
+		}
+		if (keyboard_state[SDL_SCANCODE_3]) {
+			my_texture.set_orientation(3);
+		}
+		if (keyboard_state[SDL_SCANCODE_4]) {
+			my_texture.set_orientation(4);
+		}
+		if (keyboard_state[SDL_SCANCODE_5]) {
+			my_texture.set_orientation(5);
+		}
+		if (keyboard_state[SDL_SCANCODE_6]) {
+			my_texture.set_orientation(6);
+		}
+		if (keyboard_state[SDL_SCANCODE_7]) {
+			my_texture.set_orientation(7);
+		}
+		if (keyboard_state[SDL_SCANCODE_8]) {
+			my_texture.set_orientation(8);
 		}
 		
 //		if (frame == test_anim.length) {

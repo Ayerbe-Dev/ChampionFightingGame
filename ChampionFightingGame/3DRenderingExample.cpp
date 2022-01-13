@@ -26,18 +26,15 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-//	Shader shader_1("vertex_main.glsl", "fragment_main.glsl");
-//	g_rendermanager.update_shader_lights(&shader_1);
-	Shader shader_2("vertex_no_anim.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&shader_2);
-//	Model model_1("resource/chara/roy/model/model.dae");
-	Model model_2("resource/chara/roy/model/model.dae");
-//	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model_1);
-	Shader tex_shader("vertex_sdl_overlay.glsl", "fragment_sdl_overlay.glsl");
+	Shader anim_shader("vertex_main.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&anim_shader);
+	Shader model_shader("vertex_no_anim.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&model_shader);
+	Model model("resource/chara/roy/model/model.dae");
+	Model model_no_anim("resource/chara/roy/model/model.dae");
+//	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model);
 	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
 	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
-	p1_healthbar.attach_shader(&tex_shader);
-	p2_healthbar.attach_shader(&tex_shader);
 	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	p2_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 	p2_healthbar.flip_h();
@@ -48,9 +45,39 @@ void three_d_rendering_main(GameManager* game_manager) {
 	vec3 model_scale = vec3(0.05, 0.05, 0.05);
 
 	float frame = 0.0;
-	
+
+	int ticks = SDL_GetTicks();
+	vector<int> average_ticks;
+	int new_ticks;
 	while (three_deeing) {
+		if (average_ticks.size() < 10000) {
+			average_ticks.push_back(SDL_GetTicks() - ticks);
+		}
+		else {
+			int highest = average_ticks[0];
+			int freq = 0;
+			int frame_freq = 0;
+			float total = 0;
+			for (int i = 0; i < 10000; i++) {
+				total += (float)average_ticks[i];
+				if (average_ticks[i] >= 16) {
+					frame_freq++;
+				}
+				if (average_ticks[i] > highest) {
+					highest = average_ticks[i];
+					freq = 1;
+				}
+				else if (average_ticks[i] == highest) {
+					freq++;
+				}
+			}
+			total /= 10000.0;
+			cout << "On average, this loop runs in " << total << " ms, peaking at " << highest << " ms, which occurred " << freq << " times." << endl;
+			cout << "There were " << frame_freq << " instances of it taking longer than a frame to render." << endl;
+			average_ticks.clear();
+		}
 		frameTimeDelay();
+		ticks = SDL_GetTicks();
 
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -105,12 +132,12 @@ void three_d_rendering_main(GameManager* game_manager) {
 			p2_healthbar.add_pos(vec3(0.0, -1.0, 0.0));
 		}		
 		if (player_info[1]->check_button_on(BUTTON_UP)) {
-			p1_healthbar.scale_left_percent(0.8);
-			p2_healthbar.scale_left_percent(0.8);
+			p1_healthbar.scale_bottom_percent(0.8);
+			p2_healthbar.scale_bottom_percent(0.8);
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
-			p1_healthbar.scale_left_percent(1.0);
-			p2_healthbar.scale_left_percent(1.0);
+			p1_healthbar.scale_bottom_percent(1.0);
+			p2_healthbar.scale_bottom_percent(1.0);
 		}
 		
 //		if (frame == test_anim.length) {
@@ -121,11 +148,11 @@ void three_d_rendering_main(GameManager* game_manager) {
 //		}
 //		model_1.set_bones(frame, &test_anim);
 
+//		g_rendermanager.render_model(&model, &anim_shader, &model_pos, &model_rot, &model_scale);
+		g_rendermanager.render_model(&model_no_anim, &model_shader, &model_pos, &model_rot, &model_scale);
+
 		p1_healthbar.render();
 		p2_healthbar.render();
-
-//		g_rendermanager.render(&model_1, &shader_1, &model_pos, &model_rot, &model_scale);
-		g_rendermanager.render(&model_2, &shader_2, &model_pos, &model_rot, &model_scale);
 
 		SDL_GL_SwapWindow(g_window);
 	}

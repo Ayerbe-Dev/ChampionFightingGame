@@ -58,8 +58,11 @@ struct GameTextureCoord {
 
 class GameTextureNew {
 public:
+    GameTextureNew();
     GameTextureNew(string path);
     ~GameTextureNew();
+    void init(string path);
+
     void set_pos(vec3 pos);
     void add_pos(vec3 pos);
     void set_rot(vec3 rot);
@@ -77,6 +80,8 @@ public:
     void set_top_target(float percent, float max_change);
     void set_bottom_target(float percent, float max_change);
 
+    void set_alpha(unsigned char alpha);
+
     void flip_h();
     void flip_v();
     void reorient();
@@ -93,6 +98,7 @@ public:
     float target_top_max_change = 0.0;
     float target_bottom_max_change = 0.0;
 
+    unsigned char alpha = 255;
 
     Shader *shader;
     u32 texture;

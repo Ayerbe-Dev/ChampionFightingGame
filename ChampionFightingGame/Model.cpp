@@ -41,36 +41,14 @@ void Mesh::init() {
 }
 
 void Mesh::render(Shader *shader) {
-    unsigned int diffuse_count = 1;
-    unsigned int specular_count = 1;
-	unsigned int normal_count = 1;
-	unsigned int height_count = 1;
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		string number;
-		string name = textures[i].type;
-		if (name == "texture_diffuse") {
-			number = to_string(diffuse_count++);
-		}
-		else if (name == "texture_specular") {
-			number = to_string(specular_count++);
-		}
-		else if (name == "texture_normal") {
-			number = to_string(normal_count++);
-		}
-		else if (name == "texture_height") {
-			number = to_string(height_count++);
-		}
-
-		shader->set_float(("material." + name + number).c_str(), i);
+		shader->set_float(("material." + textures[i].type_string).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-
-	glActiveTexture(GL_TEXTURE0);
 }
 
 Model::Model(string path) {
@@ -143,15 +121,14 @@ void Model::load_model(string path) {
 
 void Model::render(Shader* shader) {
 	for (int i = 0; i < bones.size(); i++) {
-		string final_mat = "bone_matrix[" + to_string(i) + "]";
-		shader->set_mat4(final_mat, bones[i].final_matrix);
+		shader->set_mat4("bone_matrix[" + to_string(i) + "]", bones[i].final_matrix);
 	}
-	//1-2 ms even with the function skipping over every single bone
-
+	glDepthMask(GL_TRUE);
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].render(shader);
 	}
-	//1-2 ms but everything in there is necessary
+	glBindVertexArray(0);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void Model::set_bones(float frame, Animation3D *anim_kind) {
@@ -339,15 +316,17 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 	return Mesh(vertices, indices, textures, name);
 }
 
-vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, string typeName) {
+vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, string type_name) {
 	vector<Texture> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
 		aiString str;
 		mat->GetTexture(type, i, &str);
 		bool skip = false;
-		for (unsigned int j = 0; j < textures_loaded.size(); j++) {
-			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
-				textures.push_back(textures_loaded[j]);
+		for (unsigned int i2 = 0; i2 < textures_loaded.size(); i2++) {
+			if (std::strcmp(textures_loaded[i2].path.data(), str.C_Str()) == 0) {
+				Texture texture = textures_loaded[i2];
+				texture.type_string = type_name + to_string(i + 1);
+				textures.push_back(texture);
 				skip = true;
 				break;
 			}
@@ -355,8 +334,8 @@ vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType typ
 		if (!skip) {
 			Texture texture;
 			texture.id = loadGLTextureFromFile(str.C_Str(), directory);
-			texture.type = typeName;
 			texture.path = str.C_Str();
+			texture.type_string = type_name + to_string(i + 1);
 			textures.push_back(texture);
 			textures_loaded.push_back(texture);
 		}

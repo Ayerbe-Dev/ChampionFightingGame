@@ -47,7 +47,7 @@ int main() {
 
 	initialize_SDL();
 	initialize_GLEW();
-
+	
 	GameManager game_manager;
 
 	bool running = opening_main(&game_manager);
@@ -156,6 +156,7 @@ void initialize_GLEW() {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	stbi_set_flip_vertically_on_load(true);
 

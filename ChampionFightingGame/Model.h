@@ -21,9 +21,20 @@ struct Vertex {
 	float weights[MAX_BONE_INFLUENCE] = { 0.0 };
 };
 
+enum {
+	TEXTURE_KIND_DIFFUSE,
+	TEXTURE_KIND_SPECULAR,
+	TEXTURE_KIND_NORMAL,
+	TEXTURE_KIND_HEIGHT,
+
+	TEXTURE_KIND_MAX
+};
+
 struct Texture {
 	u32 id;
-	string type;
+	int type;
+	string type_name;
+	string type_string;
 	string path;
 };
 

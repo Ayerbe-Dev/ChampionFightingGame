@@ -450,11 +450,11 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
   <ItemGroup>
     <None Include="resource\shaders\fragment_main.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
-    <None Include="resource\shaders\fragment_sdl_overlay.glsl" />
+    <None Include="resource\shaders\fragment_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_main.glsl" />
     <None Include="resource\shaders\vertex_no_anim.glsl" />
     <None Include="resource\shaders\vertex_no_light.glsl" />
-    <None Include="resource\shaders\vertex_sdl_overlay.glsl" />
+    <None Include="resource\shaders\vertex_2d_texture.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

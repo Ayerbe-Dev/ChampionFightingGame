@@ -9,9 +9,12 @@ using namespace glm;
 class Shader {
 public:
 	Shader();
-	Shader(string vertexPath, string fragmentPath);
+	Shader(string vertex_dir, string fragment_dir);
 	~Shader();
 	unsigned int program;
+
+	void init(string vertex_dir, string fragment_dir);
+
 	void use();
 
 	void set_bool(const std::string& name, bool value) const;

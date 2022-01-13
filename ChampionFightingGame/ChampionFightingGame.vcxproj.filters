@@ -148,6 +148,12 @@
     <Filter Include="Header Files\Deps">
       <UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{9ec22d83-104b-464a-aa9f-afb8793a2aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -743,9 +749,6 @@
     <ClInclude Include="GameMenu.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
     <ClInclude Include="Box.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
@@ -756,9 +759,6 @@
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTexture.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="ParamTable.h">
@@ -806,7 +806,13 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Member</Filter>
+    </ClInclude>
     <ClInclude Include="Bone.h">
+      <Filter>Header Files\Member</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTexture.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
   </ItemGroup>
@@ -826,10 +832,10 @@
     <None Include="resource\shaders\vertex_no_anim.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_sdl_overlay.glsl">
+    <None Include="resource\shaders\fragment_2d_texture.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_sdl_overlay.glsl">
+    <None Include="resource\shaders\vertex_2d_texture.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

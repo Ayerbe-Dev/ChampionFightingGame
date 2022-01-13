@@ -1,9 +1,22 @@
 #include "GameTexture.h"
 #include "Shader.h"
+#include "RenderManager.h"
 extern SDL_Renderer* g_renderer;
+extern RenderManager g_rendermanager;
 extern bool debug;
 
+GameTextureNew::GameTextureNew() {}
+
 GameTextureNew::GameTextureNew(string path) {
+	init(path);
+}
+
+GameTextureNew::~GameTextureNew() {
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+}
+
+void GameTextureNew::init(string path) {
 	pos = vec3(0.0, 0.0, 0.0);
 	rot = vec3(0.0, 0.0, 0.0);
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { vec3(-1.0, -1.0, 0.0), vec2(0.0, 0.0) };
@@ -13,6 +26,8 @@ GameTextureNew::GameTextureNew(string path) {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
+
+	attach_shader(&g_rendermanager.default_2d_shader);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -59,11 +74,6 @@ GameTextureNew::GameTextureNew(string path) {
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-GameTextureNew::~GameTextureNew() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
 }
 
 void GameTextureNew::set_pos(vec3 pos) {
@@ -240,6 +250,10 @@ void GameTextureNew::set_bottom_target(float percent, float max_change) {
 	this->target_bottom_max_change = max_change;
 }
 
+void GameTextureNew::set_alpha(unsigned char alpha) {
+	this->alpha = alpha;
+}
+
 void GameTextureNew::flip_h() {
 	GameTextureCoord* temp_tex_accessor[4] = { tex_accessor[0], tex_accessor[1], tex_accessor[2], tex_accessor[3] };
 	float left_coord = tex_data[TEX_COORD_BOTTOM_LEFT].pos.x;
@@ -313,8 +327,8 @@ void GameTextureNew::render() {
 			target_bottom_max_change = 0.0;
 		}
 	}
-	if (target_top_max_change * height_scale != 0.0) {
-		if (target_top_crop > tex_accessor[TEX_COORD_TOP_LEFT]->pos.y) {
+	if (target_top_max_change != 0.0) {
+		if (target_top_crop * height_scale > tex_accessor[TEX_COORD_TOP_LEFT]->pos.y) {
 			tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_top_max_change, 1.0);
 			tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y + target_top_max_change, 1.0);
 			tex_accessor[TEX_COORD_TOP_LEFT]->pos.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->pos.y + target_top_max_change, target_top_crop * height_scale);
@@ -372,6 +386,7 @@ void GameTextureNew::render() {
 	}
 	float width_post_scale = width * (tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x);
 	float height_post_scale = height * (tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y + tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	vec3 gl_pos = pos;
@@ -417,13 +432,16 @@ void GameTextureNew::render() {
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;
 	gl_pos.y /= (float)WINDOW_HEIGHT;
+	float shader_alpha = 1.0 - ((float)alpha / 255.0);
 	mat4 matrix = mat4(1.0);
 	matrix = translate(matrix, gl_pos);
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
 	shader->set_int("f_texture", 0);
+	shader->set_float("f_alphamod", shader_alpha);
 	shader->set_mat4("matrix", matrix);
+	glDepthMask(gl_pos.z != 0.0);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

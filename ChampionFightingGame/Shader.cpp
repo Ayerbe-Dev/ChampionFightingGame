@@ -3,6 +3,15 @@
 Shader::Shader() {}
 
 Shader::Shader(string vertex_dir, string fragment_dir) {
+	init(vertex_dir, fragment_dir);
+}
+
+Shader::~Shader() {
+	glDeleteProgram(program);
+}
+
+
+void Shader::init(string vertex_dir, string fragment_dir) {
 	char info_log[512];
 	int success;
 
@@ -75,10 +84,6 @@ Shader::Shader(string vertex_dir, string fragment_dir) {
 	glUseProgram(0);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-}
-
-Shader::~Shader() {
-	glDeleteProgram(program);
 }
 
 void Shader::use() {

@@ -12,9 +12,9 @@ public:
     void render();
     void event_any_press();
 private:
-    GameTexture title_l1;
-    GameTexture title_l2;
-    GameTexture title_l3;
-    GameTexture title_l4;
-    GameTexture text;
+    GameTextureNew title_l1;
+    GameTextureNew title_l2;
+    GameTextureNew title_l3;
+    GameTextureNew title_l4;
+    GameTextureNew text;
 };

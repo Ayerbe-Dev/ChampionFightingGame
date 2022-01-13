@@ -537,8 +537,6 @@ void battle_main(GameManager* game_manager) {
 		SDL_RenderCopy(g_renderer, pGui, NULL, NULL); //render gui to window
 
 
-		g_rendermanager.render_sdl_as_gl(pGui);
-
 //		SDL_GL_SwapWindow(g_window);
 		SDL_RenderPresent(g_renderer); //finalize
 	}

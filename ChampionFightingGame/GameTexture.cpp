@@ -74,6 +74,7 @@ void GameTextureNew::init(string path) {
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	shader->set_int("f_texture", 0);
 }
 
 void GameTextureNew::set_pos(vec3 pos) {
@@ -438,11 +439,11 @@ void GameTextureNew::render() {
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
-	shader->set_int("f_texture", 0);
 	shader->set_float("f_alphamod", shader_alpha);
 	shader->set_mat4("matrix", matrix);
 	glDepthMask(gl_pos.z != 0.0);
 	glDrawArrays(GL_QUADS, 0, 4);
+	glDepthMask(GL_TRUE);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

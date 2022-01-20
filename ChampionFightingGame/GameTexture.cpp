@@ -12,8 +12,7 @@ GameTextureNew::GameTextureNew(string path) {
 }
 
 GameTextureNew::~GameTextureNew() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+
 }
 
 void GameTextureNew::init(string path) {
@@ -75,6 +74,11 @@ void GameTextureNew::init(string path) {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	shader->set_int("f_texture", 0);
+}
+
+void GameTextureNew::destroy() {
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
 void GameTextureNew::set_pos(vec3 pos) {
@@ -217,6 +221,47 @@ void GameTextureNew::scale_bottom_percent(float percent, bool crop) {
 	else {
 		update_buffer_data();
 	}
+}
+
+void GameTextureNew::scale_all_percent(float percent, bool crop) {
+	if (percent < 1.0) {
+		scale_left_percent(percent * 2.0, crop);
+		scale_right_percent(percent * 2.0, crop);
+		scale_top_percent(percent * 2.0, crop);
+		scale_bottom_percent(percent * 2.0, crop);
+	}
+	else {
+		scale_left_percent(percent / 2.0, crop);
+		scale_right_percent(percent / 2.0, crop);
+		scale_top_percent(percent / 2.0, crop);
+		scale_bottom_percent(percent / 2.0, crop);
+	}
+}
+
+void GameTextureNew::set_width(int new_width) {
+	float old_width_scale = (float)width / (float)WINDOW_WIDTH;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x /= old_width_scale;
+	}
+	float width_scale = (float)new_width / (float)WINDOW_WIDTH;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x *= width_scale;
+	}
+	width = new_width;
+	update_buffer_data();
+}
+
+void GameTextureNew::set_height(int new_height) {
+	float old_height_scale = (float)height / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.y /= old_height_scale;
+	}
+	float height_scale = (float)new_height / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.y *= height_scale;
+	}
+	height = new_height;
+	update_buffer_data();
 }
 
 void GameTextureNew::set_left_target(float percent, float max_change) {

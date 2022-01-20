@@ -207,6 +207,31 @@ void battle_main(GameManager* game_manager) {
 			}
 		}
 	}
+
+	/* Input handler for the new loading thread; only to be used in game_state_battle which doesn't use the new system yet.
+		bool loading = true;
+	while (loading) {
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+			player_info[i]->poll_buttons(keyboard_state);
+			if (player_info[i]->is_any_inputs()) {
+				loading = false;
+
+
+				//We don't want the option the player uses to exit the loading screen to also be capable of updating the buffer
+
+				for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
+					player_info[i]->poll_buttons(keyboard_state);
+					player_info[!i]->poll_buttons(keyboard_state);
+				}
+			}
+		}
+	}
+	*/
+
 	SDL_SetRenderTarget(g_renderer, pScreenTexture);
 	SDL_RenderClear(g_renderer);
 	SDL_SetRenderTarget(g_renderer, NULL);

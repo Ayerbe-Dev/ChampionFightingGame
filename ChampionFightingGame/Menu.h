@@ -22,33 +22,25 @@ public:
     SDL_Texture* texture_description;
     SDL_Rect destRect_description;
 
+    GameTextureNew image_texture;
+    GameTextureNew name_texture;
+
     MenuItem();
     MenuItem(string texture_dir, string texture_description_dir  = "resource\\ui\\menu\\main\\missingno.png", int destination = 999);
 };
 
 class SubMenuTable {
 public:
-    SDL_Texture* texture;
-    SDL_Rect destRect;
     int selection;
     int selected_item;
     int item_count;
-    Cursor* cursor;
 
-    SDL_Texture* sub_option_text[5];
-    SDL_Rect sub_option_rect[5]{ SDL_Rect{0, 0, 0, 0} };
+    GameTextureNew table;
+    GameTextureNew sub_text[5];
+    GameTextureNew cursor;
 
     SubMenuTable();
     SubMenuTable(int selection);
-};
-
-class Cursor {
-public:
-    SDL_Texture* texture;
-    SDL_Rect destRect;
-    int pos_y;
-
-    Cursor();
 };
 
 class MainMenu: public GameMenu{
@@ -78,5 +70,5 @@ private:
     int menu_level = MENU_LEVEL_TOP;
     int sub_type = SUB_MENU_VS;
     MenuItem menu_items[5];
-    GameTexture background_texture;
+    GameTextureNew background_texture;
 };

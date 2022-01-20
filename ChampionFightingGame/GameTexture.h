@@ -62,6 +62,7 @@ public:
     GameTextureNew(string path);
     ~GameTextureNew();
     void init(string path);
+    void destroy();
 
     void set_pos(vec3 pos);
     void add_pos(vec3 pos);
@@ -74,6 +75,10 @@ public:
     void scale_right_percent(float percent, bool crop = true);
     void scale_top_percent(float percent, bool crop = true);
     void scale_bottom_percent(float percent, bool crop = true);
+    void scale_all_percent(float percent, bool crop = true);
+
+    void set_width(int new_width);
+    void set_height(int new_height);
 
     void set_left_target(float percent, float max_change);
     void set_right_target(float percent, float max_change);

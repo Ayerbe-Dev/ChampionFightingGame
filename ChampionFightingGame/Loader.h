@@ -10,6 +10,7 @@
 #include "Menu.h"
 
 extern SDL_mutex* file_mutex;
+extern SDL_Renderer* g_renderer;
 extern SoundManager g_soundmanager;
 
 class LoadIcon {
@@ -32,13 +33,67 @@ public:
 
 class GameLoader {
 public:
+	GameLoader();
+	GameLoader(int total_items);
+
 	PlayerInfo *player_info[2];
 
 	int loaded_items = 0;
+	int total_items;
 	int ret = 0;
 	bool finished = false;
 	bool can_ret = false;
 };
+
+static int LoadingScreen(void* void_GameLoader) {
+	GameLoader* game_loader = (GameLoader*)void_GameLoader;
+
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
+
+	LoadIcon load_icon;
+	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+
+	while (!game_loader->finished) {
+		frameTimeDelay();
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT: {
+					exit(0);
+				}
+				break;
+			}
+		}
+
+		load_icon.move();
+		SDL_LockMutex(file_mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		loadingBar.setTargetPercent(((float)game_loader->loaded_items / (float)game_loader->total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(file_mutex);
+	}
+
+	return 0;
+}
 
 static int LoadGame(void* void_GameLoader) {
 	int time = SDL_GetTicks();
@@ -306,30 +361,6 @@ static int LoadDebug(void* void_DebugLoader) {
 	while (!debug_loader->can_ret) {
 	}
 	return 1;
-}
-
-class MenuLoader : public GameLoader {
-public:
-	MenuLoader() {};
-
-	MainMenu main_menu;
-};
-
-static int LoadMenu(void* void_MenuLoader) {
-	int time = SDL_GetTicks();
-	MenuLoader* menu_loader = (MenuLoader*)void_MenuLoader;
-
-	MainMenu main_menu;
-
-	main_menu.init();
-
-	menu_loader->main_menu = main_menu;
-	
-	menu_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!menu_loader->can_ret) {
-	}
-	return 0;
 }
 
 class StageSelectLoader : public GameLoader {

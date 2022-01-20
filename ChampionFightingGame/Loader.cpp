@@ -1,5 +1,10 @@
 #include "Loader.h"
 
+GameLoader::GameLoader() {}
+GameLoader::GameLoader(int total_items) {
+	this->total_items = total_items;
+}
+
 LoadIcon::LoadIcon() {
 	texture.init("resource/ui/menu/loading/loadicon.png");
 	texture.setScaleFactor(0.4);
@@ -16,7 +21,7 @@ void LoadIcon::set_attributes() {
 	int v_rng = rand() % 2;
 	int h_rng = rand() % 2;
 	int x_rng = WINDOW_WIDTH * 0.2 + (rand() % WINDOW_WIDTH * 0.6);
-	int y_rng = WINDOW_HEIGHT * 0.2 + rand() % WINDOW_HEIGHT * 0.6;
+	int y_rng = WINDOW_HEIGHT * 0.2 + (rand() % WINDOW_HEIGHT * 0.6);
 	move_right = h_rng;
 	move_down = v_rng;
 	texture.destRect.x = x_rng;

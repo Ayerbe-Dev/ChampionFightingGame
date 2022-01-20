@@ -342,21 +342,22 @@ void MainMenu::render() {
 	SDL_Rect garborect = { 0,0,232,32 };
 
 	background_texture.render();
+	menu_items[top_selection * -1].image_texture.render();
 
 	//prebuffer render
-	for (int i = 1; i < 5; i++) {
-		menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
-		menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
-		menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
-		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i - 5) * offset)), int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.add_pos(vec3(0.0, WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
+		menu_items[i].name_texture.render();
 	}
 
 	//real render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
-		menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
-		menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
-		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + i * offset)), int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.add_pos(vec3(0.0, WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
+		menu_items[i].name_texture.render();
 		sub_menu_tables[menu_items[top_selection * -1].destination]->table.render();
 		sub_menu_tables[menu_items[top_selection * -1].destination]->cursor.render();
 		for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
@@ -366,16 +367,13 @@ void MainMenu::render() {
 
 	//postbuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
-		menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
-
-		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i + 5) * offset)), int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.add_pos(vec3(0.0, WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
+		menu_items[i].name_texture.render();
 	}
 
-
 	theta += ((top_selection * offset) - theta) / 16;
-
-	menu_items[top_selection * -1].image_texture.render();
 }
 
 void MainMenu::process_submenu_tables() {
@@ -391,12 +389,15 @@ void MainMenu::process_submenu_tables() {
 MenuItem::MenuItem() {}
 MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
 	this->texture = loadSDLTexture(texture_dir.c_str());
-	this->destRect = { 0,0, 348,48 };
+	this->destRect = { 0,0,348,48 };
 	this->destination = destination;
+	name_texture.init(texture_dir);
+	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	name_texture.scale_all_percent(2.0, false);
 	image_texture.init(texture_description_dir);
-	image_texture.scale_top_percent(1.5);
-	image_texture.scale_bottom_percent(1.5);
-	image_texture.scale_right_percent(2.0);
+	image_texture.scale_top_percent(1.5, false);
+	image_texture.scale_bottom_percent(1.5, false);
+	image_texture.scale_right_percent(2.0, false);
 	image_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }
 

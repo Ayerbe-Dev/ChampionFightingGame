@@ -480,10 +480,10 @@ void GameTextureNew::render() {
 	gl_pos.y /= (float)WINDOW_HEIGHT;
 	float shader_alpha = 1.0 - ((float)alpha / 255.0);
 	mat4 matrix = mat4(1.0);
-	matrix = translate(matrix, gl_pos);
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
+	matrix = translate(matrix, gl_pos);
 	shader->set_float("f_alphamod", shader_alpha);
 	shader->set_mat4("matrix", matrix);
 	glDepthMask(gl_pos.z != 0.0);

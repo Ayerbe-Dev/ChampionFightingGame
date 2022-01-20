@@ -382,8 +382,6 @@ void MainMenu::init(){
 };
 
 void MainMenu::render() {
-	SDL_Rect garborect = { 0,0,232,32 };
-
 	background_texture.render();
 
 	//prebuffer render
@@ -391,7 +389,7 @@ void MainMenu::render() {
 		menu_items[i].destRect.x = int(magnitude * cos(theta + (i - 5) * offset));
 		menu_items[i].destRect.y = int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2;
 		menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
-		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, nullptr, &menu_items[i].destRect, ((theta + (i - 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
 
 	}
 
@@ -400,7 +398,7 @@ void MainMenu::render() {
 		menu_items[i].destRect.x = int(magnitude * cos(theta + i * offset));
 		menu_items[i].destRect.y = int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2;
 		menu_items[i].destRect.y -= menu_items[i].destRect.h / 2;
-		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, nullptr, &menu_items[i].destRect, ((theta + i * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
 		SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->destRect);
 		SDL_RenderCopy(g_renderer, sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->texture, NULL, &sub_menu_tables[menu_items[top_selection * -1].destination]->cursor->destRect);
 		for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
@@ -413,7 +411,7 @@ void MainMenu::render() {
 		menu_items[i].destRect.x = int(magnitude * cos(theta + (i + 5) * offset));
 		menu_items[i].destRect.y = int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2;
 
-		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, &garborect, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(g_renderer, menu_items[i].texture, nullptr, &menu_items[i].destRect, ((theta + (i + 5) * offset) * 180) / 3.14, nullptr, SDL_FLIP_NONE);
 	}
 
 

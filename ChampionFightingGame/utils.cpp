@@ -495,3 +495,6 @@ mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from) {
 	return to;
 }
 
+vec3 get_circular_offset(vec3 origin_point, vec3 pos, float angle) {
+	float magnitude = distance(origin_point, pos);
+}

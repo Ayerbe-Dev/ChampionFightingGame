@@ -331,6 +331,11 @@ void MainMenu::init(){
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[3].init("resource/ui/menu/main/Placeholder.png");
+	for (int i = 0; i < 5; i++) {
+		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
+			sub_menu_tables[i]->sub_text[i2].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		}
+	}
 };
 
 void MainMenu::render() {
@@ -405,11 +410,10 @@ SubMenuTable::SubMenuTable(int selection) {
 	table.scale_bottom_percent(1.2, false);
 
 	cursor.init("resource/ui/menu/main/Cursor.png");
-	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	cursor.set_pos(vec3((float)WINDOW_WIDTH * 0.75, (float)WINDOW_HEIGHT * 0.18, 0.0));
-//	cursor.scale_all_percent(0.03, false);
-	cursor.set_width(200);
-	cursor.set_height(200);
+	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT);
+	cursor.set_pos(vec3(700.0, 0.0, 0.0));
+	cursor.set_width(50);
+	cursor.set_height(50);
 
 	this->selection = selection;
 	selected_item = 0;

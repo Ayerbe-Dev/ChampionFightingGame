@@ -339,8 +339,6 @@ void MainMenu::init(){
 };
 
 void MainMenu::render() {
-	SDL_Rect garborect = { 0,0,232,32 };
-
 	background_texture.render();
 	menu_items[top_selection * -1].image_texture.render();
 
@@ -388,8 +386,6 @@ void MainMenu::process_submenu_tables() {
 
 MenuItem::MenuItem() {}
 MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
-	this->texture = loadSDLTexture(texture_dir.c_str());
-	this->destRect = { 0,0,348,48 };
 	this->destination = destination;
 	name_texture.init(texture_dir);
 	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);

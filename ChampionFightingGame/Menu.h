@@ -16,17 +16,13 @@ int get_sub_selection(int top_selection, int sub_selection);
 class MenuItem{
 public:
     int destination;
-    SDL_Texture* texture;
-    SDL_Rect destRect;
-
-    SDL_Texture* texture_description;
-    SDL_Rect destRect_description;
+    float rot = 0;
 
     GameTextureNew image_texture;
     GameTextureNew name_texture;
 
     MenuItem();
-    MenuItem(string texture_dir, string texture_description_dir  = "resource\\ui\\menu\\main\\missingno.png", int destination = 999);
+    MenuItem(string texture_dir, string texture_description_dir  = "resource/ui/menu/main/missingno.png", int destination = 999);
 };
 
 class SubMenuTable {

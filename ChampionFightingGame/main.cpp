@@ -5,7 +5,6 @@
 #include <Windows.h>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <SDL_timer.h>
 #include "utils.h"
 #include "GameSettings.h"
 #include "GameStates.h"

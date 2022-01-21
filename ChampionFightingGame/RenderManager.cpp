@@ -87,8 +87,8 @@ void RenderManager::render_model(Model *model, Shader *shader, vec3 *model_pos, 
 	update_shader_cam(shader);
 	mat4 model_mat = mat4(1.0);
 	model_mat = scale(model_mat, *model_scale);
-	model_mat = translate(model_mat, *model_pos);
 	model_mat *= orientate4(*model_rot);
+	model_mat = translate(model_mat, *model_pos);
 	shader->set_mat4("model", model_mat);
 	model->render(shader);
 }

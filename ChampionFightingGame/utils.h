@@ -95,6 +95,7 @@ void setGameSetting(string setting, int val);
 void updateGameSettings();
 int round_up_odd(int val);
 mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
+vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle);
 
 /*
 	updateCamera(); 

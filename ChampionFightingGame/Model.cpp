@@ -107,7 +107,7 @@ void Model::load_model(string path) {
 		return;
 	}
 
-	global_transform = inverse(ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation));
+	global_transform = ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation);
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 	string skeleton_path = directory + "skeleton.smd";
@@ -135,22 +135,16 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 	//First, we get all of the keyframes for both the current frame and the next frame (Note: For now this assumes every frame is baked, in the future
 	//I'll change this to use interpolation
 
-	int frame_index = clamp(0, floorf(frame), anim_kind->keyframes.size() - 1); 
-	int next_frame_index = clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1);
-	vector<Bone> keyframes = anim_kind->keyframes[frame_index];
-	vector<Bone> next_keyframes = anim_kind->keyframes[next_frame_index];
-	float decimal = (float)frame_index - frame;
+	vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
+	vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
 	for (int i = 0; i < keyframes.size(); i++) { //Iterate through all bones
-		Bone curr_frame_offsets = keyframes[i];
-		Bone next_frame_offsets = next_keyframes[i];
 
 		//Calculate the difference in offset between the current frame and the next frame, then multiply said difference by the decimal place. This will
 		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
 		//keyframes
 
-		next_frame_offsets.anim_matrix -= curr_frame_offsets.anim_matrix;
-		curr_frame_offsets.anim_matrix += decimal * next_frame_offsets.anim_matrix;
+		keyframes[i].anim_matrix += (int(frame) - frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
 		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
@@ -159,25 +153,15 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//There might be a better way to do this but if I DON'T factor in the parent matrix, the issues in bone placement are still a lot worse than just
 		//not including the parent
 
-		mat4 parent_matrix = mat4(1.0);
-		if (curr_frame_offsets.parent_id != -1) {
-			parent_matrix = bones[curr_frame_offsets.parent_id].anim_matrix;
+		if (keyframes[i].parent_id != -1) {
+			bones[i].anim_matrix = bones[keyframes[i].parent_id].anim_matrix * keyframes[i].anim_matrix;
+		}
+		else {
+			bones[i].anim_matrix = keyframes[i].anim_matrix;
 		}
 
 		//Update our anim_matrix so child bones can use it in future iterations
-
-		bones[i].anim_matrix = curr_frame_offsets.anim_matrix;
-
-		//This equation is probably wrong
-
-//		bones[i].final_matrix = global_transform * parent_matrix * bones[i].anim_matrix * bones[i].anim_rest_matrix * bones[i].model_matrix;
-		bones[i].final_matrix = bones[i].anim_rest_matrix;
-
-		if (bones[i].model_matrix != inverse(bones[i].anim_rest_matrix)) {
-			//cout << "Because that makes sense" << endl;
-
-			//Yeah so for some reason they were equal earlier but they aren't equal now. I swear I didn't touch the model_matrix.
-		}
+		bones[i].final_matrix = inverse(bones[i].anim_rest_matrix) * bones[i].anim_matrix;
 	}
 }
 
@@ -263,13 +247,8 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
 			aiNode* ai_node = ai_bone->mArmature;
-			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation); //Bone matrix in Bone Space (rest position)
-			mat4 model_matrix = inverse(anim_matrix); //Bone matrix in Model Space. I store this separately because, for whatever reason, by the time
-			//I'm adjusting the skeleton, bones[i].anim_rest_matrix * inverse(bones[i].anim_rest_matrix) will not equate to mat4(1.0). Make it make sense.
-
-			//mat4 model_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix); I THOUGHT this would be the Bone matrix in Model Space (and 
-			//therefore equivalent to inverse(anim_matrix), but it didn't seem to be usable for anything even though I've seen other tutorials use
-			//it as the offset matrix
+			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
+			mat4 model_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix); 
 
 			bone.model_matrix = model_matrix;
 			bone.anim_rest_matrix = anim_matrix;

@@ -32,7 +32,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	g_rendermanager.update_shader_lights(&model_shader);
 	Model model("resource/chara/roy/model/model.dae");
 	Model model_no_anim("resource/chara/roy/model/model.dae");
-//	Animation3D test_anim("idle", "resource/chara/roy/anims/test.smd", &model);
+	Animation3D test_anim("idle", "resource/chara/roy/anims/idle.smd", &model);
 	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
 	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
 	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
@@ -40,7 +40,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	p2_healthbar.flip_h();
 
 
-	vec3 model_pos = vec3(0.0, -6.0, -6.0);
+	vec3 model_pos = vec3(0.0, 0.0, 0.0);
 	vec3 model_rot = vec3(0.0, 0.0, 0.0);
 	vec3 model_scale = vec3(0.05, 0.05, 0.05);
 
@@ -116,39 +116,35 @@ void three_d_rendering_main(GameManager* game_manager) {
 			three_deeing = false;
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
-			p1_healthbar.add_pos(vec3(0.0, 1.0, 0.0));
-			p2_healthbar.add_pos(vec3(0.0, 1.0, 0.0));
+			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
-			p1_healthbar.add_pos(vec3(1.0, 0.0, 0.0));
-			p2_healthbar.add_pos(vec3(1.0, 0.0, 0.0));
+			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
-			p1_healthbar.add_pos(vec3(-1.0, 0.0, 0.0));
-			p2_healthbar.add_pos(vec3(-1.0, 0.0, 0.0));
+			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
-			p1_healthbar.add_pos(vec3(0.0, -1.0, 0.0));
-			p2_healthbar.add_pos(vec3(0.0, -1.0, 0.0));
+			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
 		}		
 		if (player_info[1]->check_button_on(BUTTON_UP)) {
-			p1_healthbar.scale_bottom_percent(0.8);
-			p2_healthbar.scale_bottom_percent(0.8);
+			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
-			p1_healthbar.scale_bottom_percent(1.0);
-			p2_healthbar.scale_bottom_percent(1.0);
+			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
 		}
 		
-//		if (frame == test_anim.length) {
-//			frame = 0.0;
-//		}
-//		else {
-//			frame += 1.0;
-//		}
-//		model_1.set_bones(frame, &test_anim);
+		if (frame == test_anim.length) {
+			frame = 0.0;
+		}
+		else {
+			frame += 1.0;
+		}
 
-//		g_rendermanager.render_model(&model, &anim_shader, &model_pos, &model_rot, &model_scale);
+		model.set_bones(frame, &test_anim);
+		model.set_bones(frame, &test_anim);
+
+		g_rendermanager.render_model(&model, &anim_shader, &model_pos, &model_rot, &model_scale);
 		g_rendermanager.render_model(&model_no_anim, &model_shader, &model_pos, &model_rot, &model_scale);
 
 		p1_healthbar.render();

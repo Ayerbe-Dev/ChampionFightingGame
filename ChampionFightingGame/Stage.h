@@ -1,7 +1,7 @@
 #pragma once
 #include "utils.h"
 #include <string>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 class Stage {
 public:

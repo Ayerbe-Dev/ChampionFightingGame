@@ -1,6 +1,6 @@
 #pragma once
 #include "utils.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "Box.fwd.h"
 #include "Object.fwd.h"
 #include "GameCoordinate.h"

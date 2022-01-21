@@ -2,7 +2,7 @@
 #include "Menu.h"
 #include "utils.h"
 #include "PlayerInfo.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <math.h>
 #include "Debugger.h"
 #include "DebugMenu.h"

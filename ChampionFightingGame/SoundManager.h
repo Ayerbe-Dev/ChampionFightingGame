@@ -1,5 +1,5 @@
 #pragma once
-#include "SDL_audio.h"
+#include <SDL2/SDL_audio.h>
 #include "FighterAccessor.h"
 #include "Fighter.h"
 #include "utils.h"

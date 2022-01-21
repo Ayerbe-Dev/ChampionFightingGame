@@ -5,7 +5,7 @@
 #include <string>
 #include "GameCoordinate.h"
 #include "Button.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "Animation.h"
 #include "ParamTable.h"
 #include "Fighter.fwd.h"

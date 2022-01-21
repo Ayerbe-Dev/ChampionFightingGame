@@ -3,10 +3,10 @@ using namespace std;
 #include <functional>
 #include <iostream>
 #include <fstream>
-#include "SDL.h"
-#include <glew.h>
+#include <SDL2/SDL.h>
+#include <glew/glew.h>
 #include <sstream>
-#include <SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include "GameCoordinate.fwd.h"
 #include "GameCoordinate.h"
 

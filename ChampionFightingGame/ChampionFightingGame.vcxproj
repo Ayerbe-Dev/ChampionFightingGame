@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)SDL2\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDL2\lib\x64;C:\Users\franc\Repos\ThirdPartyCppLibraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\franc\Repos\ThirdPartyCppLibraries\include;$(SolutionDir)SDL2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -165,15 +165,8 @@ copy /Y "$(SolutionDir)dependencies\x86\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libwebp-4.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libtiff-5.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libpng16-16.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\zlib1.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -2,7 +2,7 @@
 #include "Fighter.h"
 #include "utils.h"
 #include <string>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 class HealthBar {
 public:

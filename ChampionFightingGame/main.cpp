@@ -3,9 +3,9 @@
 #include <thread>
 #include <iostream>
 #include <Windows.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_timer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_timer.h>
 #include "utils.h"
 #include "GameSettings.h"
 #include "GameStates.h"

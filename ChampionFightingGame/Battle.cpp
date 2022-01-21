@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "Animation.h"
 #include "Battle.h"
 #include "Debugger.h"

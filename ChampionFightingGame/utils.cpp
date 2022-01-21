@@ -3,7 +3,7 @@ using namespace std;
 #include <sstream>
 #include <algorithm>
 #include "utils.h"
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include <cstring>
 #include <iostream>
 #include <cstdint>

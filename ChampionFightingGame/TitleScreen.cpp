@@ -1,6 +1,6 @@
 #include "TitleScreen.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "GameTexture.h"
 #include "Debugger.h"

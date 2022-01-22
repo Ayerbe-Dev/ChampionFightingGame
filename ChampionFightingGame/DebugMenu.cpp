@@ -163,6 +163,8 @@ void debugMenu(GameManager* game_manager) {
 	player_info[1]->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(debug_font);
 	delete debug_loader;
+	SDL_DestroyTexture(pScreenTexture);
+	debug_list.destroy_list();
 
 //	return game_manager->update(player_info, *game_manager->game_state);
 }
@@ -176,9 +178,18 @@ TTF_Font* loadDebugFont(string fontname){
 }
 
 debug_list::debug_list(){};
+
 debug_list::debug_list(TTF_Font *pFont, int x_offset){
 	init(pFont,x_offset);
 };
+
+void debug_list::destroy_list() {
+	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++) {
+		if (debugItems[i].state == DEBUG_ITEM_ACTIVE) {
+			debugItems[i].delete_item();
+		}
+	}
+}
 
 void debug_list::init(TTF_Font *pFont, int x_offset){
 	this->pFont = pFont;
@@ -264,6 +275,12 @@ void debug_list::event_start_press(){
 }
 
 DebugItem::DebugItem(){};
+
+void DebugItem::delete_item() {
+	SDL_DestroyTexture(pTexture);
+	SDL_DestroyTexture(pTextureSelect);
+}
+
 void DebugItem::preLoad(TTF_Font *pFont){
 	this->pFont = pFont;
 };

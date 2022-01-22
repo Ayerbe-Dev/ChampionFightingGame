@@ -48,18 +48,21 @@ public:
 
 	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name);
 	void render(Shader *shader);
-	
-private:
+
 	u32 VAO;
 	u32 VBO;
 	u32 EBO;
-
+private:
 	void init();
 };
 
 class Model {
 public:
 	Model(string path);
+	~Model();
+	void load_model(string path);
+	void unload_model();
+
     void render(Shader *shader);
 	vector<Texture> textures_loaded;
 	vector<Mesh> meshes;
@@ -78,7 +81,6 @@ public:
 	void set_bones(float frame, Animation3D *anim_kind);
 
 private:
-	void load_model(string path);
 	void load_skeleton(string path);
 
     void process_node(aiNode* node, const aiScene* scene);

@@ -34,7 +34,7 @@ public:
     TTF_Font *pFont;
 
     DebugItem();
-    //~DebugItem();
+    void delete_item();
     void preLoad(TTF_Font *pFont);
     void generateTexture(string message = "no message");
 };
@@ -46,6 +46,7 @@ public:
     TTF_Font *pFont;
     debug_list();
     debug_list(TTF_Font *pFont, int x_offset = 15);
+    void destroy_list();
     void init(TTF_Font *pFont, int x_offset = 15);
     void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();

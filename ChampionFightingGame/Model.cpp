@@ -55,6 +55,10 @@ Model::Model(string path) {
 	load_model(path);
 }
 
+Model::~Model() {
+	unload_model();
+}
+
 int Model::get_mesh_id(string mesh_name) {
 	for (int i = 0; i < meshes.size(); i++) {
 		if (meshes[i].name == mesh_name) {
@@ -117,6 +121,30 @@ void Model::load_model(string path) {
 	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
 
 	process_node(scene->mRootNode, scene);
+	for (int i = 0; i < bones.size(); i++) {
+		if (bones[i].parent_id == -1) {
+			bones[i].parent_matrix = new mat4(1.0);
+		}
+		else {
+			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
+		}
+	}
+}
+
+void Model::unload_model() {
+	for (int i = 0; i < bones.size(); i++) {
+		if (bones[i].parent_id == -1) {
+			delete bones[i].parent_matrix;
+		}
+	}
+	for (int i = 0; i < textures_loaded.size(); i++) {
+		glDeleteTextures(1, &textures_loaded[i].id);
+	}
+	for (int i = 0; i < meshes.size(); i++) {
+		glDeleteVertexArrays(1, &meshes[i].VAO);
+		glDeleteBuffers(1, &meshes[i].VBO);
+		glDeleteBuffers(1, &meshes[i].EBO);
+	}
 }
 
 void Model::render(Shader* shader) {
@@ -153,14 +181,7 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//There might be a better way to do this but if I DON'T factor in the parent matrix, the issues in bone placement are still a lot worse than just
 		//not including the parent
 
-		if (keyframes[i].parent_id != -1) {
-			bones[i].anim_matrix = bones[keyframes[i].parent_id].anim_matrix * keyframes[i].anim_matrix;
-		}
-		else {
-			bones[i].anim_matrix = keyframes[i].anim_matrix;
-		}
-
-		//Update our anim_matrix so child bones can use it in future iterations
+		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 		bones[i].final_matrix = inverse(bones[i].anim_rest_matrix) * bones[i].anim_matrix;
 	}
 }

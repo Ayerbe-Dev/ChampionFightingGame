@@ -57,18 +57,26 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 		//frame.
 		vector<Bone> new_vec = base_bones;
 		while (smd >> bone_id) { //When it tries to read "Time" as an int, this will fail
-			mat4 matrix = model->bones[bone_id].anim_rest_matrix;
-			vec3 pos = model->bones[bone_id].pos;
-			vec3 rot = model->bones[bone_id].rot;
-			vec3 smd_scale = model->bones[bone_id].scale;
+			mat4 matrix(1.0);
+			vec3 pos(0.0);
+			vec3 rot(0.0);
+			quat real_rot;
+			vec3 smd_scale(1.0);
 
 			smd >> pos.x >> pos.y >> pos.z >> rot.x >> rot.y >> rot.z; //Read in the contents of the line
+			
+			if (base_bones[bone_id].name != "ShoulderR") {
+				pos = vec3(0.0);
+				rot = vec3(0.0);
+			}
+
+			real_rot = quat(rot);
 			matrix = translate(matrix, pos);
-			rot = normalize(rot);
-			mat4 mat_rot = orientate4(rot);
-			matrix *= mat_rot;
+			matrix *= mat4_cast(real_rot);
 			matrix = scale(matrix, smd_scale);
+
 			Bone new_bone = base_bones[bone_id];
+
 			new_bone.pos = pos;
 			new_bone.rot = rot;
 			new_bone.scale = smd_scale;

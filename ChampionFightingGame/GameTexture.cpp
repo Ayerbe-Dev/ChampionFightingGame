@@ -79,6 +79,7 @@ void GameTextureNew::init(string path) {
 void GameTextureNew::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteTextures(1, &texture);
 }
 
 void GameTextureNew::set_pos(vec3 pos) {

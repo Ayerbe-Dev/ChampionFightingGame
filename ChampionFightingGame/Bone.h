@@ -13,6 +13,7 @@ struct Bone {
 	mat4 model_matrix = mat4(1.0);
 	mat4 anim_matrix = mat4(1.0);
 	mat4 anim_rest_matrix = mat4(1.0);
+	mat4 transform_matrix = mat4(1.0);
 	mat4 final_matrix = mat4(1.0);
 	bool keyframed = false;
 };

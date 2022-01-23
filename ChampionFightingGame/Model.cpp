@@ -111,7 +111,7 @@ void Model::load_model(string path) {
 		return;
 	}
 
-	global_transform = ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation);
+	global_transform = ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation.Inverse());
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 	string skeleton_path = directory + "skeleton.smd";
@@ -178,11 +178,8 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
 		//to be filled by the time we look at it.
 
-		//There might be a better way to do this but if I DON'T factor in the parent matrix, the issues in bone placement are still a lot worse than just
-		//not including the parent
-
 		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-		bones[i].final_matrix = inverse(bones[i].anim_rest_matrix) * bones[i].anim_matrix;
+		bones[i].final_matrix = (bones[i].anim_rest_matrix * bones[i].anim_matrix * bones[i].model_matrix) * bones[i].transform_matrix;
 	}
 }
 
@@ -268,26 +265,26 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
 			aiNode* ai_node = ai_bone->mArmature;
-			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 			mat4 model_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix); 
+			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 
-			bone.model_matrix = model_matrix;
-			bone.anim_rest_matrix = anim_matrix;
 			bone.anim_matrix = anim_matrix;
-
-			//Note: These vectors are only used so that empty keyframe data can be filled in properly (mostly scale, since SMD doesn't actually support
-			//that). Will be removed in the future, but it isn't the cause of the current problem.
-
-			aiVector3D base_pos; 
-			aiVector3D base_rot;
-			aiVector3D base_scale;
-			ai_node->mTransformation.Decompose(base_scale, base_rot, base_pos);
+			bone.anim_rest_matrix = anim_matrix;
+			bone.model_matrix = model_matrix;
+			bone.transform_matrix = inverse(anim_matrix * model_matrix);
+			aiVector3D base_pos(0.0, 0.0, 0.0); 
+			aiVector3D base_rot(0.0, 0.0, 0.0);
+			aiVector3D base_scale(0.0, 0.0, 0.0);
+			ai_bone->mOffsetMatrix.Decompose(base_scale, base_rot, base_pos);
 			bone.pos.x = base_pos.x;
 			bone.pos.y = base_pos.y;
 			bone.pos.z = base_pos.z;
 			bone.rot.x = base_rot.x;
 			bone.rot.y = base_rot.y;
 			bone.rot.z = base_rot.z;
+			if (bone.rot != vec3(0.0)) {
+				bone.rot = normalize(bone.rot);
+			}
 			bone.scale.x = base_scale.x;
 			bone.scale.y = base_scale.y;
 			bone.scale.z = base_scale.z;

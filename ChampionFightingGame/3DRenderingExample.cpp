@@ -6,6 +6,8 @@
 #include "utils.h"
 #include "stb_image.h"
 #include "GameTexture.h"
+#include <gtx/rotate_vector.hpp> 
+#include <gtx/string_cast.hpp>
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -50,6 +52,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 	int ticks = SDL_GetTicks();
 	vector<int> average_ticks;
 	vector<int> tick_frequency;
+	vec3 total_rot(0.0);
+	vec3 total_pos(0.0);
 	while (three_deeing) {
 		if (average_ticks.size() < trials) {
 			average_ticks.push_back(SDL_GetTicks() - ticks);
@@ -95,6 +99,9 @@ void three_d_rendering_main(GameManager* game_manager) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
+		vec3 rotation(0.0);
+		vec3 pos(0.0);
+		int target_bone = 93;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT:
@@ -128,35 +135,113 @@ void three_d_rendering_main(GameManager* game_manager) {
 			three_deeing = false;
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
-			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
+			pos.y+= 0.1;
+			test_anim.keyframes[frame][target_bone].pos.y += 0.1;
+			total_pos.y+= 0.1;
+//			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
-			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
+			pos.x+= 0.1;
+			test_anim.keyframes[frame][target_bone].pos.x += 0.1;
+			total_pos.x+= 0.1;
+//			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
-			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
+			pos.x-= 0.1;
+			test_anim.keyframes[frame][target_bone].pos.x -= 0.1;
+			total_pos.x-= 0.1;
+//			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
-			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
+			pos.y-= 0.1;
+			test_anim.keyframes[frame][target_bone].pos.y -= 0.1;
+			total_pos.y-= 0.1;
+//			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
 		}		
 		if (player_info[1]->check_button_on(BUTTON_UP)) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+			pos.z+= 0.1;
+			test_anim.keyframes[frame][target_bone].pos.z += 0.1;
+			total_pos.z+= 0.1;
+//			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
+			pos.z-= 0.1;
+			test_anim.keyframes[frame][target_bone].pos.z -= 0.1;
+			total_pos.z-= 0.1;
+//			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
 		}
-		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
-			g_rendermanager.camera.add_pos(0.0, 1.0, 0.0);
+		if (player_info[1]->check_button_trigger(BUTTON_RIGHT)) {
+			cout << "Pos X: " << total_pos.x << ", Pos Y: " << total_pos.y << ", Pos Z: " << total_pos.z << endl;
+			cout << "Rot X: " << radians(total_rot.x) << ", Rot Y: " << radians(total_rot.y) << ", Rot Z: " << radians(total_rot.z) << endl;
+			vec3 line(
+				distance(test_anim.keyframes[frame][test_anim.keyframes[frame][target_bone].parent_id].pos.x, test_anim.keyframes[frame][target_bone].pos.x),
+				distance(test_anim.keyframes[frame][test_anim.keyframes[frame][target_bone].parent_id].pos.y, test_anim.keyframes[frame][target_bone].pos.y),
+				distance(test_anim.keyframes[frame][test_anim.keyframes[frame][target_bone].parent_id].pos.z, test_anim.keyframes[frame][target_bone].pos.z)
+			);
+			cout << "Parent Bone Distance X: " << line.x << ", Distance Y: " << line.y << ", Distance Z: " << line.z << endl;
+			cout << "Sin X: " << sin(total_rot.x) << ", Sin Y: " << sin(total_rot.y) << ", Sin Z: " << sin(total_rot.z) << endl;
+			cout << "Cos X: " << cos(total_rot.x) << ", Cos Y: " << cos(total_rot.y) << ", Cos Z: " << cos(total_rot.z) << endl;
+			cout << "Tan X: " << tan(total_rot.x) << ", Tan Y: " << tan(total_rot.y) << ", Tan Z: " << tan(total_rot.z) << endl;
+
+//			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
-			g_rendermanager.camera.add_pos(0.0, -1.0, 0.0);
+			test_anim.keyframes[frame][target_bone].anim_matrix = translate(test_anim.keyframes[frame][target_bone].anim_matrix, total_pos * vec3(-1.0));
+			test_anim.keyframes[frame][target_bone].anim_matrix = rotate(test_anim.keyframes[frame][target_bone].anim_matrix, (float)radians(total_rot.x * -1.0), vec3(1.0, 0.0, 0.0));
+			test_anim.keyframes[frame][target_bone].anim_matrix = rotate(test_anim.keyframes[frame][target_bone].anim_matrix, (float)radians(total_rot.y * -1.0), vec3(0.0, 1.0, 0.0));
+			test_anim.keyframes[frame][target_bone].anim_matrix = rotate(test_anim.keyframes[frame][target_bone].anim_matrix, (float)radians(total_rot.z * -1.0), vec3(0.0, 0.0, 1.0));
+			total_pos = vec3(0.0);
+			total_rot = vec3(0.0);
+			//g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
 		}
+		if (player_info[0]->check_button_on(BUTTON_LP)) {
+			rotation.x++;
+			total_rot.x++;
+		}
+		if (player_info[0]->check_button_on(BUTTON_MP)) {
+			rotation.y++;
+			total_rot.y++;
+		}
+		if (player_info[0]->check_button_on(BUTTON_HP)) {
+			rotation.z++;
+			total_rot.z++;
+		}
+		if (player_info[0]->check_button_on(BUTTON_LK)) {
+			rotation.x--;
+			total_rot.x--;
+		}
+		if (player_info[0]->check_button_on(BUTTON_MK)) {
+			rotation.y--;
+			total_rot.y--;
+		}
+		if (player_info[0]->check_button_on(BUTTON_HK)) {
+			rotation.z--;
+			total_rot.z--;
+		}
+
+//		vec3 offset(
+//			distance(test_anim.keyframes[frame][test_anim.keyframes[frame][target_bone].parent_id].pos.x, test_anim.keyframes[frame][target_bone].pos.x),
+//			distance(test_anim.keyframes[frame][test_anim.keyframes[frame][target_bone].parent_id].pos.y, test_anim.keyframes[frame][target_bone].pos.y),
+//			distance(test_anim.keyframes[frame][test_anim.keyframes[frame][target_bone].parent_id].pos.z, test_anim.keyframes[frame][target_bone].pos.z)
+//		);
+//		offset = rotate(offset, test_anim.keyframes[frame][target_bone].rot.x, vec3(1.0, 0.0, 0.0));
+//		offset = rotate(offset, test_anim.keyframes[frame][target_bone].rot.y, vec3(0.0, 1.0, 0.0));
+//		offset = rotate(offset, test_anim.keyframes[frame][target_bone].rot.z, vec3(0.0, 0.0, 1.0));
+//		test_anim.keyframes[frame][target_bone].anim_matrix = translate(test_anim.keyframes[frame][target_bone].anim_matrix, offset * vec3(1.0));
+		test_anim.keyframes[frame][target_bone].anim_matrix = rotate(test_anim.keyframes[frame][target_bone].anim_matrix, radians(rotation.x), vec3(1.0, 0.0, 0.0));
+		test_anim.keyframes[frame][target_bone].anim_matrix = rotate(test_anim.keyframes[frame][target_bone].anim_matrix, radians(rotation.y), vec3(0.0, 1.0, 0.0));
+		test_anim.keyframes[frame][target_bone].anim_matrix = rotate(test_anim.keyframes[frame][target_bone].anim_matrix, radians(rotation.z), vec3(0.0, 0.0, 1.0));
+//		offset = rotate(offset, radians(rotation.x * (float)-1.0), vec3(1.0, 0.0, 0.0));
+//		offset = rotate(offset, radians(rotation.y * (float)-1.0), vec3(0.0, 1.0, 0.0));
+//		offset = rotate(offset, radians(rotation.z * (float)-1.0), vec3(0.0, 0.0, 1.0));
+//		test_anim.keyframes[frame][target_bone].anim_matrix = translate(test_anim.keyframes[frame][target_bone].anim_matrix, offset * vec3(-1.0));
+		test_anim.keyframes[frame][target_bone].anim_matrix = translate(test_anim.keyframes[frame][target_bone].anim_matrix, pos);
 		
-		if (frame == test_anim.length) {
+		if (frame >= test_anim.length) {
 			frame = 0.0;
 		}
 		else {
-			frame += 1.0;
+//			frame += 1.0;
 		}
 
 		model.set_bones(frame, &test_anim);
@@ -169,6 +254,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 		p2_healthbar.render();
 
 		SDL_GL_SwapWindow(g_window);
+		string hi;
+//		cin >> hi;
 	}
 	p1_healthbar.destroy();
 	p2_healthbar.destroy();

@@ -124,9 +124,11 @@ void Model::load_model(string path) {
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].parent_id == -1) {
 			bones[i].parent_matrix = new mat4(1.0);
+			bones[i].parent_rest_matrix = new mat4(1.0);
 		}
 		else {
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
+			bones[i].parent_rest_matrix = &bones[bones[i].parent_id].transform_matrix;
 		}
 	}
 }
@@ -178,8 +180,10 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
 		//to be filled by the time we look at it.
 
-		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-		bones[i].final_matrix = (bones[i].anim_rest_matrix * bones[i].anim_matrix * bones[i].model_matrix) * bones[i].transform_matrix;
+//		bones[i].anim_matrix = *bones[i].parent_matrix * *bones[i].parent_rest_matrix * keyframes[i].anim_matrix;
+//		bones[i].final_matrix = bones[i].anim_matrix * bones[i].transform_matrix;
+		bones[i].anim_matrix = keyframes[i].anim_matrix * *bones[i].parent_matrix;
+		bones[i].final_matrix = bones[i].anim_matrix;
 	}
 }
 
@@ -269,9 +273,9 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 
 			bone.anim_matrix = anim_matrix;
-			bone.anim_rest_matrix = anim_matrix;
+			bone.anim_rest_matrix = inverse(anim_matrix);
 			bone.model_matrix = model_matrix;
-			bone.transform_matrix = inverse(anim_matrix * model_matrix);
+			bone.transform_matrix = inverse(model_matrix);
 			aiVector3D base_pos(0.0, 0.0, 0.0); 
 			aiVector3D base_rot(0.0, 0.0, 0.0);
 			aiVector3D base_scale(0.0, 0.0, 0.0);

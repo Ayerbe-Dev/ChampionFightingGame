@@ -495,6 +495,15 @@ mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from) {
 	return to;
 }
 
+aiMatrix4x4 glm_to_assimp(const mat4& from) {
+	aiMatrix4x4 to;
+	to.a1 = from[0][0]; to.a2 = from[1][0]; to.a3 = from[2][0]; to.a4 = from[3][0];
+	to.b1 = from[0][1]; to.b2 = from[1][1]; to.b3 = from[2][1]; to.b4 = from[3][1];
+	to.c1 = from[0][2]; to.c2 = from[1][2]; to.c3 = from[2][2]; to.c4 = from[3][2];
+	to.d1 = from[0][3]; to.d2 = from[1][3]; to.d3 = from[2][3]; to.d4 = from[3][3];
+	return to;
+}
+
 vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle) {
 	vec3 ret = origin_point;
 	float new_x = magnitude * cos(angle);

@@ -27,7 +27,7 @@ void main() {
         bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
         total_weights += v_weights[i];
     }
-    if (total_weights != 1.0) {
+    if (total_weights < 1.0) {
         bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
     }
 
@@ -37,5 +37,5 @@ void main() {
     Normal = mat3(transpose(inverse(model))) * v_nor;  
     TexCoords = v_texcoords;
 
-    gl_Position = projection * view * model * total_pos;
+    gl_Position = projection * view * (model * total_pos);
 } 

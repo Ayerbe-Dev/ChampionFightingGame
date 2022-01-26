@@ -7,6 +7,7 @@ struct Bone {
 	int id = 0;
 	int parent_id = -1;
 	mat4 *parent_matrix;
+	mat4* parent_rest_matrix;
 	vec3 pos = vec3(0.0, 0.0, 0.0);
 	vec3 rot = vec3(0.0, 0.0, 0.0);
 	vec3 scale = vec3(0.0, 0.0, 0.0);

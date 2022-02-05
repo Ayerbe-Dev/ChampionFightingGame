@@ -2,62 +2,89 @@
 #include <gtx/string_cast.hpp>
 using namespace glm;
 
-Mesh::Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name) {
-	this->vertices = vertices;
-	this->indices = indices;
-	this->textures = textures;
-	this->name = name;
-
-	init();
-}
-
-void Mesh::init() {
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
-	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
-	glBindVertexArray(0);
-}
-
-void Mesh::render(Shader *shader) {
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		shader->set_float(("material." + textures[i].type_string).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
-	}
-
-    glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-}
-
 Model::Model(string path) {
 	load_model(path);
 }
 
 Model::~Model() {
 	unload_model();
+}
+
+void Model::load_model(string path) {
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
+		return;
+	}
+
+	global_transform = ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation.Inverse());
+
+	directory = path.substr(0, path.find_last_of('/')) + "/";
+	string skeleton_path = directory + "skeleton.smd";
+	load_skeleton(skeleton_path); 
+	
+	//Note: skeleton.smd is just an smd file stripped down to the bone list. Since bones are processed in a specific order during set_bones, I want to
+	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
+
+	process_node(scene->mRootNode, scene);
+	for (int i = 0; i < bones.size(); i++) {
+		if (bones[i].parent_id == -1) {
+			bones[i].parent_matrix = new mat4(1.0);
+		}
+		else {
+			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
+		}
+	}
+
+	int trans_index = get_bone_id("Trans");
+	int rot_index = get_bone_id("Rot");
+
+	bones[trans_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
+	bones[trans_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
+	bones[rot_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
+	bones[rot_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
+}
+
+void Model::unload_model() {
+	for (int i = 0; i < bones.size(); i++) {
+		if (bones[i].parent_id == -1) {
+			delete bones[i].parent_matrix;
+		}
+	}
+	for (int i = 0; i < textures_loaded.size(); i++) {
+		glDeleteTextures(1, &textures_loaded[i].id);
+	}
+	for (int i = 0; i < meshes.size(); i++) {
+		glDeleteVertexArrays(1, &meshes[i].VAO);
+		glDeleteBuffers(1, &meshes[i].VBO);
+		glDeleteBuffers(1, &meshes[i].EBO);
+	}
+}
+
+void Model::set_bones(float frame, Animation3D* anim_kind) {
+	vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
+	vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
+
+	for (int i = 0; i < keyframes.size(); i++) {
+		keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
+
+		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
+	}
+}
+
+void Model::render(Shader* shader) {
+	glDepthMask(GL_TRUE);
+	for (int i = 0; i < bones.size(); i++) {
+		shader->set_mat4("bone_matrix[" + to_string(i) + "]", bones[i].final_matrix);
+	}
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		meshes[i].render(shader);
+	}
+	glBindVertexArray(0);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 int Model::get_mesh_id(string mesh_name) {
@@ -68,7 +95,6 @@ int Model::get_mesh_id(string mesh_name) {
 	}
 	return -1;
 }
-
 int Model::get_bone_id(string bone_name) {
 	if (bone_name == "model-armature") { //DAE refers to this bone is blender_implicit, FBX refers to it as model-armature
 		return 0;
@@ -106,103 +132,6 @@ void Model::load_skeleton(string path) {
 
 	smd.close();
 }
-
-void Model::load_model(string path) {
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
-
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
-		return;
-	}
-
-	global_transform = ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation.Inverse());
-
-	directory = path.substr(0, path.find_last_of('/')) + "/";
-	string skeleton_path = directory + "skeleton.smd";
-	load_skeleton(skeleton_path); 
-	
-	//Note: skeleton.smd is just an smd file stripped down to the bone list. Since bones are processed in a specific order during set_bones, I want to
-	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
-
-	process_node(scene->mRootNode, scene);
-	for (int i = 0; i < bones.size(); i++) {
-		if (bones[i].parent_id == -1) {
-			bones[i].parent_matrix = new mat4(1.0);
-			bones[i].parent_rest_matrix = new mat4(1.0);
-		}
-		else {
-			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
-			bones[i].parent_rest_matrix = &bones[bones[i].parent_id].anim_rest_matrix;
-		}
-	}
-
-	int trans_index = get_bone_id("Trans");
-	int rot_index = get_bone_id("Rot");
-
-	bones[trans_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
-	bones[trans_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
-	bones[rot_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
-	bones[rot_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
-}
-
-void Model::unload_model() {
-	for (int i = 0; i < bones.size(); i++) {
-		if (bones[i].parent_id == -1) {
-			delete bones[i].parent_matrix;
-		}
-	}
-	for (int i = 0; i < textures_loaded.size(); i++) {
-		glDeleteTextures(1, &textures_loaded[i].id);
-	}
-	for (int i = 0; i < meshes.size(); i++) {
-		glDeleteVertexArrays(1, &meshes[i].VAO);
-		glDeleteBuffers(1, &meshes[i].VBO);
-		glDeleteBuffers(1, &meshes[i].EBO);
-	}
-}
-
-void Model::render(Shader* shader) {
-	glDepthMask(GL_TRUE);
-	for (int i = 0; i < bones.size(); i++) {
-		shader->set_mat4("bone_matrix[" + to_string(i) + "]", bones[i].final_matrix);
-	}
-	for (unsigned int i = 0; i < meshes.size(); i++) {
-		meshes[i].render(shader);
-	}
-	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE0);
-}
-
-void Model::set_bones(float frame, Animation3D *anim_kind) {
-	//First, we get all of the keyframes for both the current frame and the next frame (Note: For now this assumes every frame is baked, in the future
-	//I'll change this to use interpolation
-
-	vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
-	vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
-
-	for (int i = 2; i < keyframes.size(); i++) { //Iterate through all bones
-
-		//Calculate the difference in offset between the current frame and the next frame, then multiply said difference by the decimal place. This will
-		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
-		//keyframes
-
-		keyframes[i].anim_matrix += (int(frame) - frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
-
-		//If we have a parent bone, we also want to add in the offsets from that parent bone. Since a bone will never be at a lower index than its
-		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
-		//to be filled by the time we look at it.
-
-		//Bad rotation
-
-//		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-//		bones[i].final_matrix = bones[i].anim_matrix;
-
-		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix; //parentTransform * nodeTransform
-		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform; //globalTransformation * offset
-	}
-}
-
 void Model::process_node(aiNode* node, const aiScene* scene) {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -212,7 +141,6 @@ void Model::process_node(aiNode* node, const aiScene* scene) {
 		process_node(node->mChildren[i], scene);
 	}
 }
-
 Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
@@ -291,7 +219,6 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.anim_matrix = anim_matrix;
 			bone.anim_rest_matrix = anim_matrix;
 			bone.model_matrix = model_matrix;
-			bone.transform_matrix = inverse(model_matrix);
 			aiVector3D base_pos(0.0, 0.0, 0.0); 
 			aiVector3D base_rot(0.0, 0.0, 0.0);
 			aiVector3D base_scale(0.0, 0.0, 0.0);
@@ -309,10 +236,9 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.scale.y = base_scale.y;
 			bone.scale.z = base_scale.z;
 
-			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_"); //Blender be like
+			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
 			bone.id = get_bone_id(bone.name);
-			bone.parent_id = this->bones[bone.id].parent_id; //this->bones is already initialized to contain the name, ID and parent ID of each bone,
-			//but since we generate the rest of the info here, we need to copy over the one thing that isn't able to be derived
+			bone.parent_id = this->bones[bone.id].parent_id;
 
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
 				int index = ai_bone->mWeights[i2].mVertexId;
@@ -331,7 +257,6 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 	return Mesh(vertices, indices, textures, name);
 }
-
 vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, string type_name) {
 	vector<Texture> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
@@ -357,4 +282,54 @@ vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType typ
 		}
 	}
 	return textures;
+}
+
+Mesh::Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name) {
+	this->vertices = vertices;
+	this->indices = indices;
+	this->textures = textures;
+	this->name = name;
+
+	init();
+}
+
+void Mesh::init() {
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+	glBindVertexArray(0);
+}
+
+void Mesh::render(Shader* shader) {
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		shader->set_float(("material." + textures[i].type_string).c_str(), i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+	}
+
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

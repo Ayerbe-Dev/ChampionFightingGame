@@ -177,11 +177,11 @@ void three_d_rendering_main(GameManager* game_manager) {
 			model_rot.z -= 0.1;
 		}
 		
-		if (frame >= test_anim.length) {
+		if (frame > test_anim.length) {
 			frame = 0.0;
 		}
 		else {
-			frame += 1.0;
+			frame += 0.5;
 		}
 
 		model.set_bones(frame, &test_anim);

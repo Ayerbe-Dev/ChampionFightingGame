@@ -73,7 +73,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 				}
 			}
 			else {
-				float delta = (next_keyframed + last_keyframed) / 2.0;
+				float delta = ((float)i2 - last_keyframed) / (next_keyframed - last_keyframed);
 				keyframes[i2][index].anim_matrix = interpolate(keyframes[last_keyframed][index].anim_matrix, keyframes[next_keyframed][index].anim_matrix, delta);
 			}
 		}

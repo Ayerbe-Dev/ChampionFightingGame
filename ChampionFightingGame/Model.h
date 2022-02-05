@@ -62,7 +62,7 @@ public:
 	~Model();
 	void load_model(string path);
 	void unload_model();
-
+	void set_bones(float frame, Animation3D* anim_kind);
     void render(Shader *shader);
 	vector<Texture> textures_loaded;
 	vector<Mesh> meshes;
@@ -75,14 +75,10 @@ public:
 	bool gamma_correct;
 	int vertex_count = 0;
 
-
 	int get_mesh_id(string mesh_name);
 	int get_bone_id(string bone_name);
-	void set_bones(float frame, Animation3D *anim_kind);
-
 private:
 	void load_skeleton(string path);
-
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
     vector<Texture> load_material_textures(aiMaterial* mat, aiTextureType type, string type_name);

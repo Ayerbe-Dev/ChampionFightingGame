@@ -147,12 +147,12 @@ void three_d_rendering_main(GameManager* game_manager) {
 			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
 		}		
 		if (player_info[1]->check_button_on(BUTTON_UP)) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
-		}
-		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
 			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
 		}
-		if (player_info[1]->check_button_trigger(BUTTON_RIGHT)) {
+		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
+			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+		}
+		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
 			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_LEFT)) {

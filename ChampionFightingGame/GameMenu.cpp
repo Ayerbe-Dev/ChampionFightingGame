@@ -9,12 +9,10 @@ void GameMenu::event_select_press(){};
 void GameMenu::event_back_press(){};
 void GameMenu::event_any_press() {};
 
-void GameMenu::process_background(SDL_Texture *background) {};
+void GameMenu::process_background() {};
 
 GameMenu::GameMenu() {
-	for (int i = 0; i < MAX_LAYERS; i++) {
-		background_layer[i] = nullptr;
-	}
+
 }
 
 void GameMenu::update_state(int game_state, int game_context) {

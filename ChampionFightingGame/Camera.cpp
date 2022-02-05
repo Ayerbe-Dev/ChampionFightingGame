@@ -10,10 +10,10 @@ void Camera::add_pos(float x, float y, float z, float speed) {
 	if (speed == 0.0) {
 		speed = cam_speed;
 	}
+	pos += front * z * speed;
+	pos += glm::normalize(glm::cross(front, up)) * x * speed;
 
-	pos.x += x * speed;
 	pos.y += y * speed;
-	pos.z += z * speed;
 	update_view();
 }
 

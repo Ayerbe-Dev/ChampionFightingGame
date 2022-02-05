@@ -22,7 +22,8 @@ public:
     GameTextureNew name_texture;
 
     MenuItem();
-    MenuItem(string texture_dir, string texture_description_dir  = "resource/ui/menu/main/missingno.png", int destination = 999);
+    void init(string texture_dir, string texture_description_dir  = "resource/ui/menu/main/missingno.png", int destination = 999);
+    void destroy();
 };
 
 class SubMenuTable {
@@ -37,11 +38,13 @@ public:
 
     SubMenuTable();
     SubMenuTable(int selection);
+    void destroy();
 };
 
 class MainMenu: public GameMenu{
 public:
     MainMenu();
+    ~MainMenu();
 
     void event_up_press();
     void event_down_press();
@@ -51,9 +54,8 @@ public:
     void event_back_press();
     void event_start_press();
 
-    void process_background(SDL_Texture *background);
+    void process_background();
 
-    void init();
     void render();
     void process_submenu_tables();
     SubMenuTable* sub_menu_tables[5];

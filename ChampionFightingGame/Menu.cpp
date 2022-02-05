@@ -27,16 +27,12 @@ void menu_main(GameManager* game_manager) {
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-
 	GameLoader* game_loader = new GameLoader(1);
 	SDL_Thread* loading_thread;
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
 
 	MainMenu main_menu;
-	main_menu.init();
 	SDL_LockMutex(file_mutex);
 	game_loader->loaded_items++;
 	SDL_UnlockMutex(file_mutex);
@@ -90,20 +86,12 @@ void menu_main(GameManager* game_manager) {
 		
 		game_manager->handle_menus();
 		main_menu.process_submenu_tables();
-
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-
 		main_menu.render();
 
-		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-
-//		SDL_RenderPresent(g_renderer);
 		SDL_GL_SwapWindow(g_window);
 
 		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
 			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {
-				game_manager->background[game_manager->layer] = pScreenTexture;
 				game_manager->game_substate_main[main_menu.sub_state](game_manager);
 			}
 			else {
@@ -115,14 +103,6 @@ void menu_main(GameManager* game_manager) {
 			}
 			main_menu.sub_state = GAME_SUBSTATE_NONE;
 		}
-	}
-
-	SKIP_RENDER:
-
-	SDL_DestroyTexture(pScreenTexture);
-
-	for (int i = 0; i < 5; i++) {
-		delete main_menu.sub_menu_tables[i];
 	}
 
 	delete game_loader;
@@ -211,11 +191,8 @@ void MainMenu::event_back_press() {
 	}
 }
 
-void MainMenu::process_background(SDL_Texture *background) {
-	SDL_SetRenderTarget(g_renderer, background);
-	SDL_RenderClear(g_renderer);
+void MainMenu::process_background() {
 	process_submenu_tables();
-	background_texture.render();
 	render();
 }
 
@@ -292,23 +269,19 @@ int get_sub_selection(int top_selection, int sub_selection) {
 }
 
 MainMenu::MainMenu(){
-	init();
-}
-
-void MainMenu::init(){
 	background_texture.init("resource/ui/menu/main/bg.png");
 
-	menu_items[0] = MenuItem("resource/ui/menu/main/Online.png");
-	menu_items[1] = MenuItem{"resource/ui/menu/main/Solo.png"};
-	menu_items[2] = MenuItem{"resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png"};
-	menu_items[3] = MenuItem{"resource/ui/menu/main/Options.png"};
-	menu_items[4] = MenuItem{"resource/ui/menu/main/Extras.png"};
+	menu_items[0].init("resource/ui/menu/main/Online.png");
+	menu_items[1].init("resource/ui/menu/main/Solo.png" );
+	menu_items[2].init("resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png" );
+	menu_items[3].init("resource/ui/menu/main/Options.png" );
+	menu_items[4].init("resource/ui/menu/main/Extras.png" );
 
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].destination = i;
 		sub_menu_tables[i] = new SubMenuTable(i);
 	}
-	
+
 	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
 	sub_menu_tables[SUB_MENU_ONLINE]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
 	sub_menu_tables[SUB_MENU_ONLINE]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
@@ -336,7 +309,15 @@ void MainMenu::init(){
 			sub_menu_tables[i]->sub_text[i2].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 		}
 	}
-};
+}
+
+MainMenu::~MainMenu() {
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destroy();
+		sub_menu_tables[i]->destroy();
+		delete sub_menu_tables[i];
+	}
+}
 
 void MainMenu::render() {
 	background_texture.render();
@@ -385,7 +366,7 @@ void MainMenu::process_submenu_tables() {
 }
 
 MenuItem::MenuItem() {}
-MenuItem::MenuItem(string texture_dir, string texture_description_dir, int destination) {
+void MenuItem::init(string texture_dir, string texture_description_dir, int destination) {
 	this->destination = destination;
 	name_texture.init(texture_dir);
 	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
@@ -395,6 +376,10 @@ MenuItem::MenuItem(string texture_dir, string texture_description_dir, int desti
 	image_texture.scale_bottom_percent(1.5, false);
 	image_texture.scale_right_percent(2.0, false);
 	image_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+}
+void MenuItem::destroy() {
+	name_texture.destroy();
+	image_texture.destroy();
 }
 
 SubMenuTable::SubMenuTable() {}
@@ -414,4 +399,12 @@ SubMenuTable::SubMenuTable(int selection) {
 
 	this->selection = selection;
 	selected_item = 0;
+}
+
+void SubMenuTable::destroy() {
+	table.destroy();
+	cursor.destroy();
+	for (int i = 0; i < item_count; i++) {
+		sub_text[i].destroy();
+	}
 }

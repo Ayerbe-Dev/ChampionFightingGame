@@ -9,8 +9,6 @@ extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 void title_screen_main(GameManager* game_manager) {
-	SDL_RenderClear(g_renderer);
-	SDL_RenderPresent(g_renderer);
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -81,7 +79,8 @@ void title_screen_main(GameManager* game_manager) {
 
 		SDL_GL_SwapWindow(g_window);
 	}
-//	SDL_DestroyTexture(pScreenTexture);
+
+
 
 	return game_manager->update_state(GAME_STATE_MENU);
 }
@@ -92,6 +91,14 @@ TitleScreen::TitleScreen() {
     title_l3.init("resource/ui/title/title-l3.png");
     title_l4.init("resource/ui/title/title-l4.png");
     text.init("resource/ui/title/Praeiudicium.png");
+}
+
+TitleScreen::~TitleScreen() {
+	title_l1.destroy();
+	title_l2.destroy();
+	title_l3.destroy();
+	title_l4.destroy();
+	text.destroy();
 }
 
 void TitleScreen::render(){

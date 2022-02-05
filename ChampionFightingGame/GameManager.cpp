@@ -18,8 +18,6 @@ GameManager::GameManager() {
 	prev_game_context = new int;
 	for (int i = 0; i < MAX_LAYERS; i++) {
 		looping[i] = new bool;
-		background[i] = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetTextureBlendMode(background[i], SDL_BLENDMODE_BLEND);
 	}
 
 	*game_state = GAME_STATE_DEBUG_MENU;
@@ -37,7 +35,6 @@ GameManager::~GameManager() {
 	delete prev_game_context;
 	for (int i = 0; i < MAX_LAYERS; i++) {
 		delete looping[i];
-		SDL_DestroyTexture(background[i]);
 	}
 }
 

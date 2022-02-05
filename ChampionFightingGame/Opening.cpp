@@ -89,5 +89,7 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 		SDL_GL_SwapWindow(g_window);
 	}
 
+	titleSplash.destroy();
+	textSplash.destroy();
 	return true;
 }

@@ -24,6 +24,6 @@ public:
 	OptionsOverlay();
 	OptionsOverlay(int width, int height, string dir);
 
-	GameTexture panel;
+	GameTextureNew panel;
 	PlayerInfo* player_info[2];
 };

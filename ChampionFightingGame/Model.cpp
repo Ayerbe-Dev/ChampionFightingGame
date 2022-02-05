@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <gtx/string_cast.hpp>
 using namespace glm;
 
 Mesh::Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name) {
@@ -48,7 +49,7 @@ void Mesh::render(Shader *shader) {
 	}
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 Model::Model(string path) {
@@ -69,11 +70,15 @@ int Model::get_mesh_id(string mesh_name) {
 }
 
 int Model::get_bone_id(string bone_name) {
+	if (bone_name == "model-armature") { //DAE refers to this bone is blender_implicit, FBX refers to it as model-armature
+		return 0;
+	}
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].name == bone_name) {
 			return i;
 		}
 	}
+	cout << "ERROR: Couldn't find " << bone_name << endl;
 	return -1;
 }
 
@@ -128,9 +133,17 @@ void Model::load_model(string path) {
 		}
 		else {
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
-			bones[i].parent_rest_matrix = &bones[bones[i].parent_id].transform_matrix;
+			bones[i].parent_rest_matrix = &bones[bones[i].parent_id].anim_rest_matrix;
 		}
 	}
+
+	int trans_index = get_bone_id("Trans");
+	int rot_index = get_bone_id("Rot");
+
+	bones[trans_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
+	bones[trans_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
+	bones[rot_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
+	bones[rot_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
 }
 
 void Model::unload_model() {
@@ -150,10 +163,10 @@ void Model::unload_model() {
 }
 
 void Model::render(Shader* shader) {
+	glDepthMask(GL_TRUE);
 	for (int i = 0; i < bones.size(); i++) {
 		shader->set_mat4("bone_matrix[" + to_string(i) + "]", bones[i].final_matrix);
 	}
-	glDepthMask(GL_TRUE);
 	for (unsigned int i = 0; i < meshes.size(); i++) {
 		meshes[i].render(shader);
 	}
@@ -168,7 +181,7 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 	vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
-	for (int i = 0; i < keyframes.size(); i++) { //Iterate through all bones
+	for (int i = 2; i < keyframes.size(); i++) { //Iterate through all bones
 
 		//Calculate the difference in offset between the current frame and the next frame, then multiply said difference by the decimal place. This will
 		//allow us to interpolate between non-integer keyframes, so if our frame is 3.5, for example, a bone will be halfway between its frame 3 and 4
@@ -180,10 +193,13 @@ void Model::set_bones(float frame, Animation3D *anim_kind) {
 		//parent, we don't need to worry about populating the entire bone vector before making this calc, the spot we're actually looking at is going
 		//to be filled by the time we look at it.
 
-//		bones[i].anim_matrix = *bones[i].parent_matrix * *bones[i].parent_rest_matrix * keyframes[i].anim_matrix;
-//		bones[i].final_matrix = bones[i].anim_matrix * bones[i].transform_matrix;
-		bones[i].anim_matrix = keyframes[i].anim_matrix * *bones[i].parent_matrix;
-		bones[i].final_matrix = bones[i].anim_matrix;
+		//Bad rotation
+
+//		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+//		bones[i].final_matrix = bones[i].anim_matrix;
+
+		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix; //parentTransform * nodeTransform
+		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform; //globalTransformation * offset
 	}
 }
 
@@ -273,7 +289,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 
 			bone.anim_matrix = anim_matrix;
-			bone.anim_rest_matrix = inverse(anim_matrix);
+			bone.anim_rest_matrix = anim_matrix;
 			bone.model_matrix = model_matrix;
 			bone.transform_matrix = inverse(model_matrix);
 			aiVector3D base_pos(0.0, 0.0, 0.0); 
@@ -286,7 +302,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.rot.x = base_rot.x;
 			bone.rot.y = base_rot.y;
 			bone.rot.z = base_rot.z;
-			if (bone.rot != vec3(0.0)) {
+			if (bone.rot != quat(0.0, 0.0, 0.0, 0.0)) {
 				bone.rot = normalize(bone.rot);
 			}
 			bone.scale.x = base_scale.x;
@@ -309,8 +325,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 				}
 			}
 
-			this->bones[bone.id] = bone; //This keeps the model's bone coords up to date by grabbing that data once we can find it. Probably could be
-			//optimized since there's no check to make sure the bone is empty, but fixing that is a pretty low priority rn
+			this->bones[bone.id] = bone;
 		}
 	}
 

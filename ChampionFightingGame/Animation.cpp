@@ -8,6 +8,8 @@
 #include "Animation.h"
 #include "Model.h"
 #include <gtx/euler_angles.hpp>
+#include <gtx/quaternion.hpp>
+#include <gtx/matrix_interpolation.hpp>
 extern SDL_Renderer* g_renderer;
 
 Animation::Animation() {};
@@ -16,74 +18,65 @@ Animation3D::Animation3D() {}
 
 Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 	this->name = anim_kind;
-	ifstream smd;
-	smd.open(anim_dir);
-	if (smd.fail()) {
-		cout << "Failed to open SMD!" << endl;
-		smd.close();
+
+
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile(anim_dir, aiProcess_Triangulate);
+
+	if (!scene) {
+		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
 		return;
 	}
 
-	string filler;
-	getline(smd, filler);
-	getline(smd, filler);
-
-	int bone_id;
-	string bone_name;
-	int parent_id;
-
+	length = scene->mAnimations[0]->mDuration;
 	vector<Bone> base_bones;
 
-	while (smd >> bone_id) { //Eventually smd will try to fit the string "end" into the int bone_id. When this fails, we're at the end.
-		smd >> bone_name >> parent_id;
-		bone_name = Filter(bone_name, "\"");
+	for (int i = 0; i < model->bones.size(); i++) {
 		Bone new_bone;
-		new_bone.id = bone_id;
-		new_bone.name = bone_name;
-		new_bone.parent_id = parent_id;
+		new_bone.id = model->bones[i].id;
+		new_bone.name = model->bones[i].name;
+		new_bone.parent_id = model->bones[i].parent_id;
+		new_bone.anim_matrix = mat4(1.0);
 		base_bones.push_back(new_bone);
 	}
-	smd.clear();
 
-	smd >> filler >> filler;
-	while (smd >> filler) { //Until we hit the end of the file, we'll read each string of the file
-		if (filler == "end") { //If we just read in "end", we reached the end of the file. Thanks Valve.
-			this->length = keyframes.size();
-			smd.close();
-			return;
+	for (int i = 0; i <= length; i++) {
+		keyframes.push_back(base_bones);
+	}
+		
+	for (int i = 0; i < scene->mAnimations[0]->mNumChannels; i++) {
+		aiNodeAnim* node = scene->mAnimations[0]->mChannels[i];
+		int index = model->get_bone_id(node->mNodeName.C_Str());
+		for (int i2 = 0; i2 < node->mNumPositionKeys; i2++) { //Load the keyframes that are actually baked
+			mat4 pos_mat = translate(mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
+			mat4 rot_mat = toMat4(normalize(ass_converter(node->mRotationKeys[i2].mValue)));
+			mat4 scale_mat = scale(mat4(1.0), ass_converter(node->mScalingKeys[i2].mValue));
+			keyframes[node->mPositionKeys[i2].mTime][index].anim_matrix = pos_mat * rot_mat * scale_mat;
+			keyframes[node->mPositionKeys[i2].mTime][index].keyframed = true;
 		}
-		int frame;
-		smd >> frame; //Each frame declaration begins with "Time X". If filler wasn't end, it will be time, so the next thing smd reads will be the
-		//frame.
-		vector<Bone> new_vec = base_bones;
-		while (smd >> bone_id) { //When it tries to read "Time" as an int, this will fail
-//			mat4 matrix = model->bones[bone_id].model_matrix;
-			mat4 matrix(1.0);
-			vec3 pos(0.0);
-			vec3 rot(0.0);
-			vec3 smd_scale(1.0);
 
-			smd >> pos.z >> pos.x >> pos.y >> rot.x >> rot.y >> rot.z; //Read in the contents of the line
+		int last_keyframed = 0;
+		int next_keyframed = 1;
+		for (int i2 = 0; i2 < length; i2++) { //Interpolate to find all of the keyframes that aren't baked
+			if (keyframes[i2][index].keyframed) {
+				//If we find a keyframe that was already baked, set this to our last baked keyframe, then search for the next one after this and 
+				//mark that as the next baked keyframe.
 
-			pos = vec3(0.0);
-			rot = vec3(0.0);
-			matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
-			matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
-			matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
-			matrix = translate(matrix, pos);
-			matrix = scale(matrix, smd_scale);
+				//This approach means that we won't look for the next keyframe until we've found the current one, avoiding unnecessary recalculations
 
-			Bone new_bone = base_bones[bone_id];
-
-			new_bone.anim_matrix = matrix;
-			new_bone.keyframed = true;
-			new_bone.pos = model->bones[bone_id].pos;
-			new_bone.rot = model->bones[bone_id].rot;
-			new_bone.scale = model->bones[bone_id].scale;
-			new_vec[bone_id] = new_bone;
+				last_keyframed = i2;
+				for (int i3 = last_keyframed + 1; i3 <= length; i3++) {
+					if (keyframes[i3][index].keyframed) {
+						next_keyframed = i3;
+						break;
+					}
+				}
+			}
+			else {
+				float delta = (next_keyframed + last_keyframed) / 2.0;
+				keyframes[i2][index].anim_matrix = interpolate(keyframes[last_keyframed][index].anim_matrix, keyframes[next_keyframed][index].anim_matrix, delta);
+			}
 		}
-		smd.clear();
-		keyframes.push_back(new_vec);
 	}
 }
 

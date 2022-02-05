@@ -15,6 +15,7 @@ using namespace std;
 #include "GameTexture.h"
 using namespace glm;
 #include <assimp/scene.h>
+#include <gtx/quaternion.hpp>
 
 
 typedef char i8;
@@ -96,6 +97,9 @@ void updateGameSettings();
 int round_up_odd(int val);
 mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
 aiMatrix4x4 glm_to_assimp(const mat4& from);
+mat4 ass_converter(const aiMatrix4x4& from);
+vec3 ass_converter(const aiVector3D& from);
+quat ass_converter(const aiQuaternion& from);
 vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle);
 
 /*

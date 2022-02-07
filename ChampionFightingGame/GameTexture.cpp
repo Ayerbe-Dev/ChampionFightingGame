@@ -27,6 +27,7 @@ GameTextureNew::GameTextureNew(const GameTextureNew& that) {
 		tex_accessor[i] = &tex_data[i];
 	}
 	attach_shader(&g_rendermanager.default_2d_shader);
+	shader->use();
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -74,6 +75,7 @@ void GameTextureNew::init(string path) {
 	}
 
 	attach_shader(&g_rendermanager.default_2d_shader);
+	shader->use();
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -193,8 +195,8 @@ vec3 GameTextureNew::get_pos_vacuum(GameTextureNew *that) {
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT):
 		{
-			pos.y *= -1.0;
 			pos.x -= WINDOW_WIDTH - width;
+			pos.y *= -1.0;
 			pos.y += WINDOW_HEIGHT - height_post_scale;
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE):
@@ -225,7 +227,7 @@ vec3 GameTextureNew::get_pos_vacuum(GameTextureNew *that) {
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
 		{
-			pos.y -= WINDOW_HEIGHT - height;
+			pos.y += WINDOW_HEIGHT - height;
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
 		{
@@ -246,7 +248,7 @@ vec3 GameTextureNew::get_pos_vacuum(GameTextureNew *that) {
 		{
 			pos.y -= WINDOW_HEIGHT - height_post_scale;
 			pos.y *= -1.0;
-			pos.x -= WINDOW_WIDTH - width;
+			pos.x += WINDOW_WIDTH - width;
 
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE):
@@ -409,6 +411,10 @@ void GameTextureNew::set_width(int new_width) {
 	update_buffer_data();
 }
 
+void GameTextureNew::set_width_scale(float scale) {
+	width *= scale;
+}
+
 void GameTextureNew::set_height(int new_height) {
 	float old_height_scale = (float)height / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
@@ -420,6 +426,10 @@ void GameTextureNew::set_height(int new_height) {
 	}
 	height = new_height;
 	update_buffer_data();
+}
+
+void GameTextureNew::set_height_scale(float scale) {
+	height *= scale;
 }
 
 int GameTextureNew::get_width() {
@@ -464,7 +474,9 @@ void GameTextureNew::set_bottom_target(float percent, float max_change) {
 
 void GameTextureNew::set_target_pos(vec3 target_pos, float frames) {
 	this->target_pos = target_pos;
-	this->target_pos_max_change = distance(target_pos, pos) / vec3(frames);
+	this->target_pos_max_change.x = distance(target_pos.x, pos.x) / frames;
+	this->target_pos_max_change.y = distance(target_pos.y, pos.y) / frames;
+	this->target_pos_max_change.z = distance(target_pos.z, pos.z) / frames;
 }
 
 void GameTextureNew::set_alpha(unsigned char alpha) {

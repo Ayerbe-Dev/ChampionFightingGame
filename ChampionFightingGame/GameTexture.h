@@ -81,7 +81,9 @@ public:
     void scale_all_percent(float percent, bool crop = true);
 
     void set_width(int new_width);
+    void set_width_scale(float scale);
     void set_height(int new_height);
+    void set_height_scale(float scale);
     int get_width();
     int get_height();
 

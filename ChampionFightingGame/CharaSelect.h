@@ -44,6 +44,7 @@ private:
 class CSS: public GameMenu{
 public:
     CSS();
+    ~CSS();
     int load_css();
     void add_slot(int id, string cardDir, string cardName);
     int get_num_slots();
@@ -58,7 +59,6 @@ public:
     
     void render();
 
-    void query_fixed_css_slot_pos(int index, int* x_ret, int* y_ret);
     int get_chara_kind(int player_id);
     void select_slot();
     void find_prev_chara_kind(int chara_kind);
@@ -76,6 +76,7 @@ public:
     GameTextureNew mobile_css_slots[2];
     bool mobile_slots_active[2] = { false };
     CssSlot chara_slots[CSS_SLOTS];
+    CssCursor cursors[2];
 private:
     GameTextureNew background_texture;
     GameTextureNew big_bar_texture;

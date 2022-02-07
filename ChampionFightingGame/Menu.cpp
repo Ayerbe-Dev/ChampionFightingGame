@@ -366,7 +366,7 @@ MenuItem::MenuItem() {}
 void MenuItem::init(string texture_dir, string texture_description_dir, int destination) {
 	this->destination = destination;
 	name_texture.init(texture_dir);
-	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 	name_texture.scale_all_percent(2.0, false);
 	image_texture.init(texture_description_dir);
 	image_texture.scale_top_percent(1.5, false);
@@ -389,7 +389,7 @@ SubMenuTable::SubMenuTable(int selection) {
 	table.scale_bottom_percent(1.2, false);
 
 	cursor.init("resource/ui/menu/main/Cursor.png");
-	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT);
+	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 	cursor.set_pos(vec3(700.0, 0.0, 0.0));
 	cursor.set_width(50);
 	cursor.set_height(50);

@@ -60,9 +60,10 @@ class GameTextureNew {
 public:
     GameTextureNew();
     GameTextureNew(string path);
+    GameTextureNew(const GameTextureNew& that);
     ~GameTextureNew();
     void init(string path);
-    void destroy();
+    void destroy(bool destroy_texture = true);
 
     void set_pos(vec3 pos);
     void add_pos(vec3 pos);
@@ -70,6 +71,8 @@ public:
     void add_rot(vec3 rot);
     void set_orientation(int orientation);
     void attach_shader(Shader* shader);
+
+    vec3 get_pos_vacuum(int orientation);
 
     void scale_left_percent(float percent, bool crop = true);
     void scale_right_percent(float percent, bool crop = true);
@@ -86,6 +89,8 @@ public:
     void set_right_target(float percent, float max_change);
     void set_top_target(float percent, float max_change);
     void set_bottom_target(float percent, float max_change);
+
+    void set_target_pos(vec3 target, float frames);
 
     void set_alpha(unsigned char alpha);
 
@@ -105,6 +110,9 @@ public:
     float target_top_max_change = 0.0;
     float target_bottom_max_change = 0.0;
 
+    vec3 target_pos = vec3(0.0);
+    vec3 target_pos_max_change = vec3(0.0);
+    
     unsigned char alpha = 255;
 
     Shader *shader;

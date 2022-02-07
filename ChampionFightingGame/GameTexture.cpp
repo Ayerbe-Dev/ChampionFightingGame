@@ -11,6 +11,53 @@ GameTextureNew::GameTextureNew(string path) {
 	init(path);
 }
 
+/// <summary>
+/// Copy constructor for GameTextureNew. Creates another instance of a GameTexture which uses the same texture data as the original.
+/// Note: Do NOT use this unless both instances of the GameTexture will be rendered, otherwise you will waste memory.
+/// </summary>
+/// <param name="that"></param>
+GameTextureNew::GameTextureNew(const GameTextureNew& that) {
+	pos = vec3(0.0, 0.0, 0.0);
+	rot = vec3(0.0, 0.0, 0.0);
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { vec3(-1.0, -1.0, 0.0), vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { vec3(1.0, -1.0, 0.0), vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { vec3(1.0, 1.0, 0.0), vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { vec3(-1.0, 1.0, 0.0), vec2(0.0, 1.0) };
+	for (int i = 0; i < 4; i++) {
+		tex_accessor[i] = &tex_data[i];
+	}
+	attach_shader(&g_rendermanager.default_2d_shader);
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)offsetof(GameTextureCoord, tex_coord));
+	glEnableVertexAttribArray(1);
+
+	texture = that.texture;
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	width = that.width;
+	height = that.height;
+	float width_scale = (float)width / (float)WINDOW_WIDTH;
+	float height_scale = (float)height / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x *= width_scale;
+		tex_data[i].pos.y *= height_scale;
+	}
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	shader->set_int("f_texture", 0);
+}
+
 GameTextureNew::~GameTextureNew() {
 
 }
@@ -76,10 +123,12 @@ void GameTextureNew::init(string path) {
 	shader->set_int("f_texture", 0);
 }
 
-void GameTextureNew::destroy() {
+void GameTextureNew::destroy(bool destroy_texture) {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteTextures(1, &texture);
+	if (destroy_texture) {
+		glDeleteTextures(1, &texture);
+	}
 }
 
 void GameTextureNew::set_pos(vec3 pos) {
@@ -106,6 +155,112 @@ void GameTextureNew::set_orientation(int orientation) {
 
 void GameTextureNew::attach_shader(Shader* shader) {
 	this->shader = shader;
+}
+
+vec3 GameTextureNew::get_pos_vacuum(int orientation) {
+	vec3 pos = this->pos;
+	float width_post_scale = this->width * (this->tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + this->tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x);
+	float height_post_scale = this->height * (this->tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y + this->tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y);
+	switch (this->orientation) {
+		default:
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE):
+		{
+
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT):
+		{
+			pos.x -= WINDOW_WIDTH - width;
+			pos.y -= WINDOW_HEIGHT - height;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
+		{
+			pos.y -= WINDOW_HEIGHT - height;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
+		{
+			pos.x *= -1.0;
+			pos.x += WINDOW_WIDTH - width_post_scale;
+			pos.y -= WINDOW_HEIGHT - height;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT):
+		{
+			pos.x -= WINDOW_WIDTH - width;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT):
+		{
+			pos.x *= -1.0;
+			pos.x += WINDOW_WIDTH - width_post_scale;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT):
+		{
+			pos.y *= -1.0;
+			pos.x -= WINDOW_WIDTH - width;
+			pos.y += WINDOW_HEIGHT - height_post_scale;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE):
+		{
+			pos.y *= -1.0;
+			pos.y += WINDOW_HEIGHT - height_post_scale;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT):
+		{
+			pos.x *= -1.0;
+			pos.y *= -1.0;
+			pos.x += WINDOW_WIDTH - width_post_scale;
+			pos.y += WINDOW_HEIGHT - height_post_scale;
+		} break;
+	} //Translate from the actual orientation to its middle-oriented equivalent
+	switch (orientation) {
+		default:
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE):
+		{
+
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT):
+		{
+			pos.x += WINDOW_WIDTH - width;
+			pos.y += WINDOW_HEIGHT - height;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
+		{
+			pos.y -= WINDOW_HEIGHT - height;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
+		{
+			pos.x -= WINDOW_WIDTH - width_post_scale;
+			pos.x *= -1.0;
+			pos.y += WINDOW_HEIGHT - height;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT):
+		{
+			pos.x += WINDOW_WIDTH - width;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT):
+		{
+			pos.x -= WINDOW_WIDTH - width_post_scale;
+			pos.x *= -1.0;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT):
+		{
+			pos.y -= WINDOW_HEIGHT - height_post_scale;
+			pos.y *= -1.0;
+			pos.x -= WINDOW_WIDTH - width;
+
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE):
+		{
+			pos.y -= WINDOW_HEIGHT - height_post_scale;
+			pos.y *= -1.0;
+		} break;
+		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT):
+		{
+			pos.x -= WINDOW_WIDTH - width_post_scale;
+			pos.y -= WINDOW_HEIGHT - height_post_scale;
+			pos.x *= -1.0;
+			pos.y *= -1.0;
+		} break;
+	} //Translate from there to the new orientation
+	return pos;
 }
 
 void GameTextureNew::scale_left_percent(float percent, bool crop) {
@@ -305,6 +460,11 @@ void GameTextureNew::set_bottom_target(float percent, float max_change) {
 	this->target_bottom_max_change = max_change;
 }
 
+void GameTextureNew::set_target_pos(vec3 target_pos, float frames) {
+	this->target_pos = target_pos;
+	this->target_pos_max_change = distance(target_pos, pos) / vec3(frames);
+}
+
 void GameTextureNew::set_alpha(unsigned char alpha) {
 	this->alpha = alpha;
 }
@@ -437,6 +597,41 @@ void GameTextureNew::render() {
 		}
 		else {
 			target_right_max_change = 0.0;
+		}
+	}
+	if (target_pos_max_change != vec3(0.0)) {
+		if (target_pos_max_change.x != 0.0) {
+			if (target_pos.x > pos.x) {
+				pos.x = clampf(pos.x, pos.x + target_pos_max_change.x, target_pos.x);
+			}
+			else if (target_pos.x < pos.x) {
+				pos.x = clampf(target_pos.x, pos.x - target_pos_max_change.x, pos.x);
+			}
+			else {
+				target_pos_max_change.x = 0.0;
+			}
+		}
+		if (target_pos_max_change.y != 0.0) {
+			if (target_pos.y > pos.y) {
+				pos.y = clampf(pos.y, pos.y + target_pos_max_change.y, target_pos.y);
+			}
+			else if (target_pos.y < pos.y) {
+				pos.y = clampf(target_pos.y, pos.y - target_pos_max_change.y, pos.y);
+			}
+			else {
+				target_pos_max_change.y = 0.0;
+			}
+		}
+		if (target_pos_max_change.z != 0.0) {
+			if (target_pos.z > pos.z) {
+				pos.z = clampf(pos.z, pos.z + target_pos_max_change.z, target_pos.z);
+			}
+			else if (target_pos.z < pos.z) {
+				pos.z = clampf(target_pos.z, pos.z - target_pos_max_change.z, pos.z);
+			}
+			else {
+				target_pos_max_change.z = 0.0;
+			}
 		}
 	}
 	float width_post_scale = width * (tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x);

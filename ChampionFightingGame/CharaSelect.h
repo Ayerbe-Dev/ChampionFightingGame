@@ -28,32 +28,6 @@ public:
     string name = "";
 };
 
-class CssSlotMobile {
-public:
-    GameTextureNew texture;
-    void play_anim();
-
-    /*
-        Sets the glide target
-        \param x the x target
-        \param y the y target
-        \param w the starting width
-        \param h the starting height
-    */
-    void set_target(int x, int y, float w, float h);
-private:
-    int anim_speed = 16;
-    int target_x = 0;
-    int target_y = 0;
-    float pos_x = 0;
-    float pos_y = 0;
-    float theta = 0;
-    int anim_time = 0;
-    float scale = .2;
-    float scale_x = 0;
-    float scale_y = 0;
-};
-
 class CssCursor{
 public:
     void init(string texture_dir);
@@ -99,7 +73,8 @@ public:
     int cols_offset;
 
     PlayerInfo *player_info[2];
-    CssSlotMobile mobile_css_slots[2];
+    GameTextureNew mobile_css_slots[2];
+    bool mobile_slots_active[2] = { false };
     CssSlot chara_slots[CSS_SLOTS];
 private:
     GameTextureNew background_texture;

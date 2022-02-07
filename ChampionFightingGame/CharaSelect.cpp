@@ -48,7 +48,7 @@ void chara_select_main(GameManager* game_manager) {
 			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
 		}
 		else {
-			css.mobile_css_slots[i].texture = css.chara_slots[i].texture;
+			css.mobile_css_slots[i] = css.chara_slots[i].texture;
 		}
 	}
 
@@ -150,8 +150,6 @@ int CSS::load_css() {
 	int chara_kind;
 	string resource_dir;
 	bool selectable;
-	CssSlot* tmpSlot;
-	int iRowXdelta = 0;
 
 	if (css_file.fail()) {
 		css_file.close();
@@ -190,51 +188,20 @@ int CSS::load_css() {
 	for (int i = 0; i < num_slots; i++) {
 		if (chara_slots[i].my_row == num_rows && num_cols != NUM_COLS) {
 			chara_slots[i].my_col += (cols_offset / 2);
-			
+			chara_slots[i].texture.set_pos(vec3(
+				((WINDOW_WIDTH - (WINDOW_WIDTH / 10) * num_slots % 10 - (WINDOW_WIDTH / 10)) / 2) + chara_slots[i].my_col * (WINDOW_WIDTH / 10),
+				chara_slots[i].my_row * chara_slots[i].texture.get_height() * 2.1 + 140,
+				0
+			));
 		}
 		else {
 			chara_slots[i].texture.set_pos(vec3(
 				chara_slots[i].my_col * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20),
-				chara_slots[i].my_row * chara_slots[i].texture.get_height() * 1.2 + 20, 
+				chara_slots[i].my_row * chara_slots[i].texture.get_height() * 2.1 + 140, 
 				0
 			));
 		}
 	}
-
-	//for (int iRow = 1; iRow < 4; iRow++) {
-	//	//Following line checks if the row is filled (the tenth item in the row is filled)
-	//	if (chara_slots[iRow * 10 - 1].is_initialized()) {
-	//		//row filled code
-	//		for (int iColumn = 0; iColumn < 10; iColumn++) {
-	//			tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-	//			tmpSlot->texture.scale_all_percent(1.2, false);
-	//			/*
-	//				(WINDOW_WIDTH/10) is for the spacing between the cards
-	//				(WINDOW_WIDTH/20) is for the offset to center the row, it should always be 1/2 the previous one
-	//			*/
-
-	//			tmpSlot->set_x_pos(iColumn * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20));
-	//			tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
-	//		}
-	//	}
-	//	else {
-	//	 //row not filled code
-	//		for (int iColumn = 0; iColumn < get_num_slots() % 10; iColumn++) {
-	//			tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-	//			tmpSlot->texture.scale_all_percent(1.2, false);
-	//			/*
-	//				Basically.....
-	//				Calculate the difference in x positions of the first and last card as iRowXdelta
-	//				Divide iRowXdelta by 2 and subtract the WINDOW_WIDTH by iRowXdelta to get the starting point
-	//				from which to render the row.
-	//			*/
-	//			iRowXdelta = (WINDOW_WIDTH / 10) * (get_num_slots() % 10) - (WINDOW_WIDTH / 10); //yes this gets recalculated every frame, no im not moving it
-	//			tmpSlot->set_x_pos(((WINDOW_WIDTH - iRowXdelta) / 2) + iColumn * (WINDOW_WIDTH / 10));
-	//			tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
-	//		}
-	//		break;
-	//	}
-	//}
 
 	return 0;
 }
@@ -267,24 +234,28 @@ int CSS::get_num_slots() {
 void CSS::event_select_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		player_info[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
-		CssSlotMobile tmpSlot;
-		tmpSlot.texture = chara_slots[player_selected_index[player_id]].texture;
+		mobile_css_slots[player_id] = GameTextureNew(chara_slots[player_selected_index[player_id]].texture);
+
+		mobile_css_slots[player_id].set_width(190);
+		mobile_css_slots[player_id].set_height(280);
 
 		if (player_id) {
-			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+			mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT));
 		}
 		else {
-			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+			mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT));
 		}
-		tmpSlot.texture.set_pos(vec3(117, 906, 0));
-		tmpSlot.texture.scale_all_percent(1.5, false);
-		mobile_css_slots[player_id] = tmpSlot;
+
+		mobile_css_slots[player_id].set_target_pos(vec3(40, 70, 0), 16.0);
+		mobile_slots_active[player_id] = true;
 	}
 }
 void CSS::event_back_press() {
 	if (player_info[player_id]->chara_kind != CHARA_KIND_MAX) {
-		CssSlotMobile tmpSlot;
-		mobile_css_slots[player_id] = tmpSlot;
+		mobile_slots_active[player_id] = false;
+		mobile_css_slots[player_id].destroy(false);
 		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
@@ -304,7 +275,7 @@ void CSS::event_start_press() {
 
 void CSS::event_right_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]]->is_initialized()) {
+		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]++;
 		}
 		is_last_input_right[player_id] = true;
@@ -314,7 +285,7 @@ void CSS::event_right_press() {
 
 void CSS::event_left_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]]->is_initialized()) {
+		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]--;
 		}
 		is_last_input_right[player_id] = false;
@@ -326,12 +297,12 @@ void CSS::event_down_press() {
 	bool jump = false;
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] < num_rows) {
-			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1]->is_initialized()) {
+			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1] == nullptr) {
 				jump = true;
 				bool valid_col = false;
 				if (my_col[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (chara_slots_ordered[i][my_row[player_id] + 1]->is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] + 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -340,7 +311,7 @@ void CSS::event_down_press() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (chara_slots_ordered[i][my_row[player_id] + 1]->is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] + 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -375,12 +346,12 @@ void CSS::event_up_press() {
 	bool jump = false;
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] != 0) {
-			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1]->is_initialized()) {
+			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1] == nullptr) {
 				jump = true;
 				bool valid_col = false;
 				if (my_col[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (chara_slots_ordered[i][my_row[player_id] - 1]->is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] - 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -389,7 +360,7 @@ void CSS::event_up_press() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (chara_slots_ordered[i][my_row[player_id] - 1]->is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] - 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -449,18 +420,19 @@ void CSS::render() {
 
 	for (int i = 0; i < 2; i++) {
 		CssSlot tmpSlot;
-		tmpSlot.texture = chara_slots[player_selected_index[i]].texture;
+		tmpSlot.texture = GameTextureNew(chara_slots[player_selected_index[i]].texture);
 		tmpSlot.name = chara_slots[player_selected_index[i]].name;
 		tmpSlot.texture_dir = chara_slots[player_selected_index[i]].texture_dir;
 
 		if (i) {
-			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 		}
 		else {
-			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 		}
-		tmpSlot.texture.set_pos(vec3(117, 906, 0));
-		tmpSlot.texture.scale_all_percent(1.5);
+		tmpSlot.texture.set_pos(vec3(40, 70, 0));
+		tmpSlot.texture.set_width(190);
+		tmpSlot.texture.set_height(280);
 		tmpSlot.texture.set_alpha((Uint8)127);
 		tmpSlot.texture.render();
 		tmpSlot.texture.set_alpha((Uint8)255);
@@ -468,10 +440,10 @@ void CSS::render() {
 //			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.texture.destRect.x, tmpSlot.texture.destRect.y + 70, 24, 255, 255, 255, 255);
 		}
 
-		if (player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			mobile_css_slots[i].play_anim();
+		if (mobile_slots_active[i]) {
+			mobile_css_slots[i].render();
 		}
-		mobile_css_slots[i].texture.render();
+		tmpSlot.texture.destroy(false);
 	}
 }
 
@@ -635,52 +607,4 @@ void CssCursor::init(string texture_path) {
 void CssCursor::set_target(int x, int y) {
 	target_x = x;
 	target_y = y;
-}
-
-/// <summary>
-/// Spaghetti code which makes it rotate once.
-/// </summary>
-void CssSlotMobile::play_anim() {
-	//spaghetti code which makes it rotate once
-	anim_time++;
-	if (cos(theta) < 0) {
-		theta = -3.14 / 2;
-	}
-	if (anim_time < anim_speed) {
-		theta += (3.14) / anim_speed;
-		texture.scale_left_percent(cos(theta) + scale_x);
-		texture.scale_right_percent(cos(theta) + scale_x);
-		texture.scale_top_percent(scale_y);
-		texture.scale_bottom_percent(scale_y);
-	}
-	else {
-		texture.scale_all_percent(1.5);
-	}
-
-	scale_y += (1.5 - scale_y) / (anim_speed / 3);
-	scale_x += (0 - scale_x) / (anim_speed / 3);
-	pos_x += (target_x - pos_x) / (anim_speed / 2);
-	pos_y += (target_y - pos_y) / (anim_speed / 2);
-
-	texture.pos.x = pos_x;
-	texture.pos.y = pos_y;
-
-}
-
-/// <summary>
-/// Set the Mobile CSS Slot's target.
-/// </summary>
-/// <param name="x">: The target X position.</param>
-/// <param name="y">: The target Y position.</param>
-/// <param name="w">: The intended width of the slot.</param>
-/// <param name="h">: The intended height of the slot.</param>
-void CssSlotMobile::set_target(int x, int y, float w, float h) {
-	target_x = x;
-	target_y = y;
-
-	pos_x = texture.pos.x;
-	pos_y = texture.pos.y;
-
-	scale_x = w - 1.5;
-	scale_y = h;
 }

@@ -9,7 +9,7 @@ void chara_select_main(GameManager *game_manager);
 
 class CssSlot {
 public:
-    GameTexture texture;
+    GameTextureNew texture;
     bool is_initialized();
     void init(int id, string textureDir, string name);
     void set_x_pos(int x);
@@ -30,7 +30,7 @@ public:
 
 class CssSlotMobile {
 public:
-    GameTexture texture;
+    GameTextureNew texture;
     void play_anim();
 
     /*
@@ -59,7 +59,7 @@ public:
     void init(string texture_dir);
     void set_target(int x, int y);
     void render();
-    GameTexture texture;
+    GameTextureNew texture;
     int target_x = 0;
     int target_y = 0;
 private:
@@ -99,12 +99,12 @@ public:
     int cols_offset;
 
     PlayerInfo *player_info[2];
-private:
     CssSlotMobile mobile_css_slots[2];
-    GameTexture background_texture;
-    GameTexture big_bar_texture;
-    GameTexture top_bar_texture;
     CssSlot chara_slots[CSS_SLOTS];
+private:
+    GameTextureNew background_texture;
+    GameTextureNew big_bar_texture;
+    GameTextureNew top_bar_texture;
     CssSlot chara_slots_ordered[10][4];
     bool is_last_input_right[2]{ false };
 };

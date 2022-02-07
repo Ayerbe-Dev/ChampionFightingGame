@@ -20,99 +20,64 @@ void chara_select_main(GameManager* game_manager) {
 	Debugger debugger;
 	debugger = Debugger();
 
-
-	CharaSelectLoader* chara_select_loader = new CharaSelectLoader;
-	chara_select_loader->player_info[0] = player_info[0];
-	chara_select_loader->player_info[1] = player_info[1];
-
-
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	bool loading = true;
-
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-
+	GameLoader* game_loader = new GameLoader(3);
+	SDL_Thread* loading_thread;
+	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
+	
 	CSS css;
 	CssCursor cursors[2];
 
-	SDL_Thread* loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadCharaSelect, "Init.rar", (void*)chara_select_loader);
-	SDL_DetachThread(loading_thread);
-
-	game_manager->set_menu_info(nullptr);
-
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-
-	while (loading) {
-		frameTimeDelay();
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return game_manager->update_state(GAME_STATE_CLOSE);
-					return;
-				}
-				break;
-			}
+	css.player_info[0] = player_info[0];
+	css.player_info[1] = player_info[1];
+	if (css.load_css()) {
+		displayLoadingScreen();
+		player_info[0]->crash_reason = "Could not open CSS file!";
+		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
+	}
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+	if (css.num_rows == 0) {
+		css.my_col[0] = 1;
+		css.my_col[1] = 1;
+	}
+	for (int i = 0; i < 2; i++) {
+		css.player_id = i;
+		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
+			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
 		}
-
-		load_icon.move();
-		SDL_LockMutex(file_mutex);
-
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		loadingSplash.render();
-		int total_items = 3;
-		loadingBar.setTargetPercent(((float)chara_select_loader->loaded_items / total_items), 0.3);
-		loadingBar.render();
-		loadingFlavor.render();
-		load_icon.texture.render();
-
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-
-		SDL_UnlockMutex(file_mutex);
-
-		if (chara_select_loader->finished) {
-			if (!chara_select_loader->can_ret) {
-				css = chara_select_loader->css;
-				for (int i = 0; i < 2; i++) {
-					cursors[i] = chara_select_loader->css_cursor[i];
-					player_info[i] = chara_select_loader->player_info[i];
-				}
-				game_manager->set_menu_info(&css);
-			}
-			chara_select_loader->can_ret = true;	
-			loading = false;
+		else {
+			css.mobile_css_slots[i].texture = css.chara_slots[i].texture;
 		}
 	}
-	SDL_SetRenderTarget(g_renderer, pScreenTexture);
-	SDL_RenderClear(g_renderer);
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+	cursors[0].texture.scale_all_percent(1.2);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+	cursors[1].texture.scale_all_percent(1.2);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	game_manager->set_menu_info(&css);
+	
+	game_loader->finished = true;
+
+	SDL_RenderClear(g_renderer);
+	SDL_RenderPresent(g_renderer);
 
 	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 		}
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -146,9 +111,6 @@ void chara_select_main(GameManager* game_manager) {
 
 		game_manager->handle_menus();
 
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderClear(g_renderer);
-
 		css.render();
 
 		for (int i = 0; i < 2; i++) {
@@ -156,13 +118,10 @@ void chara_select_main(GameManager* game_manager) {
 			cursors[i].render();
 		}
 
-		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderClear(g_renderer);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(g_renderer);
+		SDL_GL_SwapWindow(g_window);
 	}
 
-	delete chara_select_loader;
+	delete game_loader;
 }
 
 /// <summary>
@@ -171,11 +130,14 @@ void chara_select_main(GameManager* game_manager) {
 CSS::CSS() {
 	//initialize other textures
 	background_texture.init("resource/ui/menu/css/CSSbackground.png");
-	background_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	background_texture.set_width(WINDOW_WIDTH);
+	background_texture.set_height(WINDOW_HEIGHT);
 	big_bar_texture.init("resource/ui/menu/css/CSSbottombar.png");
-	big_bar_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	big_bar_texture.set_width(WINDOW_WIDTH);
+	big_bar_texture.set_height(WINDOW_HEIGHT);
 	top_bar_texture.init("resource/ui/menu/css/CSStopbar.png");
-	top_bar_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	top_bar_texture.set_width(WINDOW_WIDTH);
+	top_bar_texture.set_height(WINDOW_HEIGHT);
 }
 
 /// <summary>
@@ -212,27 +174,21 @@ int CSS::load_css() {
 			//row filled code
 			for (int iColumn = 0; iColumn < 10; iColumn++) {
 				tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-
-				tmpSlot->texture.setScaleFactor(1.2);
-				tmpSlot->texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-
+				tmpSlot->texture.scale_all_percent(1.2, false);
 				/*
 					(WINDOW_WIDTH/10) is for the spacing between the cards
 					(WINDOW_WIDTH/20) is for the offset to center the row, it should always be 1/2 the previous one
 				*/
 
 				tmpSlot->set_x_pos(iColumn * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20));
-				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.getScaledHeight() + 20));
+				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
 			}
 		}
 		else {
 		 //row not filled code
 			for (int iColumn = 0; iColumn < get_num_slots() % 10; iColumn++) {
 				tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-
-				tmpSlot->texture.setScaleFactor(1.2);
-				tmpSlot->texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-
+				tmpSlot->texture.scale_all_percent(1.2, false);
 				/*
 					Basically.....
 					Calculate the difference in x positions of the first and last card as iRowXdelta
@@ -241,8 +197,9 @@ int CSS::load_css() {
 				*/
 				iRowXdelta = (WINDOW_WIDTH / 10) * (get_num_slots() % 10) - (WINDOW_WIDTH / 10); //yes this gets recalculated every frame, no im not moving it
 				tmpSlot->set_x_pos(((WINDOW_WIDTH - iRowXdelta) / 2) + iColumn * (WINDOW_WIDTH / 10));
-				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.getScaledHeight() + 20));
+				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
 			}
+			break;
 		}
 	}
 
@@ -307,18 +264,14 @@ void CSS::event_select_press() {
 		CssSlotMobile tmpSlot;
 		tmpSlot.texture = chara_slots[player_selected_index[player_id]].texture;
 
-		switch (player_id) {
-			case 0:
-				tmpSlot.set_target(117, 906, 1.5, 1.5);
-				break;
-			case 1:
-				tmpSlot.set_target(1806, 906, 1.5, 1.5);
-				break;
-			default:
-				printf("oof\n");
-				break;
+		if (player_id) {
+			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 		}
-		tmpSlot.texture.setScaleFactor(1.5);
+		else {
+			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		}
+		tmpSlot.texture.set_pos(vec3(117, 906, 0));
+		tmpSlot.texture.scale_all_percent(1.5, false);
 		mobile_css_slots[player_id] = tmpSlot;
 	}
 }
@@ -496,28 +449,24 @@ void CSS::render() {
 		tmpSlot.name = chara_slots[player_selected_index[i]].name;
 		tmpSlot.texture_dir = chara_slots[player_selected_index[i]].texture_dir;
 
-		switch (i) {
-			case 0:
-				tmpSlot.texture.destRect.x = 117;
-				tmpSlot.texture.destRect.y = 906;
-				break;
-			case 1:
-				tmpSlot.texture.destRect.x = 1806;
-				tmpSlot.texture.destRect.y = 906;
-				break;
-			default:
-				cout << "How the fuck" << endl;
-				break;
+		if (i) {
+			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 		}
-		tmpSlot.texture.setScaleFactor(1.5);
-		tmpSlot.texture.setAlpha((Uint8)127);
+		else {
+			tmpSlot.texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		}
+		tmpSlot.texture.set_pos(vec3(117, 906, 0));
+		tmpSlot.texture.scale_all_percent(1.5);
+		tmpSlot.texture.set_alpha((Uint8)127);
 		tmpSlot.texture.render();
-		tmpSlot.texture.setAlpha((Uint8)255);
+		tmpSlot.texture.set_alpha((Uint8)255);
 		if (tmpSlot.texture_dir == "default") {
-			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.texture.destRect.x, tmpSlot.texture.destRect.y + 70, 24, 255, 255, 255, 255);
+//			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.texture.destRect.x, tmpSlot.texture.destRect.y + 70, 24, 255, 255, 255, 255);
 		}
 
-		mobile_css_slots[i].play_anim();
+		if (player_info[i]->chara_kind != CHARA_KIND_MAX) {
+			mobile_css_slots[i].play_anim();
+		}
 		mobile_css_slots[i].texture.render();
 	}
 }
@@ -530,8 +479,8 @@ void CSS::render() {
 /// <param name="y_ret">: Will be set to the Y coord.</param>
 void CSS::query_fixed_css_slot_pos(int index, int* x_ret, int* y_ret) {
 	if (index < get_num_slots()) {
-		*x_ret = chara_slots[index].texture.destRect.x;
-		*y_ret = chara_slots[index].texture.destRect.y;
+		*x_ret = chara_slots[index].texture.pos.x;
+		*y_ret = chara_slots[index].texture.pos.y;
 	}
 	else {
 		printf("CSS::queryFixedCssSlotPosition --> Index out of range!\n");
@@ -643,7 +592,7 @@ void CssSlot::init(int chara_kind, string textureDir, string name) {
 /// </summary>
 /// <param name="y">: The intended Y position.</param>
 void CssSlot::set_y_pos(int y) {
-	texture.destRect.y = y;
+	texture.set_pos(vec3(0, y, 0));
 }
 
 /// <summary>
@@ -651,7 +600,7 @@ void CssSlot::set_y_pos(int y) {
 /// </summary>
 /// <param name="X">: The intended X position.</param>
 void CssSlot::set_x_pos(int x) {
-	texture.destRect.x = x;
+	texture.set_pos(vec3(x, 0, 0));
 }
 
 /// <summary>
@@ -659,7 +608,7 @@ void CssSlot::set_x_pos(int x) {
 /// </summary>
 /// <returns>The width of this CSS Slot's texture.</returns>
 int CssSlot::get_texture_width() {
-	return texture.destRect.w;
+	return texture.get_width();
 }
 
 /// <summary>
@@ -675,7 +624,7 @@ void CssSlot::render() {
 /// <param name="y">: The coord to compare against.</param>
 /// <returns>Whether or not the CSS Slot is below a given coordinate.</returns>
 bool CssSlot::is_below(int y) {
-	if (texture.destRect.y > y) {
+	if (texture.pos.y > y) {
 		return true;
 	}
 	else {
@@ -689,7 +638,7 @@ bool CssSlot::is_below(int y) {
 /// <param name="y">: The coord to compare against.</param>
 /// <returns>Whether or not the CSS Slot is above a given coordinate.</returns>
 bool CssSlot::is_above(int y) {
-	if (texture.destRect.y < y) {
+	if (texture.pos.y < y) {
 		return true;
 	}
 	else {
@@ -703,8 +652,8 @@ bool CssSlot::is_above(int y) {
 void CssCursor::render() {
 	partial_x += (target_x - partial_x) / 8;
 	partial_y += (target_y - partial_y) / 8;
-	texture.destRect.x = partial_x;
-	texture.destRect.y = partial_y;
+	texture.pos.x = partial_x;
+	texture.pos.y = partial_y;
 	texture.render();
 };
 
@@ -737,11 +686,13 @@ void CssSlotMobile::play_anim() {
 	}
 	if (anim_time < anim_speed) {
 		theta += (3.14) / anim_speed;
-		texture.setHorizontalScaleFactor(cos(theta) + scale_x);
-		texture.setVerticalScaleFactor(scale_y);
+		texture.scale_left_percent(cos(theta) + scale_x);
+		texture.scale_right_percent(cos(theta) + scale_x);
+		texture.scale_top_percent(scale_y);
+		texture.scale_bottom_percent(scale_y);
 	}
 	else {
-		texture.setScaleFactor(1.5);
+		texture.scale_all_percent(1.5);
 	}
 
 	scale_y += (1.5 - scale_y) / (anim_speed / 3);
@@ -749,8 +700,8 @@ void CssSlotMobile::play_anim() {
 	pos_x += (target_x - pos_x) / (anim_speed / 2);
 	pos_y += (target_y - pos_y) / (anim_speed / 2);
 
-	texture.destRect.x = pos_x;
-	texture.destRect.y = pos_y;
+	texture.pos.x = pos_x;
+	texture.pos.y = pos_y;
 
 }
 
@@ -765,8 +716,8 @@ void CssSlotMobile::set_target(int x, int y, float w, float h) {
 	target_x = x;
 	target_y = y;
 
-	pos_x = texture.destRect.x;
-	pos_y = texture.destRect.y;
+	pos_x = texture.pos.x;
+	pos_y = texture.pos.y;
 
 	scale_x = w - 1.5;
 	scale_y = h;

@@ -24,9 +24,6 @@ void menu_main(GameManager* game_manager) {
 	Debugger debugger;
 	debugger = Debugger();
 
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-
 	GameLoader* game_loader = new GameLoader(1);
 	SDL_Thread* loading_thread;
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);

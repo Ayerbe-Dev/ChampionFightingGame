@@ -34,7 +34,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	g_rendermanager.update_shader_lights(&model_shader);
 	Model model("resource/chara/roy/model/model.dae");
 	Model model_no_anim("resource/chara/roy/model/model.dae");
-	Animation3D test_anim("idle", "resource/chara/roy/anims/test.fbx", &model);
+	Animation3D test_anim("idle", "resource/chara/roy/anims/ryu_shoryu.fbx", &model);
 	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
 	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
 	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
@@ -181,7 +181,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 			frame = 0.0;
 		}
 		else {
-			frame += 0.5;
+			frame += 0.2;
 		}
 
 		model.set_bones(frame, &test_anim);

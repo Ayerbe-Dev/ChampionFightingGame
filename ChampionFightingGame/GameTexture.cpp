@@ -265,6 +265,14 @@ void GameTextureNew::set_height(int new_height) {
 	update_buffer_data();
 }
 
+int GameTextureNew::get_width() {
+	return width;
+}
+
+int GameTextureNew::get_height() {
+	return height;
+}
+
 void GameTextureNew::set_left_target(float percent, float max_change) {
 	if (percent < 0.0 || max_change <= 0.0) {
 		return;

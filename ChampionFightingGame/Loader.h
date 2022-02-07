@@ -234,62 +234,6 @@ static int LoadBattle(void* void_BattleLoader) {
 	return 0; 
 }
 
-class CharaSelectLoader : public GameLoader {
-public:
-	CharaSelectLoader() {};
-
-	CSS css;
-	CssCursor css_cursor[2];
-};
-
-static int LoadCharaSelect(void* void_CharaSelectLoader) {
-	int time = SDL_GetTicks();
-	CharaSelectLoader* chara_select_loader = (CharaSelectLoader*)void_CharaSelectLoader;
-
-	CSS css;
-	CssCursor cursors[2];
-
-	css.player_info[0] = chara_select_loader->player_info[0];
-	css.player_info[1] = chara_select_loader->player_info[1];
-
-	if (css.load_css()) {
-		displayLoadingScreen();
-		chara_select_loader->player_info[0]->crash_reason = "Could not open CSS file!";
-		return 1;
-	}
-	chara_select_loader->loaded_items++;
-	if (css.num_rows == 0) {
-		css.my_col[0] = 1;
-		css.my_col[1] = 1;
-	}
-	for (int i = 0; i < 2; i++) {
-		css.player_id = i;
-		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
-		}
-	}
-
-	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	cursors[0].texture.setScaleFactor(1.2);
-	cursors[0].texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-	chara_select_loader->loaded_items++;
-
-	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	cursors[1].texture.setScaleFactor(1.2);
-	cursors[1].texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-	chara_select_loader->loaded_items++;
-
-	chara_select_loader->css = css;
-	chara_select_loader->css_cursor[0] = cursors[0];
-	chara_select_loader->css_cursor[1] = cursors[1];
-
-	chara_select_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!chara_select_loader->can_ret) {
-	}
-	return 0;
-}
-
 class DebugLoader : public GameLoader {
 public:
 	DebugLoader() {};

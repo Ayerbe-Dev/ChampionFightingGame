@@ -10,6 +10,7 @@
 #include <gtx/euler_angles.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtx/matrix_interpolation.hpp>
+#include <gtx/string_cast.hpp>
 extern SDL_Renderer* g_renderer;
 
 Animation::Animation() {};
@@ -29,6 +30,7 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 	}
 
 	length = scene->mAnimations[0]->mDuration;
+	cout << length << endl;
 	vector<Bone> base_bones;
 
 	for (int i = 0; i < model->bones.size(); i++) {

@@ -79,6 +79,8 @@ public:
 
     void set_width(int new_width);
     void set_height(int new_height);
+    int get_width();
+    int get_height();
 
     void set_left_target(float percent, float max_change);
     void set_right_target(float percent, float max_change);

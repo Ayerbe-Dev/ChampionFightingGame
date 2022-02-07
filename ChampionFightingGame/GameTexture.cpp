@@ -157,7 +157,7 @@ void GameTextureNew::attach_shader(Shader* shader) {
 	this->shader = shader;
 }
 
-vec3 GameTextureNew::get_pos_vacuum(int orientation) {
+vec3 GameTextureNew::get_pos_vacuum(GameTextureNew *that) {
 	vec3 pos = this->pos;
 	float width_post_scale = this->width * (this->tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + this->tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x);
 	float height_post_scale = this->height * (this->tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y + this->tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y);
@@ -210,7 +210,9 @@ vec3 GameTextureNew::get_pos_vacuum(int orientation) {
 			pos.y += WINDOW_HEIGHT - height_post_scale;
 		} break;
 	} //Translate from the actual orientation to its middle-oriented equivalent
-	switch (orientation) {
+	width_post_scale = that->width * (that->tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + that->tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x);
+	height_post_scale = that->height * (that->tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y + that->tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y);
+	switch (that->orientation) {
 		default:
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE):
 		{
@@ -684,10 +686,10 @@ void GameTextureNew::render() {
 	gl_pos.y /= (float)WINDOW_HEIGHT;
 	float shader_alpha = 1.0 - ((float)alpha / 255.0);
 	mat4 matrix = mat4(1.0);
+	matrix = translate(matrix, gl_pos);
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
-	matrix = translate(matrix, gl_pos);
 	shader->set_float("f_alphamod", shader_alpha);
 	shader->set_mat4("matrix", matrix);
 	glDepthMask(gl_pos.z != 0.0);

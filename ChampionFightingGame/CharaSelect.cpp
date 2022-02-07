@@ -86,6 +86,20 @@ void chara_select_main(GameManager* game_manager) {
 				{
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
+				case SDL_WINDOWEVENT:
+				{
+					switch (event.window.event) {
+						case SDL_WINDOWEVENT_RESIZED:
+						case SDL_WINDOWEVENT_SIZE_CHANGED:
+						case SDL_WINDOWEVENT_MAXIMIZED:
+						{
+							int width;
+							int height;
+							SDL_GetWindowSize(g_window, &width, &height);
+							glViewport(0, 0, width, height);
+						} break;
+					}
+				} break;
 			}
 		}
 
@@ -236,16 +250,13 @@ void CSS::event_select_press() {
 		player_info[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
 		mobile_css_slots[player_id] = GameTextureNew(chara_slots[player_selected_index[player_id]].texture);
 
-		mobile_css_slots[player_id].set_width(190);
-		mobile_css_slots[player_id].set_height(280);
-
 		if (player_id) {
 			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
-			mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT));
+			mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(&mobile_css_slots[player_id]));
 		}
 		else {
 			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-			mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT));
+			mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(&mobile_css_slots[player_id]));
 		}
 
 		mobile_css_slots[player_id].set_target_pos(vec3(40, 70, 0), 16.0);
@@ -441,6 +452,14 @@ void CSS::render() {
 		}
 
 		if (mobile_slots_active[i]) {
+			if (mobile_css_slots[i].pos != mobile_css_slots[i].target_pos) {
+				mobile_css_slots[i].add_rot(vec3(0.0, 360.0 / 16.0, 0.0));
+			}
+			else {
+				mobile_css_slots[i].set_rot(vec3(0.0, 0.0, 0.0));
+				mobile_css_slots[i].set_width(190);
+				mobile_css_slots[i].set_height(280);
+			}
 			mobile_css_slots[i].render();
 		}
 		tmpSlot.texture.destroy(false);

@@ -72,7 +72,7 @@ public:
     void set_orientation(int orientation);
     void attach_shader(Shader* shader);
 
-    vec3 get_pos_vacuum(int orientation);
+    vec3 get_pos_vacuum(GameTextureNew *that);
 
     void scale_left_percent(float percent, bool crop = true);
     void scale_right_percent(float percent, bool crop = true);

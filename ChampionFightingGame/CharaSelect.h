@@ -86,7 +86,6 @@ public:
 
     void query_fixed_css_slot_pos(int index, int* x_ret, int* y_ret);
     int get_chara_kind(int player_id);
-    void center_slots();
     void select_slot();
     void find_prev_chara_kind(int chara_kind);
 
@@ -94,6 +93,7 @@ public:
     int my_col[2]{0, 0};
     int my_row[2]{ 0, 0 };
 
+    int num_slots;
     int num_cols;
     int num_rows;
     int cols_offset;
@@ -105,6 +105,7 @@ private:
     GameTextureNew background_texture;
     GameTextureNew big_bar_texture;
     GameTextureNew top_bar_texture;
-    CssSlot chara_slots_ordered[10][4];
+    CssSlot big_chara_slots[2];
+    CssSlot *chara_slots_ordered[10][4];
     bool is_last_input_right[2]{ false };
 };

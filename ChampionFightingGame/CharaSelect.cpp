@@ -145,85 +145,96 @@ CSS::CSS() {
 /// </summary>
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
 int CSS::load_css() {
-	ifstream fileCssTable;
-	fileCssTable.open("resource/ui/menu/css/css_param.yml");
-	int iCharacterKind;
-	string sCharacterDir;
-	bool bSelectable;
+	ifstream css_file;
+	css_file.open("resource/ui/menu/css/css_param.yml");
+	int chara_kind;
+	string resource_dir;
+	bool selectable;
 	CssSlot* tmpSlot;
 	int iRowXdelta = 0;
 
-	if (fileCssTable.fail()) {
-		fileCssTable.close();
+	if (css_file.fail()) {
+		css_file.close();
 		return -1;
 	}
 
-	string sCharacterName;
-	for (int i = 0; getline(fileCssTable, sCharacterName); i++) {
-		fileCssTable >> iCharacterKind >> sCharacterDir >> bSelectable;
-		if (bSelectable) {
-			add_slot(iCharacterKind, sCharacterDir, sCharacterName);
+	string chara_name;
+	for (int i = 0; getline(css_file, chara_name); i++) {
+		css_file >> chara_kind >> resource_dir >> selectable;
+		if (selectable) {
+			add_slot(chara_kind, resource_dir, chara_name);
 		}
-		getline(fileCssTable, sCharacterName); //100% authentic jank code
+		getline(css_file, chara_name);
 	}
-	fileCssTable.close();
-
-	for (int iRow = 1; iRow < 4; iRow++) {
-		//Following line checks if the row is filled (the tenth item in the row is filled)
-		if (chara_slots[iRow * 10 - 1].is_initialized()) {
-			//row filled code
-			for (int iColumn = 0; iColumn < 10; iColumn++) {
-				tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-				tmpSlot->texture.scale_all_percent(1.2, false);
-				/*
-					(WINDOW_WIDTH/10) is for the spacing between the cards
-					(WINDOW_WIDTH/20) is for the offset to center the row, it should always be 1/2 the previous one
-				*/
-
-				tmpSlot->set_x_pos(iColumn * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20));
-				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
-			}
-		}
-		else {
-		 //row not filled code
-			for (int iColumn = 0; iColumn < get_num_slots() % 10; iColumn++) {
-				tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-				tmpSlot->texture.scale_all_percent(1.2, false);
-				/*
-					Basically.....
-					Calculate the difference in x positions of the first and last card as iRowXdelta
-					Divide iRowXdelta by 2 and subtract the WINDOW_WIDTH by iRowXdelta to get the starting point
-					from which to render the row.
-				*/
-				iRowXdelta = (WINDOW_WIDTH / 10) * (get_num_slots() % 10) - (WINDOW_WIDTH / 10); //yes this gets recalculated every frame, no im not moving it
-				tmpSlot->set_x_pos(((WINDOW_WIDTH - iRowXdelta) / 2) + iColumn * (WINDOW_WIDTH / 10));
-				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
-			}
-			break;
-		}
-	}
-
-	//Anyway so we're also using a 2D array now
+	css_file.close();
 
 	int col = 0;
 	int row = 0;
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].is_initialized()) {
-			chara_slots[i].my_col = col;
-			chara_slots[i].my_row = row;
-			chara_slots_ordered[col][row] = chara_slots[i];
-			if (col == 9) {
-				col = 0;
-				row++;
-			}
-			else {
-				col++;
-			}
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots[i].my_col = col;
+		chara_slots[i].my_row = row;
+		chara_slots_ordered[col][row] = &chara_slots[i];
+		if (col == 9) {
+			col = 0;
+			row++;
+		}
+		else {
+			col++;
 		}
 	}
 	num_cols = col;
 	num_rows = row;
-	center_slots();
+
+	cols_offset = NUM_COLS - num_cols;
+
+	for (int i = 0; i < num_slots; i++) {
+		if (chara_slots[i].my_row == num_rows && num_cols != NUM_COLS) {
+			chara_slots[i].my_col += (cols_offset / 2);
+			
+		}
+		else {
+			chara_slots[i].texture.set_pos(vec3(
+				chara_slots[i].my_col * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20),
+				chara_slots[i].my_row * chara_slots[i].texture.get_height() * 1.2 + 20, 
+				0
+			));
+		}
+	}
+
+	//for (int iRow = 1; iRow < 4; iRow++) {
+	//	//Following line checks if the row is filled (the tenth item in the row is filled)
+	//	if (chara_slots[iRow * 10 - 1].is_initialized()) {
+	//		//row filled code
+	//		for (int iColumn = 0; iColumn < 10; iColumn++) {
+	//			tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
+	//			tmpSlot->texture.scale_all_percent(1.2, false);
+	//			/*
+	//				(WINDOW_WIDTH/10) is for the spacing between the cards
+	//				(WINDOW_WIDTH/20) is for the offset to center the row, it should always be 1/2 the previous one
+	//			*/
+
+	//			tmpSlot->set_x_pos(iColumn * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20));
+	//			tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
+	//		}
+	//	}
+	//	else {
+	//	 //row not filled code
+	//		for (int iColumn = 0; iColumn < get_num_slots() % 10; iColumn++) {
+	//			tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
+	//			tmpSlot->texture.scale_all_percent(1.2, false);
+	//			/*
+	//				Basically.....
+	//				Calculate the difference in x positions of the first and last card as iRowXdelta
+	//				Divide iRowXdelta by 2 and subtract the WINDOW_WIDTH by iRowXdelta to get the starting point
+	//				from which to render the row.
+	//			*/
+	//			iRowXdelta = (WINDOW_WIDTH / 10) * (get_num_slots() % 10) - (WINDOW_WIDTH / 10); //yes this gets recalculated every frame, no im not moving it
+	//			tmpSlot->set_x_pos(((WINDOW_WIDTH - iRowXdelta) / 2) + iColumn * (WINDOW_WIDTH / 10));
+	//			tmpSlot->set_y_pos(iRow * (tmpSlot->texture.get_height() * 1.2 + 20));
+	//		}
+	//		break;
+	//	}
+	//}
 
 	return 0;
 }
@@ -238,6 +249,7 @@ void CSS::add_slot(int id, string cardDir, string cardName) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (!chara_slots[i].is_initialized()) {
 			chara_slots[i].init(id, cardDir, cardName);
+			num_slots++;
 			return;
 		}
 	}
@@ -249,13 +261,7 @@ void CSS::add_slot(int id, string cardDir, string cardName) {
 /// </summary>
 /// <returns>The number of active CSS slots.</returns>
 int CSS::get_num_slots() {
-	int size = 0;
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].is_initialized()) {
-			size++;
-		}
-	}
-	return size;
+	return num_slots;
 }
 
 void CSS::event_select_press() {
@@ -298,7 +304,7 @@ void CSS::event_start_press() {
 
 void CSS::event_right_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]].is_initialized()) {
+		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]]->is_initialized()) {
 			my_col[player_id]++;
 		}
 		is_last_input_right[player_id] = true;
@@ -308,7 +314,7 @@ void CSS::event_right_press() {
 
 void CSS::event_left_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]].is_initialized()) {
+		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]]->is_initialized()) {
 			my_col[player_id]--;
 		}
 		is_last_input_right[player_id] = false;
@@ -320,12 +326,12 @@ void CSS::event_down_press() {
 	bool jump = false;
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] < num_rows) {
-			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1].is_initialized()) {
+			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1]->is_initialized()) {
 				jump = true;
 				bool valid_col = false;
 				if (my_col[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (chara_slots_ordered[i][my_row[player_id] + 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] + 1]->is_initialized()) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -334,7 +340,7 @@ void CSS::event_down_press() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (chara_slots_ordered[i][my_row[player_id] + 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] + 1]->is_initialized()) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -369,12 +375,12 @@ void CSS::event_up_press() {
 	bool jump = false;
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] != 0) {
-			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1].is_initialized()) {
+			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1]->is_initialized()) {
 				jump = true;
 				bool valid_col = false;
 				if (my_col[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (chara_slots_ordered[i][my_row[player_id] - 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] - 1]->is_initialized()) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -383,7 +389,7 @@ void CSS::event_up_press() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (chara_slots_ordered[i][my_row[player_id] - 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] - 1]->is_initialized()) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -436,10 +442,8 @@ void CSS::render() {
 	big_bar_texture.render();
 	top_bar_texture.render();
 
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].is_initialized()) {
-			chara_slots[i].render();
-		}
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots[i].render();
 	}
 
 
@@ -497,49 +501,6 @@ int CSS::get_chara_kind(int player) {
 }
 
 /// <summary>
-/// Takes the regular CSS slots array and uses it to generate a 2D array which is organized by row and column. The logic behind this is kind of weird
-/// but it makes navigating up and down on the CSS slightly easier.
-/// </summary>
-void CSS::center_slots() {
-	int empty_cols = 1;
-	int empty_row;
-	for (int i = 0; i < NUM_ROWS; i++) {
-		for (int i2 = 0; i2 < NUM_COLS; i2++) {
-			if (!chara_slots_ordered[i2][i].is_initialized()) { //If this slot is empty
-				if (chara_slots_ordered[0][i].is_initialized()) { //If the first slot on that row is full
-					empty_cols = NUM_COLS - i2;
-					empty_row = i;
-					goto ENDL;
-				}
-			}
-		}
-	}
-	ENDL: //im so funny
-	
-	cols_offset = empty_cols;
-
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].my_row == empty_row) {
-			chara_slots[i].my_col += (empty_cols / 2);
-		}
-	}
-	for (int i = 0; i < NUM_COLS; i++) {
-		for (int i2 = 0; i2 < NUM_ROWS; i2++) {
-			chara_slots_ordered[i][i2].my_col = -1;
-			chara_slots_ordered[i][i2].my_row = -1;
-			chara_slots_ordered[i][i2].initialized = false;
-			for (int i3 = 0; i3 < CSS_SLOTS; i3++) {
-				if (chara_slots[i3].my_col == i
-				&& chara_slots[i3].my_row == i2) {
-					chara_slots_ordered[i][i2] = chara_slots[i3];
-					break;
-				}
-			}
-		}
-	}
-}
-
-/// <summary>
 /// Takes the character that the current player is already selecting, and automatically puts their cursor on the first CSS slot corresponding to that
 /// character. Note: This function is used for when you re-enter the CSS after having already selected a character, such as after a match.
 /// </summary>
@@ -581,6 +542,7 @@ bool CssSlot::is_initialized() {
 /// <param name="name">: The name of the character for UI purposes.</param>
 void CssSlot::init(int chara_kind, string textureDir, string name) {
 	texture.init("resource/ui/menu/css/chara/" + textureDir + "/render.png");
+	texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	this->name = name;
 	this->texture_dir = textureDir;
 	this->chara_kind = chara_kind;

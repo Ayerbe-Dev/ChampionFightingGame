@@ -322,16 +322,14 @@ void MainMenu::render() {
 
 	//prebuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i - 5) * offset)), int(magnitude * sin(theta + (i - 5) * offset)) + WINDOW_HEIGHT / 2, 0.0));
-		menu_items[i].name_texture.add_pos(vec3(0.0, WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i - 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
 		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
 		menu_items[i].name_texture.render();
 	}
 
 	//real render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + i * offset)), int(magnitude * sin(theta + i * offset)) + WINDOW_HEIGHT / 2, 0.0));
-		menu_items[i].name_texture.add_pos(vec3(0.0, WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + i * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + i * offset)), 0.0));
 		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
 		menu_items[i].name_texture.render();
 		sub_menu_tables[menu_items[top_selection * -1].destination]->table.render();
@@ -343,8 +341,7 @@ void MainMenu::render() {
 
 	//postbuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i + 5) * offset)), int(magnitude * sin(theta + (i + 5) * offset)) + WINDOW_HEIGHT / 2, 0.0));
-		menu_items[i].name_texture.add_pos(vec3(0.0, WINDOW_HEIGHT / 2, 0.0));
+		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i + 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
 		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
 		menu_items[i].name_texture.render();
 	}

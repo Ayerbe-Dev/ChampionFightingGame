@@ -351,11 +351,10 @@ void MainMenu::render() {
 
 void MainMenu::process_submenu_tables() {
 	for (int i = 0; i < 5; i++) {
-		sub_menu_tables[i]->cursor.set_pos(vec3(sub_menu_tables[i]->cursor.pos.x, WINDOW_HEIGHT * 0.18 + (sub_menu_tables[i]->selected_item * 300 / sub_menu_tables[i]->item_count), 0.0));
 		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
-			sub_menu_tables[i]->sub_text[i2].set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT);
-			sub_menu_tables[i]->sub_text[i2].set_pos(vec3((float)WINDOW_WIDTH * 0.78, (float)WINDOW_WIDTH * 0.18 + (i2 * 300 / sub_menu_tables[i]->item_count), 0.0));
+			sub_menu_tables[i]->sub_text[i2].set_pos(vec3((float)WINDOW_WIDTH * 1.62, (float)WINDOW_HEIGHT * 0.5 + (i2 * 300 / sub_menu_tables[i]->item_count), 0.0));
 		}
+		sub_menu_tables[i]->cursor.set_pos(vec3(sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.x - 83, sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.y - 20, 0));
 	}
 }
 
@@ -386,7 +385,7 @@ SubMenuTable::SubMenuTable(int selection) {
 	table.scale_bottom_percent(1.2, false);
 
 	cursor.init("resource/ui/menu/main/Cursor.png");
-	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	cursor.set_pos(vec3(700.0, 0.0, 0.0));
 	cursor.set_width(50);
 	cursor.set_height(50);

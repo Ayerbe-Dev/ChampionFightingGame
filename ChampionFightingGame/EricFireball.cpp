@@ -7,7 +7,6 @@ EricFireball::EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fig
 	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	loadEricFireballACMD();
 	loadEricFireballStatusFunctions();
-	this->base_texture = loadSDLTexture("resource/projectile/eric_fireball/sprite/sprite.png");
 	this->fighter_accessor = fighter_accessor;
 	superInit();
 }

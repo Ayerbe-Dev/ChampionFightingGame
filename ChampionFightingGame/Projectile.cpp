@@ -4,7 +4,7 @@
 extern SDL_Renderer* g_renderer;
 
 void Projectile::projectile_main() {
-	prevpos = pos;
+	prev_pos = pos;
 
 	if (canStep()) {
 		stepAnimation();
@@ -14,12 +14,6 @@ void Projectile::projectile_main() {
 
 	decrease_common_projectile_variables(this);
 	tickOnceProjectileUnique();
-
-	int width;
-	int height;
-	SDL_QueryTexture(base_texture, NULL, NULL, &width, &height);
-	pos.x_spr_offset = width / 2;
-	pos.y_spr_offset = height;
 
 	update_hitbox_pos(false);
 	update_grabbox_pos();

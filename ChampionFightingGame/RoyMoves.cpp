@@ -6,7 +6,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -42, 0 }, GameCoordinate{ 62, 38 });
 			new_hurtbox(1, GameCoordinate{ -29, 39 }, GameCoordinate{ 33, 141 });
 			new_hurtbox(2, GameCoordinate{ 17, 82 }, GameCoordinate{ 54, 104 });
@@ -21,7 +20,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("walk_b", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -29,7 +27,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("dash_f", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -37,7 +34,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("dash_b", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -56,7 +52,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("crouch", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -38, 0 }, GameCoordinate{ 43, 71 });
 		}
 	});
@@ -120,7 +115,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("parry_start", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 4;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -135,7 +129,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("parry_start_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 4;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -162,7 +155,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("hitstun_parry", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 5;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -180,7 +172,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("hitstun_parry_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 5;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -199,7 +190,6 @@ void Roy::loadCharaMoveScripts() {
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
 			playVC(ROY_VC_ATTACK_01);
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -214,7 +204,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("stand_mp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -229,7 +218,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("stand_hp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -272,7 +260,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("crouch_lp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -38, 0 }, GameCoordinate{ 45, 71 });
 		}
 		if (is_excute_frame(4)) {
@@ -288,7 +275,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("crouch_mp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -38, 0 }, GameCoordinate{ 45, 71 });
 		}
 		if (is_excute_frame(4)) {
@@ -304,7 +290,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("crouch_hp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -45, 0 }, GameCoordinate{ 45, 25 });
 			new_hurtbox(1, GameCoordinate{ -30, 20 }, GameCoordinate{ 25, 73 });
 		}
@@ -326,7 +311,7 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("crouch_hk", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+
 		}
 		if (is_excute_frame(3)) {
 
@@ -346,7 +331,6 @@ void Roy::loadCharaMoveScripts() {
 			new_hurtbox(3, GameCoordinate{ 5, 55 }, GameCoordinate{ 40, 95 });
 		}
 		if (is_excute_wait(1)) {
-			max_ticks = 2;
 			new_hurtbox(1, GameCoordinate{ -15, 10 }, GameCoordinate{ 15, 75 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 75 });
 			new_hurtbox(3, GameCoordinate{ 5, 25 }, GameCoordinate{ 45, 75 });
@@ -361,7 +345,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("jump_mp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -55, 15 }, GameCoordinate{ 0, 100 });
 			new_hurtbox(1, GameCoordinate{ -10, 25 }, GameCoordinate{ 27, 80 });
 			new_hurtbox(2, GameCoordinate{ -65, 70 }, GameCoordinate{ 5, 100 });
@@ -384,7 +367,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("jump_hp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -40, 25 }, GameCoordinate{ 40, 65 });
 			new_hurtbox(1, GameCoordinate{ -30, 30 }, GameCoordinate{ 30, 110 });
 		}
@@ -413,7 +395,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("grab", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -424,7 +405,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
@@ -438,7 +418,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
@@ -452,7 +431,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("grab_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -463,7 +441,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
@@ -477,7 +454,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
@@ -546,7 +522,6 @@ void Roy::loadCharaMoveScripts() {
 	});
 	script("wakeup", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
 		}
 	});
 	script("crumple", [this]() {
@@ -569,28 +544,28 @@ void Roy::loadCharaMoveScripts() {
 	script("special_fireball_start", [this]() {
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 			if (is_excute_frame(11)) {
-				init_projectile(0, GameCoordinate{ 50,100 });
+				init_projectile(0, vec3(50,100,0));
 			}
 		}
 		else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
 			if (is_excute_frame(9)) {
-				max_ticks++;
+
 			}
 			if (is_excute_frame(14)) {
-				init_projectile(0, GameCoordinate{ 50,100 });
+				init_projectile(0, vec3(50, 100, 0));
 			}
 		}
 		else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
 			if (is_excute_frame(8)) {
-				max_ticks++;
+
 			}
 			if (is_excute_frame(15)) {
-				init_projectile(0, GameCoordinate{ 50,100 });
+				init_projectile(0, vec3(50, 100, 0));
 			}
 		}
 		else {
 			if (is_excute_frame(11)) {
-				init_projectile(0, GameCoordinate{ 50,100 });
+				init_projectile(0, vec3(50, 100, 0));
 			}
 		}
 	});

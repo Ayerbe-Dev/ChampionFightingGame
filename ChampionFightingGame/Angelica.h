@@ -1,8 +1,8 @@
 #pragma once
 #include "Fighter.fwd.h"
 #include "Fighter.h"
-#include "Object.fwd.h"
-#include "Object.h"
+#include "BattleObject.fwd.h"
+#include "BattleObject.h"
 #include "Angelica.fwd.h"
 #include "utils.h"
 

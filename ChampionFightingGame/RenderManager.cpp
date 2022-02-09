@@ -86,9 +86,9 @@ void RenderManager::render_model(Model *model, Shader *shader, vec3 *model_pos, 
 	shader->use(); //Because each shader is model specific, we need to set this no matter what
 	update_shader_cam(shader);
 	mat4 model_mat = mat4(1.0);
-	model_mat = scale(model_mat, *model_scale);
-	model_mat *= orientate4(*model_rot);
 	model_mat = translate(model_mat, *model_pos);
+	model_mat *= orientate4(*model_rot);
+	model_mat = scale(model_mat, *model_scale);
 	shader->set_mat4("model", model_mat);
 	model->render(shader);
 }

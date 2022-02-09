@@ -18,7 +18,6 @@ Atlas::Atlas(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	loadAtlasStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ATLAS;
-	this->base_texture = loadSDLTexture("resource/chara/atlas/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

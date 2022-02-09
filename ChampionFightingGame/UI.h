@@ -7,8 +7,8 @@
 class HealthBar {
 public:
 	Fighter* fighter;
-	GameTexture health_texture;
-	GameTexture bar_texture;
+	GameTextureNew health_texture;
+	GameTextureNew bar_texture;
 	float max_health;
 
 	HealthBar();
@@ -18,9 +18,9 @@ public:
 class ExBar {
 public:
 	Fighter* fighter;
-	GameTexture ex_texture;
-	GameTexture ex_segment_texture;
-	GameTexture bar_texture;
+	GameTextureNew ex_texture;
+	GameTextureNew ex_segment_texture;
+	GameTextureNew bar_texture;
 	float max_ex;
 	int prev_segments = 0;
 

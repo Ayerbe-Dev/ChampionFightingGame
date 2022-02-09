@@ -16,5 +16,3 @@ struct Bone {
 	mat4 final_matrix = mat4(1.0);
 	bool keyframed = false;
 };
-
-void offset_base_bone(Bone* base, Bone* offset);

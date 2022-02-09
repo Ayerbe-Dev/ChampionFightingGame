@@ -8,6 +8,7 @@
 #include "GameTexture.h"
 #include <gtx/rotate_vector.hpp> 
 #include <gtx/string_cast.hpp>
+#include "RenderObject.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -28,13 +29,24 @@ void three_d_rendering_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	Shader anim_shader("vertex_main.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&anim_shader);
-	Shader model_shader("vertex_no_anim.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&model_shader);
-	Model model("resource/chara/roy/model/model.dae");
-	Model model_no_anim("resource/chara/roy/model/model.dae");
-	Animation3D test_anim("idle", "resource/chara/roy/anims/ryu_shoryu.fbx", &model);
+	RenderObject p1;
+	RenderObject p2;
+
+	p1.shader.init("vertex_main.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&p1.shader);
+	p1.model.load_model("resource/chara/roy/model/model.dae");
+
+	p2.shader.init("vertex_main.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&p2.shader);
+	p2.model.load_model("resource/chara/roy/model/model.dae");
+
+	p1.scale = vec3(0.05);
+	p2.scale = vec3(0.05);
+
+	Animation3D anim[2];
+	anim[0] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p1.model);
+	anim[1] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p2.model);
+
 	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
 	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
 	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
@@ -42,18 +54,12 @@ void three_d_rendering_main(GameManager* game_manager) {
 	p2_healthbar.flip_h();
 
 
-	vec3 model_pos = vec3(0.0, 0.0, 0.0);
-	vec3 model_rot = vec3(0.0, 0.0, 0.0);
-	vec3 model_scale = vec3(0.05, 0.05, 0.05);
-
-	float frame = 0.0;
+	float frame[2] = { 0.0 };
 	int trials = 10000;
 
 	int ticks = SDL_GetTicks();
 	vector<int> average_ticks;
 	vector<int> tick_frequency;
-	vec3 total_rot(0.0);
-	vec3 total_pos(0.0);
 	while (three_deeing) {
 		if (average_ticks.size() < trials) {
 			average_ticks.push_back(SDL_GetTicks() - ticks);
@@ -99,9 +105,6 @@ void three_d_rendering_main(GameManager* game_manager) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
-		vec3 rotation(0.0);
-		vec3 pos(0.0);
-		int target_bone = 93;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT:
@@ -135,60 +138,76 @@ void three_d_rendering_main(GameManager* game_manager) {
 			three_deeing = false;
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
-			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
+			p1.pos.y += p1.scale.y;
+//			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
-			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
+			p1.pos.x += p1.scale.x;
+//			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
-			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
+			p1.pos.x -= p1.scale.x;
+//			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
-			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
+			p1.pos.y -= p1.scale.y;
+//			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
 		}		
 		if (player_info[1]->check_button_on(BUTTON_UP)) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
+			p2.pos.y += p2.scale.y;
+//			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+			p2.pos.y -= p2.scale.y;
+//			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
-			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
+			p2.pos.x += p2.scale.x;
+//			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
-			g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
+			p2.pos.x -= p2.scale.x;
+//			g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_LP)) {
-			model_rot.x += 0.1;
+			p1.rot.x += 0.1;
+			p2.rot.x += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_MP)) {
-			model_rot.y += 0.1;
+			p1.rot.y += 0.1;
+			p2.rot.y += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_HP)) {
-			model_rot.z += 0.1;
+			p1.rot.z += 0.1;
+			p2.rot.z += 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_LK)) {
-			model_rot.x -= 0.1;
+			p1.rot.x -= 0.1;
+			p2.rot.x -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_MK)) {
-			model_rot.y -= 0.1;
+			p1.rot.y -= 0.1;
+			p2.rot.y -= 0.1;
 		}
 		if (player_info[0]->check_button_on(BUTTON_HK)) {
-			model_rot.z -= 0.1;
+			p1.rot.z -= 0.1;
+			p2.rot.z -= 0.1;
 		}
 		
-		if (frame > test_anim.length) {
-			frame = 0.0;
-		}
-		else {
-			frame += 0.2;
+		for (int i = 0; i < 2; i++) {
+			if (frame[i] > anim[i].length) {
+				frame[i] = 0.0;
+			}
+			else {
+				frame[i] += 0.2;
+			}
 		}
 
-		model.set_bones(frame, &test_anim);
-		model.set_bones(frame, &test_anim);
+		p1.model.set_bones(frame[0], &anim[0]);
+		p2.model.set_bones(frame[1], &anim[1]);
 
-		g_rendermanager.render_model(&model, &anim_shader, &model_pos, &model_rot, &model_scale);
-		g_rendermanager.render_model(&model_no_anim, &model_shader, &model_pos, &model_rot, &model_scale);
+		p1.render();
+		p2.render();
 
 		p1_healthbar.render();
 		p2_healthbar.render();

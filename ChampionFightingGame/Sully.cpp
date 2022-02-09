@@ -18,7 +18,6 @@ Sully::Sully(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	loadSullyStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_SULLY;
-	this->base_texture = loadSDLTexture("resource/chara/sully/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

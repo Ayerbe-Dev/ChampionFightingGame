@@ -14,10 +14,8 @@ void Projectile::load_anim_list() {
 	string frame_count;
 	for (int i = 0; anim_list >> name; i++) {
 		anim_list >> path >> frame_count;
-		animation_table[i].name = ymlChopString(name);
-		animation_table[i].path = (resource_dir + "/anims/" + ymlChopString(path));
-		animation_table[i].length = ymlChopInt(frame_count) - 1;
-		loadAnimation(&animation_table[i]);
+		Animation3D anim(name, path, &model);
+		animation_table[i] = anim;
 	}
 	anim_list.close();
 }

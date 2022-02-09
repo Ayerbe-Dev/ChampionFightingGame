@@ -7,26 +7,19 @@ HealthBar::HealthBar(Fighter* fighter) {
 	this->fighter = fighter;
 	max_health = fighter->get_param_float("health");
 	health_texture.init("resource/ui/game/hp/health.png");
-	health_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	health_texture.setPercent(1);
 	bar_texture.init("resource/ui/game/hp/bar.png");
-	bar_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	bar_texture.setPercent(1);
 
-	if (fighter->id == 1) {
-		health_texture.setFlip(TEXTURE_FLIP_KIND_DRAIN);
-		bar_texture.setFlip(TEXTURE_FLIP_KIND_NO_DRAIN);
-		health_texture.setDrainKind(METER_DRAIN_KIND_LEFT);
-		health_texture.destRect.x = 46;
-		bar_texture.destRect.x = -42;
+	if (fighter->id == 0) {
+		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	}
 	else {
-		health_texture.setDrainKind(METER_DRAIN_KIND_RIGHT);
-		health_texture.destRect.x = -46;
-		bar_texture.destRect.x = 42;
+		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		health_texture.flip_h();
+		bar_texture.flip_h();
 	}
-	health_texture.destRect.y = 35;
-	bar_texture.destRect.y = 35;
+
 }
 
 ExBar::ExBar() {}
@@ -34,39 +27,26 @@ ExBar::ExBar(Fighter* fighter) {
 	this->fighter = fighter;
 	max_ex = EX_METER_SIZE;
 	ex_texture.init("resource/ui/game/ex/ex.png");
-	ex_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	ex_texture.setPercent(0);
+	ex_texture.scale_right_percent(0);
 
 	ex_segment_texture.init("resource/ui/game/ex/ex_segment.png");
-	ex_segment_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	ex_segment_texture.setPercent(0);
+	ex_segment_texture.scale_right_percent(0);
 
 	bar_texture.init("resource/ui/game/ex/bar.png");
-	bar_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-	bar_texture.setPercent(1);
 
 	if (fighter->id == 0) {
-		ex_texture.setDrainKind(METER_DRAIN_KIND_LEFT);
-		ex_texture.destRect.x = -859;
-		ex_segment_texture.setDrainKind(METER_DRAIN_KIND_LEFT);
-		ex_segment_texture.destRect.x = -859;
-		bar_texture.destRect.x = 42;
+		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 	}
 	else {
-		ex_texture.setDrainKind(METER_DRAIN_KIND_RIGHT);
-		ex_texture.setFlip(TEXTURE_FLIP_KIND_DRAIN);
-		ex_texture.destRect.x = 859;
-
-		ex_segment_texture.setDrainKind(METER_DRAIN_KIND_RIGHT);
-		ex_segment_texture.setFlip(TEXTURE_FLIP_KIND_DRAIN);
-		ex_segment_texture.destRect.x = 859;
-		
-		bar_texture.setFlip(TEXTURE_FLIP_KIND_NO_DRAIN);
-		bar_texture.destRect.x = -42;
+		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_texture.flip_h();
+		ex_segment_texture.flip_h();
+		bar_texture.flip_h();
 	}
-	ex_texture.destRect.y = 954;
-	ex_segment_texture.destRect.y = 954;
-	bar_texture.destRect.y = 900;
 }
 
 PlayerIndicator::PlayerIndicator() {}

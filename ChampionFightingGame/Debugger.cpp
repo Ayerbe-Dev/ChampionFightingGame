@@ -1,4 +1,6 @@
 #include "debugger.h"
+#include "Fighter.h"
+
 extern SDL_Renderer* g_renderer;
 
 

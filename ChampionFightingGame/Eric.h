@@ -3,8 +3,8 @@
 #include "Fighter.h"
 #include "Projectile.fwd.h"
 #include "Projectile.h"
-#include "Object.fwd.h"
-#include "Object.h"
+#include "BattleObject.fwd.h"
+#include "BattleObject.h"
 #include "Eric.fwd.h"
 #include "utils.h"
 

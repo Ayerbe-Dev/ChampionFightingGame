@@ -8,7 +8,6 @@ RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterAccessor* fight
 	load_params();
 	loadRoyFireballACMD();
 	loadRoyFireballStatusFunctions();
-	this->base_texture = loadSDLTexture("resource/projectile/roy_fireball/sprite/sprite.png");
 	this->fighter_accessor = fighter_accessor;
 	superInit();
 }

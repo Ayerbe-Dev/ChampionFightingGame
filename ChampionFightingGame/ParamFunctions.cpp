@@ -1,4 +1,4 @@
-#include "Object.h"
+#include "BattleObject.h"
 
 /// <summary>
 /// Search the specified param table for a given stat, and return the value of that stat. If no table is given, the object's stat table is used by default.
@@ -6,7 +6,7 @@
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or 0 if the value is not found.</returns>
-int Object::get_param_int(string param, Param param_table[]) {
+int BattleObject::get_param_int(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -29,7 +29,7 @@ int Object::get_param_int(string param, Param param_table[]) {
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or 0.0 if the value is not found.</returns>
-float Object::get_param_float(string param, Param param_table[]) {
+float BattleObject::get_param_float(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -52,7 +52,7 @@ float Object::get_param_float(string param, Param param_table[]) {
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or "" if the value is not found.</returns>
-string Object::get_param_string(string param, Param param_table[]) {
+string BattleObject::get_param_string(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}
@@ -75,7 +75,7 @@ string Object::get_param_string(string param, Param param_table[]) {
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or false if the value is not found.</returns>
-bool Object::get_param_bool(string param, Param param_table[]) {
+bool BattleObject::get_param_bool(string param, Param param_table[]) {
 	if (!param_table) {
 		param_table = this->stat_table;
 	}

@@ -1,13 +1,14 @@
 #pragma once
 #include "utils.h"
 #include "Animation.h"
-//#include "Model.h"
 #include "GameCoordinate.h"
-#include "Object.fwd.h"
+#include "BattleObject.fwd.h"
 #include "Box.fwd.h"
 #include "Box.h"
 #include "ParamTable.h"
 #include "PlayerInfo.fwd.h"
+
+#include "RenderObject.h"
 
 class MoveScript {
 public:
@@ -19,16 +20,16 @@ public:
 	MoveScript(string name, function<void()> move_script, int id);
 };
 
-class Object {
+class BattleObject : public RenderObject {
 public:
-	Object();
+	BattleObject();
 
 	int id;
 	int object_type;
-	GameCoordinate pos;
-	GameCoordinate prevpos;
-	bool facing_right{ true };
+	vec3 prev_pos;
+
 	float facing_dir{ 1.0 };
+	bool facing_right = true;
 	u32 status_kind{ FIGHTER_STATUS_WAIT };
 	u32 situation_kind{ FIGHTER_SITUATION_GROUND };
 
@@ -39,18 +40,16 @@ public:
 	SDL_Rect jostle_box{};
 	SDL_Rect base_jostle_box{};
 
-	Animation* anim_kind;
-	Animation* prev_anim_kind;
-	Animation animation_table[ANIM_TABLE_LENGTH];
-	int prev_anim_max_ticks;
-	int prev_anim_frame;
-	int prev_anim_render_frame;
+	Animation3D animation_table[ANIM_TABLE_LENGTH];
+	Animation3D* anim_kind;
+	Animation3D* prev_anim_kind;
 
-	int frame;
-	int render_frame;
-	int ticks;
-	int max_ticks;
-	int last_excute_frame{ 0 };
+	float prev_anim_rate;
+	float prev_anim_frame;
+
+	float frame;
+	float rate;
+	float last_excute_frame{ 0 };
 	int excute_count{ 0 };
 	int attempted_excutes{ 0 };
 
@@ -91,9 +90,6 @@ public:
 	bool get_param_bool(string param, Param param_table[] = {});
 
 	string resource_dir;
-	SDL_Texture* base_texture;
-	SDL_Rect base_rect;
-	SDL_Rect frame_rect;
 
 	void set_current_move_script(string anim_name);
 	bool is_excute_frame(int frame);

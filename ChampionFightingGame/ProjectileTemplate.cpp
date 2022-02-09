@@ -8,7 +8,6 @@ ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterA
 	load_params();
 	loadProjectileTemplateACMD();
 	loadProjectileTemplateStatusFunctions();
-	this->base_texture = loadSDLTexture("resource/projectile/template/sprite/sprite.png");
 	this->fighter_accessor = fighter_accessor;
 	superInit();
 }

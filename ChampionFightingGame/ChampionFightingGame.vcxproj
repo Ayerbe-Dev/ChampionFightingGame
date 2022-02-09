@@ -285,7 +285,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Norman.cpp" />
     <ClCompile Include="NormanMoves.cpp" />
     <ClCompile Include="NormanStatus.cpp" />
-    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="BattleObject.cpp" />
     <ClCompile Include="Opening.cpp" />
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="ParamTable.cpp">
@@ -312,6 +312,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="RamonaMoves.cpp" />
     <ClCompile Include="RamonaStatus.cpp" />
     <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
     <ClCompile Include="RoyMoves.cpp" />
@@ -397,8 +398,8 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Nightsaber.h" />
     <ClInclude Include="Norman.fwd.h" />
     <ClInclude Include="Norman.h" />
-    <ClInclude Include="Object.fwd.h" />
-    <ClInclude Include="Object.h" />
+    <ClInclude Include="BattleObject.fwd.h" />
+    <ClInclude Include="BattleObject.h" />
     <ClInclude Include="ObjectKind.h" />
     <ClInclude Include="Opening.h" />
     <ClInclude Include="Options.h" />
@@ -418,6 +419,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Ramona.fwd.h" />
     <ClInclude Include="Ramona.h" />
     <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="RenderObject.h" />
     <ClInclude Include="Roy.fwd.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyFireball.fwd.h" />

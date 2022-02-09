@@ -14,6 +14,7 @@ Fighter::Fighter(PlayerInfo* player_info) {
 }
 
 void Fighter::fighter_main() {
+	model.set_bones(frame, anim_kind);
 	Fighter* that = fighter_accessor->fighter[!id];
 	/*
 				   _.-,
@@ -40,7 +41,7 @@ void Fighter::fighter_main() {
 	
 	create_jostle_rect(GameCoordinate{ -20, 25 }, GameCoordinate{ 20, 0 });
 
-	prevpos = pos;
+	prev_pos = pos;
 
 	if (canStep()) {
 		stepAnimation();
@@ -71,30 +72,18 @@ void Fighter::fighter_main() {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
 	}
 
-	if (anim_kind->move_dir != 0) {
-		if (add_pos((abs(getRenderPos(this, false).x - getRenderPos(this, true).x) / anim_kind->length + 1) * facing_dir * anim_kind->move_dir, 0, true)) {
-			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = false;
-			if (anim_kind->force_center == 1) {
-				fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER] = false;
-			}
-		}
-	}
-	if (fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION]) {
-		add_pos(fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] / get_param_int(anim_kind->name + "_frames", param_table), 0);
-	}
-
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
+/*	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (that->status_kind != FIGHTER_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
-				add_pos(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0);
+				add_pos(vec3(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0, 0.0));
 			}
 			else {
-				that->add_pos(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0);
+				that->add_pos(vec3(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0, 0.0));
 			}
 		}
-	}
+	}*/
 
 	processInput();
 
@@ -106,25 +95,19 @@ void Fighter::fighter_main() {
 		fighter_int[FIGHTER_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
 	}
 
-	int width;
-	int height;
-	SDL_QueryTexture(base_texture, NULL, NULL, &width, &height);
-	pos.x_spr_offset = width / 2;
-	pos.y_spr_offset = height;
-
 	update_hitbox_pos();
 	update_grabbox_pos();
 	update_hurtbox_pos();
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
-				if (!add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0)) {
-					that->add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0);
+				if (!add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0, 0))) {
+					that->add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
 				}
 			}
 			else {
-				if (!add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME])) {
-					that->add_pos(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0);
+				if (!add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
+					that->add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
 				}
 			}
 		}

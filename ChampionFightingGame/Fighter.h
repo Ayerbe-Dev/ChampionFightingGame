@@ -1,5 +1,5 @@
 #pragma once
-#include "Object.h"
+#include "BattleObject.h"
 #include "Projectile.h"
 #include "utils.h"
 #include <string>
@@ -18,7 +18,7 @@
 #include "Battle.h"
 #include "SoundManager.h"
 
-class Fighter: public Object {
+class Fighter: public BattleObject {
 public:
 	//Haha interface go brrrrrrrrrrrr
 
@@ -31,9 +31,11 @@ public:
 	int chara_kind;
 	string chara_name;
 	int music_kind;
+
 	FighterAccessor* fighter_accessor;
 	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
 	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
+
 	bool requesting_priority = false; //Checked by the fighter_accessor to determine which render priority value to use
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
@@ -67,14 +69,13 @@ public:
 	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset); //Sets up the player's jostle box, called multiple times every frame
 
 	//Projectiles
-	void init_projectile(int id, GameCoordinate pos); //Marks a projectile as active and moves it to the given position relative to the player
+	void init_projectile(int id, vec3 pos); //Marks a projectile as active and moves it to the given position relative to the player
 	void destroy_projectile(int id); //Marks a projectile as inactive
 
 	//Setup
 
 	void superInit(int id);
 	void load_anim_list();
-	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
 	void loadStatusScripts();
 	void virtual loadCharaMoveScripts() {};
 	void loadFighterSounds();
@@ -140,8 +141,10 @@ public:
 		//position on each coordinate, so an invalid x but valid y will only modify your x. If prev is false, you'll go to the closest valid position
 		//to where you want to go to, so if your x would be higher than the window bounds, your x position would be set to the window bounds.
 
-	bool add_pos(float x, float y, bool prev = false);
-	bool set_pos(float x, float y, bool prev = false);
+	bool add_pos(vec3 pos, bool prev = false);
+	bool add_pos(float x, float y, float z = 0.0, bool prev = false);
+	bool set_pos(vec3 pos, bool prev = false);
+	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow
@@ -154,7 +157,7 @@ public:
 		//Use in combination with change_opponent_status to throw someone.
 	void set_opponent_angle(double angle); //Sets the opponent's angle relative to their facing dir.
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
-	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0); //Changes the opponent's animation
+	void change_opponent_anim(string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
 
 	//Hitbox
 	
@@ -181,9 +184,9 @@ public:
 	//Animation
 	
 	void reenter_last_anim();
-	bool change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
+	bool change_anim(string animation_name, float rate = 1.0, float entry_frame = 0.0);
 	bool change_anim_inherit_attributes(string animation_name, bool verbose = true,  bool continue_script = true);
-	void startAnimation(Animation* animation);
+	void startAnimation(Animation3D* animation);
 	bool canStep();
 	void stepAnimation();
 	void forceStepThroughHitlag();

@@ -140,7 +140,6 @@ static int LoadBattle(void* void_BattleLoader) {
 	stage = battle_loader->player_info[rng]->stage; 
 	battle_loader->loaded_items++;
 	string background_texture = stage.resource_dir + "background.png";
-	stage.pBackgroundTexture = loadSDLTexture(background_texture.c_str());
 	battle_loader->loaded_items++;
 	frameTimeDelay();
 

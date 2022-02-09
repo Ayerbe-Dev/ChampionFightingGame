@@ -3,7 +3,7 @@
 #include "Fighter.fwd.h"
 #include "Fighter.h"
 #include "Projectile.h"
-#include "Object.h"
+#include "BattleObject.h"
 #include "FighterAccessor.h"
 #include "Battle.fwd.h"
 #include "GameManager.h"

@@ -1,8 +1,8 @@
 #pragma once
 #include "utils.h"
 #include "Button.h"
-#include "Fighter.h"
 #include "SDL_rect.h"
+#include "Fighter.h"
 
 class Debugger {
 public:

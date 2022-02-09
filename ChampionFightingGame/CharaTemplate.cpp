@@ -18,7 +18,6 @@ CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* f
 	loadCharaTemplateStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_CHARA_TEMPLATE;
-	this->base_texture = loadSDLTexture("resource/chara/template/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

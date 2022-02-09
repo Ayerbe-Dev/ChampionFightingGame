@@ -13,7 +13,7 @@
 #include "SoundManager.h"
 #include "GameTexture.h"
 
-#include "Object.h"
+#include "BattleObject.h"
 #include "Fighter.h"
 #include "FighterAccessor.h"
 #include "Roy.fwd.h"
@@ -76,28 +76,22 @@ extern bool debug;
 /// </summary>
 /// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
 void battle_main(GameManager* game_manager) {
-/*	Shader shader("vertex_no_anim.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&shader);
-	Model model("resource/chara/roy/model/model.dae");
-
-	vec3 model_pos = vec3(0.0, -6.0, -6.0);
-	vec3 model_rot = vec3(0.0, 0.0, 0.0);
-	vec3 model_scale = vec3(0.05, 0.05, 0.05);*/
-
-	PlayerInfo *player_info[2];
+	PlayerInfo* player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
 	const Uint8* keyboard_state;
 
-	BattleLoader *battle_loader = new BattleLoader;
-	battle_loader->player_info[0] = player_info[0];
-	battle_loader->player_info[1] = player_info[1];
+	GameLoader* game_loader = new GameLoader(16);
+	SDL_Thread* loading_thread;
+	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
 
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	int rng = rand() % 2;
+	Stage stage = player_info[rng]->stage;
+	stage.background.init(stage.resource_dir + "background.png");
+
 	bool gaming = true;
-	bool loading = true;
 	bool visualize_boxes = false;
 	int next_state = GAME_STATE_MENU;
 
@@ -106,110 +100,78 @@ void battle_main(GameManager* game_manager) {
 	debugger = Debugger();
 	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
 
-	GameCoordinate debug_anchor[2] = {{0,0}};
-	GameCoordinate debug_offset[2] = {{0,0}};
+	FighterAccessor* fighter_accessor = new FighterAccessor;
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-	SDL_Texture* pGui = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pGui, SDL_BLENDMODE_BLEND);
+	GameCoordinate debug_anchor[2] = { {0,0} };
+	GameCoordinate debug_offset[2] = { {0,0} };
 
-	GameTimer timer;
-	Stage stage;
-	IObject* p1 = NULL;
-	IObject* p2 = NULL;
-	Fighter* fighter[2] = {NULL, NULL};
+	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, player_info[0]->chara_kind, 0, player_info[0], fighter_accessor);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, player_info[1]->chara_kind, 1, player_info[1], fighter_accessor);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	Fighter* fighter[2];
+	fighter[0] = p1->get_fighter();
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	fighter[1] = p2->get_fighter();
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
 	HealthBar health_bar[2];
 	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
-	FighterAccessor* fighter_accessor = NULL;
 
-	SDL_Thread* loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadBattle, "Init.zip", (void*)battle_loader);
-	SDL_DetachThread(loading_thread);
-
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-
-	while (loading) {
-		frameTimeDelay();
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
-			}
-		}
-		
-		load_icon.move();
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->player_info = player_info[i];
+		fighter[i]->pos.x = 0;
+		fighter_accessor->fighter[i] = fighter[i];
+		fighter[i]->fighter_accessor = fighter_accessor;
+		fighter[i]->superInit(i);
 		SDL_LockMutex(file_mutex);
-
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		loadingSplash.render();
-		int total_items = 17;
-		loadingBar.setTargetPercent(((float)battle_loader->loaded_items / total_items), 0.3);
-		loadingBar.render();
-		loadingFlavor.render();
-		load_icon.texture.render();
-		
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-
+		game_loader->loaded_items++;
 		SDL_UnlockMutex(file_mutex);
-
-		if (battle_loader->finished) {
-			if (!battle_loader->can_ret) {
-				timer = battle_loader->timer;
-				stage = battle_loader->stage;
-
-				p1 = battle_loader->p1;
-				p2 = battle_loader->p2;
-				fighter_accessor = battle_loader->fighter_accessor;
-				for (int i = 0; i < 2; i++) {
-					health_bar[i] = battle_loader->health_bar[i];
-					ex_bar[i] = battle_loader->ex_bar[i];
-					player_indicator[i] = battle_loader->player_indicator[i];
-					fighter[i] = battle_loader->fighter[i];
-					fighter[i]->player_info = player_info[i];
-				}
-			}
-			battle_loader->can_ret = true;
-
-			SDL_PumpEvents();
-			keyboard_state = SDL_GetKeyboardState(NULL);
-
-			for (int i = 0; i < 2; i++) {
-				player_info[i]->check_controllers();
-				player_info[i]->poll_buttons(keyboard_state);
-				if (player_info[i]->is_any_inputs()) {
-					loading = false;
-
-					//We don't want the option the player uses to exit the loading screen to also be capable of updating the buffer
-
-					for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
-						player_info[i]->poll_buttons(keyboard_state);
-						player_info[!i]->poll_buttons(keyboard_state);
-					}
-				}
-			}
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			fighter[i]->projectiles[i2]->owner_id = i;
 		}
+		health_bar[i] = HealthBar(fighter[i]);
+		SDL_LockMutex(file_mutex);
+		game_loader->loaded_items++;
+		SDL_UnlockMutex(file_mutex);
+		ex_bar[i] = ExBar(fighter[i]);
+		SDL_LockMutex(file_mutex);
+		game_loader->loaded_items++;
+		SDL_UnlockMutex(file_mutex);
+		player_indicator[i] = PlayerIndicator(fighter[i]);
+		SDL_LockMutex(file_mutex);
+		game_loader->loaded_items++;
+		SDL_UnlockMutex(file_mutex);
+	}
+	GameTimer timer(99);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	g_soundmanager.fighter_accessor = fighter_accessor;
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->loadCharaSounds();
+		SDL_LockMutex(file_mutex);
+		game_loader->loaded_items++;
+		SDL_UnlockMutex(file_mutex);
 	}
 
-	/* Input handler for the new loading thread; only to be used in game_state_battle which doesn't use the new system yet.
-		bool loading = true;
+	bool loading = true;
 	while (loading) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
@@ -230,12 +192,10 @@ void battle_main(GameManager* game_manager) {
 			}
 		}
 	}
-	*/
-
-	SDL_SetRenderTarget(g_renderer, pScreenTexture);
-	SDL_RenderClear(g_renderer);
+	game_loader->finished = true;
 	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+	SDL_RenderClear(g_renderer);
+	SDL_RenderPresent(g_renderer);
 	
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
 		g_soundmanager.playMusic(stage.default_music_kind);
@@ -331,14 +291,14 @@ void battle_main(GameManager* game_manager) {
 					if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
 						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-						if (fighter[i]->pos.x == fighter[!i]->pos.x) {
-							fighter[i]->facing_dir = 1.0;
-							fighter[i]->facing_right = true;
-							fighter[!i]->facing_dir = -1.0;
-							fighter[!i]->facing_right = false;
-						}
-						fighter[i]->add_pos(-1.0 * fighter[i]->facing_dir, 0);
-						fighter[!i]->add_pos(-1.0 * fighter[i]->facing_dir, 0);
+//						if (fighter[i]->pos.x == fighter[!i]->pos.x) {
+//							fighter[i]->facing_dir = 1.0;
+//							fighter[i]->facing_right = true;
+//							fighter[!i]->facing_dir = -1.0;
+//							fighter[!i]->facing_right = false;
+//						}
+//						fighter[i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+//						fighter[!i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
 
 						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
@@ -386,7 +346,6 @@ void battle_main(GameManager* game_manager) {
 					timer.Tick();
 					if (debugger.print_frames) {
 						cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame - 1 << endl;
-						cout << "Player " << debugger.target + 1 << " Render Frame: " << fighter[debugger.target]->render_frame - 1 << endl;
 						cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
 						cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
 						cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
@@ -410,26 +369,8 @@ void battle_main(GameManager* game_manager) {
 			}
 		}
 
-		/*
-			Rendering. The method for rendering relies on setting render targets. pScreenTexture is where all the scalable
-			textures are rendered. The GUI will be applied after the render target has been set back to the window.
-			After RenderTarget has been set, nothing has to be done with pScreenTexture untill it is time to SDL_Present
-			the content in pScreenTexture.
-		*/
-
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		SDL_SetRenderTarget(g_renderer, pGui);
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderClear(g_renderer);
-
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-
-		SDL_RenderCopy(g_renderer, stage.pBackgroundTexture, NULL, NULL);
 
 		int render_priority = 0;
 		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
@@ -444,33 +385,18 @@ void battle_main(GameManager* game_manager) {
 		else {
 			render_priority = fighter_accessor->render_priority_no_req;
 		}
-		SDL_Rect render_pos;
-		SDL_RendererFlip flip;
 
-		render_pos = getRenderPos(fighter[!render_priority], fighter[!render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
-		flip = fighter[!render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-		SDL_RenderCopyEx(g_renderer, fighter[!render_priority]->anim_kind->spritesheet, &(fighter[!render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip);
-
-		render_pos = getRenderPos(fighter[render_priority], fighter[render_priority]->fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER]);
-		flip = fighter[render_priority]->facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-		SDL_RenderCopyEx(g_renderer, fighter[render_priority]->anim_kind->spritesheet, &(fighter[render_priority]->frame_rect), &render_pos, (const double)fighter[!render_priority]->angle, NULL, flip);
-
-//		g_rendermanager.render(&model, &shader, &model_pos, &model_rot, &model_scale);
+		fighter[!render_priority]->render();
+		fighter[render_priority]->render();
 
 		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-				SDL_SetRenderTarget(g_renderer, pGui);
-				float id_ope = -1;
-				if (fighter[i]->id == 1) {
-					id_ope *= -1;
-				}
-				draw_text("FiraCode-Regular.ttf", to_string(fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), { id_ope * 500, WINDOW_HEIGHT * 0.75 }, 200, 255, 0, 0, 255);
-				SDL_SetRenderTarget(g_renderer, pScreenTexture);
+
 			}
 
 			//Projectile Renders
 
-			for (int o = 0; o < MAX_PROJECTILES; o++) {
+/*			for (int o = 0; o < MAX_PROJECTILES; o++) {
 				if (fighter[i]->projectiles[o]->id != -1) {
 					SDL_RendererFlip flip = SDL_FLIP_NONE;
 					if (!fighter[i]->projectiles[o]->facing_right) {
@@ -487,7 +413,7 @@ void battle_main(GameManager* game_manager) {
 					const double angle = (const double)fighter[i]->projectiles[o]->angle;
 					SDL_RenderCopyEx(g_renderer, fighter[i]->projectiles[o]->anim_kind->spritesheet, &(fighter[i]->projectiles[o]->frame_rect), &render_pos, angle, NULL, flip);
 				}
-			}
+			}*/
 		}
 
 		if (debug) {
@@ -500,7 +426,7 @@ void battle_main(GameManager* game_manager) {
 		check_attack_connections(fighter[0], fighter[1], visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
 
 		//Camera things
-		camera = updateCamera(fighter[0]->pos.getRenderCoodrinateX(), fighter[0]->pos.getRenderCoodrinateY(), fighter[1]->pos.getRenderCoodrinateX(), fighter[1]->pos.getRenderCoodrinateY(), debugger.zoom);
+//		camera = updateCamera(fighter[0]->pos.getRenderCoodrinateX(), fighter[0]->pos.getRenderCoodrinateY(), fighter[1]->pos.getRenderCoodrinateX(), fighter[1]->pos.getRenderCoodrinateY(), debugger.zoom);
 
 		//The tag system doesn't play nice with the render offsets I've been working on, we can reimplement it later but for now it's easier to just not think about
 
@@ -523,13 +449,13 @@ void battle_main(GameManager* game_manager) {
 			}
 		}*/
 
-		SDL_SetRenderTarget(g_renderer, pGui); //set target to gui layer
 		for (int i = 0; i < 2; i++) {
 			
 			//The health bar and the regular EX bar target %s are pretty straightforward, and we can update them every frame...
 
-			health_bar[i].health_texture.setTargetPercent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
-			ex_bar[i].ex_texture.setTargetPercent(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex);
+			health_bar[i].health_texture.scale_right_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
+
+			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
 			//...but the segmented EX bar has to be a diva about things because it won't move unless it can look pretty doing it
 
@@ -539,10 +465,10 @@ void battle_main(GameManager* game_manager) {
 			if (prev_segments != segments) { //If the value changed
 				if (prev_segments > segments) { //If it went down, lower the segmented bar to match the number of segments at the same rate as the
 					//regular bar
-					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments));
+					ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 6);
 				}
 				else if (!(segments % 2)) { //If it went up, and the number of segments is even, increase the segmented bar really fast
-					ex_bar[i].ex_segment_texture.setTargetPercent((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 0.2, 1);
+					ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 2);
 				}
 			}
 			
@@ -556,14 +482,8 @@ void battle_main(GameManager* game_manager) {
 		if (!debug) timer.Tick();
 		timer.Render();
 
-		SDL_SetRenderTarget(g_renderer, NULL); //set target to the window
-		SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 0);
-		SDL_RenderCopy(g_renderer, pScreenTexture, &camera, NULL); //render scale to window
-		SDL_RenderCopy(g_renderer, pGui, NULL, NULL); //render gui to window
 
-
-//		SDL_GL_SwapWindow(g_window);
-		SDL_RenderPresent(g_renderer); //finalize
+		SDL_GL_SwapWindow(g_window);
 	}
 
 	game_manager->update_state(next_state);
@@ -571,16 +491,16 @@ void battle_main(GameManager* game_manager) {
 	DONE_GAMING:
 
 	for (int i = 0; i < 2; i++) {
-		health_bar[i].bar_texture.clearTexture();
-		health_bar[i].health_texture.clearTexture();
-		ex_bar[i].bar_texture.clearTexture();
-		ex_bar[i].ex_texture.clearTexture();
+		health_bar[i].bar_texture.destroy();
+		health_bar[i].health_texture.destroy();
+		ex_bar[i].bar_texture.destroy();
+		ex_bar[i].ex_texture.destroy();
 	}
 	g_soundmanager.unloadSoundAll();
 	cleanup(p1, p2);
 
 	delete fighter_accessor;
-	delete battle_loader;
+	delete game_loader;
 }
 
 /// <summary>
@@ -1669,7 +1589,12 @@ Projectile* IObject::get_projectile() {
 }
 
 SDL_Rect getRenderPos(Fighter* fighter, bool force_center) {
-	SDL_Rect render_pos = fighter->anim_kind->anim_map[fighter->render_frame];
+	SDL_Rect render_pos;
+	render_pos.x = 0;
+	render_pos.y = 0;
+	render_pos.w = 0;
+	render_pos.h = 0;
+/*	SDL_Rect render_pos = fighter->anim_kind->anim_map[fighter->render_frame];
 	if (force_center) {
 		render_pos.x = fighter->pos.getRenderCoodrinateX();
 	}
@@ -1688,7 +1613,7 @@ SDL_Rect getRenderPos(Fighter* fighter, bool force_center) {
 			render_pos.x -= (render_pos.w - sprite_width);
 		}
 		render_pos.h = height;
-	}
+	}*/
 
 	return render_pos;
 }

@@ -1,5 +1,5 @@
 #include "Box.h"
-#include "Object.h"
+#include "BattleObject.h"
 #include "utils.h"
 
 
@@ -17,7 +17,7 @@ Hitbox::Hitbox() {
 	The version of the Hitbox func used by players
 */
 
-Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+Hitbox::Hitbox(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
 	int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
@@ -81,7 +81,7 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 /*
 	The version of the Hitbox func used by projectiles
 */
-Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+Hitbox::Hitbox(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 	GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, 
@@ -135,7 +135,7 @@ Hitbox::Hitbox(Object* object, int id, int multihit, float damage, float chip_da
 	they shouldn't add it a second time, hence the second arg.
 */
 
-void Hitbox::update_pos(Object * object, bool add_window_width) {
+void Hitbox::update_pos(BattleObject * object, bool add_window_width) {
 	GameCoordinate anchor;
 	GameCoordinate offset;
 	anchor = init_anchor;
@@ -186,7 +186,7 @@ Grabbox::Grabbox() {
 	make an unblockable projectile that tells the attacker to create a grabbox at the defender's location and handles it from there.
 */
 
-Grabbox::Grabbox(Object* object, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
+Grabbox::Grabbox(BattleObject* object, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
 	u32 defender_status_if_hit, bool use_player_pos) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
@@ -217,7 +217,7 @@ Grabbox::Grabbox(Object* object, int id, GameCoordinate anchor, GameCoordinate o
 	this->use_player_pos = use_player_pos;
 }
 
-void Grabbox::update_pos(Object* object) {
+void Grabbox::update_pos(BattleObject* object) {
 	GameCoordinate anchor;
 	GameCoordinate offset;
 	anchor = init_anchor;
@@ -256,7 +256,7 @@ Hurtbox::Hurtbox() {
 	Hurtboxes will never use a global position
 */
 
-Hurtbox::Hurtbox(Object* object, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
+Hurtbox::Hurtbox(BattleObject* object, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
 	this->init_anchor = anchor;
 	this->init_offset = offset;
 	anchor.x = ((anchor.x + (object->pos.x * object->facing_dir)) * object->facing_dir) + WINDOW_WIDTH / 2;
@@ -276,7 +276,7 @@ Hurtbox::Hurtbox(Object* object, int id, GameCoordinate anchor, GameCoordinate o
 	this->intangible_kind = intangible_kind;
 }
 
-void Hurtbox::update_pos(Object *object) {
+void Hurtbox::update_pos(BattleObject *object) {
 	GameCoordinate anchor;
 	GameCoordinate offset;
 	anchor = init_anchor;

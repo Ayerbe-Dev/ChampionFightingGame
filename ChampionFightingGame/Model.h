@@ -58,6 +58,7 @@ private:
 
 class Model {
 public:
+	Model();
 	Model(string path);
 	~Model();
 	void load_model(string path);

@@ -8,7 +8,7 @@ public:
 	int stage_kind;
 	int default_music_kind;
 	string resource_dir;
-	SDL_Texture* pBackgroundTexture;
+	GameTextureNew background;
 
 	Stage();
 	Stage(int stage_kind, string stage_name);

@@ -14,8 +14,8 @@ void Projectile::load_anim_list() {
 	string frame_count;
 	for (int i = 0; anim_list >> name; i++) {
 		anim_list >> path >> frame_count;
-		Animation3D anim(name, path, model);
-		animation_table.push_back(anim);
+		Animation3D anim(name, path, &model);
+		animation_table[i] = anim;
 	}
 	anim_list.close();
 }

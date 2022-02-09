@@ -6,7 +6,6 @@ void Atlas::loadCharaMoveScripts() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 8;
 			new_hurtbox(0, GameCoordinate{ -9, 242 }, GameCoordinate{ 24, 204 }); //head
 			new_hurtbox(1, GameCoordinate{ 51,204 }, GameCoordinate{ -45, 3 }); //torso
 			new_hurtbox(2, GameCoordinate{ -39, 210 }, GameCoordinate{ -8, 202 }); //extra bit
@@ -39,7 +38,6 @@ void Atlas::loadCharaMoveScripts() {
 	});
 	script("jump", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 8;
 			new_hurtbox(0, GameCoordinate{ -9, 242 }, GameCoordinate{ 24, 204 }); //test
 			new_hurtbox(1, GameCoordinate{ 51,204 }, GameCoordinate{ -45, 3 });
 			new_hurtbox(2, GameCoordinate{ -39, 210 }, GameCoordinate{ -8, 202 });
@@ -97,7 +95,6 @@ void Atlas::loadCharaMoveScripts() {
 			new_hurtbox(1, GameCoordinate{ 44, 182 }, GameCoordinate{ -34, 1980 });
 		}
 		if (is_excute_frame(2)) {
-			max_ticks = 4;
 			new_hitbox(1, 0, 30, 5, 1.2, 1, GameCoordinate{ -28,183 }, GameCoordinate{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
 		}
 		if (is_excute_wait(3)) {

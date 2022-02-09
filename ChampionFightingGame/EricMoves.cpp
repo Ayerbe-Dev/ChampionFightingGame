@@ -6,7 +6,6 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 3;
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -21,7 +20,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("walk_b", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -29,7 +28,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("dash_f", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -37,7 +36,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("dash_b", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -50,7 +49,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("crouch", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 70 });
 		}
 	});
@@ -114,12 +113,12 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("parry_start", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 4;
+			
 		}
 	});
 	script("parry_start_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 4;
+			
 		}
 	});
 	script("parry_mid", [this]() {
@@ -136,17 +135,17 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("hitstun_parry", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 5;
+			
 		}
 	});
 	script("hitstun_parry_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 5;
+			
 		}
 	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -161,7 +160,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("stand_mp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -176,7 +175,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("stand_hp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -219,7 +218,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("crouch_lp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -38, 0 }, GameCoordinate{ 45, 71 });
 		}
 		if (is_excute_frame(4)) {
@@ -235,7 +234,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("crouch_mp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -38, 0 }, GameCoordinate{ 45, 71 });
 		}
 		if (is_excute_frame(4)) {
@@ -251,7 +250,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("crouch_hp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -45, 0 }, GameCoordinate{ 45, 25 });
 			new_hurtbox(1, GameCoordinate{ -30, 20 }, GameCoordinate{ 25, 73 });
 		}
@@ -273,7 +272,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("crouch_hk", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 		}
 		if (is_excute_frame(3)) {
 
@@ -293,7 +292,7 @@ void Eric::loadCharaMoveScripts() {
 			new_hurtbox(3, GameCoordinate{ 5, 55 }, GameCoordinate{ 40, 95 });
 		}
 		if (is_excute_wait(1)) {
-			max_ticks = 2;
+			
 			new_hurtbox(1, GameCoordinate{ -15, 10 }, GameCoordinate{ 15, 75 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 75 });
 			new_hurtbox(3, GameCoordinate{ 5, 25 }, GameCoordinate{ 45, 75 });
@@ -308,7 +307,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("jump_mp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -55, 15 }, GameCoordinate{ 0, 100 });
 			new_hurtbox(1, GameCoordinate{ -10, 25 }, GameCoordinate{ 27, 80 });
 			new_hurtbox(2, GameCoordinate{ -65, 70 }, GameCoordinate{ 5, 100 });
@@ -331,7 +330,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("jump_hp", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -40, 25 }, GameCoordinate{ 40, 65 });
 			new_hurtbox(1, GameCoordinate{ -30, 30 }, GameCoordinate{ 30, 110 });
 		}
@@ -360,7 +359,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("grab", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -375,7 +374,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
@@ -389,7 +388,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 20);
@@ -408,7 +407,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("grab_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			new_hurtbox(0, GameCoordinate{ -35, 0 }, GameCoordinate{ 37, 35 });
 			new_hurtbox(1, GameCoordinate{ -25, 0 }, GameCoordinate{ 20, 110 });
 			new_hurtbox(2, GameCoordinate{ -15, 55 }, GameCoordinate{ 35, 95 });
@@ -423,7 +422,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
@@ -437,7 +436,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
 			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 20);
@@ -511,7 +510,7 @@ void Eric::loadCharaMoveScripts() {
 	});
 	script("wakeup", [this]() {
 		if (is_excute_frame(0)) {
-			max_ticks = 2;
+			
 		}
 	});
 	script("crumple", [this]() {
@@ -540,7 +539,7 @@ void Eric::loadCharaMoveScripts() {
 			}
 		}
 		if (is_excute_frame(4)) {
-			max_ticks = 2;
+			
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(1, 0, 60, 5, 1.2, 1, GameCoordinate{ 15,55 }, GameCoordinate{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true);
 			}

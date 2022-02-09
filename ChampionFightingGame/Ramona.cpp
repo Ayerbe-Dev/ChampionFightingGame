@@ -18,7 +18,6 @@ Ramona::Ramona(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 	loadRamonaStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_RAMONA;
-	this->base_texture = loadSDLTexture("resource/chara/ramona/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

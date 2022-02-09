@@ -18,7 +18,6 @@ Nightsaber::Nightsaber(int id, PlayerInfo* player_info, FighterAccessor* fighter
 	loadNightsaberStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_NIGHTSABER;
-	this->base_texture = loadSDLTexture("resource/chara/nightsaber/sprite/sprite.png");
 
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();

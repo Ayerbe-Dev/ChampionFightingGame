@@ -52,8 +52,7 @@ void Fighter::set_opponent_angle(double angle) {
 }
 
 void Fighter::set_opponent_thrown_ticks() {
-	fighter_accessor->fighter[!id]->max_ticks = (((anim_kind->length - 1) / max_ticks) / (fighter_accessor->fighter[!id]->anim_kind->length - 1)) - 1;
-	fighter_accessor->fighter[!id]->ticks = 0;
+	fighter_accessor->fighter[!id]->rate = (((anim_kind->length - 1) / this->rate) / (fighter_accessor->fighter[!id]->anim_kind->length - 1)) - 1;
 }
 
 void Fighter::change_opponent_anim(string anim_kind, float frame_rate, float entry_frame) {

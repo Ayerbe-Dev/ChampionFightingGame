@@ -1,19 +1,22 @@
 #pragma once
 #include <vector>
 #include "glm.hpp"
+#include "Shader.h"
 #include "Model.h"
-#include "Animation.h"
 
 using namespace glm;
 
 class RenderObject {
 public:
-	vec3 pos;
-	vec3 rot;
-	vec3 scale;
-
-	Model* model;
-	vector<Animation3D> animation_table;
+	RenderObject();
+	RenderObject(Model model, Shader shader);
 
 	void render();
+
+	vec3 pos = vec3(0.0);
+	vec3 rot = vec3(0.0);
+	vec3 scale = vec3(1.0);
+
+	Shader shader;
+	Model model;
 };

@@ -40,6 +40,7 @@ public:
 	SDL_Rect jostle_box{};
 	SDL_Rect base_jostle_box{};
 
+	Animation3D animation_table[ANIM_TABLE_LENGTH];
 	Animation3D* anim_kind;
 	Animation3D* prev_anim_kind;
 

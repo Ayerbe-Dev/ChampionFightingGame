@@ -142,7 +142,9 @@ public:
 		//to where you want to go to, so if your x would be higher than the window bounds, your x position would be set to the window bounds.
 
 	bool add_pos(vec3 pos, bool prev = false);
+	bool add_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos(vec3 pos, bool prev = false);
+	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow

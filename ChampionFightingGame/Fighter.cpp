@@ -14,6 +14,7 @@ Fighter::Fighter(PlayerInfo* player_info) {
 }
 
 void Fighter::fighter_main() {
+	model.set_bones(frame, anim_kind);
 	Fighter* that = fighter_accessor->fighter[!id];
 	/*
 				   _.-,
@@ -72,7 +73,7 @@ void Fighter::fighter_main() {
 	}
 
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
+/*	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (that->status_kind != FIGHTER_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
@@ -82,7 +83,7 @@ void Fighter::fighter_main() {
 				that->add_pos(vec3(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0, 0.0));
 			}
 		}
-	}
+	}*/
 
 	processInput();
 

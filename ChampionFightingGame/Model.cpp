@@ -2,6 +2,8 @@
 #include <gtx/string_cast.hpp>
 using namespace glm;
 
+Model::Model() {}
+
 Model::Model(string path) {
 	load_model(path);
 }

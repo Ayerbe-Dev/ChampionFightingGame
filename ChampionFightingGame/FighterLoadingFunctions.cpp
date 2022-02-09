@@ -1,5 +1,7 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
+#include "RenderManager.h"
+extern RenderManager g_rendermanager;
 
 void Fighter::superInit(int id) {
 	this->id = id;
@@ -7,12 +9,15 @@ void Fighter::superInit(int id) {
 	//these initial gamecoord values get overwritten almost immediately. why are we still here, just to suffer?
 
 	if (id == 0) {
-		pos = vec3(200, 0, 0);
+		pos = vec3(0, 0, 0);
 	}
 	else if (id == 1) {
-		pos = vec3(-200, 0, 0);
+		pos = vec3(0, 0, 0);
 	}
-
+	scale = vec3(0.05);
+	shader.init("vertex_main.glsl", "fragment_main.glsl");
+	g_rendermanager.update_shader_lights(&shader);
+	model.load_model(resource_dir + "/model/model.dae");
 	if (!crash_to_debug) {
 		load_anim_list();
 	}
@@ -50,15 +55,14 @@ void Fighter::load_anim_list() {
 
 	string name;
 	string path;
-	string frame_count;
 	string faf;
-	string force_center;
-	string move_dir;
 	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path >> frame_count >> faf >> force_center >> move_dir;
-		Animation3D anim(name, path, model);
+		anim_list >> path >> faf;
+		name = ymlChopString(name);
+		path = ymlChopString(path);
+		Animation3D anim(name, resource_dir + "/anims/" + path, &model);
 		anim.faf = ymlChopInt(faf);
-		animation_table.push_back(anim);
+		animation_table[i] = anim;
 	}
 	anim_list.close();
 }

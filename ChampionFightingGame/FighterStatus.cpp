@@ -1022,7 +1022,7 @@ void Fighter::exit_status_launch_start() {
 
 void Fighter::status_launch() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 1) {
-		max_ticks = ceil((float)get_launch_ticks() / (float)(anim_kind->length));
+		rate = ceil((float)get_launch_ticks() / (float)(anim_kind->length));
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
@@ -1100,12 +1100,12 @@ void Fighter::status_landing() {
 
 void Fighter::enter_status_landing() {
 	Fighter* that = fighter_accessor->fighter[!id];
-	if (that->pos.x - that->pos.x_spr_offset / 2 == WINDOW_WIDTH / -2 && pos.x - pos.x_spr_offset / 2 == WINDOW_WIDTH / -2) {
-		that->pos.x += 20;
-	}
-	if (that->pos.x + that->pos.x_spr_offset / 2 == WINDOW_WIDTH / 2 && pos.x + pos.x_spr_offset / 2 == WINDOW_WIDTH / 2) {
-		that->pos.x -= 20;
-	}
+//	if (that->pos.x - that->pos.x_spr_offset / 2 == WINDOW_WIDTH / -2 && pos.x - pos.x_spr_offset / 2 == WINDOW_WIDTH / -2) {
+//		that->pos.x += 20;
+//	}
+//	if (that->pos.x + that->pos.x_spr_offset / 2 == WINDOW_WIDTH / 2 && pos.x + pos.x_spr_offset / 2 == WINDOW_WIDTH / 2) {
+//		that->pos.x -= 20;
+//	}
 	fighter_int[FIGHTER_INT_LANDING_LAG] = 2;
 	change_anim("landing", -1, fighter_int[FIGHTER_INT_LANDING_LAG]);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;

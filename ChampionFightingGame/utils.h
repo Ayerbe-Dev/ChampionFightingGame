@@ -66,7 +66,7 @@ typedef unsigned long long u64;
 #define MOTION_SPECIAL_TIMER 11
 #define MAX_SOUNDS 20
 #define MAX_LAYERS 5
-#define FLOOR_GAMECOORD 60.0
+#define FLOOR_GAMECOORD 0.0
 #define MAX_BONE_INFLUENCE 4
 #define MAX_LIGHT_SOURCES 10
 #define MAX_SHADERS 4

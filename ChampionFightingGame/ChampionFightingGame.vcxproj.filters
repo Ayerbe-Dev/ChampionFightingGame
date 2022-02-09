@@ -171,7 +171,7 @@
     <ClCompile Include="Debugger.cpp">
       <Filter>Source Files\Global</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
+    <ClCompile Include="BattleObject.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Stage.cpp">
@@ -274,9 +274,6 @@
       <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="GameMenu.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTexture.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="UI.cpp">
@@ -456,9 +453,6 @@
     <ClCompile Include="Battle.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="StageSelect.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
@@ -480,17 +474,26 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
     <ClCompile Include="Bone.cpp">
-      <Filter>Source Files\Member</Filter>
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTexture.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -530,7 +533,7 @@
     <ClInclude Include="Nightsaber.fwd.h">
       <Filter>Forward Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Object.fwd.h">
+    <ClInclude Include="BattleObject.fwd.h">
       <Filter>Forward Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Menu.fwd.h">
@@ -596,7 +599,7 @@
     <ClInclude Include="DebugMenu.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="BattleObject.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Stage.h">
@@ -797,23 +800,26 @@
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\Deps</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
-      <Filter>Header Files\Member</Filter>
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Bone.h">
-      <Filter>Header Files\Member</Filter>
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="GameTexture.h">
-      <Filter>Header Files\Member</Filter>
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,36 +2,31 @@
 #include "Fighter.h"
 
 void Fighter::reenter_last_anim() {
-	max_ticks = prev_anim_max_ticks;
-	render_frame = prev_anim_render_frame;
+	rate = prev_anim_rate;
 	frame = prev_anim_frame;
 	set_current_move_script(prev_anim_kind->name);
 	startAnimation(prev_anim_kind);
 }
 
-bool Fighter::change_anim(string animation_name, int frame_rate, int entry_frame) {
+bool Fighter::change_anim(string animation_name, float frame_rate, float entry_frame) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
 
-	prev_anim_max_ticks = max_ticks;
+	prev_anim_rate = rate;
 	prev_anim_frame = frame;
-	prev_anim_render_frame = render_frame;
 
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
 			if (frame_rate != -1) {
-				max_ticks = frame_rate;
+				rate = frame_rate;
 				frame = entry_frame;
-				render_frame = entry_frame;
 			}
 			else {
-				max_ticks = ceil((float)entry_frame / (float)(animation_table[i].length));
+				rate = ceil((float)entry_frame / (float)(animation_table[i].length));
 				frame = 0;
-				render_frame = 0;
 			}
-			ticks = 0;
 
 			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
@@ -59,7 +54,7 @@ bool Fighter::change_anim_inherit_attributes(string animation_name, bool verbose
 	return false;
 }
 
-void Fighter::startAnimation(Animation* animation) {
+void Fighter::startAnimation(Animation3D* animation) {
 	int group = get_status_group();
 	if (group != STATUS_GROUP_NO_RENDER_PRIORITY && group != STATUS_GROUP_CROUCH && group != STATUS_GROUP_HITSTUN) {
 		fighter_accessor->render_priority = id;
@@ -74,37 +69,17 @@ void Fighter::startAnimation(Animation* animation) {
 		prev_anim_kind = anim_kind;
 	}
 	anim_kind = animation;
-	fighter_flag[FIGHTER_FLAG_FORCE_ANIM_CENTER] = (anim_kind->force_center != 0);
-	frame_rect = getFrame(render_frame, anim_kind);
-	pos.x_anim_offset = frame_rect.w / 2;
-	pos.y_anim_offset = frame_rect.h;
 }
 
 bool Fighter::canStep() {
 	attempted_excutes = 0;
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		frame++;
-		ticks++;
-
-		if (ticks >= max_ticks) {
-			ticks = 0;
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	else {
-		return false;
-	}
+	return fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0;
 }
 
 void Fighter::stepAnimation() {
-	int last_frame = render_frame;
-	frame_rect = getFrame(render_frame, anim_kind);
-	if (render_frame == anim_kind->length) {
-		render_frame = 0;
-		frame = 0;
+	float last_frame = frame;
+	if (frame >= anim_kind->length) {
+		frame = 0.0;
 		excute_count = 0;
 		clear_grabbox_all();
 		clear_hurtbox_all();
@@ -118,7 +93,7 @@ void Fighter::stepAnimation() {
 		}
 	}
 	else {
-		render_frame++;
+		frame += rate;
 	}
 	is_anim_end = last_frame > frame;
 }

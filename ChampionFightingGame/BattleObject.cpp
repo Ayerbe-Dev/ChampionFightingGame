@@ -1,4 +1,4 @@
-#include "Object.h"
+#include "BattleObject.h"
 #include "ParamTable.h"
 
 MoveScript::MoveScript() {
@@ -11,6 +11,6 @@ MoveScript::MoveScript(string name, function<void()> move_script, int id) {
 	this->id = id;
 }
 
-Object::Object() {
+BattleObject::BattleObject() {
 	this->id = -1;
 }

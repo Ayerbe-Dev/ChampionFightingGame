@@ -1,22 +1,21 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 
-bool Fighter::add_pos(float x, float y, bool prev) {
+bool Fighter::add_pos(vec3 pos, bool prev) {
 	Fighter* that = fighter_accessor->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
-	float prev_x = x;
+	vec3 prev_pos = pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
-	if (x == -0.0) {
-		x = 0.0;
+	if (pos.x == -0.0) {
+		pos.x = 0.0;
 	}
-	int prev_y = y;
-	if (y == -0.0) {
-		y = 0.0;
+	if (pos.y == -0.0) {
+		pos.y = 0.0;
 	}
-	if (isnan(x) || isnan(y)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
+	if (isnan(pos.x) || isnan(pos.y)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
 		//previous X/Y coords. This will make debugging easier.
-		char buffer_1[82];
-		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f. You probably", (id + 1), status_kind, prev_x, (float)prev_y);
+		char buffer_1[73];
+		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f, Pos Z: %f. You probably", (id + 1), status_kind, prev_pos.x, prev_pos.y, prev_pos.z);
 		char buffer_2[89];
 		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Add)", ((!id) + 1), that->status_kind);
 		fighter_accessor->fighter[0]->player_info->crash_reason = buffer_1;
@@ -28,14 +27,13 @@ bool Fighter::add_pos(float x, float y, bool prev) {
 
 	//Ok now to actually set some positions
 
-	GameCoordinate prevpos = pos; //Get the previous position
 	bool ret = true;
 
 	//Check if the front quarter or so of our sprite is inside of the front quarter of the opponent's BEFORE we changed the position. We'll check this
 	//again after and compare the values. Note: The reason we divide by 4 for the offset and not 2 is because we want the sprites to be able to partly 
 	//overlap and let the jostle boxes create a more natural looking pushback. 
 
-	float this_x_front = pos.x + (pos.x_spr_offset * facing_dir / 4);
+	float this_x_front = pos.x + (this->pos.x * facing_dir / 4);
 	float that_x_front = that->pos.x + (that->pos.x_spr_offset * that->facing_dir / 4);
 	bool opponent_right = this_x_front > that_x_front;
 

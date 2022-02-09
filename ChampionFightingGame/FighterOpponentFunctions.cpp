@@ -56,6 +56,6 @@ void Fighter::set_opponent_thrown_ticks() {
 	fighter_accessor->fighter[!id]->ticks = 0;
 }
 
-void Fighter::change_opponent_anim(string anim_kind, int frame_rate, int entry_frame) {
+void Fighter::change_opponent_anim(string anim_kind, float frame_rate, float entry_frame) {
 	fighter_accessor->fighter[!id]->change_anim(anim_kind, frame_rate, entry_frame);
 }

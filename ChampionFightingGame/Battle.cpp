@@ -13,7 +13,7 @@
 #include "SoundManager.h"
 #include "GameTexture.h"
 
-#include "Object.h"
+#include "BattleObject.h"
 #include "Fighter.h"
 #include "FighterAccessor.h"
 #include "Roy.fwd.h"

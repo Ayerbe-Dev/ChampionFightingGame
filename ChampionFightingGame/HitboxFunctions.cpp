@@ -1,11 +1,11 @@
-#include "Object.h"
+#include "BattleObject.h"
 
 /// <summary>
 /// Updates the position of a hitbox relative to the object. 
 /// </summary>
 /// <param name="add_window_width">: Whether or not to add the window width to the hitbox's new position, true by default. When called by projectiles,
 /// this arg should be false instead.</param>
-void Object::update_hitbox_pos(bool add_window_width) {
+void BattleObject::update_hitbox_pos(bool add_window_width) {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
 			hitboxes[i].update_pos(this, add_window_width);
@@ -19,7 +19,7 @@ void Object::update_hitbox_pos(bool add_window_width) {
 /// </summary>
 /// <param name="multihit">: The multihit index to check the activity of, -1 by default</param>
 /// <returns></returns>
-bool Object::is_hitbox_active(int multihit) {
+bool BattleObject::is_hitbox_active(int multihit) {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
 			if (hitboxes[i].multihit == multihit || multihit == -1) {
@@ -34,7 +34,7 @@ bool Object::is_hitbox_active(int multihit) {
 /// Clear the hitbox with the specified ID and reset the multihit flag if no other remaining hitboxes share its multihit value.
 /// </summary>
 /// <param name="id">: The ID of the hitbox to clear.</param>
-void Object::clear_hitbox(int id) {
+void BattleObject::clear_hitbox(int id) {
 	int multihit = hitboxes[id].multihit;
 	hitboxes[id].clear();
 	hitboxes[id].multihit = 0;
@@ -49,7 +49,7 @@ void Object::clear_hitbox(int id) {
 /// <summary>
 /// Clear all active hitboxes and mark all hitboxes as having not connected.
 /// </summary>
-void Object::clear_hitbox_all() {
+void BattleObject::clear_hitbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].clear();
 		hitboxes[i].multihit = 0;
@@ -62,7 +62,7 @@ void Object::clear_hitbox_all() {
 /// point where there were no active hitboxes with that multihit value.
 /// </summary>
 /// <param name="multihit_index">: The index to mark as having connected.</param>
-void Object::update_hitbox_connect(int multihit_index) {
+void BattleObject::update_hitbox_connect(int multihit_index) {
 	multihit_connected[multihit_index] = true;
 }
 

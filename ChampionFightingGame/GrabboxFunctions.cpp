@@ -1,9 +1,9 @@
-#include "Object.h"
+#include "BattleObject.h"
 
 /// <summary>
 /// Updates the position of a grabbox relative to the object. 
 /// </summary>
-void Object::update_grabbox_pos() {
+void BattleObject::update_grabbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (grabboxes[i].id != -1) {
 			grabboxes[i].update_pos(this);
@@ -15,14 +15,14 @@ void Object::update_grabbox_pos() {
 /// Clear the grabbox with the specified ID.
 /// </summary>
 /// <param name="id">: The ID of the grabbox to clear.</param>
-void Object::clear_grabbox(int id) {
+void BattleObject::clear_grabbox(int id) {
 	grabboxes[id].clear();
 }
 
 /// <summary>
 /// Clear all active grabboxes.
 /// </summary>
-void Object::clear_grabbox_all() {
+void BattleObject::clear_grabbox_all() {
 	for (int i = 0; i < 10; i++) {
 		grabboxes[i].clear();
 	}

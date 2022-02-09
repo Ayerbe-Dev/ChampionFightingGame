@@ -28,6 +28,7 @@ public:
 	string name;
 	vector<vector<Bone>> keyframes;
 	int length;
+	int faf;
 };
 
 SDL_Rect getFrame(int frame, Animation* animation);

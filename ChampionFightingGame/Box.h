@@ -2,12 +2,12 @@
 #include "utils.h"
 #include <SDL.h>
 #include "Box.fwd.h"
-#include "Object.fwd.h"
+#include "BattleObject.fwd.h"
 #include "GameCoordinate.h"
 
 class Hitbox {
 public:
-	Object* object;
+	BattleObject* object;
 	int id;
 	int multihit;
 	SDL_Rect rect;
@@ -47,24 +47,24 @@ public:
 	bool can_chip_ko;
 
 	Hitbox();
-	Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, 
+	Hitbox(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, 
 		GameCoordinate offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, 
 		int hitlag, int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback,
 		int clank_kind, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
 		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos = true);
-	Hitbox(Object* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
+	Hitbox(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
 		GameCoordinate offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 		int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, 
 		bool trade, bool continue_launch, bool can_chip_ko);
 	
-	void update_pos(Object* object, bool add_window_width = true);
+	void update_pos(BattleObject* object, bool add_window_width = true);
 	void clear();
 };
 
 class Grabbox {
 public:
-	Object* object;
+	BattleObject* object;
 	int id;
 	SDL_Rect rect;
 	int grabbox_kind;
@@ -76,16 +76,16 @@ public:
 	bool use_player_pos;
 
 	Grabbox();
-	Grabbox(Object* object, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
+	Grabbox(BattleObject* object, int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
 		u32 defender_status_if_hit, bool use_player_pos = true);
 
-	void update_pos(Object* fighter);
+	void update_pos(BattleObject* fighter);
 	void clear();
 };
 
 class Hurtbox {
 public:
-	Object* object;
+	BattleObject* object;
 	int id;
 	SDL_Rect rect;
 	int hurtbox_kind;
@@ -95,8 +95,8 @@ public:
 	GameCoordinate init_offset;
 
 	Hurtbox();
-	Hurtbox(Object* object, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind);
+	Hurtbox(BattleObject* object, int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool is_armor, int intangible_kind);
 	
-	void update_pos(Object *object);
+	void update_pos(BattleObject *object);
 	void clear();
 };

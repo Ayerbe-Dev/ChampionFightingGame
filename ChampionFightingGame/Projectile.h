@@ -1,13 +1,12 @@
 #pragma once
-#include "Object.h"
+#include "BattleObject.h"
 #include "utils.h"
 #include "FighterAccessor.fwd.h"
 #include "FighterAccessor.h"
 #include "ParamTable.h"
 
-class Projectile: public Object {
+class Projectile: public BattleObject {
 public:
-
 	int projectile_kind;
 	int owner_id;
 	FighterAccessor* fighter_accessor;
@@ -24,12 +23,13 @@ public:
 	void superInit();
 	void load_anim_list();
 	void load_stats();
-	void change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
-	void startAnimation(Animation* animation);
+	void change_anim(string animation_name, float rate = 1.0, float entry_frame = 0.0);
+	void startAnimation(Animation3D* animation);
 	void loadStatusScripts();
 
 	bool canStep();
 	void stepAnimation();
+
 	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	void playoutStatus();
 

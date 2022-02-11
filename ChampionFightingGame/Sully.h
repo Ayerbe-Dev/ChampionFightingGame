@@ -12,7 +12,7 @@ public:
 	Sully();
 	Sully(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadSullyStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Sully::* sully_status[CHARA_SULLY_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Sully::* sully_enter_status[CHARA_SULLY_STATUS_MAX - FIGHTER_STATUS_MAX])();

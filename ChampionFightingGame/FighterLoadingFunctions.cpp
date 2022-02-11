@@ -9,10 +9,10 @@ void Fighter::superInit(int id) {
 	//these initial gamecoord values get overwritten almost immediately. why are we still here, just to suffer?
 
 	if (id == 0) {
-		pos = vec3(0, 0, 0);
+		pos = vec3(-200, 0, 0);
 	}
 	else if (id == 1) {
-		pos = vec3(0, 0, 0);
+		pos = vec3(200, 0, 0);
 	}
 	scale = vec3(0.05);
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
@@ -25,7 +25,7 @@ void Fighter::superInit(int id) {
 		load_stats();
 	}
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
-	loadStatusScripts();
+	load_status_scripts();
 	pos.y = FLOOR_GAMECOORD;
 	if (!crash_to_debug) {
 		change_anim("wait", 2, 0);

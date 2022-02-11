@@ -12,7 +12,7 @@ public:
 	Bruno();
 	Bruno(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadBrunoStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Bruno::* bruno_status[CHARA_BRUNO_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Bruno::* bruno_enter_status[CHARA_BRUNO_STATUS_MAX - FIGHTER_STATUS_MAX])();

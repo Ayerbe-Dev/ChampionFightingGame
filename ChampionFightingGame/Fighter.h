@@ -20,13 +20,7 @@
 
 class Fighter: public BattleObject {
 public:
-	//Haha interface go brrrrrrrrrrrr
-
 	virtual void chara_id() = 0;
-
-	//Most variables are handled by the Fighter arrays, but if something is primarily used outside of the Fighter class, it is a direct member
-
-	//Misc important data
 
 	int chara_kind;
 	string chara_name;
@@ -39,6 +33,8 @@ public:
 	bool requesting_priority = false; //Checked by the fighter_accessor to determine which render priority value to use
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
+
+	vec3 rot_from_opponent = vec3(0.0);
 	
 	int fighter_int[FIGHTER_INT_MAX]{ 0 };
 	float fighter_float[FIGHTER_FLOAT_MAX]{ 0.0 };
@@ -68,6 +64,23 @@ public:
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
 	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset); //Sets up the player's jostle box, called multiple times every frame
 
+	void process_projectiles(); //Calls the scripts for projectiles
+
+	void process_animate(); //Increments the frame and determines whether or not the end of an animation has been reached
+	void process_post_animate(); //Rotates all of the bones once animation and frame have been finalized
+
+	void process_pre_position(); //Resets rotation as well as any garbage position values, creates a jostle rect
+	void process_position(); //Checks collision, creates a jostle rect
+	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
+
+	void process_input(); //Manages specific inputs such as special motions and dashes
+	
+	void process_pre_status(); //Executes any buffered status changes
+	void process_status(); //Checks for the hitstun parry input, then runs the status and move scripts
+	void process_post_status(); //Misc
+
+	void decrease_common_variables();
+
 	//Projectiles
 	void init_projectile(int id, vec3 pos); //Marks a projectile as active and moves it to the given position relative to the player
 	void destroy_projectile(int id); //Marks a projectile as inactive
@@ -76,14 +89,13 @@ public:
 
 	void superInit(int id);
 	void load_anim_list();
-	void loadStatusScripts();
-	void virtual loadCharaMoveScripts() {};
+	void load_status_scripts();
+	void virtual load_move_scripts() {};
 	void loadFighterSounds();
 	virtual void loadCharaSounds() {};
 
 	//Inputs
 
-	void processInput(); //Manages specific inputs such as special motions and dashes
 	bool check_button_on(u32 button); //Checks if a button is being pressed
 	bool check_button_input(u32 button); //Checks if a button was pressed within the buffer window
 	bool check_button_input(u32 buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least 
@@ -187,9 +199,6 @@ public:
 	bool change_anim(string animation_name, float rate = 1.0, float entry_frame = 0.0);
 	bool change_anim_inherit_attributes(string animation_name, bool verbose = true,  bool continue_script = true);
 	void startAnimation(Animation3D* animation);
-	bool canStep();
-	void stepAnimation();
-	void forceStepThroughHitlag();
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	int get_launch_ticks();
@@ -200,7 +209,6 @@ public:
 
 	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	bool change_status_after_hitlag(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
-	void playoutStatus();
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};

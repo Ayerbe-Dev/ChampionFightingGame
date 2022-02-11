@@ -182,7 +182,6 @@ void battle_main(GameManager* game_manager) {
 			if (player_info[i]->is_any_inputs()) {
 				loading = false;
 
-
 				//We don't want the option the player uses to exit the loading screen to also be capable of updating the buffer
 
 				for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
@@ -272,40 +271,7 @@ void battle_main(GameManager* game_manager) {
 		facing direction of each character is locked in before any movement for that frame takes place.
 		*/
 
-		for (int i = 0; i < 2; i++) {
-			if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[i]->is_actionable()) {
-				int pos_threshold = 0;
-				if (fighter[!i]->situation_kind == FIGHTER_SITUATION_AIR) {
-					pos_threshold = 5;
-				}
-				if (fighter[i]->pos.x > fighter[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
-					//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
-					fighter[i]->facing_dir = -1.0;
-					fighter[i]->facing_right = false;
-				}
-				else if (fighter[i]->pos.x < fighter[!i]->pos.x - pos_threshold) {
-					fighter[i]->facing_dir = 1.0;
-					fighter[i]->facing_right = true;
-				}
-				else { //If both players are stuck inside each other, stop that !
-					if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
-						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-//						if (fighter[i]->pos.x == fighter[!i]->pos.x) {
-//							fighter[i]->facing_dir = 1.0;
-//							fighter[i]->facing_right = true;
-//							fighter[!i]->facing_dir = -1.0;
-//							fighter[!i]->facing_right = false;
-//						}
-//						fighter[i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-//						fighter[!i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-
-						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-					}
-				}
-			}
-		}
+		process_fighter_positions(fighter);
 
 		//Main tick loop
 
@@ -372,26 +338,12 @@ void battle_main(GameManager* game_manager) {
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		int render_priority = 0;
-		if (fighter[0]->requesting_priority && fighter[1]->requesting_priority) {
-			render_priority = fighter_accessor->render_priority;
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->render();
 		}
-		else if (fighter[0]->requesting_priority) {
-			render_priority = 0;
-		}
-		else if (fighter[1]->requesting_priority) {
-			render_priority = 1;
-		}
-		else {
-			render_priority = fighter_accessor->render_priority_no_req;
-		}
-
-		fighter[!render_priority]->render();
-		fighter[render_priority]->render();
-
 		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-
+				//Combo Counter text here
 			}
 
 			//Projectile Renders
@@ -450,24 +402,17 @@ void battle_main(GameManager* game_manager) {
 		}*/
 
 		for (int i = 0; i < 2; i++) {
-			
-			//The health bar and the regular EX bar target %s are pretty straightforward, and we can update them every frame...
-
-			health_bar[i].health_texture.scale_right_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
-
+			health_bar[i].health_texture.scale_left_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
 			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
-			//...but the segmented EX bar has to be a diva about things because it won't move unless it can look pretty doing it
-
-			int prev_segments = ex_bar[i].prev_segments; //How many bars were already filled
-			int segments = floor(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / (ex_bar[i].max_ex / EX_METER_BARS)); //How many are now
-			ex_bar[i].prev_segments = segments; //Update for the next frame
-			if (prev_segments != segments) { //If the value changed
-				if (prev_segments > segments) { //If it went down, lower the segmented bar to match the number of segments at the same rate as the
-					//regular bar
+			int prev_segments = ex_bar[i].prev_segments;
+			int segments = floor(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / (ex_bar[i].max_ex / EX_METER_BARS));
+			ex_bar[i].prev_segments = segments;
+			if (prev_segments != segments) {
+				if (prev_segments > segments) {
 					ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 6);
 				}
-				else if (!(segments % 2)) { //If it went up, and the number of segments is even, increase the segmented bar really fast
+				else if (!(segments % 2)) {
 					ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 2);
 				}
 			}
@@ -481,7 +426,6 @@ void battle_main(GameManager* game_manager) {
 
 		if (!debug) timer.Tick();
 		timer.Render();
-
 
 		SDL_GL_SwapWindow(g_window);
 	}
@@ -501,6 +445,43 @@ void battle_main(GameManager* game_manager) {
 
 	delete fighter_accessor;
 	delete game_loader;
+}
+
+void process_fighter_positions(Fighter* fighter[2]) {
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[i]->is_actionable()) {
+			int pos_threshold = 0;
+			if (fighter[!i]->situation_kind == FIGHTER_SITUATION_AIR) {
+				pos_threshold = 5;
+			}
+			if (fighter[i]->pos.x > fighter[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
+				//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
+				fighter[i]->facing_dir = -1.0;
+				fighter[i]->facing_right = false;
+			}
+			else if (fighter[i]->pos.x < fighter[!i]->pos.x - pos_threshold) {
+				fighter[i]->facing_dir = 1.0;
+				fighter[i]->facing_right = true;
+			}
+			else { //If both players are stuck inside each other, stop that !
+				if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+					if (fighter[i]->pos.x == fighter[!i]->pos.x) {
+						fighter[i]->facing_dir = 1.0;
+						fighter[i]->facing_right = true;
+						fighter[!i]->facing_dir = -1.0;
+						fighter[!i]->facing_right = false;
+					}
+					fighter[i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+					fighter[!i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+
+					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+				}
+			}
+		}
+	}
 }
 
 /// <summary>
@@ -1313,6 +1294,9 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 /// <param name="hitbox"></param>
 /// <returns></returns>
 bool can_counterhit(Fighter* defender, Hitbox* hitbox) {
+	if (defender->anim_kind == nullptr) {
+		return false;
+	}
 	if (defender->anim_kind->name == "hitstun_parry" || defender->anim_kind->name == "hitstun_parry_air") {
 		return true;
 	}
@@ -1353,87 +1337,6 @@ int get_damage_status(int hit_status, int situation_kind) {
 		else {
 			return FIGHTER_STATUS_HITSTUN;
 		}
-	}
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="fighter"></param>
-void decrease_common_fighter_variables(Fighter* fighter) {
-	if (fighter->fighter_int[FIGHTER_INT_236_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_236_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_236_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_214_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_214_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_214_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_623_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_623_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_623_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_41236_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_41236_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_41236_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_63214_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_63214_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_63214_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_236236_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_236236_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_236236_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_214214_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_214214_TIMER] --;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_214214_STEP] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER]--;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		fighter->fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
-	}
-	else { 
-		if (fighter->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
-			fighter->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
-		}
-		if (fighter->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
-			fighter->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]--;
-		}
-	}
-	if (fighter->fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0) {
-		fighter->fighter_int[FIGHTER_INT_DASH_F_WINDOW]--;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0) {
-		fighter->fighter_int[FIGHTER_INT_DASH_B_WINDOW]--;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
-		fighter->fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW]--;
-	}
-	if (fighter->fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] != 0) {
-		fighter->fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER]--;
-	}
-	else {
-		fighter->fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
 	}
 }
 
@@ -1586,34 +1489,4 @@ Fighter* IObject::get_fighter() {
 
 Projectile* IObject::get_projectile() {
 	return projectile;
-}
-
-SDL_Rect getRenderPos(Fighter* fighter, bool force_center) {
-	SDL_Rect render_pos;
-	render_pos.x = 0;
-	render_pos.y = 0;
-	render_pos.w = 0;
-	render_pos.h = 0;
-/*	SDL_Rect render_pos = fighter->anim_kind->anim_map[fighter->render_frame];
-	if (force_center) {
-		render_pos.x = fighter->pos.getRenderCoodrinateX();
-	}
-	else {
-		render_pos.x = fighter->pos.getRenderCoodrinateXAnim();
-	}
-	render_pos.y = fighter->pos.getRenderCoodrinateYAnim();
-	if (render_pos.w == 0 && render_pos.h == 0) {
-		int width;
-		int sprite_width = 0;
-		int height;
-		SDL_QueryTexture(fighter->anim_kind->spritesheet, NULL, NULL, &width, &height);
-		render_pos.w = (width / (fighter->anim_kind->length + 1));
-		if (!fighter->facing_right && force_center) {
-			SDL_QueryTexture(fighter->base_texture, NULL, NULL, &sprite_width, NULL);
-			render_pos.x -= (render_pos.w - sprite_width);
-		}
-		render_pos.h = height;
-	}*/
-
-	return render_pos;
 }

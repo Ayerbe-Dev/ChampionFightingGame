@@ -1,9 +1,12 @@
 #include "Stage.h"
+extern RenderManager g_rendermanager;
 
 Stage::Stage() {}
 
-Stage::Stage(int stage_kind, string stage_name) {
+Stage::Stage(int stage_kind, string stage_name, vec3 origin) {
 	this->stage_kind = stage_kind;
+	this->origin = origin;
+	g_rendermanager.stage_origin = origin;
 	resource_dir = "resource/stage/" + stage_name + "/";
 
 	default_music_kind = get_stage_music();

@@ -1,6 +1,6 @@
 #include "Priest.h"
 
-void Priest::loadCharaMoveScripts() {
+void Priest::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

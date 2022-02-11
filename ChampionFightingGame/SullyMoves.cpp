@@ -1,6 +1,6 @@
 #include "Sully.h"
 
-void Sully::loadCharaMoveScripts() {
+void Sully::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

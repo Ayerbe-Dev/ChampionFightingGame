@@ -13,7 +13,7 @@ public:
 	Alejandro();
 	Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadAlejandroStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Alejandro::* alejandro_status[CHARA_ALEJANDRO_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Alejandro::* alejandro_enter_status[CHARA_ALEJANDRO_STATUS_MAX - FIGHTER_STATUS_MAX])();

@@ -12,7 +12,7 @@ public:
 	Julius();
 	Julius(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadJuliusStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Julius::* julius_status[CHARA_JULIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Julius::* julius_enter_status[CHARA_JULIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();

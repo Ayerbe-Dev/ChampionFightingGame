@@ -14,7 +14,7 @@ Angelica::Angelica(int id, PlayerInfo* player_info, FighterAccessor* fighter_acc
 	if (!crash_to_debug) {
 		load_params();
 	}
-	loadCharaMoveScripts();
+	load_move_scripts();
 	loadAngelicaStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_CHARA_TEMPLATE;

@@ -71,10 +71,8 @@ void BattleObject::set_current_move_script(string anim_name) {
 	for (int i = 0; i < 256; i++) {
 		if (move_scripts[i].name == anim_name) {
 			move_script = move_scripts[i];
-			break;
-		}
-		else {
-			move_script = move_scripts[0];
+			return;
 		}
 	}
+	move_script = move_scripts[0];
 }

@@ -20,7 +20,6 @@ Animation3D::Animation3D() {}
 Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 	this->name = anim_kind;
 
-
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(anim_dir, aiProcess_Triangulate);
 
@@ -48,6 +47,9 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 	for (int i = 0; i < scene->mAnimations[0]->mNumChannels; i++) {
 		aiNodeAnim* node = scene->mAnimations[0]->mChannels[i];
 		int index = model->get_bone_id(node->mNodeName.C_Str());
+		if (index == -1) {
+			continue;
+		}
 		for (int i2 = 0; i2 < node->mNumPositionKeys; i2++) { //Load the keyframes that are actually baked
 			mat4 pos_mat = translate(mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
 			mat4 rot_mat = toMat4(normalize(ass_converter(node->mRotationKeys[i2].mValue)));

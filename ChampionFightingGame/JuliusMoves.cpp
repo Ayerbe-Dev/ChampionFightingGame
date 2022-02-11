@@ -1,6 +1,6 @@
 #include "Julius.h"
 
-void Julius::loadCharaMoveScripts() {
+void Julius::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

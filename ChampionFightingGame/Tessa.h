@@ -12,7 +12,7 @@ public:
 	Tessa();
 	Tessa(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadTessaStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Tessa::* tessa_status[CHARA_TESSA_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Tessa::* tessa_enter_status[CHARA_TESSA_STATUS_MAX - FIGHTER_STATUS_MAX])();

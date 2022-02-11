@@ -12,7 +12,7 @@ public:
 	Leon();
 	Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadLeonStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Leon::* leon_status[CHARA_LEON_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Leon::* leon_enter_status[CHARA_LEON_STATUS_MAX - FIGHTER_STATUS_MAX])();

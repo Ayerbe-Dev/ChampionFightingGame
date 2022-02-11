@@ -66,6 +66,10 @@ void Model::unload_model() {
 }
 
 void Model::set_bones(float frame, Animation3D* anim_kind) {
+	if (anim_kind == nullptr) {
+		return reset_bones();
+	}
+
 	vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
@@ -74,6 +78,13 @@ void Model::set_bones(float frame, Animation3D* anim_kind) {
 
 		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
+	}
+}
+
+void Model::reset_bones() {
+	for (int i = 0; i < bones.size(); i++) {
+		bones[i].anim_matrix = mat4(1.0);
+		bones[i].final_matrix = mat4(1.0);
 	}
 }
 
@@ -174,7 +185,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			vertex.bitangent = vector;
 		}
 
-		if (mesh->mTextureCoords[0]) { 
+		if (mesh->mTextureCoords[0]) {
 			//Assimp allows for a texture to have up to 8 texture coords per vertex. The guide I'm following says we'll only need to take a look at 
 			//the first one, but if we ever want/need to change that, here's where that'd be.
 			vec2 vec;
@@ -218,6 +229,12 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			mat4 model_matrix = ConvertMatrixToGLMFormat(ai_bone->mOffsetMatrix); 
 			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 
+			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
+			bone.id = get_bone_id(bone.name);
+			if (bone.id == -1) {
+				cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << endl;
+			}
+
 			bone.anim_matrix = anim_matrix;
 			bone.anim_rest_matrix = anim_matrix;
 			bone.model_matrix = model_matrix;
@@ -238,8 +255,6 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.scale.y = base_scale.y;
 			bone.scale.z = base_scale.z;
 
-			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
-			bone.id = get_bone_id(bone.name);
 			bone.parent_id = this->bones[bone.id].parent_id;
 
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {

@@ -25,6 +25,8 @@ public:
 	Camera camera;
 	Light lights[MAX_LIGHT_SOURCES];
 	int num_lights;
+	vec3 window_scaler = vec3(1.0);
+	vec3 stage_origin = vec3(0.0);
 
 	Shader default_2d_shader;
 

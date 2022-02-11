@@ -12,7 +12,7 @@ public:
 	Atlas();
 	Atlas(int id, PlayerInfo *player_info, FighterAccessor* fighter_accessor);
 	void loadAtlasStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Atlas::* atlas_status[CHARA_ATLAS_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Atlas::* atlas_enter_status[CHARA_ATLAS_STATUS_MAX - FIGHTER_STATUS_MAX])();

@@ -22,7 +22,7 @@ Leon::Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	if (!crash_to_debug) {
 		load_params();
 	}
-	loadCharaMoveScripts();
+	load_move_scripts();
 	loadLeonStatusFunctions();
 	set_current_move_script("default");
 

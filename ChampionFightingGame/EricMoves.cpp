@@ -1,6 +1,6 @@
 #include "Eric.h"
 
-void Eric::loadCharaMoveScripts() {
+void Eric::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

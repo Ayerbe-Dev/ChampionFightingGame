@@ -218,12 +218,12 @@ void Fighter::status_walkb() {
 		return;
 	}
 	if (fighter_flag[FIGHTER_FLAG_PROX_GUARD]) {
-		if (anim_kind->name != "stand_block") {
+		if (get_anim() != "stand_block") {
 			change_anim("stand_block");
 		}
 	}
 	else {
-		if (anim_kind->name == "stand_block") {
+		if (get_anim() == "stand_block") {
 			change_anim("walk_b");
 		}
 		add_pos(get_param_float("walk_f_speed") * facing_dir * -1, 0);
@@ -649,14 +649,14 @@ void Fighter::enter_status_throw() {
 	else {
 		change_anim("throw_f");
 	}
-	if (!add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0, true)) {
+	if (!add_pos(get_param_float(get_anim() + "_move_offset", param_table) * facing_dir, 0, true)) {
 		if (pos.x > 0) {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
 		}
 		else {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
 		}
-		if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
+		if (change_anim_inherit_attributes(get_anim() + "_stationary", false)) {
 			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = true;
 		}
 		else {
@@ -667,7 +667,7 @@ void Fighter::enter_status_throw() {
 
 void Fighter::exit_status_throw() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-	if (anim_kind->name == "throw_b") {
+	if (get_anim() == "throw_b") {
 		facing_right = !facing_right;
 		facing_dir *= -1;
 	}
@@ -713,14 +713,14 @@ void Fighter::enter_status_throw_air() {
 	else {
 		change_anim("throw_f_air");
 	}
-	if (!add_pos(get_param_float(anim_kind->name + "_move_offset", param_table) * facing_dir, 0, true)) {
+	if (!add_pos(get_param_float(get_anim() + "_move_offset", param_table) * facing_dir, 0, true)) {
 		if (pos.x > 0) {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
 		}
 		else {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
 		}
-		if (change_anim_inherit_attributes(anim_kind->name + "_stationary", false)) {
+		if (change_anim_inherit_attributes(get_anim() + "_stationary", false)) {
 			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = true;
 		}
 		else {
@@ -730,7 +730,7 @@ void Fighter::enter_status_throw_air() {
 }
 
 void Fighter::exit_status_throw_air() {
-	if (anim_kind->name == "throw_b_air") {
+	if (get_anim() == "throw_b_air") {
 		facing_dir *= -1;
 		facing_right = !facing_right;
 		if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_F) {
@@ -955,7 +955,7 @@ void Fighter::exit_status_parry_start() {}
 
 void Fighter::status_parry() {
 	if (beginning_hitlag(1) || ending_hitlag(2)) {
-		forceStepThroughHitlag();
+		frame ++;
 	}
 	if (situation_kind == FIGHTER_SITUATION_GROUND && fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
@@ -1064,7 +1064,7 @@ void Fighter::exit_status_clank() {}
 
 void Fighter::status_throw_tech() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 15 || fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 16) {
-		forceStepThroughHitlag();
+		frame++;
 	}
 	else if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] < 15) {
 		add_pos(-4 * facing_dir, 0);
@@ -1255,7 +1255,7 @@ void Fighter::exit_status_wakeup() {
 
 }
 
-void Fighter::loadStatusScripts() {
+void Fighter::load_status_scripts() {
 	status_script[FIGHTER_STATUS_WAIT] = &Fighter::status_wait;
 	enter_status_script[FIGHTER_STATUS_WAIT] = &Fighter::enter_status_wait;
 	exit_status_script[FIGHTER_STATUS_WAIT] = &Fighter::exit_status_wait;

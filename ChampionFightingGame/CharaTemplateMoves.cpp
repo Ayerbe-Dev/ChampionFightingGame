@@ -1,6 +1,6 @@
 #include "CharaTemplate.h"
 
-void CharaTemplate::loadCharaMoveScripts() {
+void CharaTemplate::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

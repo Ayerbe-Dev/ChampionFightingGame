@@ -52,6 +52,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	p2_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 	p2_healthbar.flip_h();
+	p2_healthbar.scale_left_percent(1.0);
 
 
 	float frame[2] = { 0.0 };

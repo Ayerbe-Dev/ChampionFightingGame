@@ -12,7 +12,7 @@ public:
 	Angelica();
 	Angelica(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadAngelicaStatusFunctions();
-	void loadCharaMoveScripts() override;
+	void load_move_scripts() override;
 
 	void (Angelica::* angelica_status[CHARA_ANGELICA_STATUS_MAX - FIGHTER_STATUS_MAX])();
 	void (Angelica::* angelica_enter_status[CHARA_ANGELICA_STATUS_MAX - FIGHTER_STATUS_MAX])();

@@ -174,7 +174,7 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 	}
 	if (command == "reload_moves") {
 		target->wipe_scripts();
-		target->loadCharaMoveScripts();
+		target->load_move_scripts();
 		target->attempted_excutes = 0;
 		target->excute_count = 0;
 		target->last_excute_frame = 0;
@@ -184,7 +184,7 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 		target->update_grabbox_pos();
 
 		not_target->wipe_scripts();
-		not_target->loadCharaMoveScripts();
+		not_target->load_move_scripts();
 		not_target->attempted_excutes = 0;
 		not_target->excute_count = 0;
 		not_target->last_excute_frame = 0;

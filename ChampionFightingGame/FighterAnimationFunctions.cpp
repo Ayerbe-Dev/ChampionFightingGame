@@ -16,6 +16,8 @@ bool Fighter::change_anim(string animation_name, float frame_rate, float entry_f
 	prev_anim_rate = rate;
 	prev_anim_frame = frame;
 
+	set_current_move_script(animation_name);
+
 	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
@@ -28,12 +30,12 @@ bool Fighter::change_anim(string animation_name, float frame_rate, float entry_f
 				frame = 0;
 			}
 
-			set_current_move_script(animation_name);
 			startAnimation(&animation_table[i]);
 			return true;
 		}
 	}
 	cout << "Invalid Animation '" << animation_name << "'" << endl;
+	startAnimation(nullptr);
 	return false;
 }
 
@@ -51,6 +53,7 @@ bool Fighter::change_anim_inherit_attributes(string animation_name, bool verbose
 	if (verbose) {
 		cout << "Invalid Animation '" << animation_name << "'" << endl;
 	}
+	startAnimation(nullptr);
 	return false;
 }
 
@@ -69,41 +72,6 @@ void Fighter::startAnimation(Animation3D* animation) {
 		prev_anim_kind = anim_kind;
 	}
 	anim_kind = animation;
-}
-
-bool Fighter::canStep() {
-	attempted_excutes = 0;
-	return fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0;
-}
-
-void Fighter::stepAnimation() {
-	float last_frame = frame;
-	if (frame >= anim_kind->length) {
-		frame = 0.0;
-		excute_count = 0;
-		clear_grabbox_all();
-		clear_hurtbox_all();
-		clear_hitbox_all();
-		kara_enabled = false;
-		if (id == 0) {
-			int group = get_status_group();
-			if (group == STATUS_GROUP_NO_RENDER_PRIORITY || group == STATUS_GROUP_CROUCH) {
-				fighter_accessor->render_priority_no_req = !fighter_accessor->render_priority_no_req;
-			}
-		}
-	}
-	else {
-		frame += rate;
-	}
-	is_anim_end = last_frame > frame;
-}
-
-void Fighter::forceStepThroughHitlag() {
-	int curr_hitlag_frames = fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
-	canStep();
-	stepAnimation();
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = curr_hitlag_frames;
 }
 
 bool Fighter::beginning_hitlag(int frames) {
@@ -137,16 +105,26 @@ int Fighter::get_launch_ticks() {
 }
 
 string Fighter::get_anim() {
-	return anim_kind->name;
+	if (anim_kind == nullptr) {
+		return "default";
+	}
+	else {
+		return anim_kind->name;
+	}
 }
 
 string Fighter::get_anim_broad() {
-	string ret = anim_kind->name;
-	if (ret.find("_air") != string::npos) {
-		ret = Filter(ret, "_air");
+	if (anim_kind == nullptr) {
+		return "default";
 	}
-	if (ret.find("_stationary") != string::npos) {
-		ret = Filter(ret, "_stationary");
+	else {
+		string ret = anim_kind->name;
+		if (ret.find("_air") != string::npos) {
+			ret = Filter(ret, "_air");
+		}
+		if (ret.find("_stationary") != string::npos) {
+			ret = Filter(ret, "_stationary");
+		}
+		return ret;
 	}
-	return ret;
 }

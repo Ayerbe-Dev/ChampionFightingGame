@@ -1,3 +1,6 @@
 name=wait
 filename=wait.fbx
 faf=0
+name=jump_squat
+filename=jump_squat.fbx
+faf=-1

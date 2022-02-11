@@ -1,6 +1,6 @@
 #include "Roy.h"
 
-void Roy::loadCharaMoveScripts() {
+void Roy::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

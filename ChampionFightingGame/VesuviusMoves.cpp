@@ -1,6 +1,6 @@
 #include "Vesuvius.h"
 
-void Vesuvius::loadCharaMoveScripts() {
+void Vesuvius::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

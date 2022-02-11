@@ -4,3 +4,6 @@ faf=0
 name=jump_squat
 filename=jump_squat.fbx
 faf=-1
+name=stand_lp
+filename=stand_lp.fbx
+faf=24

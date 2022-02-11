@@ -145,7 +145,7 @@ void Fighter::process_post_position() {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
 	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
-	rot.z = 90.0 * facing_dir;
+	rot.z += radians(90.0 * facing_dir);
 	rot += rot_from_opponent;
 }
 

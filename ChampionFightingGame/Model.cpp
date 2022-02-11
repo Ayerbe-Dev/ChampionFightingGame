@@ -47,6 +47,7 @@ void Model::load_model(string path) {
 	bones[trans_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
 	bones[rot_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
 	bones[rot_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
+
 }
 
 void Model::unload_model() {
@@ -94,10 +95,22 @@ void Model::render(Shader* shader) {
 		shader->set_mat4("bone_matrix[" + to_string(i) + "]", bones[i].final_matrix);
 	}
 	for (unsigned int i = 0; i < meshes.size(); i++) {
-		meshes[i].render(shader);
+		if (meshes[i].visible) {
+			meshes[i].render(shader);
+		}
 	}
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);
+}
+
+void Model::set_mesh_visibility(string mesh_name, bool visibility) {
+	int index = get_mesh_id(mesh_name);
+	if (index == -1) {
+		return;
+	}
+	else {
+		meshes[index].visible = visibility;
+	}
 }
 
 int Model::get_mesh_id(string mesh_name) {
@@ -108,6 +121,7 @@ int Model::get_mesh_id(string mesh_name) {
 	}
 	return -1;
 }
+
 int Model::get_bone_id(string bone_name) {
 	if (bone_name == "model-armature") { //DAE refers to this bone is blender_implicit, FBX refers to it as model-armature
 		return 0;

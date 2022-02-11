@@ -43,8 +43,8 @@ public:
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	vector<Texture> textures;
-	bool visible = true;
 	string name;
+	bool visible;
 
 	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name);
 	void render(Shader *shader);
@@ -76,6 +76,8 @@ public:
 	string directory;
 	bool gamma_correct;
 	int vertex_count = 0;
+
+	void set_mesh_visibility(string mesh_name, bool visibility);
 
 	int get_mesh_id(string mesh_name);
 	int get_bone_id(string bone_name);

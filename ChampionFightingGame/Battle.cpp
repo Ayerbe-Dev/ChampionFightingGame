@@ -214,8 +214,51 @@ void battle_main(GameManager* game_manager) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 
+	int trials = 10000;
+
+	int ticks = SDL_GetTicks();
+	vector<int> average_ticks;
+	vector<int> tick_frequency;
 	while (gaming) {
+		if (average_ticks.size() < trials) {
+			average_ticks.push_back(SDL_GetTicks() - ticks);
+		}
+		else {
+			int highest = average_ticks[0];
+			while (highest >= tick_frequency.size()) {
+				tick_frequency.push_back(0);
+			}
+			int freq = 0;
+			int frame_freq = 0;
+			float total = 0;
+			for (int i = 0; i < trials; i++) {
+				total += (float)average_ticks[i];
+				if (average_ticks[i] >= 16) {
+					frame_freq++;
+				}
+				if (average_ticks[i] > highest) {
+					highest = average_ticks[i];
+					while (highest >= tick_frequency.size()) {
+						tick_frequency.push_back(0);
+					}
+					freq = 1;
+				}
+				else if (average_ticks[i] == highest) {
+					freq++;
+				}
+				tick_frequency[average_ticks[i]]++;
+			}
+			total /= (float)trials;
+			cout << "Lengths of all iterations across " << trials << " tests: " << endl;
+			for (int i = 0; i < tick_frequency.size(); i++) {
+				cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << endl;
+			}
+			cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << endl;
+			average_ticks.clear();
+			tick_frequency.clear();
+		}
 		frameTimeDelay();
+		ticks = SDL_GetTicks();
 
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
@@ -403,6 +446,11 @@ void battle_main(GameManager* game_manager) {
 
 		for (int i = 0; i < 2; i++) {
 			health_bar[i].health_texture.scale_left_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
+			health_bar[i].health_texture.render();
+			health_bar[i].bar_texture.render();
+		}
+
+		for (int i = 0; i < 2; i++) {
 			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
 			int prev_segments = ex_bar[i].prev_segments;
@@ -417,8 +465,6 @@ void battle_main(GameManager* game_manager) {
 				}
 			}
 			
-			health_bar[i].health_texture.render();
-			health_bar[i].bar_texture.render();
 			ex_bar[i].ex_texture.render();
 			ex_bar[i].ex_segment_texture.render();
 			ex_bar[i].bar_texture.render();

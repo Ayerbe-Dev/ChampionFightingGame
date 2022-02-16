@@ -245,6 +245,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameRect.cpp" />
     <ClCompile Include="GrabboxFunctions.cpp" />
     <ClCompile Include="HitboxFunctions.cpp" />
     <ClCompile Include="HurtboxFunctions.cpp" />
@@ -379,6 +380,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameMenu.h" />
+    <ClInclude Include="GameRect.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStates.h" />

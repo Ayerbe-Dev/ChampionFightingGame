@@ -201,7 +201,7 @@ void battle_main(GameManager* game_manager) {
 				}
 			}
 		}
-	}     
+	}
 	game_loader->finished = true;
 	SDL_SetRenderTarget(g_renderer, NULL);
 	SDL_RenderClear(g_renderer);

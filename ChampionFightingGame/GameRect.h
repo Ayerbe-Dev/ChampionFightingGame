@@ -31,3 +31,5 @@ private:
 	unsigned int VAO;
 	unsigned int VBO;
 };
+
+bool is_collide(GameRect RectA, GameRect RectB);

@@ -135,3 +135,27 @@ void GameRect::update_buffer_data() {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+/// <summary>
+/// SDL's rectangles suck so I made better ones.
+/// </summary>
+/// <param name="RectA">: The first rectangle</param>
+/// <param name="RectB">: The second rectangle</param>
+/// <returns>Whether or not any part of the two rectangles are touching</returns>
+/// <notes>The reason it's so long is because we run this check a lot so the less we put on the stack, the better
+bool is_collide(GameRect RectA, GameRect RectB) {
+	return 
+		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) || (RectA.corners[2].x >= RectB.corners[0].x 
+		&& RectA.corners[2].x <= RectB.corners[2].x) || (RectB.corners[0].x >= RectA.corners[0].x && RectB.corners[0].x <= RectA.corners[2].x) 
+		|| (RectB.corners[2].x >= RectA.corners[0].x && RectB.corners[2].x <= RectA.corners[2].x) || (RectA.corners[0].x <= RectB.corners[0].x 
+		&& RectA.corners[0].x >= RectB.corners[2].x) || (RectA.corners[2].x <= RectB.corners[0].x && RectA.corners[2].x >= RectB.corners[2].x) 
+		|| (RectB.corners[0].x <= RectA.corners[0].x && RectB.corners[0].x >= RectA.corners[2].x) || (RectB.corners[2].x <= RectA.corners[0].x 
+		&& RectB.corners[2].x >= RectA.corners[2].x)) 
+		&& 
+		((RectA.corners[0].y <= RectB.corners[0].y && RectA.corners[0].y >= RectB.corners[2].y) || (RectA.corners[2].y <= RectB.corners[0].y 
+		&& RectA.corners[2].y >= RectB.corners[2].y) || (RectB.corners[0].y <= RectA.corners[0].y && RectB.corners[0].y >= RectA.corners[2].y)
+		|| (RectB.corners[2].y <= RectA.corners[0].y && RectB.corners[2].y >= RectA.corners[2].y) || (RectA.corners[0].y >= RectB.corners[0].y 
+		&& RectA.corners[0].y <= RectB.corners[2].y) || (RectA.corners[2].y >= RectB.corners[0].y && RectA.corners[2].y <= RectB.corners[2].y) 
+		|| (RectB.corners[0].y >= RectA.corners[0].y && RectB.corners[0].y <= RectA.corners[2].y) || (RectB.corners[2].y >= RectA.corners[0].y 
+		&& RectB.corners[2].y <= RectA.corners[2].y));
+}

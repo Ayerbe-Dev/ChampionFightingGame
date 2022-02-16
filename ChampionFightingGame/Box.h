@@ -4,6 +4,7 @@
 #include "Box.fwd.h"
 #include "BattleObject.fwd.h"
 #include "GameCoordinate.h"
+#include "GameRect.h"
 
 class Hitbox {
 public:

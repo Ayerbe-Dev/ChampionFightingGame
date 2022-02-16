@@ -850,5 +850,11 @@
     <None Include="resource\shaders\vertex_2d_texture.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\fragment_rect.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_rect.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

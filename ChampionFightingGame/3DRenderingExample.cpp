@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "stb_image.h"
 #include "GameTexture.h"
+#include "GameRect.h"
 #include <gtx/rotate_vector.hpp> 
 #include <gtx/string_cast.hpp>
 #include "RenderObject.h"
@@ -34,18 +35,18 @@ void three_d_rendering_main(GameManager* game_manager) {
 
 	p1.shader.init("vertex_main.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&p1.shader);
-	p1.model.load_model("resource/chara/roy/model/model.dae");
+//	p1.model.load_model("resource/chara/roy/model/model.dae");
 
 	p2.shader.init("vertex_main.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&p2.shader);
-	p2.model.load_model("resource/chara/roy/model/model.dae");
+//	p2.model.load_model("resource/chara/roy/model/model.dae");
 
 	p1.scale = vec3(0.05);
 	p2.scale = vec3(0.05);
 
 	Animation3D anim[2];
-	anim[0] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p1.model);
-	anim[1] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p2.model);
+//	anim[0] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p1.model);
+//	anim[1] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p2.model);
 
 	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
 	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
@@ -54,6 +55,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 	p2_healthbar.flip_h();
 	p2_healthbar.scale_left_percent(1.0);
 
+	GameRect test_rect(vec2(100.0, 100.0), vec2(0.0, 0.0));
+	test_rect.set_rgba(vec4(255, 0, 0, 127));
 
 	float frame[2] = { 0.0 };
 	int trials = 10000;
@@ -140,35 +143,35 @@ void three_d_rendering_main(GameManager* game_manager) {
 		}
 		if (player_info[0]->check_button_on(BUTTON_UP)) {
 			p1.pos.y += p1.scale.y;
-//			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
+			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_RIGHT)) {
 			p1.pos.x += p1.scale.x;
-//			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
+			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_LEFT)) {
 			p1.pos.x -= p1.scale.x;
-//			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
+			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_DOWN)) {
 			p1.pos.y -= p1.scale.y;
-//			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
+			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
 		}		
 		if (player_info[1]->check_button_on(BUTTON_UP)) {
 			p2.pos.y += p2.scale.y;
-//			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
+			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_DOWN)) {
 			p2.pos.y -= p2.scale.y;
-//			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_RIGHT)) {
 			p2.pos.x += p2.scale.x;
-//			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
+			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
 		}
 		if (player_info[1]->check_button_on(BUTTON_LEFT)) {
 			p2.pos.x -= p2.scale.x;
-//			g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
+			g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
 		}
 		if (player_info[0]->check_button_on(BUTTON_LP)) {
 			p1.rot.x += 0.1;
@@ -204,19 +207,22 @@ void three_d_rendering_main(GameManager* game_manager) {
 			}
 		}
 
-		p1.model.set_bones(frame[0], &anim[0]);
-		p2.model.set_bones(frame[1], &anim[1]);
+//		p1.model.set_bones(frame[0], &anim[0]);
+//		p2.model.set_bones(frame[1], &anim[1]);
 
-		p1.render();
-		p2.render();
+//		p1.render();
+//		p2.render();
 
-		p1_healthbar.render();
-		p2_healthbar.render();
+//		p1_healthbar.render();
+//		p2_healthbar.render();
+
+		test_rect.render();
 
 		SDL_GL_SwapWindow(g_window);
 	}
 	p1_healthbar.destroy();
 	p2_healthbar.destroy();
+	test_rect.destroy();
 
 	game_manager->update_state(GAME_STATE_DEBUG_MENU);
 }

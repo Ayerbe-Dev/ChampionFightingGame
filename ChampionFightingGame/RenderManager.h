@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "Shader.h"
 #include "Model.h"
+#include "GameRect.h"
 using namespace glm;
 
 class Light {
@@ -29,6 +30,7 @@ public:
 	vec3 stage_origin = vec3(0.0);
 
 	Shader default_2d_shader;
+	Shader default_rect_shader;
 
 	const float screen_coords[8] = {
 		0.0, 0.0,

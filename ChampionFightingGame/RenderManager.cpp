@@ -19,6 +19,7 @@ RenderManager::RenderManager() {
 
 void RenderManager::init() {
 	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
+	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 }
 
 void RenderManager::add_light(Light light, int target) {

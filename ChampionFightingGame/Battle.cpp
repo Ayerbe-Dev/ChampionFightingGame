@@ -173,6 +173,17 @@ void battle_main(GameManager* game_manager) {
 
 	bool loading = true;
 	while (loading) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return game_manager->update_state(GAME_STATE_CLOSE);
+				}
+				break;
+			}
+		}
+
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
@@ -309,9 +320,9 @@ void battle_main(GameManager* game_manager) {
 		}
 
 		/*
-		Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
-		P2 moves such that P1 crosses them up, it can cause both characters to face the same direction for a frame which can break stuff. Make sure the
-		facing direction of each character is locked in before any movement for that frame takes place.
+			Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
+			P2 moves such that P1 crosses them up, it can cause both characters to face the same direction for a frame which can break stuff. Make sure the
+			facing direction of each character is locked in before any movement for that frame takes place.
 		*/
 
 		process_fighter_positions(fighter);

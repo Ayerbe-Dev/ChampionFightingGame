@@ -64,15 +64,6 @@ static int LoadingScreen(void* void_GameLoader) {
 
 	while (!game_loader->finished) {
 		frameTimeDelay();
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					exit(0);
-				}
-				break;
-			}
-		}
 
 		load_icon.move();
 		SDL_LockMutex(file_mutex);

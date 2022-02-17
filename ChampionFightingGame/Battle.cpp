@@ -394,9 +394,6 @@ void battle_main(GameManager* game_manager) {
 
 		for (int i = 0; i < 2; i++) {
 			fighter[i]->render();
-			if (visualize_boxes) {
-				fighter[i]->jostle_box.render();
-			}
 		}
 		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
@@ -459,12 +456,12 @@ void battle_main(GameManager* game_manager) {
 		}*/
 
 		for (int i = 0; i < 2; i++) {
+			if (visualize_boxes) {
+				fighter[i]->jostle_box.render();
+			}
 			health_bar[i].health_texture.scale_left_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
 			health_bar[i].health_texture.render();
 			health_bar[i].bar_texture.render();
-		}
-
-		for (int i = 0; i < 2; i++) {
 			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
 			int prev_segments = ex_bar[i].prev_segments;
@@ -1389,9 +1386,17 @@ void cleanup(IObject* p1, IObject* p2) {
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 			if (fighter[i]->projectile_objects[i2] != NULL) {
+				for (int i3 = 0; i3 < 10; i3++) {
+					fighter[i]->projectiles[i2]->hitboxes[i3].rect.destroy();
+				}
 				delete fighter[i]->projectile_objects[i2];
 			}
 			delete fighter[i]->projectiles[i2];
+		}
+		for (int i2 = 0; i2 < 10; i2++) {
+			fighter[i]->hitboxes[i2].rect.destroy();
+			fighter[i]->hurtboxes[i2].rect.destroy();
+			fighter[i]->grabboxes[i2].rect.destroy();
 		}
 		delete fighter[i];
 	}

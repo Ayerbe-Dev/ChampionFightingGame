@@ -16,7 +16,7 @@ void Fighter::superInit(int id) {
 	}
 	jostle_box.init();
 	jostle_box.bind_scale(&scale);
-	jostle_box.set_rgba(vec4(0, 0, 0, 195));
+	jostle_box.set_rgba(vec4(0, 0, 0, 127));
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);
 		hurtboxes[i].init(this);

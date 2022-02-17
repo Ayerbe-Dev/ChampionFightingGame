@@ -160,7 +160,7 @@ Grabbox::Grabbox() {
 void Grabbox::init(BattleObject* object) {
 	rect.init();
 	rect.bind_scale(&object->scale);
-	rect.set_rgba(vec4(0, 255, 0, 127));
+	rect.set_alpha(127);
 }
 
 /*
@@ -189,6 +189,12 @@ void Grabbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, i
 	this->attacker_status_if_hit = attacker_status_if_hit;
 	this->defender_status_if_hit = defender_status_if_hit;
 	this->use_player_pos = use_player_pos;
+	if (grabbox_kind & GRABBOX_KIND_NOTECH) {
+		rect.set_rgb(vec3(128, 0, 128));
+	}
+	else {
+		rect.set_rgb(vec3(0, 255, 0));
+	}
 }
 
 void Grabbox::update_pos(BattleObject* object) {

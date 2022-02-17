@@ -101,14 +101,14 @@ void Fighter::process_pre_position() {
 		pos.y = 0;
 	}
 
-	create_jostle_rect(GameCoordinate{ -20, 25 }, GameCoordinate{ 20, 0 });
+	create_jostle_rect(vec2{ -20, 25 }, vec2{ 20, 0 });
 
 	prev_pos = pos;
 }
 
 void Fighter::process_position() {
 	Fighter* that = fighter_accessor->fighter[!id];
-	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
 	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
@@ -144,7 +144,7 @@ void Fighter::process_post_position() {
 	else {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
-	create_jostle_rect(GameCoordinate{ -15, 25 }, GameCoordinate{ 15, 0 });
+	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
 	rot.z += radians(90.0 * facing_dir);
 	rot += rot_from_opponent;
 }

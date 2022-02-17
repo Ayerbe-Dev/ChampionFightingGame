@@ -14,6 +14,14 @@ void Fighter::superInit(int id) {
 	else if (id == 1) {
 		pos = vec3(200, 0, 0);
 	}
+	jostle_box.init();
+	jostle_box.bind_scale(&scale);
+	jostle_box.set_rgba(vec4(0, 0, 0, 195));
+	for (int i = 0; i < 10; i++) {
+		hitboxes[i].init(this);
+		hurtboxes[i].init(this);
+		grabboxes[i].init(this);
+	}
 	scale = vec3(0.05);
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&shader);

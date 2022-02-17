@@ -37,8 +37,8 @@ public:
 
 	double angle{ 0 };
 
-	SDL_Rect jostle_box{};
-	SDL_Rect base_jostle_box{};
+	GameRect jostle_box;
+	GameRect base_jostle_box;
 
 	Animation3D animation_table[ANIM_TABLE_LENGTH];
 	Animation3D* anim_kind;

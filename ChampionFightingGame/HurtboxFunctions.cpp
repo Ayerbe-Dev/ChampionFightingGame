@@ -44,8 +44,8 @@ void BattleObject::clear_hurtbox_all() {
 /// <param name="intangible_kind">: What kinds of hitboxes this hurtbox is immune to. Options are: NORMAL (immune to all attacks but not grabs or 
 /// projectiles), HIGH, MID, and LOW (immune to attacks that match the height), PROJECTILE (immune to projectiles), THROW (immune to throws), NONE
 /// (immune to nothing), ALL (immune to everything), and INVINCIBLE (same as ALL except the attacker also goes into hitlag).</param>
-void Fighter::new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind) {
+void Fighter::new_hurtbox(int id, vec2 anchor, vec2 offset, int hurtbox_kind, bool armor, int intangible_kind) {
 	if (id < 10) {
-		hurtboxes[id] = Hurtbox(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+		hurtboxes[id].activate(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
 	}
 }

@@ -13,8 +13,9 @@ Light::Light(vec3 pos) {
 }
 
 RenderManager::RenderManager() {
-	window_scaler.x = WINDOW_WIDTH;
-	window_scaler.y = WINDOW_HEIGHT;
+	window_scaler.x = WINDOW_WIDTH / 5;
+	window_scaler.y = WINDOW_HEIGHT / 5;
+	window_scaler.z = 1;
 }
 
 void RenderManager::init() {
@@ -90,8 +91,7 @@ void RenderManager::render_model(Model *model, Shader *shader, vec3 *model_pos, 
 	shader->use(); //Because each shader is model specific, we need to set this no matter what
 	update_shader_cam(shader);
 	mat4 model_mat = mat4(1.0);
-	model_mat = translate(model_mat, *model_pos / window_scaler);
-	model_mat = translate(model_mat, stage_origin);
+	model_mat = translate(model_mat, *model_pos / vec3(WINDOW_WIDTH / (100 * model_scale->x), WINDOW_HEIGHT / (100 * model_scale->y), 1.0));
 	model_mat *= orientate4(*model_rot);
 	model_mat = scale(model_mat, *model_scale);
 	shader->set_mat4("model", model_mat);

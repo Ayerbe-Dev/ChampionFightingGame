@@ -24,6 +24,9 @@ void Projectile::superInit() {
 	load_anim_list();
 	load_stats();
 	loadStatusScripts();
+	for (int i = 0; i < HITBOX_COUNT_MAX; i++) {
+		hitboxes[i].init(this);
+	}
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }

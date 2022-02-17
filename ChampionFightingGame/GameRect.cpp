@@ -108,16 +108,16 @@ void GameRect::set_rgba(vec4 rgba) {
 }
 
 void GameRect::render() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	shader->use();
 	g_rendermanager.update_shader_cam(shader);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	mat4 mat = mat4(1.0);
 	if (scale != nullptr) {
 		mat = glm::scale(mat, *scale);
 	}
-	mat = translate(mat, g_rendermanager.stage_origin);
+	mat = glm::scale(mat, vec3(100.0)); //Scaling up all GameRects by 100x makes them reasonably sized
 	shader->set_mat4("matrix", mat);
 	shader->set_vec4("f_rgba", rgba);
 

@@ -36,8 +36,8 @@ bool Fighter::add_pos(vec3 pos, bool prev) {
 	//again after and compare the values. Note: The reason we divide by 4 for the offset and not 2 is because we want the sprites to be able to partly 
 	//overlap and let the jostle boxes create a more natural looking pushback. 
 
-	float this_x_front = this->pos.x + (this->jostle_box.w * facing_dir / 4);
-	float that_x_front = that->pos.x + (that->jostle_box.w * that->facing_dir / 4);
+	float this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 4);
+	float that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 4);
 	bool opponent_right = this_x_front > that_x_front;
 
 	//Add positions, then do a whole bunch of checks to see if we'll need to change to a different position.
@@ -92,8 +92,8 @@ bool Fighter::add_pos(vec3 pos, bool prev) {
 
 	//Check if a player is about to walk out of the camera range even if they would stay in bounds.
 
-	float this_x_back = this->pos.x + (this->jostle_box.w * this->facing_dir / -2);
-	float that_x_back = that->pos.x + (that->jostle_box.w * that->facing_dir / -2);
+	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
+	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
 		this->pos.x = prev_pos.x; //I don't know what the calculation for "make it so you're as close as possible to the max distance without going over" would
@@ -103,8 +103,8 @@ bool Fighter::add_pos(vec3 pos, bool prev) {
 
 	//Check to see if you crossed up the opponent by changing positions
 
-	float new_this_x_front = this->pos.x + (this->jostle_box.w * this->facing_dir / 4);
-	float new_that_x_front = that->pos.x + (that->jostle_box.w * that->facing_dir / 4);
+	float new_this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 4);
+	float new_that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 4);
 	bool new_opponent_right = new_this_x_front > new_that_x_front;
 
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND
@@ -151,8 +151,8 @@ bool Fighter::set_pos(vec3 pos, bool prev) {
 
 	bool ret = true;
 
-	float this_x_front = this->pos.x + (this->jostle_box.w * facing_dir / 2);
-	float that_x_front = that->pos.x + (that->jostle_box.w * that->facing_dir / 2);
+	float this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 2);
+	float that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 2);
 	bool opponent_right = this_x_front > that_x_front;
 	this->pos = pos;
 	if (this->pos.x > WINDOW_WIDTH / 2) {
@@ -191,15 +191,15 @@ bool Fighter::set_pos(vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	float this_x_back = this->pos.x + (this->jostle_box.w * facing_dir / -2);
-	float that_x_back = that->pos.x + (that->jostle_box.w * that->facing_dir / -2);
+	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
+	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}
-	float new_this_x_front = this->pos.x + (this->jostle_box.w * this->facing_dir / 2);
-	float new_that_x_front = that->pos.x + (that->jostle_box.w * that->facing_dir / 2);
+	float new_this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 2);
+	float new_that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 2);
 	bool new_opponent_right = new_this_x_front > new_that_x_front;
 
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND) {

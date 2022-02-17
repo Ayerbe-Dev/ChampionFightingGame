@@ -1,6 +1,8 @@
 #include "Camera.h"
 
-Camera::Camera() {}
+Camera::Camera() {
+	pos = vec3(0.0, 0.5, 4.0);
+}
 
 mat4 Camera::get_view() {
 	return lookAt(pos, pos + front, up);

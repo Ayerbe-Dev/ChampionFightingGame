@@ -62,7 +62,7 @@ public:
 
 	void fighter_main(); //Runs during every frame of gameplay
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
-	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset); //Sets up the player's jostle box, called multiple times every frame
+	void create_jostle_rect(vec2 anchor, vec2 offset); //Sets up the player's jostle box, called multiple times every frame
 
 	void process_projectiles(); //Calls the scripts for projectiles
 
@@ -173,7 +173,7 @@ public:
 
 	//Hitbox
 	
-	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset, 
+	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor, vec2 offset, 
 		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
 		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
@@ -181,12 +181,12 @@ public:
 
 	//Grabbox
 	
-	void new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 
+	void new_grabbox(int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 
 		u32 defender_status_if_hit, bool use_player_pos = true);
 	
 	//Hurtbox
 	
-	void new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind = HURTBOX_KIND_NORMAL, bool armor = false, int intangible_kind = INTANGIBLE_KIND_NONE);
+	void new_hurtbox(int id, vec2 anchor, vec2 offset, int hurtbox_kind = HURTBOX_KIND_NORMAL, bool armor = false, int intangible_kind = INTANGIBLE_KIND_NONE);
 
 	//Transitions
 

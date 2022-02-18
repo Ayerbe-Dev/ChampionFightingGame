@@ -1,7 +1,8 @@
 #include "Camera.h"
 
 Camera::Camera() {
-	pos = vec3(0.0, 0.5, 4.0);
+	pos = vec3(0.0, 1.3, 4.0);
+	fov = 43.0;
 }
 
 mat4 Camera::get_view() {

@@ -208,6 +208,7 @@ void battle_main(GameManager* game_manager) {
 	SDL_RenderPresent(g_renderer);
 	
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+		g_soundmanager.loadMusic(stage.default_music_kind);
 		g_soundmanager.playMusic(stage.default_music_kind);
 	}
 	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
@@ -216,7 +217,6 @@ void battle_main(GameManager* game_manager) {
 	else {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
-
 
 	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
 

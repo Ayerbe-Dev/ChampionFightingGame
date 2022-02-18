@@ -23,6 +23,7 @@ SoundManager::SoundManager(bool init) {
 void SoundManager::hyperInit() {
 	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
+	music[MUSIC_KIND_TRAINING_STAGE] = Sound("Vesuvius_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
 	music[MUSIC_KIND_ATLAS_STAGE] = Sound("Atlas_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
 }
 
@@ -413,8 +414,7 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int volume, int sound_
 	active = false;
 	looped = false;
 	switch (sound_kind) {
-		case (SOUND_KIND_MUSIC):
-		{
+		case (SOUND_KIND_MUSIC): {
 			this->dir = "resource/sound/bgm/" + name + ".wav";
 			this->loop_dir = "resource/sound/bgm/" + name + "_loop.wav";
 		} break;
@@ -641,8 +641,7 @@ void addSoundToIndex(Sound sound, int id) {
 }
 
 void audio_callback(void* unused, Uint8* stream, int len) {
-
-	u32 diff = 0; //How much leftover space we have if the length of the stream > the length of the track
+	u32 diff; //How much leftover space we have if the length of the stream > the length of the track
 	u8* source; //Audio data that will be filled by a given track
 	u8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
 	u32 dlen; //Ditto for length
@@ -652,7 +651,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
 			if (sounds[i2][i].sound.active) {
-
+				diff = 0;
 				data = sounds[i2][i].data;
 				dlen = sounds[i2][i].dlen;
 				if (sounds[i2][i].sound.sound_kind == SOUND_KIND_SE) {
@@ -677,7 +676,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 
 				//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
 
-				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(len, len, dlen));
+				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(0, len, dlen - sounds[i2][i].dpos));
 	
 				sounds[i2][i].dpos += len; //Add the length of the stream to the audio's position.
 
@@ -696,7 +695,6 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 					else { //Otherwise just get that shit outta here
 						sounds[i2][i].sound.active = false;
 						sounds[i2][i].dpos = 0;
-						sounds[i2][i].dlen = 0;
 					}
 				}
 				SDL_MixAudio(stream, source, len, vol);

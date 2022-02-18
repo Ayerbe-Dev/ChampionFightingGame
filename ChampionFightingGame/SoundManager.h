@@ -117,7 +117,6 @@ public:
 	int loadCommonSE(int se, int id);
 	int loadCharaSE(int se, int id);
 	int loadVC(int voice, int id);
-	int loadStageMusic(int stage_kind);
 	int loadMusic(int music_kind);
 	void loadSound(Sound sound, int id);
 	void unloadCommonSE(int se, int id);
@@ -125,7 +124,6 @@ public:
 	void unloadVC(int voice, int id);
 	void unloadSEAll(int id);
 	void unloadVCAll(int id);
-	void unloadStageMusic(int stage_kind);
 	void unloadMusic(int music_kind);
 	void unloadSound(Sound sound, int id);
 	void unloadSoundAll();

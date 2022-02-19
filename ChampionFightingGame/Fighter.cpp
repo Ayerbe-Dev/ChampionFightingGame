@@ -61,7 +61,6 @@ void Fighter::process_animate() {
 	}
 
 	attempted_excutes = 0;
-	float last_frame = frame;
 
 	if (anim_kind != nullptr) {
 		frame += rate;
@@ -72,12 +71,6 @@ void Fighter::process_animate() {
 			clear_hurtbox_all();
 			clear_hitbox_all();
 			kara_enabled = false;
-			if (id == 0) {
-				int group = get_status_group();
-				if (group == STATUS_GROUP_NO_RENDER_PRIORITY || group == STATUS_GROUP_CROUCH) {
-					fighter_accessor->render_priority_no_req = !fighter_accessor->render_priority_no_req;
-				}
-			}
 			is_anim_end = true;
 		}
 		else {

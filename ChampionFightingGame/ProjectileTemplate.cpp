@@ -24,7 +24,7 @@ void ProjectileTemplate::loadProjectileTemplateACMD() {
 	});
 }
 
-void ProjectileTemplate::tickOnceProjectileUnique() {
+void ProjectileTemplate::projectile_unique_main() {
 
 }
 

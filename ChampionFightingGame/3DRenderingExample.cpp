@@ -44,7 +44,7 @@ void three_d_rendering_main(GameManager* game_manager) {
 	p1.scale = vec3(0.05);
 	p2.scale = vec3(0.05);
 
-	Animation3D anim[2];
+	Animation anim[2];
 //	anim[0] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p1.model);
 //	anim[1] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p2.model);
 

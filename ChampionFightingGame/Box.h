@@ -60,7 +60,7 @@ public:
 		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x,
 		bool trade, bool continue_launch, bool can_chip_ko);
 	
-	void update_pos(BattleObject* object, bool add_window_width = true);
+	void update_pos();
 	void clear();
 };
 
@@ -82,7 +82,7 @@ public:
 	void activate(BattleObject* object, int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
 		u32 defender_status_if_hit, bool use_player_pos = true);
 
-	void update_pos(BattleObject* fighter);
+	void update_pos();
 	void clear();
 };
 
@@ -101,6 +101,6 @@ public:
 	void init(BattleObject* object);
 	void activate(BattleObject* object, int id, vec2 anchor, vec2 offset, int hurtbox_kind, bool is_armor, int intangible_kind);
 	
-	void update_pos(BattleObject *object);
+	void update_pos();
 	void clear();
 };

@@ -8,7 +8,6 @@
 #include "Battle.h"
 #include "Debugger.h"
 #include "Stage.h"
-#include "UI.h"
 #include "Menu.h"
 #include "SoundManager.h"
 #include "GameTexture.h"
@@ -87,9 +86,10 @@ void battle_main(GameManager* game_manager) {
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
 
+	Battle battle;
+
 	int rng = rand() % 2;
 	Stage stage = player_info[rng]->stage;
-	stage.background.init(stage.resource_dir + "background.png");
 
 	bool gaming = true;
 	bool visualize_boxes = true;
@@ -130,6 +130,8 @@ void battle_main(GameManager* game_manager) {
 	SDL_UnlockMutex(file_mutex);
 
 	HealthBar health_bar[2];
+	GameTextureNew health[2];
+	GameTextureNew bar[2];
 	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 
@@ -145,7 +147,22 @@ void battle_main(GameManager* game_manager) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
-		health_bar[i] = HealthBar(fighter[i]);
+		health[i].init("resource/ui/game/hp/health.png");
+		bar[i].init("resource/ui/game/hp/bar.png");
+		if (i) {
+			health[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+			bar[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+			health[i].flip_h();
+			bar[i].flip_h();
+		}
+		else {
+			health[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			bar[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		}
+		health_bar[i].health_texture = health[i];
+		health_bar[i].bar_texture = bar[i];
+		health_bar[i].health = &fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
+		health_bar[i].max_health = fighter[i]->get_param_float("health");
 		SDL_LockMutex(file_mutex);
 		game_loader->loaded_items++;
 		SDL_UnlockMutex(file_mutex);
@@ -400,26 +417,11 @@ void battle_main(GameManager* game_manager) {
 				//Combo Counter text here
 			}
 
-			//Projectile Renders
-
-/*			for (int o = 0; o < MAX_PROJECTILES; o++) {
-				if (fighter[i]->projectiles[o]->id != -1) {
-					SDL_RendererFlip flip = SDL_FLIP_NONE;
-					if (!fighter[i]->projectiles[o]->facing_right) {
-						flip = SDL_FLIP_HORIZONTAL;
-					}
-					SDL_Rect render_pos;
-					render_pos.x = fighter[i]->projectiles[o]->pos.getRenderCoodrinateX();
-					render_pos.y = fighter[i]->projectiles[o]->pos.y;
-					int width;
-					int height;
-					SDL_QueryTexture(fighter[i]->projectiles[o]->anim_kind->spritesheet, NULL, NULL, &width, &height);
-					render_pos.w = (width / (fighter[i]->projectiles[o]->anim_kind->length + 1));
-					render_pos.h = height;
-					const double angle = (const double)fighter[i]->projectiles[o]->angle;
-					SDL_RenderCopyEx(g_renderer, fighter[i]->projectiles[o]->anim_kind->spritesheet, &(fighter[i]->projectiles[o]->frame_rect), &render_pos, angle, NULL, flip);
+			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+				if (fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
+					fighter[i]->projectiles[i2]->render();
 				}
-			}*/
+			}
 		}
 
 		if (debug) {
@@ -459,9 +461,10 @@ void battle_main(GameManager* game_manager) {
 			if (visualize_boxes) {
 				fighter[i]->jostle_box.render();
 			}
-			health_bar[i].health_texture.scale_left_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / health_bar[i].max_health);
-			health_bar[i].health_texture.render();
-			health_bar[i].bar_texture.render();
+			health[i].scale_left_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / fighter[i]->get_param_float("health"));
+			health[i].render();
+			bar[i].render();
+//			health_bar[i].render();
 			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
 			int prev_segments = ex_bar[i].prev_segments;
@@ -503,6 +506,12 @@ void battle_main(GameManager* game_manager) {
 	delete fighter_accessor;
 	delete game_loader;
 }
+
+Battle::Battle() {}
+
+Battle::~Battle() {}
+
+void Battle::load_battle() {}
 
 void process_fighter_positions(Fighter* fighter[2]) {
 	for (int i = 0; i < 2; i++) {
@@ -676,13 +685,6 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->grabboxes[i2].id != -1) {
 					fighter[i]->grabboxes[i2].rect.render();
-
-					Vec4f grabbox_color = { 0, 255, 0, 127 };
-					if (fighter[i]->grabboxes[i2].grabbox_kind & GRABBOX_KIND_NOTECH) {
-						grabbox_color.x = 128;
-						grabbox_color.y = 0;
-						grabbox_color.z = 128;
-					}
 				}
 			}
 		}
@@ -1358,19 +1360,6 @@ int get_damage_status(int hit_status, int situation_kind) {
 		else {
 			return FIGHTER_STATUS_HITSTUN;
 		}
-	}
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="projectile"></param>
-void decrease_common_projectile_variables(Projectile* projectile) {
-	if (projectile->projectile_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {
-		projectile->projectile_int[PROJECTILE_INT_ACTIVE_TIME] --;
-	}
-	if (projectile->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] != 0) {
-		projectile->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] --;
 	}
 }
 

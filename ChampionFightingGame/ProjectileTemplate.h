@@ -21,7 +21,7 @@ public:
 	void loadProjectileTemplateStatusFunctions();
 	void loadProjectileTemplateACMD();
 
-	void tickOnceProjectileUnique() override;
+	void projectile_unique_main() override;
 	void projectile_unique_status() override;
 	void projectile_unique_enter_status() override;
 	void projectile_unique_exit_status() override;

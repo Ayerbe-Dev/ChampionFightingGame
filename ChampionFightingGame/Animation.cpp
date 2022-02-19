@@ -13,22 +13,30 @@
 #include <gtx/string_cast.hpp>
 extern SDL_Renderer* g_renderer;
 
-Animation::Animation() {};
+Animation::Animation() {}
 
-Animation3D::Animation3D() {}
-
-Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
+Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 	this->name = anim_kind;
 
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(anim_dir, aiProcess_Triangulate);
 
-	if (!scene) {
-		cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
+	if (!scene || !scene->HasAnimations()) {
+		if (model == nullptr) {
+			length = 1;
+		}
+		else {
+			cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
+		}
 		return;
 	}
 
 	length = scene->mAnimations[0]->mDuration;
+
+	if (model == nullptr) {
+		return;
+	}
+
 	vector<Bone> base_bones;
 
 	for (int i = 0; i < model->bones.size(); i++) {
@@ -83,19 +91,6 @@ Animation3D::Animation3D(string anim_kind, string anim_dir, Model *model) {
 	}
 }
 
-//Calculates which region of the currently loaded spritesheet to render
-
-SDL_Rect getFrame(int frame, Animation* animation) {
-	int width;
-	int height;
-	SDL_QueryTexture(animation->spritesheet, NULL, NULL, &width, &height);
-	SDL_Rect frame_rect = animation->anim_map[frame];
-	if (frame_rect.x == 0 && frame_rect.y == 0 && frame_rect.w == 0 && frame_rect.h == 0) {
-		frame_rect.x = frame * (width / (animation->length + 1));
-		frame_rect.y = 0;
-		frame_rect.w = width / (animation->length + 1);
-		frame_rect.h = height;
-	}
 
 	/* 
 
@@ -116,10 +111,3 @@ SDL_Rect getFrame(int frame, Animation* animation) {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⠿⠿⠿⠛⠉
 
 	*/
-
-	return frame_rect;
-}
-
-void loadAnimation(Animation* animation) {
-	animation->spritesheet = loadSDLTexture((animation->path).c_str());
-}

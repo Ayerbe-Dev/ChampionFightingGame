@@ -94,7 +94,7 @@ Bang! Bang!                     .'/       |
 							   :/_________|
 */
 
-void RoyFireball::tickOnceProjectileUnique() {
+void RoyFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}

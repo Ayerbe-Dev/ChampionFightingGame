@@ -6,7 +6,7 @@
 void BattleObject::update_hurtbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (hurtboxes[i].id != -1) {
-			hurtboxes[i].update_pos(this);
+			hurtboxes[i].update_pos();
 		}
 	}
 }

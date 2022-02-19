@@ -7,7 +7,8 @@ void Projectile::change_anim(string animation_name, float frame_rate, float entr
 
 	prev_anim_rate = rate;
 	prev_anim_frame = frame;
-	int anim_to_use = -1;
+	set_current_move_script(animation_name);
+
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
 			frame = entry_frame;
@@ -19,31 +20,13 @@ void Projectile::change_anim(string animation_name, float frame_rate, float entr
 		}
 	}
 	cout << "Invalid Animation '" << animation_name << "'" << endl;
+	startAnimation(nullptr);
 }
 
-void Projectile::startAnimation(Animation3D* animation) {
+void Projectile::startAnimation(Animation* animation) {
 	is_anim_end = false;
-	prev_anim_kind = anim_kind;
+	if (anim_kind != animation) {
+		prev_anim_kind = anim_kind;
+	}
 	anim_kind = animation;
-}
-
-bool Projectile::canStep() {
-	attempted_excutes = 0;
-	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-void Projectile::stepAnimation() {
-	float last_frame = frame;
-	if (frame >= anim_kind->length) {
-		frame = 0;
-	}
-	else {
-		frame += rate;
-	}
-	is_anim_end = last_frame > frame;
 }

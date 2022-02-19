@@ -133,7 +133,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	they shouldn't add it a second time, hence the second arg.
 */
 
-void Hitbox::update_pos(BattleObject * object, bool add_window_width) {
+void Hitbox::update_pos() {
 	vec2 anchor = init_anchor;
 	vec2 offset = init_offset;
 	if (use_player_pos) {
@@ -197,7 +197,7 @@ void Grabbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, i
 	}
 }
 
-void Grabbox::update_pos(BattleObject* object) {
+void Grabbox::update_pos() {
 	vec2 anchor = init_anchor;
 	vec2 offset = init_offset;
 	if (use_player_pos) {
@@ -246,7 +246,7 @@ void Hurtbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, i
 	this->intangible_kind = intangible_kind;
 }
 
-void Hurtbox::update_pos(BattleObject *object) {
+void Hurtbox::update_pos() {
 	vec2 anchor = init_anchor;
 	vec2 offset = init_offset;
 	anchor.x += object->pos.x;

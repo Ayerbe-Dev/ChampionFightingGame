@@ -350,7 +350,7 @@ SSSSlot::SSSSlot() {}
 SSSSlot::SSSSlot(string ui_name, int stage_kind, string stage_name, bool selectable) {
 	this->name = ui_name;
 	this->selectable = selectable;
-	stage = Stage(stage_kind, stage_name, vec3(0.0));
+	stage = Stage(stage_kind, stage_name);
 }
 
 void SSSSlot::set_x(int x) {

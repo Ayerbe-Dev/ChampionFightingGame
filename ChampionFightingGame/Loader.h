@@ -3,7 +3,6 @@
 #include "Fighter.h"
 #include "Stage.h"
 #include "FighterAccessor.h"
-#include "UI.h"
 #include "CharaSelect.h"
 #include "StageSelect.h"
 #include "DebugMenu.h"
@@ -90,19 +89,6 @@ static int LoadingScreen(void* void_GameLoader) {
 	SDL_DestroyTexture(pScreenTexture);
 
 	return 0;
-}
-
-static int LoadGame(void* void_GameLoader) {
-	int time = SDL_GetTicks();
-	GameLoader* game_loader = (GameLoader*)void_GameLoader;
-
-	game_loader->loaded_items++;
-
-	game_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!game_loader->can_ret) {
-	}
-	return 1;
 }
 
 class DebugLoader : public GameLoader {

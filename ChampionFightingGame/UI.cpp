@@ -3,23 +3,11 @@ extern SDL_Renderer* g_renderer;
 
 
 HealthBar::HealthBar() {}
-HealthBar::HealthBar(Fighter* fighter) {
-	this->fighter = fighter;
-	max_health = fighter->get_param_float("health");
-	health_texture.init("resource/ui/game/hp/health.png");
-	bar_texture.init("resource/ui/game/hp/bar.png");
 
-	if (fighter->id == 0) {
-		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	}
-	else {
-		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		health_texture.flip_h();
-		bar_texture.flip_h();
-	}
-
+void HealthBar::render() {
+	health_texture.scale_left_percent(*health / max_health);
+	health_texture.render();
+	bar_texture.render();
 }
 
 ExBar::ExBar() {}

@@ -6,13 +6,13 @@
 
 class HealthBar {
 public:
-	Fighter* fighter;
 	GameTextureNew health_texture;
 	GameTextureNew bar_texture;
+	float* health;
 	float max_health;
 
 	HealthBar();
-	HealthBar(Fighter* fighter);
+	void render();
 };
 
 class ExBar {

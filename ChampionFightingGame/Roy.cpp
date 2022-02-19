@@ -22,12 +22,12 @@ Roy::Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
 		projectiles[i] = new Projectile();
 	}
-/*
+
 	projectile_objects[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, id, player_info, fighter_accessor);
 	delete (projectiles[0]);
 	this->projectiles[0] = projectile_objects[0]->get_projectile();
 	RoyFireball* roy_fireball = (RoyFireball*)projectiles[0];
-	roy_fireball->roy = this;*/
+	roy_fireball->roy = this;
 }
 
 void Roy::chara_id() {

@@ -5,10 +5,10 @@
 /// </summary>
 /// <param name="add_window_width">: Whether or not to add the window width to the hitbox's new position, true by default. When called by projectiles,
 /// this arg should be false instead.</param>
-void BattleObject::update_hitbox_pos(bool add_window_width) {
+void BattleObject::update_hitbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
-			hitboxes[i].update_pos(this, add_window_width);
+			hitboxes[i].update_pos();
 		}
 	}
 }

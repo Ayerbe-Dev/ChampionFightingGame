@@ -30,7 +30,6 @@ public:
 	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
 	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
 
-	bool requesting_priority = false; //Checked by the fighter_accessor to determine which render priority value to use
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
 
@@ -60,6 +59,8 @@ public:
 	Fighter();
 	Fighter(PlayerInfo *player_info);
 
+	//Main
+
 	void fighter_main(); //Runs during every frame of gameplay
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
 	void create_jostle_rect(vec2 anchor, vec2 offset); //Sets up the player's jostle box, called multiple times every frame
@@ -82,17 +83,21 @@ public:
 	void decrease_common_variables();
 
 	//Projectiles
+
 	void init_projectile(int id, vec3 pos); //Marks a projectile as active and moves it to the given position relative to the player
 	void destroy_projectile(int id); //Marks a projectile as inactive
 
 	//Setup
 
 	void superInit(int id);
+	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();
 	void virtual load_move_scripts() {};
 	void loadFighterSounds();
 	virtual void loadCharaSounds() {};
+	void set_default_vars();
+	void init_boxes();
 
 	//Inputs
 
@@ -198,7 +203,7 @@ public:
 	void reenter_last_anim();
 	bool change_anim(string animation_name, float rate = 1.0, float entry_frame = 0.0);
 	bool change_anim_inherit_attributes(string animation_name, bool verbose = true,  bool continue_script = true);
-	void startAnimation(Animation3D* animation);
+	void startAnimation(Animation* animation);
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	int get_launch_ticks();

@@ -7,12 +7,33 @@
 #include "FighterAccessor.h"
 #include "Battle.fwd.h"
 #include "GameManager.h"
+#include "UI.h"
 
 void battle_main(GameManager *game_manager);
 
+class Battle : public GameMenu {
+public:
+	Battle();
+	~Battle();
 
+	void load_battle();
 
-void decrease_common_projectile_variables(Projectile* projectile);
+	IObject* fighter_interface[2];
+	Fighter* fighter[2];
+	Stage stage;
+	FighterAccessor* fighter_accessor;
+
+	GameTextureNew health_texture[2];
+	GameTextureNew health_bar_texture[2];
+
+	//TODO: Edit the following 3 classes to work in OpenGL
+
+//	ExBar ex_bar[2];
+//	PlayerIndicator player_indicator[2];
+//	GameTimer timer;
+
+	//TODO: Create a class for the combo counter or otherwise some form of text rendering
+};
 
 void process_fighter_positions(Fighter* fighter[2]);
 void check_attack_connections(Fighter *p1, Fighter *p2, bool visualize_boxes, bool check);

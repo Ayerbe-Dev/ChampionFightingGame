@@ -40,9 +40,9 @@ public:
 	GameRect jostle_box;
 	GameRect base_jostle_box;
 
-	Animation3D animation_table[ANIM_TABLE_LENGTH];
-	Animation3D* anim_kind;
-	Animation3D* prev_anim_kind;
+	Animation animation_table[ANIM_TABLE_LENGTH];
+	Animation* anim_kind;
+	Animation* prev_anim_kind;
 
 	float prev_anim_rate;
 	float prev_anim_frame;
@@ -66,7 +66,7 @@ public:
 	bool multihit_connected[10] = {false};
 
 	void update_hitbox_connect(int multihit_index);
-	void update_hitbox_pos(bool add_window_width = true);
+	void update_hitbox_pos();
 	bool is_hitbox_active(int multihit = -1);
 	void clear_hitbox(int id);
 	void clear_hitbox_all();

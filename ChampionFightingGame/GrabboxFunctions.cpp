@@ -6,7 +6,7 @@
 void BattleObject::update_grabbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (grabboxes[i].id != -1) {
-			grabboxes[i].update_pos(this);
+			grabboxes[i].update_pos();
 		}
 	}
 }

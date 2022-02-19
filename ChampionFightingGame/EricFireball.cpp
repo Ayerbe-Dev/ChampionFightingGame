@@ -28,7 +28,7 @@ void EricFireball::loadEricFireballACMD() {
 	});
 }
 
-void EricFireball::tickOnceProjectileUnique() {
+void EricFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}

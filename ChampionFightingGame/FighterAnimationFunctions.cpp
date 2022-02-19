@@ -18,7 +18,6 @@ bool Fighter::change_anim(string animation_name, float frame_rate, float entry_f
 
 	set_current_move_script(animation_name);
 
-	int anim_to_use = -1;
 	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
 		if (animation_table[i].name == animation_name) {
 			if (frame_rate != -1) {
@@ -57,16 +56,7 @@ bool Fighter::change_anim_inherit_attributes(string animation_name, bool verbose
 	return false;
 }
 
-void Fighter::startAnimation(Animation3D* animation) {
-	int group = get_status_group();
-	if (group != STATUS_GROUP_NO_RENDER_PRIORITY && group != STATUS_GROUP_CROUCH && group != STATUS_GROUP_HITSTUN) {
-		fighter_accessor->render_priority = id;
-		requesting_priority = true;
-	}
-	else {
-		fighter_accessor->render_priority_no_req = id;
-		requesting_priority = false;
-	}
+void Fighter::startAnimation(Animation* animation) {
 	is_anim_end = false;
 	if (anim_kind != animation) {
 		prev_anim_kind = anim_kind;

@@ -66,7 +66,7 @@ void Model::unload_model() {
 	}
 }
 
-void Model::set_bones(float frame, Animation3D* anim_kind) {
+void Model::set_bones(float frame, Animation* anim_kind) {
 	if (anim_kind == nullptr) {
 		return reset_bones();
 	}

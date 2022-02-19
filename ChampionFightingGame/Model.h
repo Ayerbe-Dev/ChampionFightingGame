@@ -63,7 +63,7 @@ public:
 	~Model();
 	void load_model(string path);
 	void unload_model();
-	void set_bones(float frame, Animation3D* anim_kind);
+	void set_bones(float frame, Animation* anim_kind);
 	void reset_bones();
     void render(Shader *shader);
 	vector<Texture> textures_loaded;

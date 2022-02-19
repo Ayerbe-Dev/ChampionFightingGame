@@ -10,5 +10,5 @@ RenderObject::RenderObject(Model model, Shader shader) {
 }
 
 void RenderObject::render() {
-	g_rendermanager.render_model(&model, &shader, &pos, &rot, &scale);
+	g_rendermanager.render_model(&model, &shader, model_mat, &pos, &rot, &scale);
 }

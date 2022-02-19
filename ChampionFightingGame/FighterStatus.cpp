@@ -633,7 +633,7 @@ void Fighter::exit_status_grab() {}
 
 void Fighter::status_throw() {
 	if (!fighter_flag[FIGHTER_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
+		set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
 	if (is_status_end()) {
 		return;
@@ -693,7 +693,7 @@ void Fighter::exit_status_grab_air() {}
 
 void Fighter::status_throw_air() {
 	if (!fighter_flag[FIGHTER_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
+		set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
@@ -759,7 +759,6 @@ void Fighter::enter_status_grabbed() {
 }
 
 void Fighter::exit_status_grabbed() {
-	angle = 0;
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 	fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 0;
 	fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;

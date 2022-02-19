@@ -1,7 +1,7 @@
 #include "Fighter.h"
 
-void Fighter::set_opponent_offset(GameCoordinate offset, int frames) {
-	GameCoordinate new_offset;
+void Fighter::set_opponent_offset(vec2 offset, int frames) {
+	vec2 new_offset;
 	new_offset.x = this->pos.x + (offset.x * facing_dir);
 	new_offset.y = this->pos.y + offset.y;
 
@@ -16,8 +16,8 @@ void Fighter::set_opponent_offset(GameCoordinate offset, int frames) {
 	fighter_accessor->fighter[!id]->fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
 }
 
-void Fighter::set_opponent_offset(GameCoordinate offset) {
-	GameCoordinate new_offset;
+void Fighter::set_opponent_offset(vec2 offset) {
+	vec2 new_offset;
 	int frames = fighter_accessor->fighter[!id]->fighter_int[FIGHTER_INT_MANUAL_POS_CHANGE_FRAMES];
 	new_offset.x = this->pos.x + (offset.x * facing_dir);
 	new_offset.y = this->pos.y + offset.y;
@@ -47,11 +47,22 @@ void Fighter::damage_opponent(float damage, float facing_dir, float x_speed, flo
 	fighter_accessor->fighter[!id]->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = y_speed;
 }
 
-void Fighter::set_opponent_angle(double angle) {
-	fighter_accessor->fighter[!id]->angle = angle * facing_dir;
+void Fighter::set_opponent_rot(vec3 rot) {
+	fighter_accessor->fighter[!id]->set_rot(rot * facing_dir);
+}
+
+void Fighter::add_opponent_rot(vec3 rot) {
+	fighter_accessor->fighter[!id]->add_rot(rot * facing_dir);
+}
+
+void Fighter::reset_opponent_rot() {
+	fighter_accessor->fighter[!id]->reset_rot();
 }
 
 void Fighter::set_opponent_thrown_ticks() {
+	if (fighter_accessor->fighter[!id]->anim_kind == nullptr) {
+		return;
+	}
 	fighter_accessor->fighter[!id]->rate = (((anim_kind->length - 1) / this->rate) / (fighter_accessor->fighter[!id]->anim_kind->length - 1)) - 1;
 }
 

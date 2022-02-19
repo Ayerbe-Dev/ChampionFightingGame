@@ -32,8 +32,6 @@ public:
 
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
-
-	vec3 rot_from_opponent = vec3(0.0);
 	
 	int fighter_int[FIGHTER_INT_MAX]{ 0 };
 	float fighter_float[FIGHTER_FLOAT_MAX]{ 0.0 };
@@ -146,7 +144,6 @@ public:
 	void unloadSEAll();
 	void unloadVCAll();
 
-
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
 	int get_param_int_special(string param);
@@ -162,17 +159,26 @@ public:
 	bool add_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos(vec3 pos, bool prev = false);
 	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
+	vec3 get_distance_to_bone(string bone_name);
+
+	//Rotation
+
+	void set_rot(vec3 rot);
+	void add_rot(vec3 rot);
+	void reset_rot();
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow
 
-	void set_opponent_offset(GameCoordinate offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
+	void set_opponent_offset(vec2 offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
 		//long it should take
-	void set_opponent_offset(GameCoordinate offset); //The above, but it leaves the time it should take alone. 
+	void set_opponent_offset(vec2 offset); //The above, but it leaves the time it should take alone. 
 	void change_opponent_status(u32 status_kind); //Wild guess.
 	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0); //Damage the opponent, set their speed and direction. 
 		//Use in combination with change_opponent_status to throw someone.
-	void set_opponent_angle(double angle); //Sets the opponent's angle relative to their facing dir.
+	void set_opponent_rot(vec3 rot); //Sets the opponent's angle relative to their facing dir.
+	void add_opponent_rot(vec3 rot);
+	void reset_opponent_rot();
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
 	void change_opponent_anim(string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
 

@@ -498,6 +498,9 @@
     <ClCompile Include="GameRect.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="FighterRotationFunctions.cpp">
+      <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">

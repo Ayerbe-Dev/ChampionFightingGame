@@ -33,9 +33,9 @@ public:
 	u32 status_kind{ FIGHTER_STATUS_WAIT };
 	u32 situation_kind{ FIGHTER_SITUATION_GROUND };
 
-	PlayerInfo* player_info;
+	vec3 extra_rot = vec3(0.0);
 
-	double angle{ 0 };
+	PlayerInfo* player_info;
 
 	GameRect jostle_box;
 	GameRect base_jostle_box;

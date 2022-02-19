@@ -409,7 +409,7 @@ void Roy::load_move_scripts() {
 		if (is_excute_frame(0)) {
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
+			set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -422,7 +422,7 @@ void Roy::load_move_scripts() {
 		if (is_excute_frame(0)) {
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
+			set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -445,7 +445,7 @@ void Roy::load_move_scripts() {
 		if (is_excute_frame(0)) {
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
+			set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -458,7 +458,7 @@ void Roy::load_move_scripts() {
 		if (is_excute_frame(0)) {
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
 			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(GameCoordinate{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
+			set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}

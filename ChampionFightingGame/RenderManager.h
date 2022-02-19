@@ -48,5 +48,5 @@ public:
 	void update_shader_lights(Shader *shader);
 	void update_shader_cam(Shader* shader);
 
-	void render_model(Model *model, Shader *shader, vec3 *pos, vec3 *rot, vec3 *scale);
+	void render_model(Model *model, Shader *shader, mat4 model_mat, vec3 *pos, vec3 *rot, vec3 *scale);
 };

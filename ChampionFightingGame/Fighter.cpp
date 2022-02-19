@@ -89,6 +89,7 @@ void Fighter::process_post_animate() {
 }
 
 void Fighter::process_pre_position() {
+	model_mat = mat4(1.0);
 	rot = vec3(0.0);
 	if (isnan(pos.y)) {
 		pos.y = 0;
@@ -139,7 +140,7 @@ void Fighter::process_post_position() {
 	}
 	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
 	rot.z += radians(90.0 * facing_dir);
-	rot += rot_from_opponent;
+	rot += extra_rot * vec3(1.0, facing_dir, facing_dir);
 }
 
 void Fighter::process_pre_status() {
@@ -424,6 +425,7 @@ void Fighter::process_input() {
 
 	if (check_button_on(BUTTON_START)) {
 		pos.y = FLOOR_GAMECOORD;
+		pos.z = 0;
 		if (id == 0) {
 			pos.x = -200.0;
 		}

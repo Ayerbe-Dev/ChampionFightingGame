@@ -24,9 +24,9 @@ Eric::Eric(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 		projectiles[i] = new Projectile();
 	}
 
-	projectile_objects[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, id, player_info, fighter_accessor);
+	projectile_interface[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ERIC_FIREBALL, id, player_info, fighter_accessor);
 	delete (projectiles[0]);
-	this->projectiles[0] = projectile_objects[0]->get_projectile();
+	this->projectiles[0] = projectile_interface[0]->get_projectile();
 	EricFireball* eric_fireball = (EricFireball*)projectiles[0];
 	eric_fireball->eric = this;
 }

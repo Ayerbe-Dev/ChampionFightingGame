@@ -57,6 +57,20 @@ void menu_main(GameManager* game_manager) {
 				{
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
+				case SDL_WINDOWEVENT:
+				{
+					switch (event.window.event) {
+						case SDL_WINDOWEVENT_RESIZED:
+						case SDL_WINDOWEVENT_SIZE_CHANGED:
+						case SDL_WINDOWEVENT_MAXIMIZED:
+						{
+							int width;
+							int height;
+							SDL_GetWindowSize(g_window, &width, &height);
+							glViewport(0, 0, width, height);
+						} break;
+					}
+				} break;
 			}
 		}
 

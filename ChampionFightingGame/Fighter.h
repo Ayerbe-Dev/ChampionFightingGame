@@ -14,9 +14,9 @@
 #include "FighterAccessor.fwd.h"
 #include "FighterAccessor.h"
 #include "PlayerInfo.h"
-#include "Battle.fwd.h"
-#include "Battle.h"
 #include "SoundManager.h"
+
+class IObject;
 
 class Fighter: public BattleObject {
 public:
@@ -28,7 +28,7 @@ public:
 
 	FighterAccessor* fighter_accessor;
 	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
-	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
+	IObject* projectile_interface[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
 
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
@@ -159,13 +159,20 @@ public:
 	bool add_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos(vec3 pos, bool prev = false);
 	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
-	vec3 get_distance_to_bone(string bone_name);
 
 	//Rotation
 
 	void set_rot(vec3 rot);
 	void add_rot(vec3 rot);
 	void reset_rot();
+
+	//Bone Functions
+	vec3 get_distance_to_bone(string bone_name);
+	vec3 get_distance_to_bone(int bone_id);
+	vec3 get_bone_rotation(string bone_name);
+	vec3 get_bone_rotation(int bone_id);
+	vec3 get_rotated_distance_to_bone(string bone_name);
+	vec3 get_rotated_distance_to_bone(int bone_id);
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow
@@ -181,6 +188,8 @@ public:
 	void reset_opponent_rot();
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
 	void change_opponent_anim(string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
+	void attach_opponent(string bone_name);
+	void detach_opponent();
 
 	//Hitbox
 	

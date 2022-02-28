@@ -56,6 +56,7 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 		aiNodeAnim* node = scene->mAnimations[0]->mChannels[i];
 		int index = model->get_bone_id(node->mNodeName.C_Str());
 		if (index == -1) {
+			cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton!" << endl;
 			continue;
 		}
 		for (int i2 = 0; i2 < node->mNumPositionKeys; i2++) { //Load the keyframes that are actually baked

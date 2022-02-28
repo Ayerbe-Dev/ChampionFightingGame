@@ -89,13 +89,12 @@ void Fighter::process_post_animate() {
 }
 
 void Fighter::process_pre_position() {
-	model_mat = mat4(1.0);
 	rot = vec3(0.0);
 	if (isnan(pos.y)) {
 		pos.y = 0;
 	}
 
-	create_jostle_rect(vec2{ -20, 25 }, vec2{ 20, 0 });
+	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
 
 	prev_pos = pos;
 }
@@ -118,9 +117,6 @@ void Fighter::process_position() {
 
 void Fighter::process_post_position() {
 	Fighter* that = fighter_accessor->fighter[!id];
-	update_hitbox_pos();
-	update_grabbox_pos();
-	update_hurtbox_pos();
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
@@ -139,8 +135,6 @@ void Fighter::process_post_position() {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
 	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
-	rot.z += radians(90.0 * facing_dir);
-	rot += extra_rot * vec3(1.0, facing_dir, facing_dir);
 }
 
 void Fighter::process_pre_status() {

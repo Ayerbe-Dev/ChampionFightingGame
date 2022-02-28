@@ -276,9 +276,6 @@
     <ClCompile Include="GameMenu.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="AlejandroStatus.cpp">
       <Filter>Source Files\Objects\Fighter\Chara\Alejandro</Filter>
     </ClCompile>
@@ -499,6 +496,9 @@
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="FighterRotationFunctions.cpp">
+      <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterBoneFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
   </ItemGroup>
@@ -771,9 +771,6 @@
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="ParamTable.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="UI.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="StageSelect.h">

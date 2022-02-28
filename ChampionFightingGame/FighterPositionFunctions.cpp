@@ -213,11 +213,3 @@ bool Fighter::set_pos(vec3 pos, bool prev) {
 bool Fighter::set_pos(float x, float y, float z, bool prev) {
 	return set_pos(vec3(x, y, z), prev);
 }
-
-vec3 Fighter::get_distance_to_bone(string bone_name) {
-	int index = model.get_bone_id(bone_name);
-	if (index != -1) {
-		return (vec3)model.bones[index].final_matrix[3];
-	}
-	return vec3(0.0);
-}

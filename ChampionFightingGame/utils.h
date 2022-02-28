@@ -101,6 +101,7 @@ mat4 ass_converter(const aiMatrix4x4& from);
 vec3 ass_converter(const aiVector3D& from);
 quat ass_converter(const aiQuaternion& from);
 vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle);
+void update_thread_progress(int& to_update);
 
 /*
 	updateCamera(); 

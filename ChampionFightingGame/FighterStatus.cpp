@@ -649,7 +649,7 @@ void Fighter::enter_status_throw() {
 	else {
 		change_anim("throw_f");
 	}
-	if (!add_pos(get_param_float(get_anim() + "_move_offset", param_table) * facing_dir, 0, true)) {
+	if (!add_pos(get_param_float(get_anim() + "_move_offset", param_table) * facing_dir, 0, 0, true)) {
 		if (pos.x > 0) {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
 		}

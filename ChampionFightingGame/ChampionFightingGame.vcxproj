@@ -244,6 +244,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterActionabilityFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
+    <ClCompile Include="FighterBoneFunctions.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameRect.cpp" />
@@ -332,7 +333,6 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="TessaMoves.cpp" />
     <ClCompile Include="TessaStatus.cpp" />
     <ClCompile Include="TitleScreen.cpp" />
-    <ClCompile Include="UI.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="Vesuvius.cpp" />
     <ClCompile Include="VesuviusMoves.cpp" />
@@ -443,7 +443,6 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Tessa.fwd.h" />
     <ClInclude Include="Tessa.h" />
     <ClInclude Include="TitleScreen.h" />
-    <ClInclude Include="UI.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Fighter.h" />
     <ClInclude Include="Vesuvius.fwd.h" />

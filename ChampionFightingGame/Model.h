@@ -85,5 +85,6 @@ private:
 	void load_skeleton(string path);
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
+	bool find_missing_bones(aiNode* node, vector<string>& bone_names);
     vector<Texture> load_material_textures(aiMaterial* mat, aiTextureType type, string type_name);
 };

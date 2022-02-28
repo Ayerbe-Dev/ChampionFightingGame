@@ -16,7 +16,7 @@ public:
 	vec3 pos = vec3(0.0);
 	vec3 rot = vec3(0.0);
 	vec3 scale = vec3(1.0);
-	mat4 model_mat = mat4(1.0);
+	mat4 extra_mat = mat4(1.0);
 
 	Shader shader;
 	Model model;

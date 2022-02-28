@@ -6,7 +6,6 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "Battle.h"
-#include "Debugger.h"
 #include "Stage.h"
 #include "Menu.h"
 #include "SoundManager.h"
@@ -70,6 +69,61 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 
+void new_battle_main(GameManager* game_manager) {
+	PlayerInfo* player_info[2];
+	for (int i = 0; i < 2; i++) {
+		player_info[i] = game_manager->player_info[i];
+	}
+	Battle battle;
+	battle.load_battle(game_manager);
+
+	while (*game_manager->looping) {
+		battle.frame_delay_check_performance();
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return game_manager->update_state(GAME_STATE_CLOSE);
+				} break;
+				case SDL_WINDOWEVENT:
+				{
+					switch (event.window.event) {
+						case SDL_WINDOWEVENT_RESIZED:
+						case SDL_WINDOWEVENT_SIZE_CHANGED:
+						case SDL_WINDOWEVENT_MAXIMIZED:
+						{
+							int width;
+							int height;
+							SDL_GetWindowSize(g_window, &width, &height);
+							glViewport(0, 0, width, height);
+						} break;
+					}
+				} break;
+			}
+		}
+
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+			if (debug) {
+				g_soundmanager.pauseSEAll(i);
+				g_soundmanager.pauseVCAll(i);
+			}
+		}
+
+		battle.process_main();
+
+		battle.render_world();
+		battle.render_ui();
+		SDL_GL_SwapWindow(g_window);
+	}
+
+	battle.unload_battle();
+}
+
 /// <summary>
 /// The main function for normal gameplay
 /// </summary>
@@ -86,8 +140,6 @@ void battle_main(GameManager* game_manager) {
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
 
-	Battle battle;
-
 	int rng = rand() % 2;
 	Stage stage = player_info[rng]->stage;
 
@@ -97,16 +149,18 @@ void battle_main(GameManager* game_manager) {
 
 
 	Debugger debugger;
-	debugger = Debugger();
-	SDL_Rect debug_rect[2] = { 0, 0, 0, 0 };
+	GameRect debug_rect[2];
+	for (int i = 0; i < 2; i++) {
+		debug_rect[i].init();
+	}
 
 	FighterAccessor* fighter_accessor = new FighterAccessor;
 	SDL_LockMutex(file_mutex);
 	game_loader->loaded_items++;
 	SDL_UnlockMutex(file_mutex);
 
-	GameCoordinate debug_anchor[2] = { {0,0} };
-	GameCoordinate debug_offset[2] = { {0,0} };
+	vec2 debug_anchor[2] = { {0,0} };
+	vec2 debug_offset[2] = { {0,0} };
 
 	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, player_info[0]->chara_kind, 0, player_info[0], fighter_accessor);
 	SDL_LockMutex(file_mutex);
@@ -210,8 +264,6 @@ void battle_main(GameManager* game_manager) {
 			if (player_info[i]->is_any_inputs()) {
 				loading = false;
 
-				//We don't want the option the player uses to exit the loading screen to also be capable of updating the buffer
-
 				for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
 					player_info[i]->poll_buttons(keyboard_state);
 					player_info[!i]->poll_buttons(keyboard_state);
@@ -285,8 +337,12 @@ void battle_main(GameManager* game_manager) {
 			average_ticks.clear();
 			tick_frequency.clear();
 		}
+
 		frameTimeDelay();
 		ticks = SDL_GetTicks();
+
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
@@ -299,8 +355,7 @@ void battle_main(GameManager* game_manager) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT:
-				{
+				case SDL_QUIT: {
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;
@@ -319,16 +374,6 @@ void battle_main(GameManager* game_manager) {
 			}
 		}
 
-		//Check the players' buttons
-		for (int i = 0; i < 2; i++) {
-			if (!debug) {
-				/*
-				Frame advance would make it so that check_button_trigger is never true during debug mode if it got checked here, so we just check the inputs
-				directly when the frame is advanced manually
-				*/
-				player_info[i]->poll_buttons(keyboard_state);
-			}
-		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
@@ -336,102 +381,87 @@ void battle_main(GameManager* game_manager) {
 			debugger.button_info[i].changed = (old_button != new_button);
 		}
 
-		/*
-			Setting up facing directions must be done outside of the main fighter loop. If P1 is on one side, is determined to be facing one way, then
-			P2 moves such that P1 crosses them up, it can cause both characters to face the same direction for a frame which can break stuff. Make sure the
-			facing direction of each character is locked in before any movement for that frame takes place.
-		*/
-
-		process_fighter_positions(fighter);
-
-		//Main tick loop
-
-		for (int i = 0; i < 2; i++) {
-			if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE) && i == 0) {
-				debug = !debug;
-				if (!debug) {
-					for (int i = 0; i < 2; i++) {
-						g_soundmanager.resumeSEAll(i);
-						g_soundmanager.resumeVCAll(i);
-					}
-				}
-				timer.ClockMode = !timer.ClockMode;
-			}
+		if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
+			debug = !debug;
+			timer.ClockMode = !timer.ClockMode;
 			if (!debug) {
+				for (int i = 0; i < 2; i++) {
+					g_soundmanager.resumeSEAll(i);
+					g_soundmanager.resumeVCAll(i);
+				}
+			}
+		}
+		if (debug) {
+			if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
+				debugger.print_commands();
+				string command;
+				cin >> command;
+				debugger.debug_query(command, fighter[debugger.target], fighter[!debugger.target]);
+			}
+			if (debugger.check_button_trigger(BUTTON_DEBUG_CHANGE_TARGET)) {
+				debugger.target = !debugger.target;
+			}
+			if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+				timer.Tick();
+				pre_process_fighter_positions(fighter);
+				for (int i = 0; i < 2; i++) {
+					g_soundmanager.resumeSEAll(i);
+					g_soundmanager.resumeVCAll(i);
+					player_info[i]->poll_buttons(keyboard_state);
+					fighter[i]->fighter_main();
+				}
+				post_process_fighter_positions(fighter);
+				if (debugger.print_frames) {
+					cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame - 1 << endl;
+					cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
+					cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
+					cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
+				}
+			}
+			debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
+			if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
+				debug = false;
+				gaming = false;
+				game_manager->update_state(GAME_STATE_DEBUG_MENU);
+				goto DONE_GAMING;
+			}
+		}
+		else {
+			timer.Tick();
+			pre_process_fighter_positions(fighter);
+			for (int i = 0; i < 2; i++) {
+				player_info[i]->poll_buttons(keyboard_state);
 				fighter[i]->fighter_main();
 			}
-			else if (i == 0) {
-				if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
-					debugger.print_commands();
-					string command;
-					cin >> command;
-					debugger.debug_query(command, fighter[debugger.target], fighter[!debugger.target]);
-				}
-				if (debugger.check_button_trigger(BUTTON_DEBUG_CHANGE_TARGET)) {
-					debugger.target = !debugger.target;
-				}
-				if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-					for (int i = 0; i < 2; i++) {
-						g_soundmanager.resumeSEAll(i);
-						g_soundmanager.resumeVCAll(i);
-					}
-
-					for (int i = 0; i < 2; i++) {
-						player_info[i]->poll_buttons(keyboard_state);
-						fighter[i]->fighter_main();
-					}
-					timer.Tick();
-					if (debugger.print_frames) {
-						cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame - 1 << endl;
-						cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
-						cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
-						cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
-					}
-				}
-				debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
-				if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
-					debug = false;
-					gaming = false;
-					game_manager->update_state(GAME_STATE_DEBUG_MENU);
-					displayLoadingScreen();
-					goto DONE_GAMING;
-				}
-			}
-
+			post_process_fighter_positions(fighter);
+		}
+		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->crash_to_debug) {
 				gaming = false;
 				game_manager->update_state(GAME_STATE_DEBUG_MENU);
-				displayLoadingScreen();
 				goto DONE_GAMING;
 			}
 		}
 
-		glClearColor(0.1, 0.1, 0.1, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		for (int i = 0; i < 2; i++) {
 			fighter[i]->render();
-		}
-		for (int i = 0; i < 2; i++) {
-			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-				//Combo Counter text here
-			}
-
+			
 			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 				if (fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
 					fighter[i]->projectiles[i2]->render();
 				}
 			}
+
+			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
+				//Combo Counter text here
+			}
 		}
 
 		if (debug) {
-			SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-			SDL_RenderDrawRect(g_renderer, &debug_rect[debugger.target]);
-			SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 127);
-			SDL_RenderFillRect(g_renderer, &debug_rect[debugger.target]);
+			debug_rect[debugger.target].render();
 		}
 
-		check_attack_connections(fighter[0], fighter[1], visualize_boxes, !debug || (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)));
+		check_attack_connections(fighter[0], fighter[1], visualize_boxes, !debug || debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE));
 
 		//Camera things
 //		camera = updateCamera(fighter[0]->pos.getRenderCoodrinateX(), fighter[0]->pos.getRenderCoodrinateY(), fighter[1]->pos.getRenderCoodrinateX(), fighter[1]->pos.getRenderCoodrinateY(), debugger.zoom);
@@ -461,10 +491,8 @@ void battle_main(GameManager* game_manager) {
 			if (visualize_boxes) {
 				fighter[i]->jostle_box.render();
 			}
-			health[i].scale_left_percent(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] / fighter[i]->get_param_float("health"));
-			health[i].render();
-			bar[i].render();
-//			health_bar[i].render();
+			health_bar[i].health_texture.scale_left_percent(*health_bar[i].health / health_bar[i].max_health);
+			health_bar[i].render();
 			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
 			int prev_segments = ex_bar[i].prev_segments;
@@ -483,8 +511,7 @@ void battle_main(GameManager* game_manager) {
 			ex_bar[i].ex_segment_texture.render();
 			ex_bar[i].bar_texture.render();
 		}
-
-		if (!debug) timer.Tick();
+	
 		timer.Render();
 
 		SDL_GL_SwapWindow(g_window);
@@ -511,9 +538,175 @@ Battle::Battle() {}
 
 Battle::~Battle() {}
 
-void Battle::load_battle() {}
+void Battle::load_battle(GameManager* game_manager) {
+	game_loader = new GameLoader(16);
+	SDL_Thread* loading_thread;
+	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
+	SDL_DetachThread(loading_thread);
 
-void process_fighter_positions(Fighter* fighter[2]) {
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
+	int rng = rand() % 2;
+	Stage stage = player_info[rng]->stage;
+
+	fighter_accessor = new FighterAccessor;
+	inc_thread();
+
+	for (int i = 0; i < 2; i++) {
+		debug_rect[i].init();
+		fighter_interface[i] = new IObject(OBJECT_TYPE_FIGHTER, player_info[i]->chara_kind, i, player_info[i], fighter_accessor);
+		inc_thread();
+		fighter[i] = fighter_interface[i]->get_fighter();
+		inc_thread();
+	}
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->player_info = player_info[i];
+		fighter[i]->pos.x = 0;
+		fighter_accessor->fighter[i] = fighter[i];
+		fighter[i]->fighter_accessor = fighter_accessor;
+		fighter[i]->superInit(i);
+		inc_thread();
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			fighter[i]->projectiles[i2]->owner_id = i;
+		}
+		health_bar[i].health_texture.init("resource/ui/game/hp/health.png");
+		health_bar[i].bar_texture.init("resource/ui/game/hp/bar.png");
+		health_bar[i].health = &fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
+		health_bar[i].max_health = fighter[i]->get_param_float("health");
+		inc_thread();
+		ex_bar[i] = ExBar(fighter[i]);
+		inc_thread();
+		player_indicator[i] = PlayerIndicator(fighter[i]);
+		inc_thread();
+	}
+	timer.init(99);
+	inc_thread();
+	g_soundmanager.fighter_accessor = fighter_accessor;
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->loadCharaSounds();
+		inc_thread();
+	}
+
+	bool loading = true;
+	while (loading) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+				{
+					return game_manager->update_state(GAME_STATE_CLOSE);
+				}
+				break;
+			}
+		}
+
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
+
+		for (int i = 0; i < 2; i++) {
+			player_info[i]->check_controllers();
+			player_info[i]->poll_buttons(keyboard_state);
+			if (player_info[i]->is_any_inputs()) {
+				loading = false;
+
+				for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
+					player_info[i]->poll_buttons(keyboard_state);
+					player_info[!i]->poll_buttons(keyboard_state);
+				}
+			}
+		}
+	}
+	game_loader->finished = true;
+	game_manager->set_menu_info(this);
+
+	SDL_SetRenderTarget(g_renderer, NULL);
+	SDL_RenderClear(g_renderer);
+	SDL_RenderPresent(g_renderer);
+
+	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+		g_soundmanager.loadMusic(stage.default_music_kind);
+		g_soundmanager.playMusic(stage.default_music_kind);
+	}
+	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
+		//randomly play the theme of one of the characters. if online, always play the opponent's theme
+	}
+	else {
+		//randomly play the theme for one of the players' tags. if online, always play the user's theme
+	}
+}
+void Battle::unload_battle() {
+	for (int i = 0; i < 2; i++) {
+		health_bar[i].bar_texture.destroy();
+		health_bar[i].health_texture.destroy();
+		ex_bar[i].bar_texture.destroy();
+		ex_bar[i].ex_texture.destroy();
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			if (fighter[i]->projectile_interface[i2] != NULL) {
+				for (int i3 = 0; i3 < 10; i3++) {
+					fighter[i]->projectiles[i2]->hitboxes[i3].rect.destroy();
+				}
+				delete fighter[i]->projectile_interface[i2];
+			}
+			delete fighter[i]->projectiles[i2];
+		}
+		for (int i2 = 0; i2 < 10; i2++) {
+			fighter[i]->hitboxes[i2].rect.destroy();
+			fighter[i]->hurtboxes[i2].rect.destroy();
+			fighter[i]->grabboxes[i2].rect.destroy();
+		}
+		delete fighter[i];
+		delete fighter_interface[i];
+	}
+	g_soundmanager.unloadSoundAll();
+
+	delete fighter_accessor;
+	delete game_loader;
+}
+
+void Battle::process_main() {
+	SDL_PumpEvents();
+	keyboard_state = SDL_GetKeyboardState(NULL);
+
+	debugger.poll_inputs(keyboard_state);
+
+	if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
+		debug = !debug;
+		timer.ClockMode = !timer.ClockMode;
+		if (!debug) {
+			for (int i = 0; i < 2; i++) {
+				g_soundmanager.resumeSEAll(i);
+				g_soundmanager.resumeVCAll(i);
+			}
+		}
+	}
+	if (debug) {
+		process_debug();
+	}
+	else {
+		timer.Tick();
+		pre_process_fighter();
+		process_fighter();
+		post_process_fighter();
+	}
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->crash_to_debug) {
+			*looping = false;
+			*game_state = GAME_STATE_DEBUG_MENU;
+		}
+	}
+	process_ui();
+
+	check_collisions();
+
+}
+
+void Battle::pre_process_fighter() {
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]) {
+			return;
+		}
+	}
 	for (int i = 0; i < 2; i++) {
 		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[i]->is_actionable()) {
 			int pos_threshold = 0;
@@ -545,6 +738,302 @@ void process_fighter_positions(Fighter* fighter[2]) {
 					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 				}
+			}
+		}
+	}
+}
+
+void Battle::process_fighter() {
+	for (int i = 0; i < 2; i++) {
+		player_info[i]->poll_buttons(keyboard_state);
+		fighter[i]->fighter_main();
+	}
+}
+
+void Battle::post_process_fighter() {
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->update_hitbox_pos();
+		fighter[i]->update_grabbox_pos();
+		fighter[i]->update_hurtbox_pos();
+		fighter[i]->rot.z += radians(90.0 * fighter[i]->facing_dir);
+		fighter[i]->rot += fighter[i]->extra_rot;
+		fighter[i]->create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
+	}
+}
+
+void Battle::process_ui() {
+	for (int i = 0; i < 2; i++) {
+		health_bar[i].health_texture.scale_left_percent(*health_bar[i].health / health_bar[i].max_health);
+		ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
+
+		int prev_segments = ex_bar[i].prev_segments;
+		int segments = floor(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / (ex_bar[i].max_ex / EX_METER_BARS));
+		ex_bar[i].prev_segments = segments;
+		if (prev_segments != segments) {
+			if (prev_segments > segments) {
+				ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 6);
+			}
+			else if (!(segments % 2)) {
+				ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 2);
+			}
+		}
+	}
+}
+
+void Battle::process_debug() {
+	if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
+		debugger.print_commands();
+		string command;
+		cin >> command;
+		debugger.debug_query(command, fighter[debugger.target], fighter[!debugger.target]);
+	}
+	if (debugger.check_button_trigger(BUTTON_DEBUG_CHANGE_TARGET)) {
+		debugger.target = !debugger.target;
+	}
+	if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+		timer.Tick();
+		for (int i = 0; i < 2; i++) {
+			g_soundmanager.resumeSEAll(i);
+			g_soundmanager.resumeVCAll(i);
+		}
+		pre_process_fighter();
+		process_fighter();
+		post_process_fighter();
+		if (debugger.print_frames) {
+			cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << endl;
+			cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
+			cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
+			cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
+		}
+	}
+	debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
+	if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
+		debug = false;
+		*looping = false;
+		*game_state = GAME_STATE_DEBUG_MENU;
+	}
+}
+
+void Battle::render_world() {
+	//update camera pos
+
+	//render the stage
+
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->render();
+		//player tags will go here
+
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			if (fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
+				fighter[i]->projectiles[i2]->render();
+			}
+		}
+	}
+}
+
+void Battle::render_ui() {
+	for (int i = 0; i < 2; i++) {
+		if (visualize_boxes) {
+			fighter[i]->jostle_box.render();
+			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->hurtboxes[i2].id != -1) {
+					fighter[i]->hurtboxes[i2].rect.render();
+				}
+			}
+			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->hitboxes[i2].id != -1) {
+					fighter[i]->hitboxes[i2].rect.render();
+				}
+			}
+			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->projectiles[i2]->id != -1) {
+					for (int i3 = 0; i3 < 10; i3++) {
+						if (fighter[i]->projectiles[i2]->hitboxes[i3].id != -1) {
+							fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();
+						}
+					}
+				}
+			}
+			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->grabboxes[i2].id != -1) {
+					fighter[i]->grabboxes[i2].rect.render();
+				}
+			}
+			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
+				//Combo Counter text here
+			}
+		}
+		health_bar[i].render();
+		ex_bar[i].ex_texture.render();
+		ex_bar[i].ex_segment_texture.render();
+		ex_bar[i].bar_texture.render();
+	}
+	timer.Render();
+
+	if (debug) {
+		debug_rect[debugger.target].render();
+	}
+}
+
+void pre_process_fighter_positions(Fighter* fighter[2]) {
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]) {
+			return;
+		}
+	}
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[i]->is_actionable()) {
+			int pos_threshold = 0;
+			if (fighter[!i]->situation_kind == FIGHTER_SITUATION_AIR) {
+				pos_threshold = 5;
+			}
+			if (fighter[i]->pos.x > fighter[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
+				//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
+				fighter[i]->facing_dir = -1.0;
+				fighter[i]->facing_right = false;
+			}
+			else if (fighter[i]->pos.x < fighter[!i]->pos.x - pos_threshold) {
+				fighter[i]->facing_dir = 1.0;
+				fighter[i]->facing_right = true;
+			}
+			else { //If both players are stuck inside each other, stop that !
+				if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+					if (fighter[i]->pos.x == fighter[!i]->pos.x) {
+						fighter[i]->facing_dir = 1.0;
+						fighter[i]->facing_right = true;
+						fighter[!i]->facing_dir = -1.0;
+						fighter[!i]->facing_right = false;
+					}
+					fighter[i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+					fighter[!i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+
+					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+				}
+			}
+		}
+	}
+}
+
+void post_process_fighter_positions(Fighter* fighter[2]) {
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->update_hitbox_pos();
+		fighter[i]->update_grabbox_pos();
+		fighter[i]->update_hurtbox_pos();
+		fighter[i]->rot.z += radians(90.0 * fighter[i]->facing_dir);
+		fighter[i]->rot += fighter[i]->extra_rot;
+		fighter[i]->create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
+	}
+}
+
+void Battle::check_collisions() {
+	if (debug && !debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+		return;
+	}
+	check_projectile_collisions();
+}
+
+void Battle::check_projectile_collisions() {
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		if (fighter[0]->projectiles[i]->id != -1) {
+			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+				if (fighter[1]->projectiles[i2]->id != -1) {
+					for (int i3 = 0; i3 < 10; i3++) {
+						if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1 && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
+							for (int i4 = 0; i4 < 10; i4++) {
+								if (fighter[1]->projectiles[i2]->hitboxes[i4].id != -1 && fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
+									GameRect p1_hitbox, p2_hitbox;
+									p1_hitbox = fighter[0]->projectiles[i]->hitboxes[i3].rect;
+									p2_hitbox = fighter[1]->projectiles[i2]->hitboxes[i4].rect;
+									if (is_collide(p1_hitbox, p2_hitbox)) {
+										fighter[0]->projectiles[i]->clear_hitbox(i3);
+										fighter[1]->projectiles[i2]->clear_hitbox(i4);
+										fighter[0]->projectiles[i]->projectile_int[PROJECTILE_INT_HEALTH] --;
+										fighter[1]->projectiles[i2]->projectile_int[PROJECTILE_INT_HEALTH] --;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void Battle::check_fighter_collisions() {
+	for (int i = 0; i < 2; i++) {
+		int hitbox_to_use = HITBOX_COUNT_MAX;
+		int projectile_hitbox_to_use = HITBOX_COUNT_MAX;
+		int grabbox_to_use = HITBOX_COUNT_MAX;
+		fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = false;
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (fighter[i]->hurtboxes[i2].id != -1) {
+				GameRect hurtbox = fighter[i]->hurtboxes[i2].rect;
+
+				for (int i3 = 0; i3 < 10; i3++) {
+					if (fighter[!i]->hitboxes[i3].id != -1) {
+						GameRect hitbox = fighter[!i]->hitboxes[i3].rect;
+						if (fighter[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
+							if (is_collide(hitbox, hurtbox)) {
+								hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &(fighter[!i]->hitboxes[i3]), &(fighter[i]->hurtboxes[i2]));
+							}
+						}
+						else {
+							fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
+						}
+						if (hitbox_to_use != HITBOX_COUNT_MAX) {
+							break;
+						}
+					}
+				}
+				for (int i3 = 0; i3 < MAX_PROJECTILES; i3++) {
+					if (fighter[!i]->projectiles[i3]->id != -1) {
+						for (int i4 = 0; i4 < 10; i4++) {
+							if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1) {
+								GameRect hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
+								if (is_collide(hitbox, hurtbox)) {
+									projectile_hitbox_to_use = get_event_hit_collide_projectile(fighter[!i]->projectiles[i3], fighter[i], &(fighter[!i]->projectiles[i3]->hitboxes[i4]), &(fighter[i]->hurtboxes[i2]));
+								}
+								if (projectile_hitbox_to_use != HITBOX_COUNT_MAX) {
+									break;
+								}
+							}
+						}
+					}
+				}
+				if (hitbox_to_use != HITBOX_COUNT_MAX) {
+					break;
+				}
+				for (int i3 = 0; i3 < 10; i3++) {
+					if (fighter[!i]->grabboxes[i3].id != -1) {
+						GameRect grabbox = fighter[!i]->grabboxes[i3].rect;
+						if (is_collide(grabbox, hurtbox)) {
+							grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &(fighter[!i]->grabboxes[i3]), &(fighter[i]->hurtboxes[i2]));
+						}
+						if (grabbox_to_use != HITBOX_COUNT_MAX) {
+							break;
+						}
+					}
+				}
+				if (grabbox_to_use != HITBOX_COUNT_MAX) {
+					break;
+				}
+			}
+		}
+		fighter[i]->connected_hitbox = hitbox_to_use;
+		fighter[i]->connected_grabbox = grabbox_to_use;
+		fighter[i]->connected_projectile_hitbox = projectile_hitbox_to_use;
+	}
+	if (!event_hit_collide_player(fighter[0], fighter[1], &(fighter[0]->hitboxes[fighter[1]->connected_hitbox]), &(fighter[1]->hitboxes[fighter[0]->connected_hitbox]))) {
+		event_grab_collide_player(fighter[0], fighter[1], &(fighter[0]->grabboxes[fighter[1]->connected_grabbox]), &(fighter[1]->grabboxes[fighter[0]->connected_grabbox]));
+	}
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
+			if (fighter[i]->projectiles[i2]->id != -1) {
+				event_hit_collide_projectile(fighter[i], fighter[!i], fighter[i]->projectiles[i2], &(fighter[i]->projectiles[i2]->hitboxes[fighter[!i]->connected_projectile_hitbox]));
 			}
 		}
 	}
@@ -594,13 +1083,11 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 			fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = false;
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->hurtboxes[i2].id != -1) {
-					GameRect hurtbox;
-					hurtbox = fighter[i]->hurtboxes[i2].rect;
+					GameRect hurtbox = fighter[i]->hurtboxes[i2].rect;
 
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[!i]->hitboxes[i3].id != -1) {
-							GameRect hitbox;
-							hitbox = fighter[!i]->hitboxes[i3].rect;
+							GameRect hitbox = fighter[!i]->hitboxes[i3].rect;
 							if (fighter[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
 								if (is_collide(hitbox, hurtbox)) {
 									hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &(fighter[!i]->hitboxes[i3]), &(fighter[i]->hurtboxes[i2]));
@@ -618,8 +1105,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 						if (fighter[!i]->projectiles[i3]->id != -1) {
 							for (int i4 = 0; i4 < 10; i4++) {
 								if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1) {
-									GameRect hitbox;
-									hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
+									GameRect hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
 									if (is_collide(hitbox, hurtbox)) {
 										projectile_hitbox_to_use = get_event_hit_collide_projectile(fighter[!i]->projectiles[i3], fighter[i], &(fighter[!i]->projectiles[i3]->hitboxes[i4]), &(fighter[i]->hurtboxes[i2]));
 									}
@@ -635,8 +1121,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 					}
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[!i]->grabboxes[i3].id != -1) {
-							GameRect grabbox;
-							grabbox = fighter[!i]->grabboxes[i3].rect;
+							GameRect grabbox = fighter[!i]->grabboxes[i3].rect;
 							if (is_collide(grabbox, hurtbox)) {
 								grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &(fighter[!i]->grabboxes[i3]), &(fighter[i]->hurtboxes[i2]));
 							}
@@ -1374,11 +1859,11 @@ void cleanup(IObject* p1, IObject* p2) {
 	fighter[1] = p2->get_fighter();
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectile_objects[i2] != NULL) {
+			if (fighter[i]->projectile_interface[i2] != NULL) {
 				for (int i3 = 0; i3 < 10; i3++) {
 					fighter[i]->projectiles[i2]->hitboxes[i3].rect.destroy();
 				}
-				delete fighter[i]->projectile_objects[i2];
+				delete fighter[i]->projectile_interface[i2];
 			}
 			delete fighter[i]->projectiles[i2];
 		}
@@ -1507,4 +1992,132 @@ Fighter* IObject::get_fighter() {
 
 Projectile* IObject::get_projectile() {
 	return projectile;
+}
+
+HealthBar::HealthBar() {}
+
+void HealthBar::render() {
+	health_texture.render();
+	bar_texture.render();
+}
+
+ExBar::ExBar() {}
+ExBar::ExBar(Fighter* fighter) {
+	this->fighter = fighter;
+	max_ex = EX_METER_SIZE;
+	ex_texture.init("resource/ui/game/ex/ex.png");
+	ex_texture.scale_right_percent(0);
+
+	ex_segment_texture.init("resource/ui/game/ex/ex_segment.png");
+	ex_segment_texture.scale_right_percent(0);
+
+	bar_texture.init("resource/ui/game/ex/bar.png");
+
+	if (fighter->id == 0) {
+		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+	}
+	else {
+		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_texture.flip_h();
+		ex_segment_texture.flip_h();
+		bar_texture.flip_h();
+	}
+}
+
+PlayerIndicator::PlayerIndicator() {}
+PlayerIndicator::PlayerIndicator(Fighter* fighter, string nametag) {
+	this->fighter = fighter;
+	this->nametag = nametag;
+	string resource_dir = "resource/ui/game/tag/";
+	if (fighter->id == 0) {
+		resource_dir += "p1_tag";
+	}
+	else {
+		resource_dir += "p2_tag";
+	}
+	if (nametag == "") {
+		resource_dir += "_no_nametag";
+	}
+	resource_dir += ".png";
+	const char* file_dir = resource_dir.c_str();
+	this->texture = loadSDLTexture(file_dir);
+	this->indicator_rect.x = 0;
+	this->indicator_rect.y = 0;
+	this->indicator_rect.w = 92;
+	this->indicator_rect.h = 92;
+}
+GameTimer::GameTimer() {};
+GameTimer::GameTimer(int time) {
+	init(time);
+};
+
+void GameTimer::init(int time) {
+	uiDecaseconds = time / 10;
+	uiSeconds = time % 10;
+	uiDecaframes = 6;
+	uiFrames = 0;
+	ClockMode = 1;
+	pBigTypeface = loadSDLTexture("resource/ui/game/timer/bigtypeface.png");
+	pSmallTypeface = loadSDLTexture("resource/ui/game/timer/smalltypeface.png");
+	pClockFace = loadSDLTexture("resource/ui/game/timer/clockface.png");
+}
+
+void GameTimer::Tick() {
+	//printf("%d%d:%d%d\n\n",uiDecaseconds,uiSeconds,uiDecaframes,uiFrames);
+	if (uiFrames == 0 && uiDecaframes == 0 && uiSeconds == 0 && uiDecaseconds == 0) {
+		//end
+		uiDecaseconds = 9;
+		uiSeconds = 9;
+		uiDecaframes = 5;
+		uiFrames = 9;
+		//this just resets it for now. later it will have to returns something to indicate round over
+	}
+	if (uiFrames == 0 && uiDecaframes == 0) {
+		//reset frame counter
+		uiDecaframes = 5;
+		uiFrames = 9;
+		//count down seconds
+		if (uiSeconds == 0) {
+			uiSeconds = 9;
+			uiDecaseconds--;
+		}
+		else {
+			uiSeconds--;
+		}
+	}
+	else {
+		if (uiFrames == 0) {
+			uiFrames = 9;
+			uiDecaframes--;
+		}
+		else {
+			uiFrames--;
+		}
+	}
+};
+
+void GameTimer::Render() {
+	SDL_Rect cClockFace{ (WINDOW_WIDTH / 2) - 63,15,126,130 };
+	SDL_Rect cClockFaceSrc{ 84 * ClockMode,0,84,87 };
+	SDL_RenderCopy(g_renderer, pClockFace, &cClockFaceSrc, &cClockFace);
+
+	SDL_Rect cDecaDestRect{ 901,22,37,88 };
+	SDL_Rect cDecaSourceRect{ uiDecaseconds * 25,0,25,59 };
+	SDL_RenderCopy(g_renderer, pBigTypeface, &cDecaSourceRect, &cDecaDestRect);
+
+	SDL_Rect cDestRect{ 942,22,37,88 };
+	SDL_Rect cSourceRect{ uiSeconds * 25,0,25,59 };
+	SDL_RenderCopy(g_renderer, pBigTypeface, &cSourceRect, &cDestRect);
+
+	SDL_Rect cDecaFrameDestRect{ 984,85,16,28 };
+	SDL_Rect cFrameSourceRect{ uiDecaframes * 11,0,11,19 };
+	SDL_RenderCopy(g_renderer, pSmallTypeface, &cFrameSourceRect, &cDecaFrameDestRect);
+
+	SDL_Rect cFrameDestRect{ 1003,85,16,28 };
+	SDL_Rect cFrameSourceRectOof{ uiFrames * 11,0,11,19 };
+	SDL_RenderCopy(g_renderer, pSmallTypeface, &cFrameSourceRectOof, &cFrameDestRect);
 }

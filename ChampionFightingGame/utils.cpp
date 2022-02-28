@@ -529,3 +529,9 @@ vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle) {
 	ret.y += new_y;
 	return ret;
 }
+
+void update_thread_progress(int& to_update) {
+	SDL_LockMutex(file_mutex);
+	to_update++;
+	SDL_UnlockMutex(file_mutex);
+}

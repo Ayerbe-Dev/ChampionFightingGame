@@ -31,6 +31,7 @@ void Model::load_model(string path) {
 	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
 
 	process_node(scene->mRootNode, scene);
+	vector<string> missing_bones;
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].parent_id == -1) {
 			bones[i].parent_matrix = new mat4(1.0);
@@ -38,16 +39,12 @@ void Model::load_model(string path) {
 		else {
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
 		}
+		if (bones[i].model_matrix == mat4(1.0)) {
+			missing_bones.push_back(bones[i].name);
+		}
 	}
 
-	int trans_index = get_bone_id("Trans");
-	int rot_index = get_bone_id("Rot");
-
-	bones[trans_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
-	bones[trans_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mTransformation);
-	bones[rot_index].anim_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
-	bones[rot_index].anim_rest_matrix = ass_converter(scene->mRootNode->mChildren[0]->mChildren[0]->mChildren[0]->mTransformation);
-
+//	find_missing_bones(scene->mRootNode, missing_bones);
 }
 
 void Model::unload_model() {
@@ -244,6 +241,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			mat4 anim_matrix = ConvertMatrixToGLMFormat(ai_node->mTransformation);
 
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
+
 			bone.id = get_bone_id(bone.name);
 			if (bone.id == -1) {
 				cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << endl;
@@ -313,6 +311,49 @@ vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType typ
 		}
 	}
 	return textures;
+}
+
+//Takes a vector of bones that didn't seem to be accounted for and searches through the entire node tree until it finds them
+//also rare footage of recursion being cool
+
+//also also it doesn't work because if you iterate through the nodes this way, all mTransformations are in a vacuum and i'm messing up a calculation
+//somewhere down the line when it comes to finding anim matrix
+bool Model::find_missing_bones(aiNode* node, vector<string>& bone_names) {
+	for (int i = 0; i < bone_names.size(); i++) {
+		if (Filter(node->mName.C_Str(), "model-armature_") == bone_names[i]) {
+			int index = get_bone_id(bone_names[i]);
+			cout << bones[index].name << ": " << endl;
+			cout << "Old Anim Matrix: " << endl << to_string(bones[index].anim_matrix) << endl;
+			bones[index].anim_matrix = ass_converter(node->mTransformation);
+			bones[index].anim_rest_matrix = ass_converter(node->mTransformation);
+			if (bones[index].parent_id != -1) {
+				for (Bone bone = bones[bones[index].parent_id]; bone.parent_id != -1; bone = bones[bone.parent_id]) {
+					bones[index].anim_matrix = bone.anim_matrix * bones[index].anim_matrix;
+					bones[index].anim_rest_matrix *= bone.anim_rest_matrix;
+				}
+			}
+			cout << "New Anim Matrix: " << endl << to_string(bones[index].anim_matrix) << endl;
+			cout << "Old Model Matrix: " << endl << to_string(bones[index].model_matrix) << endl;
+			bones[index].model_matrix = inverse(bones[index].anim_matrix);
+			if (bones[index].parent_id != -1) {
+				for (Bone bone = bones[bones[index].parent_id]; bone.parent_id != -1; bone = bones[bone.parent_id]) {
+					bones[index].model_matrix = inverse(bone.anim_matrix) * bones[index].model_matrix;
+				}
+			}
+			cout << "New Model Matrix: " << endl << to_string(bones[index].model_matrix) << endl << endl;
+			bone_names.erase(bone_names.begin() + i);
+			break;
+		}
+	}
+	if (bone_names.size() == 0) {
+		return true;
+	}
+	for (int i = 0; i < node->mNumChildren; i++) {
+		if (find_missing_bones(node->mChildren[i], bone_names)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 Mesh::Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name) {

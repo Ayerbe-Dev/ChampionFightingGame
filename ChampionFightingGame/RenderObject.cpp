@@ -2,7 +2,8 @@
 #include "RenderManager.h"
 extern RenderManager g_rendermanager;
 
-RenderObject::RenderObject() {}
+RenderObject::RenderObject() {
+}
 
 RenderObject::RenderObject(Model model, Shader shader) {
 	this->model = model;
@@ -10,5 +11,5 @@ RenderObject::RenderObject(Model model, Shader shader) {
 }
 
 void RenderObject::render() {
-	g_rendermanager.render_model(&model, &shader, model_mat, &pos, &rot, &scale);
+	g_rendermanager.render_model(&model, &shader, extra_mat, &pos, &rot, &scale);
 }

@@ -122,19 +122,6 @@ public:
 	bool visualize_boxes;
 };
 
-void pre_process_fighter_positions(Fighter* fighter[2]);
-void post_process_fighter_positions(Fighter* fighter[2]);
-void check_attack_connections(Fighter *p1, Fighter *p2, bool visualize_boxes, bool check);
-int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox *hitbox, Hurtbox *hurtbox);
-int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox *grabbox, Hurtbox *hurtbox);
-int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox);
-bool event_hit_collide_player(Fighter *p1, Fighter *p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox);
-void event_grab_collide_player(Fighter *p1, Fighter *p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox);
-void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox);
-bool can_counterhit(Fighter* defender, Hitbox* hitbox);
-int get_damage_status(int hit_status, int situation_kind);
-void cleanup(IObject* p1, IObject* p2);
-
 class IObject {
 public:
 	IObject();

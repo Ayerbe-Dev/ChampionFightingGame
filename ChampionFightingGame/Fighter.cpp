@@ -63,7 +63,12 @@ void Fighter::process_animate() {
 	attempted_excutes = 0;
 
 	if (anim_kind != nullptr) {
-		frame += rate;
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
+			frame += 0.05 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES];
+		}
+		else {
+			frame += rate;
+		}
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
 			excute_count = 0;

@@ -69,7 +69,7 @@ extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 
-void new_battle_main(GameManager* game_manager) {
+void battle_main(GameManager* game_manager) {
 	PlayerInfo* player_info[2];
 	for (int i = 0; i < 2; i++) {
 		player_info[i] = game_manager->player_info[i];
@@ -118,420 +118,12 @@ void new_battle_main(GameManager* game_manager) {
 
 		battle.render_world();
 		battle.render_ui();
+
+		battle.check_collisions();
 		SDL_GL_SwapWindow(g_window);
 	}
 
 	battle.unload_battle();
-}
-
-/// <summary>
-/// The main function for normal gameplay
-/// </summary>
-/// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
-void battle_main(GameManager* game_manager) {
-	PlayerInfo* player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
-
-	const Uint8* keyboard_state;
-
-	GameLoader* game_loader = new GameLoader(16);
-	SDL_Thread* loading_thread;
-	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
-
-	int rng = rand() % 2;
-	Stage stage = player_info[rng]->stage;
-
-	bool gaming = true;
-	bool visualize_boxes = true;
-	int next_state = GAME_STATE_MENU;
-
-
-	Debugger debugger;
-	GameRect debug_rect[2];
-	for (int i = 0; i < 2; i++) {
-		debug_rect[i].init();
-	}
-
-	FighterAccessor* fighter_accessor = new FighterAccessor;
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
-
-	vec2 debug_anchor[2] = { {0,0} };
-	vec2 debug_offset[2] = { {0,0} };
-
-	IObject* p1 = new IObject(OBJECT_TYPE_FIGHTER, player_info[0]->chara_kind, 0, player_info[0], fighter_accessor);
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
-
-	IObject* p2 = new IObject(OBJECT_TYPE_FIGHTER, player_info[1]->chara_kind, 1, player_info[1], fighter_accessor);
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
-
-	Fighter* fighter[2];
-	fighter[0] = p1->get_fighter();
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
-
-	fighter[1] = p2->get_fighter();
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
-
-	HealthBar health_bar[2];
-	GameTextureNew health[2];
-	GameTextureNew bar[2];
-	ExBar ex_bar[2];
-	PlayerIndicator player_indicator[2];
-
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = player_info[i];
-		fighter[i]->pos.x = 0;
-		fighter_accessor->fighter[i] = fighter[i];
-		fighter[i]->fighter_accessor = fighter_accessor;
-		fighter[i]->superInit(i);
-		SDL_LockMutex(file_mutex);
-		game_loader->loaded_items++;
-		SDL_UnlockMutex(file_mutex);
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			fighter[i]->projectiles[i2]->owner_id = i;
-		}
-		health[i].init("resource/ui/game/hp/health.png");
-		bar[i].init("resource/ui/game/hp/bar.png");
-		if (i) {
-			health[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-			bar[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-			health[i].flip_h();
-			bar[i].flip_h();
-		}
-		else {
-			health[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-			bar[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		}
-		health_bar[i].health_texture = health[i];
-		health_bar[i].bar_texture = bar[i];
-		health_bar[i].health = &fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
-		health_bar[i].max_health = fighter[i]->get_param_float("health");
-		SDL_LockMutex(file_mutex);
-		game_loader->loaded_items++;
-		SDL_UnlockMutex(file_mutex);
-		ex_bar[i] = ExBar(fighter[i]);
-		SDL_LockMutex(file_mutex);
-		game_loader->loaded_items++;
-		SDL_UnlockMutex(file_mutex);
-		player_indicator[i] = PlayerIndicator(fighter[i]);
-		SDL_LockMutex(file_mutex);
-		game_loader->loaded_items++;
-		SDL_UnlockMutex(file_mutex);
-	}
-	GameTimer timer(99);
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
-
-	g_soundmanager.fighter_accessor = fighter_accessor;
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->loadCharaSounds();
-		SDL_LockMutex(file_mutex);
-		game_loader->loaded_items++;
-		SDL_UnlockMutex(file_mutex);
-	}
-
-	bool loading = true;
-	while (loading) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
-			}
-		}
-
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
-		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-			player_info[i]->poll_buttons(keyboard_state);
-			if (player_info[i]->is_any_inputs()) {
-				loading = false;
-
-				for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
-					player_info[i]->poll_buttons(keyboard_state);
-					player_info[!i]->poll_buttons(keyboard_state);
-				}
-			}
-		}
-	}
-	game_loader->finished = true;
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderClear(g_renderer);
-	SDL_RenderPresent(g_renderer);
-	
-	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
-		g_soundmanager.loadMusic(stage.default_music_kind);
-		g_soundmanager.playMusic(stage.default_music_kind);
-	}
-	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
-		//randomly play the theme of one of the characters. if online, always play the opponent's theme
-	}
-	else {
-		//randomly play the theme for one of the players' tags. if online, always play the user's theme
-	}
-
-	SDL_Rect camera; //SDL_Rect which crops the pScreenTexture
-
-	if (fighter[0]->crash_to_debug || fighter[1]->crash_to_debug) {
-		gaming = false;
-		game_manager->update_state(GAME_STATE_DEBUG_MENU);
-	}
-
-	int trials = 10000;
-
-	int ticks = SDL_GetTicks();
-	vector<int> average_ticks;
-	vector<int> tick_frequency;
-	while (gaming) {
-		if (average_ticks.size() < trials) {
-			average_ticks.push_back(SDL_GetTicks() - ticks);
-		}
-		else {
-			int highest = average_ticks[0];
-			while (highest >= tick_frequency.size()) {
-				tick_frequency.push_back(0);
-			}
-			int freq = 0;
-			int frame_freq = 0;
-			float total = 0;
-			for (int i = 0; i < trials; i++) {
-				total += (float)average_ticks[i];
-				if (average_ticks[i] >= 16) {
-					frame_freq++;
-				}
-				if (average_ticks[i] > highest) {
-					highest = average_ticks[i];
-					while (highest >= tick_frequency.size()) {
-						tick_frequency.push_back(0);
-					}
-					freq = 1;
-				}
-				else if (average_ticks[i] == highest) {
-					freq++;
-				}
-				tick_frequency[average_ticks[i]]++;
-			}
-			total /= (float)trials;
-			cout << "Lengths of all iterations across " << trials << " tests: " << endl;
-			for (int i = 0; i < tick_frequency.size(); i++) {
-				cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << endl;
-			}
-			cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << endl;
-			average_ticks.clear();
-			tick_frequency.clear();
-		}
-
-		frameTimeDelay();
-		ticks = SDL_GetTicks();
-
-		glClearColor(0.1, 0.1, 0.1, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-			if (debug) {
-				g_soundmanager.pauseSEAll(i);
-				g_soundmanager.pauseVCAll(i);
-			}
-		}	
-
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
-			}
-		}
-
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
-		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(g_window, 0);
-			}
-			else {
-				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			}
-		}
-
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
-			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
-			bool new_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].changed = (old_button != new_button);
-		}
-
-		if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
-			debug = !debug;
-			timer.ClockMode = !timer.ClockMode;
-			if (!debug) {
-				for (int i = 0; i < 2; i++) {
-					g_soundmanager.resumeSEAll(i);
-					g_soundmanager.resumeVCAll(i);
-				}
-			}
-		}
-		if (debug) {
-			if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
-				debugger.print_commands();
-				string command;
-				cin >> command;
-				debugger.debug_query(command, fighter[debugger.target], fighter[!debugger.target]);
-			}
-			if (debugger.check_button_trigger(BUTTON_DEBUG_CHANGE_TARGET)) {
-				debugger.target = !debugger.target;
-			}
-			if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-				timer.Tick();
-				pre_process_fighter_positions(fighter);
-				for (int i = 0; i < 2; i++) {
-					g_soundmanager.resumeSEAll(i);
-					g_soundmanager.resumeVCAll(i);
-					player_info[i]->poll_buttons(keyboard_state);
-					fighter[i]->fighter_main();
-				}
-				post_process_fighter_positions(fighter);
-				if (debugger.print_frames) {
-					cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame - 1 << endl;
-					cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
-					cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
-					cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
-				}
-			}
-			debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
-			if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
-				debug = false;
-				gaming = false;
-				game_manager->update_state(GAME_STATE_DEBUG_MENU);
-				goto DONE_GAMING;
-			}
-		}
-		else {
-			timer.Tick();
-			pre_process_fighter_positions(fighter);
-			for (int i = 0; i < 2; i++) {
-				player_info[i]->poll_buttons(keyboard_state);
-				fighter[i]->fighter_main();
-			}
-			post_process_fighter_positions(fighter);
-		}
-		for (int i = 0; i < 2; i++) {
-			if (fighter[i]->crash_to_debug) {
-				gaming = false;
-				game_manager->update_state(GAME_STATE_DEBUG_MENU);
-				goto DONE_GAMING;
-			}
-		}
-
-		for (int i = 0; i < 2; i++) {
-			fighter[i]->render();
-			
-			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-				if (fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
-					fighter[i]->projectiles[i2]->render();
-				}
-			}
-
-			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-				//Combo Counter text here
-			}
-		}
-
-		if (debug) {
-			debug_rect[debugger.target].render();
-		}
-
-		check_attack_connections(fighter[0], fighter[1], visualize_boxes, !debug || debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE));
-
-		//Camera things
-//		camera = updateCamera(fighter[0]->pos.getRenderCoodrinateX(), fighter[0]->pos.getRenderCoodrinateY(), fighter[1]->pos.getRenderCoodrinateX(), fighter[1]->pos.getRenderCoodrinateY(), debugger.zoom);
-
-		//The tag system doesn't play nice with the render offsets I've been working on, we can reimplement it later but for now it's easier to just not think about
-
-/*		for (int i = 0; i < 2; i++) {
-			if (fighter[i]->anim_kind->move_dir) {
-				player_indicator[i].indicator_rect = SDL_Rect{
-				(int)(fighter[i]->pos.getRenderCoodrinateX() - fighter[i]->get_param_float(fighter[i]->anim_kind->name + "_move_offset", fighter[i]->param_table) * fighter[i]->facing_dir + 20),
-				(int)(fighter[i]->pos.getRenderCoodrinateYAnim() - 33),
-				30,
-				30 };
-				SDL_RenderCopy(g_renderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
-			}
-			else {
-				player_indicator[i].indicator_rect = SDL_Rect{
-				(int)(fighter[i]->pos.getRenderCoodrinateX() + 20),
-				(int)(fighter[i]->pos.getRenderCoodrinateYAnim() - 33),
-				30,
-				30};
-				SDL_RenderCopy(g_renderer, player_indicator[i].texture, nullptr, &(player_indicator[i].indicator_rect));
-			}
-		}*/
-
-		for (int i = 0; i < 2; i++) {
-			if (visualize_boxes) {
-				fighter[i]->jostle_box.render();
-			}
-			health_bar[i].health_texture.scale_left_percent(*health_bar[i].health / health_bar[i].max_health);
-			health_bar[i].render();
-			ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
-
-			int prev_segments = ex_bar[i].prev_segments;
-			int segments = floor(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / (ex_bar[i].max_ex / EX_METER_BARS));
-			ex_bar[i].prev_segments = segments;
-			if (prev_segments != segments) {
-				if (prev_segments > segments) {
-					ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 6);
-				}
-				else if (!(segments % 2)) {
-					ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 2);
-				}
-			}
-			
-			ex_bar[i].ex_texture.render();
-			ex_bar[i].ex_segment_texture.render();
-			ex_bar[i].bar_texture.render();
-		}
-	
-		timer.Render();
-
-		SDL_GL_SwapWindow(g_window);
-	}
-
-	game_manager->update_state(next_state);
-	
-	DONE_GAMING:
-
-	for (int i = 0; i < 2; i++) {
-		health_bar[i].bar_texture.destroy();
-		health_bar[i].health_texture.destroy();
-		ex_bar[i].bar_texture.destroy();
-		ex_bar[i].ex_texture.destroy();
-	}
-	g_soundmanager.unloadSoundAll();
-	cleanup(p1, p2);
-
-	delete fighter_accessor;
-	delete game_loader;
 }
 
 Battle::Battle() {}
@@ -543,6 +135,8 @@ void Battle::load_battle(GameManager* game_manager) {
 	SDL_Thread* loading_thread;
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
+
+	visualize_boxes = true;
 
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -572,6 +166,16 @@ void Battle::load_battle(GameManager* game_manager) {
 		}
 		health_bar[i].health_texture.init("resource/ui/game/hp/health.png");
 		health_bar[i].bar_texture.init("resource/ui/game/hp/bar.png");
+		if (i) {
+			health_bar[i].health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+			health_bar[i].bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+			health_bar[i].health_texture.flip_h();
+			health_bar[i].bar_texture.flip_h();
+		}
+		else {
+			health_bar[i].health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			health_bar[i].bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		}
 		health_bar[i].health = &fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
 		health_bar[i].max_health = fighter[i]->get_param_float("health");
 		inc_thread();
@@ -634,6 +238,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	else {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
+	ticks = SDL_GetTicks();
 }
 void Battle::unload_battle() {
 	for (int i = 0; i < 2; i++) {
@@ -696,9 +301,6 @@ void Battle::process_main() {
 		}
 	}
 	process_ui();
-
-	check_collisions();
-
 }
 
 void Battle::pre_process_fighter() {
@@ -875,64 +477,12 @@ void Battle::render_ui() {
 	}
 }
 
-void pre_process_fighter_positions(Fighter* fighter[2]) {
-	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]) {
-			return;
-		}
-	}
-	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[i]->is_actionable()) {
-			int pos_threshold = 0;
-			if (fighter[!i]->situation_kind == FIGHTER_SITUATION_AIR) {
-				pos_threshold = 5;
-			}
-			if (fighter[i]->pos.x > fighter[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
-				//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
-				fighter[i]->facing_dir = -1.0;
-				fighter[i]->facing_right = false;
-			}
-			else if (fighter[i]->pos.x < fighter[!i]->pos.x - pos_threshold) {
-				fighter[i]->facing_dir = 1.0;
-				fighter[i]->facing_right = true;
-			}
-			else { //If both players are stuck inside each other, stop that !
-				if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
-					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-					if (fighter[i]->pos.x == fighter[!i]->pos.x) {
-						fighter[i]->facing_dir = 1.0;
-						fighter[i]->facing_right = true;
-						fighter[!i]->facing_dir = -1.0;
-						fighter[!i]->facing_right = false;
-					}
-					fighter[i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-					fighter[!i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-
-					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-				}
-			}
-		}
-	}
-}
-
-void post_process_fighter_positions(Fighter* fighter[2]) {
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->update_hitbox_pos();
-		fighter[i]->update_grabbox_pos();
-		fighter[i]->update_hurtbox_pos();
-		fighter[i]->rot.z += radians(90.0 * fighter[i]->facing_dir);
-		fighter[i]->rot += fighter[i]->extra_rot;
-		fighter[i]->create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
-	}
-}
-
 void Battle::check_collisions() {
 	if (debug && !debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 		return;
 	}
 	check_projectile_collisions();
+	check_fighter_collisions();
 }
 
 void Battle::check_projectile_collisions() {
@@ -1039,143 +589,6 @@ void Battle::check_fighter_collisions() {
 	}
 }
 
-/// <summary>
-/// Compares all active hitboxes, grabboxes and hurtboxes against each other and/or renders visualizations for all boxes.
-/// </summary>
-/// <param name="p1">: Player 1 and any projectiles they may have.</param>
-/// <param name="p2">: Player 2 and any projectiles they may have.</param>
-/// <param name="visualize_boxes">: Whether or not to visualize hit/hurt/grabboxes.</param>
-/// <param name="check">: Whether or not to check collisions (This arg is false during frame advance).</param>
-void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bool check) {
-	Fighter* fighter[2] = { p1, p2 };
-	if (check) {
-		for (int i = 0; i < MAX_PROJECTILES; i++) {
-			if (fighter[0]->projectiles[i]->id != -1) {
-				for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-					if (fighter[1]->projectiles[i2]->id != -1) {
-						for (int i3 = 0; i3 < 10; i3++) {
-							if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1
-								&& fighter[0]->projectiles[i]->hitboxes[i3].trade) {
-								for (int i4 = 0; i4 < 10; i4++) {
-									if (fighter[1]->projectiles[i2]->hitboxes[i4].id != -1
-										&& fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
-										GameRect p1_hitbox, p2_hitbox;
-										p1_hitbox = fighter[0]->projectiles[i]->hitboxes[i3].rect;
-										p2_hitbox = fighter[1]->projectiles[i2]->hitboxes[i4].rect;
-										if (is_collide(p1_hitbox, p2_hitbox)) {
-											fighter[0]->projectiles[i]->clear_hitbox(i3);
-											fighter[1]->projectiles[i2]->clear_hitbox(i4);
-											fighter[0]->projectiles[i]->projectile_int[PROJECTILE_INT_HEALTH] --;
-											fighter[1]->projectiles[i2]->projectile_int[PROJECTILE_INT_HEALTH] --;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		for (int i = 0; i < 2; i++) {
-			int hitbox_to_use = HITBOX_COUNT_MAX;
-			int projectile_hitbox_to_use = HITBOX_COUNT_MAX;
-			int grabbox_to_use = HITBOX_COUNT_MAX;
-			fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = false;
-			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hurtboxes[i2].id != -1) {
-					GameRect hurtbox = fighter[i]->hurtboxes[i2].rect;
-
-					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[!i]->hitboxes[i3].id != -1) {
-							GameRect hitbox = fighter[!i]->hitboxes[i3].rect;
-							if (fighter[!i]->hitboxes[i3].hitbox_kind != HITBOX_KIND_BLOCK) {
-								if (is_collide(hitbox, hurtbox)) {
-									hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &(fighter[!i]->hitboxes[i3]), &(fighter[i]->hurtboxes[i2]));
-								}
-							}
-							else {
-								fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(hitbox, hurtbox);
-							}
-							if (hitbox_to_use != HITBOX_COUNT_MAX) {
-								break;
-							}
-						}
-					}
-					for (int i3 = 0; i3 < MAX_PROJECTILES; i3++) {
-						if (fighter[!i]->projectiles[i3]->id != -1) {
-							for (int i4 = 0; i4 < 10; i4++) {
-								if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1) {
-									GameRect hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
-									if (is_collide(hitbox, hurtbox)) {
-										projectile_hitbox_to_use = get_event_hit_collide_projectile(fighter[!i]->projectiles[i3], fighter[i], &(fighter[!i]->projectiles[i3]->hitboxes[i4]), &(fighter[i]->hurtboxes[i2]));
-									}
-									if (projectile_hitbox_to_use != HITBOX_COUNT_MAX) {
-										break;
-									}
-								}
-							}
-						}
-					}
-					if (hitbox_to_use != HITBOX_COUNT_MAX) {
-						break;
-					}
-					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[!i]->grabboxes[i3].id != -1) {
-							GameRect grabbox = fighter[!i]->grabboxes[i3].rect;
-							if (is_collide(grabbox, hurtbox)) {
-								grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &(fighter[!i]->grabboxes[i3]), &(fighter[i]->hurtboxes[i2]));
-							}
-							if (grabbox_to_use != HITBOX_COUNT_MAX) {
-								break;
-							}
-						}
-					}
-					if (grabbox_to_use != HITBOX_COUNT_MAX) {
-						break;
-					}
-				}
-			}
-			fighter[i]->connected_hitbox = hitbox_to_use;
-			fighter[i]->connected_grabbox = grabbox_to_use;
-			fighter[i]->connected_projectile_hitbox = projectile_hitbox_to_use;
-		}
-		if (!event_hit_collide_player(fighter[0], fighter[1], &(fighter[0]->hitboxes[fighter[1]->connected_hitbox]), &(fighter[1]->hitboxes[fighter[0]->connected_hitbox]))) {
-			event_grab_collide_player(fighter[0], fighter[1], &(fighter[0]->grabboxes[fighter[1]->connected_grabbox]), &(fighter[1]->grabboxes[fighter[0]->connected_grabbox]));
-		}
-		for (int i = 0; i < 2; i++) {
-			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-				if (fighter[i]->projectiles[i2]->id != -1) {
-					event_hit_collide_projectile(fighter[i], fighter[!i], fighter[i]->projectiles[i2], &(fighter[i]->projectiles[i2]->hitboxes[fighter[!i]->connected_projectile_hitbox]));
-				}
-			}
-		}
-	}
-	if (visualize_boxes) {
-		for (int i = 0; i < 2; i++) {
-			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hurtboxes[i2].id != -1) {
-					fighter[i]->hurtboxes[i2].rect.render();
-				}
-			}
-			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hitboxes[i2].id != -1) {
-					fighter[i]->hitboxes[i2].rect.render();
-				}
-				for (int i3 = 0; i3 < 10; i3++) {
-					if (fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->hitboxes[i3].id != -1) {
-						fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();
-					}
-				}
-			}
-			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->grabboxes[i2].id != -1) {
-					fighter[i]->grabboxes[i2].rect.render();
-				}
-			}
-		}
-	}
-}
-
 /*
 ░░░░░░░░░░░░░░░░██████████████████
 ░░░░░░░░░░░░████░░░░░░░░░░░░░░░░░░████
@@ -1218,7 +631,7 @@ void check_attack_connections(Fighter* p1, Fighter* p2, bool visualize_boxes, bo
 /// <param name="hitbox">: The hitbox that connected.</param>
 /// <param name="hurtbox">: The hurtbox that connected.</param>
 /// <returns>Either the first hitbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different hitbox ID must be checked.</returns>
-int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
+int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	//First, check if the hit and hurtboxes are even compatible
 	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
@@ -1319,7 +732,7 @@ int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* h
 /// <param name="grabbox">: The grabbox that connected.</param>
 /// <param name="hurtbox">: The hurtbox that connected.</param>
 /// <returns>Either the first grabbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different grabbox ID must be checked.</returns>
-int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox) {
+int Battle::get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox) {
 	if (grabbox->situation_hit != SITUATION_HIT_ALL) {
 		if (grabbox->situation_hit != SITUATION_HIT_GROUND_AIR) {
 			if (grabbox->situation_hit != defender->situation_kind) {
@@ -1349,7 +762,7 @@ int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox*
 /// <param name="hitbox">: The hitbox that connected.</param>
 /// <param name="hurtbox">: The hurtbox that connected.</param>
 /// <returns>Either the first hitbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different hitbox ID must be checked.</returns>
-int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
+int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	if (attacker->multihit_connected[hitbox->multihit]) {
 		return HITBOX_COUNT_MAX;
 	}
@@ -1438,7 +851,7 @@ int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hi
 /// <param name="p1_hitbox">: Which of P1's hitboxes (if any) first connected with P2.</param>
 /// <param name="p2_hitbox">: Which of P2's hitboxes (if any) first connected with P1.</param>
 /// <returns>Whether or not any kind of collision event occured.</returns>
-bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
+bool Battle::event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p1_status_post_hit = p1->status_kind;
@@ -1662,7 +1075,7 @@ bool event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbo
 /// <param name="p1_hitbox">: Which of P1's grabboxes (if any) first connected with P2.</param>
 /// <param name="p2_hitbox">: Which of P2's grabboxes (if any) first connected with P1.</param>
 /// <returns>Whether or not any kind of collision event occured.</returns>
-void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox) {
+void Battle::event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox) {
 	bool p1_hit = p2_grabbox->id != -1;
 	bool p1_tech = p2_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH;
 	bool p2_hit = p1_grabbox->id != -1;
@@ -1714,7 +1127,7 @@ void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Gr
 /// <param name="p1_projectile">: Which of P1's projectiles (if any) first connected with P2.</param>
 /// <param name="p1_hitbox">: Which of P1's projectile's hitboxes (if any) first connected with P1.</param>
 /// <returns>Whether or not any kind of collision event occured.</returns>
-void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox) {
+void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox) {
 	bool p2_hit = p1_hitbox->id != -1;
 	u32 p2_status_post_hit = p2->status_kind;
 	if (p2_hit) {
@@ -1801,7 +1214,7 @@ void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_proje
 /// <param name="defender"></param>
 /// <param name="hitbox"></param>
 /// <returns></returns>
-bool can_counterhit(Fighter* defender, Hitbox* hitbox) {
+bool Battle::can_counterhit(Fighter* defender, Hitbox* hitbox) {
 	if (defender->anim_kind == nullptr) {
 		return false;
 	}
@@ -1818,7 +1231,7 @@ bool can_counterhit(Fighter* defender, Hitbox* hitbox) {
 /// <param name="hit_status"></param>
 /// <param name="situation_kind"></param>
 /// <returns></returns>
-int get_damage_status(int hit_status, int situation_kind) {
+int Battle::get_damage_status(int hit_status, int situation_kind) {
 	if (hit_status == HIT_STATUS_CRUMPLE) {
 		if (situation_kind == FIGHTER_SITUATION_AIR) {
 			return FIGHTER_STATUS_LAUNCH;
@@ -1846,36 +1259,6 @@ int get_damage_status(int hit_status, int situation_kind) {
 			return FIGHTER_STATUS_HITSTUN;
 		}
 	}
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="p1"></param>
-/// <param name="p2"></param>
-void cleanup(IObject* p1, IObject* p2) {
-	Fighter* fighter[2];
-	fighter[0] = p1->get_fighter();
-	fighter[1] = p2->get_fighter();
-	for (int i = 0; i < 2; i++) {
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectile_interface[i2] != NULL) {
-				for (int i3 = 0; i3 < 10; i3++) {
-					fighter[i]->projectiles[i2]->hitboxes[i3].rect.destroy();
-				}
-				delete fighter[i]->projectile_interface[i2];
-			}
-			delete fighter[i]->projectiles[i2];
-		}
-		for (int i2 = 0; i2 < 10; i2++) {
-			fighter[i]->hitboxes[i2].rect.destroy();
-			fighter[i]->hurtboxes[i2].rect.destroy();
-			fighter[i]->grabboxes[i2].rect.destroy();
-		}
-		delete fighter[i];
-	}
-	delete p1;
-	delete p2;
 }
 
 IObject::IObject() {}

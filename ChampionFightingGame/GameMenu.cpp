@@ -36,7 +36,7 @@ void GameMenu::frame_delay() {
 }
 
 void GameMenu::frame_delay_check_performance() {
-	int trials = 1000;
+	int trials = 10000;
 
 	if (average_ticks.size() < trials) {
 		average_ticks.push_back(SDL_GetTicks() - ticks);

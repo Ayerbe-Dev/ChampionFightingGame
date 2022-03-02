@@ -10,7 +10,7 @@ public:
 	int stage_kind;
 	int default_music_kind;
 	string resource_dir;
-	GameTextureNew background;
+	GameTexture background;
 
 	Stage();
 	Stage(int stage_kind, string stage_name);

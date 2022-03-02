@@ -89,7 +89,6 @@ void draw_text(string font_name, string text, float x_pos, float y_pos, int font
 void draw_text_multi_lines(string font_name, string text, float x_pos, float y_pos, int font_size, int r = 0, int g = 0, int b = 0, int a = 0);
 int get_blank(string s);
 void refreshRenderer();
-void displayLoadingScreen();
 float get_relative_one_percent(float val, float denom);
 int getGameSetting(string setting);
 void setGameSetting(string setting, int val);

@@ -16,85 +16,22 @@ void stage_select_main(GameManager* game_manager) {
 	Debugger debugger;
 	debugger = Debugger();
 
-
-	StageSelectLoader* stage_select_loader = new StageSelectLoader;
-	stage_select_loader->player_info[0] = player_info[0];
-	stage_select_loader->player_info[1] = player_info[1];
-
-
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	bool loading = true;
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	StageSelect stage_select;
-
-	SDL_Thread* loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadStageSelect, "Init.rar", (void*)stage_select_loader);
-	SDL_DetachThread(loading_thread);
-
 	game_manager->set_menu_info(nullptr);
 
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-
-	while (loading) {
-		frameTimeDelay();
-		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-		}
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					*game_manager->game_state = GAME_STATE_CLOSE;
-					return;
-				}
-				break;
-			}
-		}
-
-		load_icon.move();
-		SDL_LockMutex(file_mutex);
-
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		loadingSplash.render();
-		int total_items = 1;
-		loadingBar.setTargetPercent(((float)stage_select_loader->loaded_items / total_items), 0.3);
-		loadingBar.render();
-		loadingFlavor.render();
-		load_icon.texture.render();
-
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-
-		SDL_UnlockMutex(file_mutex);
-
-		if (stage_select_loader->finished) {
-			if (!stage_select_loader->can_ret) {
-				stage_select = stage_select_loader->stage_select;
-
-				game_manager->set_menu_info(&stage_select);
-			}
-			stage_select_loader->can_ret = true;
-
-			loading = false;
-		}
+	if (stage_select.load_stage_select()) {
+		player_info[0]->crash_reason = "Could not open Stage Select file!";
+		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
+
+	game_manager->set_menu_info(&stage_select);
+
 	SDL_SetRenderTarget(g_renderer, pScreenTexture);
 	SDL_RenderClear(g_renderer);
 	SDL_SetRenderTarget(g_renderer, NULL);
@@ -168,8 +105,6 @@ void stage_select_main(GameManager* game_manager) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(g_renderer);
 	}
-
-	delete stage_select_loader;
 }
 
 StageSelect::StageSelect() {
@@ -206,8 +141,8 @@ int StageSelect::load_stage_select() {
 			for (int iColumn = 0; iColumn < 10; iColumn++) {
 				tmpSlot = &stage_slots[((iRow - 1) * 10) + iColumn];
 
-				tmpSlot->slot_texture.setScaleFactor(1.2);
-				tmpSlot->slot_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+//				tmpSlot->slot_texture.setScaleFactor(1.2);
+//				tmpSlot->slot_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 				/*
 					(WINDOW_WIDTH/10) is for the spacing between the cards
@@ -215,7 +150,7 @@ int StageSelect::load_stage_select() {
 				*/
 
 				tmpSlot->set_x(iColumn * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20));
-				tmpSlot->set_y(iRow * (tmpSlot->slot_texture.getScaledHeight() + 20));
+//				tmpSlot->set_y(iRow * (tmpSlot->slot_texture.getScaledHeight() + 20));
 			}
 		}
 		else {
@@ -223,8 +158,8 @@ int StageSelect::load_stage_select() {
 			for (int iColumn = 0; iColumn < num_slots % 10; iColumn++) {
 				tmpSlot = &stage_slots[((iRow - 1) * 10) + iColumn];
 
-				tmpSlot->slot_texture.setScaleFactor(1.2);
-				tmpSlot->slot_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
+//				tmpSlot->slot_texture.setScaleFactor(1.2);
+//				tmpSlot->slot_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
 
 				/*
 					Basically.....
@@ -234,7 +169,7 @@ int StageSelect::load_stage_select() {
 				*/
 				iRowXdelta = (WINDOW_WIDTH / 10) * (num_slots % 10) - (WINDOW_WIDTH / 10); //yes this gets recalculated every frame, no im not moving it
 				tmpSlot->set_x(((WINDOW_WIDTH - iRowXdelta) / 2) + iColumn * (WINDOW_WIDTH / 10));
-				tmpSlot->set_y(iRow * (tmpSlot->slot_texture.getScaledHeight() + 20));
+//				tmpSlot->set_y(iRow * (tmpSlot->slot_texture.getScaledHeight() + 20));
 			}
 		}
 	}
@@ -354,11 +289,11 @@ SSSSlot::SSSSlot(string ui_name, int stage_kind, string stage_name, bool selecta
 }
 
 void SSSSlot::set_x(int x) {
-	slot_texture.destRect.x = x;
+//	slot_texture.destRect.x = x;
 }
 
 void SSSSlot::set_y(int y) {
-	slot_texture.destRect.y = y;
+//	slot_texture.destRect.y = y;
 }
 
 //Copied directly from CSSCursor
@@ -366,8 +301,8 @@ void SSSSlot::set_y(int y) {
 void SSSCursor::render() {
 	partialX += (iXTarget - partialX) / 8;
 	partialY += (iYTarget - partialY) / 8;
-	cursorTexture.destRect.x = partialX;
-	cursorTexture.destRect.y = partialY;
+//	cursorTexture.destRect.x = partialX;
+//	cursorTexture.destRect.y = partialY;
 	cursorTexture.render();
 };
 void SSSCursor::init(string sTexturePath) {

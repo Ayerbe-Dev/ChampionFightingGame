@@ -77,7 +77,7 @@ void battle_main(GameManager* game_manager) {
 	Battle battle;
 	battle.load_battle(game_manager);
 
-	while (*game_manager->looping) {
+	while (*game_manager->looping[game_manager->layer]) {
 		battle.frame_delay_check_performance();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -224,10 +224,6 @@ void Battle::load_battle(GameManager* game_manager) {
 	game_loader->finished = true;
 	game_manager->set_menu_info(this);
 
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderClear(g_renderer);
-	SDL_RenderPresent(g_renderer);
-
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
 		g_soundmanager.loadMusic(stage.default_music_kind);
 		g_soundmanager.playMusic(stage.default_music_kind);
@@ -365,6 +361,9 @@ void Battle::post_process_fighter() {
 
 void Battle::process_ui() {
 	for (int i = 0; i < 2; i++) {
+		if (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+			cout << "Player " << i + 1 << " has " << (*health_bar[i].health / health_bar[i].max_health) * 100 << "% of their health remaining" << endl;
+		}
 		health_bar[i].health_texture.scale_left_percent(*health_bar[i].health / health_bar[i].max_health);
 		ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
 
@@ -379,6 +378,9 @@ void Battle::process_ui() {
 				ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 2);
 			}
 		}
+	}
+	if (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+		cout << endl;
 	}
 }
 
@@ -1043,7 +1045,7 @@ bool Battle::event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbo
 			}
 			else {
 				p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p2_hitbox->meter_gain_on_hit, EX_METER_SIZE);
-				p1->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_HEALTH] - p2_hitbox->damage * ((clampf(1, 10 - p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
+				p1->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_HEALTH] - p2_hitbox->damage * ((clampf(1, 10 - p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), p1->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				p1->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = p2_hitbox->attack_level;
 				p1_status_post_hit = get_damage_status(p2_hitbox->hit_status, p1->situation_kind);
 				if (p1->status_kind == FIGHTER_STATUS_LAUNCH && p2_hitbox->continue_launch) {

@@ -1,22 +1,78 @@
 #pragma once
-
-#include "Fighter.h"
-#include "Stage.h"
-#include "FighterAccessor.h"
-#include "CharaSelect.h"
-#include "StageSelect.h"
-#include "DebugMenu.h"
-#include "Menu.h"
+#include <SDL.h>
+#include <iostream>
+#include "utils.h"
+using namespace std;
 
 extern SDL_mutex* file_mutex;
 extern SDL_Renderer* g_renderer;
-extern SoundManager g_soundmanager;
+
+enum {
+	GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
+	GAME_TEXTURE_ANCHOR_MODE_CENTER,
+	GAME_TEXTURE_ANCHOR_MODE_BACKGROUND,
+	GAME_TEXTURE_ANCHOR_MODE_METER,
+};
+
+enum {
+	TEXTURE_FLIP_KIND_NONE,
+	TEXTURE_FLIP_KIND_DRAIN,
+	TEXTURE_FLIP_KIND_NO_DRAIN,
+
+	TEXTURE_FLIP_KIND_MAX,
+};
+
+enum {
+	METER_DRAIN_KIND_RIGHT,
+	METER_DRAIN_KIND_LEFT,
+	METER_DRAIN_KIND_NONE,
+};
+
+class GameTextureSDL {
+public:
+	SDL_Rect destRect;
+	SDL_Rect srcRect;
+
+	bool render();
+	bool init(string sTexturePath, bool delay = true);
+
+	void setScaleFactor(float fScaleFactor);
+
+	void setHorizontalScaleFactor(float fScaleFactor);
+	void setVerticalScaleFactor(float fScaleFactor);
+
+	void setAnchorMode(int iMode);
+	float getScaledWidth();
+	float getScaledHeight();
+	void setAlpha(Uint8 alpha);
+	void clearTexture();
+	bool bIsInitialized = false;
+	void setPercent(float percent);
+	void setTargetPercent(float percent, float rate = 0.2, int frames = 15);
+	void changePercent(float rate = -1.0);
+	void setFlip(int flip);
+	int getFlipKind();
+	void setDrainKind(int drain_kind);
+private:
+	float percent{ 0 };
+	float target_percent{ -1 };
+	float target_rate{ -1 };
+	int target_frames{ 1 };
+	int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
+	float fVerticalScaleFactor = 1.0;
+	float fHorizontalScaleFactor = 1.0;
+	int flip{ TEXTURE_FLIP_KIND_NONE };
+	int drain_kind{ METER_DRAIN_KIND_NONE };
+
+	SDL_Texture* pTexture;
+};
+
 
 class LoadIcon {
 public:
 	LoadIcon();
 
-	GameTexture texture;
+	GameTextureSDL texture;
 	bool move_right;
 	bool move_down;
 	bool panic_v;
@@ -51,7 +107,7 @@ static int LoadingScreen(void* void_GameLoader) {
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
+	GameTextureSDL loadingSplash, loadingFlavor, loadingBar;
 	loadingSplash.init("resource/ui/menu/loading/splashload.png");
 	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
@@ -88,108 +144,5 @@ static int LoadingScreen(void* void_GameLoader) {
 	load_icon.texture.clearTexture();
 	SDL_DestroyTexture(pScreenTexture);
 
-	return 0;
-}
-
-class DebugLoader : public GameLoader {
-public:
-	DebugLoader() {};
-
-	std::ostringstream lastString;
-	TTF_Font* debug_font;
-	debug_list debug_list;
-};
-
-static int LoadDebug(void* void_DebugLoader) {
-	int time = SDL_GetTicks();
-	DebugLoader* debug_loader = (DebugLoader*)void_DebugLoader;
-
-	TTF_Font* debug_font = loadDebugFont();
-	debug_loader->loaded_items++;
-	debug_list debug_list = { debug_font };
-	debug_loader->loaded_items++;
-
-	debug_list.addEntry("Welcome to the debug menu!", DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Use 'SPACE' or 'ENTER' to select an option.", DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry(debug_loader->lastString.str(), DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Title Screen", DEBUG_LIST_SELECTABLE, GAME_STATE_TITLE_SCREEN);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_BATTLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("3D Test", DEBUG_LIST_SELECTABLE, GAME_STATE_3D);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry(debug_loader->player_info[0]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry(debug_loader->player_info[1]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-
-	debug_list.event_down_press();
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-
-	debug_loader->debug_list = debug_list;
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_loader->debug_font = debug_font;
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-
-	debug_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!debug_loader->can_ret) {
-	}
-	return 1;
-}
-
-class StageSelectLoader : public GameLoader {
-public:
-	StageSelectLoader() {};
-
-	StageSelect stage_select;
-};
-
-static int LoadStageSelect(void* void_StageSelectLoader) {
-	int time = SDL_GetTicks();
-	GameLoader* stage_select_loader = (GameLoader*)void_StageSelectLoader;
-
-	StageSelect stage_select;
-
-	stage_select.player_info[0] = stage_select_loader->player_info[0];
-	stage_select.player_info[1] = stage_select_loader->player_info[1];
-
-	if (stage_select.load_stage_select()) {
-		displayLoadingScreen();
-		stage_select_loader->player_info[0]->crash_reason = "Could not open Stage Select file!";
-		return 1;
-	}
-	stage_select_loader->loaded_items++;
-	frameTimeDelay();
-
-	stage_select_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!stage_select_loader->can_ret) {}
 	return 0;
 }

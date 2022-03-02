@@ -21,86 +21,37 @@ void debugMenu(GameManager* game_manager) {
 	Debugger debugger;
 	debugger = Debugger();
 
-
-	DebugLoader* debug_loader = new DebugLoader;
-	debug_loader->player_info[0] = player_info[0];
-	debug_loader->player_info[1] = player_info[1];
-
-	debug_loader->lastString << "This menu was called from the destination [" << *game_manager->prev_game_state << "]";
+	std::ostringstream lastString;
+	lastString << "This menu was called from the destination [" << *game_manager->prev_game_state << "]";
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	bool loading = true;
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
-	std::ostringstream lastString;
-	TTF_Font* debug_font = NULL;
-	debug_list debug_list;
-
-	SDL_Thread* loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadDebug, "Init.rar", (void*)debug_loader);
-	SDL_DetachThread(loading_thread);
+	TTF_Font* debug_font = loadDebugFont();
+	debug_list debug_list(debug_font);
 
 	game_manager->set_menu_info(nullptr);
 
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	debug_list.addEntry("Welcome to the debug menu!", DEBUG_LIST_NOT_SELECTABLE);
+	debug_list.addEntry("Use 'SPACE' or 'ENTER' to select an option.", DEBUG_LIST_NOT_SELECTABLE);
+	debug_list.addEntry(lastString.str(), DEBUG_LIST_NOT_SELECTABLE);
+	debug_list.addEntry("Title Screen", DEBUG_LIST_SELECTABLE, GAME_STATE_TITLE_SCREEN);
+	debug_list.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
+	debug_list.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_BATTLE);
+	debug_list.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
+	debug_list.addEntry("3D Test", DEBUG_LIST_SELECTABLE, GAME_STATE_3D);
+	debug_list.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
+	debug_list.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
+	debug_list.addEntry(player_info[0]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
+	debug_list.addEntry(player_info[1]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
 
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	debug_list.event_down_press();
 
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
+	game_manager->set_menu_info(&debug_list);
 
-	while (loading) {
-		frameTimeDelay();
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					*game_manager->game_state = GAME_STATE_CLOSE;
-					return;
-				}
-				break;
-			}
-		}
-
-		load_icon.move();
-		SDL_LockMutex(file_mutex);
-
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		loadingSplash.render();
-		int total_items = 17; //Don't ask me why but I made every single line of the debug menu count as a separate item to load
-		loadingBar.setTargetPercent(((float)debug_loader->loaded_items / total_items), 0.3);
-		loadingBar.render();
-		loadingFlavor.render();
-		load_icon.texture.render();
-
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-
-		SDL_UnlockMutex(file_mutex);
-
-		if (debug_loader->finished) {
-			if (!debug_loader->can_ret) {
-				debug_font = debug_loader->debug_font;
-				debug_list = debug_loader->debug_list;
-
-				game_manager->set_menu_info(&debug_list);
-			}
-			debug_loader->can_ret = true;
-
-			loading = false;
-		}
-	}
 	SDL_SetRenderTarget(g_renderer, pScreenTexture);
 	SDL_RenderClear(g_renderer);
 	SDL_SetRenderTarget(g_renderer, NULL);
@@ -162,7 +113,6 @@ void debugMenu(GameManager* game_manager) {
 	player_info[0]->crash_reason = "Crash Message Goes Here";
 	player_info[1]->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(debug_font);
-	delete debug_loader;
 	SDL_DestroyTexture(pScreenTexture);
 	debug_list.destroy_list();
 

@@ -18,8 +18,8 @@ public:
     int destination;
     float rot = 0;
 
-    GameTextureNew image_texture;
-    GameTextureNew name_texture;
+    GameTexture image_texture;
+    GameTexture name_texture;
 
     MenuItem();
     void init(string texture_dir, string texture_description_dir  = "resource/ui/menu/main/missingno.png", int destination = 999);
@@ -32,9 +32,9 @@ public:
     int selected_item;
     int item_count;
 
-    GameTextureNew table;
-    GameTextureNew sub_text[5];
-    GameTextureNew cursor;
+    GameTexture table;
+    GameTexture sub_text[5];
+    GameTexture cursor;
 
     SubMenuTable();
     SubMenuTable(int selection);
@@ -68,5 +68,5 @@ private:
     int menu_level = MENU_LEVEL_TOP;
     int sub_type = SUB_MENU_VS;
     MenuItem menu_items[5];
-    GameTextureNew background_texture;
+    GameTexture background_texture;
 };

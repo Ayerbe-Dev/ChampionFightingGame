@@ -30,7 +30,6 @@ void chara_select_main(GameManager* game_manager) {
 	css.player_info[0] = player_info[0];
 	css.player_info[1] = player_info[1];
 	if (css.load_css()) {
-		displayLoadingScreen();
 		player_info[0]->crash_reason = "Could not open CSS file!";
 		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
@@ -257,7 +256,7 @@ int CSS::get_num_slots() {
 void CSS::event_select_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		player_info[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
-		mobile_css_slots[player_id] = GameTextureNew(chara_slots[player_selected_index[player_id]].texture);
+		mobile_css_slots[player_id] = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
 		if (player_id) {
 			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
@@ -277,7 +276,6 @@ void CSS::event_back_press() {
 		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
-		displayLoadingScreen();
 		*game_state = GAME_STATE_MENU;
 		*looping = false;
 	}
@@ -285,7 +283,6 @@ void CSS::event_back_press() {
 
 void CSS::event_start_press() {
 	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
-		displayLoadingScreen();
 		*game_state = GAME_STATE_BATTLE;
 		*looping = false;
 	}
@@ -422,7 +419,7 @@ void CSS::select_slot() {
 		}
 	}
 	big_chara_slots[player_id].texture.destroy(false);
-	big_chara_slots[player_id].texture = GameTextureNew(chara_slots[player_selected_index[player_id]].texture);
+	big_chara_slots[player_id].texture = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
 	big_chara_slots[player_id].name = chara_slots[player_selected_index[player_id]].name;
 	big_chara_slots[player_id].texture_dir = chara_slots[player_selected_index[player_id]].texture_dir;

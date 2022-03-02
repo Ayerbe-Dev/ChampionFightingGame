@@ -13,8 +13,8 @@ void battle_main(GameManager *game_manager);
 
 class HealthBar {
 public:
-	GameTextureNew health_texture;
-	GameTextureNew bar_texture;
+	GameTexture health_texture;
+	GameTexture bar_texture;
 	float* health;
 	float max_health;
 
@@ -28,9 +28,9 @@ public:
 	ExBar(Fighter* fighter);
 
 	Fighter* fighter;
-	GameTextureNew ex_texture;
-	GameTextureNew ex_segment_texture;
-	GameTextureNew bar_texture;
+	GameTexture ex_texture;
+	GameTexture ex_segment_texture;
+	GameTexture bar_texture;
 	float max_ex;
 	int prev_segments = 0;
 };

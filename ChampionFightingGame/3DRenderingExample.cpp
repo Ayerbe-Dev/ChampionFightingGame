@@ -48,8 +48,8 @@ void three_d_rendering_main(GameManager* game_manager) {
 //	anim[0] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p1.model);
 //	anim[1] = Animation3D("idle", "resource/chara/roy/anims/wait.fbx", &p2.model);
 
-	GameTextureNew p1_healthbar("resource/ui/game/hp/health.png");
-	GameTextureNew p2_healthbar("resource/ui/game/hp/health.png");
+	GameTexture p1_healthbar("resource/ui/game/hp/health.png");
+	GameTexture p2_healthbar("resource/ui/game/hp/health.png");
 	p1_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	p2_healthbar.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 	p2_healthbar.flip_h();

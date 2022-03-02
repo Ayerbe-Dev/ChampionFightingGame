@@ -3,30 +3,10 @@
 #include "PlayerInfo.fwd.h"
 #include "utils.h"
 #include "stb_image.h"
+#include <vector>
 using namespace glm;
 
 class Shader;
-
-enum {
-    GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
-    GAME_TEXTURE_ANCHOR_MODE_CENTER,
-    GAME_TEXTURE_ANCHOR_MODE_BACKGROUND,
-    GAME_TEXTURE_ANCHOR_MODE_METER,
-};
-
-enum {
-    TEXTURE_FLIP_KIND_NONE,
-    TEXTURE_FLIP_KIND_DRAIN,
-    TEXTURE_FLIP_KIND_NO_DRAIN,
-    
-    TEXTURE_FLIP_KIND_MAX,
-};
-
-enum {
-    METER_DRAIN_KIND_RIGHT,
-    METER_DRAIN_KIND_LEFT,
-    METER_DRAIN_KIND_NONE,
-};
 
 enum {
     GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT,
@@ -56,15 +36,14 @@ struct GameTextureCoord {
     vec2 tex_coord;
 };
 
-class GameTextureNew {
+class GameTexture {
 public:
-    GameTextureNew();
-    GameTextureNew(string path);
-    GameTextureNew(const GameTextureNew& that);
-    ~GameTextureNew();
+    GameTexture();
+    GameTexture(string path);
+    GameTexture(const GameTexture& that);
+    ~GameTexture();
     void init(string path);
     void destroy(bool destroy_texture = true);
-
     void set_pos(vec3 pos);
     void add_pos(vec3 pos);
     void set_rot(vec3 rot);
@@ -72,10 +51,10 @@ public:
     void set_orientation(int orientation);
     void attach_shader(Shader* shader);
 
-    vec3 get_pos_vacuum(GameTextureNew *that);
+    vec3 get_pos_vacuum(GameTexture *that);
 
-    void scale_left_percent(float percent, bool crop = true);
-    void scale_right_percent(float percent, bool crop = true);
+    void scale_left_percent(float percent, bool crop = true); //broken for cropping, outdated for scaling, if you want to fix these then go ahead
+    void scale_right_percent(float percent, bool crop = true); //but i can take care of it if not
     void scale_top_percent(float percent, bool crop = true);
     void scale_bottom_percent(float percent, bool crop = true);
     void scale_all_percent(float percent, bool crop = true);
@@ -96,8 +75,8 @@ public:
 
     void set_alpha(unsigned char alpha);
 
-    void flip_h();
-    void flip_v();
+    void flip_h(bool update = true);
+    void flip_v(bool update = true);
     void reorient();
 
     void render();
@@ -125,6 +104,18 @@ public:
     vec3 rot;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
 
+    //NEW
+
+    vector<vec2> spritesheet[4];
+    void load_spritesheet(); //load this however you want tbh
+    void set_sprite(int section); //should crop the texture to the coords specified by the given section of the spritesheet, if it doesn't exist
+    //make it yell at us etc.
+
+    void crop_left(float edge); //p self explanatory, note that the private width and height vars contain the sprite's actually width but you'll
+    void crop_right(float edge); //want to divide them by WINDOW_WIDTH and HEIGHT respectively before calling update_buffer_data
+    void crop_top(float edge); //the other funcs that modify the texture data should be able to show a good example of this
+    void crop_bottom(float edge);
+
 private:
     void update_buffer_data();
 
@@ -132,43 +123,14 @@ private:
     u32 VBO;
     float width;
     float height;
-};
 
-class GameTexture{
-public:
-    SDL_Rect destRect;
-    SDL_Rect srcRect;
+    float width_scale_mul;
+    float height_scale_mul;
+    float width_orientation;
+    float height_orientation;
 
-    bool render();
-    bool init(string sTexturePath, bool delay = true);
-    
-    void setScaleFactor(float fScaleFactor);
+    bool h_flipped;
+    bool v_flipped;
 
-    void setHorizontalScaleFactor(float fScaleFactor);
-    void setVerticalScaleFactor(float fScaleFactor);
-
-    void setAnchorMode(int iMode);
-    float getScaledWidth();
-    float getScaledHeight();
-    void setAlpha(Uint8 alpha);
-    void clearTexture();
-    bool bIsInitialized = false;
-    void setPercent(float percent);
-    void setTargetPercent(float percent, float rate = 0.2, int frames = 15);
-    void changePercent(float rate = -1.0);
-    void setFlip(int flip);
-    int getFlipKind();
-    void setDrainKind(int drain_kind);
-private:
-    float percent{ 0 };
-    float target_percent{ -1 };
-    float target_rate{ -1 };
-    int target_frames{ 1 };
-    int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
-    float fVerticalScaleFactor = 1.0;
-    float fHorizontalScaleFactor = 1.0;
-    int flip{ TEXTURE_FLIP_KIND_NONE }; 
-    int drain_kind{ METER_DRAIN_KIND_NONE };
-    
-    SDL_Texture *pTexture;
+    string name;
 };

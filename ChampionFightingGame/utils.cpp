@@ -378,16 +378,6 @@ int twoPointDistance(int x0, int y0, int x1, int y1) {
 	return std::sqrt(std::pow(x0 - x1, 2) + std::pow(y0 - y1, 2));
 }
 
-void displayLoadingScreen() {
-	SDL_RenderClear(g_renderer);
-	GameTexture loadingSplash;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-	loadingSplash.render();
-	SDL_RenderPresent(g_renderer);
-	loadingSplash.clearTexture();
-}
-
 float get_relative_one_percent(float val, float denom) {
 	float mul = denom / 100.0;
 	return (val / 100.0) * mul;

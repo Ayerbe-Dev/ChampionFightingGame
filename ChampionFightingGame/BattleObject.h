@@ -92,6 +92,6 @@ public:
 	string resource_dir;
 
 	void set_current_move_script(string anim_name);
-	bool is_excute_frame(int frame);
-	bool is_excute_wait(int frames);
+	bool is_excute_frame(float frame);
+	bool is_excute_wait(float frames);
 };

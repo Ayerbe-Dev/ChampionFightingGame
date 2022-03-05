@@ -93,7 +93,7 @@ void GameRect::bind_scale(vec3 *scale) {
 }
 
 void GameRect::set_alpha(float alpha) {
-	rgba.w = alpha / 255.0;
+	rgba.w = alpha;
 }
 
 void GameRect::set_rgb(vec3 rgb) {
@@ -103,7 +103,6 @@ void GameRect::set_rgb(vec3 rgb) {
 }
 
 void GameRect::set_rgba(vec4 rgba) {
-	rgba.w /= 255.0;
 	this->rgba = rgba;
 }
 
@@ -119,7 +118,7 @@ void GameRect::render() {
 	}
 	mat = glm::scale(mat, vec3(100.0)); //Scaling up all GameRects by 100x makes them reasonably sized
 	shader->set_mat4("matrix", mat);
-	shader->set_vec4("f_rgba", rgba);
+	shader->set_vec4("f_rgba", rgba / vec4(255.0));
 
 	glDepthMask(GL_FALSE);
 	glDrawArrays(GL_QUADS, 0, 4);

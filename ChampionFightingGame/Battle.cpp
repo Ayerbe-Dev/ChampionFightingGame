@@ -85,8 +85,7 @@ void battle_main(GameManager* game_manager) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT:
-				{
+				case SDL_QUIT: {
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 				case SDL_WINDOWEVENT:
@@ -164,22 +163,9 @@ void Battle::load_battle(GameManager* game_manager) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 			fighter[i]->projectiles[i2]->owner_id = i;
 		}
-		health_bar[i].health_texture.init("resource/ui/game/hp/health.png");
-		health_bar[i].bar_texture.init("resource/ui/game/hp/bar.png");
-		if (i) {
-			health_bar[i].health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-			health_bar[i].bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-			health_bar[i].health_texture.flip_h();
-			health_bar[i].bar_texture.flip_h();
-		}
-		else {
-			health_bar[i].health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-			health_bar[i].bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		}
-		health_bar[i].health = &fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
-		health_bar[i].max_health = fighter[i]->get_param_float("health");
+		health_bar[i].init(fighter[i]);
 		inc_thread();
-		ex_bar[i] = ExBar(fighter[i]);
+		ex_bar[i].init(fighter[i]);
 		inc_thread();
 		player_indicator[i] = PlayerIndicator(fighter[i]);
 		inc_thread();
@@ -238,10 +224,8 @@ void Battle::load_battle(GameManager* game_manager) {
 }
 void Battle::unload_battle() {
 	for (int i = 0; i < 2; i++) {
-		health_bar[i].bar_texture.destroy();
-		health_bar[i].health_texture.destroy();
-		ex_bar[i].bar_texture.destroy();
-		ex_bar[i].ex_texture.destroy();
+		health_bar[i].destroy();
+		ex_bar[i].destroy();
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
 			if (fighter[i]->projectile_interface[i2] != NULL) {
 				for (int i3 = 0; i3 < 10; i3++) {
@@ -289,6 +273,7 @@ void Battle::process_main() {
 		pre_process_fighter();
 		process_fighter();
 		post_process_fighter();
+		process_ui();
 	}
 	for (int i = 0; i < 2; i++) {
 		if (fighter[i]->crash_to_debug) {
@@ -296,7 +281,6 @@ void Battle::process_main() {
 			*game_state = GAME_STATE_DEBUG_MENU;
 		}
 	}
-	process_ui();
 }
 
 void Battle::pre_process_fighter() {
@@ -361,26 +345,8 @@ void Battle::post_process_fighter() {
 
 void Battle::process_ui() {
 	for (int i = 0; i < 2; i++) {
-		if (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-			cout << "Player " << i + 1 << " has " << (*health_bar[i].health / health_bar[i].max_health) * 100 << "% of their health remaining" << endl;
-		}
-		health_bar[i].health_texture.scale_left_percent(*health_bar[i].health / health_bar[i].max_health);
-		ex_bar[i].ex_texture.set_right_target(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / ex_bar[i].max_ex, 6);
-
-		int prev_segments = ex_bar[i].prev_segments;
-		int segments = floor(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] / (ex_bar[i].max_ex / EX_METER_BARS));
-		ex_bar[i].prev_segments = segments;
-		if (prev_segments != segments) {
-			if (prev_segments > segments) {
-				ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 6);
-			}
-			else if (!(segments % 2)) {
-				ex_bar[i].ex_segment_texture.set_right_target((ex_bar[i].max_ex / EX_METER_BARS) / (ex_bar[i].max_ex / segments), 2);
-			}
-		}
-	}
-	if (debug && debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-		cout << endl;
+		health_bar[i].process();
+		ex_bar[i].process();
 	}
 }
 
@@ -403,6 +369,7 @@ void Battle::process_debug() {
 		pre_process_fighter();
 		process_fighter();
 		post_process_fighter();
+		process_ui();
 		if (debugger.print_frames) {
 			cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << endl;
 			cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
@@ -468,9 +435,7 @@ void Battle::render_ui() {
 			}
 		}
 		health_bar[i].render();
-		ex_bar[i].ex_texture.render();
-		ex_bar[i].ex_segment_texture.render();
-		ex_bar[i].bar_texture.render();
+		ex_bar[i].render();
 	}
 	timer.Render();
 
@@ -1381,20 +1346,46 @@ Projectile* IObject::get_projectile() {
 
 HealthBar::HealthBar() {}
 
+void HealthBar::init(Fighter* fighter) {
+	health_texture.init("resource/ui/game/hp/health.png");
+	bar_texture.init("resource/ui/game/hp/bar.png");
+	if (fighter->id) {
+		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		health_texture.flip_h();
+		bar_texture.flip_h();
+	}
+	else {
+		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	}
+	health = &fighter->fighter_float[FIGHTER_FLOAT_HEALTH];
+	max_health = fighter->get_param_float("health");
+}
+
+void HealthBar::destroy() {
+	health_texture.destroy();
+	bar_texture.destroy();
+}
+
+void HealthBar::process() {
+	health_texture.scale_left_percent(*health / max_health);
+}
+
 void HealthBar::render() {
 	health_texture.render();
 	bar_texture.render();
 }
 
 ExBar::ExBar() {}
-ExBar::ExBar(Fighter* fighter) {
+
+void ExBar::init(Fighter* fighter) {
 	this->fighter = fighter;
+	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
 	max_ex = EX_METER_SIZE;
 	ex_texture.init("resource/ui/game/ex/ex.png");
-	ex_texture.scale_right_percent(0);
 
 	ex_segment_texture.init("resource/ui/game/ex/ex_segment.png");
-	ex_segment_texture.scale_right_percent(0);
 
 	bar_texture.init("resource/ui/game/ex/bar.png");
 
@@ -1411,6 +1402,37 @@ ExBar::ExBar(Fighter* fighter) {
 		ex_segment_texture.flip_h();
 		bar_texture.flip_h();
 	}
+	ex_texture.scale_right_percent(0);
+	ex_segment_texture.scale_right_percent(0);
+}
+
+void ExBar::destroy() {
+	ex_texture.destroy();
+	ex_segment_texture.destroy();
+	bar_texture.destroy();
+}
+
+void ExBar::process() {
+	ex_texture.set_right_target(*ex / max_ex, 6);
+
+	int segments = floor(*ex / (max_ex / EX_METER_BARS));
+	if (prev_segments != segments) {
+		if (prev_segments > segments) {
+			ex_segment_texture.set_right_target((*ex / EX_METER_BARS) / (max_ex / segments), 6);
+		}
+		else if (!(segments % 2)) {
+			ex_segment_texture.set_right_target((max_ex / EX_METER_BARS) / (max_ex / segments), 2);
+		}
+	}
+	prev_segments = segments;
+	ex_texture.process();
+	ex_segment_texture.process();
+}
+
+void ExBar::render() {
+	ex_texture.render();
+	ex_segment_texture.render();
+	bar_texture.render();
 }
 
 PlayerIndicator::PlayerIndicator() {}

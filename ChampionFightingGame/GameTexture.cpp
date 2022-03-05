@@ -391,11 +391,11 @@ void GameTexture::scale_all_percent(float percent, bool crop) {
 }
 
 void GameTexture::set_width(int new_width) {
-	float old_width_scale = (float)width / (float)WINDOW_WIDTH;
+	float old_width_scale = ((float)width * width_scale_mul) / (float)WINDOW_WIDTH;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x /= old_width_scale;
 	}
-	float width_scale = (float)new_width / (float)WINDOW_WIDTH;
+	float width_scale = ((float)new_width * width_scale_mul) / (float)WINDOW_WIDTH;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x *= width_scale;
 	}
@@ -404,15 +404,24 @@ void GameTexture::set_width(int new_width) {
 }
 
 void GameTexture::set_width_scale(float scale) {
+	float old_width_scale = ((float)width * width_scale_mul) / (float)WINDOW_WIDTH;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x /= old_width_scale;
+	}
+	float width_scale = ((float)width * scale) / (float)WINDOW_WIDTH;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x *= width_scale;
+	}
 	width_scale_mul = scale;
+	update_buffer_data();
 }
 
 void GameTexture::set_height(int new_height) {
-	float old_height_scale = (float)height / (float)WINDOW_HEIGHT;
+	float old_height_scale = ((float)height * height_scale_mul) / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.y /= old_height_scale;
 	}
-	float height_scale = (float)new_height / (float)WINDOW_HEIGHT;
+	float height_scale = ((float)new_height * height_scale_mul) / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.y *= height_scale;
 	}
@@ -421,7 +430,16 @@ void GameTexture::set_height(int new_height) {
 }
 
 void GameTexture::set_height_scale(float scale) {
+	float old_height_scale = ((float)height * height_scale_mul) / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.y /= old_height_scale;
+	}
+	float height_scale = ((float)height * scale) / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.y *= height_scale;
+	}
 	height_scale_mul = scale;
+	update_buffer_data();
 }
 
 int GameTexture::get_width() {
@@ -432,43 +450,43 @@ int GameTexture::get_height() {
 	return height;
 }
 
-void GameTexture::set_left_target(float percent, float max_change) {
-	if (percent < 0.0 || max_change <= 0.0) {
+void GameTexture::set_left_target(float percent, float frames) {
+	if (percent < 0.0 || frames <= 0.0) {
 		return;
 	}
-	this->target_left_crop = percent;
-	this->target_left_max_change = max_change;
+	this->target_left_crop = percent / frames;
+	this->target_left_frames = frames;
 }
 
-void GameTexture::set_right_target(float percent, float max_change) {
-	if (percent < 0.0 || max_change <= 0.0) {
+void GameTexture::set_right_target(float percent, float frames) {
+	if (percent < 0.0 || frames <= 0.0) {
 		return;
 	}
-	this->target_right_crop = percent;
-	this->target_right_max_change = max_change;
+	this->target_right_crop = percent / frames;
+	this->target_right_frames = frames;
 }
 
-void GameTexture::set_top_target(float percent, float max_change) {
-	if (percent < 0.0 || max_change <= 0.0) {
+void GameTexture::set_top_target(float percent, float frames) {
+	if (percent < 0.0 || frames <= 0.0) {
 		return;
 	}
-	this->target_top_crop = percent;
-	this->target_top_max_change = max_change;
+	this->target_top_crop = percent / frames;
+	this->target_top_frames = frames;
 }
 
-void GameTexture::set_bottom_target(float percent, float max_change) {
-	if (percent < 0.0 || max_change <= 0.0) {
+void GameTexture::set_bottom_target(float percent, float frames) {
+	if (percent < 0.0 || frames <= 0.0) {
 		return;
 	}
-	this->target_bottom_crop = percent;
-	this->target_bottom_max_change = max_change;
+	this->target_bottom_crop = percent / frames;
+	this->target_bottom_frames = frames;
 }
 
 void GameTexture::set_target_pos(vec3 target_pos, float frames) {
 	this->target_pos = target_pos;
-	this->target_pos_max_change.x = distance(target_pos.x, pos.x) / frames;
-	this->target_pos_max_change.y = distance(target_pos.y, pos.y) / frames;
-	this->target_pos_max_change.z = distance(target_pos.z, pos.z) / frames;
+	this->target_pos_frames.x = distance(target_pos.x, pos.x) / frames;
+	this->target_pos_frames.y = distance(target_pos.y, pos.y) / frames;
+	this->target_pos_frames.z = distance(target_pos.z, pos.z) / frames;
 }
 
 void GameTexture::set_alpha(unsigned char alpha) {
@@ -521,6 +539,8 @@ void GameTexture::reorient() {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
+	width_scale_mul = 1.0;
+	height_scale_mul = 1.0;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
@@ -529,124 +549,96 @@ void GameTexture::reorient() {
 	}
 	update_buffer_data();
 }
+
+void GameTexture::process() {
+	float width_scale = (float)width / (float)WINDOW_WIDTH;
+	float height_scale = (float)height / (float)WINDOW_HEIGHT;
+	if (target_bottom_frames != 0.0) {
+		if (target_bottom_crop * height_scale * -1.0 > tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y) {
+			scale_bottom_percent(tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + target_bottom_crop);
+		}
+		else if (target_bottom_crop * height_scale * -1.0 < tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y) {
+			scale_bottom_percent(tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - target_bottom_crop);
+		}
+		else {
+			target_bottom_frames = 0.0;
+		}
+	}
+	if (target_top_frames != 0.0) {
+		if (target_top_crop * height_scale > tex_accessor[TEX_COORD_TOP_LEFT]->pos.y) {
+			scale_top_percent(tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_top_crop);
+		}
+		else if (target_top_crop * height_scale < tex_accessor[TEX_COORD_TOP_LEFT]->pos.y) {
+			scale_top_percent(tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - target_top_crop);
+		}
+		else {
+			target_top_frames = 0.0;
+		}
+	}
+	if (target_left_frames != 0.0) {
+		if (target_left_crop * width_scale * -1.0 > tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x) {
+			scale_left_percent(tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + target_left_crop);
+		}
+		else if (target_left_crop * width_scale * -1.0 < tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x) {
+			scale_left_percent(tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - target_left_crop);
+		}
+		else {
+			target_left_frames = 0.0;
+		}
+	}
+	if (target_right_frames != 0.0) {
+		if (target_right_crop * width_scale > tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x) {
+			scale_right_percent(tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + target_right_crop);
+		}
+		else if (target_right_crop * width_scale < tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x) {
+			scale_right_percent(tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - target_right_crop);
+		}
+		else {
+			target_right_frames = 0.0;
+		}
+	}
+	if (target_pos_frames != vec3(0.0)) {
+		if (target_pos_frames.x != 0.0) {
+			if (target_pos.x > pos.x) {
+				pos.x = clampf(pos.x, pos.x + target_pos_frames.x, target_pos.x);
+			}
+			else if (target_pos.x < pos.x) {
+				pos.x = clampf(target_pos.x, pos.x - target_pos_frames.x, pos.x);
+			}
+			else {
+				target_pos_frames.x = 0.0;
+			}
+		}
+		if (target_pos_frames.y != 0.0) {
+			if (target_pos.y > pos.y) {
+				pos.y = clampf(pos.y, pos.y + target_pos_frames.y, target_pos.y);
+			}
+			else if (target_pos.y < pos.y) {
+				pos.y = clampf(target_pos.y, pos.y - target_pos_frames.y, pos.y);
+			}
+			else {
+				target_pos_frames.y = 0.0;
+			}
+		}
+		if (target_pos_frames.z != 0.0) {
+			if (target_pos.z > pos.z) {
+				pos.z = clampf(pos.z, pos.z + target_pos_frames.z, target_pos.z);
+			}
+			else if (target_pos.z < pos.z) {
+				pos.z = clampf(target_pos.z, pos.z - target_pos_frames.z, pos.z);
+			}
+			else {
+				target_pos_frames.z = 0.0;
+			}
+		}
+	}
+}
+
+//todo: Optimize, probably rewrite the targeting systems for everything except pos
 void GameTexture::render() {
 	shader->use();
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	float width_scale = (float)width / (float)WINDOW_WIDTH;
-	float height_scale = (float)height / (float)WINDOW_HEIGHT;
-	if (target_bottom_max_change != 0.0) {
-		if (target_bottom_crop * height_scale * -1.0 > tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y) {
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + target_bottom_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y + target_bottom_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y + target_bottom_max_change, target_bottom_crop * height_scale * -1.0);
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.y = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.y + target_bottom_max_change, target_bottom_crop * height_scale * -1.0);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else if (target_bottom_crop * height_scale * -1.0 < tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y) {
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - target_bottom_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.y - target_bottom_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y = clampf(target_bottom_crop * height_scale * -1.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y - target_bottom_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.y = clampf(target_bottom_crop * height_scale * -1.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.y - target_bottom_max_change, 1.0);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else {
-			target_bottom_max_change = 0.0;
-		}
-	}
-	if (target_top_max_change != 0.0) {
-		if (target_top_crop * height_scale > tex_accessor[TEX_COORD_TOP_LEFT]->pos.y) {
-			tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_top_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y + target_top_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_LEFT]->pos.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->pos.y + target_top_max_change, target_top_crop * height_scale);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->pos.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->pos.y + target_top_max_change, target_top_crop * height_scale);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else if (target_top_crop * height_scale < tex_accessor[TEX_COORD_TOP_LEFT]->pos.y) {
-			tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - target_top_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.y - target_top_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_LEFT]->pos.y = clampf(target_top_crop * height_scale, tex_accessor[TEX_COORD_TOP_LEFT]->pos.y - target_top_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->pos.y = clampf(target_top_crop * height_scale, tex_accessor[TEX_COORD_TOP_RIGHT]->pos.y - target_top_max_change, 1.0);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else {
-			target_top_max_change = 0.0;
-		}
-	}
-	if (target_left_max_change != 0.0) {
-		if (target_left_crop * width_scale * -1.0 > tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x) {
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + target_left_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.x + target_left_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x + target_left_max_change, target_left_crop * width_scale * -1.0);
-			tex_accessor[TEX_COORD_TOP_LEFT]->pos.x = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->pos.x + target_left_max_change, target_left_crop * width_scale * -1.0);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else if (target_left_crop * width_scale * -1.0 < tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x) {
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - target_left_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.x - target_left_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x = clampf(target_left_crop * width_scale * -1.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x - target_left_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_LEFT]->pos.x = clampf(target_left_crop * width_scale * -1.0, tex_accessor[TEX_COORD_TOP_LEFT]->pos.x - target_left_max_change, 1.0);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else {
-			target_left_max_change = 0.0;
-		}
-	}
-	if (target_right_max_change != 0.0) {
-		if (target_right_crop * width_scale > tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x) {
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + target_right_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.x + target_right_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x + target_right_max_change, target_right_crop * width_scale);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->pos.x = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->pos.x + target_right_max_change, target_right_crop * width_scale);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else if (target_right_crop * width_scale < tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x) {
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - target_right_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.x = clampf(0.0, tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord.x - target_right_max_change, 1.0);
-			tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x = clampf(target_right_crop * width_scale, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x - target_right_max_change, 1.0);
-			tex_accessor[TEX_COORD_TOP_RIGHT]->pos.x = clampf(target_right_crop * width_scale, tex_accessor[TEX_COORD_TOP_RIGHT]->pos.x - target_right_max_change, 1.0);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
-		}
-		else {
-			target_right_max_change = 0.0;
-		}
-	}
-	if (target_pos_max_change != vec3(0.0)) {
-		if (target_pos_max_change.x != 0.0) {
-			if (target_pos.x > pos.x) {
-				pos.x = clampf(pos.x, pos.x + target_pos_max_change.x, target_pos.x);
-			}
-			else if (target_pos.x < pos.x) {
-				pos.x = clampf(target_pos.x, pos.x - target_pos_max_change.x, pos.x);
-			}
-			else {
-				target_pos_max_change.x = 0.0;
-			}
-		}
-		if (target_pos_max_change.y != 0.0) {
-			if (target_pos.y > pos.y) {
-				pos.y = clampf(pos.y, pos.y + target_pos_max_change.y, target_pos.y);
-			}
-			else if (target_pos.y < pos.y) {
-				pos.y = clampf(target_pos.y, pos.y - target_pos_max_change.y, pos.y);
-			}
-			else {
-				target_pos_max_change.y = 0.0;
-			}
-		}
-		if (target_pos_max_change.z != 0.0) {
-			if (target_pos.z > pos.z) {
-				pos.z = clampf(pos.z, pos.z + target_pos_max_change.z, target_pos.z);
-			}
-			else if (target_pos.z < pos.z) {
-				pos.z = clampf(target_pos.z, pos.z - target_pos_max_change.z, pos.z);
-			}
-			else {
-				target_pos_max_change.z = 0.0;
-			}
-		}
-	}
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	vec3 gl_pos = pos;
@@ -656,50 +648,49 @@ void GameTexture::render() {
 		
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
-			gl_pos.x -= WINDOW_WIDTH - width;
-			gl_pos.y -= WINDOW_HEIGHT - height;
+			gl_pos.x -= WINDOW_WIDTH - (width * width_scale_mul);
+			gl_pos.y -= WINDOW_HEIGHT - (height * height_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
-			gl_pos.y -= WINDOW_HEIGHT - height;
+			gl_pos.y -= WINDOW_HEIGHT - (height * height_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
 			gl_pos.x *= -1.0;
-			gl_pos.x += WINDOW_WIDTH - width_orientation;
-			gl_pos.y -= WINDOW_HEIGHT - height;
+			gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale_mul);
+			gl_pos.y -= WINDOW_HEIGHT - (height * height_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
-			gl_pos.x -= WINDOW_WIDTH - width;
+			gl_pos.x -= WINDOW_WIDTH - (width * width_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
 			gl_pos.x *= -1.0;
-			gl_pos.x += WINDOW_WIDTH - width_orientation;
+			gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT): {
 			gl_pos.y *= -1.0;
-			gl_pos.x -= WINDOW_WIDTH - width;
-			gl_pos.y += WINDOW_HEIGHT - height_orientation;
+			gl_pos.x -= WINDOW_WIDTH - (width * width_scale_mul);
+			gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE): {
 			gl_pos.y *= -1.0;
-			gl_pos.y += WINDOW_HEIGHT - height_orientation;
+			gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale_mul);
 		} break;
 		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT): {
 			gl_pos.x *= -1.0;
 			gl_pos.y *= -1.0;
-			gl_pos.x += WINDOW_WIDTH - width_orientation;
-			gl_pos.y += WINDOW_HEIGHT - height_orientation;
+			gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale_mul);
+			gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale_mul);
 		} break;
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;
 	gl_pos.y /= (float)WINDOW_HEIGHT;
-	float shader_alpha = 1.0 - ((float)alpha / 255.0);
 	mat4 matrix = mat4(1.0);
 	matrix = translate(matrix, gl_pos);
 	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
-	shader->set_float("f_alphamod", shader_alpha);
 	shader->set_mat4("matrix", matrix);
+	shader->set_float("f_alphamod", 1.0 - ((float)alpha / 255.0));
 	glDepthMask(gl_pos.z != 0.0);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDepthMask(GL_TRUE);

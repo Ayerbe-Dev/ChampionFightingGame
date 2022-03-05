@@ -468,6 +468,7 @@ void CSS::render() {
 				mobile_css_slots[i].set_width(190);
 				mobile_css_slots[i].set_height(280);
 			}
+			mobile_css_slots[i].process();
 			mobile_css_slots[i].render();
 		}
 		cursors[i].set_target(chara_slots[player_selected_index[i]].texture.pos.x, chara_slots[player_selected_index[i]].texture.pos.y);
@@ -538,7 +539,7 @@ void CssSlot::init(int chara_kind, string textureDir, string name) {
 /// </summary>
 /// <param name="y">: The intended Y position.</param>
 void CssSlot::set_y_pos(int y) {
-	texture.set_pos(vec3(0, y, 0));
+	texture.set_pos(vec3(texture.pos.x, y, 0));
 }
 
 /// <summary>
@@ -546,7 +547,7 @@ void CssSlot::set_y_pos(int y) {
 /// </summary>
 /// <param name="X">: The intended X position.</param>
 void CssSlot::set_x_pos(int x) {
-	texture.set_pos(vec3(x, 0, 0));
+	texture.set_pos(vec3(x, texture.pos.y, 0));
 }
 
 /// <summary>
@@ -561,6 +562,7 @@ int CssSlot::get_texture_width() {
 /// Render the CSS Slot's texture.
 /// </summary>
 void CssSlot::render() {
+	texture.process();
 	texture.render();
 }
 
@@ -600,6 +602,7 @@ void CssCursor::render() {
 	partial_y += (target_y - partial_y) / 8;
 	texture.pos.x = partial_x;
 	texture.pos.y = partial_y;
+	texture.process();
 	texture.render();
 };
 

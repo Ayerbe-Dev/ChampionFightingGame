@@ -332,12 +332,14 @@ MainMenu::~MainMenu() {
 
 void MainMenu::render() {
 	background_texture.render();
+	menu_items[top_selection * -1].image_texture.process();
 	menu_items[top_selection * -1].image_texture.render();
 
 	//prebuffer render
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i - 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
 		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
+		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
 	}
 
@@ -345,10 +347,14 @@ void MainMenu::render() {
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + i * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + i * offset)), 0.0));
 		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
+		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
+		sub_menu_tables[menu_items[top_selection * -1].destination]->table.process();
+		sub_menu_tables[menu_items[top_selection * -1].destination]->cursor.process();
 		sub_menu_tables[menu_items[top_selection * -1].destination]->table.render();
 		sub_menu_tables[menu_items[top_selection * -1].destination]->cursor.render();
 		for (int i2 = 0; i2 < sub_menu_tables[menu_items[top_selection * -1].destination]->item_count; i2++) {
+			sub_menu_tables[menu_items[top_selection * -1].destination]->sub_text[i2].process();
 			sub_menu_tables[menu_items[top_selection * -1].destination]->sub_text[i2].render();
 		}
 	}
@@ -357,6 +363,7 @@ void MainMenu::render() {
 	for (int i = 0; i < 5; i++) {
 		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i + 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
 		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
+		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
 	}
 
@@ -379,9 +386,8 @@ void MenuItem::init(string texture_dir, string texture_description_dir, int dest
 	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 	name_texture.scale_all_percent(2.0, false);
 	image_texture.init(texture_description_dir);
-	image_texture.scale_top_percent(1.5, false);
-	image_texture.scale_bottom_percent(1.5, false);
-	image_texture.scale_right_percent(2.0, false);
+	image_texture.set_width_scale(1.6);
+	image_texture.set_height_scale(1.6);
 	image_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }
 void MenuItem::destroy() {

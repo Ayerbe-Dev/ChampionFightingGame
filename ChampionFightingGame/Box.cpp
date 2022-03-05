@@ -74,6 +74,12 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->continue_launch = continue_launch;
 	this->can_chip_ko = can_chip_ko;
 	this->use_player_pos = use_player_pos;
+	if (hitbox_kind == HITBOX_KIND_BLOCK) {
+		rect.set_rgb(vec3(255, 165, 0));
+	}
+	else {
+		rect.set_rgb(vec3(255, 0, 0));
+	}
 }
 
 /*

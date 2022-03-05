@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="frame">: The frame the user must have reached in order to execute the block.</param>
 /// <returns>Whether or not the contents of the block may be executed.</returns>
-bool BattleObject::is_excute_frame(int frame) {
+bool BattleObject::is_excute_frame(float frame) {
 	bool ret = false;
 	attempted_excutes++;
 	if (this->frame >= frame) {
@@ -25,7 +25,7 @@ bool BattleObject::is_excute_frame(int frame) {
 /// </summary>
 /// <param name="frames">: How many frames it must have been since the last is_excute check in order to execute the block.</param>
 /// <returns>Whether or not the contents of the block may be executed.</returns>
-bool BattleObject::is_excute_wait(int frames) {
+bool BattleObject::is_excute_wait(float frames) {
 	bool ret = false;
 	attempted_excutes++;
 	if (frame >= last_excute_frame + frames) {

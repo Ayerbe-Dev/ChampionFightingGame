@@ -13,24 +13,31 @@ void battle_main(GameManager *game_manager);
 
 class HealthBar {
 public:
+	HealthBar();
+	void init(Fighter* fighter);
+	void destroy();
+	void process();
+	void render();
+
 	GameTexture health_texture;
 	GameTexture bar_texture;
 	float* health;
 	float max_health;
-
-	HealthBar();
-	void render();
 };
 
 class ExBar {
 public:
 	ExBar();
-	ExBar(Fighter* fighter);
+	void init(Fighter* fighter);
+	void destroy();
+	void process();
+	void render();
 
 	Fighter* fighter;
 	GameTexture ex_texture;
 	GameTexture ex_segment_texture;
 	GameTexture bar_texture;
+	float* ex;
 	float max_ex;
 	int prev_segments = 0;
 };

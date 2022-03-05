@@ -53,8 +53,8 @@ public:
 
     vec3 get_pos_vacuum(GameTexture *that);
 
-    void scale_left_percent(float percent, bool crop = true); //broken for cropping, outdated for scaling, if you want to fix these then go ahead
-    void scale_right_percent(float percent, bool crop = true); //but i can take care of it if not
+    void scale_left_percent(float percent, bool crop = true);
+    void scale_right_percent(float percent, bool crop = true);
     void scale_top_percent(float percent, bool crop = true);
     void scale_bottom_percent(float percent, bool crop = true);
     void scale_all_percent(float percent, bool crop = true);
@@ -66,10 +66,10 @@ public:
     int get_width();
     int get_height();
 
-    void set_left_target(float percent, float max_change);
-    void set_right_target(float percent, float max_change);
-    void set_top_target(float percent, float max_change);
-    void set_bottom_target(float percent, float max_change);
+    void set_left_target(float percent, float frames);
+    void set_right_target(float percent, float frames);
+    void set_top_target(float percent, float frames);
+    void set_bottom_target(float percent, float frames);
 
     void set_target_pos(vec3 target, float frames);
 
@@ -79,6 +79,7 @@ public:
     void flip_v(bool update = true);
     void reorient();
 
+    void process();
     void render();
     
     float target_left_crop = -2.0;
@@ -86,13 +87,13 @@ public:
     float target_top_crop = -2.0;
     float target_bottom_crop = -2.0;
 
-    float target_left_max_change = 0.0;
-    float target_right_max_change = 0.0;
-    float target_top_max_change = 0.0;
-    float target_bottom_max_change = 0.0;
+    float target_left_frames = 0.0;
+    float target_right_frames = 0.0;
+    float target_top_frames = 0.0;
+    float target_bottom_frames = 0.0;
 
     vec3 target_pos = vec3(0.0);
-    vec3 target_pos_max_change = vec3(0.0);
+    vec3 target_pos_frames = vec3(0.0);
     
     unsigned char alpha = 255;
 

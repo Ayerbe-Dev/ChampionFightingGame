@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Fighter.fwd.h"
 #include "Fighter.h"
 #include "BattleObject.fwd.h"

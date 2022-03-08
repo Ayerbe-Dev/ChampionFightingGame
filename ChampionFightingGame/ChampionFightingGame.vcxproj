@@ -245,6 +245,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
     <ClCompile Include="FighterBoneFunctions.cpp" />
+    <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameRect.cpp" />
@@ -308,6 +309,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="ProjectileAnimationFunctions.cpp" />
+    <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
     <ClCompile Include="ProjectileStatusFunctions.cpp" />
@@ -373,6 +375,8 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="FighterAccessor.fwd.h" />
     <ClInclude Include="FighterAccessor.h" />
     <ClInclude Include="Battle.fwd.h" />
+    <ClInclude Include="FighterInterface.h" />
+    <ClInclude Include="Fighters.h" />
     <ClInclude Include="GameCoordinate.fwd.h" />
     <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
@@ -418,6 +422,8 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ProjectileFlag.h" />
     <ClInclude Include="ProjectileFloat.h" />
     <ClInclude Include="ProjectileInt.h" />
+    <ClInclude Include="ProjectileInterface.h" />
+    <ClInclude Include="Projectiles.h" />
     <ClInclude Include="ProjectileStatus.h" />
     <ClInclude Include="Ramona.fwd.h" />
     <ClInclude Include="Ramona.h" />

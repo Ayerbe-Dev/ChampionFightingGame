@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <iostream>
 #include "utils.h"
+extern SDL_Window* g_window;
 using namespace std;
 
 extern SDL_mutex* file_mutex;

@@ -386,8 +386,8 @@ void MenuItem::init(string texture_dir, string texture_description_dir, int dest
 	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 	name_texture.scale_all_percent(2.0, false);
 	image_texture.init(texture_description_dir);
-	image_texture.set_width_scale(1.6);
-	image_texture.set_height_scale(1.6);
+	image_texture.set_width_scale(1.5);
+	image_texture.set_height_scale(1.5);
 	image_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }
 void MenuItem::destroy() {

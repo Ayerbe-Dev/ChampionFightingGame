@@ -40,15 +40,6 @@
     <Filter Include="Source Files\Objects\Projectile">
       <UniqueIdentifier>{b97d7459-b817-43f8-920b-bbe72f22989e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Objects\Projectile\EricFireball">
-      <UniqueIdentifier>{3a453703-b814-416a-bbdc-20bf0011c723}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Objects\Projectile\ProjectileTemplate">
-      <UniqueIdentifier>{a1a93eb3-3a0c-4f33-9958-fcf4723833a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Objects\Projectile\RoyFireball">
-      <UniqueIdentifier>{c46b6fe9-3200-4891-a0b4-9266d606e2b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Objects\Projectile\Projectile">
       <UniqueIdentifier>{a3590dfe-9544-4cd9-b906-b44b898cbb45}</UniqueIdentifier>
     </Filter>
@@ -154,6 +145,33 @@
     <Filter Include="Source Files\Engine">
       <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Fighter">
+      <UniqueIdentifier>{5bdad8b0-0d92-4b36-ae7d-0fbe4df9ba7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara">
+      <UniqueIdentifier>{89f4a669-4c3a-4c9b-a36f-3feb6798647b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Projectile\Projectile">
+      <UniqueIdentifier>{4e69bbb8-a9c6-4062-806b-cfcecd606f5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Projectile\ProjectileUnique">
+      <UniqueIdentifier>{f3958ae5-7fb1-4c04-ac3e-c848bf2d9467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Projectile\ProjectileUnique">
+      <UniqueIdentifier>{3e9916cf-63dc-4c90-a7b5-dcd715411792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Projectile\ProjectileUnique\EricFireball">
+      <UniqueIdentifier>{3a453703-b814-416a-bbdc-20bf0011c723}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Projectile\ProjectileUnique\RoyFireball">
+      <UniqueIdentifier>{c46b6fe9-3200-4891-a0b4-9266d606e2b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
+      <UniqueIdentifier>{a1a93eb3-3a0c-4f33-9958-fcf4723833a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Include">
+      <UniqueIdentifier>{d2d27a10-df59-4cf7-bdb9-72a779b7dd31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -250,13 +268,13 @@
       <Filter>Source Files\Objects\Fighter\Chara\Zyair</Filter>
     </ClCompile>
     <ClCompile Include="EricFireball.cpp">
-      <Filter>Source Files\Objects\Projectile\EricFireball</Filter>
+      <Filter>Source Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileTemplate.cpp">
-      <Filter>Source Files\Objects\Projectile\ProjectileTemplate</Filter>
+      <Filter>Source Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
     </ClCompile>
     <ClCompile Include="RoyFireball.cpp">
-      <Filter>Source Files\Objects\Projectile\RoyFireball</Filter>
+      <Filter>Source Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
     </ClCompile>
     <ClCompile Include="Projectile.cpp">
       <Filter>Source Files\Objects\Projectile\Projectile</Filter>
@@ -501,6 +519,12 @@
     <ClCompile Include="FighterBoneFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="FighterInterface.cpp">
+      <Filter>Source Files\Objects\Fighter\Fighter</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileInterface.cpp">
+      <Filter>Source Files\Objects\Projectile\Projectile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -680,75 +704,6 @@
     <ClInclude Include="SettingConstants.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="Fighter.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Zyair.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Alejandro.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Angelica.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Atlas.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Aziel.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Bruno.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplate.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Eric.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Julius.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Leon.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Nightsaber.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Norman.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Priest.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Ramona.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Roy.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Sully.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Tessa.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Vesuvius.h">
-      <Filter>Header Files\Objects\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Projectile.h">
-      <Filter>Header Files\Objects\Projectile</Filter>
-    </ClInclude>
-    <ClInclude Include="EricFireball.h">
-      <Filter>Header Files\Objects\Projectile</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplate.h">
-      <Filter>Header Files\Objects\Projectile</Filter>
-    </ClInclude>
-    <ClInclude Include="RoyFireball.h">
-      <Filter>Header Files\Objects\Projectile</Filter>
-    </ClInclude>
     <ClInclude Include="Debugger.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
@@ -826,6 +781,87 @@
     </ClInclude>
     <ClInclude Include="GameRect.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Alejandro.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Angelica.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Atlas.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Aziel.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Bruno.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplate.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Eric.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Julius.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Leon.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Nightsaber.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Norman.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Priest.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Ramona.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Roy.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Sully.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Tessa.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Vesuvius.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Zyair.h">
+      <Filter>Header Files\Objects\Fighter\Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Fighter.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterInterface.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireball.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplate.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireball.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileInterface.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="Fighters.h">
+      <Filter>Header Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectiles.h">
+      <Filter>Header Files\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

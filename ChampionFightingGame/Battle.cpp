@@ -1235,10 +1235,10 @@ void ExBar::init(Fighter* fighter) {
 	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
 	max_ex = EX_METER_SIZE;
 	ex_texture.init("resource/ui/game/ex/ex.png");
-
 	ex_segment_texture.init("resource/ui/game/ex/ex_segment.png");
-
 	bar_texture.init("resource/ui/game/ex/bar.png");
+	ex_texture.set_pos(vec3(119.0, 60.0, 0.0));
+	ex_segment_texture.set_pos(vec3(119.0, 60.0, 0.0));
 
 	if (fighter->id == 0) {
 		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -1269,10 +1269,10 @@ void ExBar::process() {
 	int segments = floor(*ex / (max_ex / EX_METER_BARS));
 	if (prev_segments != segments) {
 		if (prev_segments > segments) {
-			ex_segment_texture.set_right_target((*ex / EX_METER_BARS) / (max_ex / segments), 6);
+			ex_segment_texture.set_right_target((*ex / EX_METER_BARS) / (max_ex / segments), 1);
 		}
 		else if (!(segments % 2)) {
-			ex_segment_texture.set_right_target((max_ex / EX_METER_BARS) / (max_ex / segments), 2);
+			ex_segment_texture.set_right_target((max_ex / EX_METER_BARS) / (max_ex / segments), 1);
 		}
 	}
 	prev_segments = segments;

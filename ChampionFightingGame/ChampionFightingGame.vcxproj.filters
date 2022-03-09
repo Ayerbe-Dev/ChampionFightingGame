@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Forward Header Files">
-      <UniqueIdentifier>{dcac76a2-1ba7-4834-978f-03f941307198}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Game State">
       <UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
     </Filter>

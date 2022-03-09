@@ -97,6 +97,12 @@ void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
 	}
 }
 
+void PlayerInfo::reset_buffer() {
+	for (int i = 0; i < BUTTON_MAX; i++) {
+		button_info[i].buffer = 0;
+	}
+}
+
 void PlayerInfo::set_default_button_mappings(int id) {
 	if (id == 0) {
 		button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;

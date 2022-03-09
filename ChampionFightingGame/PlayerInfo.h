@@ -20,6 +20,7 @@ public:
 	PlayerInfo(int id);
 
 	void poll_buttons(const Uint8* keyboard_state);
+	void reset_buffer();
 	void check_controllers();
 	void set_default_button_mappings(int id);
 	bool check_button_on(u32 button);

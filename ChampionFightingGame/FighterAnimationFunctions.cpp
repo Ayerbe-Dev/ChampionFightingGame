@@ -57,6 +57,7 @@ bool Fighter::change_anim_inherit_attributes(string animation_name, bool verbose
 }
 
 void Fighter::startAnimation(Animation* animation) {
+	player_info->reset_buffer();
 	is_anim_end = false;
 	if (anim_kind != animation) {
 		prev_anim_kind = anim_kind;

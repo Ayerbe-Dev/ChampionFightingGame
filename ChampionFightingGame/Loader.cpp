@@ -8,6 +8,7 @@ bool GameTextureSDL::init(string sTexturePath, bool delay) {
 
 	bIsInitialized = true;
 	pTexture = loadSDLTexture(sTexturePath.c_str(), delay);
+	SDL_SetTextureBlendMode(pTexture, SDL_BLENDMODE_BLEND);
 	destRect.x = 0;
 	destRect.y = 0;
 	srcRect.x = 0;

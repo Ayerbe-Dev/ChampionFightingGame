@@ -1,7 +1,7 @@
 #include "GameCoordinate.h"
-#include "utils.h"
 
-
+#define WINDOW_WIDTH 1920 //todo: Move these into a different file that isn't utils
+#define WINDOW_HEIGHT 1080
 
 GameCoordinate::GameCoordinate()
 {

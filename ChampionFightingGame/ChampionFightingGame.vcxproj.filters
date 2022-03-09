@@ -530,93 +530,6 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vesuvius.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tessa.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sully.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundManager.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RoyFireball.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplate.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Projectile.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Priest.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Norman.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ramona.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Nightsaber.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleObject.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameCoordinate.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterAccessor.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Fighter.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Roy.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Julius.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Battle.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EricFireball.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Eric.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplate.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Angelica.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Aziel.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Alejandro.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Atlas.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Box.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bruno.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Leon.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CharaSelect.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
@@ -686,9 +599,6 @@
     <ClInclude Include="Music.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="GameTexture.fwd.h">
-      <Filter>Forward Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
@@ -751,9 +661,6 @@
     </ClInclude>
     <ClInclude Include="RenderManager.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Zyair.fwd.h">
-      <Filter>Forward Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\Deps</Filter>

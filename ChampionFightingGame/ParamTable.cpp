@@ -1,5 +1,4 @@
 using namespace std;
-#include "Leon.fwd.h"
 #include "ParamTable.h"
 
 /*

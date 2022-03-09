@@ -1,11 +1,9 @@
 #pragma once
 #include "PlayerInfo.h"
-#include "Fighter.fwd.h"
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
 #include "FighterAccessor.h"
-#include "Battle.fwd.h"
 #include "GameManager.h"
 #include "Debugger.h"
 
@@ -105,7 +103,6 @@ public:
 
 	const Uint8* keyboard_state;
 
-	IObject* fighter_interface[2];
 	Fighter* fighter[2];
 	Stage stage;
 	FighterAccessor* fighter_accessor;
@@ -127,18 +124,6 @@ public:
 	vec2 debug_offset[2] = { {0,0} };
 
 	bool visualize_boxes;
-};
-
-class IObject {
-public:
-	IObject();
-	IObject(int object_type, int object_kind, int id, PlayerInfo *player_info, FighterAccessor* fighter_accessor);
-	~IObject();
-	Fighter* get_fighter();
-	Projectile* get_projectile();
-private: 
-	Fighter* fighter{};
-	Projectile* projectile{};
 };
 
 //Demoknight TF2 has been evicted from UI.cpp as that file no longer exists

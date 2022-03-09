@@ -1,9 +1,9 @@
 #pragma once
 #include "BattleObject.h"
 #include "utils.h"
-#include "FighterAccessor.fwd.h"
-#include "FighterAccessor.h"
 #include "ParamTable.h"
+
+class FighterAccessor;
 
 class Projectile: public BattleObject {
 public:

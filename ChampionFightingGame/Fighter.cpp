@@ -49,7 +49,7 @@ void Fighter::fighter_main() {
 
 void Fighter::process_projectiles() {
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		if (projectiles[i]->id != -1) {
+		if (projectiles[i] != nullptr && projectiles[i]->id != -1) {
 			projectiles[i]->projectile_main();
 		}
 	}

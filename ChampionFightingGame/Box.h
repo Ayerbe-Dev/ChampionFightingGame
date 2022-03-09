@@ -1,9 +1,9 @@
 #pragma once
 #include "utils.h"
 #include <SDL.h>
-#include "Box.fwd.h"
-#include "BattleObject.fwd.h"
 #include "GameRect.h"
+
+class BattleObject;
 
 class Hitbox {
 public:

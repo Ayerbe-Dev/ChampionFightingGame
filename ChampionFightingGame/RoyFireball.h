@@ -1,10 +1,6 @@
 #pragma once
 #include "Projectile.h"
-#include "Projectile.fwd.h"
-#include "BattleObject.fwd.h"
 #include "BattleObject.h"
-#include "RoyFireball.fwd.h"
-#include "Roy.fwd.h"
 #include "Roy.h"
 
 class RoyFireball : public Projectile {

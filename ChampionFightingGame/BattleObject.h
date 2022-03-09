@@ -2,8 +2,6 @@
 #include "utils.h"
 #include "Animation.h"
 #include "GameCoordinate.h"
-#include "BattleObject.fwd.h"
-#include "Box.fwd.h"
 #include "Box.h"
 #include "ParamTable.h"
 #include "PlayerInfo.fwd.h"

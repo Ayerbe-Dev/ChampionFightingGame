@@ -1,6 +1,5 @@
 #include "Alejandro.h"
 #include "Battle.h"
-#include "ProjectileTemplate.fwd.h"
 #include "ProjectileTemplate.h"
 
 Alejandro::Alejandro() {

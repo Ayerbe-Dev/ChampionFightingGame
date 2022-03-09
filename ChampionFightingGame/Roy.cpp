@@ -1,7 +1,7 @@
 #include "Roy.h"
 #include "Battle.h"
-#include "RoyFireball.fwd.h"
 #include "RoyFireball.h"
+#include "ProjectileInterface.h"
 
 Roy::Roy() {
 
@@ -19,13 +19,7 @@ Roy::Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ROY;
 
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectiles[i] = new Projectile();
-	}
-
-	projectile_interface[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_ROY_FIREBALL, id, player_info, fighter_accessor);
-	delete (projectiles[0]);
-	this->projectiles[0] = projectile_interface[0]->get_projectile();
+	projectiles[0] = create_projectile(PROJECTILE_KIND_ROY_FIREBALL, id, player_info, fighter_accessor);
 	RoyFireball* roy_fireball = (RoyFireball*)projectiles[0];
 	roy_fireball->roy = this;
 }

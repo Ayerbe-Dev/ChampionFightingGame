@@ -1,6 +1,5 @@
 #include "Aziel.h"
 #include "Battle.h"
-#include "ProjectileTemplate.fwd.h"
 #include "ProjectileTemplate.h"
 
 Aziel::Aziel() {

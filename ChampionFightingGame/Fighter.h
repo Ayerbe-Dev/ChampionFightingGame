@@ -8,15 +8,11 @@
 #include <SDL.h>
 #include "Animation.h"
 #include "ParamTable.h"
-#include "Fighter.fwd.h"
-#include "Box.fwd.h"
 #include "Box.h"
-#include "FighterAccessor.fwd.h"
-#include "FighterAccessor.h"
 #include "PlayerInfo.h"
 #include "SoundManager.h"
 
-class IObject;
+class FighterAccessor;
 
 class Fighter: public BattleObject {
 public:
@@ -28,7 +24,6 @@ public:
 
 	FighterAccessor* fighter_accessor;
 	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
-	IObject* projectile_interface[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
 
 	bool crash_to_debug{ false };
 	int prev_stick_dir;

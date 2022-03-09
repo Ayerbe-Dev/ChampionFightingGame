@@ -8,7 +8,6 @@ using namespace std;
 #include <glew.h>
 #include <sstream>
 #include <SDL_ttf.h>
-#include "GameCoordinate.fwd.h"
 #include "GameCoordinate.h"
 #include <glm.hpp>
 #include "Constants.h"
@@ -25,9 +24,6 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 typedef long long i64;
 typedef unsigned long long u64;
-
-#define global_variable static
-#define internal static
 
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080

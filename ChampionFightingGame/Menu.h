@@ -6,7 +6,6 @@
 #include <vector>
 #include "Button.h"
 #include "PlayerInfo.h"
-#include "Menu.fwd.h"
 #include "GameMenu.h"
 #include "GameManager.h"
 

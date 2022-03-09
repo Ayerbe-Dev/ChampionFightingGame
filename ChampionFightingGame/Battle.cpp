@@ -11,49 +11,17 @@
 #include "SoundManager.h"
 #include "GameTexture.h"
 
+#include "Fighters.h"
+#include "FighterInterface.h"
+
 #include "BattleObject.h"
 #include "Fighter.h"
 #include "FighterAccessor.h"
-#include "Roy.fwd.h"
-#include "Roy.h"
-#include "Eric.fwd.h"
-#include "Eric.h"
-#include "Leon.fwd.h"
-#include "Leon.h"
-#include "Angelica.fwd.h"
-#include "Angelica.h"
-#include "Nightsaber.fwd.h"
-#include "Nightsaber.h"
-#include "Sully.fwd.h"
-#include "Sully.h"
-#include "Priest.fwd.h"
-#include "Priest.h"
-#include "Aziel.fwd.h"
-#include "Aziel.h"
-#include "Bruno.fwd.h"
-#include "Bruno.h"
-#include "Tessa.fwd.h"
-#include "Tessa.h"
-#include "Alejandro.fwd.h"
-#include "Alejandro.h"
-#include "Norman.fwd.h"
-#include "Norman.h"
-#include "Atlas.fwd.h"
-#include "Atlas.h"
-#include "Julius.fwd.h"
-#include "Julius.h"
-#include "Ramona.fwd.h"
-#include "Ramona.h"
-#include "Zyair.fwd.h"
-#include "Zyair.h"
-#include "Vesuvius.fwd.h"
-#include "Vesuvius.h"
 
 #include "Projectile.h"
 #include "RoyFireball.h"
 #include "EricFireball.h"
 
-#include "CharaTemplate.fwd.h"
 #include "CharaTemplate.h"
 #include "ProjectileTemplate.h"
 #include "Loader.h"
@@ -148,9 +116,8 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	for (int i = 0; i < 2; i++) {
 		debug_rect[i].init();
-		fighter_interface[i] = new IObject(OBJECT_TYPE_FIGHTER, player_info[i]->chara_kind, i, player_info[i], fighter_accessor);
 		inc_thread();
-		fighter[i] = fighter_interface[i]->get_fighter();
+		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i], fighter_accessor);
 		inc_thread();
 	}
 	for (int i = 0; i < 2; i++) {
@@ -161,7 +128,9 @@ void Battle::load_battle(GameManager* game_manager) {
 		fighter[i]->superInit(i);
 		inc_thread();
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			fighter[i]->projectiles[i2]->owner_id = i;
+			if (fighter[i]->projectiles[i2] != nullptr) {
+				fighter[i]->projectiles[i2]->owner_id = i;
+			}
 		}
 		health_bar[i].init(fighter[i]);
 		inc_thread();
@@ -227,13 +196,12 @@ void Battle::unload_battle() {
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectile_interface[i2] != NULL) {
+			if (fighter[i]->projectiles[i2] != nullptr) {
 				for (int i3 = 0; i3 < 10; i3++) {
 					fighter[i]->projectiles[i2]->hitboxes[i3].rect.destroy();
 				}
-				delete fighter[i]->projectile_interface[i2];
+				delete fighter[i]->projectiles[i2];
 			}
-			delete fighter[i]->projectiles[i2];
 		}
 		for (int i2 = 0; i2 < 10; i2++) {
 			fighter[i]->hitboxes[i2].rect.destroy();
@@ -241,7 +209,6 @@ void Battle::unload_battle() {
 			fighter[i]->grabboxes[i2].rect.destroy();
 		}
 		delete fighter[i];
-		delete fighter_interface[i];
 	}
 	g_soundmanager.unloadSoundAll();
 
@@ -395,7 +362,7 @@ void Battle::render_world() {
 		//player tags will go here
 
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
+			if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render();
 			}
 		}
@@ -417,7 +384,7 @@ void Battle::render_ui() {
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->projectiles[i2]->id != -1) {
+				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->id != -1) {
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->hitboxes[i3].id != -1) {
 							fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();
@@ -454,9 +421,9 @@ void Battle::check_collisions() {
 
 void Battle::check_projectile_collisions() {
 	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		if (fighter[0]->projectiles[i]->id != -1) {
+		if (fighter[0]->projectiles[i] != nullptr && fighter[0]->projectiles[i]->id != -1) {
 			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-				if (fighter[1]->projectiles[i2]->id != -1) {
+				if (fighter[1]->projectiles[i2] != nullptr && fighter[1]->projectiles[i2]->id != -1) {
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1 && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
 							for (int i4 = 0; i4 < 10; i4++) {
@@ -507,7 +474,7 @@ void Battle::check_fighter_collisions() {
 					}
 				}
 				for (int i3 = 0; i3 < MAX_PROJECTILES; i3++) {
-					if (fighter[!i]->projectiles[i3]->id != -1) {
+					if (fighter[!i]->projectiles[i3] != nullptr && fighter[!i]->projectiles[i3]->id != -1) {
 						for (int i4 = 0; i4 < 10; i4++) {
 							if (fighter[!i]->projectiles[i3]->hitboxes[i4].id != -1) {
 								GameRect hitbox = fighter[!i]->projectiles[i3]->hitboxes[i4].rect;
@@ -549,7 +516,7 @@ void Battle::check_fighter_collisions() {
 	}
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectiles[i2]->id != -1) {
+			if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->id != -1) {
 				event_hit_collide_projectile(fighter[i], fighter[!i], fighter[i]->projectiles[i2], &(fighter[i]->projectiles[i2]->hitboxes[fighter[!i]->connected_projectile_hitbox]));
 			}
 		}
@@ -1226,122 +1193,6 @@ int Battle::get_damage_status(int hit_status, int situation_kind) {
 			return FIGHTER_STATUS_HITSTUN;
 		}
 	}
-}
-
-IObject::IObject() {}
-
-IObject::IObject(int object_type, int object_kind, int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
-	if (object_type == OBJECT_TYPE_FIGHTER) {
-		switch (object_kind) {
-			case (CHARA_KIND_ROY):
-			default: {
-				fighter = new Roy(id, player_info, fighter_accessor);
-			}
-			break;
-			case (CHARA_KIND_ERIC):
-			{
-				fighter = new Eric(id, player_info, fighter_accessor);
-			}
-			break;
-			case (CHARA_KIND_LEON):
-			case (CHARA_KIND_CHAMELEON): //Leon and Chameleon are the same character, but the specifics on where to get resources are in the constructor
-			{
-				fighter = new Leon(id, player_info, fighter_accessor);
-			}
-			break;
-			case (CHARA_KIND_ANGELICA):
-			{
-				fighter = new Angelica(id, player_info, fighter_accessor);
-			} 
-			break;
-			case (CHARA_KIND_NIGHTSABER):
-			{
-				fighter = new Nightsaber(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_SULLY):
-			{
-				fighter = new Sully(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_PRIEST):
-			{
-				fighter = new Priest(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_AZIEL):
-			{
-				fighter = new Aziel(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_BRUNO):
-			{
-				fighter = new Bruno(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_TESSA):
-			{
-				fighter = new Tessa(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_ALEJANDRO):
-			{
-				fighter = new Alejandro(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_NORMAN):
-			{
-				fighter = new Norman(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_ATLAS):
-			{
-				fighter = new Atlas(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_JULIUS):
-			{
-				fighter = new Julius(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_RAMONA):
-			{
-				fighter = new Ramona(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_ZYAIR):
-			{
-				fighter = new Zyair(id, player_info, fighter_accessor);
-			} break;
-			case (CHARA_KIND_VESUVIUS):
-			{
-				fighter = new Vesuvius(id, player_info, fighter_accessor);
-			} break;
-		}
-	}
-	else if (object_type == OBJECT_TYPE_PROJECTILE) {
-		switch (object_kind) {
-			case (PROJECTILE_KIND_ROY_FIREBALL):
-			{
-				projectile = new RoyFireball(id, player_info, fighter_accessor);
-			}
-			break;
-			case (PROJECTILE_KIND_ERIC_FIREBALL):
-			{
-				projectile = new EricFireball(id, player_info, fighter_accessor);
-			}
-			break;
-			case (PROJECTILE_KIND_PROJECTILE_TEMPLATE):
-			{
-				projectile = new ProjectileTemplate(id, player_info, fighter_accessor);
-			} break;
-			case (PROJECTILE_KIND_MAX):
-			{
-				projectile = NULL;
-			}
-			break;
-		}
-	}
-
-}
-
-IObject::~IObject() {}
-
-Fighter* IObject::get_fighter() {
-	return fighter;
-}
-
-Projectile* IObject::get_projectile() {
-	return projectile;
 }
 
 HealthBar::HealthBar() {}

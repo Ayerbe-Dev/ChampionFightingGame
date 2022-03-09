@@ -1,6 +1,5 @@
 #include "Leon.h"
 #include "Battle.h"
-#include "ProjectileTemplate.fwd.h"
 #include "ProjectileTemplate.h"
 
 Leon::Leon() {
@@ -25,16 +24,6 @@ Leon::Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	load_move_scripts();
 	loadLeonStatusFunctions();
 	set_current_move_script("default");
-
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectiles[i] = new Projectile();
-	}
-
-//	projectile_objects[0] = new IObject(OBJECT_TYPE_PROJECTILE, PROJECTILE_KIND_PROJECTILE_TEMPLATE, id, player_info, fighter_accessor);
-//	delete (projectiles[0]);
-//	this->projectiles[0] = projectile_objects[0]->get_projectile();
-//	ProjectileTemplate* projectile_template_instance = (ProjectileTemplate*)projectiles[0];
-//	projectile_template_instance->leon = this;
 }
 
 void Leon::chara_id() {

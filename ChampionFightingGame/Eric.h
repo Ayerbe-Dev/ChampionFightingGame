@@ -1,11 +1,7 @@
 #pragma once
-#include "Fighter.fwd.h"
 #include "Fighter.h"
-#include "Projectile.fwd.h"
 #include "Projectile.h"
-#include "BattleObject.fwd.h"
 #include "BattleObject.h"
-#include "Eric.fwd.h"
 #include "utils.h"
 
 class Eric : public Fighter {

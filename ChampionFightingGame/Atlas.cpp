@@ -1,6 +1,5 @@
 #include "Atlas.h"
 #include "Battle.h"
-#include "ProjectileTemplate.fwd.h"
 #include "ProjectileTemplate.h"
 
 Atlas::Atlas() {
@@ -18,10 +17,6 @@ Atlas::Atlas(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	loadAtlasStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ATLAS;
-
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectiles[i] = new Projectile();
-	}
 }
 
 void Atlas::chara_id() {

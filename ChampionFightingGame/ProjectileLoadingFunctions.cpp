@@ -1,5 +1,9 @@
+#pragma warning(disable : 4996)
 #include "Projectile.h"
 #include "RenderManager.h"
+#include "BoxConstants.h"
+#include "Fighter.h"
+#include "FighterAccessor.h"
 extern RenderManager g_rendermanager;
 
 void Projectile::superInit() {
@@ -23,8 +27,6 @@ void Projectile::load_model_shader() {
 }
 
 void Projectile::load_anim_list() {
-	ifstream anim_list;
-	anim_list.open(resource_dir + "/anims/anim_list.yml");
 	Model* model_ptr;
 	if (has_model) {
 		model_ptr = &model;
@@ -32,21 +34,21 @@ void Projectile::load_anim_list() {
 	else {
 		model_ptr = nullptr;
 	}
-
-	if (anim_list.fail()) {
-		cerr << "Could not open anim_list!" << endl;
-		exit(1);
+	try {
+		animation_table.load_fighter_animations(resource_dir, model_ptr);
 	}
+	catch (std::runtime_error err) {
+		if (err.what() == "Anim List Missing") {
+			char buffer[56];
+			sprintf(buffer, "Projectile %d's resource directory was incorrectly set!", projectile_kind);
+			fighter_accessor->fighter[id]->player_info->crash_reason = buffer;
 
-	string name;
-	string path;
-	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path;
-		name = ymlChopString(name);
-		Animation anim(name, path, model_ptr);
-		animation_table[i] = anim;
+			fighter_accessor->fighter[id]->crash_to_debug = true;
+		}
+		else {
+			std::cout << err.what() << std::endl;
+		}
 	}
-	anim_list.close();
 }
 
 void Projectile::load_status_scripts() {
@@ -61,46 +63,6 @@ void Projectile::load_status_scripts() {
 	status_script[PROJECTILE_STATUS_HIT] = &Projectile::status_hit;
 	enter_status_script[PROJECTILE_STATUS_HIT] = &Projectile::enter_status_hit;
 	exit_status_script[PROJECTILE_STATUS_HIT] = &Projectile::exit_status_hit;
-}
-
-void Projectile::load_stats() {
-	ifstream stats_table;
-	stats_table.open(resource_dir + "/param/stats.yml");
-
-	if (stats_table.fail()) {
-		cerr << "Could not open stats table!" << endl;
-		exit(1);
-	}
-
-	string stat;
-	for (int i = 0; stats_table >> stat; i++) {
-		stat_table[i].stat = stat;
-		stats_table >> stat_table[i].type;
-		switch (stat_table[i].type) {
-			case(PARAM_TYPE_INT):
-			{
-				stats_table >> stat_table[i].value_i;
-			} break;
-			case(PARAM_TYPE_FLOAT):
-			{
-				stats_table >> stat_table[i].value_f;
-			} break;
-			case(PARAM_TYPE_STRING):
-			{
-				stats_table >> stat_table[i].value_s;
-			} break;
-			case (PARAM_TYPE_BOOL):
-			{
-				stats_table >> stat_table[i].value_b;
-			} break;
-			default:
-			{
-				stats_table >> stat_table[i].value_i;
-			} break;
-		}
-	}
-
-	stats_table.close();
 }
 
 void Projectile::set_default_vars() {

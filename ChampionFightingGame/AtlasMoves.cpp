@@ -6,10 +6,10 @@ void Atlas::load_move_scripts() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, vec2{ -9, 242 }, vec2{ 24, 204 }); //head
-			new_hurtbox(1, vec2{ 51,204 }, vec2{ -45, 3 }); //torso
-			new_hurtbox(2, vec2{ -39, 210 }, vec2{ -8, 202 }); //extra bit
-			new_hurtbox(3, vec2{ -17, 210 }, vec2{ -7, 216 }); //extra extra bit
+			new_hurtbox(0, glm::vec2{ -9, 242 }, glm::vec2{ 24, 204 }); //head
+			new_hurtbox(1, glm::vec2{ 51,204 }, glm::vec2{ -45, 3 }); //torso
+			new_hurtbox(2, glm::vec2{ -39, 210 }, glm::vec2{ -8, 202 }); //extra bit
+			new_hurtbox(3, glm::vec2{ -17, 210 }, glm::vec2{ -7, 216 }); //extra extra bit
 		}
 	});
 	script("walk_f", [this]() {
@@ -38,10 +38,10 @@ void Atlas::load_move_scripts() {
 	});
 	script("jump", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, vec2{ -9, 242 }, vec2{ 24, 204 }); //test
-			new_hurtbox(1, vec2{ 51,204 }, vec2{ -45, 3 });
-			new_hurtbox(2, vec2{ -39, 210 }, vec2{ -8, 202 });
-			new_hurtbox(3, vec2{ -17, 210 }, vec2{ -7, 216 });
+			new_hurtbox(0, glm::vec2{ -9, 242 }, glm::vec2{ 24, 204 }); //test
+			new_hurtbox(1, glm::vec2{ 51,204 }, glm::vec2{ -45, 3 });
+			new_hurtbox(2, glm::vec2{ -39, 210 }, glm::vec2{ -8, 202 });
+			new_hurtbox(3, glm::vec2{ -17, 210 }, glm::vec2{ -7, 216 });
 		}
 	});
 	script("jump_f", [this]() {
@@ -91,11 +91,11 @@ void Atlas::load_move_scripts() {
 	});
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, vec2{ -52, 32 }, vec2{ -44, 190 });
-			new_hurtbox(1, vec2{ 44, 182 }, vec2{ -34, 1980 });
+			new_hurtbox(0, glm::vec2{ -52, 32 }, glm::vec2{ -44, 190 });
+			new_hurtbox(1, glm::vec2{ 44, 182 }, glm::vec2{ -34, 1980 });
 		}
 		if (is_excute_frame(2)) {
-			new_hitbox(1, 0, 30, 5, 1.2, 1, vec2{ -28,183 }, vec2{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
+			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ -28,183 }, glm::vec2{ 86, 218 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS], 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false);
 		}
 		if (is_excute_wait(3)) {
 			clear_hitbox_all();

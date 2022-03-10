@@ -1,6 +1,7 @@
 #include "Fighter.h"
+#include "Projectile.h"
 
-void Fighter::init_projectile(int id, vec3 init_pos) {
+void Fighter::init_projectile(int id, glm::vec3 init_pos) {
 	projectiles[id]->id = this->id;
 	projectiles[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir);
 	projectiles[id]->pos.y = init_pos.z + pos.y;

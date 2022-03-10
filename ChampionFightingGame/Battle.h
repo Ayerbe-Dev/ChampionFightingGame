@@ -45,10 +45,10 @@ public:
 	Fighter* fighter;
 	SDL_Texture* texture;
 	SDL_Rect indicator_rect;
-	string nametag;
+	std::string nametag;
 
 	PlayerIndicator();
-	PlayerIndicator(Fighter* fighter, string nametag = "");
+	PlayerIndicator(Fighter* fighter, std::string nametag = "");
 };
 
 class GameTimer {
@@ -120,8 +120,8 @@ public:
 
 	Debugger debugger;
 	GameRect debug_rect[2];
-	vec2 debug_anchor[2] = { {0,0} };
-	vec2 debug_offset[2] = { {0,0} };
+	glm::vec2 debug_anchor[2] = { {0,0} };
+	glm::vec2 debug_offset[2] = { {0,0} };
 
 	bool visualize_boxes;
 };

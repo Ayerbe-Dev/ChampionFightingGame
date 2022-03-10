@@ -1,18 +1,19 @@
 #pragma once
-#include "utils.h"
 #include "Button.h"
+#include "utils.h"
 #include "Stage.h"
+#include "MenuConstants.h"
 
 class PlayerInfo {
 public:
 	int id;
 	int chara_kind{ 0 };
 	Stage stage;
-	string name;
-	Buttons button_info[BUTTON_MAX];
+	std::string name;
+	Button button_info[BUTTON_MAX];
 	SDL_GameController* controller{ NULL };
 	unsigned int buffer_order[6]{ BUTTON_LP, BUTTON_MP, BUTTON_HP, BUTTON_LK, BUTTON_MK, BUTTON_HK };
-	string crash_reason{"Crash Message Goes Here"};
+	std::string crash_reason{"Crash Message Goes Here"};
 	int stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
 	int stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
 

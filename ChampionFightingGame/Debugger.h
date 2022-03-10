@@ -1,13 +1,16 @@
 #pragma once
-#include "utils.h"
+#include <iostream>
+#include <glm/glm.hpp>
 #include "Button.h"
-#include "Fighter.h"
+
+class Fighter;
+class GameRect;
 
 class Debugger {
 public:
 	Debugger();
 
-	Buttons button_info[BUTTON_DEBUG_MAX];
+	Button button_info[BUTTON_DEBUG_MAX];
 	int target{ 0 };
 	bool print_frames{ false };
 	bool zoom{ false };
@@ -18,7 +21,7 @@ public:
 	bool check_button_on(unsigned int button);
 	bool check_button_trigger(unsigned int button);
 
-	void debug_mode(Fighter* target, GameRect* debug_rect, vec2* debug_anchor, vec2* debug_offset);
+	void debug_mode(Fighter* target, GameRect* debug_rect, glm::vec2* debug_anchor, glm::vec2* debug_offset);
 	void print_commands();
-	void debug_query(string command, Fighter* target, Fighter* other);
+	void debug_query(std::string command, Fighter* target, Fighter* other);
 };

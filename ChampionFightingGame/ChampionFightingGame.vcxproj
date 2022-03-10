@@ -212,7 +212,6 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="3DRenderingExample.cpp" />
     <ClCompile Include="Alejandro.cpp" />
     <ClCompile Include="AlejandroMoves.cpp" />
     <ClCompile Include="AlejandroStatus.cpp" />
@@ -229,6 +228,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Bruno.cpp" />
     <ClCompile Include="BrunoMoves.cpp" />
     <ClCompile Include="BrunoStatus.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
@@ -326,6 +326,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="RoyMoves.cpp" />
     <ClCompile Include="RoyStatus.cpp" />
     <ClCompile Include="ScriptFunctions.cpp" />
+    <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
@@ -347,7 +348,6 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ZyairStatus.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3DRenderingExample.h" />
     <ClInclude Include="Alejandro.h" />
     <ClInclude Include="Angelica.h" />
     <ClInclude Include="Aziel.h" />
@@ -366,6 +366,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Eric.h" />
     <ClInclude Include="EricFireball.h" />
     <ClInclude Include="FighterAttribute.h" />
+    <ClInclude Include="FighterConstants.h" />
     <ClInclude Include="FighterFlag.h" />
     <ClInclude Include="FighterFloat.h" />
     <ClInclude Include="FighterInt.h" />
@@ -397,7 +398,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Nightsaber.h" />
     <ClInclude Include="Norman.h" />
     <ClInclude Include="BattleObject.h" />
-    <ClInclude Include="ObjectKind.h" />
+    <ClInclude Include="CharaKind.h" />
     <ClInclude Include="Opening.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="Param.h" />
@@ -405,10 +406,12 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Priest.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Atlas.h" />
+    <ClInclude Include="ProjectileConstants.h" />
     <ClInclude Include="ProjectileFlag.h" />
     <ClInclude Include="ProjectileFloat.h" />
     <ClInclude Include="ProjectileInt.h" />
     <ClInclude Include="ProjectileInterface.h" />
+    <ClInclude Include="ProjectileKind.h" />
     <ClInclude Include="Projectiles.h" />
     <ClInclude Include="ProjectileStatus.h" />
     <ClInclude Include="Ramona.h" />
@@ -416,13 +419,16 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyFireball.h" />
+    <ClInclude Include="SDL Helpers.h" />
     <ClInclude Include="SE.h" />
     <ClInclude Include="SettingConstants.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SoundConstants.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="FighterStatus.h" />
+    <ClInclude Include="StageKind.h" />
     <ClInclude Include="StageSelect.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Sully.h" />

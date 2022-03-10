@@ -8,7 +8,7 @@ void Fighter::reenter_last_anim() {
 	startAnimation(prev_anim_kind);
 }
 
-bool Fighter::change_anim(string animation_name, float frame_rate, float entry_frame) {
+bool Fighter::change_anim(std::string animation_name, float frame_rate, float entry_frame) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
@@ -18,42 +18,30 @@ bool Fighter::change_anim(string animation_name, float frame_rate, float entry_f
 
 	set_current_move_script(animation_name);
 
-	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
-		if (animation_table[i].name == animation_name) {
-			if (frame_rate != -1) {
-				rate = frame_rate;
-				frame = entry_frame;
-			}
-			else {
-				rate = ceil((float)entry_frame / (float)(animation_table[i].length));
-				frame = 0;
-			}
-
-			startAnimation(&animation_table[i]);
-			return true;
+	Animation* new_anim = animation_table.get_anim(animation_name, true);
+	if (new_anim != nullptr) {
+		if (frame_rate != -1) {
+			rate = frame_rate;
+			frame = entry_frame;
+		}
+		else {
+			rate = ceil((float)entry_frame / (float)(new_anim->length));
+			frame = 0;
 		}
 	}
-	cout << "Invalid Animation '" << animation_name << "'" << endl;
-	startAnimation(nullptr);
-	return false;
+
+	startAnimation(new_anim);
+
+	return new_anim != nullptr;
 }
 
-bool Fighter::change_anim_inherit_attributes(string animation_name, bool verbose, bool continue_script) {
-	int anim_to_use = -1;
-	for (int i = 0; i < ANIM_TABLE_LENGTH; i++) {
-		if (animation_table[i].name == animation_name) {
-			if (!continue_script) {
-				set_current_move_script(animation_name);
-			}
-			startAnimation(&animation_table[i]);
-			return true;
-		}
+bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool verbose, bool continue_script) {
+	if (!continue_script) {
+		set_current_move_script(animation_name);
 	}
-	if (verbose) {
-		cout << "Invalid Animation '" << animation_name << "'" << endl;
-	}
-	startAnimation(nullptr);
-	return false;
+	Animation* new_anim = animation_table.get_anim(animation_name, verbose);
+	startAnimation(new_anim);
+	return new_anim != nullptr;
 }
 
 void Fighter::startAnimation(Animation* animation) {
@@ -95,7 +83,7 @@ int Fighter::get_launch_ticks() {
 	return airtime;
 }
 
-string Fighter::get_anim() {
+std::string Fighter::get_anim() {
 	if (anim_kind == nullptr) {
 		return "default";
 	}
@@ -104,16 +92,16 @@ string Fighter::get_anim() {
 	}
 }
 
-string Fighter::get_anim_broad() {
+std::string Fighter::get_anim_broad() {
 	if (anim_kind == nullptr) {
 		return "default";
 	}
 	else {
-		string ret = anim_kind->name;
-		if (ret.find("_air") != string::npos) {
+		std::string ret = anim_kind->name;
+		if (ret.find("_air") != std::string::npos) {
 			ret = Filter(ret, "_air");
 		}
-		if (ret.find("_stationary") != string::npos) {
+		if (ret.find("_stationary") != std::string::npos) {
 			ret = Filter(ret, "_stationary");
 		}
 		return ret;

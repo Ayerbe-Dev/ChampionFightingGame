@@ -50,7 +50,7 @@ public:
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
 
-	void script(string name, function<void()> move_script);
+	void script(std::string name, std::function<void()> move_script);
 	void wipe_scripts();
 
 	MoveScriptTable move_script_table;
@@ -76,19 +76,18 @@ public:
 	void load_stats();
 	void load_params();
 
+	int get_param_int(std::string param);
+	int get_param_int(std::string param, ParamTable param_table);
+	float get_param_float(std::string param);
+	float get_param_float(std::string param, ParamTable param_table);
+	std::string get_param_string(std::string param);
+	std::string get_param_string(std::string param, ParamTable param_table);
+	bool get_param_bool(std::string param);
+	bool get_param_bool(std::string param, ParamTable param_table);
 
-	int get_param_int(string param);
-	int get_param_int(string param, ParamTable param_table);
-	float get_param_float(string param);
-	float get_param_float(string param, ParamTable param_table);
-	string get_param_string(string param);
-	string get_param_string(string param, ParamTable param_table);
-	bool get_param_bool(string param);
-	bool get_param_bool(string param, ParamTable param_table);
+	std::string resource_dir;
 
-	string resource_dir;
-
-	void set_current_move_script(string anim_name);
+	void set_current_move_script(std::string anim_name);
 	bool is_excute_frame(float frame);
 	bool is_excute_wait(float frames);
 };

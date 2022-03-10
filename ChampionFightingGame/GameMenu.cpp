@@ -67,11 +67,11 @@ void GameMenu::frame_delay_check_performance() {
 			tick_frequency[average_ticks[i]]++;
 		}
 		total /= (float)trials;
-		cout << "Lengths of all iterations across " << trials << " tests: " << endl;
+		std::cout << "Lengths of all iterations across " << trials << " tests: " << std::endl;
 		for (int i = 0; i < tick_frequency.size(); i++) {
-			cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << endl;
+			std::cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << std::endl;
 		}
-		cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << endl;
+		std::cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << std::endl;
 		average_ticks.clear();
 		tick_frequency.clear();
 	}

@@ -1,9 +1,9 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 
-bool Fighter::add_pos(vec3 pos, bool prev) {
+bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = fighter_accessor->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
-	vec3 prev_pos = this->pos;
+	glm::vec3 prev_pos = this->pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
 	if (pos.x == -0.0) {
@@ -117,12 +117,12 @@ bool Fighter::add_pos(vec3 pos, bool prev) {
 }
 
 bool Fighter::add_pos(float x, float y, float z, bool prev) {
-	return add_pos(vec3(x, y, z), prev);
+	return add_pos(glm::vec3(x, y, z), prev);
 }
 
-bool Fighter::set_pos(vec3 pos, bool prev) {
+bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = fighter_accessor->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
-	vec3 prev_pos = this->pos;
+	glm::vec3 prev_pos = this->pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
 	if (pos.x == -0.0) {
@@ -211,5 +211,5 @@ bool Fighter::set_pos(vec3 pos, bool prev) {
 }
 
 bool Fighter::set_pos(float x, float y, float z, bool prev) {
-	return set_pos(vec3(x, y, z), prev);
+	return set_pos(glm::vec3(x, y, z), prev);
 }

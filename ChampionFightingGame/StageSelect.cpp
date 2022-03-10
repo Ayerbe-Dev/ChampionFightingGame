@@ -1,6 +1,7 @@
 #include <cmath>
+#include <iostream>
+#include <fstream>
 #include "StageSelect.h"
-#include "utils.h"
 #include "Debugger.h"
 #include "GameTexture.h"
 #include "Loader.h"
@@ -112,10 +113,10 @@ StageSelect::StageSelect() {
 }
 
 int StageSelect::load_stage_select() {
-	ifstream stage_table;
+	std::ifstream stage_table;
 	stage_table.open("resource/ui/menu/css/stage_select_param.yml");
 	int stage_kind;
-	string stage_name_dir;
+	std::string stage_name_dir;
 	bool selectable;
 	SSSSlot* tmpSlot;
 	int iRowXdelta = 0;
@@ -125,7 +126,7 @@ int StageSelect::load_stage_select() {
 		return -1;
 	}
 
-	string stage_name_ui;
+	std::string stage_name_ui;
 	for (int i = 0; getline(stage_table, stage_name_ui); i++) {
 		stage_table >> stage_kind >> stage_name_dir >> selectable;
 		add_stage_slot(stage_kind, stage_name_dir, stage_name_ui, selectable); //Unlike the CSS, all unlockable stages will be visible whether or not
@@ -199,7 +200,7 @@ int StageSelect::load_stage_select() {
 	return 0;
 }
 
-void StageSelect::add_stage_slot(int stage_kind, string stage_name_dir, string stage_name_ui, bool selectable) {
+void StageSelect::add_stage_slot(int stage_kind, std::string stage_name_dir, std::string stage_name_ui, bool selectable) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (!stage_slots[i].initialized) {
 			SSSSlot temp_slot(stage_name_ui, stage_kind, stage_name_dir, selectable);
@@ -282,7 +283,7 @@ void StageSelect::centerSlots() {
 
 SSSSlot::SSSSlot() {}
 
-SSSSlot::SSSSlot(string ui_name, int stage_kind, string stage_name, bool selectable) {
+SSSSlot::SSSSlot(std::string ui_name, int stage_kind, std::string stage_name, bool selectable) {
 	this->name = ui_name;
 	this->selectable = selectable;
 	stage = Stage(stage_kind, stage_name);
@@ -305,7 +306,7 @@ void SSSCursor::render() {
 //	cursorTexture.destRect.y = partialY;
 	cursorTexture.render();
 };
-void SSSCursor::init(string sTexturePath) {
+void SSSCursor::init(std::string sTexturePath) {
 	cursorTexture.init(sTexturePath);
 };
 

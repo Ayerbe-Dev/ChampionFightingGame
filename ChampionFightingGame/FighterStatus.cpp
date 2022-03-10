@@ -633,7 +633,7 @@ void Fighter::exit_status_grab() {}
 
 void Fighter::status_throw() {
 	if (!fighter_flag[FIGHTER_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
+		set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
 	if (is_status_end()) {
 		return;
@@ -649,7 +649,7 @@ void Fighter::enter_status_throw() {
 	else {
 		change_anim("throw_f");
 	}
-	if (!add_pos(get_param_float(get_anim() + "_move_offset", param_table) * facing_dir, 0, 0, true)) {
+	if (!add_pos(get_param_float(get_anim() + "_move_offset", params) * facing_dir, 0, 0, true)) {
 		if (pos.x > 0) {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
 		}
@@ -693,7 +693,7 @@ void Fighter::exit_status_grab_air() {}
 
 void Fighter::status_throw_air() {
 	if (!fighter_flag[FIGHTER_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
+		set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
 	}
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
@@ -713,7 +713,7 @@ void Fighter::enter_status_throw_air() {
 	else {
 		change_anim("throw_f_air");
 	}
-	if (!add_pos(get_param_float(get_anim() + "_move_offset", param_table) * facing_dir, 0, true)) {
+	if (!add_pos(get_param_float(get_anim() + "_move_offset", params) * facing_dir, 0, true)) {
 		if (pos.x > 0) {
 			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
 		}

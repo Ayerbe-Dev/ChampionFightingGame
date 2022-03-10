@@ -44,34 +44,34 @@ void RoyFireball::loadRoyFireballACMD() {
 	script("punched", [this]() {
 		if (is_excute_frame(0)) {
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(0, 0, 40, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 40, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(0, 0, 50, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 50, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
-				new_hitbox(1, 1, 30, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(1, 1, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 		}
 	});
 	script("kicked", [this]() {
 		if (is_excute_frame(0)) {
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(0, 0, 40, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 40, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(0, 0, 50, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 50, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
-				new_hitbox(1, 1, 30, 5, 1.2, 1, vec2{ -5,35 }, vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(1, 1, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 		}
 	});
@@ -136,7 +136,7 @@ void RoyFireball::status_roy_fireball_hover() {
 }
 
 void RoyFireball::enter_status_roy_fireball_hover() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time", param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time", params);
 	change_anim("hover");
 }
 
@@ -146,13 +146,13 @@ void RoyFireball::exit_status_roy_fireball_hover() {
 
 void RoyFireball::status_roy_fireball_punched() {
 	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
-		pos.x += get_param_float("punch_move_x_speed_l", param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_l", params) * facing_dir;
 	}
 	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
-		pos.x += get_param_float("punch_move_x_speed_m", param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_m", params) * facing_dir;
 	}
 	else {
-		pos.x += get_param_float("punch_move_x_speed_h", param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_h", params) * facing_dir;
 	}
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
@@ -160,7 +160,7 @@ void RoyFireball::status_roy_fireball_punched() {
 }
 
 void RoyFireball::enter_status_roy_fireball_punched() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time", param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time", params);
 	change_anim("punched");
 }
 
@@ -170,16 +170,16 @@ void RoyFireball::exit_status_roy_fireball_punched() {
 
 void RoyFireball::status_roy_fireball_kicked() {
 	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
-		pos.x += get_param_float("kick_move_x_speed_l", param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_l", param_table);
+		pos.x += get_param_float("kick_move_x_speed_l", params) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_l", params);
 	}
 	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
-		pos.x += get_param_float("kick_move_x_speed_m", param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_m", param_table);
+		pos.x += get_param_float("kick_move_x_speed_m", params) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_m", params);
 	}
 	else {
-		pos.x += get_param_float("kick_move_x_speed_h", param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_h", param_table);
+		pos.x += get_param_float("kick_move_x_speed_h", params) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_h", params);
 	}
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
@@ -188,7 +188,7 @@ void RoyFireball::status_roy_fireball_kicked() {
 
 void RoyFireball::enter_status_roy_fireball_kicked() {
 	pos.y -= 60.0;
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", params);
 	change_anim("kicked");
 }
 

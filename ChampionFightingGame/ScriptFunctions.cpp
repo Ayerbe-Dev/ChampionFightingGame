@@ -44,7 +44,7 @@ bool BattleObject::is_excute_wait(float frames) {
 /// </summary>
 /// <param name="name">: The anim_kind that the user should be in for this script to run.</param>
 /// <param name="move_script">: The script that will run for the given anim_kind.</param>
-void BattleObject::script(string name, function<void()> move_script) {
+void BattleObject::script(std::string name, std::function<void()> move_script) {
 	move_script_table.add_script(name, move_script);
 }
 
@@ -60,6 +60,6 @@ void BattleObject::wipe_scripts() {
 /// anim_name.
 /// </summary>
 /// <param name="anim_name">: The animation to find a move script for.</param>
-void BattleObject::set_current_move_script(string anim_name) {
+void BattleObject::set_current_move_script(std::string anim_name) {
 	move_script = move_script_table.get_script(anim_name);
 }

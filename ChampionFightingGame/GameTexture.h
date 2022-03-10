@@ -1,10 +1,9 @@
 #pragma once
 #include <SDL/SDL.h>
-#include "PlayerInfo.fwd.h"
-#include "utils.h"
-#include "stb_image.h"
 #include <vector>
-using namespace glm;
+#include <iostream>
+#include <glm/glm.hpp>
+#include "stb_image.h"
 
 class Shader;
 
@@ -32,26 +31,26 @@ enum {
 };
 
 struct GameTextureCoord {
-    vec3 pos;
-    vec2 tex_coord;
+    glm::vec3 pos;
+    glm::vec2 tex_coord;
 };
 
 class GameTexture {
 public:
     GameTexture();
-    GameTexture(string path);
+    GameTexture(std::string path);
     GameTexture(const GameTexture& that);
     ~GameTexture();
-    void init(string path);
+    void init(std::string path);
     void destroy(bool destroy_texture = true);
-    void set_pos(vec3 pos);
-    void add_pos(vec3 pos);
-    void set_rot(vec3 rot);
-    void add_rot(vec3 rot);
+    void set_pos(glm::vec3 pos);
+    void add_pos(glm::vec3 pos);
+    void set_rot(glm::vec3 rot);
+    void add_rot(glm::vec3 rot);
     void set_orientation(int orientation);
     void attach_shader(Shader* shader);
 
-    vec3 get_pos_vacuum(GameTexture *that);
+    glm::vec3 get_pos_vacuum(GameTexture *that);
 
     void scale_left_percent(float percent, bool crop = true);
     void scale_right_percent(float percent, bool crop = true);
@@ -71,7 +70,7 @@ public:
     void set_top_target(float percent, float frames);
     void set_bottom_target(float percent, float frames);
 
-    void set_target_pos(vec3 target, float frames);
+    void set_target_pos(glm::vec3 target, float frames);
 
     void set_alpha(unsigned char alpha);
 
@@ -92,8 +91,8 @@ public:
     float target_top_frames = 0.0;
     float target_bottom_frames = 0.0;
 
-    vec3 target_pos = vec3(0.0);
-    vec3 target_pos_frames = vec3(0.0);
+    glm::vec3 target_pos = glm::vec3(0.0);
+    glm::vec3 target_pos_frames = glm::vec3(0.0);
     
     unsigned char alpha = 255;
 
@@ -101,13 +100,13 @@ public:
     unsigned int texture;
     GameTextureCoord tex_data[4];
     GameTextureCoord* tex_accessor[4];
-    vec3 pos;
-    vec3 rot;
+    glm::vec3 pos;
+    glm::vec3 rot;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
 
     //NEW
 
-    vector<vec2> spritesheet[4];
+    std::vector<glm::vec2> spritesheet[4];
     void load_spritesheet(); //load this however you want tbh
     void set_sprite(int section); //should crop the texture to the coords specified by the given section of the spritesheet, if it doesn't exist
     //make it yell at us etc.
@@ -133,5 +132,5 @@ private:
     bool h_flipped;
     bool v_flipped;
 
-    string name;
+    std::string name;
 };

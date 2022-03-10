@@ -47,7 +47,7 @@ void BattleObject::clear_grabbox_all() {
 /// <param name="attacker_status_if_hit">: The status to put the attacker in upon a successful hit.</param>
 /// <param name="defender_status_if_hit">: The status to put the defender in upon a successful hit.</param>
 /// <param name="use_player_pos">: If the anchor and offset coords are based on the player position, or a static point on the screen. True by default.</param>
-void Fighter::new_grabbox(int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
+void Fighter::new_grabbox(int id, glm::vec2 anchor, glm::vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
 	unsigned int defender_status_if_hit, bool use_player_pos) {
 	if (id < 10) {
 		grabboxes[id].activate(this, id, anchor, offset, grabbox_kind, situation_hit, attacker_status_if_hit, defender_status_if_hit, use_player_pos);

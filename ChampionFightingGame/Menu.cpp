@@ -1,20 +1,15 @@
 #pragma warning(disable : 4996)
 #include "Menu.h"
+#include <glew/glew.h>
 #include "utils.h"
 #include "PlayerInfo.h"
-#include <SDL.h>
 #include <math.h>
 #include "Debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
 #include "Loader.h"
 
-extern bool debug;
-extern unsigned int frame_advance_ms;
-extern unsigned int frame_advance_entry_ms;
-extern int error_render;
 extern SDL_Window* g_window;
-extern SDL_Renderer* g_renderer;
 
 void menu_main(GameManager* game_manager) {
 	PlayerInfo *player_info[2];
@@ -38,9 +33,6 @@ void menu_main(GameManager* game_manager) {
 	game_manager->set_menu_info(&main_menu);
 
 	game_loader->finished = true;
-
-	SDL_RenderClear(g_renderer);
-	SDL_RenderPresent(g_renderer);
 
 	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
@@ -337,16 +329,16 @@ void MainMenu::render() {
 
 	//prebuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i - 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
-		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
+		menu_items[i].name_texture.set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
+		menu_items[i].name_texture.set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
 		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
 	}
 
 	//real render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + i * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + i * offset)), 0.0));
-		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
+		menu_items[i].name_texture.set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + i * offset)), 0.0));
+		menu_items[i].name_texture.set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
 		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
 		sub_menu_tables[menu_items[top_selection * -1].destination]->table.process();
@@ -361,8 +353,8 @@ void MainMenu::render() {
 
 	//postbuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].name_texture.set_pos(vec3(int(magnitude * cos(theta + (i + 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
-		menu_items[i].name_texture.set_rot(vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
+		menu_items[i].name_texture.set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) + WINDOW_WIDTH / 4, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
+		menu_items[i].name_texture.set_rot(glm::vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
 		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
 	}
@@ -373,14 +365,14 @@ void MainMenu::render() {
 void MainMenu::process_submenu_tables() {
 	for (int i = 0; i < 5; i++) {
 		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
-			sub_menu_tables[i]->sub_text[i2].set_pos(vec3((float)WINDOW_WIDTH * 1.62, (float)WINDOW_HEIGHT * 0.5 + (i2 * 300 / sub_menu_tables[i]->item_count), 0.0));
+			sub_menu_tables[i]->sub_text[i2].set_pos(glm::vec3((float)WINDOW_WIDTH * 1.62, (float)WINDOW_HEIGHT * 0.5 + (i2 * 300 / sub_menu_tables[i]->item_count), 0.0));
 		}
-		sub_menu_tables[i]->cursor.set_pos(vec3(sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.x - 83, sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.y - 20, 0));
+		sub_menu_tables[i]->cursor.set_pos(glm::vec3(sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.x - 83, sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.y - 20, 0));
 	}
 }
 
 MenuItem::MenuItem() {}
-void MenuItem::init(string texture_dir, string texture_description_dir, int destination) {
+void MenuItem::init(std::string texture_dir, std::string texture_description_dir, int destination) {
 	this->destination = destination;
 	name_texture.init(texture_dir);
 	name_texture.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
@@ -406,7 +398,7 @@ SubMenuTable::SubMenuTable(int selection) {
 
 	cursor.init("resource/ui/menu/main/Cursor.png");
 	cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	cursor.set_pos(vec3(700.0, 0.0, 0.0));
+	cursor.set_pos(glm::vec3(700.0, 0.0, 0.0));
 	cursor.set_width(50);
 	cursor.set_height(50);
 

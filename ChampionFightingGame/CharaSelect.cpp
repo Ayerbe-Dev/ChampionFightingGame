@@ -1,6 +1,8 @@
-#include <cmath>
 #include "CharaSelect.h"
-#include "utils.h"
+#include <glew/glew.h>
+#include <glm/glm.hpp>
+#include <fstream>
+#include <cmath>
 #include "Debugger.h"
 #include "GameTexture.h"
 #include "Loader.h"
@@ -166,10 +168,10 @@ CSS::~CSS() {
 /// </summary>
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
 int CSS::load_css() {
-	ifstream css_file;
+	std::ifstream css_file;
 	css_file.open("resource/ui/menu/css/css_param.yml");
 	int chara_kind;
-	string resource_dir;
+	std::string resource_dir;
 	bool selectable;
 
 	if (css_file.fail()) {
@@ -177,7 +179,7 @@ int CSS::load_css() {
 		return -1;
 	}
 
-	string chara_name;
+	std::string chara_name;
 	for (int i = 0; getline(css_file, chara_name); i++) {
 		css_file >> chara_kind >> resource_dir >> selectable;
 		if (selectable) {
@@ -209,7 +211,7 @@ int CSS::load_css() {
 		if (chara_slots[i].my_row == num_rows && num_cols != NUM_COLS) {
 			chara_slots[i].my_col += (cols_offset / 2);
 		}
-		chara_slots[i].texture.set_pos(vec3(
+		chara_slots[i].texture.set_pos(glm::vec3(
 			chara_slots[i].my_col * (WINDOW_WIDTH / 5) + (chara_slots[i].texture.get_width() / 2),
 			chara_slots[i].my_row * chara_slots[i].texture.get_height() * 2.4 + 200,
 			0
@@ -234,7 +236,7 @@ int CSS::load_css() {
 /// <param name="id">: The chara_kind the slot will correspond to.</param>
 /// <param name="cardDir">: The directory for the slot's portrait.</param>
 /// <param name="cardName">: The actual character name to display on the UI.</param>
-void CSS::add_slot(int id, string cardDir, string cardName) {
+void CSS::add_slot(int id, std::string cardDir, std::string cardName) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (!chara_slots[i].is_initialized()) {
 			chara_slots[i].init(id, cardDir, cardName);
@@ -431,7 +433,7 @@ void CSS::select_slot() {
 	else {
 		big_chara_slots[player_id].texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 	}
-	big_chara_slots[player_id].texture.set_pos(vec3(
+	big_chara_slots[player_id].texture.set_pos(glm::vec3(
 		40 + (player_id * (WINDOW_WIDTH - 270)),
 		70, 
 		0));
@@ -461,10 +463,10 @@ void CSS::render() {
 
 		if (mobile_slots_active[i]) {
 			if (mobile_css_slots[i].pos != mobile_css_slots[i].target_pos) {
-				mobile_css_slots[i].add_rot(vec3(0.0, 360.0 / 16.0, 0.0));
+				mobile_css_slots[i].add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
 			}
 			else {
-				mobile_css_slots[i].set_rot(vec3(0.0, 0.0, 0.0));
+				mobile_css_slots[i].set_rot(glm::vec3(0.0, 0.0, 0.0));
 				mobile_css_slots[i].set_width(190);
 				mobile_css_slots[i].set_height(280);
 			}
@@ -525,7 +527,7 @@ bool CssSlot::is_initialized() {
 /// <param name="chara_kind">: The chara_kind this slot will correspond to.</param>
 /// <param name="textureDir">: The directory where the CSS slot's render is located.</param>
 /// <param name="name">: The name of the character for UI purposes.</param>
-void CssSlot::init(int chara_kind, string textureDir, string name) {
+void CssSlot::init(int chara_kind, std::string textureDir, std::string name) {
 	texture.init("resource/ui/menu/css/chara/" + textureDir + "/render.png");
 	texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	this->name = name;
@@ -539,7 +541,7 @@ void CssSlot::init(int chara_kind, string textureDir, string name) {
 /// </summary>
 /// <param name="y">: The intended Y position.</param>
 void CssSlot::set_y_pos(int y) {
-	texture.set_pos(vec3(texture.pos.x, y, 0));
+	texture.set_pos(glm::vec3(texture.pos.x, y, 0));
 }
 
 /// <summary>
@@ -547,7 +549,7 @@ void CssSlot::set_y_pos(int y) {
 /// </summary>
 /// <param name="X">: The intended X position.</param>
 void CssSlot::set_x_pos(int x) {
-	texture.set_pos(vec3(x, texture.pos.y, 0));
+	texture.set_pos(glm::vec3(x, texture.pos.y, 0));
 }
 
 /// <summary>
@@ -610,7 +612,7 @@ void CssCursor::render() {
 /// Initialize the CSS Cursor
 /// </summary>
 /// <param name="texture_path">: The path to the CSS Cursor's texture.</param>
-void CssCursor::init(string texture_path) {
+void CssCursor::init(std::string texture_path) {
 	texture.init(texture_path);
 };
 

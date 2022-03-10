@@ -1,5 +1,4 @@
 #pragma once
-#include <SDL.h>
 #include <string>
 #include <iostream>
 #include <functional>
@@ -21,7 +20,7 @@ public:
     GameTexture name_texture;
 
     MenuItem();
-    void init(string texture_dir, string texture_description_dir  = "resource/ui/menu/main/missingno.png", int destination = 999);
+    void init(std::string texture_dir, std::string texture_description_dir  = "resource/ui/menu/main/missingno.png", int destination = 999);
     void destroy();
 };
 

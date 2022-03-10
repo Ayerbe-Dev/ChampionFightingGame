@@ -7,11 +7,11 @@
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or 0 if the value is not found.</returns>
-int BattleObject::get_param_int(string param) {
+int BattleObject::get_param_int(std::string param) {
 	return get_param_int(param, stats);
 }
 
-int BattleObject::get_param_int(string param, ParamTable param_table) {
+int BattleObject::get_param_int(std::string param, ParamTable param_table) {
 	return param_table.get_param_int(param);
 }
 
@@ -21,11 +21,11 @@ int BattleObject::get_param_int(string param, ParamTable param_table) {
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or 0.0 if the value is not found.</returns>
-float BattleObject::get_param_float(string param) {
+float BattleObject::get_param_float(std::string param) {
 	return get_param_float(param, stats);
 }
 
-float BattleObject::get_param_float(string param, ParamTable param_table) {
+float BattleObject::get_param_float(std::string param, ParamTable param_table) {
 	return param_table.get_param_float(param);
 }
 
@@ -35,11 +35,11 @@ float BattleObject::get_param_float(string param, ParamTable param_table) {
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or "" if the value is not found.</returns>
-string BattleObject::get_param_string(string param) {
+std::string BattleObject::get_param_string(std::string param) {
 	return get_param_string(param, stats);
 }
 
-string BattleObject::get_param_string(string param, ParamTable param_table) {
+std::string BattleObject::get_param_string(std::string param, ParamTable param_table) {
 	return param_table.get_param_string(param);
 }
 
@@ -49,11 +49,11 @@ string BattleObject::get_param_string(string param, ParamTable param_table) {
 /// <param name="param">: The param to search for.</param>
 /// <param name="param_table">: The param table to look in, defaults to the object's regular stats table.</param>
 /// <returns>The value of the specified param, or false if the value is not found.</returns>
-bool BattleObject::get_param_bool(string param) {
+bool BattleObject::get_param_bool(std::string param) {
 	return get_param_bool(param, stats);
 }
 
-bool BattleObject::get_param_bool(string param, ParamTable param_table) {
+bool BattleObject::get_param_bool(std::string param, ParamTable param_table) {
 	return param_table.get_param_bool(param);
 }
 
@@ -62,7 +62,7 @@ bool BattleObject::get_param_bool(string param, ParamTable param_table) {
 /// </summary>
 /// <param name="param">: The param to search for.</param>
 /// <returns>The value of the specified param for the current special level, or 0 if the value is not found.</returns>
-int Fighter::get_param_int_special(string param) {
+int Fighter::get_param_int_special(std::string param) {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 		return params.get_param_int(param + "_l");
 	}
@@ -81,7 +81,7 @@ int Fighter::get_param_int_special(string param) {
 /// </summary>
 /// <param name="param">: The param to search for.</param>
 /// <returns>The value of the specified param for the current special level, or 0.0 if the value is not found.</returns>
-float Fighter::get_param_float_special(string param) {
+float Fighter::get_param_float_special(std::string param) {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 		return params.get_param_float(param + "_l");
 	}
@@ -101,7 +101,7 @@ float Fighter::get_param_float_special(string param) {
 /// </summary>
 /// <param name="param">: The param to search for.</param>
 /// <returns>The value of the specified param for the current special level, or false if the value is not found.</returns>
-bool Fighter::get_param_bool_special(string param) {
+bool Fighter::get_param_bool_special(std::string param) {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 		return params.get_param_bool(param + "_l");
 	}
@@ -121,7 +121,7 @@ bool Fighter::get_param_bool_special(string param) {
 /// </summary>
 /// <param name="param">: The param to search for.</param>
 /// <returns>The value of the specified param for the current special level, or "" if the value is not found.</returns>
-string Fighter::get_param_string_special(string param) {
+std::string Fighter::get_param_string_special(std::string param) {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 		return params.get_param_string(param + "_l");
 	}

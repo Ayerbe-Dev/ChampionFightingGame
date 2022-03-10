@@ -1,9 +1,11 @@
 #include "Stage.h"
+#include "StageKind.h"
+#include "Music.h"
 extern RenderManager g_rendermanager;
 
 Stage::Stage() {}
 
-Stage::Stage(int stage_kind, string stage_name) {
+Stage::Stage(int stage_kind, std::string stage_name) {
 	this->stage_kind = stage_kind;
 	resource_dir = "resource/stage/" + stage_name + "/";
 

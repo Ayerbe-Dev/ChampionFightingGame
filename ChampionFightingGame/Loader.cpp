@@ -1,6 +1,7 @@
 #include "Loader.h"
+#include "SDL Helpers.h"
 
-bool GameTextureSDL::init(string sTexturePath, bool delay) {
+bool GameTextureSDL::init(std::string sTexturePath, bool delay) {
 	if (bIsInitialized) {
 		printf("GameTexture already initialized!\n");
 		return false;
@@ -141,7 +142,7 @@ void GameTextureSDL::changePercent(float rate) {
 		rate = target_rate;
 	}
 	if (rate == -1.0) {
-		cout << "WARNING: Target rate was not set through setTargetPercent, but rate was not given a non-default arg!" << endl;
+		std::cout << "WARNING: Target rate was not set through setTargetPercent, but rate was not given a non-default arg!" << std::endl;
 	}
 
 	if (target_percent != percent) {

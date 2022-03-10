@@ -1,8 +1,9 @@
 #pragma once
-#include "utils.h"
+#include "SettingConstants.h"
+#include <iostream>
 
 struct Setting {
-	string name = "";
+	std::string name = "";
 	int val = 0;
 };
 
@@ -11,3 +12,7 @@ public:
 	GameSettings();
 	Setting settings[SETTING_KIND_MAX];
 };
+
+int getGameSetting(std::string setting);
+void setGameSetting(std::string setting, int val);
+void updateGameSettings();

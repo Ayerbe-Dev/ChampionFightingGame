@@ -7,4 +7,3 @@
 #include "Options.h"
 #include "StageSelect.h"
 #include "TitleScreen.h"
-#include "3DRenderingExample.h"

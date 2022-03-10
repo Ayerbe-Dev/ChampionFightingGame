@@ -8,8 +8,8 @@
 #include <glm/gtx/euler_angles.hpp>
 
 #include "BoneConstants.h"
+#include "Bone.h"
 
-class Bone;
 class Animation;
 class Shader;
 

@@ -1,5 +1,6 @@
 #include "Debugger.h"
 #include "Fighter.h"
+#include "GameRect.h"
 
 extern SDL_Renderer* g_renderer;
 
@@ -40,7 +41,7 @@ bool Debugger::check_button_trigger(unsigned int button) {
 	return button_info[button].changed && button_info[button].button_on && enabled;
 }
 
-void Debugger::debug_mode(Fighter* target, GameRect* debug_rect, vec2* debug_anchor, vec2* debug_offset) {
+void Debugger::debug_mode(Fighter* target, GameRect* debug_rect, glm::vec2* debug_anchor, glm::vec2* debug_offset) {
 	if (check_button_trigger(BUTTON_DEBUG_CENTER_BOX)) {
 		debug_anchor->x = (((target->pos.x * target->facing_dir)) * target->facing_dir) + WINDOW_WIDTH / 2;
 		debug_anchor->y = WINDOW_HEIGHT - target->pos.y;
@@ -123,32 +124,32 @@ void Debugger::debug_mode(Fighter* target, GameRect* debug_rect, vec2* debug_anc
 }
 
 void Debugger::print_commands() {
-	cout << "Debug Command List:" << endl;
+	std::cout << "Debug Command List:" << std::endl;
 
-	cout << "add_hp: Add a specified amount to the target's HP" << endl;
-	cout << "set_hp: Set the target's HP" << endl;
-	cout << "max_hp: Max out the target's HP" << endl;
-	cout << "max_hp_all: Max out all fighters' HP" << endl;
-	cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << endl;
-	cout << "set_ex: Set the EX Meter for the current target" << endl;
-	cout << "max_ex: Max out the EX Meter for the current target" << endl;
-	cout << "max_ex_all: Max out the EX Meter for all fighters" << endl;
-	cout << "reload_moves: Apply any changes to move scripts for all fighters" << endl;
+	std::cout << "add_hp: Add a specified amount to the target's HP" << std::endl;
+	std::cout << "set_hp: Set the target's HP" << std::endl;
+	std::cout << "max_hp: Max out the target's HP" << std::endl;
+	std::cout << "max_hp_all: Max out all fighters' HP" << std::endl;
+	std::cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << std::endl;
+	std::cout << "set_ex: Set the EX Meter for the current target" << std::endl;
+	std::cout << "max_ex: Max out the EX Meter for the current target" << std::endl;
+	std::cout << "max_ex_all: Max out the EX Meter for all fighters" << std::endl;
+	std::cout << "reload_moves: Apply any changes to move scripts for all fighters" << std::endl;
 
-	cout << endl << "Enter Command: ";
+	std::cout << std::endl << "Enter Command: ";
 }
 
-void Debugger::debug_query(string command, Fighter* target, Fighter* not_target) {
+void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_target) {
 	if (command == "add_hp") {
 		float add;
-		cout << "Enter HP Difference: ";
-		cin >> add;
+		std::cout << "Enter HP Difference: ";
+		std::cin >> add;
 		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, target->fighter_float[FIGHTER_FLOAT_HEALTH] + add, target->get_param_float("health"));
 	}
 	if (command == "set_hp") {
 		float set;
-		cout << "Enter New HP: ";
-		cin >> set;
+		std::cout << "Enter New HP: ";
+		std::cin >> set;
 		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, set, target->get_param_float("health"));
 	}
 	if (command == "max_hp") {
@@ -160,14 +161,14 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 	}
 	if (command == "add_ex") {
 		float add;
-		cout << "Enter Meter Difference: ";
-		cin >> add;
+		std::cout << "Enter Meter Difference: ";
+		std::cin >> add;
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, EX_METER_SIZE);
 	}
 	if (command == "set_ex") {
 		float set;
-		cout << "Enter New Meter Amount: ";
-		cin >> set;
+		std::cout << "Enter New Meter Amount: ";
+		std::cin >> set;
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, EX_METER_SIZE);
 	}
 	if (command == "max_ex") {

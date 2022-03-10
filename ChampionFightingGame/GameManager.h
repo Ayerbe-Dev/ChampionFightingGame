@@ -1,6 +1,7 @@
 #pragma once
 #include "PlayerInfo.h"
 #include "GameMenu.h"
+#include "GameState.h"
 
 class GameManager {
 public:

@@ -2,6 +2,7 @@
 #include "Fighter.h"
 #include "GameCoordinate.h"
 #include "Animation.h"
+#include "Projectile.h"
 #include <fstream>
 
 Fighter::Fighter() {}
@@ -94,27 +95,27 @@ void Fighter::process_post_animate() {
 }
 
 void Fighter::process_pre_position() {
-	rot = vec3(0.0);
+	rot = glm::vec3(0.0);
 	if (isnan(pos.y)) {
 		pos.y = 0;
 	}
 
-	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
+	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
 
 	prev_pos = pos;
 }
 
 void Fighter::process_position() {
 	Fighter* that = fighter_accessor->fighter[!id];
-	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
+	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
 	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (that->status_kind != FIGHTER_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
-				add_pos(vec3(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0, 0.0));
+				add_pos(glm::vec3(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0, 0.0));
 			}
 			else {
-				that->add_pos(vec3(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0, 0.0));
+				that->add_pos(glm::vec3(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0, 0.0));
 			}
 		}
 	}
@@ -125,13 +126,13 @@ void Fighter::process_post_position() {
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
-				if (!add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0, 0))) {
-					that->add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0, 0))) {
+					that->add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
 				}
 			}
 			else {
-				if (!add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
-					that->add_pos(vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
+					that->add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
 				}
 			}
 		}
@@ -139,7 +140,7 @@ void Fighter::process_post_position() {
 	else {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
-	create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
+	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
 }
 
 void Fighter::process_pre_status() {

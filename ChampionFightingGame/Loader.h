@@ -1,9 +1,8 @@
 #pragma once
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <iostream>
 #include "utils.h"
 extern SDL_Window* g_window;
-using namespace std;
 
 extern SDL_mutex* file_mutex;
 extern SDL_Renderer* g_renderer;
@@ -35,7 +34,7 @@ public:
 	SDL_Rect srcRect;
 
 	bool render();
-	bool init(string sTexturePath, bool delay = true);
+	bool init(std::string sTexturePath, bool delay = true);
 
 	void setScaleFactor(float fScaleFactor);
 
@@ -91,8 +90,6 @@ class GameLoader {
 public:
 	GameLoader();
 	GameLoader(int total_items);
-
-	PlayerInfo *player_info[2];
 
 	int loaded_items = 0;
 	int total_items;

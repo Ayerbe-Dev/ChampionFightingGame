@@ -1,6 +1,6 @@
 #include "Fighter.h"
 
-void Fighter::create_jostle_rect(vec2 anchor, vec2 offset) {
+void Fighter::create_jostle_rect(glm::vec2 anchor, glm::vec2 offset) {
 	anchor.x *= facing_dir;
 	offset.x *= facing_dir;
 	anchor.x += pos.x;

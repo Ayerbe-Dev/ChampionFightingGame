@@ -1,4 +1,6 @@
 #include "PlayerInfo.h"
+#include "CharaKind.h"
+#include "StageKind.h"
 extern int registered_controllers[4];
 
 PlayerInfo::PlayerInfo() {

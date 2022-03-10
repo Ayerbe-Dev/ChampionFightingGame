@@ -1,11 +1,8 @@
 #include "TitleScreen.h"
-
-#include <SDL.h>
-
 #include "GameTexture.h"
 #include "Debugger.h"
+#include <glew/glew.h>
 
-extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
 void title_screen_main(GameManager* game_manager) {

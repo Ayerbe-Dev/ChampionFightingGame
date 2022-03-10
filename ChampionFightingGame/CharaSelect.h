@@ -1,9 +1,10 @@
 #pragma once
-#include <SDL.h>
+#include <iostream>
 #include "PlayerInfo.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "GameManager.h"
+#include "CharaKind.h"
 
 void chara_select_main(GameManager *game_manager);
 
@@ -11,7 +12,7 @@ class CssSlot {
 public:
     GameTexture texture;
     bool is_initialized();
-    void init(int id, string textureDir, string name);
+    void init(int id, std::string textureDir, std::string name);
     void set_x_pos(int x);
     void set_y_pos(int y);
     int get_texture_width();
@@ -24,13 +25,13 @@ public:
     int my_row{ -1 };
     int chara_kind = CHARA_KIND_MAX;
     bool initialized = false;
-    string texture_dir = "";
-    string name = "";
+    std::string texture_dir = "";
+    std::string name = "";
 };
 
 class CssCursor{
 public:
-    void init(string texture_dir);
+    void init(std::string texture_dir);
     void set_target(int x, int y);
     void render();
     GameTexture texture;
@@ -46,7 +47,7 @@ public:
     CSS();
     ~CSS();
     int load_css();
-    void add_slot(int id, string cardDir, string cardName);
+    void add_slot(int id, std::string cardDir, std::string cardName);
     int get_num_slots();
 
     void event_select_press();

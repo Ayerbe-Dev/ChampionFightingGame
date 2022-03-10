@@ -1,18 +1,20 @@
 #pragma once
-#include "SDL_audio.h"
+#include <iostream>
+#include <SDL/SDL_audio.h>
 #include "FighterAccessor.h"
 #include "Fighter.h"
-#include "utils.h"
+#include "CharaKind.h"
+#include "SoundConstants.h"
 
 
 class Sound {
 public:
 	Sound();
-	Sound(string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int volume = 32, int sound_type = SOUND_TYPE_NORMAL);
+	Sound(std::string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int volume = 32, int sound_type = SOUND_TYPE_NORMAL);
 
-	string name;
-	string dir;
-	string loop_dir;
+	std::string name;
+	std::string dir;
+	std::string loop_dir;
 	int sound_kind;
 	int sound_type;
 	int volume;
@@ -21,8 +23,8 @@ public:
 };
 
 struct SoundInfo {
-	u8* data;
-	u8* loop_data;
+	Uint8* data;
+	Uint8* loop_data;
 	unsigned int dpos;
 	unsigned int dlen;
 	unsigned int loop_dlen;

@@ -1,5 +1,5 @@
 #pragma once
-#include "utils.h"
+#include "GameState.h"
 #include <vector>
 
 class GameLoader;
@@ -29,8 +29,8 @@ public:
     bool* looping;
     GameLoader* game_loader;
     int ticks = 0;
-    vector<int> average_ticks;
-    vector<int> tick_frequency;
+    std::vector<int> average_ticks;
+    std::vector<int> tick_frequency;
 
     int sub_state = GAME_SUBSTATE_NONE;
     int player_id{0};

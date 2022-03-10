@@ -1,5 +1,5 @@
 #include "Options.h"
-extern SDL_Renderer* g_renderer;
+#include <glew/glew.h>
 extern SDL_Window* g_window;
 
 void controls_main(GameManager* game_manager) {
@@ -58,7 +58,7 @@ OptionsOverlay::OptionsOverlay() {
 
 }
 
-OptionsOverlay::OptionsOverlay(int width, int height, string dir) {
+OptionsOverlay::OptionsOverlay(int width, int height, std::string dir) {
 	panel.init(dir);
 	panel.set_width(width);
 	panel.set_height(height);

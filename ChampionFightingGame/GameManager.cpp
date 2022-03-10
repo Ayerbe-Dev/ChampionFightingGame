@@ -44,7 +44,6 @@ void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_DEBUG_MENU] = &debugMenu;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
-	game_main[GAME_STATE_3D] = &three_d_rendering_main;
 
 	game_substate_main[GAME_SUBSTATE_CONTROLS] = &controls_main;
 
@@ -89,7 +88,7 @@ GameMenu* GameManager::get_target(int layer) {
 		return menu_target[this->layer];
 	}
 	else if (layer >= MAX_LAYERS) {
-		cout << "Tried to get invalid layer target: " << layer << endl;
+		std::cout << "Tried to get invalid layer target: " << layer << std::endl;
 		return menu_target[this->layer];
 	}
 	else {

@@ -34,9 +34,9 @@ void Camera::adjust_view(float x, float y, float z, float speed) {
 
 void Camera::update_view() {
 	glm::vec3 new_front;
-	new_front.x = cos(radians(yaw)) * cos(radians(pitch));
-	new_front.y = sin(radians(pitch));
-	new_front.z = sin(radians(yaw)) * cos(radians(pitch));
+	new_front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	new_front.y = sin(glm::radians(pitch));
+	new_front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front = normalize(new_front);
 
 	right = normalize(cross(front, world_up));

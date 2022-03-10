@@ -7,10 +7,10 @@ void Fighter::superInit(int id) {
 	this->id = id;
 
 	if (id == 0) {
-		pos = vec3(-200, FLOOR_GAMECOORD, 0);
+		pos = glm::vec3(-200, FLOOR_GAMECOORD, 0);
 	}
 	else if (id == 1) {
-		pos = vec3(200, FLOOR_GAMECOORD, 0);
+		pos = glm::vec3(200, FLOOR_GAMECOORD, 0);
 	}
 	load_stats();
 	load_model_shader();
@@ -28,7 +28,7 @@ void Fighter::loadFighterSounds() {
 }
 
 void Fighter::load_model_shader() {
-	scale = vec3(0.05 * get_param_float("model_scale"));
+	scale = glm::vec3(0.05 * get_param_float("model_scale"));
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	g_rendermanager.update_shader_lights(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
@@ -36,7 +36,7 @@ void Fighter::load_model_shader() {
 
 void Fighter::load_anim_list() {
 	try {
-		animation_table.load_animations(resource_dir, &model);
+		animation_table.load_fighter_animations(resource_dir, &model);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
@@ -60,7 +60,7 @@ void Fighter::set_default_vars() {
 void Fighter::init_boxes() {
 	jostle_box.init();
 	jostle_box.bind_scale(&scale);
-	jostle_box.set_rgba(vec4(0, 0, 0, 127));
+	jostle_box.set_rgba(glm::vec4(0, 0, 0, 127));
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);
 		hurtboxes[i].init(this);

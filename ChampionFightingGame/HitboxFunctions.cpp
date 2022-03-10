@@ -125,8 +125,8 @@ void BattleObject::update_hitbox_connect(int multihit_index) {
 /// <param name="can_chip_ko">: Whether or not the chip damage for this move is able to KO the defender. Generally should be false for normals, true for
 /// specials and supers.</param>
 /// <param name="use_player_pos">: If the anchor and offset coords are based on the player position, or a static point on the screen. True by default.</param>
-void Fighter::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor,
-	vec2 offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit,
+void Fighter::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
+	glm::vec2 offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit,
 	int hitlag, int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback,
 	int clank_kind, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y,
 	float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos) {
@@ -189,7 +189,7 @@ void Fighter::new_hitbox(int id, int multihit, float damage, float chip_damage, 
 /// <param name="continue_launch">: Whether or not the move can extend an opponent's launch status even if its hit status isn't HIT_STATUS_LAUNCH.</param>
 /// <param name="can_chip_ko">: Whether or not the chip damage for this move is able to KO the defender. Generally should be false for normals, true for
 /// specials and supers.</param>
-void Projectile::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor, vec2 offset,
+void Projectile::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor, glm::vec2 offset,
 	float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x,

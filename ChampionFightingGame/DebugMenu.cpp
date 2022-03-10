@@ -1,11 +1,9 @@
-#include <iostream>
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <stdbool.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 #include <string>
 #include <sstream>
-#include "utils.h"
 #include "DebugMenu.h"
 #include "Debugger.h"
 #include "Loader.h"
@@ -42,7 +40,6 @@ void debugMenu(GameManager* game_manager) {
 	debug_list.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
 	debug_list.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_BATTLE);
 	debug_list.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
-	debug_list.addEntry("3D Test", DEBUG_LIST_SELECTABLE, GAME_STATE_3D);
 	debug_list.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
 	debug_list.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
 	debug_list.addEntry(player_info[0]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
@@ -119,7 +116,7 @@ void debugMenu(GameManager* game_manager) {
 //	return game_manager->update(player_info, *game_manager->game_state);
 }
 
-TTF_Font* loadDebugFont(string fontname){
+TTF_Font* loadDebugFont(std::string fontname){
 	TTF_Font* font = TTF_OpenFont(fontname.c_str(), DEBUG_MENU_FONT_SIZE);
 	if (!font) {
 		printf("Failed to load font:  %s\n", TTF_GetError());
@@ -150,7 +147,7 @@ void debug_list::init(TTF_Font *pFont, int x_offset){
 	}
 }
 
-void debug_list::addEntry(string message, int selectable, int destination){
+void debug_list::addEntry(std::string message, int selectable, int destination){
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_NOT_ACTIVE){
 			
@@ -235,7 +232,7 @@ void DebugItem::preLoad(TTF_Font *pFont){
 	this->pFont = pFont;
 };
 
-void DebugItem::generateTexture(string message){
+void DebugItem::generateTexture(std::string message){
 	SDL_LockMutex(file_mutex);
 	SDL_Color sky = {204,247,255};
 	SDL_Color red = { 179,0,59 };

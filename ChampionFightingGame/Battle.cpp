@@ -1,15 +1,18 @@
-﻿#include <iostream>
+﻿#include "Battle.h"
+
+#include <iostream>
 #include <functional>
 #include <vector>
 #include <string>
 #include <cmath>
-#include <SDL.h>
-#include "Animation.h"
-#include "Battle.h"
+#include <SDL/SDL.h>
+#include <glew/glew.h>
+#include "SDL Helpers.h"
 #include "Stage.h"
 #include "Menu.h"
 #include "SoundManager.h"
 #include "GameTexture.h"
+#include "GameSettings.h"
 
 #include "Fighters.h"
 #include "FighterInterface.h"
@@ -19,11 +22,8 @@
 #include "FighterAccessor.h"
 
 #include "Projectile.h"
-#include "RoyFireball.h"
-#include "EricFireball.h"
+#include "Projectiles.h"
 
-#include "CharaTemplate.h"
-#include "ProjectileTemplate.h"
 #include "Loader.h"
 
 #include "Model.h"
@@ -281,8 +281,8 @@ void Battle::pre_process_fighter() {
 						fighter[!i]->facing_dir = -1.0;
 						fighter[!i]->facing_right = false;
 					}
-					fighter[i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-					fighter[!i]->add_pos(vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+					fighter[i]->add_pos(glm::vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+					fighter[!i]->add_pos(glm::vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
 
 					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
@@ -304,9 +304,9 @@ void Battle::post_process_fighter() {
 		fighter[i]->update_hitbox_pos();
 		fighter[i]->update_grabbox_pos();
 		fighter[i]->update_hurtbox_pos();
-		fighter[i]->rot.z += radians(90.0 * fighter[i]->facing_dir);
+		fighter[i]->rot.z += glm::radians(90.0 * fighter[i]->facing_dir);
 		fighter[i]->rot += fighter[i]->extra_rot;
-		fighter[i]->create_jostle_rect(vec2{ -15, 25 }, vec2{ 15, 0 });
+		fighter[i]->create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
 	}
 }
 
@@ -320,8 +320,8 @@ void Battle::process_ui() {
 void Battle::process_debug() {
 	if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
 		debugger.print_commands();
-		string command;
-		cin >> command;
+		std::string command;
+		std::cin >> command;
 		debugger.debug_query(command, fighter[debugger.target], fighter[!debugger.target]);
 	}
 	if (debugger.check_button_trigger(BUTTON_DEBUG_CHANGE_TARGET)) {
@@ -338,10 +338,10 @@ void Battle::process_debug() {
 		post_process_fighter();
 		process_ui();
 		if (debugger.print_frames) {
-			cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << endl;
-			cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << endl;
-			cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << endl;
-			cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << endl;
+			std::cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << std::endl;
+			std::cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << std::endl;
+			std::cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << std::endl;
+			std::cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << std::endl;
 		}
 	}
 	debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
@@ -1237,8 +1237,8 @@ void ExBar::init(Fighter* fighter) {
 	ex_texture.init("resource/ui/game/ex/ex.png");
 	ex_segment_texture.init("resource/ui/game/ex/ex_segment.png");
 	bar_texture.init("resource/ui/game/ex/bar.png");
-	ex_texture.set_pos(vec3(119.0, 60.0, 0.0));
-	ex_segment_texture.set_pos(vec3(119.0, 60.0, 0.0));
+	ex_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
+	ex_segment_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
 
 	if (fighter->id == 0) {
 		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -1287,10 +1287,10 @@ void ExBar::render() {
 }
 
 PlayerIndicator::PlayerIndicator() {}
-PlayerIndicator::PlayerIndicator(Fighter* fighter, string nametag) {
+PlayerIndicator::PlayerIndicator(Fighter* fighter, std::string nametag) {
 	this->fighter = fighter;
 	this->nametag = nametag;
-	string resource_dir = "resource/ui/game/tag/";
+	std::string resource_dir = "resource/ui/game/tag/";
 	if (fighter->id == 0) {
 		resource_dir += "p1_tag";
 	}

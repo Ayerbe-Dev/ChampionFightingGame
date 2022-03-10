@@ -1,13 +1,15 @@
 #include "GameTexture.h"
+#include <glew/glew.h>
 #include "Shader.h"
 #include "RenderManager.h"
+#include "utils.h"
 extern SDL_Renderer* g_renderer;
 extern RenderManager g_rendermanager;
 extern bool debug;
 
 GameTexture::GameTexture() {}
 
-GameTexture::GameTexture(string path) {
+GameTexture::GameTexture(std::string path) {
 	init(path);
 }
 
@@ -18,12 +20,12 @@ GameTexture::GameTexture(string path) {
 /// <param name="that"></param>
 GameTexture::GameTexture(const GameTexture& that) {
 	name = that.name + "_copy";
-	pos = vec3(0.0, 0.0, 0.0);
-	rot = vec3(0.0, 0.0, 0.0);
-	tex_data[TEX_COORD_BOTTOM_LEFT] = { vec3(-1.0, -1.0, 0.0), vec2(0.0, 0.0) };
-	tex_data[TEX_COORD_BOTTOM_RIGHT] = { vec3(1.0, -1.0, 0.0), vec2(1.0, 0.0) };
-	tex_data[TEX_COORD_TOP_RIGHT] = { vec3(1.0, 1.0, 0.0), vec2(1.0, 1.0) };
-	tex_data[TEX_COORD_TOP_LEFT] = { vec3(-1.0, 1.0, 0.0), vec2(0.0, 1.0) };
+	pos = glm::vec3(0.0, 0.0, 0.0);
+	rot = glm::vec3(0.0, 0.0, 0.0);
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
@@ -71,14 +73,14 @@ GameTexture::~GameTexture() {
 
 }
 
-void GameTexture::init(string path) {
+void GameTexture::init(std::string path) {
 	name = path;
-	pos = vec3(0.0, 0.0, 0.0);
-	rot = vec3(0.0, 0.0, 0.0);
-	tex_data[TEX_COORD_BOTTOM_LEFT] = { vec3(-1.0, -1.0, 0.0), vec2(0.0, 0.0) };
-	tex_data[TEX_COORD_BOTTOM_RIGHT] = { vec3(1.0, -1.0, 0.0), vec2(1.0, 0.0) };
-	tex_data[TEX_COORD_TOP_RIGHT] = { vec3(1.0, 1.0, 0.0), vec2(1.0, 1.0) };
-	tex_data[TEX_COORD_TOP_LEFT] = { vec3(-1.0, 1.0, 0.0), vec2(0.0, 1.0) };
+	pos = glm::vec3(0.0, 0.0, 0.0);
+	rot = glm::vec3(0.0, 0.0, 0.0);
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
@@ -114,7 +116,7 @@ void GameTexture::init(string path) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		cout << "Failed to load texture at path: " << path << endl;
+		std::cout << "Failed to load texture at path: " << path << std::endl;
 	}
 	stbi_image_free(data);
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
@@ -148,19 +150,19 @@ void GameTexture::destroy(bool destroy_texture) {
 	}
 }
 
-void GameTexture::set_pos(vec3 pos) {
+void GameTexture::set_pos(glm::vec3 pos) {
 	this->pos = pos;
 }
 
-void GameTexture::add_pos(vec3 pos) {
+void GameTexture::add_pos(glm::vec3 pos) {
 	this->pos += pos;
 }
 
-void GameTexture::set_rot(vec3 rot) {
+void GameTexture::set_rot(glm::vec3 rot) {
 	this->rot = rot;
 }
 
-void GameTexture::add_rot(vec3 rot) {
+void GameTexture::add_rot(glm::vec3 rot) {
 	this->rot += rot;
 }
 
@@ -174,8 +176,8 @@ void GameTexture::attach_shader(Shader* shader) {
 	this->shader = shader;
 }
 
-vec3 GameTexture::get_pos_vacuum(GameTexture *that) {
-	vec3 pos = this->pos;
+glm::vec3 GameTexture::get_pos_vacuum(GameTexture *that) {
+	glm::vec3 pos = this->pos;
 	switch (this->orientation) {
 		default:
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE):
@@ -482,11 +484,11 @@ void GameTexture::set_bottom_target(float percent, float frames) {
 	this->target_bottom_frames = frames;
 }
 
-void GameTexture::set_target_pos(vec3 target_pos, float frames) {
+void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	this->target_pos = target_pos;
-	this->target_pos_frames.x = distance(target_pos.x, pos.x) / frames;
-	this->target_pos_frames.y = distance(target_pos.y, pos.y) / frames;
-	this->target_pos_frames.z = distance(target_pos.z, pos.z) / frames;
+	this->target_pos_frames.x = glm::distance(target_pos.x, pos.x) / frames;
+	this->target_pos_frames.y = glm::distance(target_pos.y, pos.y) / frames;
+	this->target_pos_frames.z = glm::distance(target_pos.z, pos.z) / frames;
 }
 
 void GameTexture::set_alpha(unsigned char alpha) {
@@ -532,10 +534,10 @@ void GameTexture::flip_v(bool update) {
 }
 
 void GameTexture::reorient() {
-	tex_data[TEX_COORD_BOTTOM_LEFT] = { vec3(-1.0, -1.0, 0.0), vec2(0.0, 0.0) };
-	tex_data[TEX_COORD_BOTTOM_RIGHT] = { vec3(1.0, -1.0, 0.0), vec2(1.0, 0.0) };
-	tex_data[TEX_COORD_TOP_RIGHT] = { vec3(1.0, 1.0, 0.0), vec2(1.0, 1.0) };
-	tex_data[TEX_COORD_TOP_LEFT] = { vec3(-1.0, 1.0, 0.0), vec2(0.0, 1.0) };
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
@@ -649,7 +651,7 @@ void GameTexture::process() {
 			}
 		}
 	}
-	if (target_pos_frames != vec3(0.0)) {
+	if (target_pos_frames != glm::vec3(0.0)) {
 		if (target_pos_frames.x != 0.0) {
 			if (target_pos.x > pos.x) {
 				pos.x = clampf(pos.x, pos.x + target_pos_frames.x, target_pos.x);
@@ -693,7 +695,7 @@ void GameTexture::render() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	vec3 gl_pos = pos;
+	glm::vec3 gl_pos = pos;
 	switch (orientation) {
 		default:
 		case (GAME_TEXTURE_ORIENTATION_MIDDLE): {
@@ -736,11 +738,11 @@ void GameTexture::render() {
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;
 	gl_pos.y /= (float)WINDOW_HEIGHT;
-	mat4 matrix = mat4(1.0);
+	glm::mat4 matrix = glm::mat4(1.0);
 	matrix = translate(matrix, gl_pos);
-	matrix = rotate(matrix, radians(rot.x), vec3(1.0, 0.0, 0.0));
-	matrix = rotate(matrix, radians(rot.y), vec3(0.0, 1.0, 0.0));
-	matrix = rotate(matrix, radians(rot.z), vec3(0.0, 0.0, 1.0));
+	matrix = rotate(matrix, glm::radians(rot.x), glm::vec3(1.0, 0.0, 0.0));
+	matrix = rotate(matrix, glm::radians(rot.y), glm::vec3(0.0, 1.0, 0.0));
+	matrix = rotate(matrix, glm::radians(rot.z), glm::vec3(0.0, 0.0, 1.0));
 	shader->set_mat4("matrix", matrix);
 	shader->set_float("f_alphamod", 1.0 - ((float)alpha / 255.0));
 	glDepthMask(gl_pos.z != 0.0);

@@ -91,7 +91,7 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 
 AnimationTable::AnimationTable() {}
 
-void AnimationTable::load_animations(std::string resource_dir, Model *model) {
+void AnimationTable::load_fighter_animations(std::string resource_dir, Model *model) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
@@ -108,7 +108,7 @@ void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 		anim_list >> path >> faf;
 		name = ymlChopString(name);
 		path = ymlChopString(path);
-		Animation anim(name, resource_dir + "/anims/" + path, &model);
+		Animation anim(name, resource_dir + "/anims/" + path, model);
 		anim.faf = ymlChopInt(faf);
 		animations.push_back(anim);
 		anim_map[name] = i;
@@ -116,10 +116,35 @@ void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 	anim_list.close();
 }
 
-Animation* AnimationTable::get_anim(std::string anim_name) {
+void AnimationTable::load_projectile_animations(std::string resource_dir, Model* model) {
+	ifstream anim_list;
+	anim_list.open(resource_dir + "/anims/anim_list.yml");
+
+	if (anim_list.fail()) {
+		anim_list.close();
+
+		throw std::runtime_error("Anim List Missing");
+	}
+
+	string name;
+	string path;
+	for (int i = 0; anim_list >> name; i++) {
+		anim_list >> path;
+		name = ymlChopString(name);
+		path = ymlChopString(path);
+		Animation anim(name, resource_dir + "/anims/" + path, model);
+		animations.push_back(anim);
+		anim_map[name] = i;
+	}
+	anim_list.close();
+}
+
+Animation* AnimationTable::get_anim(std::string anim_name, bool verbose) {
 	std::unordered_map<std::string, int>::const_iterator iterator = anim_map.find(anim_name);
 	if (iterator == anim_map.end()) {
-		std::cout << "Invalid Animation: " << anim_name << std::endl;
+		if (verbose) {
+			std::cout << "Invalid Animation: " << anim_name << std::endl;
+		}
 		return nullptr;
 	}
 	return &animations[anim_map[anim_name]];

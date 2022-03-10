@@ -3,7 +3,7 @@ using namespace std;
 #include <sstream>
 #include <algorithm>
 #include "utils.h"
-#include <SDL_image.h>
+#include <SDL/SDL_image.h>
 #include <cstring>
 #include <iostream>
 #include <cstdint>
@@ -57,62 +57,6 @@ string ymlChopString(string line) {
 }
 
 /// <summary>
-/// SDL's rectangle collision function sucks so I made a better one.
-/// </summary>
-/// <param name="RectA">: The first rectangle</param>
-/// <param name="RectB">: The second rectangle</param>
-/// <returns>Whether or not any part of the two rectangles are touching</returns>
-bool is_collide(SDL_Rect RectA, SDL_Rect RectB) {
-	int ax0 = RectA.x;
-	int ax1 = RectA.x + RectA.w;
-	int ay0 = RectA.y;
-	int ay1 = RectA.y + RectA.h;
-	int bx0 = RectB.x;
-	int bx1 = RectB.x + RectB.w;
-	int by0 = RectB.y;
-	int by1 = RectB.y + RectB.h;
-	bool horizontal = (ax0 >= bx0 && ax0 <= bx1) || (ax1 >= bx0 && ax1 <= bx1) || (bx0 >= ax0 && bx0 <= ax1) || (bx1 >= ax0 && bx1 <= ax1) || (ax0 <= bx0 && ax0 >= bx1) || (ax1 <= bx0 && ax1 >= bx1) || (bx0 <= ax0 && bx0 >= ax1) || (bx1 <= ax0 && bx1 >= ax1);
-	bool vertical = (ay0 <= by0 && ay0 >= by1) || (ay1 <= by0 && ay1 >= by1) || (by0 <= ay0 && by0 >= ay1) || (by1 <= ay0 && by1 >= ay1) || (ay0 >= by0 && ay0 <= by1) || (ay1 >= by0 && ay1 <= by1) || (by0 >= ay0 && by0 <= ay1) || (by1 >= ay0 && by1 <= ay1);
-	return horizontal && vertical;
-}
-
-SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bool no_zoom) {
-	SDL_Rect cCamera;
-
-	if (no_zoom) {
-		cCamera.w = std::min(std::max(std::abs(player1X - player2X) + 150, 1280), 1280);
-	}
-	else {
-		cCamera.w = std::min(std::max(std::abs(player1X - player2X) + 150, CAMERA_MAX_ZOOM_IN), CAMERA_MAX_ZOOM_OUT);
-	}
-
-	//0.5625 = WINDOW_HEIGHT / WINDOW_WIDTH. its used to scale the camera for correct proportions
-	cCamera.h = cCamera.w * WINDOW_FACTOR;
-
-	//78 is the current average size of the character.
-	cCamera.x = ((player1X + player2X) / 2) - (cCamera.w / 2) + (78 / 2);
-
-	if (cCamera.x + cCamera.w > WINDOW_WIDTH) {
-		cCamera.x = WINDOW_WIDTH - cCamera.w;
-	}
-	else if (cCamera.x < 0) {
-		cCamera.x = 0;
-	}
-
-	//559 is the absolute y value of the floor
-	//JUMP_FOLLOW_THRESHOLD is the jump line before the camera starts moving
-	int iYdelta = (559 - std::min(player2Y, player1Y));
-	if (iYdelta >= JUMP_FOLLOW_THRESHOLD) {
-		cCamera.y = WINDOW_HEIGHT - cCamera.h - iYdelta + JUMP_FOLLOW_THRESHOLD - 50;
-	}
-	else {
-		cCamera.y = WINDOW_HEIGHT - cCamera.h - 50;
-	}
-
-	return cCamera;
-}
-
-/// <summary>
 /// Loads SDL textures. This should generally be avoided during normal gameplay as everything should be loaded beforehand.
 /// </summary>
 /// <param name="file_path">: File path from the game's directory</param>
@@ -132,82 +76,6 @@ SDL_Texture* loadSDLTexture(const char* file_path, bool delay) {
 		frameTimeDelay();
 	}
 	return ret;
-}
-
-unsigned int loadGLTexture(char const* file_path) {
-	unsigned int texture_id;
-	glGenTextures(1, &texture_id);
-
-	int width;
-	int height;
-	int num_components;
-	unsigned char* data = stbi_load(file_path, &width, &height, &num_components, 0);
-	if (data) {
-		GLenum format;
-		if (num_components == 3) {
-			format = GL_RGB;
-		}
-		else if (num_components == 4) {
-			format = GL_RGBA;
-		}
-		else {
-			format = GL_RED;
-		}
-
-		glBindTexture(GL_TEXTURE_2D, texture_id);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else {
-		std::cout << "Texture failed to load at path: " << file_path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return texture_id;
-}
-
-unsigned int loadGLTextureFromFile(const char* path, const string& directory, bool gamma) {
-	string filename = string(path);
-	filename = directory + '/' + filename;
-
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-	if (data) {
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else {
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
 }
 
 /// <summary>
@@ -474,50 +342,6 @@ void updateGameSettings() {
 
 int round_up_odd(int val) {
 	return (val / 2) + (val % 2);
-}
-
-mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from) {
-	mat4 to;
-	to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-	to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-	to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-	to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-	return to;
-}
-
-mat4 ass_converter(const aiMatrix4x4& from) {
-	mat4 to;
-	to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-	to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-	to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-	to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-	return to;
-}
-
-vec3 ass_converter(const aiVector3D& from) {
-	return vec3(from.x, from.y, from.z);
-}
-
-quat ass_converter(const aiQuaternion& from) {
-	return quat(from.w, from.x, from.y, from.z);
-}
-
-aiMatrix4x4 glm_to_assimp(const mat4& from) {
-	aiMatrix4x4 to;
-	to.a1 = from[0][0]; to.a2 = from[1][0]; to.a3 = from[2][0]; to.a4 = from[3][0];
-	to.b1 = from[0][1]; to.b2 = from[1][1]; to.b3 = from[2][1]; to.b4 = from[3][1];
-	to.c1 = from[0][2]; to.c2 = from[1][2]; to.c3 = from[2][2]; to.c4 = from[3][2];
-	to.d1 = from[0][3]; to.d2 = from[1][3]; to.d3 = from[2][3]; to.d4 = from[3][3];
-	return to;
-}
-
-vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle) {
-	vec3 ret = origin_point;
-	float new_x = magnitude * cos(angle);
-	float new_y = magnitude * sin(angle);
-	ret.x += new_x;
-	ret.y += new_y;
-	return ret;
 }
 
 void update_thread_progress(int& to_update) {

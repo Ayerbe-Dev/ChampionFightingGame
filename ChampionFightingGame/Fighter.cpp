@@ -75,7 +75,7 @@ void Fighter::process_animate() {
 			clear_grabbox_all();
 			clear_hurtbox_all();
 			clear_hitbox_all();
-			kara_enabled = false;
+			fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
 			is_anim_end = true;
 		}
 		else {
@@ -151,7 +151,7 @@ void Fighter::process_pre_status() {
 
 void Fighter::process_status() {
 	if (is_status_hitstun_enable_parry()) {
-		u32 parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
 				change_anim("hitstun_parry", 5);

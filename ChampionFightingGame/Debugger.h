@@ -15,8 +15,8 @@ public:
 
 	void poll_inputs(const Uint8* keyboard_state);
 
-	bool check_button_on(u32 button);
-	bool check_button_trigger(u32 button);
+	bool check_button_on(unsigned int button);
+	bool check_button_trigger(unsigned int button);
 
 	void debug_mode(Fighter* target, GameRect* debug_rect, vec2* debug_anchor, vec2* debug_offset);
 	void print_commands();

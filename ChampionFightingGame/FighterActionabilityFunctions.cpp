@@ -18,7 +18,7 @@ bool Fighter::is_actionable() {
 }
 
 bool Fighter::can_kara() {
-	if (((fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) || kara_enabled) {
+	if (((fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) || fighter_flag[FIGHTER_FLAG_KARA_ENABLED]) {
 		return true;
 	}
 	else {

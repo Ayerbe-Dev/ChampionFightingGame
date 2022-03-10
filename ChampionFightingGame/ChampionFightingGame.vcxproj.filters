@@ -169,6 +169,12 @@
     <Filter Include="Header Files\Include">
       <UniqueIdentifier>{d2d27a10-df59-4cf7-bdb9-72a779b7dd31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Helper Funcs">
+      <UniqueIdentifier>{b09d0e5d-265e-4542-8026-df22f515a5c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helper Funcs">
+      <UniqueIdentifier>{3b964603-72cf-4262-adae-bd6c8fea4f10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -283,9 +289,6 @@
       <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="GameCoordinate.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
-    <ClCompile Include="ParamTable.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="GameMenu.cpp">
@@ -486,9 +489,6 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
@@ -521,6 +521,21 @@
     </ClCompile>
     <ClCompile Include="ProjectileInterface.cpp">
       <Filter>Source Files\Objects\Projectile\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="Param.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GLM Helpers.cpp">
+      <Filter>Source Files\Helper Funcs</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveScript.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GLEW Helpers.cpp">
+      <Filter>Source Files\Helper Funcs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -630,9 +645,6 @@
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="ParamTable.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="StageSelect.h">
@@ -766,6 +778,24 @@
     </ClInclude>
     <ClInclude Include="Projectiles.h">
       <Filter>Header Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>Header Files\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Param.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GLM Helpers.h">
+      <Filter>Header Files\Helper Funcs</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneConstants.h">
+      <Filter>Header Files\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveScript.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GLEW Helpers.h">
+      <Filter>Header Files\Helper Funcs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,22 +1,22 @@
 #include "Fighter.h"
 
-bool Fighter::check_button_on(u32 button) {
+bool Fighter::check_button_on(unsigned int button) {
 	return player_info->check_button_on(button);
 }
 
-bool Fighter::check_button_input(u32 button) {
+bool Fighter::check_button_input(unsigned int button) {
 	return player_info->check_button_input(button);
 }
 
-bool Fighter::check_button_input(u32 button[], int length, int min_matches) {
+bool Fighter::check_button_input(unsigned int button[], int length, int min_matches) {
 	return player_info->check_button_input(button, length, min_matches);
 }
 
-bool Fighter::check_button_trigger(u32 button) {
+bool Fighter::check_button_trigger(unsigned int button) {
 	return player_info->check_button_trigger(button);
 }
 
-bool Fighter::check_button_release(u32 button) {
+bool Fighter::check_button_release(unsigned int button) {
 	return player_info->check_button_release(button);
 }
 
@@ -72,18 +72,18 @@ int Fighter::get_flick_dir() {
 	}
 }
 
-int Fighter::get_special_input(int special_kind, u32 button, int charge_frames) {
+int Fighter::get_special_input(int special_kind, unsigned int button, int charge_frames) {
 	int button_check = 0;
 	bool input_check = false;
 
 	if (button == BUTTON_MACRO_P) {
-		u32 ex_buttons[3] = { BUTTON_LP, BUTTON_MP, BUTTON_HP };
+		unsigned int ex_buttons[3] = { BUTTON_LP, BUTTON_MP, BUTTON_HP };
 		if (check_button_input(ex_buttons, 3, 2)) {
 			button_check = SPECIAL_INPUT_NORMAL;
 		}
 	}
 	else if (button == BUTTON_MACRO_K) {
-		u32 ex_buttons[3] = { BUTTON_LK, BUTTON_MK, BUTTON_HK };
+		unsigned int ex_buttons[3] = { BUTTON_LK, BUTTON_MK, BUTTON_HK };
 		if (check_button_input(ex_buttons, 3, 2)) {
 			button_check = SPECIAL_INPUT_NORMAL;
 		}
@@ -215,7 +215,7 @@ int Fighter::get_special_input(int special_kind, u32 button, int charge_frames) 
 	}
 }
 
-bool Fighter::get_normal_cancel(int attack_kind, u32 button, int situation_kind, int stick) {
+bool Fighter::get_normal_cancel(int attack_kind, unsigned int button, int situation_kind, int stick) {
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == attack_kind && check_button_input(button) && situation_kind == this->situation_kind) {
 		int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
 		if (button == BUTTON_LP) {
@@ -281,7 +281,7 @@ bool Fighter::get_normal_cancel(int attack_kind, u32 button, int situation_kind,
 }
 
 int Fighter::try_ex(bool punch) {
-	u32 no_heavy_ex_buttons[2];
+	unsigned int no_heavy_ex_buttons[2];
 	no_heavy_ex_buttons[0] = punch ? BUTTON_LP : BUTTON_LK;
 	no_heavy_ex_buttons[1] = punch ? BUTTON_MP : BUTTON_MK;
 	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= EX_METER_SIZE / (EX_METER_BARS / 2)) {

@@ -788,8 +788,8 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 bool Battle::event_hit_collide_player(Fighter* p1, Fighter* p2, Hitbox* p1_hitbox, Hitbox* p2_hitbox) {
 	bool p1_hit = p2_hitbox->id != -1;
 	bool p2_hit = p1_hitbox->id != -1;
-	u32 p1_status_post_hit = p1->status_kind;
-	u32 p2_status_post_hit = p2->status_kind;
+	unsigned int p1_status_post_hit = p1->status_kind;
+	unsigned int p2_status_post_hit = p2->status_kind;
 	if (p1_hit && p2_hit) { //Both players got hit
 		if (p1->situation_kind != p2->situation_kind) {
 			if (p1->situation_kind == FIGHTER_SITUATION_GROUND) {
@@ -1063,7 +1063,7 @@ void Battle::event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_gra
 /// <returns>Whether or not any kind of collision event occured.</returns>
 void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox) {
 	bool p2_hit = p1_hitbox->id != -1;
-	u32 p2_status_post_hit = p2->status_kind;
+	unsigned int p2_status_post_hit = p2->status_kind;
 	if (p2_hit) {
 		p1_projectile->update_hitbox_connect(p1_hitbox->multihit);
 		p1_projectile->projectile_int[PROJECTILE_INT_HEALTH] --;

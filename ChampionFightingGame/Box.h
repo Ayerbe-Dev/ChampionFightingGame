@@ -1,6 +1,5 @@
 #pragma once
-#include "utils.h"
-#include <SDL.h>
+#include "BoxConstants.h"
 #include "GameRect.h"
 
 class BattleObject;
@@ -39,8 +38,8 @@ public:
 	float launch_speed_x;
 	float hit_pushback;
 	float block_pushback;
-	vec2 init_anchor;
-	vec2 init_offset;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
 	bool use_player_pos;
 	bool trade;
 	bool continue_launch;
@@ -48,14 +47,14 @@ public:
 
 	Hitbox();
 	void init(BattleObject* object);
-	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor,
-		vec2 offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit,
+	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
+		glm::vec2 offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit,
 		int hitlag, int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback,
 		int clank_kind, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
 		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos = true);
 
-	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor,
-		vec2 offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
+	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
+		glm::vec2 offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 		int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x,
 		bool trade, bool continue_launch, bool can_chip_ko);
@@ -71,16 +70,16 @@ public:
 	GameRect rect;
 	int grabbox_kind;
 	int situation_hit;
-	u32 attacker_status_if_hit;
-	u32 defender_status_if_hit;
-	vec2 init_anchor;
-	vec2 init_offset;
+	unsigned int attacker_status_if_hit;
+	unsigned int defender_status_if_hit;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
 	bool use_player_pos;
 
 	Grabbox();
 	void init(BattleObject* object);
-	void activate(BattleObject* object, int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
-		u32 defender_status_if_hit, bool use_player_pos = true);
+	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
+		unsigned int defender_status_if_hit, bool use_player_pos = true);
 
 	void update_pos();
 	void clear();
@@ -94,12 +93,12 @@ public:
 	int hurtbox_kind;
 	bool is_armor;
 	int intangible_kind;
-	vec2 init_anchor;
-	vec2 init_offset;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
 
 	Hurtbox();
 	void init(BattleObject* object);
-	void activate(BattleObject* object, int id, vec2 anchor, vec2 offset, int hurtbox_kind, bool is_armor, int intangible_kind);
+	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind, bool is_armor, int intangible_kind);
 	
 	void update_pos();
 	void clear();

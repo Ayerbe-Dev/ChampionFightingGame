@@ -1,22 +1,16 @@
 #pragma once
-#include "utils.h"
-#include "Animation.h"
-#include "GameCoordinate.h"
-#include "Box.h"
-#include "ParamTable.h"
-#include "PlayerInfo.fwd.h"
-
 #include "RenderObject.h"
+#include "Animation.h"
+#include "MoveScript.h"
+#include "Box.h"
+#include "Param.h"
+#include "FighterStatus.h"
+#include "FighterAttribute.h"
+#include "FighterInt.h"
+#include "FighterFloat.h"
+#include "FighterFlag.h"
 
-class MoveScript {
-public:
-	string name;
-	function<void()> move_script{ []() {} };
-	int id{ -1 };
-
-	MoveScript();
-	MoveScript(string name, function<void()> move_script, int id);
-};
+class PlayerInfo;
 
 class BattleObject : public RenderObject {
 public:
@@ -24,21 +18,21 @@ public:
 
 	int id;
 	int object_type;
-	vec3 prev_pos;
+	glm::vec3 prev_pos;
 
 	float facing_dir{ 1.0 };
 	bool facing_right = true;
-	u32 status_kind{ FIGHTER_STATUS_WAIT };
-	u32 situation_kind{ FIGHTER_SITUATION_GROUND };
+	unsigned int status_kind{ FIGHTER_STATUS_WAIT };
+	unsigned int situation_kind{ FIGHTER_SITUATION_GROUND };
 
-	vec3 extra_rot = vec3(0.0);
+	glm::vec3 extra_rot = glm::vec3(0.0);
 
 	PlayerInfo* player_info;
 
 	GameRect jostle_box;
 	GameRect base_jostle_box;
 
-	Animation animation_table[ANIM_TABLE_LENGTH];
+	AnimationTable animation_table;
 	Animation* anim_kind;
 	Animation* prev_anim_kind;
 
@@ -58,9 +52,10 @@ public:
 
 	void script(string name, function<void()> move_script);
 	void wipe_scripts();
-	MoveScript move_scripts[MOVE_SCRIPT_MAX];
+
+	MoveScriptTable move_script_table;
 	MoveScript move_script;
-	
+
 	bool multihit_connected[10] = {false};
 
 	void update_hitbox_connect(int multihit_index);
@@ -75,17 +70,21 @@ public:
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();
 
-	Param stat_table[PARAM_TABLE_LENGTH];
-	Param param_table[PARAM_TABLE_LENGTH];
+	ParamTable stats;
+	ParamTable params;
 
 	void load_stats();
 	void load_params();
 
 
-	int get_param_int(string param, Param param_table[] = {});
-	float get_param_float(string param, Param param_table[] = {});
-	string get_param_string(string param, Param param_table[] = {});
-	bool get_param_bool(string param, Param param_table[] = {});
+	int get_param_int(string param);
+	int get_param_int(string param, ParamTable param_table);
+	float get_param_float(string param);
+	float get_param_float(string param, ParamTable param_table);
+	string get_param_string(string param);
+	string get_param_string(string param, ParamTable param_table);
+	bool get_param_bool(string param);
+	bool get_param_bool(string param, ParamTable param_table);
 
 	string resource_dir;
 

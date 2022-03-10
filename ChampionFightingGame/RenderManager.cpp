@@ -1,11 +1,12 @@
 #include "RenderManager.h"
-using namespace glm;
+#include <string>
+#include "utils.h"
 
-Light::Light(vec3 pos) {
+Light::Light(glm::vec3 pos) {
 	position = pos;
-	ambient = vec3(0.2, 0.2, 0.2);
-	diffuse = vec3(0.5, 0.5, 0.5);
-	specular = vec3(1.0, 1.0, 1.0);
+	ambient = glm::vec3(0.2, 0.2, 0.2);
+	diffuse = glm::vec3(0.5, 0.5, 0.5);
+	specular = glm::vec3(1.0, 1.0, 1.0);
 	constant = 1.0;
 	linear = 0.09;
 	quadratic = 0.032;
@@ -26,7 +27,7 @@ void RenderManager::init() {
 void RenderManager::add_light(Light light, int target) {
 	if (target == -1) {
 		if (num_lights == MAX_LIGHT_SOURCES) {
-			cout << "Congrats you stupid idiot, you ran out of lights" << endl;
+			std::cout << "Congrats you stupid idiot, you ran out of lights" << std::endl;
 			return;
 		}
 		else {
@@ -65,7 +66,7 @@ void RenderManager::update_shader_lights(Shader *shader) {
 	shader->set_float("material.shininess", 16.0f);
 
 	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-		string light = "light[" + to_string(i) + "].";
+		std::string light = "light[" + std::to_string(i) + "].";
 		shader->set_vec3(light + "position", lights[i].position);
 		shader->set_vec3(light + "ambient", lights[i].ambient);
 		shader->set_vec3(light + "diffuse", lights[i].diffuse);
@@ -79,19 +80,19 @@ void RenderManager::update_shader_lights(Shader *shader) {
 
 void RenderManager::update_shader_cam(Shader* shader) {
 	camera.update_view();
-	mat4 view = camera.get_view();
-	mat4 projection = perspective(radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
+	glm::mat4 view = camera.get_view();
+	glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
 	shader->set_vec3("view_pos", camera.pos);
 
 	shader->set_mat4("projection", projection);
 	shader->set_mat4("view", view);
 }
 
-void RenderManager::render_model(Model *model, Shader *shader, mat4 extra_mat, vec3 *model_pos, vec3 *model_rot, vec3 *model_scale) {
+void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *model_pos, glm::vec3 *model_rot, glm::vec3 *model_scale) {
 	shader->use(); //Because each shader is model specific, we need to set this no matter what
 	update_shader_cam(shader);
-	mat4 model_mat = mat4(1.0);
-	model_mat = translate(model_mat, *model_pos / vec3(WINDOW_WIDTH / (100 * model_scale->x), WINDOW_HEIGHT / (100 * model_scale->y), 1.0));
+	glm::mat4 model_mat = glm::mat4(1.0);
+	model_mat = glm::translate(model_mat, *model_pos / glm::vec3(WINDOW_WIDTH / (100 * model_scale->x), WINDOW_HEIGHT / (100 * model_scale->y), 1.0));
 	model_mat *= orientate4(*model_rot);
 	model_mat = scale(model_mat, *model_scale);
 	model_mat *= extra_mat;

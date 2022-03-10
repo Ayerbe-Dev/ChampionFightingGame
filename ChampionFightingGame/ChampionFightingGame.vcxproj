@@ -96,26 +96,26 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\SDL2\include;$(SolutionDir)\dependencies\x86\glew-2.1.0\include;$(SolutionDir)\dependencies\x86\glm\include;$(SolutionDir)\dependencies\x86\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\SDL2\lib;$(SolutionDir)\dependencies\x86\glew-2.1.0\lib;$(SolutionDir)\dependencies\x86\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\lib\SDL;$(SolutionDir)\dependencies\x86\lib\glew;$(SolutionDir)\dependencies\x86\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libwebp-4.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libtiff-5.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libpng16-16.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\zlib1.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(TargetDir)</Command>
+      <Command>copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libwebp-4.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libtiff-5.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libjpeg-9.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libpng16-16.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\SDL2.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\SDL2_Image.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\SDL2_ttf.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\zlib1.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\glew\glew32.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x86\bin\assimp\assimp-vc142-mt.dll" "$(TargetDir)</Command>
       <Message>Copies neccesary DLL files on successful build</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -157,26 +157,26 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\SDL2\include;$(SolutionDir)\dependencies\x64\glew-2.1.0\include;$(SolutionDir)\dependencies\x64\glm\include;$(SolutionDir)\dependencies\x64\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\SDL2\lib;$(SolutionDir)\dependencies\x64\glew-2.1.0\lib;$(SolutionDir)\dependencies\x64\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libwebp-4.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libtiff-5.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libjpeg-9.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\libpng16-16.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_Image.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\SDL2_ttf.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\SDL2\bin\zlib1.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\glew-2.1.0\bin\glew32.dll" "$(TargetDir)
-copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(TargetDir)</Command>
+      <Command>copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libwebp-4.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\libtiff-5.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\libjpeg-9.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\libpng16-16.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\SDL2.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\SDL2_Image.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\SDL2_ttf.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\SDL\zlib1.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\glew\glew32.dll" "$(TargetDir)
+copy /Y "$(SolutionDir)dependencies\x64\bin\assimp\assimp-vc142-mt.dll" "$(TargetDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -249,6 +249,8 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterRotationFunctions.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameRect.cpp" />
+    <ClCompile Include="GLEW Helpers.cpp" />
+    <ClCompile Include="GLM Helpers.cpp" />
     <ClCompile Include="GrabboxFunctions.cpp" />
     <ClCompile Include="HitboxFunctions.cpp" />
     <ClCompile Include="HurtboxFunctions.cpp" />
@@ -258,6 +260,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterOpponentFunctions.cpp" />
     <ClCompile Include="LoadingFunctions.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="MoveScript.cpp" />
     <ClCompile Include="ParamFunctions.cpp" />
     <ClCompile Include="FighterPositionFunctions.cpp" />
     <ClCompile Include="FighterProjectileFunctions.cpp" />
@@ -292,7 +295,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleObject.cpp" />
     <ClCompile Include="Opening.cpp" />
     <ClCompile Include="Options.cpp" />
-    <ClCompile Include="ParamTable.cpp">
+    <ClCompile Include="Param.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -349,6 +352,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Angelica.h" />
     <ClInclude Include="Aziel.h" />
     <ClInclude Include="Bone.h" />
+    <ClInclude Include="BoneConstants.h" />
     <ClInclude Include="BoxConstants.h" />
     <ClInclude Include="Bruno.h" />
     <ClInclude Include="ButtonConstants.h" />
@@ -358,6 +362,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />
+    <ClInclude Include="Define.h" />
     <ClInclude Include="Eric.h" />
     <ClInclude Include="EricFireball.h" />
     <ClInclude Include="FighterAttribute.h" />
@@ -379,12 +384,15 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStates.h" />
     <ClInclude Include="GameTexture.h" />
+    <ClInclude Include="GLEW Helpers.h" />
+    <ClInclude Include="GLM Helpers.h" />
     <ClInclude Include="Julius.h" />
     <ClInclude Include="Leon.h" />
     <ClInclude Include="Loader.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="MoveScript.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Nightsaber.h" />
     <ClInclude Include="Norman.h" />
@@ -392,7 +400,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ObjectKind.h" />
     <ClInclude Include="Opening.h" />
     <ClInclude Include="Options.h" />
-    <ClInclude Include="ParamTable.h" />
+    <ClInclude Include="Param.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Priest.h" />
     <ClInclude Include="Projectile.h" />

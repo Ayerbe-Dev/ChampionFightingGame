@@ -33,7 +33,7 @@ void Fighter::set_opponent_offset(vec2 offset) {
 	fighter_accessor->fighter[!id]->fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = new_offset.y;
 }
 
-void Fighter::change_opponent_status(u32 status_kind) {
+void Fighter::change_opponent_status(unsigned int status_kind) {
 	if ((this->status_kind == FIGHTER_STATUS_THROW || this->status_kind == FIGHTER_STATUS_THROW_AIR) && status_kind == FIGHTER_STATUS_THROWN) {
 		fighter_flag[FIGHTER_FLAG_THREW_OPPONENT] = true;
 	}

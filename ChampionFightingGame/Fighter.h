@@ -7,7 +7,6 @@
 #include "Button.h"
 #include <SDL.h>
 #include "Animation.h"
-#include "ParamTable.h"
 #include "Box.h"
 #include "PlayerInfo.h"
 #include "SoundManager.h"
@@ -31,7 +30,6 @@ public:
 	int fighter_int[FIGHTER_INT_MAX]{ 0 };
 	float fighter_float[FIGHTER_FLOAT_MAX]{ 0.0 };
 	bool fighter_flag[FIGHTER_FLAG_MAX]{false};
-	bool kara_enabled{ false }; //Should be made into a Fighter Flag tbh, never used outside of status scripts
 	
 	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
 	int connected_hitbox = -1;
@@ -86,7 +84,7 @@ public:
 	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();
-	void virtual load_move_scripts() {};
+	virtual void load_move_scripts() {};
 	void loadFighterSounds();
 	virtual void loadCharaSounds() {};
 	void set_default_vars();
@@ -94,16 +92,16 @@ public:
 
 	//Inputs
 
-	bool check_button_on(u32 button); //Checks if a button is being pressed
-	bool check_button_input(u32 button); //Checks if a button was pressed within the buffer window
-	bool check_button_input(u32 buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least 
+	bool check_button_on(unsigned int button); //Checks if a button is being pressed
+	bool check_button_input(unsigned int button); //Checks if a button was pressed within the buffer window
+	bool check_button_input(unsigned int buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least 
 		//min_matches buttons were pressed
-	bool check_button_trigger(u32 button); //Checks if a button was pressed on that frame
-	bool check_button_release(u32 button); //Checks if a button was released on that frame
+	bool check_button_trigger(unsigned int button); //Checks if a button was pressed on that frame
+	bool check_button_release(unsigned int button); //Checks if a button was released on that frame
 	int get_stick_dir(); //Stick direction, relative to your facing direction. Returns num pad notation.
 	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
-	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
-	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
+	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
+	bool get_normal_cancel(int attack_kind, unsigned int button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
 		//button if the situation_kind is correct
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
@@ -175,7 +173,7 @@ public:
 	void set_opponent_offset(vec2 offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
 		//long it should take
 	void set_opponent_offset(vec2 offset); //The above, but it leaves the time it should take alone. 
-	void change_opponent_status(u32 status_kind); //Wild guess.
+	void change_opponent_status(unsigned int status_kind); //Wild guess.
 	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0); //Damage the opponent, set their speed and direction. 
 		//Use in combination with change_opponent_status to throw someone.
 	void set_opponent_rot(vec3 rot); //Sets the opponent's angle relative to their facing dir.
@@ -196,8 +194,8 @@ public:
 
 	//Grabbox
 	
-	void new_grabbox(int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 
-		u32 defender_status_if_hit, bool use_player_pos = true);
+	void new_grabbox(int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit, 
+		unsigned int defender_status_if_hit, bool use_player_pos = true);
 	
 	//Hurtbox
 	
@@ -222,8 +220,8 @@ public:
 
 	//Status
 
-	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
-	bool change_status_after_hitlag(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
@@ -233,8 +231,8 @@ public:
 	virtual bool specific_ground_status_act() { return false; };
 	virtual bool specific_air_status_act() { return false; };
 	virtual bool specific_status_attack() { return false; };
-	bool is_status_end(u32 status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
-	u32 get_status_group();
+	bool is_status_end(unsigned int status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
+	unsigned int get_status_group();
 	bool is_status_hitstun_enable_parry();
 
 	//don't worry, it'll get longer :)

@@ -1,25 +1,17 @@
 #pragma once
-#include "utils.h"
+#include <iostream>
 #include <vector>
 #include <map>
-#include "Shader.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <gtx/euler_angles.hpp>
-#include "Bone.h"
-#include "Animation.h"
-using namespace glm;
+#include <glm/gtx/euler_angles.hpp>
 
-struct Vertex {
-	vec3 position;
-	vec3 normal;
-	vec2 tex_coords;
-	vec3 tangent;
-	vec3 bitangent;
-	int bone_ids[MAX_BONE_INFLUENCE] = { 0 };
-	float weights[MAX_BONE_INFLUENCE] = { 0.0 };
-};
+#include "BoneConstants.h"
+
+class Bone;
+class Animation;
+class Shader;
 
 enum {
 	TEXTURE_KIND_DIFFUSE,
@@ -30,28 +22,38 @@ enum {
 	TEXTURE_KIND_MAX
 };
 
-struct Texture {
-	u32 id;
+struct ModelVertex {
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 tex_coords;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	int bone_ids[MAX_BONE_INFLUENCE] = { 0 };
+	float weights[MAX_BONE_INFLUENCE] = { 0.0 };
+};
+
+struct ModelTexture {
+	unsigned int id;
 	int type;
-	string type_name;
-	string type_string;
-	string path;
+	std::string type_name;
+	std::string type_string;
+	std::string path;
 };
 
 class Mesh {
 public:
-	vector<Vertex> vertices;
-	vector<unsigned int> indices;
-	vector<Texture> textures;
-	string name;
+	std::vector<ModelVertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<ModelTexture> textures;
+	std::string name;
 	bool visible;
 
-	Mesh(vector<Vertex> vertices, vector<uint> indices, vector<Texture> textures, string name);
+	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
 	void render(Shader *shader);
 
-	u32 VAO;
-	u32 VBO;
-	u32 EBO;
+	unsigned int VAO;
+	unsigned int VBO;
+	unsigned int EBO;
 private:
 	void init();
 };
@@ -59,32 +61,32 @@ private:
 class Model {
 public:
 	Model();
-	Model(string path);
+	Model(std::string path);
 	~Model();
-	void load_model(string path);
+	void load_model(std::string path);
 	void unload_model();
 	void set_bones(float frame, Animation* anim_kind);
 	void reset_bones();
     void render(Shader *shader);
-	vector<Texture> textures_loaded;
-	vector<Mesh> meshes;
+	std::vector<ModelTexture> textures_loaded;
+	std::vector<Mesh> meshes;
 
-	mat4 global_transform;
+	glm::mat4 global_transform;
 
-	vector<Bone> bones;
+	std::vector<Bone> bones;
 
-	string directory;
+	std::string directory;
 	bool gamma_correct;
 	int vertex_count = 0;
 
-	void set_mesh_visibility(string mesh_name, bool visibility);
+	void set_mesh_visibility(std::string mesh_name, bool visibility);
 
-	int get_mesh_id(string mesh_name);
-	int get_bone_id(string bone_name);
+	int get_mesh_id(std::string mesh_name);
+	int get_bone_id(std::string bone_name);
 private:
-	void load_skeleton(string path);
+	void load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
-	bool find_missing_bones(aiNode* node, vector<string>& bone_names);
-    vector<Texture> load_material_textures(aiMaterial* mat, aiTextureType type, string type_name);
+	bool find_missing_bones(aiNode* node, std::vector<std::string>& bone_names);
+	std::vector<ModelTexture> load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name);
 };

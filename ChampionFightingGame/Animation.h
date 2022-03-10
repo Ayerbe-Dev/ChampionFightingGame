@@ -1,19 +1,27 @@
 #pragma once
-#include <SDL.h>
-#include <string>
 #include <vector>
-#include "utils.h"
-#include "Bone.h"
-#include <assimp/Importer.hpp>
+#include <unordered_map>
+#include <iostream>
 
 class Model;
+class Bone;
 
 class Animation {
 public:
 	Animation();
-	Animation(string anim_kind, string anim_dir, Model* model);
-	string name;
-	vector<vector<Bone>> keyframes;
+	Animation(std::string anim_kind, std::string anim_dir, Model* model);
+	std::string name;
+	std::vector<std::vector<Bone>> keyframes;
 	int length;
 	int faf;
+};
+
+class AnimationTable {
+public:
+	AnimationTable();
+	void load_animations(std::string resource_dir, Model* model);
+	Animation* get_anim(std::string anim_name);
+private:
+	std::vector<Animation> animations;
+	std::unordered_map<std::string, int> anim_map;
 };

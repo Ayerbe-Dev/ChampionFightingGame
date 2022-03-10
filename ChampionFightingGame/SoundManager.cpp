@@ -579,13 +579,13 @@ void addSoundToIndex(Sound sound, int id) {
 
 	SDL_AudioSpec wave;
 	u8* data;
-	u32 dlen;
+	unsigned int dlen;
 	SDL_AudioCVT cvt;
 	const char* file = (sound.dir).c_str();
 
 	SDL_AudioSpec loop_wave;
 	u8* loop_data;
-	u32 loop_dlen;
+	unsigned int loop_dlen;
 	SDL_AudioCVT loop_cvt;
 	const char* loop_file = (sound.loop_dir).c_str();
 
@@ -641,10 +641,10 @@ void addSoundToIndex(Sound sound, int id) {
 }
 
 void audio_callback(void* unused, Uint8* stream, int len) {
-	u32 diff; //How much leftover space we have if the length of the stream > the length of the track
+	unsigned int diff; //How much leftover space we have if the length of the stream > the length of the track
 	u8* source; //Audio data that will be filled by a given track
 	u8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
-	u32 dlen; //Ditto for length
+	unsigned int dlen; //Ditto for length
 	int vol; //Volume value to be multiplied by the values in the user's settings
 	SDL_memset(stream, 0, len); //Clear the stream
 

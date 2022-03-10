@@ -1,30 +1,29 @@
 #pragma once
-#include <glm.hpp>
+#include <glm/glm.hpp>
 #include "Shader.h"
-using namespace glm;
 
 class GameRect {
 public:
 	GameRect();
-	GameRect(vec2 c1, vec2 c2);
+	GameRect(glm::vec2 c1, glm::vec2 c2);
 	void init();
-	void init(vec2 c1, vec2 c2);
+	void init(glm::vec2 c1, glm::vec2 c2);
 	void destroy();
-	void update_corners(vec2 c1, vec2 c2);
+	void update_corners(glm::vec2 c1, glm::vec2 c2);
 	void attach_shader(Shader* shader);
-	void bind_scale(vec3* scale);
+	void bind_scale(glm::vec3* scale);
 	void set_alpha(float alpha);
-	void set_rgb(vec3 rgb);
-	void set_rgba(vec4 rgba);
+	void set_rgb(glm::vec3 rgb);
+	void set_rgba(glm::vec4 rgba);
 
 	void render();
 
 	Shader* shader;
 
-	vec2 corners[4] = { vec2(0.0) };
+	glm::vec2 corners[4] = { glm::vec2(0.0) };
 
-	vec3 *scale = nullptr;
-	vec4 rgba = vec4(0.0);
+	glm::vec3 *scale = nullptr;
+	glm::vec4 rgba = glm::vec4(0.0);
 private:
 	void update_buffer_data();
 

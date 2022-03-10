@@ -1,11 +1,11 @@
 #include "Fighter.h"
 
-bool Fighter::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, bool require_different_status) {
 	if (new_status_kind != status_kind || !require_different_status) {
 		clear_hitbox_all();
 		clear_grabbox_all();
 		clear_hurtbox_all();
-		kara_enabled = false;
+		fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = false;
@@ -34,7 +34,7 @@ bool Fighter::change_status(u32 new_status_kind, bool call_end_status, bool requ
 	}
 }
 
-bool Fighter::change_status_after_hitlag(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+bool Fighter::change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status, bool require_different_status) {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		return change_status(new_status_kind, call_end_status, require_different_status);
 	}
@@ -51,7 +51,7 @@ bool Fighter::change_status_after_hitlag(u32 new_status_kind, bool call_end_stat
 	}
 }
 
-u32 Fighter::get_status_group() {
+unsigned int Fighter::get_status_group() {
 	switch (status_kind) {
 		case (FIGHTER_STATUS_HITSTUN):
 		case (FIGHTER_STATUS_HITSTUN_AIR):
@@ -94,7 +94,7 @@ u32 Fighter::get_status_group() {
 
 /// When it's time to transition out of the current status, this changes to the proper status. If no arg is given, this will change status to wait or
 /// fall based on your situation_kind
-bool Fighter::is_status_end(u32 post_status_kind, bool call_end_status, bool require_different_status) {
+bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status, bool require_different_status) {
 	if (is_anim_end) {
 		if (situation_kind == FIGHTER_SITUATION_AIR && post_status_kind == FIGHTER_STATUS_WAIT) {
 			post_status_kind = FIGHTER_STATUS_FALL;

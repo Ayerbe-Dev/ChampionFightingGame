@@ -1,19 +1,21 @@
 #pragma once
-#include "utils.h"
+#include <glm/glm.hpp>
 #include "Shader.h"
 #include "Model.h"
 #include "GameRect.h"
-using namespace glm;
+#include "Camera.h"
+
+#define MAX_LIGHT_SOURCES 10
 
 class Light {
 public:
-	Light(vec3 pos = vec3(0.0, 0.0, 0.0));
+	Light(glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0));
 
-	vec3 position;
+	glm::vec3 position;
 
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
 
 	float constant;
 	float linear;
@@ -26,7 +28,7 @@ public:
 	Camera camera;
 	Light lights[MAX_LIGHT_SOURCES];
 	int num_lights;
-	vec3 window_scaler = vec3(1.0);
+	glm::vec3 window_scaler = glm::vec3(1.0);
 
 	Shader default_2d_shader;
 	Shader default_rect_shader;
@@ -48,5 +50,5 @@ public:
 	void update_shader_lights(Shader *shader);
 	void update_shader_cam(Shader* shader);
 
-	void render_model(Model *model, Shader *shader, mat4 extra_mat, vec3 *pos, vec3 *rot, vec3 *scale);
+	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
 };

@@ -1,17 +1,14 @@
-﻿using namespace std;
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_timer.h>
-#include <string>
-#include <iostream>
-#include <functional>
-#include "Animation.h"
+﻿#include "Animation.h"
+#include <fstream>
 #include "Model.h"
-#include <gtx/euler_angles.hpp>
-#include <gtx/quaternion.hpp>
-#include <gtx/matrix_interpolation.hpp>
-#include <gtx/string_cast.hpp>
-extern SDL_Renderer* g_renderer;
+#include "Bone.h"
+#include "GLM Helpers.h"
+#include <glm/gtx/matrix_interpolation.hpp>
+#include <assimp/Importer.hpp>
+#include "utils.h"
+
+using namespace std;
+using namespace glm;
 
 Animation::Animation() {}
 
@@ -92,6 +89,41 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 	}
 }
 
+AnimationTable::AnimationTable() {}
+
+void AnimationTable::load_animations(std::string resource_dir, Model *model) {
+	ifstream anim_list;
+	anim_list.open(resource_dir + "/anims/anim_list.yml");
+
+	if (anim_list.fail()) {
+		anim_list.close();
+
+		throw std::runtime_error("Anim List Missing");
+	}
+
+	string name;
+	string path;
+	string faf;
+	for (int i = 0; anim_list >> name; i++) {
+		anim_list >> path >> faf;
+		name = ymlChopString(name);
+		path = ymlChopString(path);
+		Animation anim(name, resource_dir + "/anims/" + path, &model);
+		anim.faf = ymlChopInt(faf);
+		animations.push_back(anim);
+		anim_map[name] = i;
+	}
+	anim_list.close();
+}
+
+Animation* AnimationTable::get_anim(std::string anim_name) {
+	std::unordered_map<std::string, int>::const_iterator iterator = anim_map.find(anim_name);
+	if (iterator == anim_map.end()) {
+		std::cout << "Invalid Animation: " << anim_name << std::endl;
+		return nullptr;
+	}
+	return &animations[anim_map[anim_name]];
+}
 
 	/* 
 

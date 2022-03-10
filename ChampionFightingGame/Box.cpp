@@ -1,8 +1,5 @@
 #include "Box.h"
 #include "BattleObject.h"
-#include "utils.h"
-
-
 
 Hitbox::Hitbox() {
 	this->id = -1;
@@ -20,11 +17,11 @@ Hitbox::Hitbox() {
 void Hitbox::init(BattleObject* object) {
 	rect.init();
 	rect.bind_scale(&object->scale);
-	rect.set_rgba(vec4(255, 0, 0, 127));
+	rect.set_rgba(glm::vec4(255, 0, 0, 127));
 }
 
-void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor,
-	vec2 offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
+void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
+	glm::vec2 offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
 	int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
 	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos) {
@@ -75,18 +72,18 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->can_chip_ko = can_chip_ko;
 	this->use_player_pos = use_player_pos;
 	if (hitbox_kind == HITBOX_KIND_BLOCK) {
-		rect.set_rgb(vec3(255, 165, 0));
+		rect.set_rgb(glm::vec3(255, 165, 0));
 	}
 	else {
-		rect.set_rgb(vec3(255, 0, 0));
+		rect.set_rgb(glm::vec3(255, 0, 0));
 	}
 }
 
 /*
 	The version of the Hitbox func used by projectiles
 */
-void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, vec2 anchor,
-	vec2 offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
+void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
+	glm::vec2 offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, 
 	bool continue_launch, bool can_chip_ko) {
@@ -140,8 +137,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 */
 
 void Hitbox::update_pos() {
-	vec2 anchor = init_anchor;
-	vec2 offset = init_offset;
+	glm::vec2 anchor = init_anchor;
+	glm::vec2 offset = init_offset;
 	if (use_player_pos) {
 		anchor.x += object->pos.x;
 		anchor.y += object->pos.y;
@@ -174,8 +171,8 @@ void Grabbox::init(BattleObject* object) {
 	make an unblockable projectile that tells the attacker to create a grabbox at the defender's location and handles it from there.
 */
 
-void Grabbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit,
-	u32 defender_status_if_hit, bool use_player_pos) {
+void Grabbox::activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
+	unsigned int defender_status_if_hit, bool use_player_pos) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
 	this->init_anchor = anchor;
@@ -196,16 +193,16 @@ void Grabbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, i
 	this->defender_status_if_hit = defender_status_if_hit;
 	this->use_player_pos = use_player_pos;
 	if (grabbox_kind & GRABBOX_KIND_NOTECH) {
-		rect.set_rgb(vec3(128, 0, 128));
+		rect.set_rgb(glm::vec3(128, 0, 128));
 	}
 	else {
-		rect.set_rgb(vec3(0, 255, 0));
+		rect.set_rgb(glm::vec3(0, 255, 0));
 	}
 }
 
 void Grabbox::update_pos() {
-	vec2 anchor = init_anchor;
-	vec2 offset = init_offset;
+	glm::vec2 anchor = init_anchor;
+	glm::vec2 offset = init_offset;
 	if (use_player_pos) {
 		anchor.x += object->pos.x;
 		anchor.y += object->pos.y;
@@ -226,7 +223,7 @@ Hurtbox::Hurtbox() {
 void Hurtbox::init(BattleObject* object) {
 	rect.init();
 	rect.bind_scale(&object->scale);
-	rect.set_rgba(vec4(0, 0, 255, 127));
+	rect.set_rgba(glm::vec4(0, 0, 255, 127));
 }
 
 /*
@@ -234,7 +231,7 @@ void Hurtbox::init(BattleObject* object) {
 	Hurtboxes will never use a global position
 */
 
-void Hurtbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
+void Hurtbox::activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind, bool is_armor, int intangible_kind) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
 	this->init_anchor = anchor;
@@ -253,8 +250,8 @@ void Hurtbox::activate(BattleObject* object, int id, vec2 anchor, vec2 offset, i
 }
 
 void Hurtbox::update_pos() {
-	vec2 anchor = init_anchor;
-	vec2 offset = init_offset;
+	glm::vec2 anchor = init_anchor;
+	glm::vec2 offset = init_offset;
 	anchor.x += object->pos.x;
 	anchor.y += object->pos.y;
 	offset.x += object->pos.x;

@@ -23,9 +23,9 @@ public:
 struct SoundInfo {
 	u8* data;
 	u8* loop_data;
-	u32 dpos;
-	u32 dlen;
-	u32 loop_dlen;
+	unsigned int dpos;
+	unsigned int dlen;
+	unsigned int loop_dlen;
 	Sound sound;
 };
 

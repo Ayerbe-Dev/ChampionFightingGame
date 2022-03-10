@@ -1,6 +1,6 @@
 #include "Projectile.h"
 
-bool Projectile::change_status(u32 new_status_kind, bool call_end_status, bool require_different_status) {
+bool Projectile::change_status(unsigned int new_status_kind, bool call_end_status, bool require_different_status) {
 	if (new_status_kind != status_kind || !require_different_status) {
 		clear_hitbox_all();
 		clear_grabbox_all();

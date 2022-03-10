@@ -35,32 +35,21 @@ void Fighter::load_model_shader() {
 }
 
 void Fighter::load_anim_list() {
-	ifstream anim_list;
-	anim_list.open(resource_dir + "/anims/anim_list.yml");
-
-	if (anim_list.fail()) {
-		anim_list.close();
-		char buffer[55];
-		sprintf(buffer, "Character %d's resource directory was incorrectly set!", chara_kind);
-		player_info->crash_reason = buffer;
-
-		crash_to_debug = true;
-
-		return;
+	try {
+		animation_table.load_animations(resource_dir, &model);
 	}
+	catch (std::runtime_error err) {
+		if (err.what() == "Anim List Missing") {
+			char buffer[55];
+			sprintf(buffer, "Character %d's resource directory was incorrectly set!", chara_kind);
+			player_info->crash_reason = buffer;
 
-	string name;
-	string path;
-	string faf;
-	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path >> faf;
-		name = ymlChopString(name);
-		path = ymlChopString(path);
-		Animation anim(name, resource_dir + "/anims/" + path, &model);
-		anim.faf = ymlChopInt(faf);
-		animation_table[i] = anim;
+			crash_to_debug = true;
+		}
+		else {
+			std::cout << err.what() << std::endl;
+		}
 	}
-	anim_list.close();
 }
 
 void Fighter::set_default_vars() {

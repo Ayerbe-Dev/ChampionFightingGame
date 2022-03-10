@@ -1,7 +1,6 @@
 #pragma once
 #include "BattleObject.h"
 #include "utils.h"
-#include "ParamTable.h"
 
 class FighterAccessor;
 
@@ -55,7 +54,7 @@ public:
 
 	//Status
 
-	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	virtual void projectile_unique_status() {};
 	virtual void projectile_unique_enter_status() {};
 	virtual void projectile_unique_exit_status() {};

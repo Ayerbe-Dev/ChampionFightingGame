@@ -32,11 +32,11 @@ void Debugger::poll_inputs(const Uint8* keyboard_state) {
 	}
 }
 
-bool Debugger::check_button_on(u32 button) {
+bool Debugger::check_button_on(unsigned int button) {
 	return button_info[button].button_on && enabled;
 }
 
-bool Debugger::check_button_trigger(u32 button) {
+bool Debugger::check_button_trigger(unsigned int button) {
 	return button_info[button].changed && button_info[button].button_on && enabled;
 }
 

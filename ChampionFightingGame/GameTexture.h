@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "PlayerInfo.fwd.h"
 #include "utils.h"
 #include "stb_image.h"
@@ -98,7 +98,7 @@ public:
     unsigned char alpha = 255;
 
     Shader *shader;
-    u32 texture;
+    unsigned int texture;
     GameTextureCoord tex_data[4];
     GameTextureCoord* tex_accessor[4];
     vec3 pos;
@@ -120,8 +120,8 @@ public:
 private:
     void update_buffer_data();
 
-    u32 VAO;
-    u32 VBO;
+    unsigned int VAO;
+    unsigned int VBO;
     float width;
     float height;
 

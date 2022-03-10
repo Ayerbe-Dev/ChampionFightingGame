@@ -2,7 +2,7 @@
 #include "utils.h"
 
 struct Buttons {
-	u32 mapping = 0;
+	unsigned int mapping = 0;
 	SDL_GameControllerButton c_mapping = SDL_CONTROLLER_BUTTON_INVALID;
 	SDL_GameControllerAxis axis = SDL_CONTROLLER_AXIS_INVALID;
 	bool button_on = false;

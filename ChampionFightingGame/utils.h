@@ -1,29 +1,5 @@
 #pragma once
 using namespace std;
-#include <functional>
-#include <iostream>
-#include <fstream>
-#include "SDL.h"
-#include "SDL_render.h"
-#include <glew.h>
-#include <sstream>
-#include <SDL_ttf.h>
-#include "GameCoordinate.h"
-#include <glm.hpp>
-#include "Constants.h"
-#include "GameTexture.h"
-using namespace glm;
-#include <assimp/scene.h>
-#include <gtx/quaternion.hpp>
-
-
-typedef char i8;
-typedef unsigned char u8;
-typedef short i16;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef long long i64;
-typedef unsigned long long u64;
 
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
@@ -63,8 +39,6 @@ typedef unsigned long long u64;
 #define MAX_SOUNDS 20
 #define MAX_LAYERS 5
 #define FLOOR_GAMECOORD 1.0
-#define MAX_BONE_INFLUENCE 4
-#define MAX_LIGHT_SOURCES 10
 #define MAX_SHADERS 4
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
@@ -74,7 +48,6 @@ float clampf(float min, float value, float max);
 int ymlChopInt(string line);
 float ymlChopFloat(string line);
 string ymlChopString(string line);
-bool is_collide(SDL_Rect RectA, SDL_Rect RectB);
 SDL_Texture *loadSDLTexture(const char *file_path, bool delay = true);
 unsigned int loadGLTexture(const char* file_path);
 unsigned int loadGLTextureFromFile(const char* file_path, const string& directory, bool gamma = false);
@@ -90,31 +63,7 @@ int getGameSetting(string setting);
 void setGameSetting(string setting, int val);
 void updateGameSettings();
 int round_up_odd(int val);
-mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
-aiMatrix4x4 glm_to_assimp(const mat4& from);
-mat4 ass_converter(const aiMatrix4x4& from);
-vec3 ass_converter(const aiVector3D& from);
-quat ass_converter(const aiQuaternion& from);
-vec3 get_circular_pos(vec3 origin_point, float magnitude, float angle);
 void update_thread_progress(int& to_update);
-
-/*
-	updateCamera(); 
-	Returns a new camera because the SDL_Render func refuses to work with 
-	a pointer to a camera... smh.
-	
-	What a looser.
-*/
-SDL_Rect updateCamera(int player1X, int player1Y, int player2X, int player2Y, bool no_zoom);
-
-enum { //This is the only enum in all of our source code that I couldn't figure out how to organize lmao
-	PARAM_TYPE_INT = 1,
-	PARAM_TYPE_FLOAT,
-	PARAM_TYPE_STRING,
-	PARAM_TYPE_BOOL,
-
-	PARAM_TYPE_MAX,
-};
 
 enum {
 	SOUND_KIND_SE,
@@ -129,17 +78,4 @@ enum { //jk
 	SOUND_TYPE_LOOP,
 
 	SOUND_TYPE_MAX,
-};
-
-struct Offset
-{
-	int offset_x;
-	int offset_y;
-};
-
-struct Vec4f {
-	float x;
-	float y;
-	float z;
-	float w;
 };

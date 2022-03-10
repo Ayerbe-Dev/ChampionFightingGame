@@ -1,11 +1,12 @@
 #include "Camera.h"
+#include "utils.h"
 
 Camera::Camera() {
-	pos = vec3(0.0, 1.3, 4.0);
+	pos = glm::vec3(0.0, 1.3, 4.0);
 	fov = 43.0;
 }
 
-mat4 Camera::get_view() {
+glm::mat4 Camera::get_view() {
 	return lookAt(pos, pos + front, up);
 }
 

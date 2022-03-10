@@ -10,8 +10,8 @@
 #include "Loader.h"
 
 extern bool debug;
-extern u32 frame_advance_ms;
-extern u32 frame_advance_entry_ms;
+extern unsigned int frame_advance_ms;
+extern unsigned int frame_advance_entry_ms;
 extern int error_render;
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;

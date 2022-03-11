@@ -261,27 +261,27 @@ void Roy::loadRoyStatusFunctions() {
 	enter_status_script.resize(CHARA_ROY_STATUS_MAX, nullptr);
 	exit_status_script.resize(CHARA_ROY_STATUS_MAX, nullptr);
 
-	ADD_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_status_special_fireball_start);
-	ADD_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_enter_status_special_fireball_start);
-	ADD_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_exit_status_special_fireball_start);
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_status_special_fireball_start);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_enter_status_special_fireball_start);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_exit_status_special_fireball_start);
 
-	ADD_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_status_special_fireball_punch);
-	ADD_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_enter_status_special_fireball_punch);
-	ADD_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_exit_status_special_fireball_punch);
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_status_special_fireball_punch);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_enter_status_special_fireball_punch);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_exit_status_special_fireball_punch);
 
-	ADD_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_status_special_fireball_kick);
-	ADD_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_enter_status_special_fireball_kick);
-	ADD_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_exit_status_special_fireball_kick);
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_status_special_fireball_kick);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_enter_status_special_fireball_kick);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_exit_status_special_fireball_kick);
 
-	ADD_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_status_special_uppercut_start);
-	ADD_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_enter_status_special_uppercut_start);
-	ADD_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_exit_status_special_uppercut_start);
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_status_special_uppercut_start);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_enter_status_special_uppercut_start);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_exit_status_special_uppercut_start);
 
-	ADD_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_status_special_uppercut);
-	ADD_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_enter_status_special_uppercut);
-	ADD_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_exit_status_special_uppercut);
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_status_special_uppercut);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_enter_status_special_uppercut);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_exit_status_special_uppercut);
 
-	ADD_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_status_special_uppercut_fall);
-	ADD_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_enter_status_special_uppercut_fall);
-	ADD_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_exit_status_special_uppercut_fall);
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_status_special_uppercut_fall);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_enter_status_special_uppercut_fall);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_exit_status_special_uppercut_fall);
 }

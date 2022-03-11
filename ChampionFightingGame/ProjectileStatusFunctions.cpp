@@ -7,20 +7,10 @@ bool Projectile::change_status(unsigned int new_status_kind, bool call_end_statu
 		clear_hurtbox_all();
 		projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = false;
 		if (call_end_status) {
-			if (status_kind < PROJECTILE_STATUS_MAX) {
-				(this->*exit_status_script[status_kind])();
-			}
-			else {
-				projectile_unique_exit_status();
-			}
+			(this->*exit_status_script[status_kind])();
 		}
 		status_kind = new_status_kind;
-		if (status_kind < PROJECTILE_STATUS_MAX) {
-			(this->*enter_status_script[status_kind])();
-		}
-		else {
-			projectile_unique_enter_status();
-		}
+		(this->*enter_status_script[status_kind])();
 		return true;
 	}
 	else {

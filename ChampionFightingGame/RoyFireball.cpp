@@ -1,37 +1,45 @@
 #include "RoyFireball.h"
-#include "Battle.h"
+#include "RoyFireballConstants.h"
 
 RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/projectile/roy_fireball";
-	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
+	projectile_name = "roy_fireball";
+	projectile_int.resize(PROJECTILE_ROY_FIREBALL_INT_MAX, 0);
+	projectile_float.resize(PROJECTILE_ROY_FIREBALL_FLOAT_MAX, 0.0);
+	projectile_flag.resize(PROJECTILE_ROY_FIREBALL_FLAG_MAX, false);
 	load_params();
 	loadRoyFireballACMD();
 	loadRoyFireballStatusFunctions();
-	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	superInit();
+	this->fighter_accessor = fighter_accessor;
 }
 
 void RoyFireball::loadRoyFireballStatusFunctions() {
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_HOVER- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_hover;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_HOVER- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_hover;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_HOVER- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_hover;
+	status_script.resize(PROJECTILE_ROY_FIREBALL_STATUS_MAX, nullptr);
+	enter_status_script.resize(PROJECTILE_ROY_FIREBALL_STATUS_MAX, nullptr);
+	exit_status_script.resize(PROJECTILE_ROY_FIREBALL_STATUS_MAX, nullptr);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_punched;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_punched;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_punched;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_HOVER, &RoyFireball::status_roy_fireball_hover);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_HOVER, &RoyFireball::enter_status_roy_fireball_hover);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_HOVER, &RoyFireball::exit_status_roy_fireball_hover);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_KICKED- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_kicked;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_KICKED- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_kicked;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_KICKED- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_kicked;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED, &RoyFireball::status_roy_fireball_punched);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED, &RoyFireball::enter_status_roy_fireball_punched);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED, &RoyFireball::exit_status_roy_fireball_punched);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_FALL- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_fall;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_FALL- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_fall;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_FALL- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_fall;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_KICKED, &RoyFireball::status_roy_fireball_kicked);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_KICKED, &RoyFireball::enter_status_roy_fireball_kicked);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_KICKED, &RoyFireball::exit_status_roy_fireball_kicked);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_GROUND- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_ground;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_GROUND- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_ground;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_GROUND- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_ground;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_FALL, &RoyFireball::status_roy_fireball_fall);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_FALL, &RoyFireball::enter_status_roy_fireball_fall);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_FALL, &RoyFireball::exit_status_roy_fireball_fall);
+
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::status_roy_fireball_ground);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::enter_status_roy_fireball_ground);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::exit_status_roy_fireball_ground);
 }
 
 void RoyFireball::loadRoyFireballACMD() {
@@ -98,18 +106,6 @@ void RoyFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}
-}
-
-void RoyFireball::projectile_unique_status() {
-	(this->*roy_fireball_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void RoyFireball::projectile_unique_enter_status() {
-	(this->*roy_fireball_enter_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void RoyFireball::projectile_unique_exit_status() {
-	(this->*roy_fireball_exit_status[status_kind - PROJECTILE_STATUS_MAX])();
 }
 
 void RoyFireball::status_default() {

@@ -1,0 +1,8 @@
+#pragma once
+#include "ProjectileInt.h"
+
+enum {
+	PROJECTILE_ERIC_FIREBALL_INT_START = PROJECTILE_INT_MAX,
+
+	PROJECTILE_ERIC_FIREBALL_INT_MAX,
+};

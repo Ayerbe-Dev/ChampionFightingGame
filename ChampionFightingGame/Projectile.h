@@ -4,26 +4,31 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
+#define ADD_PROJECTILE_STATUS(index, status_func) (status_script[index] = (void (Projectile::*)(void))status_func)
+#define ADD_PROJECTILE_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Projectile::*)(void))(status_func))
+#define ADD_PROJECTILE_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Projectile::*)(void))(status_func))
+
 class Fighter;
 class FighterAccessor;
 
 class Projectile: public BattleObject {
 public:
 	int projectile_kind;
+	std::string projectile_name;
 	int owner_id;
 
-	Fighter* owner;
 	FighterAccessor* fighter_accessor;
+	Fighter* owner;
 
 	bool has_model;
 
-	int projectile_int[PROJECTILE_INT_MAX];
-	float projectile_float[PROJECTILE_FLOAT_MAX];
-	bool projectile_flag[PROJECTILE_FLAG_MAX];
+	std::vector<int> projectile_int;
+	std::vector<float> projectile_float;
+	std::vector<bool> projectile_flag;
 
-	void (Projectile::* status_script[PROJECTILE_STATUS_MAX])();
-	void (Projectile::* enter_status_script[PROJECTILE_STATUS_MAX])();
-	void (Projectile::* exit_status_script[PROJECTILE_STATUS_MAX])();
+	std::vector<void (Projectile::*)(void)> status_script;
+	std::vector<void (Projectile::*)(void)> enter_status_script;
+	std::vector<void (Projectile::*)(void)> exit_status_script;
 
 	/*
 		FUNCTIONS
@@ -58,9 +63,6 @@ public:
 	//Status
 
 	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
-	virtual void projectile_unique_status() {};
-	virtual void projectile_unique_enter_status() {};
-	virtual void projectile_unique_exit_status() {};
 
 	//Hitbox
 

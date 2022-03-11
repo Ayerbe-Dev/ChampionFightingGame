@@ -14,12 +14,7 @@ void Projectile::projectile_main() {
 }
 
 void Projectile::process_status() {
-	if (status_kind < PROJECTILE_STATUS_MAX) {
-		(this->*status_script[status_kind])();
-	}
-	else {
-		projectile_unique_status();
-	}
+	(this->*status_script[status_kind])();
 	move_script.move_script();
 }
 

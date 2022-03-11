@@ -395,6 +395,11 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Eric.h" />
     <ClInclude Include="EricConstants.h" />
     <ClInclude Include="EricFireball.h" />
+    <ClInclude Include="EricFireballConstants.h" />
+    <ClInclude Include="EricFireballFlag.h" />
+    <ClInclude Include="EricFireballFloat.h" />
+    <ClInclude Include="EricFireballInt.h" />
+    <ClInclude Include="EricFireballStatus.h" />
     <ClInclude Include="EricFlag.h" />
     <ClInclude Include="EricFloat.h" />
     <ClInclude Include="EricInt.h" />
@@ -473,6 +478,11 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ProjectileKind.h" />
     <ClInclude Include="Projectiles.h" />
     <ClInclude Include="ProjectileStatus.h" />
+    <ClInclude Include="ProjectileTemplateConstants.h" />
+    <ClInclude Include="ProjectileTemplateFlag.h" />
+    <ClInclude Include="ProjectileTemplateFloat.h" />
+    <ClInclude Include="ProjectileTemplateInt.h" />
+    <ClInclude Include="ProjectileTemplateStatus.h" />
     <ClInclude Include="Ramona.h" />
     <ClInclude Include="RamonaConstants.h" />
     <ClInclude Include="RamonaFlag.h" />
@@ -484,6 +494,11 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Roy.h" />
     <ClInclude Include="RoyConstants.h" />
     <ClInclude Include="RoyFireball.h" />
+    <ClInclude Include="RoyFireballConstants.h" />
+    <ClInclude Include="RoyFireballFlag.h" />
+    <ClInclude Include="RoyFireballFloat.h" />
+    <ClInclude Include="RoyFireballInt.h" />
+    <ClInclude Include="RoyFireballStatus.h" />
     <ClInclude Include="RoyFlag.h" />
     <ClInclude Include="RoyFloat.h" />
     <ClInclude Include="RoyInt.h" />

@@ -4,7 +4,7 @@
 #include <iostream>
 
 class Model;
-class Bone;
+struct Bone;
 
 class Animation {
 public:

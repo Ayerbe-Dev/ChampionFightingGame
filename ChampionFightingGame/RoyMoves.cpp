@@ -1,5 +1,6 @@
 #include "Roy.h"
 #include "RoyFireball.h"
+#include "RoyFireballConstants.h"
 
 void Roy::load_move_scripts() {
 	script("default", [this]() {

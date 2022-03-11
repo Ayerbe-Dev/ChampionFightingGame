@@ -1,18 +1,26 @@
 #include "EricFireball.h"
 #include "Battle.h"
+#include "EricFireballConstants.h"
 
 EricFireball::EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 	this->player_info = player_info;
 	resource_dir = "resource/projectile/eric_fireball";
-	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
+	projectile_name = "eric_fireball";
+	projectile_int.resize(PROJECTILE_ERIC_FIREBALL_INT_MAX, 0);
+	projectile_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
+	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
+	load_params();
 	loadEricFireballACMD();
 	loadEricFireballStatusFunctions();
-	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	superInit();
+	this->fighter_accessor = fighter_accessor;
 }
 
 void EricFireball::loadEricFireballStatusFunctions() {
-
+	status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
+	enter_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
+	exit_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
 }
 
 void EricFireball::loadEricFireballACMD() {
@@ -32,18 +40,6 @@ void EricFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}
-}
-
-void EricFireball::projectile_unique_status() {
-	(this->*eric_fireball_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void EricFireball::projectile_unique_enter_status() {
-	(this->*eric_fireball_enter_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void EricFireball::projectile_unique_exit_status() {
-	(this->*eric_fireball_exit_status[status_kind - PROJECTILE_STATUS_MAX])();
 }
 
 void EricFireball::status_default() {

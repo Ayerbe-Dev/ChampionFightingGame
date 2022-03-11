@@ -11,14 +11,7 @@ public:
 	void loadRoyFireballStatusFunctions();
 	void loadRoyFireballACMD();
 
-	void (RoyFireball::* roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_MAX - PROJECTILE_STATUS_MAX])();
-	void (RoyFireball::* roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_MAX - PROJECTILE_STATUS_MAX])();
-	void (RoyFireball::* roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_MAX - PROJECTILE_STATUS_MAX])();
-
 	void projectile_unique_main() override;
-	void projectile_unique_status() override;
-	void projectile_unique_enter_status() override;
-	void projectile_unique_exit_status() override;
 
 	void status_default() override;
 	void status_hit() override;

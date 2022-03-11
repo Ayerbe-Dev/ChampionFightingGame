@@ -1,21 +1,30 @@
 #include "ProjectileTemplate.h"
 #include "Battle.h"
+#include "ProjectileTemplateConstants.h"
 
 ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor * fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/projectile/template";
-	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
+	projectile_name = "projectile_template";
+	resource_dir = "resource/projectile/projectile_template";
+	projectile_int.resize(PROJECTILE_PROJECTILE_TEMPLATE_INT_MAX, 0);
+	projectile_float.resize(PROJECTILE_PROJECTILE_TEMPLATE_FLOAT_MAX, 0.0);
+	projectile_flag.resize(PROJECTILE_PROJECTILE_TEMPLATE_FLAG_MAX, false);
 	load_params();
 	loadProjectileTemplateACMD();
 	loadProjectileTemplateStatusFunctions();
-	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	superInit();
+	this->fighter_accessor = fighter_accessor;
 }
 
 void ProjectileTemplate::loadProjectileTemplateStatusFunctions() {
-	projectile_template_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE - PROJECTILE_STATUS_MAX] = &ProjectileTemplate::projectile_template_status_template;
-	projectile_template_enter_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE - PROJECTILE_STATUS_MAX] = &ProjectileTemplate::projectile_template_enter_status_template;
-	projectile_template_exit_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE - PROJECTILE_STATUS_MAX] = &ProjectileTemplate::projectile_template_exit_status_template;
+	status_script.resize(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX, nullptr);
+	enter_status_script.resize(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX, nullptr);
+	exit_status_script.resize(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX, nullptr);
+
+	ADD_PROJECTILE_STATUS(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE, &ProjectileTemplate::projectile_template_status_template);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE, &ProjectileTemplate::projectile_template_enter_status_template);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE, &ProjectileTemplate::projectile_template_exit_status_template);
 }
 
 void ProjectileTemplate::loadProjectileTemplateACMD() {
@@ -27,19 +36,6 @@ void ProjectileTemplate::loadProjectileTemplateACMD() {
 void ProjectileTemplate::projectile_unique_main() {
 
 }
-
-void ProjectileTemplate::projectile_unique_status() {
-	(this->*projectile_template_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void ProjectileTemplate::projectile_unique_enter_status() {
-	(this->*projectile_template_enter_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void ProjectileTemplate::projectile_unique_exit_status() {
-	(this->*projectile_template_exit_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
 void ProjectileTemplate::status_default() {
 	
 }

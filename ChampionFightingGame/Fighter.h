@@ -8,17 +8,15 @@
 #include "SoundManager.h"
 #include "FighterConstants.h"
 
-#define ADD_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
-#define ADD_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
-#define ADD_EXIT_STATUS(index, status_func) (exit_status_script[index] =(void (Fighter::*)(void))(status_func))
+#define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
+#define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
+#define ADD_FIGHTER_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Fighter::*)(void))(status_func))
 
 class FighterAccessor;
 class Projectile;
 
 class Fighter: public BattleObject {
 public:
-	virtual void chara_id() = 0;
-
 	int chara_kind;
 	std::string chara_name;
 	int music_kind;

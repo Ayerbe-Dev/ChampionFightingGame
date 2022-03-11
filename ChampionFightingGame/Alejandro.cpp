@@ -20,10 +20,6 @@ Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_a
 	loadAlejandroStatusFunctions();
 	set_current_move_script("default");
 	this->chara_kind = CHARA_KIND_ALEJANDRO;
-
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		projectiles[i] = new Projectile();
-	}
 }
 
 void Alejandro::chara_id() {

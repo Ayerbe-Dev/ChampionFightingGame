@@ -8,18 +8,11 @@ public:
 	ProjectileTemplate();
 	ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 
-	void (ProjectileTemplate::* projectile_template_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX - PROJECTILE_STATUS_MAX])();
-	void (ProjectileTemplate::* projectile_template_enter_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX - PROJECTILE_STATUS_MAX])();
-	void (ProjectileTemplate::* projectile_template_exit_status[PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX - PROJECTILE_STATUS_MAX])();
-
 	void loadProjectileTemplateStatusFunctions();
 	void loadProjectileTemplateACMD();
 
 	void projectile_unique_main() override;
-	void projectile_unique_status() override;
-	void projectile_unique_enter_status() override;
-	void projectile_unique_exit_status() override;
-
+	
 	void status_default() override;
 	void status_hit() override;
 	void enter_status_hit() override;

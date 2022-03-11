@@ -229,6 +229,15 @@
     <Filter Include="Header Files\Objects\Fighter\Chara\Zyair">
       <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Objects\Projectile\ProjectileUnique\EricFireball">
+      <UniqueIdentifier>{97ef6028-95f9-4bb7-aea3-ae88d6326ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Projectile\ProjectileUnique\RoyFireball">
+      <UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
+      <UniqueIdentifier>{9d5c1f42-c2f4-4037-b140-49a0fa7c2837}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -617,18 +626,6 @@
     <ClInclude Include="Stage.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectileStatus.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileInt.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileFloat.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileFlag.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
     <ClInclude Include="BoxConstants.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
@@ -743,15 +740,6 @@
     <ClInclude Include="Projectile.h">
       <Filter>Header Files\Objects\Projectile\Projectile</Filter>
     </ClInclude>
-    <ClInclude Include="EricFireball.h">
-      <Filter>Header Files\Objects\Projectile\ProjectileUnique</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplate.h">
-      <Filter>Header Files\Objects\Projectile\ProjectileUnique</Filter>
-    </ClInclude>
-    <ClInclude Include="RoyFireball.h">
-      <Filter>Header Files\Objects\Projectile\ProjectileUnique</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectileInterface.h">
       <Filter>Header Files\Objects\Projectile\Projectile</Filter>
     </ClInclude>
@@ -777,12 +765,6 @@
       <Filter>Header Files\Helper Funcs</Filter>
     </ClInclude>
     <ClInclude Include="StageKind.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileConstants.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileKind.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="SoundConstants.h">
@@ -1135,6 +1117,78 @@
     </ClInclude>
     <ClInclude Include="VesuviusConstants.h">
       <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileStatus.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileConstants.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileFlag.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileFloat.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileInt.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileKind.h">
+      <Filter>Header Files\Objects\Projectile\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplate.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireball.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireball.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireballConstants.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireballInt.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireballFloat.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireballStatus.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFireballFlag.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplateFlag.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplateFloat.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplateInt.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplateStatus.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileTemplateConstants.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireballFlag.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireballFloat.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireballInt.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireballStatus.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFireballConstants.h">
+      <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

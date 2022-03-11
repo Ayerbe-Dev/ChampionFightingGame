@@ -13,20 +13,10 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
 		fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = 0.0;
 		if (call_end_status) {
-			if (status_kind < FIGHTER_STATUS_MAX) {
-				(this->*exit_status_script[status_kind])();
-			}
-			else {
-				chara_exit_status();
-			}
+			(this->*exit_status_script[status_kind])();
 		}
 		status_kind = new_status_kind;
-		if (status_kind < FIGHTER_STATUS_MAX) {
-			(this->*enter_status_script[status_kind])();
-		}
-		else {
-			chara_enter_status();
-		}
+		(this->*enter_status_script[status_kind])();
 		return true;
 	}
 	else {

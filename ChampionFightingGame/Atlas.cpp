@@ -10,6 +10,9 @@ Atlas::Atlas(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	this->player_info = player_info;
 	chara_name = "atlas";
 	resource_dir = "resource/chara/atlas";
+	fighter_int.resize(CHARA_ATLAS_INT_MAX, 0);
+	fighter_float.resize(CHARA_ATLAS_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_ATLAS_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Atlas::Atlas(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 
 void Atlas::chara_id() {
 
-}
-
-void Atlas::chara_status() {
-	(this->*atlas_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Atlas::chara_enter_status() {
-	(this->*atlas_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Atlas::chara_exit_status() {
-	(this->*atlas_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

@@ -175,6 +175,60 @@
     <Filter Include="Source Files\Helper Funcs">
       <UniqueIdentifier>{3b964603-72cf-4262-adae-bd6c8fea4f10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Alejandro">
+      <UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Angelica">
+      <UniqueIdentifier>{f4ed11fc-9f35-4f43-9f5d-79998f0e4424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Atlas">
+      <UniqueIdentifier>{eea94ffe-4b31-4d12-b834-703f6e472663}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Aziel">
+      <UniqueIdentifier>{2d6f673b-5344-48ba-aaa0-25b260597256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Bruno">
+      <UniqueIdentifier>{d49a19b3-bff5-4062-88f4-70ea9616fbe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\CharaTemplate">
+      <UniqueIdentifier>{8226793e-5c9f-44ad-be88-86bb98615d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Eric">
+      <UniqueIdentifier>{0bdc1526-7a6d-4a41-8711-ef0e50fd1f8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Julius">
+      <UniqueIdentifier>{58ae0a9a-47fe-4aba-a47a-7b5e2a3c733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Leon">
+      <UniqueIdentifier>{809dd26f-5c52-4ae2-82b5-5c9e37b6090b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Nightsaber">
+      <UniqueIdentifier>{b3af1407-aabb-4604-85e6-570b6d1461d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Norman">
+      <UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Priest">
+      <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Ramona">
+      <UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Roy">
+      <UniqueIdentifier>{bd654e23-229e-44d8-bd71-63c99649a964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Sully">
+      <UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Tessa">
+      <UniqueIdentifier>{ef0cddad-ff51-47f2-9d3f-4849808a3e29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Vesuvius">
+      <UniqueIdentifier>{d85384a9-35c0-4632-9bfb-08bb8a330702}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Fighter\Chara\Zyair">
+      <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -563,18 +617,6 @@
     <ClInclude Include="Stage.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="FighterStatus.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterInt.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterFloat.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterFlag.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectileStatus.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
@@ -597,9 +639,6 @@
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="MenuConstants.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterAttribute.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="CharaKind.h">
@@ -695,60 +734,6 @@
     <ClInclude Include="GameRect.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Alejandro.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Angelica.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Atlas.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Aziel.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Bruno.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplate.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Eric.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Julius.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Leon.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Nightsaber.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Norman.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Priest.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Ramona.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Roy.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Sully.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Tessa.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Vesuvius.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
-    <ClInclude Include="Zyair.h">
-      <Filter>Header Files\Objects\Fighter\Chara</Filter>
-    </ClInclude>
     <ClInclude Include="Fighter.h">
       <Filter>Header Files\Objects\Fighter\Fighter</Filter>
     </ClInclude>
@@ -794,9 +779,6 @@
     <ClInclude Include="StageKind.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="FighterConstants.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectileConstants.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
@@ -811,6 +793,348 @@
     </ClInclude>
     <ClInclude Include="GameSettings.h">
       <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Alejandro.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+    </ClInclude>
+    <ClInclude Include="Angelica.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    </ClInclude>
+    <ClInclude Include="Atlas.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="Aziel.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    </ClInclude>
+    <ClInclude Include="Bruno.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplate.h">
+      <Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="Eric.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+    </ClInclude>
+    <ClInclude Include="Julius.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+    </ClInclude>
+    <ClInclude Include="Leon.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+    </ClInclude>
+    <ClInclude Include="Nightsaber.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    </ClInclude>
+    <ClInclude Include="Norman.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+    </ClInclude>
+    <ClInclude Include="Priest.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+    </ClInclude>
+    <ClInclude Include="Ramona.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+    </ClInclude>
+    <ClInclude Include="Roy.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+    </ClInclude>
+    <ClInclude Include="Sully.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+    </ClInclude>
+    <ClInclude Include="Tessa.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+    </ClInclude>
+    <ClInclude Include="Zyair.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+    </ClInclude>
+    <ClInclude Include="Vesuvius.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+    </ClInclude>
+    <ClInclude Include="AlejandroInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+    </ClInclude>
+    <ClInclude Include="AlejandroFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+    </ClInclude>
+    <ClInclude Include="AlejandroFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+    </ClInclude>
+    <ClInclude Include="AlejandroStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicaFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicaFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicaInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicaStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlasFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlasFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlasInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlasStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="AzielFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    </ClInclude>
+    <ClInclude Include="AzielFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    </ClInclude>
+    <ClInclude Include="AzielInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    </ClInclude>
+    <ClInclude Include="AzielStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    </ClInclude>
+    <ClInclude Include="BrunoFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+    </ClInclude>
+    <ClInclude Include="BrunoFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+    </ClInclude>
+    <ClInclude Include="BrunoInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+    </ClInclude>
+    <ClInclude Include="BrunoStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplateFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplateFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplateInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplateStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+    </ClInclude>
+    <ClInclude Include="EricFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+    </ClInclude>
+    <ClInclude Include="EricInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+    </ClInclude>
+    <ClInclude Include="EricStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+    </ClInclude>
+    <ClInclude Include="JuliusFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+    </ClInclude>
+    <ClInclude Include="JuliusFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+    </ClInclude>
+    <ClInclude Include="JuliusInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+    </ClInclude>
+    <ClInclude Include="JuliusStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+    </ClInclude>
+    <ClInclude Include="LeonFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+    </ClInclude>
+    <ClInclude Include="LeonFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+    </ClInclude>
+    <ClInclude Include="LeonInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+    </ClInclude>
+    <ClInclude Include="LeonStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+    </ClInclude>
+    <ClInclude Include="ZyairFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+    </ClInclude>
+    <ClInclude Include="ZyairFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+    </ClInclude>
+    <ClInclude Include="ZyairInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+    </ClInclude>
+    <ClInclude Include="ZyairStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+    </ClInclude>
+    <ClInclude Include="VesuviusFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+    </ClInclude>
+    <ClInclude Include="VesuviusFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+    </ClInclude>
+    <ClInclude Include="VesuviusInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+    </ClInclude>
+    <ClInclude Include="VesuviusStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+    </ClInclude>
+    <ClInclude Include="TessaFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+    </ClInclude>
+    <ClInclude Include="TessaFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+    </ClInclude>
+    <ClInclude Include="TessaInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+    </ClInclude>
+    <ClInclude Include="TessaStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+    </ClInclude>
+    <ClInclude Include="SullyFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+    </ClInclude>
+    <ClInclude Include="SullyFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+    </ClInclude>
+    <ClInclude Include="SullyInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+    </ClInclude>
+    <ClInclude Include="SullyStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+    </ClInclude>
+    <ClInclude Include="PriestFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+    </ClInclude>
+    <ClInclude Include="PriestFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+    </ClInclude>
+    <ClInclude Include="PriestInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+    </ClInclude>
+    <ClInclude Include="PriestStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+    </ClInclude>
+    <ClInclude Include="NormanFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+    </ClInclude>
+    <ClInclude Include="NormanFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+    </ClInclude>
+    <ClInclude Include="NormanInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+    </ClInclude>
+    <ClInclude Include="NormanStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+    </ClInclude>
+    <ClInclude Include="NightsaberFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    </ClInclude>
+    <ClInclude Include="NightsaberFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    </ClInclude>
+    <ClInclude Include="NightsaberInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    </ClInclude>
+    <ClInclude Include="NightsaberStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    </ClInclude>
+    <ClInclude Include="RamonaFlag.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+    </ClInclude>
+    <ClInclude Include="RamonaFloat.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+    </ClInclude>
+    <ClInclude Include="RamonaInt.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+    </ClInclude>
+    <ClInclude Include="RamonaStatus.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterAttribute.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterConstants.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterFlag.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterFloat.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterInt.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterStatus.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="AlejandroConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+    </ClInclude>
+    <ClInclude Include="AngelicaConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlasConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="AzielConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    </ClInclude>
+    <ClInclude Include="BrunoConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaTemplateConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="EricConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+    </ClInclude>
+    <ClInclude Include="JuliusConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+    </ClInclude>
+    <ClInclude Include="LeonConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+    </ClInclude>
+    <ClInclude Include="ZyairConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+    </ClInclude>
+    <ClInclude Include="NightsaberConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    </ClInclude>
+    <ClInclude Include="NormanConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+    </ClInclude>
+    <ClInclude Include="PriestConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+    </ClInclude>
+    <ClInclude Include="RamonaConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+    </ClInclude>
+    <ClInclude Include="RoyConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+    </ClInclude>
+    <ClInclude Include="SullyConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+    </ClInclude>
+    <ClInclude Include="TessaConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+    </ClInclude>
+    <ClInclude Include="VesuviusConstants.h">
+      <Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

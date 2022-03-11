@@ -8,8 +8,6 @@ public:
 	EricFireball();
 	EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor);
 
-	Eric* eric;
-
 	void loadEricFireballStatusFunctions();
 	void loadEricFireballACMD();
 

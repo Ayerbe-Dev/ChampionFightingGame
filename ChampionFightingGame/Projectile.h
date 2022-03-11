@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
+class Fighter;
 class FighterAccessor;
 
 class Projectile: public BattleObject {
@@ -11,6 +12,7 @@ public:
 	int projectile_kind;
 	int owner_id;
 
+	Fighter* owner;
 	FighterAccessor* fighter_accessor;
 
 	bool has_model;

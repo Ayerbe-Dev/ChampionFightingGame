@@ -10,6 +10,9 @@ Zyair::Zyair(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	this->player_info = player_info;
 	resource_dir = "resource/chara/zyair";
 	chara_name = "zyair";
+	fighter_int.resize(CHARA_ZYAIR_INT_MAX, 0);
+	fighter_float.resize(CHARA_ZYAIR_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_ZYAIR_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Zyair::Zyair(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 
 void Zyair::chara_id() {
 
-}
-
-void Zyair::chara_status() {
-	(this->*zyair_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Zyair::chara_enter_status() {
-	(this->*zyair_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Zyair::chara_exit_status() {
-	(this->*zyair_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

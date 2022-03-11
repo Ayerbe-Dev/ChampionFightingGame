@@ -10,6 +10,9 @@ Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_a
 	this->player_info = player_info;
 	resource_dir = "resource/chara/alejandro";
 	chara_name = "alejandro";
+	fighter_int.resize(CHARA_ALEJANDRO_INT_MAX, 0);
+	fighter_float.resize(CHARA_ALEJANDRO_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_ALEJANDRO_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -25,16 +28,4 @@ Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_a
 
 void Alejandro::chara_id() {
 
-}
-
-void Alejandro::chara_status() {
-	(this->*alejandro_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Alejandro::chara_enter_status() {
-	(this->*alejandro_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Alejandro::chara_exit_status() {
-	(this->*alejandro_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "Fighter.h"
 #include "BattleObject.h"
-#include "utils.h"
+#include "AzielConstants.h"
 
 class Aziel : public Fighter {
 public:
@@ -11,18 +11,7 @@ public:
 	void loadAzielStatusFunctions();
 	void load_move_scripts() override;
 
-	void (Aziel::* aziel_status[CHARA_AZIEL_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Aziel::* aziel_enter_status[CHARA_AZIEL_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Aziel::* aziel_exit_status[CHARA_AZIEL_STATUS_MAX - FIGHTER_STATUS_MAX])();
-
-	int aziel_int[CHARA_AZIEL_INT_MAX];
-	float aziel_float[CHARA_AZIEL_FLOAT_MAX];
-	bool aziel_flag[CHARA_AZIEL_FLAG_MAX];
-
 	void chara_main() override;
-	void chara_status() override;
-	void chara_enter_status() override;
-	void chara_exit_status() override;
 
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;

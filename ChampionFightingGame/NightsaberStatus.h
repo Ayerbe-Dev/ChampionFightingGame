@@ -1,0 +1,7 @@
+#pragma once
+#include "FighterStatus.h"
+
+enum {
+	CHARA_NIGHTSABER_STATUS_START = FIGHTER_STATUS_MAX,
+	CHARA_NIGHTSABER_STATUS_MAX,
+};

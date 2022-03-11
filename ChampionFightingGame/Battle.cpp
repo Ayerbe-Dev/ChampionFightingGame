@@ -45,6 +45,10 @@ void battle_main(GameManager* game_manager) {
 	Battle battle;
 	battle.load_battle(game_manager);
 
+	if (battle.fighter[0]->chara_kind == CHARA_KIND_ERIC) {
+		((Eric*)battle.fighter[0])->loadEricStatusFunctions();
+	}
+
 	while (*game_manager->looping[game_manager->layer]) {
 		battle.frame_delay_check_performance();
 		glClearColor(0.1, 0.1, 0.1, 1);
@@ -121,17 +125,8 @@ void Battle::load_battle(GameManager* game_manager) {
 		inc_thread();
 	}
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = player_info[i];
-		fighter[i]->pos.x = 0;
-		fighter_accessor->fighter[i] = fighter[i];
-		fighter[i]->fighter_accessor = fighter_accessor;
 		fighter[i]->superInit(i);
 		inc_thread();
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectiles[i2] != nullptr) {
-				fighter[i]->projectiles[i2]->owner_id = i;
-			}
-		}
 		health_bar[i].init(fighter[i]);
 		inc_thread();
 		ex_bar[i].init(fighter[i]);

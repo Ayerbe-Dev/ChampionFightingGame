@@ -11,6 +11,9 @@ Eric::Eric() {
 Eric::Eric(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 	resource_dir = "resource/chara/eric";
 	chara_name = "eric";
+	fighter_int.resize(CHARA_ERIC_INT_MAX, 0);
+	fighter_float.resize(CHARA_ERIC_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_ERIC_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -23,23 +26,9 @@ Eric::Eric(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 		projectiles[i] = new Projectile();
 	}
 
-	projectiles[0] = create_projectile(PROJECTILE_KIND_ERIC_FIREBALL, id, player_info, fighter_accessor);
-	EricFireball* eric_fireball = (EricFireball*)projectiles[0];
-	eric_fireball->eric = this;
+	projectiles[0] = create_projectile(PROJECTILE_KIND_ERIC_FIREBALL, id, player_info, this, fighter_accessor);
 }
 
 void Eric::chara_id() {
 
-}
-
-void Eric::chara_status() {
-	(this->*eric_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Eric::chara_enter_status() {
-	(this->*eric_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Eric::chara_exit_status() {
-	(this->*eric_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

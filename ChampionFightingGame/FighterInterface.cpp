@@ -86,6 +86,9 @@ FighterInterface::FighterInterface(int chara_kind, int id, PlayerInfo* player_in
 			fighter = new Vesuvius(id, player_info, fighter_accessor);
 		} break;
 	}
+	fighter->player_info = player_info;
+	fighter_accessor->fighter[id] = fighter;
+	fighter->fighter_accessor = fighter_accessor;
 }
 
 FighterInterface::~FighterInterface() {}

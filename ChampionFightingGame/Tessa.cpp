@@ -10,6 +10,9 @@ Tessa::Tessa(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	this->player_info = player_info;
 	resource_dir = "resource/chara/tessa";
 	chara_name = "tessa";
+	fighter_int.resize(CHARA_TESSA_INT_MAX, 0);
+	fighter_float.resize(CHARA_TESSA_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_TESSA_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Tessa::Tessa(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 
 void Tessa::chara_id() {
 
-}
-
-void Tessa::chara_status() {
-	(this->*tessa_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Tessa::chara_enter_status() {
-	(this->*tessa_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Tessa::chara_exit_status() {
-	(this->*tessa_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

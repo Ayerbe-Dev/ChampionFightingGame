@@ -10,6 +10,9 @@ Vesuvius::Vesuvius(int id, PlayerInfo* player_info, FighterAccessor* fighter_acc
 	this->player_info = player_info;
 	resource_dir = "resource/chara/vesuvius";
 	chara_name = "vesuvius";
+	fighter_int.resize(CHARA_VESUVIUS_INT_MAX, 0);
+	fighter_float.resize(CHARA_VESUVIUS_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_VESUVIUS_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Vesuvius::Vesuvius(int id, PlayerInfo* player_info, FighterAccessor* fighter_acc
 
 void Vesuvius::chara_id() {
 
-}
-
-void Vesuvius::chara_status() {
-	(this->*vesuvius_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Vesuvius::chara_enter_status() {
-	(this->*vesuvius_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Vesuvius::chara_exit_status() {
-	(this->*vesuvius_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

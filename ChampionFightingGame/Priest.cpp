@@ -10,6 +10,9 @@ Priest::Priest(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 	this->player_info = player_info;
 	resource_dir = "resource/chara/priest";
 	chara_name = "priest";
+	fighter_int.resize(CHARA_PRIEST_INT_MAX, 0);
+	fighter_float.resize(CHARA_PRIEST_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_PRIEST_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Priest::Priest(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 
 void Priest::chara_id() {
 
-}
-
-void Priest::chara_status() {
-	(this->*priest_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Priest::chara_enter_status() {
-	(this->*priest_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Priest::chara_exit_status() {
-	(this->*priest_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

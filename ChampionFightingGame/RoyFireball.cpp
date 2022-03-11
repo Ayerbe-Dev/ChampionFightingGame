@@ -145,10 +145,10 @@ void RoyFireball::exit_status_roy_fireball_hover() {
 }
 
 void RoyFireball::status_roy_fireball_punched() {
-	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
+	if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
 		pos.x += get_param_float("punch_move_x_speed_l", params) * facing_dir;
 	}
-	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
+	else if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
 		pos.x += get_param_float("punch_move_x_speed_m", params) * facing_dir;
 	}
 	else {
@@ -169,11 +169,11 @@ void RoyFireball::exit_status_roy_fireball_punched() {
 }
 
 void RoyFireball::status_roy_fireball_kicked() {
-	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
+	if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
 		pos.x += get_param_float("kick_move_x_speed_l", params) * facing_dir;
 		pos.y += get_param_float("kick_move_y_speed_l", params);
 	}
-	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
+	else if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
 		pos.x += get_param_float("kick_move_x_speed_m", params) * facing_dir;
 		pos.y += get_param_float("kick_move_y_speed_m", params);
 	}

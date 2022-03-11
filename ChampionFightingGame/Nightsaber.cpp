@@ -10,6 +10,9 @@ Nightsaber::Nightsaber(int id, PlayerInfo* player_info, FighterAccessor* fighter
 	this->player_info = player_info;
 	resource_dir = "resource/chara/nightsaber";
 	chara_name = "nightsaber";
+	fighter_int.resize(CHARA_NIGHTSABER_INT_MAX, 0);
+	fighter_float.resize(CHARA_NIGHTSABER_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_NIGHTSABER_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Nightsaber::Nightsaber(int id, PlayerInfo* player_info, FighterAccessor* fighter
 
 void Nightsaber::chara_id() {
 
-}
-
-void Nightsaber::chara_status() {
-	(this->*nightsaber_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Nightsaber::chara_enter_status() {
-	(this->*nightsaber_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Nightsaber::chara_exit_status() {
-	(this->*nightsaber_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

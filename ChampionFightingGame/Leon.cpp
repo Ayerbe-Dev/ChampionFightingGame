@@ -18,6 +18,9 @@ Leon::Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 		resource_dir = "resource/chara/chameleon";
 		chara_name = "chameleon";
 	}
+	fighter_int.resize(CHARA_LEON_INT_MAX, 0);
+	fighter_float.resize(CHARA_LEON_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_LEON_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -28,16 +31,4 @@ Leon::Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 
 void Leon::chara_id() {
 
-}
-
-void Leon::chara_status() {
-	(this->*leon_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Leon::chara_enter_status() {
-	(this->*leon_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Leon::chara_exit_status() {
-	(this->*leon_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

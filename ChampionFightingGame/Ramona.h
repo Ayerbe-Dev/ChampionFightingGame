@@ -1,7 +1,7 @@
 #pragma once
 #include "Fighter.h"
 #include "BattleObject.h"
-#include "utils.h"
+#include "RamonaConstants.h"
 
 class Ramona : public Fighter {
 public:
@@ -11,18 +11,7 @@ public:
 	void loadRamonaStatusFunctions();
 	void load_move_scripts() override;
 
-	void (Ramona::* ramona_status[CHARA_RAMONA_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Ramona::* ramona_enter_status[CHARA_RAMONA_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Ramona::* ramona_exit_status[CHARA_RAMONA_STATUS_MAX - FIGHTER_STATUS_MAX])();
-
-	int ramona_int[CHARA_RAMONA_INT_MAX];
-	float ramona_float[CHARA_RAMONA_FLOAT_MAX];
-	bool ramona_flag[CHARA_RAMONA_FLAG_MAX];
-
 	void chara_main() override;
-	void chara_status() override;
-	void chara_enter_status() override;
-	void chara_exit_status() override;
 
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;

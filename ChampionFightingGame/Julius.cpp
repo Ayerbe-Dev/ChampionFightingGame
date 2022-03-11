@@ -10,6 +10,9 @@ Julius::Julius(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 	this->player_info = player_info;
 	resource_dir = "resource/chara/julius";
 	chara_name = "julius";
+	fighter_int.resize(CHARA_JULIUS_INT_MAX, 0);
+	fighter_float.resize(CHARA_JULIUS_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_JULIUS_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Julius::Julius(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 
 void Julius::chara_id() {
 
-}
-
-void Julius::chara_status() {
-	(this->*julius_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Julius::chara_enter_status() {
-	(this->*julius_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Julius::chara_exit_status() {
-	(this->*julius_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

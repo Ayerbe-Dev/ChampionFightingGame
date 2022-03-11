@@ -11,6 +11,7 @@ Fighter::Fighter(PlayerInfo* player_info) {
 	this->player_info = player_info;
 	// runs
 		// yeah
+			// jk no
 	superInit(0);
 }
 
@@ -163,12 +164,7 @@ void Fighter::process_status() {
 			fighter_accessor->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
 		}
 	}
-	if (status_kind < FIGHTER_STATUS_MAX) {
-		(this->*status_script[status_kind])();
-	}
-	else {
-		chara_status();
-	}
+	(this->*status_script[status_kind])();
 	move_script.move_script();
 }
 

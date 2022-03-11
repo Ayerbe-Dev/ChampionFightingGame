@@ -1,7 +1,7 @@
 #pragma once
 #include "Fighter.h"
 #include "BattleObject.h"
-#include "utils.h"
+#include "VesuviusConstants.h"
 
 class Vesuvius : public Fighter {
 public:
@@ -11,18 +11,7 @@ public:
 	void loadVesuviusStatusFunctions();
 	void load_move_scripts() override;
 
-	void (Vesuvius::* vesuvius_status[CHARA_VESUVIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Vesuvius::* vesuvius_enter_status[CHARA_VESUVIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Vesuvius::* vesuvius_exit_status[CHARA_VESUVIUS_STATUS_MAX - FIGHTER_STATUS_MAX])();
-
-	int vesuvius_int[CHARA_VESUVIUS_INT_MAX];
-	float vesuvius_float[CHARA_VESUVIUS_FLOAT_MAX];
-	bool vesuvius_flag[CHARA_VESUVIUS_FLAG_MAX];
-
 	void chara_main() override;
-	void chara_status() override;
-	void chara_enter_status() override;
-	void chara_exit_status() override;
 
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;

@@ -1,0 +1,8 @@
+#pragma once
+#include "FighterInt.h"
+
+enum {
+	CHARA_ERIC_INT_START = FIGHTER_INT_MAX,
+	CHARA_ERIC_INT_DISCHARGE_LEVEL,
+	CHARA_ERIC_INT_MAX,
+};

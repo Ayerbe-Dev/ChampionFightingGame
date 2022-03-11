@@ -10,6 +10,9 @@ Ramona::Ramona(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 	this->player_info = player_info;
 	resource_dir = "resource/chara/ramona";
 	chara_name = "ramona";
+	fighter_int.resize(CHARA_RAMONA_INT_MAX, 0);
+	fighter_float.resize(CHARA_RAMONA_FLOAT_MAX, 0.0);
+	fighter_flag.resize(CHARA_RAMONA_FLAG_MAX, false);
 	if (!crash_to_debug) {
 		load_params();
 	}
@@ -21,16 +24,4 @@ Ramona::Ramona(int id, PlayerInfo* player_info, FighterAccessor* fighter_accesso
 
 void Ramona::chara_id() {
 
-}
-
-void Ramona::chara_status() {
-	(this->*ramona_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Ramona::chara_enter_status() {
-	(this->*ramona_enter_status[status_kind - FIGHTER_STATUS_MAX])();
-}
-
-void Ramona::chara_exit_status() {
-	(this->*ramona_exit_status[status_kind - FIGHTER_STATUS_MAX])();
 }

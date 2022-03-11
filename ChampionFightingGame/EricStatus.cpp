@@ -168,15 +168,20 @@ void Eric::eric_exit_status_special_uppercut_fall() {
 }
 
 void Eric::loadEricStatusFunctions() {
-	eric_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Eric::eric_status_special_uppercut_start;
-	eric_enter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Eric::eric_enter_status_special_uppercut_start;
-	eric_exit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Eric::eric_exit_status_special_uppercut_start;
+	status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
+	
 
-	eric_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Eric::eric_status_special_uppercut;
-	eric_enter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Eric::eric_enter_status_special_uppercut;
-	eric_exit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Eric::eric_exit_status_special_uppercut;
+	ADD_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START, &Eric::eric_status_special_uppercut_start);
+	ADD_ENTRY_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START, &Eric::eric_enter_status_special_uppercut_start);
+	ADD_EXIT_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START, &Eric::eric_exit_status_special_uppercut_start);
 
-	eric_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Eric::eric_status_special_uppercut_fall;
-	eric_enter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Eric::eric_enter_status_special_uppercut_fall;
-	eric_exit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Eric::eric_exit_status_special_uppercut_fall;
+	ADD_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT, &Eric::eric_enter_status_special_uppercut);
+	ADD_ENTRY_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT , &Eric::eric_enter_status_special_uppercut);
+	ADD_EXIT_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT , &Eric::eric_exit_status_special_uppercut);
+
+	ADD_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL , &Eric::eric_status_special_uppercut_fall);
+	ADD_ENTRY_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL , &Eric::eric_enter_status_special_uppercut_fall);
+	ADD_EXIT_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL , &Eric::eric_exit_status_special_uppercut_fall);
 }

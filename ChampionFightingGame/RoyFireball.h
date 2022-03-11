@@ -8,8 +8,6 @@ public:
 	RoyFireball();
 	RoyFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor);
 
-	Roy* roy;
-
 	void loadRoyFireballStatusFunctions();
 	void loadRoyFireballACMD();
 

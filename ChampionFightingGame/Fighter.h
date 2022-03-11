@@ -8,6 +8,10 @@
 #include "SoundManager.h"
 #include "FighterConstants.h"
 
+#define ADD_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
+#define ADD_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
+#define ADD_EXIT_STATUS(index, status_func) (exit_status_script[index] =(void (Fighter::*)(void))(status_func))
+
 class FighterAccessor;
 class Projectile;
 
@@ -25,9 +29,9 @@ public:
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
 	
-	int fighter_int[FIGHTER_INT_MAX]{ 0 };
-	float fighter_float[FIGHTER_FLOAT_MAX]{ 0.0 };
-	bool fighter_flag[FIGHTER_FLAG_MAX]{false};
+	std::vector<int> fighter_int;
+	std::vector<float> fighter_float;
+	std::vector<bool> fighter_flag;
 	
 	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
 	int connected_hitbox = -1;
@@ -35,9 +39,9 @@ public:
 	int connected_projectile_hitbox = -1;
 
 	//Array of pointers to the corressponding function for each status
-	void (Fighter::* status_script[FIGHTER_STATUS_MAX])(); //Runs every frame for the status you're in
-	void (Fighter::* enter_status_script[FIGHTER_STATUS_MAX])(); //While your status is being changed, runs for the status you're going into
-	void (Fighter::* exit_status_script[FIGHTER_STATUS_MAX])(); //While your status is being changed, runs for the status you're going out of
+	std::vector<void (Fighter::*)(void)> status_script;
+	std::vector<void (Fighter::*)(void)> enter_status_script;
+	std::vector<void (Fighter::*)(void)> exit_status_script;
 
 	/*
 		FUNCTIONS

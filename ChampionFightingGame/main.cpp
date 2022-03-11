@@ -3,8 +3,10 @@
 #include <thread>
 #include <iostream>
 #include <Windows.h>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <glew/glew.h>
+#include "SDL Helpers.h"
 #include "utils.h"
 #include "GameSettings.h"
 #include "GameStates.h"
@@ -159,5 +161,5 @@ void initialize_GLEW() {
 	stbi_set_flip_vertically_on_load(true);
 
 	g_rendermanager.init();
-	g_rendermanager.add_light(vec3(1.0, 0.0, 1.2));
+	g_rendermanager.add_light(glm::vec3(1.0, 0.0, 1.2));
 }

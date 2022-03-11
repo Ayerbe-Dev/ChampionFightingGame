@@ -776,9 +776,6 @@
     <ClInclude Include="Projectiles.h">
       <Filter>Header Files\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
     <ClInclude Include="Param.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>

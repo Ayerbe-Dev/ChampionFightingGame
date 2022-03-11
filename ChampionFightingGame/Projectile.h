@@ -45,7 +45,6 @@ public:
 	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();
-	void load_stats();
 	void set_default_vars();
 	void init_boxes();
 

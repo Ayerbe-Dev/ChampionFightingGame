@@ -11,8 +11,6 @@
 
 #include "utils.h"
 
-using namespace glm;
-
 Model::Model() {}
 
 Model::Model(std::string path) {
@@ -45,12 +43,12 @@ void Model::load_model(std::string path) {
 	std::vector<std::string> missing_bones;
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].parent_id == -1) {
-			bones[i].parent_matrix = new mat4(1.0);
+			bones[i].parent_matrix = new glm::mat4(1.0);
 		}
 		else {
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
 		}
-		if (bones[i].model_matrix == mat4(1.0)) {
+		if (bones[i].model_matrix == glm::mat4(1.0)) {
 			missing_bones.push_back(bones[i].name);
 		}
 	}
@@ -92,8 +90,8 @@ void Model::set_bones(float frame, Animation* anim_kind) {
 
 void Model::reset_bones() {
 	for (int i = 0; i < bones.size(); i++) {
-		bones[i].anim_matrix = mat4(1.0);
-		bones[i].final_matrix = mat4(1.0);
+		bones[i].anim_matrix = glm::mat4(1.0);
+		bones[i].final_matrix = glm::mat4(1.0);
 	}
 }
 
@@ -184,7 +182,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		ModelVertex vertex;
-		vec3 vector;
+		glm::vec3 vector;
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
@@ -210,7 +208,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 		if (mesh->mTextureCoords[0]) {
 			//Assimp allows for a texture to have up to 8 texture coords per vertex. The guide I'm following says we'll only need to take a look at 
 			//the first one, but if we ever want/need to change that, here's where that'd be.
-			vec2 vec;
+			glm::vec2 vec;
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.tex_coords = vec;
@@ -248,8 +246,8 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
 			aiNode* ai_node = ai_bone->mArmature;
-			mat4 model_matrix = ass_converter(ai_bone->mOffsetMatrix); 
-			mat4 anim_matrix = ass_converter(ai_node->mTransformation);
+			glm::mat4 model_matrix = ass_converter(ai_bone->mOffsetMatrix);
+			glm::mat4 anim_matrix = ass_converter(ai_node->mTransformation);
 
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
 
@@ -271,7 +269,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			bone.rot.x = base_rot.x;
 			bone.rot.y = base_rot.y;
 			bone.rot.z = base_rot.z;
-			if (bone.rot != quat(0.0, 0.0, 0.0, 0.0)) {
+			if (bone.rot != glm::quat(0.0, 0.0, 0.0, 0.0)) {
 				bone.rot = normalize(bone.rot);
 			}
 			bone.scale.x = base_scale.x;
@@ -306,7 +304,7 @@ std::vector<ModelTexture> Model::load_material_textures(aiMaterial* mat, aiTextu
 		for (unsigned int i2 = 0; i2 < textures_loaded.size(); i2++) {
 			if (std::strcmp(textures_loaded[i2].path.data(), str.C_Str()) == 0) {
 				ModelTexture texture = textures_loaded[i2];
-				texture.type_string = type_name + to_string(i + 1);
+				texture.type_string = type_name + std::to_string(i + 1);
 				textures.push_back(texture);
 				skip = true;
 				break;
@@ -316,7 +314,7 @@ std::vector<ModelTexture> Model::load_material_textures(aiMaterial* mat, aiTextu
 			ModelTexture texture;
 			texture.id = loadGLTextureFromFile(str.C_Str(), directory);
 			texture.path = str.C_Str();
-			texture.type_string = type_name + to_string(i + 1);
+			texture.type_string = type_name + std::to_string(i + 1);
 			textures.push_back(texture);
 			textures_loaded.push_back(texture);
 		}
@@ -334,7 +332,7 @@ bool Model::find_missing_bones(aiNode* node, std::vector<std::string>& bone_name
 		if (Filter(node->mName.C_Str(), "model-armature_") == bone_names[i]) {
 			int index = get_bone_id(bone_names[i]);
 			std::cout << bones[index].name << ": " << std::endl;
-			std::cout << "Old Anim Matrix: " << std::endl << to_string(bones[index].anim_matrix) << std::endl;
+			std::cout << "Old Anim Matrix: " << std::endl << glm::to_string(bones[index].anim_matrix) << std::endl;
 			bones[index].anim_matrix = ass_converter(node->mTransformation);
 			bones[index].anim_rest_matrix = ass_converter(node->mTransformation);
 			if (bones[index].parent_id != -1) {
@@ -343,15 +341,15 @@ bool Model::find_missing_bones(aiNode* node, std::vector<std::string>& bone_name
 					bones[index].anim_rest_matrix *= bone.anim_rest_matrix;
 				}
 			}
-			std::cout << "New Anim Matrix: " << std::endl << to_string(bones[index].anim_matrix) << std::endl;
-			std::cout << "Old Model Matrix: " << std::endl << to_string(bones[index].model_matrix) << std::endl;
+			std::cout << "New Anim Matrix: " << std::endl << glm::to_string(bones[index].anim_matrix) << std::endl;
+			std::cout << "Old Model Matrix: " << std::endl << glm::to_string(bones[index].model_matrix) << std::endl;
 			bones[index].model_matrix = inverse(bones[index].anim_matrix);
 			if (bones[index].parent_id != -1) {
 				for (Bone bone = bones[bones[index].parent_id]; bone.parent_id != -1; bone = bones[bone.parent_id]) {
 					bones[index].model_matrix = inverse(bone.anim_matrix) * bones[index].model_matrix;
 				}
 			}
-			std::cout << "New Model Matrix: " << std::endl << to_string(bones[index].model_matrix) << std::endl << std::endl;
+			std::cout << "New Model Matrix: " << std::endl << glm::to_string(bones[index].model_matrix) << std::endl << std::endl;
 			bone_names.erase(bone_names.begin() + i);
 			break;
 		}

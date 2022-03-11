@@ -47,28 +47,6 @@ string ymlChopString(string line) {
 }
 
 /// <summary>
-/// Checks if a controller is making any inputs. Used for mapping a controller to a player who has none, as well as allowing any controller input to
-/// skip the opening/exit certain loading screens.
-/// 
-/// NOTE: This function is a helper function called by PlayerInfo::is_any_inputs. That function should always be called instead of this one.
-/// </summary>
-/// <param name="controller">: The controller being checked.</param>
-/// <returns>Whether or not the controller is making any inputs.</returns>
-bool is_any_controller_input(SDL_GameController* controller) {
-	for (int i = 1; i < 16; i++) {
-		if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)i)) {
-			return true;
-		}
-	}
-	for (int i = 1; i < 7; i++) {
-		if (abs(SDL_GameControllerGetAxis(controller, (SDL_GameControllerAxis)i)) >= 13106) {
-			return true;
-		}
-	}
-	return false;
-}
-
-/// <summary>
 /// Takes a string and removes a filtered version of it.
 /// </summary>
 /// <param name="to">: Base string</param>

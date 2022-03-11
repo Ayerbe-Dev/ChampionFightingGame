@@ -362,7 +362,6 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />
-    <ClInclude Include="Define.h" />
     <ClInclude Include="Eric.h" />
     <ClInclude Include="EricFireball.h" />
     <ClInclude Include="FighterAttribute.h" />

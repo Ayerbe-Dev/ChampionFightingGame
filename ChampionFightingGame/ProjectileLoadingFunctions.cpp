@@ -35,7 +35,7 @@ void Projectile::load_anim_list() {
 		model_ptr = nullptr;
 	}
 	try {
-		animation_table.load_fighter_animations(resource_dir, model_ptr);
+		animation_table.load_projectile_animations(resource_dir, model_ptr);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {

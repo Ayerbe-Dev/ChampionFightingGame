@@ -9,7 +9,7 @@ public:
 	RoyFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor);
 
 	void loadRoyFireballStatusFunctions();
-	void loadRoyFireballACMD();
+	void load_move_scripts() override;
 
 	void projectile_unique_main() override;
 

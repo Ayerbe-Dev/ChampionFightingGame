@@ -4,17 +4,17 @@
 
 EricFireball::EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/projectile/eric_fireball";
+	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	projectile_name = "eric_fireball";
+	resource_dir = "resource/projectile/eric_fireball";
 	projectile_int.resize(PROJECTILE_ERIC_FIREBALL_INT_MAX, 0);
 	projectile_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
 	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
 	load_params();
-	loadEricFireballACMD();
+	load_move_scripts();
 	loadEricFireballStatusFunctions();
-	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	superInit();
-	this->fighter_accessor = fighter_accessor;
 }
 
 void EricFireball::loadEricFireballStatusFunctions() {
@@ -23,7 +23,7 @@ void EricFireball::loadEricFireballStatusFunctions() {
 	exit_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
 }
 
-void EricFireball::loadEricFireballACMD() {
+void EricFireball::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

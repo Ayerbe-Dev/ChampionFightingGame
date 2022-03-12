@@ -9,7 +9,7 @@ public:
 	EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor);
 
 	void loadEricFireballStatusFunctions();
-	void loadEricFireballACMD();
+	void load_move_scripts() override;
 
 	void projectile_unique_main() override;
 

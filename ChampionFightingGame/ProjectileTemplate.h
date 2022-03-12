@@ -9,7 +9,7 @@ public:
 	ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 
 	void loadProjectileTemplateStatusFunctions();
-	void loadProjectileTemplateACMD();
+	void load_move_scripts() override;
 
 	void projectile_unique_main() override;
 	

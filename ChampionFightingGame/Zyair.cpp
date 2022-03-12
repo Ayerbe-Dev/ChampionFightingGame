@@ -8,8 +8,10 @@ Zyair::Zyair() {
 
 Zyair::Zyair(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/chara/zyair";
+	this->fighter_accessor = fighter_accessor;
+	this->chara_kind = CHARA_KIND_ZYAIR;
 	chara_name = "zyair";
+	resource_dir = "resource/chara/zyair";
 	fighter_int.resize(CHARA_ZYAIR_INT_MAX, 0);
 	fighter_float.resize(CHARA_ZYAIR_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ZYAIR_FLAG_MAX, false);
@@ -19,7 +21,6 @@ Zyair::Zyair(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	load_move_scripts();
 	loadZyairStatusFunctions();
 	set_current_move_script("default");
-	this->chara_kind = CHARA_KIND_ZYAIR;
 }
 
 void Zyair::chara_id() {

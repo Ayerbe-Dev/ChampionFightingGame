@@ -4,17 +4,17 @@
 
 ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, FighterAccessor * fighter_accessor) {
 	this->player_info = player_info;
+	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	projectile_name = "projectile_template";
 	resource_dir = "resource/projectile/projectile_template";
 	projectile_int.resize(PROJECTILE_PROJECTILE_TEMPLATE_INT_MAX, 0);
 	projectile_float.resize(PROJECTILE_PROJECTILE_TEMPLATE_FLOAT_MAX, 0.0);
 	projectile_flag.resize(PROJECTILE_PROJECTILE_TEMPLATE_FLAG_MAX, false);
 	load_params();
-	loadProjectileTemplateACMD();
+	load_move_scripts();
 	loadProjectileTemplateStatusFunctions();
-	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	superInit();
-	this->fighter_accessor = fighter_accessor;
 }
 
 void ProjectileTemplate::loadProjectileTemplateStatusFunctions() {
@@ -27,7 +27,7 @@ void ProjectileTemplate::loadProjectileTemplateStatusFunctions() {
 	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_TEMPLATE, &ProjectileTemplate::projectile_template_exit_status_template);
 }
 
-void ProjectileTemplate::loadProjectileTemplateACMD() {
+void ProjectileTemplate::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

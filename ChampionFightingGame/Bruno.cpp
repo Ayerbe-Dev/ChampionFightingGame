@@ -8,8 +8,10 @@ Bruno::Bruno() {
 
 Bruno::Bruno(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/chara/bruno";
+	this->fighter_accessor = fighter_accessor;
+	this->chara_kind = CHARA_KIND_BRUNO;
 	chara_name = "bruno";
+	resource_dir = "resource/chara/bruno";
 	fighter_int.resize(CHARA_BRUNO_INT_MAX, 0);
 	fighter_float.resize(CHARA_BRUNO_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_BRUNO_FLAG_MAX, false);
@@ -19,7 +21,6 @@ Bruno::Bruno(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor)
 	load_move_scripts();
 	loadBrunoStatusFunctions();
 	set_current_move_script("default");
-	this->chara_kind = CHARA_KIND_BRUNO;
 }
 
 void Bruno::chara_id() {

@@ -8,8 +8,10 @@ Alejandro::Alejandro() {
 
 Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/chara/alejandro";
+	this->fighter_accessor = fighter_accessor;
+	this->chara_kind = CHARA_KIND_ALEJANDRO;
 	chara_name = "alejandro";
+	resource_dir = "resource/chara/alejandro";
 	fighter_int.resize(CHARA_ALEJANDRO_INT_MAX, 0);
 	fighter_float.resize(CHARA_ALEJANDRO_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ALEJANDRO_FLAG_MAX, false);
@@ -18,9 +20,7 @@ Alejandro::Alejandro(int id, PlayerInfo* player_info, FighterAccessor* fighter_a
 	}
 	load_move_scripts();
 	loadAlejandroStatusFunctions();
-	set_current_move_script("default");
-	this->chara_kind = CHARA_KIND_ALEJANDRO;
-}
+	set_current_move_script("default");}
 
 void Alejandro::chara_id() {
 

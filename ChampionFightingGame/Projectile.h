@@ -52,6 +52,7 @@ public:
 	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();
+	virtual void load_move_scripts() {};
 	void set_default_vars();
 	void init_boxes();
 

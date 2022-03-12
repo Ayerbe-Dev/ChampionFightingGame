@@ -3,17 +3,17 @@
 
 RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/projectile/roy_fireball";
+	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	projectile_name = "roy_fireball";
+	resource_dir = "resource/projectile/roy_fireball";
 	projectile_int.resize(PROJECTILE_ROY_FIREBALL_INT_MAX, 0);
 	projectile_float.resize(PROJECTILE_ROY_FIREBALL_FLOAT_MAX, 0.0);
 	projectile_flag.resize(PROJECTILE_ROY_FIREBALL_FLAG_MAX, false);
 	load_params();
-	loadRoyFireballACMD();
+	load_move_scripts();
 	loadRoyFireballStatusFunctions();
-	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	superInit();
-	this->fighter_accessor = fighter_accessor;
 }
 
 void RoyFireball::loadRoyFireballStatusFunctions() {
@@ -42,7 +42,7 @@ void RoyFireball::loadRoyFireballStatusFunctions() {
 	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::exit_status_roy_fireball_ground);
 }
 
-void RoyFireball::loadRoyFireballACMD() {
+void RoyFireball::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

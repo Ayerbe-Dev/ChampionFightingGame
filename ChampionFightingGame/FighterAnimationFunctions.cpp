@@ -18,7 +18,7 @@ bool Fighter::change_anim(std::string animation_name, float frame_rate, float en
 
 	set_current_move_script(animation_name);
 
-	Animation* new_anim = animation_table.get_anim(animation_name, true);
+	Animation* new_anim = anim_table.get_anim(animation_name, true);
 	if (new_anim != nullptr) {
 		if (frame_rate != -1) {
 			rate = frame_rate;
@@ -39,7 +39,7 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool ve
 	if (!continue_script) {
 		set_current_move_script(animation_name);
 	}
-	Animation* new_anim = animation_table.get_anim(animation_name, verbose);
+	Animation* new_anim = anim_table.get_anim(animation_name, verbose);
 	startAnimation(new_anim);
 	return new_anim != nullptr;
 }

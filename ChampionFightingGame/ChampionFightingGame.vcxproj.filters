@@ -238,6 +238,12 @@
     <Filter Include="Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
       <UniqueIdentifier>{9d5c1f42-c2f4-4037-b140-49a0fa7c2837}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Objects\Stage">
+      <UniqueIdentifier>{7c3a2b02-67c3-414a-ba55-3b7a76b3eb67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Stage">
+      <UniqueIdentifier>{602191a6-c76e-4f64-a1b1-c9db34231183}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -256,9 +262,6 @@
       <Filter>Source Files\Global</Filter>
     </ClCompile>
     <ClCompile Include="BattleObject.cpp">
-      <Filter>Source Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Stage.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Loader.cpp">
@@ -603,6 +606,15 @@
     <ClCompile Include="GameSettings.cpp">
       <Filter>Source Files\Global</Filter>
     </ClCompile>
+    <ClCompile Include="Stage.cpp">
+      <Filter>Source Files\Objects\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="StageAsset.cpp">
+      <Filter>Source Files\Objects\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -623,9 +635,6 @@
     <ClInclude Include="BattleObject.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Stage.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="BoxConstants.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
@@ -636,9 +645,6 @@
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="MenuConstants.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaKind.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="SE.h">
@@ -763,9 +769,6 @@
     </ClInclude>
     <ClInclude Include="GLEW Helpers.h">
       <Filter>Header Files\Helper Funcs</Filter>
-    </ClInclude>
-    <ClInclude Include="StageKind.h">
-      <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="SoundConstants.h">
       <Filter>Header Files\Constants</Filter>
@@ -1189,6 +1192,21 @@
     </ClInclude>
     <ClInclude Include="RoyFireballConstants.h">
       <Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaKind.h">
+      <Filter>Header Files\Objects\Fighter\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage.h">
+      <Filter>Header Files\Objects\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="StageKind.h">
+      <Filter>Header Files\Objects\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="StageAsset.h">
+      <Filter>Header Files\Objects\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

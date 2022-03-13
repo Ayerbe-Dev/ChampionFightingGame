@@ -6,6 +6,7 @@
 #include "FighterAccessor.h"
 #include "GameManager.h"
 #include "Debugger.h"
+#include "GameTexture.h"
 
 void battle_main(GameManager *game_manager);
 

@@ -91,7 +91,7 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 
 AnimationTable::AnimationTable() {}
 
-void AnimationTable::load_fighter_animations(std::string resource_dir, Model *model) {
+void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
@@ -116,7 +116,7 @@ void AnimationTable::load_fighter_animations(std::string resource_dir, Model *mo
 	anim_list.close();
 }
 
-void AnimationTable::load_projectile_animations(std::string resource_dir, Model* model) {
+void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* model) {
 	ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 

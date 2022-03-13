@@ -1,17 +1,32 @@
 #pragma once
-#include "GameTexture.h"
 #include "RenderObject.h"
-#include "RenderManager.h"
 
-class Stage : public RenderObject {
+class StageAsset;
+class FighterAccessor;
+
+class StageInfo {
+public:
+	StageInfo();
+	StageInfo(int stage_kind, std::string stage_name);
+
+	int stage_kind;
+	int default_music_kind;
+	std::string resource_dir;
+
+	int get_stage_music();
+};
+
+class Stage {
 public:
 	int stage_kind;
 	int default_music_kind;
 	std::string resource_dir;
-	GameTexture background;
+	std::vector<StageAsset*> stage_assets;
 
 	Stage();
-	Stage(int stage_kind, std::string stage_name);
 
-	int get_stage_music();
+	void load_stage(StageInfo stage_info, FighterAccessor* fighter_accessor);
+	void unload_stage();
+	void process();
+	void render();
 };

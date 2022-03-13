@@ -10,7 +10,7 @@ void Projectile::change_anim(std::string animation_name, float frame_rate, float
 
 	set_current_move_script(animation_name);
 
-	Animation* new_anim = animation_table.get_anim(animation_name, true);
+	Animation* new_anim = anim_table.get_anim(animation_name, true);
 	if (new_anim != nullptr) {
 		frame = entry_frame;
 		rate = frame_rate;

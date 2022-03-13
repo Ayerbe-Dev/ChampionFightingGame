@@ -258,6 +258,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterJostleFunctions.cpp" />
     <ClCompile Include="FighterLoadingFunctions.cpp" />
     <ClCompile Include="FighterOpponentFunctions.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LoadingFunctions.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MoveScript.cpp" />
@@ -331,6 +332,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
+    <ClCompile Include="StageAsset.cpp" />
     <ClCompile Include="StageSelect.cpp" />
     <ClCompile Include="Sully.cpp" />
     <ClCompile Include="SullyMoves.cpp" />
@@ -438,6 +440,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="LeonFloat.h" />
     <ClInclude Include="LeonInt.h" />
     <ClInclude Include="LeonStatus.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Loader.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />
@@ -512,6 +515,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Stage.h" />
     <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="FighterStatus.h" />
+    <ClInclude Include="StageAsset.h" />
     <ClInclude Include="StageKind.h" />
     <ClInclude Include="StageSelect.h" />
     <ClInclude Include="stb_image.h" />

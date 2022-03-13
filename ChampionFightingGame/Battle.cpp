@@ -45,10 +45,6 @@ void battle_main(GameManager* game_manager) {
 	Battle battle;
 	battle.load_battle(game_manager);
 
-	if (battle.fighter[0]->chara_kind == CHARA_KIND_ERIC) {
-		((Eric*)battle.fighter[0])->loadEricStatusFunctions();
-	}
-
 	while (*game_manager->looping[game_manager->layer]) {
 		battle.frame_delay_check_performance();
 		glClearColor(0.1, 0.1, 0.1, 1);
@@ -102,7 +98,7 @@ Battle::Battle() {}
 Battle::~Battle() {}
 
 void Battle::load_battle(GameManager* game_manager) {
-	game_loader = new GameLoader(16);
+	game_loader = new GameLoader(17);
 	SDL_Thread* loading_thread;
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
@@ -112,10 +108,13 @@ void Battle::load_battle(GameManager* game_manager) {
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
-	int rng = rand() % 2;
-	Stage stage = player_info[rng]->stage;
-
 	fighter_accessor = new FighterAccessor;
+
+	inc_thread();
+
+	int rng = rand() % 2;
+	stage.load_stage(player_info[rng]->stage_info, fighter_accessor);
+
 	inc_thread();
 
 	for (int i = 0; i < 2; i++) {
@@ -313,6 +312,30 @@ void Battle::process_ui() {
 }
 
 void Battle::process_debug() {
+	if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+		g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_LEFT]) {
+		g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_UP]) {
+		g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_DOWN]) {
+		g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_D]) {
+		g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_A]) {
+		g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_W]) {
+		g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
+	}
+	if (keyboard_state[SDL_SCANCODE_S]) {
+		g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+	}
 	if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
 		debugger.print_commands();
 		std::string command;
@@ -348,9 +371,10 @@ void Battle::process_debug() {
 }
 
 void Battle::render_world() {
+	g_rendermanager.update_shader_lights();
 	//update camera pos
 
-	//render the stage
+	stage.render();
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render();

@@ -161,5 +161,5 @@ void initialize_GLEW() {
 	stbi_set_flip_vertically_on_load(true);
 
 	g_rendermanager.init();
-	g_rendermanager.add_light(glm::vec3(1.0, 0.0, 1.2));
+	g_rendermanager.add_light(glm::vec3(1.0, 0.0, 3.0));
 }

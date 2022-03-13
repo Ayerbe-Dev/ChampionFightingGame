@@ -1,5 +1,6 @@
 #include "Opening.h"
 #include <glew/glew.h>
+#include "GameTexture.h"
 extern SDL_Window* g_window;
 
 bool opening_main(GameManager* game_manager) {

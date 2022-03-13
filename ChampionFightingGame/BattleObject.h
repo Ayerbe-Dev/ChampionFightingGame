@@ -32,7 +32,7 @@ public:
 	GameRect jostle_box;
 	GameRect base_jostle_box;
 
-	AnimationTable animation_table;
+	AnimationTable anim_table;
 	Animation* anim_kind;
 	Animation* prev_anim_kind;
 

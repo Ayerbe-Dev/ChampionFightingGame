@@ -286,7 +286,7 @@ SSSSlot::SSSSlot() {}
 SSSSlot::SSSSlot(std::string ui_name, int stage_kind, std::string stage_name, bool selectable) {
 	this->name = ui_name;
 	this->selectable = selectable;
-	stage = Stage(stage_kind, stage_name);
+//	stage = Stage(stage_kind, stage_name);
 }
 
 void SSSSlot::set_x(int x) {

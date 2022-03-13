@@ -30,13 +30,13 @@ void Fighter::loadFighterSounds() {
 void Fighter::load_model_shader() {
 	scale = glm::vec3(0.05 * get_param_float("model_scale"));
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&shader);
+	g_rendermanager.link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
 }
 
 void Fighter::load_anim_list() {
 	try {
-		animation_table.load_fighter_animations(resource_dir, &model);
+		anim_table.load_animations(resource_dir, &model);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {

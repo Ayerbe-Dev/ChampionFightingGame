@@ -8,7 +8,7 @@ class PlayerInfo {
 public:
 	int id;
 	int chara_kind{ 0 };
-	Stage stage;
+	StageInfo stage_info;
 	std::string name;
 	Button button_info[BUTTON_MAX];
 	SDL_GameController* controller{ NULL };

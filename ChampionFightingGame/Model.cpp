@@ -56,6 +56,20 @@ void Model::load_model(std::string path) {
 //	find_missing_bones(scene->mRootNode, missing_bones);
 }
 
+void Model::load_model_no_skeleton(std::string path) {
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		return;
+	}
+
+	directory = path.substr(0, path.find_last_of('/')) + "/";
+
+	process_node(scene->mRootNode, scene);
+}
+
 void Model::unload_model() {
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].parent_id == -1) {

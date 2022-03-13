@@ -19,7 +19,7 @@ void Projectile::superInit() {
 
 void Projectile::load_model_shader() {
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
-	g_rendermanager.update_shader_lights(&shader);
+	g_rendermanager.link_shader(&shader);
 	has_model = get_param_bool("has_model");
 	if (has_model) {
 		model.load_model(resource_dir + "/model/model.dae");
@@ -35,7 +35,7 @@ void Projectile::load_anim_list() {
 		model_ptr = nullptr;
 	}
 	try {
-		animation_table.load_projectile_animations(resource_dir, model_ptr);
+		anim_table.load_animations_no_faf(resource_dir, model_ptr);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {

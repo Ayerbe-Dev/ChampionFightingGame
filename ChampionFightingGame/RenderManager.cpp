@@ -2,17 +2,6 @@
 #include <string>
 #include "utils.h"
 
-Light::Light(glm::vec3 pos) {
-	position = pos;
-	ambient = glm::vec3(0.2, 0.2, 0.2);
-	diffuse = glm::vec3(0.5, 0.5, 0.5);
-	specular = glm::vec3(1.0, 1.0, 1.0);
-	constant = 1.0;
-	linear = 0.09;
-	quadratic = 0.032;
-	enabled = true;
-}
-
 RenderManager::RenderManager() {
 	window_scaler.x = WINDOW_WIDTH / 5;
 	window_scaler.y = WINDOW_HEIGHT / 5;
@@ -47,9 +36,13 @@ void RenderManager::add_light(Light light, int target) {
 
 void RenderManager::remove_light(int target) {
 	if (target == -1) {
-		for (int i = 0; i < num_lights; i++) {
-			lights[i].enabled = false;
-			num_lights--;
+		int index = 0;
+		while (num_lights != 0 && index < MAX_LIGHT_SOURCES) {
+			if (lights[index].enabled) {
+				lights[index].enabled = false;
+				num_lights--;
+			}
+			index++;
 		}
 	}
 	else {
@@ -61,20 +54,26 @@ void RenderManager::remove_light(int target) {
 	}
 }
 
-void RenderManager::update_shader_lights(Shader *shader) {
-	shader->use();
-	shader->set_float("material.shininess", 16.0f);
+void RenderManager::link_shader(Shader *shader) {
+	linked_shaders.push_back(shader);
+}
 
-	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-		std::string light = "light[" + std::to_string(i) + "].";
-		shader->set_vec3(light + "position", lights[i].position);
-		shader->set_vec3(light + "ambient", lights[i].ambient);
-		shader->set_vec3(light + "diffuse", lights[i].diffuse);
-		shader->set_vec3(light + "specular", lights[i].specular);
-		shader->set_float(light + "constant", lights[i].constant);
-		shader->set_float(light + "linear", lights[i].linear);
-		shader->set_float(light + "quadratic", lights[i].quadratic);
-		shader->set_bool(light + "enabled", lights[i].enabled);
+void RenderManager::update_shader_lights() {
+	for (int i = 0; i < linked_shaders.size(); i++) {
+		linked_shaders[i]->use();
+		linked_shaders[i]->set_float("material.shininess", 16.0f);
+
+		for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
+			std::string light = "light[" + std::to_string(i2) + "].";
+			linked_shaders[i]->set_vec3(light + "position", lights[i2].position);
+			linked_shaders[i]->set_vec3(light + "ambient", lights[i2].ambient);
+			linked_shaders[i]->set_vec3(light + "diffuse", lights[i2].diffuse);
+			linked_shaders[i]->set_vec3(light + "specular", lights[i2].specular);
+			linked_shaders[i]->set_float(light + "constant", lights[i2].constant);
+			linked_shaders[i]->set_float(light + "linear", lights[i2].linear);
+			linked_shaders[i]->set_float(light + "quadratic", lights[i2].quadratic);
+			linked_shaders[i]->set_bool(light + "enabled", lights[i2].enabled);
+		}
 	}
 }
 

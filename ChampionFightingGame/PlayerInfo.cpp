@@ -9,7 +9,7 @@ PlayerInfo::PlayerInfo() {
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
 	chara_kind = CHARA_KIND_MAX;
-	stage = Stage(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
+	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	check_controllers();
 	set_default_button_mappings(id);
 }

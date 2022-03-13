@@ -7,6 +7,7 @@
 #include "PlayerInfo.h"
 #include "GameMenu.h"
 #include "GameManager.h"
+#include "GameTexture.h"
 
 void menu_main(GameManager *game_manager);
 int get_sub_selection(int top_selection, int sub_selection);

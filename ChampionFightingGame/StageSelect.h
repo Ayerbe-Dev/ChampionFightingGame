@@ -4,6 +4,7 @@
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "Stage.h"
+
 #include "GameManager.h"
 
 void stage_select_main(GameManager *game_manager);

@@ -64,6 +64,7 @@ public:
 	Model(std::string path);
 	~Model();
 	void load_model(std::string path);
+	void load_model_no_skeleton(std::string path);
 	void unload_model();
 	void set_bones(float frame, Animation* anim_kind);
 	void reset_bones();

@@ -15,6 +15,9 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, Fighter
 	load_params();
 	load_model_shader();
 	load_anim_list();
+	if (get_param_bool("has_lights")) {
+		load_lights();
+	}
 }
 
 void StageAsset::stage_asset_main() {
@@ -65,6 +68,10 @@ void StageAsset::load_anim_list() {
 
 void StageAsset::load_params() {
 	params.load_params(resource_dir + "/param/params.yml");
+}
+
+void StageAsset::load_lights() {
+
 }
 
 int StageAsset::get_param_int(std::string param) {

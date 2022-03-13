@@ -35,6 +35,7 @@ public:
 	void load_model_shader();
 	void load_anim_list();
 	void load_params();
+	void load_lights();
 
 	bool has_model;
 	bool has_skeleton;

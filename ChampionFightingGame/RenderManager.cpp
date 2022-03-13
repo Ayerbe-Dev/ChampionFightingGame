@@ -61,7 +61,7 @@ void RenderManager::link_shader(Shader *shader) {
 void RenderManager::update_shader_lights() {
 	for (int i = 0; i < linked_shaders.size(); i++) {
 		linked_shaders[i]->use();
-		linked_shaders[i]->set_float("material.shininess", 16.0f);
+		linked_shaders[i]->set_float("material.shininess", 4.0f);
 
 		for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
 			std::string light = "light[" + std::to_string(i2) + "].";

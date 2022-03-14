@@ -88,7 +88,7 @@ GameMenu* GameManager::get_target(int layer) {
 		return menu_target[this->layer];
 	}
 	else if (layer >= MAX_LAYERS) {
-		std::cout << "Tried to get invalid layer target: " << layer << std::endl;
+		std::cout << "Tried to get invalid layer target: " << layer << "\n";
 		return menu_target[this->layer];
 	}
 	else {

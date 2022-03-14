@@ -20,7 +20,7 @@ void ParamTable::load_params(std::string resource_dir) {
 
     if (param_file.fail()) {
         param_file.close();
-        std::cout << "Failed to open param file: " << resource_dir << std::endl;
+        std::cout << "Failed to open param file: " << resource_dir << "\n";
         return;
     }
 
@@ -55,7 +55,7 @@ void ParamTable::load_params(std::string resource_dir) {
 int ParamTable::get_param_int(std::string param_name) {
     std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
     if (iterator == param_map.end()) {
-        std::cout << "Failed to find param " << param_name << std::endl;
+        std::cout << "Failed to find param " << param_name << "\n";
         return 0;
     }
     return params[param_map[param_name]].value_i;
@@ -64,7 +64,7 @@ int ParamTable::get_param_int(std::string param_name) {
 float ParamTable::get_param_float(std::string param_name) {
     std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
     if (iterator == param_map.end()) {
-        std::cout << "Failed to find param " << param_name << std::endl;
+        std::cout << "Failed to find param " << param_name << "\n";
         return 0;
     }
     return params[param_map[param_name]].value_f;
@@ -73,7 +73,7 @@ float ParamTable::get_param_float(std::string param_name) {
 std::string ParamTable::get_param_string(std::string param_name) {
     std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
     if (iterator == param_map.end()) {
-        std::cout << "Failed to find param " << param_name << std::endl;
+        std::cout << "Failed to find param " << param_name << "\n";
         return "";
     }
     return params[param_map[param_name]].value_s;
@@ -82,7 +82,7 @@ std::string ParamTable::get_param_string(std::string param_name) {
 bool ParamTable::get_param_bool(std::string param_name) {
     std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
     if (iterator == param_map.end()) {
-        std::cout << "Failed to find param " << param_name << std::endl;
+        std::cout << "Failed to find param " << param_name << "\n";
         return false;
     }
     return params[param_map[param_name]].value_b;

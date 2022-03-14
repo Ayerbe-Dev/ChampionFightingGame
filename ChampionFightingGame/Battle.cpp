@@ -356,10 +356,10 @@ void Battle::process_debug() {
 		post_process_fighter();
 		process_ui();
 		if (debugger.print_frames) {
-			std::cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << std::endl;
-			std::cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << std::endl;
-			std::cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << std::endl;
-			std::cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << std::endl;
+			std::cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << "\n";
+			std::cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << "\n";
+			std::cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << "\n";
+			std::cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << "\n";
 		}
 	}
 	debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);

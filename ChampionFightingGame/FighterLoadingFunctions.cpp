@@ -47,7 +47,7 @@ void Fighter::load_anim_list() {
 			crash_to_debug = true;
 		}
 		else {
-			std::cout << err.what() << std::endl;
+			std::cout << err.what() << "\n";
 		}
 	}
 }

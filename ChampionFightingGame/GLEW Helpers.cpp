@@ -34,7 +34,7 @@ unsigned int loadGLTexture(char const* file_path) {
 		stbi_image_free(data);
 	}
 	else {
-		std::cout << "Texture failed to load at path: " << file_path << std::endl;
+		std::cout << "Texture failed to load at path: " << file_path << "\n";
 		stbi_image_free(data);
 	}
 
@@ -71,7 +71,7 @@ unsigned int loadGLTextureFromFile(const char* path, const std::string& director
 		stbi_image_free(data);
 	}
 	else {
-		std::cout << "Texture failed to load at path: " << path << std::endl;
+		std::cout << "Texture failed to load at path: " << path << "\n";
 		stbi_image_free(data);
 	}
 

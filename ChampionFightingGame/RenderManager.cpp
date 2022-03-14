@@ -16,7 +16,7 @@ void RenderManager::init() {
 void RenderManager::add_light(Light light, int target) {
 	if (target == -1) {
 		if (num_lights == MAX_LIGHT_SOURCES) {
-			std::cout << "Congrats you stupid idiot, you ran out of lights" << std::endl;
+			std::cout << "Congrats you stupid idiot, you ran out of lights" << "\n";
 			return;
 		}
 		else {

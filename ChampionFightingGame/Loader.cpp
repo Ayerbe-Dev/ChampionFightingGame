@@ -142,7 +142,7 @@ void GameTextureSDL::changePercent(float rate) {
 		rate = target_rate;
 	}
 	if (rate == -1.0) {
-		std::cout << "WARNING: Target rate was not set through setTargetPercent, but rate was not given a non-default arg!" << std::endl;
+		std::cout << "WARNING: Target rate was not set through setTargetPercent, but rate was not given a non-default arg!" << "\n";
 	}
 
 	if (target_percent != percent) {

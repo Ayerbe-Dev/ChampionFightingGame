@@ -116,7 +116,7 @@ void GameTexture::init(std::string path) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "Failed to load texture at path: " << path << std::endl;
+		std::cout << "Failed to load texture at path: " << path << "\n";
 	}
 	stbi_image_free(data);
 	float width_scale = (float)width / (float)WINDOW_WIDTH;

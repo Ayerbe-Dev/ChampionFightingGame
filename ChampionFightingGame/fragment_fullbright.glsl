@@ -12,5 +12,5 @@ in vec2 TexCoords;
 uniform Material material;
 
 void main() {    
-    FragColor = vec4(texture(material.diffuse, TexCoords).rgb, 1.0);
+    FragColor = vec4(texture(material.diffuse, TexCoords).rgb + texture(material.specular, TexCoords).rgb, 1.0);
 }

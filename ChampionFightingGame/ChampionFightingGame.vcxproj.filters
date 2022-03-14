@@ -1237,5 +1237,8 @@
     <None Include="resource\shaders\vertex_rect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="fragment_fullbright.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

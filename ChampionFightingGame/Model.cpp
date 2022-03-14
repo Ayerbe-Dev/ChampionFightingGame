@@ -26,7 +26,7 @@ void Model::load_model(std::string path) {
 	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		return;
 	}
 
@@ -61,7 +61,7 @@ void Model::load_model_no_skeleton(std::string path) {
 	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		return;
 	}
 
@@ -151,7 +151,7 @@ int Model::get_bone_id(std::string bone_name) {
 			return i;
 		}
 	}
-	std::cout << "ERROR: Couldn't find " << bone_name << std::endl;
+	std::cout << "ERROR: Couldn't find " << bone_name << "\n";
 	return -1;
 }
 
@@ -159,7 +159,7 @@ void Model::load_skeleton(std::string path) {
 	std::ifstream smd;
 	smd.open(path);
 	if (smd.fail()) {
-		std::cout << "Failed to open SMD!" << std::endl;
+		std::cout << "Failed to open SMD!" << "\n";
 		smd.close();
 		return;
 	}
@@ -267,7 +267,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 			bone.id = get_bone_id(bone.name);
 			if (bone.id == -1) {
-				std::cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << std::endl;
+				std::cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << "\n";
 			}
 
 			bone.anim_matrix = anim_matrix;
@@ -345,8 +345,8 @@ bool Model::find_missing_bones(aiNode* node, std::vector<std::string>& bone_name
 	for (int i = 0; i < bone_names.size(); i++) {
 		if (Filter(node->mName.C_Str(), "model-armature_") == bone_names[i]) {
 			int index = get_bone_id(bone_names[i]);
-			std::cout << bones[index].name << ": " << std::endl;
-			std::cout << "Old Anim Matrix: " << std::endl << glm::to_string(bones[index].anim_matrix) << std::endl;
+			std::cout << bones[index].name << ": " << "\n";
+			std::cout << "Old Anim Matrix: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
 			bones[index].anim_matrix = ass_converter(node->mTransformation);
 			bones[index].anim_rest_matrix = ass_converter(node->mTransformation);
 			if (bones[index].parent_id != -1) {
@@ -355,15 +355,15 @@ bool Model::find_missing_bones(aiNode* node, std::vector<std::string>& bone_name
 					bones[index].anim_rest_matrix *= bone.anim_rest_matrix;
 				}
 			}
-			std::cout << "New Anim Matrix: " << std::endl << glm::to_string(bones[index].anim_matrix) << std::endl;
-			std::cout << "Old Model Matrix: " << std::endl << glm::to_string(bones[index].model_matrix) << std::endl;
+			std::cout << "New Anim Matrix: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
+			std::cout << "Old Model Matrix: " << "\n" << glm::to_string(bones[index].model_matrix) << "\n";
 			bones[index].model_matrix = inverse(bones[index].anim_matrix);
 			if (bones[index].parent_id != -1) {
 				for (Bone bone = bones[bones[index].parent_id]; bone.parent_id != -1; bone = bones[bone.parent_id]) {
 					bones[index].model_matrix = inverse(bone.anim_matrix) * bones[index].model_matrix;
 				}
 			}
-			std::cout << "New Model Matrix: " << std::endl << glm::to_string(bones[index].model_matrix) << std::endl << std::endl;
+			std::cout << "New Model Matrix: " << "\n" << glm::to_string(bones[index].model_matrix) << "\n" << "\n";
 			bone_names.erase(bone_names.begin() + i);
 			break;
 		}

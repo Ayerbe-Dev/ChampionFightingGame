@@ -17,7 +17,7 @@ SDL_Texture* loadSDLTexture(const char* file_path, bool delay) {
 	SDL_LockMutex(file_mutex);
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {
-		std::cout << "Error loading image: " << IMG_GetError() << std::endl;
+		std::cout << "Error loading image: " << IMG_GetError() << "\n";
 	}
 	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);

@@ -4,6 +4,11 @@
 GameSettings::GameSettings() {
 	std::ifstream settings;
 	settings.open("resource/save/game_settings.yml");
+	if (settings.fail()) {
+		std::cout << "Failed to open settings file! \n";
+		settings.close();
+		return;
+	}
 	for (int i = 0; i < SETTING_KIND_MAX; i++) {
 		settings >> this->settings[i].name >> this->settings[i].val;
 	}
@@ -93,8 +98,13 @@ void updateGameSettings() {
 
 	std::ofstream settings;
 	settings.open("resource/save/game_settings.yml", std::ofstream::trunc);
+	if (settings.fail()) {
+		std::cout << "Failed to open settings file! \n";
+		settings.close();
+		return;
+	}
 	for (int i = 0; i < SETTING_KIND_MAX; i++) {
-		settings << g_settings.settings[i].name << " " << g_settings.settings[i].val << std::endl;
+		settings << g_settings.settings[i].name << " " << g_settings.settings[i].val << "\n";
 	}
 	settings.close();
 }

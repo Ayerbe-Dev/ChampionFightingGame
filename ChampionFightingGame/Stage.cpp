@@ -39,7 +39,8 @@ void Stage::load_stage(StageInfo stage_info, FighterAccessor *fighter_accessor) 
 	std::ifstream asset_list;
 	asset_list.open(resource_dir + "asset_list.yml");
 	if (asset_list.fail()) {
-		std::cout << "Failed to open asset list!" << std::endl;
+		std::cout << "Failed to open asset list!" << "\n";
+		asset_list.close();
 		return;
 	}
 

@@ -7,12 +7,9 @@
 #include <assimp/Importer.hpp>
 #include "utils.h"
 
-using namespace std;
-using namespace glm;
-
 Animation::Animation() {}
 
-Animation::Animation(string anim_kind, string anim_dir, Model *model) {
+Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) {
 	this->name = anim_kind;
 
 	Assimp::Importer import;
@@ -23,7 +20,7 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 			length = 1;
 		}
 		else {
-			cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
+			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		}
 		return;
 	}
@@ -34,14 +31,14 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 		return;
 	}
 
-	vector<Bone> base_bones;
+	std::vector<Bone> base_bones;
 
 	for (int i = 0; i < model->bones.size(); i++) {
 		Bone new_bone;
 		new_bone.id = model->bones[i].id;
 		new_bone.name = model->bones[i].name;
 		new_bone.parent_id = model->bones[i].parent_id;
-		new_bone.anim_matrix = mat4(1.0);
+		new_bone.anim_matrix = glm::mat4(1.0);
 		base_bones.push_back(new_bone);
 	}
 
@@ -53,13 +50,13 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 		aiNodeAnim* node = scene->mAnimations[0]->mChannels[i];
 		int index = model->get_bone_id(node->mNodeName.C_Str());
 		if (index == -1) {
-			cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton!" << endl;
+			std::cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton!" << "\n";
 			continue;
 		}
 		for (int i2 = 0; i2 < node->mNumPositionKeys; i2++) { //Load the keyframes that are actually baked
-			mat4 pos_mat = translate(mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
-			mat4 rot_mat = toMat4(normalize(ass_converter(node->mRotationKeys[i2].mValue)));
-			mat4 scale_mat = scale(mat4(1.0), ass_converter(node->mScalingKeys[i2].mValue));
+			glm::mat4 pos_mat = translate(glm::mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
+			glm::mat4 rot_mat = toMat4(normalize(ass_converter(node->mRotationKeys[i2].mValue)));
+			glm::mat4 scale_mat = scale(glm::mat4(1.0), ass_converter(node->mScalingKeys[i2].mValue));
 			keyframes[node->mPositionKeys[i2].mTime][index].anim_matrix = pos_mat * rot_mat * scale_mat;
 			keyframes[node->mPositionKeys[i2].mTime][index].keyframed = true;
 		}
@@ -92,7 +89,7 @@ Animation::Animation(string anim_kind, string anim_dir, Model *model) {
 AnimationTable::AnimationTable() {}
 
 void AnimationTable::load_animations(std::string resource_dir, Model *model) {
-	ifstream anim_list;
+	std::ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
 	if (anim_list.fail()) {
@@ -101,9 +98,9 @@ void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 		throw std::runtime_error("Anim List Missing");
 	}
 
-	string name;
-	string path;
-	string faf;
+	std::string name;
+	std::string path;
+	std::string faf;
 	for (int i = 0; anim_list >> name; i++) {
 		anim_list >> path >> faf;
 		name = ymlChopString(name);
@@ -117,7 +114,7 @@ void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 }
 
 void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* model) {
-	ifstream anim_list;
+	std::ifstream anim_list;
 	anim_list.open(resource_dir + "/anims/anim_list.yml");
 
 	if (anim_list.fail()) {
@@ -126,8 +123,8 @@ void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* mod
 		throw std::runtime_error("Anim List Missing");
 	}
 
-	string name;
-	string path;
+	std::string name;
+	std::string path;
 	for (int i = 0; anim_list >> name; i++) {
 		anim_list >> path;
 		name = ymlChopString(name);
@@ -143,7 +140,7 @@ Animation* AnimationTable::get_anim(std::string anim_name, bool verbose) {
 	std::unordered_map<std::string, int>::const_iterator iterator = anim_map.find(anim_name);
 	if (iterator == anim_map.end()) {
 		if (verbose) {
-			std::cout << "Invalid Animation: " << anim_name << std::endl;
+			std::cout << "Invalid Animation: " << anim_name << "\n";
 		}
 		return nullptr;
 	}

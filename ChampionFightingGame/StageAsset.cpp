@@ -61,7 +61,7 @@ void StageAsset::load_anim_list() {
 			fighter_accessor->fighter[0]->crash_to_debug = true;
 		}
 		else {
-			std::cout << err.what() << std::endl;
+			std::cout << err.what() << "\n";
 		}
 	}
 }

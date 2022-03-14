@@ -124,19 +124,19 @@ void Debugger::debug_mode(Fighter* target, GameRect* debug_rect, glm::vec2* debu
 }
 
 void Debugger::print_commands() {
-	std::cout << "Debug Command List:" << std::endl;
+	std::cout << "Debug Command List:" << "\n";
 
-	std::cout << "add_hp: Add a specified amount to the target's HP" << std::endl;
-	std::cout << "set_hp: Set the target's HP" << std::endl;
-	std::cout << "max_hp: Max out the target's HP" << std::endl;
-	std::cout << "max_hp_all: Max out all fighters' HP" << std::endl;
-	std::cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << std::endl;
-	std::cout << "set_ex: Set the EX Meter for the current target" << std::endl;
-	std::cout << "max_ex: Max out the EX Meter for the current target" << std::endl;
-	std::cout << "max_ex_all: Max out the EX Meter for all fighters" << std::endl;
-	std::cout << "reload_moves: Apply any changes to move scripts for all fighters" << std::endl;
+	std::cout << "add_hp: Add a specified amount to the target's HP" << "\n";
+	std::cout << "set_hp: Set the target's HP" << "\n";
+	std::cout << "max_hp: Max out the target's HP" << "\n";
+	std::cout << "max_hp_all: Max out all fighters' HP" << "\n";
+	std::cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << "\n";
+	std::cout << "set_ex: Set the EX Meter for the current target" << "\n";
+	std::cout << "max_ex: Max out the EX Meter for the current target" << "\n";
+	std::cout << "max_ex_all: Max out the EX Meter for all fighters" << "\n";
+	std::cout << "reload_moves: Apply any changes to move scripts for all fighters" << "\n";
 
-	std::cout << std::endl << "Enter Command: ";
+	std::cout << "\n" << "Enter Command: ";
 }
 
 void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_target) {

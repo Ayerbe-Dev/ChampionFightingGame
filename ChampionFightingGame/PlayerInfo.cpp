@@ -190,8 +190,8 @@ bool PlayerInfo::check_button_input(unsigned int button[], int length, int min_m
 	}
 	int matches = 0;
 	for (int i = 0; i < length; i++) {
-		for (int o = 0; o < length; o++) {
-			if (buffer_order[o] == button[i] && button_info[button[i]].buffer > 0) {
+		for (int i2 = 0; i2 < length; i2++) {
+			if (buffer_order[i2] == button[i] && button_info[button[i]].buffer > 0) {
 				matches += 1;
 				break;
 			}

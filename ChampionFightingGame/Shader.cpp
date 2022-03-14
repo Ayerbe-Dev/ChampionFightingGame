@@ -30,7 +30,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 
 	shader_file.open("resource/shaders/" + vertex_dir);
 	if (shader_file.fail()) {
-		std::cout << "Could not open Vertex Core Shader File!" << std::endl;
+		std::cout << "Could not open Vertex Core Shader File!" << "\n";
 		return;
 	}
 
@@ -48,7 +48,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
-		std::cout << "Could not compile Vertex Core!" << info_log << std::endl;
+		std::cout << "Could not compile Vertex Core!" << info_log << "\n";
 	}
 
 	input = "";
@@ -56,7 +56,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 
 	shader_file.open("resource/shaders/" + fragment_dir);
 	if (shader_file.fail()) {
-		std::cout << "Could not open Fragment Core Shader File!" << std::endl;
+		std::cout << "Could not open Fragment Core Shader File!" << "\n";
 		return;
 	}
 
@@ -74,7 +74,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, info_log);
-		std::cout << "Could not compile Fragment Core!" << info_log << std::endl;
+		std::cout << "Could not compile Fragment Core!" << info_log << "\n";
 		return;
 	}
 
@@ -86,7 +86,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	glGetShaderiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program, 512, NULL, info_log);
-		std::cout << "Could not link Program!" << info_log << std::endl;
+		std::cout << "Could not link Program!" << info_log << "\n";
 	}
 
 	glUseProgram(0);

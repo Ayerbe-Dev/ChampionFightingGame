@@ -46,7 +46,7 @@ void Projectile::load_anim_list() {
 			fighter_accessor->fighter[id]->crash_to_debug = true;
 		}
 		else {
-			std::cout << err.what() << std::endl;
+			std::cout << err.what() << "\n";
 		}
 	}
 }

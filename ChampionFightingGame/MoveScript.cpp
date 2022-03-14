@@ -22,7 +22,7 @@ void MoveScriptTable::add_script(std::string name, std::function<void()> move_sc
 MoveScript MoveScriptTable::get_script(std::string script_name) {
 	std::unordered_map<std::string, int>::const_iterator iterator = script_map.find(script_name);
 	if (iterator == script_map.end()) {
-		std::cout << "Invalid Script: " << script_name << std::endl;
+		std::cout << "Invalid Script: " << script_name << "\n";
 		return scripts[script_map["default"]];
 	}
 	return scripts[script_map[script_name]];
@@ -30,4 +30,5 @@ MoveScript MoveScriptTable::get_script(std::string script_name) {
 
 void MoveScriptTable::wipe_scripts() {
 	scripts.clear();
+	script_map.clear();
 }

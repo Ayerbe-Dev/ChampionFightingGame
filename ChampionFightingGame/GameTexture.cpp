@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "RenderManager.h"
 #include "utils.h"
+#include <fstream>
 extern SDL_Renderer* g_renderer;
 extern RenderManager g_rendermanager;
 extern bool debug;
@@ -750,6 +751,31 @@ void GameTexture::render() {
 	glDepthMask(GL_TRUE);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void GameTexture::load_spritesheet(std::string spritesheet_dir) {
+	std::ifstream spritesheet_file;
+	spritesheet_file.open(spritesheet_dir);
+	if (spritesheet_file.fail()) {
+		std::cout << "Failed to open spritesheet at " << spritesheet_dir << "!\n";
+		spritesheet_file.close();
+		return;
+	}
+	glm::vec2 c1;
+	glm::vec2 c2;
+	while (spritesheet_file >> c1.x) {
+		spritesheet_file >> c1.y;
+		spritesheet_file >> c2.x;
+		spritesheet_file >> c2.y;
+		spritesheet->push_back({ c1, c2 });
+	}
+	spritesheet_file.close();
+}
+
+void GameTexture::set_sprite(int index) {
+	tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord = spritesheet[0][index];
+	tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord = spritesheet[1][index];
+	update_buffer_data();
 }
 
 void GameTexture::update_buffer_data() {

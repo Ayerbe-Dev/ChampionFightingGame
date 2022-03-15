@@ -106,15 +106,9 @@ public:
 
     //NEW
 
-    std::vector<glm::vec2> spritesheet[4];
-    void load_spritesheet(); //load this however you want tbh
-    void set_sprite(int section); //should crop the texture to the coords specified by the given section of the spritesheet, if it doesn't exist
-    //make it yell at us etc.
-
-    void crop_left(float edge); //p self explanatory, note that the private width and height vars contain the sprite's actually width but you'll
-    void crop_right(float edge); //want to divide them by WINDOW_WIDTH and HEIGHT respectively before calling update_buffer_data
-    void crop_top(float edge); //the other funcs that modify the texture data should be able to show a good example of this
-    void crop_bottom(float edge);
+    std::vector<glm::vec2> spritesheet[2];
+    void load_spritesheet(std::string spritesheet_dir);
+    void set_sprite(int section);
 
 private:
     void update_buffer_data();

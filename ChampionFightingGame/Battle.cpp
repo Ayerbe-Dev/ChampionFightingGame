@@ -290,6 +290,12 @@ void Battle::process_fighter() {
 	for (int i = 0; i < 2; i++) {
 		player_info[i]->poll_buttons(keyboard_state);
 		fighter[i]->fighter_main();
+//		if (fighter[i]->check_button_on(BUTTON_LP)) {
+//			fighter[i]->attach_opponent("HaveL");
+//		}
+//		if (fighter[i]->check_button_trigger(BUTTON_LK)) {
+//			fighter[i]->detach_opponent();
+//		}
 	}
 }
 

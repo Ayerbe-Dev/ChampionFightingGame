@@ -13,6 +13,7 @@ void Projectile::superInit() {
 	load_anim_list();
 	load_status_scripts();
 
+	frame = 0.0;
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }

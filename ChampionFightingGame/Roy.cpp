@@ -22,7 +22,6 @@ Roy::Roy(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	load_move_scripts();
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
-
 	projectiles[0] = create_projectile(PROJECTILE_KIND_ROY_FIREBALL, id, player_info, this, fighter_accessor);
 }
 

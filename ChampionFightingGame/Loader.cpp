@@ -232,14 +232,16 @@ void LoadIcon::move() {
 			panic_mode = false;
 		}
 	}
-	if (texture.destRect.y > WINDOW_HEIGHT || texture.destRect.y < 0) {
-		move_down = !move_down;
-		texture.destRect.y = (texture.destRect.y > WINDOW_HEIGHT ? WINDOW_HEIGHT : 0);
-		if (panic_setting) {
-			panic_mode = false;
+	if (!(panic_mode && !panic_setting && panic_speed > 3.0)) {
+		if (texture.destRect.y > WINDOW_HEIGHT || texture.destRect.y < 0) {
+			move_down = !move_down;
+			texture.destRect.y = (texture.destRect.y > WINDOW_HEIGHT ? WINDOW_HEIGHT : 0);
+			if (panic_setting) {
+				panic_mode = false;
+			}
 		}
+		check_corner_distance(false);
 	}
-	check_corner_distance(false);
 }
 
 bool LoadIcon::check_corner_distance(bool init) {

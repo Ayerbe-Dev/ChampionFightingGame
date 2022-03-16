@@ -80,6 +80,9 @@ public:
 
     void process();
     void render();
+
+    void load_spritesheet(std::string spritesheet_dir);
+    void set_sprite(int section);
     
     float target_left_crop = -2.0;
     float target_right_crop = -2.0;
@@ -103,13 +106,7 @@ public:
     glm::vec3 pos;
     glm::vec3 rot;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
-
-    //NEW
-
-    std::vector<glm::vec2> spritesheet[2];
-    void load_spritesheet(std::string spritesheet_dir);
-    void set_sprite(int section);
-
+    std::vector<glm::vec2> spritesheet[4];
 private:
     void update_buffer_data();
 

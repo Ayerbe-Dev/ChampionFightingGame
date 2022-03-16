@@ -218,7 +218,7 @@ void Battle::process_main() {
 
 	if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
 		debug = !debug;
-		timer.ClockMode = !timer.ClockMode;
+		timer.flip_clock();
 		if (!debug) {
 			for (int i = 0; i < 2; i++) {
 				g_soundmanager.resumeSEAll(i);
@@ -230,7 +230,6 @@ void Battle::process_main() {
 		process_debug();
 	}
 	else {
-		timer.Tick();
 		pre_process_fighter();
 		process_fighter();
 		post_process_fighter();
@@ -315,6 +314,7 @@ void Battle::process_ui() {
 		health_bar[i].process();
 		ex_bar[i].process();
 	}
+	timer.process();
 }
 
 void Battle::process_debug() {
@@ -352,7 +352,6 @@ void Battle::process_debug() {
 		debugger.target = !debugger.target;
 	}
 	if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
-		timer.Tick();
 		for (int i = 0; i < 2; i++) {
 			g_soundmanager.resumeSEAll(i);
 			g_soundmanager.resumeVCAll(i);
@@ -429,7 +428,7 @@ void Battle::render_ui() {
 		health_bar[i].render();
 		ex_bar[i].render();
 	}
-	timer.Render();
+	timer.render();
 
 	if (debug) {
 		debug_rect[debugger.target].render();
@@ -1339,68 +1338,72 @@ GameTimer::GameTimer(int time) {
 };
 
 void GameTimer::init(int time) {
-	uiDecaseconds = time / 10;
-	uiSeconds = time % 10;
-	uiDecaframes = 6;
-	uiFrames = 0;
-	ClockMode = 1;
-	pBigTypeface = loadSDLTexture("resource/ui/game/timer/bigtypeface.png");
-	pSmallTypeface = loadSDLTexture("resource/ui/game/timer/smalltypeface.png");
-	pClockFace = loadSDLTexture("resource/ui/game/timer/clockface.png");
+	deca_seconds = time / 10;
+	seconds = time % 10;
+	deca_frames = 5;
+	frames = 9;
+	clock_mode = 1;
+
+	clock.init("resource/ui/game/timer/clockface.png");
+	second_texture.init("resource/ui/game/timer/bigtypeface.png");
+	deca_second_texture.init("resource/ui/game/timer/bigtypeface.png");
+	frame_texture.init("resource/ui/game/timer/smalltypeface.png");
+	deca_frame_texture.init("resource/ui/game/timer/smalltypeface.png");
+
+	clock.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	deca_second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	deca_frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
+
+	clock.load_spritesheet("resource/ui/game/timer/clockface.yml");
+	second_texture.load_spritesheet("resource/ui/game/timer/bigtypeface.yml");
+	deca_second_texture.load_spritesheet("resource/ui/game/timer/bigtypeface.yml");
+	frame_texture.load_spritesheet("resource/ui/game/timer/smalltypeface.yml");
+	deca_frame_texture.load_spritesheet("resource/ui/game/timer/smalltypeface.yml");
 }
 
-void GameTimer::Tick() {
-	//printf("%d%d:%d%d\n\n",uiDecaseconds,uiSeconds,uiDecaframes,uiFrames);
-	if (uiFrames == 0 && uiDecaframes == 0 && uiSeconds == 0 && uiDecaseconds == 0) {
-		//end
-		uiDecaseconds = 9;
-		uiSeconds = 9;
-		uiDecaframes = 5;
-		uiFrames = 9;
-		//this just resets it for now. later it will have to returns something to indicate round over
-	}
-	if (uiFrames == 0 && uiDecaframes == 0) {
-		//reset frame counter
-		uiDecaframes = 5;
-		uiFrames = 9;
-		//count down seconds
-		if (uiSeconds == 0) {
-			uiSeconds = 9;
-			uiDecaseconds--;
+void GameTimer::process() {
+	if (frames == 0) {
+		if (deca_frames == 0) {
+			if (seconds == 0 && deca_seconds == 0) {
+				time_up = true;
+			}
+			else {
+				deca_frames = 5;
+				frames = 9;
+				if (seconds == 0) {
+					deca_seconds--;
+					seconds = 9;
+				}
+				else {
+					seconds--;
+				}
+			}
 		}
 		else {
-			uiSeconds--;
+			deca_frames--;
+			frames = 9;
 		}
 	}
 	else {
-		if (uiFrames == 0) {
-			uiFrames = 9;
-			uiDecaframes--;
-		}
-		else {
-			uiFrames--;
-		}
+		frames--;
 	}
-};
+	second_texture.set_sprite(seconds);
+	deca_second_texture.set_sprite(deca_seconds);
+	frame_texture.set_sprite(frames);
+	deca_frame_texture.set_sprite(deca_frames);
+}
 
-void GameTimer::Render() {
-	SDL_Rect cClockFace{ (WINDOW_WIDTH / 2) - 63,15,126,130 };
-	SDL_Rect cClockFaceSrc{ 84 * ClockMode,0,84,87 };
-	SDL_RenderCopy(g_renderer, pClockFace, &cClockFaceSrc, &cClockFace);
+void GameTimer::flip_clock() {
+	clock_mode = !clock_mode;
+	clock.set_sprite(clock_mode);
+}
 
-	SDL_Rect cDecaDestRect{ 901,22,37,88 };
-	SDL_Rect cDecaSourceRect{ uiDecaseconds * 25,0,25,59 };
-	SDL_RenderCopy(g_renderer, pBigTypeface, &cDecaSourceRect, &cDecaDestRect);
-
-	SDL_Rect cDestRect{ 942,22,37,88 };
-	SDL_Rect cSourceRect{ uiSeconds * 25,0,25,59 };
-	SDL_RenderCopy(g_renderer, pBigTypeface, &cSourceRect, &cDestRect);
-
-	SDL_Rect cDecaFrameDestRect{ 984,85,16,28 };
-	SDL_Rect cFrameSourceRect{ uiDecaframes * 11,0,11,19 };
-	SDL_RenderCopy(g_renderer, pSmallTypeface, &cFrameSourceRect, &cDecaFrameDestRect);
-
-	SDL_Rect cFrameDestRect{ 1003,85,16,28 };
-	SDL_Rect cFrameSourceRectOof{ uiFrames * 11,0,11,19 };
-	SDL_RenderCopy(g_renderer, pSmallTypeface, &cFrameSourceRectOof, &cFrameDestRect);
+void GameTimer::render() {
+	clock.render();
+	second_texture.render();
+	deca_second_texture.render();
+	frame_texture.render();
+	deca_frame_texture.render();
 }

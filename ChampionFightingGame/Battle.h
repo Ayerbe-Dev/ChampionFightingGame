@@ -54,22 +54,27 @@ public:
 
 class GameTimer {
 public:
-	int uiDecaseconds;
-	int uiSeconds;
-	int uiDecaframes;
-	int uiFrames;
-	int ClockMode;
-
-	SDL_Texture* pBigTypeface;
-	SDL_Texture* pSmallTypeface;
-	SDL_Texture* pClockFace;
 	GameTimer();
 	GameTimer(int time);
 
 	void init(int time);
+	void process();
+	void render();
+	void flip_clock();
 
-	void Tick();
-	void Render();
+	bool time_up;
+
+	int clock_mode;
+	int deca_seconds;
+	int seconds;
+	int deca_frames;
+	int frames;
+
+	GameTexture second_texture;
+	GameTexture deca_second_texture;
+	GameTexture frame_texture;
+	GameTexture deca_frame_texture;
+	GameTexture clock;
 };
 
 class Battle : public GameMenu {

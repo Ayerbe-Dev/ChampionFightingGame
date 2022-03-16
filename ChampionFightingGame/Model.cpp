@@ -53,7 +53,7 @@ void Model::load_model(std::string path) {
 		}
 	}
 
-	find_missing_bones(scene->mRootNode, missing_bones);
+//	find_missing_bones(scene->mRootNode, missing_bones);
 }
 
 void Model::load_model_no_skeleton(std::string path) {

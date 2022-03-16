@@ -761,20 +761,31 @@ void GameTexture::load_spritesheet(std::string spritesheet_dir) {
 		spritesheet_file.close();
 		return;
 	}
-	glm::vec2 c1;
-	glm::vec2 c2;
-	while (spritesheet_file >> c1.x) {
-		spritesheet_file >> c1.y;
-		spritesheet_file >> c2.x;
-		spritesheet_file >> c2.y;
-		spritesheet->push_back({ c1, c2 });
+	int frame;
+	glm::vec2 corners[4];
+	while (spritesheet_file >> frame) {
+		spritesheet_file >> corners[0].x;
+		spritesheet_file >> corners[0].y;
+		spritesheet_file >> corners[1].x;
+		spritesheet_file >> corners[1].y;
+		spritesheet_file >> corners[2].x;
+		spritesheet_file >> corners[2].y;
+		spritesheet_file >> corners[3].x;
+		spritesheet_file >> corners[3].y;
+		for (int i = 0; i < 4; i++) {
+			corners[i].x = clampf(0.0, corners[i].x / width, 1.0);
+			corners[i].y = clampf(0.0, corners[i].y / height, 1.0);
+			spritesheet[i].push_back(corners[i]);
+		}
 	}
 	spritesheet_file.close();
+	set_sprite(0);
 }
 
 void GameTexture::set_sprite(int index) {
-	tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord = spritesheet[0][index];
-	tex_accessor[TEX_COORD_TOP_RIGHT]->tex_coord = spritesheet[1][index];
+	for (int i = 0; i < 4; i++) {
+		tex_accessor[i]->tex_coord = spritesheet[i][index];
+	}
 	update_buffer_data();
 }
 

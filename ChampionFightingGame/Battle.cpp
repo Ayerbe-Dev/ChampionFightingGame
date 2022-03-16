@@ -318,29 +318,31 @@ void Battle::process_ui() {
 }
 
 void Battle::process_debug() {
-	if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-		g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_LEFT]) {
-		g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_UP]) {
-		g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_DOWN]) {
-		g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_D]) {
-		g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_A]) {
-		g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_W]) {
-		g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
-	}
-	if (keyboard_state[SDL_SCANCODE_S]) {
-		g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+	if (keyboard_state[SDL_SCANCODE_RCTRL]) {
+		if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_LEFT]) {
+			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_UP]) {
+			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_DOWN]) {
+			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_D]) {
+			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_A]) {
+			g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_W]) {
+			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
+		}
+		if (keyboard_state[SDL_SCANCODE_S]) {
+			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+		}
 	}
 	if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
 		debugger.print_commands();
@@ -1234,6 +1236,8 @@ void HealthBar::init(Fighter* fighter) {
 		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	}
+	health_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
+	bar_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
 	health = &fighter->fighter_float[FIGHTER_FLOAT_HEALTH];
 	max_health = fighter->get_param_float("health");
 }
@@ -1361,6 +1365,18 @@ void GameTimer::init(int time) {
 	deca_second_texture.load_spritesheet("resource/ui/game/timer/bigtypeface.yml");
 	frame_texture.load_spritesheet("resource/ui/game/timer/smalltypeface.yml");
 	deca_frame_texture.load_spritesheet("resource/ui/game/timer/smalltypeface.yml");
+
+	clock.set_scale(1.5);
+	deca_second_texture.set_scale(1.5);
+	second_texture.set_scale(1.5);
+	deca_frame_texture.set_scale(1.5);
+	frame_texture.set_scale(1.5);
+
+	clock.set_pos(glm::vec3(0.0, 20.0, 0.0));
+	deca_second_texture.set_pos(glm::vec3(-76.0, 38.5, 0.0));
+	second_texture.set_pos(glm::vec3(4.0, 38.5, 0.0));
+	deca_frame_texture.set_pos(glm::vec3(68.0, 155.0, 0.0));
+	frame_texture.set_pos(glm::vec3(100.0, 155.0, 0.0));
 }
 
 void GameTimer::process() {

@@ -62,6 +62,7 @@ public:
     void set_width_scale(float scale);
     void set_height(int new_height);
     void set_height_scale(float scale);
+    void set_scale(float scale);
     int get_width();
     int get_height();
 

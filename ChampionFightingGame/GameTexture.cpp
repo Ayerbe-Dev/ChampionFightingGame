@@ -445,6 +445,11 @@ void GameTexture::set_height_scale(float scale) {
 	update_buffer_data();
 }
 
+void GameTexture::set_scale(float scale) {
+	set_width_scale(scale);
+	set_height_scale(scale);
+}
+
 int GameTexture::get_width() {
 	return width;
 }
@@ -764,21 +769,19 @@ void GameTexture::load_spritesheet(std::string spritesheet_dir) {
 	int frame;
 	glm::vec2 corners[4];
 	while (spritesheet_file >> frame) {
-		spritesheet_file >> corners[0].x;
-		spritesheet_file >> corners[0].y;
-		spritesheet_file >> corners[1].x;
-		spritesheet_file >> corners[1].y;
-		spritesheet_file >> corners[2].x;
-		spritesheet_file >> corners[2].y;
-		spritesheet_file >> corners[3].x;
-		spritesheet_file >> corners[3].y;
+		spritesheet_file >> corners[TEX_COORD_BOTTOM_LEFT].x >> corners[TEX_COORD_BOTTOM_LEFT].y;
+		spritesheet_file >> corners[TEX_COORD_BOTTOM_RIGHT].x >> corners[TEX_COORD_BOTTOM_RIGHT].y;
+		spritesheet_file >> corners[TEX_COORD_TOP_RIGHT].x >> corners[TEX_COORD_TOP_RIGHT].y;
+		spritesheet_file >> corners[TEX_COORD_TOP_LEFT].x >> corners[TEX_COORD_TOP_LEFT].y;
 		for (int i = 0; i < 4; i++) {
-			corners[i].x = clampf(0.0, corners[i].x / width, 1.0);
-			corners[i].y = clampf(0.0, corners[i].y / height, 1.0);
+			corners[i].x /= width;
+			corners[i].y /= height;
 			spritesheet[i].push_back(corners[i]);
 		}
 	}
 	spritesheet_file.close();
+	set_width(spritesheet[TEX_COORD_TOP_RIGHT][0].x * width);
+	set_height(spritesheet[TEX_COORD_TOP_RIGHT][0].y * height);
 	set_sprite(0);
 }
 

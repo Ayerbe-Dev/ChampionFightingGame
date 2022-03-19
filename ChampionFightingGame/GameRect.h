@@ -31,4 +31,4 @@ private:
 	unsigned int VBO;
 };
 
-bool is_collide(GameRect RectA, GameRect RectB);
+bool is_collide(GameRect &RectA, GameRect &RectB);

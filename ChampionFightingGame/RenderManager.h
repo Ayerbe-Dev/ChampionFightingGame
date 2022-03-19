@@ -34,6 +34,7 @@ public:
 	void remove_light(int target = -1);
 
 	void link_shader(Shader *shader);
+	void unlink_all_shaders();
 
 	void update_shader_lights();
 	void update_shader_cam(Shader* shader);

@@ -58,6 +58,10 @@ void RenderManager::link_shader(Shader *shader) {
 	linked_shaders.push_back(shader);
 }
 
+void RenderManager::unlink_all_shaders() {
+	linked_shaders.clear();
+}
+
 void RenderManager::update_shader_lights() {
 	for (int i = 0; i < linked_shaders.size(); i++) {
 		linked_shaders[i]->use();

@@ -94,7 +94,7 @@ void Model::set_bones(float frame, Animation* anim_kind) {
 	std::vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	std::vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
-	for (int i = 0; i < keyframes.size(); i++) {
+	for (int i = 0, max = keyframes.size(); i < max; i++) {
 		keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
 		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
@@ -103,20 +103,20 @@ void Model::set_bones(float frame, Animation* anim_kind) {
 }
 
 void Model::reset_bones() {
-	for (int i = 0; i < bones.size(); i++) {
-		bones[i].anim_matrix = glm::mat4(1.0);
-		bones[i].final_matrix = glm::mat4(1.0);
+	for (Bone &bone : bones) {
+		bone.anim_matrix = glm::mat4(1.0);
+		bone.final_matrix = glm::mat4(1.0);
 	}
 }
 
 void Model::render(Shader* shader) {
 	glDepthMask(GL_TRUE);
-	for (int i = 0; i < bones.size(); i++) {
+	for (int i = 0, max = bones.size(); i < max; i++) {
 		shader->set_mat4("bone_matrix[" + std::to_string(i) + "]", bones[i].final_matrix);
 	}
-	for (unsigned int i = 0; i < meshes.size(); i++) {
-		if (meshes[i].visible) {
-			meshes[i].render(shader);
+	for (Mesh &mesh : meshes) {
+		if (mesh.visible) {
+			mesh.render(shader);
 		}
 	}
 	glBindVertexArray(0);

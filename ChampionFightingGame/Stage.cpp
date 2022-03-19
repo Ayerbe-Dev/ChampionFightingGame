@@ -60,15 +60,15 @@ void Stage::unload_stage() {
 }
 
 void Stage::process() {
-	for (int i = 0; i < stage_assets.size(); i++) {
-		stage_assets[i]->stage_asset_main();
+	for (StageAsset *stage_asset : stage_assets) {
+		stage_asset->stage_asset_main();
 	}
 }
 
 void Stage::render() {
-	for (int i = 0; i < stage_assets.size(); i++) {
-		if (stage_assets[i]->has_model) {
-			stage_assets[i]->render();
+	for (StageAsset* stage_asset : stage_assets) {
+		if (stage_asset->has_model) {
+			stage_asset->render();
 		}
 	}
 }

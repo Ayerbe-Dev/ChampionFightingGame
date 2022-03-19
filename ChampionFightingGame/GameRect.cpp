@@ -144,7 +144,7 @@ void GameRect::update_buffer_data() {
 /// <param name="RectB">: The second rectangle</param>
 /// <returns>Whether or not any part of the two rectangles are touching</returns>
 /// <notes>The reason it's so long is because we run this check a lot so the less we put on the stack, the better
-bool is_collide(GameRect RectA, GameRect RectB) {
+bool is_collide(GameRect &RectA, GameRect &RectB) {
 	return 
 		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) || (RectA.corners[2].x >= RectB.corners[0].x 
 		&& RectA.corners[2].x <= RectB.corners[2].x) || (RectB.corners[0].x >= RectA.corners[0].x && RectB.corners[0].x <= RectA.corners[2].x) 

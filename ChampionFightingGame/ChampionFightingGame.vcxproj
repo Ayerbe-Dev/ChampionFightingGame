@@ -442,6 +442,7 @@ copy /Y "$(SolutionDir)dependencies\x64\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="LeonStatus.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Loader.h" />
+    <ClInclude Include="LoopingVector.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />
     <ClInclude Include="Model.h" />

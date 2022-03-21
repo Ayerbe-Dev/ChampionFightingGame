@@ -347,22 +347,21 @@ bool Model::find_missing_bones(aiNode* node, std::vector<std::string>& bone_name
 			int index = get_bone_id(bone_names[i]);
 			std::cout << bones[index].name << ": " << "\n";
 			std::cout << "Old Anim Matrix: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
-			bones[index].anim_matrix = ass_converter(node->mParent->mTransformation);
-//			std::cout << "Anim Matrix 1st stage: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
-//			if (bones[index].parent_id != -1) {
-//				for (Bone bone = bones[bones[index].parent_id]; bone.parent_id != -1; bone = bones[bone.parent_id]) {
-//					bones[index].anim_matrix = bone.anim_matrix * bones[index].anim_matrix;
-//				}
-//			}
-			bones[index].anim_rest_matrix = bones[index].anim_matrix;
+
+			bones[index].anim_matrix = ass_converter(node->mTransformation);
+
 			std::cout << "New Anim Matrix: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
+			bones[index].anim_rest_matrix = bones[index].anim_matrix;
+
 			std::cout << "Old Model Matrix: " << "\n" << glm::to_string(bones[index].model_matrix) << "\n";
-			bones[index].model_matrix = inverse(bones[index].anim_matrix);
-			if (bones[index].parent_id != -1) {
-				for (Bone bone = bones[bones[index].parent_id]; bone.parent_id != -1; bone = bones[bone.parent_id]) {
-					bones[index].model_matrix = inverse(bone.anim_matrix) * bones[index].model_matrix;
-				}
+			
+			aiMatrix4x4 temp_transform = node->mTransformation.Inverse();
+			for (aiNode* parent = node->mParent; parent != nullptr; parent = parent->mParent) {
+				temp_transform = parent->mTransformation.Inverse() * temp_transform;
 			}
+
+//			bones[index].model_matrix = ass_converter(temp_transform);
+
 			std::cout << "New Model Matrix: " << "\n" << glm::to_string(bones[index].model_matrix) << "\n" << "\n";
 			bone_names.erase(bone_names.begin() + i);
 			break;

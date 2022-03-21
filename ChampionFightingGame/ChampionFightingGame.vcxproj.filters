@@ -725,9 +725,6 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="GameTexture.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -1209,6 +1206,9 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="LoopingVector.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>

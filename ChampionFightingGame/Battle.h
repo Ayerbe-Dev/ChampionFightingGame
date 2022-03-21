@@ -99,7 +99,7 @@ public:
 	int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox);
 	int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox);
 	bool event_hit_collide_player();
-	void event_grab_collide_player(Fighter* p1, Fighter* p2, Grabbox* p1_grabbox, Grabbox* p2_grabbox);
+	void event_grab_collide_player();
 	void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox);
 	bool can_counterhit(Fighter* defender, Hitbox* hitbox);
 	int get_damage_status(int hit_status, int situation_kind);
@@ -117,7 +117,6 @@ public:
 
 	HealthBar health_bar[2];
 
-	//TODO: Edit the following 3 classes to work in OpenGL
 	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;

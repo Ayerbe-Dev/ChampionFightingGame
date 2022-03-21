@@ -333,6 +333,7 @@ void MainMenu::render() {
 		menu_items[i].name_texture.set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
 		menu_items[i].name_texture.process();
 		menu_items[i].name_texture.render();
+
 	}
 
 	//real render

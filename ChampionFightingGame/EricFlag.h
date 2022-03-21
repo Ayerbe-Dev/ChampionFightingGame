@@ -1,0 +1,8 @@
+#pragma once
+#include "FighterFlag.h"
+
+enum {
+	CHARA_ERIC_FLAG_START = FIGHTER_FLAG_MAX,
+	CHARA_ERIC_FLAG_OVERDRIVEN,
+	CHARA_ERIC_FLAG_MAX,
+};

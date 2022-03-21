@@ -1,6 +1,6 @@
 #include "Norman.h"
 
-void Norman::loadCharaMoveScripts() {
+void Norman::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

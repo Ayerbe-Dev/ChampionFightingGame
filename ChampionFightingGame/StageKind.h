@@ -1,0 +1,7 @@
+#pragma once
+enum {
+	STAGE_KIND_TRAINING,
+	STAGE_KIND_TRAINING_OLD,
+
+	STAGE_KIND_MAX,
+};

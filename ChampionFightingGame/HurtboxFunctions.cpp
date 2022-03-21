@@ -1,12 +1,12 @@
-#include "Object.h"
+#include "BattleObject.h"
 
 /// <summary>
 /// Updates the position of a hurtbox relative to the object. 
 /// </summary>
-void Object::update_hurtbox_pos() {
+void BattleObject::update_hurtbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (hurtboxes[i].id != -1) {
-			hurtboxes[i].update_pos(this);
+			hurtboxes[i].update_pos();
 		}
 	}
 }
@@ -15,14 +15,14 @@ void Object::update_hurtbox_pos() {
 /// Clear the hurtbox with the specified ID.
 /// </summary>
 /// <param name="id">: The ID of the hurtbox to clear.</param>
-void Object::clear_hurtbox(int id) {
+void BattleObject::clear_hurtbox(int id) {
 	hurtboxes[id].clear();
 }
 
 /// <summary>
 /// Clear all active hurtboxes.
 /// </summary>
-void Object::clear_hurtbox_all() {
+void BattleObject::clear_hurtbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hurtboxes[i].clear();
 	}
@@ -44,8 +44,8 @@ void Object::clear_hurtbox_all() {
 /// <param name="intangible_kind">: What kinds of hitboxes this hurtbox is immune to. Options are: NORMAL (immune to all attacks but not grabs or 
 /// projectiles), HIGH, MID, and LOW (immune to attacks that match the height), PROJECTILE (immune to projectiles), THROW (immune to throws), NONE
 /// (immune to nothing), ALL (immune to everything), and INVINCIBLE (same as ALL except the attacker also goes into hitlag).</param>
-void Fighter::new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind, bool armor, int intangible_kind) {
+void Fighter::new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind, bool armor, int intangible_kind) {
 	if (id < 10) {
-		hurtboxes[id] = Hurtbox(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+		hurtboxes[id].activate(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
 	}
 }

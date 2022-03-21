@@ -1,6 +1,6 @@
 #include "Tessa.h"
 
-void Tessa::loadCharaMoveScripts() {
+void Tessa::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

@@ -9,6 +9,7 @@ void title_screen_main(GameManager *game_manager);
 class TitleScreen: public GameMenu{
 public:
     TitleScreen();
+    ~TitleScreen();
     void render();
     void event_any_press();
 private:

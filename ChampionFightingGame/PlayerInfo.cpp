@@ -1,4 +1,6 @@
 #include "PlayerInfo.h"
+#include "CharaKind.h"
+#include "StageKind.h"
 extern int registered_controllers[4];
 
 PlayerInfo::PlayerInfo() {
@@ -7,7 +9,7 @@ PlayerInfo::PlayerInfo() {
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
 	chara_kind = CHARA_KIND_MAX;
-	stage = Stage(STAGE_KIND_TRAINING_OLD, "training_room_old"); //Todo: Overwrite this value while on the stage select
+	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	check_controllers();
 	set_default_button_mappings(id);
 }
@@ -97,6 +99,12 @@ void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
 	}
 }
 
+void PlayerInfo::reset_buffer() {
+	for (int i = 0; i < BUTTON_MAX; i++) {
+		button_info[i].buffer = 0;
+	}
+}
+
 void PlayerInfo::set_default_button_mappings(int id) {
 	if (id == 0) {
 		button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;
@@ -168,22 +176,22 @@ void PlayerInfo::set_default_button_mappings(int id) {
 	button_info[BUTTON_MENU_START].c_mapping = SDL_CONTROLLER_BUTTON_START;
 }
 
-bool PlayerInfo::check_button_on(u32 button) {
+bool PlayerInfo::check_button_on(unsigned int button) {
 	return button_info[button].button_on;
 }
 
-bool PlayerInfo::check_button_input(u32 button) {
+bool PlayerInfo::check_button_input(unsigned int button) {
 	return buffer_order[0] == button && button_info[button].buffer > 0;
 }
 
-bool PlayerInfo::check_button_input(u32 button[], int length, int min_matches) {
+bool PlayerInfo::check_button_input(unsigned int button[], int length, int min_matches) {
 	if (min_matches == 0) {
 		min_matches = length;
 	}
 	int matches = 0;
 	for (int i = 0; i < length; i++) {
-		for (int o = 0; o < length; o++) {
-			if (buffer_order[o] == button[i] && button_info[button[i]].buffer > 0) {
+		for (int i2 = 0; i2 < length; i2++) {
+			if (buffer_order[i2] == button[i] && button_info[button[i]].buffer > 0) {
 				matches += 1;
 				break;
 			}
@@ -192,15 +200,15 @@ bool PlayerInfo::check_button_input(u32 button[], int length, int min_matches) {
 	return matches >= min_matches;
 }
 
-bool PlayerInfo::check_button_trigger(u32 button) {
+bool PlayerInfo::check_button_trigger(unsigned int button) {
 	return  button_info[button].button_on && button_info[button].changed;
 }
 
-bool PlayerInfo::check_button_release(u32 button) {
+bool PlayerInfo::check_button_release(unsigned int button) {
 	return button_info[button].changed && (!button_info[button].button_on);
 }
 
-void PlayerInfo::move_to_front(u32 buttons[6], u32 button) {
+void PlayerInfo::move_to_front(unsigned int buttons[6], unsigned int button) {
 	int button_index = 0;
 	for (int i = 0; i < 6; i++) {
 		if (buttons[i] == button) {
@@ -217,7 +225,7 @@ void PlayerInfo::move_to_front(u32 buttons[6], u32 button) {
 	buttons[0] = button;
 }
 
-bool PlayerInfo::is_valid_buffer_button(u32 button) {
+bool PlayerInfo::is_valid_buffer_button(unsigned int button) {
 	if (button == BUTTON_LP || button == BUTTON_MP || button == BUTTON_HP || button == BUTTON_LK || button == BUTTON_MK || button == BUTTON_HK) {
 		return true;
 	}

@@ -1,11 +1,11 @@
-#include "Object.h"
+#include "BattleObject.h"
 
 /// <summary>
 /// Checks if the user has reached the correct frame for the following block to run, and makes sure that the block has not already run.
 /// </summary>
 /// <param name="frame">: The frame the user must have reached in order to execute the block.</param>
 /// <returns>Whether or not the contents of the block may be executed.</returns>
-bool Object::is_excute_frame(int frame) {
+bool BattleObject::is_excute_frame(float frame) {
 	bool ret = false;
 	attempted_excutes++;
 	if (this->frame >= frame) {
@@ -25,7 +25,7 @@ bool Object::is_excute_frame(int frame) {
 /// </summary>
 /// <param name="frames">: How many frames it must have been since the last is_excute check in order to execute the block.</param>
 /// <returns>Whether or not the contents of the block may be executed.</returns>
-bool Object::is_excute_wait(int frames) {
+bool BattleObject::is_excute_wait(float frames) {
 	bool ret = false;
 	attempted_excutes++;
 	if (frame >= last_excute_frame + frames) {
@@ -44,22 +44,15 @@ bool Object::is_excute_wait(int frames) {
 /// </summary>
 /// <param name="name">: The anim_kind that the user should be in for this script to run.</param>
 /// <param name="move_script">: The script that will run for the given anim_kind.</param>
-void Object::script(string name, function<void()> move_script) {
-	for (int i = 0; i < MOVE_SCRIPT_MAX; i++) {
-		if (move_scripts[i].id == -1) {
-			move_scripts[i] = MoveScript(name, move_script, i);
-			return;
-		}
-	}
+void BattleObject::script(std::string name, std::function<void()> move_script) {
+	move_script_table.add_script(name, move_script);
 }
 
 /// <summary>
 /// Clears all move scripts.
 /// </summary>
-void Object::wipe_scripts() {
-	for (int i = 0; i < MOVE_SCRIPT_MAX; i++) {
-		move_scripts[i] = MoveScript();
-	}
+void BattleObject::wipe_scripts() {
+	move_script_table.wipe_scripts();
 }
 
 /// <summary>
@@ -67,14 +60,6 @@ void Object::wipe_scripts() {
 /// anim_name.
 /// </summary>
 /// <param name="anim_name">: The animation to find a move script for.</param>
-void Object::set_current_move_script(string anim_name) {
-	for (int i = 0; i < 256; i++) {
-		if (move_scripts[i].name == anim_name) {
-			move_script = move_scripts[i];
-			break;
-		}
-		else {
-			move_script = move_scripts[0];
-		}
-	}
+void BattleObject::set_current_move_script(std::string anim_name) {
+	move_script = move_script_table.get_script(anim_name);
 }

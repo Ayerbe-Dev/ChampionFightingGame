@@ -1,6 +1,6 @@
 #include "Zyair.h"
 
-void Zyair::loadCharaMoveScripts() {
+void Zyair::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

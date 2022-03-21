@@ -1,47 +1,35 @@
 #pragma once
-#include "Object.h"
-#include "Projectile.h"
-#include "utils.h"
+#include "BattleObject.h"
 #include <string>
-#include "GameCoordinate.h"
 #include "Button.h"
-#include <SDL.h>
 #include "Animation.h"
-#include "ParamTable.h"
-#include "Fighter.fwd.h"
-#include "Box.fwd.h"
 #include "Box.h"
-#include "FighterAccessor.fwd.h"
-#include "FighterAccessor.h"
 #include "PlayerInfo.h"
-#include "Battle.fwd.h"
-#include "Battle.h"
 #include "SoundManager.h"
+#include "FighterConstants.h"
 
-class Fighter: public Object {
+#define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
+#define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
+#define ADD_FIGHTER_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Fighter::*)(void))(status_func))
+
+class FighterAccessor;
+class Projectile;
+
+class Fighter: public BattleObject {
 public:
-	//Haha interface go brrrrrrrrrrrr
-
-	virtual void chara_id() = 0;
-
-	//Most variables are handled by the Fighter arrays, but if something is primarily used outside of the Fighter class, it is a direct member
-
-	//Misc important data
-
 	int chara_kind;
-	string chara_name;
+	std::string chara_name;
 	int music_kind;
+
 	FighterAccessor* fighter_accessor;
-	Projectile* projectiles[MAX_PROJECTILES]{}; //The actual Projectile class
-	IObject* projectile_objects[MAX_PROJECTILES]{}; //Used to instantiate Projectiles of different child types 
-	bool requesting_priority = false; //Checked by the fighter_accessor to determine which render priority value to use
+	Projectile* projectiles[MAX_PROJECTILES]{};
+
 	bool crash_to_debug{ false };
 	int prev_stick_dir;
 	
-	int fighter_int[FIGHTER_INT_MAX]{ 0 };
-	float fighter_float[FIGHTER_FLOAT_MAX]{ 0.0 };
-	bool fighter_flag[FIGHTER_FLAG_MAX]{false};
-	bool kara_enabled{ false }; //Should be made into a Fighter Flag tbh, never used outside of status scripts
+	std::vector<int> fighter_int;
+	std::vector<float> fighter_float;
+	std::vector<bool> fighter_flag;
 	
 	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
 	int connected_hitbox = -1;
@@ -49,9 +37,9 @@ public:
 	int connected_projectile_hitbox = -1;
 
 	//Array of pointers to the corressponding function for each status
-	void (Fighter::* status_script[FIGHTER_STATUS_MAX])(); //Runs every frame for the status you're in
-	void (Fighter::* enter_status_script[FIGHTER_STATUS_MAX])(); //While your status is being changed, runs for the status you're going into
-	void (Fighter::* exit_status_script[FIGHTER_STATUS_MAX])(); //While your status is being changed, runs for the status you're going out of
+	std::vector<void (Fighter::*)(void)> status_script;
+	std::vector<void (Fighter::*)(void)> enter_status_script;
+	std::vector<void (Fighter::*)(void)> exit_status_script;
 
 	/*
 		FUNCTIONS
@@ -62,37 +50,58 @@ public:
 	Fighter();
 	Fighter(PlayerInfo *player_info);
 
+	//Main
+
 	void fighter_main(); //Runs during every frame of gameplay
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
-	void create_jostle_rect(GameCoordinate anchor, GameCoordinate offset); //Sets up the player's jostle box, called multiple times every frame
+	void create_jostle_rect(glm::vec2 anchor, glm::vec2 offset); //Sets up the player's jostle box, called multiple times every frame
+
+	void process_projectiles(); //Calls the scripts for projectiles
+
+	void process_animate(); //Increments the frame and determines whether or not the end of an animation has been reached
+	void process_post_animate(); //Rotates all of the bones once animation and frame have been finalized
+
+	void process_pre_position(); //Resets rotation as well as any garbage position values, creates a jostle rect
+	void process_position(); //Checks collision, creates a jostle rect
+	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
+
+	void process_input(); //Manages specific inputs such as special motions and dashes
+	
+	void process_pre_status(); //Executes any buffered status changes
+	void process_status(); //Checks for the hitstun parry input, then runs the status and move scripts
+	void process_post_status(); //Misc
+
+	void decrease_common_variables();
 
 	//Projectiles
-	void init_projectile(int id, GameCoordinate pos); //Marks a projectile as active and moves it to the given position relative to the player
+
+	void init_projectile(int id, glm::vec3 pos); //Marks a projectile as active and moves it to the given position relative to the player
 	void destroy_projectile(int id); //Marks a projectile as inactive
 
 	//Setup
 
 	void superInit(int id);
+	void load_model_shader();
 	void load_anim_list();
-	void load_anim_map(SDL_Rect ret[MAX_ANIM_LENGTH], string anim_dir);
-	void loadStatusScripts();
-	void virtual loadCharaMoveScripts() {};
+	void load_status_scripts();
+	virtual void load_move_scripts() {};
 	void loadFighterSounds();
 	virtual void loadCharaSounds() {};
+	void set_default_vars();
+	void init_boxes();
 
 	//Inputs
 
-	void processInput(); //Manages specific inputs such as special motions and dashes
-	bool check_button_on(u32 button); //Checks if a button is being pressed
-	bool check_button_input(u32 button); //Checks if a button was pressed within the buffer window
-	bool check_button_input(u32 buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least 
+	bool check_button_on(unsigned int button); //Checks if a button is being pressed
+	bool check_button_input(unsigned int button); //Checks if a button was pressed within the buffer window
+	bool check_button_input(unsigned int buttons[], int length, int min_matches = 0); //Same as above but for multiple buttons, returning true if at least 
 		//min_matches buttons were pressed
-	bool check_button_trigger(u32 button); //Checks if a button was pressed on that frame
-	bool check_button_release(u32 button); //Checks if a button was released on that frame
+	bool check_button_trigger(unsigned int button); //Checks if a button was pressed on that frame
+	bool check_button_release(unsigned int button); //Checks if a button was released on that frame
 	int get_stick_dir(); //Stick direction, relative to your facing direction. Returns num pad notation.
 	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
-	int get_special_input(int special_kind, u32 button, int charge_frames = 0); //Checks if you're making a special input
-	bool get_normal_cancel(int attack_kind, u32 button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
+	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
+	bool get_normal_cancel(int attack_kind, unsigned int button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
 		//button if the situation_kind is correct
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
@@ -128,37 +137,56 @@ public:
 	void unloadSEAll();
 	void unloadVCAll();
 
-
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
-	int get_param_int_special(string param);
-	float get_param_float_special(string param);
-	bool get_param_bool_special(string param);
-	string get_param_string_special(string param);
+	int get_param_int_special(std::string param);
+	float get_param_float_special(std::string param);
+	bool get_param_bool_special(std::string param);
+	std::string get_param_string_special(std::string param);
 
 	//Position - For both of these functions, the "prev" arg determines what to do if the position is invalid. If prev is true, you'll go to the last
 		//position on each coordinate, so an invalid x but valid y will only modify your x. If prev is false, you'll go to the closest valid position
 		//to where you want to go to, so if your x would be higher than the window bounds, your x position would be set to the window bounds.
 
-	bool add_pos(float x, float y, bool prev = false);
-	bool set_pos(float x, float y, bool prev = false);
+	bool add_pos(glm::vec3 pos, bool prev = false);
+	bool add_pos(float x, float y, float z = 0.0, bool prev = false);
+	bool set_pos(glm::vec3 pos, bool prev = false);
+	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
+
+	//Rotation
+
+	void set_rot(glm::vec3 rot);
+	void add_rot(glm::vec3 rot);
+	void reset_rot();
+
+	//Bone Functions
+	glm::vec3 get_distance_to_bone(std::string bone_name);
+	glm::vec3 get_distance_to_bone(int bone_id);
+	glm::vec3 get_bone_rotation(std::string bone_name);
+	glm::vec3 get_bone_rotation(int bone_id);
+	glm::vec3 get_rotated_distance_to_bone(std::string bone_name);
+	glm::vec3 get_rotated_distance_to_bone(int bone_id);
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow
 
-	void set_opponent_offset(GameCoordinate offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
+	void set_opponent_offset(glm::vec2 offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
 		//long it should take
-	void set_opponent_offset(GameCoordinate offset); //The above, but it leaves the time it should take alone. 
-	void change_opponent_status(u32 status_kind); //Wild guess.
+	void set_opponent_offset(glm::vec2 offset); //The above, but it leaves the time it should take alone. 
+	void change_opponent_status(unsigned int status_kind); //Wild guess.
 	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0); //Damage the opponent, set their speed and direction. 
 		//Use in combination with change_opponent_status to throw someone.
-	void set_opponent_angle(double angle); //Sets the opponent's angle relative to their facing dir.
+	void set_opponent_rot(glm::vec3 rot); //Sets the opponent's angle relative to their facing dir.
+	void add_opponent_rot(glm::vec3 rot);
+	void reset_opponent_rot();
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
-	void change_opponent_anim(string anim_kind, int frame_rate = 1, int entry_frame = 0); //Changes the opponent's animation
+	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
+	void attach_opponent(std::string bone_name);
+	void detach_opponent();
 
 	//Hitbox
 	
-	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset, 
+	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor, glm::vec2 offset,
 		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
 		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
 		int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
@@ -166,12 +194,12 @@ public:
 
 	//Grabbox
 	
-	void new_grabbox(int id, GameCoordinate anchor, GameCoordinate offset, int grabbox_kind, int situation_hit, u32 attacker_status_if_hit, 
-		u32 defender_status_if_hit, bool use_player_pos = true);
+	void new_grabbox(int id, glm::vec2 anchor, glm::vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
+		unsigned int defender_status_if_hit, bool use_player_pos = true);
 	
 	//Hurtbox
 	
-	void new_hurtbox(int id, GameCoordinate anchor, GameCoordinate offset, int hurtbox_kind = HURTBOX_KIND_NORMAL, bool armor = false, int intangible_kind = INTANGIBLE_KIND_NONE);
+	void new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind = HURTBOX_KIND_NORMAL, bool armor = false, int intangible_kind = INTANGIBLE_KIND_NONE);
 
 	//Transitions
 
@@ -181,23 +209,19 @@ public:
 	//Animation
 	
 	void reenter_last_anim();
-	bool change_anim(string animation_name, int max_ticks = 1, int entry_frame = 0);
-	bool change_anim_inherit_attributes(string animation_name, bool verbose = true,  bool continue_script = true);
+	bool change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0);
+	bool change_anim_inherit_attributes(std::string animation_name, bool verbose = true,  bool continue_script = true);
 	void startAnimation(Animation* animation);
-	bool canStep();
-	void stepAnimation();
-	void forceStepThroughHitlag();
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	int get_launch_ticks();
-	string get_anim();
-	string get_anim_broad();
+	std::string get_anim();
+	std::string get_anim_broad();
 
 	//Status
 
-	bool change_status(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
-	bool change_status_after_hitlag(u32 new_status_kind, bool call_end_status = true, bool require_different_status = true);
-	void playoutStatus();
+	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
@@ -207,8 +231,8 @@ public:
 	virtual bool specific_ground_status_act() { return false; };
 	virtual bool specific_air_status_act() { return false; };
 	virtual bool specific_status_attack() { return false; };
-	bool is_status_end(u32 status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
-	u32 get_status_group();
+	bool is_status_end(unsigned int status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
+	unsigned int get_status_group();
 	bool is_status_hitstun_enable_parry();
 
 	//don't worry, it'll get longer :)

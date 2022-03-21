@@ -91,32 +91,32 @@ bool Roy::specific_status_attack() {
 void Roy::roy_status_special_fireball_start() {
 	if (frame >= get_param_int_special("special_fireball_transition_frame")) {
 		if (check_button_input(BUTTON_LP)) {
-			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
+			fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
 			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
 			return;
 		}
 		if (check_button_input(BUTTON_MP)) {
-			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
+			fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
 			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
 			return;
 		}
 		if (check_button_input(BUTTON_HP)) {
-			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
+			fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
 			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH);
 			return;
 		}
 		if (check_button_input(BUTTON_LK)) {
-			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
+			fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
 			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK);
 			return;
 		}
 		if (check_button_input(BUTTON_MK)) {
-			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
+			fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
 			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK);
 			return;
 		}
 		if (check_button_input(BUTTON_HK)) {
-			roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
+			fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
 			change_status(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK);
 			return;
 		}
@@ -171,7 +171,7 @@ void Roy::roy_exit_status_special_fireball_kick() {
 }
 
 void Roy::roy_status_special_uppercut_start() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_param_int("special_uppercut_transition_frame", param_table) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
 		change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
@@ -193,7 +193,7 @@ void Roy::roy_status_special_uppercut() {
 		change_status(FIGHTER_STATUS_LANDING);
 		return;
 	}
-	if (anim_kind->name == "special_uppercut") {
+	if (get_anim() == "special_uppercut") {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
 				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity");
@@ -257,27 +257,31 @@ void Roy::roy_exit_status_special_uppercut_fall() {
 }
 
 void Roy::loadRoyStatusFunctions() {
-	roy_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_START - FIGHTER_STATUS_MAX] = &Roy::roy_status_special_fireball_start;
-	roy_enter_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_START - FIGHTER_STATUS_MAX] = &Roy::roy_enter_status_special_fireball_start;
-	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_START - FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_fireball_start;
+	status_script.resize(CHARA_ROY_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_ROY_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_ROY_STATUS_MAX, nullptr);
 
-	roy_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH - FIGHTER_STATUS_MAX] = &Roy::roy_status_special_fireball_punch;
-	roy_enter_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH - FIGHTER_STATUS_MAX] = &Roy::roy_enter_status_special_fireball_punch;
-	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH - FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_fireball_punch;
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_status_special_fireball_start);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_enter_status_special_fireball_start);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START, &Roy::roy_exit_status_special_fireball_start);
 
-	roy_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK - FIGHTER_STATUS_MAX] = &Roy::roy_status_special_fireball_kick;
-	roy_enter_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK - FIGHTER_STATUS_MAX] = &Roy::roy_enter_status_special_fireball_kick;
-	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK - FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_fireball_kick;
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_status_special_fireball_punch);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_enter_status_special_fireball_punch);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH, &Roy::roy_exit_status_special_fireball_punch);
 
-	roy_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Roy::roy_status_special_uppercut_start;
-	roy_enter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Roy::roy_enter_status_special_uppercut_start;
-	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_uppercut_start;
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_status_special_fireball_kick);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_enter_status_special_fireball_kick);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_exit_status_special_fireball_kick);
 
-	roy_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Roy::roy_status_special_uppercut;
-	roy_enter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Roy::roy_enter_status_special_uppercut;
-	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_uppercut;
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_status_special_uppercut_start);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_enter_status_special_uppercut_start);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_exit_status_special_uppercut_start);
 
-	roy_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Roy::roy_status_special_uppercut_fall;
-	roy_enter_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Roy::roy_enter_status_special_uppercut_fall;
-	roy_exit_status[CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Roy::roy_exit_status_special_uppercut_fall;
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_status_special_uppercut);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_enter_status_special_uppercut);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT, &Roy::roy_exit_status_special_uppercut);
+
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_status_special_uppercut_fall);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_enter_status_special_uppercut_fall);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL, &Roy::roy_exit_status_special_uppercut_fall);
 }

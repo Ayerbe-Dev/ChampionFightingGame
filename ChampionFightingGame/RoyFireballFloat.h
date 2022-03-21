@@ -1,0 +1,8 @@
+#pragma once
+#include "ProjectileFloat.h"
+
+enum {
+	PROJECTILE_ROY_FIREBALL_FLOAT_START = PROJECTILE_FLOAT_MAX,
+
+	PROJECTILE_ROY_FIREBALL_FLOAT_MAX,
+};

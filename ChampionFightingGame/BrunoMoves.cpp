@@ -1,6 +1,6 @@
 #include "Bruno.h"
 
-void Bruno::loadCharaMoveScripts() {
+void Bruno::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

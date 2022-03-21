@@ -1,0 +1,7 @@
+#pragma once
+#include "FighterFloat.h"
+
+enum {
+	CHARA_CHARA_TEMPLATE_FLOAT_START = FIGHTER_FLOAT_MAX,
+	CHARA_CHARA_TEMPLATE_FLOAT_MAX,
+};

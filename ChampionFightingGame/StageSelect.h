@@ -1,9 +1,10 @@
 #pragma once
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "PlayerInfo.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "Stage.h"
+
 #include "GameManager.h"
 
 void stage_select_main(GameManager *game_manager);
@@ -11,7 +12,7 @@ void stage_select_main(GameManager *game_manager);
 class SSSSlot {
 public:
 	SSSSlot();
-	SSSSlot(string ui_name, int stage_kind, string stage_name, bool selectable);
+	SSSSlot(std::string ui_name, int stage_kind, std::string stage_name, bool selectable);
 
 	GameTexture slot_texture;
 
@@ -20,7 +21,7 @@ public:
 
 	int myCol{ -1 };
 	int myRow{ -1 };
-	string name;
+	std::string name;
 	bool selectable;
 	Stage stage;
 
@@ -41,7 +42,7 @@ public:
 	void event_left_press();
 	void event_right_press();
 
-	void add_stage_slot(int stage_kind, string stage_name_dir, string stage_name_ui, bool selectable);
+	void add_stage_slot(int stage_kind, std::string stage_name_dir, std::string stage_name_ui, bool selectable);
 	void centerSlots();
 
 	void render();
@@ -63,7 +64,7 @@ public:
 
 class SSSCursor {
 public:
-	void init(string sTexturePath);
+	void init(std::string sTexturePath);
 	void setTarget(int x, int y);
 	void render();
 	GameTexture cursorTexture;

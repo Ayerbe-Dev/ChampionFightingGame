@@ -1,9 +1,11 @@
 #include "Fighter.h"
+#include "Projectile.h"
 
-void Fighter::init_projectile(int id, GameCoordinate init_pos) {
+void Fighter::init_projectile(int id, glm::vec3 init_pos) {
 	projectiles[id]->id = this->id;
-	projectiles[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir) + WINDOW_WIDTH / 2;
-	projectiles[id]->pos.y = (init_pos.y - WINDOW_HEIGHT) * -1.0 - this->pos.y;
+	projectiles[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir);
+	projectiles[id]->pos.y = init_pos.z + pos.y;
+	projectiles[id]->pos.z = init_pos.z + pos.z;
 
 	projectiles[id]->facing_right = facing_right;
 	projectiles[id]->facing_dir = facing_dir;

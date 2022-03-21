@@ -1,8 +1,8 @@
 #pragma once
 #include "utils.h"
 #include "GameCoordinate.h"
-#include "FighterAccessor.fwd.h"
-#include "Fighter.fwd.h"
+
+class Fighter;
 
 /*
 	This class allows one fighter to access the attributes of the other without needing a pointer to the other fighter.
@@ -12,8 +12,6 @@
 class FighterAccessor {
 public:
 	Fighter* fighter[2];
-	int render_priority = 0;
-	int render_priority_no_req = 0;
 
 	FighterAccessor();
 	FighterAccessor(Fighter* p1, Fighter* p2);

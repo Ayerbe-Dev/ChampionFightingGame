@@ -87,7 +87,7 @@ void Eric::exit_status_dashb() {
 }
 
 void Eric::eric_status_special_uppercut_start() {
-	if (frame >= get_param_int("special_uppercut_transition_frame", param_table) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+	if (frame >= get_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
 		change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
@@ -168,15 +168,19 @@ void Eric::eric_exit_status_special_uppercut_fall() {
 }
 
 void Eric::loadEricStatusFunctions() {
-	eric_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Eric::eric_status_special_uppercut_start;
-	eric_enter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Eric::eric_enter_status_special_uppercut_start;
-	eric_exit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START - FIGHTER_STATUS_MAX] = &Eric::eric_exit_status_special_uppercut_start;
+	status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
+	
+	ADD_FIGHTER_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START, &Eric::eric_status_special_uppercut_start);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START, &Eric::eric_enter_status_special_uppercut_start);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START, &Eric::eric_exit_status_special_uppercut_start);
 
-	eric_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Eric::eric_status_special_uppercut;
-	eric_enter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Eric::eric_enter_status_special_uppercut;
-	eric_exit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT - FIGHTER_STATUS_MAX] = &Eric::eric_exit_status_special_uppercut;
+	ADD_FIGHTER_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT, &Eric::eric_enter_status_special_uppercut);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT , &Eric::eric_enter_status_special_uppercut);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT , &Eric::eric_exit_status_special_uppercut);
 
-	eric_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Eric::eric_status_special_uppercut_fall;
-	eric_enter_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Eric::eric_enter_status_special_uppercut_fall;
-	eric_exit_status[CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL - FIGHTER_STATUS_MAX] = &Eric::eric_exit_status_special_uppercut_fall;
+	ADD_FIGHTER_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL , &Eric::eric_status_special_uppercut_fall);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL , &Eric::eric_enter_status_special_uppercut_fall);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL , &Eric::eric_exit_status_special_uppercut_fall);
 }

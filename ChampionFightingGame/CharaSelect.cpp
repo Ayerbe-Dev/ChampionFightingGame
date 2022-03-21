@@ -1,6 +1,8 @@
-#include <cmath>
 #include "CharaSelect.h"
-#include "utils.h"
+#include <glew/glew.h>
+#include <glm/glm.hpp>
+#include <fstream>
+#include <cmath>
 #include "Debugger.h"
 #include "GameTexture.h"
 #include "Loader.h"
@@ -20,99 +22,62 @@ void chara_select_main(GameManager* game_manager) {
 	Debugger debugger;
 	debugger = Debugger();
 
-
-	CharaSelectLoader* chara_select_loader = new CharaSelectLoader;
-	chara_select_loader->player_info[0] = player_info[0];
-	chara_select_loader->player_info[1] = player_info[1];
-
-
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	bool loading = true;
-
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-
-	CSS css;
-	CssCursor cursors[2];
-
+	GameLoader* game_loader = new GameLoader(3);
 	SDL_Thread* loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadCharaSelect, "Init.rar", (void*)chara_select_loader);
+	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
+	
+	CSS css;
 
-	game_manager->set_menu_info(nullptr);
-
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-
-	while (loading) {
-		frameTimeDelay();
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return game_manager->update_state(GAME_STATE_CLOSE);
-					return;
-				}
-				break;
-			}
+	css.player_info[0] = player_info[0];
+	css.player_info[1] = player_info[1];
+	if (css.load_css()) {
+		player_info[0]->crash_reason = "Could not open CSS file!";
+		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
+	}
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+	if (css.num_rows == 0) {
+		css.my_col[0] = 1;
+		css.my_col[1] = 1;
+	}
+	for (int i = 0; i < 2; i++) {
+		css.player_id = i;
+		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
+			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
 		}
-
-		load_icon.move();
-		SDL_LockMutex(mutex);
-
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		loadingSplash.render();
-		int total_items = 3;
-		loadingBar.setTargetPercent(((float)chara_select_loader->loaded_items / total_items), 0.3);
-		loadingBar.render();
-		loadingFlavor.render();
-		load_icon.texture.render();
-
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-
-		SDL_UnlockMutex(mutex);
-
-		if (chara_select_loader->finished) {
-			if (!chara_select_loader->can_ret) {
-				css = chara_select_loader->css;
-				for (int i = 0; i < 2; i++) {
-					cursors[i] = chara_select_loader->css_cursor[i];
-					player_info[i] = chara_select_loader->player_info[i];
-				}
-				game_manager->set_menu_info(&css);
-			}
-			chara_select_loader->can_ret = true;	
-			loading = false;
+		else {
+			css.mobile_css_slots[i] = css.chara_slots[i].texture;
 		}
 	}
-	SDL_SetRenderTarget(g_renderer, pScreenTexture);
-	SDL_RenderClear(g_renderer);
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	css.cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+	css.cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	css.cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+	css.cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	SDL_LockMutex(file_mutex);
+	game_loader->loaded_items++;
+	SDL_UnlockMutex(file_mutex);
+
+	game_manager->set_menu_info(&css);
+	
+	game_loader->finished = true;
+
+	SDL_RenderClear(g_renderer);
+	SDL_RenderPresent(g_renderer);
 
 	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 		}
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -120,6 +85,20 @@ void chara_select_main(GameManager* game_manager) {
 				case SDL_QUIT:
 				{
 					return game_manager->update_state(GAME_STATE_CLOSE);
+				} break;
+				case SDL_WINDOWEVENT:
+				{
+					switch (event.window.event) {
+						case SDL_WINDOWEVENT_RESIZED:
+						case SDL_WINDOWEVENT_SIZE_CHANGED:
+						case SDL_WINDOWEVENT_MAXIMIZED:
+						{
+							int width;
+							int height;
+							SDL_GetWindowSize(g_window, &width, &height);
+							glViewport(0, 0, width, height);
+						} break;
+					}
 				} break;
 			}
 		}
@@ -146,23 +125,12 @@ void chara_select_main(GameManager* game_manager) {
 
 		game_manager->handle_menus();
 
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderClear(g_renderer);
-
 		css.render();
 
-		for (int i = 0; i < 2; i++) {
-			css.query_fixed_css_slot_pos(css.player_selected_index[i], &cursors[i].target_x, &cursors[i].target_y);
-			cursors[i].render();
-		}
-
-		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderClear(g_renderer);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(g_renderer);
+		SDL_GL_SwapWindow(g_window);
 	}
 
-	delete chara_select_loader;
+	delete game_loader;
 }
 
 /// <summary>
@@ -171,11 +139,28 @@ void chara_select_main(GameManager* game_manager) {
 CSS::CSS() {
 	//initialize other textures
 	background_texture.init("resource/ui/menu/css/CSSbackground.png");
-	background_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	background_texture.set_width(WINDOW_WIDTH);
+	background_texture.set_height(WINDOW_HEIGHT);
 	big_bar_texture.init("resource/ui/menu/css/CSSbottombar.png");
-	big_bar_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	big_bar_texture.set_width(WINDOW_WIDTH);
+	big_bar_texture.set_height(WINDOW_HEIGHT);
 	top_bar_texture.init("resource/ui/menu/css/CSStopbar.png");
-	top_bar_texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	top_bar_texture.set_width(WINDOW_WIDTH);
+	top_bar_texture.set_height(WINDOW_HEIGHT);
+}
+
+CSS::~CSS() {
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots[i].texture.destroy();
+	}
+	for (int i = 0; i < 2; i++) {
+		big_chara_slots[i].texture.destroy();
+		mobile_css_slots[i].destroy();
+		cursors[i].texture.destroy();
+	}
+	background_texture.destroy();
+	big_bar_texture.destroy();
+	top_bar_texture.destroy();
 }
 
 /// <summary>
@@ -183,90 +168,64 @@ CSS::CSS() {
 /// </summary>
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
 int CSS::load_css() {
-	ifstream fileCssTable;
-	fileCssTable.open("resource/ui/menu/css/css_param.yml");
-	int iCharacterKind;
-	string sCharacterDir;
-	bool bSelectable;
-	CssSlot* tmpSlot;
-	int iRowXdelta = 0;
+	std::ifstream css_file;
+	css_file.open("resource/ui/menu/css/css_param.yml");
+	int chara_kind;
+	std::string resource_dir;
+	bool selectable;
 
-	if (fileCssTable.fail()) {
-		fileCssTable.close();
+	if (css_file.fail()) {
+		css_file.close();
 		return -1;
 	}
 
-	string sCharacterName;
-	for (int i = 0; getline(fileCssTable, sCharacterName); i++) {
-		fileCssTable >> iCharacterKind >> sCharacterDir >> bSelectable;
-		if (bSelectable) {
-			add_slot(iCharacterKind, sCharacterDir, sCharacterName);
+	std::string chara_name;
+	for (int i = 0; getline(css_file, chara_name); i++) {
+		css_file >> chara_kind >> resource_dir >> selectable;
+		if (selectable) {
+			add_slot(chara_kind, resource_dir, chara_name);
 		}
-		getline(fileCssTable, sCharacterName); //100% authentic jank code
+		getline(css_file, chara_name);
 	}
-	fileCssTable.close();
-
-	for (int iRow = 1; iRow < 4; iRow++) {
-		//Following line checks if the row is filled (the tenth item in the row is filled)
-		if (chara_slots[iRow * 10 - 1].is_initialized()) {
-			//row filled code
-			for (int iColumn = 0; iColumn < 10; iColumn++) {
-				tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-
-				tmpSlot->texture.setScaleFactor(1.2);
-				tmpSlot->texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-
-				/*
-					(WINDOW_WIDTH/10) is for the spacing between the cards
-					(WINDOW_WIDTH/20) is for the offset to center the row, it should always be 1/2 the previous one
-				*/
-
-				tmpSlot->set_x_pos(iColumn * (WINDOW_WIDTH / 10) + (WINDOW_WIDTH / 20));
-				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.getScaledHeight() + 20));
-			}
-		}
-		else {
-		 //row not filled code
-			for (int iColumn = 0; iColumn < get_num_slots() % 10; iColumn++) {
-				tmpSlot = &chara_slots[((iRow - 1) * 10) + iColumn];
-
-				tmpSlot->texture.setScaleFactor(1.2);
-				tmpSlot->texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-
-				/*
-					Basically.....
-					Calculate the difference in x positions of the first and last card as iRowXdelta
-					Divide iRowXdelta by 2 and subtract the WINDOW_WIDTH by iRowXdelta to get the starting point
-					from which to render the row.
-				*/
-				iRowXdelta = (WINDOW_WIDTH / 10) * (get_num_slots() % 10) - (WINDOW_WIDTH / 10); //yes this gets recalculated every frame, no im not moving it
-				tmpSlot->set_x_pos(((WINDOW_WIDTH - iRowXdelta) / 2) + iColumn * (WINDOW_WIDTH / 10));
-				tmpSlot->set_y_pos(iRow * (tmpSlot->texture.getScaledHeight() + 20));
-			}
-		}
-	}
-
-	//Anyway so we're also using a 2D array now
+	css_file.close();
 
 	int col = 0;
 	int row = 0;
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].is_initialized()) {
-			chara_slots[i].my_col = col;
-			chara_slots[i].my_row = row;
-			chara_slots_ordered[col][row] = chara_slots[i];
-			if (col == 9) {
-				col = 0;
-				row++;
-			}
-			else {
-				col++;
-			}
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots[i].my_col = col;
+		chara_slots[i].my_row = row;
+		if (col == 9) {
+			col = 0;
+			row++;
+		}
+		else {
+			col++;
 		}
 	}
 	num_cols = col;
 	num_rows = row;
-	center_slots();
+
+	cols_offset = NUM_COLS - num_cols;
+
+	for (int i = 0; i < num_slots; i++) {
+		if (chara_slots[i].my_row == num_rows && num_cols != NUM_COLS) {
+			chara_slots[i].my_col += (cols_offset / 2);
+		}
+		chara_slots[i].texture.set_pos(glm::vec3(
+			chara_slots[i].my_col * (WINDOW_WIDTH / 5) + (chara_slots[i].texture.get_width() / 2),
+			chara_slots[i].my_row * chara_slots[i].texture.get_height() * 2.4 + 200,
+			0
+		));
+	}
+
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots_ordered[chara_slots[i].my_col][chara_slots[i].my_row] = &chara_slots[i];
+	}
+
+	for (int i = 0; i < 2; i++) {
+		player_id = i;
+		select_slot();
+	}
 
 	return 0;
 }
@@ -277,10 +236,11 @@ int CSS::load_css() {
 /// <param name="id">: The chara_kind the slot will correspond to.</param>
 /// <param name="cardDir">: The directory for the slot's portrait.</param>
 /// <param name="cardName">: The actual character name to display on the UI.</param>
-void CSS::add_slot(int id, string cardDir, string cardName) {
+void CSS::add_slot(int id, std::string cardDir, std::string cardName) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (!chara_slots[i].is_initialized()) {
 			chara_slots[i].init(id, cardDir, cardName);
+			num_slots++;
 			return;
 		}
 	}
@@ -292,44 +252,32 @@ void CSS::add_slot(int id, string cardDir, string cardName) {
 /// </summary>
 /// <returns>The number of active CSS slots.</returns>
 int CSS::get_num_slots() {
-	int size = 0;
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].is_initialized()) {
-			size++;
-		}
-	}
-	return size;
+	return num_slots;
 }
 
 void CSS::event_select_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		player_info[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
-		CssSlotMobile tmpSlot;
-		tmpSlot.texture = chara_slots[player_selected_index[player_id]].texture;
+		mobile_css_slots[player_id] = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
-		switch (player_id) {
-			case 0:
-				tmpSlot.set_target(117, 906, 1.5, 1.5);
-				break;
-			case 1:
-				tmpSlot.set_target(1806, 906, 1.5, 1.5);
-				break;
-			default:
-				printf("oof\n");
-				break;
+		if (player_id) {
+			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
 		}
-		tmpSlot.texture.setScaleFactor(1.5);
-		mobile_css_slots[player_id] = tmpSlot;
+		else {
+			mobile_css_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		}
+		mobile_css_slots[player_id].set_pos(chara_slots[player_selected_index[player_id]].texture.get_pos_vacuum(&mobile_css_slots[player_id]));
+		mobile_css_slots[player_id].set_target_pos(big_chara_slots[player_id].texture.pos, 16.0);
+		mobile_slots_active[player_id] = true;
 	}
 }
 void CSS::event_back_press() {
 	if (player_info[player_id]->chara_kind != CHARA_KIND_MAX) {
-		CssSlotMobile tmpSlot;
-		mobile_css_slots[player_id] = tmpSlot;
+		mobile_slots_active[player_id] = false;
+		mobile_css_slots[player_id].destroy(false);
 		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
-		displayLoadingScreen();
 		*game_state = GAME_STATE_MENU;
 		*looping = false;
 	}
@@ -337,7 +285,6 @@ void CSS::event_back_press() {
 
 void CSS::event_start_press() {
 	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
-		displayLoadingScreen();
 		*game_state = GAME_STATE_BATTLE;
 		*looping = false;
 	}
@@ -345,7 +292,7 @@ void CSS::event_start_press() {
 
 void CSS::event_right_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]].is_initialized()) {
+		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]++;
 		}
 		is_last_input_right[player_id] = true;
@@ -355,7 +302,7 @@ void CSS::event_right_press() {
 
 void CSS::event_left_press() {
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]].is_initialized()) {
+		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]--;
 		}
 		is_last_input_right[player_id] = false;
@@ -367,12 +314,12 @@ void CSS::event_down_press() {
 	bool jump = false;
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] < num_rows) {
-			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1].is_initialized()) {
+			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1] == nullptr) {
 				jump = true;
 				bool valid_col = false;
 				if (my_col[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (chara_slots_ordered[i][my_row[player_id] + 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] + 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -381,7 +328,7 @@ void CSS::event_down_press() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (chara_slots_ordered[i][my_row[player_id] + 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] + 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -416,12 +363,12 @@ void CSS::event_up_press() {
 	bool jump = false;
 	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] != 0) {
-			if (!chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1].is_initialized()) {
+			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1] == nullptr) {
 				jump = true;
 				bool valid_col = false;
 				if (my_col[player_id] >= 5) {
 					for (int i = NUM_COLS - 1; i > 0; i--) {
-						if (chara_slots_ordered[i][my_row[player_id] - 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] - 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -430,7 +377,7 @@ void CSS::event_up_press() {
 				}
 				else {
 					for (int i = 0; i < NUM_COLS; i++) {
-						if (chara_slots_ordered[i][my_row[player_id] - 1].is_initialized()) {
+						if (chara_slots_ordered[i][my_row[player_id] - 1] != nullptr) {
 							my_col[player_id] = i;
 							valid_col = true;
 							break;
@@ -466,13 +413,33 @@ void CSS::event_up_press() {
 /// make sure to set that up properly if this function is copied into another menu.
 /// </summary>
 void CSS::select_slot() {
-	for (int i = 0; i < CSS_SLOTS; i++) {
+	for (int i = 0; i < num_slots; i++) {
 		if (my_col[player_id] == chara_slots[i].my_col
 		&& my_row[player_id] == chara_slots[i].my_row) {
 			player_selected_index[player_id] = i;
 			break;
 		}
 	}
+	big_chara_slots[player_id].texture.destroy(false);
+	big_chara_slots[player_id].texture = GameTexture(chara_slots[player_selected_index[player_id]].texture);
+
+	big_chara_slots[player_id].name = chara_slots[player_selected_index[player_id]].name;
+	big_chara_slots[player_id].texture_dir = chara_slots[player_selected_index[player_id]].texture_dir;
+
+
+	if (player_id) {
+		big_chara_slots[player_id].texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
+	}
+	else {
+		big_chara_slots[player_id].texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+	}
+	big_chara_slots[player_id].texture.set_pos(glm::vec3(
+		40 + (player_id * (WINDOW_WIDTH - 270)),
+		70, 
+		0));
+	big_chara_slots[player_id].texture.set_width(190);
+	big_chara_slots[player_id].texture.set_height(280);
+	big_chara_slots[player_id].texture.set_alpha((Uint8)127);
 }
 
 /// <summary>
@@ -483,58 +450,31 @@ void CSS::render() {
 	big_bar_texture.render();
 	top_bar_texture.render();
 
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].is_initialized()) {
-			chara_slots[i].render();
-		}
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots[i].render();
 	}
 
 
 	for (int i = 0; i < 2; i++) {
-		CssSlot tmpSlot;
-		tmpSlot.texture = chara_slots[player_selected_index[i]].texture;
-		tmpSlot.name = chara_slots[player_selected_index[i]].name;
-		tmpSlot.texture_dir = chara_slots[player_selected_index[i]].texture_dir;
-
-		switch (i) {
-			case 0:
-				tmpSlot.texture.destRect.x = 117;
-				tmpSlot.texture.destRect.y = 906;
-				break;
-			case 1:
-				tmpSlot.texture.destRect.x = 1806;
-				tmpSlot.texture.destRect.y = 906;
-				break;
-			default:
-				cout << "How the fuck" << endl;
-				break;
-		}
-		tmpSlot.texture.setScaleFactor(1.5);
-		tmpSlot.texture.setAlpha((Uint8)127);
-		tmpSlot.texture.render();
-		tmpSlot.texture.setAlpha((Uint8)255);
-		if (tmpSlot.texture_dir == "default") {
-			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.texture.destRect.x, tmpSlot.texture.destRect.y + 70, 24, 255, 255, 255, 255);
+		big_chara_slots[i].texture.render();
+		if (big_chara_slots[i].texture_dir == "default") { //Todo: OpenGL text rendering
+//			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.texture.destRect.x, tmpSlot.texture.destRect.y + 70, 24, 255, 255, 255, 255);
 		}
 
-		mobile_css_slots[i].play_anim();
-		mobile_css_slots[i].texture.render();
-	}
-}
-
-/// <summary>
-/// Find the X and Y coordinates of a specified CSS slot.
-/// </summary>
-/// <param name="index">: The index of the CSS slot to query.</param>
-/// <param name="x_ret">: Will be set to the X coord.</param>
-/// <param name="y_ret">: Will be set to the Y coord.</param>
-void CSS::query_fixed_css_slot_pos(int index, int* x_ret, int* y_ret) {
-	if (index < get_num_slots()) {
-		*x_ret = chara_slots[index].texture.destRect.x;
-		*y_ret = chara_slots[index].texture.destRect.y;
-	}
-	else {
-		printf("CSS::queryFixedCssSlotPosition --> Index out of range!\n");
+		if (mobile_slots_active[i]) {
+			if (mobile_css_slots[i].pos != mobile_css_slots[i].target_pos) {
+				mobile_css_slots[i].add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
+			}
+			else {
+				mobile_css_slots[i].set_rot(glm::vec3(0.0, 0.0, 0.0));
+				mobile_css_slots[i].set_width(190);
+				mobile_css_slots[i].set_height(280);
+			}
+			mobile_css_slots[i].process();
+			mobile_css_slots[i].render();
+		}
+		cursors[i].set_target(chara_slots[player_selected_index[i]].texture.pos.x, chara_slots[player_selected_index[i]].texture.pos.y);
+		cursors[i].render();
 	}
 }
 
@@ -545,49 +485,6 @@ void CSS::query_fixed_css_slot_pos(int index, int* x_ret, int* y_ret) {
 /// <returns></returns>
 int CSS::get_chara_kind(int player) {
 	return chara_slots[player_selected_index[player]].get_chara_kind();
-}
-
-/// <summary>
-/// Takes the regular CSS slots array and uses it to generate a 2D array which is organized by row and column. The logic behind this is kind of weird
-/// but it makes navigating up and down on the CSS slightly easier.
-/// </summary>
-void CSS::center_slots() {
-	int empty_cols = 1;
-	int empty_row;
-	for (int i = 0; i < NUM_ROWS; i++) {
-		for (int i2 = 0; i2 < NUM_COLS; i2++) {
-			if (!chara_slots_ordered[i2][i].is_initialized()) { //If this slot is empty
-				if (chara_slots_ordered[0][i].is_initialized()) { //If the first slot on that row is full
-					empty_cols = NUM_COLS - i2;
-					empty_row = i;
-					goto ENDL;
-				}
-			}
-		}
-	}
-	ENDL: //im so funny
-	
-	cols_offset = empty_cols;
-
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (chara_slots[i].my_row == empty_row) {
-			chara_slots[i].my_col += (empty_cols / 2);
-		}
-	}
-	for (int i = 0; i < NUM_COLS; i++) {
-		for (int i2 = 0; i2 < NUM_ROWS; i2++) {
-			chara_slots_ordered[i][i2].my_col = -1;
-			chara_slots_ordered[i][i2].my_row = -1;
-			chara_slots_ordered[i][i2].initialized = false;
-			for (int i3 = 0; i3 < CSS_SLOTS; i3++) {
-				if (chara_slots[i3].my_col == i
-				&& chara_slots[i3].my_row == i2) {
-					chara_slots_ordered[i][i2] = chara_slots[i3];
-					break;
-				}
-			}
-		}
-	}
 }
 
 /// <summary>
@@ -630,8 +527,9 @@ bool CssSlot::is_initialized() {
 /// <param name="chara_kind">: The chara_kind this slot will correspond to.</param>
 /// <param name="textureDir">: The directory where the CSS slot's render is located.</param>
 /// <param name="name">: The name of the character for UI purposes.</param>
-void CssSlot::init(int chara_kind, string textureDir, string name) {
+void CssSlot::init(int chara_kind, std::string textureDir, std::string name) {
 	texture.init("resource/ui/menu/css/chara/" + textureDir + "/render.png");
+	texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	this->name = name;
 	this->texture_dir = textureDir;
 	this->chara_kind = chara_kind;
@@ -643,7 +541,7 @@ void CssSlot::init(int chara_kind, string textureDir, string name) {
 /// </summary>
 /// <param name="y">: The intended Y position.</param>
 void CssSlot::set_y_pos(int y) {
-	texture.destRect.y = y;
+	texture.set_pos(glm::vec3(texture.pos.x, y, 0));
 }
 
 /// <summary>
@@ -651,7 +549,7 @@ void CssSlot::set_y_pos(int y) {
 /// </summary>
 /// <param name="X">: The intended X position.</param>
 void CssSlot::set_x_pos(int x) {
-	texture.destRect.x = x;
+	texture.set_pos(glm::vec3(x, texture.pos.y, 0));
 }
 
 /// <summary>
@@ -659,13 +557,14 @@ void CssSlot::set_x_pos(int x) {
 /// </summary>
 /// <returns>The width of this CSS Slot's texture.</returns>
 int CssSlot::get_texture_width() {
-	return texture.destRect.w;
+	return texture.get_width();
 }
 
 /// <summary>
 /// Render the CSS Slot's texture.
 /// </summary>
 void CssSlot::render() {
+	texture.process();
 	texture.render();
 }
 
@@ -675,7 +574,7 @@ void CssSlot::render() {
 /// <param name="y">: The coord to compare against.</param>
 /// <returns>Whether or not the CSS Slot is below a given coordinate.</returns>
 bool CssSlot::is_below(int y) {
-	if (texture.destRect.y > y) {
+	if (texture.pos.y > y) {
 		return true;
 	}
 	else {
@@ -689,7 +588,7 @@ bool CssSlot::is_below(int y) {
 /// <param name="y">: The coord to compare against.</param>
 /// <returns>Whether or not the CSS Slot is above a given coordinate.</returns>
 bool CssSlot::is_above(int y) {
-	if (texture.destRect.y < y) {
+	if (texture.pos.y < y) {
 		return true;
 	}
 	else {
@@ -703,8 +602,9 @@ bool CssSlot::is_above(int y) {
 void CssCursor::render() {
 	partial_x += (target_x - partial_x) / 8;
 	partial_y += (target_y - partial_y) / 8;
-	texture.destRect.x = partial_x;
-	texture.destRect.y = partial_y;
+	texture.pos.x = partial_x;
+	texture.pos.y = partial_y;
+	texture.process();
 	texture.render();
 };
 
@@ -712,7 +612,7 @@ void CssCursor::render() {
 /// Initialize the CSS Cursor
 /// </summary>
 /// <param name="texture_path">: The path to the CSS Cursor's texture.</param>
-void CssCursor::init(string texture_path) {
+void CssCursor::init(std::string texture_path) {
 	texture.init(texture_path);
 };
 
@@ -724,50 +624,4 @@ void CssCursor::init(string texture_path) {
 void CssCursor::set_target(int x, int y) {
 	target_x = x;
 	target_y = y;
-}
-
-/// <summary>
-/// Spaghetti code which makes it rotate once.
-/// </summary>
-void CssSlotMobile::play_anim() {
-	//spaghetti code which makes it rotate once
-	anim_time++;
-	if (cos(theta) < 0) {
-		theta = -3.14 / 2;
-	}
-	if (anim_time < anim_speed) {
-		theta += (3.14) / anim_speed;
-		texture.setHorizontalScaleFactor(cos(theta) + scale_x);
-		texture.setVerticalScaleFactor(scale_y);
-	}
-	else {
-		texture.setScaleFactor(1.5);
-	}
-
-	scale_y += (1.5 - scale_y) / (anim_speed / 3);
-	scale_x += (0 - scale_x) / (anim_speed / 3);
-	pos_x += (target_x - pos_x) / (anim_speed / 2);
-	pos_y += (target_y - pos_y) / (anim_speed / 2);
-
-	texture.destRect.x = pos_x;
-	texture.destRect.y = pos_y;
-
-}
-
-/// <summary>
-/// Set the Mobile CSS Slot's target.
-/// </summary>
-/// <param name="x">: The target X position.</param>
-/// <param name="y">: The target Y position.</param>
-/// <param name="w">: The intended width of the slot.</param>
-/// <param name="h">: The intended height of the slot.</param>
-void CssSlotMobile::set_target(int x, int y, float w, float h) {
-	target_x = x;
-	target_y = y;
-
-	pos_x = texture.destRect.x;
-	pos_y = texture.destRect.y;
-
-	scale_x = w - 1.5;
-	scale_y = h;
 }

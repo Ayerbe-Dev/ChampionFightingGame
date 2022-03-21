@@ -18,8 +18,6 @@ GameManager::GameManager() {
 	prev_game_context = new int;
 	for (int i = 0; i < MAX_LAYERS; i++) {
 		looping[i] = new bool;
-		background[i] = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-		SDL_SetTextureBlendMode(background[i], SDL_BLENDMODE_BLEND);
 	}
 
 	*game_state = GAME_STATE_DEBUG_MENU;
@@ -37,7 +35,6 @@ GameManager::~GameManager() {
 	delete prev_game_context;
 	for (int i = 0; i < MAX_LAYERS; i++) {
 		delete looping[i];
-		SDL_DestroyTexture(background[i]);
 	}
 }
 
@@ -47,7 +44,6 @@ void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_DEBUG_MENU] = &debugMenu;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
-	game_main[GAME_STATE_3D] = &three_d_rendering_main;
 
 	game_substate_main[GAME_SUBSTATE_CONTROLS] = &controls_main;
 
@@ -91,8 +87,8 @@ GameMenu* GameManager::get_target(int layer) {
 	if (layer == -1) {
 		return menu_target[this->layer];
 	}
-	else if (layer > MAX_LAYERS) {
-		cout << "Tried to get invalid layer target: " << layer << endl;
+	else if (layer >= MAX_LAYERS) {
+		std::cout << "Tried to get invalid layer target: " << layer << "\n";
 		return menu_target[this->layer];
 	}
 	else {

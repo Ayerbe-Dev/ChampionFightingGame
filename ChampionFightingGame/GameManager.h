@@ -1,6 +1,7 @@
 #pragma once
 #include "PlayerInfo.h"
 #include "GameMenu.h"
+#include "GameState.h"
 
 class GameManager {
 public:
@@ -35,7 +36,6 @@ public:
 	void event_back_press();
 	void event_any_press();
 
-	SDL_Texture* background[MAX_LAYERS];
 private:
 	GameMenu* menu_target[MAX_LAYERS];
 

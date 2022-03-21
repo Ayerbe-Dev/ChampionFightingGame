@@ -1,4 +1,7 @@
-#include "debugger.h"
+#include "Debugger.h"
+#include "Fighter.h"
+#include "GameRect.h"
+
 extern SDL_Renderer* g_renderer;
 
 
@@ -21,15 +24,24 @@ Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_FULLSCREEN].mapping = SDL_SCANCODE_ESCAPE;
 }
 
-bool Debugger::check_button_on(u32 button) {
+void Debugger::poll_inputs(const Uint8* keyboard_state) {
+	for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+		bool old_button = button_info[i].button_on;
+		button_info[i].button_on = keyboard_state[button_info[i].mapping];
+		bool new_button = button_info[i].button_on;
+		button_info[i].changed = (old_button != new_button);
+	}
+}
+
+bool Debugger::check_button_on(unsigned int button) {
 	return button_info[button].button_on && enabled;
 }
 
-bool Debugger::check_button_trigger(u32 button) {
+bool Debugger::check_button_trigger(unsigned int button) {
 	return button_info[button].changed && button_info[button].button_on && enabled;
 }
 
-void Debugger::debug_mode(Fighter* target, SDL_Rect* debug_rect, GameCoordinate* debug_anchor, GameCoordinate* debug_offset) {
+void Debugger::debug_mode(Fighter* target, GameRect* debug_rect, glm::vec2* debug_anchor, glm::vec2* debug_offset) {
 	if (check_button_trigger(BUTTON_DEBUG_CENTER_BOX)) {
 		debug_anchor->x = (((target->pos.x * target->facing_dir)) * target->facing_dir) + WINDOW_WIDTH / 2;
 		debug_anchor->y = WINDOW_HEIGHT - target->pos.y;
@@ -54,10 +66,10 @@ void Debugger::debug_mode(Fighter* target, SDL_Rect* debug_rect, GameCoordinate*
 			}
 		}
 		if (check_button_on(BUTTON_DEBUG_UP)) {
-			debug_anchor->y -= 1;
+			debug_anchor->y += 1;
 		}
 		if (check_button_on(BUTTON_DEBUG_DOWN)) {
-			debug_anchor->y += 1;
+			debug_anchor->y -= 1;
 		}
 	}
 	if (check_button_on(BUTTON_DEBUG_MOVE_1)) {
@@ -78,18 +90,14 @@ void Debugger::debug_mode(Fighter* target, SDL_Rect* debug_rect, GameCoordinate*
 			}
 		}
 		if (check_button_on(BUTTON_DEBUG_UP)) {
-			debug_offset->y -= 1;
-		}
-		if (check_button_on(BUTTON_DEBUG_DOWN)) {
 			debug_offset->y += 1;
 		}
+		if (check_button_on(BUTTON_DEBUG_DOWN)) {
+			debug_offset->y -= 1;
+		}
 	}
-	debug_rect->x = debug_anchor->x;
-	debug_rect->y = debug_anchor->y;
-	debug_rect->w = debug_offset->x;
-	debug_rect->h = debug_offset->y;
-	debug_rect->w -= debug_rect->x;
-	debug_rect->h -= debug_rect->y;
+	debug_rect->update_corners(*debug_anchor, *debug_offset);
+
 	if (check_button_on(BUTTON_DEBUG_PRINT_POS)) {
 		SDL_Rect temp_rect;
 		int x_anchor = (debug_anchor->x - (target->pos.x + WINDOW_WIDTH / 2)) * target->facing_dir;
@@ -105,7 +113,7 @@ void Debugger::debug_mode(Fighter* target, SDL_Rect* debug_rect, GameCoordinate*
 			temp_rect.w = x_anchor;
 		}
 
-		printf(" GameCoordinate{ %d, %d }, GameCoordinate{ %d, %d }\n",temp_rect.x,temp_rect.y,temp_rect.w,temp_rect.h);
+		printf(" GameCoordinate{ %d, %d }, GameCoordinate{ %d, %d }\n", temp_rect.x,temp_rect.y,temp_rect.w,temp_rect.h);
 	}
 	if (check_button_trigger(BUTTON_DEBUG_PRINT_FRAME)) {
 		print_frames = !print_frames;
@@ -116,32 +124,32 @@ void Debugger::debug_mode(Fighter* target, SDL_Rect* debug_rect, GameCoordinate*
 }
 
 void Debugger::print_commands() {
-	cout << "Debug Command List:" << endl;
+	std::cout << "Debug Command List:" << "\n";
 
-	cout << "add_hp: Add a specified amount to the target's HP" << endl;
-	cout << "set_hp: Set the target's HP" << endl;
-	cout << "max_hp: Max out the target's HP" << endl;
-	cout << "max_hp_all: Max out all fighters' HP" << endl;
-	cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << endl;
-	cout << "set_ex: Set the EX Meter for the current target" << endl;
-	cout << "max_ex: Max out the EX Meter for the current target" << endl;
-	cout << "max_ex_all: Max out the EX Meter for all fighters" << endl;
-	cout << "reload_moves: Apply any changes to move scripts for all fighters" << endl;
+	std::cout << "add_hp: Add a specified amount to the target's HP" << "\n";
+	std::cout << "set_hp: Set the target's HP" << "\n";
+	std::cout << "max_hp: Max out the target's HP" << "\n";
+	std::cout << "max_hp_all: Max out all fighters' HP" << "\n";
+	std::cout << "add_ex: Add to the EX Meter for the current target by a specified amount" << "\n";
+	std::cout << "set_ex: Set the EX Meter for the current target" << "\n";
+	std::cout << "max_ex: Max out the EX Meter for the current target" << "\n";
+	std::cout << "max_ex_all: Max out the EX Meter for all fighters" << "\n";
+	std::cout << "reload_moves: Apply any changes to move scripts for all fighters" << "\n";
 
-	cout << endl << "Enter Command: ";
+	std::cout << "\n" << "Enter Command: ";
 }
 
-void Debugger::debug_query(string command, Fighter* target, Fighter* not_target) {
+void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_target) {
 	if (command == "add_hp") {
 		float add;
-		cout << "Enter HP Difference: ";
-		cin >> add;
+		std::cout << "Enter HP Difference: ";
+		std::cin >> add;
 		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, target->fighter_float[FIGHTER_FLOAT_HEALTH] + add, target->get_param_float("health"));
 	}
 	if (command == "set_hp") {
 		float set;
-		cout << "Enter New HP: ";
-		cin >> set;
+		std::cout << "Enter New HP: ";
+		std::cin >> set;
 		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, set, target->get_param_float("health"));
 	}
 	if (command == "max_hp") {
@@ -153,14 +161,14 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 	}
 	if (command == "add_ex") {
 		float add;
-		cout << "Enter Meter Difference: ";
-		cin >> add;
+		std::cout << "Enter Meter Difference: ";
+		std::cin >> add;
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, EX_METER_SIZE);
 	}
 	if (command == "set_ex") {
 		float set;
-		cout << "Enter New Meter Amount: ";
-		cin >> set;
+		std::cout << "Enter New Meter Amount: ";
+		std::cin >> set;
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, EX_METER_SIZE);
 	}
 	if (command == "max_ex") {
@@ -172,7 +180,7 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 	}
 	if (command == "reload_moves") {
 		target->wipe_scripts();
-		target->loadCharaMoveScripts();
+		target->load_move_scripts();
 		target->attempted_excutes = 0;
 		target->excute_count = 0;
 		target->last_excute_frame = 0;
@@ -182,7 +190,7 @@ void Debugger::debug_query(string command, Fighter* target, Fighter* not_target)
 		target->update_grabbox_pos();
 
 		not_target->wipe_scripts();
-		not_target->loadCharaMoveScripts();
+		not_target->load_move_scripts();
 		not_target->attempted_excutes = 0;
 		not_target->excute_count = 0;
 		not_target->last_excute_frame = 0;

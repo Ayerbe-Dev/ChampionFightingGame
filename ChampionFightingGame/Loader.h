@@ -1,22 +1,78 @@
 #pragma once
+#include <SDL/SDL.h>
+#include <iostream>
+#include "utils.h"
+extern SDL_Window* g_window;
 
-#include "Fighter.h"
-#include "Stage.h"
-#include "FighterAccessor.h"
-#include "UI.h"
-#include "CharaSelect.h"
-#include "StageSelect.h"
-#include "DebugMenu.h"
-#include "Menu.h"
+extern SDL_mutex* file_mutex;
+extern SDL_Renderer* g_renderer;
 
-extern SDL_mutex* mutex;
-extern SoundManager g_soundmanager;
+enum {
+	GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
+	GAME_TEXTURE_ANCHOR_MODE_CENTER,
+	GAME_TEXTURE_ANCHOR_MODE_BACKGROUND,
+	GAME_TEXTURE_ANCHOR_MODE_METER,
+};
+
+enum {
+	TEXTURE_FLIP_KIND_NONE,
+	TEXTURE_FLIP_KIND_DRAIN,
+	TEXTURE_FLIP_KIND_NO_DRAIN,
+
+	TEXTURE_FLIP_KIND_MAX,
+};
+
+enum {
+	METER_DRAIN_KIND_RIGHT,
+	METER_DRAIN_KIND_LEFT,
+	METER_DRAIN_KIND_NONE,
+};
+
+class GameTextureSDL {
+public:
+	SDL_Rect destRect;
+	SDL_Rect srcRect;
+
+	bool render();
+	bool init(std::string sTexturePath, bool delay = true);
+
+	void setScaleFactor(float fScaleFactor);
+
+	void setHorizontalScaleFactor(float fScaleFactor);
+	void setVerticalScaleFactor(float fScaleFactor);
+
+	void setAnchorMode(int iMode);
+	float getScaledWidth();
+	float getScaledHeight();
+	void setAlpha(Uint8 alpha);
+	void clearTexture();
+	bool bIsInitialized = false;
+	void setPercent(float percent);
+	void setTargetPercent(float percent, float rate = 0.2, int frames = 15);
+	void changePercent(float rate = -1.0);
+	void setFlip(int flip);
+	int getFlipKind();
+	void setDrainKind(int drain_kind);
+private:
+	float percent{ 0 };
+	float target_percent{ -1 };
+	float target_rate{ -1 };
+	int target_frames{ 1 };
+	int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
+	float fVerticalScaleFactor = 1.0;
+	float fHorizontalScaleFactor = 1.0;
+	int flip{ TEXTURE_FLIP_KIND_NONE };
+	int drain_kind{ METER_DRAIN_KIND_NONE };
+
+	SDL_Texture* pTexture;
+};
+
 
 class LoadIcon {
 public:
 	LoadIcon();
 
-	GameTexture texture;
+	GameTextureSDL texture;
 	bool move_right;
 	bool move_down;
 	bool panic_v;
@@ -32,332 +88,59 @@ public:
 
 class GameLoader {
 public:
-	PlayerInfo *player_info[2];
+	GameLoader();
+	GameLoader(int total_items);
 
 	int loaded_items = 0;
+	int total_items;
 	int ret = 0;
 	bool finished = false;
 	bool can_ret = false;
 };
 
-static int LoadGame(void* void_GameLoader) {
-	int time = SDL_GetTicks();
+static int LoadingScreen(void* void_GameLoader) {
 	GameLoader* game_loader = (GameLoader*)void_GameLoader;
 
-	game_loader->loaded_items++;
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
-	game_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!game_loader->can_ret) {
-	}
-	return 1;
-}
+	LoadIcon load_icon;
+	GameTextureSDL loadingSplash, loadingFlavor, loadingBar;
+	loadingSplash.init("resource/ui/menu/loading/splashload.png");
+	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
-class BattleLoader : public GameLoader {
-public:
-	BattleLoader() {};
+	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
+	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
 
-	Fighter* fighter[2];
-	FighterAccessor* fighter_accessor;
-	IObject* p1;
-	IObject* p2;
-	HealthBar health_bar[2];
-	ExBar ex_bar[2];
-	PlayerIndicator player_indicator[2];
-	GameTimer timer;
-	Stage stage;
-};
+	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
+	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
 
-static int LoadBattle(void* void_BattleLoader) {
-	int time = SDL_GetTicks();
-	BattleLoader* battle_loader = (BattleLoader*)void_BattleLoader;
-	GameTimer timer;
-	Stage stage;
-	IObject* p1;
-	IObject* p2;
-	Fighter* fighter[2];
-	HealthBar health_bar[2];
-	ExBar ex_bar[2];
-	PlayerIndicator player_indicator[2];
-	FighterAccessor* fighter_accessor = new FighterAccessor;
-
-	int rng = rand() % 2;
-	stage = battle_loader->player_info[rng]->stage; 
-	battle_loader->loaded_items++;
-	string background_texture = stage.resource_dir + "background.png";
-	stage.pBackgroundTexture = loadTexture(background_texture.c_str());
-	battle_loader->loaded_items++;
-	frameTimeDelay();
-
-	p1 = new IObject(OBJECT_TYPE_FIGHTER, battle_loader->player_info[0]->chara_kind, 0, battle_loader->player_info[0], fighter_accessor);
-	battle_loader->loaded_items++;
-	frameTimeDelay();
-
-	p2 = new IObject(OBJECT_TYPE_FIGHTER, battle_loader->player_info[1]->chara_kind, 1, battle_loader->player_info[1], fighter_accessor);
-	battle_loader->loaded_items++;
-	frameTimeDelay();
-
-	fighter[0] = p1->get_fighter();
-	battle_loader->loaded_items++;
-	frameTimeDelay();
-
-	fighter[1] = p2->get_fighter();
-	battle_loader->loaded_items++;
-	frameTimeDelay();
-
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->player_info = battle_loader->player_info[i];
-		fighter[i]->pos.x = 0;
-		fighter_accessor->fighter[i] = fighter[i];
-		fighter[i]->fighter_accessor = fighter_accessor;
-		battle_loader->loaded_items++;
+	while (!game_loader->finished) {
 		frameTimeDelay();
+
+		load_icon.move();
+		SDL_LockMutex(file_mutex);
+
+		SDL_RenderClear(g_renderer);
+		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		loadingSplash.render();
+		loadingBar.setTargetPercent(((float)game_loader->loaded_items / (float)game_loader->total_items), 0.3);
+		loadingBar.render();
+		loadingFlavor.render();
+		load_icon.texture.render();
+
+		SDL_SetRenderTarget(g_renderer, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(g_renderer);
+
+		SDL_UnlockMutex(file_mutex);
 	}
 
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->superInit(i);
-		battle_loader->loaded_items++;
-		frameTimeDelay();
-	}
+	loadingSplash.clearTexture();
+	loadingBar.clearTexture();
+	loadingFlavor.clearTexture();
+	load_icon.texture.clearTexture();
+	SDL_DestroyTexture(pScreenTexture);
 
-	for (int i = 0; i < 2; i++) {
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			fighter[i]->projectiles[i2]->owner_id = i;
-		}
-		battle_loader->loaded_items++;
-		frameTimeDelay();
-	}
-
-	for (int i = 0; i < 2; i++) {
-		health_bar[i] = HealthBar(fighter[i]);
-		battle_loader->loaded_items++;
-		frameTimeDelay();
-	}
-
-	for (int i = 0; i < 2; i++) {
-		ex_bar[i] = ExBar(fighter[i]);
-		battle_loader->loaded_items++;
-		frameTimeDelay();
-	}
-
-	timer = GameTimer(99);
-	battle_loader->loaded_items++;
-	frameTimeDelay();
-
-	for (int i = 0; i < 2; i++) {
-		player_indicator[i] = PlayerIndicator(fighter[i]);
-	}
-
-	g_soundmanager.fighter_accessor = fighter_accessor;
-
-	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
-		g_soundmanager.loadMusic(stage.default_music_kind);
-	}
-	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
-		//randomly play the theme of one of the characters. if online, always play the opponent's theme
-	}
-	else {
-		//randomly play the theme for one of the players' tags. if online, always play the user's theme
-	}
-
-	battle_loader->stage = stage;
-	battle_loader->fighter_accessor = fighter_accessor;
-	battle_loader->p1 = p1;
-	battle_loader->p2 = p2;
-	for (int i = 0; i < 2; i++) {
-		battle_loader->fighter[i] = fighter[i];
-		battle_loader->fighter[i]->loadCharaSounds();
-		battle_loader->player_indicator[i] = player_indicator[i];
-		battle_loader->health_bar[i] = health_bar[i];
-		battle_loader->ex_bar[i] = ex_bar[i];
-	}
-	battle_loader->timer = timer;
-	battle_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!battle_loader->can_ret) {
-	}
-	return 0; 
-}
-
-class CharaSelectLoader : public GameLoader {
-public:
-	CharaSelectLoader() {};
-
-	CSS css;
-	CssCursor css_cursor[2];
-};
-
-static int LoadCharaSelect(void* void_CharaSelectLoader) {
-	int time = SDL_GetTicks();
-	CharaSelectLoader* chara_select_loader = (CharaSelectLoader*)void_CharaSelectLoader;
-
-	CSS css;
-	CssCursor cursors[2];
-
-	css.player_info[0] = chara_select_loader->player_info[0];
-	css.player_info[1] = chara_select_loader->player_info[1];
-
-	if (css.load_css()) {
-		displayLoadingScreen();
-		chara_select_loader->player_info[0]->crash_reason = "Could not open CSS file!";
-		return 1;
-	}
-	chara_select_loader->loaded_items++;
-	if (css.num_rows == 0) {
-		css.my_col[0] = 1;
-		css.my_col[1] = 1;
-	}
-	for (int i = 0; i < 2; i++) {
-		css.player_id = i;
-		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
-		}
-	}
-
-	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	cursors[0].texture.setScaleFactor(1.2);
-	cursors[0].texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-	chara_select_loader->loaded_items++;
-
-	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	cursors[1].texture.setScaleFactor(1.2);
-	cursors[1].texture.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_CENTER);
-	chara_select_loader->loaded_items++;
-
-	chara_select_loader->css = css;
-	chara_select_loader->css_cursor[0] = cursors[0];
-	chara_select_loader->css_cursor[1] = cursors[1];
-
-	chara_select_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!chara_select_loader->can_ret) {
-	}
-	return 0;
-}
-
-class DebugLoader : public GameLoader {
-public:
-	DebugLoader() {};
-
-	std::ostringstream lastString;
-	TTF_Font* debug_font;
-	debug_list debug_list;
-};
-
-static int LoadDebug(void* void_DebugLoader) {
-	int time = SDL_GetTicks();
-	DebugLoader* debug_loader = (DebugLoader*)void_DebugLoader;
-
-	TTF_Font* debug_font = loadDebugFont();
-	debug_loader->loaded_items++;
-	debug_list debug_list = { debug_font };
-	debug_loader->loaded_items++;
-
-	debug_list.addEntry("Welcome to the debug menu!", DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Use 'SPACE' or 'ENTER' to select an option.", DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry(debug_loader->lastString.str(), DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Title Screen", DEBUG_LIST_SELECTABLE, GAME_STATE_TITLE_SCREEN);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Menu", DEBUG_LIST_SELECTABLE, GAME_STATE_MENU);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Game", DEBUG_LIST_SELECTABLE, GAME_STATE_BATTLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("3D Test", DEBUG_LIST_SELECTABLE, GAME_STATE_3D);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry(debug_loader->player_info[0]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_list.addEntry(debug_loader->player_info[1]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-
-	debug_list.event_down_press();
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-
-	debug_loader->debug_list = debug_list;
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-	debug_loader->debug_font = debug_font;
-	debug_loader->loaded_items++;
-	frameTimeDelay();
-
-	debug_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!debug_loader->can_ret) {
-	}
-	return 1;
-}
-
-class MenuLoader : public GameLoader {
-public:
-	MenuLoader() {};
-
-	MainMenu main_menu;
-};
-
-static int LoadMenu(void* void_MenuLoader) {
-	int time = SDL_GetTicks();
-	MenuLoader* menu_loader = (MenuLoader*)void_MenuLoader;
-
-	MainMenu main_menu;
-
-	main_menu.init();
-
-	menu_loader->main_menu = main_menu;
-	
-	menu_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!menu_loader->can_ret) {
-	}
-	return 0;
-}
-
-class StageSelectLoader : public GameLoader {
-public:
-	StageSelectLoader() {};
-
-	StageSelect stage_select;
-};
-
-static int LoadStageSelect(void* void_StageSelectLoader) {
-	int time = SDL_GetTicks();
-	GameLoader* stage_select_loader = (GameLoader*)void_StageSelectLoader;
-
-	StageSelect stage_select;
-
-	stage_select.player_info[0] = stage_select_loader->player_info[0];
-	stage_select.player_info[1] = stage_select_loader->player_info[1];
-
-	if (stage_select.load_stage_select()) {
-		displayLoadingScreen();
-		stage_select_loader->player_info[0]->crash_reason = "Could not open Stage Select file!";
-		return 1;
-	}
-	stage_select_loader->loaded_items++;
-	frameTimeDelay();
-
-	stage_select_loader->finished = true;
-	cout << "This thread was active for " << SDL_GetTicks() - time << " ms" << endl;
-	while (!stage_select_loader->can_ret) {}
 	return 0;
 }

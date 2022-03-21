@@ -3,18 +3,20 @@
 #include <thread>
 #include <iostream>
 #include <Windows.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_timer.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <glew/glew.h>
+#include "SDL Helpers.h"
 #include "utils.h"
 #include "GameSettings.h"
 #include "GameStates.h"
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
-#include "UI.h"
 #include "SoundManager.h"
 #include "GameManager.h"
+#include "RenderManager.h"
+#include "stb_image.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
 //undefine it before we include Loader.h.
 #undef LoadIcon
@@ -29,8 +31,10 @@ SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_GLContext g_context;
 SoundManager g_soundmanager;
+RenderManager g_rendermanager;
 auto g_chron = chrono::steady_clock::now();
-SDL_mutex* mutex;
+SDL_mutex* file_mutex;
+SDL_mutex* render_mutex;
 
 void initialize_SDL();
 void initialize_GLEW();
@@ -43,7 +47,7 @@ int main() {
 
 	initialize_SDL();
 	initialize_GLEW();
-
+	
 	GameManager game_manager;
 
 	bool running = opening_main(&game_manager);
@@ -73,7 +77,7 @@ int main() {
 	SDL_DestroyWindow(g_window);
 	SDL_GL_DeleteContext(g_context);
 	SDL_DestroyRenderer(g_renderer);
-	SDL_DestroyMutex(mutex);
+	SDL_DestroyMutex(file_mutex);
 
 	SDL_Quit();
 
@@ -117,7 +121,7 @@ void initialize_SDL() {
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	g_context = SDL_GL_CreateContext(g_window);
-	mutex = SDL_CreateMutex();
+	file_mutex = SDL_CreateMutex();
 
 	//Initialize Audio
 
@@ -147,259 +151,15 @@ void initialize_GLEW() {
 	if (glewInit() != GLEW_OK) {
 		cout << "Failed to initialize GLEW!" << endl;
 	}
+	SDL_GL_MakeCurrent(g_window, g_context);
 	SDL_GL_SetSwapInterval(1);
-}
 
-void example_main(GameManager* game_manager) {
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
-	const Uint8* keyboard_state;
-	Debugger debugger;
-	debugger = Debugger();
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	
-	GameLoader *game_loader = new GameLoader;
-	game_loader->player_info[0] = player_info[0];
-	game_loader->player_info[1] = player_info[1];
+	stbi_set_flip_vertically_on_load(true);
 
-
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
-	bool loading = true;
-
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
-
-/*
-
- /$$$$$$$                      /$$                                     /$$                                 /$$ /$$
-| $$__  $$                    | $$                                    | $$                                | $$|__/
-| $$  \ $$  /$$$$$$   /$$$$$$$| $$  /$$$$$$   /$$$$$$   /$$$$$$       | $$        /$$$$$$   /$$$$$$   /$$$$$$$ /$$ /$$$$$$$   /$$$$$$
-| $$  | $$ /$$__  $$ /$$_____/| $$ |____  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$ |____  $$ /$$__  $$| $$| $$__  $$ /$$__  $$
-| $$  | $$| $$$$$$$$| $$      | $$  /$$$$$$$| $$  \__/| $$$$$$$$      | $$      | $$  \ $$  /$$$$$$$| $$  | $$| $$| $$  \ $$| $$  \ $$
-| $$  | $$| $$_____/| $$      | $$ /$$__  $$| $$      | $$_____/      | $$      | $$  | $$ /$$__  $$| $$  | $$| $$| $$  | $$| $$  | $$
-| $$$$$$$/|  $$$$$$$|  $$$$$$$| $$|  $$$$$$$| $$      |  $$$$$$$      | $$$$$$$$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$| $$  | $$|  $$$$$$$
-|_______/  \_______/ \_______/|__/ \_______/|__/       \_______/      |________/ \______/  \_______/ \_______/|__/|__/  |__/ \____  $$
-																															 /$$  \ $$
-																															|  $$$$$$/
-																															 \______/
- /$$$$$$$$ /$$                                           /$$       /$$    /$$                    /$$           /$$       /$$
-|__  $$__/| $$                                          | $$      | $$   | $$                   |__/          | $$      | $$
-   | $$   | $$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$      | $$   | $$ /$$$$$$   /$$$$$$  /$$  /$$$$$$ | $$$$$$$ | $$  /$$$$$$   /$$$$$$$
-   | $$   | $$__  $$ /$$__  $$ /$$__  $$ |____  $$ /$$__  $$      |  $$ / $$/|____  $$ /$$__  $$| $$ |____  $$| $$__  $$| $$ /$$__  $$ /$$_____/
-   | $$   | $$  \ $$| $$  \__/| $$$$$$$$  /$$$$$$$| $$  | $$       \  $$ $$/  /$$$$$$$| $$  \__/| $$  /$$$$$$$| $$  \ $$| $$| $$$$$$$$|  $$$$$$
-   | $$   | $$  | $$| $$      | $$_____/ /$$__  $$| $$  | $$        \  $$$/  /$$__  $$| $$      | $$ /$$__  $$| $$  | $$| $$| $$_____/ \____  $$
-   | $$   | $$  | $$| $$      |  $$$$$$$|  $$$$$$$|  $$$$$$$         \  $/  |  $$$$$$$| $$      | $$|  $$$$$$$| $$$$$$$/| $$|  $$$$$$$ /$$$$$$$/
-   |__/   |__/  |__/|__/       \_______/ \_______/ \_______/          \_/    \_______/|__/      |__/ \_______/|_______/ |__/ \_______/|_______/
-
-
-
- /$$   /$$
-| $$  | $$
-| $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
-| $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
-| $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
-| $$  | $$| $$_____/| $$      | $$_____/
-| $$  | $$|  $$$$$$$| $$      |  $$$$$$$
-|__/  |__/ \_______/|__/       \_______/
-
-*/
-
-	SDL_Thread* loading_thread;
-
-	loading_thread = SDL_CreateThread(LoadGame, "Init.rar", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
-	
-	game_manager->set_menu_info(nullptr);
-
-	LoadIcon load_icon;
-	GameTexture loadingSplash, loadingFlavor, loadingBar;
-	loadingSplash.init("resource/ui/menu/loading/splashload.png");
-	loadingSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingFlavor.init("resource/ui/menu/loading/FlavorBar.png");
-	loadingFlavor.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
-
-	loadingBar.init("resource/ui/menu/loading/loadingbar.png");
-	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
-
-	while (loading) {
-		frameTimeDelay();
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
-			}
-		}
-
-		load_icon.move();
-		SDL_LockMutex(mutex);
-
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		loadingSplash.render();
-		int total_items = 17; //Change to reflect the actual number of items
-		loadingBar.setTargetPercent(((float)game_loader->loaded_items / total_items), 0.3);
-		loadingBar.render();
-		loadingFlavor.render();
-		load_icon.texture.render();
-
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
-
-		SDL_UnlockMutex(mutex);
-
-		if (game_loader->finished) {
-			if (!game_loader->can_ret) {
-/*
-
- /$$$$$$$$             /$$                                    /$$           /$$                                 /$$ /$$
-| $$_____/            | $$                                   | $$          | $$                                | $$|__/
-| $$       /$$   /$$ /$$$$$$    /$$$$$$  /$$$$$$   /$$$$$$$ /$$$$$$        | $$        /$$$$$$   /$$$$$$   /$$$$$$$ /$$ /$$$$$$$   /$$$$$$
-| $$$$$   |  $$ /$$/|_  $$_/   /$$__  $$|____  $$ /$$_____/|_  $$_/        | $$       /$$__  $$ |____  $$ /$$__  $$| $$| $$__  $$ /$$__  $$
-| $$__/    \  $$$$/   | $$    | $$  \__/ /$$$$$$$| $$        | $$          | $$      | $$  \ $$  /$$$$$$$| $$  | $$| $$| $$  \ $$| $$  \ $$
-| $$        >$$  $$   | $$ /$$| $$      /$$__  $$| $$        | $$ /$$      | $$      | $$  | $$ /$$__  $$| $$  | $$| $$| $$  | $$| $$  | $$
-| $$$$$$$$ /$$/\  $$  |  $$$$/| $$     |  $$$$$$$|  $$$$$$$  |  $$$$/      | $$$$$$$$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$| $$  | $$|  $$$$$$$
-|________/|__/  \__/   \___/  |__/      \_______/ \_______/   \___/        |________/ \______/  \_______/ \_______/|__/|__/  |__/ \____  $$
-																																  /$$  \ $$
-																																 |  $$$$$$/
-																																  \______/
- /$$$$$$$$ /$$                                           /$$       /$$    /$$                    /$$           /$$       /$$
-|__  $$__/| $$                                          | $$      | $$   | $$                   |__/          | $$      | $$
-   | $$   | $$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$      | $$   | $$ /$$$$$$   /$$$$$$  /$$  /$$$$$$ | $$$$$$$ | $$  /$$$$$$   /$$$$$$$
-   | $$   | $$__  $$ /$$__  $$ /$$__  $$ |____  $$ /$$__  $$      |  $$ / $$/|____  $$ /$$__  $$| $$ |____  $$| $$__  $$| $$ /$$__  $$ /$$_____/
-   | $$   | $$  \ $$| $$  \__/| $$$$$$$$  /$$$$$$$| $$  | $$       \  $$ $$/  /$$$$$$$| $$  \__/| $$  /$$$$$$$| $$  \ $$| $$| $$$$$$$$|  $$$$$$
-   | $$   | $$  | $$| $$      | $$_____/ /$$__  $$| $$  | $$        \  $$$/  /$$__  $$| $$      | $$ /$$__  $$| $$  | $$| $$| $$_____/ \____  $$
-   | $$   | $$  | $$| $$      |  $$$$$$$|  $$$$$$$|  $$$$$$$         \  $/  |  $$$$$$$| $$      | $$|  $$$$$$$| $$$$$$$/| $$|  $$$$$$$ /$$$$$$$/
-   |__/   |__/  |__/|__/       \_______/ \_______/ \_______/          \_/    \_______/|__/      |__/ \_______/|_______/ |__/ \_______/|_______/
-
- /$$   /$$
-| $$  | $$
-| $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
-| $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
-| $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
-| $$  | $$| $$_____/| $$      | $$_____/
-| $$  | $$|  $$$$$$$| $$      |  $$$$$$$
-|__/  |__/ \_______/|__/       \_______/
-
-*/
-
-//				game_manager->set_menu_info(&menu);
-
-//				These lines are applicable to all game states where the GameManager is in charge of menus, just replace "menu" with the actual class
-			}
-			game_loader->can_ret = true;
-
-			//For most game_main functions, this entire section can be replaced with just "loading = false;"
-
-			SDL_PumpEvents();
-			keyboard_state = SDL_GetKeyboardState(NULL);
-
-			for (int i = 0; i < 2; i++) {
-				player_info[i]->poll_buttons(keyboard_state);
-				if (player_info[i]->is_any_inputs()) {
-					loading = false;
-				}
-			}
-		}
-	}
-	SDL_SetRenderTarget(g_renderer, pScreenTexture);
-	SDL_RenderClear(g_renderer);
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
-
-	while (*game_manager->looping) {
-		frameTimeDelay();
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
-
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-			}
-		}
-
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
-		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(g_window, 0);
-			}
-			else {
-				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			}
-		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
-			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
-			bool new_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].changed = (old_button != new_button);
-		}
-		for (int i = 0; i < 2; i++) {
-			player_info[i]->poll_buttons(keyboard_state);
-		}
-
-/*
-		 /$$   /$$           /$$                                      /$$$$$$                  /$$
-		| $$  | $$          |__/                                     /$$__  $$                | $$
-		| $$  | $$ /$$$$$$$  /$$  /$$$$$$  /$$   /$$  /$$$$$$       | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$
-		| $$  | $$| $$__  $$| $$ /$$__  $$| $$  | $$ /$$__  $$      | $$       /$$__  $$ /$$__  $$ /$$__  $$
-		| $$  | $$| $$  \ $$| $$| $$  \ $$| $$  | $$| $$$$$$$$      | $$      | $$  \ $$| $$  | $$| $$$$$$$$
-		| $$  | $$| $$  | $$| $$| $$  | $$| $$  | $$| $$_____/      | $$    $$| $$  | $$| $$  | $$| $$_____/
-		|  $$$$$$/| $$  | $$| $$|  $$$$$$$|  $$$$$$/|  $$$$$$$      |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
-		 \______/ |__/  |__/|__/ \____  $$ \______/  \_______/       \______/  \______/  \_______/ \_______/
-									  | $$
-									  | $$
-									  |__/
-		  /$$$$$$                                      /$$   /$$
-		 /$$__  $$                                    | $$  | $$
-		| $$  \__/  /$$$$$$   /$$$$$$   /$$$$$$$      | $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
-		| $$ /$$$$ /$$__  $$ /$$__  $$ /$$_____/      | $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
-		| $$|_  $$| $$  \ $$| $$$$$$$$|  $$$$$$       | $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
-		| $$  \ $$| $$  | $$| $$_____/ \____  $$      | $$  | $$| $$_____/| $$      | $$_____/
-		|  $$$$$$/|  $$$$$$/|  $$$$$$$ /$$$$$$$/      | $$  | $$|  $$$$$$$| $$      |  $$$$$$$
-		 \______/  \______/  \_______/|_______/       |__/  |__/ \_______/|__/       \_______/
-*/
-
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-
-/*
-		 /$$$$$$$                            /$$                            /$$$$$$                  /$$
-		| $$__  $$                          | $$                           /$$__  $$                | $$
-		| $$  \ $$  /$$$$$$  /$$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$       | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$
-		| $$$$$$$/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$ /$$__  $$ /$$__  $$
-		| $$__  $$| $$$$$$$$| $$  \ $$| $$  | $$| $$$$$$$$| $$  \__/      | $$      | $$  \ $$| $$  | $$| $$$$$$$$
-		| $$  \ $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$            | $$    $$| $$  | $$| $$  | $$| $$_____/
-		| $$  | $$|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
-		|__/  |__/ \_______/|__/  |__/ \_______/ \_______/|__/             \______/  \______/  \_______/ \_______/
-
-
-
-		  /$$$$$$                                      /$$   /$$
-		 /$$__  $$                                    | $$  | $$
-		| $$  \__/  /$$$$$$   /$$$$$$   /$$$$$$$      | $$  | $$  /$$$$$$   /$$$$$$   /$$$$$$
-		| $$ /$$$$ /$$__  $$ /$$__  $$ /$$_____/      | $$$$$$$$ /$$__  $$ /$$__  $$ /$$__  $$
-		| $$|_  $$| $$  \ $$| $$$$$$$$|  $$$$$$       | $$__  $$| $$$$$$$$| $$  \__/| $$$$$$$$
-		| $$  \ $$| $$  | $$| $$_____/ \____  $$      | $$  | $$| $$_____/| $$      | $$_____/
-		|  $$$$$$/|  $$$$$$/|  $$$$$$$ /$$$$$$$/      | $$  | $$|  $$$$$$$| $$      |  $$$$$$$
-		 \______/  \______/  \_______/|_______/       |__/  |__/ \_______/|__/       \_______/
-*/
-
-		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(g_renderer);
-	}
-
-	delete game_loader;
+	g_rendermanager.init();
+	g_rendermanager.add_light(glm::vec3(1.0, 0.0, 3.0));
 }

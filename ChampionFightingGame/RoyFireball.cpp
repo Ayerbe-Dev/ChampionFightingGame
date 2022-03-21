@@ -1,41 +1,48 @@
 #include "RoyFireball.h"
-#include "Battle.h"
+#include "RoyFireballConstants.h"
 
 RoyFireball::RoyFireball(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
 	this->player_info = player_info;
-	resource_dir = "resource/projectile/roy_fireball";
-	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
-	load_params();
-	loadRoyFireballACMD();
-	loadRoyFireballStatusFunctions();
-	this->base_texture = loadTexture("resource/projectile/roy_fireball/sprite/sprite.png");
 	this->fighter_accessor = fighter_accessor;
+	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
+	projectile_name = "roy_fireball";
+	resource_dir = "resource/projectile/roy_fireball";
+	projectile_int.resize(PROJECTILE_ROY_FIREBALL_INT_MAX, 0);
+	projectile_float.resize(PROJECTILE_ROY_FIREBALL_FLOAT_MAX, 0.0);
+	projectile_flag.resize(PROJECTILE_ROY_FIREBALL_FLAG_MAX, false);
+	load_params();
+	load_move_scripts();
+	loadRoyFireballStatusFunctions();
 	superInit();
 }
 
 void RoyFireball::loadRoyFireballStatusFunctions() {
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_HOVER- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_hover;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_HOVER- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_hover;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_HOVER- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_hover;
+	status_script.resize(PROJECTILE_ROY_FIREBALL_STATUS_MAX, nullptr);
+	enter_status_script.resize(PROJECTILE_ROY_FIREBALL_STATUS_MAX, nullptr);
+	exit_status_script.resize(PROJECTILE_ROY_FIREBALL_STATUS_MAX, nullptr);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_punched;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_punched;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_punched;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_HOVER, &RoyFireball::status_roy_fireball_hover);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_HOVER, &RoyFireball::enter_status_roy_fireball_hover);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_HOVER, &RoyFireball::exit_status_roy_fireball_hover);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_KICKED- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_kicked;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_KICKED- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_kicked;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_KICKED- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_kicked;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED, &RoyFireball::status_roy_fireball_punched);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED, &RoyFireball::enter_status_roy_fireball_punched);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED, &RoyFireball::exit_status_roy_fireball_punched);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_FALL- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_fall;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_FALL- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_fall;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_FALL- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_fall;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_KICKED, &RoyFireball::status_roy_fireball_kicked);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_KICKED, &RoyFireball::enter_status_roy_fireball_kicked);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_KICKED, &RoyFireball::exit_status_roy_fireball_kicked);
 
-	roy_fireball_status[PROJECTILE_ROY_FIREBALL_STATUS_GROUND- PROJECTILE_STATUS_MAX] = &RoyFireball::status_roy_fireball_ground;
-	roy_fireball_enter_status[PROJECTILE_ROY_FIREBALL_STATUS_GROUND- PROJECTILE_STATUS_MAX] = &RoyFireball::enter_status_roy_fireball_ground;
-	roy_fireball_exit_status[PROJECTILE_ROY_FIREBALL_STATUS_GROUND- PROJECTILE_STATUS_MAX] = &RoyFireball::exit_status_roy_fireball_ground;
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_FALL, &RoyFireball::status_roy_fireball_fall);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_FALL, &RoyFireball::enter_status_roy_fireball_fall);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_FALL, &RoyFireball::exit_status_roy_fireball_fall);
+
+	ADD_PROJECTILE_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::status_roy_fireball_ground);
+	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::enter_status_roy_fireball_ground);
+	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROY_FIREBALL_STATUS_GROUND, &RoyFireball::exit_status_roy_fireball_ground);
 }
 
-void RoyFireball::loadRoyFireballACMD() {
+void RoyFireball::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});
@@ -45,34 +52,34 @@ void RoyFireball::loadRoyFireballACMD() {
 	script("punched", [this]() {
 		if (is_excute_frame(0)) {
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(0, 0, 40, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 40, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(0, 0, 50, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 50, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
-				new_hitbox(1, 1, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(1, 1, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 		}
 	});
 	script("kicked", [this]() {
 		if (is_excute_frame(0)) {
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(0, 0, 40, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 40, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(0, 0, 50, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 50, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 			if (fighter_accessor->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				new_hitbox(0, 0, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
-				new_hitbox(1, 1, 30, 5, 1.2, 1, GameCoordinate{ -5,35 }, GameCoordinate{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
+				new_hitbox(1, 1, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false);
 			}
 		}
 	});
@@ -95,22 +102,10 @@ Bang! Bang!                     .'/       |
 							   :/_________|
 */
 
-void RoyFireball::tickOnceProjectileUnique() {
+void RoyFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}
-}
-
-void RoyFireball::projectile_unique_status() {
-	(this->*roy_fireball_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void RoyFireball::projectile_unique_enter_status() {
-	(this->*roy_fireball_enter_status[status_kind - PROJECTILE_STATUS_MAX])();
-}
-
-void RoyFireball::projectile_unique_exit_status() {
-	(this->*roy_fireball_exit_status[status_kind - PROJECTILE_STATUS_MAX])();
 }
 
 void RoyFireball::status_default() {
@@ -137,7 +132,7 @@ void RoyFireball::status_roy_fireball_hover() {
 }
 
 void RoyFireball::enter_status_roy_fireball_hover() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time", param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time", params);
 	change_anim("hover");
 }
 
@@ -146,14 +141,14 @@ void RoyFireball::exit_status_roy_fireball_hover() {
 }
 
 void RoyFireball::status_roy_fireball_punched() {
-	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
-		pos.x += get_param_float("punch_move_x_speed_l", param_table) * facing_dir;
+	if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
+		pos.x += get_param_float("punch_move_x_speed_l", params) * facing_dir;
 	}
-	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
-		pos.x += get_param_float("punch_move_x_speed_m", param_table) * facing_dir;
+	else if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
+		pos.x += get_param_float("punch_move_x_speed_m", params) * facing_dir;
 	}
 	else {
-		pos.x += get_param_float("punch_move_x_speed_h", param_table) * facing_dir;
+		pos.x += get_param_float("punch_move_x_speed_h", params) * facing_dir;
 	}
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
@@ -161,7 +156,7 @@ void RoyFireball::status_roy_fireball_punched() {
 }
 
 void RoyFireball::enter_status_roy_fireball_punched() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time", param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time", params);
 	change_anim("punched");
 }
 
@@ -170,17 +165,17 @@ void RoyFireball::exit_status_roy_fireball_punched() {
 }
 
 void RoyFireball::status_roy_fireball_kicked() {
-	if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
-		pos.x += get_param_float("kick_move_x_speed_l", param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_l", param_table);
+	if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_L) {
+		pos.x += get_param_float("kick_move_x_speed_l", params) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_l", params);
 	}
-	else if (roy->roy_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
-		pos.x += get_param_float("kick_move_x_speed_m", param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_m", param_table);
+	else if (owner->fighter_int[CHARA_ROY_INT_FIREBALL_LEVEL] == SPECIAL_LEVEL_M) {
+		pos.x += get_param_float("kick_move_x_speed_m", params) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_m", params);
 	}
 	else {
-		pos.x += get_param_float("kick_move_x_speed_h", param_table) * facing_dir;
-		pos.y += get_param_float("kick_move_y_speed_h", param_table);
+		pos.x += get_param_float("kick_move_x_speed_h", params) * facing_dir;
+		pos.y += get_param_float("kick_move_y_speed_h", params);
 	}
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
@@ -189,7 +184,7 @@ void RoyFireball::status_roy_fireball_kicked() {
 
 void RoyFireball::enter_status_roy_fireball_kicked() {
 	pos.y -= 60.0;
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", param_table);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time", params);
 	change_anim("kicked");
 }
 

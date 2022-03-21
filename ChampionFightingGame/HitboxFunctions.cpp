@@ -1,14 +1,14 @@
-#include "Object.h"
+#include "BattleObject.h"
 
 /// <summary>
 /// Updates the position of a hitbox relative to the object. 
 /// </summary>
 /// <param name="add_window_width">: Whether or not to add the window width to the hitbox's new position, true by default. When called by projectiles,
 /// this arg should be false instead.</param>
-void Object::update_hitbox_pos(bool add_window_width) {
+void BattleObject::update_hitbox_pos() {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
-			hitboxes[i].update_pos(this, add_window_width);
+			hitboxes[i].update_pos();
 		}
 	}
 }
@@ -19,7 +19,7 @@ void Object::update_hitbox_pos(bool add_window_width) {
 /// </summary>
 /// <param name="multihit">: The multihit index to check the activity of, -1 by default</param>
 /// <returns></returns>
-bool Object::is_hitbox_active(int multihit) {
+bool BattleObject::is_hitbox_active(int multihit) {
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].id != -1) {
 			if (hitboxes[i].multihit == multihit || multihit == -1) {
@@ -34,7 +34,7 @@ bool Object::is_hitbox_active(int multihit) {
 /// Clear the hitbox with the specified ID and reset the multihit flag if no other remaining hitboxes share its multihit value.
 /// </summary>
 /// <param name="id">: The ID of the hitbox to clear.</param>
-void Object::clear_hitbox(int id) {
+void BattleObject::clear_hitbox(int id) {
 	int multihit = hitboxes[id].multihit;
 	hitboxes[id].clear();
 	hitboxes[id].multihit = 0;
@@ -49,7 +49,7 @@ void Object::clear_hitbox(int id) {
 /// <summary>
 /// Clear all active hitboxes and mark all hitboxes as having not connected.
 /// </summary>
-void Object::clear_hitbox_all() {
+void BattleObject::clear_hitbox_all() {
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].clear();
 		hitboxes[i].multihit = 0;
@@ -62,7 +62,7 @@ void Object::clear_hitbox_all() {
 /// point where there were no active hitboxes with that multihit value.
 /// </summary>
 /// <param name="multihit_index">: The index to mark as having connected.</param>
-void Object::update_hitbox_connect(int multihit_index) {
+void BattleObject::update_hitbox_connect(int multihit_index) {
 	multihit_connected[multihit_index] = true;
 }
 
@@ -125,16 +125,16 @@ void Object::update_hitbox_connect(int multihit_index) {
 /// <param name="can_chip_ko">: Whether or not the chip damage for this move is able to KO the defender. Generally should be false for normals, true for
 /// specials and supers.</param>
 /// <param name="use_player_pos">: If the anchor and offset coords are based on the player position, or a static point on the screen. True by default.</param>
-void Fighter::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor,
-	GameCoordinate offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit,
+void Fighter::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
+	glm::vec2 offset, int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit,
 	int hitlag, int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback,
 	int clank_kind, int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y,
 	float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos) {
 	if (id < 10) {
-		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, hitbox_kind, meter_gain_on_hit,
-							  meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, attack_height,
-							  attack_level, hit_pushback, block_pushback, clank_kind, juggle_set, max_juggle, hit_status, counterhit_status,
-							  counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, continue_launch, can_chip_ko, use_player_pos);
+		hitboxes[id].activate(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, hitbox_kind, meter_gain_on_hit,
+			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable, attack_height,
+			attack_level, hit_pushback, block_pushback, clank_kind, juggle_set, max_juggle, hit_status, counterhit_status,
+			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, continue_launch, can_chip_ko, use_player_pos);
 	}
 }
 
@@ -189,13 +189,13 @@ void Fighter::new_hitbox(int id, int multihit, float damage, float chip_damage, 
 /// <param name="continue_launch">: Whether or not the move can extend an opponent's launch status even if its hit status isn't HIT_STATUS_LAUNCH.</param>
 /// <param name="can_chip_ko">: Whether or not the chip damage for this move is able to KO the defender. Generally should be false for normals, true for
 /// specials and supers.</param>
-void Projectile::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, GameCoordinate anchor, GameCoordinate offset,
+void Projectile::new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor, glm::vec2 offset,
 	float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
 	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x,
 	bool trade, bool continue_launch, bool can_chip_ko) {
 	if (id < 10) {
-		hitboxes[id] = Hitbox(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, meter_gain_on_hit,
+		hitboxes[id].activate(this, id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, meter_gain_on_hit,
 			meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, blocklag, blockstun, unblockable,
 			hit_pushback, block_pushback, juggle_set, max_juggle, hit_status, counterhit_status,
 			counterhit_type, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x, trade, continue_launch, can_chip_ko);

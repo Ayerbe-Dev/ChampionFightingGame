@@ -12,7 +12,7 @@
 #include "GameState.h"
 #include "MenuConstants.h"
 #include "FighterAttribute.h"
-#include "ObjectKind.h"
+#include "StageKind.h"
 #include "SE.h"
 #include "VC.h"
 #include "Music.h"

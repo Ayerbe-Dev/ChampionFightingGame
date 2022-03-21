@@ -1,10 +1,7 @@
 #pragma once
-#include "Fighter.fwd.h"
 #include "Fighter.h"
-#include "Object.fwd.h"
-#include "Object.h"
-#include "Nightsaber.fwd.h"
-#include "utils.h"
+#include "BattleObject.h"
+#include "NightsaberConstants.h"
 
 class Nightsaber : public Fighter {
 public:
@@ -12,20 +9,9 @@ public:
 	Nightsaber();
 	Nightsaber(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadNightsaberStatusFunctions();
-	void loadCharaMoveScripts() override;
-
-	void (Nightsaber::* nightsaber_status[CHARA_NIGHTSABER_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Nightsaber::* nightsaber_enter_status[CHARA_NIGHTSABER_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (Nightsaber::* nightsaber_exit_status[CHARA_NIGHTSABER_STATUS_MAX - FIGHTER_STATUS_MAX])();
-
-	int nightsaber_int[CHARA_NIGHTSABER_INT_MAX];
-	float nightsaber_float[CHARA_NIGHTSABER_FLOAT_MAX];
-	bool nightsaber_flag[CHARA_NIGHTSABER_FLAG_MAX];
+	void load_move_scripts() override;
 
 	void chara_main() override;
-	void chara_status() override;
-	void chara_enter_status() override;
-	void chara_exit_status() override;
 
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;

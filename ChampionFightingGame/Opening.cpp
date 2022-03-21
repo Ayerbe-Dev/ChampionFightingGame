@@ -1,5 +1,7 @@
 #include "Opening.h"
-extern SDL_Renderer* g_renderer;
+#include <glew/glew.h>
+#include "GameTexture.h"
+extern SDL_Window* g_window;
 
 bool opening_main(GameManager* game_manager) {
 	PlayerInfo *player_info[2];
@@ -11,17 +13,14 @@ bool opening_main(GameManager* game_manager) {
 
 bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 	const Uint8* keyboard_state;
-	SDL_RenderClear(g_renderer);
 	GameTexture titleSplash;
-	titleSplash.init("resource/ui/menu/opening/game-splash-background.png", false);
-	titleSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	titleSplash.init("resource/ui/menu/opening/game-splash-background.png");
 
 	GameTexture textSplash;
-	textSplash.init("resource/ui/menu/opening/game-splash-text.png", false);
-	textSplash.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_BACKGROUND);
+	textSplash.init("resource/ui/menu/opening/game-splash-text.png");
 
-	u8 title_alpha = 0;
-	u8 text_alpha = 0;
+	char title_alpha = 0;
+	char text_alpha = 0;
 	bool opening = true;
 	int fade_count = 0;
 	int fade_state = 0;
@@ -49,11 +48,12 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 			player_info[i]->check_controllers();
 			player_info[i]->poll_buttons(keyboard_state);
 			if (player_info[i]->is_any_inputs()) {
-				goto SKIP_INTRO;
+				opening = false;
 			}
 		}
 
-		SDL_RenderClear(g_renderer);
+		glClearColor(0, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
 		if (fade_state == 0) {
 			title_alpha += 10;
@@ -80,17 +80,15 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 			}
 		}
 
-		titleSplash.setAlpha(title_alpha);
-		textSplash.setAlpha(text_alpha);
+		titleSplash.set_alpha(title_alpha);
+		textSplash.set_alpha(text_alpha);
 		titleSplash.render();
 		textSplash.render();
 
-		SDL_RenderPresent(g_renderer);
+		SDL_GL_SwapWindow(g_window);
 	}
 
-
-	SKIP_INTRO:
-	textSplash.clearTexture();
-	titleSplash.clearTexture();
+	titleSplash.destroy();
+	textSplash.destroy();
 	return true;
 }

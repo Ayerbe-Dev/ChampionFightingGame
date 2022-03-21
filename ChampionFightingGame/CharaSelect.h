@@ -1,9 +1,10 @@
 #pragma once
-#include <SDL.h>
+#include <iostream>
 #include "PlayerInfo.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "GameManager.h"
+#include "CharaKind.h"
 
 void chara_select_main(GameManager *game_manager);
 
@@ -11,7 +12,7 @@ class CssSlot {
 public:
     GameTexture texture;
     bool is_initialized();
-    void init(int id, string textureDir, string name);
+    void init(int id, std::string textureDir, std::string name);
     void set_x_pos(int x);
     void set_y_pos(int y);
     int get_texture_width();
@@ -24,39 +25,13 @@ public:
     int my_row{ -1 };
     int chara_kind = CHARA_KIND_MAX;
     bool initialized = false;
-    string texture_dir = "";
-    string name = "";
-};
-
-class CssSlotMobile {
-public:
-    GameTexture texture;
-    void play_anim();
-
-    /*
-        Sets the glide target
-        \param x the x target
-        \param y the y target
-        \param w the starting width
-        \param h the starting height
-    */
-    void set_target(int x, int y, float w, float h);
-private:
-    int anim_speed = 16;
-    int target_x = 0;
-    int target_y = 0;
-    float pos_x = 0;
-    float pos_y = 0;
-    float theta = 0;
-    int anim_time = 0;
-    float scale = .2;
-    float scale_x = 0;
-    float scale_y = 0;
+    std::string texture_dir = "";
+    std::string name = "";
 };
 
 class CssCursor{
 public:
-    void init(string texture_dir);
+    void init(std::string texture_dir);
     void set_target(int x, int y);
     void render();
     GameTexture texture;
@@ -70,8 +45,9 @@ private:
 class CSS: public GameMenu{
 public:
     CSS();
+    ~CSS();
     int load_css();
-    void add_slot(int id, string cardDir, string cardName);
+    void add_slot(int id, std::string cardDir, std::string cardName);
     int get_num_slots();
 
     void event_select_press();
@@ -84,9 +60,7 @@ public:
     
     void render();
 
-    void query_fixed_css_slot_pos(int index, int* x_ret, int* y_ret);
     int get_chara_kind(int player_id);
-    void center_slots();
     void select_slot();
     void find_prev_chara_kind(int chara_kind);
 
@@ -94,17 +68,21 @@ public:
     int my_col[2]{0, 0};
     int my_row[2]{ 0, 0 };
 
+    int num_slots;
     int num_cols;
     int num_rows;
     int cols_offset;
 
     PlayerInfo *player_info[2];
+    GameTexture mobile_css_slots[2];
+    bool mobile_slots_active[2] = { false };
+    CssSlot chara_slots[CSS_SLOTS];
+    CssCursor cursors[2];
 private:
-    CssSlotMobile mobile_css_slots[2];
     GameTexture background_texture;
     GameTexture big_bar_texture;
     GameTexture top_bar_texture;
-    CssSlot chara_slots[CSS_SLOTS];
-    CssSlot chara_slots_ordered[10][4];
+    CssSlot big_chara_slots[2];
+    CssSlot *chara_slots_ordered[10][4];
     bool is_last_input_right[2]{ false };
 };

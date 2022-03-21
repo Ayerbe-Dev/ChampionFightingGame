@@ -1,21 +1,16 @@
 #include "Options.h"
-extern SDL_Renderer* g_renderer;
+#include <glew/glew.h>
 extern SDL_Window* g_window;
 
 void controls_main(GameManager* game_manager) {
 	GameMenu* background_menu = game_manager->get_target();
-	SDL_Texture *background = game_manager->background[game_manager->layer];
 
 	game_manager->layer++;
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-
 	const Uint8* keyboard_state;
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	OptionsOverlay options_overlay = OptionsOverlay(500, 300, "resource/ui/menu/options/overlay.png");
 	options_overlay.player_info[0] = player_info[0];
@@ -25,11 +20,8 @@ void controls_main(GameManager* game_manager) {
 
 	while (*game_manager->looping[game_manager->layer]) {
 		frameTimeDelay();
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderClear(g_renderer);
-
-		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -42,6 +34,8 @@ void controls_main(GameManager* game_manager) {
 				break;
 			}
 		}
+		SDL_PumpEvents();
+		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 			player_info[i]->poll_buttons(keyboard_state);
@@ -49,17 +43,14 @@ void controls_main(GameManager* game_manager) {
 				*game_manager->looping[game_manager->layer] = false;
 			}
 		}
-		background_menu->process_background(background);
 
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderCopy(g_renderer, background, nullptr, nullptr);
+		background_menu->process_background();
 		options_overlay.panel.render();
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
+
+		SDL_GL_SwapWindow(g_window);
 	}
 
-	SDL_DestroyTexture(pScreenTexture);
+	options_overlay.panel.destroy();
 	game_manager->layer--;
 }
 
@@ -67,10 +58,9 @@ OptionsOverlay::OptionsOverlay() {
 
 }
 
-OptionsOverlay::OptionsOverlay(int width, int height, string dir) {
-	panel.init(dir, false);
-	panel.destRect.w = width;
-	panel.destRect.h = height;
-	panel.destRect.x = WINDOW_WIDTH / 2;
-	panel.destRect.y = WINDOW_HEIGHT / 2;
+OptionsOverlay::OptionsOverlay(int width, int height, std::string dir) {
+	panel.init(dir);
+	panel.set_width(width);
+	panel.set_height(height);
+	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }

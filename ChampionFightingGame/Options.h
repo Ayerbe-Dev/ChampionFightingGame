@@ -22,7 +22,7 @@ public:
 class OptionsOverlay : public GameMenu {
 public:
 	OptionsOverlay();
-	OptionsOverlay(int width, int height, string dir);
+	OptionsOverlay(int width, int height, std::string dir);
 
 	GameTexture panel;
 	PlayerInfo* player_info[2];

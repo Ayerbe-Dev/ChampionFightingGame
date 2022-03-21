@@ -1,6 +1,6 @@
 #pragma once
-#include <SDL.h>
-#include <SDL_ttf.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
 #include <string>
 
 #include "PlayerInfo.h"
@@ -34,9 +34,9 @@ public:
     TTF_Font *pFont;
 
     DebugItem();
-    //~DebugItem();
+    void delete_item();
     void preLoad(TTF_Font *pFont);
-    void generateTexture(string message = "no message");
+    void generateTexture(std::string message = "no message");
 };
 class debug_list: public GameMenu{
 public:
@@ -46,8 +46,9 @@ public:
     TTF_Font *pFont;
     debug_list();
     debug_list(TTF_Font *pFont, int x_offset = 15);
+    void destroy_list();
     void init(TTF_Font *pFont, int x_offset = 15);
-    void addEntry(string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
+    void addEntry(std::string message, int selectable = DEBUG_LIST_SELECTABLE, int destination = 888);
     void render();
     void event_down_press();
     void event_up_press();
@@ -55,5 +56,5 @@ public:
     int getDestination();
 };
 
-TTF_Font *loadDebugFont(string fontname = "FiraCode-Regular.ttf");
+TTF_Font *loadDebugFont(std::string fontname = "FiraCode-Regular.ttf");
 void debugMenu(GameManager *game_manager);

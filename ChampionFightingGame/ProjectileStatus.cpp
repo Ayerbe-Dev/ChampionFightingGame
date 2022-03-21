@@ -36,17 +36,3 @@ void Projectile::enter_status_hit() {
 void Projectile::exit_status_hit() {
 
 }
-
-void Projectile::loadStatusScripts() {
-	status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::status_default;
-	enter_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::enter_status_default;
-	exit_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::exit_status_default;
-
-	status_script[PROJECTILE_STATUS_MOVE] = &Projectile::status_move;
-	enter_status_script[PROJECTILE_STATUS_MOVE] = &Projectile::enter_status_move;
-	exit_status_script[PROJECTILE_STATUS_MOVE] = &Projectile::exit_status_move;
-
-	status_script[PROJECTILE_STATUS_HIT] = &Projectile::status_hit;
-	enter_status_script[PROJECTILE_STATUS_HIT] = &Projectile::enter_status_hit;
-	exit_status_script[PROJECTILE_STATUS_HIT] = &Projectile::exit_status_hit;
-}

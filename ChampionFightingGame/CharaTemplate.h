@@ -1,10 +1,7 @@
 #pragma once
-#include "Fighter.fwd.h"
 #include "Fighter.h"
-#include "Object.fwd.h"
-#include "Object.h"
-#include "CharaTemplate.fwd.h"
-#include "utils.h"
+#include "BattleObject.h"
+#include "CharaTemplateConstants.h"
 
 class CharaTemplate : public Fighter {
 public:
@@ -12,20 +9,9 @@ public:
 	CharaTemplate();
 	CharaTemplate(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
 	void loadCharaTemplateStatusFunctions();
-	void loadCharaMoveScripts() override;
-
-	void (CharaTemplate::* chara_template_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (CharaTemplate::* chara_template_enter_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
-	void (CharaTemplate::* chara_template_exit_status[CHARA_CHARA_TEMPLATE_STATUS_MAX - FIGHTER_STATUS_MAX])();
-
-	int chara_template_int[CHARA_CHARA_TEMPLATE_INT_MAX];
-	float chara_template_float[CHARA_CHARA_TEMPLATE_FLOAT_MAX];
-	bool chara_template_flag[CHARA_CHARA_TEMPLATE_FLAG_MAX];
+	void load_move_scripts() override;
 
 	void chara_main() override;
-	void chara_status() override;
-	void chara_enter_status() override;
-	void chara_exit_status() override;
 
 	bool specific_ground_status_act() override;
 	bool specific_air_status_act() override;

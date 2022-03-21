@@ -1,20 +1,28 @@
 #pragma once
-#include <SDL.h>
-#include <string>
-#include "utils.h"
+#include <vector>
+#include <unordered_map>
+#include <iostream>
 
-struct Animation {
-	SDL_Texture* spritesheet;
-	string name{ "default"};
-	string path{ "default.png" };
-	int length{ -1 };
-	int faf{ -1 };
-	int force_center{ 0 };
-	int move_dir{ 0 };
-	SDL_Rect anim_map[MAX_ANIM_LENGTH] = {};
+class Model;
+struct Bone;
 
+class Animation {
+public:
 	Animation();
+	Animation(std::string anim_kind, std::string anim_dir, Model* model);
+	std::string name;
+	std::vector<std::vector<Bone>> keyframes;
+	int length;
+	int faf;
 };
 
-SDL_Rect getFrame(int frame, Animation* animation);
-void loadAnimation(Animation* animation);
+class AnimationTable {
+public:
+	AnimationTable();
+	void load_animations(std::string resource_dir, Model* model);
+	void load_animations_no_faf(std::string resource_dir, Model* model);
+	Animation* get_anim(std::string anim_name, bool verbose);
+private:
+	std::vector<Animation> animations;
+	std::unordered_map<std::string, int> anim_map;
+};

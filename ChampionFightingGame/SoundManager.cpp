@@ -1,4 +1,6 @@
 ﻿#include "SoundManager.h"
+#include "GameSettings.h"
+#include "SDL/SDL_audio.h"
 SoundInfo sounds[3][MAX_SOUNDS];
 extern bool debug;
 
@@ -7,14 +9,14 @@ SoundManager::SoundManager() {}
 SoundManager::SoundManager(bool init) {
 	if (init) {
 		//you had to be there
-		cout << "  /$$$$$$                        /$$               /$$                                  /$$$$$$                        /$$                               /$$$$$$           /$$   /$$    " << endl;
-		cout << " /$$__  $$                      | $$              | $$                                 /$$__  $$                      | $$                              |_  $$_/          |__/  | $$    " << endl;
-		cout << "| $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$$| $$$$$$$   /$$$$$$   /$$$$$$       | $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$   /$$$$$$         | $$   /$$$$$$$  /$$ /$$$$$$  " << endl;
-		cout << "| $$ /$$$$ |____  $$| $$__  $$|_  $$_/   /$$_____/| $$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$| $$__  $$|_  $$_/   /$$__  $$ /$$__  $$        | $$  | $$__  $$| $$|_  $$_/  " << endl;
-		cout << "| $$|_  $$  /$$$$$$$| $$  \\ $$  | $$    | $$      | $$  \\ $$| $$$$$$$$| $$  \\__/      | $$      | $$$$$$$$| $$  \\ $$  | $$    | $$$$$$$$| $$  \\__/        | $$  | $$  \\ $$| $$  | $$    " << endl;
-		cout << "| $$  \\ $$ /$$__  $$| $$  | $$  | $$ /$$| $$      | $$  | $$| $$_____/| $$            | $$    $$| $$_____/| $$  | $$  | $$ /$$| $$_____/| $$              | $$  | $$  | $$| $$  | $$ /$$" << endl;
-		cout << "|  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$             /$$$$$$| $$  | $$| $$  |  $$$$/" << endl;
-		cout << " \\______/  \\_______/|__/  |__/   \\___/   \\_______/|__/  |__/ \\_______/|__/             \\______/  \\_______/|__/  |__/   \\___/   \_______/|__/            |______/|__/  |__/|__/   \\___/  " << endl << endl;
+		std::cout << "  /$$$$$$                        /$$               /$$                                  /$$$$$$                        /$$                               /$$$$$$           /$$   /$$    " << "\n";
+		std::cout << " /$$__  $$                      | $$              | $$                                 /$$__  $$                      | $$                              |_  $$_/          |__/  | $$    " << "\n";
+		std::cout << "| $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$$| $$$$$$$   /$$$$$$   /$$$$$$       | $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$   /$$$$$$         | $$   /$$$$$$$  /$$ /$$$$$$  " << "\n";
+		std::cout << "| $$ /$$$$ |____  $$| $$__  $$|_  $$_/   /$$_____/| $$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$| $$__  $$|_  $$_/   /$$__  $$ /$$__  $$        | $$  | $$__  $$| $$|_  $$_/  " << "\n";
+		std::cout << "| $$|_  $$  /$$$$$$$| $$  \\ $$  | $$    | $$      | $$  \\ $$| $$$$$$$$| $$  \\__/      | $$      | $$$$$$$$| $$  \\ $$  | $$    | $$$$$$$$| $$  \\__/        | $$  | $$  \\ $$| $$  | $$    " << "\n";
+		std::cout << "| $$  \\ $$ /$$__  $$| $$  | $$  | $$ /$$| $$      | $$  | $$| $$_____/| $$            | $$    $$| $$_____/| $$  | $$  | $$ /$$| $$_____/| $$              | $$  | $$  | $$| $$  | $$ /$$" << "\n";
+		std::cout << "|  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$             /$$$$$$| $$  | $$| $$  |  $$$$/" << "\n";
+		std::cout << " \\______/  \\_______/|__/  |__/   \\___/   \\_______/|__/  |__/ \\_______/|__/             \\______/  \\_______/|__/  |__/   \\___/   \_______/|__/            |______/|__/  |__/|__/   \\___/  " << "\n" << "\n";
 
 	}
 	hyperInit();
@@ -23,6 +25,7 @@ SoundManager::SoundManager(bool init) {
 void SoundManager::hyperInit() {
 	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
+	music[MUSIC_KIND_TRAINING_STAGE] = Sound("Vesuvius_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
 	music[MUSIC_KIND_ATLAS_STAGE] = Sound("Atlas_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
 }
 
@@ -405,7 +408,7 @@ Sound::Sound() {
 	sound_kind = SOUND_KIND_MAX;
 }
 
-Sound::Sound(string name, int sound_kind, int chara_kind, int volume, int sound_type) {
+Sound::Sound(std::string name, int sound_kind, int chara_kind, int volume, int sound_type) {
 	this->name = name;
 	this->sound_kind = sound_kind;
 	this->sound_type = sound_type;
@@ -413,8 +416,7 @@ Sound::Sound(string name, int sound_kind, int chara_kind, int volume, int sound_
 	active = false;
 	looped = false;
 	switch (sound_kind) {
-		case (SOUND_KIND_MUSIC):
-		{
+		case (SOUND_KIND_MUSIC): {
 			this->dir = "resource/sound/bgm/" + name + ".wav";
 			this->loop_dir = "resource/sound/bgm/" + name + "_loop.wav";
 		} break;
@@ -578,14 +580,14 @@ void addSoundToIndex(Sound sound, int id) {
 	int index;
 
 	SDL_AudioSpec wave;
-	u8* data;
-	u32 dlen;
+	Uint8* data;
+	unsigned int dlen;
 	SDL_AudioCVT cvt;
 	const char* file = (sound.dir).c_str();
 
 	SDL_AudioSpec loop_wave;
-	u8* loop_data;
-	u32 loop_dlen;
+	Uint8* loop_data;
+	unsigned int loop_dlen;
 	SDL_AudioCVT loop_cvt;
 	const char* loop_file = (sound.loop_dir).c_str();
 
@@ -641,18 +643,17 @@ void addSoundToIndex(Sound sound, int id) {
 }
 
 void audio_callback(void* unused, Uint8* stream, int len) {
-
-	u32 diff = 0; //How much leftover space we have if the length of the stream > the length of the track
-	u8* source; //Audio data that will be filled by a given track
-	u8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
-	u32 dlen; //Ditto for length
+	unsigned int diff; //How much leftover space we have if the length of the stream > the length of the track
+	Uint8* source; //Audio data that will be filled by a given track
+	Uint8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
+	unsigned int dlen; //Ditto for length
 	int vol; //Volume value to be multiplied by the values in the user's settings
 	SDL_memset(stream, 0, len); //Clear the stream
 
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
 			if (sounds[i2][i].sound.active) {
-
+				diff = 0;
 				data = sounds[i2][i].data;
 				dlen = sounds[i2][i].dlen;
 				if (sounds[i2][i].sound.sound_kind == SOUND_KIND_SE) {
@@ -670,14 +671,14 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 					dlen = sounds[i2][i].loop_dlen;
 				}
 
-				source = (u8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
+				source = (Uint8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
 				if (sounds[i2][i].dpos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
 					diff = (sounds[i2][i].dpos + len) - dlen;
 				}
 
 				//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
 
-				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(len, len, dlen));
+				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(0, len, dlen - sounds[i2][i].dpos));
 	
 				sounds[i2][i].dpos += len; //Add the length of the stream to the audio's position.
 
@@ -696,7 +697,6 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 					else { //Otherwise just get that shit outta here
 						sounds[i2][i].sound.active = false;
 						sounds[i2][i].dpos = 0;
-						sounds[i2][i].dlen = 0;
 					}
 				}
 				SDL_MixAudio(stream, source, len, vol);

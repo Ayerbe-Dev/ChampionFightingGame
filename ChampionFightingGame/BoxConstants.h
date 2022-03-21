@@ -1,5 +1,7 @@
 #pragma once
 
+#define HITBOX_COUNT_MAX 9
+
 enum {
 	HITBOX_KIND_NORMAL,
 	HITBOX_KIND_BLOCK,

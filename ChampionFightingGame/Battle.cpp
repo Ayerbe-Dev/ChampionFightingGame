@@ -291,12 +291,6 @@ void Battle::process_fighter() {
 	for (int i = 0; i < 2; i++) {
 		player_info[i]->poll_buttons(keyboard_state);
 		fighter[i]->fighter_main();
-		if (fighter[i]->check_button_on(BUTTON_LP)) {
-			fighter[i]->attach_opponent("HaveL");
-		}
-		if (fighter[i]->check_button_trigger(BUTTON_LK)) {
-			fighter[i]->detach_opponent();
-		}
 	}
 }
 
@@ -939,12 +933,6 @@ bool Battle::event_hit_collide_player() {
 /// <summary>
 /// Handle any potential grabbox collision events between two Fighters on this frame and change statuses accordingly.
 /// </summary>
-/// <param name="p1">: Player 1</param>
-/// <param name="p2">: Player 2</param>
-/// <param name="p1_hitbox">: Which of P1's grabboxes (if any) first connected with P2.</param>
-/// <param name="p2_hitbox">: Which of P2's grabboxes (if any) first connected with P1.</param>
-/// <returns>Whether or not any kind of collision event occured.</returns>
-
 void Battle::event_grab_collide_player() {
 	Grabbox* grabboxes[2] = { &(fighter[0]->grabboxes[fighter[1]->connected_hitbox]), &(fighter[1]->grabboxes[fighter[0]->connected_hitbox]) };
 	bool players_hit[2] = { grabboxes[1]->id != -1, grabboxes[0]->id != -1 };

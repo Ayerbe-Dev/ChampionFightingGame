@@ -32,7 +32,7 @@ void GameMenu::inc_thread() {
 }
 
 void GameMenu::frame_delay() {
-	frameTimeDelay();
+	wait_ms();
 }
 
 void GameMenu::frame_delay_check_performance() {
@@ -75,6 +75,6 @@ void GameMenu::frame_delay_check_performance() {
 		average_ticks.clear();
 		tick_frequency.clear();
 	}
-	frameTimeDelay();
+	wait_ms();
 	ticks = SDL_GetTicks();
 }

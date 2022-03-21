@@ -116,7 +116,7 @@ static int LoadingScreen(void* void_GameLoader) {
 	loadingBar.setAnchorMode(GAME_TEXTURE_ANCHOR_MODE_METER);
 
 	while (!game_loader->finished) {
-		frameTimeDelay();
+		wait_ms();
 
 		load_icon.move();
 		SDL_LockMutex(file_mutex);

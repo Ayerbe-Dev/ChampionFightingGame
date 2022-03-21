@@ -37,7 +37,7 @@
 #define MAX_SHADERS 4
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
-void frameTimeDelay();
+void wait_ms(double ms_duration = 16.667);
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
 int ymlChopInt(std::string line);

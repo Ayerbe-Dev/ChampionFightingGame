@@ -23,7 +23,7 @@ SDL_Texture* loadSDLTexture(const char* file_path, bool delay) {
 	SDL_FreeSurface(image_surface);
 	SDL_UnlockMutex(file_mutex);
 	if (delay) {
-		frameTimeDelay();
+		wait_ms();
 	}
 	return ret;
 }

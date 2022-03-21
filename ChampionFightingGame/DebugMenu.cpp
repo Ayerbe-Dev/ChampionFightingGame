@@ -57,7 +57,7 @@ void debugMenu(GameManager* game_manager) {
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	while (*game_manager->looping[game_manager->layer]) {
-		frameTimeDelay();
+		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 		}

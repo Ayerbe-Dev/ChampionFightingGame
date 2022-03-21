@@ -35,7 +35,7 @@ void menu_main(GameManager* game_manager) {
 	game_loader->finished = true;
 
 	while (*game_manager->looping[game_manager->layer]) {
-		frameTimeDelay();
+		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 		}

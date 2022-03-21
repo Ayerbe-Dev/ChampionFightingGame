@@ -26,10 +26,10 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 	int fade_state = 0;
 
 	while (opening) {
-		frameTimeDelay();
-		frameTimeDelay();
-		frameTimeDelay();
-		frameTimeDelay();
+		wait_ms();
+		wait_ms();
+		wait_ms();
+		wait_ms();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {

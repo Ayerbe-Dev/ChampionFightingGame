@@ -3,7 +3,7 @@
 #include "RenderManager.h"
 #include "BoxConstants.h"
 #include "Fighter.h"
-#include "FighterAccessor.h"
+#include "BattleObjectManager.h"
 extern RenderManager g_rendermanager;
 
 void Projectile::superInit() {
@@ -42,9 +42,9 @@ void Projectile::load_anim_list() {
 		if (err.what() == "Anim List Missing") {
 			char buffer[56];
 			sprintf(buffer, "Projectile %d's resource directory was incorrectly set!", projectile_kind);
-			fighter_accessor->fighter[id]->player_info->crash_reason = buffer;
+			battle_object_manager->fighter[id]->player_info->crash_reason = buffer;
 
-			fighter_accessor->fighter[id]->crash_to_debug = true;
+			battle_object_manager->fighter[id]->crash_to_debug = true;
 		}
 		else {
 			std::cout << err.what() << "\n";

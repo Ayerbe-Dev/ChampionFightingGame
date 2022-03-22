@@ -326,7 +326,7 @@ int SoundManager::findSoundIndex(Sound sound, int id) {
 
 Sound SoundManager::getCharaSound(int index, int id, bool se) {
 	Sound sound;
-	switch (fighter_accessor->fighter[id]->chara_kind) {
+	switch (battle_object_manager->fighter[id]->chara_kind) {
 		case(CHARA_KIND_ROY):
 		{
 			sound = se ? roy_se[index] : roy_vc[index];

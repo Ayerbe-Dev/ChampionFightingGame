@@ -6,9 +6,9 @@ Leon::Leon() {
 
 }
 
-Leon::Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
+Leon::Leon(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
 	this->player_info = player_info;
-	this->fighter_accessor = fighter_accessor;
+	this->battle_object_manager = battle_object_manager;
 	if (player_info->chara_kind == CHARA_KIND_LEON) {
 		this->chara_kind = CHARA_KIND_LEON;
 		chara_name = "leon";

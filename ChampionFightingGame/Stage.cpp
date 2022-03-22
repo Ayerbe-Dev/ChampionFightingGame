@@ -3,7 +3,7 @@
 #include "StageAsset.h"
 #include "Music.h"
 #include "Animation.h"
-#include "FighterAccessor.h"
+#include "BattleObjectManager.h"
 #include <fstream>
 extern RenderManager g_rendermanager;
 
@@ -31,7 +31,7 @@ int StageInfo::get_stage_music() {
 
 Stage::Stage() {}
 
-void Stage::load_stage(StageInfo stage_info, FighterAccessor *fighter_accessor) {
+void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_manager) {
 	stage_kind = stage_info.stage_kind;
 	resource_dir = stage_info.resource_dir;
 	default_music_kind = stage_info.default_music_kind;
@@ -47,7 +47,7 @@ void Stage::load_stage(StageInfo stage_info, FighterAccessor *fighter_accessor) 
 	std::string asset_name;
 	while (asset_list >> asset_name) {
 		std::string resource_dir = this->resource_dir + "assets/" + asset_name;
-		stage_assets.push_back(new StageAsset(asset_name, resource_dir, fighter_accessor));
+		stage_assets.push_back(new StageAsset(asset_name, resource_dir, battle_object_manager));
 	}
 
 	asset_list.close();

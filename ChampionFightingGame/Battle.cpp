@@ -19,7 +19,7 @@
 
 #include "BattleObject.h"
 #include "Fighter.h"
-#include "FighterAccessor.h"
+#include "BattleObjectManager.h"
 
 #include "Projectile.h"
 #include "Projectiles.h"
@@ -108,19 +108,19 @@ void Battle::load_battle(GameManager* game_manager) {
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
-	fighter_accessor = new FighterAccessor;
+	battle_object_manager = new BattleObjectManager;
 
 	inc_thread();
 
 	int rng = rand() % 2;
-	stage.load_stage(player_info[rng]->stage_info, fighter_accessor);
+	stage.load_stage(player_info[rng]->stage_info, battle_object_manager);
 
 	inc_thread();
 
 	for (int i = 0; i < 2; i++) {
 		debug_rect[i].init();
 		inc_thread();
-		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i], fighter_accessor);
+		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i], battle_object_manager);
 		inc_thread();
 	}
 	for (int i = 0; i < 2; i++) {
@@ -135,7 +135,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 	timer.init(99);
 	inc_thread();
-	g_soundmanager.fighter_accessor = fighter_accessor;
+	g_soundmanager.battle_object_manager = battle_object_manager;
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->loadCharaSounds();
 		inc_thread();
@@ -208,7 +208,7 @@ void Battle::unload_battle() {
 	g_soundmanager.unloadSoundAll();
 	g_rendermanager.unlink_all_shaders();
 
-	delete fighter_accessor;
+	delete battle_object_manager;
 	delete game_loader;
 }
 

@@ -2,7 +2,7 @@
 #include "Fighter.h"
 
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
-	Fighter* that = fighter_accessor->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
 	glm::vec3 prev_pos = this->pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
@@ -21,8 +21,8 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f, Pos Z: %f. You probably", (id + 1), status_kind, prev_pos.x, prev_pos.y, prev_pos.z);
 		char buffer_2[89];
 		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Add)", ((!id) + 1), that->status_kind);
-		fighter_accessor->fighter[0]->player_info->crash_reason = buffer_1;
-		fighter_accessor->fighter[1]->player_info->crash_reason = buffer_2;
+		battle_object_manager->fighter[0]->player_info->crash_reason = buffer_1;
+		battle_object_manager->fighter[1]->player_info->crash_reason = buffer_2;
 
 		crash_to_debug = true;
 		return false;
@@ -121,7 +121,7 @@ bool Fighter::add_pos(float x, float y, float z, bool prev) {
 }
 
 bool Fighter::set_pos(glm::vec3 pos, bool prev) {
-	Fighter* that = fighter_accessor->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
 	glm::vec3 prev_pos = this->pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
@@ -140,8 +140,8 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f, Pos Z: %f. You probably", (id + 1), status_kind, prev_pos.x, prev_pos.y, prev_pos.z);
 		char buffer_2[89];
 		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Add)", ((!id) + 1), that->status_kind);
-		fighter_accessor->fighter[0]->player_info->crash_reason = buffer_1;
-		fighter_accessor->fighter[1]->player_info->crash_reason = buffer_2;
+		battle_object_manager->fighter[0]->player_info->crash_reason = buffer_1;
+		battle_object_manager->fighter[1]->player_info->crash_reason = buffer_2;
 
 		crash_to_debug = true;
 		return false;

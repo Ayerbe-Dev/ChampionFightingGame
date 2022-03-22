@@ -6,9 +6,9 @@ Angelica::Angelica() {
 
 }
 
-Angelica::Angelica(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
+Angelica::Angelica(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
 	this->player_info = player_info;
-	this->fighter_accessor = fighter_accessor;
+	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_ANGELICA;
 	chara_name = "angelica";
 	resource_dir = "resource/chara/angelica";

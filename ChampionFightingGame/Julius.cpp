@@ -6,9 +6,9 @@ Julius::Julius() {
 
 }
 
-Julius::Julius(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor) {
+Julius::Julius(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
 	this->player_info = player_info;
-	this->fighter_accessor = fighter_accessor;
+	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_JULIUS;
 	chara_name = "julius";
 	resource_dir = "resource/chara/julius";

@@ -2,9 +2,9 @@
 #include "Battle.h"
 #include "EricFireballConstants.h"
 
-EricFireball::EricFireball(int id, PlayerInfo* player_info, FighterAccessor *fighter_accessor) {
+EricFireball::EricFireball(int id, PlayerInfo* player_info, BattleObjectManager *battle_object_manager) {
 	this->player_info = player_info;
-	this->fighter_accessor = fighter_accessor;
+	this->battle_object_manager = battle_object_manager;
 	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	projectile_name = "eric_fireball";
 	resource_dir = "resource/projectile/eric_fireball";

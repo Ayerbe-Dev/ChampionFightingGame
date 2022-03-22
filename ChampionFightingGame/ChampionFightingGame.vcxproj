@@ -231,7 +231,7 @@ copy /Y "$(SolutionDir)dependencies\x64\bin\assimp\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="EricFireball.cpp" />
     <ClCompile Include="EricMoves.cpp" />
     <ClCompile Include="EricStatus.cpp" />
-    <ClCompile Include="FighterAccessor.cpp" />
+    <ClCompile Include="BattleObjectManager.cpp" />
     <ClCompile Include="FighterActionabilityFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
@@ -402,7 +402,7 @@ copy /Y "$(SolutionDir)dependencies\x64\bin\assimp\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="FighterFlag.h" />
     <ClInclude Include="FighterFloat.h" />
     <ClInclude Include="FighterInt.h" />
-    <ClInclude Include="FighterAccessor.h" />
+    <ClInclude Include="BattleObjectManager.h" />
     <ClInclude Include="FighterInterface.h" />
     <ClInclude Include="Fighters.h" />
     <ClInclude Include="GameCoordinate.h" />

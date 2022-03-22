@@ -2,7 +2,7 @@
 #include "RenderObject.h"
 
 class StageAsset;
-class FighterAccessor;
+class BattleObjectManager;
 
 class StageInfo {
 public:
@@ -25,7 +25,7 @@ public:
 
 	Stage();
 
-	void load_stage(StageInfo stage_info, FighterAccessor* fighter_accessor);
+	void load_stage(StageInfo stage_info, BattleObjectManager* battle_object_manager);
 	void unload_stage();
 	void process();
 	void render();

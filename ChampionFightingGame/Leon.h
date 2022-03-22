@@ -7,7 +7,7 @@ class Leon : public Fighter {
 public:
 	virtual void chara_id();
 	Leon();
-	Leon(int id, PlayerInfo* player_info, FighterAccessor* fighter_accessor);
+	Leon(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
 	void loadLeonStatusFunctions();
 	void load_move_scripts() override;
 

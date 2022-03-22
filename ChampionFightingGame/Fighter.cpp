@@ -107,7 +107,7 @@ void Fighter::process_pre_position() {
 }
 
 void Fighter::process_position() {
-	Fighter* that = fighter_accessor->fighter[!id];
+	Fighter* that = battle_object_manager->fighter[!id];
 	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
 	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
@@ -123,7 +123,7 @@ void Fighter::process_position() {
 }
 
 void Fighter::process_post_position() {
-	Fighter* that = fighter_accessor->fighter[!id];
+	Fighter* that = battle_object_manager->fighter[!id];
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
@@ -161,7 +161,7 @@ void Fighter::process_status() {
 			else {
 				change_anim("hitstun_parry_air", 5);
 			}
-			fighter_accessor->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
+			battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
 		}
 	}
 	(this->*status_script[status_kind])();
@@ -169,7 +169,7 @@ void Fighter::process_status() {
 }
 
 void Fighter::process_post_status() {
-	Fighter* that = fighter_accessor->fighter[!id];
+	Fighter* that = battle_object_manager->fighter[!id];
 
 	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
 		fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;

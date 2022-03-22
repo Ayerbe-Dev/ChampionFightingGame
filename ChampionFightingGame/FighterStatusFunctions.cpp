@@ -103,7 +103,7 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 }
 
 bool Fighter::is_status_hitstun_enable_parry() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0 || fighter_accessor->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] == -5) {
+	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0 || battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] == -5) {
 		return false;
 	}
 	switch (status_kind) {

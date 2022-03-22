@@ -195,7 +195,7 @@ void Fighter::status_walkf() {
 		change_status(FIGHTER_STATUS_WAIT);
 		return;
 	}
-	if (is_collide(jostle_box, fighter_accessor->fighter[!id]->jostle_box)) {
+	if (is_collide(jostle_box, battle_object_manager->fighter[!id]->jostle_box)) {
 		add_pos(get_param_float("jostle_walk_f_speed") * facing_dir, 0);
 	}
 	else {
@@ -1098,7 +1098,7 @@ void Fighter::status_landing() {
 }
 
 void Fighter::enter_status_landing() {
-	Fighter* that = fighter_accessor->fighter[!id];
+	Fighter* that = battle_object_manager->fighter[!id];
 //	if (that->pos.x - that->pos.x_spr_offset / 2 == WINDOW_WIDTH / -2 && pos.x - pos.x_spr_offset / 2 == WINDOW_WIDTH / -2) {
 //		that->pos.x += 20;
 //	}

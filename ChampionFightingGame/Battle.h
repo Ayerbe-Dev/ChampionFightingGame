@@ -3,7 +3,7 @@
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
-#include "FighterAccessor.h"
+#include "BattleObjectManager.h"
 #include "GameManager.h"
 #include "Debugger.h"
 #include "GameTexture.h"
@@ -111,7 +111,7 @@ public:
 
 	Fighter* fighter[2];
 	Stage stage;
-	FighterAccessor* fighter_accessor;
+	BattleObjectManager* battle_object_manager;
 
 	PlayerInfo* player_info[2];
 

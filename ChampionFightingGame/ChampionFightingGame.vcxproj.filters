@@ -351,9 +351,6 @@
     <ClCompile Include="Box.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
-    <ClCompile Include="FighterAccessor.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="GameCoordinate.cpp">
       <Filter>Source Files\Member</Filter>
     </ClCompile>
@@ -615,6 +612,9 @@
     <ClCompile Include="Light.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="BattleObjectManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -684,9 +684,6 @@
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="Button.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterAccessor.h">
       <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.h">
@@ -1210,6 +1207,9 @@
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

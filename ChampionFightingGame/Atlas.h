@@ -7,7 +7,7 @@ class Atlas : public Fighter {
 public:
 	virtual void chara_id();
 	Atlas();
-	Atlas(int id, PlayerInfo *player_info, FighterAccessor* fighter_accessor);
+	Atlas(int id, PlayerInfo *player_info, BattleObjectManager* battle_object_manager);
 	void loadAtlasStatusFunctions();
 	void load_move_scripts() override;
 

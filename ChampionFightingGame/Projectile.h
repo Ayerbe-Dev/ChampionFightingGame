@@ -9,7 +9,7 @@
 #define ADD_PROJECTILE_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Projectile::*)(void))(status_func))
 
 class Fighter;
-class FighterAccessor;
+class BattleObjectManager;
 
 class Projectile: public BattleObject {
 public:
@@ -17,7 +17,7 @@ public:
 	std::string projectile_name;
 	int owner_id;
 
-	FighterAccessor* fighter_accessor;
+	BattleObjectManager* battle_object_manager;
 	Fighter* owner;
 
 	bool has_model;

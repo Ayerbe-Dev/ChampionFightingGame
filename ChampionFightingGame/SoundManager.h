@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <SDL/SDL_audio.h>
-#include "FighterAccessor.h"
+#include "BattleObjectManager.h"
 #include "Fighter.h"
 #include "CharaKind.h"
 #include "SoundConstants.h"
@@ -35,7 +35,7 @@ class SoundManager {
 public:
 	SoundManager();
 	SoundManager(bool initiate);
-	FighterAccessor *fighter_accessor;
+	BattleObjectManager *battle_object_manager;
 
 	Sound common_se[COMMON_SE_MAX];
 	Sound roy_se[ROY_SE_MAX];

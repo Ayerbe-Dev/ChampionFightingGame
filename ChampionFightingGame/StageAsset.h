@@ -5,14 +5,14 @@
 #include "Animation.h"
 #include "Param.h"
 
-class FighterAccessor;
+class BattleObjectManager;
 
 class StageAsset : public RenderObject {
 public:
 	StageAsset();
-	StageAsset(std::string asset_name, std::string resource_dir, FighterAccessor* fighter_accessor);
+	StageAsset(std::string asset_name, std::string resource_dir, BattleObjectManager* battle_object_manager);
 
-	FighterAccessor* fighter_accessor;
+	BattleObjectManager* battle_object_manager;
 
 	AnimationTable anim_table;
 	Animation* anim_kind;

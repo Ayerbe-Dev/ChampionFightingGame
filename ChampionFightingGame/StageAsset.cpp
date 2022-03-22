@@ -1,5 +1,5 @@
 #include "StageAsset.h"
-#include "FighterAccessor.h"
+#include "BattleObjectManager.h"
 #include "Fighter.h"
 
 extern RenderManager g_rendermanager;
@@ -8,10 +8,10 @@ StageAsset::StageAsset() {
 
 }
 
-StageAsset::StageAsset(std::string asset_name, std::string resource_dir, FighterAccessor* fighter_accessor) {
+StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleObjectManager* battle_object_manager) {
 	this->asset_name = asset_name;
 	this->resource_dir = resource_dir;
-	this->fighter_accessor = fighter_accessor;
+	this->battle_object_manager = battle_object_manager;
 	load_params();
 	load_model_shader();
 	load_anim_list();
@@ -57,8 +57,8 @@ void StageAsset::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			fighter_accessor->fighter[0]->player_info->crash_reason = "Stage " + asset_name + "'s resource directory was incorrectly set!";
-			fighter_accessor->fighter[0]->crash_to_debug = true;
+			battle_object_manager->fighter[0]->player_info->crash_reason = "Stage " + asset_name + "'s resource directory was incorrectly set!";
+			battle_object_manager->fighter[0]->crash_to_debug = true;
 		}
 		else {
 			std::cout << err.what() << "\n";

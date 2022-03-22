@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
+#include "BattleObjectManager.h"
 #include "SoundManager.h"
 #include "GameManager.h"
 #include "RenderManager.h"
@@ -30,11 +31,10 @@ bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_GLContext g_context;
-SoundManager g_soundmanager;
-RenderManager g_rendermanager;
+
 auto g_chron = chrono::steady_clock::now();
+
 SDL_mutex* file_mutex;
-SDL_mutex* render_mutex;
 
 void initialize_SDL();
 void initialize_GLEW();
@@ -47,8 +47,15 @@ int main() {
 
 	initialize_SDL();
 	initialize_GLEW();
-	
+
+	RenderManager* render_manager = RenderManager::get_instance();
+	SoundManager* sound_manager = SoundManager::get_instance();
+	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();	
 	GameManager game_manager;
+
+	render_manager->init();
+	render_manager->add_light(glm::vec3(1.0, 0.0, 3.0));
+
 
 	bool running = opening_main(&game_manager);
 
@@ -73,7 +80,7 @@ int main() {
 	}
 
 	game_manager.~GameManager();
-	g_soundmanager.unloadSoundAll();
+	sound_manager->unloadSoundAll();
 	SDL_DestroyWindow(g_window);
 	SDL_GL_DeleteContext(g_context);
 	SDL_DestroyRenderer(g_renderer);
@@ -142,8 +149,6 @@ void initialize_SDL() {
 		printf("Error opening SDL_audio: %s\n", SDL_GetError());
 	}
 	SDL_PauseAudio(0);
-
-	g_soundmanager = SoundManager(true);
 }
 
 void initialize_GLEW() {
@@ -159,7 +164,4 @@ void initialize_GLEW() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	stbi_set_flip_vertically_on_load(true);
-
-	g_rendermanager.init();
-	g_rendermanager.add_light(glm::vec3(1.0, 0.0, 3.0));
 }

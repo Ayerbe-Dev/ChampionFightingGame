@@ -3,8 +3,6 @@
 #include "RenderManager.h"
 #include "utils.h"
 
-extern RenderManager g_rendermanager;
-
 GameRect::GameRect() {
 
 }
@@ -14,7 +12,8 @@ GameRect::GameRect(glm::vec2 c1, glm::vec2 c2) {
 }
 
 void GameRect::init() {
-	attach_shader(&g_rendermanager.default_rect_shader);
+	RenderManager* render_manager = RenderManager::get_instance();
+	attach_shader(&render_manager->default_rect_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -38,7 +37,8 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	corners[2] = c2;
 	corners[3] = glm::vec2(c2.x, c1.y);
 
-	attach_shader(&g_rendermanager.default_rect_shader);
+	RenderManager* render_manager = RenderManager::get_instance();
+	attach_shader(&render_manager->default_rect_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -110,7 +110,8 @@ void GameRect::set_rgba(glm::vec4 rgba) {
 
 void GameRect::render() {
 	shader->use();
-	g_rendermanager.update_shader_cam(shader);
+	RenderManager* render_manager = RenderManager::get_instance();
+	render_manager->update_shader_cam(shader);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 

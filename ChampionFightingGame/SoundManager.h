@@ -6,7 +6,6 @@
 #include "CharaKind.h"
 #include "SoundConstants.h"
 
-
 class Sound {
 public:
 	Sound();
@@ -33,8 +32,9 @@ struct SoundInfo {
 
 class SoundManager {
 public:
-	SoundManager();
-	SoundManager(bool initiate);
+	SoundManager(SoundManager& other) = delete;
+	void operator=(const SoundManager& other) = delete;
+
 	BattleObjectManager *battle_object_manager;
 
 	Sound common_se[COMMON_SE_MAX];
@@ -132,6 +132,11 @@ public:
 
 	int findSoundIndex(Sound sound, int id);
 	Sound getCharaSound(int index, int id, bool se);
+
+	static SoundManager* get_instance();
+private:
+	SoundManager();
+	static SoundManager* instance;
 };
 
 void audio_callback(void* unused, Uint8* stream, int len);

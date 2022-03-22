@@ -3,7 +3,6 @@
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
-#include "BattleObjectManager.h"
 #include "GameManager.h"
 #include "Debugger.h"
 #include "GameTexture.h"

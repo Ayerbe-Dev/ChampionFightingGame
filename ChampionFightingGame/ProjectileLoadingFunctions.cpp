@@ -4,7 +4,6 @@
 #include "BoxConstants.h"
 #include "Fighter.h"
 #include "BattleObjectManager.h"
-extern RenderManager g_rendermanager;
 
 void Projectile::superInit() {
 	load_stats();
@@ -19,8 +18,9 @@ void Projectile::superInit() {
 }
 
 void Projectile::load_model_shader() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
-	g_rendermanager.link_shader(&shader);
+	render_manager->link_shader(&shader);
 	has_model = get_param_bool("has_model");
 	if (has_model) {
 		model.load_model(resource_dir + "/model/model.dae");

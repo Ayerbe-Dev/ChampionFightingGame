@@ -4,21 +4,7 @@
 SoundInfo sounds[3][MAX_SOUNDS];
 extern bool debug;
 
-SoundManager::SoundManager() {}
-
-SoundManager::SoundManager(bool init) {
-	if (init) {
-		//you had to be there
-		std::cout << "  /$$$$$$                        /$$               /$$                                  /$$$$$$                        /$$                               /$$$$$$           /$$   /$$    " << "\n";
-		std::cout << " /$$__  $$                      | $$              | $$                                 /$$__  $$                      | $$                              |_  $$_/          |__/  | $$    " << "\n";
-		std::cout << "| $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$$| $$$$$$$   /$$$$$$   /$$$$$$       | $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$   /$$$$$$         | $$   /$$$$$$$  /$$ /$$$$$$  " << "\n";
-		std::cout << "| $$ /$$$$ |____  $$| $$__  $$|_  $$_/   /$$_____/| $$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$| $$__  $$|_  $$_/   /$$__  $$ /$$__  $$        | $$  | $$__  $$| $$|_  $$_/  " << "\n";
-		std::cout << "| $$|_  $$  /$$$$$$$| $$  \\ $$  | $$    | $$      | $$  \\ $$| $$$$$$$$| $$  \\__/      | $$      | $$$$$$$$| $$  \\ $$  | $$    | $$$$$$$$| $$  \\__/        | $$  | $$  \\ $$| $$  | $$    " << "\n";
-		std::cout << "| $$  \\ $$ /$$__  $$| $$  | $$  | $$ /$$| $$      | $$  | $$| $$_____/| $$            | $$    $$| $$_____/| $$  | $$  | $$ /$$| $$_____/| $$              | $$  | $$  | $$| $$  | $$ /$$" << "\n";
-		std::cout << "|  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$             /$$$$$$| $$  | $$| $$  |  $$$$/" << "\n";
-		std::cout << " \\______/  \\_______/|__/  |__/   \\___/   \\_______/|__/  |__/ \\_______/|__/             \\______/  \\_______/|__/  |__/   \\___/   \_______/|__/            |______/|__/  |__/|__/   \\___/  " << "\n" << "\n";
-
-	}
+SoundManager::SoundManager() {
 	hyperInit();
 }
 
@@ -574,6 +560,15 @@ Sound::Sound(std::string name, int sound_kind, int chara_kind, int volume, int s
 			}
 		} break;
 	}
+}
+
+SoundManager* SoundManager::instance = nullptr;
+
+SoundManager* SoundManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new SoundManager;
+	}
+	return instance;
 }
 
 void addSoundToIndex(Sound sound, int id) {

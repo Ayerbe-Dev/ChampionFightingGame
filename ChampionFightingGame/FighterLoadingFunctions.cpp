@@ -1,7 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 #include "RenderManager.h"
-extern RenderManager g_rendermanager;
 
 void Fighter::superInit(int id) {
 	this->id = id;
@@ -28,9 +27,10 @@ void Fighter::loadFighterSounds() {
 }
 
 void Fighter::load_model_shader() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	scale = glm::vec3(0.05 * get_param_float("model_scale"));
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
-	g_rendermanager.link_shader(&shader);
+	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
 }
 

@@ -1,94 +1,116 @@
 #include "Fighter.h"
-extern SoundManager g_soundmanager;
 
 void Fighter::playCommonSE(int se) {
-	g_soundmanager.playCommonSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->playCommonSE(se, id);
 }
 
 void Fighter::playCharaSE(int se) {
-	g_soundmanager.playCharaSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->playCharaSE(se, id);
 }
 
 void Fighter::playVC(int vc) {
-	g_soundmanager.playVC(vc, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->playVC(vc, id);
 }
 
 void Fighter::pauseCommonSE(int se) {
-	g_soundmanager.pauseCommonSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->pauseCommonSE(se, id);
 }
 
 void Fighter::pauseCharaSE(int se) {
-	g_soundmanager.pauseCharaSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->pauseCharaSE(se, id);
 }
 
 void Fighter::pauseVC(int vc) {
-	g_soundmanager.pauseVC(vc, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->pauseVC(vc, id);
 }
 
 void Fighter::pauseSEAll() {
-	g_soundmanager.pauseSEAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->pauseSEAll(id);
 }
 
 void Fighter::pauseVCAll() {
-	g_soundmanager.pauseVCAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->pauseVCAll(id);
 }
 
 void Fighter::resumeSEAll() {
-	g_soundmanager.resumeSEAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->resumeSEAll(id);
 }
 
 void Fighter::resumeVCAll() {
-	g_soundmanager.resumeVCAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->resumeVCAll(id);
 }
 
 void Fighter::stopCommonSE(int se) {
-	g_soundmanager.stopCommonSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->stopCommonSE(se, id);
 }
 
 void Fighter::stopCharaSE(int se) {
-	g_soundmanager.stopCharaSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->stopCharaSE(se, id);
 }
 
 void Fighter::stopVC(int vc) {
-	g_soundmanager.stopVC(vc, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->stopVC(vc, id);
 }
 
 void Fighter::stopSEAll() {
-	g_soundmanager.stopSEAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->stopSEAll(id);
 }
 
 void Fighter::stopVCAll() {
-	g_soundmanager.stopVCAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->stopVCAll(id);
 }
 
 int Fighter::loadCommonSE(int se) {
-	return g_soundmanager.loadCommonSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	return sound_manager->loadCommonSE(se, id);
 }
 
 int Fighter::loadCharaSE(int se) {
-	return g_soundmanager.loadCharaSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	return sound_manager->loadCharaSE(se, id);
 }
 
 int Fighter::loadVC(int vc) {
-	return g_soundmanager.loadVC(vc, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	return sound_manager->loadVC(vc, id);
 }
 
 void Fighter::unloadCommonSE(int se) {
-	g_soundmanager.unloadCommonSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->unloadCommonSE(se, id);
 }
 
 void Fighter::unloadCharaSE(int se) {
-	g_soundmanager.unloadCharaSE(se, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->unloadCharaSE(se, id);
 }
 
 void Fighter::unloadVC(int vc) {
-	g_soundmanager.unloadVC(vc, id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->unloadVC(vc, id);
 }
 
 void Fighter::unloadSEAll() {
-	g_soundmanager.unloadSEAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->unloadSEAll(id);
 }
 
 void Fighter::unloadVCAll() {
-	g_soundmanager.unloadVCAll(id);
+	SoundManager* sound_manager = SoundManager::get_instance();
+	sound_manager->unloadVCAll(id);
 }

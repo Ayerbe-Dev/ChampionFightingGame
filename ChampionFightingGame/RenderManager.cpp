@@ -102,3 +102,12 @@ void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_m
 	shader->set_mat4("model", model_mat);
 	model->render(shader);
 }
+
+RenderManager* RenderManager::instance = nullptr;
+
+RenderManager* RenderManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new RenderManager;
+	}
+	return instance;
+}

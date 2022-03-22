@@ -31,13 +31,12 @@
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
-extern SoundManager g_soundmanager;
-extern RenderManager g_rendermanager;
 extern SoundInfo sounds[3][MAX_SOUNDS];
 
 extern bool debug;
 
 void battle_main(GameManager* game_manager) {
+	SoundManager* sound_manager = SoundManager::get_instance();
 	PlayerInfo* player_info[2];
 	for (int i = 0; i < 2; i++) {
 		player_info[i] = game_manager->player_info[i];
@@ -76,8 +75,8 @@ void battle_main(GameManager* game_manager) {
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 			if (debug) {
-				g_soundmanager.pauseSEAll(i);
-				g_soundmanager.pauseVCAll(i);
+				sound_manager->pauseSEAll(i);
+				sound_manager->pauseVCAll(i);
 			}
 		}
 
@@ -98,6 +97,7 @@ Battle::Battle() {}
 Battle::~Battle() {}
 
 void Battle::load_battle(GameManager* game_manager) {
+	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(17);
 	SDL_Thread* loading_thread;
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
@@ -108,7 +108,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
-	battle_object_manager = new BattleObjectManager;
+	battle_object_manager = BattleObjectManager::get_instance();
 
 	inc_thread();
 
@@ -135,7 +135,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 	timer.init(99);
 	inc_thread();
-	g_soundmanager.battle_object_manager = battle_object_manager;
+	sound_manager->battle_object_manager = battle_object_manager;
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->loadCharaSounds();
 		inc_thread();
@@ -174,8 +174,8 @@ void Battle::load_battle(GameManager* game_manager) {
 	game_manager->set_menu_info(this);
 
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
-		g_soundmanager.loadMusic(stage.default_music_kind);
-		g_soundmanager.playMusic(stage.default_music_kind);
+		sound_manager->loadMusic(stage.default_music_kind);
+		sound_manager->playMusic(stage.default_music_kind);
 	}
 	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
 		//randomly play the theme of one of the characters. if online, always play the opponent's theme
@@ -186,6 +186,8 @@ void Battle::load_battle(GameManager* game_manager) {
 	ticks = SDL_GetTicks();
 }
 void Battle::unload_battle() {
+	RenderManager* render_manager = RenderManager::get_instance();
+	SoundManager* sound_manager = SoundManager::get_instance();
 	for (int i = 0; i < 2; i++) {
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
@@ -205,14 +207,15 @@ void Battle::unload_battle() {
 		delete fighter[i];
 	}
 	stage.unload_stage();
-	g_soundmanager.unloadSoundAll();
-	g_rendermanager.unlink_all_shaders();
+	sound_manager->unloadSoundAll();
+	render_manager->unlink_all_shaders();
 
 	delete battle_object_manager;
 	delete game_loader;
 }
 
 void Battle::process_main() {
+	SoundManager* sound_manager = SoundManager::get_instance();
 	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
 
@@ -223,8 +226,8 @@ void Battle::process_main() {
 		timer.flip_clock();
 		if (!debug) {
 			for (int i = 0; i < 2; i++) {
-				g_soundmanager.resumeSEAll(i);
-				g_soundmanager.resumeVCAll(i);
+				sound_manager->resumeSEAll(i);
+				sound_manager->resumeVCAll(i);
 			}
 		}
 	}
@@ -314,30 +317,32 @@ void Battle::process_ui() {
 }
 
 void Battle::process_debug() {
+	RenderManager* render_manager = RenderManager::get_instance();
+	SoundManager* sound_manager = SoundManager::get_instance();
 	if (keyboard_state[SDL_SCANCODE_RCTRL]) {
 		if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-			g_rendermanager.camera.adjust_view(1.0, 0.0, 0.0);
+			render_manager->camera.adjust_view(1.0, 0.0, 0.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_LEFT]) {
-			g_rendermanager.camera.adjust_view(-1.0, 0.0, 0.0);
+			render_manager->camera.adjust_view(-1.0, 0.0, 0.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_UP]) {
-			g_rendermanager.camera.adjust_view(0.0, 1.0, 0.0);
+			render_manager->camera.adjust_view(0.0, 1.0, 0.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_DOWN]) {
-			g_rendermanager.camera.adjust_view(0.0, -1.0, 0.0);
+			render_manager->camera.adjust_view(0.0, -1.0, 0.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_D]) {
-			g_rendermanager.camera.add_pos(1.0, 0.0, 0.0);
+			render_manager->camera.add_pos(1.0, 0.0, 0.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_A]) {
-			g_rendermanager.camera.add_pos(-1.0, 0.0, 0.0);
+			render_manager->camera.add_pos(-1.0, 0.0, 0.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_W]) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, 1.0);
+			render_manager->camera.add_pos(0.0, 0.0, 1.0);
 		}
 		if (keyboard_state[SDL_SCANCODE_S]) {
-			g_rendermanager.camera.add_pos(0.0, 0.0, -1.0);
+			render_manager->camera.add_pos(0.0, 0.0, -1.0);
 		}
 	}
 	if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
@@ -351,8 +356,8 @@ void Battle::process_debug() {
 	}
 	if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 		for (int i = 0; i < 2; i++) {
-			g_soundmanager.resumeSEAll(i);
-			g_soundmanager.resumeVCAll(i);
+			sound_manager->resumeSEAll(i);
+			sound_manager->resumeVCAll(i);
 		}
 		pre_process_fighter();
 		process_fighter();
@@ -374,6 +379,7 @@ void Battle::process_debug() {
 }
 
 void Battle::render_world() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	glEnable(GL_CULL_FACE); 
 	
 	//Enabling face culling causes all 2D objects that were flipped to not render at all. This could technically be fixed by sorting all 2D objects 
@@ -382,7 +388,7 @@ void Battle::render_world() {
 	//it's easier to just enable culling only for the part of the rendering process that actually needs it (Since enabling culling on 2D textures
 	//doesn't make much of a difference either way)
 
-	g_rendermanager.update_shader_lights();
+	render_manager->update_shader_lights();
 	//update camera pos
 
 	for (int i = 0; i < 2; i++) {

@@ -5,7 +5,6 @@
 #include "utils.h"
 #include <fstream>
 extern SDL_Renderer* g_renderer;
-extern RenderManager g_rendermanager;
 extern bool debug;
 
 GameTexture::GameTexture() {}
@@ -30,7 +29,8 @@ GameTexture::GameTexture(const GameTexture& that) {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
-	attach_shader(&g_rendermanager.default_2d_shader);
+	RenderManager* render_manager = RenderManager::get_instance();
+	attach_shader(&render_manager->default_2d_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -86,7 +86,8 @@ void GameTexture::init(std::string path) {
 		tex_accessor[i] = &tex_data[i];
 	}
 
-	attach_shader(&g_rendermanager.default_2d_shader);
+	RenderManager* render_manager = RenderManager::get_instance();
+	attach_shader(&render_manager->default_2d_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);

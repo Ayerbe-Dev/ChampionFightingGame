@@ -2,8 +2,6 @@
 #include "BattleObjectManager.h"
 #include "Fighter.h"
 
-extern RenderManager g_rendermanager;
-
 StageAsset::StageAsset() {
 
 }
@@ -41,7 +39,8 @@ void StageAsset::load_model_shader() {
 	else {
 		shader.init("vertex_no_anim.glsl", "fragment_main.glsl");
 	}
-	g_rendermanager.link_shader(&shader);
+	RenderManager* render_manager = RenderManager::get_instance();
+	render_manager->link_shader(&shader);
 }
 
 void StageAsset::load_anim_list() {

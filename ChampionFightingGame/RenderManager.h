@@ -10,6 +10,9 @@
 
 class RenderManager {
 public:
+	RenderManager(RenderManager& other) = delete;
+	void operator=(const RenderManager& other) = delete;
+
 	Camera camera;
 	Light lights[MAX_LIGHT_SOURCES];
 	int num_lights;
@@ -26,8 +29,6 @@ public:
 		1.0, 0.0
 	};
 
-	RenderManager();
-
 	void init();
 
 	void add_light(Light light, int target = -1);
@@ -40,4 +41,9 @@ public:
 	void update_shader_cam(Shader* shader);
 
 	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
+
+	static RenderManager* get_instance();
+private:
+	RenderManager();
+	static RenderManager* instance;
 };

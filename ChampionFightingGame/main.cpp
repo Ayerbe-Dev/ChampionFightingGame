@@ -1,4 +1,5 @@
 #pragma warning(disable : 4996)
+#include <vector>
 #include <chrono>
 #include <thread>
 #include <iostream>

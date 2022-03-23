@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "Model.h"
 
+class RenderManager;
+
 class RenderObject {
 public:
 	RenderObject();
@@ -18,4 +20,6 @@ public:
 
 	Shader shader;
 	Model model;
+
+	RenderManager* render_manager;
 };

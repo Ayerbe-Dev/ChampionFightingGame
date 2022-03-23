@@ -2,6 +2,7 @@
 #include "RenderManager.h"
 
 RenderObject::RenderObject() {
+	render_manager = RenderManager::get_instance();
 }
 
 RenderObject::RenderObject(Model model, Shader shader) {
@@ -10,6 +11,5 @@ RenderObject::RenderObject(Model model, Shader shader) {
 }
 
 void RenderObject::render() {
-	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->render_model(&model, &shader, extra_mat, &pos, &rot, &scale);
 }

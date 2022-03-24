@@ -32,8 +32,17 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundInfo sounds[3][MAX_SOUNDS];
+extern SDL_GLContext g_context;
 
 extern bool debug;
+
+#define DEBUG
+#ifdef DEBUG
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+#endif // DEBUG
+
 
 void battle_main(GameManager* game_manager) {
 	SoundManager* sound_manager = SoundManager::get_instance();
@@ -44,13 +53,30 @@ void battle_main(GameManager* game_manager) {
 	Battle battle;
 	battle.load_battle(game_manager);
 
+
+#ifdef DEBUG
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
+	ImGui_ImplOpenGL3_Init();
+#endif
+
+
 	while (*game_manager->looping[game_manager->layer]) {
 		battle.frame_delay_check_performance();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
+#ifdef DEBUG
+			ImGui_ImplSDL2_ProcessEvent(&event);
+#endif
 			switch (event.type) {
 				case SDL_QUIT: {
 					return game_manager->update_state(GAME_STATE_CLOSE);
@@ -82,10 +108,32 @@ void battle_main(GameManager* game_manager) {
 
 		battle.process_main();
 
+	
+
 		battle.render_world();
 		battle.render_ui();
 
 		battle.check_collisions();
+
+#ifdef DEBUG
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame(g_window);
+		ImGui::NewFrame();
+
+		{
+			ImGui::Begin("Debug Menu");                          // Create a window called "Hello, world!" and append into it.
+			//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
+			//if (ImGui::Button("Auto Rotate")) AutoRotateCB();
+			//ImGui::SliderFloat("Radians", &radians, 0.0f, 6.28f);
+			
+			ImGui::SliderInt("stick_hold_h_timer", &player_info[0]->stick_hold_h_timer,0,0);
+			ImGui::End();
+		}
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+
 		SDL_GL_SwapWindow(g_window);
 	}
 
@@ -117,22 +165,29 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	inc_thread();
 
+
 	for (int i = 0; i < 2; i++) {
 		debug_rect[i].init();
 		inc_thread();
 		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i], battle_object_manager);
 		inc_thread();
 	}
+
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->superInit(i);
+
 		inc_thread();
 		health_bar[i].init(fighter[i]);
+	
 		inc_thread();
 		ex_bar[i].init(fighter[i]);
+	
 		inc_thread();
 		player_indicator[i] = PlayerIndicator(fighter[i]);
+	
 		inc_thread();
 	}
+	
 	timer.init(99);
 	inc_thread();
 	sound_manager->battle_object_manager = battle_object_manager;

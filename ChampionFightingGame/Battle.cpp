@@ -72,6 +72,8 @@ void battle_main(GameManager* game_manager) {
 	for (int i = 4; i < MAX_LIGHT_SOURCES; i++) {
 		init_render_manager->lights[i].enabled = false;
 	}
+	//glEnable(GL_FRAMEBUFFER_SRGB); uncomment for gamma correction
+	glDisable(GL_FRAMEBUFFER_SRGB);
 #endif
 
 
@@ -130,20 +132,42 @@ void battle_main(GameManager* game_manager) {
 		ImGui::NewFrame();
 
 		RenderManager* tmp_render_manager = RenderManager::get_instance();
-
+		static float hi = 0.0f;
+		
 
 		{
 			ImGui::Begin("Debug Menu");
 			//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
+
+			ImGui::SliderFloat("cam X", &tmp_render_manager->camera.pos[0], -15.0f, 15.0f);
+			ImGui::SliderFloat("cam Y", &tmp_render_manager->camera.pos[1], -15.0f, 15.0f);
+			ImGui::SliderFloat("cam Z", &tmp_render_manager->camera.pos[2], -15.0f, 15.0f);
+
 			
+			ImGui::SliderFloat("p0 X", &battle.fighter[0]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 X", &battle.fighter[1]->pos[0], -3000.0f, 3000.0f);
+
+			ImGui::SliderFloat("yaw", &tmp_render_manager->camera.yaw, -180.0f, 180.0f);
+			ImGui::SliderFloat("hi", &hi, 1.0f, 6.0f);
+
+			
+			tmp_render_manager->camera.pos[0] = ((battle.fighter[0]->pos[0] + battle.fighter[1]->pos[0]) / 450)/2;
+			tmp_render_manager->camera.pos[1] = 0.813;
+			tmp_render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle.fighter[0]->pos[0] - battle.fighter[1]->pos[0]) / 450,2.867);
+
+			tmp_render_manager->camera.yaw = -90 + tmp_render_manager->camera.pos[0] * hi;
+			//tmp_render_manager->camera.adjust_view()
+
 			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 
-				ImGui::Text(light_name.c_str());
-				ImGui::SliderFloat((light_name + " X").c_str(), &tmp_render_manager->lights[i2].position[0], -15.0f, 15.0f);
-				ImGui::SliderFloat((light_name + " Y").c_str(), &tmp_render_manager->lights[i2].position[1], -15.0f, 15.0f);
-				ImGui::SliderFloat((light_name + " Z").c_str(), &tmp_render_manager->lights[i2].position[2], -15.0f, 15.0f);
-				ImGui::Checkbox((light_name).c_str(), &tmp_render_manager->lights[i2].enabled);
+				//ImGui::Text(light_name.c_str());
+				if (ImGui::CollapsingHeader(light_name.c_str())) {
+					ImGui::SliderFloat((light_name + " X").c_str(), &tmp_render_manager->lights[i2].position[0], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + " Y").c_str(), &tmp_render_manager->lights[i2].position[1], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + " Z").c_str(), &tmp_render_manager->lights[i2].position[2], -15.0f, 15.0f);
+					ImGui::Checkbox((light_name).c_str(), &tmp_render_manager->lights[i2].enabled);
+				}
 				
 			}
 
@@ -293,7 +317,6 @@ void Battle::process_main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
-
 	debugger.poll_inputs(keyboard_state);
 
 	if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {

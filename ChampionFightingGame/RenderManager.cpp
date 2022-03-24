@@ -20,10 +20,11 @@ void RenderManager::add_light(Light light, int target) {
 			return;
 		}
 		else {
-			for (int i = 0; i < num_lights; i++) {
+			for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
 				if (!lights[i].enabled) {
 					lights[i] = light;
 					num_lights++;
+					break;
 				}
 			}
 		}

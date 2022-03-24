@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Users\franc\Repos\ThirdPartyCppLibraries\lib;$(SolutionDir)SDL2\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\franc\Repos\ThirdPartyCppLibraries\include;$(SolutionDir)SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dependencies\x64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)dependencies\x64\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>

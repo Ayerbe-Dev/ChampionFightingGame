@@ -63,6 +63,8 @@ void battle_main(GameManager* game_manager) {
 	ImGui_ImplOpenGL3_Init();
 
 	//DO NOT question my shitty second reference to this instance
+
+
 	RenderManager* init_render_manager = RenderManager::get_instance();
 	init_render_manager->lights[0].position = glm::vec3(0.0,4.867,7.333);
 	init_render_manager->lights[1].position = glm::vec3(4.4, 4.733, 3.267);

@@ -61,6 +61,17 @@ void battle_main(GameManager* game_manager) {
 	ImGui::StyleColorsDark();
 	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
 	ImGui_ImplOpenGL3_Init();
+
+	//DO NOT question my shitty second reference to this instance
+	RenderManager* init_render_manager = RenderManager::get_instance();
+	init_render_manager->lights[0].position = glm::vec3(0.0,4.867,7.333);
+	init_render_manager->lights[1].position = glm::vec3(4.4, 4.733, 3.267);
+	init_render_manager->lights[2].position = glm::vec3(-4.4, 4.733, 3.267);
+	init_render_manager->lights[3].position = glm::vec3(0.0, 2.7, 15.0);
+
+	for (int i = 4; i < MAX_LIGHT_SOURCES; i++) {
+		init_render_manager->lights[i].enabled = false;
+	}
 #endif
 
 
@@ -108,8 +119,6 @@ void battle_main(GameManager* game_manager) {
 
 		battle.process_main();
 
-	
-
 		battle.render_world();
 		battle.render_ui();
 
@@ -120,13 +129,24 @@ void battle_main(GameManager* game_manager) {
 		ImGui_ImplSDL2_NewFrame(g_window);
 		ImGui::NewFrame();
 
+		RenderManager* tmp_render_manager = RenderManager::get_instance();
+
+
 		{
-			ImGui::Begin("Debug Menu");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Begin("Debug Menu");
 			//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
-			//if (ImGui::Button("Auto Rotate")) AutoRotateCB();
-			//ImGui::SliderFloat("Radians", &radians, 0.0f, 6.28f);
 			
-			ImGui::SliderInt("stick_hold_h_timer", &player_info[0]->stick_hold_h_timer,0,0);
+			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
+				std::string light_name = "Light [" + std::to_string(i2) + "]";
+
+				ImGui::Text(light_name.c_str());
+				ImGui::SliderFloat((light_name + " X").c_str(), &tmp_render_manager->lights[i2].position[0], -15.0f, 15.0f);
+				ImGui::SliderFloat((light_name + " Y").c_str(), &tmp_render_manager->lights[i2].position[1], -15.0f, 15.0f);
+				ImGui::SliderFloat((light_name + " Z").c_str(), &tmp_render_manager->lights[i2].position[2], -15.0f, 15.0f);
+				ImGui::Checkbox((light_name).c_str(), &tmp_render_manager->lights[i2].enabled);
+				
+			}
+
 			ImGui::End();
 		}
 

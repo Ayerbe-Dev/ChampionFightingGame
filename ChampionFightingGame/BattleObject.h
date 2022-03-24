@@ -11,6 +11,8 @@
 #include "FighterFlag.h"
 
 class PlayerInfo;
+class BattleObjectManager;
+class SoundManager;
 
 class BattleObject : public RenderObject {
 public:
@@ -90,4 +92,7 @@ public:
 	void set_current_move_script(std::string anim_name);
 	bool is_excute_frame(float frame);
 	bool is_excute_wait(float frames);
+
+	BattleObjectManager* battle_object_manager;
+	SoundManager* sound_manager;
 };

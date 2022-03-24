@@ -38,7 +38,7 @@ void Projectile::process_animate() {
 void Projectile::process_post_animate() {
 	if (has_model) {
 		if (anim_kind != nullptr) {
-			model.set_bones(frame, anim_kind);
+			model.set_bones(frame, anim_kind, !owner->facing_right);
 		}
 		else {
 			model.reset_bones();

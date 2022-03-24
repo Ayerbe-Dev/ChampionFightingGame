@@ -66,13 +66,14 @@ public:
 	void load_model(std::string path);
 	void load_model_no_skeleton(std::string path);
 	void unload_model();
-	void set_bones(float frame, Animation* anim_kind);
+	void set_bones(float frame, Animation* anim_kind, bool flip);
 	void reset_bones();
     void render(Shader *shader);
 	std::vector<ModelTexture> textures_loaded;
 	std::vector<Mesh> meshes;
 
 	glm::mat4 global_transform;
+	glm::mat4 mirror_matrix;
 
 	std::vector<Bone> bones;
 

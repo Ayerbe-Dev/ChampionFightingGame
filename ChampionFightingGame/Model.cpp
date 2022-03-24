@@ -30,6 +30,13 @@ void Model::load_model(std::string path) {
 		return;
 	}
 
+	mirror_matrix = glm::mat4 (
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+
 	global_transform = ass_converter(scene->mRootNode->mTransformation.Inverse());
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
@@ -86,7 +93,7 @@ void Model::unload_model() {
 	}
 }
 
-void Model::set_bones(float frame, Animation* anim_kind) {
+void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 	if (anim_kind == nullptr) {
 		return reset_bones();
 	}
@@ -97,7 +104,13 @@ void Model::set_bones(float frame, Animation* anim_kind) {
 	for (int i = 0, max = keyframes.size(); i < max; i++) {
 		keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
-		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+		if (flip) {
+			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+		}
+		else {
+			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+		}
+
 		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
 	}
 }

@@ -1,4 +1,5 @@
 #include "Fighter.h"
+#include "SoundManager.h"
 
 void Fighter::playCommonSE(int se) {
 

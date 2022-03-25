@@ -1,92 +1,94 @@
 #include "FighterInterface.h"
 #include "Fighters.h"
 
-Fighter* create_fighter(int chara_kind, int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
-	FighterInterface fighter_interface(chara_kind, id, player_info, battle_object_manager);
+Fighter* create_fighter(int chara_kind, int id, PlayerInfo* player_info) {
+	FighterInterface fighter_interface(chara_kind, id, player_info);
 	Fighter* ret = fighter_interface.get_fighter();
 	return ret;
 }
 
-FighterInterface::FighterInterface() {}
+FighterInterface::FighterInterface() {
 
-FighterInterface::FighterInterface(int chara_kind, int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+}
+
+FighterInterface::FighterInterface(int chara_kind, int id, PlayerInfo* player_info) {
 	switch (chara_kind) {
 		case (CHARA_KIND_ROY):
 		default:
 		{
-			fighter = new Roy(id, player_info, battle_object_manager);
+			fighter = new Roy(id, player_info);
 		}
 		break;
 		case (CHARA_KIND_ERIC):
 		{
-			fighter = new Eric(id, player_info, battle_object_manager);
+			fighter = new Eric(id, player_info);
 		}
 		break;
 		case (CHARA_KIND_LEON):
 		case (CHARA_KIND_CHAMELEON): //Leon and Chameleon are the same character, but the specifics on where to get resources are in the constructor
 		{
-			fighter = new Leon(id, player_info, battle_object_manager);
+			fighter = new Leon(id, player_info);
 		}
 		break;
 		case (CHARA_KIND_ANGELICA):
 		{
-			fighter = new Angelica(id, player_info, battle_object_manager);
+			fighter = new Angelica(id, player_info);
 		}
 		break;
 		case (CHARA_KIND_NIGHTSABER):
 		{
-			fighter = new Nightsaber(id, player_info, battle_object_manager);
+			fighter = new Nightsaber(id, player_info);
 		} break;
 		case (CHARA_KIND_SULLY):
 		{
-			fighter = new Sully(id, player_info, battle_object_manager);
+			fighter = new Sully(id, player_info);
 		} break;
 		case (CHARA_KIND_PRIEST):
 		{
-			fighter = new Priest(id, player_info, battle_object_manager);
+			fighter = new Priest(id, player_info);
 		} break;
 		case (CHARA_KIND_AZIEL):
 		{
-			fighter = new Aziel(id, player_info, battle_object_manager);
+			fighter = new Aziel(id, player_info);
 		} break;
 		case (CHARA_KIND_BRUNO):
 		{
-			fighter = new Bruno(id, player_info, battle_object_manager);
+			fighter = new Bruno(id, player_info);
 		} break;
 		case (CHARA_KIND_TESSA):
 		{
-			fighter = new Tessa(id, player_info, battle_object_manager);
+			fighter = new Tessa(id, player_info);
 		} break;
 		case (CHARA_KIND_ALEJANDRO):
 		{
-			fighter = new Alejandro(id, player_info, battle_object_manager);
+			fighter = new Alejandro(id, player_info);
 		} break;
 		case (CHARA_KIND_NORMAN):
 		{
-			fighter = new Norman(id, player_info, battle_object_manager);
+			fighter = new Norman(id, player_info);
 		} break;
 		case (CHARA_KIND_ATLAS):
 		{
-			fighter = new Atlas(id, player_info, battle_object_manager);
+			fighter = new Atlas(id, player_info);
 		} break;
 		case (CHARA_KIND_JULIUS):
 		{
-			fighter = new Julius(id, player_info, battle_object_manager);
+			fighter = new Julius(id, player_info);
 		} break;
 		case (CHARA_KIND_RAMONA):
 		{
-			fighter = new Ramona(id, player_info, battle_object_manager);
+			fighter = new Ramona(id, player_info);
 		} break;
 		case (CHARA_KIND_ZYAIR):
 		{
-			fighter = new Zyair(id, player_info, battle_object_manager);
+			fighter = new Zyair(id, player_info);
 		} break;
 		case (CHARA_KIND_VESUVIUS):
 		{
-			fighter = new Vesuvius(id, player_info, battle_object_manager);
+			fighter = new Vesuvius(id, player_info);
 		} break;
 	}
-	battle_object_manager->fighter[id] = fighter;
+	BattleObjectManager::get_instance()->fighter[id] = fighter;
 }
 
 FighterInterface::~FighterInterface() {}

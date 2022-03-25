@@ -6,7 +6,7 @@ class Bruno : public Fighter {
 public:
 	virtual void chara_id();
 	Bruno();
-	Bruno(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Bruno(int id, PlayerInfo* player_info);
 	void loadBrunoStatusFunctions();
 	void load_move_scripts() override;
 

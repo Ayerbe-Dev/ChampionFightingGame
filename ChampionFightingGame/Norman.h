@@ -6,7 +6,7 @@ class Norman : public Fighter {
 public:
 	virtual void chara_id();
 	Norman();
-	Norman(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Norman(int id, PlayerInfo* player_info);
 	void loadNormanStatusFunctions();
 	void load_move_scripts() override;
 

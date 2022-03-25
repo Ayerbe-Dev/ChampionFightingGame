@@ -6,7 +6,7 @@
 class RoyFireball : public Projectile {
 public:
 	RoyFireball();
-	RoyFireball(int id, PlayerInfo* player_info, BattleObjectManager *battle_object_manager);
+	RoyFireball(int id, PlayerInfo* player_info);
 
 	void loadRoyFireballStatusFunctions();
 	void load_move_scripts() override;

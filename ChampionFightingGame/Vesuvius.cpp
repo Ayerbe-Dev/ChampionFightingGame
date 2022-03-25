@@ -4,9 +4,8 @@ Vesuvius::Vesuvius() {
 
 }
 
-Vesuvius::Vesuvius(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+Vesuvius::Vesuvius(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_VESUVIUS;
 	chara_name = "vesuvius";
 	resource_dir = "resource/chara/vesuvius";

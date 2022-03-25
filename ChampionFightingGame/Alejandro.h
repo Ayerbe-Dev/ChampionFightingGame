@@ -6,7 +6,7 @@ class Alejandro : public Fighter {
 public:
 	virtual void chara_id();
 	Alejandro();
-	Alejandro(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Alejandro(int id, PlayerInfo* player_info);
 	void loadAlejandroStatusFunctions();
 	void load_move_scripts() override;
 

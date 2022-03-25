@@ -4,9 +4,8 @@ Norman::Norman() {
 
 }
 
-Norman::Norman(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+Norman::Norman(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_NORMAN;
 	chara_name = "norman";
 	resource_dir = "resource/chara/norman";

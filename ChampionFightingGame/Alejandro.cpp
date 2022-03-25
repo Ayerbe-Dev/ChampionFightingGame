@@ -4,9 +4,8 @@ Alejandro::Alejandro() {
 
 }
 
-Alejandro::Alejandro(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+Alejandro::Alejandro(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_ALEJANDRO;
 	chara_name = "alejandro";
 	resource_dir = "resource/chara/alejandro";

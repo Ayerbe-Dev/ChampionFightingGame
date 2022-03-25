@@ -6,7 +6,7 @@ class Vesuvius : public Fighter {
 public:
 	virtual void chara_id();
 	Vesuvius();
-	Vesuvius(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Vesuvius(int id, PlayerInfo* player_info);
 	void loadVesuviusStatusFunctions();
 	void load_move_scripts() override;
 

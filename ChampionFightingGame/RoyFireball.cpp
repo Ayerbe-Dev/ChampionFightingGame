@@ -3,9 +3,8 @@
 
 RoyFireball::RoyFireball() {}
 
-RoyFireball::RoyFireball(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+RoyFireball::RoyFireball(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	projectile_name = "roy_fireball";
 	resource_dir = "resource/projectile/roy_fireball";

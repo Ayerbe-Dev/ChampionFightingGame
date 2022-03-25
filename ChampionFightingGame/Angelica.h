@@ -6,7 +6,7 @@ class Angelica : public Fighter {
 public:
 	virtual void chara_id();
 	Angelica();
-	Angelica(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Angelica(int id, PlayerInfo* player_info);
 	void loadAngelicaStatusFunctions();
 	void load_move_scripts() override;
 

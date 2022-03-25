@@ -1,14 +1,14 @@
 #include "Roy.h"
 #include "RoyFireball.h"
 #include "ProjectileInterface.h"
+#include "SoundConstants.h"
 
 Roy::Roy() {
 
 }
 
-Roy::Roy(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+Roy::Roy(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_ROY;
 	chara_name = "roy";
 	resource_dir = "resource/chara/roy";
@@ -21,7 +21,7 @@ Roy::Roy(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_man
 	load_move_scripts();
 	loadRoyStatusFunctions();
 	set_current_move_script("default");
-	projectiles[0] = create_projectile(PROJECTILE_KIND_ROY_FIREBALL, id, player_info, this, battle_object_manager);
+	projectiles[0] = create_projectile(PROJECTILE_KIND_ROY_FIREBALL, id, player_info, this);
 }
 
 void Roy::chara_id() {

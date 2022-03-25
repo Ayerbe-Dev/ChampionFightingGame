@@ -4,9 +4,8 @@ Aziel::Aziel() {
 
 }
 
-Aziel::Aziel(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
+Aziel::Aziel(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->chara_kind = CHARA_KIND_AZIEL;
 	chara_name = "aziel";
 	resource_dir = "resource/chara/aziel";

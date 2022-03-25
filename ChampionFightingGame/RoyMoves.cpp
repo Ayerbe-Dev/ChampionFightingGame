@@ -1,6 +1,7 @@
 #include "Roy.h"
 #include "RoyFireball.h"
 #include "RoyFireballConstants.h"
+#include "SoundConstants.h"
 
 void Roy::load_move_scripts() {
 	script("default", [this]() {

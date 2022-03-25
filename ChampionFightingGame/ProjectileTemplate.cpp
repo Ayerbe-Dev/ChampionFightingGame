@@ -3,9 +3,8 @@
 
 ProjectileTemplate::ProjectileTemplate() {}
 
-ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, BattleObjectManager * battle_object_manager) {
+ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	projectile_name = "projectile_template";
 	resource_dir = "resource/projectile/projectile_template";

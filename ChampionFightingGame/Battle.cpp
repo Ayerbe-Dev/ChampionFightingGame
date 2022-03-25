@@ -215,7 +215,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	for (int i = 0; i < 2; i++) {
 		debug_rect[i].init();
 		inc_thread();
-		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i], battle_object_manager);
+		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i]);
 		inc_thread();
 	}
 

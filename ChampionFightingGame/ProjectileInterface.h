@@ -1,12 +1,12 @@
 #pragma once
 #include "Projectile.h"
 
-Projectile* create_projectile(int projectile_kind, int id, PlayerInfo* player_info, Fighter* owner, BattleObjectManager* battle_object_manager);
+Projectile* create_projectile(int projectile_kind, int id, PlayerInfo* player_info, Fighter* owner);
 
 class ProjectileInterface {
 public:
 	ProjectileInterface();
-	ProjectileInterface(int projectile_kind, int id, PlayerInfo* player_info, Fighter* owner, BattleObjectManager* battle_object_manager);
+	ProjectileInterface(int projectile_kind, int id, PlayerInfo* player_info, Fighter* owner);
 	~ProjectileInterface();
 	Projectile* get_projectile();
 private:

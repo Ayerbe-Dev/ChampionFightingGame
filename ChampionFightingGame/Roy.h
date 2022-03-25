@@ -8,7 +8,7 @@ public:
 
 	virtual void chara_id();
 	Roy();
-	Roy(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Roy(int id, PlayerInfo* player_info);
 	void loadRoyStatusFunctions();
 	void loadCharaSounds() override;
 	void load_move_scripts() override;

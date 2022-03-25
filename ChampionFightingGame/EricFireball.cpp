@@ -3,9 +3,8 @@
 
 EricFireball::EricFireball() {}
 
-EricFireball::EricFireball(int id, PlayerInfo* player_info, BattleObjectManager *battle_object_manager) {
+EricFireball::EricFireball(int id, PlayerInfo* player_info) {
 	this->player_info = player_info;
-	this->battle_object_manager = battle_object_manager;
 	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	projectile_name = "eric_fireball";
 	resource_dir = "resource/projectile/eric_fireball";

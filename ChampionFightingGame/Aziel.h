@@ -6,7 +6,7 @@ class Aziel : public Fighter {
 public:
 	virtual void chara_id();
 	Aziel();
-	Aziel(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Aziel(int id, PlayerInfo* player_info);
 	void loadAzielStatusFunctions();
 	void load_move_scripts() override;
 

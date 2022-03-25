@@ -8,7 +8,7 @@ public:
 
 	virtual void chara_id();
 	Eric();
-	Eric(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager);
+	Eric(int id, PlayerInfo* player_info);
 	void loadEricStatusFunctions();
 	void load_move_scripts() override;
 	

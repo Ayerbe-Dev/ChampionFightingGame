@@ -40,7 +40,7 @@ void stage_select_main(GameManager* game_manager) {
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	while (*game_manager->looping[game_manager->layer]) {
+	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);

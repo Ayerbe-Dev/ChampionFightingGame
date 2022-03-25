@@ -1,5 +1,4 @@
 #include "Roy.h"
-#include "Battle.h"
 #include "RoyFireball.h"
 #include "ProjectileInterface.h"
 

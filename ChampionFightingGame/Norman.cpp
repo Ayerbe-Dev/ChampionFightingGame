@@ -1,6 +1,4 @@
 #include "Norman.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Norman::Norman() {
 

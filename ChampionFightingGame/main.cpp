@@ -63,7 +63,7 @@ int main() {
 	while (running) {
 		refreshRenderer();
 		for (int i = 0; i < MAX_LAYERS; i++) {
-			*game_manager.looping[i] = true;
+			game_manager.looping[i] = true;
 		}
 		if (game_manager.game_main[*game_manager.game_state] != nullptr) {
 			game_manager.game_main[*game_manager.game_state](&game_manager);

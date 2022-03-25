@@ -1,6 +1,4 @@
 #include "Angelica.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Angelica::Angelica() {
 

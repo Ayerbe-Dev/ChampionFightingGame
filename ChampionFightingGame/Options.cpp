@@ -18,7 +18,7 @@ void controls_main(GameManager* game_manager) {
 
 	game_manager->set_menu_info(&options_overlay);
 
-	while (*game_manager->looping[game_manager->layer]) {
+	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -40,7 +40,7 @@ void controls_main(GameManager* game_manager) {
 			player_info[i]->check_controllers();
 			player_info[i]->poll_buttons(keyboard_state);
 			if (player_info[i]->check_button_trigger(BUTTON_MENU_BACK)) {
-				*game_manager->looping[game_manager->layer] = false;
+				game_manager->looping[game_manager->layer] = false;
 			}
 		}
 

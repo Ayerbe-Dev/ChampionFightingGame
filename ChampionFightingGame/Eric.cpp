@@ -1,5 +1,4 @@
 ﻿#include "Eric.h"
-#include "Battle.h"
 #include "EricFireball.h"
 #include "ProjectileInterface.h"
 

@@ -34,7 +34,7 @@ void menu_main(GameManager* game_manager) {
 
 	game_loader->finished = true;
 
-	while (*game_manager->looping[game_manager->layer]) {
+	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
@@ -101,7 +101,7 @@ void menu_main(GameManager* game_manager) {
 				char buffer[91];
 				sprintf(buffer, "Error: Game Substate was %d (not GAME_SUBSTATE_NONE) but there was no associated function!", main_menu.sub_state);
 				player_info[0]->crash_reason = buffer;
-				*game_manager->looping[game_manager->layer] = false;
+				game_manager->looping[game_manager->layer] = false;
 				game_manager->update_state(GAME_STATE_DEBUG_MENU);
 			}
 			main_menu.sub_state = GAME_SUBSTATE_NONE;

@@ -16,9 +16,6 @@ GameManager::GameManager() {
 	prev_game_state = new int;
 	game_context = new int;
 	prev_game_context = new int;
-	for (int i = 0; i < MAX_LAYERS; i++) {
-		looping[i] = new bool;
-	}
 
 	*game_state = GAME_STATE_DEBUG_MENU;
 	*prev_game_state = *game_state;
@@ -33,9 +30,6 @@ GameManager::~GameManager() {
 	delete prev_game_state;
 	delete game_context;
 	delete prev_game_context;
-	for (int i = 0; i < MAX_LAYERS; i++) {
-		delete looping[i];
-	}
 }
 
 void GameManager::set_game_state_functions() {
@@ -55,7 +49,7 @@ void GameManager::update_state(int game_state, int game_context) {
 		*this->game_state = game_state;
 		if (game_state == GAME_STATE_CLOSE) {
 			for (int i = 0; i < MAX_LAYERS; i++) {
-				*looping[i] = false;
+				looping[i] = false;
 			}
 		}
 	}
@@ -71,7 +65,7 @@ void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int
 	this->hold_rate = hold_rate;
 	this->menu_target[layer] = menu_target;
 
-	*looping[layer] = true;
+	looping[layer] = true;
 
 	//Assign a few pointers from the current target to match the GameManager
 	if (this->menu_target[layer] != nullptr) {
@@ -79,7 +73,7 @@ void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int
 		this->menu_target[layer]->prev_game_state = game_state;
 		this->menu_target[layer]->game_context = game_context;
 		this->menu_target[layer]->prev_game_context = prev_game_context;
-		this->menu_target[layer]->looping = looping[layer];
+		this->menu_target[layer]->looping = &looping[layer];
 	}
 }
 

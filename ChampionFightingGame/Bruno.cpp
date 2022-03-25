@@ -1,6 +1,4 @@
 #include "Bruno.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Bruno::Bruno() {
 

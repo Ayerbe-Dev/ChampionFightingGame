@@ -17,7 +17,7 @@ void title_screen_main(GameManager* game_manager) {
 
 	game_manager->set_menu_info(&title_screen);
 
-    while (*game_manager->looping[game_manager->layer]) {
+    while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 
 		glClearColor(0.0, 0.0, 0.0, 0);

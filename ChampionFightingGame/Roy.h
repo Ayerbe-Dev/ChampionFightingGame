@@ -1,6 +1,5 @@
 #pragma once
 #include "Fighter.h"
-#include "BattleObject.h"
 #include "RoyConstants.h"
 
 class Roy : public Fighter {

@@ -1,6 +1,4 @@
 #include "Vesuvius.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Vesuvius::Vesuvius() {
 

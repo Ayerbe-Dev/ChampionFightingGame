@@ -71,7 +71,7 @@ void chara_select_main(GameManager* game_manager) {
 	SDL_RenderClear(g_renderer);
 	SDL_RenderPresent(g_renderer);
 
-	while (*game_manager->looping[game_manager->layer]) {
+	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();

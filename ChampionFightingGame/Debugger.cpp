@@ -218,7 +218,7 @@ void cotr_imgui_terminate() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	printf("Debug Exit");
+	printf("Debug Exit\n");
 }
 
 void cotr_imgui_debug_dbmenu(GameManager* game_manager)
@@ -227,17 +227,17 @@ void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 	ImGui_ImplSDL2_NewFrame(g_window);
 	ImGui::NewFrame();
 	
-	ImGui::Begin("Debug Menu");
+	ImGui::Begin("Debug Menu\n");
 
 	{
 		ImGui::Text("%s", game_manager->player_info[0]->crash_reason.c_str());
 		ImGui::Text("%s", game_manager->player_info[1]->crash_reason.c_str());
 		if (ImGui::Button("CSS")) {
 			game_manager->update_state(GAME_STATE_CHARA_SELECT);
-			*game_manager->looping[game_manager->layer] = false;
+			game_manager->looping[game_manager->layer] = false;
 		}
 		if (ImGui::Button("exit")) {
-			*game_manager->looping[game_manager->layer] = false;
+			game_manager->looping[game_manager->layer] = false;
 		}
 	}
 

@@ -1,6 +1,4 @@
 #include "Nightsaber.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Nightsaber::Nightsaber() {
 

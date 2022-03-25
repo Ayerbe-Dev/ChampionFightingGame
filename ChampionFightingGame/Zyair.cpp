@@ -1,6 +1,4 @@
 #include "Zyair.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Zyair::Zyair() {
 

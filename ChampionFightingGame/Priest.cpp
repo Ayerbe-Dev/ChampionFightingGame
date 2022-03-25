@@ -1,6 +1,4 @@
 #include "Priest.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Priest::Priest() {
 

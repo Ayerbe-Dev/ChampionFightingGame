@@ -1,6 +1,4 @@
 #include "Julius.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Julius::Julius() {
 

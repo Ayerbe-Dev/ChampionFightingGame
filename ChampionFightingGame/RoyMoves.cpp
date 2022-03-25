@@ -12,6 +12,9 @@ void Roy::load_move_scripts() {
 			new_hurtbox(1, glm::vec2{ -29, 39 }, glm::vec2{ 33, 141 });
 			new_hurtbox(2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
 		}
+		if (is_excute_frame(10)) { //todo: Delete this
+			frame++;
+		}
 	});
 	script("walk_f", [this]() {
 		if (is_excute_frame(0)) {

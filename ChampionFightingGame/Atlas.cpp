@@ -1,6 +1,4 @@
 #include "Atlas.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Atlas::Atlas() {
 

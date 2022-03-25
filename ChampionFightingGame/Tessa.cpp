@@ -1,6 +1,4 @@
 #include "Tessa.h"
-#include "Battle.h"
-#include "ProjectileTemplate.h"
 
 Tessa::Tessa() {
 

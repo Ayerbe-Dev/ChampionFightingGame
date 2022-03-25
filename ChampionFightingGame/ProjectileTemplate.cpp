@@ -1,6 +1,7 @@
 #include "ProjectileTemplate.h"
-#include "Battle.h"
 #include "ProjectileTemplateConstants.h"
+
+ProjectileTemplate::ProjectileTemplate() {}
 
 ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info, BattleObjectManager * battle_object_manager) {
 	this->player_info = player_info;

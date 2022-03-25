@@ -1,7 +1,7 @@
 #include "Projectile.h"
 #include "Battle.h"
 
-extern SDL_Renderer* g_renderer;
+Projectile::Projectile() {}
 
 void Projectile::projectile_main() {
 	process_animate();

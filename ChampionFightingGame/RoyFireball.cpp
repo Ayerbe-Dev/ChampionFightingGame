@@ -1,6 +1,8 @@
 #include "RoyFireball.h"
 #include "RoyFireballConstants.h"
 
+RoyFireball::RoyFireball() {}
+
 RoyFireball::RoyFireball(int id, PlayerInfo* player_info, BattleObjectManager* battle_object_manager) {
 	this->player_info = player_info;
 	this->battle_object_manager = battle_object_manager;

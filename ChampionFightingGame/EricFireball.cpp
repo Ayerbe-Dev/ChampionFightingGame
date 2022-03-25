@@ -1,6 +1,7 @@
 #include "EricFireball.h"
-#include "Battle.h"
 #include "EricFireballConstants.h"
+
+EricFireball::EricFireball() {}
 
 EricFireball::EricFireball(int id, PlayerInfo* player_info, BattleObjectManager *battle_object_manager) {
 	this->player_info = player_info;

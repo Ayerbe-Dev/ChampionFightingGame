@@ -5,14 +5,13 @@
 #include "Animation.h"
 #include "Box.h"
 #include "PlayerInfo.h"
-#include "SoundManager.h"
 #include "FighterConstants.h"
+#include "BattleObjectManager.h"
 
 #define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
 #define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
 #define ADD_FIGHTER_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Fighter::*)(void))(status_func))
 
-class BattleObjectManager;
 class Projectile;
 
 class Fighter: public BattleObject {
@@ -21,7 +20,6 @@ public:
 	std::string chara_name;
 	int music_kind;
 
-	BattleObjectManager* battle_object_manager;
 	Projectile* projectiles[MAX_PROJECTILES]{};
 
 	bool crash_to_debug{ false };
@@ -48,7 +46,6 @@ public:
 	//Constructors
 
 	Fighter();
-	Fighter(PlayerInfo *player_info);
 
 	//Main
 

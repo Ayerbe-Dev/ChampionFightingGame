@@ -4,15 +4,10 @@
 #include "Animation.h"
 #include "Projectile.h"
 #include <fstream>
+#include "BattleObjectManager.h"
 
-Fighter::Fighter() {}
+Fighter::Fighter() {
 
-Fighter::Fighter(PlayerInfo* player_info) {
-	this->player_info = player_info;
-	// runs
-		// yeah
-			// jk no
-	superInit(0);
 }
 
 void Fighter::fighter_main() {

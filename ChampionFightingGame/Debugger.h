@@ -3,6 +3,12 @@
 #include <glm/glm.hpp>
 #include "Button.h"
 
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+
+#include "GameManager.h"
+
 class Fighter;
 class GameRect;
 
@@ -25,3 +31,7 @@ public:
 	void print_commands();
 	void debug_query(std::string command, Fighter* target, Fighter* other);
 };
+
+void cotr_imgui_init();
+void cotr_imgui_debug_dbmenu(GameManager* game_manager);
+void cotr_imgui_terminate();

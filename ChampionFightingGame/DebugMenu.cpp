@@ -7,6 +7,7 @@
 #include "DebugMenu.h"
 #include "Debugger.h"
 #include "Loader.h"
+#include <glew/glew.h>
 
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
@@ -16,8 +17,10 @@ void debugMenu(GameManager* game_manager) {
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
-	Debugger debugger;
-	debugger = Debugger();
+	//Debugger debugger;
+	//debugger = Debugger();
+
+	
 
 	std::ostringstream lastString;
 	lastString << "This menu was called from the destination [" << *game_manager->prev_game_state << "]";
@@ -56,18 +59,24 @@ void debugMenu(GameManager* game_manager) {
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
+	cotr_imgui_init();
 	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 		}
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+
+		glClearColor(0.1, 0.1, 0.1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		/*SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);*/
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
+			ImGui_ImplSDL2_ProcessEvent(&event);
 			switch (event.type) {
 				case SDL_QUIT:
 				{
@@ -77,36 +86,42 @@ void debugMenu(GameManager* game_manager) {
 		}
 
 		SDL_PumpEvents();
-		keyboard_state = SDL_GetKeyboardState(NULL);
+		//keyboard_state = SDL_GetKeyboardState(NULL);
 
-		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
+		/*if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
 			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 				SDL_SetWindowFullscreen(g_window, 0);
 			}
 			else {
 				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
-		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
+		}*/
+
+		/*for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
-		}
-		for (int i = 0; i < 2; i++) {
-			player_info[i]->poll_buttons(keyboard_state);
-		}
+		}*/
 
-		game_manager->handle_menus();
+		/*for (int i = 0; i < 2; i++) {
+			player_info[i]->poll_buttons(keyboard_state);
+		}*/
+
+		/*game_manager->handle_menus();
 		*game_manager->game_state = debug_list.getDestination();
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
 		debug_list.render();
 
 		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(g_renderer);
+		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);*/
+		
+		cotr_imgui_debug_dbmenu(game_manager);
+		
+		//SDL_RenderPresent(g_renderer);
+		SDL_GL_SwapWindow(g_window);
 	}
-
+	cotr_imgui_terminate();
 	player_info[0]->crash_reason = "Crash Message Goes Here";
 	player_info[1]->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(debug_font);

@@ -3,6 +3,8 @@
 #include "GameRect.h"
 
 extern SDL_Renderer* g_renderer;
+extern SDL_Window* g_window;
+extern SDL_GLContext g_context;
 
 
 Debugger::Debugger() {
@@ -199,4 +201,47 @@ void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_ta
 		not_target->update_hurtbox_pos();
 		not_target->update_grabbox_pos();
 	}
+}
+
+void cotr_imgui_init() {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
+	ImGui_ImplOpenGL3_Init();
+
+	printf("Debug Init");
+}
+
+void cotr_imgui_terminate() {
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+	printf("Debug Exit\n");
+}
+
+void cotr_imgui_debug_dbmenu(GameManager* game_manager)
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame(g_window);
+	ImGui::NewFrame();
+	
+	ImGui::Begin("Debug Menu\n");
+
+	{
+		ImGui::Text("%s", game_manager->player_info[0]->crash_reason.c_str());
+		ImGui::Text("%s", game_manager->player_info[1]->crash_reason.c_str());
+		if (ImGui::Button("CSS")) {
+			game_manager->update_state(GAME_STATE_CHARA_SELECT);
+			game_manager->looping[game_manager->layer] = false;
+		}
+		if (ImGui::Button("exit")) {
+			game_manager->looping[game_manager->layer] = false;
+		}
+	}
+
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

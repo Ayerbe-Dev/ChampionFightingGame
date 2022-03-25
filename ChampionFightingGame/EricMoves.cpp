@@ -11,7 +11,6 @@ void Eric::load_move_scripts() {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			rate = 0.3;
 		}
 	});
 	script("walk_f", [this]() {

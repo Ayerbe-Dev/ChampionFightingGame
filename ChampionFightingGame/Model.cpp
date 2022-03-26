@@ -125,7 +125,7 @@ void Model::reset_bones() {
 void Model::render(Shader* shader) {
 	glDepthMask(GL_TRUE);
 	for (int i = 0, max = bones.size(); i < max; i++) {
-		shader->set_mat4("bone_matrix[" + std::to_string(i) + "]", bones[i].final_matrix);
+		shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 	}
 	for (Mesh &mesh : meshes) {
 		if (mesh.visible) {

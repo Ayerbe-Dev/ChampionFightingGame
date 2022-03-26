@@ -1,16 +1,16 @@
 #version 330 core
 out vec4 FragColor;
 
+#define MAX_LIGHT_SOURCES 10
+
 struct Material {
     sampler2D diffuse;
-    sampler2D specular;    
+    sampler2D specular;
     float shininess;
 }; 
 
-#define MAX_LIGHT_SOURCES 10
-
 struct Light {
-    vec3 position;  
+    vec3 position;
   
     vec3 ambient;
     vec3 diffuse;

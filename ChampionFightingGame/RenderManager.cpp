@@ -69,15 +69,14 @@ void RenderManager::update_shader_lights() {
 		linked_shaders[i]->set_float("material.shininess", 4.0f);
 
 		for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
-			std::string light = "light[" + std::to_string(i2) + "].";
-			linked_shaders[i]->set_vec3(light + "position", lights[i2].position);
-			linked_shaders[i]->set_vec3(light + "ambient", lights[i2].ambient);
-			linked_shaders[i]->set_vec3(light + "diffuse", lights[i2].diffuse);
-			linked_shaders[i]->set_vec3(light + "specular", lights[i2].specular);
-			linked_shaders[i]->set_float(light + "constant", lights[i2].constant);
-			linked_shaders[i]->set_float(light + "linear", lights[i2].linear);
-			linked_shaders[i]->set_float(light + "quadratic", lights[i2].quadratic);
-			linked_shaders[i]->set_bool(light + "enabled", lights[i2].enabled);
+			linked_shaders[i]->set_vec3("light[0].position", lights[i2].position, i2);
+			linked_shaders[i]->set_vec3("light[0].ambient", lights[i2].ambient, i2);
+			linked_shaders[i]->set_vec3("light[0].diffuse", lights[i2].diffuse, i2);
+			linked_shaders[i]->set_vec3("light[0].specular", lights[i2].specular, i2);
+			linked_shaders[i]->set_float("light[0].constant", lights[i2].constant, i2);
+			linked_shaders[i]->set_float("light[0].linear", lights[i2].linear, i2);
+			linked_shaders[i]->set_float("light[0].quadratic", lights[i2].quadratic, i2);
+			linked_shaders[i]->set_bool("light[0].enabled", lights[i2].enabled, i2);
 		}
 	}
 }

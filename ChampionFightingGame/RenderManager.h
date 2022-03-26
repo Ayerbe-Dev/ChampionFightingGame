@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Light.h"
 
-#define MAX_LIGHT_SOURCES 10
+#define MAX_LIGHT_SOURCES 5
 
 class RenderManager {
 public:

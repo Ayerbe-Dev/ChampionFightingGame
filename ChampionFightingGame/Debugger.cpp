@@ -276,28 +276,39 @@ void cotr_imgui_debug_battle(Battle* battle)
 	ImGui::Begin("Debug Menu\n");
 
 	RenderManager* tmp_render_manager = RenderManager::get_instance();
-	static float hi = 0.0f;
+	//static float hi = 0.0f;
 
 	{
 		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
 
-		ImGui::SliderFloat("cam X", &tmp_render_manager->camera.pos[0], -15.0f, 15.0f);
-		ImGui::SliderFloat("cam Y", &tmp_render_manager->camera.pos[1], -15.0f, 15.0f);
-		ImGui::SliderFloat("cam Z", &tmp_render_manager->camera.pos[2], -15.0f, 15.0f);
 
+		if (ImGui::TreeNode("Camera")) {
+			ImGui::DragFloat("Camera X", &tmp_render_manager->camera.pos[0], 0.01);
+			ImGui::DragFloat("Camera Y", &tmp_render_manager->camera.pos[1], 0.01);
+			ImGui::DragFloat("Camera Z", &tmp_render_manager->camera.pos[2], 0.01);
+			if (ImGui::TreeNode("Camera Properties")) {
+				ImGui::Checkbox("Auto Camera", &tmp_render_manager->camera.autocamera);
+				ImGui::SliderFloat("Yaw", &tmp_render_manager->camera.yaw, -180.0f, 180.0f);
+				ImGui::SliderFloat("Auto Yaw Scale", &tmp_render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
+		}
 
-		ImGui::SliderFloat("p0 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
-		ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+		if (ImGui::TreeNode("Players")) {
+			ImGui::SliderFloat("p0 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+		}
 
-		ImGui::SliderFloat("yaw", &tmp_render_manager->camera.yaw, -180.0f, 180.0f);
-		ImGui::SliderFloat("hi", &hi, 1.0f, 6.0f);
+		
 
-		tmp_render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
-		tmp_render_manager->camera.pos[1] = 0.813;
-		tmp_render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
-
-		tmp_render_manager->camera.yaw = -90 + tmp_render_manager->camera.pos[0] * hi;
-		//tmp_render_manager->camera.adjust_view()
+		if (tmp_render_manager->camera.autocamera){
+			tmp_render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
+			tmp_render_manager->camera.pos[1] = 0.813;
+			tmp_render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
+			tmp_render_manager->camera.yaw = -90 + tmp_render_manager->camera.pos[0] * tmp_render_manager->camera.auto_linear_scale;
+			//tmp_render_manager->camera.adjust_view()
+		}
 
 		if (ImGui::TreeNode("Lights")) {
 			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {

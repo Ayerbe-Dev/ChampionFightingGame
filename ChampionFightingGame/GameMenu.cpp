@@ -13,7 +13,7 @@ void GameMenu::event_any_press() {};
 void GameMenu::process_background() {};
 
 GameMenu::GameMenu() {
-
+	average_ticks.reserve(10000);
 }
 
 void GameMenu::update_state(int game_state, int game_context) {

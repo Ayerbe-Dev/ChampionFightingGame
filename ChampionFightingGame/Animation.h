@@ -4,14 +4,14 @@
 #include <iostream>
 
 class Model;
-struct Bone;
+struct AnimBone;
 
 class Animation {
 public:
 	Animation();
 	Animation(std::string anim_kind, std::string anim_dir, Model* model);
 	std::string name;
-	std::vector<std::vector<Bone>> keyframes;
+	std::vector<std::vector<AnimBone>> keyframes;
 	int length;
 	int faf;
 };

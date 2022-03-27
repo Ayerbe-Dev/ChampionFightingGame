@@ -17,3 +17,13 @@ struct Bone {
 	glm::mat4 final_matrix = glm::mat4(1.0);
 	bool keyframed = false;
 };
+
+//idk, this is probably slightly more optimized
+
+struct AnimBone {
+	std::string name = "";
+	int id = 0;
+	int parent_id = -1;
+	glm::mat4 anim_matrix = glm::mat4(1.0);
+	bool keyframed = false;
+};

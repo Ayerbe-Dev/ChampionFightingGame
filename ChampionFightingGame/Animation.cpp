@@ -34,10 +34,10 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 		return;
 	}
 
-	std::vector<Bone> base_bones;
+	std::vector<AnimBone> base_bones;
 
-	for (int i = 0; i < model->bones.size(); i++) {
-		Bone new_bone;
+	for (int i = 0, max = model->bones.size(); i < max; i++) {
+		AnimBone new_bone;
 		new_bone.id = model->bones[i].id;
 		new_bone.name = model->bones[i].name;
 		new_bone.parent_id = model->bones[i].parent_id;

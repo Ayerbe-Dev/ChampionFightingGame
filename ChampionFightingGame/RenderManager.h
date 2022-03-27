@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Light.h"
 
-#define MAX_LIGHT_SOURCES 10
+#define MAX_LIGHT_SOURCES 5
 
 class RenderManager {
 public:
@@ -42,6 +42,7 @@ public:
 
 	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
 
+	//complete scuffedness
 	static RenderManager* get_instance();
 private:
 	RenderManager();

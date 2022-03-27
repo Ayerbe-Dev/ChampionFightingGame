@@ -211,6 +211,8 @@ void cotr_imgui_init() {
 	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
 	ImGui_ImplOpenGL3_Init();
 
+	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
+
 	printf("Debug Init");
 }
 
@@ -230,14 +232,100 @@ void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 	ImGui::Begin("Debug Menu\n");
 
 	{
-		ImGui::Text("%s", game_manager->player_info[0]->crash_reason.c_str());
-		ImGui::Text("%s", game_manager->player_info[1]->crash_reason.c_str());
-		if (ImGui::Button("CSS")) {
+		
+		if (ImGui::MenuItem("Debug Menu", "This screen")) {
+			game_manager->update_state(GAME_STATE_DEBUG_MENU);
+			game_manager->looping[game_manager->layer] = false;
+		}
+		if (ImGui::MenuItem("1v1 Game", "With Default settings")) {
+			game_manager->update_state(GAME_STATE_BATTLE);
+			game_manager->looping[game_manager->layer] = false;
+		}
+		if (ImGui::MenuItem("Character Select Screen")) {
 			game_manager->update_state(GAME_STATE_CHARA_SELECT);
+			game_manager->looping[game_manager->layer] = false;
+		}
+		if (ImGui::MenuItem("Main Menu")) {
+			game_manager->update_state(GAME_STATE_MENU);
+			game_manager->looping[game_manager->layer] = false;
+		}
+		if (ImGui::MenuItem("Title Screen")) {
+			game_manager->update_state(GAME_STATE_TITLE_SCREEN);
 			game_manager->looping[game_manager->layer] = false;
 		}
 		if (ImGui::Button("exit")) {
 			game_manager->looping[game_manager->layer] = false;
+		}
+
+		ImGui::Text("%s", game_manager->player_info[0]->crash_reason.c_str());
+		ImGui::Text("%s", game_manager->player_info[1]->crash_reason.c_str());
+	}
+
+	ImGui::End();
+	//ImGui::ShowDemoWindow();
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void cotr_imgui_debug_battle(Battle* battle)
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame(g_window);
+	ImGui::NewFrame();
+
+	ImGui::Begin("Debug Menu\n");
+
+	RenderManager* tmp_render_manager = RenderManager::get_instance();
+	//static float hi = 0.0f;
+
+	{
+		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
+
+
+		if (ImGui::TreeNode("Camera")) {
+			ImGui::DragFloat("Camera X", &tmp_render_manager->camera.pos[0], 0.01);
+			ImGui::DragFloat("Camera Y", &tmp_render_manager->camera.pos[1], 0.01);
+			ImGui::DragFloat("Camera Z", &tmp_render_manager->camera.pos[2], 0.01);
+			if (ImGui::TreeNode("Camera Properties")) {
+				ImGui::Checkbox("Auto Camera", &tmp_render_manager->camera.autocamera);
+				ImGui::SliderFloat("Yaw", &tmp_render_manager->camera.yaw, -180.0f, 180.0f);
+				ImGui::SliderFloat("Auto Yaw Scale", &tmp_render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Players")) {
+			ImGui::SliderFloat("p0 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+			ImGui::TreePop();
+		}
+
+		
+
+		if (tmp_render_manager->camera.autocamera){
+			tmp_render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
+			tmp_render_manager->camera.pos[1] = 0.813;
+			tmp_render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
+			tmp_render_manager->camera.yaw = -90 + tmp_render_manager->camera.pos[0] * tmp_render_manager->camera.auto_linear_scale;
+			//tmp_render_manager->camera.adjust_view()
+		}
+
+		if (ImGui::TreeNode("Lights")) {
+			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
+				std::string light_name = "Light [" + std::to_string(i2) + "]";
+
+				//ImGui::Text(light_name.c_str());
+				//if (ImGui::CollapsingHeader(light_name.c_str())) {
+				if (ImGui::TreeNode(light_name.c_str())) {
+					ImGui::SliderFloat((light_name + " X").c_str(), &tmp_render_manager->lights[i2].position[0], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + " Y").c_str(), &tmp_render_manager->lights[i2].position[1], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + " Z").c_str(), &tmp_render_manager->lights[i2].position[2], -15.0f, 15.0f);
+					ImGui::Checkbox((light_name).c_str(), &tmp_render_manager->lights[i2].enabled);
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
 		}
 	}
 

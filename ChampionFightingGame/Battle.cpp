@@ -29,6 +29,9 @@
 #include "Model.h"
 #include "RenderManager.h"
 
+#include "Debugger.h"
+
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundInfo sounds[3][MAX_SOUNDS];
@@ -55,32 +58,26 @@ void battle_main(GameManager* game_manager) {
 
 
 #ifdef DEBUG
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
-	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
-	ImGui_ImplOpenGL3_Init();
+	cotr_imgui_init();
 
 	//DO NOT question my shitty second reference to this instance
-
-
+	//these need to be moved as well
 	RenderManager* init_render_manager = RenderManager::get_instance();
 	init_render_manager->lights[0].position = glm::vec3(0.0,4.867,7.333);
 	init_render_manager->lights[1].position = glm::vec3(4.4, 4.733, 3.267);
 	init_render_manager->lights[2].position = glm::vec3(-4.4, 4.733, 3.267);
 	init_render_manager->lights[3].position = glm::vec3(0.0, 2.7, 15.0);
 
+	//this needs to be moved
 	for (int i = 4; i < MAX_LIGHT_SOURCES; i++) {
 		init_render_manager->lights[i].enabled = false;
 	}
-	//glEnable(GL_FRAMEBUFFER_SRGB); uncomment for gamma correction
-	glDisable(GL_FRAMEBUFFER_SRGB);
 #endif
 
 
 	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay_check_performance();
+		//battle.frame_delay_check_performance();
+		battle.frame_delay();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -129,60 +126,13 @@ void battle_main(GameManager* game_manager) {
 		battle.check_collisions();
 
 #ifdef DEBUG
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame(g_window);
-		ImGui::NewFrame();
-
-		RenderManager* tmp_render_manager = RenderManager::get_instance();
-		static float hi = 0.0f;
-		
-
-		{
-			ImGui::Begin("Debug Menu");
-			//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
-
-			ImGui::SliderFloat("cam X", &tmp_render_manager->camera.pos[0], -15.0f, 15.0f);
-			ImGui::SliderFloat("cam Y", &tmp_render_manager->camera.pos[1], -15.0f, 15.0f);
-			ImGui::SliderFloat("cam Z", &tmp_render_manager->camera.pos[2], -15.0f, 15.0f);
-
-			
-			ImGui::SliderFloat("p0 X", &battle.fighter[0]->pos[0], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p1 X", &battle.fighter[1]->pos[0], -3000.0f, 3000.0f);
-
-			ImGui::SliderFloat("yaw", &tmp_render_manager->camera.yaw, -180.0f, 180.0f);
-			ImGui::SliderFloat("hi", &hi, 1.0f, 6.0f);
-
-			
-			tmp_render_manager->camera.pos[0] = ((battle.fighter[0]->pos[0] + battle.fighter[1]->pos[0]) / 450)/2;
-			tmp_render_manager->camera.pos[1] = 0.813;
-			tmp_render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle.fighter[0]->pos[0] - battle.fighter[1]->pos[0]) / 450,2.867);
-
-			tmp_render_manager->camera.yaw = -90 + tmp_render_manager->camera.pos[0] * hi;
-			//tmp_render_manager->camera.adjust_view()
-
-			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
-				std::string light_name = "Light [" + std::to_string(i2) + "]";
-
-				//ImGui::Text(light_name.c_str());
-				if (ImGui::CollapsingHeader(light_name.c_str())) {
-					ImGui::SliderFloat((light_name + " X").c_str(), &tmp_render_manager->lights[i2].position[0], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Y").c_str(), &tmp_render_manager->lights[i2].position[1], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Z").c_str(), &tmp_render_manager->lights[i2].position[2], -15.0f, 15.0f);
-					ImGui::Checkbox((light_name).c_str(), &tmp_render_manager->lights[i2].enabled);
-				}
-				
-			}
-
-			ImGui::End();
-		}
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		cotr_imgui_debug_battle(&battle);
 #endif
 
 		SDL_GL_SwapWindow(g_window);
 	}
 
+	cotr_imgui_terminate();
 	battle.unload_battle();
 }
 
@@ -319,18 +269,18 @@ void Battle::process_main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
-	debugger.poll_inputs(keyboard_state);
+	//debugger.poll_inputs(keyboard_state);
 
-	if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
-		debug = !debug;
-		timer.flip_clock();
-		if (!debug) {
-			for (int i = 0; i < 2; i++) {
-				sound_manager->resumeSEAll(i);
-				sound_manager->resumeVCAll(i);
-			}
-		}
-	}
+	//if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
+	//	debug = !debug;
+	//	timer.flip_clock();
+	//	if (!debug) {
+	//		for (int i = 0; i < 2; i++) {
+	//			sound_manager->resumeSEAll(i);
+	//			sound_manager->resumeVCAll(i);
+	//		}
+	//	}
+	//}
 	if (debug) {
 		process_debug();
 	}
@@ -417,7 +367,7 @@ void Battle::process_ui() {
 }
 
 void Battle::process_debug() {
-	RenderManager* render_manager = RenderManager::get_instance();
+	/*RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	if (keyboard_state[SDL_SCANCODE_RCTRL]) {
 		if (keyboard_state[SDL_SCANCODE_RIGHT]) {
@@ -475,7 +425,7 @@ void Battle::process_debug() {
 		debug = false;
 		*looping = false;
 		*game_state = GAME_STATE_DEBUG_MENU;
-	}
+	}*/
 }
 
 void Battle::render_world() {
@@ -544,15 +494,15 @@ void Battle::render_ui() {
 	}
 	timer.render();
 
-	if (debug) {
+	/*if (debug) {
 		debug_rect[debugger.target].render();
-	}
+	}*/
 }
 
 void Battle::check_collisions() {
-	if (debug && !debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+	/*if (debug && !debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
 		return;
-	}
+	}*/
 	check_projectile_collisions();
 	check_fighter_collisions();
 }

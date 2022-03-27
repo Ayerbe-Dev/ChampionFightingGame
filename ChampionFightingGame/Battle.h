@@ -4,7 +4,6 @@
 #include "Projectile.h"
 #include "BattleObject.h"
 #include "GameManager.h"
-#include "Debugger.h"
 #include "GameTexture.h"
 
 void battle_main(GameManager *game_manager);
@@ -122,7 +121,6 @@ public:
 
 	//TODO: Create a class for the combo counter or otherwise some form of text rendering
 
-	Debugger debugger;
 	GameRect debug_rect[2];
 	glm::vec2 debug_anchor[2] = { {0,0} };
 	glm::vec2 debug_offset[2] = { {0,0} };

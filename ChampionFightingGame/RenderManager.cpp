@@ -104,7 +104,7 @@ void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_m
 }
 
 RenderManager* RenderManager::instance = nullptr;
-
+//beyond scuffed
 RenderManager* RenderManager::get_instance() {
 	if (instance == nullptr) {
 		instance = new RenderManager;

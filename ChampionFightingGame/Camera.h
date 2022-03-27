@@ -20,6 +20,11 @@ public:
 	const float cam_sens = 2.5;
 	float fov = 45.0;
 
+	//imagine having self documenting names, couldnt be me. This determines the linear scale on which the camera rotates in auto mode
+	float auto_linear_scale = 6.0;
+
+	bool autocamera = true;
+
 	Camera();
 	glm::mat4 get_view();
 	void add_pos(float x, float y, float z, float speed = 0.0);

@@ -430,7 +430,7 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
-void Mesh::render(Shader* shader) {
+[[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		shader->set_float(("material." + textures[i].type_string).c_str(), i);

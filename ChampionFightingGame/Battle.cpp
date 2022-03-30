@@ -76,8 +76,8 @@ void battle_main(GameManager* game_manager) {
 
 
 	while (game_manager->looping[game_manager->layer]) {
-		//battle.frame_delay_check_performance();
-		battle.frame_delay();
+		battle.frame_delay_check_performance();
+		//battle.frame_delay();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

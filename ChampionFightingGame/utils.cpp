@@ -4,10 +4,8 @@
 #include <iostream>
 #include <chrono>
 
-extern SDL_Renderer* g_renderer;
 extern std::chrono::steady_clock::time_point g_chron;
 extern SDL_mutex* file_mutex;
-extern bool threadRender;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {

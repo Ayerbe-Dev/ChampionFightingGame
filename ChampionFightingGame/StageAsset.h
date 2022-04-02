@@ -39,6 +39,7 @@ public:
 
 	bool has_model;
 	bool has_skeleton;
+	bool has_lights;
 
 	int get_param_int(std::string param);
 	float get_param_float(std::string param);

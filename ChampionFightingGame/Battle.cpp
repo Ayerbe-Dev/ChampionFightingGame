@@ -59,30 +59,13 @@ void battle_main(GameManager* game_manager) {
 
 #ifdef DEBUG
 	cotr_imgui_init();
-
-	//DO NOT question my shitty second reference to this instance
-	//these need to be moved as well
-	RenderManager* init_render_manager = RenderManager::get_instance();
-	init_render_manager->lights[0].position = glm::vec3(0.0,4.867,7.333);
-	init_render_manager->lights[1].position = glm::vec3(4.4, 4.733, 3.267);
-	init_render_manager->lights[2].position = glm::vec3(-4.4, 4.733, 3.267);
-	init_render_manager->lights[3].position = glm::vec3(0.0, 2.7, 15.0);
-
-	//this needs to be moved
-	for (int i = 4; i < MAX_LIGHT_SOURCES; i++) {
-		init_render_manager->lights[i].enabled = false;
-	}
 #endif
 
 
 	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay_check_performance();
-		//battle.frame_delay();
+		battle.frame_delay();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {

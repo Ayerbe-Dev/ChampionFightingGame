@@ -267,29 +267,24 @@ void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void cotr_imgui_debug_battle(Battle* battle)
-{
+void cotr_imgui_debug_battle(Battle* battle) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(g_window);
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug Menu\n");
 
-	RenderManager* tmp_render_manager = RenderManager::get_instance();
-	//static float hi = 0.0f;
-
-	{
+	RenderManager* render_manager = RenderManager::get_instance(); {
 		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
 
-
 		if (ImGui::TreeNode("Camera")) {
-			ImGui::DragFloat("Camera X", &tmp_render_manager->camera.pos[0], 0.01);
-			ImGui::DragFloat("Camera Y", &tmp_render_manager->camera.pos[1], 0.01);
-			ImGui::DragFloat("Camera Z", &tmp_render_manager->camera.pos[2], 0.01);
+			ImGui::DragFloat("Camera X", &render_manager->camera.pos[0], 0.01);
+			ImGui::DragFloat("Camera Y", &render_manager->camera.pos[1], 0.01);
+			ImGui::DragFloat("Camera Z", &render_manager->camera.pos[2], 0.01);
 			if (ImGui::TreeNode("Camera Properties")) {
-				ImGui::Checkbox("Auto Camera", &tmp_render_manager->camera.autocamera);
-				ImGui::SliderFloat("Yaw", &tmp_render_manager->camera.yaw, -180.0f, 180.0f);
-				ImGui::SliderFloat("Auto Yaw Scale", &tmp_render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
+				ImGui::Checkbox("Auto Camera", &render_manager->camera.autocamera);
+				ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f);
+				ImGui::SliderFloat("Auto Yaw Scale", &render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
 				ImGui::TreePop();
 			}
 			ImGui::TreePop();
@@ -301,13 +296,11 @@ void cotr_imgui_debug_battle(Battle* battle)
 			ImGui::TreePop();
 		}
 
-		
-
-		if (tmp_render_manager->camera.autocamera){
-			tmp_render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
-			tmp_render_manager->camera.pos[1] = 0.813;
-			tmp_render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
-			tmp_render_manager->camera.yaw = -90 + tmp_render_manager->camera.pos[0] * tmp_render_manager->camera.auto_linear_scale;
+		if (render_manager->camera.autocamera) {
+			render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
+			render_manager->camera.pos[1] = 0.813;
+			render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
+			render_manager->camera.yaw = -90 + render_manager->camera.pos[0] * render_manager->camera.auto_linear_scale;
 			//tmp_render_manager->camera.adjust_view()
 		}
 
@@ -318,10 +311,10 @@ void cotr_imgui_debug_battle(Battle* battle)
 				//ImGui::Text(light_name.c_str());
 				//if (ImGui::CollapsingHeader(light_name.c_str())) {
 				if (ImGui::TreeNode(light_name.c_str())) {
-					ImGui::SliderFloat((light_name + " X").c_str(), &tmp_render_manager->lights[i2].position[0], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Y").c_str(), &tmp_render_manager->lights[i2].position[1], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Z").c_str(), &tmp_render_manager->lights[i2].position[2], -15.0f, 15.0f);
-					ImGui::Checkbox((light_name).c_str(), &tmp_render_manager->lights[i2].enabled);
+					ImGui::SliderFloat((light_name + " X").c_str(), &render_manager->lights[i2].position[0], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + " Y").c_str(), &render_manager->lights[i2].position[1], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + " Z").c_str(), &render_manager->lights[i2].position[2], -15.0f, 15.0f);
+					ImGui::Checkbox((light_name).c_str(), &render_manager->lights[i2].enabled);
 					ImGui::TreePop();
 				}
 			}

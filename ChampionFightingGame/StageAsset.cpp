@@ -1,6 +1,7 @@
 #include "StageAsset.h"
 #include "BattleObjectManager.h"
 #include "Fighter.h"
+#include <fstream>
 
 StageAsset::StageAsset() {
 
@@ -13,7 +14,8 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 	load_params();
 	load_model_shader();
 	load_anim_list();
-	if (get_param_bool("has_lights")) {
+	has_lights = get_param_bool("has_lights");
+	if (has_lights) {
 		load_lights();
 	}
 }
@@ -70,7 +72,24 @@ void StageAsset::load_params() {
 }
 
 void StageAsset::load_lights() {
+	std::ifstream light_stream;
+	light_stream.open(resource_dir + "/param/lights.yml");
+	if (light_stream.fail()) {
+		std::cout << "Failed to load lights! \n";
+		light_stream.close();
+		return;
+	}
 
+	RenderManager* render_manager = RenderManager::get_instance();
+	
+	glm::vec3 light_pos;
+	while (light_stream >> light_pos.x) {
+		light_stream >> light_pos.y;
+		light_stream >> light_pos.z;
+		render_manager->add_light(Light(light_pos));
+	}
+
+	light_stream.close();
 }
 
 int StageAsset::get_param_int(std::string param) {

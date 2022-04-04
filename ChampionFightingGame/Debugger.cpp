@@ -274,7 +274,11 @@ void cotr_imgui_debug_battle(Battle* battle) {
 
 	ImGui::Begin("Debug Menu");
 
-	RenderManager* render_manager = RenderManager::get_instance(); {
+	RenderManager* render_manager = RenderManager::get_instance(); 
+	
+
+
+	{
 		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
 
 		if (ImGui::TreeNode("Camera")) {

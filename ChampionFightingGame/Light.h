@@ -3,7 +3,7 @@
 
 class Light {
 public:
-	Light(glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0));
+	Light(glm::vec3 pos = glm::vec3(0.0, 1.0, 0.0));
 
 	glm::vec3 position;
 

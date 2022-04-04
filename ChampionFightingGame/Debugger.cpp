@@ -213,7 +213,7 @@ void cotr_imgui_init() {
 
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
-	printf("Debug Init");
+	printf("Debug Init\n");
 }
 
 void cotr_imgui_terminate() {
@@ -273,7 +273,7 @@ void cotr_imgui_debug_battle(Battle* battle)
 	ImGui_ImplSDL2_NewFrame(g_window);
 	ImGui::NewFrame();
 
-	ImGui::Begin("Debug Menu\n");
+	ImGui::Begin("Debug Menu");
 
 	RenderManager* tmp_render_manager = RenderManager::get_instance();
 	//static float hi = 0.0f;
@@ -300,8 +300,6 @@ void cotr_imgui_debug_battle(Battle* battle)
 			ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
 			ImGui::TreePop();
 		}
-
-		
 
 		if (tmp_render_manager->camera.autocamera){
 			tmp_render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;

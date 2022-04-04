@@ -21,9 +21,9 @@ uniform mat4 projection;
 uniform mat4 bone_matrix[MAX_BONES];
 
 void main() {
-    mat4 bone_transform = bone_matrix[v_boneids[0]] * v_weights[0];
-    float total_weights = v_weights[0];
-    for (int i = 1; i < MAX_BONE_INFLUENCE; i++) {
+    mat4 bone_transform = mat4(0.0);
+    float total_weights = 0.0;
+    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
         total_weights += v_weights[i];
     }

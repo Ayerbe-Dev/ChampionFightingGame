@@ -98,8 +98,8 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 		return reset_bones();
 	}
 
-	std::vector<Bone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
-	std::vector<Bone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
+	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
+	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
 	for (int i = 0, max = keyframes.size(); i < max; i++) {
 		keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
@@ -430,7 +430,7 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
-void Mesh::render(Shader* shader) {
+[[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		shader->set_float(("material." + textures[i].type_string).c_str(), i);

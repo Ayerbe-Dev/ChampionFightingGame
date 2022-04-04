@@ -55,8 +55,6 @@ int main() {
 	GameManager game_manager;
 
 	render_manager->init();
-	render_manager->add_light(glm::vec3(1.0, 0.0, 3.0));
-
 
 	bool running = opening_main(&game_manager);
 

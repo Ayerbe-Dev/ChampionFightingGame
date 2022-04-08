@@ -51,7 +51,7 @@ public:
 
 	void fighter_main(); //Runs during every frame of gameplay
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
-	void create_jostle_rect(glm::vec2 anchor, glm::vec2 offset); //Sets up the player's jostle box, called multiple times every frame
+	void update_jostle_rect(); //Sets up the player's jostle box, called multiple times every frame
 
 	void process_projectiles(); //Calls the scripts for projectiles
 

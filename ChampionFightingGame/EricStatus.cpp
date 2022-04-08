@@ -67,7 +67,7 @@ bool Eric::specific_status_attack() {
 }
 
 void Eric::enter_status_dash() {
-	change_anim("dash_f", 2);
+	change_anim("dash_f");
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 }
 
@@ -77,7 +77,7 @@ void Eric::exit_status_dash() {
 }
 
 void Eric::enter_status_dashb() {
-	change_anim("dash_b", 2);
+	change_anim("dash_b");
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 }
 

@@ -32,7 +32,8 @@ public:
 	PlayerInfo* player_info;
 
 	GameRect jostle_box;
-	GameRect base_jostle_box;
+	glm::vec2 base_jostle_anchor;
+	glm::vec2 base_jostle_offset;
 
 	AnimationTable anim_table;
 	Animation* anim_kind;

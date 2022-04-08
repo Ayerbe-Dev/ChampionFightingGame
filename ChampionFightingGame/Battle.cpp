@@ -95,7 +95,7 @@ void battle_main(GameManager* game_manager) {
 
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
-			if (debug) {
+			if (battle.frame_pause) {
 				sound_manager->pauseSEAll(i);
 				sound_manager->pauseVCAll(i);
 			}
@@ -124,6 +124,9 @@ Battle::Battle() {}
 Battle::~Battle() {}
 
 void Battle::load_battle(GameManager* game_manager) {
+	debug_buttons[BUTTON_MENU_FRAME_PAUSE].mapping = SDL_SCANCODE_LSHIFT;
+	debug_buttons[BUTTON_MENU_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
+
 	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(17);
 	SDL_Thread* loading_thread;
@@ -252,20 +255,14 @@ void Battle::process_main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
-	//debugger.poll_inputs(keyboard_state);
+	poll_inputs(keyboard_state);
+	if (check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
+		frame_pause = !frame_pause;
+		timer.clock_mode = !timer.clock_mode;
+	}
 
-	//if (debugger.check_button_trigger(BUTTON_DEBUG_ENABLE)) {
-	//	debug = !debug;
-	//	timer.flip_clock();
-	//	if (!debug) {
-	//		for (int i = 0; i < 2; i++) {
-	//			sound_manager->resumeSEAll(i);
-	//			sound_manager->resumeVCAll(i);
-	//		}
-	//	}
-	//}
-	if (debug) {
-		process_debug();
+	if (frame_pause) {
+		process_frame_pause();
 	}
 	else {
 		pre_process_fighter();
@@ -337,7 +334,7 @@ void Battle::post_process_fighter() {
 		fighter[i]->update_hurtbox_pos();
 		fighter[i]->rot.z += glm::radians(90.0 * fighter[i]->facing_dir);
 		fighter[i]->rot += fighter[i]->extra_rot;
-		fighter[i]->create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
+		fighter[i]->update_jostle_rect();
 	}
 }
 
@@ -349,45 +346,9 @@ void Battle::process_ui() {
 	timer.process();
 }
 
-void Battle::process_debug() {
-	/*RenderManager* render_manager = RenderManager::get_instance();
+void Battle::process_frame_pause() {
 	SoundManager* sound_manager = SoundManager::get_instance();
-	if (keyboard_state[SDL_SCANCODE_RCTRL]) {
-		if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-			render_manager->camera.adjust_view(1.0, 0.0, 0.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_LEFT]) {
-			render_manager->camera.adjust_view(-1.0, 0.0, 0.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_UP]) {
-			render_manager->camera.adjust_view(0.0, 1.0, 0.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_DOWN]) {
-			render_manager->camera.adjust_view(0.0, -1.0, 0.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_D]) {
-			render_manager->camera.add_pos(1.0, 0.0, 0.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_A]) {
-			render_manager->camera.add_pos(-1.0, 0.0, 0.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_W]) {
-			render_manager->camera.add_pos(0.0, 0.0, 1.0);
-		}
-		if (keyboard_state[SDL_SCANCODE_S]) {
-			render_manager->camera.add_pos(0.0, 0.0, -1.0);
-		}
-	}
-	if (debugger.check_button_trigger(BUTTON_DEBUG_QUERY)) {
-		debugger.print_commands();
-		std::string command;
-		std::cin >> command;
-		debugger.debug_query(command, fighter[debugger.target], fighter[!debugger.target]);
-	}
-	if (debugger.check_button_trigger(BUTTON_DEBUG_CHANGE_TARGET)) {
-		debugger.target = !debugger.target;
-	}
-	if (debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+	if (check_button_trigger(BUTTON_MENU_ADVANCE)) {
 		for (int i = 0; i < 2; i++) {
 			sound_manager->resumeSEAll(i);
 			sound_manager->resumeVCAll(i);
@@ -396,19 +357,7 @@ void Battle::process_debug() {
 		process_fighter();
 		post_process_fighter();
 		process_ui();
-		if (debugger.print_frames) {
-			std::cout << "Player " << debugger.target + 1 << " Frame: " << fighter[debugger.target]->frame << "\n";
-			std::cout << "Player " << debugger.target + 1 << " Pos X: " << fighter[debugger.target]->pos.x << "\n";
-			std::cout << "Player " << debugger.target + 1 << " Pos Y: " << fighter[debugger.target]->pos.y << "\n";
-			std::cout << "Player " << debugger.target + 1 << " Health: " << fighter[debugger.target]->fighter_float[FIGHTER_FLOAT_HEALTH] << "\n";
-		}
 	}
-	debugger.debug_mode(fighter[debugger.target], &debug_rect[debugger.target], &debug_anchor[debugger.target], &debug_offset[debugger.target]);
-	if (debugger.check_button_trigger(BUTTON_DEBUG_RESET)) {
-		debug = false;
-		*looping = false;
-		*game_state = GAME_STATE_DEBUG_MENU;
-	}*/
 }
 
 void Battle::render_world() {
@@ -483,9 +432,9 @@ void Battle::render_ui() {
 }
 
 void Battle::check_collisions() {
-	/*if (debug && !debugger.check_button_trigger(BUTTON_DEBUG_ADVANCE)) {
+	if (frame_pause && !check_button_trigger(BUTTON_MENU_ADVANCE)) {
 		return;
-	}*/
+	}
 	check_projectile_collisions();
 	check_fighter_collisions();
 }
@@ -1149,6 +1098,23 @@ int Battle::get_damage_status(int hit_status, int situation_kind) {
 			return FIGHTER_STATUS_HITSTUN;
 		}
 	}
+}
+
+void Battle::poll_inputs(const Uint8* keyboard_state) {
+	for (int i = 0; i < BUTTON_MAX; i++) {
+		bool old_button = debug_buttons[i].button_on;
+		debug_buttons[i].button_on = keyboard_state[debug_buttons[i].mapping];
+		bool new_button = debug_buttons[i].button_on;
+		debug_buttons[i].changed = (old_button != new_button);
+	}
+}
+
+bool Battle::check_button_on(unsigned int button) {
+	return debug_buttons[button].button_on;
+}
+
+bool Battle::check_button_trigger(unsigned int button) {
+	return debug_buttons[button].changed && debug_buttons[button].button_on;
 }
 
 HealthBar::HealthBar() {}

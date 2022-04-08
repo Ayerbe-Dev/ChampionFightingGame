@@ -34,6 +34,7 @@ public:
 	void event_start_press();
 	void event_select_press();
 	void event_back_press();
+	void event_pause_press();
 	void event_any_press();
 
 private:

@@ -114,6 +114,9 @@ void GameManager::handle_menus() {
 		if (player_info[i]->check_button_trigger(BUTTON_MENU_BACK)) {
 			event_back_press();
 		}
+		if (player_info[i]->check_button_trigger(BUTTON_MENU_PAUSE)) {
+			event_pause_press();
+		}
 		if (is_any_menu_input(i)) {
 			event_any_press();
 		}
@@ -235,6 +238,10 @@ void GameManager::event_select_press() {
 
 void GameManager::event_back_press() {
 	(menu_target[layer]->*(&GameMenu::event_back_press))();
+}
+
+void GameManager::event_pause_press() {
+	(menu_target[layer]->*(&GameMenu::event_pause_press))();
 }
 
 void GameManager::event_any_press() {

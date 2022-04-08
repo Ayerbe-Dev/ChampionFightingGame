@@ -96,22 +96,24 @@ void Fighter::process_pre_position() {
 		pos.y = 0;
 	}
 
-	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
+	update_jostle_rect();
 
 	prev_pos = pos;
 }
 
 void Fighter::process_position() {
 	Fighter* that = battle_object_manager->fighter[!id];
-	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
+	update_jostle_rect();
 	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
-			if (that->status_kind != FIGHTER_STATUS_WAIT && that->get_status_group() != STATUS_GROUP_CROUCH) {
-				add_pos(glm::vec3(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0, 0.0));
+			if (that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH) {
+				if (!that->add_pos(glm::vec3(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0, 0.0))) {
+					add_pos(glm::vec3(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0, 0.0));
+				}
 			}
 			else {
-				that->add_pos(glm::vec3(that->get_param_float("jostle_walk_b_speed") * -1 * that->facing_dir, 0.0, 0.0));
+				add_pos(glm::vec3(get_param_float("jostle_walk_b_speed") * -1 * facing_dir, 0.0, 0.0));
 			}
 		}
 	}
@@ -136,7 +138,7 @@ void Fighter::process_post_position() {
 	else {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 	}
-	create_jostle_rect(glm::vec2{ -15, 25 }, glm::vec2{ 15, 0 });
+	update_jostle_rect();
 }
 
 void Fighter::process_pre_status() {

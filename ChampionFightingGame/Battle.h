@@ -88,7 +88,7 @@ public:
 	void pre_process_fighter();
 	void process_fighter();
 	void post_process_fighter();
-	void process_debug();
+	void process_frame_pause();
 
 	void check_collisions();
 	void check_projectile_collisions();
@@ -104,6 +104,11 @@ public:
 
 	void render_world();
 	void render_ui();
+
+	Button debug_buttons[BUTTON_MAX];
+	void poll_inputs(const Uint8* keyboard_state);
+	bool check_button_on(unsigned int button);
+	bool check_button_trigger(unsigned int button);
 
 	const Uint8* keyboard_state;
 
@@ -126,6 +131,8 @@ public:
 	glm::vec2 debug_offset[2] = { {0,0} };
 
 	bool visualize_boxes;
+	bool pause;
+	bool frame_pause;
 };
 
 //Demoknight TF2 has been evicted from UI.cpp as that file no longer exists
@@ -147,7 +154,7 @@ public:
 															  `OZn
 															  jQO`
 															  J0U                ___________________
-															 :0wu               (  So, No Head?     )
+															 :0wu               (  So, No Home?     )
 															 J0m"               (___________________)
 															"mwz               /
 															+0Q?              /

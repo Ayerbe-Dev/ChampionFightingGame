@@ -29,3 +29,7 @@ has_airdash 4 0
 has_throwb 4 1
 has_wallbounce 4 1
 meter_gain_on_parry 2 30.0
+jostle_x0 2 -40.0 
+jostle_x1 2 40.0
+jostle_y0 2 0.0
+jostle_y1 2 30.0

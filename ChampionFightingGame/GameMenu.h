@@ -14,6 +14,7 @@ public:
     virtual void event_select_press();
     virtual void event_start_press();
     virtual void event_back_press();
+    virtual void event_pause_press();
     virtual void event_any_press();
 
     virtual void process_background();

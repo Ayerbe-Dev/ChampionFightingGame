@@ -6,10 +6,10 @@
 #include "CharaKind.h"
 #include "SoundConstants.h"
 
-class Sound {
+class SoundInfo {
 public:
-	Sound();
-	Sound(std::string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int volume = 32, int sound_type = SOUND_TYPE_NORMAL);
+	SoundInfo();
+	SoundInfo(std::string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int volume = 32, int sound_type = SOUND_TYPE_NORMAL);
 
 	std::string name;
 	std::string dir;
@@ -21,13 +21,13 @@ public:
 	bool active;
 };
 
-struct SoundInfo {
+struct Sound {
 	Uint8* data;
 	Uint8* loop_data;
 	unsigned int dpos;
 	unsigned int dlen;
 	unsigned int loop_dlen;
-	Sound sound;
+	SoundInfo sound;
 };
 
 class SoundManager {
@@ -37,44 +37,44 @@ public:
 
 	BattleObjectManager *battle_object_manager;
 
-	Sound common_se[COMMON_SE_MAX];
-	Sound roy_se[ROY_SE_MAX];
-	Sound roy_vc[ROY_VC_MAX];
-	Sound eric_se[ERIC_SE_MAX];
-	Sound eric_vc[ERIC_VC_MAX];
-	Sound leon_se[LEON_SE_MAX];
-	Sound leon_vc[LEON_VC_MAX];
-	Sound chameleon_se[CHAMELEON_SE_MAX];
-	Sound chameleon_vc[CHAMELEON_VC_MAX];
-	Sound angelica_se[ANGELICA_SE_MAX];
-	Sound angelica_vc[ANGELICA_VC_MAX];
-	Sound nightsaber_se[NIGHTSABER_SE_MAX];
-	Sound nightsaber_vc[NIGHTSABER_VC_MAX];
-	Sound sully_se[SULLY_SE_MAX];
-	Sound sully_vc[SULLY_VC_MAX];
-	Sound priest_se[PRIEST_SE_MAX];
-	Sound priest_vc[PRIEST_VC_MAX];
-	Sound aziel_se[AZIEL_SE_MAX];
-	Sound aziel_vc[AZIEL_VC_MAX];
-	Sound bruno_se[BRUNO_SE_MAX];
-	Sound bruno_vc[BRUNO_VC_MAX];
-	Sound tessa_se[TESSA_SE_MAX];
-	Sound tessa_vc[TESSA_VC_MAX];
-	Sound alejandro_se[ALEJANDRO_SE_MAX];
-	Sound alejandro_vc[ALEJANDRO_VC_MAX];
-	Sound norman_se[NORMAN_SE_MAX];
-	Sound norman_vc[NORMAN_VC_MAX];
-	Sound atlas_se[ATLAS_SE_MAX];
-	Sound atlas_vc[ATLAS_VC_MAX];
-	Sound julius_se[JULIUS_SE_MAX];
-	Sound julius_vc[JULIUS_VC_MAX];
-	Sound ramona_se[RAMONA_SE_MAX];
-	Sound ramona_vc[RAMONA_VC_MAX];
-	Sound zyair_se[ZYAIR_SE_MAX];
-	Sound zyair_vc[ZYAIR_VC_MAX];
-	Sound vesuvius_se[VESUVIUS_SE_MAX];
-	Sound vesuvius_vc[VESUVIUS_VC_MAX];
-	Sound music[MUSIC_KIND_MAX];
+	SoundInfo common_se[COMMON_SE_MAX];
+	SoundInfo roy_se[ROY_SE_MAX];
+	SoundInfo roy_vc[ROY_VC_MAX];
+	SoundInfo eric_se[ERIC_SE_MAX];
+	SoundInfo eric_vc[ERIC_VC_MAX];
+	SoundInfo leon_se[LEON_SE_MAX];
+	SoundInfo leon_vc[LEON_VC_MAX];
+	SoundInfo chameleon_se[CHAMELEON_SE_MAX];
+	SoundInfo chameleon_vc[CHAMELEON_VC_MAX];
+	SoundInfo angelica_se[ANGELICA_SE_MAX];
+	SoundInfo angelica_vc[ANGELICA_VC_MAX];
+	SoundInfo nightsaber_se[NIGHTSABER_SE_MAX];
+	SoundInfo nightsaber_vc[NIGHTSABER_VC_MAX];
+	SoundInfo sully_se[SULLY_SE_MAX];
+	SoundInfo sully_vc[SULLY_VC_MAX];
+	SoundInfo priest_se[PRIEST_SE_MAX];
+	SoundInfo priest_vc[PRIEST_VC_MAX];
+	SoundInfo aziel_se[AZIEL_SE_MAX];
+	SoundInfo aziel_vc[AZIEL_VC_MAX];
+	SoundInfo bruno_se[BRUNO_SE_MAX];
+	SoundInfo bruno_vc[BRUNO_VC_MAX];
+	SoundInfo tessa_se[TESSA_SE_MAX];
+	SoundInfo tessa_vc[TESSA_VC_MAX];
+	SoundInfo alejandro_se[ALEJANDRO_SE_MAX];
+	SoundInfo alejandro_vc[ALEJANDRO_VC_MAX];
+	SoundInfo norman_se[NORMAN_SE_MAX];
+	SoundInfo norman_vc[NORMAN_VC_MAX];
+	SoundInfo atlas_se[ATLAS_SE_MAX];
+	SoundInfo atlas_vc[ATLAS_VC_MAX];
+	SoundInfo julius_se[JULIUS_SE_MAX];
+	SoundInfo julius_vc[JULIUS_VC_MAX];
+	SoundInfo ramona_se[RAMONA_SE_MAX];
+	SoundInfo ramona_vc[RAMONA_VC_MAX];
+	SoundInfo zyair_se[ZYAIR_SE_MAX];
+	SoundInfo zyair_vc[ZYAIR_VC_MAX];
+	SoundInfo vesuvius_se[VESUVIUS_SE_MAX];
+	SoundInfo vesuvius_vc[VESUVIUS_VC_MAX];
+	SoundInfo music[MUSIC_KIND_MAX];
 
 	void hyperInit();
 
@@ -85,7 +85,7 @@ public:
 	void playCharaSE(int se, int id);
 	void playVC(int voice, int id);
 	void playMusic(int music_kind);
-	void playSound(Sound sound, int id);
+	void playSound(SoundInfo sound, int id);
 
 	//Mark the sound as inactive, but unlike the stop functions, this series doesn't set the position of a sound back to 0
 
@@ -95,7 +95,7 @@ public:
 	void pauseSEAll(int id);
 	void pauseVCAll(int id);
 	void pauseMusic(int music_kind);
-	void pauseSound(Sound sound, int id);
+	void pauseSound(SoundInfo sound, int id);
 	void pauseSoundAll();
 
 	//Resume any paused sounds. There's no function to resume a specific sound because we can already use the playSound series for that
@@ -113,25 +113,25 @@ public:
 	void stopSEAll(int id);
 	void stopVCAll(int id);
 	void stopMusic(int music_kind);
-	void stopSound(Sound sound, int id);
+	void stopSound(SoundInfo sound, int id);
 	void stopSoundAll();
 
 	int loadCommonSE(int se, int id);
 	int loadCharaSE(int se, int id);
 	int loadVC(int voice, int id);
 	int loadMusic(int music_kind);
-	void loadSound(Sound sound, int id);
+	void loadSound(SoundInfo sound, int id);
 	void unloadCommonSE(int se, int id);
 	void unloadCharaSE(int se, int id);
 	void unloadVC(int voice, int id);
 	void unloadSEAll(int id);
 	void unloadVCAll(int id);
 	void unloadMusic(int music_kind);
-	void unloadSound(Sound sound, int id);
+	void unloadSound(SoundInfo sound, int id);
 	void unloadSoundAll();
 
-	int findSoundIndex(Sound sound, int id);
-	Sound getCharaSound(int index, int id, bool se);
+	int findSoundIndex(SoundInfo sound, int id);
+	SoundInfo getCharaSound(int index, int id, bool se);
 
 	static SoundManager* get_instance();
 private:
@@ -140,4 +140,4 @@ private:
 };
 
 void audio_callback(void* unused, Uint8* stream, int len);
-void addSoundToIndex(Sound sound, int id);
+void addSoundToIndex(SoundInfo sound, int id);

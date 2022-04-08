@@ -34,7 +34,7 @@
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
-extern SoundInfo sounds[3][MAX_SOUNDS];
+extern Sound sounds[3][MAX_SOUNDS];
 extern SDL_GLContext g_context;
 
 extern bool debug;
@@ -377,8 +377,8 @@ void Battle::render_world() {
 		fighter[i]->render();
 		//player tags will go here
 
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->id != -1 && fighter[i]->projectiles[i2]->has_model) {
+		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render();
 			}
 		}
@@ -440,10 +440,10 @@ void Battle::check_collisions() {
 }
 
 void Battle::check_projectile_collisions() {
-	for (int i = 0; i < MAX_PROJECTILES; i++) {
-		if (fighter[0]->projectiles[i] != nullptr && fighter[0]->projectiles[i]->id != -1) {
-			for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-				if (fighter[1]->projectiles[i2] != nullptr && fighter[1]->projectiles[i2]->id != -1) {
+	for (int i = 0; i < fighter[0]->num_projectiles; i++) {
+		if (fighter[0]->projectiles[i]->active) {
+			for (int i2 = 0; i2 < fighter[1]->num_projectiles; i2++) {
+				if (fighter[1]->projectiles[i2]->active) {
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1 && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
 							for (int i4 = 0; i4 < 10; i4++) {
@@ -491,7 +491,7 @@ void Battle::check_fighter_collisions() {
 					}
 				}
 				for (Projectile* projectile : fighter[!i]->projectiles) {
-					if (projectile != nullptr && projectile->id != -1) {
+					if (projectile != nullptr && projectile->active) {
 						for (Hitbox& hitbox : projectile->hitboxes) {
 							if (hitbox.id != -1) {
 								if (is_collide(hitbox.rect, hurtbox.rect)) {
@@ -525,7 +525,7 @@ void Battle::check_fighter_collisions() {
 	}
 	for (int i = 0; i < 2; i++) {
 		for (Projectile* projectile : fighter[i]->projectiles) {
-			if (projectile != nullptr && projectile->id != -1) {
+			if (projectile != nullptr && projectile->active) {
 				event_hit_collide_projectile(fighter[i], fighter[!i], projectile, &projectile->hitboxes[fighter[!i]->connected_projectile_hitbox]);
 			}
 		}

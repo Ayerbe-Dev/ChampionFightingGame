@@ -21,6 +21,7 @@ public:
 	int music_kind;
 
 	Projectile* projectiles[MAX_PROJECTILES]{};
+	int num_projectiles = 0;
 
 	bool crash_to_debug{ false };
 	int prev_stick_dir;

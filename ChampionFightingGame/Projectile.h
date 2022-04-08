@@ -20,6 +20,7 @@ public:
 	Fighter* owner;
 
 	bool has_model;
+	bool active = false;
 
 	std::vector<int> projectile_int;
 	std::vector<float> projectile_float;

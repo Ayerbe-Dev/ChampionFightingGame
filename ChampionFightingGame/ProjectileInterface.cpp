@@ -2,6 +2,7 @@
 #include "Projectiles.h"
 
 Projectile* create_projectile(int projectile_kind, int id, PlayerInfo* player_info, Fighter* owner) {
+	owner->num_projectiles++;
 	ProjectileInterface projectile_interface(projectile_kind, id, player_info, owner);
 	Projectile* ret = projectile_interface.get_projectile();
 	return ret;
@@ -26,6 +27,7 @@ ProjectileInterface::ProjectileInterface(int projectile_kind, int id, PlayerInfo
 	}
 	projectile->owner = owner;
 	projectile->owner_id = id;
+	projectile->id = 10 * (id + 1) + owner->num_projectiles;
 }
 
 ProjectileInterface::~ProjectileInterface() {}

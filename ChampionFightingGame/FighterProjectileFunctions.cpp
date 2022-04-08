@@ -2,7 +2,7 @@
 #include "Projectile.h"
 
 void Fighter::init_projectile(int id, glm::vec3 init_pos) {
-	projectiles[id]->id = this->id;
+	projectiles[id]->active = true;
 	projectiles[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir);
 	projectiles[id]->pos.y = init_pos.z + pos.y;
 	projectiles[id]->pos.z = init_pos.z + pos.z;
@@ -13,5 +13,5 @@ void Fighter::init_projectile(int id, glm::vec3 init_pos) {
 }
 
 void Fighter::destroy_projectile(int id) {
-	projectiles[id]->id = -1;
+	projectiles[id]->active = false;
 }

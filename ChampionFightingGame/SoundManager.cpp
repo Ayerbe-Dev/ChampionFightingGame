@@ -1,7 +1,7 @@
 ﻿#include "SoundManager.h"
 #include "GameSettings.h"
 #include "SDL/SDL_audio.h"
-SoundInfo sounds[3][MAX_SOUNDS];
+Sound sounds[3][MAX_SOUNDS];
 extern bool debug;
 
 SoundManager::SoundManager() {
@@ -9,49 +9,49 @@ SoundManager::SoundManager() {
 }
 
 void SoundManager::hyperInit() {
-	roy_vc[ROY_VC_ATTACK_01] = Sound("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
+	roy_vc[ROY_VC_ATTACK_01] = SoundInfo("attack_01", SOUND_KIND_VC, CHARA_KIND_ROY);
 
-	music[MUSIC_KIND_TRAINING_STAGE] = Sound("Vesuvius_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
-	music[MUSIC_KIND_ATLAS_STAGE] = Sound("Atlas_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
+	music[MUSIC_KIND_TRAINING_STAGE] = SoundInfo("Vesuvius_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
+	music[MUSIC_KIND_ATLAS_STAGE] = SoundInfo("Atlas_Theme", SOUND_KIND_MUSIC, 0, 128, SOUND_TYPE_LOOP);
 }
 
 void SoundManager::playCommonSE(int se, int id) {
-	Sound sound = common_se[se];
+	SoundInfo sound = common_se[se];
 	playSound(sound, id);
 }
 
 void SoundManager::playCharaSE(int se, int id) {
-	Sound sound = getCharaSound(se, id, true);
+	SoundInfo sound = getCharaSound(se, id, true);
 	playSound(sound, id);
 }
 
 void SoundManager::playVC(int vc, int id) {
-	Sound sound = getCharaSound(vc, id, false);
+	SoundInfo sound = getCharaSound(vc, id, false);
 	playSound(sound, id);
 }
 
 void SoundManager::playMusic(int music_kind) {
-	Sound sound = music[music_kind];
+	SoundInfo sound = music[music_kind];
 	playSound(sound, 2);
 }
 
-void SoundManager::playSound(Sound sound, int id) {
+void SoundManager::playSound(SoundInfo sound, int id) {
 	int index = findSoundIndex(sound, id);
 	sounds[id][index].sound.active = true;
 }
 
 void SoundManager::pauseCommonSE(int se, int id) {
-	Sound sound = common_se[se];
+	SoundInfo sound = common_se[se];
 	pauseSound(sound, id);
 }
 
 void SoundManager::pauseCharaSE(int se, int id) {
-	Sound sound = getCharaSound(se, id, true);
+	SoundInfo sound = getCharaSound(se, id, true);
 	pauseSound(sound, id);
 }
 
 void SoundManager::pauseVC(int vc, int id) {
-	Sound sound = getCharaSound(vc, id, false);
+	SoundInfo sound = getCharaSound(vc, id, false);
 	pauseSound(sound, id);
 }
 
@@ -72,11 +72,11 @@ void SoundManager::pauseVCAll(int id) {
 }
 
 void SoundManager::pauseMusic(int music_kind) {
-	Sound sound = music[music_kind];
+	SoundInfo sound = music[music_kind];
 	pauseSound(sound, 2);
 }
 
-void SoundManager::pauseSound(Sound sound, int id) {
+void SoundManager::pauseSound(SoundInfo sound, int id) {
 	int index = findSoundIndex(sound, id);
 	sounds[id][index].sound.active = false;
 }
@@ -124,17 +124,17 @@ void SoundManager::resumeSoundAll(int id) {
 }
 
 void SoundManager::stopCommonSE(int se, int id) {
-	Sound sound = common_se[se];
+	SoundInfo sound = common_se[se];
 	stopSound(sound, id);
 }
 
 void SoundManager::stopCharaSE(int se, int id) {
-	Sound sound = getCharaSound(se, id, true);
+	SoundInfo sound = getCharaSound(se, id, true);
 	stopSound(sound, id);
 }
 
 void SoundManager::stopVC(int vc, int id) {
-	Sound sound = getCharaSound(vc, id, false);
+	SoundInfo sound = getCharaSound(vc, id, false);
 	stopSound(sound, id);
 }
 
@@ -157,11 +157,11 @@ void SoundManager::stopVCAll(int id) {
 }
 
 void SoundManager::stopMusic(int music_kind) {
-	Sound sound = music[music_kind];
+	SoundInfo sound = music[music_kind];
 	stopSound(sound, 2);
 }
 
-void SoundManager::stopSound(Sound sound, int id) {
+void SoundManager::stopSound(SoundInfo sound, int id) {
 	int index = findSoundIndex(sound, id);
 	sounds[id][index].sound.active = false;
 	sounds[id][index].dpos = 0;
@@ -177,7 +177,7 @@ void SoundManager::stopSoundAll() {
 }
 
 int SoundManager::loadCommonSE(int se, int id) {
-	Sound sound = common_se[se];
+	SoundInfo sound = common_se[se];
 	if (sound.name == "") {
 		return -1;
 	}
@@ -186,7 +186,7 @@ int SoundManager::loadCommonSE(int se, int id) {
 }
 
 int SoundManager::loadCharaSE(int se, int id) {
-	Sound sound = getCharaSound(se, id, true);
+	SoundInfo sound = getCharaSound(se, id, true);
 	if (sound.name == "") {
 		return -1;
 	}
@@ -195,7 +195,7 @@ int SoundManager::loadCharaSE(int se, int id) {
 }
 
 int SoundManager::loadVC(int vc, int id) {
-	Sound sound = getCharaSound(vc, id, false);
+	SoundInfo sound = getCharaSound(vc, id, false);
 	if (sound.name == "") {
 		return -1;
 	}
@@ -204,7 +204,7 @@ int SoundManager::loadVC(int vc, int id) {
 }
 
 int SoundManager::loadMusic(int music_kind) {
-	Sound sound = music[music_kind];
+	SoundInfo sound = music[music_kind];
 	if (sound.name == "") {
 		return -1;
 	}
@@ -212,23 +212,23 @@ int SoundManager::loadMusic(int music_kind) {
 	return 0;
 }
 
-void SoundManager::loadSound(Sound sound, int id) {
+void SoundManager::loadSound(SoundInfo sound, int id) {
 	const char* dir = (sound.dir).c_str();
 	addSoundToIndex(sound, id);
 }
 
 void SoundManager::unloadCommonSE(int se, int id) {
-	Sound sound = common_se[se];
+	SoundInfo sound = common_se[se];
 	unloadSound(sound, id);
 }
 
 void SoundManager::unloadCharaSE(int se, int id) {
-	Sound sound = getCharaSound(se, id, true);
+	SoundInfo sound = getCharaSound(se, id, true);
 	unloadSound(sound, id);
 }
 
 void SoundManager::unloadVC(int vc, int id) {
-	Sound sound = getCharaSound(vc, id, false);
+	SoundInfo sound = getCharaSound(vc, id, false);
 	unloadSound(sound, id);
 }
 
@@ -259,11 +259,11 @@ void SoundManager::unloadVCAll(int id) {
 }
 
 void SoundManager::unloadMusic(int music_kind) {
-	Sound sound = music[music_kind];
+	SoundInfo sound = music[music_kind];
 	unloadSound(sound, 2);
 }
 
-void SoundManager::unloadSound(Sound sound, int id) {
+void SoundManager::unloadSound(SoundInfo sound, int id) {
 	int clear_index = findSoundIndex(sound, id);
 	sounds[id][clear_index].dpos = 0;
 	sounds[id][clear_index].dlen = 0;
@@ -301,7 +301,7 @@ void SoundManager::unloadSoundAll() {
 	}
 }
 
-int SoundManager::findSoundIndex(Sound sound, int id) {
+int SoundManager::findSoundIndex(SoundInfo sound, int id) {
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		if (sounds[id][i].sound.dir == sound.dir) {
 			return i;
@@ -310,8 +310,8 @@ int SoundManager::findSoundIndex(Sound sound, int id) {
 	return MAX_SOUNDS;
 }
 
-Sound SoundManager::getCharaSound(int index, int id, bool se) {
-	Sound sound;
+SoundInfo SoundManager::getCharaSound(int index, int id, bool se) {
+	SoundInfo sound;
 	switch (battle_object_manager->fighter[id]->chara_kind) {
 		case(CHARA_KIND_ROY):
 		{
@@ -390,11 +390,11 @@ Sound SoundManager::getCharaSound(int index, int id, bool se) {
 	return sound;
 }
 
-Sound::Sound() {
+SoundInfo::SoundInfo() {
 	sound_kind = SOUND_KIND_MAX;
 }
 
-Sound::Sound(std::string name, int sound_kind, int chara_kind, int volume, int sound_type) {
+SoundInfo::SoundInfo(std::string name, int sound_kind, int chara_kind, int volume, int sound_type) {
 	this->name = name;
 	this->sound_kind = sound_kind;
 	this->sound_type = sound_type;
@@ -571,7 +571,7 @@ SoundManager* SoundManager::get_instance() {
 	return instance;
 }
 
-void addSoundToIndex(Sound sound, int id) {
+void addSoundToIndex(SoundInfo sound, int id) {
 	int index;
 
 	SDL_AudioSpec wave;
@@ -672,6 +672,8 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 				}
 
 				//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
+
+				std::cout << clamp(0, len, dlen - sounds[i2][i].dpos) << "\n";
 
 				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(0, len, dlen - sounds[i2][i].dpos));
 	

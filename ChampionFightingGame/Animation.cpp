@@ -19,11 +19,11 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 		if (model == nullptr) {
 			length = 1;
 		}
-		else if (!scene->HasAnimations()) {
-			std::cout << "Scene has no animations but Assimp doesn't seem to see the problem \n";
+		else if (!scene) {
+			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		}
 		else {
-			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
+			std::cout << "Scene has no animations but Assimp doesn't seem to see the problem \n";
 		}
 		return;
 	}

@@ -99,7 +99,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	bool new_opponent_right = this->pos.x > that->pos.x;
 
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND
-		&& that->situation_kind == FIGHTER_SITUATION_GROUND && this->pos.x * facing_dir > 0) {
+		&& that->situation_kind == FIGHTER_SITUATION_GROUND) {
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}

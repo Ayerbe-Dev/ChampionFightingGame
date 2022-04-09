@@ -31,14 +31,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	//Ok now to actually set some positions
 
 	bool ret = true;
-
-	//Check if the front quarter or so of our sprite is inside of the front quarter of the opponent's BEFORE we changed the position. We'll check this
-	//again after and compare the values. Note: The reason we divide by 4 for the offset and not 2 is because we want the sprites to be able to partly 
-	//overlap and let the jostle boxes create a more natural looking pushback. 
-
-	float this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 4);
-	float that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 4);
-	bool opponent_right = this_x_front > that_x_front;
+	bool opponent_right = this->pos.x > that->pos.x;
 
 	//Add positions, then do a whole bunch of checks to see if we'll need to change to a different position.
 
@@ -103,9 +96,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 	//Check to see if you crossed up the opponent by changing positions
 
-	float new_this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 4);
-	float new_that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 4);
-	bool new_opponent_right = new_this_x_front > new_that_x_front;
+	bool new_opponent_right = this->pos.x > that->pos.x;
 
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND
 		&& that->situation_kind == FIGHTER_SITUATION_GROUND && this->pos.x * facing_dir > 0) {
@@ -151,9 +142,8 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 
 	bool ret = true;
 
-	float this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 2);
-	float that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 2);
-	bool opponent_right = this_x_front > that_x_front;
+	bool opponent_right = this->pos.x > that->pos.x;
+
 	this->pos = pos;
 	if (this->pos.x > WINDOW_WIDTH / 2) {
 		if (prev) {
@@ -198,9 +188,7 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}
-	float new_this_x_front = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * facing_dir / 2);
-	float new_that_x_front = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / 2);
-	bool new_opponent_right = new_this_x_front > new_that_x_front;
+	bool new_opponent_right = this->pos.x > that->pos.x;
 
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND) {
 		this->pos.x = prev_pos.x;

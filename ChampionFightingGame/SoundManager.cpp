@@ -642,7 +642,9 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	Uint8* source; //Audio data that will be filled by a given track
 	Uint8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
 	unsigned int dlen; //Ditto for length
+	unsigned int mlen; //Maximum length
 	int vol; //Volume value to be multiplied by the values in the user's settings
+	
 	SDL_memset(stream, 0, len); //Clear the stream
 
 	for (int i = 0; i < MAX_SOUNDS; i++) {
@@ -671,11 +673,11 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 					diff = (sounds[i2][i].dpos + len) - dlen;
 				}
 
+				mlen = clamp(0, len, dlen - sounds[i2][i].dpos);
+
 				//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
 
-				std::cout << clamp(0, len, dlen - sounds[i2][i].dpos) << "\n";
-
-				SDL_memcpy(source, &data[sounds[i2][i].dpos], clamp(0, len, dlen - sounds[i2][i].dpos));
+				SDL_memcpy(source, &data[sounds[i2][i].dpos], mlen);
 	
 				sounds[i2][i].dpos += len; //Add the length of the stream to the audio's position.
 
@@ -696,7 +698,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 						sounds[i2][i].dpos = 0;
 					}
 				}
-				SDL_MixAudio(stream, source, len, vol);
+				SDL_MixAudio(stream, source, mlen, vol);
 				SDL_free(source);
 			}
 		}

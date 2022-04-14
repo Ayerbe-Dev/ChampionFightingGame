@@ -319,6 +319,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ScriptFunctions.cpp" />
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
@@ -418,6 +419,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GameTexture.h" />
     <ClInclude Include="GLEW Helpers.h" />
     <ClInclude Include="GLM Helpers.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_opengl3.h" />
@@ -554,6 +556,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_no_light.glsl" />
     <None Include="resource\shaders\fragment_2d_texture.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
+    <None Include="resource\shaders\ShadowFragment.glsl" />
+    <None Include="resource\shaders\ShadowVertex.glsl" />
     <None Include="resource\shaders\vertex_main.glsl" />
     <None Include="resource\shaders\vertex_no_anim.glsl" />
     <None Include="resource\shaders\vertex_no_light.glsl" />

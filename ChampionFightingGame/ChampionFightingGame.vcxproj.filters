@@ -645,6 +645,9 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Source Files\Deps\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1268,6 +1271,9 @@
     <ClInclude Include="imstb_truetype.h">
       <Filter>Header Files\Deps\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\vertex_main.glsl">
@@ -1298,6 +1304,12 @@
       <Filter>resource\shaders</Filter>
     </None>
     <None Include="fragment_fullbright.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\ShadowFragment.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\ShadowVertex.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

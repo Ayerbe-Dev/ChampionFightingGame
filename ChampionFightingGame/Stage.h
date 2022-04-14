@@ -29,4 +29,5 @@ public:
 	void unload_stage();
 	void process();
 	void render();
+	void render_shadow();
 };

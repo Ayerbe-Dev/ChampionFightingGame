@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 #include <vector>
 #include <iostream>
+#include <glew/glew.h>
 #include <glm/glm.hpp>
 #include "stb_image.h"
 
@@ -42,6 +43,7 @@ public:
     GameTexture(const GameTexture& that);
     ~GameTexture();
     void init(std::string path);
+    void init(GLuint gl_tex_locatione);
     void destroy(bool destroy_texture = true);
     void set_pos(glm::vec3 pos);
     void add_pos(glm::vec3 pos);

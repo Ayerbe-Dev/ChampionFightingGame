@@ -72,3 +72,12 @@ void Stage::render() {
 		}
 	}
 }
+
+void Stage::render_shadow()
+{
+	for (StageAsset* stage_asset : stage_assets) {
+		if (stage_asset->has_model) {
+			stage_asset->render_shadow();
+		}
+	}
+}

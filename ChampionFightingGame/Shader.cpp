@@ -26,7 +26,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 
 	shader_file.open("resource/shaders/" + vertex_dir);
 	if (shader_file.fail()) {
-		std::cout << "Could not open Vertex Core Shader File!" << "\n";
+		std::cout << "Could not open Vertex Core Shader File!" << vertex_dir << "\n";
 		return;
 	}
 

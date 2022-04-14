@@ -56,7 +56,13 @@ void battle_main(GameManager* game_manager) {
 	Battle battle;
 	battle.load_battle(game_manager);
 
+	battle.health_bar[0].bar_texture.texture;
 
+	GameTexture debug_depth;
+	debug_depth.pos.z = 0.1f;
+	debug_depth.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	debug_depth.init(RenderManager::get_instance()->shadow_map.depth_map_location);
+	
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
@@ -105,6 +111,7 @@ void battle_main(GameManager* game_manager) {
 
 		battle.render_world();
 		battle.render_ui();
+		debug_depth.render(); ///get rid of me as soon as possible;
 
 		battle.check_collisions();
 
@@ -371,7 +378,48 @@ void Battle::render_world() {
 	//doesn't make much of a difference either way)
 
 	render_manager->update_shader_lights();
-	//update camera pos
+	
+
+
+	///SHADOW PASS
+	
+	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
+	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.fbo_location);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);
+	stage.render_shadow();
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->render_shadow();
+		/*for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+				fighter[i]->projectiles[i2]->render_shadow();
+			}
+		}*/
+	}
+	
+
+	glCullFace(GL_BACK);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT); //these constants are wrong
+	
+	///
+
+
+	//COLOR PASS
+	int width;
+	int height;
+	SDL_GetWindowSize(g_window, &width, &height);
+	glViewport(0, 0, width, height);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //render_manager->shadow_shader.set_float("material.shadow_map", GL_TEXTURE0 + 2);
+	//glActiveTexture(GL_TEXTURE0+2);
+	//glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);
+	static GLuint u;
+	
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render();
@@ -429,6 +477,7 @@ void Battle::render_ui() {
 	/*if (debug) {
 		debug_rect[debugger.target].render();
 	}*/
+
 }
 
 void Battle::check_collisions() {

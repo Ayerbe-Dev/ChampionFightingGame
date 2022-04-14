@@ -2,21 +2,25 @@
 
 #include <stdio.h>
 #include <glew/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-class ShadowMapFBO
+
+class ShadowMap
 {
 public:
-    ShadowMapFBO();
+	ShadowMap();
+	void update_light();
 
-    ~ShadowMapFBO();
+	const int SHADOW_WIDTH = 100;
+	const int SHADOW_HEIGHT = 100;
 
-    bool Init(unsigned int WindowWidth, unsigned int WindowHeight);
+	float shadow_map_depth = 7.0f, shadow_map_fov = 5.0f;
 
-    void BindForWriting();
+	GLuint fbo_location = 0;
+	GLuint depth_map_location = 0;
 
-    void BindForReading(GLenum TextureUnit);
-
-private:
-    GLuint m_fbo;
-    GLuint m_shadowMap;
+	glm::mat4 m_orthographic_perspective;
+	glm::mat4 m_lookat;
+	glm::vec3 m_light_position;
 };

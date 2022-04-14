@@ -430,13 +430,43 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
+#include "RenderManager.h"
 [[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		shader->set_float(("material." + textures[i].type_string).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+	shader->set_float("material.shadow_map", 2);
+	shader->set_float("material.diffuse", 0);
+	shader->set_float("material.specular", 1);
+
+	if (textures.size() >= 2) {
+		glActiveTexture(GL_TEXTURE2);
+		//shader->set_float("material.shadow_map", 2);
+		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
 	}
+	if (textures.size() >= 2) {
+		glActiveTexture(GL_TEXTURE1);
+		//shader->set_float(("material." + textures[1].type_string).c_str(), 1);
+		glBindTexture(GL_TEXTURE_2D, textures[1].id);
+		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	}
+
+	if (textures.size() >= 1) {
+		glActiveTexture(GL_TEXTURE0);
+		//shader->set_float(("material." + textures[0].type_string).c_str(), 0);
+		glBindTexture(GL_TEXTURE_2D, textures[0].id);
+		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	};
+
+	//for (unsigned int i = 0; i < textures.size(); i++) {
+	//	glActiveTexture(GL_TEXTURE0 + i);
+	//	shader->set_float(("material." + textures[i].type_string).c_str(), i);
+	//	glBindTexture(GL_TEXTURE_2D, textures[i].id);
+	//	//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	//}
+
+
+	
+	//printf("shmap %d : %s\n",glGetUniformLocation(shader->program, "material.shadow_map"),name.c_str());
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }

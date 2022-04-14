@@ -11,6 +11,7 @@ RenderManager::RenderManager() {
 void RenderManager::init() {
 	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
+	shadow_shader.init("ShadowVertex.glsl", "ShadowFragment.glsl");
 }
 
 void RenderManager::add_light(Light light, int target) {
@@ -93,7 +94,11 @@ void RenderManager::update_shader_cam(Shader* shader) {
 
 void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *model_pos, glm::vec3 *model_rot, glm::vec3 *model_scale) {
 	shader->use(); //Because each shader is model specific, we need to set this no matter what
+	//shader->set_mat4("shadow_light_view", shadow_map.m_orthographic_perspective * shadow_map.m_lookat); //should only be set once per frame but im lazy
+	//printf("slv %d\n", glGetUniformLocation(shader->program, "shadow_light_view"));
+
 	update_shader_cam(shader);
+	shader->set_mat4("shadow_light_view", shadow_map.m_orthographic_perspective * shadow_map.m_lookat);
 	glm::mat4 model_mat = glm::mat4(1.0);
 	model_mat = glm::translate(model_mat, *model_pos / glm::vec3(WINDOW_WIDTH / (100 * model_scale->x), WINDOW_HEIGHT / (100 * model_scale->y), 1.0));
 	model_mat *= orientate4(*model_rot);
@@ -101,6 +106,20 @@ void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_m
 	model_mat *= extra_mat;
 	shader->set_mat4("model", model_mat);
 	model->render(shader);
+}
+
+#include <glm/gtx/string_cast.hpp>
+void RenderManager::render_model_shadow(Model* model, glm::mat4 extra_mat, glm::vec3* model_pos, glm::vec3* model_rot, glm::vec3* model_scale)
+{
+	shadow_shader.use();
+	shadow_shader.set_mat4("camera_matrix", shadow_map.m_orthographic_perspective * shadow_map.m_lookat);
+	glm::mat4 model_mat = glm::mat4(1.0);
+	model_mat = glm::translate(model_mat, *model_pos / glm::vec3(WINDOW_WIDTH / (100 * model_scale->x), WINDOW_HEIGHT / (100 * model_scale->y), 1.0));
+	model_mat *= orientate4(*model_rot);
+	model_mat = scale(model_mat, *model_scale);
+	model_mat *= extra_mat;
+	shadow_shader.set_mat4("model_matrix", model_mat);
+	model->render(&shadow_shader);
 }
 
 RenderManager* RenderManager::instance = nullptr;

@@ -275,8 +275,6 @@ void cotr_imgui_debug_battle(Battle* battle) {
 	ImGui::Begin("Debug Menu");
 
 	RenderManager* render_manager = RenderManager::get_instance(); 
-	
-
 
 	{
 		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
@@ -291,6 +289,19 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				ImGui::SliderFloat("Auto Yaw Scale", &render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
 				ImGui::TreePop();
 			}
+			ImGui::TreePop();
+		}	
+
+		if (ImGui::TreeNode("Shadow Light")) {
+			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.m_light_position.x, 0.01);
+			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.m_light_position.y, 0.01);
+			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.m_light_position.z, 0.01);
+			
+			ImGui::DragFloat("fov", &render_manager->shadow_map.shadow_map_fov, 0.01);
+			ImGui::DragFloat("depth", &render_manager->shadow_map.shadow_map_depth, 0.01);
+
+			render_manager->shadow_map.update_light();
+
 			ImGui::TreePop();
 		}
 

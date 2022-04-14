@@ -5,6 +5,7 @@
 #include "GameRect.h"
 #include "Camera.h"
 #include "Light.h"
+#include "ShadowMap.h"
 
 #define MAX_LIGHT_SOURCES 5
 
@@ -21,6 +22,9 @@ public:
 
 	Shader default_2d_shader;
 	Shader default_rect_shader;
+	Shader shadow_shader;
+
+	ShadowMap shadow_map;
 
 	const float screen_coords[8] = {
 		0.0, 0.0,
@@ -41,6 +45,7 @@ public:
 	void update_shader_cam(Shader* shader);
 
 	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
+	void render_model_shadow(Model *model, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
 
 	//complete scuffedness
 	static RenderManager* get_instance();

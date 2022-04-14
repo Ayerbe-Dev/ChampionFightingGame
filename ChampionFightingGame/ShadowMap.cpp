@@ -1,64 +1,37 @@
 #include "ShadowMap.h"
 
-ShadowMapFBO::ShadowMapFBO()
+ShadowMap::ShadowMap()
 {
-    m_fbo = 0;
-    m_shadowMap = 0;
+	glGenFramebuffers(1, &fbo_location);
+
+	glGenTextures(1, &depth_map_location);
+
+	glBindTexture(GL_TEXTURE_2D, depth_map_location);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_location);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_map_location, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	m_light_position = glm::vec3(0.0,1.0,1.0);
+	m_orthographic_perspective = glm::ortho(-shadow_map_fov, shadow_map_fov, -shadow_map_fov, shadow_map_fov, 0.1f, shadow_map_depth);
+	m_lookat = glm::lookAt(m_light_position,
+							glm::vec3(0.0f, 0.0f, 0.0f),
+							glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-ShadowMapFBO::~ShadowMapFBO()
+void ShadowMap::update_light()
 {
-    if (m_fbo != 0) {
-        glDeleteFramebuffers(1, &m_fbo);
-    }
-
-    if (m_shadowMap != 0) {
-        glDeleteTextures(1, &m_shadowMap);
-    }
-}
-
-bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
-{
-    // Create the FBO and place its location in m_fbo
-    glGenFramebuffers(1, &m_fbo);
-
-    // Create the depth buffer
-    glGenTextures(1, &m_shadowMap); //generate the texture to be used
-    glBindTexture(GL_TEXTURE_2D, m_shadowMap); //bind the texture as the current texture so we can modify its properties
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    //we want clamping on the texture to avoid artifacts later
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    //set fbo as current frame buffer, notice that only the main fbo can render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo); //not main fbo
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMap, 0);//bind this texture to the fbo
-
-    // Disable writes to the color buffer
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-
-    GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-    if (Status != GL_FRAMEBUFFER_COMPLETE) {
-        printf("FB error, status: 0x%x\n", Status);
-        return false;
-    }
-
-    return true;
-}
-
-void ShadowMapFBO::BindForWriting()
-{
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
-}
-
-
-void ShadowMapFBO::BindForReading(GLenum TextureUnit)
-{
-    glActiveTexture(TextureUnit);
-    glBindTexture(GL_TEXTURE_2D, m_shadowMap);
+	m_orthographic_perspective = glm::ortho(-shadow_map_fov, shadow_map_fov, -shadow_map_fov, shadow_map_fov, 0.1f, shadow_map_depth);
+	m_lookat = glm::lookAt(m_light_position,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f));
 }

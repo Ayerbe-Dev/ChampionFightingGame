@@ -310,7 +310,7 @@ void Battle::pre_process_fighter() {
 						fighter[!i]->facing_right = false;
 					}
 					fighter[i]->add_pos(glm::vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-					fighter[!i]->add_pos(glm::vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
+					fighter[!i]->add_pos(glm::vec3(-1.0 * fighter[!i]->facing_dir, 0, 0));
 
 					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;

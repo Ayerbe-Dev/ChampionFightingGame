@@ -30,12 +30,16 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 	//Ok now to actually set some positions
 
+	float this_x_front = this->jostle_box.corners[2].x - (((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir) / 2 * this->facing_dir);
+	float that_x_front = that->jostle_box.corners[2].x - (((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir) / 2 * that->facing_dir);
 	bool ret = true;
-	bool opponent_right = this->pos.x > that->pos.x;
+	bool opponent_right = this_x_front > that_x_front;
 
 	//Add positions, then do a whole bunch of checks to see if we'll need to change to a different position.
 
 	this->pos += pos;
+
+	update_jostle_rect();
 
 	//Note: The prev arg determines what should happen should a position check fail. If it's true, the changes to position on that axis are canceled
 	//completely. If not, the position is moved to the closest valid position.
@@ -85,8 +89,8 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 	//Check if a player is about to walk out of the camera range even if they would stay in bounds.
 
-	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
-	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);
+	float this_x_back = this->jostle_box.corners[0].x;
+	float that_x_back = that->jostle_box.corners[0].x;
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
 	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
 		this->pos.x = prev_pos.x; //I don't know what the calculation for "make it so you're as close as possible to the max distance without going over" would
@@ -96,7 +100,8 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 	//Check to see if you crossed up the opponent by changing positions
 
-	bool new_opponent_right = this->pos.x > that->pos.x;
+	float new_this_x_front = this->jostle_box.corners[2].x - (((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir) / 2 * this->facing_dir);
+	bool new_opponent_right = new_this_x_front > that_x_front;
 
 	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND
 		&& that->situation_kind == FIGHTER_SITUATION_GROUND) {

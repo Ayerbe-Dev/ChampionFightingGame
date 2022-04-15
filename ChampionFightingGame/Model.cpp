@@ -468,3 +468,9 @@ void Mesh::init() {
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
+
+[[gnu::always_inline]] inline void Mesh::render_shadow(Shader* shader) {
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}

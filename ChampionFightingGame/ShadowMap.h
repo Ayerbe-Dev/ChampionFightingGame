@@ -12,8 +12,8 @@ public:
 	ShadowMap();
 	void update_light();
 
-	const int SHADOW_WIDTH = 100;
-	const int SHADOW_HEIGHT = 100;
+	const int SHADOW_WIDTH = 1024;
+	const int SHADOW_HEIGHT = 1024;
 
 	float shadow_map_depth = 7.0f, shadow_map_fov = 5.0f;
 

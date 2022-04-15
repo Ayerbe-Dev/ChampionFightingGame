@@ -109,8 +109,7 @@ void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_m
 }
 
 #include <glm/gtx/string_cast.hpp>
-void RenderManager::render_model_shadow(Model* model, glm::mat4 extra_mat, glm::vec3* model_pos, glm::vec3* model_rot, glm::vec3* model_scale)
-{
+void RenderManager::render_model_shadow(Model* model, glm::mat4 extra_mat, glm::vec3* model_pos, glm::vec3* model_rot, glm::vec3* model_scale) {
 	shadow_shader.use();
 	shadow_shader.set_mat4("camera_matrix", shadow_map.m_orthographic_perspective * shadow_map.m_lookat);
 	glm::mat4 model_mat = glm::mat4(1.0);

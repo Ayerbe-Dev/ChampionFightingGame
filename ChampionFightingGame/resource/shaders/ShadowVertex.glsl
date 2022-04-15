@@ -27,6 +27,4 @@ void main()
 
 
     gl_Position = camera_matrix * (model_matrix * total_pos);
-
-    //gl_Position = camera_matrix * model_matrix * vec4(vertex_position, 1.0);
 }  

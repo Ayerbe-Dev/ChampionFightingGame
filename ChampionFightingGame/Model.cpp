@@ -8,6 +8,7 @@
 
 #include "GLM Helpers.h"
 #include "GLEW Helpers.h"
+#include "RenderManager.h"
 
 #include "utils.h"
 
@@ -430,16 +431,12 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
-#include "RenderManager.h"
 [[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
-	shader->set_float("material.shadow_map", 2);
-	shader->set_float("material.diffuse", 0);
-	shader->set_float("material.specular", 1);
-
-	if (textures.size() >= 2) {
-		glActiveTexture(GL_TEXTURE2);
-		//shader->set_float("material.shadow_map", 2);
-		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	if (textures.size() >= 1) {
+		glActiveTexture(GL_TEXTURE0);
+		//shader->set_float(("material." + textures[0].type_string).c_str(), 0);
+		glBindTexture(GL_TEXTURE_2D, textures[0].id);
+		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
 	}
 	if (textures.size() >= 2) {
 		glActiveTexture(GL_TEXTURE1);
@@ -447,13 +444,15 @@ void Mesh::init() {
 		glBindTexture(GL_TEXTURE_2D, textures[1].id);
 		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
 	}
+	if (textures.size() >= 2) {
+		glActiveTexture(GL_TEXTURE2);
+		//shader->set_float("material.shadow_map", 2);
+		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	}
+	shader->set_int("material.diffuse", 0);
+	shader->set_int("material.specular", 1);
+	shader->set_int("material.shadow_map", 2);
 
-	if (textures.size() >= 1) {
-		glActiveTexture(GL_TEXTURE0);
-		//shader->set_float(("material." + textures[0].type_string).c_str(), 0);
-		glBindTexture(GL_TEXTURE_2D, textures[0].id);
-		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
-	};
 
 	//for (unsigned int i = 0; i < textures.size(); i++) {
 	//	glActiveTexture(GL_TEXTURE0 + i);

@@ -387,9 +387,8 @@ void Battle::render_world() {
 	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.fbo_location);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);
-	stage.render_shadow();
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow();
 		/*for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
@@ -398,6 +397,7 @@ void Battle::render_world() {
 			}
 		}*/
 	}
+//	stage.render_shadow();
 	
 
 	glCullFace(GL_BACK);
@@ -417,9 +417,7 @@ void Battle::render_world() {
 
     //render_manager->shadow_shader.set_float("material.shadow_map", GL_TEXTURE0 + 2);
 	//glActiveTexture(GL_TEXTURE0+2);
-	//glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);
-	static GLuint u;
-	
+	//glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);	
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render();

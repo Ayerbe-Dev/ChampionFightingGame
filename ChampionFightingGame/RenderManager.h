@@ -44,8 +44,8 @@ public:
 	void update_shader_lights();
 	void update_shader_cam(Shader* shader);
 
-	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
-	void render_model_shadow(Model *model, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale);
+	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale, bool flip);
+	void render_model_shadow(Model *model, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale, bool flip);
 
 	//complete scuffedness
 	static RenderManager* get_instance();

@@ -1,7 +1,6 @@
 #include "ShadowMap.h"
 
-ShadowMap::ShadowMap()
-{
+ShadowMap::ShadowMap() {
 	glGenFramebuffers(1, &fbo_location);
 
 	glGenTextures(1, &depth_map_location);
@@ -26,6 +25,9 @@ ShadowMap::ShadowMap()
 	m_lookat = glm::lookAt(m_light_position,
 							glm::vec3(0.0f, 0.0f, 0.0f),
 							glm::vec3(0.0f, 1.0f, 0.0f));
+
+	SHADOW_WIDTH = 2000;
+	SHADOW_HEIGHT = 2000;
 }
 
 void ShadowMap::update_light()

@@ -111,7 +111,7 @@ void battle_main(GameManager* game_manager) {
 
 		battle.render_world();
 		battle.render_ui();
-		debug_depth.render(); ///get rid of me as soon as possible;
+//		debug_depth.render(); ///get rid of me as soon as possible;
 
 		battle.check_collisions();
 
@@ -339,7 +339,8 @@ void Battle::post_process_fighter() {
 		fighter[i]->update_hitbox_pos();
 		fighter[i]->update_grabbox_pos();
 		fighter[i]->update_hurtbox_pos();
-		fighter[i]->rot.z += glm::radians(90.0 * fighter[i]->facing_dir);
+		fighter[i]->rot.z += glm::radians(90.0);
+//		fighter[i]->rot.z += glm::radians(90.0 * fighter[i]->facing_dir);
 		fighter[i]->rot += fighter[i]->extra_rot;
 		fighter[i]->update_jostle_rect();
 	}
@@ -369,6 +370,7 @@ void Battle::process_frame_pause() {
 
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
+	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE); 
 	
 	//Enabling face culling causes all 2D objects that were flipped to not render at all. This could technically be fixed by sorting all 2D objects 
@@ -378,8 +380,6 @@ void Battle::render_world() {
 	//doesn't make much of a difference either way)
 
 	render_manager->update_shader_lights();
-	
-
 
 	///SHADOW PASS
 	
@@ -390,22 +390,18 @@ void Battle::render_world() {
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render_shadow();
-		/*for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+		fighter[i]->render_shadow(!fighter[i]->facing_right);
+		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render_shadow();
+				fighter[i]->projectiles[i2]->render_shadow(!fighter[i]->facing_right);
 			}
-		}*/
+		}
 	}
 //	stage.render_shadow();
 	
 
 	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT); //these constants are wrong
-	
-	///
-
 
 	//COLOR PASS
 	int width;
@@ -415,17 +411,13 @@ void Battle::render_world() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //render_manager->shadow_shader.set_float("material.shadow_map", GL_TEXTURE0 + 2);
-	//glActiveTexture(GL_TEXTURE0+2);
-	//glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);	
-
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render();
+		fighter[i]->render(!fighter[i]->facing_right);
 		//player tags will go here
 
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render();
+				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
 			}
 		}
 	}

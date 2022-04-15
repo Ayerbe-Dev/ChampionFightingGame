@@ -96,5 +96,4 @@ void main() {
     float shadow_result = ShadowCalculation(FragPosLightSpace);
     vec3 color = texture(material.diffuse, TexCoords).rgb;
     FragColor = vec4((1.0 - shadow_result) * result, 1.0);
-    //FragColor = vec4(result, 1.0);
 }

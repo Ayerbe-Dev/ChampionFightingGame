@@ -31,13 +31,6 @@ void Model::load_model(std::string path) {
 		return;
 	}
 
-	mirror_matrix = glm::mat4 (
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, -1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	);
-
 	global_transform = ass_converter(scene->mRootNode->mTransformation.Inverse());
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
@@ -94,7 +87,7 @@ void Model::unload_model() {
 	}
 }
 
-void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
+void Model::set_bones(float frame, Animation* anim_kind) {
 	if (anim_kind == nullptr) {
 		return reset_bones();
 	}
@@ -105,13 +98,7 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 	for (int i = 0, max = keyframes.size(); i < max; i++) {
 		keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
-		if (flip) {
-			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-		}
-		else {
-			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-		}
-
+		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
 	}
 }
@@ -123,14 +110,44 @@ void Model::reset_bones() {
 	}
 }
 
-void Model::render(Shader* shader) {
-	glDepthMask(GL_TRUE);
-	for (int i = 0, max = bones.size(); i < max; i++) {
-		shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+void Model::render(Shader* shader, bool flip) {
+	if (flip) {
+		glCullFace(GL_FRONT);
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
+		}
 	}
+	else {
+		glCullFace(GL_BACK);
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+		}
+	}
+
 	for (Mesh &mesh : meshes) {
 		if (mesh.visible) {
 			mesh.render(shader);
+		}
+	}
+	glBindVertexArray(0);
+	glActiveTexture(GL_TEXTURE0);
+}
+
+void Model::render_shadow(Shader* shader, bool flip) {
+	if (flip) {
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
+		}
+	}
+	else {
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+		}
+	}
+
+	for (Mesh& mesh : meshes) {
+		if (mesh.visible) {
+			mesh.render_shadow(shader);
 		}
 	}
 	glBindVertexArray(0);
@@ -434,36 +451,31 @@ void Mesh::init() {
 [[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
 	if (textures.size() >= 1) {
 		glActiveTexture(GL_TEXTURE0);
-		//shader->set_float(("material." + textures[0].type_string).c_str(), 0);
 		glBindTexture(GL_TEXTURE_2D, textures[0].id);
-		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
 	}
 	if (textures.size() >= 2) {
 		glActiveTexture(GL_TEXTURE1);
-		//shader->set_float(("material." + textures[1].type_string).c_str(), 1);
 		glBindTexture(GL_TEXTURE_2D, textures[1].id);
-		//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
 	}
 	if (textures.size() >= 2) {
 		glActiveTexture(GL_TEXTURE2);
-		//shader->set_float("material.shadow_map", 2);
 		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
 	}
 	shader->set_int("material.diffuse", 0);
 	shader->set_int("material.specular", 1);
 	shader->set_int("material.shadow_map", 2);
 
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
 
-	//for (unsigned int i = 0; i < textures.size(); i++) {
-	//	glActiveTexture(GL_TEXTURE0 + i);
-	//	shader->set_float(("material." + textures[i].type_string).c_str(), i);
-	//	glBindTexture(GL_TEXTURE_2D, textures[i].id);
-	//	//glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
-	//}
-
-
-	
-	//printf("shmap %d : %s\n",glGetUniformLocation(shader->program, "material.shadow_map"),name.c_str());
+[[gnu::always_inline]] inline void Mesh::render_shadow(Shader* shader) {
+	if (textures.size() >= 2) {
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	}
+	shader->set_int("material.shadow_map", 2);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

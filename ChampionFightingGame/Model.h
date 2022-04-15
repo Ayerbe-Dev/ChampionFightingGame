@@ -50,6 +50,7 @@ public:
 
 	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
 	void render(Shader *shader);
+	void render_shadow(Shader* shader);
 
 	unsigned int VAO;
 	unsigned int VBO;
@@ -66,14 +67,16 @@ public:
 	void load_model(std::string path);
 	void load_model_no_skeleton(std::string path);
 	void unload_model();
-	void set_bones(float frame, Animation* anim_kind, bool flip);
+	void set_bones(float frame, Animation* anim_kind);
 	void reset_bones();
-    void render(Shader *shader);
+
+    void render(Shader *shader, bool flip);
+	void render_shadow(Shader* shader, bool flip);
+
 	std::vector<ModelTexture> textures_loaded;
 	std::vector<Mesh> meshes;
 
 	glm::mat4 global_transform;
-	glm::mat4 mirror_matrix;
 
 	std::vector<Bone> bones;
 
@@ -91,4 +94,9 @@ private:
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
 	bool find_missing_bones(aiNode* node, std::vector<std::string>& bone_names);
 	std::vector<ModelTexture> load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name);
+	glm::mat4 flip_matrix = glm::mat4(1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, -1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0
+	);
 };

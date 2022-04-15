@@ -58,15 +58,12 @@ void battle_main(GameManager* game_manager) {
 
 	battle.health_bar[0].bar_texture.texture;
 
-	GameTexture debug_depth;
-	debug_depth.pos.z = 0.1f;
-	debug_depth.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	debug_depth.init(RenderManager::get_instance()->shadow_map.depth_map_location);
+	RenderManager *render_manager = RenderManager::get_instance();
+	SDL_GetWindowSize(g_window, &render_manager->s_window_width, &render_manager->s_window_height);
 	
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
-
 
 	while (game_manager->looping[game_manager->layer]) {
 		battle.frame_delay();
@@ -89,10 +86,8 @@ void battle_main(GameManager* game_manager) {
 						case SDL_WINDOWEVENT_SIZE_CHANGED:
 						case SDL_WINDOWEVENT_MAXIMIZED:
 						{
-							int width;
-							int height;
-							SDL_GetWindowSize(g_window, &width, &height);
-							glViewport(0, 0, width, height);
+							SDL_GetWindowSize(g_window, &render_manager->s_window_width, &render_manager->s_window_height);
+							glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 						} break;
 					}
 				} break;
@@ -111,7 +106,6 @@ void battle_main(GameManager* game_manager) {
 
 		battle.render_world();
 		battle.render_ui();
-//		debug_depth.render(); ///get rid of me as soon as possible;
 
 		battle.check_collisions();
 
@@ -383,12 +377,15 @@ void Battle::render_world() {
 
 	///SHADOW PASS
 	
+	//Setup for the render
 	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.fbo_location);
 	glClear(GL_DEPTH_BUFFER_BIT);
-
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);
+	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location); // this might only need to be bounded once 
+	glCullFace(GL_FRONT);
+
+	//The actual render
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow(!fighter[i]->facing_right);
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
@@ -397,19 +394,18 @@ void Battle::render_world() {
 			}
 		}
 	}
-//	stage.render_shadow();
-	
 
 	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//COLOR PASS
-	int width;
-	int height;
-	SDL_GetWindowSize(g_window, &width, &height);
-	glViewport(0, 0, width, height);
+
+	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);	
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);

@@ -449,33 +449,20 @@ void Mesh::init() {
 }
 
 [[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
-	if (textures.size() >= 1) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures[0].id);
-	}
-	if (textures.size() >= 2) {
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textures[1].id);
-	}
-	if (textures.size() >= 2) {
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
-	}
+	//These should be set on creation of the shader for optimal performance
 	shader->set_int("material.diffuse", 0);
 	shader->set_int("material.specular", 1);
 	shader->set_int("material.shadow_map", 2);
-
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
-[[gnu::always_inline]] inline void Mesh::render_shadow(Shader* shader) {
-	if (textures.size() >= 2) {
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, RenderManager::get_instance()->shadow_map.depth_map_location);
+	//
+	
+	// this for-loop is probably fine since it is essentially checking if the mesh has textures;
+	// the issue is, this is pretty ambiguous in regard to which shaders are being used. 
+	// proposal to remove for loop and thus conditionals: move render func to be a virtual func of shader and make child shader classes for each shader program
+	// downside: code bulk
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-	shader->set_int("material.shadow_map", 2);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

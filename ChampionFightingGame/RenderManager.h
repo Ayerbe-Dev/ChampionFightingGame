@@ -26,6 +26,8 @@ public:
 
 	ShadowMap shadow_map;
 
+	int s_window_width, s_window_height;
+
 	const float screen_coords[8] = {
 		0.0, 0.0,
 		0.0, 1.0,

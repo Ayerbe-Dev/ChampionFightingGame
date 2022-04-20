@@ -841,6 +841,7 @@ void GameTexture::load_spritesheet(std::string spritesheet_dir) {
 }
 
 void GameTexture::set_sprite(int index) {
+	if (spritesheet[0].size() <= index) return;
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i]->tex_coord = spritesheet[i][index];
 	}

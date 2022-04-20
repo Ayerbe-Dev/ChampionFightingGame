@@ -259,7 +259,7 @@ void Battle::process_main() {
 	poll_inputs(keyboard_state);
 	if (check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 		frame_pause = !frame_pause;
-		timer.clock_mode = !timer.clock_mode;
+		timer.flip_clock();
 	}
 
 	if (frame_pause) {
@@ -1308,6 +1308,8 @@ void GameTimer::init(int time) {
 	second_texture.set_pos(glm::vec3(4.0, 38.5, 0.0));
 	deca_frame_texture.set_pos(glm::vec3(68.0, 155.0, 0.0));
 	frame_texture.set_pos(glm::vec3(100.0, 155.0, 0.0));
+
+	clock.set_sprite(1);
 }
 
 void GameTimer::process() {

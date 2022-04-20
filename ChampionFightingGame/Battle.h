@@ -61,8 +61,8 @@ public:
 	void flip_clock();
 
 	bool time_up;
-
 	int clock_mode;
+
 	int deca_seconds;
 	int seconds;
 	int deca_frames;

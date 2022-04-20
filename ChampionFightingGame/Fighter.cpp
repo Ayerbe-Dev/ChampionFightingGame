@@ -61,7 +61,7 @@ void Fighter::process_animate() {
 
 	if (anim_kind != nullptr) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-			frame += 0.05 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES];
+			frame += 0.2 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES];
 		}
 		else {
 			frame += rate;

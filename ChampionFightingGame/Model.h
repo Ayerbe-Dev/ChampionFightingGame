@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/gtx/euler_angles.hpp>
+#include <unordered_map>
 
 #include "BoneConstants.h"
 #include "Bone.h"

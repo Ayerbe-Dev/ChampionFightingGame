@@ -204,6 +204,7 @@ void Model::load_skeleton(std::string path) {
 		new_bone.id = bone_id;
 		new_bone.parent_id = parent_id;
 		bones.push_back(new_bone);
+		bone_map[bone_name] = bone_id;
 	}
 
 	smd.close();
@@ -212,6 +213,7 @@ void Model::process_node(aiNode* node, const aiScene* scene) {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(process_mesh(mesh, scene));
+		mesh_map[meshes[i].name] = i;
 	}
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
 		process_node(node->mChildren[i], scene);
@@ -333,6 +335,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			}
 
 			this->bones[bone.id] = bone;
+			
 		}
 	}
 

@@ -35,6 +35,7 @@
 #define MAX_SOUNDS 20
 #define FLOOR_GAMECOORD 1.0
 #define MAX_SHADERS 4
+#define FORCE_INLINE [[gnu::always_inline]] inline
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
 void wait_ms(double ms_duration = 16.667);

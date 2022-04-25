@@ -165,25 +165,23 @@ void Model::set_mesh_visibility(std::string mesh_name, bool visibility) {
 }
 
 int Model::get_mesh_id(std::string mesh_name) {
-	for (int i = 0; i < meshes.size(); i++) {
-		if (meshes[i].name == mesh_name) {
-			return i;
-		}
+	std::unordered_map<std::string, int>::const_iterator iterator = mesh_map.find(mesh_name);
+	if (iterator == mesh_map.end()) {
+		return -1;
 	}
-	return -1;
+	return mesh_map[mesh_name];
 }
 
 int Model::get_bone_id(std::string bone_name) {
-	if (bone_name == "model-armature") { //DAE refers to this bone is blender_implicit, FBX refers to it as model-armature
+	if (bone_name == "model-armature") {
 		return 0;
 	}
-	for (int i = 0; i < bones.size(); i++) {
-		if (bones[i].name == bone_name) {
-			return i;
-		}
+	std::unordered_map<std::string, int>::const_iterator iterator = bone_map.find(bone_name);
+	if (iterator == bone_map.end()) {
+		std::cout << "ERROR: Couldn't find " << bone_name << "\n";
+		return -1;
 	}
-	std::cout << "ERROR: Couldn't find " << bone_name << "\n";
-	return -1;
+	return bone_map[bone_name];
 }
 
 void Model::load_skeleton(std::string path) {
@@ -448,7 +446,7 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
-[[gnu::always_inline]] inline void Mesh::render(Shader* shader) {
+FORCE_INLINE void Mesh::render(Shader* shader) {
 	//These should be set on creation of the shader for optimal performance
 	shader->set_int("material.diffuse", 0);
 	shader->set_int("material.specular", 1);
@@ -459,7 +457,7 @@ void Mesh::init() {
 	// the issue is, this is pretty ambiguous in regard to which shaders are being used. 
 	// proposal to remove for loop and thus conditionals: move render func to be a virtual func of shader and make child shader classes for each shader program
 	// downside: code bulk
-	for (unsigned int i = 0; i < textures.size(); i++) {
+	for (unsigned int i = 0, max = textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
@@ -469,7 +467,7 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
-[[gnu::always_inline]] inline void Mesh::render_shadow(Shader* shader) {
+FORCE_INLINE void Mesh::render_shadow(Shader* shader) {
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

@@ -75,10 +75,12 @@ public:
 
 	std::vector<ModelTexture> textures_loaded;
 	std::vector<Mesh> meshes;
+	std::unordered_map<std::string, int> mesh_map;
 
 	glm::mat4 global_transform;
 
 	std::vector<Bone> bones;
+	std::unordered_map<std::string, int> bone_map;
 
 	std::string directory;
 	bool gamma_correct;

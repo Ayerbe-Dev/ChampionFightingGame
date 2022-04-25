@@ -4,6 +4,7 @@
 #include "Bone.h"
 #include "GLM Helpers.h"
 #include <glm/gtx/matrix_interpolation.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <assimp/Importer.hpp>
 #include "utils.h"
 
@@ -58,7 +59,7 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 		}
 		for (int i2 = 0; i2 < node->mNumPositionKeys; i2++) { //Load the keyframes that are actually baked
 			glm::mat4 pos_mat = translate(glm::mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
-			glm::mat4 rot_mat = toMat4(normalize(ass_converter(node->mRotationKeys[i2].mValue)));
+			glm::mat4 rot_mat = toMat4(ass_converter(node->mRotationKeys[i2].mValue));
 			glm::mat4 scale_mat = scale(glm::mat4(1.0), ass_converter(node->mScalingKeys[i2].mValue));
 			keyframes[node->mPositionKeys[i2].mTime][index].anim_matrix = pos_mat * rot_mat * scale_mat;
 			keyframes[node->mPositionKeys[i2].mTime][index].keyframed = true;

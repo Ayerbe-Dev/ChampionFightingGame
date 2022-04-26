@@ -253,6 +253,12 @@
     <Filter Include="Source Files\Deps\ImGui">
       <UniqueIdentifier>{d29f705d-5f6a-4727-bfe1-a8c1bbe8f4b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AI">
+      <UniqueIdentifier>{96a1c763-0db4-4be9-963a-8ae26cd4c8ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{408529bd-f80f-432e-a0df-8ff04c35d6c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -647,6 +653,12 @@
     </ClCompile>
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="DecisionMaking.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI.cpp">
+      <Filter>Source Files\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1273,6 +1285,15 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="DecisionMaking.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveList.h">
+      <Filter>Header Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

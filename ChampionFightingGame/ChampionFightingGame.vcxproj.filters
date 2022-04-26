@@ -654,11 +654,17 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="DecisionMaking.cpp">
+    <ClCompile Include="AIDecision.cpp">
       <Filter>Source Files\AI</Filter>
     </ClCompile>
     <ClCompile Include="AI.cpp">
       <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIInput.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIManager.cpp">
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1286,14 +1292,20 @@
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="DecisionMaking.h">
+    <ClInclude Include="AIDecision.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
     <ClInclude Include="AI.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
-    <ClInclude Include="MoveList.h">
+    <ClInclude Include="AIMoveList.h">
       <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIInput.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

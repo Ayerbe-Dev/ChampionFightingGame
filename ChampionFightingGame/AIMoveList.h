@@ -1,5 +1,7 @@
 #pragma once
-struct MoveList {
+#include <vector>
+
+struct AIMoveList {
 	std::string name;
 	float range_x;
 	float range_y;
@@ -11,7 +13,7 @@ struct MoveList {
 	float chip_damage;
 	int hit_advantage;
 	int block_advantage;
-	std::vector<MoveList*> cancel_followups;
+	std::vector<AIMoveList*> cancel_followups;
 	int meter_cost;
 	int charge_frames;
 };

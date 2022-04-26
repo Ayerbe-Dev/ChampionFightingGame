@@ -196,6 +196,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AI.cpp" />
+    <ClCompile Include="AIInput.cpp" />
+    <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Alejandro.cpp" />
     <ClCompile Include="AlejandroMoves.cpp" />
     <ClCompile Include="AlejandroStatus.cpp" />
@@ -220,7 +222,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="CharaTemplateStatus.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
-    <ClCompile Include="DecisionMaking.cpp" />
+    <ClCompile Include="AIDecision.cpp" />
     <ClCompile Include="Eric.cpp" />
     <ClCompile Include="EricFireball.cpp" />
     <ClCompile Include="EricMoves.cpp" />
@@ -344,7 +346,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI.h" />
-    <ClInclude Include="DecisionMaking.h" />
+    <ClInclude Include="AIDecision.h" />
+    <ClInclude Include="AIInput.h" />
+    <ClInclude Include="AIManager.h" />
     <ClInclude Include="Alejandro.h" />
     <ClInclude Include="AlejandroConstants.h" />
     <ClInclude Include="AlejandroFlag.h" />
@@ -423,7 +427,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GameTexture.h" />
     <ClInclude Include="GLEW Helpers.h" />
     <ClInclude Include="GLM Helpers.h" />
-    <ClInclude Include="MoveList.h" />
+    <ClInclude Include="AIMoveList.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />

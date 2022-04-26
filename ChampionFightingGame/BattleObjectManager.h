@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Button.h"
 class Fighter;
 class StageAsset;
 class Projectile;
@@ -12,6 +13,9 @@ public:
 	Fighter* fighter[2];
 	std::vector<StageAsset*> stage_assets;
 	std::vector<Projectile*> projectiles;
+
+	std::vector<Button [BUTTON_MAX]> player_inputs[2];
+
 	
 	static BattleObjectManager* get_instance();
 

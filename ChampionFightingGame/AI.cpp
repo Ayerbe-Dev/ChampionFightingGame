@@ -4,6 +4,10 @@
 #include <fstream>
 
 AI::AI() {
+	judgement = 8;
+	precision = 10;
+	execution = 10;
+	reaction = 12;
 	ai_info.resize(2);
 }
 

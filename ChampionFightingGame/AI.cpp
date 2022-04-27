@@ -29,8 +29,13 @@ void AI::init(int id, int judgement, int precision, int execution, int reaction)
 void AI::ai_main() {
 	AIManager* ai_manager = AIManager::get_instance();
 	ai_manager->ai_mutex.lock();
-	ai_info.insert(ai_manager->ai_info[id].newest(reaction));
+	ai_info.insert(ai_manager->ai_info[id].newest(reaction)); //Get the most recent actions from the
+	//opponent that we're allowed to see
 	ai_manager->ai_mutex.unlock();
+
+	//Run through all of the functions in AIDecision.cpp to figure out what action we should take
+
+	//Do some stuff in AIInput.cpp to simulate actually making the inputs
 }
 
 void AI::load_chara_info(std::string chara_kind, std::vector<AIMoveList>& target) {

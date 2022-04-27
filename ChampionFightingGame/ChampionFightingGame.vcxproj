@@ -346,8 +346,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI.h" />
-    <ClInclude Include="AIDecision.h" />
-    <ClInclude Include="AIInput.h" />
     <ClInclude Include="AIManager.h" />
     <ClInclude Include="Alejandro.h" />
     <ClInclude Include="AlejandroConstants.h" />
@@ -390,6 +388,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="CharaTemplateFloat.h" />
     <ClInclude Include="CharaTemplateInt.h" />
     <ClInclude Include="CharaTemplateStatus.h" />
+    <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />

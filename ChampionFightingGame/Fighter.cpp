@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include <fstream>
 #include "BattleObjectManager.h"
+#include "AIManager.h"
 
 Fighter::Fighter() {
 
@@ -428,6 +429,13 @@ void Fighter::process_input() {
 	}
 
 	prev_stick_dir = get_stick_dir();
+}
+
+void Fighter::process_ai() {
+	AIManager* ai_manager = AIManager::get_instance();
+	ai_manager->ai_mutex.lock();
+	ai_manager->ai_info[id].insert(AIInfo(pos.x, pos.y, anim_kind->name, frame, rate));
+	ai_manager->ai_mutex.unlock();
 }
 
 /*

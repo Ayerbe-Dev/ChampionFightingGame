@@ -1292,20 +1292,17 @@
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="AIDecision.h">
-      <Filter>Header Files\AI</Filter>
-    </ClInclude>
     <ClInclude Include="AI.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
     <ClInclude Include="AIMoveList.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
-    <ClInclude Include="AIInput.h">
-      <Filter>Header Files\AI</Filter>
-    </ClInclude>
     <ClInclude Include="AIManager.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularBuffer.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

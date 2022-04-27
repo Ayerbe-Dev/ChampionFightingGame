@@ -69,6 +69,8 @@ public:
 	void process_status(); //Checks for the hitstun parry input, then runs the status and move scripts
 	void process_post_status(); //Misc
 
+	void process_ai();
+
 	void decrease_common_variables();
 
 	//Projectiles

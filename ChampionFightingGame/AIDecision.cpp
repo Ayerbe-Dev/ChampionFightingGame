@@ -1,50 +1,35 @@
-#include "AIDecision.h"
-#include "AIMoveList.h"
+#include "AI.h"
 #include <random>
 
-AIDecision::AIDecision() {
-
+bool AI::is_in_range(AIMoveList& move) {
+	return true;
 }
 
-AIDecision::AIDecision(int judgement, int precision, std::vector<AIMoveList>* opponent_move_list) {
-	init(judgement, precision, nullptr);
+bool AI::fast_enough(AIMoveList& move) {
+	return true;
 }
 
-void AIDecision::init(int judgement, int precision, std::vector<AIMoveList>* opponent_move_list) {
-	this->judgement = judgement;
-	this->precision = 10 - precision;
-	this->opponent_move_list = opponent_move_list;
+bool AI::they_wont_press_here(AIMoveList& move) {
+	return true;
 }
 
-bool AIDecision::is_in_range(AIMoveList& move) {
-	
+bool AI::is_safe(AIMoveList& move) {
+	return true;
 }
 
-bool AIDecision::fast_enough(AIMoveList& move) {
-
+bool AI::will_hit(AIMoveList& move) {
+	return true;
 }
 
-bool AIDecision::they_wont_press_here(AIMoveList& move) {
-
-}
-
-bool AIDecision::is_safe(AIMoveList& move) {
-
-}
-
-bool AIDecision::will_hit(AIMoveList& move) {
-
-}
-
-bool AIDecision::fuck_it(AIMoveList& move) {
+bool AI::fuck_it(AIMoveList& move) {
 	return fuck_it_close_enough(move) && is_in_range(move);
 }
 
-bool AIDecision::fuck_it_close_enough(AIMoveList& move) {
+bool AI::fuck_it_close_enough(AIMoveList& move) {
 	int impulse = std::rand() % 10;
 	return impulse > judgement;
 }
 
-bool AIDecision::can_use(AIMoveList& move) {
-
+bool AI::can_use(AIMoveList& move) {
+	return true;
 }

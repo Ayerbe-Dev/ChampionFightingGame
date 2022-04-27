@@ -33,7 +33,7 @@ void AI::init(int id, int judgement, int precision, int execution, int reaction)
 void AI::ai_main() {
 	AIManager* ai_manager = AIManager::get_instance();
 	ai_manager->ai_mutex.lock();
-	ai_info.insert(ai_manager->ai_info[id].newest(reaction)); //Get the most recent actions from the
+	ai_info.insert(ai_manager->ai_info[!id].newest(reaction)); //Get the most recent actions from the
 	//opponent that we're allowed to see
 	ai_manager->ai_mutex.unlock();
 

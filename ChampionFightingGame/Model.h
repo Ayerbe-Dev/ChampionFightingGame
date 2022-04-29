@@ -68,6 +68,7 @@ public:
 	void load_model(std::string path);
 	void load_model_no_skeleton(std::string path);
 	void unload_model();
+	void set_move(bool move);
 	void set_bones(float frame, Animation* anim_kind);
 	void reset_bones();
 
@@ -81,6 +82,7 @@ public:
 	glm::mat4 global_transform;
 
 	std::vector<Bone> bones;
+	std::vector<Bone*> trans_children;
 	std::unordered_map<std::string, int> bone_map;
 
 	std::string directory;
@@ -102,4 +104,7 @@ private:
 		0.0, 0.0, -1.0, 0.0, 
 		0.0, 0.0, 0.0, 1.0
 	);
+	glm::mat4* dummy_matrix;
+	bool move;
+	size_t trans_id;
 };

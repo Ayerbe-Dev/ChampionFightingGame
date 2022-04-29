@@ -386,7 +386,6 @@ void Fighter::enter_status_crouchd() {
 void Fighter::exit_status_crouchd() {}
 
 void Fighter::status_crouch() {
-	std::cout << frame << "\n";
 	if (common_ground_status_act()) {
 		return;
 	}

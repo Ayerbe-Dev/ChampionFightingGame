@@ -2,6 +2,7 @@
 #include "RoyFireball.h"
 #include "RoyFireballConstants.h"
 #include "SoundConstants.h"
+#include <glm/gtx/string_cast.hpp>
 
 void Roy::load_move_scripts() {
 	script("default", [this]() {
@@ -225,6 +226,7 @@ void Roy::load_move_scripts() {
 		}
 	});
 	script("stand_hp", [this]() {
+		std::cout << glm::to_string(model.bones[model.get_bone_id("Trans")].anim_matrix) << "\n";
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });

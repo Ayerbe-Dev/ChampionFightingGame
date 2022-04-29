@@ -46,6 +46,10 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool ve
 
 void Fighter::startAnimation(Animation* animation) {
 	player_info->reset_buffer();
+	if (animation != nullptr) {
+		model.set_move(animation->move);
+	}
+	prev_anim_offset = glm::vec3(0.0);
 	is_anim_end = false;
 	if (anim_kind != animation) {
 		prev_anim_kind = anim_kind;

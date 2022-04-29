@@ -105,12 +105,14 @@ void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 	std::string name;
 	std::string path;
 	std::string faf;
+	std::string move;
 	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path >> faf;
+		anim_list >> path >> faf >> move;
 		name = ymlChopString(name);
 		path = ymlChopString(path);
 		Animation anim(name, resource_dir + "/anims/" + path, model);
 		anim.faf = ymlChopInt(faf);
+		anim.move = ymlChopInt(move);
 		animations.push_back(anim);
 		anim_map[name] = i;
 	}

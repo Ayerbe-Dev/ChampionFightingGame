@@ -206,3 +206,23 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 bool Fighter::set_pos(float x, float y, float z, bool prev) {
 	return set_pos(glm::vec3(x, y, z), prev);
 }
+
+bool Fighter::set_pos_anim() {
+	if (anim_kind->move) {
+		Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
+		glm::vec3 trans_offset = glm::vec3(
+			trans_bone.anim_matrix[3].z,
+			trans_bone.anim_matrix[3].y,
+			0.0
+		);
+		trans_offset -= prev_anim_offset;
+		trans_offset /= scale;
+
+		bool ret = add_pos(trans_offset);
+		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z, trans_bone.anim_matrix[3].y, 0.0);
+		return ret;
+	}
+	else {
+		return false;
+	}
+}

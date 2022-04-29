@@ -85,6 +85,7 @@ void Fighter::process_animate() {
 void Fighter::process_post_animate() {
 	if (anim_kind != nullptr) {
 		model.set_bones(frame, anim_kind);
+		set_pos_anim();
 	}
 	else {
 		model.reset_bones();

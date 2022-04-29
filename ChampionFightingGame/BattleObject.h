@@ -39,6 +39,7 @@ public:
 	AnimationTable anim_table;
 	Animation* anim_kind;
 	Animation* prev_anim_kind;
+	glm::vec3 prev_anim_offset;
 
 	float prev_anim_rate;
 	float prev_anim_frame;

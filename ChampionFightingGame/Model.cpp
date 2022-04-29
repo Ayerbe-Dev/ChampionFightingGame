@@ -12,7 +12,10 @@
 
 #include "utils.h"
 
-Model::Model() {}
+Model::Model() {
+	move = false;
+	dummy_matrix = new glm::mat4(1.0);
+}
 
 Model::Model(std::string path) {
 	load_model(path);
@@ -20,6 +23,7 @@ Model::Model(std::string path) {
 
 Model::~Model() {
 	unload_model();
+	delete dummy_matrix;
 }
 
 void Model::load_model(std::string path) {
@@ -42,11 +46,15 @@ void Model::load_model(std::string path) {
 
 	process_node(scene->mRootNode, scene);
 	std::vector<std::string> missing_bones;
+	trans_id = get_bone_id("Trans");
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].parent_id == -1) {
-			bones[i].parent_matrix = new glm::mat4(1.0);
+			bones[i].parent_matrix = dummy_matrix;
 		}
 		else {
+			if (bones[i].parent_id == trans_id) {
+				trans_children.push_back(&bones[i]);
+			}
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
 		}
 		if (bones[i].model_matrix == glm::mat4(1.0)) {
@@ -85,6 +93,36 @@ void Model::unload_model() {
 		glDeleteBuffers(1, &meshes[i].VBO);
 		glDeleteBuffers(1, &meshes[i].EBO);
 	}
+}
+
+void Model::set_move(bool move) {
+	//Basically: If an animation uses the "move" flag, that indicates that the
+	//trans bone movement should be applied to the player's actual position
+	//instead of to the animation. 
+
+	//For this to work, we still need to know the position of the trans bone, but
+	//we don't want it to influence any of the other bones in the skeleton, or the
+	//movement will be doubled. So for all bones which have the trans bone as their
+	//parent, we want to set their parent matrix to be the dummy one instead of the
+	//trans bone matrix. 
+	
+	//That being said, we don't want to do this every frame, so we use this function
+	//to properly set the children of trans' parent matrices right at the start of an
+	//animation. 
+	if (this->move == move) {
+		return;
+	}
+
+	for (int i = 0, max = trans_children.size(); i < max; i++) {
+		if (move) {
+			trans_children[i]->parent_matrix = dummy_matrix;
+		}
+		else {
+			trans_children[i]->parent_matrix = &bones[trans_id].anim_matrix;
+		}
+	}
+
+	this->move = move;
 }
 
 void Model::set_bones(float frame, Animation* anim_kind) {

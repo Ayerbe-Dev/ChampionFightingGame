@@ -9,9 +9,7 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = false;
-		fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = false;
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
-		fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = 0.0;
 		if (call_end_status) {
 			(this->*exit_status_script[status_kind])();
 		}

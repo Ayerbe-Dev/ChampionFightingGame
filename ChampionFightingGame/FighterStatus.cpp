@@ -649,20 +649,6 @@ void Fighter::enter_status_throw() {
 	else {
 		change_anim("throw_f");
 	}
-	if (!add_pos(get_param_float(get_anim() + "_move_offset", params) * facing_dir, 0, 0, true)) {
-		if (pos.x > 0) {
-			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
-		}
-		else {
-			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
-		}
-		if (change_anim_inherit_attributes(get_anim() + "_stationary", false)) {
-			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = true;
-		}
-		else {
-			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = false;
-		}
-	}
 }
 
 void Fighter::exit_status_throw() {
@@ -712,20 +698,6 @@ void Fighter::enter_status_throw_air() {
 	}
 	else {
 		change_anim("throw_f_air");
-	}
-	if (!add_pos(get_param_float(get_anim() + "_move_offset", params) * facing_dir, 0, true)) {
-		if (pos.x > 0) {
-			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / 2) - pos.x;
-		}
-		else {
-			fighter_float[FIGHTER_FLOAT_DISTANCE_TO_WALL] = (WINDOW_WIDTH / -2) + pos.x;
-		}
-		if (change_anim_inherit_attributes(get_anim() + "_stationary", false)) {
-			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = true;
-		}
-		else {
-			fighter_flag[FIGHTER_FLAG_STATIONARY_ANIMATION] = false;
-		}
 	}
 }
 

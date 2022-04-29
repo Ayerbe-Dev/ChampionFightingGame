@@ -94,3 +94,7 @@ name=crouch_hk
 filename=crouch_hk.fbx
 faf=30
 move=1
+name=grab
+filename=grab.fbx
+faf=24
+move=0

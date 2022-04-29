@@ -105,9 +105,6 @@ std::string Fighter::get_anim_broad() {
 		if (ret.find("_air") != std::string::npos) {
 			ret = Filter(ret, "_air");
 		}
-		if (ret.find("_stationary") != std::string::npos) {
-			ret = Filter(ret, "_stationary");
-		}
 		return ret;
 	}
 }

@@ -632,16 +632,13 @@ void Fighter::enter_status_grab() {
 void Fighter::exit_status_grab() {}
 
 void Fighter::status_throw() {
-	if (!fighter_flag[FIGHTER_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
-	}
+	std::cout << "We as player " << id + 1 << " are throwing!\n";
 	if (is_status_end()) {
 		return;
 	}
 }
 
 void Fighter::enter_status_throw() {
-	fighter_flag[FIGHTER_FLAG_THREW_OPPONENT] = false;
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
 		change_anim("throw_b");
@@ -678,9 +675,6 @@ void Fighter::enter_status_grab_air() {
 void Fighter::exit_status_grab_air() {}
 
 void Fighter::status_throw_air() {
-	if (!fighter_flag[FIGHTER_FLAG_THREW_OPPONENT]) {
-		set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] });
-	}
 	if (pos.y <= FLOOR_GAMECOORD) {
 		set_pos(pos.x, FLOOR_GAMECOORD);
 		situation_kind = FIGHTER_SITUATION_GROUND;
@@ -692,7 +686,6 @@ void Fighter::status_throw_air() {
 }
 
 void Fighter::enter_status_throw_air() {
-	fighter_flag[FIGHTER_FLAG_THREW_OPPONENT] = false;
 	if ((get_stick_dir() == 4 || get_stick_dir() == 1 || get_stick_dir() == 7) && get_param_bool("has_throwb")) {
 		change_anim("throw_b_air");
 	}
@@ -715,25 +708,36 @@ void Fighter::exit_status_throw_air() {
 }
 
 void Fighter::status_grabbed() {
-	if (fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] != 0 && fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] != 0) {
-		if (fighter_int[FIGHTER_INT_MANUAL_POS_CHANGE_FRAMES] != 0) {
-			add_pos(fighter_float[FIGHTER_FLOAT_MANUAL_POS_CHANGE_X] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_MANUAL_POS_CHANGE_Y] * -1);
-			fighter_int[FIGHTER_INT_MANUAL_POS_CHANGE_FRAMES]--;
+	if (fighter_flag[FIGHTER_FLAG_GRABBED]) {
+		Fighter* that = battle_object_manager->fighter[!id];
+		glm::vec3 offset = glm::vec3(
+			fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_X], 
+			fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y], 
+			0.0
+		);
+		if (fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] > 0) {
+			offset /= glm::vec3(fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES]);
+		}
+		glm::vec3 target_pos = that->get_rotated_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
+		target_pos.z = 0.0;
+		if (fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] > 0) {
+			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES]--;
+			add_pos(pos - target_pos);
 		}
 		else {
-			set_pos(fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y]);
+			set_pos(target_pos);
 		}
 	}
 }
 
 void Fighter::enter_status_grabbed() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
 }
 
 void Fighter::exit_status_grabbed() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-	fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 0;
-	fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
+	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
 }
 
 void Fighter::status_thrown() {

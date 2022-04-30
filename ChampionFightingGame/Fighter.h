@@ -161,21 +161,22 @@ public:
 	void reset_rot();
 
 	//Bone Functions
-	glm::vec3 get_distance_to_bone(std::string bone_name);
-	glm::vec3 get_distance_to_bone(int bone_id);
+	glm::vec3 get_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
-	glm::vec3 get_rotated_distance_to_bone(std::string bone_name);
-	glm::vec3 get_rotated_distance_to_bone(int bone_id);
+	glm::vec3 get_rotated_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_rotated_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_rotated_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_rotated_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow
 
-	void set_opponent_offset(glm::vec2 offset, int frames); //Sets the distance from the player that the opponent should move to, as well as how 
-		//long it should take
-	void set_opponent_offset(glm::vec2 offset); //The above, but it leaves the time it should take alone. 
 	void change_opponent_status(unsigned int status_kind); //Wild guess.
-	void damage_opponent(float damage, float facing_dir, float x_speed = 0, float y_speed = 0); //Damage the opponent, set their speed and direction. 
+	void damage_opponent(float damage); //Damage the opponent. 
 		//Use in combination with change_opponent_status to throw someone.
 	void set_opponent_rot(glm::vec3 rot); //Sets the opponent's angle relative to their facing dir.
 	void add_opponent_rot(glm::vec3 rot);
@@ -184,6 +185,10 @@ public:
 	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
 	void attach_opponent(std::string bone_name);
 	void detach_opponent();
+
+	//Grab Functions
+	void grab_opponent(std::string bone_name, glm::vec2 offset, int frames);
+	void throw_opponent(float damage, float x_speed = 0, float y_speed = 0);
 
 	//Hitbox
 	

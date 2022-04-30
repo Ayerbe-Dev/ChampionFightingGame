@@ -56,8 +56,6 @@ void battle_main(GameManager* game_manager) {
 	Battle battle;
 	battle.load_battle(game_manager);
 
-	battle.health_bar[0].bar_texture.texture;
-
 	RenderManager *render_manager = RenderManager::get_instance();
 	SDL_GetWindowSize(g_window, &render_manager->s_window_width, &render_manager->s_window_height);
 	
@@ -564,9 +562,6 @@ void Battle::check_fighter_collisions() {
 		fighter[i]->connected_projectile_hitbox = projectile_hitbox_to_use;
 	}
 	if (!event_hit_collide_player()) {
-		if (fighter[1]->connected_grabbox != -1) {
-			std::cout << "No hit event: " << fighter[1]->connected_grabbox << "\n";
-		}
 		event_grab_collide_player();
 	}
 	for (int i = 0; i < 2; i++) {
@@ -968,7 +963,7 @@ bool Battle::event_hit_collide_player() {
 /// Handle any potential grabbox collision events between two Fighters on this frame and change statuses accordingly.
 /// </summary>
 void Battle::event_grab_collide_player() {
-	Grabbox* grabboxes[2] = { &(fighter[1]->grabboxes[fighter[0]->connected_grabbox]), &(fighter[0]->grabboxes[fighter[1]->connected_grabbox]) };
+	Grabbox* grabboxes[2] = { &(fighter[0]->grabboxes[fighter[1]->connected_grabbox]), &(fighter[1]->grabboxes[fighter[0]->connected_grabbox]) };
 	bool players_hit[2] = { grabboxes[1]->id != -1, grabboxes[0]->id != -1 };
 	bool players_tech[2] = { grabboxes[1]->grabbox_kind & GRABBOX_KIND_NOTECH, grabboxes[0]->grabbox_kind & GRABBOX_KIND_NOTECH };
 	if (players_hit[0] && players_hit[1]) {
@@ -987,7 +982,6 @@ void Battle::event_grab_collide_player() {
 	}
 	for (int i = 0; i < 2; i++) {
 		if (players_hit[i]) {
-			std::cout << "Player " << i + 1 << "should be getting grabbed\n";
 			if (fighter[i]->fighter_flag[FIGHTER_FLAG_THROW_TECH] && players_tech[i]) {
 				fighter[i]->change_status(FIGHTER_STATUS_THROW_TECH);
 				fighter[!i]->change_status(FIGHTER_STATUS_THROW_TECH);

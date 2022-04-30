@@ -376,90 +376,56 @@ void Eric::load_move_scripts() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
-			damage_opponent(30.0, 1, 15.0, 8.0);
+			throw_opponent(30.0, 15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 20);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(15)) {
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 7);
-		}
-		if (is_excute_frame(20)) {
-			damage_opponent(30.0, -1, -18.0, 8.0);
+		if (is_excute_frame(10)) {
+			throw_opponent(30.0, -15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("grab_air", [this]() {
 		if (is_excute_frame(0)) {
-			
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		}
 		if (is_excute_frame(3)) {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
-		}
-		if (is_excute_wait(2)) {
-			clear_grabbox_all();
-			fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
+			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
 		}
 	});
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
-			
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
-			damage_opponent(30.0, 1, 15.0, 8.0);
+			throw_opponent(30.0, 15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 20);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(15)) {
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 7);
-		}
-		if (is_excute_frame(20)) {
-			damage_opponent(30.0, -1, -18.0, 8.0);
+		if (is_excute_frame(10)) {
+			throw_opponent(30.0, -15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
-		}
-	});
-	script("stand_hitstun_l", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		}
 	});
 	script("stand_hitstun_m", [this]() {

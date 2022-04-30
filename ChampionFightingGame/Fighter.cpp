@@ -427,6 +427,7 @@ void Fighter::process_input() {
 		else {
 			pos.x = 200.0;
 		}
+		change_status(FIGHTER_STATUS_WAIT);
 	}
 
 	prev_stick_dir = get_stick_dir();

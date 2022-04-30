@@ -226,7 +226,6 @@ void Roy::load_move_scripts() {
 		}
 	});
 	script("stand_hp", [this]() {
-		std::cout << glm::to_string(model.bones[model.get_bone_id("Trans")].anim_matrix) << "\n";
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
@@ -415,27 +414,23 @@ void Roy::load_move_scripts() {
 	});
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
+			grab_opponent("HaveL", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
-			damage_opponent(30.0, 1, 15.0, 8.0);
+			throw_opponent(30.0, 15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(10)) {
-			damage_opponent(30.0, -1, -15.0, 8.0);
+			throw_opponent(30.0, -15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
@@ -451,27 +446,23 @@ void Roy::load_move_scripts() {
 	});
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = -60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
 			change_opponent_anim("stand_hitstun_m", 2);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(13)) {
-			damage_opponent(30.0, 1, 15.0, 8.0);
+			throw_opponent(30.0, 15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X] = 60;
-			fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] = 0;
-			set_opponent_offset(glm::vec2{ fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_X], fighter_float[FIGHTER_FLOAT_MANUAL_POS_OFFSET_Y] }, 5);
+			grab_opponent("HandL", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(10)) {
-			damage_opponent(30.0, -1, -15.0, 8.0);
+			throw_opponent(30.0, -15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});

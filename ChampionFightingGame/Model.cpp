@@ -45,24 +45,7 @@ void Model::load_model(std::string path) {
 	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
 
 	process_node(scene->mRootNode, scene);
-	std::vector<std::string> missing_bones;
-	trans_id = get_bone_id("Trans");
-	for (int i = 0; i < bones.size(); i++) {
-		if (bones[i].parent_id == -1) {
-			bones[i].parent_matrix = dummy_matrix;
-		}
-		else {
-			if (bones[i].parent_id == trans_id) {
-				trans_children.push_back(&bones[i]);
-			}
-			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
-		}
-		if (bones[i].model_matrix == glm::mat4(1.0)) {
-			missing_bones.push_back(bones[i].name);
-		}
-	}
-
-//	find_missing_bones(scene->mRootNode, missing_bones);
+	post_process_skeleton();
 }
 
 void Model::load_model_no_skeleton(std::string path) {
@@ -125,7 +108,7 @@ void Model::set_move(bool move) {
 	this->move = move;
 }
 
-void Model::set_bones(float frame, Animation* anim_kind) {
+void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 	if (anim_kind == nullptr) {
 		return reset_bones();
 	}
@@ -133,11 +116,21 @@ void Model::set_bones(float frame, Animation* anim_kind) {
 	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
-	for (int i = 0, max = keyframes.size(); i < max; i++) {
-		keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
+	if (flip) {
+		for (int i = 0, max = keyframes.size(); i < max; i++) {
+			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
-		bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-		bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
+			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+			bones[bones[i].counterpart_id].final_matrix = flip_matrix * bones[i].anim_matrix * bones[i].model_flip_matrix * global_transform;
+		}
+	}
+	else {
+		for (int i = 0, max = keyframes.size(); i < max; i++) {
+			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
+
+			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
+			bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
+		}
 	}
 }
 
@@ -149,17 +142,15 @@ void Model::reset_bones() {
 }
 
 void Model::render(Shader* shader, bool flip) {
+	shader->set_bool("flipped", false);
 	if (flip) {
 		glCullFace(GL_FRONT);
-		for (int i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
-		}
 	}
 	else {
 		glCullFace(GL_BACK);
-		for (int i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
-		}
+	}
+	for (int i = 0, max = bones.size(); i < max; i++) {
+		shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 	}
 
 	for (Mesh &mesh : meshes) {
@@ -172,15 +163,9 @@ void Model::render(Shader* shader, bool flip) {
 }
 
 void Model::render_shadow(Shader* shader, bool flip) {
-	if (flip) {
-		for (int i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
-		}
-	}
-	else {
-		for (int i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
-		}
+	shader->set_bool("flipped", false);
+	for (int i = 0, max = bones.size(); i < max; i++) {
+		shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 	}
 
 	for (Mesh& mesh : meshes) {
@@ -231,18 +216,21 @@ void Model::load_skeleton(std::string path) {
 		return;
 	}
 
+	Bone new_bone;
 	int bone_id;
 	std::string bone_name;
 	int parent_id;
+	int counterpart_id;
 	while (smd >> bone_id) {
-		smd >> bone_name >> parent_id;
-		Bone new_bone;
+		smd >> bone_name >> parent_id >> counterpart_id;
 		bone_name = Filter(bone_name, "\""); //Remove the "s from the SMD's bone names
 		new_bone.name = bone_name;
 		new_bone.id = bone_id;
 		new_bone.parent_id = parent_id;
+		new_bone.counterpart_id = counterpart_id;
 		bones.push_back(new_bone);
 		bone_map[bone_name] = bone_id;
+
 	}
 
 	smd.close();
@@ -340,32 +328,16 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			}
 
 			bone.anim_matrix = anim_matrix;
-			bone.anim_rest_matrix = anim_matrix;
 			bone.model_matrix = model_matrix;
-			aiVector3D base_pos(0.0, 0.0, 0.0); 
-			aiVector3D base_rot(0.0, 0.0, 0.0);
-			aiVector3D base_scale(0.0, 0.0, 0.0);
-			ai_bone->mOffsetMatrix.Decompose(base_scale, base_rot, base_pos);
-			bone.pos.x = base_pos.x;
-			bone.pos.y = base_pos.y;
-			bone.pos.z = base_pos.z;
-			bone.rot.x = base_rot.x;
-			bone.rot.y = base_rot.y;
-			bone.rot.z = base_rot.z;
-			if (bone.rot != glm::quat(0.0, 0.0, 0.0, 0.0)) {
-				bone.rot = normalize(bone.rot);
-			}
-			bone.scale.x = base_scale.x;
-			bone.scale.y = base_scale.y;
-			bone.scale.z = base_scale.z;
-
 			bone.parent_id = this->bones[bone.id].parent_id;
+			bone.counterpart_id = this->bones[bone.id].counterpart_id;
 
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
 				int index = ai_bone->mWeights[i2].mVertexId;
 				for (int i3 = 0; i3 < MAX_BONE_INFLUENCE; i3++) {
 					if (vertices[index].weights[i3] == 0.0) {
 						vertices[index].bone_ids[i3] = bone.id;
+						vertices[index].f_bone_ids[i3] = bone.counterpart_id;
 						vertices[index].weights[i3] = ai_bone->mWeights[i2].mWeight;
 						break;
 					}
@@ -406,46 +378,20 @@ std::vector<ModelTexture> Model::load_material_textures(aiMaterial* mat, aiTextu
 	return textures;
 }
 
-//Takes a vector of bones that didn't seem to be accounted for and searches through the entire node tree until it finds them
-//also rare footage of recursion being cool
-
-//also also it doesn't work because if you iterate through the nodes this way, all mTransformations are in a vacuum and i'm messing up a calculation
-//somewhere down the line when it comes to finding anim matrix
-bool Model::find_missing_bones(aiNode* node, std::vector<std::string>& bone_names) {
-	for (int i = 0; i < bone_names.size(); i++) {
-		if (Filter(node->mName.C_Str(), "model-armature_") == bone_names[i]) {
-			int index = get_bone_id(bone_names[i]);
-			std::cout << bones[index].name << ": " << "\n";
-			std::cout << "Old Anim Matrix: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
-
-			bones[index].anim_matrix = ass_converter(node->mTransformation);
-
-			std::cout << "New Anim Matrix: " << "\n" << glm::to_string(bones[index].anim_matrix) << "\n";
-			bones[index].anim_rest_matrix = bones[index].anim_matrix;
-
-			std::cout << "Old Model Matrix: " << "\n" << glm::to_string(bones[index].model_matrix) << "\n";
-			
-			aiMatrix4x4 temp_transform = node->mTransformation.Inverse();
-			for (aiNode* parent = node->mParent; parent != nullptr; parent = parent->mParent) {
-				temp_transform = parent->mTransformation.Inverse() * temp_transform;
+void Model::post_process_skeleton() {
+	trans_id = get_bone_id("Trans");
+	for (int i = 0, max = bones.size(); i < max; i++) {
+		if (bones[i].parent_id == -1) {
+			bones[i].parent_matrix = dummy_matrix;
+		}
+		else {
+			if (bones[i].parent_id == trans_id) {
+				trans_children.push_back(&bones[i]);
 			}
-
-//			bones[index].model_matrix = ass_converter(temp_transform);
-
-			std::cout << "New Model Matrix: " << "\n" << glm::to_string(bones[index].model_matrix) << "\n" << "\n";
-			bone_names.erase(bone_names.begin() + i);
-			break;
+			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
 		}
+		bones[i].model_flip_matrix = bones[bones[i].counterpart_id].model_matrix;
 	}
-	if (bone_names.size() == 0) {
-		return true;
-	}
-	for (int i = 0; i < node->mNumChildren; i++) {
-		if (find_missing_bones(node->mChildren[i], bone_names)) {
-			return true;
-		}
-	}
-	return false;
 }
 
 Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name) {
@@ -483,7 +429,9 @@ void Mesh::init() {
 	glEnableVertexAttribArray(5);
 	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(ModelVertex), (void*)offsetof(ModelVertex, bone_ids));
 	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, weights));
+	glVertexAttribIPointer(6, MAX_BONE_INFLUENCE, GL_INT, sizeof(ModelVertex), (void*)offsetof(ModelVertex, f_bone_ids));
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, weights));
 	glBindVertexArray(0);
 }
 

@@ -7,9 +7,9 @@ glm::vec3 Fighter::get_relative_bone_position(std::string bone_name, glm::vec3 o
 	if (index != -1) {
 		Bone& target = model.bones[index];
 		glm::vec3 ret = glm::vec3(
-			target.anim_matrix[3].z,
+			target.anim_matrix[3].z * facing_dir,
 			target.anim_matrix[3].y,
-			target.anim_matrix[3].x
+			target.anim_matrix[3].x * facing_dir * -1
 		);
 		return (ret / scale) + offset;
 	}
@@ -19,9 +19,9 @@ glm::vec3 Fighter::get_relative_bone_position(std::string bone_name, glm::vec3 o
 glm::vec3 Fighter::get_relative_bone_position(int bone_id, glm::vec3 offset) {
 	Bone& target = model.bones[bone_id];
 	glm::vec3 ret = glm::vec3(
-		target.anim_matrix[3].z,
+		target.anim_matrix[3].z * facing_dir,
 		target.anim_matrix[3].y,
-		target.anim_matrix[3].x
+		target.anim_matrix[3].x * facing_dir * -1
 	);
 	return (ret / scale) + offset;
 }
@@ -54,25 +54,32 @@ glm::vec3 Fighter::get_bone_rotation(int bone_id) {
 	return eulerAngles(q);
 }
 
+//Disclaimer: The below 4 functions are all unused and don't work. Turns out just
+//getting the position raw already accounts for rotation, but they might still come in
+//handy idk
 glm::vec3 Fighter::get_rotated_bone_position(std::string bone_name, glm::vec3 offset) {
 	int index = model.get_bone_id(bone_name);
 	if (index != -1) {
-		glm::vec3 pos = get_bone_position(index, offset);
+		glm::vec3 pos = get_relative_bone_position(index, offset);
 		glm::vec3 rot = get_bone_rotation(index);
 		pos = rotate(pos, rot.x, glm::vec3(1.0, 0.0, 0.0));
 		pos = rotate(pos, rot.y, glm::vec3(0.0, 1.0, 0.0));
 		pos = rotate(pos, rot.z, glm::vec3(0.0, 0.0, 1.0));
+		pos.x *= facing_dir;
+		pos += this->pos;
 		return pos;
 	}
 	return glm::vec3(0.0);
 }
 
 glm::vec3 Fighter::get_rotated_bone_position(int bone_id, glm::vec3 offset) {
-	glm::vec3 pos = get_bone_position(bone_id, offset);
+	glm::vec3 pos = get_relative_bone_position(bone_id, offset);
 	glm::vec3 rot = get_bone_rotation(bone_id);
 	pos = rotate(pos, rot.x, glm::vec3(1.0, 0.0, 0.0));
 	pos = rotate(pos, rot.y, glm::vec3(0.0, 1.0, 0.0));
 	pos = rotate(pos, rot.z, glm::vec3(0.0, 0.0, 1.0));
+	pos.x *= facing_dir;
+	pos += this->pos;
 	return pos;
 }
 

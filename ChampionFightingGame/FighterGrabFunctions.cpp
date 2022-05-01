@@ -1,14 +1,16 @@
 #include "Fighter.h"
 
-void Fighter::grab_opponent(std::string bone_name, glm::vec2 offset, int frames) {
+void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames) {
 	Fighter* that = battle_object_manager->fighter[!id];
-	int index = model.get_bone_id(bone_name);
-	if (index == -1) {
+	int attacker_index = model.get_bone_id(attacker_bone_name);
+	int defender_index = model.get_bone_id(defender_bone_name);
+	if (attacker_index == -1 || defender_index == -1) {
 		return;
 	}
 	that->fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES] = frames;
 	that->fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] = frames;
-	that->fighter_int[FIGHTER_INT_GRAB_BONE_ID] = index;
+	that->fighter_int[FIGHTER_INT_GRAB_BONE_ID] = attacker_index;
+	that->fighter_int[FIGHTER_INT_GRABBED_BONE_ID] = defender_index;
 	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_X] = offset.x * facing_dir;
 	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y] = offset.y;
 	that->fighter_flag[FIGHTER_FLAG_GRABBED] = true;

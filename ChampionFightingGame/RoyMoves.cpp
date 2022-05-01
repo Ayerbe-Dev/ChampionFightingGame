@@ -415,17 +415,16 @@ void Roy::load_move_scripts() {
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
 			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("HaveL", glm::vec2(0.0), 3);
+			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(13)) {
+		if (is_excute_frame(22)) {
 			throw_opponent(30.0, 15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("throw_b", [this]() {
 		if (is_excute_frame(0)) {
-			grab_opponent("HandL", glm::vec2(0.0), 3);
+			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}
@@ -447,17 +446,16 @@ void Roy::load_move_scripts() {
 	script("throw_f_air", [this]() {
 		if (is_excute_frame(0)) {
 			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("HandL", glm::vec2(0.0), 3);
+			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(13)) {
+		if (is_excute_frame(22)) {
 			throw_opponent(30.0, 15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
 		}
 	});
 	script("throw_b_air", [this]() {
 		if (is_excute_frame(0)) {
-			grab_opponent("HandL", glm::vec2(0.0), 3);
+			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
 		}

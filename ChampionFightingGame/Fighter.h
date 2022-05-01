@@ -187,7 +187,7 @@ public:
 	void detach_opponent();
 
 	//Grab Functions
-	void grab_opponent(std::string bone_name, glm::vec2 offset, int frames);
+	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames);
 	void throw_opponent(float damage, float x_speed = 0, float y_speed = 0);
 
 	//Hitbox

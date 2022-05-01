@@ -632,7 +632,6 @@ void Fighter::enter_status_grab() {
 void Fighter::exit_status_grab() {}
 
 void Fighter::status_throw() {
-	std::cout << "We as player " << id + 1 << " are throwing!\n";
 	if (is_status_end()) {
 		return;
 	}
@@ -715,17 +714,21 @@ void Fighter::status_grabbed() {
 			fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y], 
 			0.0
 		);
-		if (fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] > 0) {
-			offset /= glm::vec3(fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES]);
+		glm::vec3 offset_bone_pos = get_relative_bone_position(fighter_int[FIGHTER_INT_GRABBED_BONE_ID]);
+		glm::vec3 target_pos = that->get_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
+		offset_bone_pos.y /= 10.0;
+		target_pos.y /= 10.0;
+		if (pos == target_pos) {
+			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] = 0;
 		}
-		glm::vec3 target_pos = that->get_rotated_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
-		target_pos.z = 0.0;
 		if (fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] > 0) {
 			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES]--;
-			add_pos(pos - target_pos);
+			glm::vec3 distance = target_pos - (pos + offset_bone_pos);
+			distance /= fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES];
+			add_pos(distance);
 		}
 		else {
-			set_pos(target_pos);
+			set_pos(target_pos + offset_bone_pos);
 		}
 	}
 }
@@ -738,6 +741,7 @@ void Fighter::enter_status_grabbed() {
 void Fighter::exit_status_grabbed() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
+	pos.z = 0.0;
 }
 
 void Fighter::status_thrown() {

@@ -30,6 +30,7 @@ struct ModelVertex {
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
 	int bone_ids[MAX_BONE_INFLUENCE] = { 0 };
+	int f_bone_ids[MAX_BONE_INFLUENCE] = { 0 };
 	float weights[MAX_BONE_INFLUENCE] = { 0.0 };
 };
 
@@ -69,7 +70,7 @@ public:
 	void load_model_no_skeleton(std::string path);
 	void unload_model();
 	void set_move(bool move);
-	void set_bones(float frame, Animation* anim_kind);
+	void set_bones(float frame, Animation* anim_kind, bool flip);
 	void reset_bones();
 
     void render(Shader *shader, bool flip);
@@ -97,8 +98,9 @@ private:
 	void load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
-	bool find_missing_bones(aiNode* node, std::vector<std::string>& bone_names);
 	std::vector<ModelTexture> load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name);
+	void post_process_skeleton();
+
 	glm::mat4 flip_matrix = glm::mat4(1.0, 0.0, 0.0, 0.0, 
 		0.0, 1.0, 0.0, 0.0, 
 		0.0, 0.0, -1.0, 0.0, 

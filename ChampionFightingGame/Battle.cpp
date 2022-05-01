@@ -132,7 +132,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
 	SDL_DetachThread(loading_thread);
 
-	visualize_boxes = false;
+	visualize_boxes = true;
 
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];

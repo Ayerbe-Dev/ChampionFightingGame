@@ -108,5 +108,6 @@ private:
 	);
 	glm::mat4* dummy_matrix;
 	bool move;
+	bool tpose;
 	size_t trans_id;
 };

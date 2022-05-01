@@ -112,6 +112,7 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 	if (anim_kind == nullptr) {
 		return reset_bones();
 	}
+	tpose = false;
 
 	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
@@ -121,8 +122,8 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-			bones[bones[i].counterpart_id].final_matrix = flip_matrix * bones[i].anim_matrix * bones[i].model_flip_matrix * global_transform;
-		}
+			bones[bones[i].counterpart_id].final_matrix = (bones[i].anim_matrix * flip_matrix) * bones[i].model_flip_matrix * global_transform;
+		} 
 	}
 	else {
 		for (int i = 0, max = keyframes.size(); i < max; i++) {
@@ -135,22 +136,40 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 }
 
 void Model::reset_bones() {
-	for (Bone &bone : bones) {
+	for (Bone& bone : bones) {
 		bone.anim_matrix = glm::mat4(1.0);
 		bone.final_matrix = glm::mat4(1.0);
 	}
+	tpose = true;
 }
 
 void Model::render(Shader* shader, bool flip) {
-	shader->set_bool("flipped", false);
-	if (flip) {
-		glCullFace(GL_FRONT);
+	if (tpose) {
+		if (flip) {
+			glCullFace(GL_FRONT);
+			for (int i = 0, max = bones.size(); i < max; i++) {
+				shader->set_mat4("bone_matrix[0]", flip_matrix, i);
+			}
+		}
+		else {
+			glCullFace(GL_BACK);
+			for (int i = 0, max = bones.size(); i < max; i++) {
+				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+			}
+		}
 	}
 	else {
 		glCullFace(GL_BACK);
-	}
-	for (int i = 0, max = bones.size(); i < max; i++) {
-		shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+		if (flip) {
+			for (int i = 0, max = bones.size(); i < max; i++) {
+				shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
+			}
+		}
+		else {
+			for (int i = 0, max = bones.size(); i < max; i++) {
+				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+			}
+		}
 	}
 
 	for (Mesh &mesh : meshes) {
@@ -163,9 +182,15 @@ void Model::render(Shader* shader, bool flip) {
 }
 
 void Model::render_shadow(Shader* shader, bool flip) {
-	shader->set_bool("flipped", false);
-	for (int i = 0, max = bones.size(); i < max; i++) {
-		shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+	if (flip) {
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
+		}
+	}
+	else {
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+		}
 	}
 
 	for (Mesh& mesh : meshes) {
@@ -429,9 +454,7 @@ void Mesh::init() {
 	glEnableVertexAttribArray(5);
 	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(ModelVertex), (void*)offsetof(ModelVertex, bone_ids));
 	glEnableVertexAttribArray(6);
-	glVertexAttribIPointer(6, MAX_BONE_INFLUENCE, GL_INT, sizeof(ModelVertex), (void*)offsetof(ModelVertex, f_bone_ids));
-	glEnableVertexAttribArray(7);
-	glVertexAttribPointer(7, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, weights));
+	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, weights));
 	glBindVertexArray(0);
 }
 

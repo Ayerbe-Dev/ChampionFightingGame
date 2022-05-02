@@ -7,9 +7,15 @@ void Fighter::superInit(int id) {
 
 	if (id == 0) {
 		pos = glm::vec3(-200, FLOOR_GAMECOORD, 0);
+		facing_right = true;
+		internal_facing_right = true;
+		facing_dir = 1.0;
 	}
 	else if (id == 1) {
 		pos = glm::vec3(200, FLOOR_GAMECOORD, 0);
+		facing_right = false;
+		internal_facing_right = false;
+		facing_dir = -1.0;
 	}
 	load_stats();
 	load_model_shader();

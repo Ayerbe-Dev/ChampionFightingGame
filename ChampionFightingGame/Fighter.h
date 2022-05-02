@@ -216,9 +216,9 @@ public:
 	//Animation
 	
 	void reenter_last_anim();
-	bool change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0);
-	bool change_anim_inherit_attributes(std::string animation_name, bool verbose = true,  bool continue_script = true);
-	void startAnimation(Animation* animation);
+	bool change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0, bool clear_buffer = true);
+	bool change_anim_inherit_attributes(std::string animation_name,  bool continue_script = true, bool clear_buffer = true, bool verbose = true);
+	void startAnimation(Animation* animation, bool clear_buffer);
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	int get_launch_ticks();
@@ -232,7 +232,7 @@ public:
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
-	bool common_ground_status_act();
+	bool common_ground_status_act(bool crouch = true);
 	bool common_air_status_act();
 	bool common_air_status_general();
 	virtual bool specific_ground_status_act() { return false; };
@@ -279,6 +279,9 @@ public:
 	virtual void status_fall();
 	virtual void enter_status_fall();
 	virtual void exit_status_fall();
+	virtual void status_turn();
+	virtual void enter_status_turn();
+	virtual void exit_status_turn();
 	virtual void status_attack();
 	virtual void enter_status_attack();
 	virtual void exit_status_attack();

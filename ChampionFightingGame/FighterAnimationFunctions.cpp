@@ -5,10 +5,10 @@ void Fighter::reenter_last_anim() {
 	rate = prev_anim_rate;
 	frame = prev_anim_frame;
 	set_current_move_script(prev_anim_kind->name);
-	startAnimation(prev_anim_kind);
+	startAnimation(prev_anim_kind, true);
 }
 
-bool Fighter::change_anim(std::string animation_name, float frame_rate, float entry_frame) {
+bool Fighter::change_anim(std::string animation_name, float frame_rate, float entry_frame, bool clear_buffer) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
@@ -30,22 +30,24 @@ bool Fighter::change_anim(std::string animation_name, float frame_rate, float en
 		}
 	}
 
-	startAnimation(new_anim);
+	startAnimation(new_anim, clear_buffer);
 
 	return new_anim != nullptr;
 }
 
-bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool verbose, bool continue_script) {
+bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool continue_script, bool clear_buffer, bool verbose) {
 	if (!continue_script) {
 		set_current_move_script(animation_name);
 	}
 	Animation* new_anim = anim_table.get_anim(animation_name, verbose);
-	startAnimation(new_anim);
+	startAnimation(new_anim, clear_buffer);
 	return new_anim != nullptr;
 }
 
-void Fighter::startAnimation(Animation* animation) {
-	player_info->reset_buffer();
+void Fighter::startAnimation(Animation* animation, bool clear_buffer) {
+	if (clear_buffer) {
+		player_info->reset_buffer();
+	}
 	if (animation != nullptr) {
 		model.set_move(animation->move);
 	}

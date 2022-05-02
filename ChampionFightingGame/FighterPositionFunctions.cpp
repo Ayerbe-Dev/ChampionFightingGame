@@ -214,7 +214,7 @@ bool Fighter::set_pos_anim() {
 	if (anim_kind->move) {
 		Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
 		glm::vec3 trans_offset = glm::vec3(
-			trans_bone.anim_matrix[3].z,
+			trans_bone.anim_matrix[3].z * facing_dir,
 			trans_bone.anim_matrix[3].y,
 			0.0
 		);
@@ -222,7 +222,7 @@ bool Fighter::set_pos_anim() {
 		trans_offset /= scale;
 
 		bool ret = add_pos(trans_offset);
-		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z, trans_bone.anim_matrix[3].y, 0.0);
+		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, 0.0);
 		return ret;
 	}
 	else {
@@ -237,7 +237,7 @@ void Fighter::landing_crossup() {
 		bool that_prev_allowed_crossup = that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP];
 		fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 		that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-		if (that->facing_right) {
+		if (that->internal_facing_right) {
 			add_pos(-20.0, 0.0);
 			that->add_pos(20.0, 0.0);
 		}

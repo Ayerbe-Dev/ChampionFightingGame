@@ -94,6 +94,26 @@ void Roy::load_move_scripts() {
 			new_hurtbox(1, glm::vec2{ -35, 75 }, glm::vec2{ 35, 115 });
 		}
 	});
+	script("turn_stand", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, glm::vec2{ -42, 0 }, glm::vec2{ 62, 38 });
+			new_hurtbox(1, glm::vec2{ -29, 39 }, glm::vec2{ 33, 141 });
+			new_hurtbox(2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
+		}
+		if (is_excute_frame(4)) {
+			clear_hurtbox(2);
+		}
+		if (is_excute_frame(7)) {
+			new_hurtbox(2, glm::vec2{ -17, 82 }, glm::vec2{ -54, 104 });
+		}
+	});
+	script("turn_crouch", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, glm::vec2{ -42, 0 }, glm::vec2{ 62, 38 });
+			new_hurtbox(1, glm::vec2{ -29, 39 }, glm::vec2{ 33, 141 });
+			new_hurtbox(2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
+		}
+	});
 	script("stand_block", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });

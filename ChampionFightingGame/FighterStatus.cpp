@@ -6,7 +6,7 @@
 #include <cmath>
 extern bool debug;
 
-bool Fighter::common_ground_status_act() {
+bool Fighter::common_ground_status_act(bool crouch) {
 	if (specific_ground_status_act()) {
 		return true;
 	}
@@ -89,7 +89,7 @@ bool Fighter::common_ground_status_act() {
 		if (get_stick_dir() > 6) {
 			return change_status(FIGHTER_STATUS_JUMPSQUAT);
 		}
-		if (get_stick_dir() < 4 && status_kind != FIGHTER_STATUS_CROUCH) {
+		if (crouch && get_stick_dir() < 4 && status_kind != FIGHTER_STATUS_CROUCH) {
 			if (status_kind == FIGHTER_STATUS_ATTACK && fighter_int[FIGHTER_INT_ATTACK_KIND] >= ATTACK_KIND_HK) {
 				return change_status(FIGHTER_STATUS_CROUCH);
 			}
@@ -495,6 +495,55 @@ void Fighter::exit_status_fall() {
 	fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
 }
 
+void Fighter::status_turn() {
+	if (common_ground_status_act(false)) {
+		return;
+	}
+	if (get_stick_dir() > 3) {
+		if (is_anim_end) {
+			change_status(FIGHTER_STATUS_WAIT);
+			return;
+		}
+		if (get_anim() == "turn_crouch") {
+			change_anim_inherit_attributes("turn_stand", false, false);
+		}
+	}
+	else {
+		if (is_anim_end) {
+			change_status(FIGHTER_STATUS_CROUCH);
+			return;
+		}
+		if (get_anim() == "turn_stand") {
+			change_anim_inherit_attributes("turn_crouch", false, false);
+		}
+	}
+}
+
+void Fighter::enter_status_turn() {
+	//First we want to make sure you don't accidentally dash because you inputted
+	//one direction, turned around, then inputted the other direction
+	int dash_f = fighter_int[FIGHTER_INT_DASH_F_WINDOW];
+	fighter_int[FIGHTER_INT_DASH_F_WINDOW] = fighter_int[FIGHTER_INT_DASH_B_WINDOW];
+	fighter_int[FIGHTER_INT_DASH_B_WINDOW] = dash_f;
+	if (get_stick_dir() < 4) {
+		change_anim("turn_crouch", 1.0, 0.0, false);
+	}
+	else {
+		change_anim("turn_stand", 1.0, 0.0, false);
+	}
+}
+
+
+void Fighter::exit_status_turn() {
+	facing_right = internal_facing_right;
+	if (facing_right) {
+		facing_dir = 1.0;
+	}
+	else {
+		facing_dir = -1.0;
+	}
+}
+
 void Fighter::status_attack() {
 	if (specific_status_attack()) {
 		return;
@@ -813,6 +862,7 @@ void Fighter::enter_status_hitstun() {
 void Fighter::exit_status_hitstun() {}
 
 void Fighter::status_hitstun_air() {
+	Fighter* that = battle_object_manager->fighter[!id];
 	if (pos.y < FLOOR_GAMECOORD) {
 		change_status(FIGHTER_STATUS_LANDING_HITSTUN);
 		return;
@@ -825,7 +875,7 @@ void Fighter::status_hitstun_air() {
 		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float("max_fall_speed") * -1.0) {
 			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float("gravity");
 		}
-		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 	}
 }
 
@@ -1277,6 +1327,10 @@ void Fighter::load_status_scripts() {
 	status_script[FIGHTER_STATUS_FALL] = &Fighter::status_fall;
 	enter_status_script[FIGHTER_STATUS_FALL] = &Fighter::enter_status_fall;
 	exit_status_script[FIGHTER_STATUS_FALL] = &Fighter::exit_status_fall;
+
+	status_script[FIGHTER_STATUS_TURN] = &Fighter::status_turn;
+	enter_status_script[FIGHTER_STATUS_TURN] = &Fighter::enter_status_turn;
+	exit_status_script[FIGHTER_STATUS_TURN] = &Fighter::exit_status_turn;
 
 	status_script[FIGHTER_STATUS_ATTACK] = &Fighter::status_attack;
 	enter_status_script[FIGHTER_STATUS_ATTACK] = &Fighter::enter_status_attack;

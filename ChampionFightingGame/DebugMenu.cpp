@@ -248,7 +248,7 @@ void DebugItem::preLoad(TTF_Font *pFont){
 };
 
 void DebugItem::generateTexture(std::string message){
-	SDL_LockMutex(file_mutex);
+	file_mutex.lock();
 	SDL_Color sky = {204,247,255};
 	SDL_Color red = { 179,0,59 };
 	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, message.c_str(), sky);
@@ -267,5 +267,5 @@ void DebugItem::generateTexture(std::string message){
 
 	SDL_FreeSurface(textSurfaceSelect);
 	SDL_FreeSurface(textSurface);
-	SDL_UnlockMutex(file_mutex);
+	file_mutex.unlock();
 }

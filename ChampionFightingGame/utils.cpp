@@ -6,8 +6,9 @@
 #include <time.h>
 #include <random>
 #include <thread>
+#include <mutex>
 
-extern SDL_mutex* file_mutex;
+extern std::mutex file_mutex;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -115,9 +116,9 @@ int round_up_odd(int val) {
 }
 
 void update_thread_progress(int& to_update) {
-	SDL_LockMutex(file_mutex);
+	file_mutex.lock();
 	to_update++;
-	SDL_UnlockMutex(file_mutex);
+	file_mutex.unlock();
 }
 
 void print_init() {

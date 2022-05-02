@@ -183,10 +183,8 @@ void Battle::load_battle(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT: {
 					game_loader->finished = true;
-					while (game_loader->can_ret);
 					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
+				} break;
 			}
 		}
 
@@ -221,6 +219,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 	ticks = SDL_GetTicks();
 }
+
 void Battle::unload_battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
@@ -241,13 +240,19 @@ void Battle::unload_battle() {
 			fighter[i]->grabboxes[i2].rect.destroy();
 		}
 		delete fighter[i];
+		std::cout << "Deleted the fighters\n";
 	}
 	stage.unload_stage();
+	std::cout << "Unloaded the stage\n";
 	sound_manager->unloadSoundAll();
+	std::cout << "Unloaded the sounds\n";
 	render_manager->unlink_all_shaders();
+	std::cout << "Unloaded the shaders\n";
 
 	delete battle_object_manager;
+	std::cout << "Made it all the way to the game loader call\n";
 	delete game_loader;
+	std::cout << "Finished unloading\n";
 }
 
 void Battle::process_main() {

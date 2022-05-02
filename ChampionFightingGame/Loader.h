@@ -2,10 +2,11 @@
 #include <SDL/SDL.h>
 #include <iostream>
 #include <thread>
+#include <mutex>
 #include "utils.h"
 extern SDL_Window* g_window;
 
-extern SDL_mutex* file_mutex;
+extern std::mutex file_mutex;
 extern SDL_Renderer* g_renderer;
 
 enum {
@@ -120,7 +121,7 @@ static int LoadingScreen(void* void_GameLoader) {
 		wait_ms();
 
 		load_icon.move();
-		SDL_LockMutex(file_mutex);
+		file_mutex.lock();
 
 		SDL_RenderClear(g_renderer);
 		SDL_SetRenderTarget(g_renderer, pScreenTexture);
@@ -134,7 +135,7 @@ static int LoadingScreen(void* void_GameLoader) {
 		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
 		SDL_RenderPresent(g_renderer);
 
-		SDL_UnlockMutex(file_mutex);
+		file_mutex.unlock();
 	}
 
 	loadingSplash.clearTexture();
@@ -143,6 +144,8 @@ static int LoadingScreen(void* void_GameLoader) {
 	load_icon.texture.clearTexture();
 	SDL_DestroyTexture(pScreenTexture);
 
+	file_mutex.lock();
 	game_loader->can_ret = true;
+	file_mutex.unlock();
 	return 0;
 }

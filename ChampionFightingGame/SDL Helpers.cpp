@@ -1,8 +1,9 @@
 #include "SDL Helpers.h"
 #include <SDL/SDL_image.h>
 #include "utils.h"
+#include <mutex>
 
-extern SDL_mutex* file_mutex;
+extern std::mutex file_mutex;
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
@@ -14,14 +15,14 @@ extern SDL_Window* g_window;
 /// using this function to load something with no loading screen.</param>
 /// <returns> The loaded texture</returns>
 SDL_Texture* loadSDLTexture(const char* file_path, bool delay) {
-	SDL_LockMutex(file_mutex);
+	file_mutex.lock();
 	SDL_Surface* image_surface = IMG_Load(file_path);
 	if (image_surface == NULL) {
 		std::cout << "Error loading image: " << IMG_GetError() << "\n";
 	}
 	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
-	SDL_UnlockMutex(file_mutex);
+	file_mutex.unlock();
 	if (delay) {
 		wait_ms();
 	}

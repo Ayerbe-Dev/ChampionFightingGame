@@ -2,6 +2,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <mutex>
 #include <iostream>
 #include <Windows.h>
 #include <SDL/SDL.h>
@@ -25,15 +26,13 @@
 #include "Loader.h"
 #undef main
 
-using namespace std;
-
 int registered_controllers[2] = { -1, -1 };
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_GLContext g_context;
 
-SDL_mutex* file_mutex;
+std::mutex file_mutex;
 
 void initialize_SDL();
 void initialize_GLEW();
@@ -81,7 +80,6 @@ int main() {
 	SDL_DestroyWindow(g_window);
 	SDL_GL_DeleteContext(g_context);
 	SDL_DestroyRenderer(g_renderer);
-	SDL_DestroyMutex(file_mutex);
 
 	SDL_Quit();
 
@@ -124,7 +122,6 @@ void initialize_SDL() {
 
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	g_context = SDL_GL_CreateContext(g_window);
-	file_mutex = SDL_CreateMutex();
 
 	//Initialize Audio
 
@@ -150,7 +147,7 @@ void initialize_SDL() {
 void initialize_GLEW() {
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
-		cout << "Failed to initialize GLEW!" << endl;
+		std::cout << "Failed to initialize GLEW!" << std::endl;
 	}
 	SDL_GL_MakeCurrent(g_window, g_context);
 	SDL_GL_SetSwapInterval(1);

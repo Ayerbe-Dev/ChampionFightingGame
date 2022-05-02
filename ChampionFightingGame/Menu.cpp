@@ -24,9 +24,7 @@ void menu_main(GameManager* game_manager) {
 	loading_thread.detach();
 
 	MainMenu main_menu;
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
+	update_thread_progress(game_loader->loaded_items);
 	MenuItem menu_items[5];
 
 	game_manager->set_menu_info(&main_menu);

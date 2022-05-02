@@ -34,9 +34,7 @@ void chara_select_main(GameManager* game_manager) {
 		player_info[0]->crash_reason = "Could not open CSS file!";
 		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
+	update_thread_progress(game_loader->loaded_items);
 	if (css.num_rows == 0) {
 		css.my_col[0] = 1;
 		css.my_col[1] = 1;
@@ -53,15 +51,11 @@ void chara_select_main(GameManager* game_manager) {
 
 	css.cursors[0].init("resource/ui/menu/css/p1Cursor.png");
 	css.cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
+	update_thread_progress(game_loader->loaded_items);
 
 	css.cursors[1].init("resource/ui/menu/css/p2Cursor.png");
 	css.cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	SDL_LockMutex(file_mutex);
-	game_loader->loaded_items++;
-	SDL_UnlockMutex(file_mutex);
+	update_thread_progress(game_loader->loaded_items);
 
 	game_manager->set_menu_info(&css);
 	

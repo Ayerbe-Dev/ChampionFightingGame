@@ -143,5 +143,6 @@ static int LoadingScreen(void* void_GameLoader) {
 	load_icon.texture.clearTexture();
 	SDL_DestroyTexture(pScreenTexture);
 
+	game_loader->can_ret = true;
 	return 0;
 }

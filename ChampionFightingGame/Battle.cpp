@@ -183,6 +183,7 @@ void Battle::load_battle(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT: {
 					game_loader->finished = true;
+					while (game_loader->can_ret);
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;

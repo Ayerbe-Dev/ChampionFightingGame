@@ -1,5 +1,6 @@
 #include "Loader.h"
 #include "SDL Helpers.h"
+#include <stdlib.h>
 
 bool GameTextureSDL::init(std::string sTexturePath, bool delay) {
 	if (bIsInitialized) {
@@ -180,7 +181,7 @@ LoadIcon::LoadIcon() {
 	texture.init("resource/ui/menu/loading/loadicon.png");
 	texture.setScaleFactor(0.4);
 
-	panic_setting = rand() % 2;
+	panic_setting = rng(0, 1);
 
 	set_attributes();
 	while (check_corner_distance(true)) {
@@ -189,10 +190,10 @@ LoadIcon::LoadIcon() {
 }
 
 void LoadIcon::set_attributes() {
-	int v_rng = rand() % 2;
-	int h_rng = rand() % 2;
-	int x_rng = WINDOW_WIDTH * 0.2 + (rand() % WINDOW_WIDTH * 0.6);
-	int y_rng = WINDOW_HEIGHT * 0.2 + (rand() % WINDOW_HEIGHT * 0.6);
+	int v_rng = rng(0, 1);
+	int h_rng = rng(0, 1);
+	int x_rng = WINDOW_WIDTH * 0.2 + rng(WINDOW_WIDTH * 0.2, WINDOW_WIDTH * 0.8);
+	int y_rng = WINDOW_HEIGHT * 0.2 + rng(WINDOW_HEIGHT * 0.2, WINDOW_HEIGHT * 0.8);
 	move_right = h_rng;
 	move_down = v_rng;
 	texture.destRect.x = x_rng;

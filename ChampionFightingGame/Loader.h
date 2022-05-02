@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL/SDL.h>
 #include <iostream>
+#include <thread>
 #include "utils.h"
 extern SDL_Window* g_window;
 

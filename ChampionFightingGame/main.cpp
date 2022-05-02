@@ -33,14 +33,13 @@ SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_GLContext g_context;
 
-auto g_chron = chrono::steady_clock::now();
-
 SDL_mutex* file_mutex;
 
 void initialize_SDL();
 void initialize_GLEW();
 
 int main() {
+	srand(time(0));
 	//Hide the console window. It'll be a LONG time before we get to uncomment these lines
 
 //	HWND windowHandle = GetConsoleWindow();

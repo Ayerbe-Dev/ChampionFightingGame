@@ -3,8 +3,10 @@
 #include <sstream>
 #include <iostream>
 #include <chrono>
+#include <time.h>
+#include <random>
+#include <thread>
 
-extern std::chrono::steady_clock::time_point g_chron;
 extern SDL_mutex* file_mutex;
 
 int clamp(int min, int value, int max) {
@@ -68,6 +70,7 @@ std::string Filter(const std::string& to, const std::string& remove) {
 /// thread long enough for the main thread to consistently render.
 /// </summary>
 void wait_ms(double ms_duration) {
+	thread_local std::chrono::steady_clock::time_point g_chron = std::chrono::steady_clock::now();
 	std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
 	std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::nano>> future_time = std::chrono::steady_clock::now() + std::chrono::duration<double, std::milli>(ms_duration);
 
@@ -126,4 +129,12 @@ void print_init() {
 	std::cout << "| $$  \\ $$ /$$__  $$| $$  | $$  | $$ /$$| $$      | $$  | $$| $$_____/| $$            | $$    $$| $$_____/| $$  | $$  | $$ /$$| $$_____/| $$              | $$  | $$  | $$| $$  | $$ /$$" << "\n";
 	std::cout << "|  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$             /$$$$$$| $$  | $$| $$  |  $$$$/" << "\n";
 	std::cout << " \\______/  \\_______/|__/  |__/   \\___/   \\_______/|__/  |__/ \\_______/|__/             \\______/  \\_______/|__/  |__/   \\___/   \_______/|__/            |______/|__/  |__/|__/   \\___/  " << "\n" << "\n";
+}
+
+int rng(const int& min, const int& max) {
+	thread_local std::mt19937* generator = nullptr;
+	std::hash<std::thread::id> hasher;
+	if (!generator) generator = new std::mt19937(clock() + hasher(std::this_thread::get_id()));
+	std::uniform_int_distribution<int> distribution(min, max);
+	return distribution(*generator);
 }

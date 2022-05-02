@@ -23,10 +23,9 @@ void chara_select_main(GameManager* game_manager) {
 	debugger = Debugger();
 
 	GameLoader* game_loader = new GameLoader(3);
-	SDL_Thread* loading_thread;
-	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
-	
+	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	loading_thread.detach();
+
 	CSS css;
 
 	css.player_info[0] = player_info[0];

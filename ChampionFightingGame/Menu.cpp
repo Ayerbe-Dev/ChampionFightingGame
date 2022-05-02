@@ -20,9 +20,8 @@ void menu_main(GameManager* game_manager) {
 	debugger = Debugger();
 
 	GameLoader* game_loader = new GameLoader(1);
-	SDL_Thread* loading_thread;
-	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
+	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	loading_thread.detach();
 
 	MainMenu main_menu;
 	SDL_LockMutex(file_mutex);

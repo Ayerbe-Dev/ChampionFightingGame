@@ -128,9 +128,8 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(17);
-	SDL_Thread* loading_thread;
-	loading_thread = SDL_CreateThread(LoadingScreen, "Init.rar", (void*)game_loader);
-	SDL_DetachThread(loading_thread);
+	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	loading_thread.detach();
 
 	visualize_boxes = true;
 
@@ -182,8 +181,8 @@ void Battle::load_battle(GameManager* game_manager) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT:
-				{
+				case SDL_QUIT: {
+					game_loader->finished = true;
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				}
 				break;

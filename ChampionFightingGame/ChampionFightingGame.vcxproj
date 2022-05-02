@@ -223,6 +223,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
     <ClCompile Include="AIDecision.cpp" />
+    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="Eric.cpp" />
     <ClCompile Include="EricFireball.cpp" />
     <ClCompile Include="EricMoves.cpp" />
@@ -325,6 +327,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="ProjectileTemplate.cpp" />
@@ -393,6 +396,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />
+    <ClInclude Include="Effect.h" />
+    <ClInclude Include="EffectManager.h" />
     <ClInclude Include="Eric.h" />
     <ClInclude Include="EricConstants.h" />
     <ClInclude Include="EricFireball.h" />
@@ -521,6 +526,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="SE.h" />
     <ClInclude Include="SettingConstants.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundConstants.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stage.h" />

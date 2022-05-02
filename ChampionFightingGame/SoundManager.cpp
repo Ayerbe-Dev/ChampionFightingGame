@@ -1,8 +1,7 @@
 ﻿#include "SoundManager.h"
 #include "GameSettings.h"
 #include "SDL/SDL_audio.h"
-Sound sounds[3][MAX_SOUNDS];
-extern bool debug;
+SoundManager* SoundManager::instance = nullptr;
 
 SoundManager::SoundManager() {
 	hyperInit();
@@ -390,180 +389,6 @@ SoundInfo SoundManager::getCharaSound(int index, int id, bool se) {
 	return sound;
 }
 
-SoundInfo::SoundInfo() {
-	sound_kind = SOUND_KIND_MAX;
-}
-
-SoundInfo::SoundInfo(std::string name, int sound_kind, int chara_kind, int volume, int sound_type) {
-	this->name = name;
-	this->sound_kind = sound_kind;
-	this->sound_type = sound_type;
-	this->volume = volume;
-	active = false;
-	looped = false;
-	switch (sound_kind) {
-		case (SOUND_KIND_MUSIC): {
-			this->dir = "resource/sound/bgm/" + name + ".wav";
-			this->loop_dir = "resource/sound/bgm/" + name + "_loop.wav";
-		} break;
-		case (SOUND_KIND_SE): {
-			switch (chara_kind) {
-				default: {
-					this->dir = "resource/sound/se/common/" + name + ".wav";
-				} break;
-				case (CHARA_KIND_ROY): {
-					this->dir = "resource/sound/se/roy/" + name + ".wav";
-				} break;
-				case (CHARA_KIND_ERIC):	{
-					this->dir = "resource/sound/se/eric/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_LEON): {
-					this->dir = "resource/sound/se/leon/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_CHAMELEON):
-				{
-					this->dir = "resource/sound/se/chameleon/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ANGELICA):
-				{
-					this->dir = "resource/sound/se/angelica/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_NIGHTSABER):
-				{
-					this->dir = "resource/sound/se/nightsaber/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_SULLY):
-				{
-					this->dir = "resource/sound/se/sully/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_PRIEST):
-				{
-					this->dir = "resource/sound/se/priest/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_AZIEL):
-				{
-					this->dir = "resource/sound/se/aziel/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_BRUNO):
-				{
-					this->dir = "resource/sound/se/bruno/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_TESSA):
-				{
-					this->dir = "resource/sound/se/tessa/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ALEJANDRO):
-				{
-					this->dir = "resource/sound/se/alejandro/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_NORMAN):
-				{
-					this->dir = "resource/sound/se/norman/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ATLAS):
-				{
-					this->dir = "resource/sound/se/atlas/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_JULIUS):
-				{
-					this->dir = "resource/sound/se/julius/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_RAMONA):
-				{
-					this->dir = "resource/sound/se/ramona/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ZYAIR):
-				{
-					this->dir = "resource/sound/se/zyair/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_VESUVIUS):
-				{
-					this->dir = "resource/sound/se/vesuvius/" + name + ".wav";
-				} break;
-			}
-		} break;
-		case (SOUND_KIND_VC): {
-			switch (chara_kind) {
-				default: {} break;
-				case (CHARA_KIND_ROY):
-				{
-					this->dir = "resource/sound/vc/roy/" + name + ".wav";
-				} break;
-				case (CHARA_KIND_ERIC):
-				{
-					this->dir = "resource/sound/vc/eric/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_LEON):
-				{
-					this->dir = "resource/sound/vc/leon/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_CHAMELEON):
-				{
-					this->dir = "resource/sound/vc/chameleon/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ANGELICA):
-				{
-					this->dir = "resource/sound/vc/angelica/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_NIGHTSABER):
-				{
-					this->dir = "resource/sound/vc/nightsaber/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_SULLY):
-				{
-					this->dir = "resource/sound/vc/sully/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_PRIEST):
-				{
-					this->dir = "resource/sound/vc/priest/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_AZIEL):
-				{
-					this->dir = "resource/sound/vc/aziel/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_BRUNO):
-				{
-					this->dir = "resource/sound/vc/bruno/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_TESSA):
-				{
-					this->dir = "resource/sound/vc/tessa/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ALEJANDRO):
-				{
-					this->dir = "resource/sound/vc/alejandro/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_NORMAN):
-				{
-					this->dir = "resource/sound/vc/norman/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ATLAS):
-				{
-					this->dir = "resource/sound/vc/atlas/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_JULIUS):
-				{
-					this->dir = "resource/sound/vc/julius/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_RAMONA):
-				{
-					this->dir = "resource/sound/vc/ramona/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_ZYAIR):
-				{
-					this->dir = "resource/sound/vc/zyair/" + name + ".wav";
-				} break;
-				case(CHARA_KIND_VESUVIUS):
-				{
-					this->dir = "resource/sound/vc/vesuvius/" + name + ".wav";
-				} break;
-			}
-		} break;
-	}
-}
-
-SoundManager* SoundManager::instance = nullptr;
-
 SoundManager* SoundManager::get_instance() {
 	if (instance == nullptr) {
 		instance = new SoundManager;
@@ -586,8 +411,10 @@ void addSoundToIndex(SoundInfo sound, int id) {
 	SDL_AudioCVT loop_cvt;
 	const char* loop_file = (sound.loop_dir).c_str();
 
+	SoundManager* sound_manager = SoundManager::get_instance();
+
 	for (index = 0; index < MAX_SOUNDS; index++) {
-		if (!sounds[id][index].data) {
+		if (!sound_manager->sounds[id][index].data) {
 			break;
 		}
 	}
@@ -609,9 +436,9 @@ void addSoundToIndex(SoundInfo sound, int id) {
 	SDL_FreeWAV(data);
 
 	SDL_LockAudio();
-	sounds[id][index].data = cvt.buf;
-	sounds[id][index].dlen = cvt.len_cvt;
-	sounds[id][index].dpos = 0;
+	sound_manager->sounds[id][index].data = cvt.buf;
+	sound_manager->sounds[id][index].dlen = cvt.len_cvt;
+	sound_manager->sounds[id][index].dpos = 0;
 	SDL_UnlockAudio();
 
 	if (sound.sound_type == SOUND_TYPE_LOOP) { //If the sound effect is also designed to loop, we load that data as well
@@ -629,12 +456,12 @@ void addSoundToIndex(SoundInfo sound, int id) {
 		SDL_ConvertAudio(&loop_cvt);
 		SDL_FreeWAV(loop_data);
 
-		sounds[id][index].loop_data = loop_cvt.buf;
-		sounds[id][index].loop_dlen = loop_cvt.len_cvt;
-		sounds[id][index].dpos = 0;
+		sound_manager->sounds[id][index].loop_data = loop_cvt.buf;
+		sound_manager->sounds[id][index].loop_dlen = loop_cvt.len_cvt;
+		sound_manager->sounds[id][index].dpos = 0;
 		SDL_UnlockAudio();
 	}
-	sounds[id][index].sound = sound; //We don't put this in until we finish, to prevent a song with a loop to play the first ~3 ticks twice
+	sound_manager->sounds[id][index].sound = sound; //We don't put this in until we finish, to prevent a song with a loop to play the first ~3 ticks twice
 }
 
 void audio_callback(void* unused, Uint8* stream, int len) {
@@ -644,58 +471,60 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	unsigned int dlen; //Ditto for length
 	unsigned int mlen; //Maximum length
 	int vol; //Volume value to be multiplied by the values in the user's settings
+	SoundManager* sound_manager = SoundManager::get_instance();
 	
 	SDL_memset(stream, 0, len); //Clear the stream
 
 	for (int i = 0; i < MAX_SOUNDS; i++) {
 		for (int i2 = 0; i2 < 3; i2++) {
-			if (sounds[i2][i].sound.active) {
+			Sound& sound = sound_manager->sounds[i2][i];
+			if (sound.sound.active) {
 				diff = 0;
-				data = sounds[i2][i].data;
-				dlen = sounds[i2][i].dlen;
-				if (sounds[i2][i].sound.sound_kind == SOUND_KIND_SE) {
-					vol = getGameSetting("se_vol") * get_relative_one_percent(sounds[i2][i].sound.volume, 128);
+				data = sound.data;
+				dlen = sound.dlen;
+				if (sound.sound.sound_kind == SOUND_KIND_SE) {
+					vol = getGameSetting("se_vol") * get_relative_one_percent(sound.sound.volume, 128);
 				}
-				else if (sounds[i2][i].sound.sound_kind == SOUND_KIND_VC) {
-					vol = getGameSetting("vc_vol") * get_relative_one_percent(sounds[i2][i].sound.volume, 128);
+				else if (sound.sound.sound_kind == SOUND_KIND_VC) {
+					vol = getGameSetting("vc_vol") * get_relative_one_percent(sound.sound.volume, 128);
 				}
 				else {
-					vol = getGameSetting("music_vol") * get_relative_one_percent(sounds[i2][i].sound.volume, 128);
+					vol = getGameSetting("music_vol") * get_relative_one_percent(sound.sound.volume, 128);
 				}
 
-				if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP && sounds[i2][i].sound.looped) { 
-					data = sounds[i2][i].loop_data;
-					dlen = sounds[i2][i].loop_dlen;
+				if (sound.sound.sound_type == SOUND_TYPE_LOOP && sound.sound.looped) { 
+					data = sound.loop_data;
+					dlen = sound.loop_dlen;
 				}
 
 				source = (Uint8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
-				if (sounds[i2][i].dpos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
-					diff = (sounds[i2][i].dpos + len) - dlen;
+				if (sound.dpos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
+					diff = (sound.dpos + len) - dlen;
 				}
 
-				mlen = clamp(0, len, dlen - sounds[i2][i].dpos);
+				mlen = clamp(0, len, dlen - sound.dpos);
 
 				//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
 
-				SDL_memcpy(source, &data[sounds[i2][i].dpos], mlen);
+				SDL_memcpy(source, &data[sound.dpos], mlen);
 	
-				sounds[i2][i].dpos += len; //Add the length of the stream to the audio's position.
+				sound.dpos += len; //Add the length of the stream to the audio's position.
 
 				if (diff != 0) { //If we went over
-					if (sounds[i2][i].sound.sound_type == SOUND_TYPE_LOOP) { 
-						if (!sounds[i2][i].sound.looped) { //If we've never looped before, clarify that we're getting the rest of our
+					if (sound.sound.sound_type == SOUND_TYPE_LOOP) { 
+						if (!sound.sound.looped) { //If we've never looped before, clarify that we're getting the rest of our
 							//data from the looped version, and that we are now in the loop state.
-							sounds[i2][i].sound.looped = true;
-							data = sounds[i2][i].loop_data;
+							sound.sound.looped = true;
+							data = sound.loop_data;
 						}
-						sounds[i2][i].dpos = 0;
-						SDL_memcpy(&source[len - diff], &data[sounds[i2][i].dpos], diff);
-						sounds[i2][i].dpos += diff;
+						sound.dpos = 0;
+						SDL_memcpy(&source[len - diff], &data[sound.dpos], diff);
+						sound.dpos += diff;
 
 					}
 					else { //Otherwise just get that shit outta here
-						sounds[i2][i].sound.active = false;
-						sounds[i2][i].dpos = 0;
+						sound.sound.active = false;
+						sound.dpos = 0;
 					}
 				}
 				SDL_MixAudio(stream, source, mlen, vol);

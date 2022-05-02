@@ -259,6 +259,21 @@
     <Filter Include="Source Files\AI">
       <UniqueIdentifier>{408529bd-f80f-432e-a0df-8ff04c35d6c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Containers">
+      <UniqueIdentifier>{8de0fa31-4bf8-4696-8a02-690b90a79a4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Visuals">
+      <UniqueIdentifier>{b5166abb-9cd9-4431-b494-47b5d743b007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\GameData">
+      <UniqueIdentifier>{645df0c0-01c2-4855-a588-ff5f38629ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GameData">
+      <UniqueIdentifier>{baee19ae-883e-4273-8959-a74169bcc68c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Visuals">
+      <UniqueIdentifier>{6f45579d-1787-44cc-828c-efd522f8e63c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -564,23 +579,8 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Bone.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTexture.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>Source Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRect.cpp">
-      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="FighterRotationFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
@@ -594,17 +594,8 @@
     <ClCompile Include="ProjectileInterface.cpp">
       <Filter>Source Files\Objects\Projectile\Projectile</Filter>
     </ClCompile>
-    <ClCompile Include="Param.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="GLM Helpers.cpp">
       <Filter>Source Files\Helper Funcs</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveScript.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="GLEW Helpers.cpp">
       <Filter>Source Files\Helper Funcs</Filter>
@@ -623,9 +614,6 @@
     </ClCompile>
     <ClCompile Include="StageAsset.cpp">
       <Filter>Source Files\Objects\Stage</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectManager.cpp">
       <Filter>Source Files\Managers</Filter>
@@ -651,9 +639,6 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Source Files\Deps\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowMap.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="AIDecision.cpp">
       <Filter>Source Files\AI</Filter>
     </ClCompile>
@@ -668,6 +653,45 @@
     </ClCompile>
     <ClCompile Include="FighterGrabFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRect.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTexture.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveScript.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="Param.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -767,23 +791,8 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTexture.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="RenderObject.h">
       <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="GameRect.h">
-      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Fighter.h">
       <Filter>Header Files\Objects\Fighter\Fighter</Filter>
@@ -803,17 +812,11 @@
     <ClInclude Include="Projectiles.h">
       <Filter>Header Files\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Param.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="GLM Helpers.h">
       <Filter>Header Files\Helper Funcs</Filter>
     </ClInclude>
     <ClInclude Include="BoneConstants.h">
       <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveScript.h">
-      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="GLEW Helpers.h">
       <Filter>Header Files\Helper Funcs</Filter>
@@ -1253,15 +1256,6 @@
     <ClInclude Include="StageAsset.h">
       <Filter>Header Files\Objects\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="LoopingVector.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="BattleObjectManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
@@ -1292,9 +1286,6 @@
     <ClInclude Include="imstb_truetype.h">
       <Filter>Header Files\Deps\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowMap.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="AI.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
@@ -1304,8 +1295,50 @@
     <ClInclude Include="AIManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="CircularBuffer.h">
+    <ClInclude Include="EffectManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularBuffer.h">
+      <Filter>Header Files\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="LoopingVector.h">
+      <Filter>Header Files\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRect.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTexture.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveScript.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="Param.h">
+      <Filter>Header Files\Engine\GameData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

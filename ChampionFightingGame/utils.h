@@ -51,3 +51,4 @@ float get_relative_one_percent(float val, float denom);
 int round_up_odd(int val);
 void update_thread_progress(int& to_update);
 void print_init();
+int rng(const int& min, const int& max);

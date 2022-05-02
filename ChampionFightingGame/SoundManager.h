@@ -1,34 +1,9 @@
 #pragma once
 #include <iostream>
-#include <SDL/SDL_audio.h>
 #include "BattleObjectManager.h"
 #include "Fighter.h"
 #include "CharaKind.h"
-#include "SoundConstants.h"
-
-class SoundInfo {
-public:
-	SoundInfo();
-	SoundInfo(std::string name, int sound_kind, int chara_kind = CHARA_KIND_MAX, int volume = 32, int sound_type = SOUND_TYPE_NORMAL);
-
-	std::string name;
-	std::string dir;
-	std::string loop_dir;
-	int sound_kind;
-	int sound_type;
-	int volume;
-	bool looped;
-	bool active;
-};
-
-struct Sound {
-	Uint8* data;
-	Uint8* loop_data;
-	unsigned int dpos;
-	unsigned int dlen;
-	unsigned int loop_dlen;
-	SoundInfo sound;
-};
+#include "Sound.h"
 
 class SoundManager {
 public:
@@ -132,6 +107,7 @@ public:
 
 	int findSoundIndex(SoundInfo sound, int id);
 	SoundInfo getCharaSound(int index, int id, bool se);
+	Sound sounds[3][MAX_SOUNDS];
 
 	static SoundManager* get_instance();
 private:

@@ -27,7 +27,7 @@ void Fighter::reset_opponent_rot() {
 }
 
 void Fighter::set_opponent_thrown_ticks() {
-	if (battle_object_manager->fighter[!id]->anim_kind == nullptr) {
+	if (anim_kind == nullptr || battle_object_manager->fighter[!id]->anim_kind == nullptr) {
 		return;
 	}
 	battle_object_manager->fighter[!id]->rate = ((anim_kind->length / this->rate) / battle_object_manager->fighter[!id]->anim_kind->length);

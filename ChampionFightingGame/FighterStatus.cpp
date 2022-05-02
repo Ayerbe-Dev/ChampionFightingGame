@@ -1078,13 +1078,7 @@ void Fighter::status_landing() {
 }
 
 void Fighter::enter_status_landing() {
-	Fighter* that = battle_object_manager->fighter[!id];
-//	if (that->pos.x - that->pos.x_spr_offset / 2 == WINDOW_WIDTH / -2 && pos.x - pos.x_spr_offset / 2 == WINDOW_WIDTH / -2) {
-//		that->pos.x += 20;
-//	}
-//	if (that->pos.x + that->pos.x_spr_offset / 2 == WINDOW_WIDTH / 2 && pos.x + pos.x_spr_offset / 2 == WINDOW_WIDTH / 2) {
-//		that->pos.x -= 20;
-//	}
+	landing_crossup();
 	fighter_int[FIGHTER_INT_LANDING_LAG] = 2;
 	change_anim("landing", -1, fighter_int[FIGHTER_INT_LANDING_LAG]);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
@@ -1111,6 +1105,7 @@ void Fighter::status_landing_attack() {
 
 
 void Fighter::enter_status_landing_attack() {
+	landing_crossup();
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
 		fighter_int[FIGHTER_INT_LANDING_LAG] = get_param_int("lp_landing_lag");
 	}

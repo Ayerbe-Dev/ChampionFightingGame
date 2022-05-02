@@ -331,12 +331,7 @@ void Battle::post_process_fighter() {
 		fighter[i]->update_hitbox_pos();
 		fighter[i]->update_grabbox_pos();
 		fighter[i]->update_hurtbox_pos();
-		if (fighter[i]->symmetrical) {
-			fighter[i]->rot.z += glm::radians(90.0);
-		}
-		else {
-			fighter[i]->rot.z += glm::radians(90.0 * fighter[i]->facing_dir);
-		}
+		fighter[i]->rot.z += glm::radians(90.0);
 		fighter[i]->rot += fighter[i]->extra_rot;
 		fighter[i]->update_jostle_rect();
 	}
@@ -389,12 +384,10 @@ void Battle::render_world() {
 
 	//The actual render
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render_shadow(!fighter[i]->facing_right && fighter[i]->symmetrical);
+		fighter[i]->render_shadow(!fighter[i]->facing_right);
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render_shadow(!fighter[i]->facing_right 
-					&& fighter[i]->projectiles[i2]->symmetrical
-				);
+				fighter[i]->projectiles[i2]->render_shadow(!fighter[i]->facing_right);
 			}
 		}
 	}
@@ -412,14 +405,12 @@ void Battle::render_world() {
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);	
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render(!fighter[i]->facing_right && fighter[i]->symmetrical);
+		fighter[i]->render(!fighter[i]->facing_right);
 		//player tags will go here
 
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right 
-					&& fighter[i]->projectiles[i2]->symmetrical
-				);
+				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
 			}
 		}
 	}

@@ -153,6 +153,7 @@ public:
 	bool set_pos(glm::vec3 pos, bool prev = false);
 	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos_anim();
+	void landing_crossup();
 
 	//Rotation
 

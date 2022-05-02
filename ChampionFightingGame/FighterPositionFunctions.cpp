@@ -103,8 +103,11 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	float new_this_x_front = this->jostle_box.corners[2].x - (((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir) / 2 * this->facing_dir);
 	bool new_opponent_right = new_this_x_front > that_x_front;
 
-	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND
-		&& that->situation_kind == FIGHTER_SITUATION_GROUND) {
+	if (opponent_right != new_opponent_right  //We crossed the front of the opponent's jostle box
+		&& (this_x_front - new_this_x_front) * facing_dir < 0 //We're moving towards them
+		&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] //We aren't allowed to cross up
+		&& situation_kind == FIGHTER_SITUATION_GROUND //We're on the ground
+		&& that->situation_kind == FIGHTER_SITUATION_GROUND) { //And so are they
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}
@@ -224,5 +227,25 @@ bool Fighter::set_pos_anim() {
 	}
 	else {
 		return false;
+	}
+}
+
+void Fighter::landing_crossup() {
+	Fighter* that = battle_object_manager->fighter[!id];
+	if (is_collide(jostle_box, that->jostle_box) && pos.x == that->pos.x) {
+		bool prev_allowed_crossup = fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP];
+		bool that_prev_allowed_crossup = that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP];
+		fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+		that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+		if (that->facing_right) {
+			add_pos(-20.0, 0.0);
+			that->add_pos(20.0, 0.0);
+		}
+		else {
+			add_pos(20.0, 0.0);
+			that->add_pos(-20.0, 0.0);
+		}
+		fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = prev_allowed_crossup;
+		that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = that_prev_allowed_crossup;
 	}
 }

@@ -24,7 +24,6 @@ public:
 
 	float facing_dir{ 1.0 };
 	bool facing_right = true;
-	bool symmetrical = true;
 	unsigned int status_kind{ FIGHTER_STATUS_WAIT };
 	unsigned int situation_kind{ FIGHTER_SITUATION_GROUND };
 

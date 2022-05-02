@@ -39,7 +39,6 @@ void initialize_SDL();
 void initialize_GLEW();
 
 int main() {
-	srand(time(0));
 	//Hide the console window. It'll be a LONG time before we get to uncomment these lines
 
 //	HWND windowHandle = GetConsoleWindow();
@@ -89,7 +88,6 @@ int main() {
 //	ShowWindow(windowHandle, SW_SHOW);
 //	If we try to end the program without putting the window back up, it technically causes a crash. Program was about to end anyway so it doesn't really
 //	matter but ehhhhhhhhh, clean exits are nice
-
 	exit(0);
 //	Same goes for this line; causes a crash on exit if we return 0 normally which wouldn't normally be a problem but again, clean exits
 //	Don't ask me why exit(0) is ok but return 0 isn't, I cannot answer that question.

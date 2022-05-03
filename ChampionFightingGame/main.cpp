@@ -76,10 +76,11 @@ int main() {
 	}
 
 	game_manager.~GameManager();
+	render_manager->destroy();
 	sound_manager->unloadSoundAll();
 	SDL_DestroyWindow(g_window);
-	SDL_GL_DeleteContext(g_context);
 	SDL_DestroyRenderer(g_renderer);
+	SDL_GL_DeleteContext(g_context);
 
 	SDL_Quit();
 

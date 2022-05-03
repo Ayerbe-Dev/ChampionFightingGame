@@ -1372,10 +1372,10 @@
     <None Include="fragment_fullbright.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\ShadowFragment.glsl">
+    <None Include="resource\shaders\fragment_shadow.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\ShadowVertex.glsl">
+    <None Include="resource\shaders\vertex_shadow.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

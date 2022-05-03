@@ -4,14 +4,18 @@
 
 
 Shader::Shader() {
+	loaded = false;
 }
 
 Shader::Shader(std::string vertex_dir, std::string fragment_dir) {
+	loaded = false;
 	init(vertex_dir, fragment_dir);
 }
 
 Shader::~Shader() {
-	glDeleteProgram(program);
+	if (loaded) {
+		destroy();
+	}
 }
 
 
@@ -90,6 +94,14 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	glUseProgram(0);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	loaded = true;
+}
+
+void Shader::destroy() {
+	if (loaded) {
+		glDeleteProgram(program);
+	}
+	loaded = false;
 }
 
 void Shader::use() {

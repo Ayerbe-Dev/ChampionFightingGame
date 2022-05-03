@@ -5,16 +5,6 @@
 #include <map>
 #include <vector>
 
-struct UniformType {
-	std::string name;
-	int num_members;
-};
-
-struct UniformVar {
-	std::string name;
-	UniformType type;
-};
-
 class Shader {
 public:
 	Shader();
@@ -23,6 +13,7 @@ public:
 	unsigned int program;
 
 	void init(std::string vertex_dir, std::string fragment_dir);
+	void destroy();
 
 	void use();
 
@@ -38,4 +29,6 @@ public:
 	void set_mat2(const std::string& name, const glm::mat2& mat, int index = 0) const;
 	void set_mat3(const std::string& name, const glm::mat3& mat, int index = 0) const;
 	void set_mat4(const std::string& name, const glm::mat4& mat, int index = 0) const;
+private:
+	bool loaded;
 };

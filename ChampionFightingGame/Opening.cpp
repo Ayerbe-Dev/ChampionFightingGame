@@ -26,16 +26,14 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 	int fade_state = 0;
 
 	while (opening) {
-		wait_ms();
-		wait_ms();
-		wait_ms();
-		wait_ms();
+		wait_ms(66.667);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT:
-				{
+				case SDL_QUIT: {
+					titleSplash.destroy();
+					textSplash.destroy();
 					return false;
 				}
 				break;

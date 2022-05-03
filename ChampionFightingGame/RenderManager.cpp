@@ -11,7 +11,14 @@ RenderManager::RenderManager() {
 void RenderManager::init() {
 	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
-	shadow_shader.init("ShadowVertex.glsl", "ShadowFragment.glsl");
+	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
+}
+
+void RenderManager::destroy() {
+	unlink_all_shaders();
+	default_2d_shader.destroy();
+	default_rect_shader.destroy();
+	shadow_shader.destroy();
 }
 
 void RenderManager::add_light(Light light, int target) {
@@ -61,6 +68,9 @@ void RenderManager::link_shader(Shader *shader) {
 }
 
 void RenderManager::unlink_all_shaders() {
+	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
+		linked_shaders[i]->destroy();
+	}
 	linked_shaders.clear();
 }
 

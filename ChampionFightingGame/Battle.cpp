@@ -75,7 +75,7 @@ void battle_main(GameManager* game_manager) {
 #endif
 			switch (event.type) {
 				case SDL_QUIT: {
-					return game_manager->update_state(GAME_STATE_CLOSE);
+					game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 				case SDL_WINDOWEVENT:
 				{
@@ -226,33 +226,14 @@ void Battle::unload_battle() {
 	for (int i = 0; i < 2; i++) {
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
-		for (int i2 = 0; i2 < MAX_PROJECTILES; i2++) {
-			if (fighter[i]->projectiles[i2] != nullptr) {
-				for (int i3 = 0; i3 < 10; i3++) {
-					fighter[i]->projectiles[i2]->hitboxes[i3].rect.destroy();
-				}
-				delete fighter[i]->projectiles[i2];
-			}
-		}
-		for (int i2 = 0; i2 < 10; i2++) {
-			fighter[i]->hitboxes[i2].rect.destroy();
-			fighter[i]->hurtboxes[i2].rect.destroy();
-			fighter[i]->grabboxes[i2].rect.destroy();
-		}
 		delete fighter[i];
-		std::cout << "Deleted the fighters\n";
+		std::cout << "Returned from the fighter deletion" << std::endl;
 	}
 	stage.unload_stage();
-	std::cout << "Unloaded the stage\n";
 	sound_manager->unloadSoundAll();
-	std::cout << "Unloaded the sounds\n";
 	render_manager->unlink_all_shaders();
-	std::cout << "Unloaded the shaders\n";
 
-	delete battle_object_manager;
-	std::cout << "Made it all the way to the game loader call\n";
 	delete game_loader;
-	std::cout << "Finished unloading\n";
 }
 
 void Battle::process_main() {

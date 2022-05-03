@@ -8,7 +8,31 @@
 #include "AIManager.h"
 
 Fighter::Fighter() {
+}
 
+Fighter::~Fighter() {
+	for (int i = 0; i < MAX_PROJECTILES; i++) {
+		if (projectiles[i] != nullptr) {
+			delete projectiles[i];
+		}
+	}
+	for (int i = 0, max = HITBOX_COUNT_MAX + 1; i < max; i++) {
+		hitboxes[i].rect.destroy();
+		hurtboxes[i].rect.destroy();
+		grabboxes[i].rect.destroy();
+	}
+	jostle_box.destroy();
+	fighter_int.clear();
+	fighter_float.clear();
+	fighter_flag.clear();
+	status_script.clear();
+	enter_status_script.clear();
+	exit_status_script.clear();
+	model.unload_model();
+	anim_table.unload_animations();
+	move_script_table.wipe_scripts();
+	params.unload_params();
+	stats.unload_params();
 }
 
 void Fighter::fighter_main() {

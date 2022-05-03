@@ -52,6 +52,10 @@ void ParamTable::load_params(std::string resource_dir) {
     param_file.close();
 }
 
+void ParamTable::unload_params() {
+    params.clear();
+}
+
 int ParamTable::get_param_int(std::string param_name) {
     std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
     if (iterator == param_map.end()) {

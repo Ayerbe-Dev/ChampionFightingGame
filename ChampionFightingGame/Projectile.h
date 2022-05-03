@@ -37,6 +37,7 @@ public:
 	//Constructors
 
 	Projectile();
+	~Projectile();
 
 	//Main
 

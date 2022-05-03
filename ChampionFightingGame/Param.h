@@ -27,6 +27,8 @@ class ParamTable {
 public:
 	ParamTable();
 	void load_params(std::string resource_dir);
+	void unload_params();
+
 	int get_param_int(std::string param_name);
 	float get_param_float(std::string param_name);
 	std::string get_param_string(std::string param_name);

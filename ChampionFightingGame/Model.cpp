@@ -13,20 +13,24 @@
 #include "utils.h"
 
 Model::Model() {
-	move = false;
-	dummy_matrix = new glm::mat4(1.0);
+	loaded = false;
 }
 
 Model::Model(std::string path) {
+	loaded = false;
 	load_model(path);
 }
 
 Model::~Model() {
-	unload_model();
-	delete dummy_matrix;
+	if (loaded) {
+		unload_model();
+	}
 }
 
 void Model::load_model(std::string path) {
+	move = false;
+	dummy_matrix = new glm::mat4(1.0);
+
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
@@ -46,6 +50,7 @@ void Model::load_model(std::string path) {
 
 	process_node(scene->mRootNode, scene);
 	post_process_skeleton();
+	loaded = true;
 }
 
 void Model::load_model_no_skeleton(std::string path) {
@@ -60,22 +65,22 @@ void Model::load_model_no_skeleton(std::string path) {
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 
 	process_node(scene->mRootNode, scene);
+	loaded = true;
 }
 
 void Model::unload_model() {
-	for (int i = 0; i < bones.size(); i++) {
-		if (bones[i].parent_id == -1) {
-			delete bones[i].parent_matrix;
+	if (loaded) {
+		delete dummy_matrix;
+		for (int i = 0; i < textures_loaded.size(); i++) {
+			glDeleteTextures(1, &textures_loaded[i].id);
+		}
+		for (int i = 0; i < meshes.size(); i++) {
+			glDeleteVertexArrays(1, &meshes[i].VAO);
+			glDeleteBuffers(1, &meshes[i].VBO);
+			glDeleteBuffers(1, &meshes[i].EBO);
 		}
 	}
-	for (int i = 0; i < textures_loaded.size(); i++) {
-		glDeleteTextures(1, &textures_loaded[i].id);
-	}
-	for (int i = 0; i < meshes.size(); i++) {
-		glDeleteVertexArrays(1, &meshes[i].VAO);
-		glDeleteBuffers(1, &meshes[i].VBO);
-		glDeleteBuffers(1, &meshes[i].EBO);
-	}
+	loaded = false;
 }
 
 void Model::set_move(bool move) {

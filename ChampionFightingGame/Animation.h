@@ -23,6 +23,7 @@ public:
 	AnimationTable();
 	void load_animations(std::string resource_dir, Model* model);
 	void load_animations_no_faf(std::string resource_dir, Model* model);
+	void unload_animations();
 	Animation* get_anim(std::string anim_name, bool verbose);
 private:
 	std::vector<Animation> animations;

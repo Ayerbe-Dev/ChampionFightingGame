@@ -142,6 +142,10 @@ void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* mod
 	anim_list.close();
 }
 
+void AnimationTable::unload_animations() {
+	animations.clear();
+}
+
 Animation* AnimationTable::get_anim(std::string anim_name, bool verbose) {
 	std::unordered_map<std::string, int>::const_iterator iterator = anim_map.find(anim_name);
 	if (iterator == anim_map.end()) {

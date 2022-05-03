@@ -109,5 +109,6 @@ private:
 	glm::mat4* dummy_matrix;
 	bool move;
 	bool tpose;
+	bool loaded;
 	size_t trans_id;
 };

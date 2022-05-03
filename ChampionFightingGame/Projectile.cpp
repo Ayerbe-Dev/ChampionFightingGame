@@ -3,6 +3,26 @@
 
 Projectile::Projectile() {}
 
+Projectile::~Projectile() {
+	for (int i = 0; i < 10; i++) {
+		hitboxes[i].rect.destroy();
+		hurtboxes[i].rect.destroy();
+		grabboxes[i].rect.destroy();
+	}
+	jostle_box.destroy();
+	model.unload_model();
+	projectile_int.clear();
+	projectile_float.clear();
+	projectile_flag.clear();
+	status_script.clear();
+	enter_status_script.clear();
+	exit_status_script.clear();
+	anim_table.unload_animations();
+	move_script_table.wipe_scripts();
+	params.unload_params();
+	stats.unload_params();
+}
+
 void Projectile::projectile_main() {
 	process_animate();
 	process_position();

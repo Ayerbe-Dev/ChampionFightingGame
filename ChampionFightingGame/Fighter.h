@@ -47,6 +47,7 @@ public:
 	//Constructors
 
 	Fighter();
+	~Fighter();
 
 	//Main
 

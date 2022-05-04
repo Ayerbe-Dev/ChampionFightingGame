@@ -119,6 +119,9 @@ void GameRect::render() {
 	if (scale != nullptr) {
 		mat = glm::scale(mat, *scale);
 	}
+	else {
+		mat = glm::scale(mat, glm::vec3(0.05));
+	}
 	mat = glm::scale(mat, glm::vec3(100.0)); //Scaling up all GameRects by 100x makes them reasonably sized
 	shader->set_mat4("matrix", mat);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
@@ -147,17 +150,21 @@ void GameRect::update_buffer_data() {
 /// <notes>The reason it's so long is because we run this check a lot so the less we put on the stack, the better
 bool is_collide(GameRect &RectA, GameRect &RectB) {
 	return 
-		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) || (RectA.corners[2].x >= RectB.corners[0].x 
-		&& RectA.corners[2].x <= RectB.corners[2].x) || (RectB.corners[0].x >= RectA.corners[0].x && RectB.corners[0].x <= RectA.corners[2].x) 
-		|| (RectB.corners[2].x >= RectA.corners[0].x && RectB.corners[2].x <= RectA.corners[2].x) || (RectA.corners[0].x <= RectB.corners[0].x 
-		&& RectA.corners[0].x >= RectB.corners[2].x) || (RectA.corners[2].x <= RectB.corners[0].x && RectA.corners[2].x >= RectB.corners[2].x) 
-		|| (RectB.corners[0].x <= RectA.corners[0].x && RectB.corners[0].x >= RectA.corners[2].x) || (RectB.corners[2].x <= RectA.corners[0].x 
-		&& RectB.corners[2].x >= RectA.corners[2].x)) 
+		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) 
+		|| (RectA.corners[2].x >= RectB.corners[0].x && RectA.corners[2].x <= RectB.corners[2].x) 
+		|| (RectB.corners[0].x >= RectA.corners[0].x && RectB.corners[0].x <= RectA.corners[2].x) 
+		|| (RectB.corners[2].x >= RectA.corners[0].x && RectB.corners[2].x <= RectA.corners[2].x) 
+		|| (RectA.corners[0].x <= RectB.corners[0].x && RectA.corners[0].x >= RectB.corners[2].x) 
+		|| (RectA.corners[2].x <= RectB.corners[0].x && RectA.corners[2].x >= RectB.corners[2].x) 
+		|| (RectB.corners[0].x <= RectA.corners[0].x && RectB.corners[0].x >= RectA.corners[2].x) 
+		|| (RectB.corners[2].x <= RectA.corners[0].x && RectB.corners[2].x >= RectA.corners[2].x)) 
 		&& 
-		((RectA.corners[0].y <= RectB.corners[0].y && RectA.corners[0].y >= RectB.corners[2].y) || (RectA.corners[2].y <= RectB.corners[0].y 
-		&& RectA.corners[2].y >= RectB.corners[2].y) || (RectB.corners[0].y <= RectA.corners[0].y && RectB.corners[0].y >= RectA.corners[2].y)
-		|| (RectB.corners[2].y <= RectA.corners[0].y && RectB.corners[2].y >= RectA.corners[2].y) || (RectA.corners[0].y >= RectB.corners[0].y 
-		&& RectA.corners[0].y <= RectB.corners[2].y) || (RectA.corners[2].y >= RectB.corners[0].y && RectA.corners[2].y <= RectB.corners[2].y) 
-		|| (RectB.corners[0].y >= RectA.corners[0].y && RectB.corners[0].y <= RectA.corners[2].y) || (RectB.corners[2].y >= RectA.corners[0].y 
-		&& RectB.corners[2].y <= RectA.corners[2].y));
+		((RectA.corners[0].y <= RectB.corners[0].y && RectA.corners[0].y >= RectB.corners[2].y) 
+		|| (RectA.corners[2].y <= RectB.corners[0].y && RectA.corners[2].y >= RectB.corners[2].y) 
+		|| (RectB.corners[0].y <= RectA.corners[0].y && RectB.corners[0].y >= RectA.corners[2].y)
+		|| (RectB.corners[2].y <= RectA.corners[0].y && RectB.corners[2].y >= RectA.corners[2].y) 
+		|| (RectA.corners[0].y >= RectB.corners[0].y && RectA.corners[0].y <= RectB.corners[2].y) 
+		|| (RectA.corners[2].y >= RectB.corners[0].y && RectA.corners[2].y <= RectB.corners[2].y) 
+		|| (RectB.corners[0].y >= RectA.corners[0].y && RectB.corners[0].y <= RectA.corners[2].y) 
+		|| (RectB.corners[2].y >= RectA.corners[0].y && RectB.corners[2].y <= RectA.corners[2].y));
 }

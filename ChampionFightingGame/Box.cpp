@@ -2,7 +2,7 @@
 #include "BattleObject.h"
 
 Hitbox::Hitbox() {
-	this->id = -1;
+	id = -1;
 }
 
 /*
@@ -91,12 +91,11 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	offset.x *= object->facing_dir;
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	if (use_player_pos) {
-		anchor.x += object->pos.x;
-		anchor.y += object->pos.y;
-		offset.x += object->pos.x;
-		offset.y += object->pos.y;
-	}
+	use_player_pos = true;
+	anchor.x += object->pos.x;
+	anchor.y += object->pos.y;
+	offset.x += object->pos.x;
+	offset.y += object->pos.y;
 	this->rect.update_corners(anchor, offset);
 	this->rect.bind_scale(&object->scale);
 	this->object = object;
@@ -132,8 +131,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 }
 
 /*
-	Updates the position of the hitboxes relative to their owner.Projectiles already include the window width to calculate their location, so
-	they shouldn't add it a second time, hence the second arg.
+	Updates the position of the hitboxes relative to their owner.
 */
 
 void Hitbox::update_pos() {

@@ -465,7 +465,7 @@ void Fighter::process_input() {
 void Fighter::process_ai() {
 	AIManager* ai_manager = AIManager::get_instance();
 	ai_manager->ai_mutex.lock();
-	ai_manager->ai_info[id].insert(AIInfo(pos.x, pos.y, anim_kind->name, frame, rate));
+	ai_manager->ai_info[id].insert(AIInfo(pos.x, pos.y, get_anim(), frame, rate));
 	ai_manager->ai_mutex.unlock();
 }
 

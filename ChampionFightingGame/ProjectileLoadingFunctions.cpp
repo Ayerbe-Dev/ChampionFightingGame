@@ -19,6 +19,7 @@ void Projectile::superInit() {
 
 void Projectile::load_model_shader() {
 	RenderManager* render_manager = RenderManager::get_instance();
+	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
 	has_model = get_local_param_bool("has_model");

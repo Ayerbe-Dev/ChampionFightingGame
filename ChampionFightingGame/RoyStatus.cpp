@@ -1,25 +1,28 @@
 #include "Roy.h"
+#include "RoyFireball.h"
 
 void Roy::chara_main() {
 
 }
 
 bool Roy::specific_ground_status_act() {
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
-	}
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
-	}
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
-	}
-	if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+	if (!projectiles[0]->active) {
+		if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		}
+		if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		}
+		if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		}
+		if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+		}
 	}
 
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
@@ -128,12 +131,7 @@ void Roy::roy_status_special_fireball_start() {
 }
 
 void Roy::roy_enter_status_special_fireball_start() {
-	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		change_anim("special_fireball_start", 2);
-	}
-	else {
-		change_anim("special_fireball_start", 3);
-	}
+	change_anim("special_fireball_start", 1.0);	
 }
 
 void Roy::roy_exit_status_special_fireball_start() {
@@ -148,7 +146,7 @@ void Roy::roy_status_special_fireball_punch() {
 }
 
 void Roy::roy_enter_status_special_fireball_punch() {
-	change_anim("special_fireball_punch", 2);
+	change_anim("special_fireball_punch", 1.0);
 }
 
 void Roy::roy_exit_status_special_fireball_punch() {
@@ -193,23 +191,20 @@ void Roy::roy_status_special_uppercut() {
 		change_status(FIGHTER_STATUS_LANDING);
 		return;
 	}
-	if (get_anim() == "special_uppercut") {
+	if (is_anim_end) {
+		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL);
+		return;
+	}
+	if (frame > 4.0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
 				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity");
 			}
 			situation_kind = FIGHTER_SITUATION_AIR;
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
-			if (is_anim_end) {
-				change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL);
-				return;
-			}
 		}
 	}
 	else {
-		if (is_anim_end) {
-			change_anim("special_uppercut");
-		}
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
 		}
@@ -219,14 +214,14 @@ void Roy::roy_status_special_uppercut() {
 void Roy::roy_enter_status_special_uppercut() {
 	if (situation_kind == FIGHTER_SITUATION_GROUND) { //Not sure if we want air dp to be a thing but if we do, this is designed to account for it
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			change_anim("special_uppercut_rise", 1, 1);
+			change_anim("special_uppercut", 1.0, 1.0);
 		}
 		else {
-			change_anim("special_uppercut_rise", 2, 1);
+			change_anim("special_uppercut", 0.5, 1.0);
 		}
 	}
 	else {
-		change_anim("special_uppercut");
+		change_anim("special_uppercut", 1.0, 4.0);
 	}
 
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float_special("special_uppercut_x");
@@ -247,6 +242,7 @@ void Roy::roy_status_special_uppercut_fall() {
 	}
 	add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 }
+
 void Roy::roy_enter_status_special_uppercut_fall() {
 	change_anim("special_uppercut_fall");
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;

@@ -561,38 +561,38 @@ void Roy::load_move_scripts() {
 		}
 	});
 	script("special_fireball_start", [this]() {
+		if (is_excute_frame(0)) {
+
+		}
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-			if (is_excute_frame(11)) {
-				init_projectile(0, glm::vec3(50,100,0));
+			if (is_excute_frame(3)) {
+				rate = 1.2;
 			}
 		}
 		else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-			if (is_excute_frame(9)) {
-
-			}
-			if (is_excute_frame(14)) {
-				init_projectile(0, glm::vec3(50, 100, 0));
+			if (is_excute_frame(5)) {
+				rate = 1.2;
 			}
 		}
 		else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-			if (is_excute_frame(8)) {
-
-			}
-			if (is_excute_frame(15)) {
-				init_projectile(0, glm::vec3(50, 100, 0));
+			if (is_excute_frame(7)) {
+				rate = 1.2;
 			}
 		}
 		else {
-			if (is_excute_frame(11)) {
-				init_projectile(0, glm::vec3(50, 100, 0));
+			if (is_excute_frame(3)) {
+				rate = 1.2;
 			}
+		}
+		if (is_excute_frame(11)) {
+			init_projectile(0, glm::vec3(70, 100, 0));
 		}
 	});
 	script("special_fireball_punch", [this]() {
 		if (is_excute_frame(0)) {
 
 		}
-		if (is_excute_frame(12)) {
+		if (is_excute_frame(5)) {
 			projectiles[0]->change_status(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED);
 		}
 	});
@@ -627,7 +627,7 @@ void Roy::load_move_scripts() {
 			clear_hitbox_all();
 		}
 	});
-	script("special_uppercut_rise", [this]() {
+	script("special_uppercut", [this]() {
 		if (is_excute_frame(4)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false, true);
@@ -642,9 +642,7 @@ void Roy::load_move_scripts() {
 				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true);
 			}
 		}
-	});
-	script("special_uppercut", [this]() {
-		if (is_excute_frame(0)) {
+		if (is_excute_frame(5)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false, true);
 			}

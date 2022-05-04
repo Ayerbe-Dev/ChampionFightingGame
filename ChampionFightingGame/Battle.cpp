@@ -421,7 +421,7 @@ void Battle::render_ui() {
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->id != -1) {
+				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->active) {
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->hitboxes[i3].id != -1) {
 							fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();

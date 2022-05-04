@@ -118,7 +118,7 @@ void RoyFireball::status_default() {
 
 void RoyFireball::status_hit() {
 	if (is_anim_end) {
-		id = -1;
+		active = false;
 	}
 }
 
@@ -209,7 +209,7 @@ void RoyFireball::exit_status_roy_fireball_fall() {
 
 void RoyFireball::status_roy_fireball_ground() {
 	if (is_anim_end) {
-		id = -1;
+		active = false;
 	}
 }
 

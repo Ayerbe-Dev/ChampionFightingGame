@@ -1,5 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
+#include "ParamAccessor.h"
 
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
@@ -51,7 +52,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		else {
 			this->pos.x = WINDOW_WIDTH / 2;
 		}
-		if (get_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
+		if (get_local_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
 		}
 		ret = false;
@@ -63,7 +64,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		else {
 			this->pos.x = WINDOW_WIDTH / -2;
 		}
-		if (get_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
+		if (get_local_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
 		}
 		ret = false;
@@ -92,7 +93,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	float this_x_back = this->jostle_box.corners[0].x;
 	float that_x_back = that->jostle_box.corners[0].x;
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
-	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
+	if (x_distance > get_param_float("max_distance", PARAM_FIGHTER)) {
 		this->pos.x = prev_pos.x; //I don't know what the calculation for "make it so you're as close as possible to the max distance without going over" would
 		//look like, and frankly I don't care enough to do it
 		ret = false;
@@ -192,7 +193,7 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
 	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
-	if (x_distance > CAMERA_MAX_ZOOM_OUT) {
+	if (x_distance > get_param_float("max_distance", PARAM_FIGHTER)) {
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}

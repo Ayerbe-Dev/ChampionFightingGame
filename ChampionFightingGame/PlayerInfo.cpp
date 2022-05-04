@@ -1,13 +1,21 @@
 #include "PlayerInfo.h"
 #include "CharaKind.h"
 #include "StageKind.h"
+#include "ParamAccessor.h"
 extern int registered_controllers[4];
 
 PlayerInfo::PlayerInfo() {
+	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
+	stick_hold_v_timer = timer;
+	stick_hold_h_timer = timer;
+
 }
 
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
+	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
+	stick_hold_v_timer = timer;
+	stick_hold_h_timer = timer;
 	chara_kind = CHARA_KIND_MAX;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	check_controllers();
@@ -38,6 +46,7 @@ void PlayerInfo::check_controllers() {
 }
 
 void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
+	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
 	for (int i = 0; i < BUTTON_MAX; i++) {
 		bool old_button = button_info[i].button_on;
 		if (controller != NULL) {
@@ -73,7 +82,7 @@ void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
 					button_info[i].button_on = true;
 					if (button_info[i].changed || button_already_changed) {
 						move_to_front(buffer_order, i);
-						button_info[i].buffer = BUFFER_WINDOW;
+						button_info[i].buffer = buffer_window;
 					}
 				}
 			}
@@ -86,7 +95,7 @@ void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
 					button_info[i].button_on = true;
 					if (button_info[i].changed || button_already_changed) {
 						move_to_front(buffer_order, i);
-						button_info[i].buffer = BUFFER_WINDOW;
+						button_info[i].buffer = buffer_window;
 					}
 				}
 			}
@@ -94,7 +103,7 @@ void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
 		button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
 		if (button_info[i].changed && button_info[i].button_on && is_valid_buffer_button(i)) {
 			move_to_front(buffer_order, i);
-			button_info[i].buffer = BUFFER_WINDOW;
+			button_info[i].buffer = buffer_window;
 		}
 	}
 }
@@ -238,11 +247,11 @@ bool PlayerInfo::horizontal_input(bool right) {
 	if (right) {
 		if (check_button_on(BUTTON_MENU_RIGHT)) {
 			if (check_button_trigger(BUTTON_MENU_RIGHT)) {
-				stick_hold_h_timer = MENU_STICK_HOLD_TIMER;
+				stick_hold_h_timer = get_param_int("stick_hold_timer", PARAM_MENU);
 				return true;
 			}
 			else if (stick_hold_h_timer == 0) {
-				stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
+				stick_hold_h_timer = get_param_int("stick_hold_interval", PARAM_MENU);
 				return true;
 			}
 			else {
@@ -254,11 +263,11 @@ bool PlayerInfo::horizontal_input(bool right) {
 	else {
 		if (check_button_on(BUTTON_MENU_LEFT)) {
 			if (check_button_trigger(BUTTON_MENU_LEFT)) {
-				stick_hold_h_timer = MENU_STICK_HOLD_TIMER;
+				stick_hold_h_timer = get_param_int("stick_hold_timer", PARAM_MENU);
 				return true;
 			}
 			else if (stick_hold_h_timer == 0) {
-				stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
+				stick_hold_h_timer = get_param_int("stick_hold_interval", PARAM_MENU);
 				return true;
 			}
 			else {
@@ -273,11 +282,11 @@ bool PlayerInfo::vertical_input(bool down) {
 	if (down) {
 		if (check_button_on(BUTTON_MENU_DOWN)) {
 			if (check_button_trigger(BUTTON_MENU_DOWN)) {
-				stick_hold_v_timer = MENU_STICK_HOLD_TIMER;
+				stick_hold_v_timer = get_param_int("stick_hold_timer", PARAM_MENU);
 				return true;
 			}
 			else if (stick_hold_v_timer == 0) {
-				stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
+				stick_hold_v_timer = get_param_int("stick_hold_interval", PARAM_MENU);
 				return true;
 			}
 			else {
@@ -292,11 +301,11 @@ bool PlayerInfo::vertical_input(bool down) {
 	else {
 		if (check_button_on(BUTTON_MENU_UP)) {
 			if (check_button_trigger(BUTTON_MENU_UP)) {
-				stick_hold_v_timer = MENU_STICK_HOLD_TIMER;
+				stick_hold_v_timer = get_param_int("stick_hold_timer", PARAM_MENU);
 				return true;
 			}
 			else if (stick_hold_v_timer == 0) {
-				stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
+				stick_hold_v_timer = get_param_int("stick_hold_interval", PARAM_MENU);
 				return true;
 			}
 			else {

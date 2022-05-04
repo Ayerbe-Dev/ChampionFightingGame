@@ -34,7 +34,7 @@ void Fighter::loadFighterSounds() {
 
 void Fighter::load_model_shader() {
 	RenderManager* render_manager = RenderManager::get_instance();
-	scale = glm::vec3(0.05 * get_param_float("model_scale"));
+	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
@@ -59,9 +59,9 @@ void Fighter::load_anim_list() {
 }
 
 void Fighter::set_default_vars() {
-	base_jostle_anchor = glm::vec2(get_param_float("jostle_x0"), get_param_float("jostle_y0"));
-	base_jostle_offset = glm::vec2(get_param_float("jostle_x1"), get_param_float("jostle_y1"));
-	fighter_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
+	base_jostle_anchor = glm::vec2(get_local_param_float("jostle_x0"), get_local_param_float("jostle_y0"));
+	base_jostle_offset = glm::vec2(get_local_param_float("jostle_x1"), get_local_param_float("jostle_y1"));
+	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_flag[FIGHTER_FLAG_CAN_TECH] = true;
 }
 

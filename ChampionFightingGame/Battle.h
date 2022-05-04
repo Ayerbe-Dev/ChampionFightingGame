@@ -36,6 +36,7 @@ public:
 	GameTexture bar_texture;
 	float* ex;
 	float max_ex;
+	int num_bars;
 	int prev_segments = 0;
 };
 

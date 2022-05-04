@@ -2,7 +2,6 @@
 #include "Button.h"
 #include "utils.h"
 #include "Stage.h"
-#include "MenuConstants.h"
 
 class PlayerInfo {
 public:
@@ -14,8 +13,8 @@ public:
 	SDL_GameController* controller{ NULL };
 	unsigned int buffer_order[6]{ BUTTON_LP, BUTTON_MP, BUTTON_HP, BUTTON_LK, BUTTON_MK, BUTTON_HK };
 	std::string crash_reason{"Crash Message Goes Here"};
-	int stick_hold_h_timer = MENU_STICK_HOLD_INTERVAL;
-	int stick_hold_v_timer = MENU_STICK_HOLD_INTERVAL;
+	int stick_hold_h_timer;
+	int stick_hold_v_timer;
 
 	PlayerInfo();
 	PlayerInfo(int id);

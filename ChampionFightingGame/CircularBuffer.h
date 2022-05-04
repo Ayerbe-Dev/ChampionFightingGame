@@ -9,11 +9,13 @@ public:
 	CircularBuffer() {
 		data = new T[1];
 		num_elements = 1;
+		curr_index = 0;
 	}
 
 	CircularBuffer(int size) {
 		data = new T[size];
 		num_elements = size;
+		curr_index = 0;
 	}
 
 	~CircularBuffer() {

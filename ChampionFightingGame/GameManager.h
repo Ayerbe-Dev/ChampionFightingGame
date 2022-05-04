@@ -2,6 +2,7 @@
 #include "PlayerInfo.h"
 #include "GameMenu.h"
 #include "GameState.h"
+#include "MenuConstants.h"
 
 class GameManager {
 public:

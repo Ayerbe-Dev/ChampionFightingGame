@@ -1,4 +1,5 @@
 #include "Fighter.h"
+#include "ParamAccessor.h"
 
 bool Fighter::check_button_on(unsigned int button) {
 	return player_info->check_button_on(button);
@@ -267,7 +268,7 @@ bool Fighter::get_normal_cancel(int attack_kind, unsigned int button, int situat
 			}
 		}
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= BUFFER_WINDOW) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
 				return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
 			}
@@ -284,8 +285,10 @@ int Fighter::try_ex(bool punch) {
 	unsigned int no_heavy_ex_buttons[2];
 	no_heavy_ex_buttons[0] = punch ? BUTTON_LP : BUTTON_LK;
 	no_heavy_ex_buttons[1] = punch ? BUTTON_MP : BUTTON_MK;
-	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= EX_METER_SIZE / (EX_METER_BARS / 2)) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= EX_METER_SIZE / (EX_METER_BARS / 2);
+	int ex_meter_size = get_param_int("ex_meter_size", PARAM_FIGHTER);
+	int ex_meter_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
+	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / 2)) {
+		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / 2);
 		return SPECIAL_LEVEL_EX;
 	}
 	else if (check_button_input(no_heavy_ex_buttons, 2, 2)) {

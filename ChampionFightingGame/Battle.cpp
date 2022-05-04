@@ -30,6 +30,7 @@
 #include "RenderManager.h"
 
 #include "Debugger.h"
+#include "ParamAccessor.h"
 
 
 extern SDL_Renderer* g_renderer;
@@ -177,6 +178,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 
 	bool loading = true;
+	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
 	while (loading) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -197,7 +199,7 @@ void Battle::load_battle(GameManager* game_manager) {
 			if (player_info[i]->is_any_inputs()) {
 				loading = false;
 
-				for (int i2 = 0; i2 < BUFFER_WINDOW; i2++) {
+				for (int i2 = 0; i2 < buffer_window; i2++) {
 					player_info[i]->poll_buttons(keyboard_state);
 					player_info[!i]->poll_buttons(keyboard_state);
 				}
@@ -227,7 +229,6 @@ void Battle::unload_battle() {
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
 		delete fighter[i];
-		std::cout << "Returned from the fighter deletion" << std::endl;
 	}
 	stage.unload_stage();
 	sound_manager->unloadSoundAll();
@@ -656,7 +657,7 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 	if (parrying) {
 		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14 + PARRY_ADVANTAGE_FRAMES - hitbox->blockstun;
+		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
@@ -776,7 +777,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 	if (parrying) {
 		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 6;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 6 + PARRY_ADVANTAGE_FRAMES - hitbox->blockstun;
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 6 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
 		return hitbox->id;
@@ -844,13 +845,13 @@ bool Battle::event_hit_collide_player() {
 		if (players_hit[i]) {
 			fighter[!i]->update_hitbox_connect(hitboxes[!i]->multihit);
 			if (fighter[i]->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY]) {
-				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_block / 2, EX_METER_SIZE);
-				fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + fighter[i]->get_param_float("meter_gain_on_parry"), EX_METER_SIZE);
+				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_block / 2, get_param_int("ex_meter_size", PARAM_FIGHTER));
+				fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + fighter[i]->get_local_param_float("meter_gain_on_parry"), get_param_int("ex_meter_size", PARAM_FIGHTER));
 				fighter[i]->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = false;
 				post_hit_status[i] = FIGHTER_STATUS_PARRY;
 			}
 			else if (fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
-				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_block, EX_METER_SIZE);
+				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_block, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(!hitboxes[!i]->can_chip_ko, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->chip_damage, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->block_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
@@ -864,7 +865,7 @@ bool Battle::event_hit_collide_player() {
 
 				//Note: This is also what will happen to Leon if he gets hit while he has Right of Way armor, so if we ever want to remove the chip damage
 				//for when he gets hit with RoW, we'll need to find a way to account for that. I don't think it'll be that big of a deal though.
-				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_block, EX_METER_SIZE);
+				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_block, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(1, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - (hitboxes[!i]->chip_damage / 2), fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 			}
 			else {
@@ -901,7 +902,7 @@ bool Battle::event_hit_collide_player() {
 					if (hitboxes[!i]->scale == -5) {
 						fighter[!i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
 					}
-					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_counterhit, EX_METER_SIZE);
+					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_counterhit, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * hitboxes[!i]->counterhit_damage_mul, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
 					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
@@ -912,7 +913,7 @@ bool Battle::event_hit_collide_player() {
 					}
 				}
 				else {
-					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_hit, EX_METER_SIZE);
+					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_hit, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * ((clampf(1, 10 - fighter[!i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = hitboxes[!i]->attack_level;
 					post_hit_status[i] = get_damage_status(hitboxes[!i]->hit_status, fighter[i]->situation_kind);
@@ -990,20 +991,20 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 		p1_projectile->update_hitbox_connect(p1_hitbox->multihit);
 		p1_projectile->projectile_int[PROJECTILE_INT_HEALTH] --;
 		if (p2->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY]) {
-			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_block / 2, EX_METER_SIZE);
-			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p2->get_param_float("meter_gain_on_parry"), EX_METER_SIZE);
+			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_block / 2, get_param_int("ex_meter_size", PARAM_FIGHTER));
+			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p2->get_local_param_float("meter_gain_on_parry"), get_param_int("ex_meter_size", PARAM_FIGHTER));
 			p2->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = false;
 			p2_status_post_hit = FIGHTER_STATUS_PARRY;
 		}
 		else if (p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
-			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_block, EX_METER_SIZE);
+			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_block, get_param_int("ex_meter_size", PARAM_FIGHTER));
 			p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(!p1_hitbox->can_chip_ko, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->chip_damage, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
 		}
 		else if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT]) {
-			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_block / 2, EX_METER_SIZE);
+			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_block / 2, get_param_int("ex_meter_size", PARAM_FIGHTER));
 			p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage / 2, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
 		}
 		else {
@@ -1036,7 +1037,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			}
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
-				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_counterhit, EX_METER_SIZE);
+				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_counterhit, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * p1_hitbox->counterhit_damage_mul, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
 				p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
@@ -1044,7 +1045,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);
 			}
 			else {
-				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_hit, EX_METER_SIZE);
+				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain_on_hit, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * ((clampf(1, 10 - p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
@@ -1137,8 +1138,8 @@ bool Battle::check_button_trigger(unsigned int button) {
 HealthBar::HealthBar() {}
 
 void HealthBar::init(Fighter* fighter) {
-	health_texture.init("resource/ui/game/hp/health.png");
-	bar_texture.init("resource/ui/game/hp/bar.png");
+	health_texture.init("resource/ui/battle/hp/health.png");
+	bar_texture.init("resource/ui/battle/hp/bar.png");
 	if (fighter->id) {
 		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
@@ -1152,7 +1153,7 @@ void HealthBar::init(Fighter* fighter) {
 	health_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
 	bar_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
 	health = &fighter->fighter_float[FIGHTER_FLOAT_HEALTH];
-	max_health = fighter->get_param_float("health");
+	max_health = fighter->get_local_param_float("health");
 }
 
 void HealthBar::destroy() {
@@ -1174,12 +1175,13 @@ ExBar::ExBar() {}
 void ExBar::init(Fighter* fighter) {
 	this->fighter = fighter;
 	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
-	max_ex = EX_METER_SIZE;
-	ex_texture.init("resource/ui/game/ex/ex.png");
-	ex_segment_texture.init("resource/ui/game/ex/ex_segment.png");
-	bar_texture.init("resource/ui/game/ex/bar.png");
+	max_ex = get_param_int("ex_meter_size", PARAM_FIGHTER);
+	ex_texture.init("resource/ui/battle/ex/ex.png");
+	ex_segment_texture.init("resource/ui/battle/ex/ex_segment.png");
+	bar_texture.init("resource/ui/battle/ex/bar.png");
 	ex_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
 	ex_segment_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
+	num_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
 
 	if (fighter->id == 0) {
 		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -1207,13 +1209,13 @@ void ExBar::destroy() {
 void ExBar::process() {
 	ex_texture.set_right_target(*ex / max_ex, 6);
 
-	int segments = floor(*ex / (max_ex / EX_METER_BARS));
+	int segments = floor(*ex / (max_ex / num_bars));
 	if (prev_segments != segments) {
 		if (prev_segments > segments) {
-			ex_segment_texture.set_right_target((*ex / EX_METER_BARS) / (max_ex / segments), 1);
+			ex_segment_texture.set_right_target((*ex / num_bars) / (max_ex / segments), 1);
 		}
 		else if (!(segments % 2)) {
-			ex_segment_texture.set_right_target((max_ex / EX_METER_BARS) / (max_ex / segments), 1);
+			ex_segment_texture.set_right_target((max_ex / num_bars) / (max_ex / segments), 1);
 		}
 	}
 	prev_segments = segments;
@@ -1231,7 +1233,7 @@ PlayerIndicator::PlayerIndicator() {}
 PlayerIndicator::PlayerIndicator(Fighter* fighter, std::string nametag) {
 	this->fighter = fighter;
 	this->nametag = nametag;
-	std::string resource_dir = "resource/ui/game/tag/";
+	std::string resource_dir = "resource/ui/battle/tag/";
 	if (fighter->id == 0) {
 		resource_dir += "p1_tag";
 	}
@@ -1261,11 +1263,11 @@ void GameTimer::init(int time) {
 	frames = 9;
 	clock_mode = 1;
 
-	clock.init("resource/ui/game/timer/clockface.png");
-	second_texture.init("resource/ui/game/timer/bigtypeface.png");
-	deca_second_texture.init("resource/ui/game/timer/bigtypeface.png");
-	frame_texture.init("resource/ui/game/timer/smalltypeface.png");
-	deca_frame_texture.init("resource/ui/game/timer/smalltypeface.png");
+	clock.init("resource/ui/battle/timer/clockface.png");
+	second_texture.init("resource/ui/battle/timer/bigtypeface.png");
+	deca_second_texture.init("resource/ui/battle/timer/bigtypeface.png");
+	frame_texture.init("resource/ui/battle/timer/smalltypeface.png");
+	deca_frame_texture.init("resource/ui/battle/timer/smalltypeface.png");
 
 	clock.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 	second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
@@ -1273,11 +1275,11 @@ void GameTimer::init(int time) {
 	frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 	deca_frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 
-	clock.load_spritesheet("resource/ui/game/timer/clockface.yml");
-	second_texture.load_spritesheet("resource/ui/game/timer/bigtypeface.yml");
-	deca_second_texture.load_spritesheet("resource/ui/game/timer/bigtypeface.yml");
-	frame_texture.load_spritesheet("resource/ui/game/timer/smalltypeface.yml");
-	deca_frame_texture.load_spritesheet("resource/ui/game/timer/smalltypeface.yml");
+	clock.load_spritesheet("resource/ui/battle/timer/clockface.yml");
+	second_texture.load_spritesheet("resource/ui/battle/timer/bigtypeface.yml");
+	deca_second_texture.load_spritesheet("resource/ui/battle/timer/bigtypeface.yml");
+	frame_texture.load_spritesheet("resource/ui/battle/timer/smalltypeface.yml");
+	deca_frame_texture.load_spritesheet("resource/ui/battle/timer/smalltypeface.yml");
 
 	clock.set_scale(1.5);
 	deca_second_texture.set_scale(1.5);

@@ -1,6 +1,7 @@
 #include "Debugger.h"
 #include "Fighter.h"
 #include "GameRect.h"
+#include "ParamAccessor.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -146,39 +147,40 @@ void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_ta
 		float add;
 		std::cout << "Enter HP Difference: ";
 		std::cin >> add;
-		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, target->fighter_float[FIGHTER_FLOAT_HEALTH] + add, target->get_param_float("health"));
+		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, target->fighter_float[FIGHTER_FLOAT_HEALTH] + add, target->get_local_param_float("health"));
 	}
 	if (command == "set_hp") {
 		float set;
 		std::cout << "Enter New HP: ";
 		std::cin >> set;
-		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, set, target->get_param_float("health"));
+		target->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, set, target->get_local_param_float("health"));
 	}
 	if (command == "max_hp") {
-		target->fighter_float[FIGHTER_FLOAT_HEALTH] = target->get_param_float("health");
+		target->fighter_float[FIGHTER_FLOAT_HEALTH] = target->get_local_param_float("health");
 	}
 	if (command == "max_hp_all") {
-		target->fighter_float[FIGHTER_FLOAT_HEALTH] = target->get_param_float("health");
-		not_target->fighter_float[FIGHTER_FLOAT_HEALTH] = not_target->get_param_float("health");
+		target->fighter_float[FIGHTER_FLOAT_HEALTH] = target->get_local_param_float("health");
+		not_target->fighter_float[FIGHTER_FLOAT_HEALTH] = not_target->get_local_param_float("health");
 	}
 	if (command == "add_ex") {
 		float add;
 		std::cout << "Enter Meter Difference: ";
 		std::cin >> add;
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, EX_METER_SIZE);
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, get_param_int("ex_meter_size", PARAM_FIGHTER));
 	}
 	if (command == "set_ex") {
 		float set;
 		std::cout << "Enter New Meter Amount: ";
 		std::cin >> set;
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, EX_METER_SIZE);
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, get_param_int("ex_meter_size", PARAM_FIGHTER));
 	}
 	if (command == "max_ex") {
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = EX_METER_SIZE;
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = get_param_int("ex_meter_size", PARAM_FIGHTER);
 	}
 	if (command == "max_ex_all") {
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = EX_METER_SIZE;
-		not_target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = EX_METER_SIZE;
+		int ex_meter_size = get_param_int("ex_meter_size", PARAM_FIGHTER);
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = ex_meter_size;
+		not_target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = ex_meter_size;
 	}
 	if (command == "reload_moves") {
 		target->wipe_scripts();

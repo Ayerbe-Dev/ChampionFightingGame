@@ -6,6 +6,7 @@
 #include <fstream>
 #include "BattleObjectManager.h"
 #include "AIManager.h"
+#include "ParamAccessor.h"
 
 Fighter::Fighter() {
 }
@@ -67,6 +68,7 @@ void Fighter::fighter_main() {
 	decrease_common_variables();
 	process_post_position();
 	process_post_status();
+	process_ai();
 }
 
 void Fighter::process_projectiles() {
@@ -134,12 +136,12 @@ void Fighter::process_position() {
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH) {
-				if (!that->add_pos(glm::vec3(that->get_param_float("jostle_walk_b_speed") * facing_dir, 0.0, 0.0))) {
-					add_pos(glm::vec3(get_param_float("jostle_walk_b_speed") * that->facing_dir, 0.0, 0.0));
+				if (!that->add_pos(glm::vec3(that->get_local_param_float("jostle_walk_b_speed") * facing_dir, 0.0, 0.0))) {
+					add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->facing_dir, 0.0, 0.0));
 				}
 			}
 			else {
-				add_pos(glm::vec3(get_param_float("jostle_walk_b_speed") * that->facing_dir, 0.0, 0.0));
+				add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->facing_dir, 0.0, 0.0));
 			}
 		}
 	}
@@ -297,22 +299,25 @@ void Fighter::decrease_common_variables() {
 
 void Fighter::process_input() {
 	int stick_dir = get_stick_dir();
+	int dash_window = get_param_int("dash_window", PARAM_FIGHTER);
+	int tech_window = get_param_int("tech_window", PARAM_FIGHTER);
+	int motion_special_timer = get_param_int("motion_special_timer", PARAM_FIGHTER);
 
 	//Dash Input
 
 	if (get_flick_dir() == 6 && prev_stick_dir == 5) {
-		fighter_int[FIGHTER_INT_DASH_F_WINDOW] = DASH_WINDOW;
+		fighter_int[FIGHTER_INT_DASH_F_WINDOW] = dash_window;
 	}
 	if (get_flick_dir() == 4 && prev_stick_dir == 5) {
-		fighter_int[FIGHTER_INT_DASH_B_WINDOW] = DASH_WINDOW;
+		fighter_int[FIGHTER_INT_DASH_B_WINDOW] = dash_window;
 	}
 	if (status_kind != FIGHTER_STATUS_KNOCKDOWN) {
 		if (get_flick_dir() == 8 && fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
-			fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = TECH_WINDOW;
+			fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = tech_window;
 			fighter_int[FIGHTER_INT_WAKEUP_SPEED] = WAKEUP_SPEED_FAST;
 		}
 		if (get_flick_dir() == 2 && fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
-			fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = TECH_WINDOW;
+			fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = tech_window;
 			fighter_int[FIGHTER_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
 		}
 	}
@@ -326,107 +331,107 @@ void Fighter::process_input() {
 	if (stick_dir == 1) {
 		if (fighter_int[FIGHTER_INT_214_STEP] == 1) {
 			fighter_int[FIGHTER_INT_214_STEP] ++;
-			fighter_int[FIGHTER_INT_214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_214214_STEP] == 1 || fighter_int[FIGHTER_INT_214214_STEP] == 4) {
 			fighter_int[FIGHTER_INT_214214_STEP] ++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_41236_STEP] == 1) {
 			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_63214_STEP] == 3) {
 			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
 	}
 	if (stick_dir == 2) {
 		fighter_int[FIGHTER_INT_236_STEP] = 1;
-		fighter_int[FIGHTER_INT_236_TIMER] = MOTION_SPECIAL_TIMER;
+		fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
 		fighter_int[FIGHTER_INT_214_STEP] = 1;
-		fighter_int[FIGHTER_INT_214_TIMER] = MOTION_SPECIAL_TIMER;
+		fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
 		if (fighter_int[FIGHTER_INT_623_STEP] == 1) {
 			fighter_int[FIGHTER_INT_623_STEP] ++;
-			fighter_int[FIGHTER_INT_623_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_214214_STEP] == 1) {
-			fighter_int[FIGHTER_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_214214_STEP] == 0 || fighter_int[FIGHTER_INT_214214_STEP] == 3) {
 			fighter_int[FIGHTER_INT_214214_STEP] ++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_236236_STEP] == 1) {
-			fighter_int[FIGHTER_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_236236_STEP] == 0 || fighter_int[FIGHTER_INT_236236_STEP] == 3) {
 			fighter_int[FIGHTER_INT_236236_STEP] ++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_41236_STEP] == 2) {
 			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_63214_STEP] == 2) {
 			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
 	}
 	if (stick_dir == 3) {
 		if (fighter_int[FIGHTER_INT_236_STEP] == 1) {
 			fighter_int[FIGHTER_INT_236_STEP] ++;
-			fighter_int[FIGHTER_INT_236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_623_STEP] == 2) {
 			fighter_int[FIGHTER_INT_623_STEP] ++;
-			fighter_int[FIGHTER_INT_623_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_236236_STEP] == 1 || fighter_int[FIGHTER_INT_236236_STEP] == 4) {
 			fighter_int[FIGHTER_INT_236236_STEP] ++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_41236_STEP] == 3) {
 			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_63214_STEP] == 1) {
 			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
 	}
 	if (stick_dir == 4) {
 		fighter_int[FIGHTER_INT_41236_STEP] = 1;
-		fighter_int[FIGHTER_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+		fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		if (fighter_int[FIGHTER_INT_214_STEP] == 2) {
 			fighter_int[FIGHTER_INT_214_STEP] ++;
-			fighter_int[FIGHTER_INT_214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_214214_STEP] == 2 || fighter_int[FIGHTER_INT_214214_STEP] == 5) {
 			fighter_int[FIGHTER_INT_214214_STEP] ++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_63214_STEP] == 4) {
 			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
 	}
 	if (stick_dir == 6) {
 		fighter_int[FIGHTER_INT_623_STEP] = 1;
-		fighter_int[FIGHTER_INT_623_TIMER] = MOTION_SPECIAL_TIMER;
+		fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
 		fighter_int[FIGHTER_INT_63214_STEP] = 1;
-		fighter_int[FIGHTER_INT_63214_TIMER] = MOTION_SPECIAL_TIMER;
+		fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		if (fighter_int[FIGHTER_INT_236_STEP] == 2) {
 			fighter_int[FIGHTER_INT_236_STEP] ++;
-			fighter_int[FIGHTER_INT_236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_236236_STEP] == 2 || fighter_int[FIGHTER_INT_236236_STEP] == 5) {
 			fighter_int[FIGHTER_INT_236236_STEP] ++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_41236_STEP] == 4) {
 			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = MOTION_SPECIAL_TIMER;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		}
 	}
 

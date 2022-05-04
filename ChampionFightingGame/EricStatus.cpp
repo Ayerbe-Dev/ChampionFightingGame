@@ -87,7 +87,7 @@ void Eric::exit_status_dashb() {
 }
 
 void Eric::eric_status_special_uppercut_start() {
-	if (frame >= get_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+	if (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
 		change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}

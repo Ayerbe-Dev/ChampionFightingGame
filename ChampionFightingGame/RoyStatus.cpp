@@ -171,7 +171,7 @@ void Roy::roy_exit_status_special_fireball_kick() {
 }
 
 void Roy::roy_status_special_uppercut_start() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
 		change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}

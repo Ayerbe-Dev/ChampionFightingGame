@@ -5,8 +5,8 @@ void Projectile::status_default() {
 }
 
 void Projectile::enter_status_default() {
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("active_frames");
-	projectile_int[PROJECTILE_INT_HEALTH] = get_param_int("health");
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("active_frames");
+	projectile_int[PROJECTILE_INT_HEALTH] = get_local_param_int("health");
 }
 
 void Projectile::exit_status_default() {
@@ -14,7 +14,7 @@ void Projectile::exit_status_default() {
 }
 
 void Projectile::status_move() {
-	pos.x += get_param_float("move_x_speed") * facing_dir;
+	pos.x += get_local_param_float("move_x_speed") * facing_dir;
 }
 
 void Projectile::enter_status_move() {

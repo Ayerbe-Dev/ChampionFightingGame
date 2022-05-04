@@ -10,7 +10,7 @@ public:
 	Shader();
 	Shader(std::string vertex_dir, std::string fragment_dir);
 	~Shader();
-	unsigned int program;
+	unsigned int program = 0;
 
 	void init(std::string vertex_dir, std::string fragment_dir);
 	void destroy();

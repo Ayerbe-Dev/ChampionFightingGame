@@ -21,7 +21,7 @@ void Projectile::load_model_shader() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
-	has_model = get_param_bool("has_model");
+	has_model = get_local_param_bool("has_model");
 	if (has_model) {
 		model.load_model(resource_dir + "/model/model.dae");
 	}

@@ -100,8 +100,8 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 void Shader::destroy() {
 	if (loaded) {
 		glDeleteProgram(program);
+		loaded = false;
 	}
-	loaded = false;
 }
 
 void Shader::use() {

@@ -261,6 +261,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="LoadingFunctions.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MoveScript.cpp" />
+    <ClCompile Include="ParamAccessor.cpp" />
     <ClCompile Include="ParamFunctions.cpp" />
     <ClCompile Include="FighterPositionFunctions.cpp" />
     <ClCompile Include="FighterProjectileFunctions.cpp" />
@@ -435,6 +436,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GLEW Helpers.h" />
     <ClInclude Include="GLM Helpers.h" />
     <ClInclude Include="AIMoveList.h" />
+    <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />

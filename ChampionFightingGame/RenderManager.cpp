@@ -68,9 +68,6 @@ void RenderManager::link_shader(Shader *shader) {
 }
 
 void RenderManager::unlink_all_shaders() {
-	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
-		linked_shaders[i]->destroy();
-	}
 	linked_shaders.clear();
 }
 

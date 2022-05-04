@@ -1,7 +1,4 @@
 #pragma once
-
-#define MENU_STICK_HOLD_TIMER 20
-#define MENU_STICK_HOLD_INTERVAL 2
 #define MAX_LAYERS 5
 
 enum {

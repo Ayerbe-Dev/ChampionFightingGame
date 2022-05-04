@@ -81,14 +81,14 @@ public:
 	void load_stats();
 	void load_params();
 
-	int get_param_int(std::string param);
-	int get_param_int(std::string param, ParamTable param_table);
-	float get_param_float(std::string param);
-	float get_param_float(std::string param, ParamTable param_table);
-	std::string get_param_string(std::string param);
-	std::string get_param_string(std::string param, ParamTable param_table);
-	bool get_param_bool(std::string param);
-	bool get_param_bool(std::string param, ParamTable param_table);
+	int get_local_param_int(std::string param);
+	int get_local_param_int(std::string param, ParamTable param_table);
+	float get_local_param_float(std::string param);
+	float get_local_param_float(std::string param, ParamTable param_table);
+	std::string get_local_param_string(std::string param);
+	std::string get_local_param_string(std::string param, ParamTable param_table);
+	bool get_local_param_bool(std::string param);
+	bool get_local_param_bool(std::string param, ParamTable param_table);
 
 	std::string resource_dir;
 

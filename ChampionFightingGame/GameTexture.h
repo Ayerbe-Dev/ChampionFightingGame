@@ -92,6 +92,11 @@ public:
     float target_top_crop = -2.0;
     float target_bottom_crop = -2.0;
 
+    float init_left_crop = 0.0;
+    float init_right_crop = 1.0;
+    float init_top_crop = 1.0;
+    float init_bottom_crop = 0.0;
+
     float target_left_frames = 0.0;
     float target_right_frames = 0.0;
     float target_top_frames = 0.0;

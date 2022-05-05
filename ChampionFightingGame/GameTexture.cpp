@@ -517,6 +517,14 @@ void GameTexture::set_left_target(float percent, float frames) {
 	if (percent < 0.0 || frames <= 0.0) {
 		return;
 	}
+	if (percent == 0.0) {
+		if (h_flipped) {
+			init_left_crop = tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x;
+		}
+		else {
+			init_left_crop = tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x;
+		}
+	}
 	this->target_left_crop = percent;
 	this->target_left_frames = frames;
 }
@@ -524,6 +532,14 @@ void GameTexture::set_left_target(float percent, float frames) {
 void GameTexture::set_right_target(float percent, float frames) {
 	if (percent < 0.0 || frames <= 0.0) {
 		return;
+	}
+	if (percent == 0.0) {
+		if (h_flipped) {
+			init_right_crop = tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x;
+		}
+		else {
+			init_right_crop = tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x;
+		}
 	}
 	this->target_right_crop = percent;
 	this->target_right_frames = frames;
@@ -533,6 +549,14 @@ void GameTexture::set_top_target(float percent, float frames) {
 	if (percent < 0.0 || frames <= 0.0) {
 		return;
 	}
+	if (percent == 0.0) {
+		if (v_flipped) {
+			init_top_crop = tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y;
+		}
+		else {
+			init_top_crop = tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y;
+		}
+	}
 	this->target_top_crop = percent;
 	this->target_top_frames = frames;
 }
@@ -540,6 +564,14 @@ void GameTexture::set_top_target(float percent, float frames) {
 void GameTexture::set_bottom_target(float percent, float frames) {
 	if (percent < 0.0 || frames <= 0.0) {
 		return;
+	}
+	if (percent == 0.0) {
+		if (v_flipped) {
+			init_bottom_crop = tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y;
+		}
+		else {
+			init_bottom_crop = tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y;
+		}
 	}
 	this->target_bottom_crop = percent;
 	this->target_bottom_frames = frames;
@@ -622,7 +654,12 @@ void GameTexture::process() {
 				scale_bottom_percent(clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + (target_bottom_crop / target_bottom_frames), target_bottom_crop));
 			}
 			else if (target_bottom_crop < tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y) {
-				scale_bottom_percent(clampf(target_bottom_crop, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - (target_bottom_crop / target_bottom_frames), 1.0));
+				if (target_bottom_crop == 0.0) {
+					scale_bottom_percent(clampf(target_bottom_crop, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - (init_bottom_crop / target_bottom_frames), 1.0));
+				}
+				else {
+					scale_bottom_percent(clampf(target_bottom_crop, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - (target_bottom_crop / target_bottom_frames), 1.0));
+				}
 			}
 			else {
 				target_bottom_frames = 0.0;
@@ -633,7 +670,12 @@ void GameTexture::process() {
 				scale_bottom_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + (target_bottom_crop / target_bottom_frames), target_bottom_crop));
 			}
 			else if (target_bottom_crop < tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y) {
-				scale_bottom_percent(clampf(target_bottom_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - (target_bottom_crop / target_bottom_frames), 1.0));
+				if (target_bottom_crop == 0.0) {
+					scale_bottom_percent(clampf(target_bottom_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - (init_bottom_crop / target_bottom_frames), 1.0));
+				}
+				else {
+					scale_bottom_percent(clampf(target_bottom_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - (target_bottom_crop / target_bottom_frames), 1.0));
+				}
 			}
 			else {
 				target_bottom_frames = 0.0;
@@ -646,7 +688,12 @@ void GameTexture::process() {
 				scale_top_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + (target_top_crop / target_top_frames), target_top_crop));
 			}
 			else if (target_top_crop < tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y) {
-				scale_top_percent(clampf(target_top_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - (target_top_crop / target_top_frames), 1.0));
+				if (target_top_crop == 0.0) {
+					scale_top_percent(clampf(target_top_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - (init_top_crop / target_top_frames), 1.0));
+				}
+				else {
+					scale_top_percent(clampf(target_top_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y - (target_top_crop / target_top_frames), 1.0));
+				}
 			}
 			else {
 				target_top_frames = 0.0;
@@ -657,7 +704,12 @@ void GameTexture::process() {
 				scale_top_percent(clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + (target_top_crop / target_top_frames), target_top_crop));
 			}
 			else if (target_top_crop < tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y) {
-				scale_top_percent(clampf(target_top_crop, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - (target_top_crop / target_top_frames), 1.0));
+				if (target_top_crop == 0.0) {
+					scale_top_percent(clampf(target_top_crop, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - (init_top_crop / target_top_frames), 1.0));
+				}
+				else {
+					scale_top_percent(clampf(target_top_crop, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y - (target_top_crop / target_top_frames), 1.0));
+				}
 			}
 			else {
 				target_top_frames = 0.0;
@@ -670,7 +722,12 @@ void GameTexture::process() {
 				scale_left_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + (target_left_crop / target_left_frames), target_left_crop));
 			}
 			else if (target_left_crop < tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x) {
-				scale_left_percent(clampf(target_left_crop, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - (target_left_crop / target_left_frames), 1.0));
+				if (target_left_crop == 0.0) {
+					scale_left_percent(clampf(target_left_crop, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - (init_left_crop / target_left_frames), 1.0));
+				}
+				else {
+					scale_left_percent(clampf(target_left_crop, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - (target_left_crop / target_left_frames), 1.0));
+				}
 			}
 			else {
 				target_left_frames = 0.0;
@@ -681,7 +738,12 @@ void GameTexture::process() {
 				scale_left_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + (target_left_crop / target_left_frames), target_left_crop));
 			}
 			else if (target_left_crop < tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x) {
-				scale_left_percent(clampf(target_left_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - (target_left_crop / target_left_frames), 1.0));
+				if (target_left_crop == 0.0) {
+					scale_left_percent(clampf(target_left_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - (init_left_crop / target_left_frames), 1.0));
+				}
+				else {
+					scale_left_percent(clampf(target_left_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - (target_left_crop / target_left_frames), 1.0));
+				}
 			}
 			else {
 				target_left_frames = 0.0;
@@ -694,7 +756,12 @@ void GameTexture::process() {
 				scale_right_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + (target_right_crop / target_right_frames), target_right_crop));
 			}
 			else if (target_right_crop < tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x) {
-				scale_right_percent(clampf(target_right_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - (target_right_crop / target_right_frames), 1.0));
+				if (target_right_crop == 0.0) {
+					scale_right_percent(clampf(target_right_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - (init_right_crop / target_right_frames), 1.0));
+				}
+				else {
+					scale_right_percent(clampf(target_right_crop, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x - (target_right_crop / target_right_frames), 1.0));
+				}
 			}
 			else {
 				target_right_frames = 0.0;
@@ -705,7 +772,12 @@ void GameTexture::process() {
 				scale_right_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + (target_right_crop / target_right_frames), target_right_crop));
 			}
 			else if (target_right_crop < tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x) {
-				scale_right_percent(clampf(target_right_crop, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - (target_right_crop / target_right_frames), 1.0));
+				if (target_right_crop == 0.0) {
+					scale_right_percent(clampf(target_right_crop, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - (init_right_crop / target_right_frames), 1.0));
+				}
+				else {
+					scale_right_percent(clampf(target_right_crop, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x - (target_right_crop / target_right_frames), 1.0));
+				}
 			}
 			else {
 				target_right_frames = 0.0;

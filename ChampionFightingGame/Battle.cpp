@@ -1212,10 +1212,10 @@ void ExBar::process() {
 	int segments = floor(*ex / (max_ex / num_bars));
 	if (prev_segments != segments) {
 		if (prev_segments > segments) {
-			ex_segment_texture.set_right_target((*ex / num_bars) / (max_ex / segments), 1);
+			ex_segment_texture.set_right_target(clampf(0.0, (float)segments / num_bars, 1.0), 1);
 		}
 		else if (!(segments % 2)) {
-			ex_segment_texture.set_right_target((max_ex / num_bars) / (max_ex / segments), 1);
+			ex_segment_texture.set_right_target(clampf(0.0, (float)segments / num_bars, 1.0), 1);
 		}
 	}
 	prev_segments = segments;

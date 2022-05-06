@@ -696,6 +696,9 @@
     <ClCompile Include="ParamAccessor.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1345,6 +1348,9 @@
     </ClInclude>
     <ClInclude Include="ParamAccessor.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

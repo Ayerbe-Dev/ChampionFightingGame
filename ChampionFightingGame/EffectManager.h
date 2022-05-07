@@ -23,7 +23,7 @@ public:
 	void clear_effect_all(int object_id = -1);
 	EffectInstance& get_effect_instance(int object_id, std::string name, int instance_id = 0);
 
-	void load_effect(std::string name, std::string dir);
+	void load_effect(std::string name);
 	void unload_effects();
 
 	void add_effect_caster(int object_id);

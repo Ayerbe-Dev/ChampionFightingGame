@@ -468,7 +468,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="MenuConstants.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MoveScript.h" />
-    <ClInclude Include="Music.h" />
     <ClInclude Include="Nightsaber.h" />
     <ClInclude Include="NightsaberConstants.h" />
     <ClInclude Include="NightsaberFlag.h" />
@@ -529,7 +528,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RoyInt.h" />
     <ClInclude Include="RoyStatus.h" />
     <ClInclude Include="SDL Helpers.h" />
-    <ClInclude Include="SE.h" />
     <ClInclude Include="SettingConstants.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sound.h" />
@@ -560,7 +558,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="VesuviusConstants.h" />
     <ClInclude Include="VesuviusFlag.h" />
     <ClInclude Include="Vesuvius.h" />
-    <ClInclude Include="VC.h" />
     <ClInclude Include="VesuviusFloat.h" />
     <ClInclude Include="VesuviusInt.h" />
     <ClInclude Include="VesuviusStatus.h" />

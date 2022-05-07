@@ -1,7 +1,4 @@
 #pragma once
-#include "Music.h"
-#include "SE.h"
-#include "VC.h"
 
 enum {
 	SOUND_KIND_SE,

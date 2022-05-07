@@ -23,6 +23,7 @@ struct EffectInfo {
 class Effect {
 public:
 	Effect();
+	Effect(EffectInfo info);
 
 	void init(EffectInfo info);
 	void destroy();

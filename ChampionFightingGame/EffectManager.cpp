@@ -16,6 +16,10 @@ EffectManager* EffectManager::get_instance() {
 	return instance;
 }
 
+void EffectManager::init() {
+	//Basically this will be populated by a fuck ton of calls to add_effect_info
+}
+
 //We look at every active effect across all objects. If any of them have been active for their entire duration,
 //remove them. If not, render them.
 void EffectManager::render() {
@@ -100,13 +104,15 @@ EffectInstance& EffectManager::get_effect_instance(int object_id, std::string na
 	throw std::range_error("Instance ID not found!");
 }
 
-void EffectManager::load_effect(std::string name, std::string dir) {
+void EffectManager::load_effect(std::string name) {
 	if (effect_info_map.find(name) == effect_info_map.end()) {
 		std::cerr << "Effect " << name << " doesn't exist!\n";
 		return;
 	}
-	Effect to_load;
-	to_load.init(effect_info[effect_info_map[name]]);
+	if (effect_name_map.find(name) != effect_name_map.end()) {
+		return; //The effect was already loaded, probably by another player
+	}
+	Effect to_load(effect_info[effect_info_map[name]]);
 	effect_name_map[name] = loaded_effects.size();
 	loaded_effects.push_back(to_load);
 }
@@ -126,10 +132,6 @@ void EffectManager::add_effect_caster(int object_id) {
 void EffectManager::remove_effect_casters() {
 	active_effects.clear();
 	id2index.clear();
-}
-
-void EffectManager::init() {
-	//Basically this will be populated by a fuck ton of calls to add_effect_info
 }
 
 void EffectManager::add_effect_info(std::string name, std::string dir) {

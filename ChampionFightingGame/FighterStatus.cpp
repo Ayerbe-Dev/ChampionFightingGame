@@ -618,7 +618,7 @@ void Fighter::enter_status_attack() {
 }
 
 void Fighter::exit_status_attack() {
-	stopVCAll();
+	stop_vc_all();
 }
 
 void Fighter::status_attack_air() {

@@ -77,7 +77,7 @@ int main() {
 
 	game_manager.~GameManager();
 	render_manager->destroy();
-	sound_manager->unloadSoundAll();
+	sound_manager->unload_all_sounds();
 	SDL_DestroyWindow(g_window);
 	SDL_DestroyRenderer(g_renderer);
 	SDL_GL_DeleteContext(g_context);

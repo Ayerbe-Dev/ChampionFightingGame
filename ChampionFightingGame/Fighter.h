@@ -109,34 +109,18 @@ public:
 
 	//Sound - All of these just call the SoundManager versions of these functions except they pass their own ID as an arg
 
-	void playCommonSE(int se);
-	void playCharaSE(int se);
-	void playVC(int vc);
+	void play_se(std::string se, int vol = -1);
+	void play_vc(std::string vc, int vol = -1);
 
-	void pauseCommonSE(int se);
-	void pauseCharaSE(int se);
-	void pauseVC(int vc);
-	void pauseSEAll();
-	void pauseVCAll();
+	void stop_se(std::string se);
+	void stop_se_all();
 
-	void resumeSEAll();
-	void resumeVCAll();
-	
-	void stopCommonSE(int se);
-	void stopCharaSE(int se);
-	void stopVC(int vc);
-	void stopSEAll();
-	void stopVCAll();
+	void stop_vc(std::string vc);
+	void stop_vc_all();
 
-	int loadCommonSE(int se);
-	int loadCharaSE(int se);
-	int loadVC(int vc);
-
-	void unloadCommonSE(int se);
-	void unloadCharaSE(int se);
-	void unloadVC(int vc);
-	void unloadSEAll();
-	void unloadVCAll();
+	void load_sound(std::string name);
+	void unload_sound(std::string name);
+	void unload_all_sounds();
 
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 

@@ -1,9 +1,13 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 #include "RenderManager.h"
+#include "SoundManager.h"
 
 void Fighter::superInit(int id) {
 	this->id = id;
+	
+	sound_manager = SoundManager::get_instance();
+	sound_manager->add_sound_player(id);
 
 	if (id == 0) {
 		pos = glm::vec3(-200, FLOOR_GAMECOORD, 0);

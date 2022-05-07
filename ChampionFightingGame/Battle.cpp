@@ -35,7 +35,7 @@
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
-extern Sound sounds[3][MAX_SOUNDS];
+extern SoundInstance sounds[3][MAX_SOUNDS];
 extern SDL_GLContext g_context;
 
 extern bool debug;
@@ -96,8 +96,8 @@ void battle_main(GameManager* game_manager) {
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
 			if (battle.frame_pause) {
-				sound_manager->pauseSEAll(i);
-				sound_manager->pauseVCAll(i);
+				sound_manager->pause_sound_all(i, SOUND_KIND_SE);
+				sound_manager->pause_sound_all(i, SOUND_KIND_VC);
 			}
 		}
 
@@ -171,7 +171,6 @@ void Battle::load_battle(GameManager* game_manager) {
 	
 	timer.init(99);
 	inc_thread();
-	sound_manager->battle_object_manager = battle_object_manager;
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->loadCharaSounds();
 		inc_thread();
@@ -210,8 +209,9 @@ void Battle::load_battle(GameManager* game_manager) {
 	game_manager->set_menu_info(this);
 
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
-		sound_manager->loadMusic(stage.default_music_kind);
-		sound_manager->playMusic(stage.default_music_kind);
+		sound_manager->add_sound_player(-1); //I'll find a better ID for the stage music later
+		sound_manager->load_sound(stage.default_music_kind);
+		sound_manager->play_sound(-1, SOUND_KIND_MUSIC, stage.default_music_kind);
 	}
 	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
 		//randomly play the theme of one of the characters. if online, always play the opponent's theme
@@ -231,7 +231,8 @@ void Battle::unload_battle() {
 		delete fighter[i];
 	}
 	stage.unload_stage();
-	sound_manager->unloadSoundAll();
+	sound_manager->stop_sound_all();
+	sound_manager->unload_all_sounds();
 	render_manager->unlink_all_shaders();
 
 	delete game_loader;
@@ -335,8 +336,8 @@ void Battle::process_frame_pause() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	if (check_button_trigger(BUTTON_MENU_ADVANCE)) {
 		for (int i = 0; i < 2; i++) {
-			sound_manager->resumeSEAll(i);
-			sound_manager->resumeVCAll(i);
+			sound_manager->resume_sound_all(i, SOUND_KIND_SE);
+			sound_manager->resume_sound_all(i, SOUND_KIND_VC);
 		}
 		pre_process_fighter();
 		process_fighter();

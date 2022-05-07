@@ -29,5 +29,5 @@ void Roy::chara_id() {
 }
 
 void Roy::loadCharaSounds() {
-	loadVC(ROY_VC_ATTACK_01);
+	load_sound("roy_attack_01");
 }

@@ -217,7 +217,7 @@ void Roy::load_move_scripts() {
 	script("stand_lp", [this]() {
 		if (is_excute_frame(0)) {
 			rate = 2.0;
-			playVC(ROY_VC_ATTACK_01);
+			play_vc("roy_attack_01");
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });

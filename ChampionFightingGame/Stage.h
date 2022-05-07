@@ -10,16 +10,15 @@ public:
 	StageInfo(int stage_kind, std::string stage_name);
 
 	int stage_kind;
-	int default_music_kind;
+	std::string default_music_kind;
 	std::string resource_dir;
 
-	int get_stage_music();
 };
 
 class Stage {
 public:
 	int stage_kind;
-	int default_music_kind;
+	std::string default_music_kind;
 	std::string resource_dir;
 	std::vector<StageAsset*> stage_assets;
 

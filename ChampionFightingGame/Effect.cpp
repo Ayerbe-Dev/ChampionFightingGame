@@ -15,6 +15,10 @@ Effect::Effect() {
 	duration = -1;
 }
 
+Effect::Effect(EffectInfo info) {
+	init(info);
+}
+
 void Effect::init(EffectInfo info) {
 	std::ifstream stream;
 	stream.open(info.dir);

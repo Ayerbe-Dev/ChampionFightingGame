@@ -16,8 +16,8 @@ public:
 
 	void play_sound(int object_id, int sound_kind, std::string name, int volume = -1);
 
-	void pause_sound_all(int object_id, int sound_kind);
-	void resume_sound_all(int object_id, int sound_kind);
+	void pause_sound_all(int object_id = -1, int sound_kind = -1);
+	void resume_sound_all(int object_id = -1, int sound_kind = -1);
 
 	void stop_sound(int object_id, int sound_kind, std::string name);
 	void stop_sound_all(int object_id = -1, int sound_kind = -1);

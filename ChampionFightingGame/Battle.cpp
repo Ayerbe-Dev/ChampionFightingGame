@@ -95,10 +95,6 @@ void battle_main(GameManager* game_manager) {
 
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->check_controllers();
-			if (battle.frame_pause) {
-				sound_manager->pause_sound_all(i, SOUND_KIND_SE);
-				sound_manager->pause_sound_all(i, SOUND_KIND_VC);
-			}
 		}
 
 		battle.process_main();
@@ -244,6 +240,13 @@ void Battle::process_main() {
 	keyboard_state = SDL_GetKeyboardState(NULL);
 	poll_inputs(keyboard_state);
 	if (check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
+		if (frame_pause) { //Todo: Figure out if there's a cleaner way to handle this. Maybe put this
+			//in part of process_frame_pause?
+			for (int i = 0; i < 2; i++) {
+				sound_manager->resume_sound_all(i, SOUND_KIND_SE);
+				sound_manager->resume_sound_all(i, SOUND_KIND_VC);
+			}
+		}
 		frame_pause = !frame_pause;
 		timer.flip_clock();
 	}
@@ -343,6 +346,12 @@ void Battle::process_frame_pause() {
 		process_fighter();
 		post_process_fighter();
 		process_ui();
+	}
+	else {
+		for (int i = 0; i < 2; i++) {
+			sound_manager->pause_sound_all(i, SOUND_KIND_SE);
+			sound_manager->pause_sound_all(i, SOUND_KIND_VC);
+		}
 	}
 }
 

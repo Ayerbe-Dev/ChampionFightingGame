@@ -39,31 +39,88 @@ void SoundManager::play_sound(int object_id, int sound_kind, std::string name, i
 }
 
 void SoundManager::pause_sound_all(int object_id, int sound_kind) {
-	if (id2index.find(object_id) == id2index.end()) {
-		std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-		return;
+	if (object_id != -1) {
+		if (id2index.find(object_id) == id2index.end()) {
+			std::cerr << "ID " << object_id << " is not a valid sound player!\n";
+			return;
+		}
+		if (sound_kind != -1) {
+			std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
+			SDL_LockAudio();
+			for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
+				it->active = false;
+				std::advance(it, i + 1);
+			}
+			SDL_UnlockAudio();
+		}
+		else {
+			SDL_LockAudio();
+			for (int i = 0; i < SOUND_KIND_MAX; i++) {
+				std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin();
+				for (int i2 = 0, max2 = active_sounds[id2index[object_id]][i].size(); i2 < max2; i2++) {
+					it->active = false;
+					std::advance(it, i2 + 1);
+				}
+			}
+			SDL_UnlockAudio();
+		}
 	}
-	std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
-	SDL_LockAudio();
-	for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
-		it->active = false;
-		std::advance(it, i + 1);
+	else {
+		SDL_LockAudio();
+		for (int i = 0, max = active_sounds.size(); i < max; i++) {
+			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
+				std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin();
+				for (int i3 = 0, max3 = active_sounds[i][i2].size(); i3 < max3; i3++) {
+					it->active = false;
+					std::advance(it, i3 + 1);
+				}
+			}
+		}
+		SDL_UnlockAudio();
 	}
-	SDL_UnlockAudio();
 }
 
 void SoundManager::resume_sound_all(int object_id, int sound_kind) {
-	if (id2index.find(object_id) == id2index.end()) {
-		std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-		return;
+	if (object_id != -1) {
+		if (id2index.find(object_id) == id2index.end()) {
+			std::cerr << "ID " << object_id << " is not a valid sound player!\n";
+			return;
+		}
+		if (sound_kind != -1) {
+			std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
+			SDL_LockAudio();
+			for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
+				it->active = true;
+				std::advance(it, i + 1);
+			}
+			SDL_UnlockAudio();
+		}
+		else {
+			SDL_LockAudio();
+			for (int i = 0; i < SOUND_KIND_MAX; i++) {
+				std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin();
+				for (int i2 = 0, max2 = active_sounds[id2index[object_id]][i].size(); i2 < max2; i2++) {
+					it->active = true;
+					std::advance(it, i2 + 1);
+				}
+			}
+			SDL_UnlockAudio();
+		}
 	}
-	std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
-	SDL_LockAudio();
-	for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
-		it->active = true;
-		std::advance(it, i + 1);
+	else {
+		SDL_LockAudio();
+		for (int i = 0, max = active_sounds.size(); i < max; i++) {
+			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
+				std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin();
+				for (int i3 = 0, max3 = active_sounds[i][i2].size(); i3 < max3; i3++) {
+					it->active = true;
+					std::advance(it, i3 + 1);
+				}
+			}
+		}
+		SDL_UnlockAudio();
 	}
-	SDL_UnlockAudio();
+
 }
 
 void SoundManager::stop_sound(int object_id, int sound_kind, std::string name) {
@@ -88,14 +145,23 @@ void SoundManager::stop_sound(int object_id, int sound_kind, std::string name) {
 }
 
 void SoundManager::stop_sound_all(int object_id, int sound_kind) {
-	if (sound_kind != -1) {
+	if (object_id != -1) {
 		if (id2index.find(object_id) == id2index.end()) {
 			std::cerr << "ID " << object_id << " is not a valid sound player!\n";
 			return;
 		}
-		SDL_LockAudio();
-		active_sounds[id2index[object_id]][sound_kind].clear();
-		SDL_UnlockAudio();
+		if (sound_kind != -1) {
+			SDL_LockAudio();
+			active_sounds[id2index[object_id]][sound_kind].clear();
+			SDL_UnlockAudio();
+		}
+		else {
+			SDL_LockAudio();
+			for (int i = 0; i < SOUND_KIND_MAX; i++) {
+				active_sounds[id2index[object_id]][i].clear();
+			}
+			SDL_UnlockAudio();
+		}
 	}
 	else {
 		SDL_LockAudio();
@@ -242,48 +308,47 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 			std::list<SoundInstance>::iterator it = sound_manager->active_sounds[i][i2].begin();
 			for (int i3 = 0, max3 = sound_manager->active_sounds[i][i2].size(); i3 < max3; i3++) {
 				if (it->active) {
-					SoundInstance& sound_instance = *it;
 					diff = 0;
-					data = sound_instance.sound->data;
-					dlen = sound_instance.sound->duration;
-					if (sound_instance.sound->info->sound_kind == SOUND_KIND_SE) {
-						vol = getGameSetting("se_vol") * get_relative_one_percent(sound_instance.volume, 128);
+					data = it->sound->data;
+					dlen = it->sound->duration;
+					if (it->sound->info->sound_kind == SOUND_KIND_SE) {
+						vol = getGameSetting("se_vol") * get_relative_one_percent(it->volume, 128);
 					}
-					else if (sound_instance.sound->info->sound_kind == SOUND_KIND_VC) {
-						vol = getGameSetting("vc_vol") * get_relative_one_percent(sound_instance.volume, 128);
+					else if (it->sound->info->sound_kind == SOUND_KIND_VC) {
+						vol = getGameSetting("vc_vol") * get_relative_one_percent(it->volume, 128);
 					}
 					else {
-						vol = getGameSetting("music_vol") * get_relative_one_percent(sound_instance.volume, 128);
+						vol = getGameSetting("music_vol") * get_relative_one_percent(it->volume, 128);
 					}
 
-					if (sound_instance.sound->info->sound_type == SOUND_TYPE_LOOP && sound_instance.looped) {
-						data = sound_instance.sound->loop_data;
-						dlen = sound_instance.sound->loop_duration;
+					if (it->sound->info->sound_type == SOUND_TYPE_LOOP && it->looped) {
+						data = it->sound->loop_data;
+						dlen = it->sound->loop_duration;
 					}
 
 					source = (Uint8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
-					if (sound_instance.pos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
-						diff = (sound_instance.pos + len) - dlen;
+					if (it->pos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
+						diff = (it->pos + len) - dlen;
 					}
 
-					mlen = clamp(0, len, dlen - sound_instance.pos);
+					mlen = clamp(0, len, dlen - it->pos);
 
 					//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
 
-					SDL_memcpy(source, &data[sound_instance.pos], mlen);
+					SDL_memcpy(source, &data[it->pos], mlen);
 
-					sound_instance.pos += len; //Add the length of the stream to the audio's position.
+					it->pos += len; //Add the length of the stream to the audio's position.
 
 					if (diff != 0) { //If we went over
-						if (sound_instance.sound->info->sound_type == SOUND_TYPE_LOOP) {
-							if (!sound_instance.looped) { //If we've never looped before, clarify that we're getting the rest of our
+						if (it->sound->info->sound_type == SOUND_TYPE_LOOP) {
+							if (!it->looped) { //If we've never looped before, clarify that we're getting the rest of our
 								//data from the looped version, and that we are now in the loop state.
-								sound_instance.looped = true;
-								data = sound_instance.sound->loop_data;
+								it->looped = true;
+								data = it->sound->loop_data;
 							}
-							sound_instance.pos = 0;
-							SDL_memcpy(&source[len - diff], &data[sound_instance.pos], diff);
-							sound_instance.pos += diff;
+							it->pos = 0;
+							SDL_memcpy(&source[len - diff], &data[it->pos], diff);
+							it->pos += diff;
 
 						}
 						else { //Otherwise just get that shit outta here

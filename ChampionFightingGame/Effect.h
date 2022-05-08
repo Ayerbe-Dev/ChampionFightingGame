@@ -32,6 +32,7 @@ public:
 	EffectInfo info;
 	std::vector<Particle> particles;
 	int duration;
+	Shader shader;
 };
 
 //EffectInstances are what actually get rendered to the screen. Each instance can have a different position,
@@ -48,7 +49,7 @@ public:
 	void render();
 	Effect* effect;
 private:
-	Shader shader;
+	Shader* shader;
 	glm::vec3 pos;
 	glm::vec3 rot;
 	glm::vec3 scale;

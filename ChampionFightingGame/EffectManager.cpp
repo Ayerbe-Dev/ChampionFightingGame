@@ -17,7 +17,7 @@ EffectManager* EffectManager::get_instance() {
 }
 
 void EffectManager::init() {
-	//Basically this will be populated by a fuck ton of calls to add_effect_info
+	add_effect_info("flame", "resource/chara/roy/effects/flame/");
 }
 
 //We look at every active effect across all objects. If any of them have been active for their entire duration,
@@ -25,15 +25,16 @@ void EffectManager::init() {
 void EffectManager::render() {
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
 		std::list<EffectInstance>::iterator it = active_effects[i].begin();
-		for (int i2 = 0, max = active_effects[i].size(); i2 < max; i2++) {
+		for (int i2 = 0; i2 < active_effects[i].size(); i2++) {
 			if (it->process()) {
 				it->render();
+				std::next(it, 1);
 			}
 			else {
 				active_effects[i].erase(it);
-				i2--;
+				it = active_effects[i].begin(); //How the fuck do iterators
+				std::next(it, i2);
 			}
-			std::advance(it, i2 + 1);
 		}
 	}
 }
@@ -68,7 +69,7 @@ void EffectManager::clear_effect(int object_id, std::string name, int instance_i
 				instance_id--;
 			}
 		}
-		std::advance(it, i + 1);
+		std::next(it, 1);
 	}
 	std::cerr << "Instance ID not found!\n";
 }
@@ -99,7 +100,7 @@ EffectInstance& EffectManager::get_effect_instance(int object_id, std::string na
 				instance_id--;
 			}
 		}
-		std::advance(it, i + 1);
+		std::next(it, 1);
 	}
 	throw std::range_error("Instance ID not found!");
 }

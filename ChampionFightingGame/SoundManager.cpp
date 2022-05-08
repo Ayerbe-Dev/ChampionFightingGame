@@ -1,6 +1,7 @@
 ﻿#include "SoundManager.h"
 #include "GameSettings.h"
 #include "SDL/SDL_audio.h"
+#include "utils.h"
 SoundManager* SoundManager::instance = nullptr;
 
 SoundManager::SoundManager() {
@@ -307,6 +308,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 		for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
 			std::list<SoundInstance>::iterator it = sound_manager->active_sounds[i][i2].begin();
 			for (int i3 = 0, max3 = sound_manager->active_sounds[i][i2].size(); i3 < max3; i3++) {
+				bool erase = false;
 				if (it->active) {
 					diff = 0;
 					data = it->sound->data;
@@ -353,10 +355,14 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 						}
 						else { //Otherwise just get that shit outta here
 							sound_manager->active_sounds[i][i2].erase(it);
+							erase = true;
 						}
 					}
 					SDL_MixAudio(stream, source, mlen, vol);
 					SDL_free(source);
+				}
+				if (!erase) {
+					std::next(it, 1);
 				}
 			}
 		}

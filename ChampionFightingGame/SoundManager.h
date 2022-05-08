@@ -4,9 +4,6 @@
 #include <list>
 #include <array>
 #include <unordered_map>
-#include "BattleObjectManager.h"
-#include "Fighter.h"
-#include "CharaKind.h"
 #include "Sound.h"
 
 class SoundManager {

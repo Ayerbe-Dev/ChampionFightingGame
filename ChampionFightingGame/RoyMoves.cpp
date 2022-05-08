@@ -435,7 +435,7 @@ void Roy::load_move_scripts() {
 	script("throw_f", [this]() {
 		if (is_excute_frame(0)) {
 			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
+			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
 		if (is_excute_frame(22)) {

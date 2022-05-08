@@ -4,7 +4,7 @@
 #include <iostream>
 #include <glew/glew.h>
 #include <glm/glm.hpp>
-#include "stb_image.h"
+#include "TextureCoord.h"
 
 class Shader;
 
@@ -20,20 +20,6 @@ enum {
     GAME_TEXTURE_ORIENTATION_TOP_RIGHT,
 
     GAME_TEXTURE_ORIENTATION_MAX,
-};
-
-enum {
-    TEX_COORD_BOTTOM_LEFT,
-    TEX_COORD_BOTTOM_RIGHT,
-    TEX_COORD_TOP_RIGHT,
-    TEX_COORD_TOP_LEFT,
-
-    TEX_COORD_MAX,
-};
-
-struct GameTextureCoord {
-    glm::vec3 pos;
-    glm::vec2 tex_coord;
 };
 
 class GameTexture {
@@ -104,8 +90,8 @@ public:
 
     Shader *shader;
     unsigned int texture;
-    GameTextureCoord tex_data[4];
-    GameTextureCoord* tex_accessor[4];
+    TextureCoord tex_data[4];
+    TextureCoord* tex_accessor[4];
     glm::vec3 pos;
     glm::vec3 rot;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;

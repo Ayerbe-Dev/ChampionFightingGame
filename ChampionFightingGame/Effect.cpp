@@ -1,6 +1,7 @@
 #include "Effect.h"
 #include "Particle.h"
 #include <fstream>
+#include "RenderManager.h"
 
 EffectInfo::EffectInfo() {
 
@@ -21,20 +22,35 @@ Effect::Effect(EffectInfo info) {
 
 void Effect::init(EffectInfo info) {
 	std::ifstream stream;
-	stream.open(info.dir);
+	stream.open(info.dir + "effect_info.yml");
 	if (stream.fail()) {
 		stream.close();
 		return;
 	}
 	this->info = info;
+	stream >> duration;
 
-	//Read in the particle info
+	std::string particle_name;
+	glm::vec3 pos;
+	glm::vec3 rot;
+	glm::vec3 scale;
+	glm::vec4 rgba;
+	while (stream >> particle_name) {
+		stream >> pos.x >> pos.y >> pos.z;
+		stream >> rot.x >> rot.y >> rot.z;
+		stream >> scale.x >> scale.y >> scale.z;
+		stream >> rgba.x >> rgba.y >> rgba.z >> rgba.w;
+		Particle particle(info.dir + particle_name, pos, rot, scale, rgba);
+		particles.push_back(particle);
+	}
+	shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 }
 
 void Effect::destroy() {
 	for (int i = 0, max = particles.size(); i < max; i++) {
 		particles[i].destroy();
 	}
+	shader.destroy();
 }
 
 EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
@@ -44,6 +60,7 @@ EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale
 
 EffectInstance::EffectInstance() {
 	effect = nullptr;
+	shader = nullptr;
 	pos = glm::vec3(0.0);
 	rot = glm::vec3(0.0);
 	scale = glm::vec3(1.0);
@@ -54,32 +71,33 @@ EffectInstance::EffectInstance() {
 
 EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
 	this->effect = effect;
+	shader = &effect->shader;
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
 	this->rgba = rgba;
 	this->rate = rate;
 	this->frame = frame;
-	shader.init("vertex_effect", "fragment_effect");
 }
 
 bool EffectInstance::process() {
+	frame += rate;
 	if (frame >= effect->duration) {
 		return false;
 	}
-	frame += rate;
 
 	return true;
 }
 
 void EffectInstance::render() {
-	shader.use();
+	glDepthMask(GL_TRUE);
+	shader->use();
+	shader->set_int("f_texture", 0);
+	RenderManager::get_instance()->update_shader_cam(shader);
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
-		if (effect->particles[i].spritesheet) {
-			effect->particles[i].render(&shader, pos, rot, scale, rgba, (int)frame);
-		}
-		else {
-			effect->particles[i].render(&shader, pos, rot, scale, rgba);
-		}
+		effect->particles[i].render(shader, pos, rot, scale, rgba, (int)frame);
 	}
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -44,14 +44,14 @@ glm::vec3 Fighter::get_bone_rotation(std::string bone_name) {
 	int index = model.get_bone_id(bone_name);
 	if (index != -1) {
 		glm::quat q = quat_cast(model.bones[index].anim_matrix);
-		return eulerAngles(q);
+		return degrees(eulerAngles(q));
 	}
 	return glm::vec3(0.0);
 }
 
 glm::vec3 Fighter::get_bone_rotation(int bone_id) {
 	glm::quat q = quat_cast(model.bones[bone_id].anim_matrix);
-	return eulerAngles(q);
+	return degrees(eulerAngles(q));
 }
 
 //Disclaimer: The below 4 functions are all unused and don't work. Turns out just

@@ -1343,6 +1343,9 @@
     <ClInclude Include="Particle.h">
       <Filter>Header Files\Engine\Visuals</Filter>
     </ClInclude>
+    <ClInclude Include="TextureCoord.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\vertex_main.glsl">
@@ -1372,13 +1375,16 @@
     <None Include="resource\shaders\vertex_rect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="fragment_fullbright.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
     <None Include="resource\shaders\fragment_shadow.glsl">
       <Filter>resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_shadow.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="vertex_effect.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="fragment_effect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

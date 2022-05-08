@@ -552,6 +552,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TessaFloat.h" />
     <ClInclude Include="TessaInt.h" />
     <ClInclude Include="TessaStatus.h" />
+    <ClInclude Include="TextureCoord.h" />
     <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Fighter.h" />
@@ -569,7 +570,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ZyairStatus.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment_fullbright.glsl" />
+    <None Include="fragment_effect.glsl" />
     <None Include="resource\shaders\fragment_main.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
     <None Include="resource\shaders\fragment_2d_texture.glsl" />
@@ -581,6 +582,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\vertex_no_light.glsl" />
     <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />
+    <None Include="vertex_effect.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

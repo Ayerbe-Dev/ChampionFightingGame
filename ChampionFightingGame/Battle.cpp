@@ -32,6 +32,8 @@
 #include "Debugger.h"
 #include "ParamAccessor.h"
 
+#include "EffectManager.h"
+
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -120,6 +122,10 @@ Battle::Battle() {}
 Battle::~Battle() {}
 
 void Battle::load_battle(GameManager* game_manager) {
+	EffectManager* effect_manager = EffectManager::get_instance();
+	effect_manager->add_effect_caster(-1);
+	effect_manager->load_effect("flame");
+
 	debug_buttons[BUTTON_MENU_FRAME_PAUSE].mapping = SDL_SCANCODE_LSHIFT;
 	debug_buttons[BUTTON_MENU_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
 
@@ -221,6 +227,7 @@ void Battle::load_battle(GameManager* game_manager) {
 void Battle::unload_battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
+	EffectManager* effect_manager = EffectManager::get_instance();
 	for (int i = 0; i < 2; i++) {
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
@@ -230,6 +237,9 @@ void Battle::unload_battle() {
 	sound_manager->stop_sound_all();
 	sound_manager->unload_all_sounds();
 	render_manager->unlink_all_shaders();
+	effect_manager->clear_effect_all();
+	effect_manager->unload_effects();
+	effect_manager->remove_effect_casters();
 
 	delete game_loader;
 }
@@ -346,6 +356,7 @@ void Battle::process_frame_pause() {
 		process_fighter();
 		post_process_fighter();
 		process_ui();
+		EffectManager::get_instance()->activate_effect(-1, "flame", glm::vec3(10.0, 10.0, 0.0), glm::vec3(0.0), glm::vec3(40.0), glm::vec4(0.0));
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
@@ -412,6 +423,7 @@ void Battle::render_world() {
 	}
 
 	stage.render();
+	EffectManager::get_instance()->render();
 
 	glDisable(GL_CULL_FACE);
 }

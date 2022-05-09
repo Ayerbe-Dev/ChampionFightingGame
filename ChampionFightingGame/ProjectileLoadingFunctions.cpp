@@ -4,15 +4,21 @@
 #include "BoxConstants.h"
 #include "Fighter.h"
 #include "BattleObjectManager.h"
+#include "SoundManager.h"
+#include "EffectManager.h"
 
 void Projectile::superInit() {
+	sound_manager = SoundManager::get_instance();
+	sound_manager->add_sound_player(id);
+	effect_manager = EffectManager::get_instance();
+	effect_manager->add_effect_caster(id);
+
 	load_stats();
 	load_model_shader();
 	init_boxes();
 	load_anim_list();
 	load_status_scripts();
 
-	frame = 0.0;
 	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }

@@ -107,21 +107,6 @@ public:
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
 
-	//Sound - All of these just call the SoundManager versions of these functions except they pass their own ID as an arg
-
-	void play_se(std::string se, int vol = -1);
-	void play_vc(std::string vc, int vol = -1);
-
-	void stop_se(std::string se);
-	void stop_se_all();
-
-	void stop_vc(std::string vc);
-	void stop_vc_all();
-
-	void load_sound(std::string name);
-	void unload_sound(std::string name);
-	void unload_all_sounds();
-
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
 	int get_param_int_special(std::string param);
@@ -145,18 +130,6 @@ public:
 	void set_rot(glm::vec3 rot);
 	void add_rot(glm::vec3 rot);
 	void reset_rot();
-
-	//Bone Functions
-	glm::vec3 get_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_bone_rotation(std::string bone_name);
-	glm::vec3 get_bone_rotation(int bone_id);
-	glm::vec3 get_rotated_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_rotated_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_rotated_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_rotated_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
 
 	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
 		//can get really hard to follow

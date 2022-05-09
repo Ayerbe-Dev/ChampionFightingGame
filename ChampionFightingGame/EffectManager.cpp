@@ -1,6 +1,7 @@
 #include "EffectManager.h"
 #include "Effect.h"
 #include "Particle.h";
+#include "BattleObject.h"
 #include <stdexcept>
 
 EffectManager* EffectManager::instance = nullptr;
@@ -24,22 +25,26 @@ void EffectManager::init() {
 //remove them. If not, render them.
 void EffectManager::render() {
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
-		std::list<EffectInstance>::iterator it = active_effects[i].begin();
-		for (int i2 = 0; i2 < active_effects[i].size(); i2++) {
+		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(); it != active_effects[i].end(); it++) {
 			if (it->process()) {
 				it->render();
-				std::next(it, 1);
 			}
 			else {
-				active_effects[i].erase(it);
-				it = active_effects[i].begin(); //How the fuck do iterators
-				std::next(it, i2);
+				if (active_effects[i].size() != 1) {
+					it = active_effects[i].erase(it);
+				}
+				else {
+					active_effects[i].erase(it);
+					break;
+				}
 			}
 		}
 	}
 }
 
-void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
+void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
+	glm::vec4 rgba, BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	if (effect_name_map.find(name) == effect_name_map.end()) {
 		std::cerr << "Effect " << name << " isn't loaded!\n";
 		return;
@@ -49,7 +54,8 @@ void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 p
 		return;
 	}
 
-	EffectInstance to_add = loaded_effects[effect_name_map[name]].instantiate(pos, rot, scale, rgba, rate, frame);
+	EffectInstance to_add = loaded_effects[effect_name_map[name]].instantiate(pos, rot, scale, rgba, battle_object,
+		bone_id, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 	active_effects[id2index[object_id]].push_back(to_add);
 }
 
@@ -58,8 +64,7 @@ void EffectManager::clear_effect(int object_id, std::string name, int instance_i
 		std::cerr << "ID " << object_id << " is not a valid effect caster!\n";
 		return;
 	}
-	std::list<EffectInstance>::iterator it = active_effects[id2index[object_id]].begin();
-	for (int i = 0, max = active_effects[id2index[object_id]].size(); i < max; i++) {
+	for (std::list<EffectInstance>::iterator it = active_effects[id2index[object_id]].begin(), max = active_effects[id2index[object_id]].end(); it != max; it++) {
 		if (it->effect->info.name == name) {
 			if (instance_id == 0) {
 				active_effects[id2index[object_id]].erase(it);
@@ -69,7 +74,6 @@ void EffectManager::clear_effect(int object_id, std::string name, int instance_i
 				instance_id--;
 			}
 		}
-		std::next(it, 1);
 	}
 	std::cerr << "Instance ID not found!\n";
 }
@@ -98,8 +102,7 @@ EffectInstance& EffectManager::get_effect_instance(int object_id, std::string na
 	if (id2index.find(object_id) == id2index.end()) {
 		throw std::range_error("ID of object caster not in EffectManager!");
 	}
-	std::list<EffectInstance>::iterator it = active_effects[id2index[object_id]].begin();
-	for (int i = 0, max = active_effects[id2index[object_id]].size(); i < max; i++) {
+	for (std::list<EffectInstance>::iterator it = active_effects[id2index[object_id]].begin(), max = active_effects[id2index[object_id]].end(); it != max; it++) {
 		if (it->effect->info.name == name) {
 			if (instance_id == 0) {
 				return *it;
@@ -108,7 +111,6 @@ EffectInstance& EffectManager::get_effect_instance(int object_id, std::string na
 				instance_id--;
 			}
 		}
-		std::next(it, 1);
 	}
 	throw std::range_error("Instance ID not found!");
 }

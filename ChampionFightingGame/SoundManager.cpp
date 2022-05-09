@@ -46,21 +46,17 @@ void SoundManager::pause_sound_all(int object_id, int sound_kind) {
 			return;
 		}
 		if (sound_kind != -1) {
-			std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
 			SDL_LockAudio();
-			for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
+			for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin(), max = active_sounds[id2index[object_id]][sound_kind].end(); it != max; it++) {
 				it->active = false;
-				std::advance(it, i + 1);
 			}
 			SDL_UnlockAudio();
 		}
 		else {
 			SDL_LockAudio();
 			for (int i = 0; i < SOUND_KIND_MAX; i++) {
-				std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin();
-				for (int i2 = 0, max2 = active_sounds[id2index[object_id]][i].size(); i2 < max2; i2++) {
+				for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin(), max = active_sounds[id2index[object_id]][i].end(); it != max; it++) {
 					it->active = false;
-					std::advance(it, i2 + 1);
 				}
 			}
 			SDL_UnlockAudio();
@@ -70,10 +66,8 @@ void SoundManager::pause_sound_all(int object_id, int sound_kind) {
 		SDL_LockAudio();
 		for (int i = 0, max = active_sounds.size(); i < max; i++) {
 			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-				std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin();
-				for (int i3 = 0, max3 = active_sounds[i][i2].size(); i3 < max3; i3++) {
+				for (std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin(), max = active_sounds[i][i2].end(); it != max; it++) {
 					it->active = false;
-					std::advance(it, i3 + 1);
 				}
 			}
 		}
@@ -88,21 +82,17 @@ void SoundManager::resume_sound_all(int object_id, int sound_kind) {
 			return;
 		}
 		if (sound_kind != -1) {
-			std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
 			SDL_LockAudio();
-			for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
+			for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin(), max = active_sounds[id2index[object_id]][sound_kind].end(); it != max; it++) {
 				it->active = true;
-				std::advance(it, i + 1);
 			}
 			SDL_UnlockAudio();
 		}
 		else {
 			SDL_LockAudio();
 			for (int i = 0; i < SOUND_KIND_MAX; i++) {
-				std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin();
-				for (int i2 = 0, max2 = active_sounds[id2index[object_id]][i].size(); i2 < max2; i2++) {
+				for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin(), max = active_sounds[id2index[object_id]][i].end(); it != max; it++) {
 					it->active = true;
-					std::advance(it, i2 + 1);
 				}
 			}
 			SDL_UnlockAudio();
@@ -112,16 +102,13 @@ void SoundManager::resume_sound_all(int object_id, int sound_kind) {
 		SDL_LockAudio();
 		for (int i = 0, max = active_sounds.size(); i < max; i++) {
 			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-				std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin();
-				for (int i3 = 0, max3 = active_sounds[i][i2].size(); i3 < max3; i3++) {
+				for (std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin(), max = active_sounds[i][i2].end(); it != max; it++) {
 					it->active = true;
-					std::advance(it, i3 + 1);
 				}
 			}
 		}
 		SDL_UnlockAudio();
 	}
-
 }
 
 void SoundManager::stop_sound(int object_id, int sound_kind, std::string name) {
@@ -134,14 +121,13 @@ void SoundManager::stop_sound(int object_id, int sound_kind, std::string name) {
 		return;
 	}
 	std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
-	for (int i = 0, max = active_sounds[id2index[object_id]][sound_kind].size(); i < max; i++) {
+	for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin(), max = active_sounds[id2index[object_id]][sound_kind].end(); it != max; it++) {
 		if (it->sound->info->name == name) {
 			SDL_LockAudio();
 			active_sounds[id2index[object_id]][sound_kind].erase(it);
 			SDL_UnlockAudio();
 			return;
 		}
-		std::advance(it, i + 1);
 	}
 }
 
@@ -306,9 +292,7 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 
 	for (int i = 0, max = sound_manager->active_sounds.size(); i < max; i++) {
 		for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-			std::list<SoundInstance>::iterator it = sound_manager->active_sounds[i][i2].begin();
-			for (int i3 = 0, max3 = sound_manager->active_sounds[i][i2].size(); i3 < max3; i3++) {
-				bool erase = false;
+			for (std::list<SoundInstance>::iterator it = sound_manager->active_sounds[i][i2].begin(); it != sound_manager->active_sounds[i][i2].end(); it++) {
 				if (it->active) {
 					diff = 0;
 					data = it->sound->data;
@@ -354,15 +338,17 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 
 						}
 						else { //Otherwise just get that shit outta here
-							sound_manager->active_sounds[i][i2].erase(it);
-							erase = true;
+							if (sound_manager->active_sounds[i][i2].size() != 1) {
+								it = sound_manager->active_sounds[i][i2].erase(it);
+							}
+							else {
+								sound_manager->active_sounds[i][i2].erase(it);
+								break;
+							}
 						}
 					}
 					SDL_MixAudio(stream, source, mlen, vol);
 					SDL_free(source);
-				}
-				if (!erase) {
-					std::next(it, 1);
 				}
 			}
 		}

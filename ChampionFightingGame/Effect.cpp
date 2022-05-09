@@ -2,6 +2,8 @@
 #include "Particle.h"
 #include <fstream>
 #include "RenderManager.h"
+#include "BattleObject.h"
+#include "Fighter.h"
 
 EffectInfo::EffectInfo() {
 
@@ -35,14 +37,23 @@ void Effect::init(EffectInfo info) {
 	glm::vec3 rot;
 	glm::vec3 scale;
 	glm::vec4 rgba;
+	glm::vec3 pos_frame;
+	glm::vec3 rot_frame;
+	glm::vec3 scale_frame;
+	glm::vec4 rgba_frame;
 	bool has_spritesheet;
 	while (stream >> particle_name) {
 		stream >> pos.x >> pos.y >> pos.z;
 		stream >> rot.x >> rot.y >> rot.z;
 		stream >> scale.x >> scale.y >> scale.z;
 		stream >> rgba.x >> rgba.y >> rgba.z >> rgba.w;
+		stream >> pos_frame.x >> pos_frame.y >> pos_frame.z;
+		stream >> rot_frame.x >> rot_frame.y >> rot_frame.z;
+		stream >> scale_frame.x >> scale_frame.y >> scale_frame.z;
+		stream >> rgba_frame.x >> rgba_frame.y >> rgba_frame.z >> rgba_frame.w;
 		stream >> has_spritesheet;
-		Particle particle(info.dir + particle_name + ".png", pos, rot, scale, rgba);
+		Particle particle(info.dir + particle_name + ".png", pos, rot, scale, rgba, pos_frame, 
+			rot_frame, scale_frame, rgba_frame);
 		if (has_spritesheet) {
 			particle.load_spritesheet(info.dir + particle_name + ".yml");
 		}
@@ -63,29 +74,53 @@ void Effect::attach_shader(Shader* shader) {
 	this->shader = shader;
 }
 
-EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
-	EffectInstance ret(this, pos, rot, scale, rgba, rate, frame);
+EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
+	BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	EffectInstance ret(this, pos, rot, scale, rgba, battle_object, bone_id, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 	return ret;
 }
 
 EffectInstance::EffectInstance() {
 	effect = nullptr;
 	shader = nullptr;
+	battle_object = nullptr;
 	pos = glm::vec3(0.0);
 	rot = glm::vec3(0.0);
 	scale = glm::vec3(1.0);
 	rgba = glm::vec4(1.0);
+	pos_frame = glm::vec3(0.0);
+	rot_frame = glm::vec3(0.0);
+	scale_frame = glm::vec3(0.0);
+	rgba_frame = glm::vec4(0.0);
+	final_pos = glm::vec3(0.0);
+	final_rot = glm::vec3(0.0);
+	final_scale = glm::vec3(1.0);
+	final_rgba = glm::vec4(1.0);
 	frame = 0.0;
 	rate = 1.0;
+	bone_id = -1;
 }
 
-EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
+EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
+	BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	this->effect = effect;
 	shader = effect->shader;
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
 	this->rgba = rgba;
+	this->battle_object = battle_object;
+	this->bone_id = bone_id;
+	this->pos_frame = pos_frame;
+	this->rot_frame = rot_frame;
+	this->scale_frame = scale_frame;
+	this->rgba_frame = rgba_frame;
+	final_pos = glm::vec3(0.0);
+	final_rot = glm::vec3(0.0);
+	final_scale = glm::vec3(1.0);
+	final_rgba = glm::vec4(1.0);
 	this->rate = rate;
 	this->frame = frame;
 }
@@ -105,8 +140,22 @@ void EffectInstance::render() {
 	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);
 	RenderManager::get_instance()->update_shader_cam(shader);
+	final_pos = pos + (pos_frame * frame);
+	final_rot = rot + (rot_frame * frame);
+	final_scale = scale + (scale_frame * frame);
+	final_rgba = rgba + (rgba_frame * frame);
+	if (battle_object != nullptr) {
+		if (bone_id != -1) {
+			pos += battle_object->get_bone_position(bone_id);
+			rot += battle_object->get_bone_rotation(bone_id);
+		}
+		else {
+			pos += battle_object->pos;
+		}
+		rot += battle_object->rot;
+	}
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
-		effect->particles[i].render(shader, pos, rot, scale, rgba, (int)frame);
+		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, frame);
 	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

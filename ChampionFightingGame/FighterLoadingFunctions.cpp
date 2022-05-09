@@ -2,6 +2,7 @@
 #include "Fighter.h"
 #include "RenderManager.h"
 #include "SoundManager.h"
+#include "EffectManager.h"
 
 void Fighter::superInit(int id) {
 	this->id = id;
@@ -9,18 +10,22 @@ void Fighter::superInit(int id) {
 	sound_manager = SoundManager::get_instance();
 	sound_manager->add_sound_player(id);
 
+	effect_manager = EffectManager::get_instance();
+	effect_manager->add_effect_caster(id);
+
 	if (id == 0) {
 		pos = glm::vec3(-200, FLOOR_GAMECOORD, 0);
 		facing_right = true;
 		internal_facing_right = true;
 		facing_dir = 1.0;
 	}
-	else if (id == 1) {
+	else {
 		pos = glm::vec3(200, FLOOR_GAMECOORD, 0);
 		facing_right = false;
 		internal_facing_right = false;
 		facing_dir = -1.0;
 	}
+
 	load_stats();
 	load_model_shader();
 	init_boxes();
@@ -29,7 +34,7 @@ void Fighter::superInit(int id) {
 	set_default_vars();
 
 	change_anim("wait", 2, 0);
-	status_kind = FIGHTER_STATUS_WAIT;
+	change_status(FIGHTER_STATUS_WAIT, false, false);
 }
 
 void Fighter::loadFighterSounds() {

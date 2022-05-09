@@ -11,12 +11,17 @@ Particle::Particle() {
 
 }
 
-Particle::Particle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba) {
+Particle::Particle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
+	glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame) {
 	init(path);
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
 	this->rgba = rgba;
+	this->pos_frame = pos_frame;
+	this->rot_frame = rot_frame;
+	this->scale_frame = scale_frame;
+	this->rgba_frame = rgba_frame;
 }
 
 void Particle::init(std::string path) {
@@ -96,16 +101,16 @@ void Particle::set_sprite(int index) {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
 }
 
-void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, int frame) {
+void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float frame) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	pos += this->pos;
-	rot += this->rot;
-	scale *= this->scale;
-	rgba += this->rgba;
-	set_sprite(frame);
+	pos += this->pos + (pos_frame * frame);
+	rot += this->rot + (rot_frame * frame);
+	scale *= this->scale + (scale_frame * frame);
+	rgba += this->rgba + (rgba_frame * frame);
+	set_sprite((int)frame);
 
 	pos.x /= (float)WINDOW_WIDTH;
 	pos.y /= (float)WINDOW_HEIGHT;
@@ -117,7 +122,7 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 
 	glm::mat4 matrix = glm::mat4(1.0);
 	matrix = glm::translate(matrix, pos);
-	matrix *= glm::orientate4(rot);
+	matrix *= glm::orientate4(radians(rot));
 	matrix = glm::scale(matrix, scale);
 	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_colormod", rgba);

@@ -357,7 +357,7 @@ void Battle::process_frame_pause() {
 		process_fighter();
 		post_process_fighter();
 		process_ui(); 
-		EffectManager::get_instance()->activate_effect(-1, "flame", glm::vec3(10.0, 1000.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0), glm::vec4(0.0));
+		EffectManager::get_instance()->activate_effect(-1, "flame", glm::vec3(10.0, 1000.0, 0.0), glm::vec3(0.0, 0.0, 90.0), glm::vec3(1.0), glm::vec4(0.0), nullptr, -1, glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
 	}
 	else {
 		for (int i = 0; i < 2; i++) {

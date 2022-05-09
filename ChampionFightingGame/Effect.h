@@ -5,6 +5,7 @@
 #include "Light.h"
 #include "Shader.h"
 
+class BattleObject;
 class Particle;
 class EffectInstance;
 
@@ -28,7 +29,9 @@ public:
 	void init(EffectInfo info);
 	void destroy();
 	void attach_shader(Shader* shader);
-	EffectInstance instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate = 1.0, float frame = 0.0);
+	EffectInstance instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
+		BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+		glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame);
 
 	EffectInfo info;
 	std::vector<Particle> particles;
@@ -44,17 +47,29 @@ public:
 class EffectInstance {
 public:
 	EffectInstance();
-	EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float frame, float rate);
+	EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
+		BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+		glm::vec3 scale_frame, glm::vec4 rgba_frame, float frame, float rate);
 
 	bool process();
 	void render();
 	Effect* effect;
+	float frame;
 private:
 	Shader* shader;
+	BattleObject* battle_object;
 	glm::vec3 pos;
 	glm::vec3 rot;
 	glm::vec3 scale;
 	glm::vec4 rgba;
-	float frame;
+	glm::vec3 pos_frame;
+	glm::vec3 rot_frame;
+	glm::vec3 scale_frame;
+	glm::vec4 rgba_frame;
+	glm::vec3 final_pos;
+	glm::vec3 final_rot;
+	glm::vec3 final_scale;
+	glm::vec4 final_rgba;
 	float rate;
+	int bone_id;
 };

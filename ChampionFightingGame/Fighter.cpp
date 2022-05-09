@@ -9,6 +9,7 @@
 #include "ParamAccessor.h"
 
 Fighter::Fighter() {
+	has_model = true;
 }
 
 Fighter::~Fighter() {

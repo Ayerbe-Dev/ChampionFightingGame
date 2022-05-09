@@ -13,6 +13,7 @@
 class PlayerInfo;
 class BattleObjectManager;
 class SoundManager;
+class EffectManager;
 
 class BattleObject : public RenderObject {
 public:
@@ -35,6 +36,8 @@ public:
 	GameRect jostle_box;
 	glm::vec2 base_jostle_anchor;
 	glm::vec2 base_jostle_offset;
+
+	bool has_model;
 
 	AnimationTable anim_table;
 	Animation* anim_kind;
@@ -92,10 +95,35 @@ public:
 
 	std::string resource_dir;
 
+	glm::vec3 get_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_bone_rotation(std::string bone_name);
+	glm::vec3 get_bone_rotation(int bone_id);
+	glm::vec3 get_rotated_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_rotated_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_rotated_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_rotated_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+
 	void set_current_move_script(std::string anim_name);
 	bool is_excute_frame(float frame);
 	bool is_excute_wait(float frames);
 
+	void play_se(std::string se, int vol = -1);
+	void play_vc(std::string vc, int vol = -1);
+
+	void stop_se(std::string se);
+	void stop_se_all();
+
+	void stop_vc(std::string vc);
+	void stop_vc_all();
+
+	void load_sound(std::string name);
+	void unload_sound(std::string name);
+	void unload_all_sounds();
+
 	BattleObjectManager* battle_object_manager;
 	SoundManager* sound_manager;
+	EffectManager* effect_manager;
 };

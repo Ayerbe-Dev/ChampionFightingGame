@@ -534,9 +534,6 @@
     <ClCompile Include="FighterProjectileFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="FighterSoundFunctions.cpp">
-      <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="FighterPositionFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
@@ -583,9 +580,6 @@
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="FighterRotationFunctions.cpp">
-      <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="FighterBoneFunctions.cpp">
       <Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
     <ClCompile Include="FighterInterface.cpp">
@@ -698,6 +692,15 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundFunctions.cpp">
+      <Filter>Source Files\Objects\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectFunctions.cpp">
+      <Filter>Source Files\Objects\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneFunctions.cpp">
+      <Filter>Source Files\Objects\Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

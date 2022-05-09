@@ -27,12 +27,13 @@ public:
 
 	void init(EffectInfo info);
 	void destroy();
+	void attach_shader(Shader* shader);
 	EffectInstance instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate = 1.0, float frame = 0.0);
 
 	EffectInfo info;
 	std::vector<Particle> particles;
 	int duration;
-	Shader shader;
+	Shader *shader;
 };
 
 //EffectInstances are what actually get rendered to the screen. Each instance can have a different position,

@@ -35,24 +35,32 @@ void Effect::init(EffectInfo info) {
 	glm::vec3 rot;
 	glm::vec3 scale;
 	glm::vec4 rgba;
+	bool has_spritesheet;
 	while (stream >> particle_name) {
 		stream >> pos.x >> pos.y >> pos.z;
 		stream >> rot.x >> rot.y >> rot.z;
 		stream >> scale.x >> scale.y >> scale.z;
 		stream >> rgba.x >> rgba.y >> rgba.z >> rgba.w;
-		Particle particle(info.dir + particle_name, pos, rot, scale, rgba);
+		stream >> has_spritesheet;
+		Particle particle(info.dir + particle_name + ".png", pos, rot, scale, rgba);
+		if (has_spritesheet) {
+			particle.load_spritesheet(info.dir + particle_name + ".yml");
+		}
 		particles.push_back(particle);
 	}
-	shader.init("vertex_effect.glsl", "fragment_effect.glsl");
-	shader.use();
-	shader.set_int("f_texture", 0);
+	RenderManager* render_manager = RenderManager::get_instance();
+	attach_shader(&render_manager->default_effect_shader);
+	shader->use();
 }
 
 void Effect::destroy() {
 	for (int i = 0, max = particles.size(); i < max; i++) {
 		particles[i].destroy();
 	}
-	shader.destroy();
+}
+
+void Effect::attach_shader(Shader* shader) {
+	this->shader = shader;
 }
 
 EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
@@ -73,7 +81,7 @@ EffectInstance::EffectInstance() {
 
 EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate, float frame) {
 	this->effect = effect;
-	shader = &effect->shader;
+	shader = effect->shader;
 	this->pos = pos;
 	this->rot = rot;
 	this->scale = scale;
@@ -94,6 +102,7 @@ bool EffectInstance::process() {
 void EffectInstance::render() {
 	glDepthMask(GL_TRUE);
 	shader->use();
+	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);
 	RenderManager::get_instance()->update_shader_cam(shader);
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {

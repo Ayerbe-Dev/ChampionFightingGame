@@ -22,6 +22,7 @@ public:
 
 	Shader default_2d_shader;
 	Shader default_rect_shader;
+	Shader default_effect_shader;
 	Shader shadow_shader;
 
 	ShadowMap shadow_map;

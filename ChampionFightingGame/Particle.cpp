@@ -41,14 +41,8 @@ void Particle::init(std::string path) {
 	int width;
 	int height;
 	texture = loadGLTexture(path.c_str(), &width, &height);
-	float width_scale = (float)width / (float)WINDOW_WIDTH;
-	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
 	this->height = height;
-	for (int i = 0; i < 4; i++) {
-//		tex_data[i].pos.x *= width_scale;
-//		tex_data[i].pos.y *= height_scale;
-	}
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
 	glBindVertexArray(0);
@@ -111,12 +105,11 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	rot += this->rot;
 	scale *= this->scale;
 	rgba += this->rgba;
-	std::cout << pos.x << ", " << pos.y << ", " << pos.z << "\n";
-	std::cout << rot.x << ", " << rot.y << ", " << rot.z << "\n";
-	std::cout << scale.x << ", " << scale.y << ", " << scale.z << "\n";
-	std::cout << rgba.x << ", " << rgba.y << ", " << rgba.z << ", " << rgba.w << "\n";
 	set_sprite(frame);
 
+	pos.x /= (float)WINDOW_WIDTH;
+	pos.y /= (float)WINDOW_HEIGHT;
+	pos.z /= (float)WINDOW_DEPTH;
 	rgba.x /= 255.0;
 	rgba.y /= 255.0;
 	rgba.z /= 255.0;

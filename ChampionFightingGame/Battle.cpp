@@ -51,9 +51,6 @@ extern bool debug;
 #include "imgui_impl_opengl3.h"
 #endif // DEBUG
 
-GameTexture test_flame;
-
-
 void battle_main(GameManager* game_manager) {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	PlayerInfo* player_info[2];
@@ -129,7 +126,6 @@ void Battle::load_battle(GameManager* game_manager) {
 	EffectManager* effect_manager = EffectManager::get_instance();
 	effect_manager->add_effect_caster(-1);
 	effect_manager->load_effect("flame");
-	test_flame.init(effect_manager->get_effect("flame").particles[0].get_texture());
 
 	debug_buttons[BUTTON_MENU_FRAME_PAUSE].mapping = SDL_SCANCODE_LSHIFT;
 	debug_buttons[BUTTON_MENU_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
@@ -360,8 +356,8 @@ void Battle::process_frame_pause() {
 		pre_process_fighter();
 		process_fighter();
 		post_process_fighter();
-		process_ui();
-		EffectManager::get_instance()->activate_effect(-1, "flame", glm::vec3(10.0, 10.0, 0.0), glm::vec3(0.0), glm::vec3(40.0), glm::vec4(0.0));
+		process_ui(); 
+		EffectManager::get_instance()->activate_effect(-1, "flame", glm::vec3(10.0, 1000.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0), glm::vec4(0.0));
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
@@ -434,7 +430,6 @@ void Battle::render_world() {
 }
 
 void Battle::render_ui() {
-//	test_flame.render();
 	EffectManager::get_instance()->render();
 	for (int i = 0; i < 2; i++) {
 		if (visualize_boxes) {

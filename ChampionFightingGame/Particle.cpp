@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "stb_image.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include "utils.h"
 #include <fstream>
 #include "GLEW Helpers.h"
@@ -50,6 +51,8 @@ void Particle::init(std::string path) {
 	}
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Particle::destroy() {
@@ -86,7 +89,9 @@ void Particle::load_spritesheet(std::string spritesheet_dir) {
 }
 
 void Particle::set_sprite(int index) {
-	if (spritesheet[0].size() <= index) return;
+	if (spritesheet[0].size() <= index || index < 0) {
+		return;
+	}
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i]->tex_coord = spritesheet[i][index];
 	}
@@ -103,10 +108,10 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	rot += this->rot;
 	scale *= this->scale;
 	rgba += this->rgba;
-//	std::cout << pos.x << ", " << pos.y << ", " << pos.z << "\n";
-//	std::cout << rot.x << ", " << rot.y << ", " << rot.z << "\n";
-//	std::cout << scale.x << ", " << scale.y << ", " << scale.z << "\n";
-//	std::cout << rgba.x << ", " << rgba.y << ", " << rgba.z << ", " << rgba.w << "\n";
+	std::cout << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+	std::cout << rot.x << ", " << rot.y << ", " << rot.z << "\n";
+	std::cout << scale.x << ", " << scale.y << ", " << scale.z << "\n";
+	std::cout << rgba.x << ", " << rgba.y << ", " << rgba.z << ", " << rgba.w << "\n";
 	set_sprite(frame);
 
 	rgba.x /= 255.0;
@@ -115,11 +120,9 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	rgba.w = (1.0 - (rgba.w / 255.0));
 
 	glm::mat4 matrix = glm::mat4(1.0);
-	matrix = glm::scale(matrix, scale);
 	matrix = glm::translate(matrix, pos);
-	matrix = glm::rotate(matrix, glm::radians(rot.x), glm::vec3(1.0, 0.0, 0.0));
-	matrix = glm::rotate(matrix, glm::radians(rot.y), glm::vec3(0.0, 1.0, 0.0));
-	matrix = glm::rotate(matrix, glm::radians(rot.z), glm::vec3(0.0, 0.0, 1.0));
+	matrix *= glm::orientate4(rot);
+	matrix = glm::scale(matrix, scale);
 	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_colormod", rgba);
 	glDrawArrays(GL_QUADS, 0, 4);

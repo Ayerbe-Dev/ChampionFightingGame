@@ -1381,10 +1381,10 @@
     <None Include="resource\shaders\vertex_shadow.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="vertex_effect.glsl">
+    <None Include="resource\shaders\fragment_effect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="fragment_effect.glsl">
+    <None Include="resource\shaders\vertex_effect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

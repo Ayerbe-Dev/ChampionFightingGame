@@ -21,6 +21,7 @@ Shader::~Shader() {
 
 void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	char info_log[512];
+	name = vertex_dir + ", " + fragment_dir;
 	int success;
 
 	std::string input;
@@ -33,8 +34,6 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 		std::cout << "Could not open Vertex Core Shader File!" << vertex_dir << "\n";
 		return;
 	}
-
-	std::map<std::string, int> constant_map;
 
 	while (getline(shader_file, input)) {
 		source += input + "\n";

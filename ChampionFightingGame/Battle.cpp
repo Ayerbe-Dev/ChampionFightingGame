@@ -423,9 +423,9 @@ void Battle::render_world() {
 	}
 
 	stage.render();
-	EffectManager::get_instance()->render();
 
 	glDisable(GL_CULL_FACE);
+	EffectManager::get_instance()->render();
 }
 
 void Battle::render_ui() {

@@ -16,7 +16,7 @@ public:
 
 	void load_spritesheet(std::string spritesheet_dir);	
 	
-	void render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, int frame = -1);
+	void render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, int frame = 0);
 
 	TextureCoord tex_data[4];
 	TextureCoord* tex_accessor[4];

@@ -570,19 +570,19 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ZyairStatus.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment_effect.glsl" />
+    <None Include="resource\shaders\fragment_effect.glsl" />
     <None Include="resource\shaders\fragment_main.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
     <None Include="resource\shaders\fragment_2d_texture.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
     <None Include="resource\shaders\fragment_shadow.glsl" />
+    <None Include="resource\shaders\vertex_effect.glsl" />
     <None Include="resource\shaders\vertex_shadow.glsl" />
     <None Include="resource\shaders\vertex_main.glsl" />
     <None Include="resource\shaders\vertex_no_anim.glsl" />
     <None Include="resource\shaders\vertex_no_light.glsl" />
     <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />
-    <None Include="vertex_effect.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

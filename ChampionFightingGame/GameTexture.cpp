@@ -1,4 +1,5 @@
 #include "GameTexture.h"
+#include "GLEW Helpers.h"
 #include <glew/glew.h>
 #include "Shader.h"
 #include "RenderManager.h"
@@ -113,16 +114,7 @@ void GameTexture::init(std::string path) {
 
 	int width;
 	int height;
-	int num_channels;
-	unsigned char* data = stbi_load(path.c_str(), &width, &height, &num_channels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		std::cout << "Failed to load texture at path: " << path << "\n";
-	}
-	stbi_image_free(data);
+	texture = loadGLTexture(path.c_str(), &width, &height);
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
@@ -145,7 +137,9 @@ void GameTexture::init(std::string path) {
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 
-}void GameTexture::init(GLuint gl_tex_locatione) {
+}
+
+void GameTexture::init(GLuint gl_tex_locatione) {
 	texture = gl_tex_locatione;
 
 	pos = glm::vec3(0.0, 0.0, 0.0);

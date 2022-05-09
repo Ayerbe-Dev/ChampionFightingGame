@@ -21,6 +21,7 @@ public:
 	void activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, float rate = 1.0, float frame = 0.0);
 	void clear_effect(int object_id, std::string name, int instance_id = 0);
 	void clear_effect_all(int object_id = -1);
+	Effect get_effect(std::string name);
 	EffectInstance& get_effect_instance(int object_id, std::string name, int instance_id = 0);
 
 	void load_effect(std::string name);

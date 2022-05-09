@@ -33,6 +33,8 @@
 #include "ParamAccessor.h"
 
 #include "EffectManager.h"
+#include "Effect.h"
+#include "Particle.h"
 
 
 extern SDL_Renderer* g_renderer;
@@ -48,6 +50,8 @@ extern bool debug;
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 #endif // DEBUG
+
+GameTexture test_flame;
 
 
 void battle_main(GameManager* game_manager) {
@@ -125,6 +129,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	EffectManager* effect_manager = EffectManager::get_instance();
 	effect_manager->add_effect_caster(-1);
 	effect_manager->load_effect("flame");
+	test_flame.init(effect_manager->get_effect("flame").particles[0].get_texture());
 
 	debug_buttons[BUTTON_MENU_FRAME_PAUSE].mapping = SDL_SCANCODE_LSHIFT;
 	debug_buttons[BUTTON_MENU_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
@@ -383,10 +388,10 @@ void Battle::render_world() {
 	
 	//Setup for the render
 	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
-	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.fbo_location);
+	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location); // this might only need to be bounded once 
+	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);
 	glCullFace(GL_FRONT);
 
 	//The actual render
@@ -406,10 +411,11 @@ void Battle::render_world() {
 
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); <- I don't think we actually need this line?
+//	The screen gets cleared immediately after wait_ms() gets called
 
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.depth_map_location);	
+	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);
@@ -425,10 +431,11 @@ void Battle::render_world() {
 	stage.render();
 
 	glDisable(GL_CULL_FACE);
-	EffectManager::get_instance()->render();
 }
 
 void Battle::render_ui() {
+//	test_flame.render();
+	EffectManager::get_instance()->render();
 	for (int i = 0; i < 2; i++) {
 		if (visualize_boxes) {
 			fighter[i]->jostle_box.render();

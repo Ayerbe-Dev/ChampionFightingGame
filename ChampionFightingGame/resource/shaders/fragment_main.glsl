@@ -34,8 +34,7 @@ uniform Material material;
 uniform Light light[MAX_LIGHT_SOURCES];
 
 
-float ShadowCalculation(vec4 fragPosLightSpace)
-{
+float ShadowCalculation(vec4 fragPosLightSpace) {
     float bias = 0.005;
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;

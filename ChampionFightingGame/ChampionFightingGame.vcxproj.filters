@@ -1354,9 +1354,6 @@
     <None Include="resource\shaders\fragment_no_light.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_no_light.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
     <None Include="resource\shaders\fragment_main.glsl">
       <Filter>resource\shaders</Filter>
     </None>

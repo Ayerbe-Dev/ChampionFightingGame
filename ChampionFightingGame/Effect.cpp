@@ -44,6 +44,8 @@ void Effect::init(EffectInfo info) {
 		particles.push_back(particle);
 	}
 	shader.init("vertex_effect.glsl", "fragment_effect.glsl");
+	shader.use();
+	shader.set_int("f_texture", 0);
 }
 
 void Effect::destroy() {
@@ -92,7 +94,7 @@ bool EffectInstance::process() {
 void EffectInstance::render() {
 	glDepthMask(GL_TRUE);
 	shader->use();
-	shader->set_int("f_texture", 0);
+	glActiveTexture(GL_TEXTURE0);
 	RenderManager::get_instance()->update_shader_cam(shader);
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
 		effect->particles[i].render(shader, pos, rot, scale, rgba, (int)frame);

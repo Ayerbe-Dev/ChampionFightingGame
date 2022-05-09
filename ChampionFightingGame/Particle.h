@@ -13,6 +13,7 @@ public:
 
 	void init(std::string path);
 	void destroy();
+	unsigned int get_texture();
 
 	void load_spritesheet(std::string spritesheet_dir);	
 	

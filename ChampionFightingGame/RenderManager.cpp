@@ -94,9 +94,7 @@ void RenderManager::update_shader_cam(Shader* shader) {
 	glm::mat4 view = camera.get_view();
 	glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
 	shader->set_vec3("view_pos", camera.pos);
-
-	shader->set_mat4("projection", projection);
-	shader->set_mat4("view", view);
+	shader->set_mat4("camera_matrix", projection * view);
 }
 
 void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *model_pos, glm::vec3 *model_rot, glm::vec3 *model_scale, bool flip) {
@@ -113,7 +111,7 @@ void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_m
 	model_mat *= orientate4(*model_rot);
 	model_mat = scale(model_mat, *model_scale);
 	model_mat *= extra_mat;
-	shader->set_mat4("model", model_mat);
+	shader->set_mat4("model_matrix", model_mat);
 	model->render(shader, flip);
 }
 

@@ -149,7 +149,8 @@ void Model::reset_bones() {
 }
 
 void Model::render(Shader* shader, bool flip) {
-	if (tpose) {
+	if (tpose) { //If we don't have any keyframe data and we're facing left, we only apply 1 flip matrix,
+		//so we need to change the culling to support it.
 		if (flip) {
 			glCullFace(GL_FRONT);
 			for (int i = 0, max = bones.size(); i < max; i++) {
@@ -163,7 +164,8 @@ void Model::render(Shader* shader, bool flip) {
 			}
 		}
 	}
-	else {
+	else { //But if we have keyframe data and face left, we applied 1 flip matrix to each bone to mirror
+		//the transformations, then we applied another one to the entire model, so culling is always the same
 		glCullFace(GL_BACK);
 		if (flip) {
 			for (int i = 0, max = bones.size(); i < max; i++) {
@@ -408,7 +410,8 @@ std::vector<ModelTexture> Model::load_material_textures(aiMaterial* mat, aiTextu
 	return textures;
 }
 
-void Model::post_process_skeleton() {
+void Model::post_process_skeleton() { //Reads through the skeleton, figures out which bone is our
+	//base translation bone, figures out all of its children, and sets up the parent and flip matrices
 	trans_id = get_bone_id("Trans");
 	for (int i = 0, max = bones.size(); i < max; i++) {
 		if (bones[i].parent_id == -1) {

@@ -46,8 +46,8 @@ void Particle::init(std::string path) {
 	this->width = width;
 	this->height = height;
 	for (int i = 0; i < 4; i++) {
-		tex_data[i].pos.x *= width_scale;
-		tex_data[i].pos.y *= height_scale;
+//		tex_data[i].pos.x *= width_scale;
+//		tex_data[i].pos.y *= height_scale;
 	}
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
@@ -59,6 +59,10 @@ void Particle::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteTextures(1, &texture);
+}
+
+unsigned int Particle::get_texture() {
+	return texture;
 }
 
 void Particle::load_spritesheet(std::string spritesheet_dir) {
@@ -101,7 +105,6 @@ void Particle::set_sprite(int index) {
 void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, int frame) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	pos += this->pos;

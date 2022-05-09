@@ -15,10 +15,11 @@ public:
 	int SHADOW_WIDTH = 2000;
 	int SHADOW_HEIGHT = 2000;
 
-	float shadow_map_depth = 7.0f, shadow_map_fov = 5.0f;
+	float shadow_map_depth = 7.0f;
+	float shadow_map_fov = 5.0f;
 
-	GLuint fbo_location = 0;
-	GLuint depth_map_location = 0;
+	GLuint FBO = 0;
+	GLuint shadow_texture = 0;
 
 	glm::mat4 m_orthographic_perspective;
 	glm::mat4 m_lookat;

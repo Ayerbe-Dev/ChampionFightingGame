@@ -86,6 +86,14 @@ void EffectManager::clear_effect_all(int object_id) {
 	}
 }
 
+Effect EffectManager::get_effect(std::string name) {
+	if (effect_name_map.find(name) == effect_name_map.end()) {
+		std::cerr << "Effect " << name << " isn't loaded!\n";
+		return Effect();
+	}
+	return loaded_effects[effect_name_map[name]];
+}
+
 EffectInstance& EffectManager::get_effect_instance(int object_id, std::string name, int instance_id) {
 	if (id2index.find(object_id) == id2index.end()) {
 		throw std::range_error("ID of object caster not in EffectManager!");

@@ -30,8 +30,8 @@ public:
 	void destroy();
 	void attach_shader(Shader* shader);
 	EffectInstance instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
-		BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
-		glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame);
+		BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, 
+		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame);
 
 	EffectInfo info;
 	std::vector<Particle> particles;
@@ -48,8 +48,8 @@ class EffectInstance {
 public:
 	EffectInstance();
 	EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
-		BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
-		glm::vec3 scale_frame, glm::vec4 rgba_frame, float frame, float rate);
+		BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, 
+		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float frame, float rate);
 
 	bool process();
 	void render();
@@ -62,6 +62,8 @@ private:
 	glm::vec3 rot;
 	glm::vec3 scale;
 	glm::vec4 rgba;
+	int bone_id;
+	glm::vec3 bone_offset;
 	glm::vec3 pos_frame;
 	glm::vec3 rot_frame;
 	glm::vec3 scale_frame;
@@ -71,6 +73,6 @@ private:
 	glm::vec3 final_scale;
 	glm::vec4 final_rgba;
 	glm::vec3 scale_vec;
+	bool flip;
 	float rate;
-	int bone_id;
 };

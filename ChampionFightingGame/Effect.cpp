@@ -75,9 +75,9 @@ void Effect::attach_shader(Shader* shader) {
 }
 
 EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
-	BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+	BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
-	EffectInstance ret(this, pos, rot, scale, rgba, battle_object, bone_id, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	EffectInstance ret(this, pos, rot, scale, rgba, battle_object, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 	return ret;
 }
 
@@ -89,6 +89,8 @@ EffectInstance::EffectInstance() {
 	rot = glm::vec3(0.0);
 	scale = glm::vec3(1.0);
 	rgba = glm::vec4(1.0);
+	bone_id = -1;
+	bone_offset = glm::vec3(0.0);
 	pos_frame = glm::vec3(0.0);
 	rot_frame = glm::vec3(0.0);
 	scale_frame = glm::vec3(0.0);
@@ -97,13 +99,14 @@ EffectInstance::EffectInstance() {
 	final_rot = glm::vec3(0.0);
 	final_scale = glm::vec3(1.0);
 	final_rgba = glm::vec4(1.0);
+	scale_vec = glm::vec3(1.0);
+	flip = false;
 	frame = 0.0;
 	rate = 1.0;
-	bone_id = -1;
 }
 
 EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
-	BattleObject* battle_object, int bone_id, glm::vec3 pos_frame, glm::vec3 rot_frame,
+	BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	this->effect = effect;
 	shader = effect->shader;
@@ -113,6 +116,7 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	this->rgba = rgba;
 	this->battle_object = battle_object;
 	this->bone_id = bone_id;
+	this->bone_offset = bone_offset;
 	this->pos_frame = pos_frame;
 	this->rot_frame = rot_frame;
 	this->scale_frame = scale_frame;
@@ -121,6 +125,7 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	final_rot = glm::vec3(0.0);
 	final_scale = glm::vec3(1.0);
 	final_rgba = glm::vec4(1.0);
+	flip = false;
 	this->rate = rate;
 	this->frame = frame;
 	if (battle_object != nullptr) {
@@ -129,6 +134,11 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 			WINDOW_HEIGHT / (100 * battle_object->scale.y),
 			WINDOW_DEPTH / (100 * battle_object->scale.z)
 		);
+		if (!battle_object->facing_right) {
+			this->scale.y *= -1.0;
+			this->scale_frame.y *= -1.0;
+			flip = true;
+		}
 	}
 	else {
 		scale_vec = glm::vec3(0.05);
@@ -156,16 +166,16 @@ void EffectInstance::render() {
 	final_rgba = rgba + (rgba_frame * frame);
 	if (battle_object != nullptr) {
 		if (bone_id != -1) {
-			final_pos += battle_object->get_bone_position(bone_id);
+			final_pos += battle_object->get_bone_position(bone_id, bone_offset);
 			final_rot += battle_object->get_bone_rotation(bone_id);
 		}
 		else {
 			final_pos += battle_object->pos;
+			final_rot += battle_object->rot;
 		}
-		final_rot += battle_object->rot;
 	}
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
-		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, scale_vec, frame);
+		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, scale_vec, flip, frame);
 	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

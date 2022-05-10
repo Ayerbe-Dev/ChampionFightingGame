@@ -101,13 +101,17 @@ void Particle::set_sprite(int index) {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
 }
 
-void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,  glm::vec4 rgba, glm::vec3 scale_vec,float frame) {
+void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,  glm::vec4 rgba, glm::vec3 scale_vec, bool flip, float frame) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	pos += this->pos + (pos_frame * frame);
-	rot += this->rot + (rot_frame * frame);
+	real_rot_frame = rot_frame;
+	if (flip) {
+		real_rot_frame.y *= -1.0;
+	}
+	rot += this->rot + (real_rot_frame * frame);
 	scale *= this->scale + (scale_frame * frame);
 	rgba += this->rgba + (rgba_frame * frame);
 	set_sprite((int)frame);

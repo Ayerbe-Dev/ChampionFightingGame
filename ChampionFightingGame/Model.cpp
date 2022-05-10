@@ -227,13 +227,15 @@ int Model::get_mesh_id(std::string mesh_name) {
 	return mesh_map[mesh_name];
 }
 
-int Model::get_bone_id(std::string bone_name) {
+int Model::get_bone_id(std::string bone_name, bool verbose) {
 	if (bone_name == "model-armature") {
 		return 0;
 	}
 	std::unordered_map<std::string, int>::const_iterator iterator = bone_map.find(bone_name);
 	if (iterator == bone_map.end()) {
-		std::cout << "ERROR: Couldn't find " << bone_name << "\n";
+		if (verbose) {
+			std::cout << "ERROR: Couldn't find " << bone_name << "\n";
+		}
 		return -1;
 	}
 	return bone_map[bone_name];

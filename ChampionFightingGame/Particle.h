@@ -18,7 +18,7 @@ public:
 
 	void load_spritesheet(std::string spritesheet_dir);	
 	
-	void render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, glm::vec3 scale_vec, float frame = 0);
+	void render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, glm::vec3 scale_vec, bool flip, float frame = 0);
 
 	TextureCoord tex_data[4];
 	TextureCoord* tex_accessor[4];
@@ -34,6 +34,8 @@ public:
 	std::vector<glm::vec2> spritesheet[4];
 private:
 	void set_sprite(int section);
+
+	glm::vec3 real_rot_frame;
 
 	unsigned int VAO;
 	unsigned int VBO;

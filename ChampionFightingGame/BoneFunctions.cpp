@@ -11,7 +11,7 @@ glm::vec3 BattleObject::get_relative_bone_position(std::string bone_name, glm::v
 		Bone& target = model.bones[index];
 		glm::vec3 ret = glm::vec3(
 			target.anim_matrix[3].z * facing_dir,
-			target.anim_matrix[3].y,
+			target.anim_matrix[3].y / 2.0,
 			target.anim_matrix[3].x * facing_dir * -1
 		);
 		return (ret / scale) + offset;
@@ -26,7 +26,7 @@ glm::vec3 BattleObject::get_relative_bone_position(int bone_id, glm::vec3 offset
 	Bone& target = model.bones[bone_id];
 	glm::vec3 ret = glm::vec3(
 		target.anim_matrix[3].z * facing_dir,
-		target.anim_matrix[3].y,
+		target.anim_matrix[3].y / 2.0,
 		target.anim_matrix[3].x * facing_dir * -1
 	);
 	return (ret / scale) + offset;
@@ -58,8 +58,10 @@ glm::vec3 BattleObject::get_bone_rotation(std::string bone_name) {
 	}
 	int index = model.get_bone_id(bone_name);
 	if (index != -1) {
-		glm::quat q = quat_cast(model.bones[index].anim_matrix);
-		return degrees(eulerAngles(q));
+		glm::vec3 ret;
+		ret = degrees(eulerAngles(quat_cast(model.bones[index].anim_matrix)));
+		ret.z *= facing_dir;
+		return ret;
 	}
 	return glm::vec3(0.0);
 }
@@ -68,8 +70,10 @@ glm::vec3 BattleObject::get_bone_rotation(int bone_id) {
 	if (!has_model) {
 		return glm::vec3(0.0);
 	}
-	glm::quat q = quat_cast(model.bones[bone_id].anim_matrix);
-	return degrees(eulerAngles(q));
+	glm::vec3 ret;	
+	ret = degrees(eulerAngles(quat_cast(model.bones[bone_id].anim_matrix)));
+	ret.z *= facing_dir;
+	return ret;
 }
 
 //Disclaimer: The below 4 functions are all unused and don't work. Turns out just

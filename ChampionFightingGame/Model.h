@@ -93,7 +93,7 @@ public:
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
 
 	int get_mesh_id(std::string mesh_name);
-	int get_bone_id(std::string bone_name);
+	int get_bone_id(std::string bone_name, bool verbose = true);
 private:
 	void load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);
@@ -101,9 +101,9 @@ private:
 	std::vector<ModelTexture> load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name);
 	void post_process_skeleton();
 
-	glm::mat4 flip_matrix = glm::mat4(1.0, 0.0, 0.0, 0.0, 
-		0.0, 1.0, 0.0, 0.0, 
-		0.0, 0.0, -1.0, 0.0, 
+	glm::mat4 flip_matrix = glm::mat4(1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
 		0.0, 0.0, 0.0, 1.0
 	);
 	glm::mat4* dummy_matrix;

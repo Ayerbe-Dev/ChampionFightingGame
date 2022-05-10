@@ -4,6 +4,7 @@
 ProjectileTemplate::ProjectileTemplate() {}
 
 ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info) {
+	this->id = id;
 	this->player_info = player_info;
 	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	projectile_name = "projectile_template";

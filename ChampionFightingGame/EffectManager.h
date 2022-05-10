@@ -17,6 +17,7 @@ public:
 
 	static EffectManager* get_instance();
 
+	void process();
 	void render();
 
 	void activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, 

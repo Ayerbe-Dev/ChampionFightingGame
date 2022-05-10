@@ -123,6 +123,16 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	final_rgba = glm::vec4(1.0);
 	this->rate = rate;
 	this->frame = frame;
+	if (battle_object != nullptr) {
+		scale_vec = glm::vec3(
+			WINDOW_WIDTH / (100 * battle_object->scale.x),
+			WINDOW_HEIGHT / (100 * battle_object->scale.y),
+			WINDOW_DEPTH / (100 * battle_object->scale.z)
+		);
+	}
+	else {
+		scale_vec = glm::vec3(0.05);
+	}
 }
 
 bool EffectInstance::process() {
@@ -146,16 +156,16 @@ void EffectInstance::render() {
 	final_rgba = rgba + (rgba_frame * frame);
 	if (battle_object != nullptr) {
 		if (bone_id != -1) {
-			pos += battle_object->get_bone_position(bone_id);
-			rot += battle_object->get_bone_rotation(bone_id);
+			final_pos += battle_object->get_bone_position(bone_id);
+			final_rot += battle_object->get_bone_rotation(bone_id);
 		}
 		else {
-			pos += battle_object->pos;
+			final_pos += battle_object->pos;
 		}
-		rot += battle_object->rot;
+		final_rot += battle_object->rot;
 	}
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
-		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, frame);
+		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, scale_vec, frame);
 	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

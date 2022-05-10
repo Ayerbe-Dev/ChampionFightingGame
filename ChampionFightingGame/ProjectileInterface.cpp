@@ -14,20 +14,19 @@ ProjectileInterface::ProjectileInterface(int projectile_kind, int id, PlayerInfo
 	switch (projectile_kind) {
 		case (PROJECTILE_KIND_ROY_FIREBALL):
 		default: {
-			projectile = new RoyFireball(id, player_info);
+			projectile = new RoyFireball(10 * (id + 1) + owner->num_projectiles, player_info);
 		}
 		break;
 		case (PROJECTILE_KIND_ERIC_FIREBALL): {
-			projectile = new EricFireball(id, player_info);
+			projectile = new EricFireball(10 * (id + 1) + owner->num_projectiles, player_info);
 		}
 		break;
 		case (PROJECTILE_KIND_PROJECTILE_TEMPLATE): {
-			projectile = new ProjectileTemplate(id, player_info);
+			projectile = new ProjectileTemplate(10 * (id + 1) + owner->num_projectiles, player_info);
 		} break;
 	}
 	projectile->owner = owner;
 	projectile->owner_id = id;
-	projectile->id = 10 * (id + 1) + owner->num_projectiles;
 }
 
 ProjectileInterface::~ProjectileInterface() {}

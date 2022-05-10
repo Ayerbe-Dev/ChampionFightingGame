@@ -41,9 +41,10 @@ void Projectile::process_status() {
 void Projectile::process_animate() {
 	attempted_excutes = 0;
 	
+	frame += rate;
+
 	if (anim_kind != nullptr) {
-		frame += rate;
-		if (frame >= anim_kind->length) {
+		if (frame >= anim_kind->length && anim_kind->length != -1) {
 			frame = 0.0;
 			excute_count = 0;
 			clear_hitbox_all();

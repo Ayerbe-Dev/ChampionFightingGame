@@ -70,6 +70,7 @@ private:
 	glm::vec3 final_rot;
 	glm::vec3 final_scale;
 	glm::vec4 final_rgba;
+	glm::vec3 scale_vec;
 	float rate;
 	int bone_id;
 };

@@ -17,10 +17,7 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 	const aiScene* scene = import.ReadFile(anim_dir, aiProcess_Triangulate);
 
 	if (!scene || !scene->HasAnimations()) {
-		if (model == nullptr) {
-			length = 1;
-		}
-		else if (!scene) {
+		if (!scene) {
 			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		}
 		else {
@@ -30,11 +27,6 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 	}
 
 	length = scene->mAnimations[0]->mDuration;
-
-	if (model == nullptr) {
-		return;
-	}
-
 	std::vector<AnimBone> base_bones;
 
 	for (int i = 0, max = model->bones.size(); i < max; i++) {
@@ -130,12 +122,18 @@ void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* mod
 	}
 
 	std::string name;
-	std::string path;
+	std::string path_or_length;
 	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path;
+		anim_list >> path_or_length;
 		name = ymlChopString(name);
-		path = ymlChopString(path);
-		Animation anim(name, resource_dir + "/anims/" + path, model);
+		path_or_length = ymlChopString(path_or_length);
+		Animation anim;
+		if (model == nullptr) {
+			anim.name = name;
+		}
+		else {
+			anim = Animation(name, resource_dir + "/anims/" + path_or_length, model);
+		}
 		animations.push_back(anim);
 		anim_map[name] = i;
 	}

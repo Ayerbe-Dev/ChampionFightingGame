@@ -4,6 +4,7 @@
 EricFireball::EricFireball() {}
 
 EricFireball::EricFireball(int id, PlayerInfo* player_info) {
+	this->id = id;
 	this->player_info = player_info;
 	this->projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	projectile_name = "eric_fireball";

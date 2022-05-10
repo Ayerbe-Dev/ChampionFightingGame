@@ -21,15 +21,10 @@ void EffectManager::init() {
 	add_effect_info("flame", "resource/chara/roy/effects/flame/");
 }
 
-//We look at every active effect across all objects. If any of them have been active for their entire duration,
-//remove them. If not, render them.
-void EffectManager::render() {
+void EffectManager::process() {
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
 		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(); it != active_effects[i].end(); it++) {
-			if (it->process()) {
-				it->render();
-			}
-			else {
+			if (!it->process()) {
 				if (active_effects[i].size() != 1) {
 					it = active_effects[i].erase(it);
 				}
@@ -38,6 +33,14 @@ void EffectManager::render() {
 					break;
 				}
 			}
+		}
+	}
+}
+
+void EffectManager::render() {
+	for (int i = 0, max = active_effects.size(); i < max; i++) {
+		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(), max = active_effects[i].end(); it != max; it++) {
+			it->render();
 		}
 	}
 }

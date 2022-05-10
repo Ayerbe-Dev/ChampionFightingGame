@@ -269,6 +269,7 @@ void Battle::process_main() {
 		pre_process_fighter();
 		process_fighter();
 		post_process_fighter();
+		EffectManager::get_instance()->process();
 		process_ui();
 	}
 	for (int i = 0; i < 2; i++) {
@@ -356,8 +357,8 @@ void Battle::process_frame_pause() {
 		pre_process_fighter();
 		process_fighter();
 		post_process_fighter();
+		EffectManager::get_instance()->process();
 		process_ui(); 
-		EffectManager::get_instance()->activate_effect(-1, "flame", glm::vec3(10.0, 1000.0, 0.0), glm::vec3(0.0, 0.0, 90.0), glm::vec3(1.0), glm::vec4(0.0), nullptr, -1, glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
@@ -425,14 +426,9 @@ void Battle::render_world() {
 	}
 
 	stage.render();
-
 	glDisable(GL_CULL_FACE);
-}
-
-void Battle::render_ui() {
-	EffectManager::get_instance()->render();
-	for (int i = 0; i < 2; i++) {
-		if (visualize_boxes) {
+	if (visualize_boxes) {
+		for (int i = 0; i < 2; i++) {
 			fighter[i]->jostle_box.render();
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->hurtboxes[i2].id != -1) {
@@ -458,9 +454,15 @@ void Battle::render_ui() {
 					fighter[i]->grabboxes[i2].rect.render();
 				}
 			}
-			if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-				//Combo Counter text here
-			}
+		}
+	}
+	EffectManager::get_instance()->render();
+}
+
+void Battle::render_ui() {
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
+			//Combo Counter text here
 		}
 		health_bar[i].render();
 		ex_bar[i].render();

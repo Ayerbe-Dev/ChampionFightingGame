@@ -4,6 +4,7 @@
 class Fighter;
 class StageAsset;
 class Projectile;
+class Stage;
 
 class BattleObjectManager {
 public:
@@ -15,7 +16,7 @@ public:
 	std::vector<Projectile*> projectiles;
 
 	std::vector<Button [BUTTON_MAX]> player_inputs[2];
-
+	Stage* stage;
 	
 	static BattleObjectManager* get_instance();
 

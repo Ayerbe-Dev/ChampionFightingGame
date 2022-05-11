@@ -6,3 +6,4 @@ ex_meter_size 1 300
 ex_meter_bars 1 6
 motion_special_timer 1 11
 max_distance 2 1000.0
+spawn_distance 2 400.0

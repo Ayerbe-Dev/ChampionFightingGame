@@ -45,24 +45,24 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	//Note: The prev arg determines what should happen should a position check fail. If it's true, the changes to position on that axis are canceled
 	//completely. If not, the position is moved to the closest valid position.
 
-	if (this->pos.x > WINDOW_WIDTH / 2) { //If you went out of the horizontal bounds
+	if (this->pos.x > stage->stage_bounds.y) { //If you went out of the horizontal bounds
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
-			this->pos.x = WINDOW_WIDTH / 2;
+			this->pos.x = stage->stage_bounds.y;
 		}
 		if (get_local_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
 		}
 		ret = false;
 	}
-	if (this->pos.x < WINDOW_WIDTH / -2) {
+	if (this->pos.x < stage->stage_bounds.x) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
-			this->pos.x = WINDOW_WIDTH / -2;
+			this->pos.x = stage->stage_bounds.x;
 		}
 		if (get_local_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
@@ -154,21 +154,21 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	bool opponent_right = this->pos.x > that->pos.x;
 
 	this->pos = pos;
-	if (this->pos.x > WINDOW_WIDTH / 2) {
+	if (this->pos.x > stage->stage_bounds.y) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
-			this->pos.x = WINDOW_WIDTH / 2;
+			this->pos.x = stage->stage_bounds.y;
 		}
 		ret = false;
 	}
-	if (this->pos.x < WINDOW_WIDTH / -2) {
+	if (this->pos.x < stage->stage_bounds.x) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
-			this->pos.x = WINDOW_WIDTH / -2;
+			this->pos.x = stage->stage_bounds.x;
 		}
 		ret = false;
 	}

@@ -6,6 +6,8 @@
 #include "GameManager.h"
 #include "GameTexture.h"
 
+class Camera;
+
 void battle_main(GameManager *game_manager);
 
 class HealthBar {
@@ -124,6 +126,7 @@ public:
 	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;
+	Camera *camera;
 
 	//TODO: Create a class for the combo counter or otherwise some form of text rendering
 

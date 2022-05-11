@@ -7,20 +7,18 @@
 void Fighter::superInit(int id) {
 	this->id = id;
 	
-	sound_manager = SoundManager::get_instance();
 	sound_manager->add_sound_player(id);
-
-	effect_manager = EffectManager::get_instance();
 	effect_manager->add_effect_caster(id);
+	stage = battle_object_manager->stage;
 
 	if (id == 0) {
-		pos = glm::vec3(-200, FLOOR_GAMECOORD, 0);
+		pos = glm::vec3(stage->start_pos.x, FLOOR_GAMECOORD, 0);
 		facing_right = true;
 		internal_facing_right = true;
 		facing_dir = 1.0;
 	}
 	else {
-		pos = glm::vec3(200, FLOOR_GAMECOORD, 0);
+		pos = glm::vec3(stage->start_pos.y, FLOOR_GAMECOORD, 0);
 		facing_right = false;
 		internal_facing_right = false;
 		facing_dir = -1.0;

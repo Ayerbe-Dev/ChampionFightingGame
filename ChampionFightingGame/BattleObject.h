@@ -14,6 +14,7 @@ class PlayerInfo;
 class BattleObjectManager;
 class SoundManager;
 class EffectManager;
+class Stage;
 
 class BattleObject : public RenderObject {
 public:
@@ -36,6 +37,8 @@ public:
 	GameRect jostle_box;
 	glm::vec2 base_jostle_anchor;
 	glm::vec2 base_jostle_offset;
+
+	Stage* stage;
 
 	bool has_model;
 

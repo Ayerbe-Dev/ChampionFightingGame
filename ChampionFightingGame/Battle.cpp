@@ -35,7 +35,7 @@
 #include "EffectManager.h"
 #include "Effect.h"
 #include "Particle.h"
-
+#include "Camera.h"
 
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
@@ -134,6 +134,9 @@ void Battle::load_battle(GameManager* game_manager) {
 	game_loader = new GameLoader(17);
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
+
+	RenderManager* render_manager = RenderManager::get_instance();
+	camera = &render_manager->camera;
 
 	visualize_boxes = true;
 

@@ -1,9 +1,11 @@
 #include "Camera.h"
+#include "Stage.h"
 #include "utils.h"
 
 Camera::Camera() {
 	pos = glm::vec3(0.0, 1.3, 4.0);
 	fov = 43.0;
+	following_players = true;
 }
 
 glm::mat4 Camera::get_view() {
@@ -41,4 +43,11 @@ void Camera::update_view() {
 
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
+}
+
+void Camera::follow_players(glm::vec2 p1, glm::vec2 p2, Stage* stage) {
+	//Should move the camera into a position such that it balances the players and slightly tilts towards
+	//whichever player is further from the center
+
+	//I'll let you work your magic to figure out how to actually do that
 }

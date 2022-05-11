@@ -17,11 +17,6 @@ public:
 
 class Stage {
 public:
-	int stage_kind;
-	std::string default_music_kind;
-	std::string resource_dir;
-	std::vector<StageAsset*> stage_assets;
-
 	Stage();
 
 	void load_stage(StageInfo stage_info, BattleObjectManager* battle_object_manager);
@@ -29,4 +24,13 @@ public:
 	void process();
 	void render();
 	void render_shadow();
+
+	int stage_kind;
+
+	glm::vec2 start_pos;
+	glm::vec2 stage_bounds;
+
+	std::string default_music_kind;
+	std::string resource_dir;
+	std::vector<StageAsset*> stage_assets;
 };

@@ -766,7 +766,6 @@ void Fighter::status_grabbed() {
 			fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y], 
 			0.0
 		);
-//		extra_rot = that->get_bone_rotation(fighter_int[FIGHTER_INT_GRAB_BONE_ID]);
 		glm::vec3 offset_bone_pos = get_relative_bone_position(fighter_int[FIGHTER_INT_GRABBED_BONE_ID]);
 		glm::vec3 target_pos = that->get_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
 		offset_bone_pos.y /= 10.0;
@@ -795,7 +794,6 @@ void Fighter::exit_status_grabbed() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
 	pos.z = 0.0;
-//	extra_rot = glm::vec3(0.0);
 }
 
 void Fighter::status_thrown() {

@@ -254,8 +254,7 @@ void Battle::process_main() {
 	keyboard_state = SDL_GetKeyboardState(NULL);
 	poll_inputs(keyboard_state);
 	if (check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
-		if (frame_pause) { //Todo: Figure out if there's a cleaner way to handle this. Maybe put this
-			//in part of process_frame_pause?
+		if (frame_pause) {
 			for (int i = 0; i < 2; i++) {
 				sound_manager->resume_sound_all(i, SOUND_KIND_SE);
 				sound_manager->resume_sound_all(i, SOUND_KIND_VC);
@@ -333,12 +332,7 @@ void Battle::process_fighter() {
 
 void Battle::post_process_fighter() {
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->update_hitbox_pos();
-		fighter[i]->update_grabbox_pos();
-		fighter[i]->update_hurtbox_pos();
-		fighter[i]->rot.z += glm::radians(90.0);
-		fighter[i]->rot += fighter[i]->extra_rot;
-		fighter[i]->update_jostle_rect();
+		fighter[i]->fighter_post();
 	}
 }
 

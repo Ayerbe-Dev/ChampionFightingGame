@@ -160,6 +160,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <StringPooling>false</StringPooling>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -344,6 +345,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Tessa.cpp" />
     <ClCompile Include="TessaMoves.cpp" />
     <ClCompile Include="TessaStatus.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="TitleScreen.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="Vesuvius.cpp" />
@@ -554,6 +556,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TessaInt.h" />
     <ClInclude Include="TessaStatus.h" />
     <ClInclude Include="TextureCoord.h" />
+    <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Fighter.h" />

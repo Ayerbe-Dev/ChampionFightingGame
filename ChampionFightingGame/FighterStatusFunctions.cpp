@@ -119,3 +119,16 @@ bool Fighter::is_status_hitstun_enable_parry() {
 		break;
 	}
 }
+
+bool Fighter::is_status_delay() {
+	switch (status_kind) {
+		case (FIGHTER_STATUS_GRABBED): {
+			return true;
+		}
+		break;
+		default: {
+			return false;
+		}
+		break;
+	}
+}

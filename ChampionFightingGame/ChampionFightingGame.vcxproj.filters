@@ -702,6 +702,9 @@
     <ClCompile Include="BoneFunctions.cpp">
       <Filter>Source Files\Objects\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1348,6 +1351,9 @@
     </ClInclude>
     <ClInclude Include="TextureCoord.h">
       <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

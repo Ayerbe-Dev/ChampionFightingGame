@@ -1,14 +1,14 @@
 name=default
 length=-1
 name=hover
-length=-1
+length=0
 name=punched
 length=-1
 name=kicked
 length=-1
 name=fall
-length=6
+length=0
 name=hit
-length=4
+length=0
 name=ground
 length=0

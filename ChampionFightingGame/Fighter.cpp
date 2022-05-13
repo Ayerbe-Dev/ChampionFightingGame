@@ -72,6 +72,18 @@ void Fighter::fighter_main() {
 	process_ai();
 }
 
+void Fighter::fighter_post() {
+	if (is_status_delay()) {
+		(this->*status_script[status_kind])();
+	}
+	update_hitbox_pos();
+	update_grabbox_pos();
+	update_hurtbox_pos();
+	rot.z += glm::radians(90.0);
+	rot += extra_rot;
+	update_jostle_rect();
+}
+
 void Fighter::process_projectiles() {
 	for (int i = 0; i < num_projectiles; i++) {
 		if (projectiles[i]->active) {
@@ -190,7 +202,9 @@ void Fighter::process_status() {
 			battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
 		}
 	}
-	(this->*status_script[status_kind])();
+	if (!is_status_delay()) {
+		(this->*status_script[status_kind])();
+	}
 	move_script.move_script();
 }
 

@@ -23,6 +23,17 @@ void BattleObject::new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, gl
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
+	if (!facing_right) {
+		scale.x *= -1.0;
+	}
+	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+}
+
+void BattleObject::new_effect_no_follow(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
+	glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame,
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	pos.x *= facing_dir;
+	pos_frame.x *= facing_dir;
 	pos += this->pos;
 	if (!facing_right) {
 		scale.x *= -1.0;

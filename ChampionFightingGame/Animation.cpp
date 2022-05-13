@@ -122,21 +122,32 @@ void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* mod
 	}
 
 	std::string name;
-	std::string path_or_length;
-	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path_or_length;
-		name = ymlChopString(name);
-		path_or_length = ymlChopString(path_or_length);
-		Animation anim;
-		if (model == nullptr) {
+	std::string path_length_container;
+	if (model == nullptr) {
+		int length;
+		for (int i = 0; anim_list >> name; i++) {
+			anim_list >> path_length_container;
+			name = ymlChopString(name);
+			length = ymlChopInt(path_length_container);
+			Animation anim;
 			anim.name = name;
+			anim.length = length;
+			animations.push_back(anim);
+			anim_map[name] = i;
 		}
-		else {
-			anim = Animation(name, resource_dir + "/anims/" + path_or_length, model);
-		}
-		animations.push_back(anim);
-		anim_map[name] = i;
 	}
+	else {
+		std::string path;
+		for (int i = 0; anim_list >> name; i++) {
+			anim_list >> path_length_container;
+			name = ymlChopString(name);
+			path = ymlChopString(path_length_container);
+			Animation anim(name, resource_dir + "/anims/" + path, model);
+			animations.push_back(anim);
+			anim_map[name] = i;
+		}
+	}
+
 	anim_list.close();
 }
 

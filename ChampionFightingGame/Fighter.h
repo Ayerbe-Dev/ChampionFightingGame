@@ -52,6 +52,9 @@ public:
 	//Main
 
 	void fighter_main(); //Runs during every frame of gameplay
+	void fighter_post(); //Handles some logic which may require the opponent's main() function being finished
+	//(throws requiring the opponent's bone positions being up to date, for example)
+
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
 	void update_jostle_rect(); //Sets up the player's jostle box, called multiple times every frame
 
@@ -199,6 +202,7 @@ public:
 	bool is_status_end(unsigned int status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
 	unsigned int get_status_group();
 	bool is_status_hitstun_enable_parry();
+	bool is_status_delay();
 
 	//don't worry, it'll get longer :)
 	virtual void status_wait();

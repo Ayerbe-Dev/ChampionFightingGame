@@ -139,6 +139,10 @@ public:
 		glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame, 
 		glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
 
+	void new_effect_no_follow(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
+		glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame,
+		glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
+
 	void clear_effect(std::string name, int instance = 0);
 	void clear_effect_all();
 

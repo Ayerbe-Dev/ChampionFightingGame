@@ -51,8 +51,8 @@ public:
 	bool visible;
 
 	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
-	void render(Shader *shader);
-	void render_shadow(Shader* shader);
+	void render();
+	void render_shadow();
 
 	unsigned int VAO;
 	unsigned int VBO;

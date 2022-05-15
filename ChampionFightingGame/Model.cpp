@@ -174,7 +174,7 @@ void Model::render(Shader* shader, bool flip) {
 
 	for (Mesh &mesh : meshes) {
 		if (mesh.visible) {
-			mesh.render(shader);
+			mesh.render();
 		}
 	}
 	glBindVertexArray(0);
@@ -195,7 +195,7 @@ void Model::render_shadow(Shader* shader, bool flip) {
 
 	for (Mesh& mesh : meshes) {
 		if (mesh.visible) {
-			mesh.render_shadow(shader);
+			mesh.render_shadow();
 		}
 	}
 	glBindVertexArray(0);
@@ -461,19 +461,7 @@ void Mesh::init() {
 	glBindVertexArray(0);
 }
 
-FORCE_INLINE void Mesh::render(Shader* shader) {
-	//These should be set on creation of the shader for optimal performance
-
-	//Just tried it, it made them models really shiny and also broke stages??
-	shader->set_int("material.diffuse", 0);
-	shader->set_int("material.specular", 1);
-	shader->set_int("material.shadow_map", 2);
-	//
-	
-	// this for-loop is probably fine since it is essentially checking if the mesh has textures;
-	// the issue is, this is pretty ambiguous in regard to which shaders are being used. 
-	// proposal to remove for loop and thus conditionals: move render func to be a virtual func of shader and make child shader classes for each shader program
-	// downside: code bulk
+FORCE_INLINE void Mesh::render() {
 	for (unsigned int i = 0, max = textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
@@ -484,7 +472,7 @@ FORCE_INLINE void Mesh::render(Shader* shader) {
 	glBindVertexArray(0);
 }
 
-FORCE_INLINE void Mesh::render_shadow(Shader* shader) {
+FORCE_INLINE void Mesh::render_shadow() {
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

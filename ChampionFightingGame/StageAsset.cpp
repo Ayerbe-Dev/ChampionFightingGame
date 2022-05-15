@@ -41,6 +41,10 @@ void StageAsset::load_model_shader() {
 	else {
 		shader.init("vertex_no_anim.glsl", "fragment_main.glsl");
 	}
+	shader.use();
+	shader.set_int("material.diffuse", 0);
+	shader.set_int("material.specular", 1);
+	shader.set_int("material.shadow_map", 2);
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->link_shader(&shader);
 }

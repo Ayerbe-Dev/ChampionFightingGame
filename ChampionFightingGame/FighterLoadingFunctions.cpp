@@ -45,6 +45,11 @@ void Fighter::load_model_shader() {
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
+	shader.use();
+	shader.set_int("material.diffuse", 0);
+	shader.set_int("material.specular", 1);
+	shader.set_int("material.shadow_map", 2);
+
 }
 
 void Fighter::load_anim_list() {

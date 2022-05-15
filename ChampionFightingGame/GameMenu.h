@@ -1,6 +1,7 @@
 #pragma once
 #include "GameState.h"
 #include <vector>
+#include <chrono>
 
 class GameLoader;
 
@@ -29,8 +30,8 @@ public:
     int* prev_game_context;
     bool* looping;
     GameLoader* game_loader;
-    int ticks = 0;
-    std::vector<int> average_ticks;
+    std::chrono::steady_clock::time_point ms;
+    std::vector<float> average_ticks;
     std::vector<int> tick_frequency;
 
     int sub_state = GAME_SUBSTATE_NONE;

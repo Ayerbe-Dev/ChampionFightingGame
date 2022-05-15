@@ -37,6 +37,8 @@
 #include "Particle.h"
 #include "Camera.h"
 
+#include "ThreadManager.h"
+
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 extern SoundInstance sounds[3][MAX_SOUNDS];
@@ -62,13 +64,12 @@ void battle_main(GameManager* game_manager) {
 
 	RenderManager *render_manager = RenderManager::get_instance();
 	SDL_GetWindowSize(g_window, &render_manager->s_window_width, &render_manager->s_window_height);
-	
+
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
-
 	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay();
+		battle.frame_delay_check_performance();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -101,7 +102,6 @@ void battle_main(GameManager* game_manager) {
 		}
 
 		battle.process_main();
-
 		battle.render_world();
 		battle.render_ui();
 
@@ -137,6 +137,8 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	RenderManager* render_manager = RenderManager::get_instance();
 	camera = &render_manager->camera;
+
+	thread_manager = ThreadManager::get_instance();
 
 	visualize_boxes = true;
 
@@ -211,6 +213,10 @@ void Battle::load_battle(GameManager* game_manager) {
 			}
 		}
 	}
+	for (int i = 0; i < 2; i++) {
+		thread_manager->add_thread(i, fighter_thread, (void*)fighter[i]);
+	}
+	thread_manager->add_thread(THREAD_KIND_EFFECT, ui_thread, (void*)this);
 	game_loader->finished = true;
 	game_manager->set_menu_info(this);
 
@@ -225,7 +231,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	else {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
-	ticks = SDL_GetTicks();
+	ms = std::chrono::high_resolution_clock::now();
 }
 
 void Battle::unload_battle() {
@@ -233,10 +239,12 @@ void Battle::unload_battle() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	for (int i = 0; i < 2; i++) {
+		thread_manager->kill_thread(i);
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
 		delete fighter[i];
 	}
+	thread_manager->kill_thread(THREAD_KIND_EFFECT);
 	stage.unload_stage();
 	sound_manager->stop_sound_all();
 	sound_manager->unload_all_sounds();
@@ -270,9 +278,10 @@ void Battle::process_main() {
 	else {
 		pre_process_fighter();
 		process_fighter();
-		post_process_fighter();
-		EffectManager::get_instance()->process();
 		process_ui();
+		stage.process();
+		post_process_fighter();
+		thread_manager->wait_thread(THREAD_KIND_EFFECT);
 	}
 	for (int i = 0; i < 2; i++) {
 		if (fighter[i]->crash_to_debug) {
@@ -326,22 +335,39 @@ void Battle::pre_process_fighter() {
 void Battle::process_fighter() {
 	for (int i = 0; i < 2; i++) {
 		player_info[i]->poll_buttons(keyboard_state);
-		fighter[i]->fighter_main();
+		thread_manager->notify_thread(i);
 	}
 }
 
+void fighter_thread(void* fighter_arg) {
+	Fighter* fighter = (Fighter*)fighter_arg;
+	fighter->fighter_main();
+	wait_ms();
+}
+
 void Battle::post_process_fighter() {
+	thread_manager->wait_thread(THREAD_KIND_PLAYER_1);
+	thread_manager->wait_thread(THREAD_KIND_PLAYER_2);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->fighter_post();
 	}
 }
 
 void Battle::process_ui() {
+	thread_manager->notify_thread(THREAD_KIND_EFFECT);
+}
+
+void ui_thread(void* battle_arg) {
+	Battle* battle = (Battle*)battle_arg;
 	for (int i = 0; i < 2; i++) {
-		health_bar[i].process();
-		ex_bar[i].process();
+		battle->health_bar[i].process();
+		battle->ex_bar[i].process();
 	}
-	timer.process();
+	battle->timer.process();
+	EffectManager* effect_manager = EffectManager::get_instance();
+	effect_manager->process();
+	effect_manager->prepare_render(); 
+	wait_ms();
 }
 
 void Battle::process_frame_pause() {
@@ -353,9 +379,9 @@ void Battle::process_frame_pause() {
 		}
 		pre_process_fighter();
 		process_fighter();
+		process_ui();
 		post_process_fighter();
-		EffectManager::get_instance()->process();
-		process_ui(); 
+		thread_manager->wait_thread(THREAD_KIND_EFFECT);
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
@@ -368,7 +394,7 @@ void Battle::process_frame_pause() {
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE); 
+	glEnable(GL_CULL_FACE);
 	
 	//Enabling face culling causes all 2D objects that were flipped to not render at all. This could technically be fixed by sorting all 2D objects 
 	//into flipped and non-flipped, turning culling off, rendering the flipped ones, turning culling back on and rendering the non-flipped ones, 
@@ -453,7 +479,7 @@ void Battle::render_world() {
 			}
 		}
 	}
-	EffectManager::get_instance()->render();
+	EffectManager::get_instance()->render_prepared();
 }
 
 void Battle::render_ui() {
@@ -1186,11 +1212,13 @@ void HealthBar::destroy() {
 
 void HealthBar::process() {
 	health_texture.scale_left_percent(*health / max_health);
+	health_texture.prepare_render();
+	bar_texture.prepare_render();
 }
 
 void HealthBar::render() {
-	health_texture.render();
-	bar_texture.render();
+	health_texture.render_prepared();
+	bar_texture.render_prepared();
 }
 
 ExBar::ExBar() {}
@@ -1244,12 +1272,15 @@ void ExBar::process() {
 	prev_segments = segments;
 	ex_texture.process();
 	ex_segment_texture.process();
+	ex_texture.prepare_render();
+	ex_segment_texture.prepare_render();
+	bar_texture.prepare_render();
 }
 
 void ExBar::render() {
-	ex_texture.render();
-	ex_segment_texture.render();
-	bar_texture.render();
+	ex_texture.render_prepared();
+	ex_segment_texture.render_prepared();
+	bar_texture.render_prepared();
 }
 
 PlayerIndicator::PlayerIndicator() {}
@@ -1349,6 +1380,12 @@ void GameTimer::process() {
 	deca_second_texture.set_sprite(deca_seconds);
 	frame_texture.set_sprite(frames);
 	deca_frame_texture.set_sprite(deca_frames);
+
+	clock.prepare_render();
+	second_texture.prepare_render();
+	deca_second_texture.prepare_render();
+	frame_texture.prepare_render();
+	deca_frame_texture.prepare_render();
 }
 
 void GameTimer::flip_clock() {
@@ -1357,9 +1394,9 @@ void GameTimer::flip_clock() {
 }
 
 void GameTimer::render() {
-	clock.render();
-	second_texture.render();
-	deca_second_texture.render();
-	frame_texture.render();
-	deca_frame_texture.render();
+	clock.render_prepared();
+	second_texture.render_prepared();
+	deca_second_texture.render_prepared();
+	frame_texture.render_prepared();
+	deca_frame_texture.render_prepared();
 }

@@ -13,7 +13,7 @@
 #define FORCE_INLINE [[gnu::always_inline]] inline
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
-void wait_ms(double ms_duration = 16.667);
+void wait_ms(double ms_duration = 16.667, bool process_time = true);
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
 int ymlChopInt(std::string line);

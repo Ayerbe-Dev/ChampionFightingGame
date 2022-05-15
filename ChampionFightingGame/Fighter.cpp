@@ -7,6 +7,7 @@
 #include "BattleObjectManager.h"
 #include "AIManager.h"
 #include "ParamAccessor.h"
+#include "ThreadManager.h"
 
 Fighter::Fighter() {
 	has_model = true;

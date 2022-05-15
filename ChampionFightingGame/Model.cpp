@@ -127,7 +127,7 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-			bones[bones[i].counterpart_id].final_matrix = (bones[i].anim_matrix * flip_matrix) * bones[i].model_flip_matrix * global_transform;
+			bones[bones[i].counterpart_id].final_matrix = flip_matrix * ((bones[i].anim_matrix* flip_matrix)* bones[i].model_flip_matrix* global_transform);
 		} 
 	}
 	else {
@@ -167,15 +167,8 @@ void Model::render(Shader* shader, bool flip) {
 	else { //But if we have keyframe data and face left, we applied 1 flip matrix to each bone to mirror
 		//the transformations, then we applied another one to the entire model, so culling is always the same
 		glCullFace(GL_BACK);
-		if (flip) {
-			for (int i = 0, max = bones.size(); i < max; i++) {
-				shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
-			}
-		}
-		else {
-			for (int i = 0, max = bones.size(); i < max; i++) {
-				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
-			}
+		for (int i = 0, max = bones.size(); i < max; i++) {
+			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 		}
 	}
 
@@ -191,7 +184,7 @@ void Model::render(Shader* shader, bool flip) {
 void Model::render_shadow(Shader* shader, bool flip) {
 	if (flip) {
 		for (int i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", flip_matrix * bones[i].final_matrix, i);
+			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 		}
 	}
 	else {
@@ -470,6 +463,8 @@ void Mesh::init() {
 
 FORCE_INLINE void Mesh::render(Shader* shader) {
 	//These should be set on creation of the shader for optimal performance
+
+	//Just tried it, it made them models really shiny and also broke stages??
 	shader->set_int("material.diffuse", 0);
 	shader->set_int("material.specular", 1);
 	shader->set_int("material.shadow_map", 2);

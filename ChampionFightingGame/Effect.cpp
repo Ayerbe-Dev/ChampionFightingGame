@@ -125,6 +125,8 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	final_rot = glm::vec3(0.0);
 	final_scale = glm::vec3(1.0);
 	final_rgba = glm::vec4(1.0);
+	final_matrix_instance.resize(effect->particles.size());
+	final_rgba_instance.resize(effect->particles.size());
 	flip = false;
 	this->rate = rate;
 	this->frame = frame;
@@ -154,6 +156,27 @@ bool EffectInstance::process() {
 	return true;
 }
 
+void EffectInstance::prepare_render() {
+	final_pos = pos + (pos_frame * frame);
+	final_rot = rot + (rot_frame * frame);
+	final_scale = scale + (scale_frame * frame);
+	final_rgba = rgba + (rgba_frame * frame);
+	if (battle_object != nullptr) {
+		if (bone_id != -1) {
+			final_pos += battle_object->get_bone_position(bone_id, bone_offset);
+			final_rot += battle_object->get_bone_rotation(bone_id);
+		}
+		else {
+			final_pos += battle_object->pos;
+			final_rot += battle_object->rot;
+		}
+	}
+	for (int i = 0, max = effect->particles.size(); i < max; i++) {
+		final_rgba_instance[i] = final_rgba;
+		final_matrix_instance[i] = effect->particles[i].prepare_render(final_pos, final_rot, final_scale, final_rgba_instance[i], scale_vec, flip, frame);
+	}
+}
+
 void EffectInstance::render() {
 	glDepthMask(GL_TRUE);
 	shader->use();
@@ -176,6 +199,20 @@ void EffectInstance::render() {
 	}
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
 		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, scale_vec, flip, frame);
+	}
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void EffectInstance::render_prepared() {
+	glDepthMask(GL_TRUE);
+	shader->use();
+	shader->set_int("f_texture", 0);
+	glActiveTexture(GL_TEXTURE0);
+	RenderManager::get_instance()->update_shader_cam(shader);
+	for (int i = 0, max = effect->particles.size(); i < max; i++) {
+		effect->particles[i].render_prepared(shader, final_matrix_instance[i], final_rgba_instance[i], frame);
 	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -6,6 +6,7 @@
 #include "GameManager.h"
 #include "GameTexture.h"
 
+class ThreadManager;
 class Camera;
 
 void battle_main(GameManager *game_manager);
@@ -118,6 +119,7 @@ public:
 	Fighter* fighter[2];
 	Stage stage;
 	BattleObjectManager* battle_object_manager;
+	ThreadManager* thread_manager;
 
 	PlayerInfo* player_info[2];
 
@@ -138,6 +140,9 @@ public:
 	bool pause;
 	bool frame_pause;
 };
+
+void fighter_thread(void* fighter_arg);
+void ui_thread(void* battle_arg);
 
 //Demoknight TF2 has been evicted from UI.cpp as that file no longer exists
 

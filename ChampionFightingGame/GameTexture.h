@@ -7,6 +7,7 @@
 #include "TextureCoord.h"
 
 class Shader;
+class ThreadManager;
 
 enum {
     GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT,
@@ -68,7 +69,10 @@ public:
     void reorient();
 
     void process();
+    void prepare_render();
+
     void render();
+    void render_prepared();
 
     void load_spritesheet(std::string spritesheet_dir);
     void set_sprite(int section);
@@ -99,6 +103,8 @@ public:
 private:
     void update_buffer_data();
 
+    ThreadManager* thread_manager;
+
     unsigned int VAO;
     unsigned int VBO;
     float width;
@@ -113,4 +119,6 @@ private:
     bool v_flipped;
 
     std::string name;
+    glm::mat4 matrix;
+    bool depth;
 };

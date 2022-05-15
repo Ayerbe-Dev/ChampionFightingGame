@@ -1,10 +1,12 @@
 #include "GameRect.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
+#include "ThreadManager.h"
 #include "utils.h"
 
 GameRect::GameRect() {
-
+	thread_manager = ThreadManager::get_instance();
+	render_manager = RenderManager::get_instance();
 }
 
 GameRect::GameRect(glm::vec2 c1, glm::vec2 c2) {
@@ -75,14 +77,16 @@ void GameRect::update_corners(glm::vec2 c1, glm::vec2 c2) {
 	corners[2] = c2;
 	corners[3] = glm::vec2(c2.x, c1.y);
 
-	for (int i = 0; i < 4; i++) {
-		corners[i].x /= WINDOW_WIDTH;
-		corners[i].y /= WINDOW_HEIGHT;
-	}
-	update_buffer_data();
-	for (int i = 0; i < 4; i++) {
-		corners[i].x *= WINDOW_WIDTH;
-		corners[i].y *= WINDOW_HEIGHT;
+	if (thread_manager->is_main_thread()) {
+		for (int i = 0; i < 4; i++) {
+			corners[i].x /= WINDOW_WIDTH;
+			corners[i].y /= WINDOW_HEIGHT;
+		}
+		update_buffer_data();
+		for (int i = 0; i < 4; i++) {
+			corners[i].x *= WINDOW_WIDTH;
+			corners[i].y *= WINDOW_HEIGHT;
+		}
 	}
 }
 
@@ -108,24 +112,28 @@ void GameRect::set_rgba(glm::vec4 rgba) {
 	this->rgba = rgba;
 }
 
+void GameRect::prepare_render() {
+	if (scale != nullptr) {
+		matrix = glm::scale(glm::mat4(1.0), *scale);
+	}
+	else {
+		matrix = glm::scale(glm::mat4(1.0), glm::vec3(0.05));
+	}
+	matrix = glm::scale(matrix, glm::vec3(100.0)); //Scaling up all GameRects by 100x makes them reasonably sized
+}
+
 void GameRect::render() {
+	prepare_render();
+	render_prepared();
+}
+
+void GameRect::render_prepared() {
 	shader->use();
-	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->update_shader_cam(shader);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glm::mat4 mat = glm::mat4(1.0);
-	if (scale != nullptr) {
-		mat = glm::scale(mat, *scale);
-	}
-	else {
-		mat = glm::scale(mat, glm::vec3(0.05));
-	}
-	mat = glm::scale(mat, glm::vec3(100.0)); //Scaling up all GameRects by 100x makes them reasonably sized
-	shader->set_mat4("matrix", mat);
+	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
-
 	glDepthMask(GL_FALSE);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDepthMask(GL_TRUE);

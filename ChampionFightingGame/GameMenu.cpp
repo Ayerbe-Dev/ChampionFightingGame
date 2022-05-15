@@ -40,10 +40,10 @@ void GameMenu::frame_delay_check_performance() {
 	int trials = 10000;
 
 	if (average_ticks.size() < trials) {
-		average_ticks.push_back(SDL_GetTicks() - ticks);
+		average_ticks.push_back((float)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - ms).count())/1000.0);
 	}
 	else {
-		int highest = average_ticks[0];
+		float highest = average_ticks[0];
 		while (highest >= tick_frequency.size()) {
 			tick_frequency.push_back(0);
 		}
@@ -51,8 +51,8 @@ void GameMenu::frame_delay_check_performance() {
 		int frame_freq = 0;
 		float total = 0;
 		for (int i = 0; i < trials; i++) {
-			total += (float)average_ticks[i];
-			if (average_ticks[i] >= 16) {
+			total += average_ticks[i];
+			if (average_ticks[i] >= 16.667) {
 				frame_freq++;
 			}
 			if (average_ticks[i] > highest) {
@@ -65,7 +65,7 @@ void GameMenu::frame_delay_check_performance() {
 			else if (average_ticks[i] == highest) {
 				freq++;
 			}
-			tick_frequency[average_ticks[i]]++;
+			tick_frequency[(int)average_ticks[i]]++;
 		}
 		total /= (float)trials;
 		std::cout << "Lengths of all iterations across " << trials << " tests: " << "\n";
@@ -77,5 +77,5 @@ void GameMenu::frame_delay_check_performance() {
 		tick_frequency.clear();
 	}
 	wait_ms();
-	ticks = SDL_GetTicks();
+	ms = std::chrono::high_resolution_clock::now();
 }

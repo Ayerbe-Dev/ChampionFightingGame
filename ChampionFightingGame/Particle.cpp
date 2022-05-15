@@ -101,6 +101,26 @@ void Particle::set_sprite(int index) {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
 }
 
+glm::mat4 Particle::prepare_render(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4& rgba, glm::vec3 scale_vec, bool flip, float frame) {
+	pos += this->pos + (pos_frame * frame);
+	real_rot_frame = rot_frame;
+	if (flip) {
+		real_rot_frame.y *= -1.0;
+	}
+	rot += this->rot + (real_rot_frame * frame);
+	scale *= this->scale + (scale_frame * frame);
+	rgba += this->rgba + (rgba_frame * frame);
+	rgba.x /= 255.0;
+	rgba.y /= 255.0;
+	rgba.z /= 255.0;
+	rgba.w = (1.0 - (rgba.w / 255.0));
+	glm::mat4 matrix = glm::mat4(1.0);
+	matrix = glm::translate(matrix, pos / scale_vec);
+	matrix *= glm::orientate4(radians(rot));
+	matrix = glm::scale(matrix, scale);
+	return matrix;
+}
+
 void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,  glm::vec4 rgba, glm::vec3 scale_vec, bool flip, float frame) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -125,6 +145,16 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	matrix = glm::translate(matrix, pos / scale_vec);
 	matrix *= glm::orientate4(radians(rot));
 	matrix = glm::scale(matrix, scale);
+	shader->set_mat4("matrix", matrix);
+	shader->set_vec4("f_colormod", rgba);
+	glDrawArrays(GL_QUADS, 0, 4);
+}
+
+void Particle::render_prepared(Shader* shader, glm::mat4 matrix, glm::vec4 rgba, int frame) {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	set_sprite(frame);
 	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_colormod", rgba);
 	glDrawArrays(GL_QUADS, 0, 4);

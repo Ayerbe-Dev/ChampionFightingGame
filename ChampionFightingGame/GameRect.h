@@ -2,6 +2,9 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 
+class ThreadManager;
+class RenderManager;
+
 class GameRect {
 public:
 	GameRect();
@@ -16,7 +19,10 @@ public:
 	void set_rgb(glm::vec3 rgb);
 	void set_rgba(glm::vec4 rgba);
 
+	void prepare_render();
+
 	void render();
+	void render_prepared();
 
 	Shader* shader;
 
@@ -26,6 +32,9 @@ public:
 	glm::vec4 rgba = glm::vec4(0.0);
 private:
 	void update_buffer_data();
+	RenderManager* render_manager;
+	ThreadManager* thread_manager;
+	glm::mat4 matrix;
 
 	unsigned int VAO;
 	unsigned int VBO;

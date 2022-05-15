@@ -70,18 +70,22 @@ std::string Filter(const std::string& to, const std::string& remove) {
 /// Pauses the current thread until 1 frame since the last time this function was called. Also called by loadSDLTexture in order to pause the loading
 /// thread long enough for the main thread to consistently render.
 /// </summary>
-void wait_ms(double ms_duration) {
-	thread_local std::chrono::steady_clock::time_point g_chron = std::chrono::steady_clock::now();
+thread_local std::chrono::steady_clock::time_point g_chron = std::chrono::steady_clock::now();
+void wait_ms(double ms_duration, bool process_time) {
 	std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
 	std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::nano>> future_time = std::chrono::steady_clock::now() + std::chrono::duration<double, std::milli>(ms_duration);
 
 	//reduce the future time to account for processing time
-	future_time -= (current_time - g_chron);
+	if (process_time) {
+		future_time -= (current_time - g_chron);
+	}
 
 	while (current_time < future_time) {
 		current_time = std::chrono::steady_clock::now();
 	}
-	g_chron = std::chrono::steady_clock::now();
+	if (process_time) {
+		g_chron = std::chrono::steady_clock::now();
+	}
 };
 
 //Check the first character in a string that is a space

@@ -52,27 +52,38 @@ public:
 		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float frame, float rate);
 
 	bool process();
+	void prepare_render();
 	void render();
+	void render_prepared();
+
 	Effect* effect;
 	float frame;
 private:
 	Shader* shader;
 	BattleObject* battle_object;
-	glm::vec3 pos;
+
+	glm::vec3 pos; //Instance-specific values
 	glm::vec3 rot;
 	glm::vec3 scale;
 	glm::vec4 rgba;
+
 	int bone_id;
 	glm::vec3 bone_offset;
-	glm::vec3 pos_frame;
+
+	glm::vec3 pos_frame; //How much to deviate from the original values per frame
 	glm::vec3 rot_frame;
 	glm::vec3 scale_frame;
 	glm::vec4 rgba_frame;
-	glm::vec3 final_pos;
+
+	glm::vec3 final_pos; //Only listed as members for storage purposes
 	glm::vec3 final_rot;
 	glm::vec3 final_scale;
 	glm::vec4 final_rgba;
 	glm::vec3 scale_vec;
+
 	bool flip;
 	float rate;
+
+	std::vector<glm::mat4> final_matrix_instance; //Only to be used when we prepare and render at diff times
+	std::vector<glm::vec4> final_rgba_instance; //(I.E. during threads)
 };

@@ -104,6 +104,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\lib\SDL;$(SolutionDir)\dependencies\x86\lib\glew;$(SolutionDir)\dependencies\x86\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libwebp-4.dll" "$(TargetDir)
@@ -169,6 +170,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -191,7 +193,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\x64\lib\SDL;$(SolutionDir)dependencies\x64\lib\glew;$(SolutionDir)dependencies\x64\lib\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>

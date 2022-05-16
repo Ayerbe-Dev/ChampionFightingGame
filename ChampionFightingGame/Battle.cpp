@@ -231,6 +231,9 @@ void Battle::load_battle(GameManager* game_manager) {
 	else {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
+
+	render_manager->update_shader_lights();
+
 	ms = std::chrono::high_resolution_clock::now();
 }
 
@@ -431,9 +434,6 @@ void Battle::render_world() {
 
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); <- I don't think we actually need this line?
-//	The screen gets cleared immediately after wait_ms() gets called
-
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
 
@@ -491,7 +491,6 @@ void Battle::render_ui() {
 		ex_bar[i].render();
 	}
 	timer.render();
-
 	/*if (debug) {
 		debug_rect[debugger.target].render();
 	}*/

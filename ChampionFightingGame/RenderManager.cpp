@@ -73,7 +73,7 @@ void RenderManager::unlink_all_shaders() {
 }
 
 void RenderManager::update_shader_lights() {
-	for (int i = 0; i < linked_shaders.size(); i++) {
+	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
 		linked_shaders[i]->use();
 		linked_shaders[i]->set_float("material.shininess", 4.0f);
 

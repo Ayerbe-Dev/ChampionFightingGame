@@ -177,8 +177,6 @@ void Model::render(Shader* shader, bool flip) {
 			mesh.render();
 		}
 	}
-	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE0);
 }
 
 void Model::render_shadow(Shader* shader, bool flip) {
@@ -198,8 +196,6 @@ void Model::render_shadow(Shader* shader, bool flip) {
 			mesh.render_shadow();
 		}
 	}
-	glBindVertexArray(0);
-	glActiveTexture(GL_TEXTURE0);
 }
 
 void Model::set_mesh_visibility(std::string mesh_name, bool visibility) {

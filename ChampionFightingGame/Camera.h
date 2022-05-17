@@ -20,7 +20,8 @@ public:
 	float pitch = 0.0;
 	const float cam_speed = 0.5;
 	const float cam_sens = 2.5;
-	float fov = 45.0;
+	float fov;
+	float max_fov = 45.0;
 
 	//imagine having self documenting names, couldnt be me. This determines the linear scale on which the camera rotates in auto mode
 	float auto_linear_scale = 6.0;

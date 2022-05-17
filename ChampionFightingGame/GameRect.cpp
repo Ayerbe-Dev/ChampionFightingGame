@@ -137,16 +137,12 @@ void GameRect::render_prepared() {
 	glDepthMask(GL_FALSE);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDepthMask(GL_TRUE);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GameRect::update_buffer_data() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(corners), corners);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 /// <summary>

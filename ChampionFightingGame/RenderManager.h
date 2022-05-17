@@ -17,7 +17,6 @@ public:
 	Camera camera;
 	Light lights[MAX_LIGHT_SOURCES];
 	int num_lights;
-	glm::vec3 window_scaler = glm::vec3(1.0);
 	std::vector<Shader*> linked_shaders;
 
 	Shader default_2d_shader;

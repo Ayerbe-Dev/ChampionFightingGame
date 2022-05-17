@@ -4,7 +4,7 @@
 
 Camera::Camera() {
 	pos = glm::vec3(0.0, 1.3, 4.0);
-	fov = 43.0;
+	fov = 45.0;
 	following_players = true;
 }
 
@@ -30,7 +30,7 @@ void Camera::adjust_view(float x, float y, float z, float speed) {
 
 	yaw += x * speed;
 	pitch = clampf(-89.0, pitch + (y * speed), 89.0);
-	fov = clampf(1.0, fov + (z * speed), 45.0);
+	fov = clampf(1.0, fov + (z * speed), max_fov);
 	update_view();
 }
 

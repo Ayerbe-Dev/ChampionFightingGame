@@ -3,9 +3,7 @@
 #include "utils.h"
 
 RenderManager::RenderManager() {
-	window_scaler.x = WINDOW_WIDTH / 5;
-	window_scaler.y = WINDOW_HEIGHT / 5;
-	window_scaler.z = WINDOW_DEPTH / 5;
+
 }
 
 void RenderManager::init() {

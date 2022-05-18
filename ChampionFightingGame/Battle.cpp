@@ -69,7 +69,7 @@ void battle_main(GameManager* game_manager) {
 	cotr_imgui_init();
 #endif
 	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay();
+		battle.frame_delay_check_performance();
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -129,6 +129,7 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	debug_buttons[BUTTON_MENU_FRAME_PAUSE].mapping = SDL_SCANCODE_LSHIFT;
 	debug_buttons[BUTTON_MENU_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
+	debug_buttons[BUTTON_MENU_START].mapping = SDL_SCANCODE_SPACE;
 
 	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(17);
@@ -274,6 +275,11 @@ void Battle::process_main() {
 		frame_pause = !frame_pause;
 		timer.flip_clock();
 	}
+	if (check_button_trigger(BUTTON_MENU_START)) {
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->reset();
+		}
+	}
 
 	if (frame_pause) {
 		process_frame_pause();
@@ -285,6 +291,9 @@ void Battle::process_main() {
 		stage.process();
 		post_process_fighter();
 		thread_manager->wait_thread(THREAD_KIND_EFFECT);
+	}
+	if (camera->following_players) {
+		camera->follow_players(fighter[0]->pos, fighter[1]->pos, &stage);
 	}
 	for (int i = 0; i < 2; i++) {
 		if (fighter[i]->crash_to_debug) {
@@ -345,7 +354,6 @@ void Battle::process_fighter() {
 void fighter_thread(void* fighter_arg) {
 	Fighter* fighter = (Fighter*)fighter_arg;
 	fighter->fighter_main();
-	wait_ms();
 }
 
 void Battle::post_process_fighter() {
@@ -370,7 +378,6 @@ void ui_thread(void* battle_arg) {
 	EffectManager* effect_manager = EffectManager::get_instance();
 	effect_manager->process();
 	effect_manager->prepare_render(); 
-	wait_ms();
 }
 
 void Battle::process_frame_pause() {

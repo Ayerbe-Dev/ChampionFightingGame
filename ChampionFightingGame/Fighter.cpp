@@ -123,13 +123,8 @@ void Fighter::process_animate() {
 }
 
 void Fighter::process_post_animate() {
-	if (anim_kind != nullptr) {
-		model.set_bones(frame, anim_kind, !facing_right);
-		set_pos_anim();
-	}
-	else {
-		model.reset_bones();
-	}
+	model.set_bones(frame, anim_kind, !facing_right);
+	set_pos_anim();
 }
 
 void Fighter::process_pre_position() {
@@ -233,83 +228,6 @@ void Fighter::process_post_status() {
 		else {
 			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = false;
 		}
-	}
-}
-
-void Fighter::decrease_common_variables() {
-	if (fighter_int[FIGHTER_INT_236_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_236_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_236_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_214_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_214_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_214_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_623_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_623_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_623_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_41236_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_41236_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_41236_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_63214_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_63214_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_63214_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_236236_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_236236_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_236236_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_214214_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_214214_TIMER] --;
-	}
-	else {
-		fighter_int[FIGHTER_INT_214214_STEP] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER]--;
-	}
-	else {
-		fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
-	}
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
-	}
-	else {
-		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
-			fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
-		}
-		if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
-			fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]--;
-		}
-	}
-	if (fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0) {
-		fighter_int[FIGHTER_INT_DASH_F_WINDOW]--;
-	}
-	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0) {
-		fighter_int[FIGHTER_INT_DASH_B_WINDOW]--;
-	}
-	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
-		fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW]--;
-	}
-	if (fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER]--;
-	}
-	else {
-		fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
 	}
 }
 
@@ -463,18 +381,6 @@ void Fighter::process_input() {
 		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = 6;
 	}
 
-	if (check_button_on(BUTTON_START)) {
-		pos.y = FLOOR_GAMECOORD;
-		pos.z = 0;
-		if (id == 0) {
-			pos.x = -200.0;
-		}
-		else {
-			pos.x = 200.0;
-		}
-		change_status(FIGHTER_STATUS_WAIT);
-	}
-
 	prev_stick_dir = get_stick_dir();
 }
 
@@ -493,3 +399,89 @@ void Fighter::process_ai() {
 |_|  ________)~`)  |_|
 	[========]  ()
 */
+
+void Fighter::reset() {
+	pos.x = stage->start_pos[id];
+	pos.y = FLOOR_GAMECOORD;
+	pos.z = 0;
+	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
+	change_status(FIGHTER_STATUS_WAIT);
+}
+
+
+void Fighter::decrease_common_variables() {
+	if (fighter_int[FIGHTER_INT_236_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_236_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_236_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_214_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_214_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_214_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_623_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_623_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_623_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_41236_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_41236_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_41236_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_63214_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_63214_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_63214_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_236236_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_236236_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_236236_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_214214_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_214214_TIMER] --;
+	}
+	else {
+		fighter_int[FIGHTER_INT_214214_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
+		fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
+	}
+	else {
+		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
+			fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
+		}
+		if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
+			fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]--;
+		}
+	}
+	if (fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0) {
+		fighter_int[FIGHTER_INT_DASH_F_WINDOW]--;
+	}
+	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0) {
+		fighter_int[FIGHTER_INT_DASH_B_WINDOW]--;
+	}
+	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
+		fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW]--;
+	}
+	if (fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+	}
+}

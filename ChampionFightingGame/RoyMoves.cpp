@@ -114,7 +114,21 @@ void Roy::load_move_scripts() {
 			new_hurtbox(2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
 		}
 	});
+	script("stand_block_start", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		}
+	});
 	script("stand_block", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		}
+	});
+	script("stand_blockstun", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
@@ -145,8 +159,6 @@ void Roy::load_move_scripts() {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
-		if (is_excute_frame(1)) {
 			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
 		}
 		if (is_excute_wait(4)) {
@@ -159,8 +171,6 @@ void Roy::load_move_scripts() {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
-		if (is_excute_frame(1)) {
 			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
 		}
 		if (is_excute_wait(4)) {

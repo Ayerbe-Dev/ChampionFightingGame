@@ -1,11 +1,16 @@
 #include "Camera.h"
 #include "Stage.h"
 #include "utils.h"
+#include <glm/gtx/vector_angle.hpp>
 
 Camera::Camera() {
-	pos = glm::vec3(0.0, 1.3, 4.0);
+	base_pos = glm::vec3(0.0, 0.6, 2.7);
+	pos = base_pos;
+	pitch = 3;
 	fov = 45.0;
 	following_players = true;
+	auto_linear_scale = 3.0;
+	update_view();
 }
 
 glm::mat4 Camera::get_view() {
@@ -46,8 +51,6 @@ void Camera::update_view() {
 }
 
 void Camera::follow_players(glm::vec2 p1, glm::vec2 p2, Stage* stage) {
-	//Should move the camera into a position such that it balances the players and slightly tilts towards
-	//whichever player is further from the center
-
-	//I'll let you work your magic to figure out how to actually do that
+	pos.x = clampf(stage->camera_bounds.x, (p1.x + p2.x) / 2.0, stage->camera_bounds.y) / 400.0;
+	pos.y = clampf(base_pos.y, ((std::max(p1.y, p2.y)) / 200.0) - (base_pos.y / 4.0), 800.0);
 }

@@ -219,11 +219,18 @@ void Fighter::status_walkb() {
 	}
 	if (fighter_flag[FIGHTER_FLAG_PROX_GUARD]) {
 		if (get_anim() != "stand_block") {
-			change_anim("stand_block");
+			if (get_anim() == "stand_block_start") {
+				if (is_anim_end) {
+					change_anim("stand_block");
+				}
+			}
+			else {
+				change_anim("stand_block_start");
+			}
 		}
 	}
 	else {
-		if (get_anim() == "stand_block") {
+		if (get_anim() != "walk_b") {
 			change_anim("walk_b");
 		}
 		add_pos(get_local_param_float("walk_f_speed") * facing_dir * -1, 0);
@@ -815,7 +822,7 @@ void Fighter::enter_status_thrown() {
 	if (fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
 		fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_local_param_float("max_fall_speed");
 	}
-	change_anim("knockdown_start", -1, get_launch_ticks());
+	change_anim("knockdown_start", calc_launch_frames(), -1.0);
 }
 
 void Fighter::exit_status_thrown() {
@@ -840,24 +847,24 @@ void Fighter::status_hitstun() {
 void Fighter::enter_status_hitstun() {
 	if (get_stick_dir() < 4) {
 		if (fighter_int[FIGHTER_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
-			change_anim("crouch_hitstun_l", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("crouch_hitstun_l", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 		else if (fighter_int[FIGHTER_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
-			change_anim("crouch_hitstun_m", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("crouch_hitstun_m", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 		else {
-			change_anim("crouch_hitstun_h", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("crouch_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 	}
 	else {
 		if (fighter_int[FIGHTER_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_LIGHT) {
-			change_anim("stand_hitstun_l", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("stand_hitstun_l", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 		else if (fighter_int[FIGHTER_INT_HITSTUN_LEVEL] == ATTACK_LEVEL_MEDIUM) {
-			change_anim("stand_hitstun_m", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("stand_hitstun_m", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 		else {
-			change_anim("stand_hitstun_h", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("stand_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 	}
 }
@@ -885,7 +892,7 @@ void Fighter::status_hitstun_air() {
 void Fighter::enter_status_hitstun_air() {
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X];
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED];
-	change_anim("jump_hitstun", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+	change_anim("jump_hitstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 }
 
 
@@ -931,17 +938,17 @@ void Fighter::status_blockstun() {
 void Fighter::enter_status_blockstun() {
 	if (situation_kind == FIGHTER_SITUATION_GROUND) {
 		if (get_stick_dir() < 4) {
-			change_anim("crouch_block", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("crouch_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 		else if (fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] == ATTACK_HEIGHT_HIGH) {
-			change_anim("high_block", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("high_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 		else {
-			change_anim("stand_block", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+			change_anim("stand_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		}
 	}
 	else {
-		change_anim("jump_block", -1, fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+		change_anim("jump_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	}
@@ -987,7 +994,7 @@ void Fighter::exit_status_parry_start() {}
 
 void Fighter::status_parry() {
 	if (beginning_hitlag(1) || ending_hitlag(2)) {
-		frame ++;
+		frame++;
 	}
 	if (situation_kind == FIGHTER_SITUATION_GROUND && fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
@@ -1017,6 +1024,7 @@ void Fighter::enter_status_parry() {
 			change_anim("parry_high");
 		}
 	}
+
 }
 
 void Fighter::exit_status_parry() {
@@ -1054,7 +1062,7 @@ void Fighter::exit_status_launch_start() {
 
 void Fighter::status_launch() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 1) {
-		rate = ceil((float)get_launch_ticks() / (float)(anim_kind->length));
+		rate = anim_kind->length / calc_launch_frames();
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
@@ -1077,7 +1085,7 @@ void Fighter::enter_status_launch() {
 	if (fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
 		fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_local_param_float("max_fall_speed");
 	}
-	change_anim("launch", -1, get_launch_ticks());
+	change_anim("launch", calc_launch_frames(), -1.0);
 }
 
 void Fighter::exit_status_launch() {
@@ -1121,19 +1129,20 @@ void Fighter::status_landing() {
 		if (common_ground_status_act()) {
 			return;
 		}
-		else if (change_status(FIGHTER_STATUS_WAIT)) {
+		else if (is_anim_end) {
+			change_status(FIGHTER_STATUS_WAIT);
 			return;
 		}
 	}
 	else {
 		fighter_int[FIGHTER_INT_LANDING_LAG]--;
 	}
-}
+} 
 
 void Fighter::enter_status_landing() {
 	landing_crossup();
 	fighter_int[FIGHTER_INT_LANDING_LAG] = 2;
-	change_anim("landing", -1, fighter_int[FIGHTER_INT_LANDING_LAG]);
+	change_anim("landing", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;
@@ -1177,7 +1186,7 @@ void Fighter::enter_status_landing_attack() {
 	else if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_HK) {
 		fighter_int[FIGHTER_INT_LANDING_LAG] = get_local_param_int("hk_landing_lag");
 	}
-	change_anim("landing", -1, fighter_int[FIGHTER_INT_LANDING_LAG]);
+	change_anim("landing", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;
@@ -1205,7 +1214,7 @@ void Fighter::enter_status_landing_hitstun() {
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	fighter_int[FIGHTER_INT_LANDING_LAG] = 4;
-	change_anim("landing_hitstun", -1, fighter_int[FIGHTER_INT_LANDING_LAG]);
+	change_anim("landing_hitstun", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
 	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;
 	pos.y = FLOOR_GAMECOORD;

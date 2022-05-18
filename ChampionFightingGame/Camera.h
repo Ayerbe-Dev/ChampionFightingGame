@@ -22,9 +22,10 @@ public:
 	const float cam_sens = 2.5;
 	float fov;
 	float max_fov = 45.0;
+	glm::vec3 base_pos;
 
 	//imagine having self documenting names, couldnt be me. This determines the linear scale on which the camera rotates in auto mode
-	float auto_linear_scale = 6.0;
+	float auto_linear_scale;
 
 	bool following_players;
 

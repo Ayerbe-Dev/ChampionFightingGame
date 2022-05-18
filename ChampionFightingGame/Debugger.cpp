@@ -287,7 +287,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::DragFloat("Camera Z", &render_manager->camera.pos[2], 0.01);
 			if (ImGui::TreeNode("Camera Properties")) {
 				ImGui::Checkbox("Auto Camera", &render_manager->camera.following_players);
+				ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f);
 				ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f);
+				ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, render_manager->camera.max_fov);
 				ImGui::SliderFloat("Auto Yaw Scale", &render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
 				ImGui::TreePop();
 			}
@@ -314,10 +316,10 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (render_manager->camera.following_players) {
-			render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
-			render_manager->camera.pos[1] = 0.813;
-			render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
-			render_manager->camera.yaw = -90 + render_manager->camera.pos[0] * render_manager->camera.auto_linear_scale;
+//			render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
+//			render_manager->camera.pos[1] = 0.5;
+//			render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
+//			render_manager->camera.yaw = -90 + render_manager->camera.pos[0] * render_manager->camera.auto_linear_scale;
 			//tmp_render_manager->camera.adjust_view()
 		}
 

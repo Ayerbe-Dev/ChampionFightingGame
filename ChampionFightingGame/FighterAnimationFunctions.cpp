@@ -8,7 +8,7 @@ void Fighter::reenter_last_anim() {
 	startAnimation(prev_anim_kind, true);
 }
 
-bool Fighter::change_anim(std::string animation_name, float frame_rate, float entry_frame, bool clear_buffer) {
+bool Fighter::change_anim(std::string animation_name, float rate, float frame, bool clear_buffer) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
@@ -20,13 +20,27 @@ bool Fighter::change_anim(std::string animation_name, float frame_rate, float en
 
 	Animation* new_anim = anim_table.get_anim(animation_name, true);
 	if (new_anim != nullptr) {
-		if (frame_rate != -1) {
-			rate = frame_rate;
-			frame = entry_frame;
+		if (frame != -1) { //The frame can't go into the negatives, so if we call an animation with
+			//frame -1, that's code for "scale the animation so that we reach a target frame within
+			//[rate] frames
+			this->rate = rate;
+			this->frame = frame;
 		}
 		else {
-			rate = ceil((float)entry_frame / (float)(new_anim->length));
-			frame = 0;
+			//If the animation has an faf, that's the target frame. If the faf is either 0 or -1, the target
+			//frame is the anim length
+
+			//In practice: For hitstun animations, if you pass the number of hitstun frames as the rate,
+			//the hitstun animation should end when hitstun does no matter how many frames it is. 
+			//For landing animations, if you pass the landing lag as the rate, the transition from landing
+			//to idle will continue after landing lag ends (just looks prettier that way), but you'll reach
+			//the interruptible frame of the landing animation on the frame landing lag ends
+			float target_frame = new_anim->faf;
+			if (target_frame < 1) {
+				target_frame = new_anim->length;
+			}
+			this->rate = target_frame / (rate + 1.0);
+			this->frame = 0.0;
 		}
 	}
 
@@ -67,7 +81,7 @@ bool Fighter::ending_hitlag(int frames) {
 	return fighter_int[FIGHTER_INT_HITLAG_FRAMES] - frames <= 0 && fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0;
 }
 
-int Fighter::get_launch_ticks() {
+float Fighter::calc_launch_frames() {
 	if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] == 0) {
 		char buffer[51];
 		sprintf(buffer, "Player %d needs a gravity value on their launcher!", ((!id) + 1));
@@ -76,9 +90,9 @@ int Fighter::get_launch_ticks() {
 		crash_to_debug = true;
 		return 1;
 	}
-	int airtime = 0;
-	int simp_y = pos.y; //haha simp
-	int sims_y = fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED];
+	float airtime = 0.0;
+	float simp_y = pos.y; //haha simp
+	float sims_y = fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED];
 	while (simp_y >= FLOOR_GAMECOORD) {
 		if (sims_y > fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1) {
 			sims_y -= fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY];

@@ -76,6 +76,7 @@ public:
 	void process_ai();
 
 	void decrease_common_variables();
+	void reset();
 
 	//Projectiles
 
@@ -182,7 +183,7 @@ public:
 	void startAnimation(Animation* animation, bool clear_buffer);
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
-	int get_launch_ticks();
+	float calc_launch_frames();
 	std::string get_anim();
 	std::string get_anim_broad();
 

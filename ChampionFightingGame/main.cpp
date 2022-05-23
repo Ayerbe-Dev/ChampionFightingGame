@@ -19,6 +19,7 @@
 #include "SoundManager.h"
 #include "GameManager.h"
 #include "RenderManager.h"
+#include "ThreadManager.h"
 #include "stb_image.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
 //undefine it before we include Loader.h.
@@ -46,36 +47,37 @@ int main() {
 	initialize_SDL();
 	initialize_GLEW();
 
+	ThreadManager* thread_manager = ThreadManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();	
-	GameManager game_manager;
+	GameManager* game_manager = GameManager::get_instance();
 
 	render_manager->init();
 
-	bool running = opening_main(&game_manager);
+	bool running = opening_main(game_manager);
 
 	while (running) {
 		refreshRenderer();
 		for (int i = 0; i < MAX_LAYERS; i++) {
-			game_manager.looping[i] = true;
+			game_manager->looping[i] = true;
 		}
-		if (game_manager.game_main[*game_manager.game_state] != nullptr) {
-			game_manager.game_main[*game_manager.game_state](&game_manager);
+		if (game_manager->game_main[*game_manager->game_state] != nullptr) {
+			game_manager->game_main[*game_manager->game_state](game_manager);
 		}
-		else if (*game_manager.game_state != GAME_STATE_CLOSE) {
+		else if (*game_manager->game_state != GAME_STATE_CLOSE) {
 			char buffer[86];
-			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager.game_state);
-			game_manager.player_info[0]->crash_reason = buffer;
-			game_manager.game_main[GAME_STATE_DEBUG_MENU](&game_manager);
+			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager->game_state);
+			game_manager->player_info[0]->crash_reason = buffer;
+			game_manager->game_main[GAME_STATE_DEBUG_MENU](game_manager);
 		}
 
-		if (*game_manager.game_state == GAME_STATE_CLOSE) {
+		if (*game_manager->game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
 	}
 
-	game_manager.~GameManager();
+	game_manager->destroy();
 	render_manager->destroy();
 	sound_manager->unload_all_sounds();
 	SDL_DestroyWindow(g_window);

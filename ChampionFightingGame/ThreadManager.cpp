@@ -133,5 +133,9 @@ bool ThreadManager::is_active(std::thread::id& id) {
 
 bool ThreadManager::is_main_thread() {
 	std::thread::id id = std::this_thread::get_id();
-	return id == main_thread_id;
+	return id == instance->main_thread_id; //For whatever reason, sometimes `this` will stop being valid
+	//so we need to deref the instance instead
+
+	//I'm not too worried for now since the instance still isn't getting corrupted, but I'm not sure
+	//what exactly is causing it
 }

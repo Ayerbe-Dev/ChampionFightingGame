@@ -6,8 +6,10 @@
 
 class GameManager {
 public:
-	GameManager();
-	~GameManager();
+	GameManager(GameManager& other) = delete;
+	void operator=(const GameManager& other) = delete;
+
+	static GameManager* get_instance();
 
 	PlayerInfo *player_info[2];
 	int layer = 0;
@@ -16,6 +18,8 @@ public:
 	int* game_context;
 	int* prev_game_context;
 	bool looping[MAX_LAYERS];
+
+	void destroy();
 
 	void (*game_main[GAME_STATE_MAX])(GameManager* game_manager);
 	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager);
@@ -39,6 +43,9 @@ public:
 	void event_any_press();
 
 private:
+	GameManager();
+	static GameManager* instance;
+
 	GameMenu* menu_target[MAX_LAYERS];
 
 	bool is_up_press(int id);

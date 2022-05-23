@@ -110,12 +110,12 @@ void menu_main(GameManager* game_manager) {
 
 void MainMenu::event_up_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		if (top_selection < 0) {
-			top_selection++;
+		if (top_selection > -4) {
+			top_selection--;
 		}
 		else {
-			top_selection = -4;
-			theta -= 5 * offset;
+			top_selection = 0;
+			theta += 5 * offset;
 		}
 	}
 	else {
@@ -130,12 +130,12 @@ void MainMenu::event_up_press() {
 
 void MainMenu::event_down_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		if (top_selection > -4) {
-			top_selection--;
+		if (top_selection < 0) {
+			top_selection++;
 		}
 		else {
-			top_selection = 0;
-			theta += 5 * offset;
+			top_selection = -4;
+			theta -= 5 * offset;
 		}
 	}
 	else {
@@ -365,7 +365,7 @@ void MainMenu::process_submenu_tables() {
 		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
 			sub_menu_tables[i]->sub_text[i2].set_pos(glm::vec3((float)WINDOW_WIDTH * 1.62, (float)WINDOW_HEIGHT * 0.5 + (i2 * 300 / sub_menu_tables[i]->item_count), 0.0));
 		}
-		sub_menu_tables[i]->cursor.set_pos(glm::vec3(sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.x - 83, sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.y - 20, 0));
+		sub_menu_tables[i]->cursor.set_pos(glm::vec3(sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.x - 83, sub_menu_tables[i]->sub_text[sub_menu_tables[i]->selected_item].pos.y - WINDOW_HEIGHT * 1.125, 0));
 	}
 }
 

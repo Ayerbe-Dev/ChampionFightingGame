@@ -26,38 +26,38 @@ void chara_select_main(GameManager* game_manager) {
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
 
-	CSS css;
+	CSS *css = new CSS;
 
-	css.player_info[0] = player_info[0];
-	css.player_info[1] = player_info[1];
-	if (css.load_css()) {
+	css->player_info[0] = player_info[0];
+	css->player_info[1] = player_info[1];
+	if (css->load_css()) {
 		player_info[0]->crash_reason = "Could not open CSS file!";
 		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 	update_thread_progress(game_loader->loaded_items);
-	if (css.num_rows == 0) {
-		css.my_col[0] = 1;
-		css.my_col[1] = 1;
+	if (css->num_rows == 0) {
+		css->my_col[0] = 1;
+		css->my_col[1] = 1;
 	}
 	for (int i = 0; i < 2; i++) {
-		css.player_id = i;
-		if (css.player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css.find_prev_chara_kind(css.player_info[i]->chara_kind);
+		css->player_id = i;
+		if (css->player_info[i]->chara_kind != CHARA_KIND_MAX) {
+			css->find_prev_chara_kind(css->player_info[i]->chara_kind);
 		}
 		else {
-			css.mobile_css_slots[i] = css.chara_slots[i].texture;
+			css->mobile_css_slots[i] = css->chara_slots[i].texture;
 		}
 	}
 
-	css.cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	css.cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	css->cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+	css->cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	update_thread_progress(game_loader->loaded_items);
 
-	css.cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	css.cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	css->cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+	css->cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	update_thread_progress(game_loader->loaded_items);
 
-	game_manager->set_menu_info(&css);
+	game_manager->set_menu_info(css);
 	
 	game_loader->finished = true;
 
@@ -77,6 +77,7 @@ void chara_select_main(GameManager* game_manager) {
 			switch (event.type) {
 				case SDL_QUIT:
 				{
+					delete css;
 					return game_manager->update_state(GAME_STATE_CLOSE);
 				} break;
 				case SDL_WINDOWEVENT:
@@ -118,12 +119,13 @@ void chara_select_main(GameManager* game_manager) {
 
 		game_manager->handle_menus();
 
-		css.render();
+		css->render();
 
 		SDL_GL_SwapWindow(g_window);
 	}
 
 	delete game_loader;
+	delete css;
 }
 
 /// <summary>
@@ -455,7 +457,7 @@ void CSS::render() {
 		}
 
 		if (mobile_slots_active[i]) {
-			if (mobile_css_slots[i].pos != mobile_css_slots[i].target_pos) {
+			if (mobile_css_slots[i].pos != big_chara_slots[i].texture.pos) {
 				mobile_css_slots[i].add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
 			}
 			else {

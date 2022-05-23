@@ -2,6 +2,15 @@
 #include "GameStates.h"
 extern SDL_Renderer* g_renderer;
 
+GameManager* GameManager::instance = nullptr;
+
+GameManager* GameManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new GameManager;
+	}
+	return instance;
+}
+
 GameManager::GameManager() {
 	player_info[0] = new PlayerInfo(0);
 	player_info[1] = new PlayerInfo(1);
@@ -23,7 +32,7 @@ GameManager::GameManager() {
 	*prev_game_context = *game_context;
 }
 
-GameManager::~GameManager() {
+void GameManager::destroy() {
 	delete player_info[0];
 	delete player_info[1];
 	delete game_state;

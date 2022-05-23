@@ -259,7 +259,7 @@ void Fighter::status_dash() {
 
 	if (frame >= get_local_param_int("dash_f_cancel_frame")) {
 		if (!fighter_flag[FIGHTER_FLAG_DASH_CANCEL]) {
-			if (get_stick_dir() == 4) {
+			if (get_stick_dir(false) == 4) {
 				if (get_local_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE) {
 					fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
 				}
@@ -296,7 +296,7 @@ void Fighter::status_dashb() {
 
 	if (frame >= get_local_param_int("dash_f_cancel_frame")) {
 		if (!fighter_flag[FIGHTER_FLAG_DASH_CANCEL]) {
-			if (get_stick_dir() == 6) {
+			if (get_stick_dir(false) == 6) {
 				if (get_local_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE) {
 					fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
 				}
@@ -530,7 +530,13 @@ void Fighter::enter_status_turn() {
 	//First we want to make sure you don't accidentally dash because you inputted
 	//one direction, turned around, then inputted the other direction
 	int dash_f = fighter_int[FIGHTER_INT_DASH_F_WINDOW];
-	fighter_int[FIGHTER_INT_DASH_F_WINDOW] = fighter_int[FIGHTER_INT_DASH_B_WINDOW];
+	int dash_b = fighter_int[FIGHTER_INT_DASH_B_WINDOW];
+	fighter_int[FIGHTER_INT_DASH_F_WINDOW] = 0;
+	fighter_int[FIGHTER_INT_DASH_B_WINDOW] = 0;
+	if (common_ground_status_act(false)) { //Rare footage of recursive change_status calls
+		return;
+	}
+	fighter_int[FIGHTER_INT_DASH_F_WINDOW] = dash_b;
 	fighter_int[FIGHTER_INT_DASH_B_WINDOW] = dash_f;
 	if (get_stick_dir() < 4) {
 		change_anim("turn_crouch", 1.0, 0.0, false);
@@ -1142,7 +1148,7 @@ void Fighter::status_landing() {
 void Fighter::enter_status_landing() {
 	landing_crossup();
 	fighter_int[FIGHTER_INT_LANDING_LAG] = 2;
-	change_anim("landing", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
+	change_anim("landing", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0, false);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;

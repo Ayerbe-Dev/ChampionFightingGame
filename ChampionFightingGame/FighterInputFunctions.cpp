@@ -21,10 +21,15 @@ bool Fighter::check_button_release(unsigned int button) {
 	return player_info->check_button_release(button);
 }
 
-int Fighter::get_stick_dir() {
+int Fighter::get_stick_dir(bool internal_dir) {
+	bool right = internal_facing_right;
+	if (!internal_dir) {
+		right = facing_right;
+	}
+
 	if (check_button_on(BUTTON_UP) && !check_button_on(BUTTON_DOWN)) {
 		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
-			if (check_button_on(BUTTON_RIGHT) == internal_facing_right) {
+			if (check_button_on(BUTTON_RIGHT) == right) {
 				return 9;
 			}
 			else {
@@ -37,7 +42,7 @@ int Fighter::get_stick_dir() {
 	}
 	else if (check_button_on(BUTTON_DOWN) && !check_button_on(BUTTON_UP)) {
 		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
-			if (check_button_on(BUTTON_RIGHT) == internal_facing_right) {
+			if (check_button_on(BUTTON_RIGHT) == right) {
 				return 3;
 			}
 			else {
@@ -50,7 +55,7 @@ int Fighter::get_stick_dir() {
 	}
 	else {
 		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
-			if (check_button_on(BUTTON_RIGHT) == internal_facing_right) {
+			if (check_button_on(BUTTON_RIGHT) == right) {
 				return 6;
 			}
 			else {
@@ -63,8 +68,8 @@ int Fighter::get_stick_dir() {
 	}
 }
 
-int Fighter::get_flick_dir() {
-	int stick_dir = get_stick_dir();
+int Fighter::get_flick_dir(bool internal_dir) {
+	int stick_dir = get_stick_dir(internal_dir);
 	if (stick_dir == prev_stick_dir) {
 		return 0;
 	}

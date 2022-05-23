@@ -2,7 +2,9 @@
 
 BattleObjectManager* BattleObjectManager::instance = nullptr;
 
-BattleObjectManager::BattleObjectManager() {}
+BattleObjectManager::BattleObjectManager() {
+	world_rate = 1.0;
+}
 
 BattleObjectManager* BattleObjectManager::get_instance() {
 	if (instance == nullptr) {

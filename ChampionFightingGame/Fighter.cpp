@@ -100,10 +100,15 @@ void Fighter::process_animate() {
 
 	attempted_excutes = 0;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		frame += 0.2 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES];
+		frame += (0.2 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]) * battle_object_manager->world_rate;
 	}
 	else {
-		frame += rate;
+		frame += rate * battle_object_manager->world_rate;
+	}
+
+	if ((internal_facing_right != facing_right) && is_actionable() && (status_kind != FIGHTER_STATUS_TURN) && (situation_kind == FIGHTER_SITUATION_GROUND)) {
+		change_status(FIGHTER_STATUS_TURN);
+		return;
 	}
 
 	if (anim_kind != nullptr) {
@@ -145,12 +150,12 @@ void Fighter::process_position() {
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH) {
-				if (!that->add_pos(glm::vec3(that->get_local_param_float("jostle_walk_b_speed") * facing_dir, 0.0, 0.0))) {
-					add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->facing_dir, 0.0, 0.0));
+				if (!that->add_pos(glm::vec3(that->get_local_param_float("jostle_walk_b_speed") * internal_facing_dir, 0.0, 0.0))) {
+					add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0));
 				}
 			}
 			else {
-				add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->facing_dir, 0.0, 0.0));
+				add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0));
 			}
 		}
 	}
@@ -190,10 +195,10 @@ void Fighter::process_status() {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
-				change_anim("hitstun_parry", 5);
+				change_anim("hitstun_parry", 0.2);
 			}
 			else {
-				change_anim("hitstun_parry_air", 5);
+				change_anim("hitstun_parry_air", 0.2);
 			}
 			battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
 		}

@@ -13,9 +13,9 @@ dash_b_cancel_frame 1 11
 jostle_walk_f_speed 2 4.0
 jostle_walk_b_speed 2 4.0
 jump_y_init_speed 2 25.0
-jump_y_init_speed_s 2 21.0
+jump_y_init_speed_s 2 19.0
 jump_x_speed 2 11.0
-gravity 2 1.5
+gravity 2 1.3
 max_fall_speed 2 15.0
 empty_landing_lag 1 3
 lp_landing_lag 1 5

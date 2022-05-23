@@ -103,8 +103,8 @@ public:
 		//min_matches buttons were pressed
 	bool check_button_trigger(unsigned int button); //Checks if a button was pressed on that frame
 	bool check_button_release(unsigned int button); //Checks if a button was released on that frame
-	int get_stick_dir(); //Stick direction, relative to your facing direction. Returns num pad notation.
-	int get_flick_dir(); //Same as above, but returns 0 if your direction didn't change on that frame
+	int get_stick_dir(bool internal_dir = true); //Stick direction, relative to your facing direction. Returns num pad notation.
+	int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
 	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
 	bool get_normal_cancel(int attack_kind, unsigned int button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
 		//button if the situation_kind is correct

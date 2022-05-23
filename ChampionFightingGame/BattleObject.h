@@ -25,6 +25,7 @@ public:
 	glm::vec3 prev_pos;
 
 	float facing_dir{ 1.0 };
+	float internal_facing_dir{ 1.0 };
 	bool facing_right = true;
 	bool internal_facing_right = true;
 	unsigned int status_kind{ FIGHTER_STATUS_WAIT };

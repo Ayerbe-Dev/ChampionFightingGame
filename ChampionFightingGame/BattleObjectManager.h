@@ -17,6 +17,8 @@ public:
 
 	std::vector<Button [BUTTON_MAX]> player_inputs[2];
 	Stage* stage;
+
+	float world_rate;
 	
 	static BattleObjectManager* get_instance();
 

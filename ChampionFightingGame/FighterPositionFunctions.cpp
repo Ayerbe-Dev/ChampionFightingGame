@@ -28,6 +28,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		crash_to_debug = true;
 		return false;
 	}
+	pos *= battle_object_manager->world_rate;
 
 	//Ok now to actually set some positions
 

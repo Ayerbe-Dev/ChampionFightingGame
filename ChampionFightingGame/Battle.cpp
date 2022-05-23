@@ -310,7 +310,7 @@ void Battle::pre_process_fighter() {
 		}
 	}
 	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[i]->is_actionable()) {
+		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND) {
 			int pos_threshold = 0;
 			if (fighter[!i]->situation_kind == FIGHTER_SITUATION_AIR) {
 				pos_threshold = 5;
@@ -318,9 +318,11 @@ void Battle::pre_process_fighter() {
 			if (fighter[i]->pos.x > fighter[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
 				//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
 				fighter[i]->internal_facing_right = false;
+				fighter[i]->internal_facing_dir = -1.0;
 			}
 			else if (fighter[i]->pos.x < fighter[!i]->pos.x - pos_threshold) {
 				fighter[i]->internal_facing_right = true;
+				fighter[i]->internal_facing_dir = 1.0;
 			}
 			else { //If both players are stuck inside each other, stop that !
 				if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
@@ -328,7 +330,9 @@ void Battle::pre_process_fighter() {
 					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 					if (fighter[i]->pos.x == fighter[!i]->pos.x) {
 						fighter[i]->internal_facing_right = true;
+						fighter[i]->internal_facing_dir = 1.0;
 						fighter[!i]->internal_facing_right = false;
+						fighter[!i]->internal_facing_dir = -1.0;
 					}
 					fighter[i]->add_pos(glm::vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
 					fighter[!i]->add_pos(glm::vec3(-1.0 * fighter[!i]->facing_dir, 0, 0));
@@ -336,9 +340,6 @@ void Battle::pre_process_fighter() {
 					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 				}
-			}
-			if (fighter[i]->internal_facing_right != fighter[i]->facing_right && fighter[i]->status_kind != FIGHTER_STATUS_TURN) {
-				fighter[i]->change_status(FIGHTER_STATUS_TURN);
 			}
 		}
 	}

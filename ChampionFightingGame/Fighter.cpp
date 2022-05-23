@@ -60,11 +60,11 @@ void Fighter::fighter_main() {
 
 	process_animate();
 	process_pre_position();
-	process_projectiles();
 	process_pre_status();
 	chara_main();
 	process_status();
 	process_post_animate();
+	process_projectiles();
 	process_position();
 	process_input();
 	decrease_common_variables();
@@ -83,12 +83,21 @@ void Fighter::fighter_post() {
 	rot.z += glm::radians(90.0);
 	rot += extra_rot;
 	update_jostle_rect();
+	process_post_projectiles();
 }
 
 void Fighter::process_projectiles() {
 	for (int i = 0; i < num_projectiles; i++) {
 		if (projectiles[i]->active) {
 			projectiles[i]->projectile_main();
+		}
+	}
+}
+
+void Fighter::process_post_projectiles() {
+	for (int i = 0; i < num_projectiles; i++) {
+		if (projectiles[i]->active) {
+			projectiles[i]->projectile_post();
 		}
 	}
 }
@@ -200,7 +209,7 @@ void Fighter::process_status() {
 			else {
 				change_anim("hitstun_parry_air", 0.2);
 			}
-			battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
+			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
 		}
 	}
 	if (!is_status_delay()) {

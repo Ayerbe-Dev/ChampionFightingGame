@@ -160,8 +160,7 @@ void Roy::roy_status_special_fireball_kick() {
 }
 
 void Roy::roy_enter_status_special_fireball_kick() {
-	situation_kind = FIGHTER_SITUATION_AIR;
-	change_anim("special_fireball_kick", 2);
+	change_anim("special_fireball_kick", 1.0);
 }
 
 void Roy::roy_exit_status_special_fireball_kick() {

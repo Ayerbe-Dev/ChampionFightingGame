@@ -33,6 +33,10 @@ void Projectile::projectile_main() {
 	process_post_position();
 }
 
+void Projectile::projectile_post() {
+	update_hitbox_pos();
+}
+
 void Projectile::process_status() {
 	(this->*status_script[status_kind])();
 	move_script.move_script();

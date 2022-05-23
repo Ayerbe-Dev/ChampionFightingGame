@@ -376,9 +376,10 @@ void ui_thread(void* battle_arg) {
 		battle->ex_bar[i].process();
 	}
 	battle->timer.process();
-	EffectManager* effect_manager = EffectManager::get_instance();
-	effect_manager->process();
-	effect_manager->prepare_render(); 
+//	EffectManager* effect_manager = EffectManager::get_instance();
+//	effect_manager->process();
+//	effect_manager->prepare_render(); 
+	EffectManager::get_instance()->process();
 }
 
 void Battle::process_frame_pause() {
@@ -487,7 +488,8 @@ void Battle::render_world() {
 			}
 		}
 	}
-	EffectManager::get_instance()->render_prepared();
+//	EffectManager::get_instance()->render_prepared();
+	EffectManager::get_instance()->render();
 }
 
 void Battle::render_ui() {
@@ -879,8 +881,8 @@ bool Battle::event_hit_collide_player() {
 		}
 		else if (hitboxes[0]->attack_level == hitboxes[1]->attack_level) {
 			if (hitboxes[0]->clank_kind == CLANK_KIND_CONTINUE || hitboxes[1]->clank_kind == CLANK_KIND_CONTINUE) {
-				const int clank_kinds[2] = { hitboxes[0]->clank_kind, hitboxes[1]->clank_kind }; //If Player 1's clank_kind is CLANK_KIND_CONTINUE, 
-				//player 2's status will change. This will cause player 2's hitbox to be destroyed before it's checked against Player 1, so in order
+				const int clank_kinds[2] = { hitboxes[0]->clank_kind, hitboxes[1]->clank_kind }; //If player 1's clank_kind is CLANK_KIND_CONTINUE, 
+				//player 2's status will change. This will cause player 2's hitbox to be destroyed before it's checked against player 1, so in order
 				//to compensate for port priority, we back up the clank_kind as a constant 
 				for (int i = 0; i < 2; i++) {
 					if (clank_kinds[i] == CLANK_KIND_CONTINUE) {
@@ -932,11 +934,11 @@ bool Battle::event_hit_collide_player() {
 				fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
 				if (fighter[i]->get_status_group() == STATUS_GROUP_HITSTUN) {
 					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
-						fighter[!i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->scale;
+						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->scale;
 					}
 				}
 				else {
-					fighter[!i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
+					fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
 				}
 				fighter[i]->fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = hitboxes[!i]->launch_init_y;
 				fighter[i]->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = hitboxes[!i]->launch_gravity_y;
@@ -946,18 +948,15 @@ bool Battle::event_hit_collide_player() {
 				If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise,
 				increase it by one so that the opponent's juggle value is always going up
 				*/
-				if (fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] >= hitboxes[!i]->juggle_set) {
-					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE]++;
+				if (fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] >= hitboxes[!i]->juggle_start) {
+					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] += hitboxes[!i]->juggle_increase;
 				}
 				else {
-					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = hitboxes[!i]->juggle_set;
+					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = hitboxes[!i]->juggle_start;
 				}
 				float prev_x = fighter[i]->pos.x;
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->hit_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				if (can_counterhit(fighter[i], hitboxes[!i])) {
-					if (hitboxes[!i]->scale == -5) {
-						fighter[!i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
-					}
 					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_counterhit, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * hitboxes[!i]->counterhit_damage_mul, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
@@ -970,7 +969,7 @@ bool Battle::event_hit_collide_player() {
 				}
 				else {
 					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain_on_hit, get_param_int("ex_meter_size", PARAM_FIGHTER));
-					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * ((clampf(1, 10 - fighter[!i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * ((clampf(1, 10 - fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = hitboxes[!i]->attack_level;
 					post_hit_status[i] = get_damage_status(hitboxes[!i]->hit_status, fighter[i]->situation_kind);
 					if (fighter[i]->status_kind == FIGHTER_STATUS_LAUNCH && hitboxes[!i]->continue_launch) {
@@ -1085,11 +1084,11 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise,
 			increase it by one so that the opponent's juggle value is always going up
 			*/
-			if (p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_set) {
+			if (p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_start) {
 				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE]++;
 			}
 			else {
-				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_set;
+				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_start;
 			}
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {

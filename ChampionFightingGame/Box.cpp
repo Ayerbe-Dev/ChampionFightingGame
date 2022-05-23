@@ -23,8 +23,8 @@ void Hitbox::init(BattleObject* object) {
 void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
 	glm::vec2 offset, int hitbox_kind, float  meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, 
 	int hitstun, int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind,
-	int juggle_set, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
-	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool use_player_pos) {
+	int juggle_start, int juggle_increase, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y,
+	float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool can_ko, bool use_player_pos) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
 	this->init_anchor = anchor;
@@ -57,7 +57,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->blockstun = blockstun;
 	this->attack_height = attack_height;
 	this->unblockable = unblockable;
-	this->juggle_set = juggle_set;
+	this->juggle_start = juggle_start;
+	this->juggle_increase = juggle_increase;
 	this->max_juggle = max_juggle;
 	this->hit_status = hit_status;
 	this->counterhit_status = counterhit_status;
@@ -70,6 +71,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->launch_speed_x = launch_speed_x;
 	this->continue_launch = continue_launch;
 	this->can_chip_ko = can_chip_ko;
+	this->can_ko = can_ko;
 	this->use_player_pos = use_player_pos;
 	if (hitbox_kind == HITBOX_KIND_BLOCK) {
 		rect.set_rgb(glm::vec3(255, 165, 0));
@@ -84,9 +86,9 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 */
 void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
 	glm::vec2 offset, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun,
-	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_set, int max_juggle, int hit_status,
+	int blocklag, int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_start, int juggle_increase, int max_juggle, int hit_status,
 	int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool trade, 
-	bool continue_launch, bool can_chip_ko) {
+	bool continue_launch, bool can_chip_ko, bool can_ko) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
 	this->init_anchor = anchor;
@@ -114,7 +116,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->blocklag = blocklag;
 	this->blockstun = blockstun;
 	this->unblockable = unblockable;
-	this->juggle_set = juggle_set;
+	this->juggle_start = juggle_start;
+	this->juggle_increase = juggle_increase;
 	this->max_juggle = max_juggle;
 	this->hit_status = hit_status;
 	this->counterhit_status = counterhit_status;
@@ -126,8 +129,9 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->launch_max_fall_speed = launch_max_fall_speed;
 	this->launch_speed_x = launch_speed_x;
 	this->trade = trade;
-	this->can_chip_ko = can_chip_ko;
 	this->continue_launch = continue_launch;
+	this->can_chip_ko = can_chip_ko;
+	this->can_ko = can_ko;
 }
 
 /*

@@ -104,11 +104,12 @@ void Particle::set_sprite(int index) {
 glm::mat4 Particle::prepare_render(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4& rgba, glm::vec3 scale_vec, bool flip, float frame) {
 	pos += this->pos + (pos_frame * frame);
 	real_rot_frame = rot_frame;
-	if (flip) {
-		real_rot_frame.y *= -1.0;
-	}
 	rot += this->rot + (real_rot_frame * frame);
 	scale *= this->scale + (scale_frame * frame);
+	if (flip) {
+		scale.y *= -1.0;
+		rot.y *= -1.0;
+	}
 	rgba += this->rgba + (rgba_frame * frame);
 	rgba.x /= 255.0;
 	rgba.y /= 255.0;
@@ -128,11 +129,12 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 
 	pos += this->pos + (pos_frame * frame);
 	real_rot_frame = rot_frame;
-	if (flip) {
-		real_rot_frame.y *= -1.0;
-	}
 	rot += this->rot + (real_rot_frame * frame);
 	scale *= this->scale + (scale_frame * frame);
+	if (flip) {
+		scale.y *= -1.0;
+		rot.y *= -1.0;
+	}
 	rgba += this->rgba + (rgba_frame * frame);
 	set_sprite((int)frame);
 

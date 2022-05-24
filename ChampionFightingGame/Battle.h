@@ -46,8 +46,7 @@ public:
 class PlayerIndicator {
 public:
 	Fighter* fighter;
-	SDL_Texture* texture;
-	SDL_Rect indicator_rect;
+	GameTexture texture;
 	std::string nametag;
 
 	PlayerIndicator();

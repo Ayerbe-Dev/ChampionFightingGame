@@ -1190,7 +1190,10 @@ bool Battle::check_button_trigger(unsigned int button) {
 	return debug_buttons[button].changed && debug_buttons[button].button_on;
 }
 
-HealthBar::HealthBar() {}
+HealthBar::HealthBar() {
+	health = nullptr;
+	max_health = 0.0;
+}
 
 void HealthBar::init(Fighter* fighter) {
 	health_texture.init("resource/ui/battle/hp/health.png");
@@ -1227,7 +1230,12 @@ void HealthBar::render() {
 	bar_texture.render_prepared();
 }
 
-ExBar::ExBar() {}
+ExBar::ExBar() {
+	ex = nullptr;
+	max_ex = 0.0;
+	fighter = nullptr;
+	num_bars = 0;
+}
 
 void ExBar::init(Fighter* fighter) {
 	this->fighter = fighter;
@@ -1289,7 +1297,10 @@ void ExBar::render() {
 	bar_texture.render_prepared();
 }
 
-PlayerIndicator::PlayerIndicator() {}
+PlayerIndicator::PlayerIndicator() {
+	fighter = nullptr;
+}
+
 PlayerIndicator::PlayerIndicator(Fighter* fighter, std::string nametag) {
 	this->fighter = fighter;
 	this->nametag = nametag;
@@ -1304,14 +1315,18 @@ PlayerIndicator::PlayerIndicator(Fighter* fighter, std::string nametag) {
 		resource_dir += "_no_nametag";
 	}
 	resource_dir += ".png";
-	const char* file_dir = resource_dir.c_str();
-	this->texture = loadSDLTexture(file_dir);
-	this->indicator_rect.x = 0;
-	this->indicator_rect.y = 0;
-	this->indicator_rect.w = 92;
-	this->indicator_rect.h = 92;
+	this->texture.init(resource_dir);
 }
-GameTimer::GameTimer() {};
+
+GameTimer::GameTimer() {
+	clock_mode = 0;
+	deca_frames = 0;
+	frames = 0;
+	deca_seconds = 0;
+	seconds = 0;
+	time_up = false;
+}
+
 GameTimer::GameTimer(int time) {
 	init(time);
 };

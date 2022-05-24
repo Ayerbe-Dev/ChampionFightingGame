@@ -32,8 +32,7 @@ enum {
 
 class GameTextureSDL {
 public:
-	SDL_Rect destRect;
-	SDL_Rect srcRect;
+	GameTextureSDL();
 
 	bool render();
 	bool init(std::string sTexturePath, bool delay = true);
@@ -48,25 +47,29 @@ public:
 	float getScaledHeight();
 	void setAlpha(Uint8 alpha);
 	void clearTexture();
-	bool bIsInitialized = false;
 	void setPercent(float percent);
 	void setTargetPercent(float percent, float rate = 0.2, int frames = 15);
-	void changePercent(float rate = -1.0);
+	void change_percent(float rate = -1.0);
 	void setFlip(int flip);
 	int getFlipKind();
 	void setDrainKind(int drain_kind);
-private:
-	float percent{ 0 };
-	float target_percent{ -1 };
-	float target_rate{ -1 };
-	int target_frames{ 1 };
-	int iAnchorMode = GAME_TEXTURE_ANCHOR_MODE_DEFAULT;
-	float fVerticalScaleFactor = 1.0;
-	float fHorizontalScaleFactor = 1.0;
-	int flip{ TEXTURE_FLIP_KIND_NONE };
-	int drain_kind{ METER_DRAIN_KIND_NONE };
 
-	SDL_Texture* pTexture;
+	bool loaded;
+
+	SDL_Rect dest_rect;
+	SDL_Rect src_rect;
+private:
+	float percent;
+	float target_percent;
+	float target_rate;
+	int target_frames;
+	int anchor_mode;
+	float vertical_scale;
+	float horizontal_scale;
+	int flip;
+	int drain_kind;
+
+	SDL_Texture* texture;
 };
 
 

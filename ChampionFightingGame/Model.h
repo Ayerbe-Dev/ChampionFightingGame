@@ -87,7 +87,6 @@ public:
 	std::unordered_map<std::string, int> bone_map;
 
 	std::string directory;
-	bool gamma_correct;
 	int vertex_count = 0;
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);

@@ -88,6 +88,7 @@
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>CotRRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

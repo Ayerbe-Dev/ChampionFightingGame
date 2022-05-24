@@ -15,6 +15,12 @@ void GameMenu::process_background() {};
 
 GameMenu::GameMenu() {
 	average_ticks.reserve(10000);
+	looping = nullptr;
+	game_state = nullptr;
+	prev_game_state = nullptr;
+	game_context = nullptr;
+	prev_game_context = nullptr;
+	game_loader = nullptr;
 }
 
 void GameMenu::update_state(int game_state, int game_context) {

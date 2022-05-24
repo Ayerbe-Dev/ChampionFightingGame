@@ -14,6 +14,11 @@
 
 Model::Model() {
 	loaded = false;
+	dummy_matrix = nullptr;
+	global_transform = glm::mat4(1.0);
+	move = false;
+	tpose = false;
+	trans_id = -1;
 }
 
 Model::Model(std::string path) {

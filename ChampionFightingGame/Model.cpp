@@ -455,6 +455,7 @@ void Mesh::init() {
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, weights));
 	glBindVertexArray(0);
+	visible = true;
 }
 
 FORCE_INLINE void Mesh::render() {

@@ -70,7 +70,6 @@ void battle_main(GameManager* game_manager) {
 #endif
 	while (game_manager->looping[game_manager->layer]) {
 		battle.frame_delay();
-		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
@@ -351,7 +350,7 @@ void Battle::pre_process_fighter() {
 void Battle::process_fighter() {
 	//Here's some test code that forces player 2 to exclusively mash the shit out of QCF Punch and then 
 	//backdash. I'll find a better place to put this once I know it works.
-	if (fighter[1]->is_actionable()) {
+/*	if (fighter[1]->is_actionable()) {
 		if (!fighter[1]->projectiles[0]->active) {
 			if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 0) {
 				player_info[1]->controller.set_button_on(BUTTON_DOWN, 2);
@@ -378,8 +377,8 @@ void Battle::process_fighter() {
 				player_info[1]->controller.set_button_on(BUTTON_RIGHT);
 			}
 		}
-	}
-
+	}*/
+	
 	for (int i = 0; i < 2; i++) {
 		player_info[i]->controller.poll_buttons(keyboard_state);
 		thread_manager->notify_thread(i);
@@ -493,9 +492,17 @@ void Battle::render_world() {
 
 	stage.render();
 	glDisable(GL_CULL_FACE);
+
+	//	EffectManager::get_instance()->render_prepared();
+	EffectManager::get_instance()->render();
+
 	if (visualize_boxes) {
+		glBindFramebuffer(GL_FRAMEBUFFER, render_manager->box_layer.FBO);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, render_manager->box_layer.texture);
+
 		for (int i = 0; i < 2; i++) {
-			fighter[i]->jostle_box.render();
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->hurtboxes[i2].id != -1) {
 					fighter[i]->hurtboxes[i2].rect.render();
@@ -520,10 +527,12 @@ void Battle::render_world() {
 					fighter[i]->grabboxes[i2].rect.render();
 				}
 			}
+			fighter[i]->jostle_box.render();
 		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		render_manager->box_layer.render(255.0);
 	}
-//	EffectManager::get_instance()->render_prepared();
-	EffectManager::get_instance()->render();
 }
 
 void Battle::render_ui() {

@@ -705,6 +705,9 @@
     <ClCompile Include="ControllerManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="OverlayLayer.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1361,6 +1364,9 @@
     <ClInclude Include="ControllerManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="OverlayLayer.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\vertex_main.glsl">
@@ -1387,9 +1393,6 @@
     <None Include="resource\shaders\vertex_rect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_shadow.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
     <None Include="resource\shaders\vertex_shadow.glsl">
       <Filter>resource\shaders</Filter>
     </None>
@@ -1397,6 +1400,15 @@
       <Filter>resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_effect.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_layer.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_layer.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_shadow.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

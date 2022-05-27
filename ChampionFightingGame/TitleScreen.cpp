@@ -20,7 +20,6 @@ void title_screen_main(GameManager* game_manager) {
     while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 
-		glClearColor(0.0, 0.0, 0.0, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;

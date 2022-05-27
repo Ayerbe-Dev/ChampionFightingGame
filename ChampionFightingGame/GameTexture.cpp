@@ -8,9 +8,6 @@
 #include "stb_image.h"
 #include "ThreadManager.h"
 
-extern SDL_Renderer* g_renderer;
-extern bool debug;
-
 GameTexture::GameTexture() {
 	thread_manager = ThreadManager::get_instance();
 }
@@ -142,8 +139,8 @@ void GameTexture::init(std::string path) {
 
 }
 
-void GameTexture::init(GLuint gl_tex_locatione) {
-	texture = gl_tex_locatione;
+void GameTexture::init(GLuint gl_tex_location) {
+	texture = gl_tex_location;
 
 	pos = glm::vec3(0.0, 0.0, 0.0);
 	rot = glm::vec3(0.0, 0.0, 0.0);
@@ -171,8 +168,8 @@ void GameTexture::init(GLuint gl_tex_locatione) {
 	glEnableVertexAttribArray(1);
 
 
-	int width = 400;
-	int height = 400;
+	int width = WINDOW_WIDTH;
+	int height = WINDOW_HEIGHT;
 
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;

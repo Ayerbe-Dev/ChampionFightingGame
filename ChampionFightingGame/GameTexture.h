@@ -1,5 +1,4 @@
 #pragma once
-#include <SDL/SDL.h>
 #include <vector>
 #include <iostream>
 #include <glew/glew.h>
@@ -30,7 +29,7 @@ public:
     GameTexture(const GameTexture& that);
     ~GameTexture();
     void init(std::string path);
-    void init(GLuint gl_tex_locatione);
+    void init(GLuint gl_tex_location);
     void destroy(bool destroy_texture = true);
     void set_pos(glm::vec3 pos);
     void add_pos(glm::vec3 pos);
@@ -76,6 +75,8 @@ public:
 
     void load_spritesheet(std::string spritesheet_dir);
     void set_sprite(int section);
+
+    void update_buffer_data();
     
     float target_left_crop = -2.0;
     float target_right_crop = -2.0;
@@ -101,8 +102,6 @@ public:
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
     std::vector<glm::vec2> spritesheet[4];
 private:
-    void update_buffer_data();
-
     ThreadManager* thread_manager;
 
     unsigned int VAO;

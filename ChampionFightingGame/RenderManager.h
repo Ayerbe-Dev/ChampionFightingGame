@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ShadowMap.h"
+#include "OverlayLayer.h"
 
 #define MAX_LIGHT_SOURCES 5
 
@@ -25,15 +26,14 @@ public:
 	Shader shadow_shader;
 
 	ShadowMap shadow_map;
+	OverlayLayer box_layer;
 
-	int s_window_width, s_window_height;
+	GLuint box_FBO;
+	GLuint box_FBO_color;
+	GLuint box_FBO_depth;
 
-	const float screen_coords[8] = {
-		0.0, 0.0,
-		0.0, 1.0,
-		1.0, 1.0,
-		1.0, 0.0
-	};
+	int s_window_width;
+	int s_window_height;
 
 	void init();
 	void destroy();

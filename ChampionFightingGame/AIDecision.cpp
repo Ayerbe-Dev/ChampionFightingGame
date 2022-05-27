@@ -1,4 +1,6 @@
 #include "AI.h"
+#include "AIManager.h"
+#include "Fighter.h"
 #include "utils.h"
 
 void AI::decision_main() {
@@ -36,6 +38,14 @@ void AI::decision_main() {
 }
 
 bool AI::is_in_range(AIMoveList& move) {
+	//Figure out where the opponent will likely be by the time the move comes out
+	float x_now = ai_info.newest().x_pos;
+	float x_then = ai_info.newest(4).x_pos;
+	float x_future = x_now + (x_now - x_then) * move.startup; 
+	float y_now = ai_info.newest().y_pos;
+	float y_then = ai_info.newest(4).y_pos;
+	float y_future = y_now + (y_now - y_then) * move.startup;
+
 	return true;
 }
 

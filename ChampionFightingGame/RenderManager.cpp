@@ -3,7 +3,10 @@
 #include "utils.h"
 
 RenderManager::RenderManager() {
-
+	num_lights = 0;
+	s_window_width = 0;
+	s_window_height = 0;
+	box_FBO = 0;
 }
 
 void RenderManager::init() {
@@ -11,6 +14,24 @@ void RenderManager::init() {
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	default_effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
+
+	glGenFramebuffers(1, &box_FBO);
+	glGenTextures(1, &box_FBO_color);
+	glGenRenderbuffers(1, &box_FBO_depth);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, box_FBO);
+
+	glBindTexture(GL_TEXTURE_2D, box_FBO_color);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, box_FBO_color, 0);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, box_FBO_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, box_FBO_depth);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void RenderManager::destroy() {
@@ -114,7 +135,6 @@ void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_m
 	model->render(shader, flip);
 }
 
-#include <glm/gtx/string_cast.hpp>
 void RenderManager::render_model_shadow(Model* model, glm::mat4 extra_mat, glm::vec3* model_pos, glm::vec3* model_rot, glm::vec3* model_scale, bool flip) {
 	shadow_shader.use();
 	shadow_shader.set_mat4("camera_matrix", shadow_map.m_orthographic_perspective * shadow_map.m_lookat);

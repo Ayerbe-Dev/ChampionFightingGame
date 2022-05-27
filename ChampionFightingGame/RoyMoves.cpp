@@ -10,40 +10,43 @@ void Roy::load_move_scripts() {
 	});
 	script("wait", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -132, 0 }, glm::vec2{ 146, 38 });
-			new_hurtbox(1, glm::vec2{ -39, 33 }, glm::vec2{ 46, 141 });
-			new_hurtbox(2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
+			rate = 0.5;
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
 		}
-		if (is_excute_frame(10)) { //todo: Delete this
-			frame++;
+		if (is_excute_frame(9.5)) { //todo: Delete this
+			frame += 1.5;
 		}
 	});
 	script("walk_f", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
 	script("walk_b", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
 	script("dash_f", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
 		}
 	});
 	script("dash_b", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
 	script("crouch_d", [this]() {
@@ -116,16 +119,16 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_block_start", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
 	script("stand_block", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
 	script("stand_blockstun", [this]() {
@@ -137,9 +140,9 @@ void Roy::load_move_scripts() {
 	});
 	script("high_block", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
 	script("crouch_block", [this]() {
@@ -229,13 +232,14 @@ void Roy::load_move_scripts() {
 			rate = 2.0;
 			play_vc("roy_attack_01");
 			new_effect("flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.4), glm::vec4(0.0), "HaveL", glm::vec3(0.0, 15.0, 0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ 5,70 }, glm::vec2{ 130, 90 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 10, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 25, 25, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0, false, false, true);
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+			new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ 5,145 }, glm::vec2{ 240, 165 }, HITBOX_KIND_BLOCK, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 10, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 0.0, 0.0, 0.0, 0.0, false, false, true);
 		}
 		if (is_excute_frame(4)) {
-			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 35,70 }, glm::vec2{ 90, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 10, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 25, 25, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false, false, true);
+			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 5,145 }, glm::vec2{ 200, 165 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 10, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false, false, true);
 			rate = 1.0;
 		}
 		if (is_excute_wait(4)) {
@@ -601,23 +605,26 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_hitstun_l", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
 		}
 	});
 	script("stand_hitstun_m", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
 		}
 	});
 	script("stand_hitstun_h", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
 		}
 	});
 	script("crouch_hitstun_l", [this]() {

@@ -6,14 +6,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-class ShadowMap
-{
+class ShadowMap {
 public:
 	ShadowMap();
 	void update_light();
 
-	int SHADOW_WIDTH = 2000;
-	int SHADOW_HEIGHT = 2000;
+	int SHADOW_WIDTH;
+	int SHADOW_HEIGHT;
 
 	float shadow_map_depth = 7.0f;
 	float shadow_map_fov = 5.0f;

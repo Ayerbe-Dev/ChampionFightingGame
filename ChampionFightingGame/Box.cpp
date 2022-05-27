@@ -17,7 +17,7 @@ Hitbox::Hitbox() {
 void Hitbox::init(BattleObject* object) {
 	rect.init();
 	rect.bind_scale(&object->scale);
-	rect.set_rgba(glm::vec4(255, 0, 0, 127));
+	rect.set_rgba(glm::vec4(255, 0, 0, 204));
 }
 
 void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor,
@@ -63,8 +63,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->hit_status = hit_status;
 	this->counterhit_status = counterhit_status;
 	this->counterhit_type = counterhit_type;
-	this->hit_pushback = hit_pushback;
-	this->block_pushback = block_pushback;
+	this->hit_pushback = hit_pushback * 10;
+	this->block_pushback = block_pushback * 10;
 	this->launch_init_y = launch_init_y;
 	this->launch_gravity_y = launch_gravity_y;
 	this->launch_max_fall_speed = launch_max_fall_speed;
@@ -122,8 +122,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->hit_status = hit_status;
 	this->counterhit_status = counterhit_status;
 	this->counterhit_type = counterhit_type;
-	this->hit_pushback = hit_pushback;
-	this->block_pushback = block_pushback;
+	this->hit_pushback = hit_pushback * 10;
+	this->block_pushback = block_pushback * 10;
 	this->launch_init_y = launch_init_y;
 	this->launch_gravity_y = launch_gravity_y;
 	this->launch_max_fall_speed = launch_max_fall_speed;
@@ -165,7 +165,7 @@ Grabbox::Grabbox() {
 void Grabbox::init(BattleObject* object) {
 	rect.init();
 	rect.bind_scale(&object->scale);
-	rect.set_alpha(127);
+	rect.set_alpha(204);
 }
 
 /*
@@ -225,7 +225,7 @@ Hurtbox::Hurtbox() {
 void Hurtbox::init(BattleObject* object) {
 	rect.init();
 	rect.bind_scale(&object->scale);
-	rect.set_rgba(glm::vec4(0, 0, 255, 127));
+	rect.set_rgba(glm::vec4(0, 0, 255, 204));
 }
 
 /*

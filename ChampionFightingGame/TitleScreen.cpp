@@ -50,13 +50,13 @@ void title_screen_main(GameManager* game_manager) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-			player_info[i]->poll_buttons(keyboard_state);
+			player_info[i]->controller.check_controllers();
+			player_info[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].k_mapping];
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
 		}

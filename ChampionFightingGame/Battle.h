@@ -108,10 +108,7 @@ public:
 	void render_world();
 	void render_ui();
 
-	Button debug_buttons[BUTTON_MAX];
-	void poll_inputs(const Uint8* keyboard_state);
-	bool check_button_on(unsigned int button);
-	bool check_button_trigger(unsigned int button);
+	GameController debug_controller;
 
 	const Uint8* keyboard_state;
 

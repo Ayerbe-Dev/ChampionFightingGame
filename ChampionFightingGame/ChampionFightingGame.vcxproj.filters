@@ -109,12 +109,6 @@
     <Filter Include="Source Files\Objects\Fighter\Chara\Aziel">
       <UniqueIdentifier>{01956d82-287b-468c-8f84-f4deee0093ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Member">
-      <UniqueIdentifier>{a3479b31-0fc2-453a-a6bb-328e7329ec0d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Member">
-      <UniqueIdentifier>{8801c2a2-a612-4150-ab0d-866c0773f8bf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Objects\Functions">
       <UniqueIdentifier>{64e6e8bb-93b3-4b08-9568-cee7c3d04033}</UniqueIdentifier>
     </Filter>
@@ -378,15 +372,6 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Source Files\Objects\Projectile\Projectile</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
-    <ClCompile Include="GameCoordinate.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMenu.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="AlejandroStatus.cpp">
       <Filter>Source Files\Objects\Fighter\Chara\Alejandro</Filter>
     </ClCompile>
@@ -567,9 +552,6 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>Source Files\Member</Filter>
-    </ClCompile>
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -593,9 +575,6 @@
     </ClCompile>
     <ClCompile Include="GLEW Helpers.cpp">
       <Filter>Source Files\Helper Funcs</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Source Files\Member</Filter>
     </ClCompile>
     <ClCompile Include="SDL Helpers.cpp">
       <Filter>Source Files\Helper Funcs</Filter>
@@ -705,6 +684,27 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCoordinate.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMenu.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="GameController.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="ControllerManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -758,18 +758,6 @@
     <ClInclude Include="Loader.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
-    <ClInclude Include="GameMenu.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="Box.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
-    <ClInclude Include="GameCoordinate.h">
-      <Filter>Header Files\Member</Filter>
-    </ClInclude>
     <ClInclude Include="StageSelect.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
@@ -781,9 +769,6 @@
     </ClInclude>
     <ClInclude Include="GameManager.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>Header Files\Member</Filter>
     </ClInclude>
     <ClInclude Include="RenderManager.h">
       <Filter>Header Files\Managers</Filter>
@@ -1353,6 +1338,27 @@
       <Filter>Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="ThreadManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCoordinate.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMenu.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="GameController.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>

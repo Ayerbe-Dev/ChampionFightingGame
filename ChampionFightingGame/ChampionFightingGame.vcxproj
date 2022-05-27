@@ -230,6 +230,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="CharaSelect.cpp" />
     <ClCompile Include="CharaTemplateMoves.cpp" />
     <ClCompile Include="CharaTemplateStatus.cpp" />
+    <ClCompile Include="ControllerManager.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
     <ClCompile Include="AIDecision.cpp" />
@@ -247,6 +248,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterGrabFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameRect.cpp" />
     <ClCompile Include="GLEW Helpers.cpp" />
@@ -407,6 +409,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="CharaTemplateStatus.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="ControllerManager.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugMenu.h" />
     <ClInclude Include="Effect.h" />
@@ -431,6 +434,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="BattleObjectManager.h" />
     <ClInclude Include="FighterInterface.h" />
     <ClInclude Include="Fighters.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />

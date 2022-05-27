@@ -63,7 +63,7 @@ void debugMenu(GameManager* game_manager) {
 	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
+			player_info[i]->controller.check_controllers();
 		}
 
 		glClearColor(0.1, 0.1, 0.1, 1);

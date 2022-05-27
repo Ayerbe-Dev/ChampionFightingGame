@@ -43,9 +43,9 @@ bool displayOpeningSplash(PlayerInfo *player_info[2]) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-			player_info[i]->poll_buttons(keyboard_state);
-			if (player_info[i]->is_any_inputs()) {
+			player_info[i]->controller.check_controllers();
+			player_info[i]->controller.poll_buttons(keyboard_state);
+			if (player_info[i]->controller.is_any_inputs()) {
 				opening = false;
 			}
 		}

@@ -9,28 +9,28 @@ extern SDL_GLContext g_context;
 
 
 Debugger::Debugger() {
-	button_info[BUTTON_DEBUG_ENABLE].mapping = SDL_SCANCODE_LSHIFT;
-	button_info[BUTTON_DEBUG_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
-	button_info[BUTTON_DEBUG_UP].mapping = SDL_SCANCODE_W;
-	button_info[BUTTON_DEBUG_LEFT].mapping = SDL_SCANCODE_A;
-	button_info[BUTTON_DEBUG_DOWN].mapping = SDL_SCANCODE_S;
-	button_info[BUTTON_DEBUG_RIGHT].mapping = SDL_SCANCODE_D;
-	button_info[BUTTON_DEBUG_QUERY].mapping = SDL_SCANCODE_1;
-	button_info[BUTTON_DEBUG_CHANGE_TARGET].mapping = SDL_SCANCODE_2;
-	button_info[BUTTON_DEBUG_CENTER_BOX].mapping = SDL_SCANCODE_3;
-	button_info[BUTTON_DEBUG_MOVE_0].mapping = SDL_SCANCODE_4;
-	button_info[BUTTON_DEBUG_MOVE_1].mapping = SDL_SCANCODE_5;
-	button_info[BUTTON_DEBUG_PRINT_POS].mapping = SDL_SCANCODE_6;
-	button_info[BUTTON_DEBUG_PRINT_FRAME].mapping = SDL_SCANCODE_7;
-	button_info[BUTTON_DEBUG_ZOOM_OUT].mapping = SDL_SCANCODE_8;
-	button_info[BUTTON_DEBUG_RESET].mapping = SDL_SCANCODE_9;
-	button_info[BUTTON_DEBUG_FULLSCREEN].mapping = SDL_SCANCODE_ESCAPE;
+	button_info[BUTTON_DEBUG_ENABLE].k_mapping = SDL_SCANCODE_LSHIFT;
+	button_info[BUTTON_DEBUG_ADVANCE].k_mapping = SDL_SCANCODE_LCTRL;
+	button_info[BUTTON_DEBUG_UP].k_mapping = SDL_SCANCODE_W;
+	button_info[BUTTON_DEBUG_LEFT].k_mapping = SDL_SCANCODE_A;
+	button_info[BUTTON_DEBUG_DOWN].k_mapping = SDL_SCANCODE_S;
+	button_info[BUTTON_DEBUG_RIGHT].k_mapping = SDL_SCANCODE_D;
+	button_info[BUTTON_DEBUG_QUERY].k_mapping = SDL_SCANCODE_1;
+	button_info[BUTTON_DEBUG_CHANGE_TARGET].k_mapping = SDL_SCANCODE_2;
+	button_info[BUTTON_DEBUG_CENTER_BOX].k_mapping = SDL_SCANCODE_3;
+	button_info[BUTTON_DEBUG_MOVE_0].k_mapping = SDL_SCANCODE_4;
+	button_info[BUTTON_DEBUG_MOVE_1].k_mapping = SDL_SCANCODE_5;
+	button_info[BUTTON_DEBUG_PRINT_POS].k_mapping = SDL_SCANCODE_6;
+	button_info[BUTTON_DEBUG_PRINT_FRAME].k_mapping = SDL_SCANCODE_7;
+	button_info[BUTTON_DEBUG_ZOOM_OUT].k_mapping = SDL_SCANCODE_8;
+	button_info[BUTTON_DEBUG_RESET].k_mapping = SDL_SCANCODE_9;
+	button_info[BUTTON_DEBUG_FULLSCREEN].k_mapping = SDL_SCANCODE_ESCAPE;
 }
 
 void Debugger::poll_inputs(const Uint8* keyboard_state) {
 	for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 		bool old_button = button_info[i].button_on;
-		button_info[i].button_on = keyboard_state[button_info[i].mapping];
+		button_info[i].button_on = keyboard_state[button_info[i].k_mapping];
 		bool new_button = button_info[i].button_on;
 		button_info[i].changed = (old_button != new_button);
 	}

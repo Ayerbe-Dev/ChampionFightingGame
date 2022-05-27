@@ -37,9 +37,9 @@ void controls_main(GameManager* game_manager) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-			player_info[i]->poll_buttons(keyboard_state);
-			if (player_info[i]->check_button_trigger(BUTTON_MENU_BACK)) {
+			player_info[i]->controller.check_controllers();
+			player_info[i]->controller.poll_buttons(keyboard_state);
+			if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
 				game_manager->looping[game_manager->layer] = false;
 			}
 		}

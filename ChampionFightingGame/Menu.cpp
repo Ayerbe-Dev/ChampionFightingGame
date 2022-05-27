@@ -34,7 +34,7 @@ void menu_main(GameManager* game_manager) {
 	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
+			player_info[i]->controller.check_controllers();
 		}
 		glClearColor(0.1, 0.1, 0.1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -66,7 +66,7 @@ void menu_main(GameManager* game_manager) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->poll_buttons(keyboard_state);
+			player_info[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
@@ -79,7 +79,7 @@ void menu_main(GameManager* game_manager) {
 		}
 		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
 			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].mapping];
+			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].k_mapping];
 			bool new_button = debugger.button_info[i].button_on;
 			debugger.button_info[i].changed = (old_button != new_button);
 		}

@@ -2,333 +2,68 @@
 #include "CharaKind.h"
 #include "StageKind.h"
 #include "ParamAccessor.h"
-extern int registered_controllers[4];
 
 PlayerInfo::PlayerInfo() {
+	id = -1;
 	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
-	stick_hold_v_timer = timer;
-	stick_hold_h_timer = timer;
+	controller.stick_hold_v_timer = timer;
+	controller.stick_hold_h_timer = timer;
 
 }
 
 PlayerInfo::PlayerInfo(int id) {
 	this->id = id;
 	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
-	stick_hold_v_timer = timer;
-	stick_hold_h_timer = timer;
+	controller.stick_hold_v_timer = timer;
+	controller.stick_hold_h_timer = timer;
 	chara_kind = CHARA_KIND_MAX;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
-	check_controllers();
 	set_default_button_mappings(id);
-}
-
-void PlayerInfo::check_controllers() {
-	SDL_GameController* new_controller;
-	for (int i = 0; i < SDL_NumJoysticks(); ++i) { //Check all plugged in controllers
-		if (SDL_IsGameController(i)) {
-			bool unregistered = registered_controllers[!id] != i; //Make sure that the other player isn't already using it
-			if (unregistered && controller == NULL) { //Only map a controller if we don't already have one
-				new_controller = SDL_GameControllerOpen(i); 
-				if (is_any_controller_input(new_controller)) {
-					/*
-					If we don't have a controller yet, we found a controller that the opponent isn't using, AND that controller is
-					making inputs, register it to the first player that asked
-					*/
-					controller = new_controller;
-					registered_controllers[id] = i;
-				}
-			}
-		}
-	}
-	if (controller != NULL && !SDL_GameControllerGetAttached(controller)) {
-		controller = NULL;
-	}
-}
-
-void PlayerInfo::poll_buttons(const Uint8* keyboard_state) {
-	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
-	for (int i = 0; i < BUTTON_MAX; i++) {
-		bool old_button = button_info[i].button_on;
-		if (controller != NULL) {
-			if (i < 8) {
-				if (i == BUTTON_UP || i == BUTTON_MENU_UP) { //Up
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);
-				}
-				else if (i == BUTTON_DOWN || i == BUTTON_MENU_DOWN) { //Down
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) >= 13106);
-				}
-				else if (i == BUTTON_LEFT || i == BUTTON_MENU_LEFT) { //Left
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) <= -13106);
-				}
-				else { //Right
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) >= 13106);
-				}
-			}
-			else {
-				button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping)
-					|| SDL_GameControllerGetAxis(controller, button_info[i].axis) >= 13106);
-			}
-		}
-		else {
-			button_info[i].button_on = keyboard_state[button_info[i].mapping];
-		}
-		bool new_button = button_info[i].button_on;
-		button_info[i].changed = (old_button != new_button);
-		if (i == BUTTON_MACRO_P && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_LP; i < BUTTON_HP + 1; i++) {
-					bool button_already_changed = button_info[i].changed;
-					button_info[i].changed = !button_info[i].button_on;
-					button_info[i].button_on = true;
-					if (button_info[i].changed || button_already_changed) {
-						move_to_front(buffer_order, i);
-						button_info[i].buffer = buffer_window;
-					}
-				}
-			}
-		}
-		if (i == BUTTON_MACRO_K && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_LK; i < BUTTON_HK + 1; i++) {
-					bool button_already_changed = button_info[i].changed;
-					button_info[i].changed = !button_info[i].button_on;
-					button_info[i].button_on = true;
-					if (button_info[i].changed || button_already_changed) {
-						move_to_front(buffer_order, i);
-						button_info[i].buffer = buffer_window;
-					}
-				}
-			}
-		}
-		button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
-		if (button_info[i].changed && button_info[i].button_on && is_valid_buffer_button(i)) {
-			move_to_front(buffer_order, i);
-			button_info[i].buffer = buffer_window;
-		}
-	}
-}
-
-void PlayerInfo::reset_buffer() {
-	for (int i = 0; i < BUTTON_MAX; i++) {
-		button_info[i].buffer = 0;
-	}
 }
 
 void PlayerInfo::set_default_button_mappings(int id) {
 	if (id == 0) {
-		button_info[BUTTON_UP].mapping = SDL_SCANCODE_W;
-		button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_A;
-		button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_S;
-		button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_D;
-		button_info[BUTTON_LP].mapping = SDL_SCANCODE_Y;
-		button_info[BUTTON_MP].mapping = SDL_SCANCODE_U;
-		button_info[BUTTON_HP].mapping = SDL_SCANCODE_I;
-		button_info[BUTTON_LK].mapping = SDL_SCANCODE_H;
-		button_info[BUTTON_MK].mapping = SDL_SCANCODE_J;
-		button_info[BUTTON_HK].mapping = SDL_SCANCODE_K;
-		button_info[BUTTON_MACRO_P].mapping = SDL_SCANCODE_O;
-		button_info[BUTTON_MACRO_K].mapping = SDL_SCANCODE_L;
-		button_info[BUTTON_START].mapping = SDL_SCANCODE_SPACE;
-
-		button_info[BUTTON_MENU_UP].mapping = SDL_SCANCODE_W;
-		button_info[BUTTON_MENU_LEFT].mapping = SDL_SCANCODE_A;
-		button_info[BUTTON_MENU_DOWN].mapping = SDL_SCANCODE_S;
-		button_info[BUTTON_MENU_RIGHT].mapping = SDL_SCANCODE_D;
-		button_info[BUTTON_MENU_SELECT].mapping = SDL_SCANCODE_Y;
-		button_info[BUTTON_MENU_BACK].mapping = SDL_SCANCODE_U;
-		button_info[BUTTON_MENU_START].mapping = SDL_SCANCODE_SPACE;
+		controller.add_button(BUTTON_UP, SDL_SCANCODE_W, SDL_CONTROLLER_BUTTON_DPAD_UP);
+		controller.add_button(BUTTON_LEFT, SDL_SCANCODE_A, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+		controller.add_button(BUTTON_DOWN, SDL_SCANCODE_S, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+		controller.add_button(BUTTON_RIGHT, SDL_SCANCODE_D, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+		controller.add_button(BUTTON_LP, SDL_SCANCODE_Y, SDL_CONTROLLER_BUTTON_A);
+		controller.add_button(BUTTON_MP, SDL_SCANCODE_U, SDL_CONTROLLER_BUTTON_X);
+		controller.add_button(BUTTON_HP, SDL_SCANCODE_I, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+		controller.add_button(BUTTON_LK, SDL_SCANCODE_H, SDL_CONTROLLER_BUTTON_B);
+		controller.add_button(BUTTON_MK, SDL_SCANCODE_J, SDL_CONTROLLER_BUTTON_Y);
+		controller.add_button(BUTTON_HK, SDL_SCANCODE_K, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+		controller.add_button(BUTTON_MACRO_P, SDL_SCANCODE_O, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		controller.add_button(BUTTON_MACRO_K, SDL_SCANCODE_L, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		controller.add_button(BUTTON_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_START);
+		controller.add_button(BUTTON_MENU_UP, SDL_SCANCODE_W, SDL_CONTROLLER_BUTTON_DPAD_UP);
+		controller.add_button(BUTTON_MENU_LEFT, SDL_SCANCODE_A, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+		controller.add_button(BUTTON_MENU_DOWN, SDL_SCANCODE_S, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+		controller.add_button(BUTTON_MENU_RIGHT, SDL_SCANCODE_D, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+		controller.add_button(BUTTON_MENU_SELECT, SDL_SCANCODE_Y, SDL_CONTROLLER_BUTTON_A);
+		controller.add_button(BUTTON_MENU_BACK, SDL_SCANCODE_U, SDL_CONTROLLER_BUTTON_B);
+		controller.add_button(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_START);
 	}
 	else {
-		button_info[BUTTON_UP].mapping = SDL_SCANCODE_UP;
-		button_info[BUTTON_DOWN].mapping = SDL_SCANCODE_DOWN;
-		button_info[BUTTON_LEFT].mapping = SDL_SCANCODE_LEFT;
-		button_info[BUTTON_RIGHT].mapping = SDL_SCANCODE_RIGHT;
-		button_info[BUTTON_LP].mapping = SDL_SCANCODE_Z;
-		button_info[BUTTON_MP].mapping = SDL_SCANCODE_X;
-		button_info[BUTTON_HP].mapping = SDL_SCANCODE_C;
-		button_info[BUTTON_LK].mapping = SDL_SCANCODE_V;
-		button_info[BUTTON_MK].mapping = SDL_SCANCODE_B;
-		button_info[BUTTON_HK].mapping = SDL_SCANCODE_N;
-		button_info[BUTTON_MACRO_P].mapping = SDL_SCANCODE_M;
-		button_info[BUTTON_MACRO_K].mapping = SDL_SCANCODE_COMMA;
-		button_info[BUTTON_START].mapping = SDL_SCANCODE_RETURN;
-
-		button_info[BUTTON_MENU_UP].mapping = SDL_SCANCODE_UP;
-		button_info[BUTTON_MENU_LEFT].mapping = SDL_SCANCODE_LEFT;
-		button_info[BUTTON_MENU_DOWN].mapping = SDL_SCANCODE_DOWN;
-		button_info[BUTTON_MENU_RIGHT].mapping = SDL_SCANCODE_RIGHT;
-		button_info[BUTTON_MENU_SELECT].mapping = SDL_SCANCODE_Z;
-		button_info[BUTTON_MENU_BACK].mapping = SDL_SCANCODE_X;
-		button_info[BUTTON_MENU_START].mapping = SDL_SCANCODE_RETURN;
-	}
-
-	button_info[BUTTON_UP].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_UP;
-	button_info[BUTTON_LEFT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-	button_info[BUTTON_DOWN].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-	button_info[BUTTON_RIGHT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
-	button_info[BUTTON_LP].c_mapping = SDL_CONTROLLER_BUTTON_A;
-	button_info[BUTTON_MP].c_mapping = SDL_CONTROLLER_BUTTON_X;
-	button_info[BUTTON_HP].c_mapping = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
-	button_info[BUTTON_LK].c_mapping = SDL_CONTROLLER_BUTTON_B;
-	button_info[BUTTON_MK].c_mapping = SDL_CONTROLLER_BUTTON_Y;
-	button_info[BUTTON_HK].c_mapping = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
-	button_info[BUTTON_MACRO_P].axis = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
-	button_info[BUTTON_MACRO_K].axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT;
-	button_info[BUTTON_START].c_mapping = SDL_CONTROLLER_BUTTON_START;
-
-	button_info[BUTTON_MENU_UP].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_UP;
-	button_info[BUTTON_MENU_LEFT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-	button_info[BUTTON_MENU_DOWN].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-	button_info[BUTTON_MENU_RIGHT].c_mapping = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
-	button_info[BUTTON_MENU_SELECT].c_mapping = SDL_CONTROLLER_BUTTON_A;
-	button_info[BUTTON_MENU_BACK].c_mapping = SDL_CONTROLLER_BUTTON_B;
-	button_info[BUTTON_MENU_START].c_mapping = SDL_CONTROLLER_BUTTON_START;
-}
-
-bool PlayerInfo::check_button_on(unsigned int button) {
-	return button_info[button].button_on;
-}
-
-bool PlayerInfo::check_button_input(unsigned int button) {
-	return buffer_order[0] == button && button_info[button].buffer > 0;
-}
-
-bool PlayerInfo::check_button_input(unsigned int button[], int length, int min_matches) {
-	if (min_matches == 0) {
-		min_matches = length;
-	}
-	int matches = 0;
-	for (int i = 0; i < length; i++) {
-		for (int i2 = 0; i2 < length; i2++) {
-			if (buffer_order[i2] == button[i] && button_info[button[i]].buffer > 0) {
-				matches += 1;
-				break;
-			}
-		}
-	}
-	return matches >= min_matches;
-}
-
-bool PlayerInfo::check_button_trigger(unsigned int button) {
-	return  button_info[button].button_on && button_info[button].changed;
-}
-
-bool PlayerInfo::check_button_release(unsigned int button) {
-	return button_info[button].changed && (!button_info[button].button_on);
-}
-
-void PlayerInfo::move_to_front(unsigned int buttons[6], unsigned int button) {
-	int button_index = 0;
-	for (int i = 0; i < 6; i++) {
-		if (buttons[i] == button) {
-			if (i == 0) {
-				return;
-			}
-			button_index = i;
-			break;
-		}
-	}
-	for (int i = button_index; i > 0; i--) {
-		buttons[i] = buttons[i - 1];
-	}
-	buttons[0] = button;
-}
-
-bool PlayerInfo::is_valid_buffer_button(unsigned int button) {
-	if (button == BUTTON_LP || button == BUTTON_MP || button == BUTTON_HP || button == BUTTON_LK || button == BUTTON_MK || button == BUTTON_HK) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool PlayerInfo::horizontal_input(bool right) {
-	if (right) {
-		if (check_button_on(BUTTON_MENU_RIGHT)) {
-			if (check_button_trigger(BUTTON_MENU_RIGHT)) {
-				stick_hold_h_timer = get_param_int("stick_hold_timer", PARAM_MENU);
-				return true;
-			}
-			else if (stick_hold_h_timer == 0) {
-				stick_hold_h_timer = get_param_int("stick_hold_interval", PARAM_MENU);
-				return true;
-			}
-			else {
-				stick_hold_h_timer--;
-				return false;
-			}
-		}
-	}
-	else {
-		if (check_button_on(BUTTON_MENU_LEFT)) {
-			if (check_button_trigger(BUTTON_MENU_LEFT)) {
-				stick_hold_h_timer = get_param_int("stick_hold_timer", PARAM_MENU);
-				return true;
-			}
-			else if (stick_hold_h_timer == 0) {
-				stick_hold_h_timer = get_param_int("stick_hold_interval", PARAM_MENU);
-				return true;
-			}
-			else {
-				stick_hold_h_timer--;
-				return false;
-			}
-		}
-	}
-}
-
-bool PlayerInfo::vertical_input(bool down) {
-	if (down) {
-		if (check_button_on(BUTTON_MENU_DOWN)) {
-			if (check_button_trigger(BUTTON_MENU_DOWN)) {
-				stick_hold_v_timer = get_param_int("stick_hold_timer", PARAM_MENU);
-				return true;
-			}
-			else if (stick_hold_v_timer == 0) {
-				stick_hold_v_timer = get_param_int("stick_hold_interval", PARAM_MENU);
-				return true;
-			}
-			else {
-				stick_hold_v_timer--;
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-	}
-	else {
-		if (check_button_on(BUTTON_MENU_UP)) {
-			if (check_button_trigger(BUTTON_MENU_UP)) {
-				stick_hold_v_timer = get_param_int("stick_hold_timer", PARAM_MENU);
-				return true;
-			}
-			else if (stick_hold_v_timer == 0) {
-				stick_hold_v_timer = get_param_int("stick_hold_interval", PARAM_MENU);
-				return true;
-			}
-			else {
-				stick_hold_v_timer--;
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-	}
-}
-
-bool PlayerInfo::is_any_inputs() {
-	if (controller != NULL) {
-		return is_any_controller_input(controller);
-	}
-	else {
-		for (int i = 0; i < BUTTON_MAX; i++) {
-			if (check_button_trigger(i)) {
-				return true;
-			}
-		}
-		return false;
+		controller.add_button(BUTTON_UP, SDL_SCANCODE_UP, SDL_CONTROLLER_BUTTON_DPAD_UP);
+		controller.add_button(BUTTON_LEFT, SDL_SCANCODE_LEFT, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+		controller.add_button(BUTTON_DOWN, SDL_SCANCODE_DOWN, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+		controller.add_button(BUTTON_RIGHT, SDL_SCANCODE_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+		controller.add_button(BUTTON_LP, SDL_SCANCODE_Z, SDL_CONTROLLER_BUTTON_A);
+		controller.add_button(BUTTON_MP, SDL_SCANCODE_X, SDL_CONTROLLER_BUTTON_X);
+		controller.add_button(BUTTON_HP, SDL_SCANCODE_C, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+		controller.add_button(BUTTON_LK, SDL_SCANCODE_B, SDL_CONTROLLER_BUTTON_B);
+		controller.add_button(BUTTON_MK, SDL_SCANCODE_N, SDL_CONTROLLER_BUTTON_Y);
+		controller.add_button(BUTTON_HK, SDL_SCANCODE_M, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+		controller.add_button(BUTTON_MACRO_P, SDL_SCANCODE_V, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		controller.add_button(BUTTON_MACRO_K, SDL_SCANCODE_COMMA, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		controller.add_button(BUTTON_START, SDL_SCANCODE_RETURN, SDL_CONTROLLER_BUTTON_START);
+		controller.add_button(BUTTON_MENU_UP, SDL_SCANCODE_UP, SDL_CONTROLLER_BUTTON_DPAD_UP);
+		controller.add_button(BUTTON_MENU_LEFT, SDL_SCANCODE_LEFT, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+		controller.add_button(BUTTON_MENU_DOWN, SDL_SCANCODE_DOWN, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+		controller.add_button(BUTTON_MENU_RIGHT, SDL_SCANCODE_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+		controller.add_button(BUTTON_MENU_SELECT, SDL_SCANCODE_Z, SDL_CONTROLLER_BUTTON_A);
+		controller.add_button(BUTTON_MENU_BACK, SDL_SCANCODE_X, SDL_CONTROLLER_BUTTON_B);
+		controller.add_button(BUTTON_MENU_START, SDL_SCANCODE_RETURN, SDL_CONTROLLER_BUTTON_START);
 	}
 }

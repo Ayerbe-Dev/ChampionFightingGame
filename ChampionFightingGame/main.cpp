@@ -27,7 +27,6 @@
 #include "Loader.h"
 #undef main
 
-int registered_controllers[2] = { -1, -1 };
 bool debug = false;
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;

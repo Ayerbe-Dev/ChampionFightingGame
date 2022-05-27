@@ -98,7 +98,7 @@ void battle_main(GameManager* game_manager) {
 		}
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
+			player_info[i]->controller.check_controllers();
 		}
 
 		battle.process_main();
@@ -114,7 +114,9 @@ void battle_main(GameManager* game_manager) {
 		SDL_GL_SwapWindow(g_window);
 	}
 
+#ifdef DEBUG
 	cotr_imgui_terminate();
+#endif
 	battle.unload_battle();
 }
 
@@ -127,9 +129,9 @@ void Battle::load_battle(GameManager* game_manager) {
 	effect_manager->add_effect_caster(-1);
 	effect_manager->load_effect("flame");
 
-	debug_buttons[BUTTON_MENU_FRAME_PAUSE].mapping = SDL_SCANCODE_LSHIFT;
-	debug_buttons[BUTTON_MENU_ADVANCE].mapping = SDL_SCANCODE_LCTRL;
-	debug_buttons[BUTTON_MENU_START].mapping = SDL_SCANCODE_SPACE;
+	debug_controller.add_button(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
+	debug_controller.add_button(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
+	debug_controller.add_button(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
 	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(17);
@@ -202,15 +204,13 @@ void Battle::load_battle(GameManager* game_manager) {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->check_controllers();
-			player_info[i]->poll_buttons(keyboard_state);
-			if (player_info[i]->is_any_inputs()) {
+			player_info[i]->controller.check_controllers();
+			player_info[i]->controller.poll_buttons(keyboard_state);
+			if (player_info[i]->controller.is_any_inputs()) {
 				loading = false;
-
-				for (int i2 = 0; i2 < buffer_window; i2++) {
-					player_info[i]->poll_buttons(keyboard_state);
-					player_info[!i]->poll_buttons(keyboard_state);
-				}
+				
+				player_info[i]->controller.reset_buffer();
+				player_info[!i]->controller.reset_buffer();
 			}
 		}
 	}
@@ -264,8 +264,8 @@ void Battle::process_main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
-	poll_inputs(keyboard_state);
-	if (check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
+	debug_controller.poll_buttons(keyboard_state);
+	if (debug_controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 		if (frame_pause) {
 			for (int i = 0; i < 2; i++) {
 				sound_manager->resume_sound_all(i, SOUND_KIND_SE);
@@ -275,7 +275,7 @@ void Battle::process_main() {
 		frame_pause = !frame_pause;
 		timer.flip_clock();
 	}
-	if (check_button_trigger(BUTTON_MENU_START)) {
+	if (debug_controller.check_button_trigger(BUTTON_MENU_START)) {
 		for (int i = 0; i < 2; i++) {
 			fighter[i]->reset();
 		}
@@ -347,7 +347,7 @@ void Battle::pre_process_fighter() {
 
 void Battle::process_fighter() {
 	for (int i = 0; i < 2; i++) {
-		player_info[i]->poll_buttons(keyboard_state);
+		player_info[i]->controller.poll_buttons(keyboard_state);
 		thread_manager->notify_thread(i);
 	}
 }
@@ -384,7 +384,7 @@ void ui_thread(void* battle_arg) {
 
 void Battle::process_frame_pause() {
 	SoundManager* sound_manager = SoundManager::get_instance();
-	if (check_button_trigger(BUTTON_MENU_ADVANCE)) {
+	if (debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
 		for (int i = 0; i < 2; i++) {
 			sound_manager->resume_sound_all(i, SOUND_KIND_SE);
 			sound_manager->resume_sound_all(i, SOUND_KIND_VC);
@@ -508,7 +508,7 @@ void Battle::render_ui() {
 }
 
 void Battle::check_collisions() {
-	if (frame_pause && !check_button_trigger(BUTTON_MENU_ADVANCE)) {
+	if (frame_pause && !debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
 		return;
 	}
 	check_projectile_collisions();
@@ -1171,23 +1171,6 @@ int Battle::get_damage_status(int hit_status, int situation_kind) {
 			return FIGHTER_STATUS_HITSTUN;
 		}
 	}
-}
-
-void Battle::poll_inputs(const Uint8* keyboard_state) {
-	for (int i = 0; i < BUTTON_MAX; i++) {
-		bool old_button = debug_buttons[i].button_on;
-		debug_buttons[i].button_on = keyboard_state[debug_buttons[i].mapping];
-		bool new_button = debug_buttons[i].button_on;
-		debug_buttons[i].changed = (old_button != new_button);
-	}
-}
-
-bool Battle::check_button_on(unsigned int button) {
-	return debug_buttons[button].button_on;
-}
-
-bool Battle::check_button_trigger(unsigned int button) {
-	return debug_buttons[button].changed && debug_buttons[button].button_on;
 }
 
 HealthBar::HealthBar() {

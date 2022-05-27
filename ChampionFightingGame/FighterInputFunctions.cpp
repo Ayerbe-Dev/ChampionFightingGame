@@ -2,23 +2,23 @@
 #include "ParamAccessor.h"
 
 bool Fighter::check_button_on(unsigned int button) {
-	return player_info->check_button_on(button);
+	return player_info->controller.check_button_on(button);
 }
 
 bool Fighter::check_button_input(unsigned int button) {
-	return player_info->check_button_input(button);
+	return player_info->controller.check_button_input(button);
 }
 
 bool Fighter::check_button_input(unsigned int button[], int length, int min_matches) {
-	return player_info->check_button_input(button, length, min_matches);
+	return player_info->controller.check_button_input(button, length, min_matches);
 }
 
 bool Fighter::check_button_trigger(unsigned int button) {
-	return player_info->check_button_trigger(button);
+	return player_info->controller.check_button_trigger(button);
 }
 
 bool Fighter::check_button_release(unsigned int button) {
-	return player_info->check_button_release(button);
+	return player_info->controller.check_button_release(button);
 }
 
 int Fighter::get_stick_dir(bool internal_dir) {

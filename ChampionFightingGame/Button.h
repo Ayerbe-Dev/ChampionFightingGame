@@ -4,9 +4,10 @@
 bool is_any_controller_input(SDL_GameController* controller);
 
 struct Button {
-	unsigned int mapping = 0;
+	unsigned int button_kind = 0;
+	unsigned int k_mapping = 0;
 	SDL_GameControllerButton c_mapping = SDL_CONTROLLER_BUTTON_INVALID;
-	SDL_GameControllerAxis axis = SDL_CONTROLLER_AXIS_INVALID;
+	SDL_GameControllerAxis c_axis = SDL_CONTROLLER_AXIS_INVALID;
 	bool button_on = false;
 	bool changed = false;
 	int buffer = 0;

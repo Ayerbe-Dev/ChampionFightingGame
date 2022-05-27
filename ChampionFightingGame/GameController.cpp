@@ -45,7 +45,11 @@ void GameController::poll_buttons(const Uint8* keyboard_state) {
 	for (int i = 0, max = button_info.size(); i < max; i++) {
 		int button_kind = button_info[i].button_kind;
 		bool old_button = button_info[i].button_on;
-		if (controller != nullptr) {
+		if (button_info[i].force_duration > 0) {
+			button_info[i].button_on = true;
+			button_info[i].force_duration--;
+		}
+		else if (controller != nullptr) {
 			if (button_kind < 8) {
 				if (button_kind == BUTTON_UP || button_kind == BUTTON_MENU_UP) {
 					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);
@@ -246,6 +250,16 @@ bool GameController::is_any_inputs() {
 		}
 		return false;
 	}
+}
+
+void GameController::set_button_on(unsigned int button_kind, int duration) {
+	button_kind = button_map[button_kind];
+	button_info[button_kind].force_duration = duration;
+}
+
+void GameController::set_button_off(unsigned int button_kind) {
+	button_kind = button_map[button_kind];
+	button_info[button_kind].force_duration = 0;
 }
 
 bool GameController::is_valid_buffer_button(unsigned int button_kind) {

@@ -98,7 +98,10 @@ void battle_main(GameManager* game_manager) {
 		}
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
+			if (player_info[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
+				//check_controllers now returns whether or not controls were changed, and if someone's controller
+				//gets unplugged midgame, we should probably do something about it
+			}
 		}
 
 		battle.process_main();
@@ -346,6 +349,37 @@ void Battle::pre_process_fighter() {
 }
 
 void Battle::process_fighter() {
+	//Here's some test code that forces player 2 to exclusively mash the shit out of QCF Punch and then 
+	//backdash. I'll find a better place to put this once I know it works.
+	if (fighter[1]->is_actionable()) {
+		if (!fighter[1]->projectiles[0]->active) {
+			if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 0) {
+				player_info[1]->controller.set_button_on(BUTTON_DOWN, 2);
+			}
+			else if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 1) {
+				player_info[1]->controller.set_button_on(BUTTON_LEFT, 3);
+			}
+			else if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 3) {
+				player_info[1]->controller.set_button_on(BUTTON_LP);
+			}
+		}
+		if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
+			player_info[1]->controller.set_button_on(BUTTON_RIGHT); //lol you can't buffer dashes
+		}
+	}
+	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_START) {
+		if (!fighter[1]->check_button_on(BUTTON_LP)) { //do i LOOK like i know what frame it comes out on?
+			player_info[1]->controller.set_button_on(BUTTON_LP);
+		}
+	}
+	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
+		if (fighter[1]->frame != 0.0) { //lol you still can't buffer dashes
+			if (!fighter[1]->check_button_on(BUTTON_RIGHT)) {
+				player_info[1]->controller.set_button_on(BUTTON_RIGHT);
+			}
+		}
+	}
+
 	for (int i = 0; i < 2; i++) {
 		player_info[i]->controller.poll_buttons(keyboard_state);
 		thread_manager->notify_thread(i);

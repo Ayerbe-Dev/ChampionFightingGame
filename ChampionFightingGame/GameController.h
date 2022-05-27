@@ -30,6 +30,9 @@ public:
 	bool vertical_input(bool down);
 	bool is_any_inputs();
 
+	void set_button_on(unsigned int button_kind, int duration = 1);
+	void set_button_off(unsigned int button_kind);
+
 	bool is_valid_buffer_button(unsigned int button_kind);
 	void reset_buffer();
 	void sort_buffer(unsigned int button);

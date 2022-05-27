@@ -11,4 +11,5 @@ struct Button {
 	bool button_on = false;
 	bool changed = false;
 	int buffer = 0;
+	int force_duration = 0;
 };

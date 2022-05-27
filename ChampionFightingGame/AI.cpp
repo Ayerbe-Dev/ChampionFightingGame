@@ -4,18 +4,24 @@
 #include <fstream>
 
 AI::AI() {
+	id = -1;
+	fighter = nullptr;
+	controller = nullptr;
 	judgement = 8;
 	precision = 10;
 	execution = 10;
 	reaction = 12;
 	ai_info.resize(2);
+	committed = false;
+	input_stage = 0;
+	active_choice = nullptr;
 }
 
-AI::AI(int id, int judgement, int precision, int execution, int reaction) {
-	init(id, judgement, precision, execution, reaction);
+AI::AI(int id, int judgement, int precision, int execution, int reaction, int stubbornness) {
+	init(id, judgement, precision, execution, reaction, stubbornness);
 }
 
-void AI::init(int id, int judgement, int precision, int execution, int reaction) {
+void AI::init(int id, int judgement, int precision, int execution, int reaction, int stubbornness) {
 	this->id = id;
 
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
@@ -23,11 +29,16 @@ void AI::init(int id, int judgement, int precision, int execution, int reaction)
 	load_chara_info(battle_object_manager->fighter[!id]->chara_name, opponent_move_list);
 
 	fighter = battle_object_manager->fighter[id];
+	controller = &fighter->player_info->controller;
 
 	this->judgement = judgement;
 	this->precision = 10 - precision;
 	this->execution = execution;
 	this->reaction = reaction;
+	this->stubbornness = stubbornness;
+	committed = false;
+	input_stage = 0;
+	active_choice = nullptr;
 }
 
 void AI::ai_main() {
@@ -37,9 +48,20 @@ void AI::ai_main() {
 	//opponent that we're allowed to see
 	ai_manager->ai_mutex.unlock();
 
-	//Run through all of the functions in AIDecision.cpp to figure out what action we should take
+	if (fighter->get_status_group() == STATUS_GROUP_HITSTUN) {
+	
+	}
+	else {
+		ai_neutral();
+	}
+}
 
-	//Do some stuff in AIInput.cpp to simulate actually making the inputs
+void AI::ai_neutral() {
+	if (!committed) {
+		decision_main();
+	}
+
+	input_main();
 }
 
 void AI::load_chara_info(std::string chara_kind, std::vector<AIMoveList>& target) {

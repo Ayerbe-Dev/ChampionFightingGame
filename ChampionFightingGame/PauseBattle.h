@@ -1,15 +1,15 @@
 #pragma once
 #include "GameMenu.h"
 #include "GameTexture.h"
-#include "PlayerInfo.h"
 #include "GameManager.h"
+#include "PlayerInfo.h"
 
-void controls_main();
+void pause_battle_main();
 
-class OptionsMenu : public GameMenu {
+class PauseBattle : public GameMenu {
 public:
-	OptionsMenu();
-	OptionsMenu(int width, int height, std::string dir);
+	PauseBattle();
+	PauseBattle(int width, int height, std::string dir);
 
 	void init(int width, int height, std::string dir);
 

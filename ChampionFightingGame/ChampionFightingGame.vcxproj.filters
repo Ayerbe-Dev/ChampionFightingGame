@@ -708,6 +708,9 @@
     <ClCompile Include="OverlayLayer.cpp">
       <Filter>Source Files\Engine\Visuals</Filter>
     </ClCompile>
+    <ClCompile Include="PauseBattle.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -732,9 +735,6 @@
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ButtonConstants.h">
-      <Filter>Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
       <Filter>Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="MenuConstants.h">
@@ -1366,6 +1366,12 @@
     </ClInclude>
     <ClInclude Include="OverlayLayer.h">
       <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseBattle.h">
+      <Filter>Header Files\Game State</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

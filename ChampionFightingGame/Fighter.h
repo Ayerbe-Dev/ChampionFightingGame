@@ -40,6 +40,8 @@ public:
 	std::vector<void (Fighter::*)(void)> enter_status_script;
 	std::vector<void (Fighter::*)(void)> exit_status_script;
 
+	bool finished_scripts;
+
 	/*
 		FUNCTIONS
 	*/
@@ -56,7 +58,6 @@ public:
 	//(throws requiring the opponent's bone positions being up to date, for example)
 
 	virtual void chara_main() {}; //Runs during every frame of gameplay, specific to the character that's defining it
-	void update_jostle_rect(); //Sets up the player's jostle box, called multiple times every frame
 
 	void process_projectiles(); //Calls the scripts for projectiles
 	void process_post_projectiles(); //Calls the post scripts for projectiles
@@ -153,6 +154,11 @@ public:
 	//Grab Functions
 	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames);
 	void throw_opponent(float damage, float x_speed = 0, float y_speed = 0);
+
+	//Jostle Box
+
+	void update_jostle_rect();
+	void set_jostle_offset(float offset);
 
 	//Hitbox
 	

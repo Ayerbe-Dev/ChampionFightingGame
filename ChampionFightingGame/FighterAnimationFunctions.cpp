@@ -65,6 +65,7 @@ void Fighter::startAnimation(Animation* animation, bool clear_buffer) {
 	if (animation != nullptr) {
 		model.set_move(animation->move);
 	}
+	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
 	prev_anim_offset = glm::vec3(0.0);
 	is_anim_end = false;
 	if (anim_kind != animation) {

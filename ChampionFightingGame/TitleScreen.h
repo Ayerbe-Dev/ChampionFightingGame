@@ -4,7 +4,7 @@
 #include "GameMenu.h"
 #include "GameManager.h"
 
-void title_screen_main(GameManager *game_manager);
+void title_screen_main();
 
 class TitleScreen: public GameMenu{
 public:

@@ -549,6 +549,7 @@ void Roy::load_move_scripts() {
 		});
 	script("special_slide", [this]() {
 		if (is_excute_frame(0)) {
+			set_jostle_offset(120.0);
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				rate = 1.5;
 			}

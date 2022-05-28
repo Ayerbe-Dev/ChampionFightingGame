@@ -4,11 +4,11 @@
 #include "Particle.h";
 #include "BattleObject.h"
 #include <stdexcept>
+#include "utils.h"
 
 EffectManager* EffectManager::instance = nullptr;
 
 EffectManager::EffectManager() {
-	locked_list = false;
 	init();
 }
 
@@ -25,8 +25,6 @@ void EffectManager::init() {
 
 void EffectManager::process() {
 	ThreadManager* thread_manager = ThreadManager::get_instance();
-	while (locked_list);
-	locked_list = true;
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
 		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(); it != active_effects[i].end(); it++) {
 			if (!it->process()) {
@@ -40,19 +38,15 @@ void EffectManager::process() {
 			}
 		}
 	}
-	locked_list = false;
 }
 
 void EffectManager::prepare_render() {
 	ThreadManager* thread_manager = ThreadManager::get_instance();
-	while (locked_list);
-	locked_list = true;
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
 		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(), max = active_effects[i].end(); it != max; it++) {
 			it->prepare_render();
 		}
 	}
-	locked_list = false;
 }
 
 void EffectManager::render() {
@@ -86,11 +80,7 @@ void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 p
 	EffectInstance to_add = loaded_effects[effect_name_map[name]].instantiate(pos, rot, scale, rgba, battle_object,
 		bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 
-	ThreadManager* thread_manager = ThreadManager::get_instance();
-	while (locked_list);
-	locked_list = true;
 	active_effects[id2index[object_id]].push_back(to_add);
-	locked_list = false;
 }
 
 void EffectManager::clear_effect(int object_id, std::string name, int instance_id) {
@@ -98,13 +88,10 @@ void EffectManager::clear_effect(int object_id, std::string name, int instance_i
 		std::cerr << "ID " << object_id << " is not a valid effect caster!\n";
 		return;
 	}
-	while (locked_list);
-	locked_list = true;
 	for (std::list<EffectInstance>::iterator it = active_effects[id2index[object_id]].begin(), max = active_effects[id2index[object_id]].end(); it != max; it++) {
 		if (it->effect->info.name == name) {
 			if (instance_id == 0) {
 				active_effects[id2index[object_id]].erase(it);
-				locked_list = false;
 				return;
 			}
 			else {
@@ -112,14 +99,11 @@ void EffectManager::clear_effect(int object_id, std::string name, int instance_i
 			}
 		}
 	}
-	locked_list = false;
 	std::cerr << "Instance ID not found!\n";
 }
 
 //If no argument is passed, every effect across all objects will be cleared.
 void EffectManager::clear_effect_all(int object_id) {
-	while (locked_list);
-	locked_list = true;
 	if (object_id == -1) {
 		for (int i = 0, max = active_effects.size(); i < max; i++) {
 			active_effects[i].clear();
@@ -128,7 +112,6 @@ void EffectManager::clear_effect_all(int object_id) {
 	else {
 		active_effects[id2index[object_id]].clear();
 	}
-	locked_list = false;
 }
 
 Effect EffectManager::get_effect(std::string name) {

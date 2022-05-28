@@ -1,37 +1,37 @@
-#include "Options.h"
-#include <glew/glew.h>
+#include "PauseBattle.h"
 extern SDL_Window* g_window;
 
-void controls_main() {
+void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	GameMenu* background_menu = game_manager->get_target();
 
 	game_manager->layer++;
-	PlayerInfo *player_info[2];
+
+	PlayerInfo* player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
 	const Uint8* keyboard_state;
 
-	OptionsMenu options_menu(500, 300, "resource/ui/menu/options/overlay.png");
-	options_menu.player_info[0] = player_info[0];
-	options_menu.player_info[1] = player_info[1];
+	PauseBattle pause(500, 300, "resource/ui/battle/pause/overlay.png");
+	pause.player_info[0] = player_info[0];
+	pause.player_info[1] = player_info[1];
 
-	game_manager->set_menu_info(&options_menu);
+	game_manager->set_menu_info(&pause);
 
-	while (*options_menu.looping) {
+	while (*pause.looping) {
 		wait_ms();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-				case SDL_QUIT:
-				{
-					game_manager->layer--;
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
+			case SDL_QUIT:
+			{
+				*pause.looping = false;
+				game_manager->update_state(GAME_STATE_CLOSE);
+			}
+			break;
 			}
 		}
 		SDL_PumpEvents();
@@ -39,30 +39,30 @@ void controls_main() {
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
 			player_info[i]->controller.poll_buttons(keyboard_state);
-			if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
-				*options_menu.looping = false;
+			if (player_info[i]->controller.check_button_trigger(BUTTON_START)) {
+				*pause.looping = false;
 			}
 		}
 
 		background_menu->process_background();
-		options_menu.panel.render();
+		pause.panel.render();
 
 		SDL_GL_SwapWindow(g_window);
 	}
 
-	options_menu.panel.destroy();
+	pause.panel.destroy();
 	game_manager->layer--;
 }
 
-OptionsMenu::OptionsMenu() {
+PauseBattle::PauseBattle() {
 
 }
 
-OptionsMenu::OptionsMenu(int width, int height, std::string dir) {
+PauseBattle::PauseBattle(int width, int height, std::string dir) {
 	init(width, height, dir);
 }
 
-void OptionsMenu::init(int width, int height, std::string dir) {
+void PauseBattle::init(int width, int height, std::string dir) {
 	panel.init(dir);
 	panel.set_width(width);
 	panel.set_height(height);

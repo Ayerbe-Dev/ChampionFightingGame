@@ -7,3 +7,4 @@
 #include "Options.h"
 #include "StageSelect.h"
 #include "TitleScreen.h"
+#include "PauseBattle.h"

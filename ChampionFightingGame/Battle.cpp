@@ -53,7 +53,8 @@ extern bool debug;
 #include "imgui_impl_opengl3.h"
 #endif // DEBUG
 
-void battle_main(GameManager* game_manager) {
+void battle_main() {
+	GameManager* game_manager = GameManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	PlayerInfo* player_info[2];
 	for (int i = 0; i < 2; i++) {
@@ -69,7 +70,7 @@ void battle_main(GameManager* game_manager) {
 	cotr_imgui_init();
 #endif
 	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay();
+		battle.frame_delay_check_performance();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		SDL_Event event;
@@ -263,6 +264,7 @@ void Battle::unload_battle() {
 }
 
 void Battle::process_main() {
+	GameManager* game_manager = GameManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
@@ -277,11 +279,16 @@ void Battle::process_main() {
 		frame_pause = !frame_pause;
 		timer.flip_clock();
 	}
-	if (debug_controller.check_button_trigger(BUTTON_MENU_START)) {
-		for (int i = 0; i < 2; i++) {
-			fighter[i]->reset();
+	for (int i = 0; i < 2; i++) {
+		if (player_info[i]->controller.check_button_trigger(BUTTON_START)) {
+			game_manager->game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE]();
 		}
 	}
+//	if (debug_controller.check_button_trigger(BUTTON_MENU_START)) {
+//		for (int i = 0; i < 2; i++) {
+//			fighter[i]->reset();
+//		}
+//	}
 
 	if (frame_pause) {
 		process_frame_pause();
@@ -387,6 +394,7 @@ void Battle::process_fighter() {
 
 void fighter_thread(void* fighter_arg) {
 	Fighter* fighter = (Fighter*)fighter_arg;
+	fighter->finished_scripts = false;
 	fighter->fighter_main();
 }
 
@@ -409,10 +417,10 @@ void ui_thread(void* battle_arg) {
 		battle->ex_bar[i].process();
 	}
 	battle->timer.process();
-//	EffectManager* effect_manager = EffectManager::get_instance();
-//	effect_manager->process();
-//	effect_manager->prepare_render(); 
-	EffectManager::get_instance()->process();
+	while (!(battle->fighter[0]->finished_scripts && battle->fighter[1]->finished_scripts));
+	EffectManager* effect_manager = EffectManager::get_instance();
+	effect_manager->process();
+	effect_manager->prepare_render(); 
 }
 
 void Battle::process_frame_pause() {
@@ -548,6 +556,11 @@ void Battle::render_ui() {
 		debug_rect[debugger.target].render();
 	}*/
 
+}
+
+void Battle::process_background() {
+	render_world();
+	render_ui();
 }
 
 void Battle::check_collisions() {

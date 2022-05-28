@@ -9,13 +9,12 @@
 extern SDL_Renderer* g_renderer;
 extern SDL_Window* g_window;
 
-void stage_select_main(GameManager* game_manager) {
+void stage_select_main() {
+	GameManager* game_manager = GameManager::get_instance();
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
-	Debugger debugger;
-	debugger = Debugger();
 
 	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
@@ -58,20 +57,6 @@ void stage_select_main(GameManager* game_manager) {
 		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
-		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(g_window, 0);
-			}
-			else {
-				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			}
-		}
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
-			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].k_mapping];
-			bool new_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].changed = (old_button != new_button);
-		}
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.poll_buttons(keyboard_state);
 		}

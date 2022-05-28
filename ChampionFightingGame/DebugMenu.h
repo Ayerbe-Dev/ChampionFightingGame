@@ -57,4 +57,4 @@ public:
 };
 
 TTF_Font *loadDebugFont(std::string fontname = "FiraCode-Regular.ttf");
-void debugMenu(GameManager *game_manager);
+void debugMenu();

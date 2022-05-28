@@ -5,7 +5,8 @@
 
 extern SDL_Window* g_window;
 
-void title_screen_main(GameManager* game_manager) {
+void title_screen_main() {
+	GameManager* game_manager = GameManager::get_instance();
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -13,7 +14,6 @@ void title_screen_main(GameManager* game_manager) {
     TitleScreen title_screen;
 
     const Uint8 *keyboard_state;
-    Debugger debugger;
 
 	game_manager->set_menu_info(&title_screen);
 
@@ -51,22 +51,6 @@ void title_screen_main(GameManager* game_manager) {
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
 			player_info[i]->controller.poll_buttons(keyboard_state);
-		}
-
-		for (int i = 0; i < BUTTON_DEBUG_MAX; i++) {
-			bool old_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].button_on = keyboard_state[debugger.button_info[i].k_mapping];
-			bool new_button = debugger.button_info[i].button_on;
-			debugger.button_info[i].changed = (old_button != new_button);
-		}
-
-		if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
-			if (SDL_GetWindowFlags(g_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-				SDL_SetWindowFullscreen(g_window, 0);
-			}
-			else {
-				SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			}
 		}
 
 		game_manager->handle_menus();

@@ -12,13 +12,12 @@
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 
-void debugMenu(GameManager* game_manager) {
+void debugMenu() {
+	GameManager* game_manager = GameManager::get_instance();
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
-	//Debugger debugger;
-	//debugger = Debugger();
 
 	
 

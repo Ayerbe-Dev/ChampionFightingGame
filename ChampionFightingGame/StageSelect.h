@@ -13,7 +13,7 @@
 #define CSS_WIDTH WINDOW_WIDTH * 0.8
 #define CSS_HEIGHT WINDOW_HEIGHT / 2.5
 
-void stage_select_main(GameManager *game_manager);
+void stage_select_main();
 
 class SSSSlot {
 public:

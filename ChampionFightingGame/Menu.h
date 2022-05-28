@@ -9,7 +9,7 @@
 #include "GameManager.h"
 #include "GameTexture.h"
 
-void menu_main(GameManager *game_manager);
+void menu_main();
 int get_sub_selection(int top_selection, int sub_selection);
 
 class MenuItem{

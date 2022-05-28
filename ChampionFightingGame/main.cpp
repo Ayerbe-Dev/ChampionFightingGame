@@ -54,7 +54,7 @@ int main() {
 
 	render_manager->init();
 
-	bool running = opening_main(game_manager);
+	bool running = opening_main();
 
 	while (running) {
 		refreshRenderer();
@@ -62,13 +62,13 @@ int main() {
 			game_manager->looping[i] = true;
 		}
 		if (game_manager->game_main[*game_manager->game_state] != nullptr) {
-			game_manager->game_main[*game_manager->game_state](game_manager);
+			game_manager->game_main[*game_manager->game_state]();
 		}
 		else if (*game_manager->game_state != GAME_STATE_CLOSE) {
 			char buffer[86];
 			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager->game_state);
 			game_manager->player_info[0]->crash_reason = buffer;
-			game_manager->game_main[GAME_STATE_DEBUG_MENU](game_manager);
+			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
 		}
 
 		if (*game_manager->game_state == GAME_STATE_CLOSE) {

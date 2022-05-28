@@ -2,5 +2,5 @@
 #include "GameManager.h"
 #include "PlayerInfo.h"
 
-bool opening_main(GameManager *game_manager);
+bool opening_main();
 bool displayOpeningSplash(PlayerInfo *player_info[2]);

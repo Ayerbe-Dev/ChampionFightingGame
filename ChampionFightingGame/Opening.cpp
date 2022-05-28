@@ -3,7 +3,9 @@
 #include "GameTexture.h"
 extern SDL_Window* g_window;
 
-bool opening_main(GameManager* game_manager) {
+bool opening_main() {
+	GameManager* game_manager = GameManager::get_instance();
+
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];

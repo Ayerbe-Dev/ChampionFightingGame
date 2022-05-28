@@ -50,7 +50,5 @@ private:
 	std::vector<std::list<EffectInstance>> active_effects;
 	std::unordered_map<int, int> id2index;
 
-	bool locked_list; //Fuck it, Singleton-mutex
-
 	static EffectManager* instance;
 };

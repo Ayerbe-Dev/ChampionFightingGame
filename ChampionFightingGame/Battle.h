@@ -9,7 +9,7 @@
 class ThreadManager;
 class Camera;
 
-void battle_main(GameManager *game_manager);
+void battle_main();
 
 class HealthBar {
 public:
@@ -92,6 +92,8 @@ public:
 	void process_fighter();
 	void post_process_fighter();
 	void process_frame_pause();
+
+	void process_background();
 
 	void check_collisions();
 	void check_projectile_collisions();

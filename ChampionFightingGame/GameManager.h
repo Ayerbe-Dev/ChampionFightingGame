@@ -21,8 +21,8 @@ public:
 
 	void destroy();
 
-	void (*game_main[GAME_STATE_MAX])(GameManager* game_manager);
-	void (*game_substate_main[GAME_SUBSTATE_MAX])(GameManager* game_manager);
+	void (*game_main[GAME_STATE_MAX])();
+	void (*game_substate_main[GAME_SUBSTATE_MAX])();
 
 	void set_game_state_functions(); //Assigns a function to each index of game_main
 

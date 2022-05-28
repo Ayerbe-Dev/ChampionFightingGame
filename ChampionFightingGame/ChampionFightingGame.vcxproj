@@ -317,6 +317,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="PauseBattle.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Priest.cpp" />
     <ClCompile Include="PriestMoves.cpp" />
@@ -390,6 +391,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AzielFloat.h" />
     <ClInclude Include="AzielInt.h" />
     <ClInclude Include="AzielStatus.h" />
+    <ClInclude Include="PauseBattle.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="BoneConstants.h" />
     <ClInclude Include="BoxConstants.h" />

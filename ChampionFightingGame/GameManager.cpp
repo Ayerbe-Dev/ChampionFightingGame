@@ -48,6 +48,7 @@ void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
 
 	game_substate_main[GAME_SUBSTATE_CONTROLS] = &controls_main;
+	game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE] = &pause_battle_main;
 
 }
 

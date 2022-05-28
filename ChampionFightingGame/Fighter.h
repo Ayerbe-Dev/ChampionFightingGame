@@ -86,7 +86,7 @@ public:
 
 	//Setup
 
-	void superInit(int id);
+	void super_init(int id);
 	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();

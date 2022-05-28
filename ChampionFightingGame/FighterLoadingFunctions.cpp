@@ -4,7 +4,7 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 
-void Fighter::superInit(int id) {
+void Fighter::super_init(int id) {
 	this->id = id;
 	
 	sound_manager->add_sound_player(id);

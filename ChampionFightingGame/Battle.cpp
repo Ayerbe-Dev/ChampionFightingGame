@@ -168,7 +168,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->superInit(i);
+		fighter[i]->super_init(i);
 
 		inc_thread();
 		health_bar[i].init(fighter[i]);

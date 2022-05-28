@@ -16,9 +16,6 @@ void Roy::load_move_scripts() {
 			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
 		}
-		if (is_excute_frame(9.5)) { //todo: Delete this
-			frame += 1.5;
-		}
 	});
 	script("walk_f", [this]() {
 		if (is_excute_frame(0)) {
@@ -548,6 +545,18 @@ void Roy::load_move_scripts() {
 		if (is_excute_wait(1)) {
 			projectiles[0]->pos.x += 30.0 * facing_dir;
 			projectiles[0]->pos.y -= 40.0;
+		}
+		});
+	script("special_slide", [this]() {
+		if (is_excute_frame(0)) {
+			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				rate = 1.5;
+			}
+		}
+		});
+	script("special_slide_followup", [this]() {
+		if (is_excute_frame(0)) {
+
 		}
 		});
 	script("special_uppercut_start", [this]() {

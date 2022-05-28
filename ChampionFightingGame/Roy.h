@@ -31,6 +31,12 @@ public:
 	void roy_status_special_fireball_kick();
 	void roy_enter_status_special_fireball_kick();
 	void roy_exit_status_special_fireball_kick();
+	void roy_status_special_slide();
+	void roy_enter_status_special_slide();
+	void roy_exit_status_special_slide();
+	void roy_status_special_slide_followup();
+	void roy_enter_status_special_slide_followup();
+	void roy_exit_status_special_slide_followup();
 	void roy_status_special_uppercut_start();
 	void roy_enter_status_special_uppercut_start();
 	void roy_exit_status_special_uppercut_start();

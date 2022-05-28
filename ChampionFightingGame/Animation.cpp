@@ -8,7 +8,10 @@
 #include <assimp/Importer.hpp>
 #include "utils.h"
 
-Animation::Animation() {}
+Animation::Animation() {
+	length = 0;
+	faf = 0;
+}
 
 Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) {
 	this->name = anim_kind;
@@ -59,6 +62,7 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 
 		int last_keyframed = 0;
 		int next_keyframed = 1;
+
 		for (int i2 = 0; i2 < length; i2++) { //Interpolate to find all of the keyframes that aren't baked
 			if (keyframes[i2][index].keyframed) {
 				//If we find a keyframe that was already baked, set this to our last baked keyframe, then search for the next one after this and 
@@ -66,17 +70,16 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 
 				//This approach means that we won't look for the next keyframe until we've found the current one, avoiding unnecessary recalculations
 
-				last_keyframed = i2;
-				for (int i3 = last_keyframed + 1; i3 <= length; i3++) {
+				for (int i3 = i2 + 1; i3 <= length; i3++) {
 					if (keyframes[i3][index].keyframed) {
 						next_keyframed = i3;
 						break;
 					}
 				}
+				last_keyframed = i2;
 			}
 			else {
-				float delta = ((float)i2 - last_keyframed) / (next_keyframed - last_keyframed);
-				keyframes[i2][index].anim_matrix = interpolate(keyframes[last_keyframed][index].anim_matrix, keyframes[next_keyframed][index].anim_matrix, delta);
+				keyframes[i2][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix * ((i2 - last_keyframed) / (float)(next_keyframed - last_keyframed)) + keyframes[next_keyframed][index].anim_matrix * ((next_keyframed - i2) / (float)(next_keyframed - last_keyframed));
 			}
 		}
 	}

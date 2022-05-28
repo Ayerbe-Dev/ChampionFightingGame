@@ -25,6 +25,23 @@ bool Roy::specific_ground_status_act() {
 		}
 	}
 
+	if (get_special_input(SPECIAL_KIND_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+	}
+	if (get_special_input(SPECIAL_KIND_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+	}
+	if (get_special_input(SPECIAL_KIND_214, BUTTON_MK) != SPECIAL_INPUT_NONE) {
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+	}
+	if (get_special_input(SPECIAL_KIND_214, BUTTON_HK) != SPECIAL_INPUT_NONE) {
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+	}
+
 	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
@@ -167,6 +184,44 @@ void Roy::roy_exit_status_special_fireball_kick() {
 
 }
 
+void Roy::roy_status_special_slide() {
+	if (is_status_end()) {
+		return;
+	}
+	if (frame >= get_local_param_int("special_slide_move_start_frame", params) && frame < get_local_param_int("special_slide_move_stop_frame", params)) {
+		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, 0.0);
+	}
+	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+		if (frame >= get_local_param_int("special_slide_transition_frame", params)) {
+			change_status(CHARA_ROY_STATUS_SPECIAL_SLIDE_FOLLOWUP);
+		}
+	}
+}
+
+void Roy::roy_enter_status_special_slide() {
+	change_anim("special_slide");
+	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float_special("special_slide_move_x");
+}
+
+void Roy::roy_exit_status_special_slide() {
+
+}
+
+void Roy::roy_status_special_slide_followup() {
+	if (is_status_end()) {
+		return;
+	}
+}
+
+void Roy::roy_enter_status_special_slide_followup() {
+	change_anim("special_slide_followup");
+	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
+}
+
+void Roy::roy_exit_status_special_slide_followup() {
+
+}
+
 void Roy::roy_status_special_uppercut_start() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
 		change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
@@ -267,6 +322,14 @@ void Roy::loadRoyStatusFunctions() {
 	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_status_special_fireball_kick);
 	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_enter_status_special_fireball_kick);
 	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_FIREBALL_KICK, &Roy::roy_exit_status_special_fireball_kick);
+
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_SLIDE, &Roy::roy_status_special_slide);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_SLIDE, &Roy::roy_enter_status_special_slide);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_SLIDE, &Roy::roy_exit_status_special_slide);
+
+	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_SLIDE_FOLLOWUP, &Roy::roy_status_special_slide_followup);
+	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_SLIDE_FOLLOWUP, &Roy::roy_enter_status_special_slide_followup);
+	ADD_FIGHTER_EXIT_STATUS(CHARA_ROY_STATUS_SPECIAL_SLIDE_FOLLOWUP, &Roy::roy_exit_status_special_slide_followup);
 
 	ADD_FIGHTER_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_status_special_uppercut_start);
 	ADD_FIGHTER_ENTRY_STATUS(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START, &Roy::roy_enter_status_special_uppercut_start);

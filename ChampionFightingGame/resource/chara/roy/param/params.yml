@@ -2,6 +2,13 @@ special_fireball_transition_frame_l 1 13
 special_fireball_transition_frame_m 1 13
 special_fireball_transition_frame_h 1 13
 special_fireball_transition_frame_ex 1 13
+special_slide_transition_frame 1 27
+special_slide_move_start_frame 1 2
+special_slide_move_stop_frame 1 31
+special_slide_move_x_l 2 17.0
+special_slide_move_x_m 2 17.0
+special_slide_move_x_h 2 22.0
+special_slide_move_x_ex 2 22.0
 special_uppercut_transition_frame 1 9
 special_uppercut_move_frame 1 4
 special_uppercut_x_l 2 2.0

@@ -454,17 +454,18 @@ void Fighter::status_jump() {
 
 void Fighter::enter_status_jump() {
 	if (get_stick_dir() == 7 || get_stick_dir() == 4 || get_stick_dir() == 1) {
-		change_anim("jump_b");
+		change_anim("jump_b", 1.0, 0.0, false);
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
 	}
 	else if (get_stick_dir() == 9 || get_stick_dir() == 6 || get_stick_dir() == 3) {
-		change_anim("jump_f");
+		change_anim("jump_f", 1.0, 0.0, false);
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
 	}
 	else {
-		change_anim("jump");
+		change_anim("jump", 1.0, 0.0, false);
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
 	}
+
 	if (fighter_flag[FIGHTER_FLAG_SHORT_HOP]) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = get_local_param_float("jump_y_init_speed_s");
 	}
@@ -472,7 +473,9 @@ void Fighter::enter_status_jump() {
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = get_local_param_float("jump_y_init_speed");
 	}
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("jump_x_speed");
-	common_air_status_act();
+	if (common_air_status_act()) {
+		return;
+	}
 	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
 }
 

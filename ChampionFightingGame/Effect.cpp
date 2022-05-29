@@ -16,6 +16,7 @@ EffectInfo::EffectInfo(std::string name, std::string dir) {
 
 Effect::Effect() {
 	duration = -1;
+	shader = nullptr;
 }
 
 Effect::Effect(EffectInfo info) {

@@ -25,17 +25,26 @@ void Fighter::super_init(int id) {
 	}
 
 	load_stats();
+	load_params();
 	load_model_shader();
 	init_boxes();
 	load_anim_list();
 	load_status_scripts();
+	load_move_scripts();
+	load_fighter_sounds();
+	load_chara_sounds();
+	load_fighter_effects();
+	load_chara_effects();
 	set_default_vars();
 
-	change_anim("wait", 2, 0);
 	change_status(FIGHTER_STATUS_WAIT, false, false);
 }
 
-void Fighter::loadFighterSounds() {
+void Fighter::load_fighter_sounds() {
+
+}
+
+void Fighter::load_fighter_effects() {
 
 }
 

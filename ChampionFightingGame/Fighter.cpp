@@ -11,7 +11,6 @@
 
 Fighter::Fighter() {
 	has_model = true;
-	finished_scripts = false;
 }
 
 Fighter::~Fighter() {
@@ -93,7 +92,6 @@ void Fighter::process_projectiles() {
 			projectiles[i]->projectile_main();
 		}
 	}
-	finished_scripts = true;
 }
 
 void Fighter::process_post_projectiles() {

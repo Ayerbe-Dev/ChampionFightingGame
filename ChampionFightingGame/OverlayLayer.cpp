@@ -3,6 +3,14 @@
 #include "utils.h"
 
 OverlayLayer::OverlayLayer() {
+	
+}
+
+OverlayLayer::~OverlayLayer() {
+	destroy();
+}
+
+void OverlayLayer::init() {
 	float coords[] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -52,7 +60,7 @@ OverlayLayer::OverlayLayer() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-OverlayLayer::~OverlayLayer() {
+void OverlayLayer::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteFramebuffers(1, &FBO);

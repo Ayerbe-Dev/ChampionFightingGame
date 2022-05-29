@@ -14,9 +14,7 @@ Eric::Eric(int id, PlayerInfo* player_info) {
 	fighter_int.resize(CHARA_ERIC_INT_MAX, 0);
 	fighter_float.resize(CHARA_ERIC_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ERIC_FLAG_MAX, false);
-	if (!crash_to_debug) {
-		load_params();
-	}
+	load_params();
 	load_move_scripts();
 	loadEricStatusFunctions();
 	set_current_move_script("default");

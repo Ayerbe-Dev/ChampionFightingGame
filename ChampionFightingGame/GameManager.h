@@ -3,6 +3,9 @@
 #include "GameMenu.h"
 #include "GameState.h"
 #include "MenuConstants.h"
+#include <functional>
+
+class RenderManager;
 
 class GameManager {
 public:
@@ -10,6 +13,8 @@ public:
 	void operator=(const GameManager& other) = delete;
 
 	static GameManager* get_instance();
+
+	RenderManager* render_manager;
 
 	PlayerInfo *player_info[2];
 	int layer = 0;
@@ -30,6 +35,9 @@ public:
 	void set_menu_info(GameMenu *menu_target, int init_hold_frames = 20, int hold_rate = 4);
 	GameMenu *get_target(int layer = -1);
 
+	//Handles stuff like if the user quits the program or goes full screen. You can also optionally
+	//pass a function to execute based on the SDL Events (See DebugMenu for an example).
+	void handle_window_events(std::function<void(SDL_Event*)> event_handler = nullptr);
 	void handle_menus();
 
 	void event_up_press();

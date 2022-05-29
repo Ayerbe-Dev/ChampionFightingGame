@@ -32,10 +32,12 @@ public:
 	EffectInstance& get_effect_instance(int object_id, std::string name, int instance_id = 0);
 
 	void load_effect(std::string name);
-	void unload_effects();
+	void unload_effect(std::string name);
+	void unload_all_effects();
 
 	void add_effect_caster(int object_id);
 	void remove_effect_casters();
+
 private:
 	EffectManager();
 	void init();

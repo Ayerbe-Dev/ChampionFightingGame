@@ -16,6 +16,24 @@ SoundManager* SoundManager::get_instance() {
 }
 
 void SoundManager::init() {
+	SDL_AudioSpec format;
+	format.freq = 22050;
+	format.format = AUDIO_F32SYS;
+	format.channels = 2;
+	format.samples = 361;
+	/*
+	The number of samples needs to be a perfect square, and that value represents how much data will go into each iteration of the callback. Since the
+	callback only runs when the program determines it is time to load in more audio data, this value also effectively sets how often the callback will
+	run. The value of 361 (19*19) causes the callback to run ~61 times per second, which allows it to sync up with frame advance.
+	*/
+	format.callback = audio_callback;
+	format.userdata = NULL;
+
+	if (SDL_OpenAudio(&format, NULL) < 0) {
+		printf("Error opening SDL_audio: %s\n", SDL_GetError());
+	}
+	SDL_PauseAudio(0);
+
 	//VC
 	add_sound_info("roy_attack_01", "roy", SOUND_KIND_VC, SOUND_TYPE_NORMAL);
 

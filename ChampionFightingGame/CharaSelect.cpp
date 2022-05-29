@@ -6,9 +6,7 @@
 #include "Debugger.h"
 #include "GameTexture.h"
 #include "Loader.h"
-
-extern SDL_Renderer* g_renderer;
-extern SDL_Window* g_window;
+#include "RenderManager.h"
 
 /// <summary>
 /// The main function while on the character select screen.
@@ -16,6 +14,7 @@ extern SDL_Window* g_window;
 /// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -60,9 +59,6 @@ void chara_select_main() {
 	
 	game_loader->finished = true;
 
-	SDL_RenderClear(g_renderer);
-	SDL_RenderPresent(g_renderer);
-
 	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
@@ -70,32 +66,8 @@ void chara_select_main() {
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					delete css;
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-				case SDL_WINDOWEVENT:
-				{
-					switch (event.window.event) {
-						case SDL_WINDOWEVENT_RESIZED:
-						case SDL_WINDOWEVENT_SIZE_CHANGED:
-						case SDL_WINDOWEVENT_MAXIMIZED:
-						{
-							int width;
-							int height;
-							SDL_GetWindowSize(g_window, &width, &height);
-							glViewport(0, 0, width, height);
-						} break;
-					}
-				} break;
-			}
-		}
+		game_manager->handle_window_events();
 
-		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.poll_buttons(keyboard_state);
@@ -105,7 +77,7 @@ void chara_select_main() {
 
 		css->render();
 
-		SDL_GL_SwapWindow(g_window);
+		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 	delete game_loader;

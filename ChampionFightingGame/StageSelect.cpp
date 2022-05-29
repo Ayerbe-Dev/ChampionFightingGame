@@ -5,21 +5,20 @@
 #include "Debugger.h"
 #include "GameTexture.h"
 #include "Loader.h"
-
-extern SDL_Renderer* g_renderer;
-extern SDL_Window* g_window;
+#include "RenderManager.h"
 
 void stage_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
 
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawBlendMode(render_manager->sdl_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(render_manager->sdl_renderer, 0, 0, 0, 255);
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(render_manager->sdl_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	StageSelect stage_select;
@@ -32,29 +31,20 @@ void stage_select_main() {
 
 	game_manager->set_menu_info(&stage_select);
 
-	SDL_SetRenderTarget(g_renderer, pScreenTexture);
-	SDL_RenderClear(g_renderer);
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+	SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
+	SDL_RenderClear(render_manager->sdl_renderer);
+	SDL_SetRenderTarget(render_manager->sdl_renderer, NULL);
+	SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, NULL, NULL);
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderDrawColor(g_renderer, 100, 100, 100, 255);
+		SDL_RenderClear(render_manager->sdl_renderer);
+		SDL_SetRenderDrawColor(render_manager->sdl_renderer, 100, 100, 100, 255);
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-			}
-		}
+		game_manager->handle_window_events();
 
-		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
@@ -63,7 +53,7 @@ void stage_select_main() {
 
 		game_manager->handle_menus();
 
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
 
 /*
 		 /$$$$$$$                            /$$                            /$$$$$$                  /$$
@@ -87,9 +77,9 @@ void stage_select_main() {
 		 \______/  \______/  \_______/|_______/       |__/  |__/ \_______/|__/       \_______/
 */
 
-		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);
-		SDL_RenderPresent(g_renderer);
+		SDL_SetRenderTarget(render_manager->sdl_renderer, nullptr);
+		SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, nullptr, nullptr);
+		SDL_RenderPresent(render_manager->sdl_renderer);
 	}
 }
 

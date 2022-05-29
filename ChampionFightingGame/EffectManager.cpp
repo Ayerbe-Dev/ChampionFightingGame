@@ -24,7 +24,6 @@ void EffectManager::init() {
 }
 
 void EffectManager::process() {
-	ThreadManager* thread_manager = ThreadManager::get_instance();
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
 		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(); it != active_effects[i].end(); it++) {
 			if (!it->process()) {
@@ -152,7 +151,20 @@ void EffectManager::load_effect(std::string name) {
 	loaded_effects.push_back(to_load);
 }
 
-void EffectManager::unload_effects() {
+void EffectManager::unload_effect(std::string name) {
+	if (effect_name_map.find(name) == effect_name_map.end()) {
+		std::cout << "Effect " << name << " is not loaded!\n";
+		return;
+	}
+	Effect& to_unload = loaded_effects[effect_name_map[name]];
+	to_unload.destroy();
+	effect_name_map.erase(name);
+}
+
+void EffectManager::unload_all_effects() {
+	for (int i = 0, max = loaded_effects.size(); i < max; i++) {
+		loaded_effects[i].destroy();
+	}
 	loaded_effects.clear();
 	effect_name_map.clear();
 }

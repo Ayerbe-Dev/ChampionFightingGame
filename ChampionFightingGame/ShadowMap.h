@@ -5,10 +5,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 class ShadowMap {
 public:
 	ShadowMap();
+
+	void init();
+
 	void update_light();
 
 	int SHADOW_WIDTH;
@@ -17,8 +19,8 @@ public:
 	float shadow_map_depth = 7.0f;
 	float shadow_map_fov = 5.0f;
 
-	GLuint FBO = 0;
-	GLuint shadow_texture = 0;
+	unsigned int FBO = 0;
+	unsigned int shadow_texture = 0;
 
 	glm::mat4 m_orthographic_perspective;
 	glm::mat4 m_lookat;

@@ -48,3 +48,15 @@ void BattleObject::clear_effect(std::string name, int instance) {
 void BattleObject::clear_effect_all() {
 	effect_manager->clear_effect_all(id);
 }
+
+void BattleObject::load_effect(std::string effect) {
+	effect_manager->load_effect(effect);
+}
+
+void BattleObject::unload_effect(std::string effect) {
+	effect_manager->unload_effect(effect);
+}
+
+void BattleObject::unload_all_effects() {
+	effect_manager->unload_all_effects();
+}

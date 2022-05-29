@@ -1,8 +1,9 @@
 #include "PauseBattle.h"
-extern SDL_Window* g_window;
+#include "RenderManager.h"
 
 void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 	GameMenu* background_menu = game_manager->get_target();
 
 	game_manager->layer++;
@@ -23,18 +24,8 @@ void pause_battle_main() {
 		wait_ms();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			case SDL_QUIT:
-			{
-				*pause.looping = false;
-				game_manager->update_state(GAME_STATE_CLOSE);
-			}
-			break;
-			}
-		}
-		SDL_PumpEvents();
+		game_manager->handle_window_events();
+		
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
@@ -47,7 +38,7 @@ void pause_battle_main() {
 		background_menu->process_background();
 		pause.panel.render();
 
-		SDL_GL_SwapWindow(g_window);
+		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 	pause.panel.destroy();

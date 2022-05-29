@@ -37,6 +37,7 @@ bool GameTextureSDL::init(std::string sTexturePath, bool delay) {
 }
 
 bool GameTextureSDL::render() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!loaded) {
 		return false;
 	}
@@ -92,7 +93,7 @@ bool GameTextureSDL::render() {
 		}
 		break;
 	}
-	SDL_RenderCopyEx(g_renderer,
+	SDL_RenderCopyEx(render_manager->sdl_renderer,
 		texture,
 		anchor_mode == GAME_TEXTURE_ANCHOR_MODE_METER ? &tmpSrcRect : nullptr,
 		anchor_mode == GAME_TEXTURE_ANCHOR_MODE_BACKGROUND ? nullptr : &tmpDestRect,

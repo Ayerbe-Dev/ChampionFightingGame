@@ -147,6 +147,10 @@ public:
 	void clear_effect(std::string name, int instance = 0);
 	void clear_effect_all();
 
+	void load_effect(std::string name);
+	void unload_effect(std::string name);
+	void unload_all_effects();
+
 	BattleObjectManager* battle_object_manager;
 	SoundManager* sound_manager;
 	EffectManager* effect_manager;

@@ -9,6 +9,9 @@ public:
 	OverlayLayer();
 	~OverlayLayer();
 
+	void init();
+	void destroy();
+
 	void render(float alpha);
 
 	GLuint VAO;

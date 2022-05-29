@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <SDL/SDL.h>
 #include "Shader.h"
 #include "Model.h"
 #include "GameRect.h"
@@ -14,6 +15,10 @@ class RenderManager {
 public:
 	RenderManager(RenderManager& other) = delete;
 	void operator=(const RenderManager& other) = delete;
+
+	SDL_Window* window;
+	SDL_Renderer* sdl_renderer;
+	SDL_GLContext sdl_context;
 
 	Camera camera;
 	Light lights[MAX_LIGHT_SOURCES];
@@ -49,6 +54,8 @@ public:
 
 	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale, bool flip);
 	void render_model_shadow(Model *model, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale, bool flip);
+
+	void refresh_sdl_renderer();
 
 	static RenderManager* get_instance();
 private:

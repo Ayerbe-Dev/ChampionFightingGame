@@ -27,12 +27,15 @@ public:
 	bool they_wont_press_here(AIMoveList& move); //Calculate odds of the opponent not using a move that can stuff this one
 	bool is_safe(AIMoveList& move); //Check if opponent can punish this on block
 	bool will_hit(AIMoveList& move); //Calculate odds of the opponent not blocking this
-	bool fuck_it(AIMoveList& move); //Randomly decide whether or not to go for a move despite it failing 
-	//everything except the range check
-	bool can_use(AIMoveList& move); //Check whether or not the user has charge for this move if needed, 
-	//and has meter for this move if needed
 
-	void set_input(unsigned int input); //Translates AI inputs into actual buttons, then turns them on
+	//If a move has failed the other checks, sometimes use the move anyway if the judgement value is low enough
+	bool fuck_it(AIMoveList& move);
+
+	//Verify that the AI can even use this move
+	bool can_use(AIMoveList& move);
+
+	//Translates AI inputs into actual buttons, then turns them on
+	void set_input(unsigned int input);
 
 	int judgement; //More or less just the % odds of fuck_it() returning true
 	int precision; //The actual range of a given move will be offset by any number within this range

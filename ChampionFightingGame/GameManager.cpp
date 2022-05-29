@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "GameStates.h"
+#include "RenderManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -97,6 +98,33 @@ GameMenu* GameManager::get_target(int layer) {
 	else {
 		return menu_target[layer];
 	}
+}
+
+void GameManager::handle_window_events(std::function<void(SDL_Event*)> event_handler) {
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		if (event_handler != nullptr) {
+			event_handler(&event);
+		}
+		switch (event.type) {
+		case SDL_QUIT: {
+			update_state(GAME_STATE_CLOSE);
+		} break;
+		case SDL_WINDOWEVENT:
+		{
+			switch (event.window.event) {
+			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+			case SDL_WINDOWEVENT_MAXIMIZED:
+			{
+				SDL_GetWindowSize(render_manager->window, &render_manager->s_window_width, &render_manager->s_window_height);
+				glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+			} break;
+			}
+		} break;
+		}
+	}
+	SDL_PumpEvents();
 }
 
 void GameManager::handle_menus() {

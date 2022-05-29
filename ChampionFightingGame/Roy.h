@@ -10,7 +10,8 @@ public:
 	Roy();
 	Roy(int id, PlayerInfo* player_info);
 	void loadRoyStatusFunctions();
-	void loadCharaSounds() override;
+	void load_chara_sounds() override;
+	void load_chara_effects() override;
 	void load_move_scripts() override;
 
 	void chara_main() override;

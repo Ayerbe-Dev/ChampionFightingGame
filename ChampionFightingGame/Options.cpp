@@ -1,9 +1,10 @@
 #include "Options.h"
 #include <glew/glew.h>
-extern SDL_Window* g_window;
+#include "RenderManager.h"
 
 void controls_main() {
 	GameManager* game_manager = GameManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 	GameMenu* background_menu = game_manager->get_target();
 
 	game_manager->layer++;
@@ -23,18 +24,8 @@ void controls_main() {
 		wait_ms();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					game_manager->layer--;
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				}
-				break;
-			}
-		}
-		SDL_PumpEvents();
+		game_manager->handle_window_events();
+
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
@@ -47,7 +38,7 @@ void controls_main() {
 		background_menu->process_background();
 		options_menu.panel.render();
 
-		SDL_GL_SwapWindow(g_window);
+		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 	options_menu.panel.destroy();

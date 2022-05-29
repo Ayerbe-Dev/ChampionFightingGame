@@ -40,8 +40,6 @@ public:
 	std::vector<void (Fighter::*)(void)> enter_status_script;
 	std::vector<void (Fighter::*)(void)> exit_status_script;
 
-	bool finished_scripts;
-
 	/*
 		FUNCTIONS
 	*/
@@ -92,8 +90,10 @@ public:
 	void load_anim_list();
 	void load_status_scripts();
 	virtual void load_move_scripts() {};
-	void loadFighterSounds();
-	virtual void loadCharaSounds() {};
+	void load_fighter_sounds();
+	virtual void load_chara_sounds() {};
+	void load_fighter_effects();
+	virtual void load_chara_effects() {};
 	void set_default_vars();
 	void init_boxes();
 

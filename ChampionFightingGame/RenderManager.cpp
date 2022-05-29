@@ -1,15 +1,44 @@
 #include "RenderManager.h"
 #include <string>
+#include "GameSettings.h"
 #include "utils.h"
+#include "stb_image.h"
 
 RenderManager::RenderManager() {
+	init();
+}
+
+void RenderManager::init() {
+	if (getGameSetting("fullscreen")) {
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	else {
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	}
+	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+	sdl_context = SDL_GL_CreateContext(window);
+	glewExperimental = GL_TRUE;
+	if (glewInit() != GLEW_OK) {
+		std::cout << "Failed to initialize GLEW!" << std::endl;
+	}
+	SDL_GL_MakeCurrent(window, sdl_context);
+	SDL_GL_SetSwapInterval(1);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	stbi_set_flip_vertically_on_load(true);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+
 	num_lights = 0;
 	s_window_width = 0;
 	s_window_height = 0;
 	box_FBO = 0;
-}
 
-void RenderManager::init() {
+	shadow_map.init();
+	box_layer.init();
 	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	default_effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
@@ -39,6 +68,9 @@ void RenderManager::destroy() {
 	default_2d_shader.destroy();
 	default_rect_shader.destroy();
 	shadow_shader.destroy();
+	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(sdl_renderer);
+	SDL_GL_DeleteContext(sdl_context);
 }
 
 void RenderManager::add_light(Light light, int target) {
@@ -150,6 +182,12 @@ void RenderManager::render_model_shadow(Model* model, glm::mat4 extra_mat, glm::
 	model_mat *= extra_mat;
 	shadow_shader.set_mat4("model_matrix", model_mat);
 	model->render_shadow(&shadow_shader, flip);
+}
+
+void RenderManager::refresh_sdl_renderer() {
+	SDL_RenderClear(sdl_renderer);
+	SDL_DestroyRenderer(sdl_renderer);
+	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 }
 
 RenderManager* RenderManager::instance = nullptr;

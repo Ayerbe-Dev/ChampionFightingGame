@@ -39,11 +39,6 @@
 
 #include "ThreadManager.h"
 
-extern SDL_Renderer* g_renderer;
-extern SDL_Window* g_window;
-extern SoundInstance sounds[3][MAX_SOUNDS];
-extern SDL_GLContext g_context;
-
 extern bool debug;
 
 #define DEBUG
@@ -64,7 +59,7 @@ void battle_main() {
 	battle.load_battle(game_manager);
 
 	RenderManager *render_manager = RenderManager::get_instance();
-	SDL_GetWindowSize(g_window, &render_manager->s_window_width, &render_manager->s_window_height);
+	SDL_GetWindowSize(render_manager->window, &render_manager->s_window_width, &render_manager->s_window_height);
 
 #ifdef DEBUG
 	cotr_imgui_init();
@@ -73,29 +68,7 @@ void battle_main() {
 		battle.frame_delay_check_performance();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-#ifdef DEBUG
-			ImGui_ImplSDL2_ProcessEvent(&event);
-#endif
-			switch (event.type) {
-				case SDL_QUIT: {
-					game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-				case SDL_WINDOWEVENT:
-				{
-					switch (event.window.event) {
-						case SDL_WINDOWEVENT_RESIZED:
-						case SDL_WINDOWEVENT_SIZE_CHANGED:
-						case SDL_WINDOWEVENT_MAXIMIZED:
-						{
-							SDL_GetWindowSize(g_window, &render_manager->s_window_width, &render_manager->s_window_height);
-							glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
-						} break;
-					}
-				} break;
-			}
-		}
+		game_manager->handle_window_events();
 
 		for (int i = 0; i < 2; i++) {
 			if (player_info[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
@@ -114,7 +87,7 @@ void battle_main() {
 		cotr_imgui_debug_battle(&battle);
 #endif
 
-		SDL_GL_SwapWindow(g_window);
+		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 #ifdef DEBUG
@@ -129,15 +102,13 @@ Battle::~Battle() {}
 
 void Battle::load_battle(GameManager* game_manager) {
 	EffectManager* effect_manager = EffectManager::get_instance();
-	effect_manager->add_effect_caster(-1);
-	effect_manager->load_effect("flame");
 
 	debug_controller.add_button(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
 	SoundManager* sound_manager = SoundManager::get_instance();
-	game_loader = new GameLoader(17);
+	game_loader = new GameLoader(15);
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
 
@@ -185,10 +156,6 @@ void Battle::load_battle(GameManager* game_manager) {
 	
 	timer.init(99);
 	inc_thread();
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->loadCharaSounds();
-		inc_thread();
-	}
 
 	bool loading = true;
 	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
@@ -220,7 +187,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	for (int i = 0; i < 2; i++) {
 		thread_manager->add_thread(i, fighter_thread, (void*)fighter[i]);
 	}
-	thread_manager->add_thread(THREAD_KIND_EFFECT, ui_thread, (void*)this);
+	thread_manager->add_thread(THREAD_KIND_UI, ui_thread, (void*)this);
 	game_loader->finished = true;
 	game_manager->set_menu_info(this);
 
@@ -251,13 +218,13 @@ void Battle::unload_battle() {
 		ex_bar[i].destroy();
 		delete fighter[i];
 	}
-	thread_manager->kill_thread(THREAD_KIND_EFFECT);
+	thread_manager->kill_thread(THREAD_KIND_UI);
 	stage.unload_stage();
 	sound_manager->stop_sound_all();
 	sound_manager->unload_all_sounds();
 	render_manager->unlink_all_shaders();
 	effect_manager->clear_effect_all();
-	effect_manager->unload_effects();
+	effect_manager->unload_all_effects();
 	effect_manager->remove_effect_casters();
 
 	delete game_loader;
@@ -299,7 +266,7 @@ void Battle::process_main() {
 		process_ui();
 		stage.process();
 		post_process_fighter();
-		thread_manager->wait_thread(THREAD_KIND_EFFECT);
+		thread_manager->wait_thread(THREAD_KIND_UI);
 	}
 	if (camera->following_players) {
 		camera->follow_players(fighter[0]->pos, fighter[1]->pos, &stage);
@@ -394,7 +361,6 @@ void Battle::process_fighter() {
 
 void fighter_thread(void* fighter_arg) {
 	Fighter* fighter = (Fighter*)fighter_arg;
-	fighter->finished_scripts = false;
 	fighter->fighter_main();
 }
 
@@ -404,10 +370,11 @@ void Battle::post_process_fighter() {
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->fighter_post();
 	}
+	EffectManager::get_instance()->process();
 }
 
 void Battle::process_ui() {
-	thread_manager->notify_thread(THREAD_KIND_EFFECT);
+	thread_manager->notify_thread(THREAD_KIND_UI);
 }
 
 void ui_thread(void* battle_arg) {
@@ -417,10 +384,6 @@ void ui_thread(void* battle_arg) {
 		battle->ex_bar[i].process();
 	}
 	battle->timer.process();
-	while (!(battle->fighter[0]->finished_scripts && battle->fighter[1]->finished_scripts));
-	EffectManager* effect_manager = EffectManager::get_instance();
-	effect_manager->process();
-	effect_manager->prepare_render(); 
 }
 
 void Battle::process_frame_pause() {
@@ -434,7 +397,7 @@ void Battle::process_frame_pause() {
 		process_fighter();
 		process_ui();
 		post_process_fighter();
-		thread_manager->wait_thread(THREAD_KIND_EFFECT);
+		thread_manager->wait_thread(THREAD_KIND_UI);
 	}
 	else {
 		for (int i = 0; i < 2; i++) {

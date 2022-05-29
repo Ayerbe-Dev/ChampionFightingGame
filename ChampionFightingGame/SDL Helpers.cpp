@@ -1,11 +1,10 @@
 #include "SDL Helpers.h"
 #include <SDL/SDL_image.h>
 #include "utils.h"
+#include "RenderManager.h"
 #include <mutex>
 
 extern std::mutex file_mutex;
-extern SDL_Renderer* g_renderer;
-extern SDL_Window* g_window;
 
 /// <summary>
 /// Loads SDL textures. This should generally be avoided during normal gameplay as everything should be loaded beforehand.
@@ -20,20 +19,11 @@ SDL_Texture* loadSDLTexture(const char* file_path, bool delay) {
 	if (image_surface == NULL) {
 		std::cout << "Error loading image: " << IMG_GetError() << "\n";
 	}
-	SDL_Texture* ret = SDL_CreateTextureFromSurface(g_renderer, image_surface);
+	SDL_Texture* ret = SDL_CreateTextureFromSurface(RenderManager::get_instance()->sdl_renderer, image_surface);
 	SDL_FreeSurface(image_surface);
 	file_mutex.unlock();
 	if (delay) {
 		wait_ms();
 	}
 	return ret;
-}
-
-/// <summary>
-/// T H E   C Y C L E   O F   D E S T R U C T I O N   A N D   R E C R E A T I O N
-/// </summary>
-void refreshRenderer() {
-	SDL_RenderClear(g_renderer);
-	SDL_DestroyRenderer(g_renderer);
-	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 }

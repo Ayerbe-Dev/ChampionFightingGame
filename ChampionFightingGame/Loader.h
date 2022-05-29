@@ -4,10 +4,10 @@
 #include <thread>
 #include <mutex>
 #include "utils.h"
-extern SDL_Window* g_window;
+#include "RenderManager.h"
+
 
 extern std::mutex file_mutex;
-extern SDL_Renderer* g_renderer;
 
 enum {
 	GAME_TEXTURE_ANCHOR_MODE_DEFAULT,
@@ -105,8 +105,9 @@ public:
 
 static int LoadingScreen(void* void_GameLoader) {
 	GameLoader* game_loader = (GameLoader*)void_GameLoader;
+	RenderManager* render_manager = RenderManager::get_instance();
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(render_manager->sdl_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	LoadIcon load_icon;
@@ -126,17 +127,17 @@ static int LoadingScreen(void* void_GameLoader) {
 		load_icon.move();
 		file_mutex.lock();
 
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_RenderClear(render_manager->sdl_renderer);
+		SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
 		loadingSplash.render();
 		loadingBar.setTargetPercent(((float)game_loader->loaded_items / (float)game_loader->total_items), 0.3);
 		loadingBar.render();
 		loadingFlavor.render();
 		load_icon.texture.render();
 
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
-		SDL_RenderPresent(g_renderer);
+		SDL_SetRenderTarget(render_manager->sdl_renderer, NULL);
+		SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, NULL, NULL);
+		SDL_RenderPresent(render_manager->sdl_renderer);
 
 		file_mutex.unlock();
 	}

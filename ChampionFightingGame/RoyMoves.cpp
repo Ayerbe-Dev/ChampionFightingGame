@@ -572,11 +572,11 @@ void Roy::load_move_scripts() {
 				new_hurtbox(0, glm::vec2{ -82, 8 }, glm::vec2{ 50, 41 });
 				new_hurtbox(1, glm::vec2{ -18, 37 }, glm::vec2{ 46, 132 });
 				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 34, 77 }, glm::vec2{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -90, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
+				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
 			}
 			else {
 				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 34, 77 }, glm::vec2{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -90, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
+				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
 			}
 		}
 		if (is_excute_wait(4)) {

@@ -8,26 +8,23 @@
 #include "Debugger.h"
 #include "Loader.h"
 #include <glew/glew.h>
-
-extern SDL_Window* g_window;
-extern SDL_Renderer* g_renderer;
+#include "RenderManager.h"
 
 void debugMenu() {
 	GameManager* game_manager = GameManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
 
-	
-
 	std::ostringstream lastString;
 	lastString << "This menu was called from the destination [" << *game_manager->prev_game_state << "]";
 
-	SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawBlendMode(render_manager->sdl_renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(render_manager->sdl_renderer, 0, 0, 0, 255);
 
-	SDL_Texture* pScreenTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+	SDL_Texture* pScreenTexture = SDL_CreateTexture(render_manager->sdl_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
 	TTF_Font* debug_font = loadDebugFont();
@@ -51,10 +48,10 @@ void debugMenu() {
 
 	game_manager->set_menu_info(&debug_list);
 
-	SDL_SetRenderTarget(g_renderer, pScreenTexture);
-	SDL_RenderClear(g_renderer);
-	SDL_SetRenderTarget(g_renderer, NULL);
-	SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);
+	SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
+	SDL_RenderClear(render_manager->sdl_renderer);
+	SDL_SetRenderTarget(render_manager->sdl_renderer, NULL);
+	SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, NULL, NULL);
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
@@ -67,23 +64,13 @@ void debugMenu() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/*SDL_SetRenderTarget(g_renderer, pScreenTexture);
-		SDL_RenderClear(g_renderer);
-		SDL_SetRenderTarget(g_renderer, NULL);
-		SDL_RenderCopy(g_renderer, pScreenTexture, NULL, NULL);*/
+		/*SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
+		SDL_RenderClear(render_manager->sdl_renderer);
+		SDL_SetRenderTarget(render_manager->sdl_renderer, NULL);
+		SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, NULL, NULL);*/
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			ImGui_ImplSDL2_ProcessEvent(&event);
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-			}
-		}
+		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
-		SDL_PumpEvents();
 		//keyboard_state = SDL_GetKeyboardState(NULL);
 
 		/*if (debugger.check_button_trigger(BUTTON_DEBUG_FULLSCREEN)) {
@@ -108,16 +95,16 @@ void debugMenu() {
 
 		/*game_manager->handle_menus();
 		*game_manager->game_state = debug_list.getDestination();
-		SDL_SetRenderTarget(g_renderer, pScreenTexture);
+		SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
 		debug_list.render();
 
-		SDL_SetRenderTarget(g_renderer, nullptr);
-		SDL_RenderCopy(g_renderer, pScreenTexture, nullptr, nullptr);*/
+		SDL_SetRenderTarget(render_manager->sdl_renderer, nullptr);
+		SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, nullptr, nullptr);*/
 		
 		cotr_imgui_debug_dbmenu(game_manager);
 		
-		//SDL_RenderPresent(g_renderer);
-		SDL_GL_SwapWindow(g_window);
+		//SDL_RenderPresent(render_manager->sdl_renderer);
+		SDL_GL_SwapWindow(render_manager->window);
 	}
 	cotr_imgui_terminate();
 	player_info[0]->crash_reason = "Crash Message Goes Here";
@@ -181,12 +168,13 @@ void debug_list::addEntry(std::string message, int selectable, int destination){
 }
 
 void debug_list::render(){
+	RenderManager* render_manager = RenderManager::get_instance();
 	for (int i = 0; i < DEBUG_MENU_ITEMS_MAX; i++){
 		if (debugItems[i].state == DEBUG_ITEM_ACTIVE){
 			if(i == selection){
-				SDL_RenderCopy(g_renderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
+				SDL_RenderCopy(render_manager->sdl_renderer,debugItems[i].pTextureSelect,nullptr,&debugItems[i].destRectSelect);
 			} else {
-				SDL_RenderCopy(g_renderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
+				SDL_RenderCopy(render_manager->sdl_renderer,debugItems[i].pTexture,nullptr,&debugItems[i].destRect);
 			}
 		}
 	}
@@ -246,6 +234,7 @@ void DebugItem::preLoad(TTF_Font *pFont){
 };
 
 void DebugItem::generateTexture(std::string message){
+	RenderManager* render_manager = RenderManager::get_instance();
 	file_mutex.lock();
 	SDL_Color sky = {204,247,255};
 	SDL_Color red = { 179,0,59 };
@@ -256,11 +245,11 @@ void DebugItem::generateTexture(std::string message){
 		printf("Failed to render text:  %s\n", TTF_GetError());
 	}
 	
-	pTexture = SDL_CreateTextureFromSurface(g_renderer, textSurface);
+	pTexture = SDL_CreateTextureFromSurface(render_manager->sdl_renderer, textSurface);
 	
 	SDL_QueryTexture(pTexture,nullptr,nullptr,&destRect.w,&destRect.h);
 
-	pTextureSelect = SDL_CreateTextureFromSurface(g_renderer, textSurfaceSelect);
+	pTextureSelect = SDL_CreateTextureFromSurface(render_manager->sdl_renderer, textSurfaceSelect);
 	SDL_QueryTexture(pTextureSelect,nullptr,nullptr,&destRectSelect.w,&destRectSelect.h);
 
 	SDL_FreeSurface(textSurfaceSelect);

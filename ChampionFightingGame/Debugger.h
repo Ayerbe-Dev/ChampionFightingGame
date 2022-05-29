@@ -7,7 +7,6 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 
-#include "RenderManager.h"
 #include "GameManager.h"
 #include "Battle.h"
 

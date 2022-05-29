@@ -8,11 +8,12 @@
 #include "DebugMenu.h"
 #include "Options.h"
 #include "Loader.h"
-
-extern SDL_Window* g_window;
+#include "RenderManager.h"
 
 void menu_main() {
 	GameManager* game_manager = GameManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
+
 	PlayerInfo *player_info[2];
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
@@ -37,31 +38,8 @@ void menu_main() {
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT:
-				{
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-				case SDL_WINDOWEVENT:
-				{
-					switch (event.window.event) {
-						case SDL_WINDOWEVENT_RESIZED:
-						case SDL_WINDOWEVENT_SIZE_CHANGED:
-						case SDL_WINDOWEVENT_MAXIMIZED:
-						{
-							int width;
-							int height;
-							SDL_GetWindowSize(g_window, &width, &height);
-							glViewport(0, 0, width, height);
-						} break;
-					}
-				} break;
-			}
-		}
+		game_manager->handle_window_events();
 
-		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.poll_buttons(keyboard_state);
@@ -71,7 +49,7 @@ void menu_main() {
 		main_menu.process_submenu_tables();
 		main_menu.render();
 
-		SDL_GL_SwapWindow(g_window);
+		SDL_GL_SwapWindow(render_manager->window);
 
 		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
 			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {

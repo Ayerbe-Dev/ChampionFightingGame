@@ -2,11 +2,7 @@
 #include "Fighter.h"
 #include "GameRect.h"
 #include "ParamAccessor.h"
-
-extern SDL_Renderer* g_renderer;
-extern SDL_Window* g_window;
-extern SDL_GLContext g_context;
-
+#include "RenderManager.h"
 
 Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_ENABLE].k_mapping = SDL_SCANCODE_LSHIFT;
@@ -210,7 +206,7 @@ void cotr_imgui_init() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
-	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
+	ImGui_ImplSDL2_InitForOpenGL(RenderManager::get_instance()->window, RenderManager::get_instance()->sdl_context);
 	ImGui_ImplOpenGL3_Init();
 
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
@@ -228,7 +224,7 @@ void cotr_imgui_terminate() {
 void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 {
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(g_window);
+	ImGui_ImplSDL2_NewFrame(RenderManager::get_instance()->window);
 	ImGui::NewFrame();
 	
 	ImGui::Begin("Debug Menu\n");
@@ -270,13 +266,13 @@ void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 }
 
 void cotr_imgui_debug_battle(Battle* battle) {
+	RenderManager* render_manager = RenderManager::get_instance();
+
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(g_window);
+	ImGui_ImplSDL2_NewFrame(render_manager->window);
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug Menu");
-
-	RenderManager* render_manager = RenderManager::get_instance(); 
 
 	{
 		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));

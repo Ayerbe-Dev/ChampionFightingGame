@@ -55,6 +55,14 @@ void battle_main() {
 	for (int i = 0; i < 2; i++) {
 		player_info[i] = game_manager->player_info[i];
 	}
+	if (player_info[0]->chara_kind == player_info[1]->chara_kind && player_info[0]->alt_color == player_info[1]->alt_color) {
+		if (player_info[0]->alt_color == 0) {
+			player_info[1]->alt_color++;
+		}
+		else {
+			player_info[1]->alt_color--;
+		}
+	}
 	Battle battle;
 	battle.load_battle(game_manager);
 
@@ -117,7 +125,7 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = true;
+	visualize_boxes = false;
 
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];

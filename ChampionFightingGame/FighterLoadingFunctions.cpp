@@ -54,6 +54,7 @@ void Fighter::load_model_shader() {
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
+	model.load_textures("c" + std::to_string(player_info->alt_color));
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);

@@ -12,7 +12,8 @@ public:
 
 	GameController controller;
 	int id;
-	int chara_kind{ 0 };
+	int chara_kind = 0;
+	int alt_color = 0;
 	StageInfo stage_info;
 	std::string name;
 

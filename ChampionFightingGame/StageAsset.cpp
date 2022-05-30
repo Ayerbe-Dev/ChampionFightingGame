@@ -37,6 +37,7 @@ void StageAsset::load_model_shader() {
 			model.load_model_no_skeleton(resource_dir + "/model/model.dae");
 			shader.init("vertex_no_anim.glsl", "fragment_main.glsl");
 		}
+		model.load_textures();
 	}
 	else {
 		shader.init("vertex_no_anim.glsl", "fragment_main.glsl");

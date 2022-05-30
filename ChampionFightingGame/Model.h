@@ -35,11 +35,10 @@ struct ModelVertex {
 };
 
 struct ModelTexture {
-	unsigned int id;
+	unsigned int id = 0;
 	int type;
-	std::string type_name;
 	std::string type_string;
-	std::string path;
+	std::string filename;
 };
 
 class Mesh {
@@ -68,6 +67,8 @@ public:
 	~Model();
 	void load_model(std::string path);
 	void load_model_no_skeleton(std::string path);
+	void load_textures();
+	void load_textures(std::string path);
 	void unload_model();
 	void set_move(bool move);
 	void set_bones(float frame, Animation* anim_kind, bool flip);
@@ -76,7 +77,10 @@ public:
     void render(Shader *shader, bool flip);
 	void render_shadow(Shader* shader, bool flip);
 
-	std::vector<ModelTexture> textures_loaded;
+	std::vector<std::string> texture_names;
+	std::vector<unsigned int> textures_loaded;
+	std::unordered_map<std::string, std::vector<ModelTexture*>> texture_map;
+
 	std::vector<Mesh> meshes;
 	std::unordered_map<std::string, int> mesh_map;
 
@@ -97,7 +101,7 @@ private:
 	void load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
-	std::vector<ModelTexture> load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name);
+	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);
 	void post_process_skeleton();
 
 	glm::mat4 flip_matrix = glm::mat4(1.0, 0.0, 0.0, 0.0,

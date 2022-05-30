@@ -73,11 +73,32 @@ void Model::load_model_no_skeleton(std::string path) {
 	loaded = true;
 }
 
+//Used if there's only one possible texture set (I.E. the stage).
+void Model::load_textures() {
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		textures_loaded.push_back(loadGLTexture(directory + "/" + texture_names[i]));
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			texture_map[texture_names[i]][i2]->id = textures_loaded[i];
+		}
+	}
+}
+
+//Used for specifying sub-directories from the Model folder (I.E. different textures per alt but the
+//same model data)
+void Model::load_textures(std::string texture_dir) {
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		textures_loaded.push_back(loadGLTexture(directory + "/" + texture_dir + "/" + texture_names[i]));
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			texture_map[texture_names[i]][i2]->id = textures_loaded[i];
+		}
+	}
+}
+
 void Model::unload_model() {
 	if (loaded) {
 		delete dummy_matrix;
 		for (int i = 0; i < textures_loaded.size(); i++) {
-			glDeleteTextures(1, &textures_loaded[i].id);
+			glDeleteTextures(1, &textures_loaded[i]);
 		}
 		for (int i = 0; i < meshes.size(); i++) {
 			glDeleteVertexArrays(1, &meshes[i].VAO);
@@ -264,12 +285,17 @@ void Model::load_skeleton(std::string path) {
 	smd.close();
 }
 void Model::process_node(aiNode* node, const aiScene* scene) {
-	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+	for (int i = 0, max = node->mNumMeshes; i < max; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		int index = meshes.size();
 		meshes.push_back(process_mesh(mesh, scene));
-		mesh_map[meshes[i].name] = i;
+		mesh_map[meshes[index].name] = index;
+		for (int i2 = 0, max2 = meshes[index].textures.size(); i2 < max2; i2++) {
+			texture_map[meshes[index].textures[i2].filename].push_back(&meshes[index].textures[i2]);
+		}
+		std::cout << "\n";
 	}
-	for (unsigned int i = 0; i < node->mNumChildren; i++) {
+	for (unsigned int i = 0, max = node->mNumChildren; i < max; i++) {
 		process_node(node->mChildren[i], scene);
 	}
 }
@@ -328,13 +354,13 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 	if (mesh->mMaterialIndex >= 0) {
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<ModelTexture> diffuseMaps = load_material_textures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		std::vector<ModelTexture> diffuseMaps = load_texture_data(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		std::vector<ModelTexture> specularMaps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
+		std::vector<ModelTexture> specularMaps = load_texture_data(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-		std::vector<ModelTexture> normalMaps = load_material_textures(material, aiTextureType_HEIGHT, "texture_normal");
+		std::vector<ModelTexture> normalMaps = load_texture_data(material, aiTextureType_HEIGHT, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-		std::vector<ModelTexture> heightMaps = load_material_textures(material, aiTextureType_AMBIENT, "texture_height");
+		std::vector<ModelTexture> heightMaps = load_texture_data(material, aiTextureType_AMBIENT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 
@@ -379,29 +405,25 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 	return Mesh(vertices, indices, textures, name);
 }
-std::vector<ModelTexture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, std::string type_name) {
+std::vector<ModelTexture> Model::load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name) {
 	std::vector<ModelTexture> textures;
-	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
-		aiString str;
-		mat->GetTexture(type, i, &str);
-		bool skip = false;
-		for (unsigned int i2 = 0; i2 < textures_loaded.size(); i2++) {
-			if (std::strcmp(textures_loaded[i2].path.data(), str.C_Str()) == 0) {
-				ModelTexture texture = textures_loaded[i2];
-				texture.type_string = type_name + std::to_string(i + 1);
-				textures.push_back(texture);
-				skip = true;
-				break;
+	for (unsigned int i = 0, max = mat->GetTextureCount(type); i < max; i++) {
+		aiString ai_filename;
+		mat->GetTexture(type, i, &ai_filename);
+		std::string filename = ai_filename.C_Str();
+		bool new_texture = true;
+		for (int i2 = 0, max2 = texture_names.size(); i2 < max2; i2++) {
+			if (texture_names[i2] == filename) {
+				new_texture = false;
 			}
 		}
-		if (!skip) {
-			ModelTexture texture;
-			texture.id = loadGLTextureFromFile(str.C_Str(), directory);
-			texture.path = str.C_Str();
-			texture.type_string = type_name + std::to_string(i + 1);
-			textures.push_back(texture);
-			textures_loaded.push_back(texture);
+		if (new_texture) {
+			texture_names.push_back(filename);
 		}
+		ModelTexture texture;
+		texture.filename = filename;
+		texture.type_string = type_name + std::to_string(i + 1);
+		textures.push_back(texture);
 	}
 	return textures;
 }

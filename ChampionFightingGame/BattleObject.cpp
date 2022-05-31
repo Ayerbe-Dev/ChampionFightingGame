@@ -3,7 +3,6 @@
 #include "EffectManager.h"
 #include "SoundManager.h"
 
-
 BattleObject::BattleObject() {
 	this->id = -1;
 	battle_object_manager = BattleObjectManager::get_instance();

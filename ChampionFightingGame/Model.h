@@ -43,15 +43,20 @@ struct ModelTexture {
 
 class Mesh {
 public:
+	Mesh();
+	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
+
+	Mesh copy(); //This can't be a copy constructor because it will fuck with vectors
+	
+	void render();
+	void render_shadow();
+
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<ModelTexture> textures;
 	std::string name;
 	bool visible;
 
-	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
-	void render();
-	void render_shadow();
 
 	unsigned int VAO;
 	unsigned int VBO;
@@ -64,12 +69,16 @@ class Model {
 public:
 	Model();
 	Model(std::string path);
+
+	Model copy();
+
 	~Model();
 	void load_model(std::string path);
 	void load_model_no_skeleton(std::string path);
 	void load_textures();
 	void load_textures(std::string path);
 	void unload_model();
+	void unload_textures();
 	void set_move(bool move);
 	void set_bones(float frame, Animation* anim_kind, bool flip);
 	void reset_bones();
@@ -91,7 +100,6 @@ public:
 	std::unordered_map<std::string, int> bone_map;
 
 	std::string directory;
-	int vertex_count = 0;
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
 
@@ -104,14 +112,9 @@ private:
 	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);
 	void post_process_skeleton();
 
-	glm::mat4 flip_matrix = glm::mat4(1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, -1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	);
+	glm::mat4 flip_matrix;
 	glm::mat4* dummy_matrix;
 	bool move;
 	bool tpose;
-	bool loaded;
 	size_t trans_id;
 };

@@ -45,7 +45,8 @@ void Particle::init(std::string path) {
 
 	int width;
 	int height;
-	texture = loadGLTexture(path.c_str(), &width, &height);
+	int num_components;
+	texture = loadGLTexture(path.c_str(), &width, &height, &num_components);
 	this->width = width;
 	this->height = height;
 

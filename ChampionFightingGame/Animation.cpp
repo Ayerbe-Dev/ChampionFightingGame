@@ -20,12 +20,12 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 	const aiScene* scene = import.ReadFile(anim_dir, aiProcess_Triangulate);
 
 	if (!scene || !scene->HasAnimations()) {
-		if (!scene) {
-			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
-		}
-		else {
-			std::cout << "Scene has no animations but Assimp doesn't seem to see the problem \n";
-		}
+			if (!scene) {
+				std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
+			}
+			else {
+				std::cout << "Scene has no animations but Assimp doesn't seem to see the problem \n";
+			}
 		return;
 	}
 

@@ -198,8 +198,7 @@ void CSS::add_slot(int id, std::string cardDir, std::string cardName) {
 }
 
 /// <summary>
-/// Counts each initialized slot, then returns the final product. Fez didn't keep count of the slots length while actually adding to it, don't ask me 
-/// why.
+/// Returns the number of active CSS slots.
 /// </summary>
 /// <returns>The number of active CSS slots.</returns>
 int CSS::get_num_slots() {
@@ -225,7 +224,6 @@ void CSS::event_select_press() {
 void CSS::event_back_press() {
 	if (player_info[player_id]->chara_kind != CHARA_KIND_MAX) {
 		mobile_slots_active[player_id] = false;
-		mobile_css_slots[player_id].destroy(false);
 		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
@@ -371,7 +369,6 @@ void CSS::select_slot() {
 			break;
 		}
 	}
-	big_chara_slots[player_id].texture.destroy(false);
 	big_chara_slots[player_id].texture = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
 	big_chara_slots[player_id].name = chara_slots[player_selected_index[player_id]].name;

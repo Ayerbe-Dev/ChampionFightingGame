@@ -9,7 +9,7 @@
 #include "ThreadManager.h"
 
 GameTexture::GameTexture() {
-	thread_manager = ThreadManager::get_instance();
+
 }
 
 GameTexture::GameTexture(std::string path) {
@@ -17,12 +17,12 @@ GameTexture::GameTexture(std::string path) {
 }
 
 /// <summary>
-/// Copy constructor for GameTextureNew. Creates another instance of a GameTexture which uses the same texture data as the original.
-/// Note: Do NOT use this unless both instances of the GameTexture will be rendered, otherwise you will waste memory.
+/// Copy constructor for GameTexture. Uses the same VAO, VBO and texture as the original, but with different
+/// tex_data. Don't call destroy() on a GameTexture that was copied, or you will destroy all instances of it.
 /// </summary>
 /// <param name="that"></param>
 GameTexture::GameTexture(const GameTexture& that) {
-	name = that.name + "_copy";
+	name = that.name;
 	pos = glm::vec3(0.0, 0.0, 0.0);
 	rot = glm::vec3(0.0, 0.0, 0.0);
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
@@ -36,19 +36,9 @@ GameTexture::GameTexture(const GameTexture& that) {
 	attach_shader(&render_manager->default_2d_shader);
 	shader->use();
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
-	glEnableVertexAttribArray(1);
-
+	VAO = that.VAO;
+	VBO = that.VBO;
 	texture = that.texture;
-	glBindTexture(GL_TEXTURE_2D, texture);
 
 	width = that.width;
 	height = that.height;
@@ -65,8 +55,6 @@ GameTexture::GameTexture(const GameTexture& that) {
 		tex_data[i].pos.x *= width_scale;
 		tex_data[i].pos.y *= height_scale;
 	}
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -106,7 +94,7 @@ void GameTexture::init(std::string path) {
 
 	int width;
 	int height;
-	texture = loadGLTexture(path.c_str(), &width, &height);
+	texture = loadGLTexture(path, &width, &height);
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
@@ -128,7 +116,6 @@ void GameTexture::init(std::string path) {
 	v_flipped = false;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
-
 }
 
 void GameTexture::init(GLuint gl_tex_location) {
@@ -186,12 +173,10 @@ void GameTexture::init(GLuint gl_tex_location) {
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
 
-void GameTexture::destroy(bool destroy_texture) {
+void GameTexture::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	if (destroy_texture) {
-		glDeleteTextures(1, &texture);
-	}
+	glDeleteTextures(1, &texture);
 }
 
 void GameTexture::set_pos(glm::vec3 pos) {
@@ -345,10 +330,6 @@ void GameTexture::scale_left_percent(float percent, bool crop) {
 		tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 		tex_accessor[TEX_COORD_TOP_LEFT]->pos.x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
-
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
-	}
 }
 
 void GameTexture::scale_right_percent(float percent, bool crop) {
@@ -371,9 +352,6 @@ void GameTexture::scale_right_percent(float percent, bool crop) {
 		}
 		tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 		tex_accessor[TEX_COORD_TOP_RIGHT]->pos.x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
-	}
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
 	}
 }
 
@@ -398,9 +376,6 @@ void GameTexture::scale_top_percent(float percent, bool crop) {
 		tex_accessor[TEX_COORD_TOP_LEFT]->pos.y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 		tex_accessor[TEX_COORD_TOP_RIGHT]->pos.y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
-	}
 }
 
 void GameTexture::scale_bottom_percent(float percent, bool crop) {
@@ -423,9 +398,6 @@ void GameTexture::scale_bottom_percent(float percent, bool crop) {
 		}
 		tex_accessor[TEX_COORD_BOTTOM_LEFT]->pos.y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 		tex_accessor[TEX_COORD_BOTTOM_RIGHT]->pos.y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
-	}
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
 	}
 }
 
@@ -454,9 +426,6 @@ void GameTexture::set_width(int new_width) {
 		tex_data[i].pos.x *= width_scale;
 	}
 	width = new_width;
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
-	}
 }
 
 void GameTexture::set_width_scale(float scale) {
@@ -469,9 +438,6 @@ void GameTexture::set_width_scale(float scale) {
 		tex_data[i].pos.x *= width_scale;
 	}
 	width_scale_mul = scale;
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
-	}
 }
 
 void GameTexture::set_height(int new_height) {
@@ -484,9 +450,6 @@ void GameTexture::set_height(int new_height) {
 		tex_data[i].pos.y *= height_scale;
 	}
 	height = new_height;
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
-	}
 }
 
 void GameTexture::set_height_scale(float scale) {
@@ -499,9 +462,6 @@ void GameTexture::set_height_scale(float scale) {
 		tex_data[i].pos.y *= height_scale;
 	}
 	height_scale_mul = scale;
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
-	}
 }
 
 void GameTexture::set_scale(float scale) {
@@ -581,7 +541,7 @@ void GameTexture::set_alpha(unsigned char alpha) {
 	this->alpha = alpha;
 }
 
-void GameTexture::flip_h(bool update) {
+void GameTexture::flip_h() {
 	TextureCoord* temp_tex_accessor[4] = { tex_accessor[0], tex_accessor[1], tex_accessor[2], tex_accessor[3] };
 	float left_coord = tex_data[TEX_COORD_BOTTOM_LEFT].pos.x;
 
@@ -595,14 +555,9 @@ void GameTexture::flip_h(bool update) {
 	tex_accessor[TEX_COORD_TOP_LEFT] = temp_tex_accessor[TEX_COORD_TOP_RIGHT];
 	tex_accessor[TEX_COORD_TOP_RIGHT] = temp_tex_accessor[TEX_COORD_TOP_LEFT];
 	h_flipped = !h_flipped;
-	if (update) {
-		if (thread_manager->is_main_thread()) {
-			update_buffer_data();
-		}
-	}
 }
 
-void GameTexture::flip_v(bool update) {
+void GameTexture::flip_v() {
 	TextureCoord* temp_tex_accessor[4] = { tex_accessor[0], tex_accessor[1], tex_accessor[2], tex_accessor[3] };
 	float bottom_coord = tex_data[TEX_COORD_BOTTOM_LEFT].pos.y;
 
@@ -616,11 +571,6 @@ void GameTexture::flip_v(bool update) {
 	tex_accessor[TEX_COORD_BOTTOM_RIGHT] = temp_tex_accessor[TEX_COORD_TOP_RIGHT];
 	tex_accessor[TEX_COORD_TOP_RIGHT] = temp_tex_accessor[TEX_COORD_BOTTOM_RIGHT];
 	v_flipped = !v_flipped;
-	if (update) {
-		if (thread_manager->is_main_thread()) {
-			update_buffer_data();
-		}
-	}
 }
 
 void GameTexture::reorient() {
@@ -638,9 +588,6 @@ void GameTexture::reorient() {
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x *= width_scale;
 		tex_data[i].pos.y *= height_scale;
-	}
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
 	}
 }
 
@@ -737,8 +684,7 @@ void GameTexture::prepare_render() {
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;
 	gl_pos.y /= (float)WINDOW_HEIGHT;
-	matrix = glm::mat4(1.0);
-	matrix = translate(matrix, gl_pos);
+	matrix = translate(glm::mat4(1.0), gl_pos);
 	matrix = rotate(matrix, glm::radians(rot.x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, glm::radians(rot.y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = rotate(matrix, glm::radians(rot.z), glm::vec3(0.0, 0.0, 1.0));
@@ -797,9 +743,6 @@ void GameTexture::set_sprite(int index) {
 	if (spritesheet[0].size() <= index) return;
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i]->tex_coord = spritesheet[i][index];
-	}
-	if (thread_manager->is_main_thread()) {
-		update_buffer_data();
 	}
 }
 

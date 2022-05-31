@@ -6,7 +6,6 @@
 #include "TextureCoord.h"
 
 class Shader;
-class ThreadManager;
 
 enum {
     GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT,
@@ -30,7 +29,7 @@ public:
     ~GameTexture();
     void init(std::string path);
     void init(GLuint gl_tex_location);
-    void destroy(bool destroy_texture = true);
+    void destroy();
     void set_pos(glm::vec3 pos);
     void add_pos(glm::vec3 pos);
     void set_rot(glm::vec3 rot);
@@ -63,8 +62,8 @@ public:
 
     void set_alpha(unsigned char alpha);
 
-    void flip_h(bool update = true);
-    void flip_v(bool update = true);
+    void flip_h();
+    void flip_v();
     void reorient();
 
     void process();
@@ -102,8 +101,6 @@ public:
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
     std::vector<glm::vec2> spritesheet[4];
 private:
-    ThreadManager* thread_manager;
-
     unsigned int VAO;
     unsigned int VBO;
     float width;

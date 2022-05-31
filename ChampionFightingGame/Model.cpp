@@ -13,28 +13,63 @@
 #include "utils.h"
 
 Model::Model() {
-	loaded = false;
-	dummy_matrix = nullptr;
-	global_transform = glm::mat4(1.0);
 	move = false;
 	tpose = false;
+	global_transform = glm::mat4(1.0);
+	dummy_matrix = nullptr;
+	flip_matrix = glm::mat4(
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
 	trans_id = -1;
 }
 
 Model::Model(std::string path) {
-	loaded = false;
 	load_model(path);
 }
 
-Model::~Model() {
-	if (loaded) {
-		unload_model();
+Model Model::copy() {
+	Model ret;
+	ret.global_transform = global_transform;
+	ret.dummy_matrix = dummy_matrix;
+	ret.directory = directory;
+
+	for (int i = 0, max = meshes.size(); i < max; i++) {
+		ret.meshes.push_back(meshes[i].copy());
+		for (int i2 = 0, max2 = meshes[i].textures.size(); i2 < max2; i2++) {
+			ret.texture_map[meshes[i].textures[i2].filename].push_back(&ret.meshes[i].textures[i2]);
+		}
 	}
+	ret.mesh_map = mesh_map;
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		ret.texture_names.push_back(texture_names[i]);
+	}
+
+	for (int i = 0, max = bones.size(); i < max; i++) {
+		ret.bones.push_back(bones[i]);
+	}
+	ret.bone_map = bone_map;
+	ret.post_process_skeleton();
+
+	return ret;
+}
+
+Model::~Model() {
+
 }
 
 void Model::load_model(std::string path) {
 	move = false;
+	tpose = false;
 	dummy_matrix = new glm::mat4(1.0);
+	flip_matrix = glm::mat4(
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
 
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -55,7 +90,6 @@ void Model::load_model(std::string path) {
 
 	process_node(scene->mRootNode, scene);
 	post_process_skeleton();
-	loaded = true;
 }
 
 void Model::load_model_no_skeleton(std::string path) {
@@ -70,15 +104,14 @@ void Model::load_model_no_skeleton(std::string path) {
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 
 	process_node(scene->mRootNode, scene);
-	loaded = true;
 }
 
 //Used if there's only one possible texture set (I.E. the stage).
 void Model::load_textures() {
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		textures_loaded.push_back(loadGLTexture(directory + "/" + texture_names[i]));
+		textures_loaded.push_back(loadGLTexture(directory + texture_names[i]));
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = textures_loaded[i];
+			texture_map[texture_names[i]][i2]->id = textures_loaded.back();
 		}
 	}
 }
@@ -87,7 +120,7 @@ void Model::load_textures() {
 //same model data)
 void Model::load_textures(std::string texture_dir) {
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		textures_loaded.push_back(loadGLTexture(directory + "/" + texture_dir + "/" + texture_names[i]));
+		textures_loaded.push_back(loadGLTexture(directory + texture_dir + "/" + texture_names[i]));
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			texture_map[texture_names[i]][i2]->id = textures_loaded[i];
 		}
@@ -95,18 +128,18 @@ void Model::load_textures(std::string texture_dir) {
 }
 
 void Model::unload_model() {
-	if (loaded) {
-		delete dummy_matrix;
-		for (int i = 0; i < textures_loaded.size(); i++) {
-			glDeleteTextures(1, &textures_loaded[i]);
-		}
-		for (int i = 0; i < meshes.size(); i++) {
-			glDeleteVertexArrays(1, &meshes[i].VAO);
-			glDeleteBuffers(1, &meshes[i].VBO);
-			glDeleteBuffers(1, &meshes[i].EBO);
-		}
+	delete dummy_matrix;
+	for (int i = 0; i < meshes.size(); i++) {
+		glDeleteVertexArrays(1, &meshes[i].VAO);
+		glDeleteBuffers(1, &meshes[i].VBO);
+		glDeleteBuffers(1, &meshes[i].EBO);
 	}
-	loaded = false;
+}
+
+void Model::unload_textures() {
+	for (int i = 0; i < textures_loaded.size(); i++) {
+		glDeleteTextures(1, &textures_loaded[i]);
+	}
 }
 
 void Model::set_move(bool move) {
@@ -293,12 +326,12 @@ void Model::process_node(aiNode* node, const aiScene* scene) {
 		for (int i2 = 0, max2 = meshes[index].textures.size(); i2 < max2; i2++) {
 			texture_map[meshes[index].textures[i2].filename].push_back(&meshes[index].textures[i2]);
 		}
-		std::cout << "\n";
 	}
 	for (unsigned int i = 0, max = node->mNumChildren; i < max; i++) {
 		process_node(node->mChildren[i], scene);
 	}
 }
+
 Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
@@ -445,6 +478,13 @@ void Model::post_process_skeleton() { //Reads through the skeleton, figures out 
 	}
 }
 
+Mesh::Mesh() {
+	visible = true;
+	VAO = 0;
+	VBO = 0;
+	EBO = 0;
+}
+
 Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name) {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -452,6 +492,26 @@ Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices,
 	this->name = name;
 
 	init();
+}
+
+Mesh Mesh::copy() {
+	Mesh ret;
+	for (int i = 0, max = vertices.size(); i < max; i++) {
+		ret.vertices.push_back(vertices[i]);
+	}
+	for (int i = 0, max = indices.size(); i < max; i++) {
+		ret.indices.push_back(indices[i]);
+	}
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		ret.textures.push_back(textures[i]);
+	}
+
+	ret.VAO = VAO;
+	ret.VBO = VBO;
+	ret.EBO = EBO;
+	ret.name = name;
+
+	return ret;
 }
 
 void Mesh::init() {

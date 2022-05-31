@@ -125,7 +125,7 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = false;
+	visualize_boxes = true;
 
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];

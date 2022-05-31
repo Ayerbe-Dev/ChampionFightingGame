@@ -21,7 +21,7 @@ void chara_select_main() {
 	const Uint8* keyboard_state;
 
 	GameLoader* game_loader = new GameLoader(3);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
 	CSS *css = new CSS;

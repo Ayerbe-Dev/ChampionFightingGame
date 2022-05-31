@@ -117,7 +117,7 @@ void Battle::load_battle(GameManager* game_manager) {
 
 	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(15);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
 	RenderManager* render_manager = RenderManager::get_instance();

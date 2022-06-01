@@ -711,6 +711,9 @@
     <ClCompile Include="PauseBattle.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
+    <ClCompile Include="BlockboxFunctions.cpp">
+      <Filter>Source Files\Objects\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">

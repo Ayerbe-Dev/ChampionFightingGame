@@ -434,7 +434,7 @@ void Battle::render_world() {
 	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);
 	glCullFace(GL_FRONT);
 
@@ -455,7 +455,7 @@ void Battle::render_world() {
 
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
 
 	for (int i = 0; i < 2; i++) {
@@ -483,27 +483,33 @@ void Battle::render_world() {
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hurtboxes[i2].id != -1) {
+				if (fighter[i]->hurtboxes[i2].active) {
 					fighter[i]->hurtboxes[i2].rect.render();
 				}
 			}
+			if (fighter[i]->blockbox.active) {
+				fighter[i]->blockbox.rect.render();
+			}
 			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hitboxes[i2].id != -1) {
+				if (fighter[i]->grabboxes[i2].active) {
+					fighter[i]->grabboxes[i2].rect.render();
+				}
+			}
+			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->hitboxes[i2].active) {
 					fighter[i]->hitboxes[i2].rect.render();
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->active) {
+					if (fighter[i]->projectiles[i2]->blockbox.active) {
+						fighter[i]->projectiles[i2]->blockbox.rect.render();
+					}
 					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[i]->projectiles[i2]->hitboxes[i3].id != -1) {
+						if (fighter[i]->projectiles[i2]->hitboxes[i3].active) {
 							fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();
 						}
 					}
-				}
-			}
-			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->grabboxes[i2].id != -1) {
-					fighter[i]->grabboxes[i2].rect.render();
 				}
 			}
 			fighter[i]->jostle_box.render();
@@ -548,9 +554,9 @@ void Battle::check_projectile_collisions() {
 			for (int i2 = 0; i2 < fighter[1]->num_projectiles; i2++) {
 				if (fighter[1]->projectiles[i2]->active) {
 					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1 && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
+						if (fighter[0]->projectiles[i]->hitboxes[i3].active && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
 							for (int i4 = 0; i4 < 10; i4++) {
-								if (fighter[1]->projectiles[i2]->hitboxes[i4].id != -1 && fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
+								if (fighter[1]->projectiles[i2]->hitboxes[i4].active && fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
 									GameRect p1_hitbox, p2_hitbox;
 									p1_hitbox = fighter[0]->projectiles[i]->hitboxes[i3].rect;
 									p2_hitbox = fighter[1]->projectiles[i2]->hitboxes[i4].rect;
@@ -577,16 +583,15 @@ void Battle::check_fighter_collisions() {
 		int grabbox_to_use = HITBOX_COUNT_MAX;
 		fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = false;
 		for (Hurtbox& hurtbox : fighter[i]->hurtboxes) {
-			if (hurtbox.id != -1) {
+			if (hurtbox.active) {
+				Blockbox& blockbox = fighter[!i]->blockbox;
+				if (blockbox.active) {
+					fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(blockbox.rect, hurtbox.rect);
+				}
 				for (Hitbox& hitbox : fighter[!i]->hitboxes) {
-					if (hitbox.id != -1) {
-						if (hitbox.hitbox_kind != HITBOX_KIND_BLOCK) {
-							if (is_collide(hitbox.rect, hurtbox.rect)) {
-								hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
-							}
-						}
-						else {
-							fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(hitbox.rect, hurtbox.rect);
+					if (hitbox.active) {
+						if (is_collide(hitbox.rect, hurtbox.rect)) {
+							hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
@@ -596,7 +601,7 @@ void Battle::check_fighter_collisions() {
 				for (Projectile* projectile : fighter[!i]->projectiles) {
 					if (projectile != nullptr && projectile->active) {
 						for (Hitbox& hitbox : projectile->hitboxes) {
-							if (hitbox.id != -1) {
+							if (hitbox.active) {
 								if (is_collide(hitbox.rect, hurtbox.rect)) {
 									projectile_hitbox_to_use = get_event_hit_collide_projectile(projectile, fighter[i], &hitbox, &hurtbox);
 								}
@@ -608,7 +613,7 @@ void Battle::check_fighter_collisions() {
 					}
 				}
 				for (Grabbox& grabbox : fighter[!i]->grabboxes) {
-					if (grabbox.id != -1) {
+					if (grabbox.active) {
 						if (is_collide(grabbox.rect, hurtbox.rect)) {
 							grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &grabbox, &hurtbox);
 						}

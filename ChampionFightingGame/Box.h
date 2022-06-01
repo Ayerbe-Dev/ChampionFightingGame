@@ -4,6 +4,21 @@
 
 class BattleObject;
 
+class Blockbox {
+public:
+	BattleObject* object;
+	GameRect rect;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
+	bool active;
+
+	Blockbox();
+	void init(BattleObject* object);
+	void activate(BattleObject* object, glm::vec2 anchor, glm::vec2 offset);
+	void update_pos();
+	void clear();
+};
+
 class Hitbox {
 public:
 	BattleObject* object;
@@ -46,6 +61,7 @@ public:
 	bool continue_launch;
 	bool can_chip_ko;
 	bool can_ko;
+	bool active;
 
 	Hitbox();
 	void init(BattleObject* object);
@@ -77,6 +93,7 @@ public:
 	glm::vec2 init_anchor;
 	glm::vec2 init_offset;
 	bool use_player_pos;
+	bool active;
 
 	Grabbox();
 	void init(BattleObject* object);
@@ -97,6 +114,7 @@ public:
 	int intangible_kind;
 	glm::vec2 init_anchor;
 	glm::vec2 init_offset;
+	bool active;
 
 	Hurtbox();
 	void init(BattleObject* object);

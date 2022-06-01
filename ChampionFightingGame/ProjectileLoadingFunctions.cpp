@@ -7,7 +7,7 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 
-void Projectile::superInit() {
+void Projectile::super_init() {
 	sound_manager = SoundManager::get_instance();
 	sound_manager->add_sound_player(id);
 	effect_manager = EffectManager::get_instance();
@@ -81,4 +81,5 @@ void Projectile::init_boxes() {
 	for (int i = 0; i < HITBOX_COUNT_MAX; i++) {
 		hitboxes[i].init(this);
 	}
+	blockbox.init(this);
 }

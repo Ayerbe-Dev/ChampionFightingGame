@@ -7,7 +7,7 @@
 /// this arg should be false instead.</param>
 void BattleObject::update_hitbox_pos() {
 	for (int i = 0; i < 10; i++) {
-		if (hitboxes[i].id != -1) {
+		if (hitboxes[i].active) {
 			hitboxes[i].update_pos();
 		}
 	}
@@ -21,7 +21,7 @@ void BattleObject::update_hitbox_pos() {
 /// <returns></returns>
 bool BattleObject::is_hitbox_active(int multihit) {
 	for (int i = 0; i < 10; i++) {
-		if (hitboxes[i].id != -1) {
+		if (hitboxes[i].active) {
 			if (hitboxes[i].multihit == multihit || multihit == -1) {
 				return true;
 			}
@@ -39,7 +39,7 @@ void BattleObject::clear_hitbox(int id) {
 	hitboxes[id].clear();
 	hitboxes[id].multihit = 0;
 	for (int i = 0; i < 10; i++) {
-		if (hitboxes[i].id != -1 && hitboxes[i].multihit == multihit) {
+		if (hitboxes[i].active && hitboxes[i].multihit == multihit) {
 			return;
 		}
 	}
@@ -55,6 +55,7 @@ void BattleObject::clear_hitbox_all() {
 		hitboxes[i].multihit = 0;
 		multihit_connected[i] = false;
 	}
+	clear_blockbox();
 }
 
 /// <summary>

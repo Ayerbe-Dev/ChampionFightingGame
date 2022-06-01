@@ -24,6 +24,7 @@ Fighter::~Fighter() {
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
 	}
+	blockbox.rect.destroy();
 	jostle_box.destroy();
 	fighter_int.clear();
 	fighter_float.clear();
@@ -80,9 +81,10 @@ void Fighter::fighter_post() {
 	update_hitbox_pos();
 	update_grabbox_pos();
 	update_hurtbox_pos();
+	update_blockbox_pos();
+	update_jostle_rect();
 	rot.z += glm::radians(90.0);
 	rot += extra_rot;
-	update_jostle_rect();
 	process_post_projectiles();
 }
 
@@ -234,7 +236,7 @@ void Fighter::process_post_status() {
 	}
 
 	for (int i = 0; i < 10; i++) {
-		if (hitboxes[i].id != -1 && hitboxes[i].hitbox_kind != HITBOX_KIND_BLOCK) {
+		if (hitboxes[i].active) {
 			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = true;
 			fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = true;
 			break;

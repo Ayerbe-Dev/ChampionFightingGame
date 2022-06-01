@@ -1,5 +1,6 @@
 #include "GameRect.h"
 #include <glew/glew.h>
+#include <glm/ext/matrix_projection.hpp>
 #include "RenderManager.h"
 #include "ThreadManager.h"
 #include "utils.h"
@@ -134,6 +135,17 @@ void GameRect::render_prepared() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
+//	if (rgba == glm::vec4(255, 165, 0, 204)) { //For my own sanity, we're only going to do blockboxes for now
+//		for (int i = 0; i < 4; i++) {
+//			glm::vec3 pos = glm::vec3(corners[i], 0.0);
+//			glm::mat4 projection = glm::perspective(glm::radians(render_manager->camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
+//			glm::mat4 view = render_manager->camera.get_view();
+//			glm::vec4 viewport = glm::vec4(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+//			glm::vec3 projected = glm::projectZO(pos, view, projection, viewport);
+//			std::cout << projected.x << ", " << projected.y << ", " << projected.z << "\n";
+//		}
+//		std::cout << "\n";
+//	}
 	glDepthMask(GL_FALSE);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDepthMask(GL_TRUE);

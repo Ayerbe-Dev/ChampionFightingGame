@@ -58,6 +58,7 @@ public:
 	int attempted_excutes{ 0 };
 
 	bool is_anim_end{ false };
+	Blockbox blockbox;
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
@@ -70,6 +71,9 @@ public:
 
 	bool multihit_connected[10] = {false};
 
+	void new_blockbox(glm::vec2 anchor, glm::vec2 offset);
+	void update_blockbox_pos();
+	void clear_blockbox();
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos();
 	bool is_hitbox_active(int multihit = -1);

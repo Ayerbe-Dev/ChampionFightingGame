@@ -9,6 +9,7 @@ Projectile::~Projectile() {
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
 	}
+	blockbox.rect.destroy();
 	jostle_box.destroy();
 	model.unload_model();
 	projectile_int.clear();
@@ -35,6 +36,7 @@ void Projectile::projectile_main() {
 
 void Projectile::projectile_post() {
 	update_hitbox_pos();
+	update_blockbox_pos();
 }
 
 void Projectile::process_status() {

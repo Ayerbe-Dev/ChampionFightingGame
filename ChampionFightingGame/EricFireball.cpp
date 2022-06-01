@@ -15,7 +15,7 @@ EricFireball::EricFireball(int id, PlayerInfo* player_info) {
 	load_params();
 	load_move_scripts();
 	loadEricFireballStatusFunctions();
-	superInit();
+	super_init();
 }
 
 void EricFireball::loadEricFireballStatusFunctions() {

@@ -58,7 +58,7 @@ void Fighter::load_model_shader() {
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
-	shader.set_int("material.shadow_map", 2);
+	shader.set_int("material.shadow_map", 4);
 
 }
 
@@ -96,4 +96,5 @@ void Fighter::init_boxes() {
 		hurtboxes[i].init(this);
 		grabboxes[i].init(this);
 	}
+	blockbox.init(this);
 }

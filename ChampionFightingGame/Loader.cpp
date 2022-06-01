@@ -17,9 +17,7 @@ void GameLoader::loading_screen() {
 
 	LoadIcon load_icon;
 	GameTextureSDL splash_screen("resource/ui/menu/loading/splashload.png");
-	splash_screen.whole_screen = true;
 	GameTextureSDL loading_flavor("resource/ui/menu/loading/FlavorBar.png");
-	loading_flavor.whole_screen = true;
 	GameTextureSDL loading_bar("resource/ui/menu/loading/loadingbar.png");
 
 	while (!finished) {
@@ -32,11 +30,10 @@ void GameLoader::loading_screen() {
 		SDL_SetRenderTarget(render_manager->sdl_renderer, screen_texture);
 		
 		splash_screen.render();
-		loading_bar.set_right_target(loaded_items / total_items, 6);
+		loading_bar.scale_right_percent(loaded_items / (float)total_items, false);
 		loading_bar.process();
 		loading_bar.render();
 		loading_flavor.render();
-		std::cout << loading_bar.dest_rect.x << ", " << loading_bar.dest_rect.h << "\n";
 
 		load_icon.texture.render();
 
@@ -60,7 +57,7 @@ void GameLoader::loading_screen() {
 
 LoadIcon::LoadIcon() {
 	texture.init("resource/ui/menu/loading/loadicon.png");
-	texture.scale_all_percent(0.2);
+	texture.scale_all_percent(0.2, false);
 
 	panic_setting = rng(0, 1);
 

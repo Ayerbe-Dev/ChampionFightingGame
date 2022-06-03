@@ -44,7 +44,7 @@ void GameManager::destroy() {
 void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_BATTLE] = &battle_main;
 	game_main[GAME_STATE_CHARA_SELECT] = &chara_select_main;
-	game_main[GAME_STATE_DEBUG_MENU] = &debugMenu;
+	game_main[GAME_STATE_DEBUG_MENU] = &debug_main;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
 
@@ -61,6 +61,9 @@ void GameManager::update_state(int game_state, int game_context) {
 			for (int i = 0; i < MAX_LAYERS; i++) {
 				looping[i] = false;
 			}
+		}
+		else {
+			looping[layer] = false;
 		}
 	}
 	if (game_context != GAME_CONTEXT_MAX) {
@@ -283,4 +286,22 @@ void GameManager::event_pause_press() {
 
 void GameManager::event_any_press() {
 	(menu_target[layer]->*(&GameMenu::event_any_press))();
+}
+
+void GameManager::add_crash_log(std::string crash_reason) {
+	crash_log.push(crash_reason);
+}
+
+bool GameManager::get_crash_log(std::string* ret) {
+	if (crash_log.empty()) {
+		return false;
+	}
+
+	*ret = crash_log.front();
+	crash_log.pop();
+	return true;
+}
+
+bool GameManager::is_crash() {
+	return !crash_log.empty();
 }

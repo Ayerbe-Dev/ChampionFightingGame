@@ -12,12 +12,7 @@ Atlas::Atlas(int id, PlayerInfo* player_info) {
 	fighter_int.resize(CHARA_ATLAS_INT_MAX, 0);
 	fighter_float.resize(CHARA_ATLAS_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ATLAS_FLAG_MAX, false);
-	if (!crash_to_debug) {
-		load_params();
-	}
-	load_move_scripts();
 	loadAtlasStatusFunctions();
-	set_current_move_script("default");
 }
 
 void Atlas::chara_id() {

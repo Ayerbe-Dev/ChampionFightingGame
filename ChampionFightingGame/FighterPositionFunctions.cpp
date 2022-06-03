@@ -1,6 +1,7 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 #include "ParamAccessor.h"
+#include "GameManager.h"
 
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
@@ -18,14 +19,14 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	}
 	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
 		//previous X/Y coords. This will make debugging easier.
-		char buffer_1[73];
-		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f, Pos Z: %f. You probably", (id + 1), status_kind, prev_pos.x, prev_pos.y, prev_pos.z);
-		char buffer_2[89];
-		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Add)", ((!id) + 1), that->status_kind);
-		battle_object_manager->fighter[0]->player_info->crash_reason = buffer_1;
-		battle_object_manager->fighter[1]->player_info->crash_reason = buffer_2;
+		GameManager* game_manager = GameManager::get_instance();
+		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " + 
+			std::to_string(status_kind) + ". Pos X: " + std::to_string(prev_pos.x) + ", Pos Y: " + 
+			std::to_string(prev_pos.y) + ", Pos Z: " + std::to_string(prev_pos.z) + 
+			". Probably tried to divide by 0 somewhere in the status. Opponent Status: " + 
+			std::to_string(that->status_kind)
+		);
 
-		crash_to_debug = true;
 		return false;
 	}
 	pos *= battle_object_manager->world_rate;
@@ -137,14 +138,14 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	}
 	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
 		//previous X/Y coords. This will make debugging easier.
-		char buffer_1[73];
-		sprintf(buffer_1, "Player %d (Me) Status: %d. Pos X: %f, Pos Y: %f, Pos Z: %f. You probably", (id + 1), status_kind, prev_pos.x, prev_pos.y, prev_pos.z);
-		char buffer_2[89];
-		sprintf(buffer_2, "accidentally divided by 0 somewhere in that status. Player %d (Not Me) Status: %d. (Add)", ((!id) + 1), that->status_kind);
-		battle_object_manager->fighter[0]->player_info->crash_reason = buffer_1;
-		battle_object_manager->fighter[1]->player_info->crash_reason = buffer_2;
+		GameManager* game_manager = GameManager::get_instance();
+		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " +
+			std::to_string(status_kind) + ". Pos X: " + std::to_string(prev_pos.x) + ", Pos Y: " +
+			std::to_string(prev_pos.y) + ", Pos Z: " + std::to_string(prev_pos.z) +
+			". Probably tried to divide by 0 somewhere in the status. Opponent Status: " + 
+			std::to_string(that->status_kind)
+		);
 
-		crash_to_debug = true;
 		return false;
 	}
 

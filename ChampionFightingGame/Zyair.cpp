@@ -12,12 +12,7 @@ Zyair::Zyair(int id, PlayerInfo* player_info) {
 	fighter_int.resize(CHARA_ZYAIR_INT_MAX, 0);
 	fighter_float.resize(CHARA_ZYAIR_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ZYAIR_FLAG_MAX, false);
-	if (!crash_to_debug) {
-		load_params();
-	}
-	load_move_scripts();
 	loadZyairStatusFunctions();
-	set_current_move_script("default");
 }
 
 void Zyair::chara_id() {

@@ -12,11 +12,11 @@ void title_screen_main() {
 	player_info[0] = game_manager->player_info[0];
 	player_info[1] = game_manager->player_info[1];
 
-    TitleScreen title_screen;
+    TitleScreen *title_screen = new TitleScreen;
 
     const Uint8 *keyboard_state;
 
-	game_manager->set_menu_info(&title_screen);
+	game_manager->set_menu_info(title_screen);
 
     while (game_manager->looping[game_manager->layer]) {
 		wait_ms();
@@ -33,13 +33,13 @@ void title_screen_main() {
 
 		game_manager->handle_menus();
 
-		title_screen.render();
+		title_screen->render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 
-
+	delete title_screen;
 	return game_manager->update_state(GAME_STATE_MENU);
 }
 

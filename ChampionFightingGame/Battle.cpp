@@ -63,8 +63,8 @@ void battle_main() {
 			player_info[1]->alt_color--;
 		}
 	}
-	Battle battle;
-	battle.load_battle(game_manager);
+	Battle *battle = new Battle;
+	battle->load_battle(game_manager);
 
 	RenderManager *render_manager = RenderManager::get_instance();
 	SDL_GetWindowSize(render_manager->window, &render_manager->s_window_width, &render_manager->s_window_height);
@@ -72,8 +72,8 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
-	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay_check_performance();
+	while (*battle->looping) {
+		battle->frame_delay_check_performance();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		game_manager->handle_window_events();
@@ -85,14 +85,14 @@ void battle_main() {
 			}
 		}
 
-		battle.process_main();
-		battle.render_world();
-		battle.render_ui();
+		battle->process_main();
+		battle->render_world();
+		battle->render_ui();
 
-		battle.check_collisions();
+		battle->check_collisions();
 
 #ifdef DEBUG
-		cotr_imgui_debug_battle(&battle);
+		cotr_imgui_debug_battle(battle);
 #endif
 
 		SDL_GL_SwapWindow(render_manager->window);
@@ -101,7 +101,8 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
-	battle.unload_battle();
+	battle->unload_battle();
+	delete battle;
 }
 
 Battle::Battle() {}
@@ -279,11 +280,8 @@ void Battle::process_main() {
 	if (camera->following_players) {
 		camera->follow_players(fighter[0]->pos, fighter[1]->pos, &stage);
 	}
-	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->crash_to_debug) {
-			*looping = false;
-			*game_state = GAME_STATE_DEBUG_MENU;
-		}
+	if (game_manager->is_crash()) {
+		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 }
 

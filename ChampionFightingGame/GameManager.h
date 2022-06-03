@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "MenuConstants.h"
 #include <functional>
+#include <queue>
 
 class RenderManager;
 
@@ -50,6 +51,9 @@ public:
 	void event_pause_press();
 	void event_any_press();
 
+	void add_crash_log(std::string crash_reason);
+	bool get_crash_log(std::string* ret);
+	bool is_crash();
 private:
 	GameManager();
 	static GameManager* instance;
@@ -70,4 +74,5 @@ private:
 	int d_hold_frames[2];
 	int l_hold_frames[2];
 	int r_hold_frames[2];
+	std::queue<std::string> crash_log;
 };

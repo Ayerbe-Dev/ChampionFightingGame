@@ -10,7 +10,7 @@
 #include <glew/glew.h>
 #include "RenderManager.h"
 
-void debugMenu() {
+void debug_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	PlayerInfo *player_info[2];
@@ -41,8 +41,10 @@ void debugMenu() {
 	debug_list.addEntry("CSS", DEBUG_LIST_SELECTABLE, GAME_STATE_CHARA_SELECT);
 	debug_list.addEntry("Debug (this menu)", DEBUG_LIST_SELECTABLE, GAME_STATE_DEBUG_MENU);
 	debug_list.addEntry("Close", DEBUG_LIST_SELECTABLE, GAME_STATE_CLOSE);
-	debug_list.addEntry(player_info[0]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
-	debug_list.addEntry(player_info[1]->crash_reason, DEBUG_LIST_NOT_SELECTABLE);
+	std::string crash_reason;
+	while (game_manager->get_crash_log(&crash_reason)) {
+		debug_list.addEntry(crash_reason, DEBUG_LIST_NOT_SELECTABLE);
+	}
 
 	debug_list.event_down_press();
 
@@ -107,8 +109,6 @@ void debugMenu() {
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 	cotr_imgui_terminate();
-	player_info[0]->crash_reason = "Crash Message Goes Here";
-	player_info[1]->crash_reason = "Crash Message Goes Here";
 	TTF_CloseFont(debug_font);
 	SDL_DestroyTexture(pScreenTexture);
 	debug_list.destroy_list();

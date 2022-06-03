@@ -21,15 +21,14 @@ void stage_select_main() {
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(render_manager->sdl_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);
 
-	StageSelect stage_select;
-	game_manager->set_menu_info(nullptr);
+	StageSelect *stage_select = new StageSelect;
+	game_manager->set_menu_info(stage_select);
 
-	if (stage_select.load_stage_select()) {
-		player_info[0]->crash_reason = "Could not open Stage Select file!";
+	if (stage_select->load_stage_select()) {
+		game_manager->add_crash_log("Could not open CSS file!");
+		delete stage_select;
 		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
-
-	game_manager->set_menu_info(&stage_select);
 
 	SDL_SetRenderTarget(render_manager->sdl_renderer, pScreenTexture);
 	SDL_RenderClear(render_manager->sdl_renderer);
@@ -38,7 +37,7 @@ void stage_select_main() {
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	while (game_manager->looping[game_manager->layer]) {
+	while (*stage_select->looping) {
 		wait_ms();
 		SDL_RenderClear(render_manager->sdl_renderer);
 		SDL_SetRenderDrawColor(render_manager->sdl_renderer, 100, 100, 100, 255);
@@ -81,6 +80,7 @@ void stage_select_main() {
 		SDL_RenderCopy(render_manager->sdl_renderer, pScreenTexture, nullptr, nullptr);
 		SDL_RenderPresent(render_manager->sdl_renderer);
 	}
+	delete stage_select;
 }
 
 StageSelect::StageSelect() {

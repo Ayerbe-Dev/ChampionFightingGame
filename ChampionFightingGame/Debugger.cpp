@@ -226,41 +226,39 @@ void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(RenderManager::get_instance()->window);
 	ImGui::NewFrame();
+
+	std::vector<std::string> debug_messages;
+	std::string crash_reason;
+	while (game_manager->get_crash_log(&crash_reason)) {
+		debug_messages.push_back(crash_reason);
+	}
 	
-	ImGui::Begin("Debug Menu\n");
-
-	{
-		
-		if (ImGui::MenuItem("Debug Menu", "This screen")) {
-			game_manager->update_state(GAME_STATE_DEBUG_MENU);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("1v1 Game", "With Default settings")) {
-			game_manager->update_state(GAME_STATE_BATTLE);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("Character Select Screen")) {
-			game_manager->update_state(GAME_STATE_CHARA_SELECT);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("Main Menu")) {
-			game_manager->update_state(GAME_STATE_MENU);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("Title Screen")) {
-			game_manager->update_state(GAME_STATE_TITLE_SCREEN);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::Button("exit")) {
-			game_manager->looping[game_manager->layer] = false;
-		}
-
-		ImGui::Text("%s", game_manager->player_info[0]->crash_reason.c_str());
-		ImGui::Text("%s", game_manager->player_info[1]->crash_reason.c_str());
+	ImGui::Begin("Debug Menu\n");		
+	
+	if (ImGui::MenuItem("Debug Menu", "This screen")) {
+		game_manager->update_state(GAME_STATE_DEBUG_MENU);
+		game_manager->looping[game_manager->layer] = false;
+	}
+	if (ImGui::MenuItem("1v1 Game", "With Default settings")) {
+		game_manager->update_state(GAME_STATE_BATTLE);
+	}
+	if (ImGui::MenuItem("Character Select Screen")) {
+		game_manager->update_state(GAME_STATE_CHARA_SELECT);
+	}
+	if (ImGui::MenuItem("Main Menu")) {
+		game_manager->update_state(GAME_STATE_MENU);
+	}
+	if (ImGui::MenuItem("Title Screen")) {
+		game_manager->update_state(GAME_STATE_TITLE_SCREEN);
+	}
+	if (ImGui::Button("exit")) {
+		game_manager->update_state(GAME_STATE_CLOSE);
+	}
+	for (int i = 0, max = debug_messages.size(); i < max; i++) {
+		ImGui::Text("%s", debug_messages[i].c_str());
 	}
 
 	ImGui::End();
-	//ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

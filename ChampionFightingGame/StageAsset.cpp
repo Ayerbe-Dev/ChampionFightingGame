@@ -2,6 +2,7 @@
 #include "BattleObjectManager.h"
 #include "Fighter.h"
 #include <fstream>
+#include "GameManager.h"
 
 StageAsset::StageAsset() {
 
@@ -63,8 +64,7 @@ void StageAsset::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			battle_object_manager->fighter[0]->player_info->crash_reason = "Stage " + asset_name + "'s resource directory was incorrectly set!";
-			battle_object_manager->fighter[0]->crash_to_debug = true;
+			GameManager::get_instance()->add_crash_log("Stage " + asset_name + "'s resource directory was incorrectly set!");
 		}
 		else {
 			std::cout << err.what() << "\n";

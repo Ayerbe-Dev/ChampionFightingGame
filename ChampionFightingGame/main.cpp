@@ -66,9 +66,7 @@ int main() {
 			game_manager->game_main[*game_manager->game_state]();
 		}
 		else if (*game_manager->game_state != GAME_STATE_CLOSE) {
-			char buffer[86];
-			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager->game_state);
-			game_manager->player_info[0]->crash_reason = buffer;
+			game_manager->add_crash_log("Error: Game State was " + std::to_string(*game_manager->game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
 			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
 		}
 

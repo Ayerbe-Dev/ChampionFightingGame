@@ -6,6 +6,7 @@
 #include "BattleObjectManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
+#include "GameManager.h"
 
 void Projectile::super_init() {
 	sound_manager = SoundManager::get_instance();
@@ -47,11 +48,7 @@ void Projectile::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			char buffer[56];
-			sprintf(buffer, "Projectile %d's resource directory was incorrectly set!", projectile_kind);
-			battle_object_manager->fighter[id]->player_info->crash_reason = buffer;
-
-			battle_object_manager->fighter[id]->crash_to_debug = true;
+			GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s resource directory was incorrectly set!");
 		}
 		else {
 			std::cout << err.what() << "\n";

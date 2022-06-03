@@ -16,6 +16,4 @@ public:
 	int alt_color = 0;
 	StageInfo stage_info;
 	std::string name;
-
-	std::string crash_reason{ "Crash Message Goes Here" };
 };

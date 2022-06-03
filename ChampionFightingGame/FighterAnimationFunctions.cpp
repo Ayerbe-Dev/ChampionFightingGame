@@ -1,5 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
+#include "GameManager.h"
 
 void Fighter::reenter_last_anim() {
 	rate = prev_anim_rate;
@@ -84,11 +85,7 @@ bool Fighter::ending_hitlag(int frames) {
 
 float Fighter::calc_launch_frames() {
 	if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] == 0) {
-		char buffer[51];
-		sprintf(buffer, "Player %d needs a gravity value on their launcher!", ((!id) + 1));
-		player_info->crash_reason = buffer;
-
-		crash_to_debug = true;
+		GameManager::get_instance()->add_crash_log("Player " + std::to_string((!id) + 1) + " needs a gravity value on their launcher!");
 		return 1;
 	}
 	float airtime = 0.0;

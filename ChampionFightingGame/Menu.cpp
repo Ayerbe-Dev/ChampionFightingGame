@@ -23,15 +23,15 @@ void menu_main() {
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
 
-	MainMenu main_menu;
+	MainMenu *main_menu = new MainMenu;
 	update_thread_progress(game_loader->loaded_items);
 	MenuItem menu_items[5];
 
-	game_manager->set_menu_info(&main_menu);
+	game_manager->set_menu_info(main_menu);
 
 	game_loader->finished = true;
 
-	while (game_manager->looping[game_manager->layer]) {
+	while (*main_menu->looping) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
@@ -46,27 +46,25 @@ void menu_main() {
 		}
 		
 		game_manager->handle_menus();
-		main_menu.process_submenu_tables();
-		main_menu.render();
+		main_menu->process_submenu_tables();
+		main_menu->render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 
-		if (main_menu.sub_state != GAME_SUBSTATE_NONE) {
-			if (game_manager->game_substate_main[main_menu.sub_state] != nullptr) {
-				game_manager->game_substate_main[main_menu.sub_state]();
+		if (main_menu->sub_state != GAME_SUBSTATE_NONE) {
+			if (game_manager->game_substate_main[main_menu->sub_state] != nullptr) {
+				game_manager->game_substate_main[main_menu->sub_state]();
 			}
 			else {
-				char buffer[91];
-				sprintf(buffer, "Error: Game Substate was %d (not GAME_SUBSTATE_NONE) but there was no associated function!", main_menu.sub_state);
-				player_info[0]->crash_reason = buffer;
-				game_manager->looping[game_manager->layer] = false;
+				game_manager->add_crash_log("Error: Game Substate was " + std::to_string(main_menu->sub_state) + " (not GAME_SUBSTATE_NONE) but there was no associated function!");
 				game_manager->update_state(GAME_STATE_DEBUG_MENU);
 			}
-			main_menu.sub_state = GAME_SUBSTATE_NONE;
+			main_menu->sub_state = GAME_SUBSTATE_NONE;
 		}
 	}
 
 	delete game_loader;
+	delete main_menu;
 }
 
 void MainMenu::event_up_press() {

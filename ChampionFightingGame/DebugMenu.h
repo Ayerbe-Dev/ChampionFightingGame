@@ -57,4 +57,4 @@ public:
 };
 
 TTF_Font *loadDebugFont(std::string fontname = "FiraCode-Regular.ttf");
-void debugMenu();
+void debug_main();

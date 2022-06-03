@@ -29,7 +29,8 @@ void chara_select_main() {
 	css->player_info[0] = player_info[0];
 	css->player_info[1] = player_info[1];
 	if (css->load_css()) {
-		player_info[0]->crash_reason = "Could not open CSS file!";
+		game_manager->add_crash_log("Could not open CSS file!");
+		delete css;
 		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 	update_thread_progress(game_loader->loaded_items);
@@ -59,7 +60,7 @@ void chara_select_main() {
 	
 	game_loader->finished = true;
 
-	while (game_manager->looping[game_manager->layer]) {
+	while (*css->looping) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
@@ -285,7 +286,7 @@ void CSS::event_down_press() {
 					}
 				}
 				if (!valid_col) {
-					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
+					GameManager::get_instance()->add_crash_log("Couldn't find a valid column!");
 					*looping = false;
 					*game_state = GAME_STATE_DEBUG_MENU;
 					return;
@@ -334,7 +335,7 @@ void CSS::event_up_press() {
 					}
 				}
 				if (!valid_col) {
-					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
+					GameManager::get_instance()->add_crash_log("Couldn't find a valid column!");
 					*looping = false;
 					*game_state = GAME_STATE_DEBUG_MENU;
 					return;

@@ -4,8 +4,8 @@ Nightsaber::Nightsaber() {
 
 }
 
-Nightsaber::Nightsaber(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Nightsaber::Nightsaber(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_NIGHTSABER;
 	chara_name = "nightsaber";
 	resource_dir = "resource/chara/nightsaber";

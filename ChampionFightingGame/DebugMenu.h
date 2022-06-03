@@ -2,7 +2,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
 #include <string>
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameMenu.h"
 #include "GameManager.h"
 

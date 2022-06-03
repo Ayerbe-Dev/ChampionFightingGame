@@ -319,6 +319,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     </ClCompile>
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PauseBattle.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Priest.cpp" />
     <ClCompile Include="PriestMoves.cpp" />
@@ -339,6 +340,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="RoyFireball.cpp" />
     <ClCompile Include="RoyMoves.cpp" />
     <ClCompile Include="RoyStatus.cpp" />
+    <ClCompile Include="SaveManager.cpp" />
     <ClCompile Include="ScriptFunctions.cpp" />
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -457,6 +459,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="OverlayLayer.h" />
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="SaveManager.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -503,7 +507,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Opening.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="Param.h" />
-    <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Priest.h" />
     <ClInclude Include="PriestConstants.h" />
     <ClInclude Include="PriestFlag.h" />

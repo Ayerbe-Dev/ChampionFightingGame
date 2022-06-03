@@ -10,9 +10,9 @@
 void stage_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player *player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
 	SDL_SetRenderDrawBlendMode(render_manager->sdl_renderer, SDL_BLENDMODE_BLEND);
@@ -47,7 +47,7 @@ void stage_select_main() {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();

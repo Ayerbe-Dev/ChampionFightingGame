@@ -1,5 +1,5 @@
 #pragma once
 #include "GameManager.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 
 void opening_main();

@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 #include "Button.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameMenu.h"
 #include "GameManager.h"
 #include "GameTexture.h"

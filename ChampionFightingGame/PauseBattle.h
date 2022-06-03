@@ -2,7 +2,7 @@
 #include "GameMenu.h"
 #include "GameTexture.h"
 #include "GameManager.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 
 void pause_battle_main();
 
@@ -15,5 +15,5 @@ public:
 	void event_back_press();
 
 	GameTexture panel;
-	PlayerInfo* player_info[2];
+	Player* player[2];
 };

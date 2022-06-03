@@ -1,7 +1,7 @@
 #pragma once
 #include "GameMenu.h"
 #include "GameTexture.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameManager.h"
 
 void controls_main();
@@ -15,5 +15,5 @@ public:
 	void event_back_press();
 
 	GameTexture panel;
-	PlayerInfo* player_info[2];
+	Player* player[2];
 };

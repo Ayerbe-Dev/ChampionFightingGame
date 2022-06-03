@@ -4,8 +4,8 @@ Ramona::Ramona() {
 
 }
 
-Ramona::Ramona(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Ramona::Ramona(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_RAMONA;
 	chara_name = "ramona";
 	resource_dir = "resource/chara/ramona";

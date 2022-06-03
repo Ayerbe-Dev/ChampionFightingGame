@@ -4,8 +4,8 @@ Bruno::Bruno() {
 
 }
 
-Bruno::Bruno(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Bruno::Bruno(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_BRUNO;
 	chara_name = "bruno";
 	resource_dir = "resource/chara/bruno";

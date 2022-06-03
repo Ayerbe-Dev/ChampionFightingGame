@@ -6,7 +6,7 @@
 class EricFireball : public Projectile {
 public:
 	EricFireball();
-	EricFireball(int id, PlayerInfo* player_info);
+	EricFireball(int id, Player* player);
 
 	void loadEricFireballStatusFunctions();
 	void load_move_scripts() override;

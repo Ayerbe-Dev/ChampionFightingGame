@@ -4,8 +4,8 @@ Priest::Priest() {
 
 }
 
-Priest::Priest(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Priest::Priest(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_PRIEST;
 	chara_name = "priest";
 	resource_dir = "resource/chara/priest";

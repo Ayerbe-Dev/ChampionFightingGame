@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include <vector>
 #include <chrono>
+#include "utils.h"
 
 class GameLoader;
 

@@ -6,7 +6,7 @@ class CharaTemplate : public Fighter {
 public:
 	virtual void chara_id();
 	CharaTemplate();
-	CharaTemplate(int id, PlayerInfo* player_info);
+	CharaTemplate(int id, Player* player);
 	void loadCharaTemplateStatusFunctions();
 	void load_move_scripts() override;
 

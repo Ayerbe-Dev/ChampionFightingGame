@@ -4,9 +4,9 @@ Leon::Leon() {
 
 }
 
-Leon::Leon(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
-	if (player_info->chara_kind == CHARA_KIND_LEON) {
+Leon::Leon(int id, Player* player) {
+	this->player = player;
+	if (player->chara_kind == CHARA_KIND_LEON) {
 		this->chara_kind = CHARA_KIND_LEON;
 		chara_name = "leon";
 		resource_dir = "resource/chara/leon";

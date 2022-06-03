@@ -4,8 +4,8 @@ Aziel::Aziel() {
 
 }
 
-Aziel::Aziel(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Aziel::Aziel(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_AZIEL;
 	chara_name = "aziel";
 	resource_dir = "resource/chara/aziel";

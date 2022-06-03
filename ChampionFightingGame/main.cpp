@@ -20,6 +20,7 @@
 #include "GameManager.h"
 #include "RenderManager.h"
 #include "ThreadManager.h"
+#include "SaveManager.h"
 #include "stb_image.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
 //undefine it before we include Loader.h.
@@ -47,6 +48,7 @@ int main() {
 
 	SDL_GameControllerEventState(SDL_ENABLE);
 
+	SaveManager* save_manager = SaveManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();

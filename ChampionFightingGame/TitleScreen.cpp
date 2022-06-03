@@ -8,9 +8,9 @@ void title_screen_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player *player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
     TitleScreen *title_screen = new TitleScreen;
@@ -25,8 +25,8 @@ void title_screen_main() {
 
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
-			player_info[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.check_controllers();
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();

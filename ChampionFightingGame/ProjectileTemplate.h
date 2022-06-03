@@ -6,7 +6,7 @@
 class ProjectileTemplate : public Projectile {
 public:
 	ProjectileTemplate();
-	ProjectileTemplate(int id, PlayerInfo* player_info);
+	ProjectileTemplate(int id, Player* player);
 
 	void loadProjectileTemplateStatusFunctions();
 	void load_move_scripts() override;

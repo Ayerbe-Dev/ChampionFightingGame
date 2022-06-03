@@ -4,8 +4,8 @@ Zyair::Zyair() {
 
 }
 
-Zyair::Zyair(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Zyair::Zyair(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_ZYAIR;
 	chara_name = "zyair";
 	resource_dir = "resource/chara/zyair";

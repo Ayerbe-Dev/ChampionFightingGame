@@ -4,8 +4,8 @@ Angelica::Angelica() {
 
 }
 
-Angelica::Angelica(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Angelica::Angelica(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_ANGELICA;
 	chara_name = "angelica";
 	resource_dir = "resource/chara/angelica";

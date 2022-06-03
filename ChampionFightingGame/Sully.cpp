@@ -4,8 +4,8 @@ Sully::Sully() {
 
 }
 
-Sully::Sully(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Sully::Sully(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_SULLY;
 	chara_name = "sully";
 	resource_dir = "resource/chara/sully";

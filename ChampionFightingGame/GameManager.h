@@ -1,5 +1,5 @@
 #pragma once
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameMenu.h"
 #include "GameState.h"
 #include "MenuConstants.h"
@@ -17,7 +17,7 @@ public:
 
 	RenderManager* render_manager;
 
-	PlayerInfo *player_info[2];
+	Player *player[2];
 	int layer = 0;
 	int* game_state;
 	int* prev_game_state;

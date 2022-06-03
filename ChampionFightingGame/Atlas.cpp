@@ -4,8 +4,8 @@ Atlas::Atlas() {
 
 }
 
-Atlas::Atlas(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Atlas::Atlas(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_ATLAS;
 	chara_name = "atlas";
 	resource_dir = "resource/chara/atlas";

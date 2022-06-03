@@ -8,7 +8,7 @@ public:
 
 	virtual void chara_id();
 	Eric();
-	Eric(int id, PlayerInfo* player_info);
+	Eric(int id, Player* player);
 	void loadEricStatusFunctions();
 	void load_move_scripts() override;
 	

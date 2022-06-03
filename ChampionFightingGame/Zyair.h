@@ -6,7 +6,7 @@ class Zyair : public Fighter {
 public:
 	virtual void chara_id();
 	Zyair();
-	Zyair(int id, PlayerInfo* player_info);
+	Zyair(int id, Player* player);
 	void loadZyairStatusFunctions();
 	void load_move_scripts() override;
 

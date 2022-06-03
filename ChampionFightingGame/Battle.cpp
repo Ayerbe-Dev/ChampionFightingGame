@@ -52,17 +52,17 @@ void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	PlayerInfo* player_info[2];
+	Player* player[2];
 	for (int i = 0; i < 2; i++) {
-		player_info[i] = game_manager->player_info[i];
+		player[i] = game_manager->player[i];
 	}
 
-	if (player_info[0]->chara_kind == player_info[1]->chara_kind && player_info[0]->alt_color == player_info[1]->alt_color) {
-		if (player_info[0]->alt_color == 0) {
-			player_info[1]->alt_color++;
+	if (player[0]->chara_kind == player[1]->chara_kind && player[0]->alt_color == player[1]->alt_color) {
+		if (player[0]->alt_color == 0) {
+			player[1]->alt_color++;
 		}
 		else {
-			player_info[1]->alt_color--;
+			player[1]->alt_color--;
 		}
 	}
 
@@ -78,7 +78,7 @@ void battle_main() {
 		game_manager->handle_window_events();
 
 		for (int i = 0; i < 2; i++) {
-			if (player_info[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
+			if (player[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
 				//check_controllers now returns whether or not controls were changed, and if someone's controller
 				//gets unplugged midgame, we should probably do something about it
 			}
@@ -130,15 +130,15 @@ void Battle::load_game_menu() {
 
 	visualize_boxes = true;
 
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 
 	battle_object_manager = BattleObjectManager::get_instance();
 
 	inc_thread();
 
 	int rng = rand() % 2;
-	stage.load_stage(player_info[rng]->stage_info, battle_object_manager);
+	stage.load_stage(player[rng]->stage_info, battle_object_manager);
 
 	inc_thread();
 
@@ -146,7 +146,7 @@ void Battle::load_game_menu() {
 	for (int i = 0; i < 2; i++) {
 		debug_rect[i].init();
 		inc_thread();
-		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i]);
+		fighter[i] = create_fighter(player[i]->chara_kind, i, player[i]);
 		inc_thread();
 	}
 
@@ -185,13 +185,13 @@ void Battle::load_game_menu() {
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
-			player_info[i]->controller.poll_buttons(keyboard_state);
-			if (player_info[i]->controller.is_any_inputs()) {
+			player[i]->controller.check_controllers();
+			player[i]->controller.poll_buttons(keyboard_state);
+			if (player[i]->controller.is_any_inputs()) {
 				loading = false;
 				
-				player_info[i]->controller.reset_buffer();
-				player_info[!i]->controller.reset_buffer();
+				player[i]->controller.reset_buffer();
+				player[!i]->controller.reset_buffer();
 			}
 		}
 	}
@@ -257,7 +257,7 @@ void Battle::process_main() {
 		timer.flip_clock();
 	}
 	for (int i = 0; i < 2; i++) {
-		if (player_info[i]->controller.check_button_trigger(BUTTON_START)) {
+		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
 			game_manager->game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE]();
 		}
 	}
@@ -334,34 +334,34 @@ void Battle::process_fighter() {
 /*	if (fighter[1]->is_actionable()) {
 		if (!fighter[1]->projectiles[0]->active) {
 			if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 0) {
-				player_info[1]->controller.set_button_on(BUTTON_DOWN, 2);
+				player[1]->controller.set_button_on(BUTTON_DOWN, 2);
 			}
 			else if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 1) {
-				player_info[1]->controller.set_button_on(BUTTON_LEFT, 3);
+				player[1]->controller.set_button_on(BUTTON_LEFT, 3);
 			}
 			else if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 3) {
-				player_info[1]->controller.set_button_on(BUTTON_LP);
+				player[1]->controller.set_button_on(BUTTON_LP);
 			}
 		}
 		if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
-			player_info[1]->controller.set_button_on(BUTTON_RIGHT); //lol you can't buffer dashes
+			player[1]->controller.set_button_on(BUTTON_RIGHT); //lol you can't buffer dashes
 		}
 	}
 	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_START) {
 		if (!fighter[1]->check_button_on(BUTTON_LP)) { //do i LOOK like i know what frame it comes out on?
-			player_info[1]->controller.set_button_on(BUTTON_LP);
+			player[1]->controller.set_button_on(BUTTON_LP);
 		}
 	}
 	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
 		if (fighter[1]->frame != 0.0) { //lol you still can't buffer dashes
 			if (!fighter[1]->check_button_on(BUTTON_RIGHT)) {
-				player_info[1]->controller.set_button_on(BUTTON_RIGHT);
+				player[1]->controller.set_button_on(BUTTON_RIGHT);
 			}
 		}
 	}*/
 	
 	for (int i = 0; i < 2; i++) {
-		player_info[i]->controller.poll_buttons(keyboard_state);
+		player[i]->controller.poll_buttons(keyboard_state);
 		thread_manager->notify_thread(i);
 	}
 }

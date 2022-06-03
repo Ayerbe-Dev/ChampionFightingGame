@@ -8,9 +8,9 @@ void controls_main() {
 	GameMenu* background_menu = game_manager->get_target();
 
 	game_manager->layer++;
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player *player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 
 	const Uint8* keyboard_state;
 
@@ -25,8 +25,8 @@ void controls_main() {
 
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
-			player_info[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.check_controllers();
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();
@@ -54,8 +54,8 @@ void OptionsMenu::load_game_menu() {
 
 	game_manager->set_menu_info(this);
 
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 
 	panel.init("resource/ui/menu/options/overlay.png");
 	panel.set_width(500);

@@ -4,6 +4,7 @@
 #include "RenderManager.h"
 #include "BattleObject.h"
 #include "Fighter.h"
+#include "utils.h"
 
 EffectInfo::EffectInfo() {
 

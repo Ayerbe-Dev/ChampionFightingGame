@@ -4,6 +4,7 @@
 #include "ParamAccessor.h"
 #include "RenderManager.h"
 #include "DebugMenu.h"
+#include "utils.h"
 
 Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_ENABLE].k_mapping = SDL_SCANCODE_LSHIFT;

@@ -5,6 +5,7 @@
 #include "ParamAccessor.h"
 #include <fstream>
 #include <cmath>
+#include "utils.h"
 
 bool Fighter::common_ground_status_act(bool crouch) {
 	if (specific_ground_status_act()) {

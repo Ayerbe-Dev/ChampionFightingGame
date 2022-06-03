@@ -10,7 +10,7 @@
 #include "FighterFloat.h"
 #include "FighterFlag.h"
 
-class PlayerInfo;
+class Player;
 class BattleObjectManager;
 class SoundManager;
 class EffectManager;
@@ -33,7 +33,7 @@ public:
 
 	glm::vec3 extra_rot = glm::vec3(0.0);
 
-	PlayerInfo* player_info;
+	Player* player;
 
 	GameRect jostle_box;
 	glm::vec2 base_jostle_anchor;

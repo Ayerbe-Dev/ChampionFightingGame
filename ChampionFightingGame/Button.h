@@ -1,6 +1,12 @@
 #pragma once
 #include <SDL/SDL.h>
 #include "ButtonConstants.h"
+
+enum {
+	CONTROL_TYPE_NORMAL,
+	CONTROL_TYPE_WEENIE,
+};
+
 bool is_any_controller_input(SDL_GameController* controller);
 bool is_menu_button(unsigned int button_kind);
 

@@ -1,6 +1,7 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 #include "GameManager.h"
+#include "utils.h"
 
 void Fighter::reenter_last_anim() {
 	rate = prev_anim_rate;
@@ -61,7 +62,7 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 
 void Fighter::startAnimation(Animation* animation, bool clear_buffer) {
 	if (clear_buffer) {
-		player_info->controller.reset_buffer();
+		player->controller.reset_buffer();
 	}
 	if (animation != nullptr) {
 		model.set_move(animation->move);

@@ -5,8 +5,8 @@ CharaTemplate::CharaTemplate() {
 
 }
 
-CharaTemplate::CharaTemplate(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+CharaTemplate::CharaTemplate(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_CHARA_TEMPLATE;
 	chara_name = "chara_template";
 	resource_dir = "resource/chara/chara_template";

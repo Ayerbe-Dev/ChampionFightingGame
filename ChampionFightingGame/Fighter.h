@@ -4,7 +4,7 @@
 #include "Button.h"
 #include "Animation.h"
 #include "Box.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "FighterConstants.h"
 #include "BattleObjectManager.h"
 

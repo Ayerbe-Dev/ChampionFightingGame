@@ -15,9 +15,9 @@
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player *player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
 	CSS *css = new CSS;
@@ -26,7 +26,7 @@ void chara_select_main() {
 	while (*css->looping) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
+			player[i]->controller.check_controllers();
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -34,7 +34,7 @@ void chara_select_main() {
 
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();
@@ -86,8 +86,8 @@ void CSS::load_game_menu() {
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
 
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 
 	if (!load_css()) {
 		game_manager->add_crash_log("Could not open CSS file!");
@@ -102,8 +102,8 @@ void CSS::load_game_menu() {
 	}
 	for (int i = 0; i < 2; i++) {
 		player_id = i;
-		if (player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			find_prev_chara_kind(player_info[i]->chara_kind);
+		if (player[i]->chara_kind != CHARA_KIND_MAX) {
+			find_prev_chara_kind(player[i]->chara_kind);
 		}
 		else {
 			mobile_css_slots[i] = chara_slots[i].texture;
@@ -214,8 +214,8 @@ int CSS::get_num_slots() {
 }
 
 void CSS::event_select_press() {
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		player_info[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
+		player[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
 		mobile_css_slots[player_id] = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
 		if (player_id) {
@@ -230,9 +230,9 @@ void CSS::event_select_press() {
 	}
 }
 void CSS::event_back_press() {
-	if (player_info[player_id]->chara_kind != CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind != CHARA_KIND_MAX) {
 		mobile_slots_active[player_id] = false;
-		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
+		player[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
 		*game_state = GAME_STATE_MENU;
@@ -241,14 +241,14 @@ void CSS::event_back_press() {
 }
 
 void CSS::event_start_press() {
-	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
+	if (player[0]->chara_kind != CHARA_KIND_MAX && player[1]->chara_kind != CHARA_KIND_MAX) {
 		*game_state = GAME_STATE_BATTLE;
 		*looping = false;
 	}
 }
 
 void CSS::event_right_press() {
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]++;
 		}
@@ -258,7 +258,7 @@ void CSS::event_right_press() {
 }
 
 void CSS::event_left_press() {
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]--;
 		}
@@ -269,7 +269,7 @@ void CSS::event_left_press() {
 
 void CSS::event_down_press() {
 	bool jump = false;
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] < num_rows) {
 			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1] == nullptr) {
 				jump = true;
@@ -318,7 +318,7 @@ void CSS::event_down_press() {
 
 void CSS::event_up_press() {
 	bool jump = false;
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] != 0) {
 			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1] == nullptr) {
 				jump = true;
@@ -451,7 +451,7 @@ int CSS::get_chara_kind(int player) {
 void CSS::find_prev_chara_kind(int chara_kind) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (chara_slots[i].chara_kind == chara_kind) {
-			player_info[player_id]->chara_kind = CHARA_KIND_MAX;
+			player[player_id]->chara_kind = CHARA_KIND_MAX;
 			my_col[player_id] = chara_slots[i].my_col;
 			my_row[player_id] = chara_slots[i].my_row;
 			select_slot();

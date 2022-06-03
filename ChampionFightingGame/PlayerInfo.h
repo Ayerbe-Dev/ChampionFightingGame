@@ -1,19 +1,16 @@
 #pragma once
-#include "utils.h"
-#include "Stage.h"
-#include "GameController.h"
+#include <iostream>
+#include <vector>
+#include "Button.h"
+#include "CharaKind.h"
 
 class PlayerInfo {
 public:
 	PlayerInfo();
-	PlayerInfo(int id);
 
-	void set_default_button_mappings(int id);
-
-	GameController controller;
-	int id;
-	int chara_kind = 0;
-	int alt_color = 0;
-	StageInfo stage_info;
 	std::string name;
+	int control_type;
+	std::vector<Button> custom_mappings;
+	int preferred_chara = CHARA_KIND_ROY;
+	int preferred_color[CHARA_KIND_MAX] = { 0 };
 };

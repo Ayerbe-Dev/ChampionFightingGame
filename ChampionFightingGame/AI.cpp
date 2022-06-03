@@ -29,7 +29,7 @@ void AI::init(int id, int judgement, int precision, int execution, int reaction,
 	load_chara_info(battle_object_manager->fighter[!id]->chara_name, opponent_move_list);
 
 	fighter = battle_object_manager->fighter[id];
-	controller = &fighter->player_info->controller;
+	controller = &fighter->player->controller;
 
 	this->judgement = judgement;
 	this->precision = 10 - precision;

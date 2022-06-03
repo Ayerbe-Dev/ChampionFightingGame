@@ -4,8 +4,8 @@ Tessa::Tessa() {
 
 }
 
-Tessa::Tessa(int id, PlayerInfo* player_info) {
-	this->player_info = player_info;
+Tessa::Tessa(int id, Player* player) {
+	this->player = player;
 	this->chara_kind = CHARA_KIND_TESSA;
 	chara_name = "tessa";
 	resource_dir = "resource/chara/tessa";

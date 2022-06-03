@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL/SDL.h>
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "Stage.h"
@@ -61,7 +61,7 @@ public:
 	int numRows;
 	int colsOffset;
 
-	PlayerInfo* player_info[2];
+	Player* player[2];
 
 	int num_slots;
 	SSSSlot stage_slots[CSS_SLOTS];

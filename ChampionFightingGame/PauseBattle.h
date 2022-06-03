@@ -9,9 +9,10 @@ void pause_battle_main();
 class PauseBattle : public GameMenu {
 public:
 	PauseBattle();
-	PauseBattle(int width, int height, std::string dir);
-
-	void init(int width, int height, std::string dir);
+	~PauseBattle();
+	
+	void load_game_menu();
+	void event_back_press();
 
 	GameTexture panel;
 	PlayerInfo* player_info[2];

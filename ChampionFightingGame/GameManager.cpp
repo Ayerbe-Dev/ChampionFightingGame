@@ -30,6 +30,7 @@ GameManager::GameManager() {
 	*prev_game_state = *game_state;
 	*game_context = GAME_CONTEXT_NORMAL;
 	*prev_game_context = *game_context;
+	render_manager = RenderManager::get_instance();
 }
 
 void GameManager::destroy() {
@@ -55,8 +56,10 @@ void GameManager::set_game_state_functions() {
 
 void GameManager::update_state(int game_state, int game_context) {
 	if (game_state != GAME_STATE_MAX) {
-		*prev_game_state = *this->game_state;
-		*this->game_state = game_state;
+		if (game_state != *this->game_state) {
+			*prev_game_state = *this->game_state;
+			*this->game_state = game_state;
+		}
 		if (game_state == GAME_STATE_CLOSE) {
 			for (int i = 0; i < MAX_LAYERS; i++) {
 				looping[i] = false;
@@ -67,8 +70,10 @@ void GameManager::update_state(int game_state, int game_context) {
 		}
 	}
 	if (game_context != GAME_CONTEXT_MAX) {
-		*prev_game_context = *this->game_context;
-		*this->game_context = game_context;
+		if (game_context != *this->game_context) {
+			*prev_game_context = *this->game_context;
+			*this->game_context = game_context;
+		}
 	}
 }
 
@@ -160,6 +165,9 @@ void GameManager::handle_menus() {
 		if (is_any_menu_input(i)) {
 			event_any_press();
 		}
+	}
+	if (is_crash()) {
+		update_state(GAME_STATE_DEBUG_MENU);
 	}
 }
 
@@ -290,6 +298,7 @@ void GameManager::event_any_press() {
 
 void GameManager::add_crash_log(std::string crash_reason) {
 	crash_log.push(crash_reason);
+	update_state(GAME_STATE_DEBUG_MENU);
 }
 
 bool GameManager::get_crash_log(std::string* ret) {

@@ -19,17 +19,9 @@ void menu_main() {
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
 
-	GameLoader* game_loader = new GameLoader(1);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
-	loading_thread.detach();
 
 	MainMenu *main_menu = new MainMenu;
-	update_thread_progress(game_loader->loaded_items);
-	MenuItem menu_items[5];
-
-	game_manager->set_menu_info(main_menu);
-
-	game_loader->finished = true;
+	main_menu->load_game_menu();
 
 	while (*main_menu->looping) {
 		wait_ms();
@@ -63,8 +55,73 @@ void menu_main() {
 		}
 	}
 
-	delete game_loader;
 	delete main_menu;
+}
+
+MainMenu::MainMenu() {
+
+}
+
+MainMenu::~MainMenu() {
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destroy();
+		sub_menu_tables[i]->destroy();
+		delete sub_menu_tables[i];
+	}
+	delete game_loader;
+}
+
+void MainMenu::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
+	game_manager->set_menu_info(this);
+
+	game_loader = new GameLoader(1);
+	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	loading_thread.detach();
+
+	background_texture.init("resource/ui/menu/main/bg.png");
+
+	menu_items[0].init("resource/ui/menu/main/Online.png");
+	menu_items[1].init("resource/ui/menu/main/Solo.png");
+	menu_items[2].init("resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png");
+	menu_items[3].init("resource/ui/menu/main/Options.png");
+	menu_items[4].init("resource/ui/menu/main/Extras.png");
+
+	for (int i = 0; i < 5; i++) {
+		menu_items[i].destination = i;
+		sub_menu_tables[i] = new SubMenuTable(i);
+	}
+
+	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_ONLINE]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_text[0].init("resource/ui/menu/main/Story.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_text[1].init("resource/ui/menu/main/Arcade.png");
+	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_text[2].init("resource/ui/menu/main/Training.png");
+	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
+	sub_menu_tables[SUB_MENU_VS]->sub_text[0].init("resource/ui/menu/main/PlayerVsPlayer.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_text[1].init("resource/ui/menu/main/PlayerVsCPU.png");
+	sub_menu_tables[SUB_MENU_VS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[3].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[4].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
+	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[3].init("resource/ui/menu/main/Placeholder.png");
+	for (int i = 0; i < 5; i++) {
+		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
+			sub_menu_tables[i]->sub_text[i2].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		}
+	}
+
+	inc_thread();
+	game_loader->finished = true;
 }
 
 void MainMenu::event_up_press() {
@@ -225,57 +282,6 @@ int get_sub_selection(int top_selection, int sub_selection) {
 		} break;
 	}
 	return ret;
-}
-
-MainMenu::MainMenu(){
-	background_texture.init("resource/ui/menu/main/bg.png");
-
-	menu_items[0].init("resource/ui/menu/main/Online.png");
-	menu_items[1].init("resource/ui/menu/main/Solo.png" );
-	menu_items[2].init("resource/ui/menu/main/VS.png", "resource/ui/menu/main/vsimg.png" );
-	menu_items[3].init("resource/ui/menu/main/Options.png" );
-	menu_items[4].init("resource/ui/menu/main/Extras.png" );
-
-	for (int i = 0; i < 5; i++) {
-		menu_items[i].destination = i;
-		sub_menu_tables[i] = new SubMenuTable(i);
-	}
-
-	sub_menu_tables[SUB_MENU_ONLINE]->item_count = 2;
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_ONLINE]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->item_count = 3;
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_text[0].init("resource/ui/menu/main/Story.png");
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_text[1].init("resource/ui/menu/main/Arcade.png");
-	sub_menu_tables[SUB_MENU_SINGLEPLAYER]->sub_text[2].init("resource/ui/menu/main/Training.png");
-	sub_menu_tables[SUB_MENU_VS]->item_count = 3;
-	sub_menu_tables[SUB_MENU_VS]->sub_text[0].init("resource/ui/menu/main/PlayerVsPlayer.png");
-	sub_menu_tables[SUB_MENU_VS]->sub_text[1].init("resource/ui/menu/main/PlayerVsCPU.png");
-	sub_menu_tables[SUB_MENU_VS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->item_count = 5;
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[3].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_OPTIONS]->sub_text[4].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->item_count = 4;
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[0].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[1].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[2].init("resource/ui/menu/main/Placeholder.png");
-	sub_menu_tables[SUB_MENU_EXTRAS]->sub_text[3].init("resource/ui/menu/main/Placeholder.png");
-	for (int i = 0; i < 5; i++) {
-		for (int i2 = 0; i2 < sub_menu_tables[i]->item_count; i2++) {
-			sub_menu_tables[i]->sub_text[i2].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		}
-	}
-}
-
-MainMenu::~MainMenu() {
-	for (int i = 0; i < 5; i++) {
-		menu_items[i].destroy();
-		sub_menu_tables[i]->destroy();
-		delete sub_menu_tables[i];
-	}
 }
 
 void MainMenu::render() {

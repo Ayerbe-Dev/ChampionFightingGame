@@ -50,11 +50,13 @@ extern bool debug;
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	SoundManager* sound_manager = SoundManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
+
 	PlayerInfo* player_info[2];
 	for (int i = 0; i < 2; i++) {
 		player_info[i] = game_manager->player_info[i];
 	}
+
 	if (player_info[0]->chara_kind == player_info[1]->chara_kind && player_info[0]->alt_color == player_info[1]->alt_color) {
 		if (player_info[0]->alt_color == 0) {
 			player_info[1]->alt_color++;
@@ -63,12 +65,9 @@ void battle_main() {
 			player_info[1]->alt_color--;
 		}
 	}
+
 	Battle *battle = new Battle;
-	battle->load_battle(game_manager);
-
-	RenderManager *render_manager = RenderManager::get_instance();
-	SDL_GetWindowSize(render_manager->window, &render_manager->s_window_width, &render_manager->s_window_height);
-
+	battle->load_game_menu();
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
@@ -101,7 +100,7 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
-	battle->unload_battle();
+	battle->unload_game_menu();
 	delete battle;
 }
 
@@ -109,14 +108,17 @@ Battle::Battle() {}
 
 Battle::~Battle() {}
 
-void Battle::load_battle(GameManager* game_manager) {
+void Battle::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
+	SoundManager* sound_manager = SoundManager::get_instance();
+
+	game_manager->set_menu_info(this);
 
 	debug_controller.add_button(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
-	SoundManager* sound_manager = SoundManager::get_instance();
 	game_loader = new GameLoader(15);
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
@@ -198,7 +200,6 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 	thread_manager->add_thread(THREAD_KIND_UI, ui_thread, (void*)this);
 	game_loader->finished = true;
-	game_manager->set_menu_info(this);
 
 	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
 		sound_manager->add_sound_player(-1); //I'll find a better ID for the stage music later
@@ -217,7 +218,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	ms = std::chrono::high_resolution_clock::now();
 }
 
-void Battle::unload_battle() {
+void Battle::unload_game_menu() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();

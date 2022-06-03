@@ -3,6 +3,7 @@
 #include "GameRect.h"
 #include "ParamAccessor.h"
 #include "RenderManager.h"
+#include "DebugMenu.h"
 
 Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_ENABLE].k_mapping = SDL_SCANCODE_LSHIFT;
@@ -210,28 +211,20 @@ void cotr_imgui_init() {
 	ImGui_ImplOpenGL3_Init();
 
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
-
-	printf("Debug Init\n");
 }
 
 void cotr_imgui_terminate() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	printf("Debug Exit\n");
 }
 
-void cotr_imgui_debug_dbmenu(GameManager* game_manager)
-{
+void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(RenderManager::get_instance()->window);
 	ImGui::NewFrame();
 
-	std::vector<std::string> debug_messages;
-	std::string crash_reason;
-	while (game_manager->get_crash_log(&crash_reason)) {
-		debug_messages.push_back(crash_reason);
-	}
+	GameManager* game_manager = GameManager::get_instance();
 	
 	ImGui::Begin("Debug Menu\n");		
 	
@@ -254,8 +247,8 @@ void cotr_imgui_debug_dbmenu(GameManager* game_manager)
 	if (ImGui::Button("exit")) {
 		game_manager->update_state(GAME_STATE_CLOSE);
 	}
-	for (int i = 0, max = debug_messages.size(); i < max; i++) {
-		ImGui::Text("%s", debug_messages[i].c_str());
+	for (int i = 0, max = debug_menu->debug_messages.size(); i < max; i++) {
+		ImGui::Text("%s", debug_menu->debug_messages[i].c_str());
 	}
 
 	ImGui::End();

@@ -14,13 +14,10 @@ void controls_main() {
 
 	const Uint8* keyboard_state;
 
-	OptionsMenu options_menu(500, 300, "resource/ui/menu/options/overlay.png");
-	options_menu.player_info[0] = player_info[0];
-	options_menu.player_info[1] = player_info[1];
+	OptionsMenu* options_menu = new OptionsMenu;
+	options_menu->load_game_menu();
 
-	game_manager->set_menu_info(&options_menu);
-
-	while (*options_menu.looping) {
+	while (*options_menu->looping) {
 		wait_ms();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -30,18 +27,17 @@ void controls_main() {
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.check_controllers();
 			player_info[i]->controller.poll_buttons(keyboard_state);
-			if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
-				*options_menu.looping = false;
-			}
 		}
 
+		game_manager->handle_menus();
+
 		background_menu->process_background();
-		options_menu.panel.render();
+		options_menu->panel.render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
-	options_menu.panel.destroy();
+	delete options_menu;
 	game_manager->layer--;
 }
 
@@ -49,13 +45,24 @@ OptionsMenu::OptionsMenu() {
 
 }
 
-OptionsMenu::OptionsMenu(int width, int height, std::string dir) {
-	init(width, height, dir);
+OptionsMenu::~OptionsMenu() {
+	panel.destroy();
 }
 
-void OptionsMenu::init(int width, int height, std::string dir) {
-	panel.init(dir);
-	panel.set_width(width);
-	panel.set_height(height);
+void OptionsMenu::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
+
+	game_manager->set_menu_info(this);
+
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
+	panel.init("resource/ui/menu/options/overlay.png");
+	panel.set_width(500);
+	panel.set_height(300);
 	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+}
+
+void OptionsMenu::event_back_press() {
+	*looping = false;
 }

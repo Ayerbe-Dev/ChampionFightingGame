@@ -1,17 +1,21 @@
 #include "GameMenu.h"
 #include "Loader.h"
+#include "GameManager.h"
 
-void GameMenu::event_up_press(){};
-void GameMenu::event_down_press(){};
-void GameMenu::event_left_press(){};
-void GameMenu::event_right_press(){};
-void GameMenu::event_start_press(){};
-void GameMenu::event_select_press(){};
-void GameMenu::event_back_press(){};
-void GameMenu::event_pause_press() {};
-void GameMenu::event_any_press() {};
+void GameMenu::event_up_press(){}
+void GameMenu::event_down_press(){}
+void GameMenu::event_left_press(){}
+void GameMenu::event_right_press(){}
+void GameMenu::event_start_press(){}
+void GameMenu::event_select_press(){}
+void GameMenu::event_back_press(){}
+void GameMenu::event_pause_press() {}
+void GameMenu::event_any_press() {}
+void GameMenu::process_background() {}
 
-void GameMenu::process_background() {};
+void GameMenu::load_game_menu() {
+	GameManager::get_instance()->set_menu_info(this);
+}
 
 GameMenu::GameMenu() {
 	average_ticks.reserve(10000);

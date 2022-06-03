@@ -106,6 +106,7 @@ public:
 static int LoadingScreen(void* void_GameLoader) {
 	GameLoader* game_loader = (GameLoader*)void_GameLoader;
 	RenderManager* render_manager = RenderManager::get_instance();
+	render_manager->refresh_sdl_renderer();
 
 	SDL_Texture* pScreenTexture = SDL_CreateTexture(render_manager->sdl_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	SDL_SetTextureBlendMode(pScreenTexture, SDL_BLENDMODE_BLEND);

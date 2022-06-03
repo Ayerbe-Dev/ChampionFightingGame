@@ -58,7 +58,6 @@ int main() {
 	bool running = *game_manager->game_state != GAME_STATE_CLOSE;
 
 	while (running) {
-		render_manager->refresh_sdl_renderer();
 		for (int i = 0; i < MAX_LAYERS; i++) {
 			game_manager->looping[i] = true;
 		}

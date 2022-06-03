@@ -12,6 +12,7 @@ public:
     ~TitleScreen();
     void render();
     void event_any_press();
+    void load_game_menu();
 private:
     GameTexture title_l1;
     GameTexture title_l2;

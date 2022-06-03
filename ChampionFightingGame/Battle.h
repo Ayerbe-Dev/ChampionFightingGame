@@ -83,8 +83,8 @@ public:
 	Battle();
 	~Battle();
 
-	void load_battle(GameManager* game_manager);
-	void unload_battle();
+	void load_game_menu();
+	void unload_game_menu();
 
 	void process_main();
 	void process_ui();

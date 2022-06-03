@@ -15,6 +15,7 @@ void RenderManager::init() {
 	else {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
+	SDL_GetWindowSize(window, &s_window_width, &s_window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	sdl_context = SDL_GL_CreateContext(window);
 	glewExperimental = GL_TRUE;
@@ -33,9 +34,6 @@ void RenderManager::init() {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	num_lights = 0;
-	s_window_width = 0;
-	s_window_height = 0;
-	box_FBO = 0;
 
 	shadow_map.init();
 	box_layer.init();
@@ -43,24 +41,6 @@ void RenderManager::init() {
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	default_effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-
-	glGenFramebuffers(1, &box_FBO);
-	glGenTextures(1, &box_FBO_color);
-	glGenRenderbuffers(1, &box_FBO_depth);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, box_FBO);
-
-	glBindTexture(GL_TEXTURE_2D, box_FBO_color);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, box_FBO_color, 0);
-
-	glBindRenderbuffer(GL_RENDERBUFFER, box_FBO_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, box_FBO_depth);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void RenderManager::destroy() {

@@ -20,45 +20,8 @@ void chara_select_main() {
 	player_info[1] = game_manager->player_info[1];
 	const Uint8* keyboard_state;
 
-	GameLoader* game_loader = new GameLoader(3);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
-	loading_thread.detach();
-
 	CSS *css = new CSS;
-
-	css->player_info[0] = player_info[0];
-	css->player_info[1] = player_info[1];
-	if (css->load_css()) {
-		game_manager->add_crash_log("Could not open CSS file!");
-		delete css;
-		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
-	}
-	update_thread_progress(game_loader->loaded_items);
-	if (css->num_rows == 0) {
-		css->my_col[0] = 1;
-		css->my_col[1] = 1;
-	}
-	for (int i = 0; i < 2; i++) {
-		css->player_id = i;
-		if (css->player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css->find_prev_chara_kind(css->player_info[i]->chara_kind);
-		}
-		else {
-			css->mobile_css_slots[i] = css->chara_slots[i].texture;
-		}
-	}
-
-	css->cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	css->cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	update_thread_progress(game_loader->loaded_items);
-
-	css->cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	css->cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	update_thread_progress(game_loader->loaded_items);
-
-	game_manager->set_menu_info(css);
-	
-	game_loader->finished = true;
+	css->load_game_menu();
 
 	while (*css->looping) {
 		wait_ms();
@@ -69,7 +32,7 @@ void chara_select_main() {
 
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
+		keyboard_state = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < 2; i++) {
 			player_info[i]->controller.poll_buttons(keyboard_state);
 		}
@@ -81,7 +44,6 @@ void chara_select_main() {
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
-	delete game_loader;
 	delete css;
 }
 
@@ -113,13 +75,58 @@ CSS::~CSS() {
 	background_texture.destroy();
 	big_bar_texture.destroy();
 	top_bar_texture.destroy();
+	delete game_loader;
+}
+
+void CSS::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
+	game_manager->set_menu_info(this);
+
+	game_loader = new GameLoader(3);
+	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	loading_thread.detach();
+
+	player_info[0] = game_manager->player_info[0];
+	player_info[1] = game_manager->player_info[1];
+
+	if (!load_css()) {
+		game_manager->add_crash_log("Could not open CSS file!");
+		game_loader->finished = true;
+		return;
+	}
+
+	inc_thread();
+	if (num_rows == 0) {
+		my_col[0] = 1;
+		my_col[1] = 1;
+	}
+	for (int i = 0; i < 2; i++) {
+		player_id = i;
+		if (player_info[i]->chara_kind != CHARA_KIND_MAX) {
+			find_prev_chara_kind(player_info[i]->chara_kind);
+		}
+		else {
+			mobile_css_slots[i] = chara_slots[i].texture;
+		}
+	}
+
+	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+	cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+
+	inc_thread();
+
+	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+	cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	inc_thread();
+
+	game_loader->finished = true;
 }
 
 /// <summary>
 /// Loads the CSS file and sets up all of the slots.
 /// </summary>
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
-int CSS::load_css() {
+bool CSS::load_css() {
 	std::ifstream css_file;
 	css_file.open("resource/ui/menu/css/css_param.yml");
 	int chara_kind;
@@ -128,7 +135,7 @@ int CSS::load_css() {
 
 	if (css_file.fail()) {
 		css_file.close();
-		return -1;
+		return false;
 	}
 
 	std::string chara_name;
@@ -179,7 +186,7 @@ int CSS::load_css() {
 		select_slot();
 	}
 
-	return 0;
+	return true;
 }
 
 /// <summary>

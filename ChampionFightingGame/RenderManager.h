@@ -33,10 +33,6 @@ public:
 	ShadowMap shadow_map;
 	OverlayLayer box_layer;
 
-	GLuint box_FBO;
-	GLuint box_FBO_color;
-	GLuint box_FBO_depth;
-
 	int s_window_width;
 	int s_window_height;
 

@@ -45,6 +45,8 @@ public:
     MainMenu();
     ~MainMenu();
 
+    void load_game_menu();
+
     void event_up_press();
     void event_down_press();
     void event_left_press();

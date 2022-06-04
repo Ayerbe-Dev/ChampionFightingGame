@@ -11,7 +11,7 @@ public:
 
 	void init();
 
-	void update_light();
+	void update_light_pos();
 
 	int SHADOW_WIDTH;
 	int SHADOW_HEIGHT;

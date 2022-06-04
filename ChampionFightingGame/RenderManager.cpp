@@ -129,7 +129,7 @@ void RenderManager::update_shader_lights() {
 	else {
 		shadow_map.light_pos = shadow_total / glm::vec3(shadow_factor);
 	}
-	shadow_map.update_light();
+	shadow_map.update_light_pos();
 }
 
 void RenderManager::update_shader_cams() {

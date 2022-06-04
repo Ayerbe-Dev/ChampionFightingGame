@@ -63,6 +63,6 @@ void PauseBattle::load_game_menu() {
 	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }
 
-void PauseBattle::event_back_press() {
+void PauseBattle::event_start_press() {
 	*looping = false;
 }

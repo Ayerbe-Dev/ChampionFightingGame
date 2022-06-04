@@ -1,13 +1,14 @@
-#include "ShadowMap.h"
 #include <iostream>
+#include "ShadowMap.h"
+#include "RenderManager.h"
 
 ShadowMap::ShadowMap() {
 	SHADOW_WIDTH = 2000;
 	SHADOW_HEIGHT = 2000;
 
-	m_light_position = glm::vec3(0.0, 1.0, 1.0);
-	m_orthographic_perspective = glm::ortho(-shadow_map_fov, shadow_map_fov, -shadow_map_fov, shadow_map_fov, 0.1f, shadow_map_depth);
-	m_lookat = glm::lookAt(m_light_position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	light_pos = glm::vec3(0.0, 1.0, 1.0);
+	perspective = glm::ortho(-fov, fov, -fov, fov, 0.1f, depth);
+	lookat = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void ShadowMap::init() {
@@ -30,6 +31,7 @@ void ShadowMap::init() {
 }
 
 void ShadowMap::update_light() {
-	m_orthographic_perspective = glm::ortho(-shadow_map_fov, shadow_map_fov, -shadow_map_fov, shadow_map_fov, 0.1f, shadow_map_depth);
-	m_lookat = glm::lookAt(m_light_position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	perspective = glm::ortho(-fov, fov, -fov, fov, 0.1f, depth);
+	lookat = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	RenderManager::get_instance()->update_shader_shadows();
 }

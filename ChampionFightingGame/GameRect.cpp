@@ -130,7 +130,6 @@ void GameRect::render() {
 
 void GameRect::render_prepared() {
 	shader->use();
-	render_manager->update_shader_cam(shader);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	shader->set_mat4("matrix", matrix);

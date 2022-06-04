@@ -46,10 +46,8 @@ public:
 	void unlink_all_shaders();
 
 	void update_shader_lights();
-	void update_shader_cam(Shader* shader);
-
-	void render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale, bool flip);
-	void render_model_shadow(Model *model, glm::mat4 extra_mat, glm::vec3 *pos, glm::vec3 *rot, glm::vec3 *scale, bool flip);
+	void update_shader_cams();
+	void update_shader_shadows();
 
 	void refresh_sdl_renderer();
 

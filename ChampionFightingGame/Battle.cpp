@@ -75,7 +75,7 @@ void battle_main() {
 		battle->frame_delay_check_performance();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events();
+		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
 		for (int i = 0; i < 2; i++) {
 			if (player[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
@@ -112,6 +112,7 @@ void Battle::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 
 	game_manager->set_menu_info(this);
 
@@ -123,7 +124,6 @@ void Battle::load_game_menu() {
 	std::thread loading_thread(LoadingScreen, (void*)game_loader);
 	loading_thread.detach();
 
-	RenderManager* render_manager = RenderManager::get_instance();
 	camera = &render_manager->camera;
 
 	thread_manager = ThreadManager::get_instance();
@@ -164,6 +164,10 @@ void Battle::load_game_menu() {
 	
 		inc_thread();
 	}
+
+	render_manager->update_shader_cams();
+	render_manager->update_shader_lights();
+	render_manager->update_shader_shadows();
 	
 	timer.init(99);
 	inc_thread();
@@ -171,17 +175,8 @@ void Battle::load_game_menu() {
 	bool loading = true;
 	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
 	while (loading) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					game_loader->finished = true;
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-			}
-		}
+		game_manager->handle_window_events();
 
-		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
@@ -212,8 +207,6 @@ void Battle::load_game_menu() {
 	else {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
-
-	render_manager->update_shader_lights();
 
 	ms = std::chrono::high_resolution_clock::now();
 }

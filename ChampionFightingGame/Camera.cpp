@@ -2,15 +2,18 @@
 #include "Stage.h"
 #include "utils.h"
 #include <glm/gtx/vector_angle.hpp>
+#include "RenderManager.h"
 
 Camera::Camera() {
 	base_pos = glm::vec3(0.0, 0.6, 2.7);
 	pos = base_pos;
+	prev_pos = glm::vec3(0.0);
 	pitch = 3;
 	fov = 45.0;
 	following_players = true;
 	auto_linear_scale = 3.0;
-	update_view();
+	right = normalize(cross(front, world_up));
+	up = normalize(cross(right, front));
 }
 
 glm::mat4 Camera::get_view() {
@@ -48,9 +51,14 @@ void Camera::update_view() {
 
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
+	RenderManager::get_instance()->update_shader_cams();
 }
 
 void Camera::follow_players(glm::vec2 p1, glm::vec2 p2, Stage* stage) {
 	pos.x = clampf(stage->camera_bounds.x, (p1.x + p2.x) / 2.0, stage->camera_bounds.y) / 400.0;
 	pos.y = clampf(base_pos.y, ((std::max(p1.y, p2.y)) / 200.0) - (base_pos.y / 4.0), 800.0);
+	if (prev_pos != pos) {
+		update_view();
+	}
+	prev_pos = pos;
 }

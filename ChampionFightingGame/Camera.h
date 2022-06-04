@@ -16,6 +16,8 @@ public:
 	glm::vec3 up;
 	glm::vec3 right;
 
+	glm::vec3 prev_pos;
+
 	float yaw = -90.0;
 	float pitch = 0.0;
 	const float cam_speed = 0.5;

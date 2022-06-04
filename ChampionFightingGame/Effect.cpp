@@ -184,7 +184,6 @@ void EffectInstance::render() {
 	shader->use();
 	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);
-	RenderManager::get_instance()->update_shader_cam(shader);
 	final_pos = pos + (pos_frame * frame);
 	final_rot = rot + (rot_frame * frame);
 	final_scale = scale + (scale_frame * frame);
@@ -212,7 +211,6 @@ void EffectInstance::render_prepared() {
 	shader->use();
 	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);
-	RenderManager::get_instance()->update_shader_cam(shader);
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
 		effect->particles[i].render_prepared(shader, final_matrix_instance[i], final_rgba_instance[i], frame);
 	}

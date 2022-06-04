@@ -15,7 +15,7 @@ out vec4 FragPosLightSpace;
 
 uniform mat4 model_matrix;
 uniform mat4 camera_matrix;
-uniform mat4 shadow_light_view;
+uniform mat4 shadow_matrix;
 
 void main() {
     vec4 total_pos = vec4(v_pos, 1.0);
@@ -23,6 +23,6 @@ void main() {
     FragPos = vec3(model_matrix * total_pos);
     Normal = mat3(transpose(inverse(model_matrix))) * v_nor;  
     TexCoords = v_texcoords;
-    FragPosLightSpace = shadow_light_view * vec4(FragPos,1.0);
-    gl_Position = camera_matrix * model_matrix * total_pos;
+    FragPosLightSpace = shadow_matrix * vec4(FragPos,1.0);
+    gl_Position = camera_matrix * (model_matrix * total_pos);
 } 

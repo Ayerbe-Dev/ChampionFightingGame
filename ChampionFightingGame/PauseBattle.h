@@ -12,7 +12,7 @@ public:
 	~PauseBattle();
 	
 	void load_game_menu();
-	void event_back_press();
+	void event_start_press();
 
 	GameTexture panel;
 	Player* player[2];

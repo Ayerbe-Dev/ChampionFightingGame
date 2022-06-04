@@ -285,12 +285,12 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}	
 
 		if (ImGui::TreeNode("Shadow Light")) {
-			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.m_light_position.x, 0.01);
-			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.m_light_position.y, 0.01);
-			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.m_light_position.z, 0.01);
+			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.light_pos.x, 0.01);
+			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.light_pos.y, 0.01);
+			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.light_pos.z, 0.01);
 			
-			ImGui::DragFloat("fov", &render_manager->shadow_map.shadow_map_fov, 0.01);
-			ImGui::DragFloat("depth", &render_manager->shadow_map.shadow_map_depth, 0.01);
+			ImGui::DragFloat("fov", &render_manager->shadow_map.fov, 0.01);
+			ImGui::DragFloat("depth", &render_manager->shadow_map.depth, 0.01);
 
 			render_manager->shadow_map.update_light();
 
@@ -301,14 +301,6 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::SliderFloat("p0 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
 			ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
 			ImGui::TreePop();
-		}
-
-		if (render_manager->camera.following_players) {
-//			render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
-//			render_manager->camera.pos[1] = 0.5;
-//			render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
-//			render_manager->camera.yaw = -90 + render_manager->camera.pos[0] * render_manager->camera.auto_linear_scale;
-			//tmp_render_manager->camera.adjust_view()
 		}
 
 		if (ImGui::TreeNode("Lights")) {

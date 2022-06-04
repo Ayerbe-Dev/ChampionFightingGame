@@ -284,15 +284,14 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::TreePop();
 		}	
 
-		if (ImGui::TreeNode("Shadow Light")) {
+		if (ImGui::TreeNode("Shadow Light")) { //tbh this block doesn't really make sense anymore since
+			//by design it should always be the same as render_manager->lights[0]
 			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.light_pos.x, 0.01);
 			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.light_pos.y, 0.01);
 			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.light_pos.z, 0.01);
 			
 			ImGui::DragFloat("fov", &render_manager->shadow_map.fov, 0.01);
 			ImGui::DragFloat("depth", &render_manager->shadow_map.depth, 0.01);
-
-			render_manager->shadow_map.update_light();
 
 			ImGui::TreePop();
 		}
@@ -304,20 +303,19 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (ImGui::TreeNode("Lights")) {
-			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
+			for (int i2 = 0; i2 < render_manager->lights.size(); i2++) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 
-				//ImGui::Text(light_name.c_str());
-				//if (ImGui::CollapsingHeader(light_name.c_str())) {
 				if (ImGui::TreeNode(light_name.c_str())) {
-					ImGui::SliderFloat((light_name + " X").c_str(), &render_manager->lights[i2].position[0], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Y").c_str(), &render_manager->lights[i2].position[1], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Z").c_str(), &render_manager->lights[i2].position[2], -15.0f, 15.0f);
-					ImGui::Checkbox((light_name).c_str(), &render_manager->lights[i2].enabled);
+					ImGui::SliderFloat((light_name + ".X").c_str(), &render_manager->lights[i2]->position[0], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + ".Y").c_str(), &render_manager->lights[i2]->position[1], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + ".Z").c_str(), &render_manager->lights[i2]->position[2], -15.0f, 15.0f);
+					ImGui::Checkbox((light_name).c_str(), &render_manager->lights[i2]->enabled);
 					ImGui::TreePop();
 				}
 			}
 			ImGui::TreePop();
+			render_manager->update_shader_lights();
 		}
 	}
 

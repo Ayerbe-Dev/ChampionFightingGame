@@ -85,27 +85,21 @@ void StageAsset::load_lights() {
 		return;
 	}
 
+	lights.reserve(MAX_LIGHT_SOURCES);
+
 	RenderManager* render_manager = RenderManager::get_instance();
 
 
-	std::vector<glm::vec3> tmp_lights;
-	//glm::vec3 light_pos;
-	int light_i = 0;
-	tmp_lights.resize(MAX_LIGHT_SOURCES);
-	while (light_stream >> tmp_lights[light_i].x) {
-		light_stream >> tmp_lights[light_i].y;
-		light_stream >> tmp_lights[light_i].z;
-		//printf("Light Vector %f %f %f\n", tmp_lights[light_i].x, tmp_lights[light_i].y, tmp_lights[light_i].z);
-		//render_manager->add_light(Light(light_pos));
-		light_i++;
+	glm::vec3 light_pos; //RenderManager now gets pointers to the lights, so we'll store them
+	//in the StageAssets. This is also better because it means we can move the lights around within the
+	//stage scripts and have it affect the RenderManager.
+	while (light_stream >> light_pos.x) {
+		light_stream >> light_pos.y;
+		light_stream >> light_pos.z;
+		lights.push_back(Light(light_pos));
+		render_manager->add_light(&lights[lights.size() - 1]);
 	}
 	
-	for (unsigned int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-		render_manager->lights[i].position.x = tmp_lights[i].x;
-		render_manager->lights[i].position.y = tmp_lights[i].y;
-		render_manager->lights[i].position.z = tmp_lights[i].z;
-		//printf("StageAsset.cpp %f %f %f %p\n", render_manager->lights[i].position.x, render_manager->lights[i].position.y, render_manager->lights[i].position.z, &render_manager->lights[i]);
-	}
 	light_stream.close();
 }
 

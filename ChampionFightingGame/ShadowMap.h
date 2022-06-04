@@ -16,8 +16,8 @@ public:
 	int SHADOW_WIDTH;
 	int SHADOW_HEIGHT;
 
-	float depth = 7.0f;
-	float fov = 5.0f;
+	float depth;
+	float fov;
 
 	unsigned int FBO = 0;
 	unsigned int shadow_texture = 0;

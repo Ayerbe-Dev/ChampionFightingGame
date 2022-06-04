@@ -9,7 +9,7 @@
 #include "ShadowMap.h"
 #include "OverlayLayer.h"
 
-#define MAX_LIGHT_SOURCES 5
+#define MAX_LIGHT_SOURCES 10
 
 class RenderManager {
 public:
@@ -21,8 +21,7 @@ public:
 	SDL_GLContext sdl_context;
 
 	Camera camera;
-	Light lights[MAX_LIGHT_SOURCES];
-	int num_lights;
+	std::vector<Light*>lights;
 	std::vector<Shader*> linked_shaders;
 
 	Shader default_2d_shader;
@@ -39,7 +38,7 @@ public:
 	void init();
 	void destroy();
 
-	void add_light(Light light, int target = -1);
+	void add_light(Light *light, int target = -1);
 	void remove_light(int target = -1);
 
 	void link_shader(Shader *shader);

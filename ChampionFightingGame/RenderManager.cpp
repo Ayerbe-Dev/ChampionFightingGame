@@ -33,8 +33,6 @@ void RenderManager::init() {
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	num_lights = 0;
-
 	shadow_map.init();
 	box_layer.init();
 	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
@@ -53,46 +51,36 @@ void RenderManager::destroy() {
 	SDL_GL_DeleteContext(sdl_context);
 }
 
-void RenderManager::add_light(Light light, int target) {
+void RenderManager::add_light(Light *light, int target) {
 	if (target == -1) {
-		if (num_lights == MAX_LIGHT_SOURCES) {
-			std::cout << "Congrats you stupid idiot, you ran out of lights" << "\n";
+		if (lights.size() == MAX_LIGHT_SOURCES) {
+			std::cout << "Congrats you stupid idiot, you ran out of lights\n";
 			return;
 		}
 		else {
-			for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-				if (!lights[i].enabled) {
-					lights[i] = light;
-					num_lights++;
-					break;
-				}
-			}
+			lights.push_back(light);
 		}
 	}
 	else {
+		if (lights.size() <= target) {
+			lights.resize(target + 1);
+		}
 		lights[target] = light;
-		num_lights++;
 	}
+	update_shader_lights();
 }
 
 void RenderManager::remove_light(int target) {
 	if (target == -1) {
-		int index = 0;
-		while (num_lights != 0 && index < MAX_LIGHT_SOURCES) {
-			if (lights[index].enabled) {
-				lights[index].enabled = false;
-				num_lights--;
-			}
-			index++;
-		}
+		lights.clear();
 	}
 	else {
-		lights[target].enabled = false;
-		num_lights--;
+		for (int i = target, max = lights.size() - 1; i < max; i++) {
+			lights[i] = lights[i + 1];
+		}
+		lights.pop_back();
 	}
-	if (num_lights < 0) {
-		num_lights = 0;
-	}
+	update_shader_lights();
 }
 
 void RenderManager::link_shader(Shader *shader) {
@@ -104,18 +92,30 @@ void RenderManager::unlink_all_shaders() {
 }
 
 void RenderManager::update_shader_lights() {
+	if (lights.empty()) {
+		shadow_map.light_pos = glm::vec3(0.0, 1.0, 1.0);
+	}
+	else {
+		shadow_map.light_pos = lights[0]->position;
+	}
+	shadow_map.update_light();
 	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
 		linked_shaders[i]->use();
 		linked_shaders[i]->set_float("material.shininess", 4.0f);
-		for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
-			linked_shaders[i]->set_vec3("light[0].position", lights[i2].position, i2);
-			linked_shaders[i]->set_vec3("light[0].ambient", lights[i2].ambient, i2);
-			linked_shaders[i]->set_vec3("light[0].diffuse", lights[i2].diffuse, i2);
-			linked_shaders[i]->set_vec3("light[0].specular", lights[i2].specular, i2);
-			linked_shaders[i]->set_float("light[0].constant", lights[i2].constant, i2);
-			linked_shaders[i]->set_float("light[0].linear", lights[i2].linear, i2);
-			linked_shaders[i]->set_float("light[0].quadratic", lights[i2].quadratic, i2);
-			linked_shaders[i]->set_bool("light[0].enabled", lights[i2].enabled, i2);
+		for (int i2 = 0, max2 = MAX_LIGHT_SOURCES; i2 < max2; i2++) {
+			if (i2 < lights.size()) {
+				linked_shaders[i]->set_vec3("light[0].position", lights[i2]->position, i2);
+				linked_shaders[i]->set_vec3("light[0].ambient", lights[i2]->ambient, i2);
+				linked_shaders[i]->set_vec3("light[0].diffuse", lights[i2]->diffuse, i2);
+				linked_shaders[i]->set_vec3("light[0].specular", lights[i2]->specular, i2);
+				linked_shaders[i]->set_float("light[0].constant", lights[i2]->constant, i2);
+				linked_shaders[i]->set_float("light[0].linear", lights[i2]->linear, i2);
+				linked_shaders[i]->set_float("light[0].quadratic", lights[i2]->quadratic, i2);
+				linked_shaders[i]->set_bool("light[0].enabled", lights[i2]->enabled, i2);
+			}
+			else {
+				linked_shaders[i]->set_bool("lights[0].enabled", false, i2);
+			}
 		}
 	}
 }

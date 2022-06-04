@@ -418,8 +418,6 @@ void Battle::render_world() {
 	//it's easier to just enable culling only for the part of the rendering process that actually needs it (Since enabling culling on 2D textures
 	//doesn't make much of a difference either way)
 
-	render_manager->update_shader_lights();
-
 	///SHADOW PASS
 	
 	//Setup for the render

@@ -24,6 +24,8 @@ public:
 	std::vector<float> stage_float;
 	std::vector<bool> stage_flag;
 
+	std::vector<Light> lights;
+
 	float frame;
 	float rate;
 	bool is_anim_end = false;

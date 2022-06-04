@@ -32,7 +32,6 @@ uniform vec3 view_pos;
 uniform Material material;
 uniform Light light[MAX_LIGHT_SOURCES];
 
-
 float ShadowCalculation(vec4 fragPosLightSpace) {
     float bias = 0.005;
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -56,19 +55,20 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
 
 void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
+    vec3 color = texture(material.diffuse, TexCoords).rgb;
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
         if (light[i].enabled) {
-            vec3 ambient = light[i].ambient * texture(material.diffuse, TexCoords).rgb;
+            vec3 ambient = light[i].ambient * color;
   	 
             vec3 norm = normalize(Normal);
             vec3 light_dir = normalize(light[i].position - FragPos);
             float diff = max(dot(norm, light_dir), 0.0);
-            vec3 diffuse = light[i].diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
+            vec3 diffuse = light[i].diffuse * diff * color;  
     
             vec3 view_dir = normalize(view_pos - FragPos);
             vec3 reflect_dir = reflect(-light_dir, norm);  
             float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
-            vec3 specular = light[i].specular * spec * texture(material.specular, TexCoords).rgb;  
+            vec3 specular = light[i].specular * spec * color;  
     
             float distance = length(light[i].position - FragPos);
             float attenuation = 1.0 / (light[i].constant + light[i].linear * distance + light[i].quadratic * (distance * distance));    
@@ -82,6 +82,5 @@ void main() {
     }
 
     float shadow_result = ShadowCalculation(FragPosLightSpace);
-    vec3 color = texture(material.diffuse, TexCoords).rgb;
     FragColor = vec4((1.0 - shadow_result) * result, 1.0);
 }

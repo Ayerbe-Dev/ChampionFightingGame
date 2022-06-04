@@ -6,10 +6,15 @@ ShadowMap::ShadowMap() {
 	SHADOW_WIDTH = 2000;
 	SHADOW_HEIGHT = 2000;
 
+	depth = 25.0;
+	fov = 5.0;
+
 	light_pos = glm::vec3(0.0, 1.0, 1.0);
-	perspective = glm::ortho(-fov, fov, -fov, fov, 0.1f, depth);
+	perspective = glm::ortho(-fov, fov, -fov, fov, 0.0f, depth);
 	lookat = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
+
+
 
 void ShadowMap::init() {
 	glGenFramebuffers(1, &FBO);

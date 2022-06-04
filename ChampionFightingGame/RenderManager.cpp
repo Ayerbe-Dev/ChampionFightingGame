@@ -1,3 +1,4 @@
+#include "GameManager.h"
 #include "RenderManager.h"
 #include <string>
 #include "GameSettings.h"
@@ -54,7 +55,7 @@ void RenderManager::destroy() {
 void RenderManager::add_light(Light *light, int target) {
 	if (target == -1) {
 		if (lights.size() == MAX_LIGHT_SOURCES) {
-			std::cout << "Congrats you stupid idiot, you ran out of lights\n";
+			GameManager::get_instance()->add_crash_log("Congrats you stupid idiot, you ran out of lights\n");
 			return;
 		}
 		else {
@@ -63,9 +64,12 @@ void RenderManager::add_light(Light *light, int target) {
 	}
 	else {
 		if (lights.size() <= target) {
-			lights.resize(target + 1);
+			lights.resize(target);
+			lights.push_back(light);
 		}
-		lights[target] = light;
+		else {
+			lights[target] = light;
+		}
 	}
 	update_shader_lights();
 }
@@ -92,32 +96,40 @@ void RenderManager::unlink_all_shaders() {
 }
 
 void RenderManager::update_shader_lights() {
+	glm::vec3 shadow_total = glm::vec3(0.0);
+	float shadow_factor = 0.0;
+	for (int i = 0, max = MAX_LIGHT_SOURCES; i < max; i++) {
+		if (i < lights.size()) {
+			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
+				linked_shaders[i2]->use();
+				linked_shaders[i2]->set_vec3("light[0].position", lights[i]->position, i);
+				linked_shaders[i2]->set_vec3("light[0].ambient", lights[i]->ambient, i);
+				linked_shaders[i2]->set_vec3("light[0].diffuse", lights[i]->diffuse, i);
+				linked_shaders[i2]->set_vec3("light[0].specular", lights[i]->specular, i);
+				linked_shaders[i2]->set_float("light[0].constant", lights[i]->constant, i);
+				linked_shaders[i2]->set_float("light[0].linear", lights[i]->linear, i);
+				linked_shaders[i2]->set_float("light[0].quadratic", lights[i]->quadratic, i);
+				linked_shaders[i2]->set_bool("light[0].enabled", lights[i]->enabled, i);
+			}
+			if (lights[i]->enabled) {
+				shadow_total += lights[i]->position;
+				shadow_factor++;
+			}
+		}
+		else {
+			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
+				linked_shaders[i2]->use();
+				linked_shaders[i2]->set_bool("lights[0].enabled", false, i);
+			}
+		}
+	}
 	if (lights.empty()) {
 		shadow_map.light_pos = glm::vec3(0.0, 1.0, 1.0);
 	}
 	else {
-		shadow_map.light_pos = lights[0]->position;
+		shadow_map.light_pos = shadow_total / glm::vec3(shadow_factor);
 	}
 	shadow_map.update_light();
-	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
-		linked_shaders[i]->use();
-		linked_shaders[i]->set_float("material.shininess", 4.0f);
-		for (int i2 = 0, max2 = MAX_LIGHT_SOURCES; i2 < max2; i2++) {
-			if (i2 < lights.size()) {
-				linked_shaders[i]->set_vec3("light[0].position", lights[i2]->position, i2);
-				linked_shaders[i]->set_vec3("light[0].ambient", lights[i2]->ambient, i2);
-				linked_shaders[i]->set_vec3("light[0].diffuse", lights[i2]->diffuse, i2);
-				linked_shaders[i]->set_vec3("light[0].specular", lights[i2]->specular, i2);
-				linked_shaders[i]->set_float("light[0].constant", lights[i2]->constant, i2);
-				linked_shaders[i]->set_float("light[0].linear", lights[i2]->linear, i2);
-				linked_shaders[i]->set_float("light[0].quadratic", lights[i2]->quadratic, i2);
-				linked_shaders[i]->set_bool("light[0].enabled", lights[i2]->enabled, i2);
-			}
-			else {
-				linked_shaders[i]->set_bool("lights[0].enabled", false, i2);
-			}
-		}
-	}
 }
 
 void RenderManager::update_shader_cams() {

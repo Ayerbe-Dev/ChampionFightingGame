@@ -259,7 +259,7 @@ void Battle::process_main() {
 //			fighter[i]->reset();
 //		}
 //	}
-
+	battle_object_manager->world_frame += battle_object_manager->world_rate;
 	if (frame_pause) {
 		process_frame_pause();
 	}
@@ -270,6 +270,9 @@ void Battle::process_main() {
 		stage.process();
 		post_process_fighter();
 		thread_manager->wait_thread(THREAD_KIND_UI);
+	}
+	if (battle_object_manager->world_frame >= 0.97) {
+		battle_object_manager->world_frame = 0.0;
 	}
 	if (camera->following_players) {
 		camera->follow_players(fighter[0]->pos, fighter[1]->pos, &stage);

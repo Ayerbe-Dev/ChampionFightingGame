@@ -68,7 +68,9 @@ void Fighter::fighter_main() {
 	process_projectiles();
 	process_position();
 	process_input();
-	decrease_common_variables();
+	if (battle_object_manager->counters_can_move()) {
+		decrease_common_variables();
+	}
 	process_post_position();
 	process_post_status();
 	process_ai();

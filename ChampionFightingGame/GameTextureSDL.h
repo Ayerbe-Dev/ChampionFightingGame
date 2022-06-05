@@ -51,6 +51,16 @@ public:
 
     glm::vec2 get_pos_offset(glm::vec2 pos, SDL_Rect rect);
 
+    float left_percent = 1.0;
+    float right_percent = 1.0;
+    float top_percent = 1.0;
+    float bottom_percent = 1.0;
+
+    float left_crop = 1.0;
+    float right_crop = 1.0;
+    float top_crop = 1.0;
+    float bottom_crop = 1.0;
+
     float target_left_crop = -2.0;
     float target_right_crop = -2.0;
     float target_top_crop = -2.0;
@@ -74,12 +84,15 @@ public:
     int base_width;
     int base_height;
 
-    int width_scale;
-    int height_scale;
-
     bool h_flipped;
     bool v_flipped;
 
     bool whole_texture;
     bool whole_screen;
+
+private:
+    void scale_left_percent_internal(SDL_Rect* rect, float percent);
+    void scale_right_percent_internal(SDL_Rect* rect, float percent);
+    void scale_top_percent_internal(SDL_Rect* rect, float percent);
+    void scale_bottom_percent_internal(SDL_Rect* rect, float percent);
 };

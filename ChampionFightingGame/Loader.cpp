@@ -20,6 +20,9 @@ void GameLoader::loading_screen() {
 	GameTextureSDL loading_flavor("resource/ui/menu/loading/FlavorBar.png");
 	GameTextureSDL loading_bar("resource/ui/menu/loading/loadingbar.png");
 
+	loading_flavor.set_pos(glm::vec2(0.0, -60.0));
+	loading_bar.set_pos(glm::vec2(0.0, 60.0));
+
 	while (!finished) {
 		wait_ms();
 
@@ -30,7 +33,8 @@ void GameLoader::loading_screen() {
 		SDL_SetRenderTarget(render_manager->sdl_renderer, screen_texture);
 		
 		splash_screen.render();
-		loading_bar.scale_right_percent(loaded_items / (float)total_items, false);
+//		loading_bar.scale_top_percent(loaded_items / (float)total_items);
+//		loading_bar.set_top_target(loaded_items / (float)total_items, 6);
 		loading_bar.process();
 		loading_bar.render();
 		loading_flavor.render();

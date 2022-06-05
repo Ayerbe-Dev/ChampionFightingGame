@@ -31,17 +31,8 @@ void ThreadObject::init(std::function<void(void* execution_arg)> to_execute, voi
 	thread.detach();
 }
 
-ThreadManager* ThreadManager::instance = nullptr;
-
 ThreadManager::ThreadManager() {
 	main_thread_id = std::this_thread::get_id();
-}
-
-ThreadManager* ThreadManager::get_instance() {
-	if (instance == nullptr) {
-		instance = new ThreadManager;
-	}
-	return instance;
 }
 
 void ThreadManager::add_thread(int id, std::function<void(void* execution_arg)> to_execute, void* execution_arg) {
@@ -138,4 +129,18 @@ bool ThreadManager::is_main_thread() {
 
 	//I'm not too worried for now since the instance still isn't getting corrupted, but I'm not sure
 	//what exactly is causing it
+}
+
+ThreadManager* ThreadManager::instance = nullptr;
+ThreadManager* ThreadManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new ThreadManager;
+	}
+	return instance;
+}
+
+void ThreadManager::destroy_instance() {
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

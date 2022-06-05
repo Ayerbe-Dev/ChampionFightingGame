@@ -23,8 +23,9 @@ public:
 	float world_frame;
 	float world_rate;
 	
-	static BattleObjectManager* get_instance();
 
+	static BattleObjectManager* get_instance();
+	void destroy_instance();
 private:
 	BattleObjectManager();
 	static BattleObjectManager* instance;

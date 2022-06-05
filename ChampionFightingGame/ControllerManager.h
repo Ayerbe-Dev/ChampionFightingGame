@@ -14,6 +14,7 @@ public:
 	ControllerInfo registered_controllers[2];
 
 	static ControllerManager* get_instance();
+	void destroy_instance();
 private:
 	ControllerManager();
 

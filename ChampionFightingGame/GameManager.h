@@ -13,8 +13,6 @@ public:
 	GameManager(GameManager& other) = delete;
 	void operator=(const GameManager& other) = delete;
 
-	static GameManager* get_instance();
-
 	RenderManager* render_manager;
 
 	Player *player[2];
@@ -24,8 +22,6 @@ public:
 	int* game_context;
 	int* prev_game_context;
 	bool looping[MAX_LAYERS];
-
-	void destroy();
 
 	void (*game_main[GAME_STATE_MAX])();
 	void (*game_substate_main[GAME_SUBSTATE_MAX])();
@@ -54,6 +50,9 @@ public:
 	void add_crash_log(std::string crash_reason);
 	bool get_crash_log(std::string* ret);
 	bool is_crash();
+
+	static GameManager* get_instance();
+	void destroy_instance();
 private:
 	GameManager();
 	static GameManager* instance;

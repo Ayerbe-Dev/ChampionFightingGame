@@ -1,7 +1,7 @@
 #include "GameManager.h"
 #include "RenderManager.h"
 #include <string>
-#include "GameSettings.h"
+#include "SaveManager.h"
 #include "utils.h"
 #include "stb_image.h"
 
@@ -10,11 +10,12 @@ RenderManager::RenderManager() {
 }
 
 void RenderManager::init() {
-	if (getGameSetting("fullscreen")) {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SaveManager* save_manager = SaveManager::get_instance();
+	if (save_manager->get_game_setting("fullscreen")) {
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
 	SDL_GetWindowSize(window, &s_window_width, &s_window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
@@ -40,16 +41,6 @@ void RenderManager::init() {
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	default_effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-}
-
-void RenderManager::destroy() {
-	unlink_all_shaders();
-	default_2d_shader.destroy();
-	default_rect_shader.destroy();
-	shadow_shader.destroy();
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(sdl_renderer);
-	SDL_GL_DeleteContext(sdl_context);
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -167,4 +158,17 @@ RenderManager* RenderManager::get_instance() {
 		instance = new RenderManager;
 	}
 	return instance;
+}
+
+void RenderManager::destroy_instance() {
+	unlink_all_shaders();
+	default_2d_shader.destroy();
+	default_rect_shader.destroy();
+	shadow_shader.destroy();
+	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(sdl_renderer);
+	SDL_GL_DeleteContext(sdl_context);
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

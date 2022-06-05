@@ -6,17 +6,8 @@
 #include <stdexcept>
 #include "utils.h"
 
-EffectManager* EffectManager::instance = nullptr;
-
 EffectManager::EffectManager() {
 	init();
-}
-
-EffectManager* EffectManager::get_instance() {
-	if (instance == nullptr) {
-		instance = new EffectManager;
-	}
-	return instance;
 }
 
 void EffectManager::init() {
@@ -185,4 +176,18 @@ void EffectManager::add_effect_info(std::string name, std::string dir) {
 	effect_info_map[name] = effect_info.size();
 	EffectInfo to_add(name, dir);
 	effect_info.push_back(to_add);
+}
+
+EffectManager* EffectManager::instance = nullptr;
+EffectManager* EffectManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new EffectManager;
+	}
+	return instance;
+}
+
+void EffectManager::destroy_instance() {
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

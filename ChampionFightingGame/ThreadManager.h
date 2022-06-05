@@ -37,8 +37,6 @@ public:
 	ThreadManager(ThreadManager& other) = delete;
 	void operator=(const ThreadManager& other) = delete;
 
-	static ThreadManager* get_instance();
-
 	void add_thread(int id, std::function<void(void* execution_arg)> to_execute, void* execution_arg);
 	void lock_thread(int id = -1);
 	void unlock_thread(int id = -1);
@@ -48,6 +46,9 @@ public:
 	void kill_thread(int id);
 	bool is_active(std::thread::id &id);
 	bool is_main_thread();
+
+	static ThreadManager* get_instance();
+	void destroy_instance();
 private:
 	ThreadManager();
 	static ThreadManager* instance;

@@ -2,15 +2,6 @@
 #include "GameStates.h"
 #include "RenderManager.h"
 
-GameManager* GameManager::instance = nullptr;
-
-GameManager* GameManager::get_instance() {
-	if (instance == nullptr) {
-		instance = new GameManager;
-	}
-	return instance;
-}
-
 GameManager::GameManager() {
 	player[0] = new Player(0);
 	player[1] = new Player(1);
@@ -31,15 +22,6 @@ GameManager::GameManager() {
 	*game_context = GAME_CONTEXT_NORMAL;
 	*prev_game_context = *game_context;
 	render_manager = RenderManager::get_instance();
-}
-
-void GameManager::destroy() {
-	delete player[0];
-	delete player[1];
-	delete game_state;
-	delete prev_game_state;
-	delete game_context;
-	delete prev_game_context;
 }
 
 void GameManager::set_game_state_functions() {
@@ -313,4 +295,24 @@ bool GameManager::get_crash_log(std::string* ret) {
 
 bool GameManager::is_crash() {
 	return !crash_log.empty();
+}
+
+GameManager* GameManager::instance = nullptr;
+GameManager* GameManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new GameManager;
+	}
+	return instance;
+}
+
+void GameManager::destroy_instance() {
+	delete player[0];
+	delete player[1];
+	delete game_state;
+	delete prev_game_state;
+	delete game_context;
+	delete prev_game_context;
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

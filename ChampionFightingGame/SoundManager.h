@@ -29,6 +29,7 @@ public:
 	std::vector<std::array<std::list<SoundInstance>, SOUND_KIND_MAX>> active_sounds;
 
 	static SoundManager* get_instance();
+	void destroy_instance();
 private:
 	SoundManager();
 	void init();

@@ -23,6 +23,7 @@ public:
 	ParamTable params[PARAM_MAX];
 
 	static ParamAccessor* get_instance();
+	void destroy_instance();
 private:
 	ParamAccessor();
 	static ParamAccessor* instance;

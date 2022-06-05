@@ -36,7 +36,6 @@ public:
 	int s_window_height;
 
 	void init();
-	void destroy();
 
 	void add_light(Light *light, int target = -1);
 	void remove_light(int target = -1);
@@ -51,6 +50,7 @@ public:
 	void refresh_sdl_renderer();
 
 	static RenderManager* get_instance();
+	void destroy_instance();
 private:
 	RenderManager();
 	static RenderManager* instance;

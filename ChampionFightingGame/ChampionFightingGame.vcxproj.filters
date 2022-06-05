@@ -576,9 +576,6 @@
     <ClCompile Include="SDL Helpers.cpp">
       <Filter>Source Files\Helper Funcs</Filter>
     </ClCompile>
-    <ClCompile Include="GameSettings.cpp">
-      <Filter>Source Files\Global</Filter>
-    </ClCompile>
     <ClCompile Include="Stage.cpp">
       <Filter>Source Files\Objects\Stage</Filter>
     </ClCompile>
@@ -820,9 +817,6 @@
     </ClInclude>
     <ClInclude Include="SDL Helpers.h">
       <Filter>Header Files\Helper Funcs</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="Alejandro.h">
       <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>

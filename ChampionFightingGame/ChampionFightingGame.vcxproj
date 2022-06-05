@@ -282,7 +282,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="GameCoordinate.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="GameMenu.cpp" />
-    <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="JuliusMoves.cpp" />
@@ -449,7 +448,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameRect.h" />
-    <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStates.h" />
     <ClInclude Include="GameTexture.h" />

@@ -12,7 +12,6 @@
 #include "Menu.h"
 #include "SoundManager.h"
 #include "GameTexture.h"
-#include "GameSettings.h"
 
 #include "Fighters.h"
 #include "FighterInterface.h"
@@ -38,6 +37,7 @@
 #include "Camera.h"
 
 #include "ThreadManager.h"
+#include "SaveManager.h"
 
 extern bool debug;
 
@@ -113,6 +113,7 @@ void Battle::load_game_menu() {
 	EffectManager* effect_manager = EffectManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+	SaveManager* save_manager = SaveManager::get_instance();
 
 	game_manager->set_menu_info(this);
 
@@ -196,12 +197,12 @@ void Battle::load_game_menu() {
 	thread_manager->add_thread(THREAD_KIND_UI, ui_thread, (void*)this);
 	game_loader->finished = true;
 
-	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+	if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_STAGE) {
 		sound_manager->add_sound_player(-1); //I'll find a better ID for the stage music later
 		sound_manager->load_sound(stage.default_music_kind);
 		sound_manager->play_sound(-1, SOUND_KIND_MUSIC, stage.default_music_kind);
 	}
-	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
+	else if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_CHARA) {
 		//randomly play the theme of one of the characters. if online, always play the opponent's theme
 	}
 	else {

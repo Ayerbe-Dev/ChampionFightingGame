@@ -19,7 +19,6 @@ void menu_main() {
 	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
-
 	MainMenu *main_menu = new MainMenu;
 	main_menu->load_game_menu();
 
@@ -75,8 +74,8 @@ void MainMenu::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
-	game_loader = new GameLoader(1);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+  game_loader = new GameLoader(1);
+	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
 	background_texture.init("resource/ui/menu/main/bg.png");

@@ -699,6 +699,9 @@
     <ClCompile Include="PauseBattle.cpp">
       <Filter>Source Files\Game State</Filter>
     </ClCompile>
+    <ClCompile Include="GameTextureSDL.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
     <ClCompile Include="BlockboxFunctions.cpp">
       <Filter>Source Files\Objects\Functions</Filter>
     </ClCompile>
@@ -1366,6 +1369,9 @@
     </ClInclude>
     <ClInclude Include="GameMenu.h">
       <Filter>Header Files\Game State</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTextureSDL.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>Header Files\Constants</Filter>

@@ -82,8 +82,8 @@ void CSS::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
-	game_loader = new GameLoader(3);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+  game_loader = new GameLoader(3);
+	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
 	player[0] = game_manager->player[0];

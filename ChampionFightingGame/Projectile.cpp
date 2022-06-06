@@ -9,6 +9,7 @@ Projectile::~Projectile() {
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
 	}
+	blockbox.rect.destroy();
 	jostle_box.destroy();
 	model.unload_model();
 	projectile_int.clear();
@@ -29,12 +30,15 @@ void Projectile::projectile_main() {
 	projectile_unique_main();
 	process_status();
 	process_post_animate();
-	decrease_common_variables();
+	if (battle_object_manager->counters_can_move()) {
+		decrease_common_variables();
+	}
 	process_post_position();
 }
 
 void Projectile::projectile_post() {
 	update_hitbox_pos();
+	update_blockbox_pos();
 }
 
 void Projectile::process_status() {

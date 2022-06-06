@@ -18,8 +18,8 @@ out vec4 FragPosLightSpace;
 
 uniform mat4 model_matrix;
 uniform mat4 camera_matrix;
+uniform mat4 shadow_matrix;
 uniform mat4 bone_matrix[MAX_BONES];
-uniform mat4 shadow_light_view;
 
 void main() {
     mat4 bone_transform = mat4(0.0);
@@ -37,7 +37,7 @@ void main() {
     FragPos = vec3(model_matrix * total_pos);
     Normal = mat3(transpose(inverse(model_matrix))) * v_nor;  
     TexCoords = v_texcoords;
-    FragPosLightSpace = shadow_light_view * vec4(FragPos,1.0);
+    FragPosLightSpace = shadow_matrix * vec4(FragPos,1.0);
 
     gl_Position = camera_matrix * (model_matrix * total_pos);
 } 

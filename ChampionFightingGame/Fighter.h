@@ -4,7 +4,7 @@
 #include "Button.h"
 #include "Animation.h"
 #include "Box.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "FighterConstants.h"
 #include "BattleObjectManager.h"
 
@@ -23,7 +23,6 @@ public:
 	Projectile* projectiles[MAX_PROJECTILES]{};
 	int num_projectiles = 0;
 
-	bool crash_to_debug{ false };
 	int prev_stick_dir;
 	
 	std::vector<int> fighter_int;

@@ -11,18 +11,18 @@ public:
 
 	void init();
 
-	void update_light();
+	void update_light_pos();
 
 	int SHADOW_WIDTH;
 	int SHADOW_HEIGHT;
 
-	float shadow_map_depth = 7.0f;
-	float shadow_map_fov = 5.0f;
+	float depth;
+	float fov;
 
 	unsigned int FBO = 0;
 	unsigned int shadow_texture = 0;
 
-	glm::mat4 m_orthographic_perspective;
-	glm::mat4 m_lookat;
-	glm::vec3 m_light_position;
+	glm::mat4 perspective;
+	glm::mat4 lookat;
+	glm::vec3 light_pos;
 };

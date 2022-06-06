@@ -12,17 +12,22 @@ AIInfo::AIInfo(float x_pos, float y_pos, std::string anim_kind, float frame, flo
 	this->rate = rate;
 }
 
-AIManager* AIManager::instance = nullptr;
-
 AIManager::AIManager() {
 	for (int i = 0; i < 2; i++) {
 		ai_info[i].resize(20);
 	}
 }
 
+AIManager* AIManager::instance = nullptr;
 AIManager* AIManager::get_instance() {
 	if (instance == nullptr) {
 		instance = new AIManager;
 	}
 	return instance;
+}
+
+void AIManager::destroy_instance() {
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

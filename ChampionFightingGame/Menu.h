@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 #include "Button.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameMenu.h"
 #include "GameManager.h"
 #include "GameTexture.h"
@@ -44,6 +44,8 @@ class MainMenu: public GameMenu{
 public:
     MainMenu();
     ~MainMenu();
+
+    void load_game_menu();
 
     void event_up_press();
     void event_down_press();

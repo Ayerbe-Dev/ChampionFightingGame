@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include <vector>
 #include <chrono>
+#include "utils.h"
 
 class GameLoader;
 
@@ -19,6 +20,8 @@ public:
     virtual void event_any_press();
 
     virtual void process_background();
+    virtual void load_game_menu();
+
     void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
     void inc_thread();
     void frame_delay();

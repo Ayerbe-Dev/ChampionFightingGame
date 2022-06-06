@@ -6,7 +6,7 @@ class Ramona : public Fighter {
 public:
 	virtual void chara_id();
 	Ramona();
-	Ramona(int id, PlayerInfo* player_info);
+	Ramona(int id, Player* player);
 	void loadRamonaStatusFunctions();
 	void load_move_scripts() override;
 

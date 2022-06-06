@@ -6,7 +6,7 @@ class Nightsaber : public Fighter {
 public:
 	virtual void chara_id();
 	Nightsaber();
-	Nightsaber(int id, PlayerInfo* player_info);
+	Nightsaber(int id, Player* player);
 	void loadNightsaberStatusFunctions();
 	void load_move_scripts() override;
 

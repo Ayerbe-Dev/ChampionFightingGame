@@ -10,15 +10,19 @@
 #include <glew/glew.h>
 #include "SDL Helpers.h"
 #include "utils.h"
-#include "GameSettings.h"
 #include "GameStates.h"
 #include "Animation.h"
 #include "Debugger.h"
 #include "Stage.h"
+#include "AIManager.h"
 #include "BattleObjectManager.h"
-#include "SoundManager.h"
+#include "ControllerManager.h"
+#include "EffectManager.h"
 #include "GameManager.h"
+#include "ParamAccessor.h"
 #include "RenderManager.h"
+#include "SaveManager.h"
+#include "SoundManager.h"
 #include "ThreadManager.h"
 #include "stb_image.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
@@ -47,18 +51,31 @@ int main() {
 
 	SDL_GameControllerEventState(SDL_ENABLE);
 
-	RenderManager* render_manager = RenderManager::get_instance();
-	ThreadManager* thread_manager = ThreadManager::get_instance();
-	SoundManager* sound_manager = SoundManager::get_instance();
-	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();	
+	//The only Singletons that are actually necessary here are GameManager, RenderManager, SoundManager
+	//and SaveManager, the rest are just here so we can call their deletion functions from main(). 
+
+	//That being said, we can't keep them perfectly organized. RenderManager creates the window, but
+	//SaveManager has to initialize first so it knows how big the window must be.
+
+	//Just for the record, GameManager's constructor calls RenderManager::get_instance(), so the window 
+	//is actually created during GameManager(), not main()
+
+	SaveManager* save_manager = SaveManager::get_instance();
+	AIManager* ai_manager = AIManager::get_instance();
+	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
+	ControllerManager* controller_manager = ControllerManager::get_instance();
+	EffectManager* effect_manager = EffectManager::get_instance();
 	GameManager* game_manager = GameManager::get_instance();
+	ParamAccessor* param_accessor = ParamAccessor::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
+	SoundManager* sound_manager = SoundManager::get_instance();
+	ThreadManager* thread_manager = ThreadManager::get_instance();
 
 	opening_main();
 
 	bool running = *game_manager->game_state != GAME_STATE_CLOSE;
 
 	while (running) {
-		render_manager->refresh_sdl_renderer();
 		for (int i = 0; i < MAX_LAYERS; i++) {
 			game_manager->looping[i] = true;
 		}
@@ -66,9 +83,7 @@ int main() {
 			game_manager->game_main[*game_manager->game_state]();
 		}
 		else if (*game_manager->game_state != GAME_STATE_CLOSE) {
-			char buffer[86];
-			sprintf(buffer, "Error: Game State was %d (not GAME_STATE_CLOSE) but there was no associated function!", *game_manager->game_state);
-			game_manager->player_info[0]->crash_reason = buffer;
+			game_manager->add_crash_log("Error: Game State was " + std::to_string(*game_manager->game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
 			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
 		}
 
@@ -77,9 +92,16 @@ int main() {
 		}
 	}
 
-	game_manager->destroy();
-	render_manager->destroy();
-	sound_manager->unload_all_sounds();
+	ai_manager->destroy_instance();
+	battle_object_manager->destroy_instance();
+	controller_manager->destroy_instance();
+	effect_manager->destroy_instance();
+	game_manager->destroy_instance();
+	param_accessor->destroy_instance();
+	render_manager->destroy_instance();
+	save_manager->destroy_instance();
+	sound_manager->destroy_instance();
+	thread_manager->destroy_instance();
 
 	SDL_Quit();
 

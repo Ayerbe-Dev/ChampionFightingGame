@@ -2,18 +2,9 @@
 #include "GameStates.h"
 #include "RenderManager.h"
 
-GameManager* GameManager::instance = nullptr;
-
-GameManager* GameManager::get_instance() {
-	if (instance == nullptr) {
-		instance = new GameManager;
-	}
-	return instance;
-}
-
 GameManager::GameManager() {
-	player_info[0] = new PlayerInfo(0);
-	player_info[1] = new PlayerInfo(1);
+	player[0] = new Player(0);
+	player[1] = new Player(1);
 	for (int i = 0; i < GAME_STATE_MAX; i++) {
 		game_main[i] = nullptr;
 	}
@@ -30,21 +21,13 @@ GameManager::GameManager() {
 	*prev_game_state = *game_state;
 	*game_context = GAME_CONTEXT_NORMAL;
 	*prev_game_context = *game_context;
-}
-
-void GameManager::destroy() {
-	delete player_info[0];
-	delete player_info[1];
-	delete game_state;
-	delete prev_game_state;
-	delete game_context;
-	delete prev_game_context;
+	render_manager = RenderManager::get_instance();
 }
 
 void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_BATTLE] = &battle_main;
 	game_main[GAME_STATE_CHARA_SELECT] = &chara_select_main;
-	game_main[GAME_STATE_DEBUG_MENU] = &debugMenu;
+	game_main[GAME_STATE_DEBUG_MENU] = &debug_main;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
 
@@ -55,17 +38,24 @@ void GameManager::set_game_state_functions() {
 
 void GameManager::update_state(int game_state, int game_context) {
 	if (game_state != GAME_STATE_MAX) {
-		*prev_game_state = *this->game_state;
-		*this->game_state = game_state;
+		if (game_state != *this->game_state) {
+			*prev_game_state = *this->game_state;
+			*this->game_state = game_state;
+		}
 		if (game_state == GAME_STATE_CLOSE) {
 			for (int i = 0; i < MAX_LAYERS; i++) {
 				looping[i] = false;
 			}
 		}
+		else {
+			looping[layer] = false;
+		}
 	}
 	if (game_context != GAME_CONTEXT_MAX) {
-		*prev_game_context = *this->game_context;
-		*this->game_context = game_context;
+		if (game_context != *this->game_context) {
+			*prev_game_context = *this->game_context;
+			*this->game_context = game_context;
+		}
 	}
 }
 
@@ -142,27 +132,30 @@ void GameManager::handle_menus() {
 		if (is_right_press(i)) {
 			event_right_press();
 		}
-		if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_START)) {
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_START)) {
 			event_start_press();
 		}
-		if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_SELECT)) {
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_SELECT)) {
 			event_select_press();
 		}
-		if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
 			event_back_press();
 		}
-		if (player_info[i]->controller.check_button_trigger(BUTTON_MENU_PAUSE)) {
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_PAUSE)) {
 			event_pause_press();
 		}
 		if (is_any_menu_input(i)) {
 			event_any_press();
 		}
 	}
+	if (is_crash()) {
+		update_state(GAME_STATE_DEBUG_MENU);
+	}
 }
 
 bool GameManager::is_up_press(int id) {
 	bool ret = false;
-	if (player_info[id]->controller.check_button_on(BUTTON_MENU_UP)) {
+	if (player[id]->controller.check_button_on(BUTTON_MENU_UP)) {
 		if (u_hold_frames[id] == init_hold_frames) {
 			u_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -182,7 +175,7 @@ bool GameManager::is_up_press(int id) {
 
 bool GameManager::is_down_press(int id) {
 	bool ret = false;
-	if (player_info[id]->controller.check_button_on(BUTTON_MENU_DOWN)) {
+	if (player[id]->controller.check_button_on(BUTTON_MENU_DOWN)) {
 		if (d_hold_frames[id] == init_hold_frames) {
 			d_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -202,7 +195,7 @@ bool GameManager::is_down_press(int id) {
 
 bool GameManager::is_right_press(int id) {
 	bool ret = false;
-	if (player_info[id]->controller.check_button_on(BUTTON_MENU_RIGHT)) {
+	if (player[id]->controller.check_button_on(BUTTON_MENU_RIGHT)) {
 		if (r_hold_frames[id] == init_hold_frames) {
 			r_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -222,7 +215,7 @@ bool GameManager::is_right_press(int id) {
 
 bool GameManager::is_left_press(int id) {
 	bool ret = false;
-	if (player_info[id]->controller.check_button_on(BUTTON_MENU_LEFT)) {
+	if (player[id]->controller.check_button_on(BUTTON_MENU_LEFT)) {
 		if (l_hold_frames[id] == init_hold_frames) {
 			l_hold_frames[id] -= hold_rate;
 			ret = true;
@@ -242,7 +235,7 @@ bool GameManager::is_left_press(int id) {
 
 bool GameManager::is_any_menu_input(int id) {
 	for (int i = 0; i < BUTTON_MAX; i++) {
-		if (player_info[id]->controller.check_button_trigger(i)) {
+		if (player[id]->controller.check_button_trigger(i)) {
 			return true;
 		}
 	}
@@ -283,4 +276,43 @@ void GameManager::event_pause_press() {
 
 void GameManager::event_any_press() {
 	(menu_target[layer]->*(&GameMenu::event_any_press))();
+}
+
+void GameManager::add_crash_log(std::string crash_reason) {
+	crash_log.push(crash_reason);
+	update_state(GAME_STATE_DEBUG_MENU);
+}
+
+bool GameManager::get_crash_log(std::string* ret) {
+	if (crash_log.empty()) {
+		return false;
+	}
+
+	*ret = crash_log.front();
+	crash_log.pop();
+	return true;
+}
+
+bool GameManager::is_crash() {
+	return !crash_log.empty();
+}
+
+GameManager* GameManager::instance = nullptr;
+GameManager* GameManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new GameManager;
+	}
+	return instance;
+}
+
+void GameManager::destroy_instance() {
+	delete player[0];
+	delete player[1];
+	delete game_state;
+	delete prev_game_state;
+	delete game_context;
+	delete prev_game_context;
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

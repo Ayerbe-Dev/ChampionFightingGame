@@ -1,9 +1,10 @@
 #pragma once
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameMenu.h"
 #include "GameState.h"
 #include "MenuConstants.h"
 #include <functional>
+#include <queue>
 
 class RenderManager;
 
@@ -12,19 +13,15 @@ public:
 	GameManager(GameManager& other) = delete;
 	void operator=(const GameManager& other) = delete;
 
-	static GameManager* get_instance();
-
 	RenderManager* render_manager;
 
-	PlayerInfo *player_info[2];
+	Player *player[2];
 	int layer = 0;
 	int* game_state;
 	int* prev_game_state;
 	int* game_context;
 	int* prev_game_context;
 	bool looping[MAX_LAYERS];
-
-	void destroy();
 
 	void (*game_main[GAME_STATE_MAX])();
 	void (*game_substate_main[GAME_SUBSTATE_MAX])();
@@ -50,6 +47,12 @@ public:
 	void event_pause_press();
 	void event_any_press();
 
+	void add_crash_log(std::string crash_reason);
+	bool get_crash_log(std::string* ret);
+	bool is_crash();
+
+	static GameManager* get_instance();
+	void destroy_instance();
 private:
 	GameManager();
 	static GameManager* instance;
@@ -70,4 +73,5 @@ private:
 	int d_hold_frames[2];
 	int l_hold_frames[2];
 	int r_hold_frames[2];
+	std::queue<std::string> crash_log;
 };

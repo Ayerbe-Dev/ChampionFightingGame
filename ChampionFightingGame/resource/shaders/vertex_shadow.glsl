@@ -1,14 +1,14 @@
 #version 330 core
-layout (location = 0) in vec3 vertex_position;
+
+layout (location = 0) in vec3 v_pos;
 layout (location = 5) in ivec4 v_boneids;
 layout (location = 6) in vec4 v_weights;
 
-
-uniform mat4 camera_matrix;
-uniform mat4 model_matrix;
-
 const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 4;
+
+uniform mat4 model_matrix;
+uniform mat4 camera_matrix;
 uniform mat4 bone_matrix[MAX_BONES];
 uniform bool flipped;
 
@@ -23,7 +23,7 @@ void main() {
         bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
     }
 
-    vec4 total_pos = bone_transform * vec4(vertex_position, 1.0);
+    vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
 
 
     gl_Position = camera_matrix * (model_matrix * total_pos);

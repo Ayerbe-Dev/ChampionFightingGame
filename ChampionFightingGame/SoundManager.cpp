@@ -1,18 +1,10 @@
 ﻿#include "SoundManager.h"
-#include "GameSettings.h"
+#include "SaveManager.h"
 #include "SDL/SDL_audio.h"
 #include "utils.h"
-SoundManager* SoundManager::instance = nullptr;
 
 SoundManager::SoundManager() {
 	init();
-}
-
-SoundManager* SoundManager::get_instance() {
-	if (instance == nullptr) {
-		instance = new SoundManager;
-	}
-	return instance;
 }
 
 void SoundManager::init() {
@@ -297,6 +289,21 @@ void SoundManager::add_sound_info(std::string name, std::string dir, int sound_k
 	sound_info.push_back(to_add);
 }
 
+SoundManager* SoundManager::instance = nullptr;
+SoundManager* SoundManager::get_instance() {
+	if (instance == nullptr) {
+		instance = new SoundManager;
+	}
+	return instance;
+}
+
+void SoundManager::destroy_instance() {
+	unload_all_sounds();
+	if (instance != nullptr) {
+		delete instance;
+	}
+}
+
 void audio_callback(void* unused, Uint8* stream, int len) {
 	unsigned int diff; //How much leftover space we have if the length of the stream > the length of the track
 	Uint8* source; //Audio data that will be filled by a given track
@@ -305,6 +312,8 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 	unsigned int mlen; //Maximum length
 	int vol; //Volume value to be multiplied by the values in the user's settings
 	SoundManager* sound_manager = SoundManager::get_instance();
+	SaveManager* save_manager = SaveManager::get_instance();
+
 	
 	SDL_memset(stream, 0, len); //Clear the stream
 
@@ -316,13 +325,13 @@ void audio_callback(void* unused, Uint8* stream, int len) {
 					data = it->sound->data;
 					dlen = it->sound->duration;
 					if (it->sound->info->sound_kind == SOUND_KIND_SE) {
-						vol = getGameSetting("se_vol") * get_relative_one_percent(it->volume, 128);
+						vol = save_manager->get_game_setting("se_vol") * get_relative_one_percent(it->volume, 128);
 					}
 					else if (it->sound->info->sound_kind == SOUND_KIND_VC) {
-						vol = getGameSetting("vc_vol") * get_relative_one_percent(it->volume, 128);
+						vol = save_manager->get_game_setting("vc_vol") * get_relative_one_percent(it->volume, 128);
 					}
 					else {
-						vol = getGameSetting("music_vol") * get_relative_one_percent(it->volume, 128);
+						vol = save_manager->get_game_setting("music_vol") * get_relative_one_percent(it->volume, 128);
 					}
 
 					if (it->sound->info->sound_type == SOUND_TYPE_LOOP && it->looped) {

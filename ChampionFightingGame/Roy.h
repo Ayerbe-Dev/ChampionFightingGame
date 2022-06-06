@@ -8,7 +8,7 @@ public:
 
 	virtual void chara_id();
 	Roy();
-	Roy(int id, PlayerInfo* player_info);
+	Roy(int id, Player* player);
 	void loadRoyStatusFunctions();
 	void load_chara_sounds() override;
 	void load_chara_effects() override;

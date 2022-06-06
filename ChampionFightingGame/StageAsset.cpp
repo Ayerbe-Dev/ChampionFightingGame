@@ -2,6 +2,7 @@
 #include "BattleObjectManager.h"
 #include "Fighter.h"
 #include <fstream>
+#include "GameManager.h"
 
 StageAsset::StageAsset() {
 
@@ -45,7 +46,7 @@ void StageAsset::load_model_shader() {
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
-	shader.set_int("material.shadow_map", 2);
+	shader.set_int("material.shadow_map", 4);
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->link_shader(&shader);
 }
@@ -63,8 +64,7 @@ void StageAsset::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			battle_object_manager->fighter[0]->player_info->crash_reason = "Stage " + asset_name + "'s resource directory was incorrectly set!";
-			battle_object_manager->fighter[0]->crash_to_debug = true;
+			GameManager::get_instance()->add_crash_log("Stage " + asset_name + "'s resource directory was incorrectly set!");
 		}
 		else {
 			std::cout << err.what() << "\n";
@@ -85,27 +85,21 @@ void StageAsset::load_lights() {
 		return;
 	}
 
+	lights.reserve(MAX_LIGHT_SOURCES);
+
 	RenderManager* render_manager = RenderManager::get_instance();
 
 
-	std::vector<glm::vec3> tmp_lights;
-	//glm::vec3 light_pos;
-	int light_i = 0;
-	tmp_lights.resize(MAX_LIGHT_SOURCES);
-	while (light_stream >> tmp_lights[light_i].x) {
-		light_stream >> tmp_lights[light_i].y;
-		light_stream >> tmp_lights[light_i].z;
-		//printf("Light Vector %f %f %f\n", tmp_lights[light_i].x, tmp_lights[light_i].y, tmp_lights[light_i].z);
-		//render_manager->add_light(Light(light_pos));
-		light_i++;
+	glm::vec3 light_pos; //RenderManager now gets pointers to the lights, so we'll store them
+	//in the StageAssets. This is also better because it means we can move the lights around within the
+	//stage scripts and have it affect the RenderManager.
+	while (light_stream >> light_pos.x) {
+		light_stream >> light_pos.y;
+		light_stream >> light_pos.z;
+		lights.push_back(Light(light_pos));
+		render_manager->add_light(&lights[lights.size() - 1]);
 	}
 	
-	for (unsigned int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-		render_manager->lights[i].position.x = tmp_lights[i].x;
-		render_manager->lights[i].position.y = tmp_lights[i].y;
-		render_manager->lights[i].position.z = tmp_lights[i].z;
-		//printf("StageAsset.cpp %f %f %f %p\n", render_manager->lights[i].position.x, render_manager->lights[i].position.y, render_manager->lights[i].position.z, &render_manager->lights[i]);
-	}
 	light_stream.close();
 }
 

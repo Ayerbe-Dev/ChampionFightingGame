@@ -6,7 +6,7 @@ class Julius : public Fighter {
 public:
 	virtual void chara_id();
 	Julius();
-	Julius(int id, PlayerInfo* player_info);
+	Julius(int id, Player* player);
 	void loadJuliusStatusFunctions();
 	void load_move_scripts() override;
 

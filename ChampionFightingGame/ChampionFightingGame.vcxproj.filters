@@ -555,9 +555,6 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
@@ -578,9 +575,6 @@
     </ClCompile>
     <ClCompile Include="SDL Helpers.cpp">
       <Filter>Source Files\Helper Funcs</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSettings.cpp">
-      <Filter>Source Files\Global</Filter>
     </ClCompile>
     <ClCompile Include="Stage.cpp">
       <Filter>Source Files\Objects\Stage</Filter>
@@ -684,9 +678,6 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>Source Files\Engine\GameData</Filter>
-    </ClCompile>
     <ClCompile Include="Box.cpp">
       <Filter>Source Files\Engine\GameData</Filter>
     </ClCompile>
@@ -694,9 +685,6 @@
       <Filter>Source Files\Engine\GameData</Filter>
     </ClCompile>
     <ClCompile Include="GameCoordinate.cpp">
-      <Filter>Source Files\Engine\GameData</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMenu.cpp">
       <Filter>Source Files\Engine\GameData</Filter>
     </ClCompile>
     <ClCompile Include="GameController.cpp">
@@ -713,6 +701,24 @@
     </ClCompile>
     <ClCompile Include="GameTextureSDL.cpp">
       <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockboxFunctions.cpp">
+      <Filter>Source Files\Objects\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMenu.cpp">
+      <Filter>Source Files\Game State</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>Source Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveManager.cpp">
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -767,9 +773,6 @@
     <ClInclude Include="StageSelect.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="GameStates.h">
-      <Filter>Header Files\Game State</Filter>
-    </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
@@ -781,9 +784,6 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\Deps</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="RenderObject.h">
       <Filter>Header Files\Objects</Filter>
@@ -820,9 +820,6 @@
     </ClInclude>
     <ClInclude Include="SDL Helpers.h">
       <Filter>Header Files\Helper Funcs</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="Alejandro.h">
       <Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
@@ -1346,9 +1343,6 @@
     <ClInclude Include="ThreadManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>Header Files\Engine\GameData</Filter>
-    </ClInclude>
     <ClInclude Include="Box.h">
       <Filter>Header Files\Engine\GameData</Filter>
     </ClInclude>
@@ -1356,9 +1350,6 @@
       <Filter>Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="GameCoordinate.h">
-      <Filter>Header Files\Engine\GameData</Filter>
-    </ClInclude>
-    <ClInclude Include="GameMenu.h">
       <Filter>Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="GameController.h">
@@ -1373,11 +1364,29 @@
     <ClInclude Include="PauseBattle.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMenu.h">
       <Filter>Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="GameTextureSDL.h">
       <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates.h">
+      <Filter>Header Files\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

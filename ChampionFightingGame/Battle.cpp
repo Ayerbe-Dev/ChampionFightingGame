@@ -12,7 +12,6 @@
 #include "Menu.h"
 #include "SoundManager.h"
 #include "GameTexture.h"
-#include "GameSettings.h"
 
 #include "Fighters.h"
 #include "FighterInterface.h"
@@ -38,6 +37,7 @@
 #include "Camera.h"
 
 #include "ThreadManager.h"
+#include "SaveManager.h"
 
 extern bool debug;
 
@@ -50,49 +50,48 @@ extern bool debug;
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	SoundManager* sound_manager = SoundManager::get_instance();
-	PlayerInfo* player_info[2];
+	RenderManager* render_manager = RenderManager::get_instance();
+
+	Player* player[2];
 	for (int i = 0; i < 2; i++) {
-		player_info[i] = game_manager->player_info[i];
+		player[i] = game_manager->player[i];
 	}
-	if (player_info[0]->chara_kind == player_info[1]->chara_kind && player_info[0]->alt_color == player_info[1]->alt_color) {
-		if (player_info[0]->alt_color == 0) {
-			player_info[1]->alt_color++;
+
+	if (player[0]->chara_kind == player[1]->chara_kind && player[0]->alt_color == player[1]->alt_color) {
+		if (player[0]->alt_color == 0) {
+			player[1]->alt_color++;
 		}
 		else {
-			player_info[1]->alt_color--;
+			player[1]->alt_color--;
 		}
 	}
-	Battle battle;
-	battle.load_battle(game_manager);
 
-	RenderManager *render_manager = RenderManager::get_instance();
-	SDL_GetWindowSize(render_manager->window, &render_manager->s_window_width, &render_manager->s_window_height);
-
+	Battle *battle = new Battle;
+	battle->load_game_menu();
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
-	while (game_manager->looping[game_manager->layer]) {
-		battle.frame_delay_check_performance();
+	while (*battle->looping) {
+		battle->frame_delay_check_performance();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events();
+		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
 		for (int i = 0; i < 2; i++) {
-			if (player_info[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
+			if (player[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
 				//check_controllers now returns whether or not controls were changed, and if someone's controller
 				//gets unplugged midgame, we should probably do something about it
 			}
 		}
 
-		battle.process_main();
-		battle.render_world();
-		battle.render_ui();
+		battle->process_main();
+		battle->render_world();
+		battle->render_ui();
 
-		battle.check_collisions();
+		battle->check_collisions();
 
 #ifdef DEBUG
-		cotr_imgui_debug_battle(&battle);
+		cotr_imgui_debug_battle(battle);
 #endif
 
 		SDL_GL_SwapWindow(render_manager->window);
@@ -101,41 +100,46 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
-	battle.unload_battle();
+	battle->unload_game_menu();
+	delete battle;
 }
 
 Battle::Battle() {}
 
 Battle::~Battle() {}
 
-void Battle::load_battle(GameManager* game_manager) {
+void Battle::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
-
-	debug_controller.add_button(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
-	debug_controller.add_button(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
-	debug_controller.add_button(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
-
 	SoundManager* sound_manager = SoundManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
+	SaveManager* save_manager = SaveManager::get_instance();
+
+	game_manager->set_menu_info(this);
+
+	debug_controller.add_button_mapping(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
+	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
+	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
+
 	game_loader = new GameLoader(15);
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
-	RenderManager* render_manager = RenderManager::get_instance();
 	camera = &render_manager->camera;
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = false;
+	visualize_boxes = true;
 
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 
 	battle_object_manager = BattleObjectManager::get_instance();
 
 	inc_thread();
 
 	int rng = rand() % 2;
-	stage.load_stage(player_info[rng]->stage_info, battle_object_manager);
+	stage.load_stage(player[rng]->stage_info, battle_object_manager);
 
 	inc_thread();
 
@@ -143,7 +147,7 @@ void Battle::load_battle(GameManager* game_manager) {
 	for (int i = 0; i < 2; i++) {
 		debug_rect[i].init();
 		inc_thread();
-		fighter[i] = create_fighter(player_info[i]->chara_kind, i, player_info[i]);
+		fighter[i] = create_fighter(player[i]->chara_kind, i, player[i]);
 		inc_thread();
 	}
 
@@ -161,6 +165,10 @@ void Battle::load_battle(GameManager* game_manager) {
 	
 		inc_thread();
 	}
+
+	render_manager->update_shader_cams();
+	render_manager->update_shader_lights();
+	render_manager->update_shader_shadows();
 	
 	timer.init(99);
 	inc_thread();
@@ -168,27 +176,18 @@ void Battle::load_battle(GameManager* game_manager) {
 	bool loading = true;
 	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
 	while (loading) {
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-				case SDL_QUIT: {
-					game_loader->finished = true;
-					return game_manager->update_state(GAME_STATE_CLOSE);
-				} break;
-			}
-		}
+		game_manager->handle_window_events();
 
-		SDL_PumpEvents();
 		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
-			player_info[i]->controller.poll_buttons(keyboard_state);
-			if (player_info[i]->controller.is_any_inputs()) {
+			player[i]->controller.check_controllers();
+			player[i]->controller.poll_buttons(keyboard_state);
+			if (player[i]->controller.is_any_inputs()) {
 				loading = false;
 				
-				player_info[i]->controller.reset_buffer();
-				player_info[!i]->controller.reset_buffer();
+				player[i]->controller.reset_buffer();
+				player[!i]->controller.reset_buffer();
 			}
 		}
 	}
@@ -197,26 +196,23 @@ void Battle::load_battle(GameManager* game_manager) {
 	}
 	thread_manager->add_thread(THREAD_KIND_UI, ui_thread, (void*)this);
 	game_loader->finished = true;
-	game_manager->set_menu_info(this);
 
-	if (getGameSetting("music_setting") == MUSIC_SETTING_STAGE) {
+	if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_STAGE) {
 		sound_manager->add_sound_player(-1); //I'll find a better ID for the stage music later
 		sound_manager->load_sound(stage.default_music_kind);
 		sound_manager->play_sound(-1, SOUND_KIND_MUSIC, stage.default_music_kind);
 	}
-	else if (getGameSetting("music_setting") == MUSIC_SETTING_CHARA) {
+	else if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_CHARA) {
 		//randomly play the theme of one of the characters. if online, always play the opponent's theme
 	}
 	else {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
 
-	render_manager->update_shader_lights();
-
 	ms = std::chrono::high_resolution_clock::now();
 }
 
-void Battle::unload_battle() {
+void Battle::unload_game_menu() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
@@ -255,7 +251,7 @@ void Battle::process_main() {
 		timer.flip_clock();
 	}
 	for (int i = 0; i < 2; i++) {
-		if (player_info[i]->controller.check_button_trigger(BUTTON_START)) {
+		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
 			game_manager->game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE]();
 		}
 	}
@@ -264,7 +260,7 @@ void Battle::process_main() {
 //			fighter[i]->reset();
 //		}
 //	}
-
+	battle_object_manager->world_frame += battle_object_manager->world_rate;
 	if (frame_pause) {
 		process_frame_pause();
 	}
@@ -276,14 +272,14 @@ void Battle::process_main() {
 		post_process_fighter();
 		thread_manager->wait_thread(THREAD_KIND_UI);
 	}
+	if (battle_object_manager->world_frame >= 0.97) {
+		battle_object_manager->world_frame = 0.0;
+	}
 	if (camera->following_players) {
 		camera->follow_players(fighter[0]->pos, fighter[1]->pos, &stage);
 	}
-	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->crash_to_debug) {
-			*looping = false;
-			*game_state = GAME_STATE_DEBUG_MENU;
-		}
+	if (game_manager->is_crash()) {
+		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 }
 
@@ -335,34 +331,34 @@ void Battle::process_fighter() {
 /*	if (fighter[1]->is_actionable()) {
 		if (!fighter[1]->projectiles[0]->active) {
 			if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 0) {
-				player_info[1]->controller.set_button_on(BUTTON_DOWN, 2);
+				player[1]->controller.set_button_on(BUTTON_DOWN, 2);
 			}
 			else if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 1) {
-				player_info[1]->controller.set_button_on(BUTTON_LEFT, 3);
+				player[1]->controller.set_button_on(BUTTON_LEFT, 3);
 			}
 			else if (fighter[1]->fighter_int[FIGHTER_INT_236_STEP] == 3) {
-				player_info[1]->controller.set_button_on(BUTTON_LP);
+				player[1]->controller.set_button_on(BUTTON_LP);
 			}
 		}
 		if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
-			player_info[1]->controller.set_button_on(BUTTON_RIGHT); //lol you can't buffer dashes
+			player[1]->controller.set_button_on(BUTTON_RIGHT); //lol you can't buffer dashes
 		}
 	}
 	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_START) {
 		if (!fighter[1]->check_button_on(BUTTON_LP)) { //do i LOOK like i know what frame it comes out on?
-			player_info[1]->controller.set_button_on(BUTTON_LP);
+			player[1]->controller.set_button_on(BUTTON_LP);
 		}
 	}
 	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
 		if (fighter[1]->frame != 0.0) { //lol you still can't buffer dashes
 			if (!fighter[1]->check_button_on(BUTTON_RIGHT)) {
-				player_info[1]->controller.set_button_on(BUTTON_RIGHT);
+				player[1]->controller.set_button_on(BUTTON_RIGHT);
 			}
 		}
 	}*/
 	
 	for (int i = 0; i < 2; i++) {
-		player_info[i]->controller.poll_buttons(keyboard_state);
+		player[i]->controller.poll_buttons(keyboard_state);
 		thread_manager->notify_thread(i);
 	}
 }
@@ -426,15 +422,13 @@ void Battle::render_world() {
 	//it's easier to just enable culling only for the part of the rendering process that actually needs it (Since enabling culling on 2D textures
 	//doesn't make much of a difference either way)
 
-	render_manager->update_shader_lights();
-
 	///SHADOW PASS
 	
 	//Setup for the render
 	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);
 	glCullFace(GL_FRONT);
 
@@ -455,7 +449,7 @@ void Battle::render_world() {
 
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
 
 	for (int i = 0; i < 2; i++) {
@@ -483,27 +477,33 @@ void Battle::render_world() {
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hurtboxes[i2].id != -1) {
+				if (fighter[i]->hurtboxes[i2].active) {
 					fighter[i]->hurtboxes[i2].rect.render();
 				}
 			}
+			if (fighter[i]->blockbox.active) {
+				fighter[i]->blockbox.rect.render();
+			}
 			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->hitboxes[i2].id != -1) {
+				if (fighter[i]->grabboxes[i2].active) {
+					fighter[i]->grabboxes[i2].rect.render();
+				}
+			}
+			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->hitboxes[i2].active) {
 					fighter[i]->hitboxes[i2].rect.render();
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->active) {
+					if (fighter[i]->projectiles[i2]->blockbox.active) {
+						fighter[i]->projectiles[i2]->blockbox.rect.render();
+					}
 					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[i]->projectiles[i2]->hitboxes[i3].id != -1) {
+						if (fighter[i]->projectiles[i2]->hitboxes[i3].active) {
 							fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();
 						}
 					}
-				}
-			}
-			for (int i2 = 0; i2 < 10; i2++) {
-				if (fighter[i]->grabboxes[i2].id != -1) {
-					fighter[i]->grabboxes[i2].rect.render();
 				}
 			}
 			fighter[i]->jostle_box.render();
@@ -548,9 +548,9 @@ void Battle::check_projectile_collisions() {
 			for (int i2 = 0; i2 < fighter[1]->num_projectiles; i2++) {
 				if (fighter[1]->projectiles[i2]->active) {
 					for (int i3 = 0; i3 < 10; i3++) {
-						if (fighter[0]->projectiles[i]->hitboxes[i3].id != -1 && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
+						if (fighter[0]->projectiles[i]->hitboxes[i3].active && fighter[0]->projectiles[i]->hitboxes[i3].trade) {
 							for (int i4 = 0; i4 < 10; i4++) {
-								if (fighter[1]->projectiles[i2]->hitboxes[i4].id != -1 && fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
+								if (fighter[1]->projectiles[i2]->hitboxes[i4].active && fighter[1]->projectiles[i2]->hitboxes[i4].trade) {
 									GameRect p1_hitbox, p2_hitbox;
 									p1_hitbox = fighter[0]->projectiles[i]->hitboxes[i3].rect;
 									p2_hitbox = fighter[1]->projectiles[i2]->hitboxes[i4].rect;
@@ -577,16 +577,15 @@ void Battle::check_fighter_collisions() {
 		int grabbox_to_use = HITBOX_COUNT_MAX;
 		fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = false;
 		for (Hurtbox& hurtbox : fighter[i]->hurtboxes) {
-			if (hurtbox.id != -1) {
+			if (hurtbox.active) {
+				Blockbox& blockbox = fighter[!i]->blockbox;
+				if (blockbox.active) {
+					fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(blockbox.rect, hurtbox.rect);
+				}
 				for (Hitbox& hitbox : fighter[!i]->hitboxes) {
-					if (hitbox.id != -1) {
-						if (hitbox.hitbox_kind != HITBOX_KIND_BLOCK) {
-							if (is_collide(hitbox.rect, hurtbox.rect)) {
-								hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
-							}
-						}
-						else {
-							fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(hitbox.rect, hurtbox.rect);
+					if (hitbox.active) {
+						if (is_collide(hitbox.rect, hurtbox.rect)) {
+							hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
 						}
 						if (hitbox_to_use != HITBOX_COUNT_MAX) {
 							break;
@@ -596,7 +595,7 @@ void Battle::check_fighter_collisions() {
 				for (Projectile* projectile : fighter[!i]->projectiles) {
 					if (projectile != nullptr && projectile->active) {
 						for (Hitbox& hitbox : projectile->hitboxes) {
-							if (hitbox.id != -1) {
+							if (hitbox.active) {
 								if (is_collide(hitbox.rect, hurtbox.rect)) {
 									projectile_hitbox_to_use = get_event_hit_collide_projectile(projectile, fighter[i], &hitbox, &hurtbox);
 								}
@@ -608,7 +607,7 @@ void Battle::check_fighter_collisions() {
 					}
 				}
 				for (Grabbox& grabbox : fighter[!i]->grabboxes) {
-					if (grabbox.id != -1) {
+					if (grabbox.active) {
 						if (is_collide(grabbox.rect, hurtbox.rect)) {
 							grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &grabbox, &hurtbox);
 						}

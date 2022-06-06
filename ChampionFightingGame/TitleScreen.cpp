@@ -8,17 +8,15 @@ void title_screen_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player *player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
+	const Uint8* keyboard_state;
 
-    TitleScreen title_screen;
+    TitleScreen *title_screen = new TitleScreen;
+	title_screen->load_game_menu();
 
-    const Uint8 *keyboard_state;
-
-	game_manager->set_menu_info(&title_screen);
-
-    while (game_manager->looping[game_manager->layer]) {
+    while (*title_screen->looping) {
 		wait_ms();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -27,28 +25,24 @@ void title_screen_main() {
 
 		keyboard_state = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
-			player_info[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.check_controllers();
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();
 
-		title_screen.render();
+		title_screen->render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 
-
+	delete title_screen;
 	return game_manager->update_state(GAME_STATE_MENU);
 }
 
 TitleScreen::TitleScreen() {
-    title_l1.init("resource/ui/title/title-l1.png");
-    title_l2.init("resource/ui/title/title-l2.png");
-    title_l3.init("resource/ui/title/title-l3.png");
-    title_l4.init("resource/ui/title/title-l4.png");
-    text.init("resource/ui/title/Praeiudicium.png");
+
 }
 
 TitleScreen::~TitleScreen() {
@@ -59,7 +53,18 @@ TitleScreen::~TitleScreen() {
 	text.destroy();
 }
 
-void TitleScreen::render(){
+void TitleScreen::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
+	game_manager->set_menu_info(this);
+
+	title_l1.init("resource/ui/title/title-l1.png");
+	title_l2.init("resource/ui/title/title-l2.png");
+	title_l3.init("resource/ui/title/title-l3.png");
+	title_l4.init("resource/ui/title/title-l4.png");
+	text.init("resource/ui/title/Praeiudicium.png");
+}
+
+void TitleScreen::render() {
 	title_l4.render();
 	title_l3.render();
 	title_l2.render();
@@ -67,6 +72,6 @@ void TitleScreen::render(){
 	text.render();
 }
 
-void TitleScreen::event_any_press(){
+void TitleScreen::event_any_press() {
 	*looping = false;
 }

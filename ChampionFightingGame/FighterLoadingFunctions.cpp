@@ -3,6 +3,7 @@
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
+#include "GameManager.h"
 
 void Fighter::super_init(int id) {
 	this->id = id;
@@ -54,11 +55,11 @@ void Fighter::load_model_shader() {
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
-	model.load_textures("c" + std::to_string(player_info->alt_color));
+	model.load_textures("c" + std::to_string(player->alt_color));
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
-	shader.set_int("material.shadow_map", 2);
+	shader.set_int("material.shadow_map", 4);
 
 }
 
@@ -68,11 +69,7 @@ void Fighter::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			char buffer[55];
-			sprintf(buffer, "Character %d's resource directory was incorrectly set!", chara_kind);
-			player_info->crash_reason = buffer;
-
-			crash_to_debug = true;
+			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s resource directory was incorrectly set!");
 		}
 		else {
 			std::cout << err.what() << "\n";
@@ -96,4 +93,5 @@ void Fighter::init_boxes() {
 		hurtboxes[i].init(this);
 		grabboxes[i].init(this);
 	}
+	blockbox.init(this);
 }

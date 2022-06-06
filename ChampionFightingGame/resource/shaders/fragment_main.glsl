@@ -10,7 +10,6 @@ struct Material {
     float shininess;
 }; 
 
-
 struct Light {
     vec3 position;
   
@@ -33,29 +32,18 @@ uniform vec3 view_pos;
 uniform Material material;
 uniform Light light[MAX_LIGHT_SOURCES];
 
-
 float ShadowCalculation(vec4 fragPosLightSpace) {
     float bias = 0.005;
-    // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
 
-    ////IMPL WITHOUT ANTI ALIAS
-        // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     float closestDepth = texture(material.shadow_map, projCoords.xy).r; 
-        // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
-        // check whether current frag pos is in shadow .. 0.005 is bias
-    //float shadow = currentDepth - 0.005 > closestDepth  ? 1.0 : 0.0;
 
-    ////IMPL WITH ANTI ALIAS
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(material.shadow_map, 0);
-    for(int x = -2; x <= 2; ++x)
-    {
-        for(int y = -2; y <= 2; ++y)
-        {
+    for(int x = -2; x <= 2; ++x) {
+        for(int y = -2; y <= 2; ++y) {
             float pcfDepth = texture(material.shadow_map, projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += currentDepth - bias > pcfDepth ? 0.5 : 0.0;        
         }    
@@ -67,19 +55,20 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
 
 void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
+    vec3 color = texture(material.diffuse, TexCoords).rgb;
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
         if (light[i].enabled) {
-            vec3 ambient = light[i].ambient * texture(material.diffuse, TexCoords).rgb;
+            vec3 ambient = light[i].ambient * color;
   	 
             vec3 norm = normalize(Normal);
             vec3 light_dir = normalize(light[i].position - FragPos);
             float diff = max(dot(norm, light_dir), 0.0);
-            vec3 diffuse = light[i].diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
+            vec3 diffuse = light[i].diffuse * diff * color;  
     
             vec3 view_dir = normalize(view_pos - FragPos);
             vec3 reflect_dir = reflect(-light_dir, norm);  
             float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
-            vec3 specular = light[i].specular * spec * texture(material.specular, TexCoords).rgb;  
+            vec3 specular = light[i].specular * spec * color;  
     
             float distance = length(light[i].position - FragPos);
             float attenuation = 1.0 / (light[i].constant + light[i].linear * distance + light[i].quadratic * (distance * distance));    
@@ -93,6 +82,5 @@ void main() {
     }
 
     float shadow_result = ShadowCalculation(FragPosLightSpace);
-    vec3 color = texture(material.diffuse, TexCoords).rgb;
     FragColor = vec4((1.0 - shadow_result) * result, 1.0);
 }

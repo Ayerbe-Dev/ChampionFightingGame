@@ -3,9 +3,9 @@
 
 RoyFireball::RoyFireball() {}
 
-RoyFireball::RoyFireball(int id, PlayerInfo* player_info) {
+RoyFireball::RoyFireball(int id, Player* player) {
 	this->id = id;
-	this->player_info = player_info;
+	this->player = player;
 	this->projectile_kind = PROJECTILE_KIND_ROY_FIREBALL;
 	projectile_name = "roy_fireball";
 	resource_dir = "resource/projectile/roy_fireball";
@@ -15,7 +15,7 @@ RoyFireball::RoyFireball(int id, PlayerInfo* player_info) {
 	load_params();
 	load_move_scripts();
 	loadRoyFireballStatusFunctions();
-	superInit();
+	super_init();
 }
 
 void RoyFireball::loadRoyFireballStatusFunctions() {

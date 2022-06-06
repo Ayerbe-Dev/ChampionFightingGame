@@ -3,9 +3,9 @@
 
 ProjectileTemplate::ProjectileTemplate() {}
 
-ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info) {
+ProjectileTemplate::ProjectileTemplate(int id, Player* player) {
 	this->id = id;
-	this->player_info = player_info;
+	this->player = player;
 	this->projectile_kind = PROJECTILE_KIND_PROJECTILE_TEMPLATE;
 	projectile_name = "projectile_template";
 	resource_dir = "resource/projectile/projectile_template";
@@ -15,7 +15,7 @@ ProjectileTemplate::ProjectileTemplate(int id, PlayerInfo* player_info) {
 	load_params();
 	load_move_scripts();
 	loadProjectileTemplateStatusFunctions();
-	superInit();
+	super_init();
 }
 
 void ProjectileTemplate::loadProjectileTemplateStatusFunctions() {

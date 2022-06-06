@@ -12,6 +12,7 @@
 
 class Fighter;
 class GameRect;
+class DebugMenu;
 
 class Debugger {
 public:
@@ -34,6 +35,6 @@ public:
 };
 
 void cotr_imgui_init();
-void cotr_imgui_debug_dbmenu(GameManager* game_manager);
+void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu);
 void cotr_imgui_debug_battle(Battle* battle);
 void cotr_imgui_terminate();

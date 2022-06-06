@@ -15,62 +15,26 @@
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-	PlayerInfo *player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player *player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
-	GameLoader* game_loader = new GameLoader(3);
-	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
-	loading_thread.detach();
-
 	CSS *css = new CSS;
+	css->load_game_menu();
 
-	css->player_info[0] = player_info[0];
-	css->player_info[1] = player_info[1];
-	if (css->load_css()) {
-		player_info[0]->crash_reason = "Could not open CSS file!";
-		return game_manager->update_state(GAME_STATE_DEBUG_MENU);
-	}
-	update_thread_progress(game_loader->loaded_items);
-	if (css->num_rows == 0) {
-		css->my_col[0] = 1;
-		css->my_col[1] = 1;
-	}
-	for (int i = 0; i < 2; i++) {
-		css->player_id = i;
-		if (css->player_info[i]->chara_kind != CHARA_KIND_MAX) {
-			css->find_prev_chara_kind(css->player_info[i]->chara_kind);
-		}
-		else {
-			css->mobile_css_slots[i] = css->chara_slots[i].texture;
-		}
-	}
-
-	css->cursors[0].init("resource/ui/menu/css/p1Cursor.png");
-	css->cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	update_thread_progress(game_loader->loaded_items);
-
-	css->cursors[1].init("resource/ui/menu/css/p2Cursor.png");
-	css->cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	update_thread_progress(game_loader->loaded_items);
-
-	game_manager->set_menu_info(css);
-	
-	game_loader->finished = true;
-
-	while (game_manager->looping[game_manager->layer]) {
+	while (*css->looping) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
+			player[i]->controller.check_controllers();
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
+		keyboard_state = SDL_GetKeyboardState(nullptr);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
 		game_manager->handle_menus();
@@ -80,7 +44,6 @@ void chara_select_main() {
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
-	delete game_loader;
 	delete css;
 }
 
@@ -112,13 +75,58 @@ CSS::~CSS() {
 	background_texture.destroy();
 	big_bar_texture.destroy();
 	top_bar_texture.destroy();
+	delete game_loader;
+}
+
+void CSS::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
+	game_manager->set_menu_info(this);
+
+  game_loader = new GameLoader(3);
+	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
+	loading_thread.detach();
+
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
+
+	if (!load_css()) {
+		game_manager->add_crash_log("Could not open CSS file!");
+		game_loader->finished = true;
+		return;
+	}
+
+	inc_thread();
+	if (num_rows == 0) {
+		my_col[0] = 1;
+		my_col[1] = 1;
+	}
+	for (int i = 0; i < 2; i++) {
+		player_id = i;
+		if (player[i]->chara_kind != CHARA_KIND_MAX) {
+			find_prev_chara_kind(player[i]->chara_kind);
+		}
+		else {
+			mobile_css_slots[i] = chara_slots[i].texture;
+		}
+	}
+
+	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+	cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+
+	inc_thread();
+
+	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+	cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	inc_thread();
+
+	game_loader->finished = true;
 }
 
 /// <summary>
 /// Loads the CSS file and sets up all of the slots.
 /// </summary>
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
-int CSS::load_css() {
+bool CSS::load_css() {
 	std::ifstream css_file;
 	css_file.open("resource/ui/menu/css/css_param.yml");
 	int chara_kind;
@@ -127,7 +135,7 @@ int CSS::load_css() {
 
 	if (css_file.fail()) {
 		css_file.close();
-		return -1;
+		return false;
 	}
 
 	std::string chara_name;
@@ -178,7 +186,7 @@ int CSS::load_css() {
 		select_slot();
 	}
 
-	return 0;
+	return true;
 }
 
 /// <summary>
@@ -206,8 +214,8 @@ int CSS::get_num_slots() {
 }
 
 void CSS::event_select_press() {
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
-		player_info[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
+		player[player_id]->chara_kind = chara_slots[player_selected_index[player_id]].get_chara_kind();
 		mobile_css_slots[player_id] = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
 		if (player_id) {
@@ -222,9 +230,9 @@ void CSS::event_select_press() {
 	}
 }
 void CSS::event_back_press() {
-	if (player_info[player_id]->chara_kind != CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind != CHARA_KIND_MAX) {
 		mobile_slots_active[player_id] = false;
-		player_info[player_id]->chara_kind = CHARA_KIND_MAX;
+		player[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
 		*game_state = GAME_STATE_MENU;
@@ -233,14 +241,14 @@ void CSS::event_back_press() {
 }
 
 void CSS::event_start_press() {
-	if (player_info[0]->chara_kind != CHARA_KIND_MAX && player_info[1]->chara_kind != CHARA_KIND_MAX) {
+	if (player[0]->chara_kind != CHARA_KIND_MAX && player[1]->chara_kind != CHARA_KIND_MAX) {
 		*game_state = GAME_STATE_BATTLE;
 		*looping = false;
 	}
 }
 
 void CSS::event_right_press() {
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_col[player_id] != 9 && chara_slots_ordered[my_col[player_id] + 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]++;
 		}
@@ -250,7 +258,7 @@ void CSS::event_right_press() {
 }
 
 void CSS::event_left_press() {
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_col[player_id] != 0 && chara_slots_ordered[my_col[player_id] - 1][my_row[player_id]] != nullptr) {
 			my_col[player_id]--;
 		}
@@ -261,7 +269,7 @@ void CSS::event_left_press() {
 
 void CSS::event_down_press() {
 	bool jump = false;
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] < num_rows) {
 			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] + 1] == nullptr) {
 				jump = true;
@@ -285,7 +293,7 @@ void CSS::event_down_press() {
 					}
 				}
 				if (!valid_col) {
-					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
+					GameManager::get_instance()->add_crash_log("Couldn't find a valid column!");
 					*looping = false;
 					*game_state = GAME_STATE_DEBUG_MENU;
 					return;
@@ -310,7 +318,7 @@ void CSS::event_down_press() {
 
 void CSS::event_up_press() {
 	bool jump = false;
-	if (player_info[player_id]->chara_kind == CHARA_KIND_MAX) {
+	if (player[player_id]->chara_kind == CHARA_KIND_MAX) {
 		if (my_row[player_id] != 0) {
 			if (chara_slots_ordered[my_col[player_id]][my_row[player_id] - 1] == nullptr) {
 				jump = true;
@@ -334,7 +342,7 @@ void CSS::event_up_press() {
 					}
 				}
 				if (!valid_col) {
-					player_info[player_id]->crash_reason = "Couldn't find a valid column!";
+					GameManager::get_instance()->add_crash_log("Couldn't find a valid column!");
 					*looping = false;
 					*game_state = GAME_STATE_DEBUG_MENU;
 					return;
@@ -443,7 +451,7 @@ int CSS::get_chara_kind(int player) {
 void CSS::find_prev_chara_kind(int chara_kind) {
 	for (int i = 0; i < CSS_SLOTS; i++) {
 		if (chara_slots[i].chara_kind == chara_kind) {
-			player_info[player_id]->chara_kind = CHARA_KIND_MAX;
+			player[player_id]->chara_kind = CHARA_KIND_MAX;
 			my_col[player_id] = chara_slots[i].my_col;
 			my_row[player_id] = chara_slots[i].my_row;
 			select_slot();

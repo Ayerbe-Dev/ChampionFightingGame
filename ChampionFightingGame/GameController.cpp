@@ -74,6 +74,45 @@ void GameController::poll_buttons(const Uint8* keyboard_state) {
 		}
 		bool new_button = button_info[i].button_on;
 		button_info[i].changed = (old_button != new_button);
+		if (button_kind == BUTTON_MACRO_L && button_info[i].changed) {
+			if (new_button) {
+				for (int i = BUTTON_LP; i <= BUTTON_LK; i += 3) {
+					bool button_already_changed = button_info[button_map[i]].changed;
+					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
+					button_info[button_map[i]].button_on = true;
+					if (button_info[button_map[i]].changed || button_already_changed) {
+						sort_buffer(i);
+						button_info[button_map[i]].buffer = buffer_window;
+					}
+				}
+			}
+		}
+		if (button_kind == BUTTON_MACRO_M && button_info[i].changed) {
+			if (new_button) {
+				for (int i = BUTTON_MP; i <= BUTTON_MK; i += 3) {
+					bool button_already_changed = button_info[button_map[i]].changed;
+					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
+					button_info[button_map[i]].button_on = true;
+					if (button_info[button_map[i]].changed || button_already_changed) {
+						sort_buffer(i);
+						button_info[button_map[i]].buffer = buffer_window;
+					}
+				}
+			}
+		}
+		if (button_kind == BUTTON_MACRO_H && button_info[i].changed) {
+			if (new_button) {
+				for (int i = BUTTON_HP; i <= BUTTON_HK; i += 3) {
+					bool button_already_changed = button_info[button_map[i]].changed;
+					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
+					button_info[button_map[i]].button_on = true;
+					if (button_info[button_map[i]].changed || button_already_changed) {
+						sort_buffer(i);
+						button_info[button_map[i]].buffer = buffer_window;
+					}
+				}
+			}
+		}
 		if (button_kind == BUTTON_MACRO_P && button_info[i].changed) {
 			if (new_button) {
 				for (int i = BUTTON_LP; i <= BUTTON_HP; i++) {
@@ -108,22 +147,64 @@ void GameController::poll_buttons(const Uint8* keyboard_state) {
 	}
 }
 
-void GameController::add_button(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerButton c_mapping) {
+void GameController::add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerButton c_mapping) {
+	bool menu = is_menu_button(button_kind);
 	Button new_button;
 	new_button.button_kind = button_kind;
 	new_button.k_mapping = k_mapping;
 	new_button.c_mapping = c_mapping;
 	button_map[button_kind] = button_info.size();
+	key_map[menu][k_mapping] = button_info.size();
+	controller_map[menu][c_mapping] = button_info.size();
 	button_info.push_back(new_button);
 }
 
-void GameController::add_button(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerAxis c_axis) {
+void GameController::add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerAxis c_axis) {
+	bool menu = is_menu_button(button_kind);
 	Button new_button;
 	new_button.button_kind = button_kind;
 	new_button.k_mapping = k_mapping;
 	new_button.c_axis = c_axis;
 	button_map[button_kind] = button_info.size();
+	key_map[menu][k_mapping] = button_info.size();
+	axis_map[menu][c_axis] = button_info.size();
 	button_info.push_back(new_button);
+}
+
+void GameController::add_button_mapping(unsigned int button_kind) {
+	Button new_button;
+	new_button.button_kind = button_kind;
+	button_map[button_kind] = button_info.size();
+	button_info.push_back(new_button);
+}
+
+void GameController::set_button_mapping(unsigned int button_kind, unsigned int k_mapping) {
+	bool menu = is_menu_button(button_kind);
+	Button& button = button_info[button_map[button_kind]];
+	if (key_map[menu].find(k_mapping) != key_map[menu].end()) {
+		//Basically, this checks if we already mapped this key to a button. If we did, the button that 
+		//already used this key mapping will now use the key mapping that was already on this button
+		button_info[key_map[menu][k_mapping]].k_mapping = button.k_mapping;
+	}
+	button.k_mapping = k_mapping;
+}
+
+void GameController::set_button_mapping(unsigned int button_kind, SDL_GameControllerButton c_mapping) {
+	bool menu = is_menu_button(button_kind);
+	Button& button = button_info[button_map[button_kind]];
+	if (controller_map[menu].find(c_mapping) != controller_map[menu].end()) {
+		button_info[key_map[menu][c_mapping]].c_mapping = button.c_mapping;
+	}
+	button.c_mapping = c_mapping;
+}
+
+void GameController::set_button_mapping(unsigned int button_kind, SDL_GameControllerAxis c_axis) {
+	bool menu = is_menu_button(button_kind);
+	Button& button = button_info[button_map[button_kind]];
+	if (axis_map[menu].find(c_axis) != axis_map[menu].end()) {
+		button_info[key_map[menu][c_axis]].c_axis = button.c_axis;
+	}
+	button.c_axis = c_axis;
 }
 
 bool GameController::check_button_on(unsigned int button_kind) {

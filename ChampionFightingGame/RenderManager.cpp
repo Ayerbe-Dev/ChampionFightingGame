@@ -1,6 +1,7 @@
+#include "GameManager.h"
 #include "RenderManager.h"
 #include <string>
-#include "GameSettings.h"
+#include "SaveManager.h"
 #include "utils.h"
 #include "stb_image.h"
 
@@ -9,12 +10,14 @@ RenderManager::RenderManager() {
 }
 
 void RenderManager::init() {
-	if (getGameSetting("fullscreen")) {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SaveManager* save_manager = SaveManager::get_instance();
+	if (save_manager->get_game_setting("fullscreen")) {
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, getGameSetting("res_x"), getGameSetting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
+	SDL_GetWindowSize(window, &s_window_width, &s_window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	sdl_context = SDL_GL_CreateContext(window);
 	glewExperimental = GL_TRUE;
@@ -32,87 +35,47 @@ void RenderManager::init() {
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	num_lights = 0;
-	s_window_width = 0;
-	s_window_height = 0;
-	box_FBO = 0;
-
 	shadow_map.init();
 	box_layer.init();
 	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	default_effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-
-	glGenFramebuffers(1, &box_FBO);
-	glGenTextures(1, &box_FBO_color);
-	glGenRenderbuffers(1, &box_FBO_depth);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, box_FBO);
-
-	glBindTexture(GL_TEXTURE_2D, box_FBO_color);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, box_FBO_color, 0);
-
-	glBindRenderbuffer(GL_RENDERBUFFER, box_FBO_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, box_FBO_depth);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void RenderManager::destroy() {
-	unlink_all_shaders();
-	default_2d_shader.destroy();
-	default_rect_shader.destroy();
-	shadow_shader.destroy();
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(sdl_renderer);
-	SDL_GL_DeleteContext(sdl_context);
-}
-
-void RenderManager::add_light(Light light, int target) {
+void RenderManager::add_light(Light *light, int target) {
 	if (target == -1) {
-		if (num_lights == MAX_LIGHT_SOURCES) {
-			std::cout << "Congrats you stupid idiot, you ran out of lights" << "\n";
+		if (lights.size() == MAX_LIGHT_SOURCES) {
+			GameManager::get_instance()->add_crash_log("Congrats you stupid idiot, you ran out of lights\n");
 			return;
 		}
 		else {
-			for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-				if (!lights[i].enabled) {
-					lights[i] = light;
-					num_lights++;
-					break;
-				}
-			}
+			lights.push_back(light);
 		}
 	}
 	else {
-		lights[target] = light;
-		num_lights++;
+		if (lights.size() <= target) {
+			lights.resize(target);
+			lights.push_back(light);
+		}
+		else {
+			lights[target] = light;
+		}
 	}
+	update_shader_lights();
 }
 
 void RenderManager::remove_light(int target) {
 	if (target == -1) {
-		int index = 0;
-		while (num_lights != 0 && index < MAX_LIGHT_SOURCES) {
-			if (lights[index].enabled) {
-				lights[index].enabled = false;
-				num_lights--;
-			}
-			index++;
-		}
+		lights.clear();
 	}
 	else {
-		lights[target].enabled = false;
-		num_lights--;
+		for (int i = target, max = lights.size() - 1; i < max; i++) {
+			lights[i] = lights[i + 1];
+		}
+		lights.pop_back();
 	}
-	if (num_lights < 0) {
-		num_lights = 0;
-	}
+	update_shader_lights();
 }
 
 void RenderManager::link_shader(Shader *shader) {
@@ -124,64 +87,63 @@ void RenderManager::unlink_all_shaders() {
 }
 
 void RenderManager::update_shader_lights() {
+	glm::vec3 shadow_total = glm::vec3(0.0);
+	float shadow_factor = 0.0;
+	for (int i = 0, max = MAX_LIGHT_SOURCES; i < max; i++) {
+		if (i < lights.size()) {
+			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
+				linked_shaders[i2]->use();
+				linked_shaders[i2]->set_vec3("light[0].position", lights[i]->position, i);
+				linked_shaders[i2]->set_vec3("light[0].ambient", lights[i]->ambient, i);
+				linked_shaders[i2]->set_vec3("light[0].diffuse", lights[i]->diffuse, i);
+				linked_shaders[i2]->set_vec3("light[0].specular", lights[i]->specular, i);
+				linked_shaders[i2]->set_float("light[0].constant", lights[i]->constant, i);
+				linked_shaders[i2]->set_float("light[0].linear", lights[i]->linear, i);
+				linked_shaders[i2]->set_float("light[0].quadratic", lights[i]->quadratic, i);
+				linked_shaders[i2]->set_bool("light[0].enabled", lights[i]->enabled, i);
+			}
+			if (lights[i]->enabled) {
+				shadow_total += lights[i]->position;
+				shadow_factor++;
+			}
+		}
+		else {
+			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
+				linked_shaders[i2]->use();
+				linked_shaders[i2]->set_bool("lights[0].enabled", false, i);
+			}
+		}
+	}
+	if (lights.empty()) {
+		shadow_map.light_pos = glm::vec3(0.0, 1.0, 1.0);
+	}
+	else {
+		shadow_map.light_pos = shadow_total / glm::vec3(shadow_factor);
+	}
+	shadow_map.update_light_pos();
+}
+
+void RenderManager::update_shader_cams() {
+	glm::mat4 camera_matrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f) * camera.get_view();
+	default_rect_shader.use();
+	default_rect_shader.set_mat4("camera_matrix", camera_matrix);
+	default_effect_shader.use();
+	default_effect_shader.set_mat4("camera_matrix", camera_matrix);
 	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
 		linked_shaders[i]->use();
-		linked_shaders[i]->set_float("material.shininess", 4.0f);
-
-		for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
-			linked_shaders[i]->set_vec3("light[0].position", lights[i2].position, i2);
-			linked_shaders[i]->set_vec3("light[0].ambient", lights[i2].ambient, i2);
-			linked_shaders[i]->set_vec3("light[0].diffuse", lights[i2].diffuse, i2);
-			linked_shaders[i]->set_vec3("light[0].specular", lights[i2].specular, i2);
-			linked_shaders[i]->set_float("light[0].constant", lights[i2].constant, i2);
-			linked_shaders[i]->set_float("light[0].linear", lights[i2].linear, i2);
-			linked_shaders[i]->set_float("light[0].quadratic", lights[i2].quadratic, i2);
-			linked_shaders[i]->set_bool("light[0].enabled", lights[i2].enabled, i2);
-		}
+		linked_shaders[i]->set_vec3("view_pos", camera.pos);
+		linked_shaders[i]->set_mat4("camera_matrix", camera_matrix);
 	}
 }
 
-void RenderManager::update_shader_cam(Shader* shader) {
-	camera.update_view();
-	glm::mat4 view = camera.get_view();
-	glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
-	shader->set_vec3("view_pos", camera.pos);
-	shader->set_mat4("camera_matrix", projection * view);
-}
-
-void RenderManager::render_model(Model *model, Shader *shader, glm::mat4 extra_mat, glm::vec3 *model_pos, glm::vec3 *model_rot, glm::vec3 *model_scale, bool flip) {
-	shader->use(); 
-	update_shader_cam(shader);
-	shader->set_mat4("shadow_light_view", shadow_map.m_orthographic_perspective * shadow_map.m_lookat);
-	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat, 
-		*model_pos / glm::vec3(
-			WINDOW_WIDTH / (100 * model_scale->x), 
-			WINDOW_HEIGHT / (100 * model_scale->y), 
-			WINDOW_DEPTH / (100 * model_scale->z)
-		));
-	model_mat *= orientate4(*model_rot);
-	model_mat = scale(model_mat, *model_scale);
-	model_mat *= extra_mat;
-	shader->set_mat4("model_matrix", model_mat);
-	model->render(shader, flip);
-}
-
-void RenderManager::render_model_shadow(Model* model, glm::mat4 extra_mat, glm::vec3* model_pos, glm::vec3* model_rot, glm::vec3* model_scale, bool flip) {
+void RenderManager::update_shader_shadows() {
+	glm::mat4 shadow_matrix = (shadow_map.perspective * shadow_map.lookat);
 	shadow_shader.use();
-	shadow_shader.set_mat4("camera_matrix", shadow_map.m_orthographic_perspective * shadow_map.m_lookat);
-	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat, 
-		*model_pos / glm::vec3(
-			WINDOW_WIDTH / (100 * model_scale->x), 
-			WINDOW_HEIGHT / (100 * model_scale->y), 
-			WINDOW_DEPTH / (100 * model_scale->z)
-		));
-	model_mat *= orientate4(*model_rot);
-	model_mat = scale(model_mat, *model_scale);
-	model_mat *= extra_mat;
-	shadow_shader.set_mat4("model_matrix", model_mat);
-	model->render_shadow(&shadow_shader, flip);
+	shadow_shader.set_mat4("camera_matrix", shadow_matrix);
+	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
+		linked_shaders[i]->use();
+		linked_shaders[i]->set_mat4("shadow_matrix", shadow_matrix);
+	}
 }
 
 void RenderManager::refresh_sdl_renderer() {
@@ -196,4 +158,17 @@ RenderManager* RenderManager::get_instance() {
 		instance = new RenderManager;
 	}
 	return instance;
+}
+
+void RenderManager::destroy_instance() {
+	unlink_all_shaders();
+	default_2d_shader.destroy();
+	default_rect_shader.destroy();
+	shadow_shader.destroy();
+	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(sdl_renderer);
+	SDL_GL_DeleteContext(sdl_context);
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

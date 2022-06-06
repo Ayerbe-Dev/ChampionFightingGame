@@ -38,6 +38,7 @@ public:
 	void add_effect_caster(int object_id);
 	void remove_effect_casters();
 
+	void destroy_instance();
 private:
 	EffectManager();
 	void init();

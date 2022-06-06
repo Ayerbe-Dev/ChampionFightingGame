@@ -1,5 +1,5 @@
 #pragma once
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
@@ -83,8 +83,8 @@ public:
 	Battle();
 	~Battle();
 
-	void load_battle(GameManager* game_manager);
-	void unload_battle();
+	void load_game_menu();
+	void unload_game_menu();
 
 	void process_main();
 	void process_ui();
@@ -119,7 +119,7 @@ public:
 	BattleObjectManager* battle_object_manager;
 	ThreadManager* thread_manager;
 
-	PlayerInfo* player_info[2];
+	Player* player[2];
 
 	HealthBar health_bar[2];
 

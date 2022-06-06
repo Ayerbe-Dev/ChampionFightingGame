@@ -6,7 +6,7 @@ class Tessa : public Fighter {
 public:
 	virtual void chara_id();
 	Tessa();
-	Tessa(int id, PlayerInfo* player_info);
+	Tessa(int id, Player* player);
 	void loadTessaStatusFunctions();
 	void load_move_scripts() override;
 

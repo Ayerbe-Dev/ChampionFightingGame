@@ -10,7 +10,7 @@
 #include "FighterFloat.h"
 #include "FighterFlag.h"
 
-class PlayerInfo;
+class Player;
 class BattleObjectManager;
 class SoundManager;
 class EffectManager;
@@ -33,7 +33,7 @@ public:
 
 	glm::vec3 extra_rot = glm::vec3(0.0);
 
-	PlayerInfo* player_info;
+	Player* player;
 
 	GameRect jostle_box;
 	glm::vec2 base_jostle_anchor;
@@ -58,6 +58,7 @@ public:
 	int attempted_excutes{ 0 };
 
 	bool is_anim_end{ false };
+	Blockbox blockbox;
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
@@ -70,6 +71,9 @@ public:
 
 	bool multihit_connected[10] = {false};
 
+	void new_blockbox(glm::vec2 anchor, glm::vec2 offset);
+	void update_blockbox_pos();
+	void clear_blockbox();
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos();
 	bool is_hitbox_active(int multihit = -1);

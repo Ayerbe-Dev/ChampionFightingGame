@@ -1,7 +1,7 @@
 #pragma once
 #include "GameMenu.h"
 #include "GameTexture.h"
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameManager.h"
 
 void controls_main();
@@ -9,10 +9,11 @@ void controls_main();
 class OptionsMenu : public GameMenu {
 public:
 	OptionsMenu();
-	OptionsMenu(int width, int height, std::string dir);
+	~OptionsMenu();
 
-	void init(int width, int height, std::string dir);
+	void load_game_menu();
+	void event_back_press();
 
 	GameTexture panel;
-	PlayerInfo* player_info[2];
+	Player* player[2];
 };

@@ -19,8 +19,9 @@ public:
 
 	CircularBuffer<AIInfo> ai_info[2];
 	std::mutex ai_mutex;
-	static AIManager* get_instance();
 
+	static AIManager* get_instance();
+	void destroy_instance();
 private:
 	AIManager();
 	static AIManager* instance;

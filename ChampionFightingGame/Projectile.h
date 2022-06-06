@@ -54,7 +54,7 @@ public:
 
 	//Setup
 	
-	void superInit();
+	void super_init();
 	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();

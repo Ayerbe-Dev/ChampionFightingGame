@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "PlayerInfo.h"
+#include "Player.h"
 #include "GameTexture.h"
 #include "GameMenu.h"
 #include "GameManager.h"
@@ -52,7 +52,10 @@ class CSS: public GameMenu{
 public:
     CSS();
     ~CSS();
-    int load_css();
+
+    void load_game_menu();
+
+    bool load_css();
     void add_slot(int id, std::string cardDir, std::string cardName);
     int get_num_slots();
 
@@ -79,7 +82,7 @@ public:
     int num_rows;
     int cols_offset;
 
-    PlayerInfo *player_info[2];
+    Player *player[2];
     GameTexture mobile_css_slots[2];
     bool mobile_slots_active[2] = { false };
     CssSlot chara_slots[CSS_SLOTS];

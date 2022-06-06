@@ -6,7 +6,7 @@ class Priest : public Fighter {
 public:
 	virtual void chara_id();
 	Priest();
-	Priest(int id, PlayerInfo* player_info);
+	Priest(int id, Player* player);
 	void loadPriestStatusFunctions();
 	void load_move_scripts() override;
 

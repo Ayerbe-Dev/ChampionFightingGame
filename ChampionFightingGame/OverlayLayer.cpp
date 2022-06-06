@@ -1,5 +1,5 @@
 #include "OverlayLayer.h"
-#include "GameSettings.h"
+#include "SaveManager.h"
 #include "utils.h"
 
 OverlayLayer::OverlayLayer() {
@@ -11,6 +11,7 @@ OverlayLayer::~OverlayLayer() {
 }
 
 void OverlayLayer::init() {
+	SaveManager* save_manager = SaveManager::get_instance();
 	float coords[] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -27,7 +28,7 @@ void OverlayLayer::init() {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, getGameSetting("res_x"), getGameSetting("res_y"), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -37,7 +38,7 @@ void OverlayLayer::init() {
 
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, getGameSetting("res_x"), getGameSetting("res_y"));
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"));
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

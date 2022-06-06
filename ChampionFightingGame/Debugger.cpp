@@ -3,6 +3,8 @@
 #include "GameRect.h"
 #include "ParamAccessor.h"
 #include "RenderManager.h"
+#include "DebugMenu.h"
+#include "utils.h"
 
 Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_ENABLE].k_mapping = SDL_SCANCODE_LSHIFT;
@@ -210,57 +212,47 @@ void cotr_imgui_init() {
 	ImGui_ImplOpenGL3_Init();
 
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
-
-	printf("Debug Init\n");
 }
 
 void cotr_imgui_terminate() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	printf("Debug Exit\n");
 }
 
-void cotr_imgui_debug_dbmenu(GameManager* game_manager)
-{
+void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(RenderManager::get_instance()->window);
 	ImGui::NewFrame();
+
+	GameManager* game_manager = GameManager::get_instance();
 	
-	ImGui::Begin("Debug Menu\n");
-
-	{
-		
-		if (ImGui::MenuItem("Debug Menu", "This screen")) {
-			game_manager->update_state(GAME_STATE_DEBUG_MENU);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("1v1 Game", "With Default settings")) {
-			game_manager->update_state(GAME_STATE_BATTLE);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("Character Select Screen")) {
-			game_manager->update_state(GAME_STATE_CHARA_SELECT);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("Main Menu")) {
-			game_manager->update_state(GAME_STATE_MENU);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::MenuItem("Title Screen")) {
-			game_manager->update_state(GAME_STATE_TITLE_SCREEN);
-			game_manager->looping[game_manager->layer] = false;
-		}
-		if (ImGui::Button("exit")) {
-			game_manager->looping[game_manager->layer] = false;
-		}
-
-		ImGui::Text("%s", game_manager->player_info[0]->crash_reason.c_str());
-		ImGui::Text("%s", game_manager->player_info[1]->crash_reason.c_str());
+	ImGui::Begin("Debug Menu\n");		
+	
+	if (ImGui::MenuItem("Debug Menu", "This screen")) {
+		game_manager->update_state(GAME_STATE_DEBUG_MENU);
+		game_manager->looping[game_manager->layer] = false;
+	}
+	if (ImGui::MenuItem("1v1 Game", "With Default settings")) {
+		game_manager->update_state(GAME_STATE_BATTLE);
+	}
+	if (ImGui::MenuItem("Character Select Screen")) {
+		game_manager->update_state(GAME_STATE_CHARA_SELECT);
+	}
+	if (ImGui::MenuItem("Main Menu")) {
+		game_manager->update_state(GAME_STATE_MENU);
+	}
+	if (ImGui::MenuItem("Title Screen")) {
+		game_manager->update_state(GAME_STATE_TITLE_SCREEN);
+	}
+	if (ImGui::Button("exit")) {
+		game_manager->update_state(GAME_STATE_CLOSE);
+	}
+	for (int i = 0, max = debug_menu->debug_messages.size(); i < max; i++) {
+		ImGui::Text("%s", debug_menu->debug_messages[i].c_str());
 	}
 
 	ImGui::End();
-	//ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -292,15 +284,14 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::TreePop();
 		}	
 
-		if (ImGui::TreeNode("Shadow Light")) {
-			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.m_light_position.x, 0.01);
-			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.m_light_position.y, 0.01);
-			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.m_light_position.z, 0.01);
+		if (ImGui::TreeNode("Shadow Light")) { //tbh this block doesn't really make sense anymore since
+			//by design it should always be the same as render_manager->lights[0]
+			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.light_pos.x, 0.01);
+			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.light_pos.y, 0.01);
+			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.light_pos.z, 0.01);
 			
-			ImGui::DragFloat("fov", &render_manager->shadow_map.shadow_map_fov, 0.01);
-			ImGui::DragFloat("depth", &render_manager->shadow_map.shadow_map_depth, 0.01);
-
-			render_manager->shadow_map.update_light();
+			ImGui::DragFloat("fov", &render_manager->shadow_map.fov, 0.01);
+			ImGui::DragFloat("depth", &render_manager->shadow_map.depth, 0.01);
 
 			ImGui::TreePop();
 		}
@@ -311,29 +302,20 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::TreePop();
 		}
 
-		if (render_manager->camera.following_players) {
-//			render_manager->camera.pos[0] = ((battle->fighter[0]->pos[0] + battle->fighter[1]->pos[0]) / 450) / 2;
-//			render_manager->camera.pos[1] = 0.5;
-//			render_manager->camera.pos[2] = std::max(2.0 + std::abs(battle->fighter[0]->pos[0] - battle->fighter[1]->pos[0]) / 450, 2.867);
-//			render_manager->camera.yaw = -90 + render_manager->camera.pos[0] * render_manager->camera.auto_linear_scale;
-			//tmp_render_manager->camera.adjust_view()
-		}
-
 		if (ImGui::TreeNode("Lights")) {
-			for (int i2 = 0; i2 < MAX_LIGHT_SOURCES; i2++) {
+			for (int i2 = 0; i2 < render_manager->lights.size(); i2++) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 
-				//ImGui::Text(light_name.c_str());
-				//if (ImGui::CollapsingHeader(light_name.c_str())) {
 				if (ImGui::TreeNode(light_name.c_str())) {
-					ImGui::SliderFloat((light_name + " X").c_str(), &render_manager->lights[i2].position[0], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Y").c_str(), &render_manager->lights[i2].position[1], -15.0f, 15.0f);
-					ImGui::SliderFloat((light_name + " Z").c_str(), &render_manager->lights[i2].position[2], -15.0f, 15.0f);
-					ImGui::Checkbox((light_name).c_str(), &render_manager->lights[i2].enabled);
+					ImGui::SliderFloat((light_name + ".X").c_str(), &render_manager->lights[i2]->position[0], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + ".Y").c_str(), &render_manager->lights[i2]->position[1], -15.0f, 15.0f);
+					ImGui::SliderFloat((light_name + ".Z").c_str(), &render_manager->lights[i2]->position[2], -15.0f, 15.0f);
+					ImGui::Checkbox((light_name).c_str(), &render_manager->lights[i2]->enabled);
 					ImGui::TreePop();
 				}
 			}
 			ImGui::TreePop();
+			render_manager->update_shader_lights();
 		}
 	}
 

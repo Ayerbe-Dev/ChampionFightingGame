@@ -1,18 +1,49 @@
 #include "Box.h"
 #include "BattleObject.h"
 
-Hitbox::Hitbox() {
-	id = -1;
+Blockbox::Blockbox() {
+	active = false;
 }
 
-/*
-	All of the functions related to Hitboxes, Grabboxesand Hurtboxes. Note: None of these functions are ever called directly, the Fighter and 
-	Projectile Instances all contain functions that call these.
-*/
+void Blockbox::init(BattleObject* object) {
+	rect.init();
+	rect.bind_scale(&object->scale);
+	rect.set_rgba(glm::vec4(255, 165, 0, 204));
+}
 
-/*
-	The version of the Hitbox func used by players
-*/
+void Blockbox::activate(BattleObject* object, glm::vec2 anchor, glm::vec2 offset) {
+	anchor.x *= object->facing_dir;
+	offset.x *= object->facing_dir;
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	anchor.x += object->pos.x;
+	anchor.y += object->pos.y;
+	offset.x += object->pos.x;
+	offset.y += object->pos.y;
+	this->rect.update_corners(anchor, offset);
+	this->rect.bind_scale(&object->scale);
+	this->object = object;
+	active = true;
+}
+
+void Blockbox::update_pos() {
+	glm::vec2 anchor = init_anchor;
+	glm::vec2 offset = init_offset;
+	anchor.x += object->pos.x;
+	anchor.y += object->pos.y;
+	offset.x += object->pos.x;
+	offset.y += object->pos.y;
+	this->rect.update_corners(anchor, offset);
+}
+
+void Blockbox::clear() {
+	active = false;
+}
+
+Hitbox::Hitbox() {
+	id = -1;
+	active = false;
+}
 
 void Hitbox::init(BattleObject* object) {
 	rect.init();
@@ -73,12 +104,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->can_chip_ko = can_chip_ko;
 	this->can_ko = can_ko;
 	this->use_player_pos = use_player_pos;
-	if (hitbox_kind == HITBOX_KIND_BLOCK) {
-		rect.set_rgb(glm::vec3(255, 165, 0));
-	}
-	else {
-		rect.set_rgb(glm::vec3(255, 0, 0));
-	}
+	this->active = true;
 }
 
 /*
@@ -132,6 +158,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->continue_launch = continue_launch;
 	this->can_chip_ko = can_chip_ko;
 	this->can_ko = can_ko;
+	this->active = true;
 }
 
 /*
@@ -153,13 +180,13 @@ void Hitbox::update_pos() {
 //Clears a hitbox. TECHNICALLY never needs to be used because the constructors already set the ids to 0 but like... gross
 
 void Hitbox::clear() {
-	if (id != -1) {
-		this->id = -1;
-	}
+	id = -1;
+	active = false;
 }
 
 Grabbox::Grabbox() {
-	this->id = -1;
+	id = -1;
+	active = false;
 }
 
 void Grabbox::init(BattleObject* object) {
@@ -200,6 +227,7 @@ void Grabbox::activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2
 	else {
 		rect.set_rgb(glm::vec3(0, 255, 0));
 	}
+	this->active = true;
 }
 
 void Grabbox::update_pos() {
@@ -215,11 +243,13 @@ void Grabbox::update_pos() {
 }
 
 void Grabbox::clear() {
-	this->id = -1;
+	id = -1;
+	active = false;
 }
 
 Hurtbox::Hurtbox() {
-	this->id = -1;
+	id = -1;
+	active = false;
 }
 
 void Hurtbox::init(BattleObject* object) {
@@ -249,6 +279,7 @@ void Hurtbox::activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2
 	this->hurtbox_kind = hurtbox_kind;
 	this->is_armor = is_armor;
 	this->intangible_kind = intangible_kind;
+	this->active = true;
 }
 
 void Hurtbox::update_pos() {
@@ -262,5 +293,6 @@ void Hurtbox::update_pos() {
 }
 
 void Hurtbox::clear() {
-	this->id = -1;
+	id = -1;
+	active = false;
 }

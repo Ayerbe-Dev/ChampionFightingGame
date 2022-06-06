@@ -6,7 +6,7 @@ class Sully : public Fighter {
 public:
 	virtual void chara_id();
 	Sully();
-	Sully(int id, PlayerInfo* player_info);
+	Sully(int id, Player* player);
 	void loadSullyStatusFunctions();
 	void load_move_scripts() override;
 

@@ -5,6 +5,7 @@
 #include "ParamAccessor.h"
 #include <fstream>
 #include <cmath>
+#include "utils.h"
 
 bool Fighter::common_ground_status_act(bool crouch) {
 	if (specific_ground_status_act()) {
@@ -152,7 +153,7 @@ bool Fighter::common_air_status_act() {
 bool Fighter::common_air_status_general() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity");
+			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->world_rate;
 		}
 		if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_F) {
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
@@ -329,7 +330,7 @@ void Fighter::status_dash_air() {
 	int max_frame = min_frame + get_local_param_int("dash_f_maintain_speed_frame");
 
 	if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity");
+		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->world_rate;
 	}
 	if (frame < max_frame) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0.0;
@@ -790,7 +791,9 @@ void Fighter::status_grabbed() {
 			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] = 0;
 		}
 		if (fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] > 0) {
-			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES]--;
+			if (battle_object_manager->counters_can_move()) {
+				fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES]--;
+			}
 			glm::vec3 distance = target_pos - (pos + offset_bone_pos);
 			distance /= fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES];
 			add_pos(distance);
@@ -892,7 +895,7 @@ void Fighter::status_hitstun_air() {
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity");
+			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->world_rate;
 		}
 		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 	}
@@ -932,7 +935,7 @@ void Fighter::status_blockstun() {
 		}
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity");
+				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->world_rate;
 			}
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.5, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 		}
@@ -1075,7 +1078,7 @@ void Fighter::status_launch() {
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY];
+			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] * battle_object_manager->world_rate;
 		}
 		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 		if (pos.y < FLOOR_GAMECOORD) {
@@ -1144,7 +1147,10 @@ void Fighter::status_landing() {
 		}
 	}
 	else {
-		fighter_int[FIGHTER_INT_LANDING_LAG]--;
+		if (battle_object_manager->counters_can_move()) {
+			fighter_int[FIGHTER_INT_LANDING_LAG]--;
+		}
+
 	}
 } 
 
@@ -1170,7 +1176,10 @@ void Fighter::status_landing_attack() {
 		}
 	}
 	else {
-		fighter_int[FIGHTER_INT_LANDING_LAG]--;
+		if (battle_object_manager->counters_can_move()) {
+			fighter_int[FIGHTER_INT_LANDING_LAG]--;
+		}
+
 	}
 }
 
@@ -1214,7 +1223,10 @@ void Fighter::status_landing_hitstun() {
 		}
 	}
 	else {
-		fighter_int[FIGHTER_INT_LANDING_LAG]--;
+		if (battle_object_manager->counters_can_move()) {
+			fighter_int[FIGHTER_INT_LANDING_LAG]--;
+		}
+
 	}
 }
 

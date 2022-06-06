@@ -8,19 +8,16 @@ void pause_battle_main() {
 
 	game_manager->layer++;
 
-	PlayerInfo* player_info[2];
-	player_info[0] = game_manager->player_info[0];
-	player_info[1] = game_manager->player_info[1];
+	Player* player[2];
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
 
 	const Uint8* keyboard_state;
 
-	PauseBattle pause(500, 300, "resource/ui/battle/pause/overlay.png");
-	pause.player_info[0] = player_info[0];
-	pause.player_info[1] = player_info[1];
+	PauseBattle* pause = new PauseBattle;
+	pause->load_game_menu();
 
-	game_manager->set_menu_info(&pause);
-
-	while (*pause.looping) {
+	while (*pause->looping) {
 		wait_ms();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -28,20 +25,19 @@ void pause_battle_main() {
 		
 		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
-			player_info[i]->controller.check_controllers();
-			player_info[i]->controller.poll_buttons(keyboard_state);
-			if (player_info[i]->controller.check_button_trigger(BUTTON_START)) {
-				*pause.looping = false;
-			}
+			player[i]->controller.check_controllers();
+			player[i]->controller.poll_buttons(keyboard_state);
 		}
 
+		game_manager->handle_menus();
+
 		background_menu->process_background();
-		pause.panel.render();
+		pause->panel.render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
-	pause.panel.destroy();
+	delete pause;
 	game_manager->layer--;
 }
 
@@ -49,13 +45,24 @@ PauseBattle::PauseBattle() {
 
 }
 
-PauseBattle::PauseBattle(int width, int height, std::string dir) {
-	init(width, height, dir);
+PauseBattle::~PauseBattle() {
+	panel.destroy();
 }
 
-void PauseBattle::init(int width, int height, std::string dir) {
-	panel.init(dir);
-	panel.set_width(width);
-	panel.set_height(height);
+void PauseBattle::load_game_menu() {
+	GameManager* game_manager = GameManager::get_instance();
+
+	game_manager->set_menu_info(this);
+
+	player[0] = game_manager->player[0];
+	player[1] = game_manager->player[1];
+
+	panel.init("resource/ui/menu/options/overlay.png");
+	panel.set_width(500);
+	panel.set_height(300);
 	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+}
+
+void PauseBattle::event_start_press() {
+	*looping = false;
 }

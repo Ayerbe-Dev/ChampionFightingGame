@@ -49,7 +49,7 @@ public:
 
     void set_target_pos(glm::vec2 target, float frames);
 
-    glm::vec2 get_pos_offset(glm::vec2 pos, SDL_Rect rect);
+    glm::vec2 get_pos_offset(glm::vec2 offset);
 
     float left_percent = 1.0;
     float right_percent = 1.0;
@@ -61,10 +61,15 @@ public:
     float top_crop = 1.0;
     float bottom_crop = 1.0;
 
-    float target_left_crop = -2.0;
-    float target_right_crop = -2.0;
-    float target_top_crop = -2.0;
-    float target_bottom_crop = -2.0;
+    float target_left_crop = 0.0;
+    float target_right_crop = 0.0;
+    float target_top_crop = 0.0;
+    float target_bottom_crop = 0.0;
+
+    float prev_left_target[2] = {-1.0};
+    float prev_right_target[2] = {-1.0};
+    float prev_top_target[2] = {-1.0};
+    float prev_bottom_target[2] = {-1.0};
 
     float target_left_frames = 0.0;
     float target_right_frames = 0.0;

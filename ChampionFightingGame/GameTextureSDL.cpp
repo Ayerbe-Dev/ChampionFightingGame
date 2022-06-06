@@ -142,38 +142,50 @@ void GameTextureSDL::scale_bottom_percent(float percent, bool crop) {
 }
 
 void GameTextureSDL::scale_all_percent(float percent, bool crop) {
-	if (percent < 1.0) {
-		scale_left_percent(percent * 2.0, crop);
-		scale_right_percent(percent * 2.0, crop);
-		scale_top_percent(percent * 2.0, crop);
-		scale_bottom_percent(percent * 2.0, crop);
-	}
-	else {
-		scale_left_percent(percent / 2.0, crop);
-		scale_right_percent(percent / 2.0, crop);
-		scale_top_percent(percent / 2.0, crop);
-		scale_bottom_percent(percent / 2.0, crop);
-	}
+	scale_left_percent(percent, crop);
+	scale_right_percent(percent, crop);
+	scale_top_percent(percent, crop);
+	scale_bottom_percent(percent, crop);
 }
 
 void GameTextureSDL::set_left_target(float percent, float frames) {
+	if (prev_left_target[0] == percent && prev_left_target[1] == frames) {
+		return;
+	}
 	target_left_crop = (percent - left_percent) / frames;
 	target_left_frames = frames;
+	prev_left_target[0] = percent;
+	prev_left_target[1] = frames;
 }
 
 void GameTextureSDL::set_right_target(float percent, float frames) {
+	if (prev_right_target[0] == percent && prev_right_target[1] == frames) {
+		return;
+	}
 	target_right_crop = (percent - right_percent) / frames;
 	target_right_frames = frames;
+	prev_right_target[0] = percent;
+	prev_right_target[1] = frames;
 }
 
 void GameTextureSDL::set_top_target(float percent, float frames) {
+	if (prev_top_target[0] == percent && prev_top_target[1] == frames) {
+		return;
+	}
 	target_top_crop = (percent - top_percent) / frames;
 	target_top_frames = frames;
+	prev_top_target[0] = percent;
+	prev_top_target[1] = frames;
 }
 
 void GameTextureSDL::set_bottom_target(float percent, float frames) {
+	if (prev_bottom_target[0] == percent && prev_bottom_target[1] == frames) {
+		return;
+	}
 	target_bottom_crop = (percent - bottom_percent) / frames;
 	target_bottom_frames = frames;
+	prev_bottom_target[0] = percent;
+	prev_bottom_target[1] = frames;
 }
 
 void GameTextureSDL::set_target_pos(glm::vec2 target, float frames) {
@@ -184,10 +196,10 @@ void GameTextureSDL::set_target_pos(glm::vec2 target, float frames) {
 	this->target_pos_frames = glm::vec2(frames);
 }
 
-glm::vec2 GameTextureSDL::get_pos_offset(glm::vec2 pos, SDL_Rect rect) {
+FORCE_INLINE glm::vec2 GameTextureSDL::get_pos_offset(glm::vec2 offset) {
 	glm::vec2 ret;
-	ret.x = pos.x + (base_width / 2.0) - (rect.x + (base_width / 2.0));
-	ret.y = ((pos.y + WINDOW_HEIGHT) * -1.0 + WINDOW_HEIGHT) + (base_height / 2.0) - (rect.y + (base_height / 2.0));
+	ret.x = (pos.x - offset.x / 2) + (WINDOW_WIDTH / 2.0) - (base_width / 2.0);
+	ret.y = (((pos.y + offset.y / 2) + WINDOW_HEIGHT) * -1.0 + WINDOW_HEIGHT) + (WINDOW_HEIGHT / 2.0) - (base_height / 2.0);
 	return ret;
 }
 
@@ -196,23 +208,19 @@ bool test = false;
 void GameTextureSDL::render() {
 	SDL_Rect sdl_dest = dest_rect;
 	SDL_Rect sdl_src = src_rect;
-	glm::vec2 sdl_pos = pos;
-	glm::vec2 src_offset = get_pos_offset(sdl_pos, src_rect);
-	glm::vec2 dest_offset = get_pos_offset(sdl_pos, dest_rect);
-	sdl_src.x = src_offset.x;
-	sdl_src.y = src_offset.y;
-	sdl_dest.x = dest_offset.x;
-	sdl_dest.y = dest_offset.y;
-	scale_right_percent_internal(&sdl_dest, right_percent);
-	scale_right_percent_internal(&sdl_src, right_crop);
-	scale_left_percent_internal(&sdl_dest, left_percent);
-	scale_left_percent_internal(&sdl_src, left_crop);
-	scale_bottom_percent_internal(&sdl_dest, bottom_percent);
-	scale_bottom_percent_internal(&sdl_src, bottom_crop);
-	scale_top_percent_internal(&sdl_dest, top_percent);
-	scale_top_percent_internal(&sdl_src, top_crop);
 	SDL_Rect* render_src = &sdl_src;
 	SDL_Rect* render_dest = &sdl_dest;
+	scale_left_percent_internal(render_dest, left_percent);
+	scale_left_percent_internal(render_src, left_crop);
+	scale_right_percent_internal(render_dest, right_percent);
+	scale_right_percent_internal(render_src, right_crop);
+	scale_top_percent_internal(render_dest, top_percent);
+	scale_top_percent_internal(render_src, top_crop);
+	scale_bottom_percent_internal(render_dest, bottom_percent);
+	scale_bottom_percent_internal(render_src, bottom_crop);
+	glm::vec2 rect_offset = get_pos_offset(glm::vec2(sdl_dest.x, sdl_dest.y));
+	sdl_dest.x += rect_offset.x;
+	sdl_dest.y += rect_offset.y;
 	if (whole_texture) {
 		render_src = nullptr;
 	}
@@ -255,14 +263,14 @@ void GameTextureSDL::scale_top_percent_internal(SDL_Rect* rect, float percent) {
 	}
 	if (percent > 1.0) {
 		int scale_factor = (base_height * percent) - base_height;
-		rect->y += scale_factor;
-		rect->h -= scale_factor;
+		rect->y -= scale_factor;
+		rect->h += scale_factor;
 	}
 	else {
 		percent = 1.0 - percent;
 		int scale_factor = base_height * percent;
-		rect->y -= scale_factor;
-		rect->h += scale_factor;
+		rect->y += scale_factor;
+		rect->h -= scale_factor;
 	}
 }
 

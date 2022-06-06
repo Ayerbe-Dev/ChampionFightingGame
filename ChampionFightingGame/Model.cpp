@@ -312,7 +312,6 @@ void Model::load_skeleton(std::string path) {
 		new_bone.counterpart_id = counterpart_id;
 		bones.push_back(new_bone);
 		bone_map[bone_name] = bone_id;
-
 	}
 
 	smd.close();

@@ -1,155 +1,155 @@
-0 "blender_implicit" -1
-1 "Trans" -1
-2 "Rot" 1
-3 "Hip" 2
-4 "Waist" 3
-5 "Bust" 4
-6 "Neck" 5
-7 "Head" 6
-8 "S_HairL1" 7
-9 "S_HairL2_null" 8
-10 "S_HairR1" 7
-11 "S_HairR2_null" 10
-12 "S_HairB1" 7
-13 "S_HairB2_null" 12
-14 "Face" 7
-15 "Mouth_group" 14
-16 "UplipR1_offset" 15
-17 "UplipR1" 16
-18 "UplipR2_offset" 15
-19 "UplipR2" 18
-20 "UplipL2_offset" 15
-21 "UplipL2" 20
-22 "UplipL1_offset" 15
-23 "UplipL1" 22
-24 "UplipC_offset" 15
-25 "UplipC" 24
-26 "Jaw_group" 14
-27 "Jaw_offset" 26
-28 "Jaw" 27
-29 "Tongue" 28
-30 "Tongue1" 29
-31 "Tongue2" 30
-32 "DownlipL_offset" 28
-33 "DownlipL" 32
-34 "DownlipC_offset" 28
-35 "DownlipC" 34
-36 "DownlipR_offset" 28
-37 "DownlipR" 36
-38 "HairFront" 7
-39 "ClavicleC" 5
-40 "ClavicleL" 39
-41 "ShoulderL" 40
-42 "ArmL" 41
-43 "HandL" 42
-44 "HaveL" 43
-45 "FingerL10" 43
-46 "FingerL20" 45
-47 "FingerL30" 46
-48 "FingerL40" 47
-49 "FingerL41" 48
-50 "FingerL42" 49
-51 "FingerL43" 50
-52 "FingerL31" 47
-53 "FingerL32" 52
-54 "FingerL33" 53
-55 "FingerL21" 46
-56 "FingerL22" 55
-57 "FingerL23" 56
-58 "FingerL11" 45
-59 "FingerL12" 58
-60 "FingerL13" 59
-61 "FingerL51" 45
-62 "FingerL52" 61
-63 "FingerL53" 62
-64 "H_WristL" 42
-65 "H_ArmtwistL" 42
-66 "H_ElbowL" 41
-67 "H_UparmtwistL" 41
-68 "H_SholderL" 41
-69 "ClavicleR" 39
-70 "ShoulderR" 69
-71 "ArmR" 70
-72 "HandR" 71
-73 "HaveR" 72
-74 "FingerR10" 72
-75 "FingerR20" 74
-76 "FingerR30" 75
-77 "FingerR40" 76
-78 "FingerR41" 77
-79 "FingerR42" 78
-80 "FingerR43" 79
-81 "FingerR31" 76
-82 "FingerR32" 81
-83 "FingerR33" 82
-84 "FingerR21" 75
-85 "FingerR22" 84
-86 "FingerR23" 85
-87 "FingerR11" 74
-88 "FingerR12" 87
-89 "FingerR13" 88
-90 "FingerR51" 74
-91 "FingerR52" 90
-92 "FingerR53" 91
-93 "H_WristR" 71
-94 "H_ArmtwistR" 71
-95 "H_ElbowR" 70
-96 "H_UparmtwistR" 70
-97 "H_SholderR" 70
-98 "Dougiback" 5
-99 "H_ClavicleL" 5
-100 "H_ClavicleR" 5
-101 "LegC" 3
-102 "LegL" 101
-103 "KneeL" 102
-104 "FootL" 103
-105 "ToeL" 104
-106 "S_LegL1" 103
-107 "S_LegL2_null" 106
-108 "H_KneeL" 102
-109 "LegR" 101
-110 "KneeR" 109
-111 "FootR" 110
-112 "ToeR" 111
-113 "S_LegR1" 110
-114 "S_LegR2_null" 113
-115 "H_KneeR" 109
-116 "S_ShirttailF1" 3
-117 "S_ShirttailF2" 116
-118 "S_ShirttailF3_null" 117
-119 "S_ShirttailFL1" 3
-120 "S_ShirttailFL2" 119
-121 "S_ShirttailFL3_null" 120
-122 "S_ShirttailFR1" 3
-123 "S_ShirttailFR2" 122
-124 "S_ShirttailFR3_null" 123
-125 "S_ShirttailLa1" 3
-126 "S_ShirttailLa2" 125
-127 "S_ShirttailLa3_null" 126
-128 "S_ShirttailLb1" 3
-129 "S_ShirttailLb2_null" 128
-130 "S_ShirttailLc1" 3
-131 "S_ShirttailLc2_null" 130
-132 "S_ShirttailBL1" 3
-133 "S_ShirttailBL2_null" 132
-134 "S_ShirttailB1" 3
-135 "S_ShirttailB2_null" 134
-136 "S_ShirttailBR1" 3
-137 "S_ShirttailBR2_null" 136
-138 "S_ShirttailRc1" 3
-139 "S_ShirttailRc2_null" 138
-140 "S_ShirttailRb1" 3
-141 "S_ShirttailRb2_null" 140
-142 "S_ShirttailRa1" 3
-143 "S_ShirttailRa2" 142
-144 "S_ShirttailRa3_null" 143
-145 "S_BeltL1" 3
-146 "S_BeltL2" 145
-147 "S_BeltL3_null" 146
-148 "S_BeltR1" 3
-149 "S_BeltR2" 148
-150 "S_BeltR3_null" 149
-151 "H_LegL" 3
-152 "H_LegR" 3
-153 "Throw" 2
+0 "blender_implicit" -1 0
+1 "Trans" -1 1
+2 "Rot" 1 2
+3 "Hip" 2 3
+4 "Waist" 3 4
+5 "Bust" 4 5
+6 "Neck" 5 6
+7 "Head" 6 7
+8 "S_HairL1" 7 10
+9 "S_HairL2_null" 8 11
+10 "S_HairR1" 7 8
+11 "S_HairR2_null" 10 9
+12 "S_HairB1" 7 12
+13 "S_HairB2_null" 12 13
+14 "Face" 7 14
+15 "Mouth_group" 14 15
+16 "UplipR1_offset" 15 22
+17 "UplipR1" 16 23
+18 "UplipR2_offset" 15 20
+19 "UplipR2" 18 21
+20 "UplipL2_offset" 15 18
+21 "UplipL2" 20 19
+22 "UplipL1_offset" 15 16
+23 "UplipL1" 22 18
+24 "UplipC_offset" 15 24
+25 "UplipC" 24 25
+26 "Jaw_group" 14 26
+27 "Jaw_offset" 26 27
+28 "Jaw" 27 28
+29 "Tongue" 28 29
+30 "Tongue1" 29 30
+31 "Tongue2" 30 31
+32 "DownlipL_offset" 28 36
+33 "DownlipL" 32 37
+34 "DownlipC_offset" 28 34
+35 "DownlipC" 34 35
+36 "DownlipR_offset" 28 32
+37 "DownlipR" 36 33
+38 "HairFront" 7 38
+39 "ClavicleC" 5 39
+40 "ClavicleL" 39 69
+41 "ShoulderL" 40 70
+42 "ArmL" 41 71
+43 "HandL" 42 72
+44 "HaveL" 43 73
+45 "FingerL10" 43 74
+46 "FingerL20" 45 75
+47 "FingerL30" 46 76
+48 "FingerL40" 47 77
+49 "FingerL41" 48 78
+50 "FingerL42" 49 79
+51 "FingerL43" 50 80
+52 "FingerL31" 47 81
+53 "FingerL32" 52 82
+54 "FingerL33" 53 83
+55 "FingerL21" 46 84
+56 "FingerL22" 55 85
+57 "FingerL23" 56 86
+58 "FingerL11" 45 87
+59 "FingerL12" 58 88
+60 "FingerL13" 59 89
+61 "FingerL51" 45 90
+62 "FingerL52" 61 91
+63 "FingerL53" 62 92
+64 "H_WristL" 42 93
+65 "H_ArmtwistL" 42 94
+66 "H_ElbowL" 41 95
+67 "H_UparmtwistL" 41 96
+68 "H_SholderL" 41 97
+69 "ClavicleR" 39 40
+70 "ShoulderR" 69 41
+71 "ArmR" 70 42
+72 "HandR" 71 43
+73 "HaveR" 72 44
+74 "FingerR10" 72 45
+75 "FingerR20" 74 46
+76 "FingerR30" 75 47
+77 "FingerR40" 76 48
+78 "FingerR41" 77 49
+79 "FingerR42" 78 50
+80 "FingerR43" 79 51
+81 "FingerR31" 76 52
+82 "FingerR32" 81 53
+83 "FingerR33" 82 54
+84 "FingerR21" 75 55
+85 "FingerR22" 84 56
+86 "FingerR23" 85 57
+87 "FingerR11" 74 58
+88 "FingerR12" 87 59
+89 "FingerR13" 88 60
+90 "FingerR51" 74 61
+91 "FingerR52" 90 62
+92 "FingerR53" 91 63
+93 "H_WristR" 71 64
+94 "H_ArmtwistR" 71 65
+95 "H_ElbowR" 70 66
+96 "H_UparmtwistR" 70 67
+97 "H_SholderR" 70 68
+98 "Dougiback" 5 98
+99 "H_ClavicleL" 5 100
+100 "H_ClavicleR" 5 99
+101 "LegC" 3 101
+102 "LegL" 101 109
+103 "KneeL" 102 110
+104 "FootL" 103 111
+105 "ToeL" 104 112
+106 "S_LegL1" 103 113
+107 "S_LegL2_null" 106 114
+108 "H_KneeL" 102 115
+109 "LegR" 101 102
+110 "KneeR" 109 103
+111 "FootR" 110 104
+112 "ToeR" 111 105
+113 "S_LegR1" 110 106
+114 "S_LegR2_null" 113 107
+115 "H_KneeR" 109 108
+116 "S_ShirttailF1" 3 116
+117 "S_ShirttailF2" 116 117
+118 "S_ShirttailF3_null" 117 118
+119 "S_ShirttailFL1" 3 122
+120 "S_ShirttailFL2" 119 123
+121 "S_ShirttailFL3_null" 120 124
+122 "S_ShirttailFR1" 3 119
+123 "S_ShirttailFR2" 122 120
+124 "S_ShirttailFR3_null" 123 121
+125 "S_ShirttailLa1" 3 142
+126 "S_ShirttailLa2" 125 143
+127 "S_ShirttailLa3_null" 126 144
+128 "S_ShirttailLb1" 3 140
+129 "S_ShirttailLb2_null" 128 141
+130 "S_ShirttailLc1" 3 138
+131 "S_ShirttailLc2_null" 130 139
+132 "S_ShirttailBL1" 3 136
+133 "S_ShirttailBL2_null" 132 137
+134 "S_ShirttailB1" 3 134
+135 "S_ShirttailB2_null" 134 135
+136 "S_ShirttailBR1" 3 132
+137 "S_ShirttailBR2_null" 136 133
+138 "S_ShirttailRc1" 3 130
+139 "S_ShirttailRc2_null" 138 131
+140 "S_ShirttailRb1" 3 128
+141 "S_ShirttailRb2_null" 140 129
+142 "S_ShirttailRa1" 3 125
+143 "S_ShirttailRa2" 142 126
+144 "S_ShirttailRa3_null" 143 127
+145 "S_BeltL1" 3 148
+146 "S_BeltL2" 145 149
+147 "S_BeltL3_null" 146 150
+148 "S_BeltR1" 3 145
+149 "S_BeltR2" 148 146
+150 "S_BeltR3_null" 149 147
+151 "H_LegL" 3 152
+152 "H_LegR" 3 151
+153 "Throw" 2 153
 end

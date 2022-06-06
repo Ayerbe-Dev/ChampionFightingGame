@@ -597,42 +597,38 @@ void GameTexture::process() {
 	if (target_bottom_frames != 0.0) {
 		if (v_flipped) {
 			scale_bottom_percent(clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_bottom_crop, 1.0));
-			target_bottom_frames--;
 		}
 		else {
 			scale_bottom_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + target_bottom_crop, 1.0));
-			target_bottom_frames--;
 		}
+		target_bottom_frames--;
 	}
 	if (target_top_frames != 0.0) {
 		if (v_flipped) {
 			scale_top_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + target_top_crop, 1.0));
-			target_top_frames--;
 		}
 		else {
 			scale_top_percent(clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_top_crop, 1.0));
-			target_top_frames--;
 		}
+		target_top_frames--;
 	}
 	if (target_left_frames != 0.0) {
 		if (h_flipped) {
 			scale_left_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + target_left_crop, 1.0));
-			target_left_frames--;
 		}
 		else {
 			scale_left_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + target_left_crop, 1.0));
-			target_left_frames--;
 		}
+		target_left_frames--;
 	}
 	if (target_right_frames != 0.0) {
 		if (h_flipped) {
 			scale_right_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + target_right_crop, 1.0));
-			target_right_frames--;
 		}
 		else {
 			scale_right_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + target_right_crop, 1.0));
-			target_right_frames--;
 		}
+		target_right_frames--;
 	}
 	if (target_pos_frames != glm::vec3(0.0)) {
 		pos += target_pos;

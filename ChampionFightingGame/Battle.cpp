@@ -122,7 +122,7 @@ void Battle::load_game_menu() {
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
 	game_loader = new GameLoader(15);
-	std::thread loading_thread(LoadingScreen, (void*)game_loader);
+	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
 	camera = &render_manager->camera;

@@ -13,7 +13,4 @@
 #include "MenuConstants.h"
 #include "FighterAttribute.h"
 #include "StageKind.h"
-#include "SE.h"
-#include "VC.h"
-#include "Music.h"
 #include "SettingConstants.h"

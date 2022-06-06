@@ -755,6 +755,7 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
+		defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
 		return hitbox->id;
 	}
 
@@ -765,6 +766,7 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 	defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->hitstun;
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
+	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
 	return hitbox->id;
 }
 
@@ -875,6 +877,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
+		defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
 		return hitbox->id;
 	}
 
@@ -885,6 +888,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 	defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->hitstun;
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 	attacker->projectile_flag[PROJECTILE_FLAG_HIT] = true;
+	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
 	return hitbox->id;
 }
 

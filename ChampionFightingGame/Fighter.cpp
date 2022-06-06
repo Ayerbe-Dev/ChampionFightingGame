@@ -71,7 +71,6 @@ void Fighter::fighter_main() {
 	if (battle_object_manager->counters_can_move()) {
 		decrease_common_variables();
 	}
-	process_post_position();
 	process_post_status();
 	process_ai();
 }
@@ -80,6 +79,7 @@ void Fighter::fighter_post() {
 	if (is_status_delay()) {
 		(this->*status_script[status_kind])();
 	}
+	process_post_position();
 	update_hitbox_pos();
 	update_grabbox_pos();
 	update_hurtbox_pos();
@@ -180,12 +180,18 @@ void Fighter::process_post_position() {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND) {
 				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0, 0))) {
-					that->add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
+					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+					}
 				}
 			}
 			else {
 				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
-					that->add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir, 0, 0));
+					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+					}
 				}
 			}
 		}

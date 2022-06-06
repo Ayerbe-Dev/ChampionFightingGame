@@ -1112,7 +1112,9 @@ void Fighter::enter_status_clank() {
 
 }
 
-void Fighter::exit_status_clank() {}
+void Fighter::exit_status_clank() {
+
+}
 
 void Fighter::status_throw_tech() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 15 || fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 16) {

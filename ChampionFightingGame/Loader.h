@@ -21,7 +21,6 @@ public:
 	GameTextureSDL texture;
 	bool move_right;
 	bool move_down;
-	bool panic_v;
 	bool panic_mode;
 	float panic_speed;
 	float panic_add;

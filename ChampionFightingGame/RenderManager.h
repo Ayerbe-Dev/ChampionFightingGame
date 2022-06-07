@@ -24,9 +24,10 @@ public:
 	std::vector<Light*>lights;
 	std::vector<Shader*> linked_shaders;
 
-	Shader default_2d_shader;
-	Shader default_rect_shader;
-	Shader default_effect_shader;
+	Shader game_texture_shader;
+	Shader rect_shader;
+	Shader effect_shader;
+	Shader text_shader;
 	Shader shadow_shader;
 
 	ShadowMap shadow_map;
@@ -34,8 +35,6 @@ public:
 
 	int s_window_width;
 	int s_window_height;
-
-	void init();
 
 	void add_light(Light *light, int target = -1);
 	void remove_light(int target = -1);

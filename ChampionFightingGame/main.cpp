@@ -18,6 +18,7 @@
 #include "BattleObjectManager.h"
 #include "ControllerManager.h"
 #include "EffectManager.h"
+#include "FontManager.h"
 #include "GameManager.h"
 #include "ParamAccessor.h"
 #include "RenderManager.h"
@@ -60,14 +61,18 @@ int main() {
 	//Just for the record, GameManager's constructor calls RenderManager::get_instance(), so the window 
 	//is actually created during GameManager(), not main()
 
-	SaveManager* save_manager = SaveManager::get_instance();
+	//Wait what am I talking about of course RenderManager can go first, it can just call SaveManager
+	//as it initializes (which it was gonna do anyway).
+
 	AIManager* ai_manager = AIManager::get_instance();
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
 	ControllerManager* controller_manager = ControllerManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	GameManager* game_manager = GameManager::get_instance();
+	FontManager* font_manager = FontManager::get_instance();
 	ParamAccessor* param_accessor = ParamAccessor::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+	SaveManager* save_manager = SaveManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
@@ -96,6 +101,7 @@ int main() {
 	battle_object_manager->destroy_instance();
 	controller_manager->destroy_instance();
 	effect_manager->destroy_instance();
+	font_manager->destroy_instance();
 	game_manager->destroy_instance();
 	param_accessor->destroy_instance();
 	render_manager->destroy_instance();

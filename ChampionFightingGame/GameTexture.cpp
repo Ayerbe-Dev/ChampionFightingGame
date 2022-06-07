@@ -33,7 +33,7 @@ GameTexture::GameTexture(const GameTexture& that) {
 		tex_accessor[i] = &tex_data[i];
 	}
 	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->default_2d_shader);
+	attach_shader(&render_manager->game_texture_shader);
 	shader->use();
 
 	VAO = that.VAO;
@@ -61,10 +61,6 @@ GameTexture::GameTexture(const GameTexture& that) {
 	shader->set_int("f_texture", 0);
 }
 
-GameTexture::~GameTexture() {
-
-}
-
 void GameTexture::init(std::string path) {
 	name = path;
 	pos = glm::vec3(0.0, 0.0, 0.0);
@@ -78,7 +74,7 @@ void GameTexture::init(std::string path) {
 	}
 
 	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->default_2d_shader);
+	attach_shader(&render_manager->game_texture_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -118,9 +114,7 @@ void GameTexture::init(std::string path) {
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
 
-void GameTexture::init(GLuint gl_tex_location) {
-	texture = gl_tex_location;
-
+void GameTexture::init(GLuint texture, int width, int height) {
 	pos = glm::vec3(0.0, 0.0, 0.0);
 	rot = glm::vec3(0.0, 0.0, 0.0);
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
@@ -132,7 +126,7 @@ void GameTexture::init(GLuint gl_tex_location) {
 	}
 
 	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->default_2d_shader);
+	attach_shader(&render_manager->game_texture_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -146,10 +140,15 @@ void GameTexture::init(GLuint gl_tex_location) {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
-
-	int width = WINDOW_WIDTH;
-	int height = WINDOW_HEIGHT;
-
+	glBindTexture(GL_TEXTURE_2D, texture);
+	if (width == -1) {
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+	}
+	if (height == -1) {
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	this->texture = texture;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;

@@ -41,7 +41,7 @@ public:
 	void destroy_instance();
 private:
 	EffectManager();
-	void init();
+	void populate_effects();
 	void add_effect_info(std::string name, std::string dir);
 
 	std::vector<EffectInfo> effect_info;

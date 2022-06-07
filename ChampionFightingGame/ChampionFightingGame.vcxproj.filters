@@ -720,6 +720,12 @@
     <ClCompile Include="SaveManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files\Engine\Visuals</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1388,6 +1394,12 @@
     <ClInclude Include="SaveManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header Files\Engine\Visuals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\vertex_main.glsl">
@@ -1430,6 +1442,12 @@
       <Filter>resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\fragment_shadow.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_text.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_text.glsl">
       <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>

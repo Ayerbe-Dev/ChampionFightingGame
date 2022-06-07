@@ -7,10 +7,10 @@
 #include "utils.h"
 
 EffectManager::EffectManager() {
-	init();
+	populate_effects();
 }
 
-void EffectManager::init() {
+void EffectManager::populate_effects() {
 	add_effect_info("flame", "resource/chara/roy/effects/flame/");
 }
 

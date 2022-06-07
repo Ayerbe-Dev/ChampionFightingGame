@@ -26,9 +26,9 @@ public:
     GameTexture();
     GameTexture(std::string path);
     GameTexture(const GameTexture& that);
-    ~GameTexture();
+
     void init(std::string path);
-    void init(GLuint gl_tex_location);
+    void init(GLuint gl_tex_location, int width = -1, int height = -1);
     void destroy();
     void set_pos(glm::vec3 pos);
     void add_pos(glm::vec3 pos);

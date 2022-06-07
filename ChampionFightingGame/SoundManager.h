@@ -32,7 +32,7 @@ public:
 	void destroy_instance();
 private:
 	SoundManager();
-	void init();
+	void populate_sounds();
 	void add_sound_info(std::string name, std::string dir, int sound_kind, int sound_type, int volume = 32);
 
 	std::vector<SoundInfo> sound_info;

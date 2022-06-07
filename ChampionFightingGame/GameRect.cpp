@@ -16,7 +16,7 @@ GameRect::GameRect(glm::vec2 c1, glm::vec2 c2) {
 
 void GameRect::init() {
 	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->default_rect_shader);
+	attach_shader(&render_manager->rect_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -41,7 +41,7 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	corners[3] = glm::vec2(c2.x, c1.y);
 
 	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->default_rect_shader);
+	attach_shader(&render_manager->rect_shader);
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);

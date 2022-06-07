@@ -6,10 +6,6 @@
 #include "stb_image.h"
 
 RenderManager::RenderManager() {
-	init();
-}
-
-void RenderManager::init() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	if (save_manager->get_game_setting("fullscreen")) {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -37,9 +33,10 @@ void RenderManager::init() {
 
 	shadow_map.init();
 	box_layer.init();
-	default_2d_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
-	default_rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
-	default_effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
+	game_texture_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
+	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
+	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
+	text_shader.init("vertex_text.glsl", "fragment_text.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 }
 
@@ -125,10 +122,10 @@ void RenderManager::update_shader_lights() {
 
 void RenderManager::update_shader_cams() {
 	glm::mat4 camera_matrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f) * camera.get_view();
-	default_rect_shader.use();
-	default_rect_shader.set_mat4("camera_matrix", camera_matrix);
-	default_effect_shader.use();
-	default_effect_shader.set_mat4("camera_matrix", camera_matrix);
+	rect_shader.use();
+	rect_shader.set_mat4("camera_matrix", camera_matrix);
+	effect_shader.use();
+	effect_shader.set_mat4("camera_matrix", camera_matrix);
 	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
 		linked_shaders[i]->use();
 		linked_shaders[i]->set_vec3("view_pos", camera.pos);
@@ -162,8 +159,10 @@ RenderManager* RenderManager::get_instance() {
 
 void RenderManager::destroy_instance() {
 	unlink_all_shaders();
-	default_2d_shader.destroy();
-	default_rect_shader.destroy();
+	game_texture_shader.destroy();
+	effect_shader.destroy();
+	rect_shader.destroy();
+	text_shader.destroy();
 	shadow_shader.destroy();
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(sdl_renderer);

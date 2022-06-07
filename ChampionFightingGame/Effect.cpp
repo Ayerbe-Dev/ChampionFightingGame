@@ -62,7 +62,7 @@ void Effect::init(EffectInfo info) {
 		particles.push_back(particle);
 	}
 	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->default_effect_shader);
+	attach_shader(&render_manager->effect_shader);
 	shader->use();
 }
 

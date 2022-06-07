@@ -3,7 +3,6 @@
 #include "utils.h"
 
 OverlayLayer::OverlayLayer() {
-	
 }
 
 OverlayLayer::~OverlayLayer() {

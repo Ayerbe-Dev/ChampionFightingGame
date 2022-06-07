@@ -350,7 +350,8 @@ void Battle::process_fighter() {
 		}
 	}
 	else if (fighter[1]->status_kind == CHARA_ROY_STATUS_SPECIAL_FIREBALL_PUNCH) {
-		if (fighter[1]->frame != 0.0) { //lol you still can't buffer dashes
+		if (fighter[1]->frame != 0.0) { //lol you still can't buffer dashes <- I'm pretty sure I made
+		//it possible to buffer dashes since I wrote this so... we do a little trolling?
 			if (!fighter[1]->check_button_on(BUTTON_RIGHT)) {
 				player[1]->controller.set_button_on(BUTTON_RIGHT);
 			}

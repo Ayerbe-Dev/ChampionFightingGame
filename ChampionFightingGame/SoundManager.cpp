@@ -4,10 +4,6 @@
 #include "utils.h"
 
 SoundManager::SoundManager() {
-	init();
-}
-
-void SoundManager::init() {
 	SDL_AudioSpec format;
 	format.freq = 22050;
 	format.format = AUDIO_F32SYS;
@@ -26,6 +22,10 @@ void SoundManager::init() {
 	}
 	SDL_PauseAudio(0);
 
+	populate_sounds();
+}
+
+void SoundManager::populate_sounds() {
 	//VC
 	add_sound_info("roy_attack_01", "roy", SOUND_KIND_VC, SOUND_TYPE_NORMAL);
 

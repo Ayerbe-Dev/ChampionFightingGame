@@ -20,6 +20,7 @@ enum {
 
 enum {
 	SUB_ONLINE_LOBBY,
+	SUB_ONLINE_QUEUE,
 
 	SUB_ONLINE_MAX,
 };

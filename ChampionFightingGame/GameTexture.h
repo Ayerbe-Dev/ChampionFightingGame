@@ -4,6 +4,7 @@
 #include <glew/glew.h>
 #include <glm/glm.hpp>
 #include "TextureCoord.h"
+#include "Font.h"
 
 class Shader;
 
@@ -25,10 +26,12 @@ class GameTexture {
 public:
     GameTexture();
     GameTexture(std::string path);
+    GameTexture(Font font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
     GameTexture(const GameTexture& that);
 
     void init(std::string path);
-    void init(GLuint gl_tex_location, int width = -1, int height = -1);
+    void init(GLuint texture, int width = -1, int height = -1);
+    void init(Font font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
     void destroy();
     void set_pos(glm::vec3 pos);
     void add_pos(glm::vec3 pos);

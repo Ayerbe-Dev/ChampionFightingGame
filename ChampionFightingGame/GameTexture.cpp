@@ -16,6 +16,10 @@ GameTexture::GameTexture(std::string path) {
 	init(path);
 }
 
+GameTexture::GameTexture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	init(font, text, rgba, border_x, border_y);
+}
+
 /// <summary>
 /// Copy constructor for GameTexture. Uses the same VAO, VBO and texture as the original, but with different
 /// tex_data. Don't call destroy() on a GameTexture that was copied, or you will destroy all instances of it.
@@ -149,16 +153,68 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	this->texture = texture;
-	float width_scale = (float)width / (float)WINDOW_WIDTH;
-	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
 	this->height = height;
+	float width_scale = (float)width / (float)WINDOW_WIDTH;
+	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	width_scale_mul = 1.0;
 	height_scale_mul = 1.0;
 
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x *= width_scale;
 		tex_data[i].pos.y *= height_scale;
+	}
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	shader->set_int("f_texture", 0);
+	h_flipped = false;
+	v_flipped = false;
+	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
+	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
+}
+
+void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	texture = font.create_text(text, rgba, border_x, border_y);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+
+	pos = glm::vec3(0.0, 0.0, 0.0);
+	rot = glm::vec3(0.0, 0.0, 0.0);
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	for (int i = 0; i < 4; i++) {
+		tex_accessor[i] = &tex_data[i];
+	}
+
+	attach_shader(&RenderManager::get_instance()->game_texture_shader);
+	shader->use();
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
+	glEnableVertexAttribArray(1);
+
+	float width_scale = (float)width / (float)WINDOW_WIDTH;
+	float height_scale = (float)height / (float)WINDOW_HEIGHT;
+	width_scale_mul = 1.0;
+	height_scale_mul = 1.0;
+
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x *= width_scale;
+		tex_data[i].pos.y *= height_scale; 
 	}
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);

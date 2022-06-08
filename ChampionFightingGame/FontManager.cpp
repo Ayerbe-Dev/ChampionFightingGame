@@ -63,6 +63,7 @@ Font FontManager::load_font(std::string name, int size) {
 		tex_char.advance = face->glyph->advance.x;
 		ret.char_map.insert(std::pair<char, TexChar>(c, tex_char));
 	}
+
 	return ret;
 }
 

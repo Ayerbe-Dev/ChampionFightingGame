@@ -68,7 +68,7 @@ void Fighter::fighter_main() {
 	process_projectiles();
 	process_position();
 	process_input();
-	if (battle_object_manager->counters_can_move()) {
+	if (battle_object_manager->allow_dec_var(id)) {
 		decrease_common_variables();
 	}
 	process_post_status();
@@ -113,10 +113,10 @@ void Fighter::process_animate() {
 
 	attempted_excutes = 0;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		frame += (0.2 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]) * battle_object_manager->world_rate;
+		frame += (0.2 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]) * battle_object_manager->get_time_multiplier(id);
 	}
 	else {
-		frame += rate * battle_object_manager->world_rate;
+		frame += rate * battle_object_manager->get_time_multiplier(id);
 	}
 
 	if ((internal_facing_right != facing_right) && is_actionable() && (status_kind != FIGHTER_STATUS_TURN) && (situation_kind == FIGHTER_SITUATION_GROUND)) {
@@ -484,6 +484,9 @@ void Fighter::decrease_common_variables() {
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
+			frame -= 0.2;
+		}
 	}
 	else {
 		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {

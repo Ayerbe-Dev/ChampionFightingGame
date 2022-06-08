@@ -1,4 +1,5 @@
 #include "Fighter.h"
+#include "ParamAccessor.h"
 
 bool Fighter::is_actionable() {
 	if (anim_kind == nullptr) {
@@ -24,4 +25,14 @@ bool Fighter::can_kara() {
 	else {
 		return false;
 	}
+}
+
+bool Fighter::has_meter(int bars) {
+	int ex_meter_size = get_param_int("ex_meter_size", PARAM_FIGHTER);
+	int ex_meter_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
+	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / bars)) {
+		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / bars);
+		return true;
+	}
+	return false;
 }

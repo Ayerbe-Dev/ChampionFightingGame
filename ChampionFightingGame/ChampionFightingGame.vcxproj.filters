@@ -726,6 +726,9 @@
     <ClCompile Include="Font.cpp">
       <Filter>Source Files\Engine\Visuals</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectilePositionFunctions.cpp">
+      <Filter>Source Files\Objects\Projectile\Projectile\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">

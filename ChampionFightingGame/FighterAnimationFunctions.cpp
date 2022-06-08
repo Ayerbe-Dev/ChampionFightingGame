@@ -7,10 +7,23 @@ void Fighter::reenter_last_anim() {
 	rate = prev_anim_rate;
 	frame = prev_anim_frame;
 	set_current_move_script(prev_anim_kind->name);
-	startAnimation(prev_anim_kind, true);
+
+	if (prev_anim_kind != nullptr) {
+		model.set_move(prev_anim_kind->move);
+	}
+	else {
+		player->controller.reset_buffer();
+	}
+	prev_anim_offset = glm::vec3(0.0);
+	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
+	is_anim_end = false;
+	if (anim_kind != prev_anim_kind) {
+		prev_anim_kind = anim_kind;
+	}
+	anim_kind = prev_anim_kind;
 }
 
-bool Fighter::change_anim(std::string animation_name, float rate, float frame, bool clear_buffer) {
+bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	excute_count = 0;
 	attempted_excutes = 0;
 	last_excute_frame = 0;
@@ -46,34 +59,43 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame, b
 		}
 	}
 
-	startAnimation(new_anim, clear_buffer);
+	if (new_anim != nullptr) {
+		model.set_move(new_anim->move);
+	}
+	else {
+		player->controller.reset_buffer();
+	}
+	prev_anim_offset = glm::vec3(0.0);
+	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
+	is_anim_end = false;
+	if (anim_kind != new_anim) {
+		prev_anim_kind = anim_kind;
+	}
+	anim_kind = new_anim;
 
 	return new_anim != nullptr;
 }
 
-bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool continue_script, bool clear_buffer, bool verbose) {
+bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool continue_script, bool verbose) {
 	if (!continue_script) {
 		set_current_move_script(animation_name);
 	}
 	Animation* new_anim = anim_table.get_anim(animation_name, verbose);
-	startAnimation(new_anim, clear_buffer);
-	return new_anim != nullptr;
-}
 
-void Fighter::startAnimation(Animation* animation, bool clear_buffer) {
-	if (clear_buffer) {
+	if (new_anim != nullptr) {
+		model.set_move(new_anim->move);
+	}
+	else {
 		player->controller.reset_buffer();
 	}
-	if (animation != nullptr) {
-		model.set_move(animation->move);
-	}
 	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
-	prev_anim_offset = glm::vec3(0.0);
 	is_anim_end = false;
-	if (anim_kind != animation) {
+	if (anim_kind != new_anim) {
 		prev_anim_kind = anim_kind;
 	}
-	anim_kind = animation;
+	anim_kind = new_anim;
+
+	return new_anim != nullptr;
 }
 
 bool Fighter::beginning_hitlag(int frames) {

@@ -29,7 +29,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 		return false;
 	}
-	pos *= battle_object_manager->world_rate;
+	pos *= battle_object_manager->get_time_multiplier(id);
 
 	//Ok now to actually set some positions
 

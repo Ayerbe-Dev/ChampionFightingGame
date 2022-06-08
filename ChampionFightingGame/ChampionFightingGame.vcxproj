@@ -331,6 +331,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ProjectileAnimationFunctions.cpp" />
     <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
+    <ClCompile Include="ProjectilePositionFunctions.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
     <ClCompile Include="ProjectileStatusFunctions.cpp" />
     <ClCompile Include="Ramona.cpp" />

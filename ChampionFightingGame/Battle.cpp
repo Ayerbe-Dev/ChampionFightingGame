@@ -260,11 +260,11 @@ void Battle::process_main() {
 //			fighter[i]->reset();
 //		}
 //	}
-	battle_object_manager->world_frame += battle_object_manager->world_rate;
 	if (frame_pause) {
 		process_frame_pause();
 	}
 	else {
+		battle_object_manager->world_frame += battle_object_manager->world_rate;
 		pre_process_fighter();
 		process_fighter();
 		process_ui();
@@ -398,6 +398,7 @@ void Battle::process_frame_pause() {
 			sound_manager->resume_sound_all(i, SOUND_KIND_SE);
 			sound_manager->resume_sound_all(i, SOUND_KIND_VC);
 		}
+		battle_object_manager->world_frame += battle_object_manager->world_rate;
 		pre_process_fighter();
 		process_fighter();
 		process_ui();
@@ -471,6 +472,7 @@ void Battle::render_world() {
 	EffectManager::get_instance()->render();
 
 	if (visualize_boxes) {
+		SaveManager* save_manager = SaveManager::get_instance();
 		glBindFramebuffer(GL_FRAMEBUFFER, render_manager->box_layer.FBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
@@ -1290,12 +1292,7 @@ void ExBar::process() {
 
 	int segments = floor(*ex / (max_ex / num_bars));
 	if (prev_segments != segments) {
-		if (prev_segments > segments) {
-			ex_segment_texture.set_right_target(clampf(0.0, (float)segments / num_bars, 1.0), 1);
-		}
-		else if (!(segments % 2)) {
-			ex_segment_texture.set_right_target(clampf(0.0, (float)segments / num_bars, 1.0), 1);
-		}
+		ex_segment_texture.set_right_target(clampf(0.0, (float)segments / num_bars, 1.0), 1);
 	}
 	prev_segments = segments;
 	ex_texture.process();

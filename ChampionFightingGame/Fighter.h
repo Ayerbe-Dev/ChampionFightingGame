@@ -180,13 +180,13 @@ public:
 
 	bool is_actionable();
 	bool can_kara();
+	bool has_meter(int bars);
 
 	//Animation
 	
 	void reenter_last_anim();
-	bool change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0, bool clear_buffer = true);
-	bool change_anim_inherit_attributes(std::string animation_name,  bool continue_script = true, bool clear_buffer = true, bool verbose = true);
-	void startAnimation(Animation* animation, bool clear_buffer);
+	bool change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0);
+	bool change_anim_inherit_attributes(std::string animation_name,  bool continue_script = true, bool verbose = true);
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	float calc_launch_frames();
@@ -257,6 +257,15 @@ public:
 	virtual void status_attack_air();
 	virtual void enter_status_attack_air();
 	virtual void exit_status_attack_air();
+	virtual void status_advance();
+	virtual void enter_status_advance();
+	virtual void exit_status_advance();
+	virtual void status_advance_forward();
+	virtual void enter_status_advance_forward();
+	virtual void exit_status_advance_forward();
+	virtual void status_advance_back();
+	virtual void enter_status_advance_back();
+	virtual void exit_status_advance_back();
 	virtual void status_grab();
 	virtual void enter_status_grab();
 	virtual void exit_status_grab();

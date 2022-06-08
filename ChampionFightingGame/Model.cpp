@@ -385,6 +385,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 	}
 
 	if (mesh->mMaterialIndex >= 0) {
+	
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		std::vector<ModelTexture> diffuseMaps = load_texture_data(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());

@@ -77,6 +77,9 @@ void OverlayLayer::render(float alpha) {
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	//TODO: Scale the texture data here according to the current window width/height
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

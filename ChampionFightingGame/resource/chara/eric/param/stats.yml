@@ -33,3 +33,4 @@ jostle_x0 2 -40.0
 jostle_x1 2 40.0
 jostle_y0 2 0.0
 jostle_y1 2 30.0
+advance_low_transition_frame 2 12.0

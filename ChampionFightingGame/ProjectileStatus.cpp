@@ -14,7 +14,7 @@ void Projectile::exit_status_default() {
 }
 
 void Projectile::status_move() {
-	pos.x += get_local_param_float("move_x_speed") * facing_dir;
+	add_pos(get_local_param_float("move_x_speed") * facing_dir, 0);
 }
 
 void Projectile::enter_status_move() {

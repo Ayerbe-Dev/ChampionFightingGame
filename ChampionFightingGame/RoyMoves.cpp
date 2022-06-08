@@ -282,10 +282,10 @@ void Roy::load_move_scripts() {
 		}
 	});
 	script("stand_lk", [this]() {
-
+		battle_object_manager->set_world_rate(id, 0.5);
 	});
 	script("stand_mk", [this]() {
-
+		battle_object_manager->set_world_rate(id, 1);
 	});
 	script("stand_hk", [this]() {
 		if (is_excute_frame(0)) {
@@ -439,6 +439,22 @@ void Roy::load_move_scripts() {
 
 	});
 	script("jump_hk", [this]() {
+
+	});
+	script("advance_high", [this]() {
+		if (is_excute_frame(20)) {
+			battle_object_manager->reset_world_rate(id);
+		}
+	});
+	script("advance_low", [this]() {
+		if (is_excute_frame(20)) {
+			battle_object_manager->reset_world_rate(id);
+		}
+	});
+	script("advance_forward", [this]() {
+	
+	});
+	script("advance_back", [this]() {
 
 	});
 	script("grab", [this]() {

@@ -252,7 +252,7 @@ void Roy::roy_status_special_uppercut() {
 	if (frame > 4.0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
-				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity");
+				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity") * battle_object_manager->get_time_multiplier(id);
 			}
 			situation_kind = FIGHTER_SITUATION_AIR;
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
@@ -292,7 +292,7 @@ void Roy::roy_status_special_uppercut_fall() {
 		return;
 	}
 	if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity");
+		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity") * battle_object_manager->get_time_multiplier(id);
 	}
 	add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 }

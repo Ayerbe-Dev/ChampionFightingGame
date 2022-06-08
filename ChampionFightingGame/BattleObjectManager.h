@@ -18,11 +18,14 @@ public:
 	std::vector<Button [BUTTON_MAX]> player_inputs[2];
 	Stage* stage;
 
-	bool counters_can_move();
+	bool allow_dec_var(int object_id);
+	float get_time_multiplier(int object_id);
+	void set_world_rate(int object_id, float world_rate);
+	void reset_world_rate(int object_id);
 
 	float world_frame;
 	float world_rate;
-	
+	int real_time_id;
 
 	static BattleObjectManager* get_instance();
 	void destroy_instance();

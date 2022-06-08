@@ -30,7 +30,7 @@ void Projectile::projectile_main() {
 	projectile_unique_main();
 	process_status();
 	process_post_animate();
-	if (battle_object_manager->counters_can_move()) {
+	if (battle_object_manager->allow_dec_var(id)) {
 		decrease_common_variables();
 	}
 	process_post_position();

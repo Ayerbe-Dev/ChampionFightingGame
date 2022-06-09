@@ -54,7 +54,7 @@ bool Fighter::common_ground_status_act(bool crouch) {
 				}
 			}
 			unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
-			if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_NORMAL) {
+			if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_ADVANCE) {
 				if (get_stick_dir() == 6) {
 					if (has_meter(1)) {
 						return (change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false));
@@ -582,7 +582,7 @@ void Fighter::exit_status_turn() {
 void Fighter::status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
-		if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_NORMAL) {
+		if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_ADVANCE) {
 			if (has_meter(3)) {
 				if (get_stick_dir() == 6) {
 					change_status(FIGHTER_STATUS_ADVANCE_FORWARD);
@@ -996,7 +996,7 @@ void Fighter::status_blockstun() {
 	if (situation_kind == FIGHTER_SITUATION_GROUND) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 			unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
-			if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_NORMAL) {
+			if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_ADVANCE) {
 				if ((get_stick_dir() == 4 || get_stick_dir() == 1) && has_meter(3)) {
 					fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
 					fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;

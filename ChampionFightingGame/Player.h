@@ -16,7 +16,7 @@ public:
 	int id;
 	int chara_kind = 0;
 	int alt_color = 0;
-	int control_type = CONTROL_TYPE_NORMAL;
+	int control_type = CONTROL_TYPE_ADVANCE;
 	StageInfo stage_info;
 	std::string name;
 };

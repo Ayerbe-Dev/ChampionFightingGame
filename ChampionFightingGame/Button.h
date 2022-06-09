@@ -3,8 +3,8 @@
 #include "ButtonConstants.h"
 
 enum {
-	CONTROL_TYPE_NORMAL,
-	CONTROL_TYPE_WEENIE,
+	CONTROL_TYPE_ADVANCE,
+	CONTROL_TYPE_BASIC,
 };
 
 bool is_any_controller_input(SDL_GameController* controller);

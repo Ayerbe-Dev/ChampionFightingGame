@@ -57,17 +57,17 @@ bool Fighter::common_ground_status_act(bool crouch) {
 			if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_NORMAL) {
 				if (get_stick_dir() == 6) {
 					if (has_meter(1)) {
-						return (change_status(FIGHTER_STATUS_ADVANCE_FORWARD));
+						return (change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false));
 					}
 				}
 				else if (get_stick_dir() == 4) {
 					if (has_meter(1)) {
-						return (change_status(FIGHTER_STATUS_ADVANCE_BACK));
+						return (change_status(FIGHTER_STATUS_ADVANCE_BACK, true, false));
 					}
 				}
 				else {
 					if (has_meter(1)) {
-						return (change_status(FIGHTER_STATUS_ADVANCE));
+						return (change_status(FIGHTER_STATUS_ADVANCE, true, false));
 					}
 				}
 			}

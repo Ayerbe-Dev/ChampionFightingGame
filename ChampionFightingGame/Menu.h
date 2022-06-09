@@ -64,10 +64,9 @@ private:
 
     int menu_frame;
 
-    int top_selection = -2; //first option, dont ask; 5 opts --> -2 -1 0 1 2 represen them
+    int top_selection = SUB_MENU_VS;
     int sub_selection = GAME_STATE_BATTLE;
     int menu_level = MENU_LEVEL_TOP;
-    int sub_type = SUB_MENU_VS;
 
     GameTexture table;
     GameTexture background_texture;

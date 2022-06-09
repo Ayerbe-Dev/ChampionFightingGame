@@ -2,9 +2,12 @@
 #include "GameState.h"
 #include <vector>
 #include <chrono>
+#include <functional>
 #include "utils.h"
 
 class GameLoader;
+class GameTexture;
+class MenuObject;
 
 class GameMenu{
 public:
@@ -33,10 +36,41 @@ public:
     int* prev_game_context;
     bool* looping;
     GameLoader* game_loader;
+
+    std::vector<MenuObject> menu_objects;
+
     std::chrono::steady_clock::time_point ms;
     std::vector<float> average_ticks;
     std::vector<int> tick_frequency;
 
     int sub_state = GAME_SUBSTATE_NONE;
     int player_id{0};
+};
+
+class MenuObject {
+public:
+    MenuObject();
+    MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children);
+
+    void render();
+    void destroy();
+
+    std::function<void()> event_up_press;
+    std::function<void()> event_down_press;
+    std::function<void()> event_left_press;
+    std::function<void()> event_right_press;
+    std::function<void()> event_select_press;
+    std::function<void()> event_start_press;
+    std::function<void()> event_back_press;
+    std::function<void()> event_any_press;
+
+    GameMenu* owner;
+
+    MenuObject* parent;
+    std::vector<MenuObject> children;
+    std::vector<GameTexture> textures;
+
+    int active_child;
+
+    bool render_all_children;
 };

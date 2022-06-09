@@ -11,10 +11,10 @@ special_slide_move_x_h 2 22.0
 special_slide_move_x_ex 2 22.0
 special_uppercut_transition_frame 1 9
 special_uppercut_move_frame 1 4
-special_uppercut_x_l 2 2.0
-special_uppercut_x_m 2 2.0
-special_uppercut_x_h 2 2.0
-special_uppercut_x_ex 2 2.0
+special_uppercut_x_l 2 6.0
+special_uppercut_x_m 2 6.0
+special_uppercut_x_h 2 6.0
+special_uppercut_x_ex 2 6.0
 special_uppercut_init_y_l 2 20.0
 special_uppercut_init_y_m 2 20.0
 special_uppercut_init_y_h 2 25.0

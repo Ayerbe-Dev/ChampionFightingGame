@@ -241,21 +241,19 @@ void Roy::roy_exit_status_special_uppercut_start() {
 }
 
 void Roy::roy_status_special_uppercut() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
-		return;
-	}
 	if (is_anim_end) {
 		change_status(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_FALL);
 		return;
 	}
 	if (frame > 4.0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
-				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity") * battle_object_manager->get_time_multiplier(id);
-			}
+			apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
 			situation_kind = FIGHTER_SITUATION_AIR;
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+			if (pos.y <= FLOOR_GAMECOORD) {
+				change_status(FIGHTER_STATUS_LANDING);
+				return;
+			}
 		}
 	}
 	else {
@@ -271,7 +269,7 @@ void Roy::roy_enter_status_special_uppercut() {
 			change_anim("special_uppercut", 1.0, 1.0);
 		}
 		else {
-			change_anim("special_uppercut", 0.5, 1.0);
+			change_anim("special_uppercut", 1.0, 1.0);
 		}
 	}
 	else {
@@ -287,23 +285,19 @@ void Roy::roy_exit_status_special_uppercut() {
 }
 
 void Roy::roy_status_special_uppercut_fall() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
+	if (check_landing()) {
 		return;
 	}
-	if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_param_float_special("special_uppercut_fall_speed") * -1.0) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_param_float_special("special_uppercut_gravity") * battle_object_manager->get_time_multiplier(id);
-	}
+	apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
 	add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 }
 
 void Roy::roy_enter_status_special_uppercut_fall() {
 	change_anim("special_uppercut_fall");
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
 }
 
 void Roy::roy_exit_status_special_uppercut_fall() {
-
+	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
 }
 
 void Roy::loadRoyStatusFunctions() {

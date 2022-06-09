@@ -255,3 +255,7 @@ void Fighter::landing_crossup() {
 		that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = that_prev_allowed_crossup;
 	}
 }
+
+void Fighter::apply_gravity(float gravity, float max_fall_speed) {
+	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = clampf(max_fall_speed * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] - gravity * battle_object_manager->get_time_multiplier(id), fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+}

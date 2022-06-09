@@ -100,6 +100,13 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 	return false;
 }
 
+bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status, bool require_different_status) {
+	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && pos.y <= FLOOR_GAMECOORD && fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] < 0.0) {
+		return change_status(post_status_kind, call_end_status, require_different_status);
+	}
+	return false;
+}
+
 bool Fighter::is_status_hitstun_enable_parry() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0 
 		|| battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] == -5

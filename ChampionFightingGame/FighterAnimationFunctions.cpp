@@ -54,7 +54,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			if (target_frame < 1) {
 				target_frame = new_anim->length;
 			}
-			this->rate = target_frame / (rate + 1.0);
+			this->rate = (target_frame / rate) * 0.8;
 			this->frame = 0.0;
 		}
 	}
@@ -115,9 +115,7 @@ float Fighter::calc_launch_frames() {
 	float simp_y = pos.y; //haha simp
 	float sims_y = fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED];
 	while (simp_y >= FLOOR_GAMECOORD) {
-		if (sims_y > fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1) {
-			sims_y -= fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY];
-		}
+		sims_y = clampf(fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1, sims_y - fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], sims_y);
 		simp_y += sims_y;
 		airtime++;
 	}

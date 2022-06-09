@@ -130,24 +130,24 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_blockstun", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
-	script("high_block", [this]() {
+	script("high_blockstun", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
 			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
 			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		}
 	});
-	script("crouch_block", [this]() {
+	script("crouch_blockstun", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
 		}
 	});
-	script("jump_block", [this]() {
+	script("jump_blockstun", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
@@ -156,9 +156,21 @@ void Roy::load_move_scripts() {
 	});
 	script("parry_start", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+		}
+		if (is_excute_wait(4)) {
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+		}
+	});
+	script("parry_start_low", [this]() {
+		if (is_excute_frame(0)) {
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
 		}
 		if (is_excute_wait(4)) {
@@ -168,9 +180,9 @@ void Roy::load_move_scripts() {
 	});
 	script("parry_air_start", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
 		}
 		if (is_excute_wait(4)) {
@@ -282,10 +294,10 @@ void Roy::load_move_scripts() {
 		}
 	});
 	script("stand_lk", [this]() {
-		battle_object_manager->set_world_rate(id, 0.5);
+
 	});
 	script("stand_mk", [this]() {
-		battle_object_manager->set_world_rate(id, 1);
+
 	});
 	script("stand_hk", [this]() {
 		if (is_excute_frame(0)) {
@@ -382,13 +394,8 @@ void Roy::load_move_scripts() {
 			new_hurtbox(1, glm::vec2{ -15, 10 }, glm::vec2{ 15, 75 });
 			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 75 });
 			new_hurtbox(3, glm::vec2{ 5, 25 }, glm::vec2{ 45, 75 });
-			if (fighter_flag[FIGHTER_FLAG_SELF_CANCEL]) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 40, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 50, 50, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
-			}
-			else {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 50, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 30, 30, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
-			}
-			new_hitbox(2, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 50, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_AIR, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
+			new_hitbox(0, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 50, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 30, 30, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
+			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 50, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_AIR, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
 		}
 	});
 	script("jump_mp", [this]() {
@@ -577,12 +584,12 @@ void Roy::load_move_scripts() {
 				rate = 1.5;
 			}
 		}
-		});
+	});
 	script("special_slide_followup", [this]() {
 		if (is_excute_frame(0)) {
 
 		}
-		});
+	});
 	script("special_uppercut_start", [this]() {
 		if (is_excute_frame(0)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
@@ -594,47 +601,50 @@ void Roy::load_move_scripts() {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				new_hurtbox(0, glm::vec2{ -82, 8 }, glm::vec2{ 50, 41 });
 				new_hurtbox(1, glm::vec2{ -18, 37 }, glm::vec2{ 46, 132 });
-				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 34, 77 }, glm::vec2{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
+				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 34, 77 }, glm::vec2{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -3, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
+				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -3, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
 			}
 			else {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 34, 77 }, glm::vec2{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -30, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
+				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 34, 77 }, glm::vec2{ 54, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -3, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
+				new_hitbox(2, 0, 60, 5, 1.2, 1, glm::vec2{ 51, 77 }, glm::vec2{ 75, 103 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -3, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
 			}
 		}
 		if (is_excute_wait(4)) {
 			clear_hitbox_all();
 		}
-		});
+	});
 	script("special_uppercut", [this]() {
 		if (is_excute_frame(4)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 			else {
-				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 		}
 		if (is_excute_frame(5)) {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 0,85 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 0,85 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 0,85 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 0,85 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 			else {
-				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, 7, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
+				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, 7, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 9.0, 6.0, false, true, true);
 			}
 		}
+	});
+	script("special_uppercut_fall", [this]() {
+
 	});
 	script("stand_hitstun_l", [this]() {
 		if (is_excute_frame(0)) {

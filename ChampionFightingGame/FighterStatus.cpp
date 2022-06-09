@@ -170,9 +170,7 @@ bool Fighter::common_air_status_act() {
 
 bool Fighter::common_air_status_general() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->get_time_multiplier(id);
-		}
+		apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
 		if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_F) {
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
 		}
@@ -337,8 +335,7 @@ void Fighter::exit_status_dashb() {
 }
 
 void Fighter::status_dash_air() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
+	if (check_landing()) {
 		return;
 	}
 	if (is_status_end()) {
@@ -347,9 +344,7 @@ void Fighter::status_dash_air() {
 	int min_frame = get_local_param_int("dash_f_accel_frame");
 	int max_frame = min_frame + get_local_param_int("dash_f_maintain_speed_frame");
 
-	if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->get_time_multiplier(id);
-	}
+	apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
 	if (frame < max_frame) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0.0;
 	}
@@ -460,14 +455,13 @@ void Fighter::exit_status_jumpsquat() {
 }
 
 void Fighter::status_jump() {
-	if (is_status_end(FIGHTER_STATUS_FALL, false)) {
-		return;
-	}
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
+	if (check_landing()) {
 		return;
 	}
 	common_air_status_general();
+	if (is_status_end(FIGHTER_STATUS_FALL, false)) {
+		return;
+	}
 	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0;
 }
 
@@ -508,8 +502,7 @@ void Fighter::status_fall() {
 	if (common_air_status_act()) {
 		return;
 	}
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
+	if (check_landing()) {
 		return;
 	}
 	common_air_status_general();
@@ -611,19 +604,54 @@ void Fighter::status_attack() {
 	}
 	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
 		change_status(FIGHTER_STATUS_GRAB);
+		return;
 	}
-	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MK 
-		|| fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
-		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
-			if (!fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
-				change_status(FIGHTER_STATUS_PARRY_START);
-				return;
+	switch (fighter_int[FIGHTER_INT_ATTACK_KIND]) {
+		case ATTACK_KIND_MP:
+		case ATTACK_KIND_MK:
+		case ATTACK_KIND_CMP:
+		case ATTACK_KIND_CMK: {
+			if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
+				if (!fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
+					change_status(FIGHTER_STATUS_PARRY_START);
+					return;
+				}
+				else if (fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && has_meter(1)) {
+					change_status(FIGHTER_STATUS_PARRY_START);
+					return;
+				}
 			}
-			else if (fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && has_meter(1)) {
-				change_status(FIGHTER_STATUS_PARRY_START);
-				return;
+		} break;
+		case ATTACK_KIND_HP:
+		case ATTACK_KIND_HK:
+		case ATTACK_KIND_CHP:
+		case ATTACK_KIND_CHK: {
+			if (check_button_on(BUTTON_HP) && check_button_on(BUTTON_HK) && player->control_type == CONTROL_TYPE_ADVANCE) {
+				if (!fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
+					if (get_stick_dir() == 6) {
+						if (has_meter(1)) {
+							change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false);
+							return;
+						}
+					}
+					else if (get_stick_dir() == 4) {
+						if (has_meter(1)) {
+							change_status(FIGHTER_STATUS_ADVANCE_BACK, true, false);
+							return;
+						}
+					}
+					else {
+						if (has_meter(1)) {
+							change_status(FIGHTER_STATUS_ADVANCE, true, false);
+							return;
+						}
+					}
+				}
 			}
-		}
+		} break;
+		default: {
+
+		} break;
 	}
 }
 
@@ -722,8 +750,7 @@ void Fighter::status_attack_air() {
 	if (specific_status_attack()) {
 		return;
 	}
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING_ATTACK);
+	if (check_landing(FIGHTER_STATUS_LANDING_ATTACK)) {
 		return;
 	}
 	if (is_status_end()) {
@@ -804,8 +831,7 @@ void Fighter::exit_status_throw() {
 }
 
 void Fighter::status_grab_air() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
+	if (check_landing()) {
 		return;
 	}
 	if (is_status_end()) {
@@ -895,13 +921,10 @@ void Fighter::exit_status_grabbed() {
 }
 
 void Fighter::status_thrown() {
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_KNOCKDOWN);
+	if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
 		return;
 	}
-	if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity");
-	}
+	apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
 	add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 }
 
@@ -964,8 +987,7 @@ void Fighter::exit_status_hitstun() {}
 
 void Fighter::status_hitstun_air() {
 	Fighter* that = battle_object_manager->fighter[!id];
-	if (pos.y < FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING_HITSTUN);
+	if (check_landing(FIGHTER_STATUS_LANDING_HITSTUN)) {
 		return;
 	}
 	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
@@ -973,9 +995,7 @@ void Fighter::status_hitstun_air() {
 		return;
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->get_time_multiplier(id);
-		}
+		apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
 		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 	}
 }
@@ -1035,14 +1055,11 @@ void Fighter::status_blockstun() {
 
 	}
 	else {
-		if (pos.y < FLOOR_GAMECOORD) {
-			change_status(FIGHTER_STATUS_LANDING_HITSTUN);
+		if (check_landing(FIGHTER_STATUS_LANDING_HITSTUN)) {
 			return;
 		}
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-			if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > get_local_param_float("max_fall_speed") * -1.0) {
-				fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= get_local_param_float("gravity") * battle_object_manager->get_time_multiplier(id);
-			}
+			apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.5, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 		}
 		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
@@ -1076,8 +1093,7 @@ void Fighter::exit_status_blockstun() {}
 
 void Fighter::status_parry_start() {
 	if (situation_kind == FIGHTER_SITUATION_AIR) {
-		if (pos.y < FLOOR_GAMECOORD) {
-			change_status(FIGHTER_STATUS_LANDING);
+		if (check_landing(FIGHTER_STATUS_LANDING)) {
 			return;
 		}
 		fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
@@ -1085,13 +1101,21 @@ void Fighter::status_parry_start() {
 	}
 	else {
 		if (get_stick_dir() < 4) {
+			if (fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] && (get_anim() != "parry_start_low")) {
+				change_anim_inherit_attributes("parry_start_low", false);
+			}
 			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
 		}
-		else if (get_stick_dir() < 7) {
-			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MID;
-		}
 		else {
-			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+			if (fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] && (get_anim() != "parry_start")) {
+				change_anim_inherit_attributes("parry_start", false);
+			}
+			if (get_stick_dir() < 7) {
+				fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MID;
+			}
+			else {
+				fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+			}
 		}
 	}
 	if (is_status_end()) {
@@ -1103,6 +1127,9 @@ void Fighter::enter_status_parry_start() {
 	if (situation_kind == FIGHTER_SITUATION_AIR) {
 		change_anim("parry_air_start");
 	}
+	else if (get_stick_dir() < 4) {
+		change_anim("parry_start_low");
+	}
 	else {
 		change_anim("parry_start");
 	}
@@ -1112,7 +1139,7 @@ void Fighter::exit_status_parry_start() {}
 
 void Fighter::status_parry() {
 	if (beginning_hitlag(1) || ending_hitlag(2)) {
-		frame++;
+		frame += battle_object_manager->world_rate;
 	}
 	if (situation_kind == FIGHTER_SITUATION_GROUND && fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
@@ -1179,16 +1206,10 @@ void Fighter::exit_status_launch_start() {
 }
 
 void Fighter::status_launch() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 1) {
-		rate = anim_kind->length / calc_launch_frames();
-	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1.0) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] -= fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] * battle_object_manager->get_time_multiplier(id);
-		}
+		apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
 		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
-		if (pos.y < FLOOR_GAMECOORD) {
-			change_status(FIGHTER_STATUS_KNOCKDOWN);
+		if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
 			return;
 		}
 	}

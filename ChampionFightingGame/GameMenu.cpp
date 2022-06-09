@@ -1,6 +1,7 @@
 #include "GameMenu.h"
 #include "Loader.h"
 #include "GameManager.h"
+#include "GameTexture.h"
 
 void GameMenu::event_up_press(){}
 void GameMenu::event_down_press(){}
@@ -88,4 +89,42 @@ void GameMenu::frame_delay_check_performance() {
 	}
 	wait_ms();
 	ms = std::chrono::high_resolution_clock::now();
+}
+
+MenuObject::MenuObject() {
+	owner = nullptr;
+	parent = nullptr;
+	render_all_children = false;
+	active_child = -1;
+}
+
+MenuObject::MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children) {
+	this->owner = owner;
+	this->parent = parent;
+	this->render_all_children = render_all_children;
+	active_child = -1;
+}
+
+void MenuObject::render() {
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		textures[i].process();
+		textures[i].render();
+	}
+	if (render_all_children) {
+		for (int i = 0, max = children.size(); i < max; i++) {
+			children[i].render();
+		}
+	}
+	else if (active_child != -1) {
+		children[active_child].render();
+	}
+}
+
+void MenuObject::destroy() {
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		textures[i].destroy();
+	}
+	for (int i = 0, max = children.size(); i < max; i++) {
+		children[i].destroy();
+	}
 }

@@ -129,6 +129,7 @@ public:
 	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos_anim();
 	void landing_crossup();
+	void apply_gravity(float gravity, float fall_speed);
 
 	//Rotation
 
@@ -206,7 +207,8 @@ public:
 	virtual bool specific_ground_status_act() { return false; };
 	virtual bool specific_air_status_act() { return false; };
 	virtual bool specific_status_attack() { return false; };
-	bool is_status_end(unsigned int status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
+	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
+	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true, bool require_different_status = true);
 	unsigned int get_status_group();
 	bool is_status_hitstun_enable_parry();
 	bool is_status_delay();

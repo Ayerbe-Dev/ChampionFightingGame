@@ -129,7 +129,7 @@ void Battle::load_game_menu() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = false;
+	visualize_boxes = true;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];

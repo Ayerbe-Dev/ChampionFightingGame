@@ -98,6 +98,12 @@ void MainMenu::load_game_menu() {
 	Font main_text_font = font_manager->load_font("Fiend-Oblique", 136);
 	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 100);
 
+	table.init("resource/ui/menu/main/SubMenu.png");
+	table.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+	table.set_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0));
+	table.scale_top_percent(1.2, false);
+	table.scale_bottom_percent(1.2, false);
+
 	background_texture.init("resource/ui/menu/main/bg.png");
 	background_texture.load_spritesheet("resource/ui/menu/main/bg.yml");
 
@@ -106,12 +112,6 @@ void MainMenu::load_game_menu() {
 	menu_items[2].init(main_text_font, "VS", 2, "resource/ui/menu/main/vsimg.png");
 	menu_items[3].init(main_text_font, "Options", 3);
 	menu_items[4].init(main_text_font, "Extras", 4);
-
-	table.init("resource/ui/menu/main/SubMenu.png");
-	table.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
-	table.set_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0));
-	table.scale_top_percent(1.2, false);
-	table.scale_bottom_percent(1.2, false);
 
 	for (int i = 0; i < 5; i++) {
 		sub_menu_tables[i] = new SubMenuTable(i);
@@ -188,9 +188,9 @@ void MainMenu::render() {
 		menu_items[i].sub_menu_name.set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
 		menu_items[i].sub_menu_name.render();
 
-		sub_menu_tables[menu_items[top_selection * -1].destination]->cursor.render();
-		for (int i2 = 0, max2 = sub_menu_tables[menu_items[top_selection * -1].destination]->sub_text.size(); i2 < max2; i2++) {
-			sub_menu_tables[menu_items[top_selection * -1].destination]->sub_text[i2].render();
+		sub_menu_tables[menu_items[top_selection].destination]->cursor.render();
+		for (int i2 = 0, max2 = sub_menu_tables[menu_items[top_selection].destination]->sub_text.size(); i2 < max2; i2++) {
+			sub_menu_tables[menu_items[top_selection].destination]->sub_text[i2].render();
 		}
 	}
 
@@ -201,9 +201,9 @@ void MainMenu::render() {
 		menu_items[i].sub_menu_name.render();
 	}
 
-	menu_items[top_selection * -1].texture.render();
+	menu_items[top_selection].texture.render();
 
-	theta += ((top_selection * offset) - theta) / turn_frames;
+	theta += ((top_selection * -offset) - theta) / turn_frames;
 }
 
 void MainMenu::process_background() {
@@ -213,8 +213,8 @@ void MainMenu::process_background() {
 
 void MainMenu::event_up_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		if (top_selection > -4) {
-			top_selection--;
+		if (top_selection < 4) {
+			top_selection++;
 		}
 		else {
 			top_selection = 0;
@@ -222,31 +222,31 @@ void MainMenu::event_up_press() {
 		}
 	}
 	else {
-		if (sub_menu_tables[sub_type]->selected_item == 0) {
-			sub_menu_tables[sub_type]->selected_item = sub_menu_tables[sub_type]->sub_text.size() - 1;
+		if (sub_menu_tables[top_selection]->selected_item == 0) {
+			sub_menu_tables[top_selection]->selected_item = sub_menu_tables[top_selection]->sub_text.size() - 1;
 		}
 		else {
-			sub_menu_tables[sub_type]->selected_item--;
+			sub_menu_tables[top_selection]->selected_item--;
 		}
 	}
 }
 
 void MainMenu::event_down_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		if (top_selection < 0) {
-			top_selection++;
+		if (top_selection > 0) {
+			top_selection--;
 		}
 		else {
-			top_selection = -4;
+			top_selection = 4;
 			theta -= 5 * offset;
 		}
 	}
 	else {
-		if (sub_menu_tables[sub_type]->selected_item == sub_menu_tables[sub_type]->sub_text.size() - 1) {
-			sub_menu_tables[sub_type]->selected_item = 0;
+		if (sub_menu_tables[top_selection]->selected_item == sub_menu_tables[top_selection]->sub_text.size() - 1) {
+			sub_menu_tables[top_selection]->selected_item = 0;
 		}
 		else {
-			sub_menu_tables[sub_type]->selected_item++;
+			sub_menu_tables[top_selection]->selected_item++;
 		}
 	}
 }
@@ -272,14 +272,13 @@ void MainMenu::event_select_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
 		table.set_target_pos(glm::vec3(WINDOW_WIDTH * 1.535, 0.0, 0.0), 6);
 		menu_level = MENU_LEVEL_SUB;
-		sub_type = menu_items[top_selection * -1].destination;
 	}
 	else {
-		if (sub_type == SUB_MENU_OPTIONS) {
-			sub_state = get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item);
+		if (top_selection == SUB_MENU_OPTIONS) {
+			sub_state = get_sub_selection(top_selection, sub_menu_tables[top_selection]->selected_item);
 		}
 		else {
-			update_state(get_sub_selection(sub_type, sub_menu_tables[sub_type]->selected_item));
+			update_state(get_sub_selection(top_selection, sub_menu_tables[top_selection]->selected_item));
 			*looping = false;
 		}
 	}

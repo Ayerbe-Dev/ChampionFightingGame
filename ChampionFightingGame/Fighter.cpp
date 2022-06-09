@@ -113,7 +113,7 @@ void Fighter::process_animate() {
 
 	attempted_excutes = 0;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		frame += (0.2 / (float)fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]) * battle_object_manager->get_time_multiplier(id);
+		frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
 	}
 	else {
 		frame += rate * battle_object_manager->get_time_multiplier(id);
@@ -178,11 +178,13 @@ void Fighter::process_post_position() {
 	Fighter* that = battle_object_manager->fighter[!id];
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
-			if (situation_kind == FIGHTER_SITUATION_GROUND) {
+			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
 				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0, 0))) {
 					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true; //Necessary for making sure an opponent
+						//who jumped in on us while we were at the wall only gets pushed back and not up
 					}
 				}
 			}
@@ -191,6 +193,7 @@ void Fighter::process_post_position() {
 					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
 					}
 				}
 			}
@@ -198,6 +201,7 @@ void Fighter::process_post_position() {
 	}
 	else {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
+		fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = false;
 	}
 	update_jostle_rect();
 }

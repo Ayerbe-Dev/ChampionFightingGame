@@ -404,18 +404,20 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
 			aiNode* ai_node = ai_bone->mArmature;
-			glm::mat4 model_matrix = ass_converter(ai_bone->mOffsetMatrix);
-			glm::mat4 anim_matrix = ass_converter(ai_node->mTransformation);
+			bone.model_matrix = ass_converter(ai_bone->mOffsetMatrix);
+			if (ai_node != nullptr) {
+				bone.anim_matrix = ass_converter(ai_node->mTransformation);
+			}
+
 
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
 
 			bone.id = get_bone_id(bone.name);
 			if (bone.id == -1) {
 				std::cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << "\n";
+				continue;
 			}
 
-			bone.anim_matrix = anim_matrix;
-			bone.model_matrix = model_matrix;
 			bone.parent_id = this->bones[bone.id].parent_id;
 			bone.counterpart_id = this->bones[bone.id].counterpart_id;
 

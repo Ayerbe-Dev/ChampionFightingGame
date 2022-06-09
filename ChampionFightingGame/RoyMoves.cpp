@@ -166,7 +166,7 @@ void Roy::load_move_scripts() {
 			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
 		}
 	});
-	script("parry_start_air", [this]() {
+	script("parry_air_start", [this]() {
 		if (is_excute_frame(0)) {
 			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });

@@ -129,7 +129,7 @@ void Battle::load_game_menu() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = true;
+	visualize_boxes = false;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -175,7 +175,7 @@ void Battle::load_game_menu() {
 
 	bool loading = true;
 	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
-	while (loading) {
+	while (loading && *looping) {
 		game_manager->handle_window_events();
 
 		keyboard_state = SDL_GetKeyboardState(NULL);

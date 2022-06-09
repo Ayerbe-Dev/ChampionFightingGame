@@ -25,5 +25,7 @@ bool Atlas::specific_status_attack() {
 }
 
 void Atlas::loadAtlasStatusFunctions() {
-
+	status_script.resize(CHARA_ATLAS_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_ATLAS_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_ATLAS_STATUS_MAX, nullptr);
 }

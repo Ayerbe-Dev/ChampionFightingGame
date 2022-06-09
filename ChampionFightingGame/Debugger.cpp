@@ -280,6 +280,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, render_manager->camera.max_fov);
 				ImGui::SliderFloat("Auto Yaw Scale", &render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
 				ImGui::TreePop();
+				render_manager->camera.update_view();
 			}
 			ImGui::TreePop();
 		}	
@@ -298,7 +299,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 
 		if (ImGui::TreeNode("Players")) {
 			ImGui::SliderFloat("p0 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p0 Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
 			ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
 			ImGui::TreePop();
 		}
 

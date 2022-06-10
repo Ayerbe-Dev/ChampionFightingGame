@@ -4,9 +4,9 @@
 #include <chrono>
 #include <functional>
 #include "utils.h"
+#include "GameTexture.h"
 
 class GameLoader;
-class GameTexture;
 class MenuObject;
 
 class GameMenu{
@@ -37,7 +37,7 @@ public:
     bool* looping;
     GameLoader* game_loader;
 
-    std::vector<MenuObject> menu_objects;
+    std::vector<std::vector<MenuObject>> menu_objects;
 
     std::chrono::steady_clock::time_point ms;
     std::vector<float> average_ticks;
@@ -54,21 +54,42 @@ public:
 
     void render();
     void destroy();
+    void add_child(bool render_all_children);
+    void add_texture(std::string path);
+    void add_texture(Font font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
+    void add_texture(const GameTexture& that);
+    void add_texture(unsigned int texture_id);
 
-    std::function<void()> event_up_press;
-    std::function<void()> event_down_press;
-    std::function<void()> event_left_press;
-    std::function<void()> event_right_press;
-    std::function<void()> event_select_press;
-    std::function<void()> event_start_press;
-    std::function<void()> event_back_press;
-    std::function<void()> event_any_press;
+    void event_up_press();
+    void event_down_press();
+    void event_left_press();
+    void event_right_press();
+    void event_select_press();
+    void event_start_press();
+    void event_back_press();
+    void event_any_press();
+    void process();
+
+    std::function<void(MenuObject* menu_object)> up_event;
+    std::function<void(MenuObject* menu_object)> down_event;
+    std::function<void(MenuObject* menu_object)> left_event;
+    std::function<void(MenuObject* menu_object)> right_event;
+    std::function<void(MenuObject* menu_object)> select_event;
+    std::function<void(MenuObject* menu_object)> start_event;
+    std::function<void(MenuObject* menu_object)> back_event;
+    std::function<void(MenuObject* menu_object)> any_event;
+
+    std::function<void(MenuObject* menu_object)> process_event;
 
     GameMenu* owner;
 
     MenuObject* parent;
     std::vector<MenuObject> children;
     std::vector<GameTexture> textures;
+
+    GameTexture cursor; //I can't think of a single reason for a menu object
+    //to actually use its cursor. However, I CAN think of reasons for it to
+    //use its PARENT'S cursor, so here we are.
 
     int active_child;
 

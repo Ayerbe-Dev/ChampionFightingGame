@@ -62,35 +62,6 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 		}
 	}
 
-	input = "";
-	source = "";
-
-	shader_file.open("resource/shaders/" + fragment_dir);
-	if (shader_file.fail()) {
-		std::cout << "Could not open Fragment Core Shader File!" << "\n";
-		shader_file.close();
-	}
-	else {
-		while (getline(shader_file, input)) {
-			source += input + "\n";
-		}
-
-		shader_file.close();
-
-		const GLchar* frag_src = source.c_str();
-		glShaderSource(fragment, 1, &frag_src, NULL);
-		glCompileShader(fragment);
-
-		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			glGetShaderInfoLog(fragment, 512, NULL, info_log);
-			std::cout << "Could not compile Fragment Core!" << info_log << "\n";
-		}
-		else {
-			glAttachShader(program, fragment);
-		}
-	}
-
 	if (geometry_dir != "") {
 		input = "";
 		source = "";
@@ -119,6 +90,44 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 			else {
 				glAttachShader(program, geometry);
 			}
+		}
+	}
+
+	input = "";
+	source = "";
+
+	shader_file.open("resource/shaders/" + fragment_dir);
+	if (shader_file.fail()) {
+		std::cout << "Could not open Fragment Core Shader File!" << "\n";
+		shader_file.close();
+	}
+	else {
+		while (getline(shader_file, input)) {
+			if (geometry_dir == "" && input == "in GS_OUT {") {
+				//This block makes it so that if we're using a frag shader designed to work with
+				//a geometry shader and there is no geometry shader, we don't have to make another
+				//copy of the frag shader, we can just tell it to read directly from the vertex
+				//shader instead.
+				source += "in VS_OUT {\n";
+			}
+			else {
+				source += input + "\n";
+			}
+		}
+
+		shader_file.close();
+
+		const GLchar* frag_src = source.c_str();
+		glShaderSource(fragment, 1, &frag_src, NULL);
+		glCompileShader(fragment);
+
+		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(fragment, 512, NULL, info_log);
+			std::cout << "Could not compile Fragment Core!" << info_log << "\n";
+		}
+		else {
+			glAttachShader(program, fragment);
 		}
 	}
 

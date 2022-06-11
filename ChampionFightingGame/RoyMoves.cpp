@@ -299,7 +299,7 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_mk", [this]() {
 		if (is_excute_frame(0)) {
-			play_camera_anim("super_start", 1.0, 0.5, 0.0);
+			play_camera_anim("super_start_2", 1.0, 0.5, 0.0);
 		}
 	});
 	script("stand_hk", [this]() {

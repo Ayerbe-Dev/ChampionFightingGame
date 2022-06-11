@@ -630,6 +630,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\chara\eric\anims\wait.fbx" />
     <None Include="resource\chara\eric\anims\walk_b.fbx" />
     <None Include="resource\chara\eric\anims\walk_f.fbx" />
+    <None Include="resource\chara\eric\cam_anims\anim_list.yml" />
+    <None Include="resource\chara\eric\cam_anims\super_start.fbx" />
+    <None Include="resource\chara\eric\cam_anims\super_start_2.fbx" />
     <None Include="resource\chara\eric\model\model.dae" />
     <None Include="resource\chara\eric\model\skeleton.smd" />
     <None Include="resource\chara\eric\param\params.yml" />

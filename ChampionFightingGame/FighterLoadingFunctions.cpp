@@ -61,7 +61,6 @@ void Fighter::load_model_shader() {
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
 	shader.set_int("material.shadow_map", 4);
-
 }
 
 void Fighter::load_anim_list() {

@@ -25,10 +25,12 @@ struct Light {
     bool enabled;
 };
 
-in vec3 FragPos;  
-in vec4 FragPosLightSpace;
-in vec3 Normal;  
-in vec2 TexCoords;
+in GS_OUT {
+    vec3 FragPos;  
+    vec3 Normal;  
+    vec2 TexCoords;
+    vec4 FragPosLightSpace;
+} fs_in;
   
 uniform vec3 view_pos;
 uniform Material material;
@@ -39,22 +41,22 @@ float calc_shadow(vec4 fragPosLightSpace);
 
 void main() {
     vec3 result = vec3(0.0, 0.0, 0.0);
-    vec3 normal = normalize(Normal);
-    vec3 view_dir = normalize(view_pos - FragPos);
-    vec3 diffuse_col = texture(material.diffuse, TexCoords).rgb;
-    vec3 spec_col = texture(material.specular, TexCoords).rgb;
+    vec3 normal = normalize(fs_in.Normal);
+    vec3 view_dir = normalize(view_pos - fs_in.FragPos);
+    vec3 diffuse_col = texture(material.diffuse, fs_in.TexCoords).rgb;
+    vec3 spec_col = texture(material.specular, fs_in.TexCoords).rgb;
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
         if (light[i].enabled) {
             result += calc_light(light[i], normal, view_dir, diffuse_col, spec_col);
         }
     }
 
-    float shadow_result = calc_shadow(FragPosLightSpace);
+    float shadow_result = calc_shadow(fs_in.FragPosLightSpace);
     FragColor = vec4((1.0 - shadow_result) * result, 1.0);
 }
 
 vec3 calc_light(Light light, vec3 normal, vec3 view_dir, vec3 diffuse_col, vec3 spec_col) {
-    vec3 light_dir = normalize(light.position - FragPos);
+    vec3 light_dir = normalize(light.position - fs_in.FragPos);
 
     vec3 ambient = light.ambient * diffuse_col;
 
@@ -65,7 +67,7 @@ vec3 calc_light(Light light, vec3 normal, vec3 view_dir, vec3 diffuse_col, vec3 
     float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * spec_col;
 
-    float distance = length(light.position - FragPos);
+    float distance = length(light.position - fs_in.FragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
 
     ambient *= attenuation;  

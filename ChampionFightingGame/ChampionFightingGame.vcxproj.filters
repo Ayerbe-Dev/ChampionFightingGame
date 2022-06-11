@@ -1,389 +1,1149 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="utils.cpp" />
-    <ClCompile Include="CharaSelect.cpp" />
-    <ClCompile Include="DebugMenu.cpp" />
-    <ClCompile Include="Battle.cpp" />
-    <ClCompile Include="GameMenu.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="Opening.cpp" />
-    <ClCompile Include="Options.cpp" />
-    <ClCompile Include="PauseBattle.cpp" />
-    <ClCompile Include="StageSelect.cpp" />
-    <ClCompile Include="TitleScreen.cpp" />
-    <ClCompile Include="BattleObject.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="RenderObject.cpp" />
-    <ClCompile Include="FighterInterface.cpp" />
-    <ClCompile Include="FighterStatus.cpp" />
-    <ClCompile Include="Fighter.cpp" />
-    <ClCompile Include="FighterActionabilityFunctions.cpp" />
-    <ClCompile Include="FighterAnimationFunctions.cpp" />
-    <ClCompile Include="FighterCinematicFunctions.cpp" />
-    <ClCompile Include="FighterGrabFunctions.cpp" />
-    <ClCompile Include="FighterRotationFunctions.cpp" />
-    <ClCompile Include="FighterInputFunctions.cpp" />
-    <ClCompile Include="FighterJostleFunctions.cpp" />
-    <ClCompile Include="FighterLoadingFunctions.cpp" />
-    <ClCompile Include="FighterOpponentFunctions.cpp" />
-    <ClCompile Include="FighterPositionFunctions.cpp" />
-    <ClCompile Include="FighterProjectileFunctions.cpp" />
-    <ClCompile Include="FighterStatusFunctions.cpp" />
-    <ClCompile Include="Nightsaber.cpp" />
-    <ClCompile Include="NightsaberMoves.cpp" />
-    <ClCompile Include="NightsaberStatus.cpp" />
-    <ClCompile Include="Zyair.cpp" />
-    <ClCompile Include="ZyairMoves.cpp" />
-    <ClCompile Include="ZyairStatus.cpp" />
-    <ClCompile Include="Vesuvius.cpp" />
-    <ClCompile Include="VesuviusMoves.cpp" />
-    <ClCompile Include="VesuviusStatus.cpp" />
-    <ClCompile Include="Tessa.cpp" />
-    <ClCompile Include="TessaMoves.cpp" />
-    <ClCompile Include="TessaStatus.cpp" />
-    <ClCompile Include="Sully.cpp" />
-    <ClCompile Include="SullyMoves.cpp" />
-    <ClCompile Include="SullyStatus.cpp" />
-    <ClCompile Include="Roy.cpp" />
-    <ClCompile Include="RoyMoves.cpp" />
-    <ClCompile Include="RoyStatus.cpp" />
-    <ClCompile Include="Ramona.cpp" />
-    <ClCompile Include="RamonaMoves.cpp" />
-    <ClCompile Include="RamonaStatus.cpp" />
-    <ClCompile Include="Priest.cpp" />
-    <ClCompile Include="PriestMoves.cpp" />
-    <ClCompile Include="PriestStatus.cpp" />
-    <ClCompile Include="Norman.cpp" />
-    <ClCompile Include="NormanMoves.cpp" />
-    <ClCompile Include="NormanStatus.cpp" />
-    <ClCompile Include="Leon.cpp" />
-    <ClCompile Include="LeonMoves.cpp" />
-    <ClCompile Include="LeonStatus.cpp" />
-    <ClCompile Include="Eric.cpp" />
-    <ClCompile Include="EricMoves.cpp" />
-    <ClCompile Include="EricStatus.cpp" />
-    <ClCompile Include="Julius.cpp" />
-    <ClCompile Include="JuliusMoves.cpp" />
-    <ClCompile Include="JuliusStatus.cpp" />
-    <ClCompile Include="CharaTemplate.cpp" />
-    <ClCompile Include="CharaTemplateMoves.cpp" />
-    <ClCompile Include="CharaTemplateStatus.cpp" />
-    <ClCompile Include="Bruno.cpp" />
-    <ClCompile Include="BrunoMoves.cpp" />
-    <ClCompile Include="BrunoStatus.cpp" />
-    <ClCompile Include="Alejandro.cpp" />
-    <ClCompile Include="AlejandroMoves.cpp" />
-    <ClCompile Include="AlejandroStatus.cpp" />
-    <ClCompile Include="Angelica.cpp" />
-    <ClCompile Include="AngelicaMoves.cpp" />
-    <ClCompile Include="AngelicaStatus.cpp" />
-    <ClCompile Include="AtlasMoves.cpp" />
-    <ClCompile Include="AtlasStatus.cpp" />
-    <ClCompile Include="Atlas.cpp" />
-    <ClCompile Include="Aziel.cpp" />
-    <ClCompile Include="AzielMoves.cpp" />
-    <ClCompile Include="AzielStatus.cpp" />
-    <ClCompile Include="Projectile.cpp" />
-    <ClCompile Include="ProjectileInterface.cpp" />
-    <ClCompile Include="ProjectileStatus.cpp" />
-    <ClCompile Include="ProjectileAnimationFunctions.cpp" />
-    <ClCompile Include="ProjectileLoadingFunctions.cpp" />
-    <ClCompile Include="ProjectilePositionFunctions.cpp" />
-    <ClCompile Include="ProjectileStatusFunctions.cpp" />
-    <ClCompile Include="EricFireball.cpp" />
-    <ClCompile Include="RoyFireball.cpp" />
-    <ClCompile Include="ProjectileTemplate.cpp" />
-    <ClCompile Include="BlockboxFunctions.cpp" />
-    <ClCompile Include="BoneFunctions.cpp" />
-    <ClCompile Include="EffectFunctions.cpp" />
-    <ClCompile Include="GrabboxFunctions.cpp" />
-    <ClCompile Include="HitboxFunctions.cpp" />
-    <ClCompile Include="HurtboxFunctions.cpp" />
-    <ClCompile Include="LoadingFunctions.cpp" />
-    <ClCompile Include="ParamFunctions.cpp" />
-    <ClCompile Include="ScriptFunctions.cpp" />
-    <ClCompile Include="SoundFunctions.cpp" />
-    <ClCompile Include="Stage.cpp" />
-    <ClCompile Include="StageAsset.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CameraAnim.cpp" />
-    <ClCompile Include="Debugger.cpp" />
-    <ClCompile Include="Loader.cpp" />
-    <ClCompile Include="AIManager.cpp" />
-    <ClCompile Include="ControllerManager.cpp" />
-    <ClCompile Include="EffectManager.cpp" />
-    <ClCompile Include="BattleObjectManager.cpp" />
-    <ClCompile Include="FontManager.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="ParamAccessor.cpp" />
-    <ClCompile Include="RenderManager.cpp" />
-    <ClCompile Include="SaveManager.cpp" />
-    <ClCompile Include="SoundManager.cpp" />
-    <ClCompile Include="ThreadManager.cpp" />
-    <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="Button.cpp" />
-    <ClCompile Include="GameController.cpp" />
-    <ClCompile Include="MoveScript.cpp" />
-    <ClCompile Include="GameCoordinate.cpp" />
-    <ClCompile Include="Box.cpp" />
-    <ClCompile Include="Param.cpp" />
-    <ClCompile Include="PlayerInfo.cpp" />
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Bone.cpp" />
-    <ClCompile Include="Effect.cpp" />
-    <ClCompile Include="Font.cpp" />
-    <ClCompile Include="GameRect.cpp" />
-    <ClCompile Include="GameTextureSDL.cpp" />
-    <ClCompile Include="Light.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="OverlayLayer.cpp" />
-    <ClCompile Include="GameTexture.cpp" />
-    <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShadowMap.cpp" />
-    <ClCompile Include="GLEW Helpers.cpp" />
-    <ClCompile Include="GLM Helpers.cpp" />
-    <ClCompile Include="SDL Helpers.cpp" />
-    <ClCompile Include="imgui.cpp" />
-    <ClCompile Include="imgui_demo.cpp" />
-    <ClCompile Include="imgui_draw.cpp" />
-    <ClCompile Include="imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui_impl_sdl.cpp" />
-    <ClCompile Include="imgui_tables.cpp" />
-    <ClCompile Include="imgui_widgets.cpp" />
-    <ClCompile Include="AI.cpp" />
-    <ClCompile Include="AIInput.cpp" />
-    <ClCompile Include="AIDecision.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="utils.h" />
-    <ClInclude Include="PauseBattle.h" />
-    <ClInclude Include="CharaSelect.h" />
-    <ClInclude Include="DebugMenu.h" />
-    <ClInclude Include="Battle.h" />
-    <ClInclude Include="GameMenu.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="Opening.h" />
-    <ClInclude Include="Options.h" />
-    <ClInclude Include="StageSelect.h" />
-    <ClInclude Include="TitleScreen.h" />
-    <ClInclude Include="BattleObject.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="RenderObject.h" />
-    <ClInclude Include="FighterAttribute.h" />
-    <ClInclude Include="FighterConstants.h" />
-    <ClInclude Include="FighterFlag.h" />
-    <ClInclude Include="FighterFloat.h" />
-    <ClInclude Include="FighterInt.h" />
-    <ClInclude Include="FighterInterface.h" />
-    <ClInclude Include="CharaKind.h" />
-    <ClInclude Include="FighterStatus.h" />
-    <ClInclude Include="Fighter.h" />
-    <ClInclude Include="Alejandro.h" />
-    <ClInclude Include="AlejandroConstants.h" />
-    <ClInclude Include="AlejandroFlag.h" />
-    <ClInclude Include="AlejandroFloat.h" />
-    <ClInclude Include="AlejandroInt.h" />
-    <ClInclude Include="AlejandroStatus.h" />
-    <ClInclude Include="Angelica.h" />
-    <ClInclude Include="AngelicaConstants.h" />
-    <ClInclude Include="AngelicaFlag.h" />
-    <ClInclude Include="AngelicaFloat.h" />
-    <ClInclude Include="AngelicaInt.h" />
-    <ClInclude Include="AngelicaStatus.h" />
-    <ClInclude Include="AtlasFlag.h" />
-    <ClInclude Include="AtlasFloat.h" />
-    <ClInclude Include="AtlasInt.h" />
-    <ClInclude Include="AtlasStatus.h" />
-    <ClInclude Include="AtlasConstants.h" />
-    <ClInclude Include="Atlas.h" />
-    <ClInclude Include="Aziel.h" />
-    <ClInclude Include="AzielConstants.h" />
-    <ClInclude Include="AzielFlag.h" />
-    <ClInclude Include="AzielFloat.h" />
-    <ClInclude Include="AzielInt.h" />
-    <ClInclude Include="AzielStatus.h" />
-    <ClInclude Include="Bruno.h" />
-    <ClInclude Include="BrunoConstants.h" />
-    <ClInclude Include="BrunoFlag.h" />
-    <ClInclude Include="BrunoFloat.h" />
-    <ClInclude Include="BrunoInt.h" />
-    <ClInclude Include="BrunoStatus.h" />
-    <ClInclude Include="CharaTemplate.h" />
-    <ClInclude Include="CharaTemplateConstants.h" />
-    <ClInclude Include="CharaTemplateFlag.h" />
-    <ClInclude Include="CharaTemplateFloat.h" />
-    <ClInclude Include="CharaTemplateInt.h" />
-    <ClInclude Include="CharaTemplateStatus.h" />
-    <ClInclude Include="Eric.h" />
-    <ClInclude Include="EricConstants.h" />
-    <ClInclude Include="EricFlag.h" />
-    <ClInclude Include="EricFloat.h" />
-    <ClInclude Include="EricInt.h" />
-    <ClInclude Include="EricStatus.h" />
-    <ClInclude Include="Julius.h" />
-    <ClInclude Include="JuliusConstants.h" />
-    <ClInclude Include="JuliusFlag.h" />
-    <ClInclude Include="JuliusFloat.h" />
-    <ClInclude Include="JuliusInt.h" />
-    <ClInclude Include="JuliusStatus.h" />
-    <ClInclude Include="Leon.h" />
-    <ClInclude Include="LeonConstants.h" />
-    <ClInclude Include="LeonFlag.h" />
-    <ClInclude Include="LeonFloat.h" />
-    <ClInclude Include="LeonInt.h" />
-    <ClInclude Include="LeonStatus.h" />
-    <ClInclude Include="Nightsaber.h" />
-    <ClInclude Include="NightsaberConstants.h" />
-    <ClInclude Include="NightsaberFlag.h" />
-    <ClInclude Include="NightsaberFloat.h" />
-    <ClInclude Include="NightsaberInt.h" />
-    <ClInclude Include="NightsaberStatus.h" />
-    <ClInclude Include="Norman.h" />
-    <ClInclude Include="NormanConstants.h" />
-    <ClInclude Include="NormanFlag.h" />
-    <ClInclude Include="NormanFloat.h" />
-    <ClInclude Include="NormanInt.h" />
-    <ClInclude Include="NormanStatus.h" />
-    <ClInclude Include="Priest.h" />
-    <ClInclude Include="PriestConstants.h" />
-    <ClInclude Include="PriestFlag.h" />
-    <ClInclude Include="PriestFloat.h" />
-    <ClInclude Include="PriestInt.h" />
-    <ClInclude Include="PriestStatus.h" />
-    <ClInclude Include="Ramona.h" />
-    <ClInclude Include="RamonaConstants.h" />
-    <ClInclude Include="RamonaFlag.h" />
-    <ClInclude Include="RamonaFloat.h" />
-    <ClInclude Include="RamonaInt.h" />
-    <ClInclude Include="RamonaStatus.h" />
-    <ClInclude Include="Roy.h" />
-    <ClInclude Include="RoyConstants.h" />
-    <ClInclude Include="RoyFlag.h" />
-    <ClInclude Include="RoyFloat.h" />
-    <ClInclude Include="RoyInt.h" />
-    <ClInclude Include="RoyStatus.h" />
-    <ClInclude Include="Sully.h" />
-    <ClInclude Include="SullyConstants.h" />
-    <ClInclude Include="SullyFlag.h" />
-    <ClInclude Include="SullyFloat.h" />
-    <ClInclude Include="SullyInt.h" />
-    <ClInclude Include="SullyStatus.h" />
-    <ClInclude Include="Tessa.h" />
-    <ClInclude Include="TessaConstants.h" />
-    <ClInclude Include="TessaFlag.h" />
-    <ClInclude Include="TessaFloat.h" />
-    <ClInclude Include="TessaInt.h" />
-    <ClInclude Include="TessaStatus.h" />
-    <ClInclude Include="VesuviusConstants.h" />
-    <ClInclude Include="VesuviusFlag.h" />
-    <ClInclude Include="Vesuvius.h" />
-    <ClInclude Include="VesuviusFloat.h" />
-    <ClInclude Include="VesuviusInt.h" />
-    <ClInclude Include="VesuviusStatus.h" />
-    <ClInclude Include="Zyair.h" />
-    <ClInclude Include="ZyairConstants.h" />
-    <ClInclude Include="ZyairFlag.h" />
-    <ClInclude Include="ZyairFloat.h" />
-    <ClInclude Include="ZyairInt.h" />
-    <ClInclude Include="ZyairStatus.h" />
-    <ClInclude Include="Projectile.h" />
-    <ClInclude Include="ProjectileConstants.h" />
-    <ClInclude Include="ProjectileFlag.h" />
-    <ClInclude Include="ProjectileFloat.h" />
-    <ClInclude Include="ProjectileInt.h" />
-    <ClInclude Include="ProjectileInterface.h" />
-    <ClInclude Include="ProjectileKind.h" />
-    <ClInclude Include="ProjectileStatus.h" />
-    <ClInclude Include="EricFireball.h" />
-    <ClInclude Include="EricFireballConstants.h" />
-    <ClInclude Include="EricFireballFlag.h" />
-    <ClInclude Include="EricFireballFloat.h" />
-    <ClInclude Include="EricFireballInt.h" />
-    <ClInclude Include="EricFireballStatus.h" />
-    <ClInclude Include="RoyFireball.h" />
-    <ClInclude Include="RoyFireballConstants.h" />
-    <ClInclude Include="RoyFireballFlag.h" />
-    <ClInclude Include="RoyFireballFloat.h" />
-    <ClInclude Include="RoyFireballInt.h" />
-    <ClInclude Include="RoyFireballStatus.h" />
-    <ClInclude Include="ProjectileTemplateConstants.h" />
-    <ClInclude Include="ProjectileTemplateFlag.h" />
-    <ClInclude Include="ProjectileTemplateFloat.h" />
-    <ClInclude Include="ProjectileTemplateInt.h" />
-    <ClInclude Include="ProjectileTemplateStatus.h" />
-    <ClInclude Include="ProjectileTemplate.h" />
-    <ClInclude Include="Stage.h" />
-    <ClInclude Include="StageAsset.h" />
-    <ClInclude Include="StageKind.h" />
-    <ClInclude Include="CameraAnim.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="BoneConstants.h" />
-    <ClInclude Include="BoxConstants.h" />
-    <ClInclude Include="ButtonConstants.h" />
-    <ClInclude Include="Constants.h" />
-    <ClInclude Include="GameState.h" />
-    <ClInclude Include="GameStates.h" />
-    <ClInclude Include="MenuConstants.h" />
-    <ClInclude Include="SettingConstants.h" />
-    <ClInclude Include="SoundConstants.h" />
-    <ClInclude Include="Debugger.h" />
-    <ClInclude Include="Loader.h" />
-    <ClInclude Include="AIManager.h" />
-    <ClInclude Include="FontManager.h" />
-    <ClInclude Include="ControllerManager.h" />
-    <ClInclude Include="EffectManager.h" />
-    <ClInclude Include="BattleObjectManager.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="ParamAccessor.h" />
-    <ClInclude Include="SaveManager.h" />
-    <ClInclude Include="RenderManager.h" />
-    <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="ThreadManager.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="imconfig.h" />
-    <ClInclude Include="imgui.h" />
-    <ClInclude Include="imgui_impl_opengl3.h" />
-    <ClInclude Include="imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="imgui_impl_sdl.h" />
-    <ClInclude Include="imgui_internal.h" />
-    <ClInclude Include="imstb_rectpack.h" />
-    <ClInclude Include="imstb_textedit.h" />
-    <ClInclude Include="imstb_truetype.h" />
-    <ClInclude Include="Sound.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="GameTextureSDL.h" />
-    <ClInclude Include="Bone.h" />
-    <ClInclude Include="Effect.h" />
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="GameRect.h" />
-    <ClInclude Include="GameTexture.h" />
-    <ClInclude Include="OverlayLayer.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="ShadowMap.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="TextureCoord.h" />
-    <ClInclude Include="GameController.h" />
-    <ClInclude Include="GameCoordinate.h" />
-    <ClInclude Include="Button.h" />
-    <ClInclude Include="Box.h" />
-    <ClInclude Include="PlayerInfo.h" />
-    <ClInclude Include="MoveScript.h" />
-    <ClInclude Include="Param.h" />
-    <ClInclude Include="Fighters.h" />
-    <ClInclude Include="Projectiles.h" />
-    <ClInclude Include="GLEW Helpers.h" />
-    <ClInclude Include="GLM Helpers.h" />
-    <ClInclude Include="SDL Helpers.h" />
-    <ClInclude Include="AI.h" />
-    <ClInclude Include="AIMoveList.h" />
-    <ClInclude Include="CircularBuffer.h" />
-    <ClInclude Include="LoopingVector.h" />
-  </ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="main.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="CharaSelect.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="DebugMenu.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="Menu.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="Debugger.cpp">
+			<Filter>Source Files\Global</Filter>
+		</ClCompile>
+		<ClCompile Include="BattleObject.cpp">
+			<Filter>Source Files\Objects</Filter>
+		</ClCompile>
+		<ClCompile Include="Loader.cpp">
+			<Filter>Source Files\Global</Filter>
+		</ClCompile>
+		<ClCompile Include="TitleScreen.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="Opening.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="Options.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="Fighter.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter</Filter>
+		</ClCompile>
+		<ClCompile Include="Alejandro.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClCompile>
+		<ClCompile Include="Angelica.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClCompile>
+		<ClCompile Include="Atlas.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClCompile>
+		<ClCompile Include="Aziel.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClCompile>
+		<ClCompile Include="Bruno.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClCompile>
+		<ClCompile Include="Eric.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClCompile>
+		<ClCompile Include="Julius.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClCompile>
+		<ClCompile Include="CharaTemplate.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClCompile>
+		<ClCompile Include="Leon.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClCompile>
+		<ClCompile Include="Nightsaber.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClCompile>
+		<ClCompile Include="Norman.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClCompile>
+		<ClCompile Include="Priest.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClCompile>
+		<ClCompile Include="Ramona.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClCompile>
+		<ClCompile Include="Roy.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClCompile>
+		<ClCompile Include="Sully.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClCompile>
+		<ClCompile Include="Tessa.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClCompile>
+		<ClCompile Include="Vesuvius.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClCompile>
+		<ClCompile Include="Zyair.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClCompile>
+		<ClCompile Include="EricFireball.cpp">
+			<Filter>Source Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectileTemplate.cpp">
+			<Filter>Source Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClCompile>
+		<ClCompile Include="RoyFireball.cpp">
+			<Filter>Source Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClCompile>
+		<ClCompile Include="Projectile.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile</Filter>
+		</ClCompile>
+		<ClCompile Include="AlejandroStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClCompile>
+		<ClCompile Include="AlejandroMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClCompile>
+		<ClCompile Include="AngelicaStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClCompile>
+		<ClCompile Include="AngelicaMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClCompile>
+		<ClCompile Include="AtlasStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClCompile>
+		<ClCompile Include="AtlasMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClCompile>
+		<ClCompile Include="AzielStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClCompile>
+		<ClCompile Include="AzielMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClCompile>
+		<ClCompile Include="BrunoStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClCompile>
+		<ClCompile Include="BrunoMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClCompile>
+		<ClCompile Include="EricStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClCompile>
+		<ClCompile Include="EricMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClCompile>
+		<ClCompile Include="JuliusStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClCompile>
+		<ClCompile Include="JuliusMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClCompile>
+		<ClCompile Include="CharaTemplateStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClCompile>
+		<ClCompile Include="CharaTemplateMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClCompile>
+		<ClCompile Include="LeonStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClCompile>
+		<ClCompile Include="LeonMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClCompile>
+		<ClCompile Include="ZyairStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClCompile>
+		<ClCompile Include="ZyairMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClCompile>
+		<ClCompile Include="VesuviusStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClCompile>
+		<ClCompile Include="VesuviusMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClCompile>
+		<ClCompile Include="TessaStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClCompile>
+		<ClCompile Include="TessaMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClCompile>
+		<ClCompile Include="SullyStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClCompile>
+		<ClCompile Include="SullyMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClCompile>
+		<ClCompile Include="RoyStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClCompile>
+		<ClCompile Include="RoyMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClCompile>
+		<ClCompile Include="RamonaStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClCompile>
+		<ClCompile Include="RamonaMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClCompile>
+		<ClCompile Include="PriestStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClCompile>
+		<ClCompile Include="PriestMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClCompile>
+		<ClCompile Include="NormanStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClCompile>
+		<ClCompile Include="NormanMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClCompile>
+		<ClCompile Include="NightsaberStatus.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClCompile>
+		<ClCompile Include="NightsaberMoves.cpp">
+			<Filter>Source Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClCompile>
+		<ClCompile Include="GrabboxFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="HitboxFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="HurtboxFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ParamFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ScriptFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="LoadingFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterActionabilityFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterLoadingFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterInputFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterJostleFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterOpponentFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterStatusFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterProjectileFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterPositionFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterAnimationFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectileAnimationFunctions.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectileStatusFunctions.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectileLoadingFunctions.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectileStatus.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile</Filter>
+		</ClCompile>
+		<ClCompile Include="utils.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
+		<ClCompile Include="Battle.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="StageSelect.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="SoundManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="GameManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="RenderManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="RenderObject.cpp">
+			<Filter>Source Files\Objects</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterRotationFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterInterface.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectileInterface.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile</Filter>
+		</ClCompile>
+		<ClCompile Include="GLM Helpers.cpp">
+			<Filter>Source Files\Helper Funcs</Filter>
+		</ClCompile>
+		<ClCompile Include="GLEW Helpers.cpp">
+			<Filter>Source Files\Helper Funcs</Filter>
+		</ClCompile>
+		<ClCompile Include="SDL Helpers.cpp">
+			<Filter>Source Files\Helper Funcs</Filter>
+		</ClCompile>
+		<ClCompile Include="Stage.cpp">
+			<Filter>Source Files\Objects\Stage</Filter>
+		</ClCompile>
+		<ClCompile Include="StageAsset.cpp">
+			<Filter>Source Files\Objects\Stage</Filter>
+		</ClCompile>
+		<ClCompile Include="BattleObjectManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui_demo.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui_draw.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui_impl_opengl3.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui_impl_sdl.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui_tables.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="imgui_widgets.cpp">
+			<Filter>Source Files\Deps\ImGui</Filter>
+		</ClCompile>
+		<ClCompile Include="AIDecision.cpp">
+			<Filter>Source Files\AI</Filter>
+		</ClCompile>
+		<ClCompile Include="AI.cpp">
+			<Filter>Source Files\AI</Filter>
+		</ClCompile>
+		<ClCompile Include="AIInput.cpp">
+			<Filter>Source Files\AI</Filter>
+		</ClCompile>
+		<ClCompile Include="AIManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterGrabFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="EffectManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="Sound.cpp">
+			<Filter>Source Files\Engine</Filter>
+		</ClCompile>
+		<ClCompile Include="Animation.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="Bone.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="Effect.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="GameRect.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="GameTexture.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="Light.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="Model.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="MoveScript.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="Param.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="Shader.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="ShadowMap.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="ParamAccessor.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="Particle.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="SoundFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="EffectFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="BoneFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="ThreadManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="Box.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="Button.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="GameCoordinate.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="GameController.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="ControllerManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="OverlayLayer.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="PauseBattle.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="GameTextureSDL.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="BlockboxFunctions.cpp">
+			<Filter>Source Files\Objects\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="GameMenu.cpp">
+			<Filter>Source Files\Game State</Filter>
+		</ClCompile>
+		<ClCompile Include="Player.cpp">
+			<Filter>Source Files\Objects</Filter>
+		</ClCompile>
+		<ClCompile Include="PlayerInfo.cpp">
+			<Filter>Source Files\Engine\GameData</Filter>
+		</ClCompile>
+		<ClCompile Include="SaveManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="FontManager.cpp">
+			<Filter>Source Files\Managers</Filter>
+		</ClCompile>
+		<ClCompile Include="Font.cpp">
+			<Filter>Source Files\Engine\Visuals</Filter>
+		</ClCompile>
+		<ClCompile Include="ProjectilePositionFunctions.cpp">
+			<Filter>Source Files\Objects\Projectile\Projectile\Functions</Filter>
+		</ClCompile>
+		<ClCompile Include="Camera.cpp">
+			<Filter>Source Files\Objects\Camera</Filter>
+		</ClCompile>
+		<ClCompile Include="CameraAnim.cpp">
+			<Filter>Source Files\Objects\Camera</Filter>
+		</ClCompile>
+		<ClCompile Include="FighterCinematicFunctions.cpp">
+			<Filter>Source Files\Objects\Fighter\Fighter\Functions</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="utils.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaSelect.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="Battle.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="Menu.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="DebugMenu.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="BattleObject.h">
+			<Filter>Header Files\Objects</Filter>
+		</ClInclude>
+		<ClInclude Include="BoxConstants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="ButtonConstants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="MenuConstants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="Constants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="TitleScreen.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="Opening.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="Options.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="SettingConstants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="Debugger.h">
+			<Filter>Header Files\Global</Filter>
+		</ClInclude>
+		<ClInclude Include="Loader.h">
+			<Filter>Header Files\Global</Filter>
+		</ClInclude>
+		<ClInclude Include="StageSelect.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="SoundManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="GameManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="RenderManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="stb_image.h">
+			<Filter>Header Files\Deps</Filter>
+		</ClInclude>
+		<ClInclude Include="RenderObject.h">
+			<Filter>Header Files\Objects</Filter>
+		</ClInclude>
+		<ClInclude Include="Fighter.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterInterface.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="Projectile.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileInterface.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="Fighters.h">
+			<Filter>Header Files\Include</Filter>
+		</ClInclude>
+		<ClInclude Include="Projectiles.h">
+			<Filter>Header Files\Include</Filter>
+		</ClInclude>
+		<ClInclude Include="GLM Helpers.h">
+			<Filter>Header Files\Helper Funcs</Filter>
+		</ClInclude>
+		<ClInclude Include="BoneConstants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="GLEW Helpers.h">
+			<Filter>Header Files\Helper Funcs</Filter>
+		</ClInclude>
+		<ClInclude Include="SoundConstants.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="SDL Helpers.h">
+			<Filter>Header Files\Helper Funcs</Filter>
+		</ClInclude>
+		<ClInclude Include="Alejandro.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClInclude>
+		<ClInclude Include="Angelica.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClInclude>
+		<ClInclude Include="Atlas.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClInclude>
+		<ClInclude Include="Aziel.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClInclude>
+		<ClInclude Include="Bruno.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaTemplate.h">
+			<Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="Eric.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClInclude>
+		<ClInclude Include="Julius.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClInclude>
+		<ClInclude Include="Leon.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClInclude>
+		<ClInclude Include="Nightsaber.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClInclude>
+		<ClInclude Include="Norman.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClInclude>
+		<ClInclude Include="Priest.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClInclude>
+		<ClInclude Include="Ramona.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClInclude>
+		<ClInclude Include="Roy.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClInclude>
+		<ClInclude Include="Sully.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClInclude>
+		<ClInclude Include="Tessa.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClInclude>
+		<ClInclude Include="Zyair.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClInclude>
+		<ClInclude Include="Vesuvius.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClInclude>
+		<ClInclude Include="AlejandroInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClInclude>
+		<ClInclude Include="AlejandroFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClInclude>
+		<ClInclude Include="AlejandroFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClInclude>
+		<ClInclude Include="AlejandroStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClInclude>
+		<ClInclude Include="AngelicaFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClInclude>
+		<ClInclude Include="AngelicaFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClInclude>
+		<ClInclude Include="AngelicaInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClInclude>
+		<ClInclude Include="AngelicaStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClInclude>
+		<ClInclude Include="AtlasFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClInclude>
+		<ClInclude Include="AtlasFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClInclude>
+		<ClInclude Include="AtlasInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClInclude>
+		<ClInclude Include="AtlasStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClInclude>
+		<ClInclude Include="AzielFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClInclude>
+		<ClInclude Include="AzielFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClInclude>
+		<ClInclude Include="AzielInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClInclude>
+		<ClInclude Include="AzielStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClInclude>
+		<ClInclude Include="BrunoFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClInclude>
+		<ClInclude Include="BrunoFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClInclude>
+		<ClInclude Include="BrunoInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClInclude>
+		<ClInclude Include="BrunoStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaTemplateFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaTemplateFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaTemplateInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaTemplateStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClInclude>
+		<ClInclude Include="EricInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClInclude>
+		<ClInclude Include="EricStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClInclude>
+		<ClInclude Include="JuliusFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClInclude>
+		<ClInclude Include="JuliusFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClInclude>
+		<ClInclude Include="JuliusInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClInclude>
+		<ClInclude Include="JuliusStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClInclude>
+		<ClInclude Include="LeonFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClInclude>
+		<ClInclude Include="LeonFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClInclude>
+		<ClInclude Include="LeonInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClInclude>
+		<ClInclude Include="LeonStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClInclude>
+		<ClInclude Include="ZyairFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClInclude>
+		<ClInclude Include="ZyairFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClInclude>
+		<ClInclude Include="ZyairInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClInclude>
+		<ClInclude Include="ZyairStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClInclude>
+		<ClInclude Include="VesuviusFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClInclude>
+		<ClInclude Include="VesuviusFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClInclude>
+		<ClInclude Include="VesuviusInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClInclude>
+		<ClInclude Include="VesuviusStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClInclude>
+		<ClInclude Include="TessaFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClInclude>
+		<ClInclude Include="TessaFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClInclude>
+		<ClInclude Include="TessaInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClInclude>
+		<ClInclude Include="TessaStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClInclude>
+		<ClInclude Include="SullyFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClInclude>
+		<ClInclude Include="SullyFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClInclude>
+		<ClInclude Include="SullyInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClInclude>
+		<ClInclude Include="SullyStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClInclude>
+		<ClInclude Include="PriestFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClInclude>
+		<ClInclude Include="PriestFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClInclude>
+		<ClInclude Include="PriestInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClInclude>
+		<ClInclude Include="PriestStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClInclude>
+		<ClInclude Include="NormanFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClInclude>
+		<ClInclude Include="NormanFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClInclude>
+		<ClInclude Include="NormanInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClInclude>
+		<ClInclude Include="NormanStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClInclude>
+		<ClInclude Include="NightsaberFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClInclude>
+		<ClInclude Include="NightsaberFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClInclude>
+		<ClInclude Include="NightsaberInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClInclude>
+		<ClInclude Include="NightsaberStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClInclude>
+		<ClInclude Include="RamonaFlag.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClInclude>
+		<ClInclude Include="RamonaFloat.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClInclude>
+		<ClInclude Include="RamonaInt.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClInclude>
+		<ClInclude Include="RamonaStatus.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterAttribute.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterConstants.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterFlag.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterFloat.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterInt.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="FighterStatus.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="AlejandroConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Alejandro</Filter>
+		</ClInclude>
+		<ClInclude Include="AngelicaConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Angelica</Filter>
+		</ClInclude>
+		<ClInclude Include="AtlasConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Atlas</Filter>
+		</ClInclude>
+		<ClInclude Include="AzielConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Aziel</Filter>
+		</ClInclude>
+		<ClInclude Include="BrunoConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Bruno</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaTemplateConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\CharaTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="EricConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Eric</Filter>
+		</ClInclude>
+		<ClInclude Include="JuliusConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Julius</Filter>
+		</ClInclude>
+		<ClInclude Include="LeonConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Leon</Filter>
+		</ClInclude>
+		<ClInclude Include="ZyairConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Zyair</Filter>
+		</ClInclude>
+		<ClInclude Include="NightsaberConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+		</ClInclude>
+		<ClInclude Include="NormanConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Norman</Filter>
+		</ClInclude>
+		<ClInclude Include="PriestConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Priest</Filter>
+		</ClInclude>
+		<ClInclude Include="RamonaConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Ramona</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Roy</Filter>
+		</ClInclude>
+		<ClInclude Include="SullyConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Sully</Filter>
+		</ClInclude>
+		<ClInclude Include="TessaConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Tessa</Filter>
+		</ClInclude>
+		<ClInclude Include="VesuviusConstants.h">
+			<Filter>Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileStatus.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileConstants.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileFlag.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileFloat.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileInt.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileKind.h">
+			<Filter>Header Files\Objects\Projectile\Projectile</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileTemplate.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFireball.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFireball.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFireballConstants.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFireballInt.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFireballFloat.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFireballStatus.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="EricFireballFlag.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileTemplateFlag.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileTemplateFloat.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileTemplateInt.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileTemplateStatus.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="ProjectileTemplateConstants.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFireballFlag.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFireballFloat.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFireballInt.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFireballStatus.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="RoyFireballConstants.h">
+			<Filter>Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+		</ClInclude>
+		<ClInclude Include="CharaKind.h">
+			<Filter>Header Files\Objects\Fighter\Fighter</Filter>
+		</ClInclude>
+		<ClInclude Include="Stage.h">
+			<Filter>Header Files\Objects\Stage</Filter>
+		</ClInclude>
+		<ClInclude Include="StageKind.h">
+			<Filter>Header Files\Objects\Stage</Filter>
+		</ClInclude>
+		<ClInclude Include="StageAsset.h">
+			<Filter>Header Files\Objects\Stage</Filter>
+		</ClInclude>
+		<ClInclude Include="BattleObjectManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="imconfig.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imgui.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imgui_impl_opengl3.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imgui_impl_opengl3_loader.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imgui_impl_sdl.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imgui_internal.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imstb_rectpack.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imstb_textedit.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="imstb_truetype.h">
+			<Filter>Header Files\Deps\ImGui</Filter>
+		</ClInclude>
+		<ClInclude Include="AI.h">
+			<Filter>Header Files\AI</Filter>
+		</ClInclude>
+		<ClInclude Include="AIMoveList.h">
+			<Filter>Header Files\AI</Filter>
+		</ClInclude>
+		<ClInclude Include="AIManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="EffectManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="Sound.h">
+			<Filter>Header Files\Engine</Filter>
+		</ClInclude>
+		<ClInclude Include="CircularBuffer.h">
+			<Filter>Header Files\Containers</Filter>
+		</ClInclude>
+		<ClInclude Include="LoopingVector.h">
+			<Filter>Header Files\Containers</Filter>
+		</ClInclude>
+		<ClInclude Include="Animation.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="Bone.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="Effect.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="GameRect.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="GameTexture.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="Light.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="Model.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="Shader.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="ShadowMap.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="MoveScript.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="Param.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="ParamAccessor.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="Particle.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="TextureCoord.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="ThreadManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="Box.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="Button.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="GameCoordinate.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="GameController.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="ControllerManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="OverlayLayer.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="PauseBattle.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="Player.h">
+			<Filter>Header Files\Objects</Filter>
+		</ClInclude>
+		<ClInclude Include="GameMenu.h">
+			<Filter>Header Files\Game State</Filter>
+		</ClInclude>
+		<ClInclude Include="GameTextureSDL.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="GameState.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="GameStates.h">
+			<Filter>Header Files\Constants</Filter>
+		</ClInclude>
+		<ClInclude Include="PlayerInfo.h">
+			<Filter>Header Files\Engine\GameData</Filter>
+		</ClInclude>
+		<ClInclude Include="SaveManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="FontManager.h">
+			<Filter>Header Files\Managers</Filter>
+		</ClInclude>
+		<ClInclude Include="Font.h">
+			<Filter>Header Files\Engine\Visuals</Filter>
+		</ClInclude>
+		<ClInclude Include="Camera.h">
+			<Filter>Header Files\Objects\Camera</Filter>
+		</ClInclude>
+		<ClInclude Include="CameraAnim.h">
+			<Filter>Header Files\Objects\Camera</Filter>
+		</ClInclude>
+	</ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">
       <Filter>resource\shaders</Filter>
@@ -1243,7 +2003,273 @@
       <Filter>resource\sound\bgm\stage</Filter>
     </Media>
   </ItemGroup>
-  <ItemGroup>
+	<ItemGroup>
+		<Filter Include="Source Files">
+			<UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+			<Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+		</Filter>
+		<Filter Include="Header Files">
+			<UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+			<Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+		</Filter>
+		<Filter Include="Header Files\Game State">
+			<UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Game State">
+			<UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects">
+			<UniqueIdentifier>{e6464ca4-c8b6-41ba-b3d7-27e220de8946}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects">
+			<UniqueIdentifier>{c730743e-4260-48c8-be3f-91ebcb61c776}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Constants">
+			<UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter">
+			<UniqueIdentifier>{c368130f-c59e-48fe-8264-b00e9460586f}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Fighter">
+			<UniqueIdentifier>{da08cf93-17a4-4521-938f-79e875ee49ef}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile">
+			<UniqueIdentifier>{b97d7459-b817-43f8-920b-bbe72f22989e}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile\Projectile">
+			<UniqueIdentifier>{a3590dfe-9544-4cd9-b906-b44b898cbb45}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Global">
+			<UniqueIdentifier>{31489a1a-b655-4abe-939e-7c025d68ad6f}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter">
+			<UniqueIdentifier>{7f56f669-dc48-48b1-b785-785152c86340}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Projectile">
+			<UniqueIdentifier>{a2c055c4-4086-4e5d-99a1-73887e096d17}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Global">
+			<UniqueIdentifier>{965f5800-a3cd-42e6-8ad5-e5266651dbf2}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara">
+			<UniqueIdentifier>{1cac5f11-7660-4362-95c8-67db69e449e5}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Nightsaber">
+			<UniqueIdentifier>{b73e8d82-4b5f-419a-b4ec-2eb90705c4bf}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Zyair">
+			<UniqueIdentifier>{d91b7ce8-0bf5-4a9a-9275-6f9e05507565}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Vesuvius">
+			<UniqueIdentifier>{fd278342-dc97-499a-bd25-efa57c5ab77b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Tessa">
+			<UniqueIdentifier>{31bc65ca-3ff5-479a-b0cf-06795b7a67ec}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Sully">
+			<UniqueIdentifier>{313bdaf8-9c51-48bb-86e5-4233aeb09de1}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Roy">
+			<UniqueIdentifier>{eccec2bf-663d-4ad0-821f-cd830c44a237}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Ramona">
+			<UniqueIdentifier>{4fcf516b-1c80-4569-9f89-87f78d9d3a97}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Priest">
+			<UniqueIdentifier>{a9aff078-cafc-444b-89e3-72ac6d17eed2}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Norman">
+			<UniqueIdentifier>{d5970abc-029a-4b48-b607-d12b0e963f43}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Leon">
+			<UniqueIdentifier>{8a54ca13-98c6-4fe2-904b-0693436c6bfa}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Eric">
+			<UniqueIdentifier>{438e1161-1058-4a10-a65e-e31c55643a0d}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Julius">
+			<UniqueIdentifier>{9e554fe0-9117-406b-b673-04fbb02104a9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\CharaTemplate">
+			<UniqueIdentifier>{4caf2d83-3c93-4ed4-bf64-2f34f66e1cf4}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Bruno">
+			<UniqueIdentifier>{3b3c0100-8cf4-4259-a8b2-aa5b59a3e9b3}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Alejandro">
+			<UniqueIdentifier>{b734d982-8ea0-48d8-aac0-9ba83837f9d8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Angelica">
+			<UniqueIdentifier>{6908fdb9-bd1a-4155-ba7e-6ee19b049746}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Atlas">
+			<UniqueIdentifier>{00a2a8c0-3885-4e9a-b3bc-b6b23cef5df8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Chara\Aziel">
+			<UniqueIdentifier>{01956d82-287b-468c-8f84-f4deee0093ac}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Functions">
+			<UniqueIdentifier>{64e6e8bb-93b3-4b08-9568-cee7c3d04033}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Fighter\Fighter\Functions">
+			<UniqueIdentifier>{7a34f9ee-ecd8-4a43-b63a-25c412529485}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile\Projectile\Functions">
+			<UniqueIdentifier>{fdc28fee-9043-4574-a07b-55b992826cbc}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Managers">
+			<UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Managers">
+			<UniqueIdentifier>{60c88659-286b-4c67-a538-a286b56bb0e8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Deps">
+			<UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Engine">
+			<UniqueIdentifier>{9ec22d83-104b-464a-aa9f-afb8793a2aba}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Engine">
+			<UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Fighter">
+			<UniqueIdentifier>{5bdad8b0-0d92-4b36-ae7d-0fbe4df9ba7d}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara">
+			<UniqueIdentifier>{89f4a669-4c3a-4c9b-a36f-3feb6798647b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Projectile\Projectile">
+			<UniqueIdentifier>{4e69bbb8-a9c6-4062-806b-cfcecd606f5b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Projectile\ProjectileUnique">
+			<UniqueIdentifier>{f3958ae5-7fb1-4c04-ac3e-c848bf2d9467}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile\ProjectileUnique">
+			<UniqueIdentifier>{3e9916cf-63dc-4c90-a7b5-dcd715411792}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile\ProjectileUnique\EricFireball">
+			<UniqueIdentifier>{3a453703-b814-416a-bbdc-20bf0011c723}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile\ProjectileUnique\RoyFireball">
+			<UniqueIdentifier>{c46b6fe9-3200-4891-a0b4-9266d606e2b2}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
+			<UniqueIdentifier>{a1a93eb3-3a0c-4f33-9958-fcf4723833a3}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Include">
+			<UniqueIdentifier>{d2d27a10-df59-4cf7-bdb9-72a779b7dd31}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Helper Funcs">
+			<UniqueIdentifier>{b09d0e5d-265e-4542-8026-df22f515a5c0}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Helper Funcs">
+			<UniqueIdentifier>{3b964603-72cf-4262-adae-bd6c8fea4f10}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Alejandro">
+			<UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Angelica">
+			<UniqueIdentifier>{f4ed11fc-9f35-4f43-9f5d-79998f0e4424}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Atlas">
+			<UniqueIdentifier>{eea94ffe-4b31-4d12-b834-703f6e472663}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Aziel">
+			<UniqueIdentifier>{2d6f673b-5344-48ba-aaa0-25b260597256}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Bruno">
+			<UniqueIdentifier>{d49a19b3-bff5-4062-88f4-70ea9616fbe6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\CharaTemplate">
+			<UniqueIdentifier>{8226793e-5c9f-44ad-be88-86bb98615d00}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Eric">
+			<UniqueIdentifier>{0bdc1526-7a6d-4a41-8711-ef0e50fd1f8b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Julius">
+			<UniqueIdentifier>{58ae0a9a-47fe-4aba-a47a-7b5e2a3c733b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Leon">
+			<UniqueIdentifier>{809dd26f-5c52-4ae2-82b5-5c9e37b6090b}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Nightsaber">
+			<UniqueIdentifier>{b3af1407-aabb-4604-85e6-570b6d1461d6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Norman">
+			<UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Priest">
+			<UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Ramona">
+			<UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Roy">
+			<UniqueIdentifier>{bd654e23-229e-44d8-bd71-63c99649a964}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Sully">
+			<UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Tessa">
+			<UniqueIdentifier>{ef0cddad-ff51-47f2-9d3f-4849808a3e29}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Vesuvius">
+			<UniqueIdentifier>{d85384a9-35c0-4632-9bfb-08bb8a330702}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Fighter\Chara\Zyair">
+			<UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Projectile\ProjectileUnique\EricFireball">
+			<UniqueIdentifier>{97ef6028-95f9-4bb7-aea3-ae88d6326ed3}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Projectile\ProjectileUnique\RoyFireball">
+			<UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
+			<UniqueIdentifier>{9d5c1f42-c2f4-4037-b140-49a0fa7c2837}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Stage">
+			<UniqueIdentifier>{7c3a2b02-67c3-414a-ba55-3b7a76b3eb67}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Stage">
+			<UniqueIdentifier>{602191a6-c76e-4f64-a1b1-c9db34231183}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Deps\ImGui">
+			<UniqueIdentifier>{5aa86155-4f46-4f77-bac8-72e74c4c988e}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Deps">
+			<UniqueIdentifier>{ab0b6b8c-ccb9-4c4e-a064-f1e50d9609a3}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Deps\ImGui">
+			<UniqueIdentifier>{d29f705d-5f6a-4727-bfe1-a8c1bbe8f4b8}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\AI">
+			<UniqueIdentifier>{96a1c763-0db4-4be9-963a-8ae26cd4c8ad}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\AI">
+			<UniqueIdentifier>{408529bd-f80f-432e-a0df-8ff04c35d6c0}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Containers">
+			<UniqueIdentifier>{8de0fa31-4bf8-4696-8a02-690b90a79a4a}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Engine\Visuals">
+			<UniqueIdentifier>{b5166abb-9cd9-4431-b494-47b5d743b007}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Engine\GameData">
+			<UniqueIdentifier>{645df0c0-01c2-4855-a588-ff5f38629ac9}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Engine\GameData">
+			<UniqueIdentifier>{baee19ae-883e-4273-8959-a74169bcc68c}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Engine\Visuals">
+			<UniqueIdentifier>{6f45579d-1787-44cc-828c-efd522f8e63c}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Header Files\Objects\Camera">
+			<UniqueIdentifier>{db51de9b-a212-476b-96b6-5e3a462ec374}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Source Files\Objects\Camera">
+			<UniqueIdentifier>{460ef8ad-9bc2-48e7-834b-eff8a7c561f9}</UniqueIdentifier>
+		</Filter>
     <Filter Include="resource">
       <UniqueIdentifier>{0f966460-f620-4d64-af58-bde178432879}</UniqueIdentifier>
     </Filter>

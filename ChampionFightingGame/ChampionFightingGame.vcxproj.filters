@@ -1143,7 +1143,7 @@
 		<ClInclude Include="CameraAnim.h">
 			<Filter>Header Files\Objects\Camera</Filter>
 		</ClInclude>
-	</ItemGroup>
+	</ItemGroup> 
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">
       <Filter>resource\shaders</Filter>

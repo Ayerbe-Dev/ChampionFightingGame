@@ -4,6 +4,7 @@
 #include "SaveManager.h"
 #include "utils.h"
 #include "stb_image.h"
+#include <iostream>
 
 RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
@@ -37,6 +38,8 @@ RenderManager::RenderManager() {
 	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	text_shader.init("vertex_text.glsl", "fragment_text.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
+
+	brightness_mul = 1.0;
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -58,7 +61,9 @@ void RenderManager::add_light(Light *light, int target) {
 			lights[target] = light;
 		}
 	}
-	update_shader_lights();
+	buffer_event("Shader Light", [this](void* arg) {
+		update_shader_lights();
+	});
 }
 
 void RenderManager::remove_light(int target) {
@@ -71,7 +76,34 @@ void RenderManager::remove_light(int target) {
 		}
 		lights.pop_back();
 	}
-	update_shader_lights();
+	buffer_event("Shader Light", [this](void* arg) {
+		update_shader_lights();
+	});
+}
+
+void RenderManager::dim_lights(float brightness_mul) {
+	this->brightness_mul = brightness_mul;
+	buffer_event("Shader Light", [this](void*) {
+		update_shader_lights();
+	});
+}
+
+//When dim_lights gets called, all shaders are updated with the new brightness multiplier. This
+//includes the shader belonging to the fighter that called it, so if we want to emphasize said fighter
+//during a super freeze, we call this function to keep them at a normal brightness
+
+//This function is also literally the only reason RenderObjects can't share shaders
+void RenderManager::undim_shader(Shader* shader) {
+	buffer_event("", [this](void* arg) {
+		Shader* shader = (Shader*)arg;
+		shader->use();
+		for (int i = 0, max = std::min((size_t)MAX_LIGHT_SOURCES, lights.size()); i < max; i++) {
+			shader->set_vec3("light[0].ambient", lights[i]->ambient, i);
+			shader->set_vec3("light[0].diffuse", lights[i]->diffuse, i);
+			shader->set_vec3("light[0].specular", lights[i]->specular, i);
+		}
+
+	}, (void*)shader);
 }
 
 void RenderManager::link_shader(Shader *shader) {
@@ -90,9 +122,9 @@ void RenderManager::update_shader_lights() {
 			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
 				linked_shaders[i2]->use();
 				linked_shaders[i2]->set_vec3("light[0].position", lights[i]->position, i);
-				linked_shaders[i2]->set_vec3("light[0].ambient", lights[i]->ambient, i);
-				linked_shaders[i2]->set_vec3("light[0].diffuse", lights[i]->diffuse, i);
-				linked_shaders[i2]->set_vec3("light[0].specular", lights[i]->specular, i);
+				linked_shaders[i2]->set_vec3("light[0].ambient", lights[i]->ambient * brightness_mul, i);
+				linked_shaders[i2]->set_vec3("light[0].diffuse", lights[i]->diffuse * brightness_mul, i);
+				linked_shaders[i2]->set_vec3("light[0].specular", lights[i]->specular * brightness_mul, i);
 				linked_shaders[i2]->set_float("light[0].constant", lights[i]->constant, i);
 				linked_shaders[i2]->set_float("light[0].linear", lights[i]->linear, i);
 				linked_shaders[i2]->set_float("light[0].quadratic", lights[i]->quadratic, i);
@@ -120,7 +152,7 @@ void RenderManager::update_shader_lights() {
 }
 
 void RenderManager::update_shader_cams() {
-	glm::mat4 camera_matrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f) * camera.get_view();
+	glm::mat4 &camera_matrix = camera.camera_matrix;
 	rect_shader.use();
 	rect_shader.set_mat4("camera_matrix", camera_matrix);
 	effect_shader.use();
@@ -146,6 +178,25 @@ void RenderManager::refresh_sdl_renderer() {
 	SDL_RenderClear(sdl_renderer);
 	SDL_DestroyRenderer(sdl_renderer);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+}
+
+void RenderManager::buffer_event(std::string name, std::function<void(void*)> function, void* buffered_arg) {
+	if (name == "" || event_names.find(name) == event_names.end()) {
+		buffered_events.push_back(function);
+		buffered_args.push_back(buffered_arg);
+		if (name != "") {
+			event_names.insert(name);
+		}
+	}
+}
+
+void RenderManager::execute_buffered_events() {
+	for (int i = 0, max = buffered_events.size(); i < max; i++) {
+		buffered_events[i](buffered_args[i]);
+	}
+	buffered_events.clear();
+	buffered_args.clear();
+	event_names.clear();
 }
 
 RenderManager* RenderManager::instance = nullptr;

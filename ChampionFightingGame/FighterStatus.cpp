@@ -372,12 +372,12 @@ void Fighter::enter_status_dash_air() {
 	if (fighter_int[FIGHTER_INT_DASH_AIR_DIR] == 1) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("dash_f_speed");
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
-		change_anim("dash_f");
+		change_anim("dash_air_f");
 	}
 	if (fighter_int[FIGHTER_INT_DASH_AIR_DIR] == 2) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("dash_b_speed");
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
-		change_anim("dash_b");
+		change_anim("dash_air_b");
 	}
 }
 

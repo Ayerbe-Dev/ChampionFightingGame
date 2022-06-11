@@ -194,6 +194,13 @@ public:
 	std::string get_anim();
 	std::string get_anim_broad();
 
+	//Cinematic
+
+	void play_camera_anim(std::string anim_name, float rate, float world_brightness = 1.0, float world_rate = 1.0);
+	void end_camera_anim();
+	void slow_world(float world_rate);
+	void reset_world_rate();
+
 	//Status
 
 	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);

@@ -275,8 +275,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::DragFloat("Camera Z", &render_manager->camera.pos[2], 0.01);
 			if (ImGui::TreeNode("Camera Properties")) {
 				ImGui::Checkbox("Auto Camera", &render_manager->camera.following_players);
-				ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f);
 				ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f);
+				ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f);
+				ImGui::SliderFloat("Roll", &render_manager->camera.roll, -180.0f, 180.0f);
 				ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, render_manager->camera.max_fov);
 				ImGui::SliderFloat("Auto Yaw Scale", &render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
 				ImGui::TreePop();

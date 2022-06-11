@@ -227,6 +227,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BrunoStatus.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraAnim.cpp" />
     <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
     <ClCompile Include="CharaTemplateMoves.cpp" />
@@ -246,6 +247,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterActionabilityFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
+    <ClCompile Include="FighterCinematicFunctions.cpp" />
     <ClCompile Include="FighterGrabFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
@@ -397,6 +399,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AzielFloat.h" />
     <ClInclude Include="AzielInt.h" />
     <ClInclude Include="AzielStatus.h" />
+    <ClInclude Include="CameraAnim.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameTextureSDL.h" />

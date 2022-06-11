@@ -4,6 +4,7 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "GameManager.h"
+#include <fstream>
 
 void Fighter::super_init(int id) {
 	this->id = id;
@@ -69,11 +70,20 @@ void Fighter::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s resource directory was incorrectly set!");
+			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s animation directory was incorrectly set!");
 		}
 		else {
 			std::cout << err.what() << "\n";
 		}
+	}
+	std::ifstream camera_stream;
+	camera_stream.open(resource_dir + "/cam_anims/anim_list.yml");
+	if (camera_stream.fail()) {
+		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s camera directory was incorrectly set!");
+	}
+	std::string cam_anim_name;
+	while (camera_stream >> cam_anim_name) {
+		render_manager->camera.load_camera_anim(cam_anim_name, resource_dir + "/cam_anims/" + cam_anim_name + ".fbx");
 	}
 }
 

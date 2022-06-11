@@ -25,7 +25,7 @@ lk_landing_lag 1 5
 mk_landing_lag 1 5
 hk_landing_lag 1 5
 health 2 1000.0
-has_airdash 4 0
+has_airdash 4 1
 has_throwb 4 1
 has_wallbounce 4 1
 meter_gain_on_parry 2 30.0

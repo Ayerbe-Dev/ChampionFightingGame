@@ -85,6 +85,7 @@ void battle_main() {
 		}
 
 		battle->process_main();
+		render_manager->execute_buffered_events();
 		battle->render_world();
 		battle->render_ui();
 
@@ -125,11 +126,9 @@ void Battle::load_game_menu() {
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
-	camera = &render_manager->camera;
-
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = true;
+	visualize_boxes = false;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -150,6 +149,12 @@ void Battle::load_game_menu() {
 		fighter[i] = create_fighter(player[i]->chara_kind, i, player[i]);
 		inc_thread();
 	}
+
+	camera = &render_manager->camera;
+	for (int i = 0; i < 2; i++) {
+		camera->fighter[i] = fighter[i];
+	}
+	camera->stage = &stage;
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->super_init(i);
@@ -221,7 +226,10 @@ void Battle::unload_game_menu() {
 		health_bar[i].destroy();
 		ex_bar[i].destroy();
 		delete fighter[i];
+		camera->fighter[i] = nullptr;
 	}
+	camera->stage = nullptr;
+	camera->unload_camera_anims();
 	thread_manager->kill_thread(THREAD_KIND_UI);
 	stage.unload_stage();
 	sound_manager->stop_sound_all();
@@ -271,12 +279,10 @@ void Battle::process_main() {
 		stage.process();
 		post_process_fighter();
 		thread_manager->wait_thread(THREAD_KIND_UI);
+		camera->camera_main();
 	}
 	if (battle_object_manager->world_frame >= 0.97) {
 		battle_object_manager->world_frame = 0.0;
-	}
-	if (camera->following_players) {
-		camera->follow_players(fighter[0]->pos, fighter[1]->pos, &stage);
 	}
 	if (game_manager->is_crash()) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
@@ -404,12 +410,14 @@ void Battle::process_frame_pause() {
 		process_ui();
 		post_process_fighter();
 		thread_manager->wait_thread(THREAD_KIND_UI);
+		camera->camera_main();
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
 			sound_manager->pause_sound_all(i, SOUND_KIND_SE);
 			sound_manager->pause_sound_all(i, SOUND_KIND_VC);
 		}
+		camera->update_view();
 	}
 }
 

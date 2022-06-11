@@ -7,9 +7,9 @@ Shader::Shader() {
 	loaded = false;
 }
 
-Shader::Shader(std::string vertex_dir, std::string fragment_dir) {
+Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir) {
 	loaded = false;
-	init(vertex_dir, fragment_dir);
+	init(vertex_dir, fragment_dir, geometry_dir);
 }
 
 Shader::~Shader() {
@@ -19,37 +19,47 @@ Shader::~Shader() {
 }
 
 
-void Shader::init(std::string vertex_dir, std::string fragment_dir) {
-	char info_log[512];
+void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir) {
+	program = glCreateProgram();
 	name = vertex_dir + ", " + fragment_dir;
+	if (geometry_dir != "") {
+		name += ", " + geometry_dir;
+	}
 	int success;
-
-	std::string input;
-	std::string source;
-
+	char info_log[512];
 	std::ifstream shader_file;
+
+	std::string input = "";
+	std::string source = "";
+
+	unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int geometry = glCreateShader(GL_GEOMETRY_SHADER);
 
 	shader_file.open("resource/shaders/" + vertex_dir);
 	if (shader_file.fail()) {
 		std::cout << "Could not open Vertex Core Shader File!" << vertex_dir << "\n";
-		return;
+		shader_file.close();
 	}
+	else {
+		while (getline(shader_file, input)) {
+			source += input + "\n";
+		}
 
-	while (getline(shader_file, input)) {
-		source += input + "\n";
-	}
+		shader_file.close();
 
-	shader_file.close();
+		const GLchar* vert_src = source.c_str();
+		glShaderSource(vertex, 1, &vert_src, NULL);
+		glCompileShader(vertex);
 
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	const GLchar* vertSrc = source.c_str();
-	glShaderSource(vertexShader, 1, &vertSrc, NULL);
-	glCompileShader(vertexShader);
-
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
-		std::cout << "Could not compile Vertex Core!" << info_log << "\n";
+		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(vertex, 512, NULL, info_log);
+			std::cout << "Could not compile Vertex Core!" << info_log << "\n";
+		}
+		else {
+			glAttachShader(program, vertex);
+		}
 	}
 
 	input = "";
@@ -58,30 +68,60 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	shader_file.open("resource/shaders/" + fragment_dir);
 	if (shader_file.fail()) {
 		std::cout << "Could not open Fragment Core Shader File!" << "\n";
-		return;
+		shader_file.close();
+	}
+	else {
+		while (getline(shader_file, input)) {
+			source += input + "\n";
+		}
+
+		shader_file.close();
+
+		const GLchar* frag_src = source.c_str();
+		glShaderSource(fragment, 1, &frag_src, NULL);
+		glCompileShader(fragment);
+
+		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(fragment, 512, NULL, info_log);
+			std::cout << "Could not compile Fragment Core!" << info_log << "\n";
+		}
+		else {
+			glAttachShader(program, fragment);
+		}
 	}
 
-	while (getline(shader_file, input)) {
-		source += input + "\n";
+	if (geometry_dir != "") {
+		input = "";
+		source = "";
+
+		shader_file.open("resource/shaders/" + geometry_dir);
+		if (shader_file.fail()) {
+			std::cout << "Could not open Geometry Core Shader File!" << "\n";
+			shader_file.close();
+		}
+		else {
+			while (getline(shader_file, input)) {
+				source += input + "\n";
+			}
+
+			shader_file.close();
+
+			const GLchar* geom_src = source.c_str();
+			glShaderSource(geometry, 1, &geom_src, NULL);
+			glCompileShader(geometry);
+
+			glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
+			if (!success) {
+				glGetShaderInfoLog(geometry, 512, NULL, info_log);
+				std::cout << "Could not compile Geometry Core!" << info_log << "\n";
+			}
+			else {
+				glAttachShader(program, geometry);
+			}
+		}
 	}
 
-	shader_file.close();
-
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	const GLchar* fragSrc = source.c_str();
-	glShaderSource(fragmentShader, 1, &fragSrc, NULL);
-	glCompileShader(fragmentShader);
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, info_log);
-		std::cout << "Could not compile Fragment Core!" << info_log << "\n";
-		return;
-	}
-
-	program = glCreateProgram();
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
 	glLinkProgram(program);
 
 	glGetShaderiv(program, GL_LINK_STATUS, &success);
@@ -91,8 +131,9 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir) {
 	}
 
 	glUseProgram(0);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	glDeleteShader(vertex);
+	glDeleteShader(fragment);
+	glDeleteShader(geometry);
 	loaded = true;
 }
 

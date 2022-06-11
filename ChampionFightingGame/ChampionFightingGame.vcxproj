@@ -86,8 +86,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>CotRRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -599,24 +599,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ZyairFloat.h" />
     <ClInclude Include="ZyairInt.h" />
     <ClInclude Include="ZyairStatus.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="resource\shaders\fragment_effect.glsl" />
-    <None Include="resource\shaders\fragment_layer.glsl" />
-    <None Include="resource\shaders\fragment_main.glsl" />
-    <None Include="resource\shaders\fragment_no_light.glsl" />
-    <None Include="resource\shaders\fragment_2d_texture.glsl" />
-    <None Include="resource\shaders\fragment_rect.glsl" />
-    <None Include="resource\shaders\fragment_shadow.glsl" />
-    <None Include="resource\shaders\fragment_text.glsl" />
-    <None Include="resource\shaders\vertex_effect.glsl" />
-    <None Include="resource\shaders\vertex_layer.glsl" />
-    <None Include="resource\shaders\vertex_shadow.glsl" />
-    <None Include="resource\shaders\vertex_main.glsl" />
-    <None Include="resource\shaders\vertex_no_anim.glsl" />
-    <None Include="resource\shaders\vertex_2d_texture.glsl" />
-    <None Include="resource\shaders\vertex_rect.glsl" />
-    <None Include="resource\shaders\vertex_text.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

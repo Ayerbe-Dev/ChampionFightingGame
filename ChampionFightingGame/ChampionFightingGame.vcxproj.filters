@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="resource">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Header Files\Game State">
       <UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
     </Filter>
@@ -123,9 +119,6 @@
     </Filter>
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{60c88659-286b-4c67-a538-a286b56bb0e8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="resource\shaders">
-      <UniqueIdentifier>{e3539569-39ad-4e94-8d61-0fb3f3d108bc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Deps">
       <UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
@@ -1418,55 +1411,5 @@
     <ClInclude Include="CameraAnim.h">
       <Filter>Header Files\Objects\Camera</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="resource\shaders\vertex_main.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_no_light.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_main.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_no_anim.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_2d_texture.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_2d_texture.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_rect.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_rect.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_shadow.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_effect.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_effect.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_layer.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_layer.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_shadow.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_text.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_text.glsl">
-      <Filter>resource\shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

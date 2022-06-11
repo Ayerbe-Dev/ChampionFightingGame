@@ -8,12 +8,12 @@
 class Shader {
 public:
 	Shader();
-	Shader(std::string vertex_dir, std::string fragment_dir);
+	Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
 	~Shader();
 	unsigned int program = 0;
 	std::string name;
 
-	void init(std::string vertex_dir, std::string fragment_dir);
+	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
 	void destroy();
 
 	void use();

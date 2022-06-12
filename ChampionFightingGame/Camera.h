@@ -57,7 +57,7 @@ public:
 	void camera_main();
 
 	void load_camera_anim(std::string anim_kind, std::string anim_dir);
-	void play_camera_anim(int follow_id, std::string anim_kind, float rate);
+	void play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame);
 	void unload_camera_anims();
 
 	void add_pos(float x, float y, float z, float speed = 0.0);

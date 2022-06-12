@@ -78,7 +78,18 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 			float old_delta = ((i - last_keyframed) / (float)(next_keyframed - last_keyframed));
 			float new_delta = ((next_keyframed - i) / (float)(next_keyframed - last_keyframed));
 			keyframes[i].pos_key = keyframes[last_keyframed].pos_key * old_delta + keyframes[next_keyframed].pos_key * new_delta;
-			keyframes[i].rot_key = keyframes[last_keyframed].rot_key * old_delta + keyframes[next_keyframed].rot_key * new_delta;
+			interpolate_keyframe(keyframes[i].rot_key, keyframes[last_keyframed].rot_key * old_delta, keyframes[next_keyframed].rot_key * new_delta);
+		}
+	}
+}
+
+void CameraAnim::interpolate_keyframe(glm::vec3& rot_key, glm::vec3 prev_rot, glm::vec3 future_rot) {
+	for (int i = 0; i < 3; i++) {
+		if (future_rot[i] + prev_rot[i] < prev_rot[i] + 1.0 - future_rot[i]) {
+			rot_key[i] = future_rot[i] + prev_rot[i];
+		}
+		else {
+			rot_key[i] = prev_rot[i] + 1.0 - future_rot[i];
 		}
 	}
 }

@@ -53,6 +53,7 @@ void Fighter::load_fighter_effects() {
 void Fighter::load_model_shader() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
+//	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl"); ???
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
 	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");

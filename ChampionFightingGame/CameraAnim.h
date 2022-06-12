@@ -15,6 +15,7 @@ public:
 	CameraAnim(std::string anim_kind, std::string dir);
 
 	void load_camera_anim(std::string anim_kind, std::string dir);
+	void interpolate_keyframe(glm::vec3& rot_key, glm::vec3 prev_rot, glm::vec3 future_rot);
 
 	std::string name;
 	int length;

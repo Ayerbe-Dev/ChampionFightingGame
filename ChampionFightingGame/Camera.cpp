@@ -50,14 +50,14 @@ void Camera::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 	camera_anims.push_back(CameraAnim(anim_kind, anim_dir));
 }
 
-void Camera::play_camera_anim(int follow_id, std::string anim_kind, float rate) {
+void Camera::play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame) {
 	if (camera_anim_map.find(anim_kind) == camera_anim_map.end()) {
 		return;
 	}
 
 	this->follow_id = follow_id;
 	following_players = false;
-	frame = 0.0;
+	this->frame = frame;
 	this->rate = rate;
 	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
 }
@@ -143,9 +143,6 @@ void Camera::follow_anim() {
 	update_view();
 	frame += rate;
 	if (frame >= anim_kind->length) {
-		fighter[follow_id]->end_camera_anim();
-		anim_kind = nullptr;
-		following_players = true;
-		follow_id = -1;
+		fighter[follow_id]->stop_camera_anim();
 	}
 }

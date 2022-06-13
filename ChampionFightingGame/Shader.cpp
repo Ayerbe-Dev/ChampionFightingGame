@@ -38,7 +38,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 
 	shader_file.open("resource/shaders/" + vertex_dir);
 	if (shader_file.fail()) {
-		std::cout << "Could not open Vertex Core Shader File!" << vertex_dir << "\n";
+		std::cout << "Could not open Vertex Core Shader File: " << vertex_dir << "\n";
 		shader_file.close();
 	}
 	else {
@@ -55,7 +55,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(vertex, 512, NULL, info_log);
-			std::cout << "Could not compile Vertex Core!" << info_log << "\n";
+			std::cout << info_log << "\n";
 		}
 		else {
 			glAttachShader(program, vertex);
@@ -68,7 +68,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 
 		shader_file.open("resource/shaders/" + geometry_dir);
 		if (shader_file.fail()) {
-			std::cout << "Could not open Geometry Core Shader File!" << "\n";
+			std::cout << "Could not open Geometry Core Shader File: " << geometry_dir << "\n";
 			shader_file.close();
 		}
 		else {
@@ -85,7 +85,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 			glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
 			if (!success) {
 				glGetShaderInfoLog(geometry, 512, NULL, info_log);
-				std::cout << "Could not compile Geometry Core!" << info_log << "\n";
+				std::cout << info_log << "\n";
 			}
 			else {
 				glAttachShader(program, geometry);
@@ -98,7 +98,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 
 	shader_file.open("resource/shaders/" + fragment_dir);
 	if (shader_file.fail()) {
-		std::cout << "Could not open Fragment Core Shader File!" << "\n";
+		std::cout << "Could not open Fragment Core Shader File: " << fragment_dir << "\n";
 		shader_file.close();
 	}
 	else {
@@ -108,6 +108,10 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 				//a geometry shader and there is no geometry shader, we don't have to make another
 				//copy of the frag shader, we can just tell it to read directly from the vertex
 				//shader instead.
+
+				//That being said, because whether or not a projection matrix is used will usually 
+				//depend on the presence of a geometry shader, this probably won't matter in the
+				//long run
 				source += "in VS_OUT {\n";
 			}
 			else {
@@ -124,7 +128,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(fragment, 512, NULL, info_log);
-			std::cout << "Could not compile Fragment Core!" << info_log << "\n";
+			std::cout << info_log << "\n";
 		}
 		else {
 			glAttachShader(program, fragment);
@@ -136,7 +140,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 	glGetShaderiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program, 512, NULL, info_log);
-		std::cout << "Could not link Program!" << info_log << "\n";
+		std::cout << info_log << "\n";
 	}
 
 	glUseProgram(0);

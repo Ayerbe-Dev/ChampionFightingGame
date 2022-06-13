@@ -7,9 +7,10 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ShadowMap.h"
-#include "OverlayLayer.h"
+#include "Framebuffer.h"
 #include <functional>
 #include <set>
+#include <mutex>
 
 #define MAX_LIGHT_SOURCES 10
 
@@ -47,6 +48,7 @@ public:
 	std::vector<std::function<void(void*)>> buffered_events;
 	std::vector<void*> buffered_args;
 	std::set<std::string> event_names;
+	std::mutex event_mutex;
 
 	Shader game_texture_shader;
 	Shader rect_shader;
@@ -55,7 +57,8 @@ public:
 	Shader shadow_shader;
 
 	ShadowMap shadow_map;
-	OverlayLayer box_layer;
+	Framebuffer box_layer;
+	Framebuffer g_buffer;
 
 	int s_window_width;
 	int s_window_height;

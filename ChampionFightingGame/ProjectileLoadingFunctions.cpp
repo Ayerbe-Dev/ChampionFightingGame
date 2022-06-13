@@ -28,6 +28,11 @@ void Projectile::load_model_shader() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
 	shader.init("vertex_main.glsl", "fragment_main.glsl");
+	shader.use();
+	shader.set_int("material.diffuse", 0);
+	shader.set_int("material.specular", 1);
+	shader.set_int("material.shadow_map", 4);
+	shader.set_float("brightness_mul", 1.0);
 	render_manager->link_shader(&shader);
 	has_model = get_local_param_bool("has_model");
 	if (has_model) {

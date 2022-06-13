@@ -4,20 +4,22 @@
 #include "Shader.h"
 
 //Essentially, an Overlay Layer is designed to be an FBO that can be blended
-class OverlayLayer {
+class Framebuffer {
 public:
-	OverlayLayer();
-	~OverlayLayer();
+	Framebuffer();
+	~Framebuffer();
 
-	void init();
+	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
 	void destroy();
-
-	void render(float alpha);
+	void use();
+	void render();
 
 	GLuint VAO;
 	GLuint VBO;
 	GLuint FBO;
 	GLuint RBO;
-	GLuint texture;
+	GLuint g_position;
+	GLuint g_normal;
+	GLuint g_albedo;
 	Shader shader;
 };

@@ -32,7 +32,18 @@ RenderManager::RenderManager() {
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 
 	shadow_map.init();
-	box_layer.init();
+	
+	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
+	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
+
+	box_layer.shader.use();
+	box_layer.shader.set_int("f_texture", 0);
+
+	g_buffer.shader.use();
+	g_buffer.shader.set_int("g_position", 0);
+	g_buffer.shader.set_int("g_normal", 1);
+	g_buffer.shader.set_int("g_albedo", 2);
+
 	game_texture_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
@@ -83,8 +94,11 @@ void RenderManager::remove_light(int target) {
 
 void RenderManager::dim_lights(float brightness_mul) {
 	this->brightness_mul = brightness_mul;
-	buffer_event("Shader Light", [this](void*) {
-		update_shader_lights();
+	buffer_event("", [this](void* arg) {
+		for (int i = 0, max = linked_shaders.size(); i < max; i++) {
+			linked_shaders[i]->use();
+			linked_shaders[i]->set_float("brightness_mul", this->brightness_mul);
+		}
 	});
 }
 
@@ -97,11 +111,7 @@ void RenderManager::undim_shader(Shader* shader) {
 	buffer_event("", [this](void* arg) {
 		Shader* shader = (Shader*)arg;
 		shader->use();
-		for (int i = 0, max = std::min((size_t)MAX_LIGHT_SOURCES, lights.size()); i < max; i++) {
-			shader->set_vec3("light[0].ambient", lights[i]->ambient, i);
-			shader->set_vec3("light[0].diffuse", lights[i]->diffuse, i);
-			shader->set_vec3("light[0].specular", lights[i]->specular, i);
-		}
+		shader->set_float("brightness_mul", 1.0);
 
 	}, (void*)shader);
 }
@@ -117,29 +127,22 @@ void RenderManager::unlink_all_shaders() {
 void RenderManager::update_shader_lights() {
 	glm::vec3 shadow_total = glm::vec3(0.0);
 	float shadow_factor = 0.0;
+	g_buffer.shader.use();
 	for (int i = 0, max = MAX_LIGHT_SOURCES; i < max; i++) {
 		if (i < lights.size()) {
-			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
-				linked_shaders[i2]->use();
-				linked_shaders[i2]->set_vec3("light[0].position", lights[i]->position, i);
-				linked_shaders[i2]->set_vec3("light[0].ambient", lights[i]->ambient * brightness_mul, i);
-				linked_shaders[i2]->set_vec3("light[0].diffuse", lights[i]->diffuse * brightness_mul, i);
-				linked_shaders[i2]->set_vec3("light[0].specular", lights[i]->specular * brightness_mul, i);
-				linked_shaders[i2]->set_float("light[0].constant", lights[i]->constant, i);
-				linked_shaders[i2]->set_float("light[0].linear", lights[i]->linear, i);
-				linked_shaders[i2]->set_float("light[0].quadratic", lights[i]->quadratic, i);
-				linked_shaders[i2]->set_bool("light[0].enabled", lights[i]->enabled, i);
-			}
+			g_buffer.shader.set_vec3("light[0].position", lights[i]->position, i);
+			g_buffer.shader.set_vec3("light[0].color", lights[i]->color, i);
+			g_buffer.shader.set_float("light[0].linear", lights[i]->linear, i);
+			g_buffer.shader.set_float("light[0].quadratic", lights[i]->quadratic, i);
+
+			g_buffer.shader.set_bool("light[0].enabled", lights[i]->enabled, i);
 			if (lights[i]->enabled) {
 				shadow_total += lights[i]->position;
 				shadow_factor++;
 			}
 		}
 		else {
-			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
-				linked_shaders[i2]->use();
-				linked_shaders[i2]->set_bool("lights[0].enabled", false, i);
-			}
+			g_buffer.shader.set_bool("lights[0].enabled", false, i);
 		}
 	}
 	if (lights.empty()) {
@@ -165,7 +168,7 @@ void RenderManager::update_shader_cams() {
 }
 
 void RenderManager::update_shader_shadows() {
-	glm::mat4 shadow_matrix = (shadow_map.perspective * shadow_map.lookat);
+	glm::mat4 shadow_matrix = (shadow_map.projection_matrix * shadow_map.view_matrix);
 	shadow_shader.use();
 	shadow_shader.set_mat4("camera_matrix", shadow_matrix);
 	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
@@ -181,6 +184,7 @@ void RenderManager::refresh_sdl_renderer() {
 }
 
 void RenderManager::buffer_event(std::string name, std::function<void(void*)> function, void* buffered_arg) {
+	event_mutex.lock();
 	if (name == "" || event_names.find(name) == event_names.end()) {
 		buffered_events.push_back(function);
 		buffered_args.push_back(buffered_arg);
@@ -188,6 +192,7 @@ void RenderManager::buffer_event(std::string name, std::function<void(void*)> fu
 			event_names.insert(name);
 		}
 	}
+	event_mutex.unlock();
 }
 
 void RenderManager::execute_buffered_events() {

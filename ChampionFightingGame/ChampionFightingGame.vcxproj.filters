@@ -424,7 +424,7 @@
     <ClCompile Include="ControllerManager.cpp">
       <Filter>Code Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="OverlayLayer.cpp">
+    <ClCompile Include="Framebuffer.cpp">
       <Filter>Code Files\Engine\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="PauseBattle.cpp">
@@ -1104,7 +1104,7 @@
     <ClInclude Include="ControllerManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="OverlayLayer.h">
+    <ClInclude Include="Framebuffer.h">
       <Filter>Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="PauseBattle.h">
@@ -1154,7 +1154,7 @@
     <None Include="resource\shaders\fragment_fullbright.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_layer.glsl">
+    <None Include="resource\shaders\fragment_box_overlay.glsl">
       <Filter>resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\fragment_main.glsl">
@@ -1181,7 +1181,7 @@
     <None Include="resource\shaders\vertex_effect.glsl">
       <Filter>resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_layer.glsl">
+    <None Include="resource\shaders\vertex_box_overlay.glsl">
       <Filter>resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_main.glsl">
@@ -1720,6 +1720,12 @@
     </None>
     <None Include="resource\chara\eric\cam_anims\super_start_2.fbx">
       <Filter>resource\chara\eric\cam_anims</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_gbuffer.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_gbuffer.glsl">
+      <Filter>resource\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

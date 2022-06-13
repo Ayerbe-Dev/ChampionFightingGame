@@ -277,7 +277,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="LoadingFunctions.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MoveScript.cpp" />
-    <ClCompile Include="OverlayLayer.cpp" />
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="ParamAccessor.cpp" />
     <ClCompile Include="ParamFunctions.cpp" />
     <ClCompile Include="FighterPositionFunctions.cpp" />
@@ -464,7 +464,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GLEW Helpers.h" />
     <ClInclude Include="GLM Helpers.h" />
     <ClInclude Include="AIMoveList.h" />
-    <ClInclude Include="OverlayLayer.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PlayerInfo.h" />
@@ -763,7 +763,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_2d_texture.glsl" />
     <None Include="resource\shaders\fragment_effect.glsl" />
     <None Include="resource\shaders\fragment_fullbright.glsl" />
-    <None Include="resource\shaders\fragment_layer.glsl" />
+    <None Include="resource\shaders\fragment_gbuffer.glsl" />
+    <None Include="resource\shaders\fragment_box_overlay.glsl" />
     <None Include="resource\shaders\fragment_main.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
@@ -772,7 +773,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\geometry_main.glsl" />
     <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_effect.glsl" />
-    <None Include="resource\shaders\vertex_layer.glsl" />
+    <None Include="resource\shaders\vertex_gbuffer.glsl" />
+    <None Include="resource\shaders\vertex_box_overlay.glsl" />
     <None Include="resource\shaders\vertex_main.glsl" />
     <None Include="resource\shaders\vertex_no_anim.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />

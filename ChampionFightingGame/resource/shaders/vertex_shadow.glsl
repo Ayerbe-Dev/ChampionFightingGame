@@ -25,6 +25,5 @@ void main() {
 
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
 
-
     gl_Position = camera_matrix * (model_matrix * total_pos);
 }  

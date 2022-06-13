@@ -1,7 +1,7 @@
 #version 330 core
-out vec4 FragColor;
-
-#define MAX_LIGHT_SOURCES 10
+layout (location = 0) out vec3 g_position;
+layout (location = 1) out vec3 g_normal;
+layout (location = 2) out vec4 g_albedo;
 
 struct Material {
     sampler2D diffuse;
@@ -12,19 +12,6 @@ struct Material {
     float shininess;
 }; 
 
-struct Light {
-    vec3 position;
-  
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-	
-    float constant;
-    float linear;
-    float quadratic;
-    bool enabled;
-};
-
 in GS_OUT {
     vec3 FragPos;  
     vec3 Normal;  
@@ -32,49 +19,19 @@ in GS_OUT {
     vec4 FragPosLightSpace;
 } fs_in;
   
-uniform vec3 view_pos;
+uniform float brightness_mul;
 uniform Material material;
-uniform Light light[MAX_LIGHT_SOURCES];
 
-vec3 calc_light(Light light, vec3 normal, vec3 view_dir, vec3 diffuse_col, vec3 spec_col);
 float calc_shadow(vec4 fragPosLightSpace);
 
 void main() {
-    vec3 result = vec3(0.0, 0.0, 0.0);
-    vec3 normal = normalize(fs_in.Normal);
-    vec3 view_dir = normalize(view_pos - fs_in.FragPos);
-    vec3 diffuse_col = texture(material.diffuse, fs_in.TexCoords).rgb;
-    vec3 spec_col = texture(material.specular, fs_in.TexCoords).rgb;
-    for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
-        if (light[i].enabled) {
-            result += calc_light(light[i], normal, view_dir, diffuse_col, spec_col);
-        }
-    }
+    float shadow = calc_shadow(fs_in.FragPosLightSpace);
 
-    float shadow_result = calc_shadow(fs_in.FragPosLightSpace);
-    FragColor = vec4((1.0 - shadow_result) * result, 1.0);
-}
-
-vec3 calc_light(Light light, vec3 normal, vec3 view_dir, vec3 diffuse_col, vec3 spec_col) {
-    vec3 light_dir = normalize(light.position - fs_in.FragPos);
-
-    vec3 ambient = light.ambient * diffuse_col;
-
-    float diff = max(dot(normal, light_dir), 0.0);
-    vec3 diffuse = light.diffuse * diff * diffuse_col;  
-
-    vec3 reflect_dir = reflect(-light_dir, normal);  
-    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * spec_col;
-
-    float distance = length(light.position - fs_in.FragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
-
-    ambient *= attenuation;  
-    diffuse *= attenuation;
-    specular *= attenuation;
-
-    return (ambient + diffuse + specular);
+    g_position = fs_in.FragPos;
+    g_normal = normalize(fs_in.Normal);
+    g_albedo.rgb = vec3((1.0 - shadow) * (texture(material.diffuse, fs_in.TexCoords).rgb * brightness_mul));
+//    g_albedo.a = texture(material.specular, fs_in.TexCoords).r;
+    g_albedo.a = 1.0;
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

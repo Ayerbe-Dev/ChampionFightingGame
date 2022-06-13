@@ -128,7 +128,7 @@ void Battle::load_game_menu() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = false;
+	visualize_boxes = true;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -433,16 +433,14 @@ void Battle::render_world() {
 	//doesn't make much of a difference either way)
 
 	///SHADOW PASS
-	
-	//Setup for the render
+
 	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);
+	
 	glCullFace(GL_FRONT);
-
-	//The actual render
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow(!fighter[i]->facing_right);
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
@@ -451,13 +449,14 @@ void Battle::render_world() {
 			}
 		}
 	}
-
 	glCullFace(GL_BACK);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//COLOR PASS
 
+	render_manager->g_buffer.use();
+
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
@@ -476,15 +475,18 @@ void Battle::render_world() {
 	stage.render();
 	glDisable(GL_CULL_FACE);
 
-	//	EffectManager::get_instance()->render_prepared();
 	EffectManager::get_instance()->render();
 
+	//LIGHTING PASS
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	render_manager->g_buffer.render();
+
+	//HITBOX PASS
+
 	if (visualize_boxes) {
-		SaveManager* save_manager = SaveManager::get_instance();
-		glBindFramebuffer(GL_FRAMEBUFFER, render_manager->box_layer.FBO);
+		render_manager->box_layer.use();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, render_manager->box_layer.texture);
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {
@@ -521,7 +523,7 @@ void Battle::render_world() {
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		render_manager->box_layer.render(255.0);
+		render_manager->box_layer.render();
 	}
 }
 

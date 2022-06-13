@@ -55,7 +55,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(vertex, 512, NULL, info_log);
-			std::cout << info_log << "\n";
+			std::cout << info_log << ", Shader File: " << vertex_dir << "\n";
 		}
 		else {
 			glAttachShader(program, vertex);
@@ -85,7 +85,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 			glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
 			if (!success) {
 				glGetShaderInfoLog(geometry, 512, NULL, info_log);
-				std::cout << info_log << "\n";
+				std::cout << info_log << ", Shader File: " << geometry_dir << "\n";
 			}
 			else {
 				glAttachShader(program, geometry);
@@ -128,7 +128,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(fragment, 512, NULL, info_log);
-			std::cout << info_log << "\n";
+			std::cout << info_log << ", Shader File: " << fragment_dir << "\n";
 		}
 		else {
 			glAttachShader(program, fragment);

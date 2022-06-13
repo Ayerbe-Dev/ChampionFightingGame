@@ -20,6 +20,7 @@ public:
 	GLuint RBO;
 	GLuint g_position;
 	GLuint g_normal;
-	GLuint g_albedo;
+	GLuint g_diffuse;
+	GLuint g_specular;
 	Shader shader;
 };

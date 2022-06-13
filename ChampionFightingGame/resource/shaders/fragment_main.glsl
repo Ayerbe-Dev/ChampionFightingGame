@@ -1,7 +1,8 @@
 #version 330 core
 layout (location = 0) out vec3 g_position;
 layout (location = 1) out vec3 g_normal;
-layout (location = 2) out vec4 g_albedo;
+layout (location = 2) out vec4 g_diffuse;
+layout (location = 3) out vec4 g_specular;
 
 struct Material {
     sampler2D diffuse;
@@ -29,9 +30,9 @@ void main() {
 
     g_position = fs_in.FragPos;
     g_normal = normalize(fs_in.Normal);
-    g_albedo.rgb = vec3((1.0 - shadow) * (texture(material.diffuse, fs_in.TexCoords).rgb * brightness_mul));
-//    g_albedo.a = texture(material.specular, fs_in.TexCoords).r;
-    g_albedo.a = 1.0;
+    g_diffuse.rgb = (1.0 - shadow) * brightness_mul * texture(material.diffuse, fs_in.TexCoords).rgb;
+    g_diffuse.a = 1.0;
+    g_specular = texture(material.specular, fs_in.TexCoords);
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

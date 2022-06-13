@@ -42,7 +42,8 @@ RenderManager::RenderManager() {
 	g_buffer.shader.use();
 	g_buffer.shader.set_int("g_position", 0);
 	g_buffer.shader.set_int("g_normal", 1);
-	g_buffer.shader.set_int("g_albedo", 2);
+	g_buffer.shader.set_int("g_diffuse", 2);
+	g_buffer.shader.set_int("g_specular", 3);
 
 	game_texture_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");

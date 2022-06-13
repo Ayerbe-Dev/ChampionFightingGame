@@ -1727,6 +1727,9 @@
     <None Include="resource\shaders\vertex_gbuffer.glsl">
       <Filter>resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\geometry_effect.glsl">
+      <Filter>resource\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="resource\fonts\Fiend-Oblique.ttf">

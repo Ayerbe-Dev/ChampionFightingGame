@@ -1,14 +1,18 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec3 g_position;
+layout (location = 1) out vec3 g_normal;
+layout (location = 2) out vec4 g_diffuse;
+layout (location = 3) out vec4 g_specular;
 
-in vec2 tex_coords;
+in GS_OUT {
+    vec2 TexCoords;
+} fs_in;
 
 uniform sampler2D f_texture;
 uniform vec4 f_colormod;
 
 void main() {
-    vec4 tex_col = texture(f_texture, tex_coords);
-    tex_col.rgb += f_colormod.rgb;
-    tex_col.a -= f_colormod.a;
-    FragColor = tex_col;
+    g_diffuse = texture(f_texture, fs_in.TexCoords);
+    g_diffuse.rgb += f_colormod.rgb;
+    g_diffuse.a -= f_colormod.a;
 }

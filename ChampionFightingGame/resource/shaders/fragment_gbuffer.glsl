@@ -54,7 +54,7 @@ void main() {
             diffuse *= attenuation;
             specular *= attenuation;
 
-            result += diffuse + specular;
+            result += diffuse;// + specular;
         }
     }
 

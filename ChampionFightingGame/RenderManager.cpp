@@ -178,6 +178,11 @@ void RenderManager::update_shader_shadows() {
 	}
 }
 
+void RenderManager::update_framebuffer_dimensions() {
+	box_layer.update_dimensions();
+	g_buffer.update_dimensions();
+}
+
 void RenderManager::refresh_sdl_renderer() {
 	SDL_RenderClear(sdl_renderer);
 	SDL_DestroyRenderer(sdl_renderer);

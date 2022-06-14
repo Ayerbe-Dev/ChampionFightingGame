@@ -31,6 +31,7 @@ public:
 	void update_shader_lights();
 	void update_shader_cams();
 	void update_shader_shadows();
+	void update_framebuffer_dimensions();
 
 	void refresh_sdl_renderer();
 

@@ -232,6 +232,7 @@ void Battle::unload_game_menu() {
 	camera->unload_camera_anims();
 	thread_manager->kill_thread(THREAD_KIND_UI);
 	stage.unload_stage();
+	render_manager->remove_light();
 	sound_manager->stop_sound_all();
 	sound_manager->unload_all_sounds();
 	render_manager->unlink_all_shaders();
@@ -434,11 +435,9 @@ void Battle::render_world() {
 
 	///SHADOW PASS
 
-	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);
+	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < 2; i++) {
@@ -486,7 +485,7 @@ void Battle::render_world() {
 
 	if (visualize_boxes) {
 		render_manager->box_layer.use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {

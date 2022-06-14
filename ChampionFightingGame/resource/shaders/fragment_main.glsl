@@ -32,7 +32,8 @@ void main() {
     g_normal = normalize(fs_in.Normal);
     g_diffuse.rgb = (1.0 - shadow) * brightness_mul * texture(material.diffuse, fs_in.TexCoords).rgb;
     g_diffuse.a = 1.0;
-    g_specular = texture(material.specular, fs_in.TexCoords);
+    g_specular.rgb = texture(material.specular, fs_in.TexCoords).rgb;
+    g_specular.a = 0.0; //We don't actually have specular textures lmao this will be used later
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

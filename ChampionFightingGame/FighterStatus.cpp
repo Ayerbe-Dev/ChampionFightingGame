@@ -936,6 +936,7 @@ void Fighter::enter_status_thrown() {
 	if (fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
 		fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_local_param_float("max_fall_speed");
 	}
+	fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED];
 	change_anim("knockdown_start", calc_launch_frames(), -1.0);
 }
 

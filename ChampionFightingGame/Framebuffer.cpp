@@ -1,4 +1,5 @@
 #include "Framebuffer.h"
+#include "RenderManager.h"
 #include "SaveManager.h"
 #include "utils.h"
 
@@ -106,10 +107,24 @@ void Framebuffer::render() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	//TODO: Scale the g_position data here according to the current window width/height
-
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDepthMask(GL_TRUE);
+}
+
+void Framebuffer::update_dimensions() {
+	RenderManager* render_manager = RenderManager::get_instance();
+	float width = render_manager->s_window_width;
+	float height = render_manager->s_window_height;
+	glBindTexture(GL_TEXTURE_2D, g_position);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, g_normal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, g_diffuse);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, g_specular);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 }

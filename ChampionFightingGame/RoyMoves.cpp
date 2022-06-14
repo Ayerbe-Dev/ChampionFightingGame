@@ -483,7 +483,7 @@ void Roy::load_move_scripts() {
 			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
 		}
-		if (is_excute_frame(22)) {
+		if (is_excute_frame(24)) {
 			throw_opponent(30.0, 15.0, 8.0);
 		}
 	});

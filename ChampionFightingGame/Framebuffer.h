@@ -13,6 +13,7 @@ public:
 	void destroy();
 	void use();
 	void render();
+	void update_dimensions();
 
 	GLuint VAO;
 	GLuint VBO;

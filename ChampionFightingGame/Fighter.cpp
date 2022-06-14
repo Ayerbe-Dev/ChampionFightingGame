@@ -221,7 +221,7 @@ void Fighter::process_post_status() {
 	Fighter* that = battle_object_manager->fighter[!id];
 
 	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
-		fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
+		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
 		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {

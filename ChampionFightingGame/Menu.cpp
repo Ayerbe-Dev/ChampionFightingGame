@@ -95,8 +95,8 @@ void MainMenu::load_game_menu() {
 	loading_thread.detach();
 
 	FontManager* font_manager = FontManager::get_instance();
-	Font main_text_font = font_manager->load_font("Fiend-Oblique", 136);
-	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 100);
+	Font main_text_font = font_manager->load_font("Fiend-Oblique", 36);
+	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 20);
 
 	table.init("resource/ui/menu/main/SubMenu.png");
 	table.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
@@ -175,7 +175,7 @@ void MainMenu::render() {
 
 	//prebuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].sub_menu_name.set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
+		menu_items[i].sub_menu_name.set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.385, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
 		menu_items[i].sub_menu_name.set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
 		menu_items[i].sub_menu_name.render();
 
@@ -184,7 +184,7 @@ void MainMenu::render() {
 	//real render
 	table.render();
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].sub_menu_name.set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + i * offset)), 0.0));
+		menu_items[i].sub_menu_name.set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) - WINDOW_WIDTH / 1.385, int(magnitude * sin(theta + i * offset)), 0.0));
 		menu_items[i].sub_menu_name.set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
 		menu_items[i].sub_menu_name.render();
 
@@ -196,7 +196,7 @@ void MainMenu::render() {
 
 	//postbuffer render
 	for (int i = 0; i < 5; i++) {
-		menu_items[i].sub_menu_name.set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
+		menu_items[i].sub_menu_name.set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) - WINDOW_WIDTH / 1.385, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
 		menu_items[i].sub_menu_name.set_rot(glm::vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
 		menu_items[i].sub_menu_name.render();
 	}

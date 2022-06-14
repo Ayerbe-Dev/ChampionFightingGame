@@ -78,6 +78,7 @@ public:
     void load_spritesheet(std::string spritesheet_dir);
     void set_sprite(int section);
 
+    void update_text(Font font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
     void update_buffer_data();
     
     float target_left_crop = -2.0;

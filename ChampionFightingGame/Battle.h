@@ -78,6 +78,19 @@ public:
 	GameTexture clock;
 };
 
+class ComboCounter {
+public:
+	ComboCounter();
+	void init(Font* font, Fighter* fighter);
+	void render();
+
+	Font* font;
+	Fighter* fighter;
+	GameTexture text;
+
+	int prev_value;
+};
+
 class Battle : public GameMenu {
 public:
 	Battle();
@@ -113,6 +126,7 @@ public:
 	GameController debug_controller;
 
 	const Uint8* keyboard_state;
+	Font combo_font;
 
 	Fighter* fighter[2];
 	Stage stage;
@@ -125,10 +139,10 @@ public:
 
 	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
+	ComboCounter combo_counter[2];
 	GameTimer timer;
-	Camera *camera;
 
-	//TODO: Create a class for the combo counter or otherwise some form of text rendering
+	Camera *camera;
 
 	GameRect debug_rect[2];
 	glm::vec2 debug_anchor[2] = { {0,0} };

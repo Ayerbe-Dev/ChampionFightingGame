@@ -38,6 +38,7 @@
 
 #include "ThreadManager.h"
 #include "SaveManager.h"
+#include "FontManager.h"
 
 extern bool debug;
 
@@ -51,6 +52,9 @@ extern bool debug;
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+	FontManager* font_manager = FontManager::get_instance();
+
+	font_manager->load_face("Fiend-Oblique");
 
 	Player* player[2];
 	for (int i = 0; i < 2; i++) {
@@ -101,6 +105,7 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
+	font_manager->unload_face("Fiend-Oblique");
 	battle->unload_game_menu();
 	delete battle;
 }
@@ -115,6 +120,7 @@ void Battle::load_game_menu() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
+	FontManager* font_manager = FontManager::get_instance();
 
 	game_manager->set_menu_info(this);
 
@@ -122,7 +128,7 @@ void Battle::load_game_menu() {
 	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
-	game_loader = new GameLoader(15);
+	game_loader = new GameLoader(18);
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
@@ -134,6 +140,10 @@ void Battle::load_game_menu() {
 	player[1] = game_manager->player[1];
 
 	battle_object_manager = BattleObjectManager::get_instance();
+
+	inc_thread();
+
+	combo_font = font_manager->load_font("Fiend-Oblique", 70);
 
 	inc_thread();
 
@@ -168,6 +178,9 @@ void Battle::load_game_menu() {
 		inc_thread();
 		player_indicator[i] = PlayerIndicator(fighter[i]);
 	
+		inc_thread();
+		combo_counter[i].init(&combo_font, fighter[i]);
+
 		inc_thread();
 	}
 
@@ -425,13 +438,7 @@ void Battle::process_frame_pause() {
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-	
-	//Enabling face culling causes all 2D objects that were flipped to not render at all. This could technically be fixed by sorting all 2D objects 
-	//into flipped and non-flipped, turning culling off, rendering the flipped ones, turning culling back on and rendering the non-flipped ones, 
-	//but either way we have to keep culling off while rendering certain textures. Rather than managing flipped and not-flipped data every frame,
-	//it's easier to just enable culling only for the part of the rendering process that actually needs it (Since enabling culling on 2D textures
-	//doesn't make much of a difference either way)
+	glEnable(GL_CULL_FACE); //Face culling should be off for UI, which means we have to toggle it every frame
 
 	///SHADOW PASS
 
@@ -529,7 +536,7 @@ void Battle::render_world() {
 void Battle::render_ui() {
 	for (int i = 0; i < 2; i++) {
 		if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-			//Combo Counter text here
+			combo_counter[i].render();
 		}
 		health_bar[i].render();
 		ex_bar[i].render();
@@ -973,7 +980,7 @@ bool Battle::event_hit_collide_player() {
 					If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 					is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 				*/
-				fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
+				fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
 				if (fighter[i]->get_status_group() == STATUS_GROUP_HITSTUN) {
 					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
 						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->scale;
@@ -1109,14 +1116,14 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				If the opponent was in hitstun the first time you connected with a move during this status, increase the damage scaling by however much
 				is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 			*/
-			p2->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
+			p1->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
 			if (p2->get_status_group() == STATUS_GROUP_HITSTUN) {
 				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
-					p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += p1_hitbox->scale;
+					p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += p1_hitbox->scale;
 				}
 			}
 			else {
-				p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
+				p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
 			}
 			p2->fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
 			p2->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
@@ -1440,4 +1447,31 @@ void GameTimer::render() {
 	deca_second_texture.render_prepared();
 	frame_texture.render_prepared();
 	deca_frame_texture.render_prepared();
+}
+
+ComboCounter::ComboCounter() {
+	prev_value = 0;
+	font = nullptr;
+	fighter = nullptr;
+}
+
+void ComboCounter::init(Font* font, Fighter* fighter) {
+	this->font = font;
+	this->fighter = fighter;
+	text.init(*font, "", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
+	text.set_pos(glm::vec3(50.0, 200.0, 0.0));
+	if (fighter->id == 0) {
+		text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	}
+	else {
+		text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+	}
+}
+
+void ComboCounter::render() {
+	if (fighter->fighter_int[FIGHTER_INT_COMBO_COUNT] != prev_value) {
+		text.update_text(*font, std::to_string(fighter->fighter_int[FIGHTER_INT_COMBO_COUNT]), glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
+		prev_value = fighter->fighter_int[FIGHTER_INT_COMBO_COUNT];
+	}
+	text.render();
 }

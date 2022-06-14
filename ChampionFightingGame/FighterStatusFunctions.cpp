@@ -107,26 +107,18 @@ bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status,
 	return false;
 }
 
-bool Fighter::is_status_hitstun_enable_parry() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0 
-		|| battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] == -5
-		|| fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]) {
-		return false;
-	}
-	switch (status_kind) {
-		case (FIGHTER_STATUS_HITSTUN):
-		case (FIGHTER_STATUS_HITSTUN_AIR):
-		case (FIGHTER_STATUS_LAUNCH):
-		{
+bool Fighter::check_hitstun_parry() {
+	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]) {
+		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+		if (check_button_input(parry_buttons, 2)) {
+			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
+			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = true;
+			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = true;
+			player->controller.reset_buffer();
 			return true;
 		}
-		break;
-		default:
-		{
-			return false;
-		}
-		break;
 	}
+	return false;
 }
 
 bool Fighter::is_status_delay() {

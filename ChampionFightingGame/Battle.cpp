@@ -1172,7 +1172,7 @@ bool Battle::can_counterhit(Fighter* defender, Hitbox* hitbox) {
 	if (defender->anim_kind == nullptr) {
 		return false;
 	}
-	if (defender->anim_kind->name == "hitstun_parry" || defender->anim_kind->name == "hitstun_parry_air") {
+	if (defender->fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY]) {
 		return true;
 	}
 	return defender->fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] && (hitbox->counterhit_type == COUNTERHIT_TYPE_NORMAL

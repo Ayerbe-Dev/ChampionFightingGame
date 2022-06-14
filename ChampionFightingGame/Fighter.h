@@ -224,7 +224,7 @@ public:
 	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
 	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true, bool require_different_status = true);
 	unsigned int get_status_group();
-	bool is_status_hitstun_enable_parry();
+	bool check_hitstun_parry();
 	bool is_status_delay();
 
 	//don't worry, it'll get longer :)

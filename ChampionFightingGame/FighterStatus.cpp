@@ -699,53 +699,6 @@ void Fighter::exit_status_attack() {
 	clear_effect_all();
 }
 
-void Fighter::status_advance() {
-	if (is_status_end()) {
-		return;
-	}
-	if (frame < get_local_param_float("advance_low_transition_frame") && get_stick_dir() < 4) {
-		change_anim_inherit_attributes("advance_low", false);
-	}
-}
-
-void Fighter::enter_status_advance() {
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
-	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;
-	change_anim("advance_high");
-}
-
-void Fighter::exit_status_advance() {
-
-}
-
-void Fighter::status_advance_forward() {
-	if (is_status_end()) {
-		return;
-	}
-}
-
-void Fighter::enter_status_advance_forward() {
-	change_anim("advance_forward");
-}
-
-void Fighter::exit_status_advance_forward() {
-
-}
-
-void Fighter::status_advance_back() {
-	if (is_status_end()) {
-		return;
-	}
-}
-
-void Fighter::enter_status_advance_back() {
-	change_anim("advance_back");
-}
-
-void Fighter::exit_status_advance_back() {
-
-}
-
 void Fighter::status_attack_air() {
 	if (specific_status_attack()) {
 		return;
@@ -792,6 +745,53 @@ void Fighter::enter_status_attack_air() {
 }
 
 void Fighter::exit_status_attack_air() {}
+
+void Fighter::status_advance() {
+	if (is_status_end()) {
+		return;
+	}
+	if (frame < get_local_param_float("advance_low_transition_frame") && get_stick_dir() < 4) {
+		change_anim_inherit_attributes("advance_low", false);
+	}
+}
+
+void Fighter::enter_status_advance() {
+	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
+	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;
+	change_anim("advance_high");
+}
+
+void Fighter::exit_status_advance() {
+
+}
+
+void Fighter::status_advance_forward() {
+	if (is_status_end()) {
+		return;
+	}
+}
+
+void Fighter::enter_status_advance_forward() {
+	change_anim("advance_forward");
+}
+
+void Fighter::exit_status_advance_forward() {
+
+}
+
+void Fighter::status_advance_back() {
+	if (is_status_end()) {
+		return;
+	}
+}
+
+void Fighter::enter_status_advance_back() {
+	change_anim("advance_back");
+}
+
+void Fighter::exit_status_advance_back() {
+
+}
 
 void Fighter::status_grab() {
 	if (is_status_end()) {
@@ -945,16 +945,22 @@ void Fighter::exit_status_thrown() {
 }
 
 void Fighter::status_hitstun() {
-	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
-		if (get_stick_dir() < 4) {
-			if (change_status(FIGHTER_STATUS_CROUCH)) {
-				return;
+	if (!fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY]) {
+		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
+			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
+			if (get_stick_dir() < 4) {
+				if (change_status(FIGHTER_STATUS_CROUCH)) {
+					return;
+				}
+			}
+			else {
+				if (change_status(FIGHTER_STATUS_WAIT)) {
+					return;
+				}
 			}
 		}
-		else {
-			if (change_status(FIGHTER_STATUS_WAIT)) {
-				return;
-			}
+		else if (check_hitstun_parry()) {
+			change_anim("hitstun_parry_start");
 		}
 	}
 }
@@ -984,16 +990,24 @@ void Fighter::enter_status_hitstun() {
 	}
 }
 
-void Fighter::exit_status_hitstun() {}
+void Fighter::exit_status_hitstun() {
+	fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
+}
 
 void Fighter::status_hitstun_air() {
 	Fighter* that = battle_object_manager->fighter[!id];
 	if (check_landing(FIGHTER_STATUS_LANDING_HITSTUN)) {
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
-		change_status(FIGHTER_STATUS_FALL, false);
-		return;
+	if (!fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY]) {
+		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
+			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
+			change_status(FIGHTER_STATUS_FALL, false);
+			return;
+		}
+		else if (check_hitstun_parry()) {
+			change_anim("hitstun_parry_air_start");
+		}
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
@@ -1009,6 +1023,7 @@ void Fighter::enter_status_hitstun_air() {
 
 
 void Fighter::exit_status_hitstun_air() {
+	fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] /= 2;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] /= 2;
 }
@@ -1163,11 +1178,11 @@ void Fighter::enter_status_parry() {
 		if (fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
 			change_anim("parry_low");
 		}
-		else if (fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID) {
-			change_anim("parry_mid");
+		else if (fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_HIGH) {
+			change_anim("parry_high");
 		}
 		else {
-			change_anim("parry_high");
+			change_anim("parry_mid");
 		}
 	}
 
@@ -1211,7 +1226,13 @@ void Fighter::status_launch() {
 		apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
 		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 		if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
+			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
 			return;
+		}
+	}
+	if (!fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY]) {
+		if (check_hitstun_parry()) {
+			change_anim("hitstun_parry_air_start");
 		}
 	}
 }
@@ -1230,6 +1251,7 @@ void Fighter::enter_status_launch() {
 
 void Fighter::exit_status_launch() {
 	fighter_flag[FIGHTER_FLAG_CAN_TECH] = false;
+	fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
 }
 
 void Fighter::status_clank() {
@@ -1345,6 +1367,7 @@ void Fighter::exit_status_landing_attack() {}
 
 void Fighter::status_landing_hitstun() {
 	if (fighter_int[FIGHTER_INT_LANDING_LAG] == 0) {
+		fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
 		if (common_ground_status_act()) {
 			return;
 		}

@@ -107,10 +107,6 @@ void Fighter::process_post_projectiles() {
 }
 
 void Fighter::process_animate() {
-	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {
-		reenter_last_anim();
-	}
-
 	attempted_excutes = 0;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
@@ -215,18 +211,6 @@ void Fighter::process_pre_status() {
 }
 
 void Fighter::process_status() {
-	if (is_status_hitstun_enable_parry()) {
-		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
-		if (check_button_input(parry_buttons, 2)) {
-			if (situation_kind == FIGHTER_SITUATION_GROUND) {
-				change_anim("hitstun_parry", 0.2);
-			}
-			else {
-				change_anim("hitstun_parry_air", 0.2);
-			}
-			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
-		}
-	}
 	if (!is_status_delay()) {
 		(this->*status_script[status_kind])();
 	}

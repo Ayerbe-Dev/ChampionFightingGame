@@ -90,8 +90,8 @@ void MainMenu::load_game_menu() {
 	loading_thread.detach();
 
 	FontManager* font_manager = FontManager::get_instance();
-	Font main_text_font = font_manager->load_font("Fiend-Oblique", 136);
-	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 100);
+	Font main_text_font = font_manager->load_font("Fiend-Oblique", 36);
+	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 20);
 	glm::vec4 rgba = { 255.0, 127.0, 0.0, 255.0 };
 	float x_coord = 12.0;
 	float y_coord = -12.0;

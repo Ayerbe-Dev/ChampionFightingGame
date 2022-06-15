@@ -26,6 +26,8 @@ GameMenu::GameMenu() {
 	game_context = nullptr;
 	prev_game_context = nullptr;
 	game_loader = nullptr;
+	frame = 0;
+	fps = 60;
 }
 
 void GameMenu::update_state(int game_state, int game_context) {
@@ -45,6 +47,19 @@ void GameMenu::inc_thread() {
 
 void GameMenu::frame_delay() {
 	wait_ms();
+}
+
+void GameMenu::frame_delay_check_fps() {
+	if ((float)((std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_second).count()) / 1000.0) >= 1000.0) {
+		fps = frame;
+		frame = 0;
+		wait_ms();
+		last_second = std::chrono::high_resolution_clock::now();
+	}
+	else {
+		wait_ms();
+		frame++;
+	}
 }
 
 void GameMenu::frame_delay_check_performance() {

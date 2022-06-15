@@ -55,6 +55,7 @@ void battle_main() {
 	FontManager* font_manager = FontManager::get_instance();
 
 	font_manager->load_face("Fiend-Oblique");
+	font_manager->load_face("FiraCode");
 
 	Player* player[2];
 	for (int i = 0; i < 2; i++) {
@@ -76,7 +77,12 @@ void battle_main() {
 	cotr_imgui_init();
 #endif
 	while (*battle->looping) {
-		battle->frame_delay_check_performance();
+		battle->frame_delay_check_fps();
+		if (battle->prev_fps != battle->fps) {
+			battle->fps_counter.update_text(battle->fps_font, std::to_string(battle->fps), glm::vec4(0, 0, 0, 255));
+			battle->prev_fps = battle->fps;
+		}
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
@@ -92,6 +98,8 @@ void battle_main() {
 		render_manager->execute_buffered_events();
 		battle->render_world();
 		battle->render_ui();
+		battle->fps_counter.render();
+		battle->fps_texture.render();
 
 		battle->check_collisions();
 
@@ -106,6 +114,7 @@ void battle_main() {
 	cotr_imgui_terminate();
 #endif
 	font_manager->unload_face("Fiend-Oblique");
+	font_manager->unload_face("FiraCode");
 	battle->unload_game_menu();
 	delete battle;
 }
@@ -143,7 +152,16 @@ void Battle::load_game_menu() {
 
 	inc_thread();
 
-	combo_font = font_manager->load_font("Fiend-Oblique", 70);
+	fps_font = font_manager->load_font("FiraCode", 12);
+	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0));
+	fps_counter.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_counter.set_pos(glm::vec3(0.0, 10.0, 0.0));
+	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0));
+	fps_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_texture.set_pos(glm::vec3(80.0, 10.0, 0.0));
+
+	combo_font = font_manager->load_font("Fiend-Oblique", 64);
+	Font hits_font = font_manager->load_font("Fiend-Oblique", 20);
 
 	inc_thread();
 
@@ -179,7 +197,7 @@ void Battle::load_game_menu() {
 		player_indicator[i] = PlayerIndicator(fighter[i]);
 	
 		inc_thread();
-		combo_counter[i].init(&combo_font, fighter[i]);
+		combo_counter[i].init(&combo_font, &hits_font, fighter[i]);
 
 		inc_thread();
 	}
@@ -535,9 +553,7 @@ void Battle::render_world() {
 
 void Battle::render_ui() {
 	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-			combo_counter[i].render();
-		}
+		combo_counter[i].render();
 		health_bar[i].render();
 		ex_bar[i].render();
 	}
@@ -1450,28 +1466,69 @@ void GameTimer::render() {
 }
 
 ComboCounter::ComboCounter() {
-	prev_value = 0;
 	font = nullptr;
 	fighter = nullptr;
+	alpha = 0;
+	prev_value = 0;
+	left_oriented = false;
 }
 
-void ComboCounter::init(Font* font, Fighter* fighter) {
-	this->font = font;
+void ComboCounter::init(Font* count_font, Font* hits_font, Fighter* fighter) {
+	this->font = count_font;
 	this->fighter = fighter;
-	text.init(*font, "", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
-	text.set_pos(glm::vec3(50.0, 200.0, 0.0));
+	count_text.init(*count_font, "", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
+	count_text.set_pos(glm::vec3(120.0, 350.0, 0.0));
+	hits_text.init(*hits_font, "hits", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
+	hits_text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	count_text.set_alpha(0);
+	hits_text.set_alpha(0);
 	if (fighter->id == 0) {
-		text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		left_oriented = true;
+		count_text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		hits_text.set_pos(glm::vec3(275.0, 540.0, 0.0)); //Orientation for this text is based on
+		//the number rather than the screen, so we can't just set a GameTexture orientation
 	}
 	else {
-		text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		count_text.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		hits_text.set_pos(glm::vec3(3565.0, 540.0, 0.0));
 	}
 }
 
 void ComboCounter::render() {
-	if (fighter->fighter_int[FIGHTER_INT_COMBO_COUNT] != prev_value) {
-		text.update_text(*font, std::to_string(fighter->fighter_int[FIGHTER_INT_COMBO_COUNT]), glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
-		prev_value = fighter->fighter_int[FIGHTER_INT_COMBO_COUNT];
+	if (fighter->fighter_int[FIGHTER_INT_COMBO_COUNT] < 2) {
+		if (alpha != 0) {
+			alpha -= 51;
+			count_text.set_alpha(alpha);
+			hits_text.set_alpha(alpha);
+		}
+		else {
+			if (prev_value > 9 && left_oriented) {
+				hits_text.add_pos(glm::vec3(-65.0, 0.0, 0.0));
+			}
+			prev_value = 0;
+		}
 	}
-	text.render();
+	else {
+		if (fighter->fighter_int[FIGHTER_INT_COMBO_COUNT] != prev_value) {
+			if (alpha == 0) {
+				alpha = 255;
+				count_text.set_alpha(alpha);
+				hits_text.set_alpha(alpha);
+			}
+			if (prev_value == 9 && left_oriented) {
+				hits_text.add_pos(glm::vec3(65.0, 0.0, 0.0));
+			}
+			count_text.update_text(*font, std::to_string(fighter->fighter_int[FIGHTER_INT_COMBO_COUNT]), glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0);
+			prev_value = fighter->fighter_int[FIGHTER_INT_COMBO_COUNT];
+			count_text.scale_all_percent(0.8, false);
+			hits_text.scale_all_percent(0.8, false);
+			count_text.render();
+			hits_text.render();
+			count_text.scale_all_percent(1.0, false);
+			hits_text.scale_all_percent(1.0, false);
+			return;
+		}
+	}
+	count_text.render();
+	hits_text.render();
 }

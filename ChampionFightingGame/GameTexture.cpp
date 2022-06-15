@@ -457,18 +457,10 @@ void GameTexture::scale_bottom_percent(float percent, bool crop) {
 }
 
 void GameTexture::scale_all_percent(float percent, bool crop) {
-	if (percent < 1.0) {
-		scale_left_percent(percent * 2.0, crop);
-		scale_right_percent(percent * 2.0, crop);
-		scale_top_percent(percent * 2.0, crop);
-		scale_bottom_percent(percent * 2.0, crop);
-	}
-	else {
-		scale_left_percent(percent / 2.0, crop);
-		scale_right_percent(percent / 2.0, crop);
-		scale_top_percent(percent / 2.0, crop);
-		scale_bottom_percent(percent / 2.0, crop);
-	}
+	scale_left_percent(percent, crop);
+	scale_right_percent(percent, crop);
+	scale_top_percent(percent, crop);
+	scale_bottom_percent(percent, crop);
 }
 
 void GameTexture::set_width(int new_width) {

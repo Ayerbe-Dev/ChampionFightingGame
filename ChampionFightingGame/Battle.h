@@ -81,13 +81,16 @@ public:
 class ComboCounter {
 public:
 	ComboCounter();
-	void init(Font* font, Fighter* fighter);
+	void init(Font* count_font, Font* hits_font, Fighter* fighter);
 	void render();
 
 	Font* font;
 	Fighter* fighter;
-	GameTexture text;
+	GameTexture count_text;
+	GameTexture hits_text;
 
+	unsigned char alpha;
+	bool left_oriented;
 	int prev_value;
 };
 
@@ -127,6 +130,10 @@ public:
 
 	const Uint8* keyboard_state;
 	Font combo_font;
+	Font fps_font;
+	GameTexture fps_counter;
+	GameTexture fps_texture;
+	int prev_fps;
 
 	Fighter* fighter[2];
 	Stage stage;

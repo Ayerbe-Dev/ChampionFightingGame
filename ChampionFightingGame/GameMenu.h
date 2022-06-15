@@ -28,6 +28,7 @@ public:
     void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
     void inc_thread();
     void frame_delay();
+    void frame_delay_check_fps();
     void frame_delay_check_performance();
 
     int* game_state;
@@ -39,12 +40,15 @@ public:
 
     std::vector<MenuObject> menu_objects;
 
+    std::chrono::steady_clock::time_point last_second;
     std::chrono::steady_clock::time_point ms;
     std::vector<float> average_ticks;
     std::vector<int> tick_frequency;
 
     int sub_state = GAME_SUBSTATE_NONE;
     int player_id{0};
+    int frame;
+    int fps;
 };
 
 class MenuObject {

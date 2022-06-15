@@ -89,6 +89,15 @@ void RoyFireball::load_move_scripts() {
 			}
 		}
 	});
+	script("hit", [this]() {
+
+	});
+	script("fall", [this]() {
+
+	});
+	script("ground", [this]() {
+
+	});
 }
 
 /*

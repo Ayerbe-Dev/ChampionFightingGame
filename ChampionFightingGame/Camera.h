@@ -15,6 +15,23 @@ class Stage;
 
 class Camera {
 public:
+	Camera();
+
+	void camera_main();
+
+	void load_camera_anim(std::string anim_kind, std::string anim_dir);
+	void play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame);
+	void unload_camera_anims();
+
+	void add_pos(float x, float y, float z, float speed = 0.0);
+	void adjust_view(float x, float y, float z, float speed = 0.0);
+
+	void set_fov(float fov);
+
+	void update_view();
+	void follow_players();
+	void follow_anim();
+
 	glm::vec3 pos = glm::vec3(0.0);
 	glm::vec3 front = glm::vec3(0.0, 0.0, 1.0);
 	glm::vec3 world_up = glm::vec3(0.0, 1.0, 0.0);
@@ -50,20 +67,6 @@ public:
 	std::vector<CameraAnim> camera_anims;
 	std::map<std::string, int> camera_anim_map;
 
+	glm::mat4 projection_matrix;
 	glm::mat4 camera_matrix;
-
-	Camera();
-
-	void camera_main();
-
-	void load_camera_anim(std::string anim_kind, std::string anim_dir);
-	void play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame);
-	void unload_camera_anims();
-
-	void add_pos(float x, float y, float z, float speed = 0.0);
-	void adjust_view(float x, float y, float z, float speed = 0.0);
-
-	void update_view();
-	void follow_players();
-	void follow_anim();
 };

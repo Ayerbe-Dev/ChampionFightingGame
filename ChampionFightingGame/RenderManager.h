@@ -60,6 +60,11 @@ public:
 	ShadowMap shadow_map;
 	Framebuffer box_layer;
 	Framebuffer g_buffer;
+	Framebuffer SSAO;
+
+	std::vector<glm::vec3> ssao_kernel;
+	std::vector<glm::vec3> ssao_noise;
+	unsigned int noise_texture;
 
 	int s_window_width;
 	int s_window_height;

@@ -183,6 +183,8 @@ void Battle::load_game_menu() {
 		camera->fighter[i] = fighter[i];
 	}
 	camera->stage = &stage;
+	camera->set_fov(45.0); //This function invokes the RenderManager, so we can't call it during
+	//the RenderManager's constructor like you'd assume
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->super_init(i);
@@ -501,10 +503,25 @@ void Battle::render_world() {
 
 	EffectManager::get_instance()->render();
 
-	//LIGHTING PASS
+	bool using_ssao = false;
+	if (using_ssao) {
+		//SSAO PASS
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	render_manager->g_buffer.render();
+		render_manager->SSAO.use(); //Render the GBuffer to the SSAO buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->g_buffer.render();
+
+		//LIGHTING PASS
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); //Render the SSAO to the screen
+		render_manager->SSAO.render();
+	}
+	else {
+		//LIGHTING PASS
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); //Render the GBuffer directly to the screen
+		render_manager->g_buffer.render();
+	}
 
 	//HITBOX PASS
 

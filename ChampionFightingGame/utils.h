@@ -28,3 +28,5 @@ int round_up_odd(int val);
 void update_thread_progress(int& to_update);
 void print_init();
 int rng(const int& min, const int& max);
+float rng_f(const float& min, const float& max);
+float lerp(float a, float b, float f);

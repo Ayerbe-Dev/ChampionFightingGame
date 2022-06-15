@@ -15,14 +15,15 @@ Camera::Camera() {
 		0.0, 0.0, -1.0, 0.0,
 		0.0, 0.0, 0.0, 1.0
 	);
+	fov = 45.0;
 	yaw = 0.0;
 	pitch = 3.0;
 	roll = 0.0;
-	fov = 45.0;
 	following_players = true;
 	auto_linear_scale = 3.0;
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
+	projection_matrix = glm::mat4(1.0);
 	camera_matrix = glm::mat4(1.0);
 	anim_kind = nullptr;
 	for (int i = 0; i < 2; i++) {
@@ -30,7 +31,8 @@ Camera::Camera() {
 	}
 	stage = nullptr;
 	follow_id = -1;
-	frame = 0;
+	frame = 0.0;
+	rate = 1.0;
 }
 
 void Camera::camera_main() {
@@ -89,6 +91,12 @@ void Camera::adjust_view(float x, float y, float z, float speed) {
 	update_view();
 }
 
+void Camera::set_fov(float fov) {
+	this->fov = fov;
+	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
+	update_view();
+}
+
 void Camera::update_view() {
 	glm::vec3 new_front;
 	new_front.x = cos(glm::radians(yaw - 90)) * cos(glm::radians(pitch));
@@ -102,7 +110,7 @@ void Camera::update_view() {
 	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(roll), front);
 	up = glm::mat3(roll_mat) * up;
 
-	camera_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f) * lookAt(pos, pos + front, up);
+	camera_matrix = projection_matrix * lookAt(pos, pos + front, up);
 	RenderManager::get_instance()->update_shader_cams();
 }
 

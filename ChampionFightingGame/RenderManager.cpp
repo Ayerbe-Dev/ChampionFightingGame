@@ -8,11 +8,13 @@
 
 RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
+	float width = save_manager->get_game_setting("res_x");
+	float height = save_manager->get_game_setting("res_y");
 	if (save_manager->get_game_setting("fullscreen")) {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
 	SDL_GetWindowSize(window, &s_window_width, &s_window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
@@ -31,10 +33,44 @@ RenderManager::RenderManager() {
 	stbi_set_flip_vertically_on_load(true);
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 
+	for (int i = 0; i < 64; i++) {
+		glm::vec3 sample(rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0));
+
+		sample = glm::normalize(sample);
+		sample *= rng_f(0.0, 1.0);
+
+		float scale = (float)i / 64.0;
+		scale = lerp(0.1, 1.0, scale * scale);
+		sample *= scale;
+
+		ssao_kernel.push_back(sample);
+	}
+
+	for (int i = 0; i < 16; i++) {
+		glm::vec3 noise(
+			rng_f(0.0, 1.0) * 2.0 - 1.0,
+			rng_f(0.0, 1.0) * 2.0 - 1.0,
+			0.0
+		);
+		ssao_noise.push_back(noise);
+	}
+
 	shadow_map.init();
 	
 	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
+	box_layer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, width, height);
+
 	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
+	g_buffer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, width, height); //Position
+	g_buffer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, width, height); //Normal
+	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, width, height); //Diffuse
+	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, width, height); //Specular
+	
+	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
+	SSAO.add_texture(g_buffer.textures[0], g_buffer.texture_info[0]); //Position, same texture as gbuf
+	SSAO.add_texture(g_buffer.textures[1], g_buffer.texture_info[1]); //Ditto
+	SSAO.add_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, 4, 4, (void*)&ssao_noise[0], true);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	box_layer.shader.use();
 	box_layer.shader.set_int("f_texture", 0);
@@ -44,6 +80,16 @@ RenderManager::RenderManager() {
 	g_buffer.shader.set_int("g_normal", 1);
 	g_buffer.shader.set_int("g_diffuse", 2);
 	g_buffer.shader.set_int("g_specular", 3);
+
+	SSAO.shader.use();
+	for (int i = 0; i < 64; i++) {
+		SSAO.shader.set_vec3("samples[]", ssao_kernel[i], i);
+	}
+	SSAO.shader.set_int("window_width", s_window_width);
+	SSAO.shader.set_int("window_height", s_window_height);
+	SSAO.shader.set_int("g_position", 0);
+	SSAO.shader.set_int("g_normal", 1);
+	SSAO.shader.set_int("tex_noise", 2);
 
 	game_texture_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
@@ -156,7 +202,10 @@ void RenderManager::update_shader_lights() {
 }
 
 void RenderManager::update_shader_cams() {
+	glm::mat4& projection_matrix = camera.projection_matrix;
 	glm::mat4 &camera_matrix = camera.camera_matrix;
+	SSAO.shader.use();
+	SSAO.shader.set_mat4("projection_matrix", projection_matrix);
 	rect_shader.use();
 	rect_shader.set_mat4("camera_matrix", camera_matrix);
 	effect_shader.use();

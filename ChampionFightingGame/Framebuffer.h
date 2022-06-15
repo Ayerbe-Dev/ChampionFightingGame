@@ -3,13 +3,24 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 
-//Essentially, an Overlay Layer is designed to be an FBO that can be blended
+struct TextureInfo {
+	TextureInfo();
+	TextureInfo(GLenum internal_format, GLenum format, GLenum type, void* source, bool no_resize);
+	GLenum internal_format;
+	GLenum format;
+	GLenum type; 
+	const void* source;
+	bool no_resize;
+};
+
 class Framebuffer {
 public:
 	Framebuffer();
 	~Framebuffer();
 
 	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
+	void add_texture(GLenum internal_format, GLenum format, GLenum type, float width, float height, void* source = nullptr, bool no_resize = false);
+	void add_texture(GLuint texture, TextureInfo info);
 	void destroy();
 	void use();
 	void render();
@@ -19,6 +30,8 @@ public:
 	GLuint VBO;
 	GLuint FBO;
 	GLuint RBO;
+	std::vector<GLuint> textures;
+	std::vector<TextureInfo> texture_info;
 	GLuint g_position;
 	GLuint g_normal;
 	GLuint g_diffuse;

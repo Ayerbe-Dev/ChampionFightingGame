@@ -3,6 +3,16 @@
 #include "SaveManager.h"
 #include "utils.h"
 
+TextureInfo::TextureInfo() {}
+
+TextureInfo::TextureInfo(GLenum internal_format, GLenum format, GLenum type, void* source, bool no_resize) {
+	this->internal_format = internal_format;
+	this->format = format;
+	this->type = type;
+	this->source = source;
+	this->no_resize = no_resize;
+}
+
 Framebuffer::Framebuffer() {
 }
 
@@ -24,38 +34,6 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-	glGenTextures(1, &g_position);
-	glBindTexture(GL_TEXTURE_2D, g_position);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, g_position, 0);
-
-	glGenTextures(1, &g_normal);
-	glBindTexture(GL_TEXTURE_2D, g_normal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, g_normal, 0);
-
-	glGenTextures(1, &g_diffuse);
-	glBindTexture(GL_TEXTURE_2D, g_diffuse);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, g_diffuse, 0);
-
-	glGenTextures(1, &g_specular);
-	glBindTexture(GL_TEXTURE_2D, g_specular);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, g_specular, 0);
-
-	unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-	glDrawBuffers(4, attachments);
-
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"));
@@ -81,6 +59,43 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Framebuffer::add_texture(GLenum internal_format, GLenum format, GLenum type, float width, float height, void* source, bool no_resize) {
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, source);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + textures.size(), GL_TEXTURE_2D, texture, 0);
+	textures.push_back(texture);
+	texture_info.push_back(TextureInfo(internal_format, format, type, source, no_resize));
+
+	GLenum* attachments = new GLenum[textures.size()]; //I really hate cpp arrays
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+	}
+	glDrawBuffers(textures.size(), attachments); //Can't pass a vector here
+	delete[] attachments;
+}
+
+void Framebuffer::add_texture(GLuint texture, TextureInfo info) {
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + textures.size(), GL_TEXTURE_2D, texture, 0);
+	textures.push_back(texture);
+	texture_info.push_back(info);
+
+	GLenum* attachments = new GLenum[textures.size()]; //I really hate cpp arrays
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+	}
+	glDrawBuffers(textures.size(), attachments); //Can't pass a vector here
+	delete[] attachments;
+}
+
 void Framebuffer::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -95,14 +110,10 @@ void Framebuffer::use() {
 void Framebuffer::render() {
 	glDepthMask(GL_FALSE);
 	shader.use();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, g_position);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, g_normal);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, g_diffuse);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, g_specular);
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+	}
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -117,14 +128,12 @@ void Framebuffer::update_dimensions() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	float width = render_manager->s_window_width;
 	float height = render_manager->s_window_height;
-	glBindTexture(GL_TEXTURE_2D, g_position);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-	glBindTexture(GL_TEXTURE_2D, g_normal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-	glBindTexture(GL_TEXTURE_2D, g_diffuse);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, g_specular);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		if (!texture_info[i].no_resize) {
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, texture_info[i].internal_format, width, height, 0, texture_info[i].format, texture_info[i].type, texture_info[i].source);
+		}
+	}
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 }

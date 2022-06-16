@@ -41,3 +41,4 @@ private:
 };
 
 bool is_collide(GameRect &RectA, GameRect &RectB);
+glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_coords);

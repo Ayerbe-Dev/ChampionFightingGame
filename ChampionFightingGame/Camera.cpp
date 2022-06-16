@@ -24,6 +24,7 @@ Camera::Camera() {
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
 	projection_matrix = glm::mat4(1.0);
+	view_matrix = glm::mat4(1.0);
 	camera_matrix = glm::mat4(1.0);
 	anim_kind = nullptr;
 	for (int i = 0; i < 2; i++) {
@@ -110,7 +111,8 @@ void Camera::update_view() {
 	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(roll), front);
 	up = glm::mat3(roll_mat) * up;
 
-	camera_matrix = projection_matrix * lookAt(pos, pos + front, up);
+	view_matrix = lookAt(pos, pos + front, up);
+	camera_matrix = projection_matrix * view_matrix;
 	RenderManager::get_instance()->update_shader_cams();
 }
 

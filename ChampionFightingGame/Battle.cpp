@@ -170,9 +170,10 @@ void Battle::load_game_menu() {
 
 	inc_thread();
 
+	debug_rect.init();
+	debug_rect.set_rgba(glm::vec4(255.0, 255.0, 255.0, 204.0));
 
 	for (int i = 0; i < 2; i++) {
-		debug_rect[i].init();
 		inc_thread();
 		fighter[i] = create_fighter(player[i]->chara_kind, i, player[i]);
 		inc_thread();
@@ -261,6 +262,7 @@ void Battle::unload_game_menu() {
 		delete fighter[i];
 		camera->fighter[i] = nullptr;
 	}
+	debug_rect.destroy();
 	camera->stage = nullptr;
 	camera->unload_camera_anims();
 	thread_manager->kill_thread(THREAD_KIND_UI);
@@ -279,8 +281,28 @@ void Battle::unload_game_menu() {
 void Battle::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
-	SDL_PumpEvents();
 	keyboard_state = SDL_GetKeyboardState(NULL);
+	mouse.poll_buttons();
+
+
+	if (mouse.check_button_on(MOUSE_BUTTON_M1)) {
+		glm::vec2 game_rect_coords = mouse_pos_to_rect_coord(mouse.get_pos());
+		debug_offset = game_rect_coords;
+		if (mouse.check_button_trigger(MOUSE_BUTTON_M1)) {
+			debug_anchor = game_rect_coords;
+		}
+		debug_rect.update_corners(debug_anchor, debug_offset);
+	}
+	if (mouse.check_button_trigger(MOUSE_BUTTON_M2)) {
+		glm::ivec2 anchor = debug_anchor - glm::vec2(fighter[0]->pos);
+		glm::ivec2 offset = debug_offset - glm::vec2(fighter[0]->pos);
+		anchor.x *= fighter[0]->facing_dir;
+		offset.x *= fighter[0]->facing_dir;
+		std::cout << "Script: " << fighter[0]->move_script.name << ", frame: " << fighter[0]->frame << "\n";
+		std::cout << "glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << ", " << offset.y << ")\n";
+
+	}
+
 	debug_controller.poll_buttons(keyboard_state);
 	if (debug_controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 		if (frame_pause) {
@@ -297,11 +319,6 @@ void Battle::process_main() {
 			game_manager->game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE]();
 		}
 	}
-//	if (debug_controller.check_button_trigger(BUTTON_MENU_START)) {
-//		for (int i = 0; i < 2; i++) {
-//			fighter[i]->reset();
-//		}
-//	}
 	if (frame_pause) {
 		process_frame_pause();
 	}
@@ -562,6 +579,7 @@ void Battle::render_world() {
 			}
 			fighter[i]->jostle_box.render();
 		}
+		debug_rect.render();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		render_manager->box_layer.render();
@@ -575,9 +593,6 @@ void Battle::render_ui() {
 		ex_bar[i].render();
 	}
 	timer.render();
-	/*if (debug) {
-		debug_rect[debugger.target].render();
-	}*/
 
 }
 

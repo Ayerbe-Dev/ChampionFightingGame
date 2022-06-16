@@ -281,10 +281,13 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_hp", [this]() {
 		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
-			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			new_hurtbox(0, glm::vec2(-105, 0), glm::vec2(35, 90));
+			new_hurtbox(1, glm::vec2(30, 55), glm::vec2(95, 95));
 			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 			new_blockbox(glm::vec2{ 5,70 }, glm::vec2{ 130, 90 });
+		}
+		if (is_excute_frame(5)) {
+			new_hurtbox(1, glm::vec2(30, 0), glm::vec2(107, 50));
 		}
 		if (is_excute_frame(10)) {
 			new_hitbox(0, 0, 50, 5, 1.2, 1, glm::vec2{ 25,70 }, glm::vec2{ 170, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, true, false, true);

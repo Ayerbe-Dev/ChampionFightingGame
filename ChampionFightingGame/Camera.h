@@ -68,5 +68,6 @@ public:
 	std::map<std::string, int> camera_anim_map;
 
 	glm::mat4 projection_matrix;
+	glm::mat4 view_matrix;
 	glm::mat4 camera_matrix;
 };

@@ -466,6 +466,9 @@
     <ClCompile Include="FighterCinematicFunctions.cpp">
       <Filter>Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Code Files\Engine\GameData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1142,6 +1145,9 @@
     </ClInclude>
     <ClInclude Include="CameraAnim.h">
       <Filter>Header Files\Objects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Header Files\Engine\GameData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

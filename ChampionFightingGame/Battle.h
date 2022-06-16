@@ -5,6 +5,7 @@
 #include "BattleObject.h"
 #include "GameManager.h"
 #include "GameTexture.h"
+#include "Mouse.h"
 
 class ThreadManager;
 class Camera;
@@ -126,9 +127,6 @@ public:
 	void render_world();
 	void render_ui();
 
-	GameController debug_controller;
-
-	const Uint8* keyboard_state;
 	Font combo_font;
 	Font fps_font;
 	GameTexture fps_counter;
@@ -151,9 +149,12 @@ public:
 
 	Camera *camera;
 
-	GameRect debug_rect[2];
-	glm::vec2 debug_anchor[2] = { {0,0} };
-	glm::vec2 debug_offset[2] = { {0,0} };
+	GameController debug_controller;
+	const Uint8* keyboard_state;
+	Mouse mouse;
+	GameRect debug_rect;
+	glm::vec2 debug_anchor = {0,0};
+	glm::vec2 debug_offset = {0,0};
 
 	bool visualize_boxes;
 	bool pause;

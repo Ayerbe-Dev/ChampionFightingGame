@@ -469,6 +469,33 @@
     <ClCompile Include="Mouse.cpp">
       <Filter>Code Files\Engine\GameData</Filter>
     </ClCompile>
+    <ClCompile Include="FighterScriptFunctions.cpp">
+      <Filter>Code Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileScriptFunctions.cpp">
+      <Filter>Code Files\Objects\Projectile\Projectile\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterScriptWrappers.cpp">
+      <Filter>Code Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptWrappers.cpp">
+      <Filter>Code Files\Objects\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileScriptWrappers.cpp">
+      <Filter>Code Files\Objects\Projectile\Projectile\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterHitboxFunctions.cpp">
+      <Filter>Code Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterHurtboxFunctions.cpp">
+      <Filter>Code Files\Objects\Fighter\Fighter\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileHitboxFunctions.cpp">
+      <Filter>Code Files\Objects\Projectile\Projectile\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationFunctions.cpp">
+      <Filter>Code Files\Objects\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">

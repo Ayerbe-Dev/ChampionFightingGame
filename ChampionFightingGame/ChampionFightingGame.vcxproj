@@ -218,6 +218,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AngelicaMoves.cpp" />
     <ClCompile Include="AngelicaStatus.cpp" />
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationFunctions.cpp" />
     <ClCompile Include="AtlasMoves.cpp" />
     <ClCompile Include="AtlasStatus.cpp" />
     <ClCompile Include="Aziel.cpp" />
@@ -253,8 +254,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Battle.cpp" />
     <ClCompile Include="FighterCinematicFunctions.cpp" />
     <ClCompile Include="FighterGrabFunctions.cpp" />
+    <ClCompile Include="FighterHitboxFunctions.cpp" />
+    <ClCompile Include="FighterHurtboxFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
+    <ClCompile Include="FighterScriptFunctions.cpp" />
+    <ClCompile Include="FighterScriptWrappers.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameController.cpp" />
@@ -336,9 +341,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="ProjectileAnimationFunctions.cpp" />
+    <ClCompile Include="ProjectileHitboxFunctions.cpp" />
     <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
     <ClCompile Include="ProjectilePositionFunctions.cpp" />
+    <ClCompile Include="ProjectileScriptFunctions.cpp" />
+    <ClCompile Include="ProjectileScriptWrappers.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
     <ClCompile Include="ProjectileStatusFunctions.cpp" />
     <ClCompile Include="Ramona.cpp" />
@@ -352,6 +360,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="RoyStatus.cpp" />
     <ClCompile Include="SaveManager.cpp" />
     <ClCompile Include="ScriptFunctions.cpp" />
+    <ClCompile Include="ScriptWrappers.cpp" />
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />

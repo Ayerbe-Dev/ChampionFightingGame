@@ -179,6 +179,7 @@ public:
 
 	//Transitions
 
+	int get_frames_until_actionable();
 	bool is_actionable();
 	bool can_kara();
 	bool has_meter(int bars);
@@ -227,7 +228,16 @@ public:
 	bool check_hitstun_parry();
 	bool is_status_delay();
 
-	//don't worry, it'll get longer :)
+	//Script Functions
+	void push_function(void (Fighter::* function)(ScriptArg), int num_args, ...);
+
+	//Script Wrappers
+
+	void NEW_HURTBOX(ScriptArg args);
+
+
+	//Status Scripts
+
 	virtual void status_wait();
 	virtual void enter_status_wait();
 	virtual void exit_status_wait();

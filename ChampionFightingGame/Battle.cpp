@@ -137,7 +137,7 @@ void Battle::load_game_menu() {
 	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
-	game_loader = new GameLoader(18);
+	game_loader = new GameLoader(16);
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
@@ -191,10 +191,7 @@ void Battle::load_game_menu() {
 		fighter[i]->super_init(i);
 
 		inc_thread();
-		health_bar[i].init(fighter[i]);
-	
-		inc_thread();
-		ex_bar[i].init(fighter[i]);
+		meters[i].init(fighter[i]);
 	
 		inc_thread();
 		player_indicator[i] = PlayerIndicator(fighter[i]);
@@ -257,8 +254,7 @@ void Battle::unload_game_menu() {
 	EffectManager* effect_manager = EffectManager::get_instance();
 	for (int i = 0; i < 2; i++) {
 		thread_manager->kill_thread(i);
-		health_bar[i].destroy();
-		ex_bar[i].destroy();
+		meters[i].destroy();
 		delete fighter[i];
 		camera->fighter[i] = nullptr;
 	}
@@ -298,7 +294,7 @@ void Battle::process_main() {
 		glm::ivec2 offset = debug_offset - glm::vec2(fighter[0]->pos);
 		anchor.x *= fighter[0]->facing_dir;
 		offset.x *= fighter[0]->facing_dir;
-		std::cout << "Script: " << fighter[0]->move_script.name << ", frame: " << fighter[0]->frame << "\n";
+		std::cout << "Script: " << fighter[0]->active_move_script.name << ", frame: " << fighter[0]->frame << "\n";
 		std::cout << "glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << ", " << offset.y << ")\n";
 
 	}
@@ -442,8 +438,7 @@ void Battle::process_ui() {
 void ui_thread(void* battle_arg) {
 	Battle* battle = (Battle*)battle_arg;
 	for (int i = 0; i < 2; i++) {
-		battle->health_bar[i].process();
-		battle->ex_bar[i].process();
+		battle->meters[i].process();
 	}
 	battle->timer.process();
 }
@@ -589,8 +584,7 @@ void Battle::render_world() {
 void Battle::render_ui() {
 	for (int i = 0; i < 2; i++) {
 		combo_counter[i].render();
-		health_bar[i].render();
-		ex_bar[i].render();
+		meters[i].render();
 	}
 	timer.render();
 
@@ -811,6 +805,9 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
+		int frame_advantage = 14 - (attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + attacker->get_frames_until_actionable());
+		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
+		defender->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 		return hitbox->id;
 	}
 	if (blocking && !hitbox->unblockable) {
@@ -823,6 +820,10 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 		defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
+
+		int frame_advantage = defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->get_frames_until_actionable();
+		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
+		defender->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 		return hitbox->id;
 	}
 
@@ -834,6 +835,10 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
 	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
+
+	int frame_advantage = defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->get_frames_until_actionable();
+	attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
+	defender->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 	return hitbox->id;
 }
 
@@ -1081,7 +1086,6 @@ bool Battle::event_hit_collide_player() {
 	for (int i = 0; i < 2; i++) {
 		if (players_hit[i]) {
 			fighter[i]->change_status(post_hit_status[i], true, false);
-			fighter[i]->move_script.move_script();
 			fighter[i]->update_hurtbox_pos();
 		}
 	}
@@ -1119,8 +1123,6 @@ void Battle::event_grab_collide_player() {
 				fighter[!i]->change_status(grabboxes[!i]->attacker_status_if_hit);
 				fighter[i]->change_status(grabboxes[!i]->defender_status_if_hit);
 			}
-			fighter[i]->move_script.move_script();
-			fighter[!i]->move_script.move_script();
 			fighter[i]->update_hurtbox_pos();
 			fighter[!i]->update_hurtbox_pos();
 			return;
@@ -1212,7 +1214,6 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 	}
 	if (p2_hit) {
 		p2->change_status(p2_status_post_hit, true, false);
-		p2->move_script.move_script();
 		p2->update_hurtbox_pos();
 	}
 }
@@ -1270,88 +1271,69 @@ int Battle::get_damage_status(int hit_status, int situation_kind) {
 	}
 }
 
-HealthBar::HealthBar() {
+BattleMeter::BattleMeter() {
 	health = nullptr;
 	max_health = 0.0;
-}
-
-void HealthBar::init(Fighter* fighter) {
-	health_texture.init("resource/ui/battle/hp/health.png");
-	bar_texture.init("resource/ui/battle/hp/bar.png");
-	if (fighter->id) {
-		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		health_texture.flip_h();
-		bar_texture.flip_h();
-	}
-	else {
-		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	}
-	health_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
-	bar_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
-	health = &fighter->fighter_float[FIGHTER_FLOAT_HEALTH];
-	max_health = fighter->get_local_param_float("health");
-}
-
-void HealthBar::destroy() {
-	health_texture.destroy();
-	bar_texture.destroy();
-}
-
-void HealthBar::process() {
-	health_texture.scale_left_percent(*health / max_health);
-	health_texture.prepare_render();
-	bar_texture.prepare_render();
-}
-
-void HealthBar::render() {
-	health_texture.render_prepared();
-	bar_texture.render_prepared();
-}
-
-ExBar::ExBar() {
 	ex = nullptr;
 	max_ex = 0.0;
-	fighter = nullptr;
 	num_bars = 0;
 }
 
-void ExBar::init(Fighter* fighter) {
-	this->fighter = fighter;
-	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
-	max_ex = get_param_int("ex_meter_size", PARAM_FIGHTER);
+void BattleMeter::init(Fighter* fighter) {
+	health_texture.init("resource/ui/battle/hp/health.png");
+	health_border.init("resource/ui/battle/hp/bar.png");
 	ex_texture.init("resource/ui/battle/ex/ex.png");
 	ex_segment_texture.init("resource/ui/battle/ex/ex_segment.png");
-	bar_texture.init("resource/ui/battle/ex/bar.png");
-	ex_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
-	ex_segment_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
-	num_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
-
-	if (fighter->id == 0) {
-		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-	}
-	else {
+	ex_border.init("resource/ui/battle/ex/bar.png");
+	
+	if (fighter->id) {
+		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		health_border.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
 		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
-		bar_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_border.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+
+		health_texture.flip_h();
+		health_border.flip_h();
 		ex_texture.flip_h();
 		ex_segment_texture.flip_h();
-		bar_texture.flip_h();
+		ex_border.flip_h();
 	}
-	ex_texture.scale_right_percent(0);
-	ex_segment_texture.scale_right_percent(0);
+	else {
+		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		health_border.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		ex_border.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+	}
+	health_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
+	health_border.set_pos(glm::vec3(50.0, 57.0, 0.0));
+	ex_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
+	ex_segment_texture.set_pos(glm::vec3(119.0, 60.0, 0.0));
+
+	health = &fighter->fighter_float[FIGHTER_FLOAT_HEALTH];
+	max_health = fighter->get_local_param_float("health");
+	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
+	max_ex = get_param_int("ex_meter_size", PARAM_FIGHTER);
+	num_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
+
+	ex_texture.scale_right_percent(0.0);
+	ex_segment_texture.scale_right_percent(0.0);
 }
 
-void ExBar::destroy() {
+void BattleMeter::destroy() {
+	health_texture.destroy();
+	health_border.destroy();
 	ex_texture.destroy();
 	ex_segment_texture.destroy();
-	bar_texture.destroy();
+	ex_border.destroy();
 }
 
-void ExBar::process() {
+void BattleMeter::process() {
+	health_texture.scale_left_percent(*health / max_health);
+	health_texture.prepare_render();
+	health_border.prepare_render();
+
 	ex_texture.set_right_target(*ex / max_ex, 6);
 
 	int segments = floor(*ex / (max_ex / num_bars));
@@ -1363,13 +1345,15 @@ void ExBar::process() {
 	ex_segment_texture.process();
 	ex_texture.prepare_render();
 	ex_segment_texture.prepare_render();
-	bar_texture.prepare_render();
+	ex_border.prepare_render();
 }
 
-void ExBar::render() {
+void BattleMeter::render() {
+	health_texture.render_prepared();
+	health_border.render_prepared();
 	ex_texture.render_prepared();
 	ex_segment_texture.render_prepared();
-	bar_texture.render_prepared();
+	ex_border.render_prepared();
 }
 
 PlayerIndicator::PlayerIndicator() {

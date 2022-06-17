@@ -10,13 +10,13 @@ void Roy::load_move_scripts() {
 		return;
 	});
 	script("wait", [this]() {
-		if (is_excute_frame(0)) {
-			rate = 0.5;
-			new_hurtbox(0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
-			new_hurtbox(1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
-			new_hurtbox(2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
-			new_hurtbox(3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&BattleObject::SET_RATE, 1, 0.5);
+			push_function(&Fighter::NEW_HURTBOX, 3, 0, glm::vec2(-130, 0), glm::vec2(0, 50));
+			push_function(&Fighter::NEW_HURTBOX, 3, 1, glm::vec2(0, 0), glm::vec2(125, 80));
+			push_function(&Fighter::NEW_HURTBOX, 3, 2, glm::vec2(-35, 35), glm::vec2(65, 160));
+			push_function(&Fighter::NEW_HURTBOX, 3, 3, glm::vec2(35, 120), glm::vec2(115, 145));
+		});
 	});
 	script("walk_f", [this]() {
 		if (is_excute_frame(0)) {

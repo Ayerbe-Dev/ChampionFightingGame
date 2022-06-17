@@ -43,18 +43,16 @@ void Projectile::projectile_post() {
 
 void Projectile::process_status() {
 	(this->*status_script[status_kind])();
-	move_script.move_script();
+	active_move_script.execute(frame);
 }
 
-void Projectile::process_animate() {
-	attempted_excutes = 0;
-	
+void Projectile::process_animate() {	
 	frame += rate;
 
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length && anim_kind->length != -1) {
 			frame = 0.0;
-			excute_count = 0;
+			active_move_script.activate();
 			clear_hitbox_all();
 			is_anim_end = true;
 		}

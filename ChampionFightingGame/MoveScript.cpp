@@ -1,10 +1,58 @@
 #include "MoveScript.h"
 
-MoveScript::MoveScript() {};
+MoveScript::MoveScript() {}
 
 MoveScript::MoveScript(std::string name, std::function<void()> move_script) {
 	this->name = name;
 	this->move_script = move_script;
+}
+
+void MoveScript::activate() {
+	while (!frames.empty()) {
+		frames.pop();
+	}
+	move_script();
+}
+
+void MoveScript::execute(float frame) {
+	if (frames.empty()) {
+		return;
+	}
+	if (frames.front().frame == frame) {
+		frames.front().execute();
+		frames.pop();
+	}
+}
+
+ScriptFrame::ScriptFrame() {
+	frame = -1;
+}
+
+ScriptFrame::ScriptFrame(float frame) {
+	this->frame = frame;
+}
+
+void ScriptFrame::execute() {
+	while (!function_calls.empty()) {
+		function_calls.front()(function_args.front());
+		function_args.front().destroy();
+		function_calls.pop();
+		function_args.pop();
+	}
+}
+
+ScriptArg::ScriptArg() {
+	this->num_args = 0;
+	this->va = std::va_list();
+}
+
+ScriptArg::ScriptArg(int num_args, std::va_list va) {
+	this->num_args = num_args;
+	this->va = va;
+}
+
+void ScriptArg::destroy() {
+	va_end(va);
 }
 
 MoveScriptTable::MoveScriptTable() {

@@ -83,7 +83,19 @@ public:
 		bool trade, bool continue_launch, bool can_chip_ko, bool can_ko);
 
 	//Script Functions
-	void push_function(void (Projectile::* function)(ScriptArg), int num_args, ...);
+	template<typename ...T>
+	void push_function(void (Projectile::* function)(ScriptArg), T... args) {
+		std::tuple<T...> tuple = std::make_tuple(args...); //Make it a tuple so we can index the args
+		std::queue<void*> queue;
+		for (int i = 0, max = sizeof...(args); i < max; i++) {
+			using Type = std::common_type_t<T...>;
+			Type* ptr = new Type;
+			*ptr = std::get<i>(tuple);
+			queue.push((void*)ptr);
+		}
+		ScriptArg sa(sizeof...(args), queue);
+		push_function((void (BattleObject::*)(ScriptArg))(function), sa);
+	}
 
 	//Script Wrappers
 

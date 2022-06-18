@@ -10,6 +10,7 @@
 #include "FighterFloat.h"
 #include "FighterFlag.h"
 #include <cstdarg>
+#include <type_traits>
 
 class Player;
 class BattleObjectManager;
@@ -145,16 +146,16 @@ public:
 	//Effect Functions
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
-		glm::vec4 rgba, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame, 
+		glm::vec4 rgba, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
 		glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
-		glm::vec4 rgba, std::string bone_name, glm::vec3 bone_offset, glm::vec3 pos_frame, 
-		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0, 
+		glm::vec4 rgba, std::string bone_name, glm::vec3 bone_offset, glm::vec3 pos_frame,
+		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0,
 		float frame = 0.0);
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
-		glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame, 
+		glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame,
 		glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
 
 	void new_effect_no_follow(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
@@ -179,7 +180,20 @@ public:
 	void execute_frame(float frame, std::function<void()> execute);
 	void execute_wait(float frames, std::function<void()> execute);
 
-	void push_function(void (BattleObject::* function)(ScriptArg), int num_args, ...);
+	template<typename ...T>
+	void push_function(void (BattleObject::* function)(ScriptArg), T... args) {
+		std::tuple<T...> tuple = std::make_tuple(args...); //Make it a tuple so we can index the args
+		std::queue<void*> queue;
+		for (int i = 0, max = sizeof...(args); i < max; i++) {
+			using Type = std::common_type_t<T...>;
+			Type* ptr = new Type;
+			*ptr = std::get<i>(tuple);
+			queue.push((void*)ptr);
+		}
+		ScriptArg sa(sizeof...(args), queue);
+		push_function(function, sa);
+	}
+
 	void push_function(void (BattleObject::* function)(ScriptArg), ScriptArg args);
 
 	//Script Wrappers

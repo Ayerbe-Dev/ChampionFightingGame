@@ -35,7 +35,6 @@ ScriptFrame::ScriptFrame(float frame) {
 void ScriptFrame::execute() {
 	while (!function_calls.empty()) {
 		function_calls.front()(function_args.front());
-		function_args.front().destroy();
 		function_calls.pop();
 		function_args.pop();
 	}
@@ -43,16 +42,20 @@ void ScriptFrame::execute() {
 
 ScriptArg::ScriptArg() {
 	this->num_args = 0;
-	this->va = std::va_list();
 }
 
-ScriptArg::ScriptArg(int num_args, std::va_list va) {
+ScriptArg::ScriptArg(int num_args, std::queue<void*> args) {
 	this->num_args = num_args;
-	this->va = va;
+	this->args = args;
 }
 
-void ScriptArg::destroy() {
-	va_end(va);
+void ScriptArg::pop() {
+	delete args.front();
+	args.pop();
+}
+
+void* ScriptArg::get_arg() {
+	return args.front();
 }
 
 MoveScriptTable::MoveScriptTable() {

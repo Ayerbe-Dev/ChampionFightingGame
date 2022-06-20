@@ -173,9 +173,6 @@ public:
 	void script(std::string name, std::function<void()> move_script);
 	void wipe_scripts();
 	void set_current_move_script(std::string anim_name);
-	bool is_excute_frame(float frame);
-	bool is_excute_wait(float frames);
-
 	void execute_frame(float frame, std::function<void()> execute);
 	void execute_wait(float frames, std::function<void()> execute);
 

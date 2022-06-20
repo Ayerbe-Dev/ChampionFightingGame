@@ -162,11 +162,15 @@ public:
 
 	//Hitbox
 	
-	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor, glm::vec2 offset,
-		int hitbox_kind, float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, 
-		int blocklag, int blockstun, bool unblockable, int attack_height, int attack_level, float hit_pushback, float block_pushback, int clank_kind, 
-		int juggle_start, int juggle_increase, int max_juggle, int hit_status, int counterhit_status, int counterhit_type, float launch_init_y, 
-		float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, bool continue_launch, bool can_chip_ko, bool can_ko, bool use_player_pos = true);
+	void new_hitbox(int id, int multihit, float damage, float chip_damage,
+		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, SituationHit situation_hit,
+		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
+		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
+		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
+		int juggle_max, ClankKind clank_kind, KoKind ko_kind, bool continue_launch,
+		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
+		float launch_max_fall_speed, float launch_speed_x, bool use_player_pos
+	);
 
 	//Grabbox
 	

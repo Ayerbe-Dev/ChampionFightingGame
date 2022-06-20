@@ -1,43 +1,42 @@
 #include "Projectile.h"
 
-void Projectile::HITBOX(ScriptArg args) {
+void Projectile::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(id, int);
 	UNWRAP(multihit, int);
-	UNWRAP(damage, float);
-	UNWRAP(chip_damage, float);
-	UNWRAP(counterhit_damage_mul, float);
-	UNWRAP(scale, int);
+	UNWRAP(damage, double);
+	UNWRAP(chip_damage, double);
+	UNWRAP(damage_scale, int);
+	UNWRAP(meter_gain, double);
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
-	UNWRAP(meter_gain_on_hit, float);
-	UNWRAP(meter_gain_on_counterhit, float);
-	UNWRAP(meter_gain_on_block, float);
-	UNWRAP(situation_hit, int);
+	UNWRAP(situation_hit, SituationHit);
+	UNWRAP(attack_level, AttackLevel);
+	UNWRAP(attack_height, AttackHeight);
 	UNWRAP(hitlag, int);
-	UNWRAP(hitstun, int);
 	UNWRAP(blocklag, int);
+	UNWRAP(hitstun, int);
 	UNWRAP(blockstun, int);
-	UNWRAP(unblockable, bool);
-	UNWRAP(hit_pushback, float);
-	UNWRAP(block_pushback, float);
+	UNWRAP(hit_pushback, double);
+	UNWRAP(block_pushback, double);
+	UNWRAP(hit_status, HitStatus);
+	UNWRAP(counterhit_status, HitStatus);
+	UNWRAP(counterhit_type, CounterhitType);
 	UNWRAP(juggle_start, int);
 	UNWRAP(juggle_increase, int);
-	UNWRAP(max_juggle, int);
-	UNWRAP(hit_status, int);
-	UNWRAP(counterhit_status, int);
-	UNWRAP(counterhit_type, int);
-	UNWRAP(launch_init_y, float);
-	UNWRAP(launch_gravity_y, float);
-	UNWRAP(launch_max_fall_speed, float);
-	UNWRAP(launch_speed_x, float);
+	UNWRAP(juggle_max, int);
 	UNWRAP(trade, bool);
+	UNWRAP(ko_kind, KoKind);
 	UNWRAP(continue_launch, bool);
-	UNWRAP(can_chip_ko, bool);
-	UNWRAP(can_ko, bool);
+	UNWRAP(disable_hitstun_parry, bool);
+	UNWRAP(launch_init_y, double);
+	UNWRAP(launch_gravity_y, double);
+	UNWRAP(launch_max_fall_speed, double);
+	UNWRAP(launch_speed_x, double);
 
-	new_hitbox(id, multihit, damage, chip_damage, counterhit_damage_mul, scale, anchor, offset, 
-	meter_gain_on_hit, meter_gain_on_counterhit, meter_gain_on_block, situation_hit, hitlag, hitstun, 
-	blocklag, blockstun, unblockable, hit_pushback, block_pushback, juggle_start, juggle_increase, 
-	max_juggle, hit_status, counterhit_status, counterhit_type, launch_init_y, launch_gravity_y, 
-	launch_max_fall_speed, launch_speed_x, trade, continue_launch, can_chip_ko, can_ko);
+	new_hitbox(id, multihit, damage, chip_damage, damage_scale, meter_gain,
+		anchor, offset, situation_hit, attack_level, attack_height, hitlag, blocklag, hitstun,
+		blockstun, hit_pushback, block_pushback, hit_status, counterhit_status, counterhit_type,
+		juggle_start, juggle_increase, juggle_max, trade, ko_kind, continue_launch,
+		disable_hitstun_parry, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x
+	);
 }

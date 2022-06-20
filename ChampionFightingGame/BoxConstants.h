@@ -2,12 +2,6 @@
 
 #define HITBOX_COUNT_MAX 9
 
-enum HitboxKind {
-	HITBOX_KIND_NORMAL,
-
-	HITBOX_KIND_MAX,
-};
-
 enum AttackLevel {
 	ATTACK_LEVEL_LIGHT,
 	ATTACK_LEVEL_MEDIUM,
@@ -39,6 +33,14 @@ enum CounterhitType {
 	COUNTERHIT_TYPE_NORMAL,
 
 	COUNTERHIT_TYPE_MAX,
+};
+
+enum KoKind {
+	KO_KIND_NORMAL,
+	KO_KIND_NONE,
+	KO_KIND_CHIP,
+
+	KO_KIND_MAX,
 };
 
 enum GrabboxKind {

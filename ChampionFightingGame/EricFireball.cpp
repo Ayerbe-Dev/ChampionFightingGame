@@ -29,11 +29,9 @@ void EricFireball::load_move_scripts() {
 		return;
 	});
 	script("move", [this]() {
-		if (is_excute_frame(0)) {
-			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false, true);
-			new_hitbox(2, 1, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false, true);
-			new_hitbox(3, 2, 30, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, 10, 10, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NONE, 10.0, 0.0, 0.0, 1.0, true, true, false, true);
-		}
+		execute_frame(0, [this]() {
+			push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, KO_KIND_CHIP, true, 10.0, 0.0, 0.0, 1.0);
+		});
 	});
 }
 

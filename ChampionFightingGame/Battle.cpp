@@ -515,7 +515,7 @@ void Battle::render_world() {
 
 	EffectManager::get_instance()->render();
 
-	bool using_ssao = true;
+	bool using_ssao = false;
 	if (using_ssao) {
 		//SSAO PASS
 

@@ -5,6 +5,7 @@ Priest::Priest() {
 }
 
 Priest::Priest(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_PRIEST;
 	chara_name = "priest";

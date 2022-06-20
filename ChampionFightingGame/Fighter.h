@@ -84,7 +84,7 @@ public:
 
 	//Setup
 
-	void super_init(int id);
+	void super_init();
 	void load_model_shader();
 	void load_anim_list();
 	void load_status_scripts();
@@ -231,22 +231,16 @@ public:
 	//Script Functions
 	template<typename ...T>
 	void push_function(void (Fighter::* function)(ScriptArg), T... args) {
-		std::tuple<T...> tuple = std::make_tuple(args...); //Make it a tuple so we can index the args
-		std::queue<void*> queue;
-		for (int i = 0, max = sizeof...(args); i < max; i++) {
-			using Type = std::common_type_t<T...>;
-			Type* ptr = new Type;
-			*ptr = std::get<i>(tuple);
-			queue.push((void*)ptr);
-		}
+		std::queue<std::any> queue = extract_variadic_to_queue(args...);
 		ScriptArg sa(sizeof...(args), queue);
-		push_function((void (BattleObject::*)(ScriptArg))(function), sa);
+		active_script_frame.function_calls.push((void (BattleObject::*)(ScriptArg))function);
+		active_script_frame.function_args.push(sa);
 	}
 
 	//Script Wrappers
 
 	void NEW_HURTBOX(ScriptArg args);
-
+	void NEW_HITBOX(ScriptArg args);
 
 	//Status Scripts
 

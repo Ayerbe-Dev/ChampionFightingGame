@@ -6,9 +6,7 @@
 #include "GameManager.h"
 #include <fstream>
 
-void Fighter::super_init(int id) {
-	this->id = id;
-	
+void Fighter::super_init() {
 	sound_manager->add_sound_player(id);
 	effect_manager->add_effect_caster(id);
 	stage = battle_object_manager->stage;

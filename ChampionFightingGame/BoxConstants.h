@@ -2,13 +2,13 @@
 
 #define HITBOX_COUNT_MAX 9
 
-enum {
+enum HitboxKind {
 	HITBOX_KIND_NORMAL,
 
 	HITBOX_KIND_MAX,
 };
 
-enum {
+enum AttackLevel {
 	ATTACK_LEVEL_LIGHT,
 	ATTACK_LEVEL_MEDIUM,
 	ATTACK_LEVEL_HEAVY,
@@ -16,7 +16,7 @@ enum {
 	ATTACK_LEVEL_MAX,
 };
 
-enum {
+enum ClankKind {
 	CLANK_KIND_NORMAL,
 	CLANK_KIND_CLANK,
 	CLANK_KIND_CONTINUE,
@@ -24,7 +24,7 @@ enum {
 	CLANK_KIND_MAX,
 };
 
-enum {
+enum HitStatus {
 	HIT_STATUS_NORMAL,
 	HIT_STATUS_CRUMPLE,
 	HIT_STATUS_LAUNCH,
@@ -33,7 +33,7 @@ enum {
 	HIT_STATUS_MAX,
 };
 
-enum {
+enum CounterhitType {
 	COUNTERHIT_TYPE_NONE,
 	COUNTERHIT_TYPE_AERIAL,
 	COUNTERHIT_TYPE_NORMAL,
@@ -41,7 +41,7 @@ enum {
 	COUNTERHIT_TYPE_MAX,
 };
 
-enum {
+enum GrabboxKind {
 	GRABBOX_KIND_NORMAL,
 	GRABBOX_KIND_NOTECH,
 	GRABBOX_KIND_HITSTUN,
@@ -50,7 +50,7 @@ enum {
 	GRABBOX_KIND_MAX,
 };
 
-enum {
+enum HurtboxKind {
 	HURTBOX_KIND_NORMAL,
 	HURTBOX_KIND_COUNTER,
 	HURTBOX_KIND_RIGHT_OF_WAY,
@@ -58,7 +58,7 @@ enum {
 	HURTBOX_KIND_MAX,
 };
 
-enum {
+enum IntangibleKind {
 	INTANGIBLE_KIND_HIGH,
 	INTANGIBLE_KIND_MID,
 	INTANGIBLE_KIND_LOW,
@@ -72,7 +72,7 @@ enum {
 	INTANGIBLE_KIND_MAX,
 };
 
-enum {
+enum AttackHeight {
 	ATTACK_HEIGHT_HIGH,
 	ATTACK_HEIGHT_MID,
 	ATTACK_HEIGHT_LOW,
@@ -80,7 +80,7 @@ enum {
 	ATTACK_HEIGHT_MAX,
 };
 
-enum {
+enum SituationHit {
 	SITUATION_HIT_GROUND,
 	SITUATION_HIT_AIR,
 	SITUATION_HIT_DOWN,

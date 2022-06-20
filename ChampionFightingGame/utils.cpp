@@ -7,6 +7,8 @@
 #include <random>
 #include <thread>
 #include <mutex>
+#include "BattleObject.h"
+#include <boost/fusion/algorithm.hpp>
 
 extern std::mutex file_mutex;
 

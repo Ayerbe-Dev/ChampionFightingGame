@@ -5,6 +5,7 @@ Atlas::Atlas() {
 }
 
 Atlas::Atlas(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_ATLAS;
 	chara_name = "atlas";

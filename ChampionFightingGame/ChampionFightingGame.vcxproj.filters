@@ -1176,6 +1176,9 @@
     <ClInclude Include="Mouse.h">
       <Filter>Header Files\Engine\GameData</Filter>
     </ClInclude>
+    <ClInclude Include="VariadicHelpers.h">
+      <Filter>Header Files\Helper Funcs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">

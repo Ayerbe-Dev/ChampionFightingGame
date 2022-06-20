@@ -11,6 +11,7 @@
 
 Fighter::Fighter() {
 	has_model = true;
+	chara_kind = CHARA_KIND_ROY;
 }
 
 Fighter::~Fighter() {
@@ -213,7 +214,7 @@ void Fighter::process_status() {
 	if (!is_status_delay()) {
 		(this->*status_script[status_kind])();
 	}
-	active_move_script.execute(frame);
+	active_move_script.execute(this, frame);
 }
 
 void Fighter::process_post_status() {

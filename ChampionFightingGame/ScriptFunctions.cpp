@@ -61,8 +61,3 @@ void BattleObject::execute_wait(float frames, std::function<void()> execute) {
 	active_move_script.frames.push(active_script_frame);
 	last_execute_frame += frames;
 }
-
-void BattleObject::push_function(void (BattleObject::* function)(ScriptArg), ScriptArg args) {
-	active_script_frame.function_calls.push(std::bind(function, this, std::placeholders::_1));
-	active_script_frame.function_args.push(args);
-}

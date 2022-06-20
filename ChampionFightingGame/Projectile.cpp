@@ -43,7 +43,7 @@ void Projectile::projectile_post() {
 
 void Projectile::process_status() {
 	(this->*status_script[status_kind])();
-	active_move_script.execute(frame);
+	active_move_script.execute(this, frame);
 }
 
 void Projectile::process_animate() {	

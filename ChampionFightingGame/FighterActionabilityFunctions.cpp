@@ -16,13 +16,20 @@ int Fighter::get_frames_until_actionable() {
 		}
 
 		int ret = 0;
-		float sim_rate = rate * battle_object_manager->get_time_multiplier(id);
+		double sim_rate = rate * battle_object_manager->get_time_multiplier(id);
 
 		//TODO: This block assumes that our motion rate is constant, when we have the ability to change
 		//it midway through. We should figure out a way to read through a script and check if it
 		//will include changing the motion rate.
 
+		//Update: I hope past Henry knows the bullshit he put me through to make the following possible.
+
 		for (float sim_frame = frame + sim_rate; sim_frame < target_frame; sim_frame += sim_rate) {
+			ScriptArg args;
+			if (active_move_script.has_function(sim_frame, &BattleObject::SET_RATE, &args)) {
+				UNWRAP_NO_DECL(sim_rate);
+				sim_rate *= battle_object_manager->get_time_multiplier(id);
+			}
 			ret++;
 		}
 	

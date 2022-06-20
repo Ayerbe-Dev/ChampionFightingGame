@@ -5,6 +5,7 @@ Vesuvius::Vesuvius() {
 }
 
 Vesuvius::Vesuvius(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_VESUVIUS;
 	chara_name = "vesuvius";

@@ -1,4 +1,5 @@
 #include "MoveScript.h"
+#include "BattleObject.h"
 
 MoveScript::MoveScript() {}
 
@@ -14,13 +15,41 @@ void MoveScript::activate() {
 	move_script();
 }
 
-void MoveScript::execute(float frame) {
+void MoveScript::execute(BattleObject* object, float frame) {
 	if (frames.empty()) {
 		return;
 	}
 	if (frames.front().frame == frame) {
-		frames.front().execute();
+		frames.front().execute(object);
 		frames.pop();
+	}
+}
+
+class BattleObject;
+
+bool MoveScript::has_function(float frame, void(BattleObject::* func)(ScriptArg), ScriptArg* args_ret) {
+	std::queue<ScriptFrame> temp_frames = frames;
+	while ((!temp_frames.empty()) && temp_frames.front().frame != frame) {
+		temp_frames.pop();
+	}
+	if (temp_frames.empty()) {
+		return false;
+	}
+	else {
+		ScriptFrame temp_sf = temp_frames.front();
+		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != func)) {
+			temp_sf.function_calls.pop();
+			temp_sf.function_args.pop();
+		}
+		if (temp_sf.function_calls.empty()) {
+			return false;
+		}
+		else {
+			if (args_ret != nullptr) {
+				*args_ret = temp_sf.function_args.front();
+			}
+			return true;
+		}
 	}
 }
 
@@ -32,9 +61,9 @@ ScriptFrame::ScriptFrame(float frame) {
 	this->frame = frame;
 }
 
-void ScriptFrame::execute() {
+void ScriptFrame::execute(BattleObject* object) {
 	while (!function_calls.empty()) {
-		function_calls.front()(function_args.front());
+		std::mem_fn(function_calls.front())(object, function_args.front());
 		function_calls.pop();
 		function_args.pop();
 	}
@@ -44,18 +73,19 @@ ScriptArg::ScriptArg() {
 	this->num_args = 0;
 }
 
-ScriptArg::ScriptArg(int num_args, std::queue<void*> args) {
+ScriptArg::ScriptArg(int num_args, std::queue<std::any> args) {
 	this->num_args = num_args;
 	this->args = args;
 }
 
 void ScriptArg::pop() {
-	delete args.front();
 	args.pop();
 }
 
-void* ScriptArg::get_arg() {
-	return args.front();
+std::any ScriptArg::get_arg() {
+	std::any ret = args.front();
+	pop();
+	return ret;
 }
 
 MoveScriptTable::MoveScriptTable() {

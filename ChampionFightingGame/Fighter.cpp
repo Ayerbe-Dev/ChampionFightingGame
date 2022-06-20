@@ -11,6 +11,7 @@
 
 Fighter::Fighter() {
 	has_model = true;
+	chara_kind = CHARA_KIND_ROY;
 }
 
 Fighter::~Fighter() {
@@ -107,7 +108,6 @@ void Fighter::process_post_projectiles() {
 }
 
 void Fighter::process_animate() {
-	attempted_excutes = 0;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
 	}
@@ -123,7 +123,7 @@ void Fighter::process_animate() {
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
-			excute_count = 0;
+			active_move_script.activate();
 			clear_grabbox_all();
 			clear_hurtbox_all();
 			clear_hitbox_all();
@@ -214,7 +214,7 @@ void Fighter::process_status() {
 	if (!is_status_delay()) {
 		(this->*status_script[status_kind])();
 	}
-	move_script.move_script();
+	active_move_script.execute(this, frame);
 }
 
 void Fighter::process_post_status() {

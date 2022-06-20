@@ -5,6 +5,7 @@ Alejandro::Alejandro() {
 }
 
 Alejandro::Alejandro(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_ALEJANDRO;
 	chara_name = "alejandro";

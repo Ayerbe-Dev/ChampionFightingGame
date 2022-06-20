@@ -5,6 +5,7 @@ Ramona::Ramona() {
 }
 
 Ramona::Ramona(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_RAMONA;
 	chara_name = "ramona";

@@ -12,38 +12,6 @@ class Camera;
 
 void battle_main();
 
-class HealthBar {
-public:
-	HealthBar();
-	void init(Fighter* fighter);
-	void destroy();
-	void process();
-	void render();
-
-	GameTexture health_texture;
-	GameTexture bar_texture;
-	float* health;
-	float max_health;
-};
-
-class ExBar {
-public:
-	ExBar();
-	void init(Fighter* fighter);
-	void destroy();
-	void process();
-	void render();
-
-	Fighter* fighter;
-	GameTexture ex_texture;
-	GameTexture ex_segment_texture;
-	GameTexture bar_texture;
-	float* ex;
-	float max_ex;
-	int num_bars;
-	int prev_segments = 0;
-};
-
 class PlayerIndicator {
 public:
 	Fighter* fighter;
@@ -77,6 +45,28 @@ public:
 	GameTexture frame_texture;
 	GameTexture deca_frame_texture;
 	GameTexture clock;
+};
+
+class BattleMeter {
+public:
+	BattleMeter();
+	void init(Fighter* fighter);
+	void destroy();
+	void process();
+	void render();
+
+	GameTexture health_texture;
+	GameTexture health_border;
+	GameTexture ex_texture;
+	GameTexture ex_segment_texture;
+	GameTexture ex_border;
+
+	float* health;
+	float max_health;
+	float* ex;
+	float max_ex;
+	int num_bars;
+	int prev_segments = 0;
 };
 
 class ComboCounter {
@@ -140,9 +130,8 @@ public:
 
 	Player* player[2];
 
-	HealthBar health_bar[2];
+	BattleMeter meters[2];
 
-	ExBar ex_bar[2];
 	PlayerIndicator player_indicator[2];
 	ComboCounter combo_counter[2];
 	GameTimer timer;

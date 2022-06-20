@@ -5,6 +5,7 @@ Aziel::Aziel() {
 }
 
 Aziel::Aziel(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_AZIEL;
 	chara_name = "aziel";

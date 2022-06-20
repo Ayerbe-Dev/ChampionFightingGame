@@ -5,6 +5,7 @@ Leon::Leon() {
 }
 
 Leon::Leon(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	if (player->chara_kind == CHARA_KIND_LEON) {
 		this->chara_kind = CHARA_KIND_LEON;

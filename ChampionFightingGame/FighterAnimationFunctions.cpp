@@ -25,10 +25,6 @@ void Fighter::reenter_last_anim() {
 }
 
 bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
-	excute_count = 0;
-	attempted_excutes = 0;
-	last_excute_frame = 0;
-
 	prev_anim_rate = this->rate;
 	prev_anim_frame = this->frame;
 

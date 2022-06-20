@@ -69,7 +69,6 @@ public:
 	//Animation
 
 	void change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0);
-	void startAnimation(Animation* animation);
 
 	//Status
 
@@ -82,6 +81,22 @@ public:
 		int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_start, int juggle_increase, int max_juggle, int hit_status, 
 		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, 
 		bool trade, bool continue_launch, bool can_chip_ko, bool can_ko);
+
+	//Script Functions
+	template<typename ...T>
+	void push_function(void (Projectile::* function)(ScriptArg), T... args) {
+		std::queue<std::any> queue = extract_variadic_to_queue(args...);
+		ScriptArg sa(sizeof...(args), queue);
+		active_script_frame.function_calls.push((void (BattleObject::*)(ScriptArg))function);
+		active_script_frame.function_args.push(sa);
+	}
+
+
+	//Script Wrappers
+
+	void HITBOX(ScriptArg args);
+
+	//Status Scripts
 
 	virtual void status_default();
 	virtual void enter_status_default();

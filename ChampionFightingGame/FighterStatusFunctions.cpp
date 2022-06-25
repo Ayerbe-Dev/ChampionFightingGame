@@ -10,6 +10,7 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
+		disable_all_cancels();
 		if (call_end_status) {
 			(this->*exit_status_script[status_kind])();
 		}

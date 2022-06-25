@@ -71,7 +71,7 @@
       <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
     </ClCompile>
     <ClCompile Include="Ramona.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
+      <Filter>2. Code Files\Objects\Fighter\Chara\Roy\Ramona</Filter>
     </ClCompile>
     <ClCompile Include="Roy.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
@@ -185,10 +185,10 @@
       <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
     </ClCompile>
     <ClCompile Include="RamonaStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
+      <Filter>2. Code Files\Objects\Fighter\Chara\Roy\Ramona</Filter>
     </ClCompile>
     <ClCompile Include="RamonaMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
+      <Filter>2. Code Files\Objects\Fighter\Chara\Roy\Ramona</Filter>
     </ClCompile>
     <ClCompile Include="PriestStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
@@ -2152,9 +2152,6 @@
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Roy">
       <UniqueIdentifier>{eccec2bf-663d-4ad0-821f-cd830c44a237}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Ramona">
-      <UniqueIdentifier>{4fcf516b-1c80-4569-9f89-87f78d9d3a97}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Priest">
       <UniqueIdentifier>{a9aff078-cafc-444b-89e3-72ac6d17eed2}</UniqueIdentifier>
     </Filter>
@@ -2743,6 +2740,9 @@
     </Filter>
     <Filter Include="2. Code Files\Game State\Battle">
       <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Roy\Ramona">
+      <UniqueIdentifier>{4fcf516b-1c80-4569-9f89-87f78d9d3a97}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

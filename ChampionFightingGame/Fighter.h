@@ -39,6 +39,10 @@ public:
 	std::vector<void (Fighter::*)(void)> enter_status_script;
 	std::vector<void (Fighter::*)(void)> exit_status_script;
 
+	//Array of flags to determine what can and cannot be canceled into
+
+	bool cancel_flags[CANCEL_CAT_MAX][CANCEL_KIND_MAX];
+
 	/*
 		FUNCTIONS
 	*/
@@ -101,9 +105,9 @@ public:
 	bool check_button_release(unsigned int button); //Checks if a button was released on that frame
 	int get_stick_dir(bool internal_dir = true); //Stick direction, relative to your facing direction. Returns num pad notation.
 	int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
+	bool get_normal_input(int attack_kind, unsigned int button = 0, int stick_dir = 0);
 	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
-	bool get_normal_cancel(int attack_kind, unsigned int button, int situation_kind, int stick = 10); //Attempts to cancel attack_kind into a normal based on 
-		//button if the situation_kind is correct
+	bool normal_cancel(int attack_kind, int situation_kind, unsigned int button = 0, int stick_dir = 10);
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
 
@@ -188,6 +192,11 @@ public:
 	bool is_actionable();
 	bool can_kara();
 	bool has_meter(int bars);
+	void enable_all_cancels();
+	void enable_cancel(int cat, int kind);
+	void disable_all_cancels();
+	void disable_cancel(int cat, int kind);
+	bool is_enable_cancel(int cat, int kind);
 
 	//Cinematic
 
@@ -291,6 +300,9 @@ public:
 
 	void START_CINEMATIC_SEQUENCE(ScriptArg args);
 	void RESET_WORLD_RATE(ScriptArg args);
+
+	void ENABLE_CANCEL(ScriptArg args);
+	void DISABLE_CANCEL(ScriptArg args);
 
 	void CHANGE_STATUS(ScriptArg args);
 

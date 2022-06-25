@@ -85,3 +85,58 @@ bool Fighter::has_meter(int bars) {
 	}
 	return false;
 }
+
+void Fighter::enable_all_cancels() {
+	for (int i = 0; i < CANCEL_CAT_MAX; i++) {
+		for (int i2 = 0; i2 < CANCEL_KIND_MAX; i2++) {
+			cancel_flags[i][i2] = true;
+		}
+	}
+}
+
+void Fighter::enable_cancel(int cat, int kind) {
+	if (cat >= CANCEL_CAT_MAX) {
+		int max = cat - CANCEL_CAT_MAX;
+		for (int i = 0; i < max; i++) {
+			cancel_flags[i][kind] = true;
+		}
+	}
+	else {
+		cancel_flags[cat][kind] = true;
+	}
+}
+
+void Fighter::disable_all_cancels() {
+	for (int i = 0; i < CANCEL_CAT_MAX; i++) {
+		for (int i2 = 0; i2 < CANCEL_KIND_MAX; i2++) {
+			cancel_flags[i][i2] = false;
+		}
+	}
+}
+
+void Fighter::disable_cancel(int cat, int kind) {
+	if (cat >= CANCEL_CAT_MAX) {
+		int max = cat - CANCEL_CAT_MAX;
+		for (int i = 0; i < max; i++) {
+			cancel_flags[i][kind] = false;
+		}
+	}
+	else {
+		cancel_flags[cat][kind] = false;
+	}
+}
+
+bool Fighter::is_enable_cancel(int cat, int kind) {
+	if (cat >= CANCEL_CAT_MAX) {
+		int max = cat - CANCEL_CAT_MAX;
+		for (int i = 0; i < max; i++) {
+			if (cancel_flags[i][kind]) {
+				return true;
+			}
+		}
+		return false;
+	}
+	else {
+		return cancel_flags[cat][kind];
+	}
+}

@@ -193,7 +193,6 @@ bool Fighter::common_air_status_general() {
 }
 
 void Fighter::status_wait() {
-	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 	if (common_ground_status_act()) {
 		return;
 	}
@@ -201,6 +200,7 @@ void Fighter::status_wait() {
 
 
 void Fighter::enter_status_wait() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait");
 
@@ -764,6 +764,7 @@ void Fighter::status_advance() {
 }
 
 void Fighter::enter_status_advance() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_OTHER;
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;
 	change_anim("advance_high");
@@ -780,6 +781,7 @@ void Fighter::status_advance_forward() {
 }
 
 void Fighter::enter_status_advance_forward() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_OTHER;
 	change_anim("advance_forward");
 }
 
@@ -794,6 +796,7 @@ void Fighter::status_advance_back() {
 }
 
 void Fighter::enter_status_advance_back() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_OTHER;
 	change_anim("advance_back");
 }
 

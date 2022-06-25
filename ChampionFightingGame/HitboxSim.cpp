@@ -74,6 +74,10 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 				case (ATTACK_KIND_CHK): {
 					attack_strength = 3;
 				} break;
+				case (ATTACK_KIND_SUPER_236236):
+				case (ATTACK_KIND_SUPER_214214): {
+					attack_strength = 5;
+				}
 				default: {
 					attack_strength = 4;
 				}
@@ -82,6 +86,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			float damage;
 			float chip_damage;
 			float meter_gain;
+			int damage_scale;
 			std::string situation_hit;
 			std::string attack_level;
 			std::string attack_height;
@@ -110,6 +115,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					attack_level = "ATTACK_LEVEL_LIGHT";
 					hit_pushback = 10.0;
 					block_pushback = 10.0;
+					damage_scale = 1;
 					hit_status = "HIT_STATUS_NORMAL";
 					counterhit_status = "HIT_STATUS_NORMAL";
 					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
@@ -122,6 +128,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					std::cin >> hit_pushback;
 					std::cout << "Block Pushback?\n";
 					std::cin >> block_pushback;
+					damage_scale = 3;
 					hit_status = "HIT_STATUS_NORMAL";
 					counterhit_status = "HIT_STATUS_NORMAL";
 					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
@@ -134,6 +141,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					std::cin >> hit_pushback;
 					std::cout << "Block Pushback?\n";
 					std::cin >> block_pushback;
+					damage_scale = 1;
 					if (attack_kind == ATTACK_KIND_CHK) {
 						hit_status = "HIT_STATUS_KNOCKDOWN";
 						counterhit_status = "HIT_STATUS_KNOCKDOWN";
@@ -215,9 +223,12 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					command_loop = true;
 					ko_kind = "KO_KIND_NORMAL";
 				} break;
-				case 4: {
+				case 4:
+				case 5: {
 					std::cout << "Damage?\n";
 					std::cin >> damage;
+					std::cout << "Damage Scale?\n";
+					std::cin >> damage_scale;
 					continue_launch = "true";
 					attack_level = "ATTACK_LEVEL_HEAVY";
 					std::cout << "Hit Pushback?\n";
@@ -293,7 +304,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 						command_loop = false;
 					}
 					command_loop = true;
-					if (fighter->get_anim().starts_with("super")) {
+					if (attack_strength == 5) {
 						std::cout << "Can KO? (yes/no)\n";
 						while (command_loop) {
 							std::cin >> command_input;
@@ -335,8 +346,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			std::cout << "Chip Damage? (enter as % of damage)\n";
 			std::cin >> command_input_f;
 			chip_damage = (command_input_f / 100.0) * damage;
-			std::cout << "Meter Gain? \n";
-			std::cin >> meter_gain;
+			meter_gain = damage * 0.8;
 			std::cout << "Hits which situations? (ground/air/both/otg/all)\n";
 			while (command_loop) {
 				std::cin >> command_input;
@@ -421,8 +431,8 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			std::cout << "Script: " << fighter->active_move_script.name << ", frame: " << fighter->frame << "\n";
 			std::cout << "push_function(&Fighter::NEW_HITBOX, /*ID*/ " << active_box[active_cat] << 
 				", /*Multihit ID*/ " << multihit << ", /*Damage*/ " << damage << ", /*Chip Damage*/ "
-				<< chip_damage << ", /*Damage Scale*/ 1, /*Meter Gain*/ " << meter_gain 
-				<< ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << 
+				<< chip_damage << ", /*Damage Scale*/ " << damage_scale << ", /*Meter Gain*/ " << 
+				meter_gain << ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << 
 				", " << offset.y << "), " << situation_hit << ", " << attack_level << ", " <<
 				attack_height << ", /*Hitlag*/ " << hitlag << ", /*Blocklag*/ " << blocklag << 
 				", /*Hitstun*/ " << hitstun << ", /*Blockstun*/ " << blockstun << ", /*Hit Pushback*/ "

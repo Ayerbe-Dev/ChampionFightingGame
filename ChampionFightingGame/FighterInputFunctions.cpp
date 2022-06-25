@@ -78,7 +78,27 @@ int Fighter::get_flick_dir(bool internal_dir) {
 	}
 }
 
+bool Fighter::get_normal_input(int attack_kind, unsigned int button, int stick_dir) {
+	if (attack_kind >= ATTACK_KIND_OTHER) {
+		if (attack_kind == ATTACK_KIND_OTHER) {
+			return check_button_input(button) && get_stick_dir() == stick_dir;
+		}
+		return false;
+	}
+
+	bool button_check;
+	bool stick_check;
+	
+	button_check = check_button_input((attack_kind % 6) + 8);
+	stick_check = (attack_kind >= 7) == (get_stick_dir() < 4); 
+	return button_check && (stick_check || situation_kind != FIGHTER_SITUATION_GROUND);
+}
+
 int Fighter::get_special_input(int special_kind, unsigned int button, int charge_frames) {
+	if (special_kind < ATTACK_KIND_SPECIAL_236) {
+		return false;
+	}
+
 	int button_check = 0;
 	bool input_check = false;
 
@@ -100,7 +120,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 		}
 	}
 	if (button_check) {
-		if (special_kind == SPECIAL_KIND_236) {
+		if (special_kind == ATTACK_KIND_SPECIAL_236) {
 			if (fighter_int[FIGHTER_INT_236_STEP] == 2 && get_stick_dir() == 6) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -113,7 +133,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_236_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_214) {
+		else if (special_kind == ATTACK_KIND_SPECIAL_214) {
 			if (fighter_int[FIGHTER_INT_214_STEP] == 2 && get_stick_dir() == 4) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -126,7 +146,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_214_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_623) {
+		else if (special_kind == ATTACK_KIND_SPECIAL_623) {
 			if (fighter_int[FIGHTER_INT_623_STEP] == 2 && get_stick_dir() == 3) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -139,7 +159,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_623_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_41236) {
+		else if (special_kind == ATTACK_KIND_SPECIAL_41236) {
 			if (fighter_int[FIGHTER_INT_41236_STEP] == 4 && get_stick_dir() == 6) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -152,7 +172,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_41236_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_63214) {
+		else if (special_kind == ATTACK_KIND_SPECIAL_63214) {
 			if (fighter_int[FIGHTER_INT_63214_STEP] == 4 && get_stick_dir() == 4) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -165,7 +185,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_63214_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_236236) {
+		else if (special_kind == ATTACK_KIND_SUPER_236236) {
 			if (fighter_int[FIGHTER_INT_236236_STEP] == 5 && get_stick_dir() == 6) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -178,7 +198,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_236236_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_214214) {
+		else if (special_kind == ATTACK_KIND_SUPER_214214) {
 			if (fighter_int[FIGHTER_INT_214214_STEP] == 5 && get_stick_dir() == 4) {
 				button_check = SPECIAL_INPUT_JUST;
 				input_check = true;
@@ -191,7 +211,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_214_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_CHARGE_DOWN) {
+		else if (special_kind == ATTACK_KIND_SPECIAL_CHARGE_DOWN) {
 			input_check = (fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 8);
 			if (input_check && get_flick_dir() == 8) {
 				button_check = SPECIAL_INPUT_JUST;
@@ -202,7 +222,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 				fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = 0;
 			}
 		}
-		else if (special_kind == SPECIAL_KIND_CHARGE_BACK) {
+		else if (special_kind == ATTACK_KIND_SPECIAL_CHARGE_BACK) {
 			input_check = (fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 6);
 			if (input_check && get_flick_dir() == 6) {
 				button_check = SPECIAL_INPUT_JUST;
@@ -221,68 +241,28 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 	}
 }
 
-bool Fighter::get_normal_cancel(int attack_kind, unsigned int button, int situation_kind, int stick) {
-	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == attack_kind && check_button_input(button) && situation_kind == this->situation_kind) {
-		int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
-		if (button == BUTTON_LP) {
-			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CLP;
-			}
-			else {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LP;
-			}
-		}
-		if (button == BUTTON_MP) {
-			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CMP;
-			}
-			else {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MP;
-			}
-		}
-		if (button == BUTTON_HP) {
-			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CHP;
-			}
-			else {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HP;
-			}
-		}
-		if (button == BUTTON_LK) {
-			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CLK;
-			}
-			else {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LK;
-			}
-		}
-		if (button == BUTTON_MK) {
-			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CMK;
-			}
-			else {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MK;
-			}
-		}
-		if (button == BUTTON_HK) {
-			if (stick < 4 && situation_kind == FIGHTER_SITUATION_GROUND) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_CHK;
-			}
-			else {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HK;
-			}
-		}
-		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
-			if (situation_kind == FIGHTER_SITUATION_GROUND) {
-				return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
-			}
-			else {
-				return change_status_after_hitlag(FIGHTER_STATUS_ATTACK_AIR, true, false);
+bool Fighter::normal_cancel(int attack_kind, int situation_kind, unsigned int button, int stick) {
+	if (fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
+		if (((fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) && is_enable_cancel(CANCEL_CAT_HIT, attack_kind))
+		|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && is_enable_cancel(CANCEL_CAT_BLOCK, attack_kind))
+		|| (!fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && !fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && is_enable_cancel(CANCEL_CAT_WHIFF, attack_kind))) {
+			if (situation_kind == this->situation_kind
+				&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
+				if (get_normal_input(attack_kind, button, stick)) {
+					int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
+					fighter_int[FIGHTER_INT_ATTACK_KIND] = attack_kind;
+					fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
+
+					if (situation_kind == FIGHTER_SITUATION_GROUND) {
+						return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
+					}
+					else {
+						return change_status_after_hitlag(FIGHTER_STATUS_ATTACK_AIR, true, false);
+					}
+				}
 			}
 		}
 	}
-
 	return false;
 }
 

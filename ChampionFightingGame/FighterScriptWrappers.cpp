@@ -184,6 +184,18 @@ void Fighter::RESET_WORLD_RATE(ScriptArg args) {
 	reset_world_rate();
 }
 
+void Fighter::ENABLE_CANCEL(ScriptArg args) {
+	UNWRAP(cat, int);
+	UNWRAP(kind, int);
+	enable_cancel(cat, kind);
+}
+
+void Fighter::DISABLE_CANCEL(ScriptArg args) {
+	UNWRAP(cat, int);
+	UNWRAP(kind, int);
+	disable_cancel(cat, kind);
+}
+
 void Fighter::CHANGE_STATUS(ScriptArg args) {
 	UNWRAP(new_status_kind, int);
 	bool call_end_status = true;

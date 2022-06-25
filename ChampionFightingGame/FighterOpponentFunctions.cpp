@@ -34,7 +34,16 @@ void Fighter::set_opponent_thrown_ticks() {
 }
 
 void Fighter::change_opponent_anim(std::string anim_kind, float frame_rate, float entry_frame) {
-	battle_object_manager->fighter[!id]->change_anim(anim_kind, frame_rate, entry_frame);
+	Fighter* that = battle_object_manager->fighter[!id];
+	bool scale = false;
+	if (frame_rate == -1.0) {
+		scale = true;
+		frame_rate = 1.0;
+	}
+	that->change_anim(anim_kind, frame_rate, entry_frame);
+	if (scale && this->anim_kind != nullptr) {
+		that->rate = ((this->anim_kind->length / this->rate) / that->anim_kind->length);
+	}
 }
 
 void Fighter::attach_opponent(std::string bone_name) {
@@ -49,8 +58,6 @@ void Fighter::attach_opponent(std::string bone_name) {
 	final_rot.z += glm::radians(90.0 * facing_dir);
 	final_rot += extra_rot;
 	that->extra_mat = inverse(glm::scale(model.bones[index].final_matrix, glm::vec3(facing_dir, 1.0, 1.0)) * orientate4(final_rot));
-//	glm::vec2 to_add = get_rotated_distance_to_bone(index);
-//	that->set_pos(pos + glm::vec3(to_add, 0.0));
 }
 
 void Fighter::detach_opponent() {

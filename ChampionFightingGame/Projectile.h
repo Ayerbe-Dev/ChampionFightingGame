@@ -64,6 +64,7 @@ public:
 
 	void add_pos(float x, float y);
 	void add_pos(glm::vec3 pos);
+	void set_pos(float x, float y);
 	void set_pos(glm::vec3 pos);
 
 	//Animation
@@ -84,19 +85,41 @@ public:
 		int juggle_max, bool trade, KoKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
 		float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x);
 
+	//Balogna (thanks fez)
+
+	void set_int(int target, int val);
+	void inc_int(int target);
+	void dec_int(int target);
+	void set_float(int target, float val);
+	void set_flag(int target, bool val);
+
 	//Script Functions
 	template<typename ...T>
 	void push_function(void (Projectile::* function)(ScriptArg), T... args) {
-		std::queue<std::any> queue = extract_variadic_to_queue(args...);
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
 		ScriptArg sa(sizeof...(args), queue);
 		active_script_frame.function_calls.push((void (BattleObject::*)(ScriptArg))function);
 		active_script_frame.function_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
 	}
 
 
 	//Script Wrappers
 
 	void NEW_HITBOX(ScriptArg args);
+
+	void SET_INT(ScriptArg args);
+	void SET_FLOAT(ScriptArg args);
+	void SET_FLAG(ScriptArg args);
+
+	void ADD_POS(ScriptArg args);
+	void SET_POS(ScriptArg args);
+
+	void CHANGE_STATUS(ScriptArg args);
 
 	//Status Scripts
 

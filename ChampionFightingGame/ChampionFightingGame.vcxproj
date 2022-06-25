@@ -226,6 +226,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Aziel.cpp" />
     <ClCompile Include="AzielMoves.cpp" />
     <ClCompile Include="AzielStatus.cpp" />
+    <ClCompile Include="BattleMeter.cpp" />
+    <ClCompile Include="CollisionChecks.cpp" />
+    <ClCompile Include="ComboCounter.cpp" />
+    <ClCompile Include="EricFireballMoves.cpp" />
+    <ClCompile Include="EricFireballStatus.cpp" />
+    <ClCompile Include="FighterDataFunctions.cpp" />
     <ClCompile Include="BlockboxFunctions.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="BoneFunctions.cpp" />
@@ -268,10 +274,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameRect.cpp" />
     <ClCompile Include="GameTextureSDL.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GLEW Helpers.cpp" />
     <ClCompile Include="GLM Helpers.cpp" />
     <ClCompile Include="GrabboxFunctions.cpp" />
     <ClCompile Include="HitboxFunctions.cpp" />
+    <ClCompile Include="HitboxSim.cpp" />
     <ClCompile Include="HurtboxFunctions.cpp" />
     <ClCompile Include="FighterInputFunctions.cpp" />
     <ClCompile Include="FighterJostleFunctions.cpp" />
@@ -336,6 +344,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PauseBattle.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerIndicator.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Priest.cpp" />
     <ClCompile Include="PriestMoves.cpp" />
@@ -343,6 +352,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="ProjectileAnimationFunctions.cpp" />
+    <ClCompile Include="ProjectileDataFunctions.cpp" />
     <ClCompile Include="ProjectileHitboxFunctions.cpp" />
     <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
@@ -351,6 +361,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ProjectileScriptWrappers.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
     <ClCompile Include="ProjectileStatusFunctions.cpp" />
+    <ClCompile Include="ProjectileTemplateMoves.cpp" />
+    <ClCompile Include="ProjectileTemplateStatus.cpp" />
     <ClCompile Include="Ramona.cpp" />
     <ClCompile Include="RamonaMoves.cpp" />
     <ClCompile Include="RamonaStatus.cpp" />
@@ -358,6 +370,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
+    <ClCompile Include="RoyFireballMoves.cpp" />
+    <ClCompile Include="RoyFireballStatus.cpp" />
     <ClCompile Include="RoyMoves.cpp" />
     <ClCompile Include="RoyStatus.cpp" />
     <ClCompile Include="SaveManager.cpp" />
@@ -677,6 +691,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\chara\roy\anims\advance_forward.fbx" />
     <None Include="resource\chara\roy\anims\advance_high.fbx" />
     <None Include="resource\chara\roy\anims\advance_low.fbx" />
+    <None Include="resource\chara\roy\anims\jump_hitstun.fbx" />
     <None Include="resource\chara\roy\anims\anim_list.yml" />
     <None Include="resource\chara\roy\anims\crouch.fbx" />
     <None Include="resource\chara\roy\anims\crouch_blockstun.fbx" />
@@ -739,6 +754,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\chara\roy\anims\stand_lp.fbx" />
     <None Include="resource\chara\roy\anims\stand_mk.fbx" />
     <None Include="resource\chara\roy\anims\stand_mp.fbx" />
+    <None Include="resource\chara\roy\anims\throw_b.fbx" />
     <None Include="resource\chara\roy\anims\throw_f.fbx" />
     <None Include="resource\chara\roy\anims\turn_crouch.fbx" />
     <None Include="resource\chara\roy\anims\turn_stand.fbx" />

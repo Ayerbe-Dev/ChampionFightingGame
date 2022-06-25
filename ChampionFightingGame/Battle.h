@@ -85,6 +85,23 @@ public:
 	int prev_value;
 };
 
+class HitboxSim {
+public:
+	HitboxSim();
+
+	int active_cat;
+	int active_box[3];
+
+	GameRect boxes[3][10];
+	glm::vec2 anchor[3][10];
+	glm::vec2 offset[3][10];
+
+	void init();
+	void destroy();
+	void render();
+	void print(Fighter* fighter);
+};
+
 class Battle : public GameMenu {
 public:
 	Battle();
@@ -94,6 +111,7 @@ public:
 	void unload_game_menu();
 
 	void process_main();
+	void process_debug_boxes();
 	void process_ui();
 	void pre_process_fighter();
 	void process_fighter();
@@ -141,9 +159,11 @@ public:
 	GameController debug_controller;
 	const Uint8* keyboard_state;
 	Mouse mouse;
-	GameRect debug_rect;
-	glm::vec2 debug_anchor = {0,0};
-	glm::vec2 debug_offset = {0,0};
+
+	HitboxSim debug_boxes;
+	GameRect* active_debug_box;
+	glm::vec2 *debug_anchor;
+	glm::vec2 *debug_offset;
 
 	bool visualize_boxes;
 	bool pause;

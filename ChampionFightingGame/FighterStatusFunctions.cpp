@@ -58,15 +58,6 @@ unsigned int Fighter::get_status_group() {
 			return STATUS_GROUP_CROUCH;
 		}
 		break;
-		case (FIGHTER_STATUS_WAIT):
-		case (FIGHTER_STATUS_FALL):
-		case (FIGHTER_STATUS_WALKF):
-		case (FIGHTER_STATUS_WALKB):
-		case (FIGHTER_STATUS_JUMP):
-		{
-			return STATUS_GROUP_NO_RENDER_PRIORITY;
-		}
-		break;
 		case (FIGHTER_STATUS_ATTACK):
 		case (FIGHTER_STATUS_ATTACK_AIR):
 		{

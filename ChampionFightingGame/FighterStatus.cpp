@@ -193,6 +193,7 @@ bool Fighter::common_air_status_general() {
 }
 
 void Fighter::status_wait() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 	if (common_ground_status_act()) {
 		return;
 	}
@@ -202,7 +203,6 @@ void Fighter::status_wait() {
 void Fighter::enter_status_wait() {
 	pos.y = FLOOR_GAMECOORD;
 	change_anim("wait");
-
 
 	situation_kind = FIGHTER_SITUATION_GROUND;
 	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
@@ -751,7 +751,8 @@ void Fighter::enter_status_attack_air() {
 	}
 }
 
-void Fighter::exit_status_attack_air() {}
+void Fighter::exit_status_attack_air() {
+}
 
 void Fighter::status_advance() {
 	if (is_status_end()) {

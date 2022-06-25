@@ -15,12 +15,13 @@ void Projectile::super_init() {
 	effect_manager->add_effect_caster(id);
 
 	load_stats();
+	load_params();
 	load_model_shader();
 	init_boxes();
 	load_anim_list();
 	load_status_scripts();
+	load_move_scripts();
 
-	change_anim("default", 2, 0);
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
 }
 

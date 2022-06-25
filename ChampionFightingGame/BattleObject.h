@@ -79,6 +79,7 @@ public:
 
 	void set_rate(float rate);
 	void set_frame(float frame);
+	
 
 	//Blockbox
 
@@ -178,10 +179,15 @@ public:
 
 	template<typename ...T>
 	void push_function(void (BattleObject::* function)(ScriptArg), T... args) {
-		std::queue<std::any> queue = extract_variadic_to_queue(args...);
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
 		ScriptArg sa(sizeof...(args), queue);
 		active_script_frame.function_calls.push(function);
 		active_script_frame.function_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
 	}
 
 	//Script Wrappers
@@ -190,4 +196,10 @@ public:
 	void SET_FRAME(ScriptArg args);
 
 	void NEW_BLOCKBOX(ScriptArg args);
+
+	void PLAY_SE(ScriptArg args);
+	void PLAY_VC(ScriptArg args);
+
+	void NEW_EFFECT(ScriptArg args);
+	void NEW_EFFECT_NO_FOLLOW(ScriptArg args);
 };

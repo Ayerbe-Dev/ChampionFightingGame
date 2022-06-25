@@ -77,11 +77,6 @@ public:
 	void decrease_common_variables();
 	void reset();
 
-	//Projectiles
-
-	void init_projectile(int id, glm::vec3 pos); //Marks a projectile as active and moves it to the given position relative to the player
-	void destroy_projectile(int id); //Marks a projectile as inactive
-
 	//Setup
 
 	void super_init();
@@ -137,28 +132,13 @@ public:
 	void add_rot(glm::vec3 rot);
 	void reset_rot();
 
-	//Opponent Fighter Instance - Generally we should avoid modifying the opponent through their fighter accessor outside of these functions, or things
-		//can get really hard to follow
+	//Data
 
-	void change_opponent_status(unsigned int status_kind); //Wild guess.
-	void damage_opponent(float damage); //Damage the opponent. 
-		//Use in combination with change_opponent_status to throw someone.
-	void set_opponent_rot(glm::vec3 rot); //Sets the opponent's angle relative to their facing dir.
-	void add_opponent_rot(glm::vec3 rot);
-	void reset_opponent_rot();
-	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
-	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
-	void attach_opponent(std::string bone_name);
-	void detach_opponent();
-
-	//Grab Functions
-	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames);
-	void throw_opponent(float damage, float x_speed = 0, float y_speed = 0);
-
-	//Jostle Box
-
-	void update_jostle_rect();
-	void set_jostle_offset(float offset);
+	void set_int(int target, int val);
+	void inc_int(int target);
+	void dec_int(int target);
+	void set_float(int target, float val);
+	void set_flag(int target, bool val);
 
 	//Hitbox
 	
@@ -181,12 +161,15 @@ public:
 	
 	void new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind = HURTBOX_KIND_NORMAL, bool armor = false, int intangible_kind = INTANGIBLE_KIND_NONE);
 
-	//Transitions
+	//Grab Functions
 
-	int get_frames_until_actionable();
-	bool is_actionable();
-	bool can_kara();
-	bool has_meter(int bars);
+	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames);
+	void throw_opponent(float damage, float x_speed = 0, float y_speed = 0);
+
+	//Jostle Box
+
+	void update_jostle_rect();
+	void set_jostle_offset(float offset);
 
 	//Animation
 	
@@ -198,6 +181,13 @@ public:
 	float calc_launch_frames();
 	std::string get_anim();
 	std::string get_anim_broad();
+
+	//Actionability
+
+	int get_frames_until_actionable();
+	bool is_actionable();
+	bool can_kara();
+	bool has_meter(int bars);
 
 	//Cinematic
 
@@ -232,19 +222,89 @@ public:
 	bool check_hitstun_parry();
 	bool is_status_delay();
 
+	//Projectiles
+
+	void activate_projectile(int id, glm::vec3 pos); //Marks a projectile as active and moves it to the given position relative to the player
+	void deactivate_projectile(int id); //Marks a projectile as inactive
+	void set_projectile_int(int projectile, int target, int val);
+	void set_projectile_float(int projectile, int target, float val);
+	void set_projectile_flag(int projectile, int target, bool val);
+	void add_projectile_pos(int projectile, int pos_x, int pos_y);
+	void add_projectile_pos(int projectile, glm::vec3 pos);
+	void set_projectile_pos(int projectile, int pos_x, int pos_y);
+	void set_projectile_pos(int projectile, glm::vec3 pos);
+	void change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+
+	//Opponent
+
+	void change_opponent_status(unsigned int status_kind); //Wild guess.
+	void damage_opponent(float damage); //Damage the opponent.
+	void set_opponent_rot(glm::vec3 rot); //Sets the opponent's angle relative to their facing dir.
+	void add_opponent_rot(glm::vec3 rot);
+	void reset_opponent_rot();
+	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
+	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
+	void attach_opponent(std::string bone_name);
+	void detach_opponent();
+
 	//Script Functions
 	template<typename ...T>
 	void push_function(void (Fighter::* function)(ScriptArg), T... args) {
-		std::queue<std::any> queue = extract_variadic_to_queue(args...);
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
 		ScriptArg sa(sizeof...(args), queue);
 		active_script_frame.function_calls.push((void (BattleObject::*)(ScriptArg))function);
 		active_script_frame.function_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
 	}
 
 	//Script Wrappers
 
-	void NEW_HURTBOX(ScriptArg args);
+	void SET_INT(ScriptArg args);
+	void SET_FLOAT(ScriptArg args);
+	void SET_FLAG(ScriptArg args);
+
 	void NEW_HITBOX(ScriptArg args);
+	void CLEAR_HITBOX(ScriptArg args);
+	void CLEAR_HITBOX_ALL(ScriptArg args);
+
+	void NEW_GRABBOX(ScriptArg args);
+	void CLEAR_GRABBOX(ScriptArg args);
+	void CLEAR_GRABBOX_ALL(ScriptArg args);
+
+	void NEW_HURTBOX(ScriptArg args);
+	void CLEAR_HURTBOX(ScriptArg args);
+	void CLEAR_HURTBOX_ALL(ScriptArg args);
+
+	void GRAB_OPPONENT(ScriptArg args);
+	void THROW_OPPONENT(ScriptArg args);
+
+	void SET_JOSTLE_OFFSET(ScriptArg args);
+
+	void ADD_POS(ScriptArg args);
+	void SET_POS(ScriptArg args);
+
+	void REENTER_LAST_ANIM(ScriptArg args);
+
+	void START_CINEMATIC_SEQUENCE(ScriptArg args);
+	void RESET_WORLD_RATE(ScriptArg args);
+
+	void CHANGE_STATUS(ScriptArg args);
+
+	void ACTIVATE_PROJECTILE(ScriptArg args);
+	void DEACTIVATE_PROJECTILE(ScriptArg args);
+	void ADD_PROJECTILE_POS(ScriptArg args);
+	void SET_PROJECTILE_POS(ScriptArg args);
+	void SET_PROJECTILE_INT(ScriptArg args);
+	void SET_PROJECTILE_FLOAT(ScriptArg args);
+	void SET_PROJECTILE_FLAG(ScriptArg args);
+	void CHANGE_PROJECTILE_STATUS(ScriptArg args);
+
+	void CHANGE_OPPONENT_STATUS(ScriptArg args);
+	void CHANGE_OPPONENT_ANIM(ScriptArg args);
 
 	//Status Scripts
 

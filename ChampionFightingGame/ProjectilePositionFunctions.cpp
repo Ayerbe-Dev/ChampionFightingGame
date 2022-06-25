@@ -9,6 +9,10 @@ void Projectile::add_pos(glm::vec3 pos) {
 	this->pos += pos;
 }
 
+void Projectile::set_pos(float x, float y) {
+	set_pos(glm::vec3(x, y, 0));
+}
+
 void Projectile::set_pos(glm::vec3 pos) {
 	this->pos = pos;
 }

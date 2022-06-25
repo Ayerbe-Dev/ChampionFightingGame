@@ -19,7 +19,7 @@ void MoveScript::execute(BattleObject* object, float frame) {
 	if (frames.empty()) {
 		return;
 	}
-	if (frames.front().frame == frame) {
+	while ((!frames.empty()) && frames.front().frame <= frame) {
 		frames.front().execute(object);
 		frames.pop();
 	}

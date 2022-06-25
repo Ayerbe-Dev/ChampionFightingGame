@@ -90,6 +90,7 @@ void Fighter::set_default_vars() {
 	base_jostle_offset = glm::vec2(get_local_param_float("jostle_x1"), get_local_param_float("jostle_y1"));
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_flag[FIGHTER_FLAG_CAN_TECH] = true;
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 }
 
 void Fighter::init_boxes() {

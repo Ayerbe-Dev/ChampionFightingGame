@@ -58,18 +58,18 @@ RenderManager::RenderManager() {
 	shadow_map.init();
 	
 	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
-	box_layer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, width, height);
+	box_layer.add_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height);
 
 	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
-	g_buffer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, width, height); //Position
-	g_buffer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, width, height); //Normal
+	g_buffer.add_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height); //Position
+	g_buffer.add_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height); //Normal
 	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, width, height); //Diffuse
 	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, width, height); //Specular
 	
 	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
 	SSAO.add_texture(g_buffer.textures[0], g_buffer.texture_info[0]); //Position, same texture as gbuf
 	SSAO.add_texture(g_buffer.textures[1], g_buffer.texture_info[1]); //Ditto
-	SSAO.add_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, 4, 4, (void*)&ssao_noise[0], true);
+	SSAO.add_texture(GL_RGBA32F, GL_RGB, GL_FLOAT, 4, 4, (void*)&ssao_noise[0], true);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	box_layer.shader.use();

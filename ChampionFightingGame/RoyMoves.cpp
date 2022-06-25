@@ -55,7 +55,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(2, [this]() {
-			clear_hurtbox_all();
+			push_function(&Fighter::CLEAR_HURTBOX_ALL);
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 80 });
 		});
 	});
@@ -103,7 +103,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
 		});
 		execute_frame(4, [this]() {
-			clear_hurtbox(2);
+			push_function(&Fighter::CLEAR_HURTBOX, 2);
 		});
 		execute_frame(7, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -17, 82 }, glm::vec2{ -54, 104 });
@@ -161,11 +161,11 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, true);
 		});
 		execute_wait(4, [this]() {
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, true);
 		});
 	});
 	script("parry_start_low", [this]() {
@@ -173,11 +173,11 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, true);
 		});
 		execute_wait(4, [this]() {
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, true);
 		});
 	});
 	script("parry_air_start", [this]() {
@@ -185,11 +185,11 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, true);
 		});
 		execute_wait(4, [this]() {
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, true);
 		});
 	});
 	script("parry_mid", [this]() {
@@ -209,17 +209,17 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
-			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, true);
+			push_function(&Fighter::SET_INT, FIGHTER_INT_PARRY_HEIGHT, PARRY_HEIGHT_ALL);
 		});
 		execute_wait(1, [this]() {
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, true);
 		});
 		execute_wait(9, [this]() {
-			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-			reenter_last_anim();
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_USED_HITSTUN_PARRY, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
+			push_function(&Fighter::REENTER_LAST_ANIM);
 		});
 	});
 	script("hitstun_parry_air_start", [this]() {
@@ -227,24 +227,24 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
-			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, true);
+			push_function(&Fighter::SET_INT, FIGHTER_INT_PARRY_HEIGHT, PARRY_HEIGHT_ALL);
 		});
 		execute_wait(1, [this]() {
-			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, true);
 		});
 		execute_wait(9, [this]() {
-			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
-			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-			reenter_last_anim();
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_USED_HITSTUN_PARRY, false);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
+			push_function(&Fighter::REENTER_LAST_ANIM);
 		});
 	});
 	script("stand_lp", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::SET_RATE, 2.0);
-			play_vc("roy_attack_01");
-			new_effect("flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.4), glm::vec4(0.0), "HaveL", glm::vec3(0.0, 15.0, 0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
+			push_function(&Fighter::PLAY_VC, "roy_attack_01");
+			push_function(&Fighter::NEW_EFFECT, "flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.4), glm::vec4(0.0), "HaveL", glm::vec3(0.0, 15.0, 0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
@@ -256,7 +256,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::SET_RATE, 1.0);
 		});
 		execute_wait(4, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
 	script("stand_mp", [this]() {
@@ -271,13 +271,13 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 110 }, glm::vec2{ 155, 150 });
 		});
 		execute_frame(3, [this]() {
-			//40 damage, 12 12 6 4
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 1, /*Meter Gain*/ 20.0, glm::vec2(103, 165), glm::vec2(213, 113), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/12, /*Hitstun*/ 25, /*Blockstun*/ 19, /*Hit Pushback*/ 10.0, /*Block Pushback*/ 4.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 		});
 		execute_wait(3, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
-			clear_hurtbox(3);
+			push_function(&Fighter::CLEAR_HURTBOX, 3);
 		});
 	});
 	script("stand_hp", [this]() {
@@ -297,7 +297,7 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_wait(3, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
 	script("stand_lk", [this]() {
@@ -305,7 +305,7 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_mk", [this]() {
 		execute_frame(0, [this]() {
-			start_cinematic_sequence("super_start", 1.0, 0.0, 0.5, false, 0.0);
+			push_function(&Fighter::START_CINEMATIC_SEQUENCE, "super_start", 1.0, 0.0, 0.5, false, 0.0);
 		});
 	});
 	script("stand_hk", [this]() {
@@ -319,7 +319,7 @@ void Roy::load_move_scripts() {
 \
 		});
 		execute_frame(8, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_frame(12, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
@@ -333,13 +333,13 @@ void Roy::load_move_scripts() {
 		});
 		execute_frame(4, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 21, 43 }, glm::vec2{ 68, 64 });
-
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 30.0, /*Chip Damage*/ 3.0, /*Damage Scale*/ 1, /*Meter Gain*/ 20.0, glm::vec2(51, 112), glm::vec2(199, 82), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 14, /*Blockstun*/ 12, /*Hit Pushback*/ 10.0, /*Block Pushback*/ 10.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 		});
 		execute_wait(2, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
-			clear_hurtbox(1);
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
 		});
 	});
 	script("crouch_mp", [this]() {
@@ -351,10 +351,10 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_wait(2, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
-			clear_hurtbox(1);
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
 		});
 	});
 	script("crouch_hp", [this]() {
@@ -369,7 +369,7 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_wait(4, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
 	script("crouch_lk", [this]() {
@@ -422,10 +422,10 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_wait(2, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_frame(13, [this]() {
-			clear_hurtbox(3);
+			push_function(&Fighter::CLEAR_HURTBOX, 3);
 		});
 	});
 	script("jump_hp", [this]() {
@@ -439,11 +439,11 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_wait(5, [this]() {
-			clear_hitbox(1);
+			push_function(&Fighter::CLEAR_HITBOX, 1);
 		});
 		execute_wait(4, [this]() {
-			clear_hitbox_all();
-			clear_hurtbox(2);
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+			push_function(&Fighter::CLEAR_HURTBOX, 2);
 		});
 	});
 	script("jump_lk", [this]() {
@@ -457,12 +457,12 @@ void Roy::load_move_scripts() {
 	});
 	script("advance_high", [this]() {
 		execute_frame(20, [this]() {
-			battle_object_manager->reset_world_rate(id);
+			push_function(&Fighter::RESET_WORLD_RATE);
 		});
 	});
 	script("advance_low", [this]() {
 		execute_frame(20, [this]() {
-			battle_object_manager->reset_world_rate(id);
+			push_function(&Fighter::RESET_WORLD_RATE);
 		});
 	});
 	script("advance_forward", [this]() {
@@ -478,28 +478,26 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(3, [this]() {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
+			push_function(&Fighter::NEW_GRABBOX, 0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
 		});
 	});
 	script("throw_f", [this]() {
 		execute_frame(0, [this]() {
-			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
-			set_opponent_thrown_ticks();
+			push_function(&Fighter::CHANGE_OPPONENT_ANIM, "stand_hitstun_m", -1.0);
+			push_function(&Fighter::GRAB_OPPONENT, "Throw", "Bust", glm::vec2(0.0), 3);
 		});
 		execute_frame(24, [this]() {
-			throw_opponent(30.0, 15.0, 8.0);
+			push_function(&Fighter::THROW_OPPONENT, 30.0, 15.0, 8.0);
 		});
 	});
 	script("throw_b", [this]() {
 		execute_frame(0, [this]() {
-			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
-			change_opponent_anim("stand_hitstun_m", 2);
-			set_opponent_thrown_ticks();
+			push_function(&Fighter::GRAB_OPPONENT, "Throw", "Bust", glm::vec2(0.0), 3);
+			push_function(&Fighter::CHANGE_OPPONENT_ANIM, "stand_hitstun_m", -1.0);
 		});
-		execute_frame(10, [this]() {
-			throw_opponent(30.0, -15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
+		execute_frame(40, [this]() {
+			push_function(&Fighter::THROW_OPPONENT, 30.0, -35.0, 8.0);
+			push_function(&Fighter::CHANGE_OPPONENT_STATUS, FIGHTER_STATUS_THROWN);
 		});
 	});
 	script("grab_air", [this]() {
@@ -509,28 +507,26 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(3, [this]() {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
+			push_function(&Fighter::NEW_GRABBOX, 0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
 		});
 	});
 	script("throw_f_air", [this]() {
 		execute_frame(0, [this]() {
-			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
-			set_opponent_thrown_ticks();
+			push_function(&Fighter::CHANGE_OPPONENT_ANIM, "stand_hitstun_m", -1.0);
+			push_function(&Fighter::GRAB_OPPONENT, "Throw", "Bust", glm::vec2(0.0), 3);
 		});
 		execute_frame(22, [this]() {
-			throw_opponent(30.0, 15.0, 8.0);
+			push_function(&Fighter::THROW_OPPONENT, 30.0, 15.0, 8.0);
 		});
 	});
 	script("throw_b_air", [this]() {
 		execute_frame(0, [this]() {
-			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
-			change_opponent_anim("stand_hitstun_m", 2);
-			set_opponent_thrown_ticks();
+			push_function(&Fighter::GRAB_OPPONENT, "Throw", "Bust", glm::vec2(0.0), 3);
+			push_function(&Fighter::CHANGE_OPPONENT_ANIM, "stand_hitstun_m", -1.0);
 		});
 		execute_frame(10, [this]() {
-			throw_opponent(30.0, -15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
+			push_function(&Fighter::THROW_OPPONENT, 30.0, -15.0, 8.0);
+			push_function(&Fighter::CHANGE_OPPONENT_STATUS, FIGHTER_STATUS_THROWN);
 		});
 	});
 	script("special_fireball_start", [this]() {
@@ -558,7 +554,7 @@ void Roy::load_move_scripts() {
 			});
 		}
 		execute_frame(8, [this]() {
-			init_projectile(0, glm::vec3(0));
+			push_function(&Fighter::ACTIVATE_PROJECTILE, 0, glm::vec3(0.0));
 		});
 	});
 	script("special_fireball_punch", [this]() {
@@ -566,10 +562,10 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_frame(5, [this]() {
-			projectiles[0]->change_status(PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED);
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, 0, PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED);
 		});
 		execute_wait(1, [this]() {
-			projectiles[0]->pos.x += 50.0 * facing_dir;
+			push_function(&Fighter::ADD_PROJECTILE_POS, 0, 50.0 * facing_dir, 0.0);
 		});
 	});
 	script("special_fireball_kick", [this]() {
@@ -577,11 +573,10 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_frame(9, [this]() {
-			projectiles[0]->change_status(PROJECTILE_ROY_FIREBALL_STATUS_KICKED);
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, 0, PROJECTILE_ROY_FIREBALL_STATUS_KICKED);
 		});
 		execute_wait(1, [this]() {
-			projectiles[0]->pos.x += 30.0 * facing_dir;
-			projectiles[0]->pos.y -= 40.0;
+			push_function(&Fighter::ADD_PROJECTILE_POS, 0, 30.0 * facing_dir, -40.0);
 		});
 	});
 	script("special_slide", [this]() {
@@ -615,7 +610,7 @@ void Roy::load_move_scripts() {
 			}
 		});
 		execute_wait(4, [this]() {
-			clear_hitbox_all();
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
 	script("special_uppercut", [this]() {

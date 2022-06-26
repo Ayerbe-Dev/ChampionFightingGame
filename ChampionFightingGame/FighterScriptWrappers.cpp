@@ -196,6 +196,10 @@ void Fighter::DISABLE_CANCEL(ScriptArg args) {
 	disable_cancel(cat, kind);
 }
 
+void Fighter::DISABLE_ALL_CANCELS(ScriptArg args) {
+	disable_all_cancels();
+}
+
 void Fighter::CHANGE_STATUS(ScriptArg args) {
 	UNWRAP(new_status_kind, int);
 	bool call_end_status = true;

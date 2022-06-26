@@ -107,7 +107,7 @@ public:
 	int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
 	bool get_normal_input(int attack_kind, unsigned int button = 0, int stick_dir = 0);
 	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
-	bool normal_cancel(int attack_kind, int situation_kind, unsigned int button = 0, int stick_dir = 10);
+	bool normal_cancel(int attack_kind, unsigned int button = 0, int stick_dir = 10);
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
 
@@ -303,6 +303,7 @@ public:
 
 	void ENABLE_CANCEL(ScriptArg args);
 	void DISABLE_CANCEL(ScriptArg args);
+	void DISABLE_ALL_CANCELS(ScriptArg args);
 
 	void CHANGE_STATUS(ScriptArg args);
 

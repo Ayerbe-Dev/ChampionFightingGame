@@ -599,6 +599,11 @@ void Fighter::status_attack() {
 	if (specific_status_attack()) {
 		return;
 	}
+	for (int i = 0; i < 12; i++) {
+		if (normal_cancel(i)) {
+			return;
+		}
+	}
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] > ATTACK_KIND_HK) { //If we're in a crouching attack, change to the crouch animation on animation end. 
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
 			return;
@@ -707,17 +712,23 @@ void Fighter::exit_status_attack() {
 }
 
 void Fighter::status_attack_air() {
+	if (check_landing(FIGHTER_STATUS_LANDING_ATTACK)) {
+		return;
+	}
 	if (specific_status_attack()) {
 		return;
 	}
-	if (check_landing(FIGHTER_STATUS_LANDING_ATTACK)) {
-		return;
+	for (int i = 0; i < 6; i++) {
+		if (normal_cancel(i)) {
+			return;
+		}
 	}
 	if (is_status_end()) {
 		return;
 	}
 	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
 		change_status(FIGHTER_STATUS_GRAB_AIR);
+		return;
 	}
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MK || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
 		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {

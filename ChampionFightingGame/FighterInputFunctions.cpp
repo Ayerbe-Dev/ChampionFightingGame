@@ -90,7 +90,7 @@ bool Fighter::get_normal_input(int attack_kind, unsigned int button, int stick_d
 	bool stick_check;
 	
 	button_check = check_button_input((attack_kind % 6) + 8);
-	stick_check = (attack_kind >= 7) == (get_stick_dir() < 4); 
+	stick_check = (attack_kind >= 6) == (get_stick_dir() < 4); 
 	return button_check && (stick_check || situation_kind != FIGHTER_SITUATION_GROUND);
 }
 
@@ -241,13 +241,12 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 	}
 }
 
-bool Fighter::normal_cancel(int attack_kind, int situation_kind, unsigned int button, int stick) {
+bool Fighter::normal_cancel(int attack_kind, unsigned int button, int stick) {
 	if (fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
 		if (((fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) && is_enable_cancel(CANCEL_CAT_HIT, attack_kind))
 		|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && is_enable_cancel(CANCEL_CAT_BLOCK, attack_kind))
 		|| (!fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && !fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && is_enable_cancel(CANCEL_CAT_WHIFF, attack_kind))) {
-			if (situation_kind == this->situation_kind
-				&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
+			if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
 				if (get_normal_input(attack_kind, button, stick)) {
 					int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
 					fighter_int[FIGHTER_INT_ATTACK_KIND] = attack_kind;

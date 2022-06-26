@@ -50,25 +50,31 @@ void Roy::load_move_scripts() {
 	});
 	script("crouch_d", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-130, 0), glm::vec2(0, 50));
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(0, 0), glm::vec2(125, 80));
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(-35, 35), glm::vec2(65, 160));
 		});
 		execute_frame(2, [this]() {
 			push_function(&Fighter::CLEAR_HURTBOX_ALL);
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-50, 130), glm::vec2(55, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
 	});
 	script("crouch", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -38, 0 }, glm::vec2{ 43, 71 });
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-50, 130), glm::vec2(55, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
 	});
 	script("crouch_u", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-50, 130), glm::vec2(55, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		});
+		execute_frame(2, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-130, 0), glm::vec2(0, 50));
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(0, 0), glm::vec2(125, 80));
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(-35, 35), glm::vec2(65, 160));
 		});
 	});
 	script("jump_squat", [this]() {
@@ -242,9 +248,9 @@ void Roy::load_move_scripts() {
 	});
 	script("stand_lp", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_LP);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_LK);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_MP);
-			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
 			push_function(&Fighter::SET_RATE, 2.0);
 			push_function(&Fighter::PLAY_VC, "roy_attack_01");
@@ -260,7 +266,13 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, glm::vec2(5, 145), glm::vec2(200, 165), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 14, /*Blockstun*/ 12, /*Hit Pushback*/ 10.0, /*Block Pushback*/ 10.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 			push_function(&Fighter::SET_RATE, 1.0);
 		});
-		execute_wait(4, [this]() {
+		execute_wait(2, [this]() {
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_LP);
+		});
+		execute_wait(1, [this]() {
+			push_function(&Fighter::DISABLE_ALL_CANCELS);
+		});
+		execute_wait(1, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_frame(15, [this]() {
@@ -271,6 +283,7 @@ void Roy::load_move_scripts() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_HP);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
@@ -285,7 +298,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 3, /*Meter Gain*/ 32.0, glm::vec2(103, 165), glm::vec2(213, 113), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 23, /*Blockstun*/ 19, /*Hit Pushback*/ 10.0, /*Block Pushback*/ 4.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 		});
 		execute_wait(3, [this]() {
-			push_function(&Fighter::DISABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_HP);
+			push_function(&Fighter::DISABLE_ALL_CANCELS);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
@@ -295,6 +308,7 @@ void Roy::load_move_scripts() {
 	script("stand_hp", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-105, 0), glm::vec2(35, 90));
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(30, 55), glm::vec2(95, 95));
@@ -309,7 +323,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, glm::vec2(167, 168), glm::vec2(12, 128), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 27, /*Blockstun*/ 23, /*Hit Pushback*/ 14.0, /*Block Pushback*/ 8.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 10, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ true, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 3.0);
 		});
 		execute_wait(5, [this]() {
-			push_function(&Fighter::DISABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::DISABLE_ALL_CANCELS);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
@@ -317,56 +331,96 @@ void Roy::load_move_scripts() {
 
 	});
 	script("stand_mk", [this]() {
-		execute_frame(0, [this]() {
-
-		});
+		
 	});
 	script("stand_hk", [this]() {
 
 	});
 	script("crouch_lp", [this]() {
 		execute_frame(0, [this]() {
-
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_ALL, CANCEL_KIND_CLP);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_ALL, CANCEL_KIND_LK);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
+			push_function(&Fighter::SET_RATE, 1.5);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-50, 130), glm::vec2(55, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(4, [this]() {
-
+			push_function(&Fighter::SET_RATE, 1.0);
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(43, 108), glm::vec2(136, 79), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 30.0, /*Chip Damage*/ 3.0, /*Damage Scale*/ 1, /*Meter Gain*/ 20.0, glm::vec2(51, 112), glm::vec2(199, 82), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 14, /*Blockstun*/ 12, /*Hit Pushback*/ 10.0, /*Block Pushback*/ 10.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 		});
 		execute_wait(2, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
-
+			push_function(&Fighter::DISABLE_ALL_CANCELS);
+			push_function(&Fighter::CLEAR_HURTBOX, 2);
 		});
 	});
 	script("crouch_mp", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -38, 0 }, glm::vec2{ 45, 71 });
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-100, 0), glm::vec2(165, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(75, 20), glm::vec2(-115, 100), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
-		execute_frame(4, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 21, 43 }, glm::vec2{ 68, 64 });
-
+		execute_frame(2, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(125, 20), glm::vec2(-75, 100), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
-		execute_wait(2, [this]() {
+		execute_wait(1, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(260, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-30, 20), glm::vec2(215, 90), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		});
+		execute_wait(1, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(175, 35), glm::vec2(270, 120), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 3, /*Meter Gain*/ 32.0, glm::vec2(204, 40), glm::vec2(321, 123), SITUATION_HIT_GROUND, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 20, /*Blockstun*/ 17, /*Hit Pushback*/ 8.0, /*Block Pushback*/ 8.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 0, /*Juggle Max*/ 0, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 3, /*Meter Gain*/ 32.0, glm::vec2(285, 118), glm::vec2(392, 163), SITUATION_HIT_AIR, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 20, /*Blockstun*/ 21, /*Hit Pushback*/ 24.0, /*Block Pushback*/ 8.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 5, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
+		});
+		execute_wait(4, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
-		execute_wait(2, [this]() {
-			push_function(&Fighter::CLEAR_HURTBOX, 1);
+		execute_wait(4, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 2);
+		});
+		execute_frame(23, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-50, 130), glm::vec2(55, 40), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
 	});
 	script("crouch_hp", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -45, 0 }, glm::vec2{ 45, 25 });
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -30, 20 }, glm::vec2{ 25, 73 });
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
+			push_function(&Fighter::SET_RATE, 1.5);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(146, 58), glm::vec2(-67, -7), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-23, 114), glm::vec2(79, 8), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
-		execute_frame(6, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 40, 55 });
+		execute_frame(8, [this]() {
+			push_function(&Fighter::SET_RATE, 1.0);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(185, -9), glm::vec2(-97, 48), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-53, 114), glm::vec2(49, 8), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
 		execute_wait(2, [this]() {
-
+			push_function(&Fighter::CLEAR_HURTBOX_ALL);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-31, 0), glm::vec2(132, 113), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 50.0, /*Chip Damage*/ 5.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, glm::vec2(51, 253), glm::vec2(149, 70), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 19, /*Blockstun*/ 14, /*Hit Pushback*/ 6.0, /*Block Pushback*/ 4.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_AERIAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 6, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ true, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 20.0, 0.0, 0.0, 10.0);
 		});
-		execute_wait(4, [this]() {
+		execute_wait(1, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(22, 158), glm::vec2(129, 64), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		}); 
+		execute_wait(3, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
+		});
+		execute_wait(0, [this]() {
+			push_function(&Fighter::SET_RATE, 1.3);
+		});
+		execute_frame(25, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
 		});
 	});
 	script("crouch_lk", [this]() {

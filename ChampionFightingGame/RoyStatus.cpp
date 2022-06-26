@@ -133,25 +133,6 @@ bool Roy::specific_status_attack() {
 				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 			}
 		}
-
-		if (normal_cancel(ATTACK_KIND_LP, FIGHTER_SITUATION_GROUND)) {
-			return true;
-		}
-		if (normal_cancel(ATTACK_KIND_MP, FIGHTER_SITUATION_GROUND)) {
-			return true;
-		}
-		if (normal_cancel(ATTACK_KIND_HP, FIGHTER_SITUATION_GROUND)) {
-			return true;
-		}
-		if (normal_cancel(ATTACK_KIND_LP, FIGHTER_SITUATION_AIR)) {
-			return true;
-		}
-		if (normal_cancel(ATTACK_KIND_MP, FIGHTER_SITUATION_AIR)) {
-			return true;
-		}
-		if (normal_cancel(ATTACK_KIND_HP, FIGHTER_SITUATION_AIR)) {
-			return true;
-		}
 	}
 	return false;
 }

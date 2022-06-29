@@ -4,10 +4,9 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "GameManager.h"
+#include <fstream>
 
-void Fighter::super_init(int id) {
-	this->id = id;
-	
+void Fighter::super_init() {
 	sound_manager->add_sound_player(id);
 	effect_manager->add_effect_caster(id);
 	stage = battle_object_manager->stage;
@@ -52,7 +51,7 @@ void Fighter::load_fighter_effects() {
 void Fighter::load_model_shader() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
-	shader.init("vertex_main.glsl", "fragment_main.glsl");
+	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
 	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
@@ -60,7 +59,7 @@ void Fighter::load_model_shader() {
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
 	shader.set_int("material.shadow_map", 4);
-
+	shader.set_float("brightness_mul", 1.0);
 }
 
 void Fighter::load_anim_list() {
@@ -69,11 +68,20 @@ void Fighter::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s resource directory was incorrectly set!");
+			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s animation directory was incorrectly set!");
 		}
 		else {
 			std::cout << err.what() << "\n";
 		}
+	}
+	std::ifstream camera_stream;
+	camera_stream.open(resource_dir + "/cam_anims/anim_list.yml");
+	if (camera_stream.fail()) {
+		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s camera directory was incorrectly set!");
+	}
+	std::string cam_anim_name;
+	while (camera_stream >> cam_anim_name) {
+		render_manager->camera.load_camera_anim(cam_anim_name, resource_dir + "/cam_anims/" + cam_anim_name + ".fbx");
 	}
 }
 
@@ -82,6 +90,7 @@ void Fighter::set_default_vars() {
 	base_jostle_offset = glm::vec2(get_local_param_float("jostle_x1"), get_local_param_float("jostle_y1"));
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_flag[FIGHTER_FLAG_CAN_TECH] = true;
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 }
 
 void Fighter::init_boxes() {

@@ -5,6 +5,7 @@ Norman::Norman() {
 }
 
 Norman::Norman(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_NORMAN;
 	chara_name = "norman";

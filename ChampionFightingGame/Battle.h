@@ -5,43 +5,12 @@
 #include "BattleObject.h"
 #include "GameManager.h"
 #include "GameTexture.h"
+#include "Mouse.h"
 
 class ThreadManager;
 class Camera;
 
 void battle_main();
-
-class HealthBar {
-public:
-	HealthBar();
-	void init(Fighter* fighter);
-	void destroy();
-	void process();
-	void render();
-
-	GameTexture health_texture;
-	GameTexture bar_texture;
-	float* health;
-	float max_health;
-};
-
-class ExBar {
-public:
-	ExBar();
-	void init(Fighter* fighter);
-	void destroy();
-	void process();
-	void render();
-
-	Fighter* fighter;
-	GameTexture ex_texture;
-	GameTexture ex_segment_texture;
-	GameTexture bar_texture;
-	float* ex;
-	float max_ex;
-	int num_bars;
-	int prev_segments = 0;
-};
 
 class PlayerIndicator {
 public:
@@ -78,6 +47,57 @@ public:
 	GameTexture clock;
 };
 
+class BattleMeter {
+public:
+	BattleMeter();
+	void init(Fighter* fighter);
+	void destroy();
+	void process();
+	void render();
+
+	GameTexture health_texture;
+	GameTexture health_border;
+	GameTexture ex_texture;
+	GameTexture ex_segment_texture;
+	GameTexture ex_border;
+
+	float* health;
+	float max_health;
+	float* ex;
+	float max_ex;
+	int num_bars;
+	int prev_segments = 0;
+};
+
+class BattleText : public GameTexture {
+public:
+	BattleText();
+
+	void init (Font* font, std::string text, int duration, Fighter* fighter, glm::vec2 pos);
+	void update(std::string text, int duration);
+
+	Font* font;
+
+	int duration;
+};
+
+class HitboxSim {
+public:
+	HitboxSim();
+
+	int active_cat;
+	int active_box[3];
+
+	GameRect boxes[3][10];
+	glm::vec2 anchor[3][10];
+	glm::vec2 offset[3][10];
+
+	void init();
+	void destroy();
+	void render();
+	void print(Fighter* fighter);
+};
+
 class Battle : public GameMenu {
 public:
 	Battle();
@@ -87,11 +107,13 @@ public:
 	void unload_game_menu();
 
 	void process_main();
+	void process_debug_boxes();
 	void process_ui();
 	void pre_process_fighter();
 	void process_fighter();
 	void post_process_fighter();
 	void process_frame_pause();
+	void process_training();
 
 	void process_background();
 
@@ -110,9 +132,12 @@ public:
 	void render_world();
 	void render_ui();
 
-	GameController debug_controller;
-
-	const Uint8* keyboard_state;
+	Font combo_font;
+	Font message_font;
+	Font fps_font;
+	GameTexture fps_counter;
+	GameTexture fps_texture;
+	int prev_fps;
 
 	Fighter* fighter[2];
 	Stage stage;
@@ -121,18 +146,27 @@ public:
 
 	Player* player[2];
 
-	HealthBar health_bar[2];
+	BattleMeter meters[2];
 
-	ExBar ex_bar[2];
+	BattleText* frame_advantage[2] = { nullptr };
+	BattleText* combo_counter[2] = { nullptr };
+	BattleText* combo_hit[2] = { nullptr };
+
+	std::list<BattleText> texts[2];
+
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;
+
 	Camera *camera;
 
-	//TODO: Create a class for the combo counter or otherwise some form of text rendering
+	GameController debug_controller;
+	const Uint8* keyboard_state;
+	Mouse mouse;
 
-	GameRect debug_rect[2];
-	glm::vec2 debug_anchor[2] = { {0,0} };
-	glm::vec2 debug_offset[2] = { {0,0} };
+	HitboxSim debug_boxes;
+	GameRect* active_debug_box;
+	glm::vec2 *debug_anchor;
+	glm::vec2 *debug_offset;
 
 	bool visualize_boxes;
 	bool pause;

@@ -7,6 +7,7 @@ Eric::Eric() {
 }
 
 Eric::Eric(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_ERIC;
 	chara_name = "eric";

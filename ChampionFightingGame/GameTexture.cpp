@@ -43,6 +43,7 @@ GameTexture::GameTexture(const GameTexture& that) {
 	VAO = that.VAO;
 	VBO = that.VBO;
 	texture = that.texture;
+	text = that.text;
 
 	width = that.width;
 	height = that.height;
@@ -114,6 +115,7 @@ void GameTexture::init(std::string path) {
 	shader->set_int("f_texture", 0);
 	h_flipped = false;
 	v_flipped = false;
+	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
@@ -165,13 +167,14 @@ void GameTexture::init(GLuint texture, int width, int height) {
 		tex_data[i].pos.y *= height_scale;
 	}
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tex_data), tex_data, GL_DYNAMIC_DRAW);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	shader->set_int("f_texture", 0);
 	h_flipped = false;
 	v_flipped = false;
+	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
@@ -224,6 +227,7 @@ void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border
 	shader->set_int("f_texture", 0);
 	h_flipped = false;
 	v_flipped = false;
+	this->text = text;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
@@ -457,18 +461,10 @@ void GameTexture::scale_bottom_percent(float percent, bool crop) {
 }
 
 void GameTexture::scale_all_percent(float percent, bool crop) {
-	if (percent < 1.0) {
-		scale_left_percent(percent * 2.0, crop);
-		scale_right_percent(percent * 2.0, crop);
-		scale_top_percent(percent * 2.0, crop);
-		scale_bottom_percent(percent * 2.0, crop);
-	}
-	else {
-		scale_left_percent(percent / 2.0, crop);
-		scale_right_percent(percent / 2.0, crop);
-		scale_top_percent(percent / 2.0, crop);
-		scale_bottom_percent(percent / 2.0, crop);
-	}
+	scale_left_percent(percent, crop);
+	scale_right_percent(percent, crop);
+	scale_top_percent(percent, crop);
+	scale_bottom_percent(percent, crop);
 }
 
 void GameTexture::set_width(int new_width) {
@@ -532,6 +528,10 @@ int GameTexture::get_height() {
 	return height;
 }
 
+std::string GameTexture::get_text() {
+	return text;
+}
+
 void GameTexture::set_left_target(float percent, float frames) {
 	if (percent < 0.0 || frames <= 0.0) {
 		return;
@@ -590,6 +590,10 @@ void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	}
 	this->target_pos = (target_pos - pos) / glm::vec3(frames);
 	this->target_pos_frames = glm::vec3(frames);
+}
+
+void GameTexture::add_alpha(unsigned char alpha) {
+	this->alpha += alpha;
 }
 
 void GameTexture::set_alpha(unsigned char alpha) {
@@ -795,6 +799,41 @@ void GameTexture::set_sprite(int index) {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i]->tex_coord = spritesheet[i][index];
 	}
+}
+
+void GameTexture::update_text(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	this->text = text;
+	float width_scale = (float)width / (float)WINDOW_WIDTH;
+	float height_scale = (float)height / (float)WINDOW_HEIGHT;
+
+	if (width_scale == 0.0 || height_scale == 0.0) {
+		tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+		tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+		tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+		tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			tex_data[i].pos.x /= width_scale;
+			tex_data[i].pos.y /= height_scale;
+		}
+	}
+
+	texture = font.create_text(text, rgba, border_x, border_y, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+
+	width_scale = (float)width / (float)WINDOW_WIDTH;
+	height_scale = (float)height / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x *= width_scale;
+		tex_data[i].pos.y *= height_scale;
+	}
+	update_buffer_data();
+	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
+	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
 
 void GameTexture::update_buffer_data() {

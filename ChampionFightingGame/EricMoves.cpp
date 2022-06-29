@@ -7,121 +7,187 @@ void Eric::load_move_scripts() {
 		return;
 	});
 	script("wait", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::SET_RATE, 0.5);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-130, 0), glm::vec2(0, 50));
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(0, 0), glm::vec2(125, 80));
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(-35, 35), glm::vec2(65, 160));
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2(35, 120), glm::vec2(115, 145));
+		});
+
 	});
 	script("walk_f", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
 	script("walk_b", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
 	script("dash_f", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+		});
 	});
 	script("dash_b", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
 	script("crouch_d", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
+		execute_frame(2, [this]() {
+			clear_hurtbox_all();
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 80 });
+		});
 	});
 	script("crouch", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -38, 0 }, glm::vec2{ 43, 71 });
+		});
 	});
 	script("crouch_u", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
 	});
 	script("jump_squat", [this]() {
 
 	});
 	script("jump", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -25, 20 }, glm::vec2{ 20, 120 });
-			new_hurtbox(1, glm::vec2{ -35, 75 }, glm::vec2{ 35, 115 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -25, 20 }, glm::vec2{ 20, 120 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -35, 75 }, glm::vec2{ 35, 115 });
+		});
 	});
 	script("jump_f", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 40 }, glm::vec2{ 35, 105 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 40 }, glm::vec2{ 35, 105 });
+		});
 	});
 	script("jump_b", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 40 }, glm::vec2{ 35, 105 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 40 }, glm::vec2{ 35, 105 });
+		});
 	});
 	script("fall", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -25, 0 }, glm::vec2{ 20, 120 });
-			new_hurtbox(1, glm::vec2{ -35, 75 }, glm::vec2{ 35, 115 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -25, 0 }, glm::vec2{ 20, 120 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -35, 75 }, glm::vec2{ 35, 115 });
+		});
+	});
+	script("turn_stand", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -42, 0 }, glm::vec2{ 62, 38 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -29, 39 }, glm::vec2{ 33, 141 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
+		});
+		execute_frame(4, [this]() {
+			clear_hurtbox(2);
+		});
+		execute_frame(7, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -17, 82 }, glm::vec2{ -54, 104 });
+		});
+	});
+	script("turn_crouch", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -42, 0 }, glm::vec2{ 62, 38 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -29, 39 }, glm::vec2{ 33, 141 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ 17, 82 }, glm::vec2{ 54, 104 });
+		});
+	});
+	script("stand_block_start", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
 	script("stand_block", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
-	script("high_block", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+	script("stand_blockstun", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
-	script("crouch_block", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+	script("high_blockstun", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
 	});
-	script("jump_block", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+	script("crouch_blockstun", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
+		});
+	});
+	script("jump_blockstun", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
 	});
 	script("parry_start", [this]() {
-		if (is_excute_frame(0)) {
-			
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+		});
+		execute_wait(4, [this]() {
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+		});
 	});
-	script("parry_start_air", [this]() {
-		if (is_excute_frame(0)) {
-			
-		}
+	script("parry_start_low", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+		});
+		execute_wait(4, [this]() {
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+		});
+	});
+	script("parry_air_start", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+		});
+		execute_wait(4, [this]() {
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+		});
 	});
 	script("parry_mid", [this]() {
 
@@ -135,136 +201,173 @@ void Eric::load_move_scripts() {
 	script("parry_air", [this]() {
 
 	});
-	script("hitstun_parry", [this]() {
-		if (is_excute_frame(0)) {
-			
-		}
+	script("hitstun_parry_start", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+		});
+		execute_wait(1, [this]() {
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+		});
+		execute_wait(9, [this]() {
+			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+			reenter_last_anim();
+		});
 	});
-	script("hitstun_parry_air", [this]() {
-		if (is_excute_frame(0)) {
-			
-		}
+	script("hitstun_parry_air_start", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = true;
+			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+		});
+		execute_wait(1, [this]() {
+			fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+		});
+		execute_wait(9, [this]() {
+			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
+			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+			reenter_last_anim();
+		});
 	});
 	script("stand_lp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			new_blockbox(glm::vec2{ 5,70 }, glm::vec2{ 130, 90 });
-		}
-		if (is_excute_frame(4)) {
-			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 35,70 }, glm::vec2{ 90, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 25, 25, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false, false, true);
-		}
-		if (is_excute_wait(4)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::SET_RATE, 2.0);
+			play_vc("roy_attack_01");
+			new_effect("flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.4), glm::vec4(0.0), "HaveL", glm::vec3(0.0, 15.0, 0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 5,145 }, glm::vec2{ 240, 165 });
+		});
+		execute_frame(4, [this]() {
+			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, CLANK_KIND_NORMAL, KO_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
+			push_function(&Fighter::SET_RATE, 1.0);
+		});
+		execute_wait(4, [this]() {
 			clear_hitbox_all();
-		}
+		});
 	});
 	script("stand_mp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			new_blockbox(glm::vec2{ 5,70 }, glm::vec2{ 130, 90 });
-		}
-		if (is_excute_frame(8)) {
-			new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 35,70 }, glm::vec2{ 90, 90 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 12, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_MEDIUM, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false, false, true);
-		}
-		if (is_excute_wait(4)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 35,115 }, glm::vec2{ 240, 135 });
+		});
+		execute_frame(2, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 105, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 110 }, glm::vec2{ 155, 150 });
+		});
+		execute_frame(3, [this]() {
+			//40 damage, 12 12 6 4
+		});
+		execute_wait(3, [this]() {
 			clear_hitbox_all();
-		}
+		});
+		execute_wait(2, [this]() {
+			clear_hurtbox(3);
+		});
 	});
 	script("stand_hp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			new_blockbox(glm::vec2{ 5,70 }, glm::vec2{ 130, 90 });
-		}
-		if (is_excute_frame(10)) {
-			new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 25,70 }, glm::vec2{ 90, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, true, false, true);
-		}
-		if (is_excute_wait(2)) {
-			new_hitbox(2, 0, 60, 10, 1.2, 1, glm::vec2{ 80,70 }, glm::vec2{ 100, 100 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 20, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_CRUMPLE, HIT_STATUS_CRUMPLE, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, true, false, true);
-		}
-		if (is_excute_wait(3)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-105, 0), glm::vec2(35, 90));
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(30, 55), glm::vec2(95, 95));
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 5,70 }, glm::vec2{ 130, 90 });
+		});
+		execute_frame(5, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(30, 0), glm::vec2(107, 50));
+		});
+		execute_frame(10, [this]() {
+			//50, 16 16 12 7
+		});
+		execute_wait(2, [this]() {
+
+		});
+		execute_wait(3, [this]() {
 			clear_hitbox_all();
-		}
+		});
 	});
 	script("stand_lk", [this]() {
 
 	});
 	script("stand_mk", [this]() {
-
+		execute_frame(0, [this]() {
+			start_cinematic_sequence("super_start", 1.0, 0.0, 0.5, false, 0.0);
+		});
 	});
 	script("stand_hk", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 0, 90 });
-		}
-		if (is_excute_frame(2)) {
-			new_hurtbox(1, glm::vec2{ -15, 100 }, glm::vec2{ 25, 60 });
-		}
-		if (is_excute_frame(6)) {
-			new_hitbox(1, 0, 50, 10, 1.2, 1, glm::vec2{ 25,60 }, glm::vec2{ 60, 120 }, HITBOX_KIND_NORMAL, 20, 40, 10, SITUATION_HIT_GROUND_AIR, 4, 15, 12, 70, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 3, 3, CLANK_KIND_NORMAL, 1, 1, 20, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_AERIAL, 20.0, 0.0, 2.0, 1.0, true, false, true);
-		}
-		if (is_excute_frame(8)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 0, 90 });
+		});
+		execute_frame(2, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -15, 100 }, glm::vec2{ 25, 60 });
+		});
+		execute_frame(6, [this]() {
+			\
+		});
+		execute_frame(8, [this]() {
 			clear_hitbox_all();
-		}
-		if (is_excute_frame(12)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
 	});
 	script("crouch_lp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -38, 0 }, glm::vec2{ 45, 71 });
-		}
-		if (is_excute_frame(4)) {
-			new_hurtbox(1, glm::vec2{ 21, 43 }, glm::vec2{ 68, 64 });
-			new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 42,43 }, glm::vec2{ 76, 64 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false, false, true);
-		}
-		if (is_excute_wait(2)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -38, 0 }, glm::vec2{ 45, 71 });
+		});
+		execute_frame(4, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 21, 43 }, glm::vec2{ 68, 64 });
+
+		});
+		execute_wait(2, [this]() {
 			clear_hitbox_all();
-		}
-		if (is_excute_wait(2)) {
+		});
+		execute_wait(2, [this]() {
 			clear_hurtbox(1);
-		}
+		});
 	});
 	script("crouch_mp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -38, 0 }, glm::vec2{ 45, 71 });
-		}
-		if (is_excute_frame(4)) {
-			new_hurtbox(1, glm::vec2{ 21, 43 }, glm::vec2{ 68, 64 });
-			new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 42,43 }, glm::vec2{ 76, 64 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 12, 6, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_MEDIUM, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, false, false, true);
-		}
-		if (is_excute_wait(2)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -38, 0 }, glm::vec2{ 45, 71 });
+		});
+		execute_frame(4, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 21, 43 }, glm::vec2{ 68, 64 });
+
+		});
+		execute_wait(2, [this]() {
 			clear_hitbox_all();
-		}
-		if (is_excute_wait(2)) {
+		});
+		execute_wait(2, [this]() {
 			clear_hurtbox(1);
-		}
+		});
 	});
 	script("crouch_hp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -45, 0 }, glm::vec2{ 45, 25 });
-			new_hurtbox(1, glm::vec2{ -30, 20 }, glm::vec2{ 25, 73 });
-		}
-		if (is_excute_frame(6)) {
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 40, 55 });
-		}
-		if (is_excute_wait(2)) {
-			new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 25,55 }, glm::vec2{ -10, 140 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 15, 12, 7, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_NORMAL, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 14.0, 0.0, 0.0, 1.0, true, false, true);
-		}
-		if (is_excute_wait(4)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -45, 0 }, glm::vec2{ 45, 25 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -30, 20 }, glm::vec2{ 25, 73 });
+		});
+		execute_frame(6, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 40, 55 });
+		});
+		execute_wait(2, [this]() {
+
+		});
+		execute_wait(4, [this]() {
 			clear_hitbox_all();
-		}
+		});
 	});
 	script("crouch_lk", [this]() {
 
@@ -273,82 +376,72 @@ void Eric::load_move_scripts() {
 
 	});
 	script("crouch_hk", [this]() {
-		if (is_excute_frame(0)) {
-			
-		}
-		if (is_excute_frame(3)) {
+		execute_frame(0, [this]() {
 
-		}
-		if (is_excute_frame(6)) {
-			new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ -5,35 }, glm::vec2{ 90, 0 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 20, 15, 13, 10, false, ATTACK_HEIGHT_LOW, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 4, HIT_STATUS_KNOCKDOWN, HIT_STATUS_KNOCKDOWN, COUNTERHIT_TYPE_NORMAL, 10.0, 0.0, 0.0, 1.0, true, false, true);
-		}
+		});
+		execute_frame(3, [this]() {
+
+		});
+		execute_frame(6, [this]() {
+
+		});
 
 	});
 	script("jump_lp", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -45, 0 }, glm::vec2{ 0, 50 });
-			new_hurtbox(1, glm::vec2{ -15, 10 }, glm::vec2{ 15, 100 });
-			new_hurtbox(2, glm::vec2{ 10, 40 }, glm::vec2{ 35, 100 });
-		}
-		if (is_excute_frame(2)) {
-			new_hurtbox(3, glm::vec2{ 5, 55 }, glm::vec2{ 40, 95 });
-		}
-		if (is_excute_wait(1)) {
-			
-			new_hurtbox(1, glm::vec2{ -15, 10 }, glm::vec2{ 15, 75 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 75 });
-			new_hurtbox(3, glm::vec2{ 5, 25 }, glm::vec2{ 45, 75 });
-			if (fighter_flag[FIGHTER_FLAG_SELF_CANCEL]) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 40, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 50, 50, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
-			}
-			else {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 50, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 30, 30, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
-			}
-			new_hitbox(2, 0, 30, 5, 1.2, 1, glm::vec2{ 20,20 }, glm::vec2{ 50, 60 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_AIR, 8, 8, 6, 4, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_LIGHT, 10, 10, CLANK_KIND_NORMAL, 1, 1, 3, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -45, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -15, 10 }, glm::vec2{ 15, 100 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ 10, 40 }, glm::vec2{ 35, 100 });
+		});
+		execute_frame(2, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 5, 55 }, glm::vec2{ 40, 95 });
+		});
+		execute_wait(1, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -15, 10 }, glm::vec2{ 15, 75 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 75 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 5, 25 }, glm::vec2{ 45, 75 });
+
+		});
 	});
 	script("jump_mp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -55, 15 }, glm::vec2{ 0, 100 });
-			new_hurtbox(1, glm::vec2{ -10, 25 }, glm::vec2{ 27, 80 });
-			new_hurtbox(2, glm::vec2{ -65, 70 }, glm::vec2{ 5, 100 });
-		}
-		if (is_excute_wait(4)) {
-			new_hurtbox(1, glm::vec2{ -10, 25 }, glm::vec2{ 23, 50 });
-			new_hurtbox(2, glm::vec2{ -45, 70 }, glm::vec2{ 5, 100 });
-		}
-		if (is_excute_wait(2)) {
-			new_hurtbox(1, glm::vec2{ 0, 50 }, glm::vec2{ 40, 80 });
-			new_hurtbox(3, glm::vec2{ 15, 45 }, glm::vec2{ 55, 70 });
-			new_hitbox(1, 0, 30, 15, 1.2, 1, glm::vec2{ 45,35 }, glm::vec2{ 75, 55 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 12, 8, 8, 6, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_MEDIUM, 10, 10, CLANK_KIND_NORMAL, 3, 1, 5, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 4.0, false, false, true);
-		}
-		if (is_excute_wait(2)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -55, 15 }, glm::vec2{ 0, 100 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -10, 25 }, glm::vec2{ 27, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -65, 70 }, glm::vec2{ 5, 100 });
+		});
+		execute_wait(4, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -10, 25 }, glm::vec2{ 23, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -45, 70 }, glm::vec2{ 5, 100 });
+		});
+		execute_wait(2, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 50 }, glm::vec2{ 40, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 15, 45 }, glm::vec2{ 55, 70 });
+
+		});
+		execute_wait(2, [this]() {
 			clear_hitbox_all();
-		}
-		if (is_excute_frame(13)) {
+		});
+		execute_frame(13, [this]() {
 			clear_hurtbox(3);
-		}
+		});
 	});
 	script("jump_hp", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -40, 25 }, glm::vec2{ 40, 65 });
-			new_hurtbox(1, glm::vec2{ -30, 30 }, glm::vec2{ 30, 110 });
-		}
-		if (is_excute_frame(6)) {
-			new_hurtbox(1, glm::vec2{ -10, 30 }, glm::vec2{ 30, 110 });
-			new_hurtbox(2, glm::vec2{ -25, 75 }, glm::vec2{ 75, 95 });
-			new_hitbox(1, 0, 60, 15, 1.2, 1, glm::vec2{ 60,75 }, glm::vec2{ 95, 95 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 10, 10, 8, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 7, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 10.0, false, false, true);
-			new_hitbox(2, 0, 50, 15, 1.2, 1, glm::vec2{ 20,75 }, glm::vec2{ 95, 95 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 16, 10, 10, 8, false, ATTACK_HEIGHT_HIGH, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 1, 1, 7, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NONE, 7.0, 0.0, 0.0, 10.0, false, false, true);
-		}
-		if (is_excute_wait(5)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -40, 25 }, glm::vec2{ 40, 65 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -30, 30 }, glm::vec2{ 30, 110 });
+		});
+		execute_frame(6, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -10, 30 }, glm::vec2{ 30, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -25, 75 }, glm::vec2{ 75, 95 });
+
+		});
+		execute_wait(5, [this]() {
 			clear_hitbox(1);
-		}
-		if (is_excute_wait(4)) {
+		});
+		execute_wait(4, [this]() {
 			clear_hitbox_all();
 			clear_hurtbox(2);
-		}
+		});
 	});
 	script("jump_lk", [this]() {
 
@@ -359,116 +452,189 @@ void Eric::load_move_scripts() {
 	script("jump_hk", [this]() {
 
 	});
+	script("advance_high", [this]() {
+		execute_frame(20, [this]() {
+			battle_object_manager->reset_world_rate(id);
+		});
+	});
+	script("advance_low", [this]() {
+		execute_frame(20, [this]() {
+			battle_object_manager->reset_world_rate(id);
+		});
+	});
+	script("advance_forward", [this]() {
+
+	});
+	script("advance_back", [this]() {
+
+	});
 	script("grab", [this]() {
-		if (is_excute_frame(0)) {
-			
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
-		if (is_excute_frame(3)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
+		execute_frame(3, [this]() {
 			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
-		}
-		if (is_excute_wait(2)) {
-			clear_grabbox_all();
-			fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
-		}
+		});
 	});
 	script("throw_f", [this]() {
-		if (is_excute_frame(0)) {
+		execute_frame(0, [this]() {
 			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
+			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
-		}
-		if (is_excute_frame(13)) {
+		});
+		execute_frame(24, [this]() {
 			throw_opponent(30.0, 15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
-		}
+		});
 	});
 	script("throw_b", [this]() {
-		if (is_excute_frame(0)) {
-			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
+		execute_frame(0, [this]() {
+			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
-		}
-		if (is_excute_frame(10)) {
+		});
+		execute_frame(10, [this]() {
 			throw_opponent(30.0, -15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
-		}
+		});
 	});
 	script("grab_air", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
-		if (is_excute_frame(3)) {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
+		execute_frame(3, [this]() {
 			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
-		}
+		});
 	});
 	script("throw_f_air", [this]() {
-		if (is_excute_frame(0)) {
+		execute_frame(0, [this]() {
 			change_opponent_anim("stand_hitstun_m", 2);
-			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
+			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
 			set_opponent_thrown_ticks();
-		}
-		if (is_excute_frame(13)) {
+		});
+		execute_frame(22, [this]() {
 			throw_opponent(30.0, 15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
-		}
+		});
 	});
 	script("throw_b_air", [this]() {
-		if (is_excute_frame(0)) {
-			grab_opponent("HandL", "Bust", glm::vec2(0.0), 3);
+		execute_frame(0, [this]() {
+			grab_opponent("Throw", "Bust", glm::vec2(0.0), 3);
 			change_opponent_anim("stand_hitstun_m", 2);
 			set_opponent_thrown_ticks();
-		}
-		if (is_excute_frame(10)) {
+		});
+		execute_frame(10, [this]() {
 			throw_opponent(30.0, -15.0, 8.0);
 			change_opponent_status(FIGHTER_STATUS_THROWN);
-		}
+		});
+	});
+	script("special_uppercut_start", [this]() {
+		execute_frame(0, [this]() {
+			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -82, 8 }, glm::vec2{ 34, 41 });
+				push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -65, 36 }, glm::vec2{ 17, 95 });
+			}
+		});
+		execute_frame(4, [this]() {
+			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+				push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -82, 8 }, glm::vec2{ 50, 41 });
+				push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -18, 37 }, glm::vec2{ 46, 132 });
+
+			}
+			else {
+
+			}
+		});
+		execute_wait(4, [this]() {
+			clear_hitbox_all();
+		});
+	});
+	script("special_uppercut", [this]() {
+		execute_frame(4, [this]() {
+			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+
+			}
+			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+
+			}
+			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+
+			}
+			else {
+
+			}
+		});
+		execute_frame(5, [this]() {
+			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
+
+			}
+			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
+
+			}
+			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
+
+			}
+			else {
+
+			}
+		});
+	});
+	script("special_uppercut_fall", [this]() {
+
+	});
+	script("stand_hitstun_l", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+		});
 	});
 	script("stand_hitstun_m", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+		});
 	});
 	script("stand_hitstun_h", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+		});
 	});
 	script("crouch_hitstun_l", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
+		});
 	});
 	script("crouch_hitstun_m", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
+		});
 	});
 	script("crouch_hitstun_h", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
+		});
 	});
 	script("jump_hitstun", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
+		});
 	});
 	script("launch_start", [this]() {
 
 	});
 	script("launch", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 70 });
+		});
 	});
 	script("knockdown_start", [this]() {
 
@@ -477,85 +643,25 @@ void Eric::load_move_scripts() {
 
 	});
 	script("wakeup", [this]() {
-		if (is_excute_frame(0)) {
-			
-		}
+		execute_frame(0, [this]() {
+
+		});
 	});
 	script("crumple", [this]() {
 
 	});
 	script("landing", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
 	});
 	script("landing_hitstun", [this]() {
-		if (is_excute_frame(0)) {
-			new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-			new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-			new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-		}
-	});
-	script("special_uppercut_start", [this]() {
-		if (is_excute_frame(0)) {
-			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] != SPECIAL_LEVEL_EX) {
-				new_hurtbox(0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
-				new_hurtbox(1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
-				new_hurtbox(2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
-			}
-		}
-		if (is_excute_frame(4)) {
-			
-			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 15,55 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 15,55 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 15,55 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, 1, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-			}
-			else {
-				new_hitbox(1, 0, 60, 5, 1.2, 1, glm::vec2{ 15,55 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 8, 20, 6, 4, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, -10, 4, CLANK_KIND_NORMAL, 1, 1, 6, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 3.0, 0.1, 0.1, 0.0, false, true, true);
-			}
-		}
-		if (is_excute_wait(4)) {
-			clear_hitbox_all();
-		}
-	});
-	script("special_uppercut_rise", [this]() {
-		if (is_excute_frame(4)) {
-			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false, true, true);
-
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-			else {
-				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,5 }, glm::vec2{ 50, 75 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, 1, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-		}
-	});
-	script("special_uppercut", [this]() {
-		if (is_excute_frame(0)) {
-			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				new_hitbox(1, 0, 30, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 20.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				new_hitbox(1, 0, 40, 5, 1.2, 1, glm::vec2{ 0,85 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 25.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				new_hitbox(1, 0, 50, 5, 1.2, 1, glm::vec2{ 0,85 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 6, 1, 5, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-			else {
-				new_hitbox(1, 0, 70, 5, 1.2, 1, glm::vec2{ 0,65 }, glm::vec2{ 40, 150 }, HITBOX_KIND_NORMAL, 15, 30, 10, SITUATION_HIT_GROUND_AIR, 18, 6, 14, 10, false, ATTACK_HEIGHT_MID, ATTACK_LEVEL_HEAVY, 10, 10, CLANK_KIND_NORMAL, 8, 1, 7, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 30.0, 1.0, 12.0, 3.0, false, true, true);
-			}
-		}
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -35, 0 }, glm::vec2{ 37, 35 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ -25, 0 }, glm::vec2{ 20, 110 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
+		});
 	});
 }

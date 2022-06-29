@@ -6,10 +6,12 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		clear_grabbox_all();
 		clear_hurtbox_all();
 		fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
-		fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] = false;
-		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = false;
-		fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = false;
+		fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = false;
+		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = false;
+		fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = false;
+		fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = false;
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
+		disable_all_cancels();
 		if (call_end_status) {
 			(this->*exit_status_script[status_kind])();
 		}
@@ -58,15 +60,6 @@ unsigned int Fighter::get_status_group() {
 			return STATUS_GROUP_CROUCH;
 		}
 		break;
-		case (FIGHTER_STATUS_WAIT):
-		case (FIGHTER_STATUS_FALL):
-		case (FIGHTER_STATUS_WALKF):
-		case (FIGHTER_STATUS_WALKB):
-		case (FIGHTER_STATUS_JUMP):
-		{
-			return STATUS_GROUP_NO_RENDER_PRIORITY;
-		}
-		break;
 		case (FIGHTER_STATUS_ATTACK):
 		case (FIGHTER_STATUS_ATTACK_AIR):
 		{
@@ -107,26 +100,19 @@ bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status,
 	return false;
 }
 
-bool Fighter::is_status_hitstun_enable_parry() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0 
-		|| battle_object_manager->fighter[!id]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] == -5
-		|| fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]) {
-		return false;
-	}
-	switch (status_kind) {
-		case (FIGHTER_STATUS_HITSTUN):
-		case (FIGHTER_STATUS_HITSTUN_AIR):
-		case (FIGHTER_STATUS_LAUNCH):
-		{
+bool Fighter::check_hitstun_parry() {
+	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] 
+		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX]) {
+		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+		if (check_button_input(parry_buttons, 2)) {
+			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
+			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = true;
+			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = true;
+			player->controller.reset_buffer();
 			return true;
 		}
-		break;
-		default:
-		{
-			return false;
-		}
-		break;
 	}
+	return false;
 }
 
 bool Fighter::is_status_delay() {

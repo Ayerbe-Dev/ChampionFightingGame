@@ -7,6 +7,8 @@
 #include <random>
 #include <thread>
 #include <mutex>
+#include "BattleObject.h"
+#include <boost/fusion/algorithm.hpp>
 
 extern std::mutex file_mutex;
 
@@ -142,4 +144,16 @@ int rng(const int& min, const int& max) {
 	if (!generator) generator = new std::mt19937(clock() + hasher(std::this_thread::get_id()));
 	std::uniform_int_distribution<int> distribution(min, max);
 	return distribution(*generator);
+}
+
+float rng_f(const float& min, const float& max) {
+	thread_local std::mt19937* generator = nullptr;
+	std::hash<std::thread::id> hasher;
+	if (!generator) generator = new std::mt19937(clock() + hasher(std::this_thread::get_id()));
+	std::uniform_real_distribution<float> distribution(min, max);
+	return distribution(*generator);
+}
+
+float lerp(float a, float b, float f) {
+	return a + f * (b - a);
 }

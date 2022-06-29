@@ -1,4 +1,5 @@
 #pragma once
+
 #define FLOOR_GAMECOORD 0.0
 #define MAX_PROJECTILES 10
 

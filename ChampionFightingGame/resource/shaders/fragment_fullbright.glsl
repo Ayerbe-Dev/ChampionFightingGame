@@ -3,14 +3,22 @@ out vec4 FragColor;
 
 struct Material {
     sampler2D diffuse;
-    sampler2D specular;    
+    sampler2D specular;
+    sampler2D normal;
+    sampler2D height;
+    sampler2D shadow_map;
     float shininess;
 }; 
 
-in vec2 TexCoords;
+in GS_OUT {
+    vec3 FragPos;  
+    vec3 Normal;  
+    vec2 TexCoords;
+    vec4 FragPosLightSpace;
+} fs_in;
 
 uniform Material material;
 
 void main() {    
-    FragColor = vec4(texture(material.diffuse, TexCoords).rgb + texture(material.specular, TexCoords).rgb, 1.0);
+    FragColor = vec4(texture(material.diffuse, fs_in.TexCoords).rgb + texture(material.specular, fs_in.TexCoords).rgb, 1.0);
 }

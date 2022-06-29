@@ -105,10 +105,10 @@ void GameManager::handle_window_events(std::function<void(SDL_Event*)> event_han
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_RESIZED:
 			case SDL_WINDOWEVENT_SIZE_CHANGED:
-			case SDL_WINDOWEVENT_MAXIMIZED:
-			{
+			case SDL_WINDOWEVENT_MAXIMIZED: {
 				SDL_GetWindowSize(render_manager->window, &render_manager->s_window_width, &render_manager->s_window_height);
 				glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+				render_manager->update_framebuffer_dimensions();
 			} break;
 			}
 		} break;

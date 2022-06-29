@@ -17,19 +17,16 @@ void Fighter::reenter_last_anim() {
 	prev_anim_offset = glm::vec3(0.0);
 	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
 	is_anim_end = false;
+	Animation* saved_prev_anim_kind = prev_anim_kind;
 	if (anim_kind != prev_anim_kind) {
 		prev_anim_kind = anim_kind;
 	}
-	anim_kind = prev_anim_kind;
+	anim_kind = saved_prev_anim_kind;
 }
 
 bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
-	excute_count = 0;
-	attempted_excutes = 0;
-	last_excute_frame = 0;
-
-	prev_anim_rate = rate;
-	prev_anim_frame = frame;
+	prev_anim_rate = this->rate;
+	prev_anim_frame = this->frame;
 
 	set_current_move_script(animation_name);
 
@@ -57,20 +54,16 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			this->rate = (target_frame / rate) * 0.8;
 			this->frame = 0.0;
 		}
-	}
-
-	if (new_anim != nullptr) {
 		model.set_move(new_anim->move);
+		prev_anim_kind = anim_kind;
 	}
 	else {
 		player->controller.reset_buffer();
 	}
+
 	prev_anim_offset = glm::vec3(0.0);
 	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
 	is_anim_end = false;
-	if (anim_kind != new_anim) {
-		prev_anim_kind = anim_kind;
-	}
 	anim_kind = new_anim;
 
 	return new_anim != nullptr;

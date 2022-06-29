@@ -1,45 +1,6 @@
 #include "BattleObject.h"
 
 /// <summary>
-/// Checks if the user has reached the correct frame for the following block to run, and makes sure that the block has not already run.
-/// </summary>
-/// <param name="frame">: The frame the user must have reached in order to execute the block.</param>
-/// <returns>Whether or not the contents of the block may be executed.</returns>
-bool BattleObject::is_excute_frame(float frame) {
-	bool ret = false;
-	attempted_excutes++;
-	if (this->frame >= frame) {
-		if (excute_count < attempted_excutes) {
-			excute_count++;
-			ret = true;
-		}
-	}
-
-	last_excute_frame = frame;
-
-	return ret;
-}
-
-/// <summary>
-/// Checks if the user has waited enough frames for the following block to run, and makes sure that the block has not already run.
-/// </summary>
-/// <param name="frames">: How many frames it must have been since the last is_excute check in order to execute the block.</param>
-/// <returns>Whether or not the contents of the block may be executed.</returns>
-bool BattleObject::is_excute_wait(float frames) {
-	bool ret = false;
-	attempted_excutes++;
-	if (frame >= last_excute_frame + frames) {
-		if (excute_count < attempted_excutes) {
-			excute_count++;
-			ret = true;
-		}
-	}
-	last_excute_frame += frames;
-
-	return ret;
-}
-
-/// <summary>
 /// Finds the first empty move_script slot, and assigns it a MoveScript that contains a name and a script to execute.
 /// </summary>
 /// <param name="name">: The anim_kind that the user should be in for this script to run.</param>
@@ -61,5 +22,20 @@ void BattleObject::wipe_scripts() {
 /// </summary>
 /// <param name="anim_name">: The animation to find a move script for.</param>
 void BattleObject::set_current_move_script(std::string anim_name) {
-	move_script = move_script_table.get_script(anim_name);
+	active_move_script = move_script_table.get_script(anim_name);
+	active_move_script.activate();
+}
+
+void BattleObject::execute_frame(float frame, std::function<void()> execute) {
+	active_script_frame = ScriptFrame(frame);
+	execute();
+	active_move_script.frames.push(active_script_frame);
+	last_execute_frame = frame;
+}
+
+void BattleObject::execute_wait(float frames, std::function<void()> execute) {
+	active_script_frame = ScriptFrame(frames + last_execute_frame);
+	execute();
+	active_move_script.frames.push(active_script_frame);
+	last_execute_frame += frames;
 }

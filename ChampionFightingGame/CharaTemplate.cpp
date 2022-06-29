@@ -6,6 +6,7 @@ CharaTemplate::CharaTemplate() {
 }
 
 CharaTemplate::CharaTemplate(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_CHARA_TEMPLATE;
 	chara_name = "chara_template";

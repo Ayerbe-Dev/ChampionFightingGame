@@ -13,7 +13,7 @@ bool Priest::specific_air_status_act() {
 }
 
 bool Priest::specific_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
 		if (specific_ground_status_act()) {
 			return true;
 		}

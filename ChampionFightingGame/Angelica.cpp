@@ -5,6 +5,7 @@ Angelica::Angelica() {
 }
 
 Angelica::Angelica(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_ANGELICA;
 	chara_name = "angelica";

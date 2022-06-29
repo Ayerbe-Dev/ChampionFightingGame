@@ -134,17 +134,6 @@ void GameRect::render_prepared() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
-//	if (rgba == glm::vec4(255, 165, 0, 204)) { //For my own sanity, we're only going to do blockboxes for now
-//		for (int i = 0; i < 4; i++) {
-//			glm::vec3 pos = glm::vec3(corners[i], 0.0);
-//			glm::mat4 projection = glm::perspective(glm::radians(render_manager->camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
-//			glm::mat4 view = render_manager->camera.get_view();
-//			glm::vec4 viewport = glm::vec4(0, 0, render_manager->s_window_width, render_manager->s_window_height);
-//			glm::vec3 projected = glm::projectZO(pos, view, projection, viewport);
-//			std::cout << projected.x << ", " << projected.y << ", " << projected.z << "\n";
-//		}
-//		std::cout << "\n";
-//	}
 	glDepthMask(GL_FALSE);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDepthMask(GL_TRUE);
@@ -182,4 +171,33 @@ bool is_collide(GameRect &RectA, GameRect &RectB) {
 		|| (RectA.corners[2].y >= RectB.corners[0].y && RectA.corners[2].y <= RectB.corners[2].y) 
 		|| (RectB.corners[0].y >= RectA.corners[0].y && RectB.corners[0].y <= RectA.corners[2].y) 
 		|| (RectB.corners[2].y >= RectA.corners[0].y && RectB.corners[2].y <= RectA.corners[2].y));
+}
+
+glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_coords) {
+	RenderManager* render_manager = RenderManager::get_instance();
+
+	//put the mouse in -1, 1 coords
+
+	mouse_coords.x = ((mouse_coords.x / render_manager->s_window_width) - 0.5) * 2.0;
+	mouse_coords.y = (((render_manager->s_window_height - mouse_coords.y) / render_manager->s_window_height) - 0.5) * 2.0;
+
+	//unproject the coords based on the camera
+
+	Camera& camera = render_manager->camera;
+	glm::mat4 unproject_mat = glm::inverse(camera.camera_matrix);
+	glm::vec4 unproject_vec(mouse_coords.x, mouse_coords.y, 2.7, 1.0);
+	glm::vec2 world_pos = unproject_vec * unproject_mat;
+
+	//?????????????????????????????????????????????????????????????????????????????????????
+
+	world_pos.x *= WINDOW_WIDTH;
+	world_pos.y *= WINDOW_HEIGHT;
+	world_pos.x /= 1.865;
+	world_pos.y /= 1.82;
+	world_pos += glm::vec2(camera.pos.x * 400, camera.pos.y * 200);
+	world_pos.y += 4.0;
+
+	//profit
+
+	return world_pos;
 }

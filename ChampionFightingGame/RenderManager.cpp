@@ -4,14 +4,17 @@
 #include "SaveManager.h"
 #include "utils.h"
 #include "stb_image.h"
+#include <iostream>
 
 RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
+	float width = save_manager->get_game_setting("res_x");
+	float height = save_manager->get_game_setting("res_y");
 	if (save_manager->get_game_setting("fullscreen")) {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, save_manager->get_game_setting("res_x"), save_manager->get_game_setting("res_y"), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
 	SDL_GetWindowSize(window, &s_window_width, &s_window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
@@ -30,13 +33,71 @@ RenderManager::RenderManager() {
 	stbi_set_flip_vertically_on_load(true);
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 
+	for (int i = 0; i < 64; i++) {
+		glm::vec3 sample(rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0));
+
+		sample = glm::normalize(sample);
+		sample *= rng_f(0.0, 1.0);
+
+		float scale = (float)i / 64.0;
+		scale = lerp(0.1, 1.0, scale * scale);
+		sample *= scale;
+
+		ssao_kernel.push_back(sample);
+	}
+
+	for (int i = 0; i < 16; i++) {
+		glm::vec3 noise(
+			rng_f(0.0, 1.0) * 2.0 - 1.0,
+			rng_f(0.0, 1.0) * 2.0 - 1.0,
+			0.0
+		);
+		ssao_noise.push_back(noise);
+	}
+
 	shadow_map.init();
-	box_layer.init();
+	
+	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
+	box_layer.add_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height);
+
+	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
+	g_buffer.add_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height); //Position
+	g_buffer.add_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height); //Normal
+	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, width, height); //Diffuse
+	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, width, height); //Specular
+	
+	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
+	SSAO.add_texture(g_buffer.textures[0], g_buffer.texture_info[0]); //Position, same texture as gbuf
+	SSAO.add_texture(g_buffer.textures[1], g_buffer.texture_info[1]); //Ditto
+	SSAO.add_texture(GL_RGBA32F, GL_RGB, GL_FLOAT, 4, 4, (void*)&ssao_noise[0], true);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	box_layer.shader.use();
+	box_layer.shader.set_int("f_texture", 0);
+
+	g_buffer.shader.use();
+	g_buffer.shader.set_int("g_position", 0);
+	g_buffer.shader.set_int("g_normal", 1);
+	g_buffer.shader.set_int("g_diffuse", 2);
+	g_buffer.shader.set_int("g_specular", 3);
+
+	SSAO.shader.use();
+	for (int i = 0; i < 64; i++) {
+		SSAO.shader.set_vec3("samples[]", ssao_kernel[i], i);
+	}
+	SSAO.shader.set_int("window_width", s_window_width);
+	SSAO.shader.set_int("window_height", s_window_height);
+	SSAO.shader.set_int("g_position", 0);
+	SSAO.shader.set_int("g_normal", 1);
+	SSAO.shader.set_int("tex_noise", 2);
+
 	game_texture_shader.init("vertex_2d_texture.glsl", "fragment_2d_texture.glsl");
 	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	text_shader.init("vertex_text.glsl", "fragment_text.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
+
+	brightness_mul = 1.0;
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -58,7 +119,9 @@ void RenderManager::add_light(Light *light, int target) {
 			lights[target] = light;
 		}
 	}
-	update_shader_lights();
+	buffer_event("Shader Light", [this](void* arg) {
+		update_shader_lights();
+	});
 }
 
 void RenderManager::remove_light(int target) {
@@ -71,7 +134,33 @@ void RenderManager::remove_light(int target) {
 		}
 		lights.pop_back();
 	}
-	update_shader_lights();
+	buffer_event("Shader Light", [this](void* arg) {
+		update_shader_lights();
+	});
+}
+
+void RenderManager::dim_lights(float brightness_mul) {
+	this->brightness_mul = brightness_mul;
+	buffer_event("", [this](void* arg) {
+		for (int i = 0, max = linked_shaders.size(); i < max; i++) {
+			linked_shaders[i]->use();
+			linked_shaders[i]->set_float("brightness_mul", this->brightness_mul);
+		}
+	});
+}
+
+//When dim_lights gets called, all shaders are updated with the new brightness multiplier. This
+//includes the shader belonging to the fighter that called it, so if we want to emphasize said fighter
+//during a super freeze, we call this function to keep them at a normal brightness
+
+//This function is also literally the only reason RenderObjects can't share shaders
+void RenderManager::undim_shader(Shader* shader) {
+	buffer_event("", [this](void* arg) {
+		Shader* shader = (Shader*)arg;
+		shader->use();
+		shader->set_float("brightness_mul", 1.0);
+
+	}, (void*)shader);
 }
 
 void RenderManager::link_shader(Shader *shader) {
@@ -85,29 +174,22 @@ void RenderManager::unlink_all_shaders() {
 void RenderManager::update_shader_lights() {
 	glm::vec3 shadow_total = glm::vec3(0.0);
 	float shadow_factor = 0.0;
+	g_buffer.shader.use();
 	for (int i = 0, max = MAX_LIGHT_SOURCES; i < max; i++) {
 		if (i < lights.size()) {
-			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
-				linked_shaders[i2]->use();
-				linked_shaders[i2]->set_vec3("light[0].position", lights[i]->position, i);
-				linked_shaders[i2]->set_vec3("light[0].ambient", lights[i]->ambient, i);
-				linked_shaders[i2]->set_vec3("light[0].diffuse", lights[i]->diffuse, i);
-				linked_shaders[i2]->set_vec3("light[0].specular", lights[i]->specular, i);
-				linked_shaders[i2]->set_float("light[0].constant", lights[i]->constant, i);
-				linked_shaders[i2]->set_float("light[0].linear", lights[i]->linear, i);
-				linked_shaders[i2]->set_float("light[0].quadratic", lights[i]->quadratic, i);
-				linked_shaders[i2]->set_bool("light[0].enabled", lights[i]->enabled, i);
-			}
+			g_buffer.shader.set_vec3("light[0].position", lights[i]->position, i);
+			g_buffer.shader.set_vec3("light[0].color", lights[i]->color, i);
+			g_buffer.shader.set_float("light[0].linear", lights[i]->linear, i);
+			g_buffer.shader.set_float("light[0].quadratic", lights[i]->quadratic, i);
+
+			g_buffer.shader.set_bool("light[0].enabled", lights[i]->enabled, i);
 			if (lights[i]->enabled) {
 				shadow_total += lights[i]->position;
 				shadow_factor++;
 			}
 		}
 		else {
-			for (int i2 = 0, max2 = linked_shaders.size(); i2 < max2; i2++) {
-				linked_shaders[i2]->use();
-				linked_shaders[i2]->set_bool("lights[0].enabled", false, i);
-			}
+			g_buffer.shader.set_bool("lights[0].enabled", false, i);
 		}
 	}
 	if (lights.empty()) {
@@ -120,7 +202,10 @@ void RenderManager::update_shader_lights() {
 }
 
 void RenderManager::update_shader_cams() {
-	glm::mat4 camera_matrix = glm::perspective(glm::radians(camera.fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f) * camera.get_view();
+	glm::mat4& projection_matrix = camera.projection_matrix;
+	glm::mat4 &camera_matrix = camera.camera_matrix;
+	SSAO.shader.use();
+	SSAO.shader.set_mat4("projection_matrix", projection_matrix);
 	rect_shader.use();
 	rect_shader.set_mat4("camera_matrix", camera_matrix);
 	effect_shader.use();
@@ -133,7 +218,7 @@ void RenderManager::update_shader_cams() {
 }
 
 void RenderManager::update_shader_shadows() {
-	glm::mat4 shadow_matrix = (shadow_map.perspective * shadow_map.lookat);
+	glm::mat4 shadow_matrix = (shadow_map.projection_matrix * shadow_map.view_matrix);
 	shadow_shader.use();
 	shadow_shader.set_mat4("camera_matrix", shadow_matrix);
 	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
@@ -142,10 +227,36 @@ void RenderManager::update_shader_shadows() {
 	}
 }
 
+void RenderManager::update_framebuffer_dimensions() {
+	box_layer.update_dimensions();
+	g_buffer.update_dimensions();
+}
+
 void RenderManager::refresh_sdl_renderer() {
 	SDL_RenderClear(sdl_renderer);
 	SDL_DestroyRenderer(sdl_renderer);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
+}
+
+void RenderManager::buffer_event(std::string name, std::function<void(void*)> function, void* buffered_arg) {
+	event_mutex.lock();
+	if (name == "" || event_names.find(name) == event_names.end()) {
+		buffered_events.push_back(function);
+		buffered_args.push_back(buffered_arg);
+		if (name != "") {
+			event_names.insert(name);
+		}
+	}
+	event_mutex.unlock();
+}
+
+void RenderManager::execute_buffered_events() {
+	for (int i = 0, max = buffered_events.size(); i < max; i++) {
+		buffered_events[i](buffered_args[i]);
+	}
+	buffered_events.clear();
+	buffered_args.clear();
+	event_names.clear();
 }
 
 RenderManager* RenderManager::instance = nullptr;

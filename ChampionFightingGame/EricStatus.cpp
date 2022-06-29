@@ -5,19 +5,19 @@ void Eric::chara_main() {
 }
 
 bool Eric::specific_ground_status_act() {
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
@@ -29,7 +29,7 @@ bool Eric::specific_air_status_act() {
 }
 
 bool Eric::specific_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
 		if (situation_kind == FIGHTER_SITUATION_GROUND && specific_ground_status_act()) {
 			return true;
 		}
@@ -37,30 +37,7 @@ bool Eric::specific_status_attack() {
 			return true;
 		}
 		else {
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, FIGHTER_SITUATION_GROUND)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, FIGHTER_SITUATION_GROUND)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, FIGHTER_SITUATION_GROUND)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_HP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_LP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
+			
 		}
 	}
 	return false;
@@ -87,7 +64,7 @@ void Eric::exit_status_dashb() {
 }
 
 void Eric::eric_status_special_uppercut_start() {
-	if (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+	if (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
 		change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}

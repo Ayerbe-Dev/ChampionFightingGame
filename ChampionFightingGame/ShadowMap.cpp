@@ -10,8 +10,8 @@ ShadowMap::ShadowMap() {
 	fov = 5.0;
 
 	light_pos = glm::vec3(0.0, 1.0, 1.0);
-	perspective = glm::ortho(-fov, fov, -fov, fov, 0.0f, depth);
-	lookat = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	projection_matrix = glm::ortho(-fov, fov, -fov, fov, 0.0f, depth);
+	view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 
@@ -36,7 +36,7 @@ void ShadowMap::init() {
 }
 
 void ShadowMap::update_light_pos() {
-	perspective = glm::ortho(-fov, fov, -fov, fov, 0.1f, depth);
-	lookat = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	projection_matrix = glm::ortho(-fov, fov, -fov, fov, 0.1f, depth);
+	view_matrix = glm::lookAt(light_pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	RenderManager::get_instance()->update_shader_shadows();
 }

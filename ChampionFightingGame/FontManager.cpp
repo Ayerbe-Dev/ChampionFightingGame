@@ -1,5 +1,6 @@
 #include "FontManager.h"
 #include "GameManager.h"
+#include "RenderManager.h"
 #include <glew/glew.h>
 
 FontManager::FontManager() {
@@ -32,6 +33,7 @@ void FontManager::unload_face(std::string name) {
 }
 
 Font FontManager::load_font(std::string name, int size) {
+	size *= (WINDOW_HEIGHT / 3.34) / 72; //Font size -> Pixel size conversion
 	if (loaded_faces.find(name) == loaded_faces.end()) {
 		GameManager::get_instance()->add_crash_log("Face for font " + name + " not loaded!");
 		return Font();

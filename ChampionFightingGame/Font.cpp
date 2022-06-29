@@ -59,7 +59,6 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 
 	float base_width = 0;
 	float base_height = 0;
-	float x_offset = 0;
 	float y_offset = 0;
 
 	for (char c = 0, max = text.size(); c < max; c++) {
@@ -68,19 +67,15 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 		if (base_height < tex_char.size.y) {
 			base_height = tex_char.size.y;
 		}
-		if (x_offset < tex_char.size.x - tex_char.bearing.x) {
-			x_offset = tex_char.size.x - tex_char.bearing.x;
-		}
 		if (y_offset < tex_char.size.y - tex_char.bearing.y) {
 			y_offset = tex_char.size.y - tex_char.bearing.y;
 		}
 	}
 
+	base_height += y_offset / 2;
+
 	float width = base_width + abs(border_x);
 	float height = base_height + abs(border_y);
-
-	width += x_offset;
-	height += y_offset;
 
 	base_width /= 2;
 	base_height /= 2;
@@ -112,7 +107,7 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	//Render each character in the correct position of our framebuffer, which will also influence
@@ -156,7 +151,7 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 
 void Font::write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height, float base_width, float base_height) {
 	x_offset -= char_map[text[0]].bearing.x;
-	x_offset -= base_width;
+	x_offset -= width;
 	y_offset -= base_height;
 	for (char c = 0, max = text.size(); c < max; c++) {
 		TexChar tex_char = char_map[text[c]];

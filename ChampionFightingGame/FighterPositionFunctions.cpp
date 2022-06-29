@@ -110,7 +110,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		&& (this_x_front - new_this_x_front) * facing_dir < 0 //We're moving towards them
 		&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] //We aren't allowed to cross up
 		&& situation_kind == FIGHTER_SITUATION_GROUND //We're on the ground
-		&& that->situation_kind == FIGHTER_SITUATION_GROUND) { //And so are they
+		&& (that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)) { //And so are they
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}

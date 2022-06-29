@@ -86,8 +86,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\henry\Documents\Games\Coding\ChampionFightingGame\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>CotRRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -163,6 +163,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <Optimization>Disabled</Optimization>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -189,6 +190,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <AdditionalIncludeDirectories>$(SolutionDir)\dependencies\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -214,11 +220,18 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AngelicaMoves.cpp" />
     <ClCompile Include="AngelicaStatus.cpp" />
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationFunctions.cpp" />
     <ClCompile Include="AtlasMoves.cpp" />
     <ClCompile Include="AtlasStatus.cpp" />
     <ClCompile Include="Aziel.cpp" />
     <ClCompile Include="AzielMoves.cpp" />
     <ClCompile Include="AzielStatus.cpp" />
+    <ClCompile Include="BattleMeter.cpp" />
+    <ClCompile Include="CollisionChecks.cpp" />
+    <ClCompile Include="BattleText.cpp" />
+    <ClCompile Include="EricFireballMoves.cpp" />
+    <ClCompile Include="EricFireballStatus.cpp" />
+    <ClCompile Include="FighterDataFunctions.cpp" />
     <ClCompile Include="BlockboxFunctions.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="BoneFunctions.cpp" />
@@ -227,6 +240,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BrunoStatus.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraAnim.cpp" />
     <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
     <ClCompile Include="CharaTemplateMoves.cpp" />
@@ -246,19 +260,26 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterActionabilityFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
+    <ClCompile Include="FighterCinematicFunctions.cpp" />
     <ClCompile Include="FighterGrabFunctions.cpp" />
+    <ClCompile Include="FighterHitboxFunctions.cpp" />
+    <ClCompile Include="FighterHurtboxFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
+    <ClCompile Include="FighterScriptFunctions.cpp" />
+    <ClCompile Include="FighterScriptWrappers.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameRect.cpp" />
     <ClCompile Include="GameTextureSDL.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GLEW Helpers.cpp" />
     <ClCompile Include="GLM Helpers.cpp" />
     <ClCompile Include="GrabboxFunctions.cpp" />
     <ClCompile Include="HitboxFunctions.cpp" />
+    <ClCompile Include="HitboxSim.cpp" />
     <ClCompile Include="HurtboxFunctions.cpp" />
     <ClCompile Include="FighterInputFunctions.cpp" />
     <ClCompile Include="FighterJostleFunctions.cpp" />
@@ -274,8 +295,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LoadingFunctions.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="MoveScript.cpp" />
-    <ClCompile Include="OverlayLayer.cpp" />
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="ParamAccessor.cpp" />
     <ClCompile Include="ParamFunctions.cpp" />
     <ClCompile Include="FighterPositionFunctions.cpp" />
@@ -322,6 +344,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PauseBattle.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerIndicator.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Priest.cpp" />
     <ClCompile Include="PriestMoves.cpp" />
@@ -329,11 +352,17 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="ProjectileAnimationFunctions.cpp" />
+    <ClCompile Include="ProjectileDataFunctions.cpp" />
+    <ClCompile Include="ProjectileHitboxFunctions.cpp" />
     <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
     <ClCompile Include="ProjectilePositionFunctions.cpp" />
+    <ClCompile Include="ProjectileScriptFunctions.cpp" />
+    <ClCompile Include="ProjectileScriptWrappers.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
     <ClCompile Include="ProjectileStatusFunctions.cpp" />
+    <ClCompile Include="ProjectileTemplateMoves.cpp" />
+    <ClCompile Include="ProjectileTemplateStatus.cpp" />
     <ClCompile Include="Ramona.cpp" />
     <ClCompile Include="RamonaMoves.cpp" />
     <ClCompile Include="RamonaStatus.cpp" />
@@ -341,10 +370,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="Roy.cpp" />
     <ClCompile Include="RoyFireball.cpp" />
+    <ClCompile Include="RoyFireballMoves.cpp" />
+    <ClCompile Include="RoyFireballStatus.cpp" />
     <ClCompile Include="RoyMoves.cpp" />
     <ClCompile Include="RoyStatus.cpp" />
     <ClCompile Include="SaveManager.cpp" />
     <ClCompile Include="ScriptFunctions.cpp" />
+    <ClCompile Include="ScriptWrappers.cpp" />
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -397,9 +429,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AzielFloat.h" />
     <ClInclude Include="AzielInt.h" />
     <ClInclude Include="AzielStatus.h" />
+    <ClInclude Include="CameraAnim.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameTextureSDL.h" />
+    <ClInclude Include="Mouse.h" />
     <ClInclude Include="PauseBattle.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="BoneConstants.h" />
@@ -461,7 +495,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GLEW Helpers.h" />
     <ClInclude Include="GLM Helpers.h" />
     <ClInclude Include="AIMoveList.h" />
-    <ClInclude Include="OverlayLayer.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PlayerInfo.h" />
@@ -582,6 +616,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TextureCoord.h" />
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="TitleScreen.h" />
+    <ClInclude Include="VariadicHelpers.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Fighter.h" />
     <ClInclude Include="VesuviusConstants.h" />
@@ -598,22 +633,307 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ZyairStatus.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resource\chara\alejandro\anims\anim_list.yml" />
+    <None Include="resource\chara\alejandro\param\params.yml" />
+    <None Include="resource\chara\alejandro\param\stats.yml" />
+    <None Include="resource\chara\angelica\anims\anim_list.yml" />
+    <None Include="resource\chara\angelica\param\params.yml" />
+    <None Include="resource\chara\angelica\param\stats.yml" />
+    <None Include="resource\chara\atlas\anims\anim_list.yml" />
+    <None Include="resource\chara\atlas\anims\wait.fbx" />
+    <None Include="resource\chara\atlas\model\model.dae" />
+    <None Include="resource\chara\atlas\model\skeleton.smd" />
+    <None Include="resource\chara\atlas\param\params.yml" />
+    <None Include="resource\chara\atlas\param\stats.yml" />
+    <None Include="resource\chara\aziel\anims\anim_list.yml" />
+    <None Include="resource\chara\aziel\param\params.yml" />
+    <None Include="resource\chara\aziel\param\stats.yml" />
+    <None Include="resource\chara\bruno\anims\anim_list.yml" />
+    <None Include="resource\chara\bruno\param\params.yml" />
+    <None Include="resource\chara\bruno\param\stats.yml" />
+    <None Include="resource\chara\chameleon\anims\anim_list.yml" />
+    <None Include="resource\chara\chameleon\param\params.yml" />
+    <None Include="resource\chara\chameleon\param\stats.yml" />
+    <None Include="resource\chara\eric\anims\anim_list.yml" />
+    <None Include="resource\chara\eric\anims\dash_b.fbx" />
+    <None Include="resource\chara\eric\anims\dash_f.fbx" />
+    <None Include="resource\chara\eric\anims\jump_squat.fbx" />
+    <None Include="resource\chara\eric\anims\stand_lp.fbx" />
+    <None Include="resource\chara\eric\anims\wait.fbx" />
+    <None Include="resource\chara\eric\anims\walk_b.fbx" />
+    <None Include="resource\chara\eric\anims\walk_f.fbx" />
+    <None Include="resource\chara\eric\cam_anims\anim_list.yml" />
+    <None Include="resource\chara\eric\cam_anims\super_start.fbx" />
+    <None Include="resource\chara\eric\cam_anims\super_start_2.fbx" />
+    <None Include="resource\chara\eric\model\model.dae" />
+    <None Include="resource\chara\eric\model\skeleton.smd" />
+    <None Include="resource\chara\eric\param\params.yml" />
+    <None Include="resource\chara\eric\param\stats.yml" />
+    <None Include="resource\chara\julius\anims\anim_list.yml" />
+    <None Include="resource\chara\julius\param\params.yml" />
+    <None Include="resource\chara\julius\param\stats.yml" />
+    <None Include="resource\chara\leon\anims\anim_list.yml" />
+    <None Include="resource\chara\leon\param\params.yml" />
+    <None Include="resource\chara\leon\param\stats.yml" />
+    <None Include="resource\chara\nightsaber\anims\anim_list.yml" />
+    <None Include="resource\chara\nightsaber\param\params.yml" />
+    <None Include="resource\chara\nightsaber\param\stats.yml" />
+    <None Include="resource\chara\norman\anims\anim_list.yml" />
+    <None Include="resource\chara\norman\param\params.yml" />
+    <None Include="resource\chara\norman\param\stats.yml" />
+    <None Include="resource\chara\priest\anims\anim_list.yml" />
+    <None Include="resource\chara\priest\param\params.yml" />
+    <None Include="resource\chara\priest\param\stats.yml" />
+    <None Include="resource\chara\ramona\anims\anim_list.yml" />
+    <None Include="resource\chara\ramona\param\params.yml" />
+    <None Include="resource\chara\ramona\param\stats.yml" />
+    <None Include="resource\chara\roy\anims\advance_back.fbx" />
+    <None Include="resource\chara\roy\anims\advance_forward.fbx" />
+    <None Include="resource\chara\roy\anims\advance_high.fbx" />
+    <None Include="resource\chara\roy\anims\advance_low.fbx" />
+    <None Include="resource\chara\roy\anims\jump_hitstun.fbx" />
+    <None Include="resource\chara\roy\anims\anim_list.yml" />
+    <None Include="resource\chara\roy\anims\crouch.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_blockstun.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_d.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_hitstun_h.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_hitstun_l.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_hitstun_m.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_hk.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_hp.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_lk.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_lp.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_mk.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_mp.fbx" />
+    <None Include="resource\chara\roy\anims\crouch_u.fbx" />
+    <None Include="resource\chara\roy\anims\crumple.fbx" />
+    <None Include="resource\chara\roy\anims\dash_air_b.fbx" />
+    <None Include="resource\chara\roy\anims\dash_air_f.fbx" />
+    <None Include="resource\chara\roy\anims\dash_b.fbx" />
+    <None Include="resource\chara\roy\anims\dash_f.fbx" />
+    <None Include="resource\chara\roy\anims\fall.fbx" />
+    <None Include="resource\chara\roy\anims\grab.fbx" />
+    <None Include="resource\chara\roy\anims\jump.fbx" />
+    <None Include="resource\chara\roy\anims\jump_b.fbx" />
+    <None Include="resource\chara\roy\anims\jump_f.fbx" />
+    <None Include="resource\chara\roy\anims\jump_hk.fbx" />
+    <None Include="resource\chara\roy\anims\jump_hp.fbx" />
+    <None Include="resource\chara\roy\anims\jump_lk.fbx" />
+    <None Include="resource\chara\roy\anims\jump_lp.fbx" />
+    <None Include="resource\chara\roy\anims\jump_mk.fbx" />
+    <None Include="resource\chara\roy\anims\jump_mp.fbx" />
+    <None Include="resource\chara\roy\anims\jump_squat.fbx" />
+    <None Include="resource\chara\roy\anims\knockdown_start.fbx" />
+    <None Include="resource\chara\roy\anims\knockdown_wait.fbx" />
+    <None Include="resource\chara\roy\anims\landing.fbx" />
+    <None Include="resource\chara\roy\anims\launch.fbx" />
+    <None Include="resource\chara\roy\anims\launch_start.fbx" />
+    <None Include="resource\chara\roy\anims\parry_air.fbx" />
+    <None Include="resource\chara\roy\anims\parry_air_start.fbx" />
+    <None Include="resource\chara\roy\anims\parry_low.fbx" />
+    <None Include="resource\chara\roy\anims\parry_mid.fbx" />
+    <None Include="resource\chara\roy\anims\parry_start.fbx" />
+    <None Include="resource\chara\roy\anims\parry_start_low.fbx" />
+    <None Include="resource\chara\roy\anims\special_fireball_kick.fbx" />
+    <None Include="resource\chara\roy\anims\special_fireball_punch.fbx" />
+    <None Include="resource\chara\roy\anims\special_fireball_start.fbx" />
+    <None Include="resource\chara\roy\anims\special_slide.fbx" />
+    <None Include="resource\chara\roy\anims\special_slide_followup.fbx" />
+    <None Include="resource\chara\roy\anims\special_uppercut.fbx" />
+    <None Include="resource\chara\roy\anims\special_uppercut_fall.fbx" />
+    <None Include="resource\chara\roy\anims\special_uppercut_start.fbx" />
+    <None Include="resource\chara\roy\anims\stand_block.fbx" />
+    <None Include="resource\chara\roy\anims\stand_blockstun.fbx" />
+    <None Include="resource\chara\roy\anims\stand_block_start.fbx" />
+    <None Include="resource\chara\roy\anims\stand_hitstun_h.fbx" />
+    <None Include="resource\chara\roy\anims\stand_hitstun_l.fbx" />
+    <None Include="resource\chara\roy\anims\stand_hitstun_m.fbx" />
+    <None Include="resource\chara\roy\anims\stand_hk.fbx" />
+    <None Include="resource\chara\roy\anims\stand_hp.fbx" />
+    <None Include="resource\chara\roy\anims\stand_lk.fbx" />
+    <None Include="resource\chara\roy\anims\stand_lp.fbx" />
+    <None Include="resource\chara\roy\anims\stand_mk.fbx" />
+    <None Include="resource\chara\roy\anims\stand_mp.fbx" />
+    <None Include="resource\chara\roy\anims\throw_b.fbx" />
+    <None Include="resource\chara\roy\anims\throw_f.fbx" />
+    <None Include="resource\chara\roy\anims\turn_crouch.fbx" />
+    <None Include="resource\chara\roy\anims\turn_stand.fbx" />
+    <None Include="resource\chara\roy\anims\wait.fbx" />
+    <None Include="resource\chara\roy\anims\wakeup.fbx" />
+    <None Include="resource\chara\roy\anims\walk_b.fbx" />
+    <None Include="resource\chara\roy\anims\walk_f.fbx" />
+    <None Include="resource\chara\roy\cam_anims\anim_list.yml" />
+    <None Include="resource\chara\roy\cam_anims\super_start.fbx" />
+    <None Include="resource\chara\roy\cam_anims\super_start_2.fbx" />
+    <None Include="resource\chara\roy\effects\flame\effect_info.yml" />
+    <None Include="resource\chara\roy\model\model.dae" />
+    <None Include="resource\chara\roy\model\skeleton.smd" />
+    <None Include="resource\chara\roy\param\params.yml" />
+    <None Include="resource\chara\roy\param\stats.yml" />
+    <None Include="resource\chara\sully\anims\anim_list.yml" />
+    <None Include="resource\chara\sully\param\params.yml" />
+    <None Include="resource\chara\sully\param\stats.yml" />
+    <None Include="resource\chara\tessa\anims\anim_list.yml" />
+    <None Include="resource\chara\tessa\param\params.yml" />
+    <None Include="resource\chara\tessa\param\stats.yml" />
+    <None Include="resource\chara\vesuvius\anims\anim_list.yml" />
+    <None Include="resource\chara\vesuvius\param\params.yml" />
+    <None Include="resource\chara\vesuvius\param\stats.yml" />
+    <None Include="resource\chara\zyair\anims\anim_list.yml" />
+    <None Include="resource\chara\zyair\param\params.yml" />
+    <None Include="resource\chara\zyair\param\stats.yml" />
+    <None Include="resource\param\battle\fighter_common.yml" />
+    <None Include="resource\param\battle\render_param.yml" />
+    <None Include="resource\param\global\global_param.yml" />
+    <None Include="resource\param\menu\menu_param.yml" />
+    <None Include="resource\projectile\eric_fireball\anims\anim_list.yml" />
+    <None Include="resource\projectile\eric_fireball\param\params.yml" />
+    <None Include="resource\projectile\eric_fireball\param\stats.yml" />
+    <None Include="resource\projectile\roy_fireball\anims\anim_list.yml" />
+    <None Include="resource\projectile\roy_fireball\param\params.yml" />
+    <None Include="resource\projectile\roy_fireball\param\stats.yml" />
+    <None Include="resource\save\game_settings.yml" />
+    <None Include="resource\save\player_info.yml" />
+    <None Include="resource\shaders\fragment_2d_texture.glsl" />
     <None Include="resource\shaders\fragment_effect.glsl" />
-    <None Include="resource\shaders\fragment_layer.glsl" />
+    <None Include="resource\shaders\fragment_fullbright.glsl" />
+    <None Include="resource\shaders\fragment_gbuffer.glsl" />
+    <None Include="resource\shaders\fragment_box_overlay.glsl" />
     <None Include="resource\shaders\fragment_main.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
-    <None Include="resource\shaders\fragment_2d_texture.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
     <None Include="resource\shaders\fragment_shadow.glsl" />
+    <None Include="resource\shaders\fragment_ssao.glsl" />
     <None Include="resource\shaders\fragment_text.glsl" />
+    <None Include="resource\shaders\geometry_effect.glsl" />
+    <None Include="resource\shaders\geometry_main.glsl" />
+    <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_effect.glsl" />
-    <None Include="resource\shaders\vertex_layer.glsl" />
-    <None Include="resource\shaders\vertex_shadow.glsl" />
+    <None Include="resource\shaders\vertex_gbuffer.glsl" />
+    <None Include="resource\shaders\vertex_box_overlay.glsl" />
     <None Include="resource\shaders\vertex_main.glsl" />
     <None Include="resource\shaders\vertex_no_anim.glsl" />
-    <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />
+    <None Include="resource\shaders\vertex_shadow.glsl" />
+    <None Include="resource\shaders\vertex_ssao.glsl" />
     <None Include="resource\shaders\vertex_text.glsl" />
+    <None Include="resource\stage\training_room\assets\background\anims\anim_list.yml" />
+    <None Include="resource\stage\training_room\assets\background\model\model.dae" />
+    <None Include="resource\stage\training_room\assets\background\param\lights.yml" />
+    <None Include="resource\stage\training_room\assets\background\param\params.yml" />
+    <None Include="resource\stage\training_room\assets\surface\anims\anim_list.yml" />
+    <None Include="resource\stage\training_room\assets\surface\model\model.dae" />
+    <None Include="resource\stage\training_room\assets\surface\param\params.yml" />
+    <None Include="resource\stage\training_room\asset_list.yml" />
+    <None Include="resource\stage\training_room\params.yml" />
+    <None Include="resource\ui\battle\timer\bigtypeface.yml" />
+    <None Include="resource\ui\battle\timer\clockface.yml" />
+    <None Include="resource\ui\battle\timer\smalltypeface.yml" />
+    <None Include="resource\ui\menu\css\css_param.yml" />
+    <None Include="resource\ui\menu\main\bg.yml" />
+    <None Include="resource\ui\menu\stage_select\stage_select_param.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="resource\fonts\Fiend-Oblique.ttf" />
+    <Font Include="resource\fonts\FiraCode.ttf" />
+    <Font Include="resource\fonts\HarlowSolid.ttf" />
+    <Font Include="resource\fonts\ShowcardGothic.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resource\chara\eric\model\c0\alp_ken_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\alp_ken_001_nor.png" />
+    <Image Include="resource\chara\eric\model\c0\alp_ken_001_prm.png" />
+    <Image Include="resource\chara\eric\model\c0\def_ken_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\def_ken_001_nor.png" />
+    <Image Include="resource\chara\eric\model\c0\def_ken_001_prm.png" />
+    <Image Include="resource\chara\eric\model\c0\deyes_eye_ken_d_col.png" />
+    <Image Include="resource\chara\eric\model\c0\deyes_eye_ken_wd_col.png" />
+    <Image Include="resource\chara\eric\model\c0\eye_ken_g_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\eye_ken_w_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\eye_ken_w_001_nor.png" />
+    <Image Include="resource\chara\eric\model\c0\eye_ken_w_001_prm.png" />
+    <Image Include="resource\chara\eric\model\c0\leyes_eye_ken_l_col.png" />
+    <Image Include="resource\chara\eric\model\c0\Leye_ken_b_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\mouth_col.png" />
+    <Image Include="resource\chara\eric\model\c0\mouth_nor.png" />
+    <Image Include="resource\chara\eric\model\c0\mouth_prm.png" />
+    <Image Include="resource\chara\eric\model\c0\Reye_ken_b_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\skin_ken_001_col.png" />
+    <Image Include="resource\chara\eric\model\c0\skin_ken_001_nor.png" />
+    <Image Include="resource\chara\eric\model\c0\skin_ken_001_prm.png" />
+    <Image Include="resource\chara\roy\effects\flame\fireball_main.png" />
+    <Image Include="resource\chara\roy\model\c0\alp_dolly_002_col.png" />
+    <Image Include="resource\chara\roy\model\c0\alp_dolly_003_col.png" />
+    <Image Include="resource\chara\roy\model\c0\alp_roy_002_col.png" />
+    <Image Include="resource\chara\roy\model\c0\def_dolly_001_col.png" />
+    <Image Include="resource\chara\roy\model\c0\skin_dolly_001b_col.png" />
+    <Image Include="resource\chara\roy\model\c0\skin_dolly_001_col.png" />
+    <Image Include="resource\chara\roy\model\c0\skin_dolly_003_col.png" />
+    <Image Include="resource\chara\roy\model\c1\alp_dolly_002_col.png" />
+    <Image Include="resource\chara\roy\model\c1\alp_dolly_003_col.png" />
+    <Image Include="resource\chara\roy\model\c1\alp_roy_002_col.png" />
+    <Image Include="resource\chara\roy\model\c1\def_dolly_001_col.png" />
+    <Image Include="resource\chara\roy\model\c1\skin_dolly_001b_col.png" />
+    <Image Include="resource\chara\roy\model\c1\skin_dolly_001_col.png" />
+    <Image Include="resource\chara\roy\model\c1\skin_dolly_003_col.png" />
+    <Image Include="resource\projectile\eric_fireball\sprite\sprite.png" />
+    <Image Include="resource\stage\training_room\assets\background\model\training_grid_00_con.png.001.png" />
+    <Image Include="resource\stage\training_room\assets\surface\model\training_color_00_con_png.jpg" />
+    <Image Include="resource\stage\training_room\assets\surface\model\training_grid_01_con.png.001.png" />
+    <Image Include="resource\stage\training_room\assets\surface\model\training_grid_02_con.png.001.png" />
+    <Image Include="resource\stage\training_room_old\background.png" />
+    <Image Include="resource\ui\battle\ex\bar.png" />
+    <Image Include="resource\ui\battle\ex\ex.png" />
+    <Image Include="resource\ui\battle\ex\ex_segment.png" />
+    <Image Include="resource\ui\battle\hp\bar.png" />
+    <Image Include="resource\ui\battle\hp\health.png" />
+    <Image Include="resource\ui\battle\pause\overlay.png" />
+    <Image Include="resource\ui\battle\tag\p1_tag_no_nametag.png" />
+    <Image Include="resource\ui\battle\tag\p2_tag_no_nametag.png" />
+    <Image Include="resource\ui\battle\timer\bigtypeface.png" />
+    <Image Include="resource\ui\battle\timer\clockface.png" />
+    <Image Include="resource\ui\battle\timer\smalltypeface.png" />
+    <Image Include="resource\ui\menu\css\chara\atlas\render.png" />
+    <Image Include="resource\ui\menu\css\chara\default\render.png" />
+    <Image Include="resource\ui\menu\css\chara\eric\render.png" />
+    <Image Include="resource\ui\menu\css\chara\roy\render.png" />
+    <Image Include="resource\ui\menu\css\CSSbackground.png" />
+    <Image Include="resource\ui\menu\css\CSSbottombar.png" />
+    <Image Include="resource\ui\menu\css\CSStopbar.png" />
+    <Image Include="resource\ui\menu\css\deck.png" />
+    <Image Include="resource\ui\menu\css\p1Cursor.png" />
+    <Image Include="resource\ui\menu\css\p1_cursor.png" />
+    <Image Include="resource\ui\menu\css\p2Cursor.png" />
+    <Image Include="resource\ui\menu\css\p2_cursor.png" />
+    <Image Include="resource\ui\menu\loading\FlavorBar.png" />
+    <Image Include="resource\ui\menu\loading\loadicon.png" />
+    <Image Include="resource\ui\menu\loading\loadingbar.png" />
+    <Image Include="resource\ui\menu\loading\splashload.png" />
+    <Image Include="resource\ui\menu\main\bg.png" />
+    <Image Include="resource\ui\menu\main\Cursor.png" />
+    <Image Include="resource\ui\menu\main\missingno.png" />
+    <Image Include="resource\ui\menu\main\SubMenu.png" />
+    <Image Include="resource\ui\menu\main\vsimg.png" />
+    <Image Include="resource\ui\menu\opening\game-splash-background.png" />
+    <Image Include="resource\ui\menu\opening\game-splash-text.png" />
+    <Image Include="resource\ui\menu\options\overlay.png" />
+    <Image Include="resource\ui\title\Praeiudicium.png" />
+    <Image Include="resource\ui\title\title-l1.png" />
+    <Image Include="resource\ui\title\title-l2.png" />
+    <Image Include="resource\ui\title\title-l3.png" />
+    <Image Include="resource\ui\title\title-l4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="resource\ui\battle\chara\readme.txt" />
+    <Text Include="resource\ui\battle\tag\readme.txt" />
+    <Text Include="resource\ui\message\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="resource\sound\bgm\stage\Atlas_Theme.wav" />
+    <Media Include="resource\sound\bgm\stage\Atlas_Theme_loop.wav" />
+    <Media Include="resource\sound\bgm\stage\Vesuvius_Theme.wav" />
+    <Media Include="resource\sound\bgm\stage\Vesuvius_Theme_loop.wav" />
+    <Media Include="resource\sound\vc\roy\roy_attack_01.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

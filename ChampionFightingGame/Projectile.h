@@ -64,12 +64,12 @@ public:
 
 	void add_pos(float x, float y);
 	void add_pos(glm::vec3 pos);
+	void set_pos(float x, float y);
 	void set_pos(glm::vec3 pos);
 
 	//Animation
 
 	void change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0);
-	void startAnimation(Animation* animation);
 
 	//Status
 
@@ -77,11 +77,53 @@ public:
 
 	//Hitbox
 
-	void new_hitbox(int id, int multihit, float damage, float chip_damage, float counterhit_damage_mul, int scale, glm::vec2 anchor, glm::vec2 offset,
-		float meter_gain_on_hit, float meter_gain_on_counterhit, float meter_gain_on_block, int situation_hit, int hitlag, int hitstun, int blocklag,
-		int blockstun, bool unblockable, float hit_pushback, float block_pushback, int juggle_start, int juggle_increase, int max_juggle, int hit_status, 
-		int counterhit_status, int counterhit_type, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x, 
-		bool trade, bool continue_launch, bool can_chip_ko, bool can_ko);
+	void new_hitbox(int id, int multihit, float damage, float chip_damage,
+		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, SituationHit situation_hit,
+		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
+		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
+		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
+		int juggle_max, bool trade, KoKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
+		float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x);
+	void clear_hitbox(int id);
+	void clear_hitbox_all();
+
+	//Balogna (thanks fez)
+
+	void set_int(int target, int val);
+	void inc_int(int target);
+	void dec_int(int target);
+	void set_float(int target, float val);
+	void set_flag(int target, bool val);
+
+	//Script Functions
+	template<typename ...T>
+	void push_function(void (Projectile::* function)(ScriptArg), T... args) {
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		ScriptArg sa(sizeof...(args), queue);
+		active_script_frame.function_calls.push((void (BattleObject::*)(ScriptArg))function);
+		active_script_frame.function_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
+	}
+
+
+	//Script Wrappers
+
+	void NEW_HITBOX(ScriptArg args);
+
+	void SET_INT(ScriptArg args);
+	void SET_FLOAT(ScriptArg args);
+	void SET_FLAG(ScriptArg args);
+
+	void ADD_POS(ScriptArg args);
+	void SET_POS(ScriptArg args);
+
+	void CHANGE_STATUS(ScriptArg args);
+
+	//Status Scripts
 
 	virtual void status_default();
 	virtual void enter_status_default();

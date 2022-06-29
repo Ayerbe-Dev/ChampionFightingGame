@@ -7,42 +7,42 @@ void Roy::chara_main() {
 
 bool Roy::specific_ground_status_act() {
 	if (!projectiles[0]->active) {
-		if (get_special_input(SPECIAL_KIND_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 		}
-		if (get_special_input(SPECIAL_KIND_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 		}
-		if (get_special_input(SPECIAL_KIND_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 		}
-		if (get_special_input(SPECIAL_KIND_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
 		}
 	}
 
-	if (get_special_input(SPECIAL_KIND_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
 	}
-	if (get_special_input(SPECIAL_KIND_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
 	}
-	if (get_special_input(SPECIAL_KIND_214, BUTTON_MK) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MK) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
 	}
-	if (get_special_input(SPECIAL_KIND_214, BUTTON_HK) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_HK) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
 	}
 
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
@@ -51,15 +51,15 @@ bool Roy::specific_ground_status_act() {
 			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		}
 	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
-	if (get_special_input(SPECIAL_KIND_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
 		return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 	}
@@ -71,38 +71,65 @@ bool Roy::specific_air_status_act() {
 }
 
 bool Roy::specific_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
-		if (situation_kind == FIGHTER_SITUATION_GROUND && specific_ground_status_act()) {
-			return true;
+	if (is_enable_cancel(CANCEL_KIND_236P)) {
+		if (!projectiles[0]->active) {
+			if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+				fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+			}
+			if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+				fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+			}
+			if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+				fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+			}
+			if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+				fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_FIREBALL_START);
+			}
 		}
-		else if (situation_kind == FIGHTER_SITUATION_AIR && specific_air_status_act()) {
-			return true;
+	}
+	if (is_enable_cancel(CANCEL_KIND_214K)) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
 		}
-		else {
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, FIGHTER_SITUATION_GROUND)) {
-				return true;
+		if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+		}
+		if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MK) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+		}
+		if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_HK) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_SLIDE);
+		}
+	}
+	if (is_enable_cancel(CANCEL_KIND_623P)) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
 			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, FIGHTER_SITUATION_GROUND)) {
-				return true;
+			else {
+				return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 			}
-			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, FIGHTER_SITUATION_GROUND)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_LP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_MP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_LP, BUTTON_HP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_LP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
-			if (get_normal_cancel(ATTACK_KIND_MP, BUTTON_HP, FIGHTER_SITUATION_AIR)) {
-				return true;
-			}
+		}
+		if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT_START);
+		}
+		if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
+		}
+		if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
+			return change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		}
 	}
 	return false;
@@ -148,6 +175,7 @@ void Roy::roy_status_special_fireball_start() {
 }
 
 void Roy::roy_enter_status_special_fireball_start() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_236;
 	change_anim("special_fireball_start", 1.0);	
 }
 
@@ -199,6 +227,7 @@ void Roy::roy_status_special_slide() {
 }
 
 void Roy::roy_enter_status_special_slide() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_214;
 	change_anim("special_slide");
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float_special("special_slide_move_x");
 }
@@ -223,7 +252,7 @@ void Roy::roy_exit_status_special_slide_followup() {
 }
 
 void Roy::roy_status_special_uppercut_start() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS])) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED])) {
 		change_status_after_hitlag(CHARA_ROY_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
@@ -233,6 +262,7 @@ void Roy::roy_status_special_uppercut_start() {
 }
 
 void Roy::roy_enter_status_special_uppercut_start() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_623;
 	change_anim("special_uppercut_start", 1);
 }
 
@@ -264,6 +294,7 @@ void Roy::roy_status_special_uppercut() {
 }
 
 void Roy::roy_enter_status_special_uppercut() {
+	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_623;
 	if (situation_kind == FIGHTER_SITUATION_GROUND) { //Not sure if we want air dp to be a thing but if we do, this is designed to account for it
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 			change_anim("special_uppercut", 1.0, 1.0);

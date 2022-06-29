@@ -5,6 +5,7 @@ Bruno::Bruno() {
 }
 
 Bruno::Bruno(int id, Player* player) {
+	this->id = id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_BRUNO;
 	chara_name = "bruno";

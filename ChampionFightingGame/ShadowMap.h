@@ -22,7 +22,7 @@ public:
 	unsigned int FBO = 0;
 	unsigned int shadow_texture = 0;
 
-	glm::mat4 perspective;
-	glm::mat4 lookat;
+	glm::mat4 projection_matrix;
+	glm::mat4 view_matrix;
 	glm::vec3 light_pos;
 };

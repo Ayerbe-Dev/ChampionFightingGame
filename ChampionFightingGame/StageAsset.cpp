@@ -47,6 +47,7 @@ void StageAsset::load_model_shader() {
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
 	shader.set_int("material.shadow_map", 4);
+	shader.set_float("brightness_mul", 1.0);
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->link_shader(&shader);
 }

@@ -11,6 +11,7 @@
 
 Fighter::Fighter() {
 	has_model = true;
+	chara_kind = CHARA_KIND_ROY;
 }
 
 Fighter::~Fighter() {
@@ -107,11 +108,6 @@ void Fighter::process_post_projectiles() {
 }
 
 void Fighter::process_animate() {
-	if (get_anim_broad() == "hitstun_parry" && is_anim_end) {
-		reenter_last_anim();
-	}
-
-	attempted_excutes = 0;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
 	}
@@ -127,10 +123,11 @@ void Fighter::process_animate() {
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
-			excute_count = 0;
+			active_move_script.activate();
 			clear_grabbox_all();
 			clear_hurtbox_all();
 			clear_hitbox_all();
+			fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = false;
 			fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
 			is_anim_end = true;
 		}
@@ -159,7 +156,8 @@ void Fighter::process_pre_position() {
 void Fighter::process_position() {
 	Fighter* that = battle_object_manager->fighter[!id];
 	update_jostle_rect();
-	if (situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND
+	if ((situation_kind == FIGHTER_SITUATION_GROUND || situation_kind == FIGHTER_SITUATION_DOWN) && 
+		(that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH) {
@@ -214,29 +212,17 @@ void Fighter::process_pre_status() {
 }
 
 void Fighter::process_status() {
-	if (is_status_hitstun_enable_parry()) {
-		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
-		if (check_button_input(parry_buttons, 2)) {
-			if (situation_kind == FIGHTER_SITUATION_GROUND) {
-				change_anim("hitstun_parry", 0.2);
-			}
-			else {
-				change_anim("hitstun_parry_air", 0.2);
-			}
-			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
-		}
-	}
 	if (!is_status_delay()) {
 		(this->*status_script[status_kind])();
 	}
-	move_script.move_script();
+	active_move_script.execute(this, frame);
 }
 
 void Fighter::process_post_status() {
 	Fighter* that = battle_object_manager->fighter[!id];
 
 	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
-		fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
+		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
 		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
@@ -249,12 +235,12 @@ void Fighter::process_post_status() {
 
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].active) {
-			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = true;
-			fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = true;
+			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] = true;
+			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = true;
 			break;
 		}
 		else {
-			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = false;
+			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] = false;
 		}
 	}
 }

@@ -14,6 +14,8 @@
 #define UNWRAP_NO_DECL(var_name) if (!args.args.empty()) { var_name = std::any_cast<decltype(var_name)>(args.get_arg()); }
 
 class BattleObject;
+class Fighter;
+class Projectile;
 
 struct ScriptArg {
 	ScriptArg();
@@ -46,6 +48,11 @@ public:
 	void activate(); //Clear the ScriptFrame queue, then call the move_script() function to repopulate it
 	void execute(BattleObject* object, float frame); //Checks if the front ScriptFrame is set to this frame. If it is, then call its execute function and remove it from the queue
 	bool has_function(float frame, void(BattleObject::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
+	bool has_function(void(BattleObject::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
+	bool has_function(float frame, void(Fighter::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
+	bool has_function(void(Fighter::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
+	bool has_function(float frame, void(Projectile::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
+	bool has_function(void(Projectile::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
 
 	std::string name;
 	std::queue<ScriptFrame> frames;

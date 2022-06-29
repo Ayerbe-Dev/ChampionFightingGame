@@ -29,7 +29,7 @@ bool Eric::specific_air_status_act() {
 }
 
 bool Eric::specific_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
 		if (situation_kind == FIGHTER_SITUATION_GROUND && specific_ground_status_act()) {
 			return true;
 		}
@@ -64,7 +64,7 @@ void Eric::exit_status_dashb() {
 }
 
 void Eric::eric_status_special_uppercut_start() {
-	if (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS]) {
+	if (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
 		change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}

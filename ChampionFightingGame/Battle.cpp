@@ -161,7 +161,7 @@ void Battle::load_game_menu() {
 	fps_texture.set_pos(glm::vec3(80.0, 10.0, 0.0));
 
 	combo_font = font_manager->load_font("Fiend-Oblique", 64);
-	Font hits_font = font_manager->load_font("Fiend-Oblique", 20);
+	message_font = font_manager->load_font("Fiend-Oblique", 20);
 
 	inc_thread();
 
@@ -200,7 +200,10 @@ void Battle::load_game_menu() {
 		player_indicator[i] = PlayerIndicator(fighter[i]);
 	
 		inc_thread();
-		combo_counter[i].init(&combo_font, &hits_font, fighter[i]);
+
+		texts[i].push_back(BattleText());
+		texts[i].back().init(&message_font, "Frame Advantage: ", -1, fighter[i], glm::vec2(380.0, 350.0));
+		frame_advantage[i] = &texts[i].back();
 
 		inc_thread();
 	}
@@ -313,6 +316,9 @@ void Battle::process_main() {
 		thread_manager->wait_thread(THREAD_KIND_UI);
 		camera->camera_main();
 	}
+//	if (*game_manager->game_context == GAME_CONTEXT_TRAINING) {
+		process_training();
+//	}
 	if (battle_object_manager->world_frame >= 0.97) {
 		battle_object_manager->world_frame = 0.0;
 	}
@@ -426,6 +432,19 @@ void Battle::post_process_fighter() {
 
 void Battle::process_ui() {
 	thread_manager->notify_thread(THREAD_KIND_UI);
+}
+
+void Battle::process_training() {
+	for (int i = 0; i < 2; i++) {
+		std::string frames = std::to_string(fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE]);
+		if (fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] >= 0) {
+			frames = "+" + frames;
+		}
+		std::string advantage = "Frame Advantage: " + frames;
+		if (frame_advantage[i]->get_text() != advantage) {
+			frame_advantage[i]->update(advantage, -1);
+		}
+	}
 }
 
 void ui_thread(void* battle_arg) {
@@ -576,8 +595,34 @@ void Battle::render_world() {
 
 void Battle::render_ui() {
 	for (int i = 0; i < 2; i++) {
-		combo_counter[i].render();
 		meters[i].render();
+		for (std::list<BattleText>::iterator it = texts[i].begin(); it != texts[i].end(); it++) {
+			if (it->duration == 0) {
+				if (&*it == combo_counter[i]) {
+					combo_counter[i] = nullptr;
+					combo_hit[i] = nullptr;
+				}
+				if (it->alpha == 0) {
+					it->destroy();
+					if (texts[i].size() != 1) {
+						it = texts[i].erase(it);
+					}
+					else {
+						texts[i].erase(it);
+					}
+				}
+				else {
+					it->add_alpha(-51);
+				}
+			}
+			else if (it->duration != -1) {
+				it->duration--;
+			}
+		}
+		for (std::list<BattleText>::iterator it = texts[i].begin(); it != texts[i].end(); it++) {
+			it->render();
+			it->scale_all_percent(1.0, false);
+		}
 	}
 	timer.render();
 

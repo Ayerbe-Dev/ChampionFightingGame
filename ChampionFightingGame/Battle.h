@@ -69,20 +69,16 @@ public:
 	int prev_segments = 0;
 };
 
-class ComboCounter {
+class BattleText : public GameTexture {
 public:
-	ComboCounter();
-	void init(Font* count_font, Font* hits_font, Fighter* fighter);
-	void render();
+	BattleText();
+
+	void init (Font* font, std::string text, int duration, Fighter* fighter, glm::vec2 pos);
+	void update(std::string text, int duration);
 
 	Font* font;
-	Fighter* fighter;
-	GameTexture count_text;
-	GameTexture hits_text;
 
-	unsigned char alpha;
-	bool left_oriented;
-	int prev_value;
+	int duration;
 };
 
 class HitboxSim {
@@ -117,6 +113,7 @@ public:
 	void process_fighter();
 	void post_process_fighter();
 	void process_frame_pause();
+	void process_training();
 
 	void process_background();
 
@@ -136,6 +133,7 @@ public:
 	void render_ui();
 
 	Font combo_font;
+	Font message_font;
 	Font fps_font;
 	GameTexture fps_counter;
 	GameTexture fps_texture;
@@ -150,8 +148,13 @@ public:
 
 	BattleMeter meters[2];
 
+	BattleText* frame_advantage[2] = { nullptr };
+	BattleText* combo_counter[2] = { nullptr };
+	BattleText* combo_hit[2] = { nullptr };
+
+	std::list<BattleText> texts[2];
+
 	PlayerIndicator player_indicator[2];
-	ComboCounter combo_counter[2];
 	GameTimer timer;
 
 	Camera *camera;

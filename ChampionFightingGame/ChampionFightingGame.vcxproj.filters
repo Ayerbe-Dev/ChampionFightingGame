@@ -71,7 +71,7 @@
       <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
     </ClCompile>
     <ClCompile Include="Ramona.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Roy\Ramona</Filter>
+      <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClCompile>
     <ClCompile Include="Roy.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
@@ -185,10 +185,10 @@
       <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
     </ClCompile>
     <ClCompile Include="RamonaStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Roy\Ramona</Filter>
+      <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClCompile>
     <ClCompile Include="RamonaMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Roy\Ramona</Filter>
+      <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClCompile>
     <ClCompile Include="PriestStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
@@ -526,7 +526,7 @@
     <ClCompile Include="GameTimer.cpp">
       <Filter>2. Code Files\Game State\Battle</Filter>
     </ClCompile>
-    <ClCompile Include="ComboCounter.cpp">
+    <ClCompile Include="BattleText.cpp">
       <Filter>2. Code Files\Game State\Battle</Filter>
     </ClCompile>
     <ClCompile Include="PlayerIndicator.cpp">
@@ -2741,7 +2741,7 @@
     <Filter Include="2. Code Files\Game State\Battle">
       <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Roy\Ramona">
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Ramona">
       <UniqueIdentifier>{4fcf516b-1c80-4569-9f89-87f78d9d3a97}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

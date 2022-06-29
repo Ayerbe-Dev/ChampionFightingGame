@@ -127,6 +127,7 @@ void Fighter::process_animate() {
 			clear_grabbox_all();
 			clear_hurtbox_all();
 			clear_hitbox_all();
+			fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = false;
 			fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
 			is_anim_end = true;
 		}
@@ -234,12 +235,12 @@ void Fighter::process_post_status() {
 
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].active) {
-			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = true;
-			fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS] = true;
+			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] = true;
+			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = true;
 			break;
 		}
 		else {
-			fighter_flag[FIGHTER_FLAG_HAS_ATTACK] = false;
+			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] = false;
 		}
 	}
 }

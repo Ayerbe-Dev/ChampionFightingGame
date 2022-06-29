@@ -228,7 +228,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AzielStatus.cpp" />
     <ClCompile Include="BattleMeter.cpp" />
     <ClCompile Include="CollisionChecks.cpp" />
-    <ClCompile Include="ComboCounter.cpp" />
+    <ClCompile Include="BattleText.cpp" />
     <ClCompile Include="EricFireballMoves.cpp" />
     <ClCompile Include="EricFireballStatus.cpp" />
     <ClCompile Include="FighterDataFunctions.cpp" />

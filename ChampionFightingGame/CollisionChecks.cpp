@@ -49,37 +49,43 @@ void Battle::check_fighter_collisions() {
 				if (blockbox.active) {
 					fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(blockbox.rect, hurtbox.rect);
 				}
-				for (Hitbox& hitbox : fighter[!i]->hitboxes) {
-					if (hitbox.active) {
-						if (is_collide(hitbox.rect, hurtbox.rect)) {
-							hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
-						}
-						if (hitbox_to_use != HITBOX_COUNT_MAX) {
-							break;
+				if (hitbox_to_use == HITBOX_COUNT_MAX) {
+					for (Hitbox& hitbox : fighter[!i]->hitboxes) {
+						if (hitbox.active) {
+							if (is_collide(hitbox.rect, hurtbox.rect)) {
+								hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
+							}
+							if (hitbox_to_use != HITBOX_COUNT_MAX) {
+								break;
+							}
 						}
 					}
 				}
-				for (Projectile* projectile : fighter[!i]->projectiles) {
-					if (projectile != nullptr && projectile->active) {
-						for (Hitbox& hitbox : projectile->hitboxes) {
-							if (hitbox.active) {
-								if (is_collide(hitbox.rect, hurtbox.rect)) {
-									projectile_hitbox_to_use = get_event_hit_collide_projectile(projectile, fighter[i], &hitbox, &hurtbox);
-								}
-								if (projectile_hitbox_to_use != HITBOX_COUNT_MAX) {
-									break;
+				if (projectile_hitbox_to_use == HITBOX_COUNT_MAX) {
+					for (Projectile* projectile : fighter[!i]->projectiles) {
+						if (projectile != nullptr && projectile->active) {
+							for (Hitbox& hitbox : projectile->hitboxes) {
+								if (hitbox.active) {
+									if (is_collide(hitbox.rect, hurtbox.rect)) {
+										projectile_hitbox_to_use = get_event_hit_collide_projectile(projectile, fighter[i], &hitbox, &hurtbox);
+									}
+									if (projectile_hitbox_to_use != HITBOX_COUNT_MAX) {
+										break;
+									}
 								}
 							}
 						}
 					}
 				}
-				for (Grabbox& grabbox : fighter[!i]->grabboxes) {
-					if (grabbox.active) {
-						if (is_collide(grabbox.rect, hurtbox.rect)) {
-							grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &grabbox, &hurtbox);
-						}
-						if (grabbox_to_use != HITBOX_COUNT_MAX) {
-							break;
+				if (grabbox_to_use == HITBOX_COUNT_MAX) {
+					for (Grabbox& grabbox : fighter[!i]->grabboxes) {
+						if (grabbox.active) {
+							if (is_collide(grabbox.rect, hurtbox.rect)) {
+								grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &grabbox, &hurtbox);
+							}
+							if (grabbox_to_use != HITBOX_COUNT_MAX) {
+								break;
+							}
 						}
 					}
 				}
@@ -213,7 +219,6 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
 		int frame_advantage = 14 - (attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + attacker->get_frames_until_actionable());
 		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
-		defender->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 		return hitbox->id;
 	}
 	if (blocking && hitbox->chip_damage != -1.0) {
@@ -229,7 +234,6 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 
 		int frame_advantage = defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->get_frames_until_actionable();
 		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
-		defender->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 		return hitbox->id;
 	}
 
@@ -239,12 +243,11 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 	defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->hitstun;
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
+	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = true;
 	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
 
 	int frame_advantage = defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->get_frames_until_actionable();
 	attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
-	defender->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 	return hitbox->id;
 }
 
@@ -344,6 +347,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 6 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
+		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + 6 - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
 		return hitbox->id;
 	}
 	if (blocking && hitbox->chip_damage != -1.0) {
@@ -356,6 +360,8 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 		defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
+		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
+		attacker->owner->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 		return hitbox->id;
 	}
 
@@ -367,6 +373,8 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 	attacker->projectile_flag[PROJECTILE_FLAG_HIT] = true;
 	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
+	int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
+	attacker->owner->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 	return hitbox->id;
 }
 
@@ -422,10 +430,10 @@ bool Battle::event_hit_collide_player() {
 				fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind != KO_KIND_CHIP, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->chip_damage, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->block_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
-				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] = true;
+				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = true;
 				post_hit_status[i] = FIGHTER_STATUS_BLOCKSTUN;
 			}
-			else if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
+			else if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED]) {
 				//If Attack Connected is false but this still got set off, that means that the opponent hit you while you had armor. In this situation,
 				//the attacker gets the same meter gain as if they got blocked, and the defender takes half the usual amount of chip damage. However, this
 				//chip damage is incapable of KOing the defender no matter what they got hit by.
@@ -443,7 +451,7 @@ bool Battle::event_hit_collide_player() {
 				fighter[i]->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX] = hitboxes[!i]->disable_hitstun_parry;
 				fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
 				if (fighter[i]->get_status_group() == STATUS_GROUP_HITSTUN) {
-					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) {
+					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
 						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
 					}
 				}
@@ -477,6 +485,8 @@ bool Battle::event_hit_collide_player() {
 					if (fighter[i]->status_kind == FIGHTER_STATUS_LAUNCH && hitboxes[!i]->continue_launch) {
 						post_hit_status[i] = FIGHTER_STATUS_LAUNCH;
 					}
+					texts[!i].push_back(BattleText());
+					texts[!i].back().init(&message_font, "Counter", 40, fighter[!i], glm::vec2(275.0, 450.0));
 				}
 				else {
 					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain, get_param_int("ex_meter_size", PARAM_FIGHTER));
@@ -488,8 +498,27 @@ bool Battle::event_hit_collide_player() {
 						post_hit_status[i] = FIGHTER_STATUS_LAUNCH;
 					}
 				}
-				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = false;
-				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] = true;
+				if (fighter[i]->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
+					texts[!i].push_back(BattleText());
+					texts[!i].back().init(&message_font, "Punish", 40, fighter[!i], glm::vec2(275.0, 1280.0));
+				}
+				if (fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] != 1) {
+					if (combo_counter[!i] != nullptr) {
+						combo_counter[!i]->update(std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+						combo_hit[!i]->update("hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+					}
+					else {
+						texts[!i].push_back(BattleText());
+						texts[!i].back().init(&combo_font, std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], fighter[!i], glm::vec2(275.0, 540.0));
+						combo_counter[!i] = &texts[!i].back();
+						texts[!i].push_back(BattleText());
+						texts[!i].back().init(&message_font, "hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], fighter[!i], glm::vec2(275.0, 790.0));
+						combo_hit[!i] = &texts[!i].back();
+					}
+				}
+
+				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = false;
+				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
 			}
 		}
 	}
@@ -606,6 +635,8 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
 				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);
+				texts[p1->id].push_back(BattleText());
+				texts[p1->id].back().init(&message_font, "Counter", 40, p1, glm::vec2(275.0, 450.0));
 			}
 			else {
 				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain, get_param_int("ex_meter_size", PARAM_FIGHTER));
@@ -614,8 +645,26 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
 			}
+			if (p2->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
+				texts[p1->id].push_back(BattleText());
+				texts[p1->id].back().init(&message_font, "Punish", 40, p2, glm::vec2(275.0, 1280.0));
+			}
 			if (p2->status_kind == FIGHTER_STATUS_LAUNCH && p1_hitbox->continue_launch) {
 				p2_status_post_hit = FIGHTER_STATUS_LAUNCH;
+			}
+			if (p1->fighter_int[FIGHTER_INT_COMBO_COUNT] != 1) {
+				if (combo_counter[p1->id] != nullptr) {
+					combo_counter[p1->id]->update(std::to_string(p1->fighter_int[FIGHTER_INT_COMBO_COUNT]), p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+					combo_hit[p1->id]->update("hits", p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+				}
+				else {
+					texts[p1->id].push_back(BattleText());
+					texts[p1->id].back().init(&combo_font, std::to_string(p1->fighter_int[FIGHTER_INT_COMBO_COUNT]), p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], p1, glm::vec2(275.0, 540.0));
+					combo_counter[p1->id] = &texts[p1->id].back();
+					texts[p1->id].push_back(BattleText());
+					texts[p1->id].back().init(&message_font, "hits", p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], p1, glm::vec2(275.0, 790.0));
+					combo_hit[p1->id] = &texts[p1->id].back();
+				}
 			}
 		}
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT] = false;

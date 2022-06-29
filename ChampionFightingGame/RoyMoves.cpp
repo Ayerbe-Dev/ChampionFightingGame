@@ -273,6 +273,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
 		});
 		execute_wait(1, [this]() {
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_frame(15, [this]() {
@@ -299,6 +300,7 @@ void Roy::load_move_scripts() {
 		});
 		execute_wait(3, [this]() {
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
@@ -324,6 +326,7 @@ void Roy::load_move_scripts() {
 		});
 		execute_wait(5, [this]() {
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
@@ -353,6 +356,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 30.0, /*Chip Damage*/ 3.0, /*Damage Scale*/ 1, /*Meter Gain*/ 20.0, glm::vec2(51, 112), glm::vec2(199, 82), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 14, /*Blockstun*/ 12, /*Hit Pushback*/ 10.0, /*Block Pushback*/ 10.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 		});
 		execute_wait(2, [this]() {
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(2, [this]() {
@@ -378,9 +382,10 @@ void Roy::load_move_scripts() {
 		execute_wait(1, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(175, 35), glm::vec2(270, 120), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 3, /*Meter Gain*/ 32.0, glm::vec2(204, 40), glm::vec2(321, 123), SITUATION_HIT_GROUND, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 20, /*Blockstun*/ 17, /*Hit Pushback*/ 8.0, /*Block Pushback*/ 8.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 0, /*Juggle Max*/ 0, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 3, /*Meter Gain*/ 32.0, glm::vec2(285, 118), glm::vec2(392, 163), SITUATION_HIT_AIR, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 20, /*Blockstun*/ 21, /*Hit Pushback*/ 24.0, /*Block Pushback*/ 8.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 5, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, /*Damage*/ 40.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 3, /*Meter Gain*/ 32.0, glm::vec2(285, 118), glm::vec2(412, 163), SITUATION_HIT_AIR, ATTACK_LEVEL_MEDIUM, ATTACK_HEIGHT_MID, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 20, /*Blockstun*/ 21, /*Hit Pushback*/ 24.0, /*Block Pushback*/ 8.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 5, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ false, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 10.0, 0.0, 0.0, 1.0);
 		});
 		execute_wait(4, [this]() {
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(4, [this]() {
@@ -408,15 +413,14 @@ void Roy::load_move_scripts() {
 		execute_wait(2, [this]() {
 			push_function(&Fighter::CLEAR_HURTBOX_ALL);
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-31, 0), glm::vec2(132, 113), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 50.0, /*Chip Damage*/ 5.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, glm::vec2(51, 253), glm::vec2(149, 70), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 19, /*Blockstun*/ 14, /*Hit Pushback*/ 6.0, /*Block Pushback*/ 4.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_AERIAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 6, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ true, /*Disable Hitstun Parry*/ false, /*Launch Info*/ 20.0, 0.0, 0.0, 10.0);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, /*Damage*/ 50.0, /*Chip Damage*/ 5.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, glm::vec2(51, 253), glm::vec2(149, 70), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 14, /*Blockstun*/ 10, /*Hit Pushback*/ 6.0, /*Block Pushback*/ 4.0, /*Hit Status*/ HIT_STATUS_NORMAL, /*Counterhit Status*/ HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_AERIAL, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 6, CLANK_KIND_NORMAL, KO_KIND_NORMAL, /*Continue Launch*/ true, /*Disable Hitstun Parry*/ true, /*Launch Info*/ 20.0, 0.0, 0.0, 10.0);
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(22, 158), glm::vec2(129, 64), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		}); 
 		execute_wait(3, [this]() {
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
-		});
-		execute_wait(0, [this]() {
 			push_function(&Fighter::SET_RATE, 1.3);
 		});
 		execute_frame(25, [this]() {

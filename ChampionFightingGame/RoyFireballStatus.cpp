@@ -53,12 +53,14 @@ void RoyFireball::status_roy_fireball_punched() {
 	else {
 		add_pos(get_local_param_float("punch_move_x_speed_h", params) * facing_dir, 0);
 	}
+	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}
 }
 
 void RoyFireball::enter_status_roy_fireball_punched() {
+	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("punch_active_time", params);
 	change_anim("punched");
 }
@@ -78,12 +80,14 @@ void RoyFireball::status_roy_fireball_kicked() {
 	else {
 		add_pos(get_local_param_float("kick_move_x_speed_h", params) * facing_dir, get_local_param_float("kick_move_y_speed_h", params) * -1);
 	}
+	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		change_status(PROJECTILE_STATUS_HIT);
 	}
 }
 
 void RoyFireball::enter_status_roy_fireball_kicked() {
+	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
 	set_pos(owner->get_bone_position("FootR", glm::vec3(20.0, -25.0, 0.0)));
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("kick_active_time", params);
 	change_anim("kicked");

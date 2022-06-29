@@ -43,6 +43,7 @@ GameTexture::GameTexture(const GameTexture& that) {
 	VAO = that.VAO;
 	VBO = that.VBO;
 	texture = that.texture;
+	text = that.text;
 
 	width = that.width;
 	height = that.height;
@@ -114,6 +115,7 @@ void GameTexture::init(std::string path) {
 	shader->set_int("f_texture", 0);
 	h_flipped = false;
 	v_flipped = false;
+	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
@@ -172,6 +174,7 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	shader->set_int("f_texture", 0);
 	h_flipped = false;
 	v_flipped = false;
+	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
@@ -224,6 +227,7 @@ void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border
 	shader->set_int("f_texture", 0);
 	h_flipped = false;
 	v_flipped = false;
+	this->text = text;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 }
@@ -524,6 +528,10 @@ int GameTexture::get_height() {
 	return height;
 }
 
+std::string GameTexture::get_text() {
+	return text;
+}
+
 void GameTexture::set_left_target(float percent, float frames) {
 	if (percent < 0.0 || frames <= 0.0) {
 		return;
@@ -582,6 +590,10 @@ void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	}
 	this->target_pos = (target_pos - pos) / glm::vec3(frames);
 	this->target_pos_frames = glm::vec3(frames);
+}
+
+void GameTexture::add_alpha(unsigned char alpha) {
+	this->alpha += alpha;
 }
 
 void GameTexture::set_alpha(unsigned char alpha) {
@@ -790,6 +802,7 @@ void GameTexture::set_sprite(int index) {
 }
 
 void GameTexture::update_text(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	this->text = text;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 

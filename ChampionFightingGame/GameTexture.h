@@ -55,6 +55,7 @@ public:
     void set_scale(float scale);
     int get_width();
     int get_height();
+    std::string get_text();
 
     void set_left_target(float percent, float frames);
     void set_right_target(float percent, float frames);
@@ -63,6 +64,7 @@ public:
 
     void set_target_pos(glm::vec3 target, float frames);
 
+    void add_alpha(unsigned char alpha);
     void set_alpha(unsigned char alpha);
 
     void flip_h();
@@ -119,6 +121,7 @@ private:
     bool v_flipped;
 
     std::string name;
+    std::string text;
     glm::mat4 matrix;
     bool depth;
 };

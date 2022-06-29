@@ -16,7 +16,7 @@ int Fighter::get_frames_until_actionable() {
 		}
 
 		int ret = 0;
-		double sim_rate = rate * battle_object_manager->get_time_multiplier(id);
+		float sim_rate = rate * battle_object_manager->get_time_multiplier(id);
 
 		//TODO: This block assumes that our motion rate is constant, when we have the ability to change
 		//it midway through. We should figure out a way to read through a script and check if it
@@ -68,7 +68,7 @@ bool Fighter::is_actionable() {
 }
 
 bool Fighter::can_kara() {
-	if (((fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) || fighter_flag[FIGHTER_FLAG_KARA_ENABLED]) {
+	if (((fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) || fighter_flag[FIGHTER_FLAG_KARA_ENABLED]) {
 		return true;
 	}
 	else {
@@ -126,17 +126,15 @@ void Fighter::disable_cancel(int cat, int kind) {
 	}
 }
 
-bool Fighter::is_enable_cancel(int cat, int kind) {
-	if (cat >= CANCEL_CAT_MAX) {
-		int max = cat - CANCEL_CAT_MAX;
-		for (int i = 0; i < max; i++) {
-			if (cancel_flags[i][kind]) {
-				return true;
-			}
+bool Fighter::is_enable_cancel(int cancel_kind) {
+	if (fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
+		if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
+			return (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
+				|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && cancel_flags[CANCEL_CAT_BLOCK][cancel_kind]);
 		}
-		return false;
+		else if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX]) {
+			return cancel_flags[CANCEL_CAT_WHIFF][cancel_kind];
+		}
 	}
-	else {
-		return cancel_flags[cat][kind];
-	}
+	return false;
 }

@@ -84,6 +84,8 @@ public:
 		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
 		int juggle_max, bool trade, KoKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
 		float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x);
+	void clear_hitbox(int id);
+	void clear_hitbox_all();
 
 	//Balogna (thanks fez)
 

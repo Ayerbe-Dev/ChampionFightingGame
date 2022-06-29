@@ -78,7 +78,7 @@ int Fighter::get_flick_dir(bool internal_dir) {
 	}
 }
 
-bool Fighter::get_normal_input(int attack_kind, unsigned int button, int stick_dir) {
+bool Fighter::get_attack_input(int attack_kind, unsigned int button, int stick_dir) {
 	if (attack_kind >= ATTACK_KIND_OTHER) {
 		if (attack_kind == ATTACK_KIND_OTHER) {
 			return check_button_input(button) && get_stick_dir() == stick_dir;
@@ -241,23 +241,18 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 	}
 }
 
-bool Fighter::normal_cancel(int attack_kind, unsigned int button, int stick) {
-	if (fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
-		if (((fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS]) && is_enable_cancel(CANCEL_CAT_HIT, attack_kind))
-		|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && is_enable_cancel(CANCEL_CAT_BLOCK, attack_kind))
-		|| (!fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED_DURING_STATUS] && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && !fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && is_enable_cancel(CANCEL_CAT_WHIFF, attack_kind))) {
-			if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
-				if (get_normal_input(attack_kind, button, stick)) {
-					int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
-					fighter_int[FIGHTER_INT_ATTACK_KIND] = attack_kind;
-					fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
-
-					if (situation_kind == FIGHTER_SITUATION_GROUND) {
-						return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
-					}
-					else {
-						return change_status_after_hitlag(FIGHTER_STATUS_ATTACK_AIR, true, false);
-					}
+bool Fighter::attack_cancel(int attack_kind, unsigned int button, int stick) {
+	if (is_enable_cancel(attack_kind)) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
+			if (get_attack_input(attack_kind, button, stick)) {
+				int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = attack_kind;
+				fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
+				if (situation_kind == FIGHTER_SITUATION_GROUND) {
+					return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
+				}
+				else {
+					return change_status_after_hitlag(FIGHTER_STATUS_ATTACK_AIR, true, false);
 				}
 			}
 		}

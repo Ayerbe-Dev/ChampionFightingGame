@@ -580,7 +580,7 @@ void Fighter::exit_status_turn() {
 }
 
 void Fighter::status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED_DURING_STATUS] && fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
 		if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_ADVANCE) {
 			if (has_meter(3)) {
@@ -600,7 +600,7 @@ void Fighter::status_attack() {
 		return;
 	}
 	for (int i = 0; i < 12; i++) {
-		if (normal_cancel(i)) {
+		if (attack_cancel(i)) {
 			return;
 		}
 	}
@@ -624,11 +624,11 @@ void Fighter::status_attack() {
 		case ATTACK_KIND_CMP:
 		case ATTACK_KIND_CMK: {
 			if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
-				if (!fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
+				if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
 					change_status(FIGHTER_STATUS_PARRY_START);
 					return;
 				}
-				else if (fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && has_meter(1)) {
+				else if (fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] && has_meter(1)) {
 					change_status(FIGHTER_STATUS_PARRY_START);
 					return;
 				}
@@ -639,7 +639,7 @@ void Fighter::status_attack() {
 		case ATTACK_KIND_CHP:
 		case ATTACK_KIND_CHK: {
 			if (check_button_on(BUTTON_HP) && check_button_on(BUTTON_HK) && player->control_type == CONTROL_TYPE_ADVANCE) {
-				if (!fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
+				if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
 					if (get_stick_dir() == 6) {
 						if (has_meter(1)) {
 							change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false);
@@ -668,6 +668,7 @@ void Fighter::status_attack() {
 }
 
 void Fighter::enter_status_attack() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
 		change_anim("stand_lp");
 	}
@@ -707,6 +708,7 @@ void Fighter::enter_status_attack() {
 }
 
 void Fighter::exit_status_attack() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
 	stop_vc_all();
 	clear_effect_all();
 }
@@ -719,7 +721,7 @@ void Fighter::status_attack_air() {
 		return;
 	}
 	for (int i = 0; i < 6; i++) {
-		if (normal_cancel(i)) {
+		if (attack_cancel(i)) {
 			return;
 		}
 	}
@@ -732,7 +734,7 @@ void Fighter::status_attack_air() {
 	}
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MK || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
 		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
-			if (!fighter_flag[FIGHTER_FLAG_HAS_ATTACK] && !fighter_flag[FIGHTER_FLAG_HAD_ATTACK_IN_STATUS]) {
+			if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] && !fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
 				change_status(FIGHTER_STATUS_PARRY_START);
 				return;
 			}
@@ -742,6 +744,7 @@ void Fighter::status_attack_air() {
 }
 
 void Fighter::enter_status_attack_air() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP) {
 		change_anim("jump_lp");
 	}
@@ -763,6 +766,7 @@ void Fighter::enter_status_attack_air() {
 }
 
 void Fighter::exit_status_attack_air() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
 }
 
 void Fighter::status_advance() {

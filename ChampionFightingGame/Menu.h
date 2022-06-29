@@ -9,33 +9,14 @@
 #include "GameManager.h"
 #include "GameTexture.h"
 
+enum {
+    MENU_GROUP_RENDER_ALWAYS,
+    MENU_GROUP_RENDER_ACTIVE,
+
+    MENU_CATEGORY_MAX,
+};
+
 void menu_main();
-int get_sub_selection(int top_selection, int sub_selection);
-
-class MenuItem {
-public:
-    MenuItem();
-    void init(Font font, std::string text, int destination, std::string texture_dir = "resource/ui/menu/main/missingno.png");
-    void destroy();
-
-    int destination;
-
-    GameTexture texture;
-    GameTexture sub_menu_name;
-};
-
-class SubMenuTable {
-public:
-    int selection;
-    int selected_item;
-
-    std::vector<GameTexture> sub_text;
-    GameTexture cursor;
-
-    SubMenuTable();
-    SubMenuTable(int selection);
-    void destroy();
-};
 
 class MainMenu: public GameMenu{
 public:
@@ -70,7 +51,4 @@ private:
 
     GameTexture table;
     GameTexture background_texture;
-
-    MenuItem menu_items[5];
-    SubMenuTable* sub_menu_tables[5];
 };

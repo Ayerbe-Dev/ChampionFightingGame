@@ -110,14 +110,14 @@ MenuObject::MenuObject() {
 	owner = nullptr;
 	parent = nullptr;
 	render_all_children = false;
-	active_child = -1;
+	active_child = 0;
 }
 
 MenuObject::MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children) {
 	this->owner = owner;
 	this->parent = parent;
 	this->render_all_children = render_all_children;
-	active_child = -1;
+	active_child = 0;
 }
 
 void MenuObject::render() {
@@ -130,7 +130,7 @@ void MenuObject::render() {
 			children[i].render();
 		}
 	}
-	else if (active_child != -1) {
+	else if (active_child != -1 && !children.empty()) {
 		children[active_child].render();
 	}
 }
@@ -142,4 +142,61 @@ void MenuObject::destroy() {
 	for (int i = 0, max = children.size(); i < max; i++) {
 		children[i].destroy();
 	}
+}
+
+void MenuObject::add_child(bool render_all_children) {
+	children.push_back(MenuObject(owner, this, render_all_children));
+}
+
+void MenuObject::add_texture(std::string path) {
+	textures.push_back(GameTexture(path));
+}
+
+void MenuObject::add_texture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	textures.push_back(GameTexture(font, text, rgba, border_x, border_y));
+}
+
+void MenuObject::add_texture(const GameTexture& that) {
+	textures.push_back(that);
+}
+
+void MenuObject::add_texture(unsigned int texture_id) {
+	textures.push_back(GameTexture());
+	textures.back().init(texture_id);
+}
+
+void MenuObject::event_up_press() {
+	up_event(this);
+}
+
+void MenuObject::event_down_press() {
+	down_event(this);
+}
+
+void MenuObject::event_left_press() {
+	left_event(this);
+}
+
+void MenuObject::event_right_press() {
+	right_event(this);
+}
+
+void MenuObject::event_select_press() {
+	select_event(this);
+}
+
+void MenuObject::event_start_press() {
+	start_event(this);
+}
+
+void MenuObject::event_back_press() {
+	back_event(this);
+}
+
+void MenuObject::event_any_press() {
+	any_event(this);
+}
+
+void MenuObject::process() {
+	process_event(this);
 }

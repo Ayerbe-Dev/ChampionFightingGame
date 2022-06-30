@@ -33,17 +33,17 @@ int Fighter::get_frames_until_actionable() {
 			ret++;
 		}
 	
-		//TODO: This block assumes that your air speed is completely constant, which is rarely going 
-		//to be the case, so we'll have to figure out a proper way to handle that
+//TODO: This block assumes that your air speed is completely constant, which is rarely going 
+//to be the case, so we'll have to figure out a proper way to handle that
 
-		if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= FLOOR_GAMECOORD) {
-			for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= FLOOR_GAMECOORD; ret--);
-			
-			//TODO: Figure out how to determine how many landing lag frames will be used, add that to
-			//ret
-		}
+if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= FLOOR_GAMECOORD) {
+	for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= FLOOR_GAMECOORD; ret--);
 
-		return ret;
+	//TODO: Figure out how to determine how many landing lag frames will be used, add that to
+	//ret
+}
+
+return ret;
 	}
 }
 

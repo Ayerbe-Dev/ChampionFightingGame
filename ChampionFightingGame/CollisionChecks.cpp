@@ -450,12 +450,7 @@ bool Battle::event_hit_collide_player() {
 				*/
 				fighter[i]->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX] = hitboxes[!i]->disable_hitstun_parry;
 				fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
-				if (fighter[i]->get_status_group() == STATUS_GROUP_HITSTUN) {
-					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
-					}
-				}
-				else {
+				if (fighter[i]->get_status_group() != STATUS_GROUP_HITSTUN) {
 					fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
 				}
 				fighter[i]->fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = hitboxes[!i]->launch_init_y;
@@ -496,6 +491,9 @@ bool Battle::event_hit_collide_player() {
 					post_hit_status[i] = get_damage_status(hitboxes[!i]->hit_status, fighter[i]->situation_kind);
 					if (fighter[i]->status_kind == FIGHTER_STATUS_LAUNCH && hitboxes[!i]->continue_launch) {
 						post_hit_status[i] = FIGHTER_STATUS_LAUNCH;
+					}
+					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
+						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
 					}
 				}
 				if (fighter[i]->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
@@ -604,12 +602,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 		else {
 			p2->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX] = p1_hitbox->disable_hitstun_parry;
 			p1->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
-			if (p2->get_status_group() == STATUS_GROUP_HITSTUN) {
-				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
-					p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += p1_hitbox->damage_scale;
-				}
-			}
-			else {
+			if (p2->get_status_group() != STATUS_GROUP_HITSTUN) {
 				p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
 			}
 			p2->fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
@@ -639,6 +632,9 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				texts[p1->id].back().init(&message_font, "Counter", 40, p1, glm::vec2(275.0, 450.0));
 			}
 			else {
+				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
+					p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += p1_hitbox->damage_scale;
+				}
 				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.6, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * ((clampf(1, 10 - p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), p2->fighter_float[FIGHTER_FLOAT_HEALTH]);

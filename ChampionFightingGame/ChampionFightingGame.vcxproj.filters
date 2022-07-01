@@ -1820,6 +1820,12 @@
     <None Include="resource\chara\roy\anims\throw_b.fbx">
       <Filter>3. resource\chara\roy\anims</Filter>
     </None>
+    <None Include="resource\shaders\vertex_ssao_blur.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_ssao_blur.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="resource\fonts\Fiend-Oblique.ttf">

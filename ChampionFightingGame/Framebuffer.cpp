@@ -59,7 +59,7 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Framebuffer::add_texture(GLenum internal_format, GLenum format, GLenum type, float width, float height, void* source, bool no_resize) {
+void Framebuffer::add_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, void* source, bool no_resize) {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	GLuint texture;
 	glGenTextures(1, &texture);
@@ -67,8 +67,8 @@ void Framebuffer::add_texture(GLenum internal_format, GLenum format, GLenum type
 	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, source);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + textures.size(), GL_TEXTURE_2D, texture, 0);
 	textures.push_back(texture);
 	texture_info.push_back(TextureInfo(internal_format, format, type, source, no_resize));
@@ -87,12 +87,11 @@ void Framebuffer::add_texture(GLuint texture, TextureInfo info) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + textures.size(), GL_TEXTURE_2D, texture, 0);
 	textures.push_back(texture);
 	texture_info.push_back(info);
-
-	GLenum* attachments = new GLenum[textures.size()]; //I really hate cpp arrays
+	GLenum* attachments = new GLenum[textures.size()];
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
 	}
-	glDrawBuffers(textures.size(), attachments); //Can't pass a vector here
+	glDrawBuffers(textures.size(), attachments);
 	delete[] attachments;
 }
 

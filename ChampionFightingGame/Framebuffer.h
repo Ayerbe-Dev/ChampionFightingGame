@@ -19,7 +19,7 @@ public:
 	~Framebuffer();
 
 	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
-	void add_texture(GLenum internal_format, GLenum format, GLenum type, float width, float height, void* source = nullptr, bool no_resize = false);
+	void add_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, void* source = nullptr, bool no_resize = false);
 	void add_texture(GLuint texture, TextureInfo info);
 	void destroy();
 	void use();

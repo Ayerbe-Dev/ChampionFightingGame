@@ -212,10 +212,16 @@ void Fighter::process_pre_status() {
 }
 
 void Fighter::process_status() {
+	bool execute_after_status = is_anim_end;
+	if (!execute_after_status) {
+		active_move_script.execute(this, frame);
+	}
 	if (!is_status_delay()) {
 		(this->*status_script[status_kind])();
 	}
-	active_move_script.execute(this, frame);
+	if (execute_after_status) {
+		active_move_script.execute(this, frame);
+	}
 }
 
 void Fighter::process_post_status() {

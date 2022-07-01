@@ -5,15 +5,6 @@ in vec2 TexCoords;
 
 #define MAX_LIGHT_SOURCES 10
 
-struct Material {
-    sampler2D diffuse;
-    sampler2D specular;
-    sampler2D normal;
-    sampler2D height;
-    sampler2D shadow_map;
-    float shininess;
-}; 
-
 struct Light {
     vec3 position;
     vec3 color;
@@ -30,15 +21,17 @@ uniform sampler2D g_position;
 uniform sampler2D g_normal;
 uniform sampler2D g_diffuse;
 uniform sampler2D g_specular;
+uniform sampler2D ssao;
 
 void main() {
     vec3 FragPos = texture(g_position, TexCoords).rgb;
     vec3 Normal = texture(g_normal, TexCoords).rgb;
     vec3 Diffuse = texture(g_diffuse, TexCoords).rgb * texture(g_diffuse, TexCoords).a;
     vec3 Specular = texture(g_specular, TexCoords).rgb * texture(g_specular, TexCoords).a;
+    float AmbientOcclusion = texture(ssao, TexCoords).r;
 
-    vec3 result = Diffuse * 0.1;
-    vec3 view_dir = normalize(view_pos - FragPos);
+    vec3 result = vec3(0.3 * Diffuse * AmbientOcclusion); 
+    vec3 view_dir = normalize(-FragPos);
 
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
         if (light[i].enabled) {

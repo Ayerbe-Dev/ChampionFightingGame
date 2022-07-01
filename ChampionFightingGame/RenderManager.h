@@ -61,6 +61,7 @@ public:
 	Framebuffer box_layer;
 	Framebuffer g_buffer;
 	Framebuffer SSAO;
+	Framebuffer SSAO_blur;
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;

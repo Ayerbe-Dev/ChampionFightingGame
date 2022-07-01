@@ -24,6 +24,7 @@ void BattleObject::wipe_scripts() {
 void BattleObject::set_current_move_script(std::string anim_name) {
 	active_move_script = move_script_table.get_script(anim_name);
 	active_move_script.activate();
+	active_move_script.execute(this, 0.0);
 }
 
 void BattleObject::execute_frame(float frame, std::function<void()> execute) {

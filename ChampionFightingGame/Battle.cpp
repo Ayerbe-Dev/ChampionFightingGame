@@ -508,13 +508,11 @@ void Battle::render_world() {
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE4);
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);
-		//player tags will go here
-
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
@@ -527,25 +525,21 @@ void Battle::render_world() {
 
 	EffectManager::get_instance()->render();
 
-	bool using_ssao = false;
-	if (using_ssao) {
+	if (keyboard_state[SDL_SCANCODE_0]) {
 		//SSAO PASS
 
-		render_manager->SSAO.use(); //Render the GBuffer to the SSAO buffer
+		render_manager->SSAO.use();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		render_manager->g_buffer.render();
-
-		//LIGHTING PASS
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); //Render the SSAO to the screen
 		render_manager->SSAO.render();
+		render_manager->SSAO_blur.use();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->SSAO_blur.render();
 	}
-	else {
-		//LIGHTING PASS
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); //Render the GBuffer directly to the screen
-		render_manager->g_buffer.render();
-	}
+	//LIGHTING PASS
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); //Render the GBuffer to the screen
+	render_manager->g_buffer.render();
 
 	//HITBOX PASS
 

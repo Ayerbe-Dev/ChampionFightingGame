@@ -28,8 +28,6 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	prev_anim_rate = this->rate;
 	prev_anim_frame = this->frame;
 
-	set_current_move_script(animation_name);
-
 	Animation* new_anim = anim_table.get_anim(animation_name, true);
 	if (new_anim != nullptr) {
 		if (frame != -1) { //The frame can't go into the negatives, so if we call an animation with
@@ -65,6 +63,8 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
 	is_anim_end = false;
 	anim_kind = new_anim;
+
+	set_current_move_script(animation_name);
 
 	return new_anim != nullptr;
 }

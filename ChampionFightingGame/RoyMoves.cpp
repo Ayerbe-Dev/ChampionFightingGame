@@ -329,7 +329,9 @@ void Roy::load_move_scripts() {
 		});
 	});
 	script("stand_lk", [this]() {
-
+		execute_frame(0, [this]() {
+			push_function(&Fighter::START_CINEMATIC_SEQUENCE, "super_start", 1.0, 0.0, 0.8, false, 0.0);
+		});
 	});
 	script("stand_mk", [this]() {
 		

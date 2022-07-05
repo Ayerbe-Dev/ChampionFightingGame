@@ -1,6 +1,5 @@
 #version 330 core
-
-layout (location = 0) out float FragColor;
+out float FragColor;
   
 in vec2 TexCoords;
 
@@ -16,10 +15,10 @@ uniform mat4 projection_matrix;
 
 int kernelSize = 64;
 float radius = 0.2;
-float bias = 0.0;
+float bias = 0.05;
 
 void main() {    
-	vec2 noise_scale = vec2(window_width * 4, window_height * 4);
+	vec2 noise_scale = vec2(window_width / 4, window_height / 4);
 
 	vec3 fragPos = texture(g_position, TexCoords).xyz;
 	vec3 normal = texture(g_normal, TexCoords).rgb;
@@ -44,7 +43,7 @@ void main() {
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;           
     }
-    occlusion = 1.0 - (occlusion / kernelSize);
+    occlusion /= kernelSize;
     
     FragColor = occlusion;
 };

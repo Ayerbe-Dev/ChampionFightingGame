@@ -521,31 +521,29 @@ void Battle::render_world() {
 	}
 
 	stage.render();
-	glDisable(GL_CULL_FACE);
 
+	glDisable(GL_CULL_FACE);
 	EffectManager::get_instance()->render();
 
-	if (keyboard_state[SDL_SCANCODE_0]) {
-		//SSAO PASS
+	//SSAO PASS
 
-		render_manager->SSAO.use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		render_manager->SSAO.render();
-		render_manager->SSAO_blur.use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		render_manager->SSAO_blur.render();
-	}
+	render_manager->SSAO.use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	render_manager->SSAO.render();
+	render_manager->SSAO_blur.use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	render_manager->SSAO_blur.render();
 
 	//LIGHTING PASS
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); //Render the GBuffer to the screen
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_manager->g_buffer.render();
 
 	//HITBOX PASS
 
 	if (visualize_boxes) {
 		render_manager->box_layer.use();
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {

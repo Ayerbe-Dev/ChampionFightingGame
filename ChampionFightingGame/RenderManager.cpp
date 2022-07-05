@@ -39,7 +39,7 @@ RenderManager::RenderManager() {
 		sample = glm::normalize(sample);
 		sample *= rng_f(0.0, 1.0);
 
-		float scale = (float)i / 256.0;
+		float scale = (float)i / 64.0;
 		scale = lerp(0.1, 1.0, scale * scale);
 		sample *= scale;
 
@@ -58,23 +58,23 @@ RenderManager::RenderManager() {
 	shadow_map.init();
 	
 	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
-	box_layer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height);
+	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0);
 
 	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
-	g_buffer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height); //Position
-	g_buffer.add_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height); //Normal
-	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height); //Diffuse
-	g_buffer.add_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height); //Specular 
-
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT1); //Normal
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT2); //Diffuse
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT3); //Specular
+	
 	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
-	SSAO.add_texture(GL_RED, GL_RED, GL_FLOAT, GL_REPEAT, width, height); //SSAO output
-	SSAO.add_texture(g_buffer.textures[0], g_buffer.texture_info[0]); //Position, shared w/ GBuffer
-	SSAO.add_texture(g_buffer.textures[1], g_buffer.texture_info[1]); //Ditto for Normals
-	SSAO.add_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 4, 4, (void*)&ssao_noise[0], true); //Noise
+	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0); //Output
+	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 4, 4, (void*)&ssao_noise[0]); //Noise
+	SSAO.add_read_texture(g_buffer.textures[0]); //Position, shared w/ GBuffer
+	SSAO.add_read_texture(g_buffer.textures[1]); //Ditto for Normals
 
 	SSAO_blur.init("vertex_ssao_blur.glsl", "fragment_ssao_blur.glsl");
-	SSAO_blur.add_texture(SSAO.textures[0], SSAO.texture_info[0]);
-	g_buffer.add_texture(SSAO.textures[0], SSAO.texture_info[0]);
+	SSAO_blur.add_read_texture(SSAO.textures[0]);
+	g_buffer.add_read_texture(SSAO.textures[0]);
 		
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -94,9 +94,9 @@ RenderManager::RenderManager() {
 	}
 	SSAO.shader.set_int("window_width", s_window_width);
 	SSAO.shader.set_int("window_height", s_window_height);
-	SSAO.shader.set_int("g_position", 0);
-	SSAO.shader.set_int("g_normal", 1);
-	SSAO.shader.set_int("tex_noise", 2);
+	SSAO.shader.set_int("tex_noise", 1);
+	SSAO.shader.set_int("g_position", 2);
+	SSAO.shader.set_int("g_normal", 3);
 
 	SSAO_blur.shader.use();
 	SSAO_blur.shader.set_int("ssao", 0);
@@ -212,8 +212,9 @@ void RenderManager::update_shader_lights() {
 }
 
 void RenderManager::update_shader_cams() {
+	glm::mat4& camera_matrix = camera.camera_matrix;
 	glm::mat4& projection_matrix = camera.projection_matrix;
-	glm::mat4 &camera_matrix = camera.camera_matrix;
+	glm::mat4 &view_matrix = camera.view_matrix;
 	SSAO.shader.use();
 	SSAO.shader.set_mat4("projection_matrix", projection_matrix);
 	rect_shader.use();
@@ -224,6 +225,7 @@ void RenderManager::update_shader_cams() {
 		linked_shaders[i]->use();
 		linked_shaders[i]->set_vec3("view_pos", camera.pos);
 		linked_shaders[i]->set_mat4("camera_matrix", camera_matrix);
+		linked_shaders[i]->set_mat4("view_matrix", view_matrix);
 	}
 }
 
@@ -289,6 +291,11 @@ void RenderManager::destroy_instance() {
 	rect_shader.destroy();
 	text_shader.destroy();
 	shadow_shader.destroy();
+	box_layer.destroy();
+	g_buffer.destroy();
+	SSAO.destroy();
+	SSAO_blur.destroy();
+
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_GL_DeleteContext(sdl_context);

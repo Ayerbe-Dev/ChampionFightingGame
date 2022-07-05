@@ -1,6 +1,5 @@
 #version 330 core
-
-layout (location = 0) out float FragColor;
+out float FragColor;
   
 in vec2 TexCoords;
   

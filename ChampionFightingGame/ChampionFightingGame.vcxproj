@@ -641,6 +641,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\chara\angelica\param\stats.yml" />
     <None Include="resource\chara\atlas\anims\anim_list.yml" />
     <None Include="resource\chara\atlas\anims\wait.fbx" />
+    <None Include="resource\chara\atlas\cam_anims\anim_list.yml" />
+    <None Include="resource\chara\atlas\cam_anims\super_start.fbx" />
+    <None Include="resource\chara\atlas\cam_anims\super_start_2.fbx" />
     <None Include="resource\chara\atlas\model\model.dae" />
     <None Include="resource\chara\atlas\model\skeleton.smd" />
     <None Include="resource\chara\atlas\param\params.yml" />

@@ -186,8 +186,9 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
-			bones[bones[i].counterpart_id].final_matrix = flip_matrix * ((bones[i].anim_matrix* flip_matrix)* bones[i].model_flip_matrix* global_transform);
-		} 
+			bones[bones[i].counterpart_id].final_matrix = flip_matrix * ((bones[i].anim_matrix * flip_matrix) * bones[i].model_flip_matrix * global_transform);
+			bones[bones[i].counterpart_id].final_pos_matrix = flip_matrix * ((bones[i].anim_matrix * flip_matrix) * bones[i].model_pos_flip_matrix * global_transform);
+		}
 	}
 	else {
 		for (int i = 0, max = keyframes.size(); i < max; i++) {
@@ -195,6 +196,7 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 			bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
+			bones[i].final_pos_matrix = bones[i].anim_matrix * bones[i].model_pos_matrix * global_transform;
 		}
 	}
 }
@@ -403,13 +405,10 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 		for (int i = 0; i < mesh->mNumBones; i++) {
 			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
-			aiNode* ai_node = ai_bone->mArmature;
 			bone.model_matrix = ass_converter(ai_bone->mOffsetMatrix);
-			if (ai_node != nullptr) {
-				bone.anim_matrix = ass_converter(ai_node->mTransformation);
-			}
-
-
+			aiNode* ai_node = ai_bone->mArmature;
+			bone.anim_matrix = ass_converter(ai_node->mTransformation);
+			
 			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
 
 			bone.id = get_bone_id(bone.name);
@@ -469,14 +468,20 @@ void Model::post_process_skeleton() { //Reads through the skeleton, figures out 
 	for (int i = 0, max = bones.size(); i < max; i++) {
 		if (bones[i].parent_id == -1) {
 			bones[i].parent_matrix = dummy_matrix;
+			bones[i].model_pos_matrix = bones[i].model_matrix;
 		}
 		else {
 			if (bones[i].parent_id == trans_id) {
 				trans_children.push_back(&bones[i]);
 			}
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
+			bones[i].model_pos_matrix = bones[bones[i].parent_id].model_pos_matrix * bones[i].model_matrix;
 		}
 		bones[i].model_flip_matrix = bones[bones[i].counterpart_id].model_matrix;
+	}
+	for (int i = 0, max = bones.size(); i < max; i++) { //Wait for all of the pos matrices to be 
+		//filled before trying to populate the counterparts
+		bones[i].model_pos_flip_matrix = bones[bones[i].counterpart_id].model_pos_matrix;
 	}
 }
 

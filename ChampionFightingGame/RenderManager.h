@@ -11,6 +11,7 @@
 #include <functional>
 #include <set>
 #include <mutex>
+#include "GameTexture.h"
 
 #define MAX_LIGHT_SOURCES 10
 
@@ -65,7 +66,6 @@ public:
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;
-	unsigned int noise_texture;
 
 	int s_window_width;
 	int s_window_height;

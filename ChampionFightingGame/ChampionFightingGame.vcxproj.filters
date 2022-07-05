@@ -1826,6 +1826,15 @@
     <None Include="resource\shaders\fragment_ssao_blur.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
+    <None Include="resource\chara\atlas\cam_anims\anim_list.yml">
+      <Filter>3. resource\chara\atlas\cam_anims</Filter>
+    </None>
+    <None Include="resource\chara\atlas\cam_anims\super_start.fbx">
+      <Filter>3. resource\chara\atlas\cam_anims</Filter>
+    </None>
+    <None Include="resource\chara\atlas\cam_anims\super_start_2.fbx">
+      <Filter>3. resource\chara\atlas\cam_anims</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="resource\fonts\Fiend-Oblique.ttf">
@@ -2749,6 +2758,9 @@
     </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Ramona">
       <UniqueIdentifier>{4fcf516b-1c80-4569-9f89-87f78d9d3a97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\atlas\cam_anims">
+      <UniqueIdentifier>{a1a31a71-f181-41cb-a990-43e5c1ce0983}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

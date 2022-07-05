@@ -48,6 +48,21 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
 		});
 	});
+	script("dash_air_f", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 120 }, glm::vec2{ 115, 145 });
+		});
+	});
+	script("dash_air_b", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 0, 0 }, glm::vec2{ 125, 80 });
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -35, 35 }, glm::vec2{ 65, 160 });
+		});
+	});
 	script("crouch_d", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-130, 0), glm::vec2(0, 50));
@@ -250,6 +265,7 @@ void Roy::load_move_scripts() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_LK);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_MP);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_CHP);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
 			push_function(&Fighter::SET_RATE, 2.0);
@@ -281,6 +297,7 @@ void Roy::load_move_scripts() {
 	script("stand_mp", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_HP);
+			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_HK);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_236P);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
@@ -588,26 +605,20 @@ void Roy::load_move_scripts() {
 		execute_frame(0, [this]() {
 
 		});
-		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-			execute_frame(2, [this]() {
-				push_function(&Fighter::SET_RATE, 1.2);
-			});
-		}
-		else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-			execute_frame(4, [this]() {
-				push_function(&Fighter::SET_RATE, 1.2);
-			});
-		}
-		else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-			execute_frame(6, [this]() {
-				push_function(&Fighter::SET_RATE, 1.2);
-			});
-		}
-		else {
-			execute_frame(2, [this]() {
-				push_function(&Fighter::SET_RATE, 1.2);
-			});
-		}
+		execute_frame(2, [this]() {
+			switch (fighter_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+				case SPECIAL_LEVEL_L:
+				case SPECIAL_LEVEL_EX: {
+					push_function(&Fighter::SET_RATE, 1.2);
+				} break;
+				case SPECIAL_LEVEL_M: {
+					push_function(&Fighter::SET_RATE, 1.0);
+				} break;
+				case SPECIAL_LEVEL_H: {
+					push_function(&Fighter::SET_RATE, 0.8);
+				} break;
+			}
+		});
 		execute_frame(8, [this]() {
 			push_function(&Fighter::ACTIVATE_PROJECTILE, 0, glm::vec3(0.0));
 		});

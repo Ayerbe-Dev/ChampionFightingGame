@@ -4,49 +4,49 @@
 
 glm::vec3 BattleObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {
 	if (!has_model) {
-		return glm::vec3(0.0);
+		return offset;
 	}
 	int index = model.get_bone_id(bone_name);
 	if (index != -1) {
 		Bone& target = model.bones[index];
 		glm::vec3 ret = glm::vec3(
-			target.anim_matrix[3].z * facing_dir,
-			target.anim_matrix[3].y / 2.0,
-			target.anim_matrix[3].x * facing_dir * -1
+			target.final_pos_matrix[3].z * facing_dir,
+			target.final_pos_matrix[3].y,
+			target.final_pos_matrix[3].x
 		);
-		return (ret / scale) + offset;
+		return ret + offset;
 	}
-	return glm::vec3(0.0);
+	return offset;
 }
 
 glm::vec3 BattleObject::get_relative_bone_position(int bone_id, glm::vec3 offset) {
 	if (!has_model) {
-		return glm::vec3(0.0);
+		return offset;
 	}
 	Bone& target = model.bones[bone_id];
 	glm::vec3 ret = glm::vec3(
-		target.anim_matrix[3].z * facing_dir,
-		target.anim_matrix[3].y / 2.0,
-		target.anim_matrix[3].x * facing_dir * -1
+		target.final_pos_matrix[3].z * facing_dir,
+		target.final_pos_matrix[3].y,
+		target.final_pos_matrix[3].x
 	);
-	return (ret / scale) + offset;
+	return ret + offset;
 }
 
 glm::vec3 BattleObject::get_bone_position(std::string bone_name, glm::vec3 offset) {
 	if (!has_model) {
-		return glm::vec3(0.0);
+		return pos + offset;
 	}
 	int index = model.get_bone_id(bone_name);
 	if (index != -1) {
 		glm::vec3 base_offset = get_relative_bone_position(index, offset);
 		return pos + base_offset;
 	}
-	return glm::vec3(0.0);
+	return pos + offset;
 }
 
 glm::vec3 BattleObject::get_bone_position(int bone_id, glm::vec3 offset) {
 	if (!has_model) {
-		return glm::vec3(0.0);
+		return pos + offset;
 	}
 	glm::vec3 base_offset = get_relative_bone_position(bone_id, offset);
 	return pos + base_offset;
@@ -59,7 +59,7 @@ glm::vec3 BattleObject::get_bone_rotation(std::string bone_name) {
 	int index = model.get_bone_id(bone_name);
 	if (index != -1) {
 		glm::vec3 ret;
-		ret = degrees(eulerAngles(quat_cast(model.bones[index].anim_matrix)));
+		ret = degrees(eulerAngles(quat_cast(model.bones[index].final_pos_matrix)));
 		ret.z *= facing_dir;
 		return ret;
 	}
@@ -70,8 +70,8 @@ glm::vec3 BattleObject::get_bone_rotation(int bone_id) {
 	if (!has_model) {
 		return glm::vec3(0.0);
 	}
-	glm::vec3 ret;	
-	ret = degrees(eulerAngles(quat_cast(model.bones[bone_id].anim_matrix)));
+	glm::vec3 ret;
+	ret = degrees(eulerAngles(quat_cast(model.bones[bone_id].final_pos_matrix)));
 	ret.z *= facing_dir;
 	return ret;
 }

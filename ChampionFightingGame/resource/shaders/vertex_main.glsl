@@ -20,8 +20,10 @@ out VS_OUT {
 
 uniform mat4 model_matrix;
 uniform mat4 camera_matrix;
+uniform mat4 view_matrix;
 uniform mat4 shadow_matrix;
 uniform mat4 bone_matrix[MAX_BONES];
+uniform bool flipped;
 
 void main() {
     mat4 bone_transform = mat4(0.0);
@@ -36,10 +38,10 @@ void main() {
 
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
     
-    vs_out.FragPos = vec3(model_matrix * total_pos);
-    vs_out.Normal = mat3(transpose(inverse(model_matrix))) * v_nor;  
+    vs_out.FragPos = vec3(view_matrix * model_matrix * total_pos);
+    vec3 Normal = flipped ? -v_nor : v_nor;
+    vs_out.Normal = mat3(transpose(inverse(view_matrix * model_matrix))) * Normal;  
     vs_out.TexCoords = v_texcoords;
-    vs_out.FragPosLightSpace = shadow_matrix * vec4(vs_out.FragPos,1.0);
-
+    vs_out.FragPosLightSpace = shadow_matrix * vec4(vec3(model_matrix * total_pos), 1.0);
     gl_Position = camera_matrix * (model_matrix * total_pos);
 } 

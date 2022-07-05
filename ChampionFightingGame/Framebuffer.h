@@ -5,22 +5,24 @@
 
 struct TextureInfo {
 	TextureInfo();
-	TextureInfo(GLenum internal_format, GLenum format, GLenum type, void* source, bool no_resize);
+	TextureInfo(GLuint texture, GLenum internal_format, GLenum format, GLenum type);
+	GLuint texture;
 	GLenum internal_format;
 	GLenum format;
 	GLenum type; 
-	const void* source;
-	bool no_resize;
 };
 
 class Framebuffer {
 public:
 	Framebuffer();
-	~Framebuffer();
 
 	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
-	void add_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, void* source = nullptr, bool no_resize = false);
-	void add_texture(GLuint texture, TextureInfo info);
+	
+	void add_write_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, GLenum attachment_point);
+	void add_write_texture(GLuint texture, GLenum attachment_point);
+	void add_read_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, void* source = nullptr);
+	void add_read_texture(GLuint texture);
+
 	void destroy();
 	void use();
 	void render();
@@ -30,11 +32,10 @@ public:
 	GLuint VBO;
 	GLuint FBO;
 	GLuint RBO;
+
 	std::vector<GLuint> textures;
-	std::vector<TextureInfo> texture_info;
-	GLuint g_position;
-	GLuint g_normal;
-	GLuint g_diffuse;
-	GLuint g_specular;
+	std::vector<TextureInfo> resize_textures;
+	std::vector<GLenum> attachment_points;
+
 	Shader shader;
 };

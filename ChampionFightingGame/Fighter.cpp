@@ -144,6 +144,7 @@ void Fighter::process_post_animate() {
 
 void Fighter::process_pre_position() {
 	rot = glm::vec3(0.0);
+	extra_rot = glm::vec3(0.0);
 	if (isnan(pos.y)) {
 		pos.y = 0;
 	}

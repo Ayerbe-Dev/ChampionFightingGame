@@ -1,5 +1,7 @@
 #include "Model.h"
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include <fstream>
 
 #include "Bone.h"
@@ -72,8 +74,7 @@ void Model::load_model(std::string path) {
 	);
 
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
-
+	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		return;
@@ -89,6 +90,7 @@ void Model::load_model(std::string path) {
 	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
 
 	process_node(scene->mRootNode, scene);
+	process_skeleton(scene->mRootNode);
 	post_process_skeleton();
 }
 
@@ -185,9 +187,14 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 		for (int i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 
+
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 			bones[bones[i].counterpart_id].final_matrix = flip_matrix * ((bones[i].anim_matrix * flip_matrix) * bones[i].model_flip_matrix * global_transform);
-			bones[bones[i].counterpart_id].final_pos_matrix = flip_matrix * ((bones[i].anim_matrix * flip_matrix) * bones[i].model_pos_flip_matrix * global_transform);
+
+			glm::mat4 final_pos_matrix = bones[i].anim_matrix * bones[i].model_matrix;
+
+			bones[i].pos = final_pos_matrix * glm::vec4(bones[i].base_pos, 1.0);
+			bones[i].rot = bones[i].base_rot * glm::quat_cast(final_pos_matrix);
 		}
 	}
 	else {
@@ -196,7 +203,11 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 			bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
-			bones[i].final_pos_matrix = bones[i].anim_matrix * bones[i].model_pos_matrix * global_transform;
+
+			glm::mat4 final_pos_matrix = bones[i].anim_matrix * bones[i].model_matrix;
+
+			bones[i].pos = final_pos_matrix * glm::vec4(bones[i].base_pos, 1.0);
+			bones[i].rot = bones[i].base_rot * glm::quat_cast(final_pos_matrix);
 		}
 	}
 }
@@ -403,37 +414,26 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 	if (mesh->HasBones()) {
 		for (int i = 0; i < mesh->mNumBones; i++) {
-			Bone bone;
 			aiBone* ai_bone = mesh->mBones[i];
-			bone.model_matrix = ass_converter(ai_bone->mOffsetMatrix);
-			aiNode* ai_node = ai_bone->mArmature;
-			bone.anim_matrix = ass_converter(ai_node->mTransformation);
-			
-			bone.name = Filter(ai_bone->mName.C_Str(), "model-armature_");
+			int bone_id = get_bone_id(Filter(ai_bone->mName.C_Str(), "model-armature_"));
 
-			bone.id = get_bone_id(bone.name);
-			if (bone.id == -1) {
+
+			if (bone_id == -1) {
 				std::cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << "\n";
 				continue;
 			}
-
-			bone.parent_id = this->bones[bone.id].parent_id;
-			bone.counterpart_id = this->bones[bone.id].counterpart_id;
 
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
 				int index = ai_bone->mWeights[i2].mVertexId;
 				for (int i3 = 0; i3 < MAX_BONE_INFLUENCE; i3++) {
 					if (vertices[index].weights[i3] == 0.0) {
-						vertices[index].bone_ids[i3] = bone.id;
-						vertices[index].f_bone_ids[i3] = bone.counterpart_id;
+						vertices[index].bone_ids[i3] = bone_id;
+						vertices[index].f_bone_ids[i3] = this->bones[bone_id].counterpart_id;
 						vertices[index].weights[i3] = ai_bone->mWeights[i2].mWeight;
 						break;
 					}
 				}
 			}
-
-			this->bones[bone.id] = bone;
-			
 		}
 	}
 
@@ -462,26 +462,63 @@ std::vector<ModelTexture> Model::load_texture_data(aiMaterial* mat, aiTextureTyp
 	return textures;
 }
 
+void Model::process_skeleton(aiNode* root) {
+	for (int i = 0, max = bones.size(); i < max; i++) {
+		aiNode* node;
+		if (root->mName.C_Str() == "model-armature_" + bones[i].name) {
+			node = root;
+		}
+		else {
+			node = root->FindNode(("model-armature_" + bones[i].name).c_str());
+		}
+		if (node == nullptr) {
+			continue;
+		}
+		bones[i].anim_matrix = ass_converter(node->mTransformation); //Anim Matrix is the transformation factoring parents
+		bones[i].bind_matrix = bones[i].anim_matrix; //Bind Matrix will be in a vacuum
+		
+		//The Anim Matrix is necessary for calculating the Model Matrix, but we want the local transforms
+		//stored somewhere while post-processing the skeleton
+	}
+	for (int i = 0, max = bones.size(); i < max; i++) {
+		if (bones[i].parent_id != -1) {
+			bones[i].anim_matrix = bones[bones[i].parent_id].anim_matrix * bones[i].anim_matrix;
+		}
+		bones[i].model_matrix = glm::inverse(global_transform * bones[i].anim_matrix);
+	}
+}
+
 void Model::post_process_skeleton() { //Reads through the skeleton, figures out which bone is our
 	//base translation bone, figures out all of its children, and sets up the parent and flip matrices
 	trans_id = get_bone_id("Trans");
+	glm::vec3 decomp_other_v3;
+	glm::vec4 decomp_other_v4;
+	glm::vec3 scale_vec;
+
 	for (int i = 0, max = bones.size(); i < max; i++) {
+		glm::decompose(bones[i].bind_matrix, scale_vec, bones[i].base_rot, bones[i].base_pos, decomp_other_v3, decomp_other_v4);
+
 		if (bones[i].parent_id == -1) {
+			bones[i].base_pos = rotate(bones[i].base_pos, bones[i].base_rot);
+			std::swap(bones[i].base_pos.x, bones[i].base_pos.z);
+
 			bones[i].parent_matrix = dummy_matrix;
-			bones[i].model_pos_matrix = bones[i].model_matrix;
 		}
 		else {
 			if (bones[i].parent_id == trans_id) {
 				trans_children.push_back(&bones[i]);
 			}
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
-			bones[i].model_pos_matrix = bones[bones[i].parent_id].model_pos_matrix * bones[i].model_matrix;
+			bones[i].model_flip_matrix = bones[bones[i].counterpart_id].model_matrix;
+
+			bones[i].base_pos = rotate(bones[i].base_pos, bones[bones[i].parent_id].base_rot);
+			std::swap(bones[i].base_pos.x, bones[i].base_pos.z);
+			bones[i].base_pos.z *= -1.0;
+
+			bones[i].base_pos += bones[bones[i].parent_id].base_pos;
+
+			bones[i].base_rot = bones[bones[i].parent_id].base_rot * bones[i].base_rot;
 		}
-		bones[i].model_flip_matrix = bones[bones[i].counterpart_id].model_matrix;
-	}
-	for (int i = 0, max = bones.size(); i < max; i++) { //Wait for all of the pos matrices to be 
-		//filled before trying to populate the counterparts
-		bones[i].model_pos_flip_matrix = bones[bones[i].counterpart_id].model_pos_matrix;
 	}
 }
 

@@ -14,8 +14,8 @@ uniform int window_height;
 uniform mat4 projection_matrix;
 
 int kernelSize = 64;
-float radius = 0.2;
-float bias = 0.05;
+float radius = 0.4;
+float bias = 0.01;
 
 void main() {    
 	vec2 noise_scale = vec2(window_width / 4, window_height / 4);

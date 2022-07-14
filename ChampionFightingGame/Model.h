@@ -110,6 +110,7 @@ private:
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);
+	void process_skeleton(aiNode* root);
 	void post_process_skeleton();
 
 	glm::mat4 flip_matrix;

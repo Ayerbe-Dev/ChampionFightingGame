@@ -291,10 +291,12 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (ImGui::TreeNode("Players")) {
-			ImGui::SliderFloat("p0 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p0 Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p1 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p1 Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p1 Z", &battle->fighter[0]->pos[2], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p2 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p2 Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
+			ImGui::SliderFloat("p2 Z", &battle->fighter[1]->pos[2], -3000.0f, 3000.0f);
 			ImGui::TreePop();
 		}
 

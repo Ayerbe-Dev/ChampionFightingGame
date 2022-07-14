@@ -143,7 +143,7 @@ void Battle::load_game_menu() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = true;
+	visualize_boxes = false;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -511,6 +511,7 @@ void Battle::render_world() {
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
 
+	fighter[0]->pos.z += 0.05; //Todo: Implement a better way to handle Z fighting
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
@@ -519,6 +520,7 @@ void Battle::render_world() {
 			}
 		}
 	}
+	fighter[0]->pos.z -= 0.05;
 
 	stage.render();
 

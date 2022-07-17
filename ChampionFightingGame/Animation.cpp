@@ -3,9 +3,13 @@
 #include "Model.h"
 #include "Bone.h"
 #include "GLM Helpers.h"
+
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include <assimp/Importer.hpp>
 #include "utils.h"
 
@@ -82,6 +86,21 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 			}
 			else {
 				keyframes[i2][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix * ((i2 - last_keyframed) / (float)(next_keyframed - last_keyframed)) + keyframes[next_keyframed][index].anim_matrix * ((next_keyframed - i2) / (float)(next_keyframed - last_keyframed));
+			}
+		}
+	}
+	glm::vec3 decomp_other_v3;
+	glm::vec4 decomp_other_v4;
+	glm::vec3 scale_vec;
+	for (int i = 0, max = keyframes.size(); i < max; i++) {
+		for (int i2 = 0, max2 = keyframes[i].size(); i2 < max2; i2++) {
+			glm::decompose(keyframes[i][i2].anim_matrix, scale_vec, keyframes[i][i2].rot, keyframes[i][i2].pos, decomp_other_v3, decomp_other_v4);
+			int parent_id = model->bones[i2].parent_id;
+			if (parent_id != -1) {
+				keyframes[i][i2].pos = rotate(keyframes[i][i2].pos, keyframes[i][parent_id].rot);
+				keyframes[i][i2].pos += keyframes[i][parent_id].pos;
+
+				keyframes[i][i2].rot = keyframes[i][parent_id].rot * keyframes[i][i2].rot;
 			}
 		}
 	}

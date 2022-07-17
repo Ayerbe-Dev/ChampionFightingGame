@@ -154,11 +154,6 @@ bool EffectInstance::process() {
 	if (frame >= effect->duration) {
 		return false;
 	}
-
-	return true;
-}
-
-void EffectInstance::prepare_render() {
 	final_pos = pos + (pos_frame * frame);
 	final_rot = rot + (rot_frame * frame);
 	final_scale = scale + (scale_frame * frame);
@@ -173,6 +168,11 @@ void EffectInstance::prepare_render() {
 			final_rot += battle_object->rot;
 		}
 	}
+
+	return true;
+}
+
+void EffectInstance::prepare_render() {
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
 		final_rgba_instance[i] = final_rgba;
 		final_matrix_instance[i] = effect->particles[i].prepare_render(final_pos, final_rot, final_scale, final_rgba_instance[i], scale_vec, flip, frame);
@@ -184,20 +184,6 @@ void EffectInstance::render() {
 	shader->use();
 	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);
-	final_pos = pos + (pos_frame * frame);
-	final_rot = rot + (rot_frame * frame);
-	final_scale = scale + (scale_frame * frame);
-	final_rgba = rgba + (rgba_frame * frame);
-	if (battle_object != nullptr) {
-		if (bone_id != -1) {
-			final_pos += battle_object->get_bone_position(bone_id, bone_offset);
-			final_rot += battle_object->get_bone_rotation(bone_id);
-		}
-		else {
-			final_pos += battle_object->pos;
-			final_rot += battle_object->rot;
-		}
-	}
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
 		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, scale_vec, flip, frame);
 	}

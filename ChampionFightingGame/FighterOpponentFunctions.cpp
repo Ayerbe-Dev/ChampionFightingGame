@@ -42,7 +42,7 @@ void Fighter::change_opponent_anim(std::string anim_kind, float frame_rate, floa
 	}
 	that->change_anim(anim_kind, frame_rate, entry_frame);
 	if (scale && this->anim_kind != nullptr) {
-		that->rate = ((this->anim_kind->length / this->rate) / that->anim_kind->length);
+		that->rate = (float)that->anim_kind->length / ((float)this->anim_kind->length / this->rate);
 	}
 }
 

@@ -5,6 +5,8 @@
 #include "ParamAccessor.h"
 #include <fstream>
 #include <cmath>
+#include <glm/gtx/quaternion.hpp>
+#include "GLM Helpers.h"
 #include "utils.h"
 
 bool Fighter::common_ground_status_act(bool crouch) {
@@ -916,8 +918,6 @@ void Fighter::status_grabbed() {
 		);
 		glm::vec3 offset_bone_pos = get_relative_bone_position(fighter_int[FIGHTER_INT_GRABBED_BONE_ID]);
 		glm::vec3 target_pos = that->get_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
-		offset_bone_pos.y /= 10.0;
-		target_pos.y /= 10.0;
 		if (pos == target_pos) {
 			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] = 0;
 		}
@@ -930,7 +930,7 @@ void Fighter::status_grabbed() {
 			add_pos(distance);
 		}
 		else {
-			set_pos(target_pos + offset_bone_pos);
+			set_pos(target_pos - offset_bone_pos);
 		}
 	}
 }

@@ -115,6 +115,8 @@ private:
 
 	glm::mat4 flip_matrix;
 	glm::mat4* dummy_matrix;
+	glm::vec3* dummy_vec;
+	glm::quat* dummy_quat;
 	bool move;
 	bool tpose;
 	size_t trans_id;

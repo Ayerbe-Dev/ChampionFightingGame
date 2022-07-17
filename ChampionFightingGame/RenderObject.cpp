@@ -25,7 +25,6 @@ void RenderObject::render(bool flip) {
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
 	shader.set_mat4("model_matrix", model_mat);
-	shader.set_bool("flipped", flip);
 	model.render(&shader, flip);
 }
 

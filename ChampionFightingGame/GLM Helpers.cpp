@@ -64,6 +64,13 @@ glm::vec3 rotate(const glm::vec3& v, const glm::quat& q) {
 		+ 2.0f * s * cross(u, v);
 }
 
+glm::vec3 calc_rotation(glm::vec3 base, glm::vec3 angle) {
+	float x = acos(dot(glm::vec2(base.y, base.z), glm::vec2(angle.y, angle.z)));
+	float y = acos(dot(glm::vec2(base.x, base.z), glm::vec2(angle.x, angle.z)));
+	float z = acos(dot(glm::vec2(base.x, base.y), glm::vec2(angle.x, angle.y)));
+	return glm::vec3(x, y, z);
+}
+
 void print_vec(std::ostream& stream, glm::vec4 vec, std::string extra_chars) {
 	stream << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << extra_chars << "\n";
 }

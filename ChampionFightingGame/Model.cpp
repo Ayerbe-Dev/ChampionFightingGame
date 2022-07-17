@@ -2,6 +2,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <fstream>
 
 #include "Bone.h"
@@ -66,6 +67,8 @@ void Model::load_model(std::string path) {
 	move = false;
 	tpose = false;
 	dummy_matrix = new glm::mat4(1.0);
+	dummy_vec = new glm::vec3(0.0);
+	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
 	flip_matrix = glm::mat4(
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
@@ -131,6 +134,8 @@ void Model::load_textures(std::string texture_dir) {
 
 void Model::unload_model() {
 	delete dummy_matrix;
+	delete dummy_vec;
+	delete dummy_quat;
 	for (int i = 0; i < meshes.size(); i++) {
 		glDeleteVertexArrays(1, &meshes[i].VAO);
 		glDeleteBuffers(1, &meshes[i].VBO);
@@ -186,28 +191,37 @@ void Model::set_bones(float frame, Animation* anim_kind, bool flip) {
 	if (flip) {
 		for (int i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
+			keyframes[i].pos += (frame - (int)frame) * (next_keyframes[i].pos - keyframes[i].pos);
+			keyframes[i].rot += (frame - (int)frame) * (next_keyframes[i].rot - keyframes[i].rot);
 
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 			bones[bones[i].counterpart_id].final_matrix = flip_matrix * ((bones[i].anim_matrix * flip_matrix) * bones[i].model_flip_matrix * global_transform);
 
-			glm::mat4 final_pos_matrix = bones[i].anim_matrix * bones[i].model_matrix;
+			bones[i].pos = keyframes[i].pos;
+			bones[i].rot = keyframes[i].rot;
+			
+			bones[i].rot.x *= -1.0;
+			bones[i].rot.w *= -1.0;
 
-			bones[i].pos = final_pos_matrix * glm::vec4(bones[i].base_pos, 1.0);
-			bones[i].rot = bones[i].base_rot * glm::quat_cast(final_pos_matrix);
+			std::swap(bones[i].pos.x, bones[i].pos.z);
+			bones[i].pos.z *= -1.0;
 		}
 	}
 	else {
 		for (int i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += (frame - (int)frame) * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
+			keyframes[i].pos += (frame - (int)frame) * (next_keyframes[i].pos - keyframes[i].pos);
+			keyframes[i].rot += (frame - (int)frame) * (next_keyframes[i].rot - keyframes[i].rot);
 
 			bones[i].anim_matrix = *bones[i].parent_matrix * keyframes[i].anim_matrix;
 			bones[i].final_matrix = bones[i].anim_matrix * bones[i].model_matrix * global_transform;
 
-			glm::mat4 final_pos_matrix = bones[i].anim_matrix * bones[i].model_matrix;
+			bones[i].pos = keyframes[i].pos;
+			bones[i].rot = keyframes[i].rot;
 
-			bones[i].pos = final_pos_matrix * glm::vec4(bones[i].base_pos, 1.0);
-			bones[i].rot = bones[i].base_rot * glm::quat_cast(final_pos_matrix);
+			std::swap(bones[i].pos.x, bones[i].pos.z);
+			bones[i].pos.z *= -1.0;
 		}
 	}
 }
@@ -499,9 +513,6 @@ void Model::post_process_skeleton() { //Reads through the skeleton, figures out 
 		glm::decompose(bones[i].bind_matrix, scale_vec, bones[i].base_rot, bones[i].base_pos, decomp_other_v3, decomp_other_v4);
 
 		if (bones[i].parent_id == -1) {
-			bones[i].base_pos = rotate(bones[i].base_pos, bones[i].base_rot);
-			std::swap(bones[i].base_pos.x, bones[i].base_pos.z);
-
 			bones[i].parent_matrix = dummy_matrix;
 		}
 		else {
@@ -509,12 +520,10 @@ void Model::post_process_skeleton() { //Reads through the skeleton, figures out 
 				trans_children.push_back(&bones[i]);
 			}
 			bones[i].parent_matrix = &bones[bones[i].parent_id].anim_matrix;
+
 			bones[i].model_flip_matrix = bones[bones[i].counterpart_id].model_matrix;
 
 			bones[i].base_pos = rotate(bones[i].base_pos, bones[bones[i].parent_id].base_rot);
-			std::swap(bones[i].base_pos.x, bones[i].base_pos.z);
-			bones[i].base_pos.z *= -1.0;
-
 			bones[i].base_pos += bones[bones[i].parent_id].base_pos;
 
 			bones[i].base_rot = bones[bones[i].parent_id].base_rot * bones[i].base_rot;

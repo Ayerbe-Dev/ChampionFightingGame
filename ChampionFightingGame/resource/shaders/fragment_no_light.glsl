@@ -1,6 +1,8 @@
 #version 330 core
 out vec4 FragColor;
 
+in vec2 TexCoords;
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -10,15 +12,17 @@ struct Material {
     float shininess;
 }; 
 
-in GS_OUT {
-    vec3 FragPos;  
-    vec3 Normal;  
-    vec2 TexCoords;
-    vec4 FragPosLightSpace;
-} fs_in;
+uniform sampler2D g_position;
+uniform sampler2D g_normal;
+uniform sampler2D g_diffuse;
+uniform sampler2D g_specular;
+uniform sampler2D ssao;
 
-uniform Material material;
+void main() {
+    vec3 Diffuse = texture(g_diffuse, TexCoords).rgb * texture(g_diffuse, TexCoords).a;
+    float AmbientOcclusion = texture(ssao, TexCoords).r;
 
-void main() {    
-    FragColor = vec4(texture(material.diffuse, fs_in.TexCoords).rgb, 1.0);
+    vec3 result = Diffuse - vec3(AmbientOcclusion * 0.1);
+
+    FragColor = vec4(result, 1.0);
 }

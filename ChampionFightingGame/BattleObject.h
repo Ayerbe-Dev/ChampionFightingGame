@@ -126,10 +126,7 @@ public:
 	glm::quat get_bone_rotation_quat(int bone_id);
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
-	glm::vec3 get_rotated_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_rotated_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_rotated_relative_bone_position(std::string bone_name, glm::vec3 offset = glm::vec3(0.0));
-	glm::vec3 get_rotated_relative_bone_position(int bone_id, glm::vec3 offset = glm::vec3(0.0));
+	glm::vec3 get_bone_angle(int base_id, int angle_id);
 
 	//Sound Functions
 

@@ -71,23 +71,25 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	if (this->pos.y < 0) { //If you're about to land in the floor
-		if (prev) {
-			this->pos.y = prev_pos.y;
+	if (!fighter_flag[FIGHTER_FLAG_GRABBED]) {
+		if (this->pos.y < 0) { //If you're about to land in the floor
+			if (prev) {
+				this->pos.y = prev_pos.y;
+			}
+			else {
+				this->pos.y = 0; //Pretty sure this will get autocorrected to FLOOR_GAMECOORD on the next frame anyway
+			}
+			ret = false;
 		}
-		else {
-			this->pos.y = 0; //Pretty sure this will get autocorrected to FLOOR_GAMECOORD on the next frame anyway
+		if (this->pos.y > WINDOW_HEIGHT) {
+			if (prev) {
+				this->pos.y = prev_pos.y;
+			}
+			else {
+				this->pos.y = WINDOW_HEIGHT;
+			}
+			ret = false;
 		}
-		ret = false;
-	}
-	if (this->pos.y > WINDOW_HEIGHT) {
-		if (prev) {
-			this->pos.y = prev_pos.y;
-		}
-		else {
-			this->pos.y = WINDOW_HEIGHT;
-		}
-		ret = false;
 	}
 
 	//Check if a player is about to walk out of the camera range even if they would stay in bounds.
@@ -174,23 +176,25 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	if (this->pos.y < 0) {
-		if (prev) {
-			this->pos.y = prev_pos.y;
+	if (!fighter_flag[FIGHTER_FLAG_GRABBED]) {
+		if (this->pos.y < 0) {
+			if (prev) {
+				this->pos.y = prev_pos.y;
+			}
+			else {
+				this->pos.y = 0;
+			}
+			ret = false;
 		}
-		else {
-			this->pos.y = 0;
+		if (this->pos.y > WINDOW_HEIGHT) {
+			if (prev) {
+				this->pos.y = prev_pos.y;
+			}
+			else {
+				this->pos.y = WINDOW_HEIGHT;
+			}
+			ret = false;
 		}
-		ret = false;
-	}
-	if (this->pos.y > WINDOW_HEIGHT) {
-		if (prev) {
-			this->pos.y = prev_pos.y;
-		}
-		else {
-			this->pos.y = WINDOW_HEIGHT;
-		}
-		ret = false;
 	}
 	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
 	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);

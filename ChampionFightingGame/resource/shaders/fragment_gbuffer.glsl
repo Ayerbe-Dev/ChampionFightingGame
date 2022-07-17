@@ -30,11 +30,7 @@ void main() {
     vec3 Specular = texture(g_specular, TexCoords).rgb * texture(g_specular, TexCoords).a;
     float AmbientOcclusion = texture(ssao, TexCoords).r;
 
-    float res_x = clamp(0.0, 0.3 * Diffuse.r - AmbientOcclusion.r * 0.3, 1.0);
-    float res_y = clamp(0.0, 0.3 * Diffuse.g - AmbientOcclusion.r * 0.3, 1.0);
-    float res_z = clamp(0.0, 0.3 * Diffuse.b - AmbientOcclusion.r * 0.3, 1.0);
-
-    vec3 result = vec3(res_x, res_y, res_z);
+    vec3 result = vec3(0.3 * Diffuse - AmbientOcclusion);
     vec3 view_dir = normalize(view_pos - FragPos);
 
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {

@@ -22,5 +22,9 @@ void Fighter::throw_opponent(float damage, float x_speed, float y_speed) {
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = x_speed * this->facing_dir;
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = y_speed;
 	that->fighter_flag[FIGHTER_FLAG_GRABBED] = false;
+	if (that->pos.x != pos.x) {
+		that->facing_right = that->pos.x < pos.x;
+		that->facing_dir = that->facing_right ? 1.0 : -1.0;
+	}
 	that->change_status(FIGHTER_STATUS_THROWN);
 }

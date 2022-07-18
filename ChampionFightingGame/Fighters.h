@@ -6,7 +6,7 @@
 #include "Angelica.h"
 #include "Nightsaber.h"
 #include "Sully.h"
-#include "Priest.h"
+#include "Rook.h"
 #include "Aziel.h"
 #include "Bruno.h"
 #include "Tessa.h"

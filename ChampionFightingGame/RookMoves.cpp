@@ -1,6 +1,6 @@
-#include "Priest.h"
+#include "Rook.h"
 
-void Priest::load_move_scripts() {
+void Rook::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

@@ -10,7 +10,6 @@ Player::Player() {
 	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
 	controller.stick_hold_v_timer = timer;
 	controller.stick_hold_h_timer = timer;
-
 }
 
 Player::Player(int id) {

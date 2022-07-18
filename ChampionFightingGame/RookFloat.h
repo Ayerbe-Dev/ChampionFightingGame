@@ -1,0 +1,10 @@
+#pragma once
+#include "FighterFloat.h"
+
+enum {
+	_CHARA_ROOK_FLOAT_START = FIGHTER_FLOAT_MAX,
+	_CHARA_ROOK_FLOAT_MAX,
+};
+
+const int CHARA_ROOK_FLOAT_START = _CHARA_ROOK_FLOAT_START;
+const int CHARA_ROOK_FLOAT_MAX = _CHARA_ROOK_FLOAT_MAX;

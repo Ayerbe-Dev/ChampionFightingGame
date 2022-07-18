@@ -1,13 +1,13 @@
 #pragma once
 #include "Fighter.h"
-#include "PriestConstants.h"
+#include "RookConstants.h"
 
-class Priest : public Fighter {
+class Rook : public Fighter {
 public:
 	virtual void chara_id();
-	Priest();
-	Priest(int id, Player* player);
-	void loadPriestStatusFunctions();
+	Rook();
+	Rook(int id, Player* player);
+	void loadRookStatusFunctions();
 	void load_move_scripts() override;
 
 	void chara_main() override;

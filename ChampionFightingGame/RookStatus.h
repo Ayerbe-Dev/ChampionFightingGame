@@ -1,0 +1,11 @@
+#pragma once
+#include "FighterStatus.h"
+
+enum {
+	_CHARA_ROOK_STATUS_START = FIGHTER_STATUS_MAX,
+	_CHARA_ROOK_STATUS_MAX,
+};
+
+const int CHARA_ROOK_STATUS_START = _CHARA_ROOK_STATUS_START;
+const int CHARA_ROOK_STATUS_MAX = _CHARA_ROOK_STATUS_MAX;
+

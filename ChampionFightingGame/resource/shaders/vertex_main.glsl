@@ -25,19 +25,21 @@ uniform mat4 shadow_matrix;
 uniform mat4 bone_matrix[MAX_BONES];
 
 void main() {
-    mat4 bone_transform = mat4(0.0);
+    mat4 bone_transform;
     float total_weights = 0.0;
-    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-        bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
-        total_weights += v_weights[i];
+    if (v_weights[0] != 0.0) {
+        for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+            bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
+            total_weights += v_weights[i];
+        }
+        if (total_weights < 1.0) {
+            bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
+        }
     }
-    if (total_weights < 1.0) {
-        bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
-    }
-
-    if (bone_transform == mat4(0.0)) {
+    else {
         bone_transform = mat4(1.0);
     }
+
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
     
     vs_out.FragPos = vec3(view_matrix * model_matrix * total_pos);

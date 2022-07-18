@@ -67,8 +67,8 @@
     <ClCompile Include="Norman.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Norman</Filter>
     </ClCompile>
-    <ClCompile Include="Priest.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClCompile Include="Rook.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Rook</Filter>
     </ClCompile>
     <ClCompile Include="Ramona.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
@@ -190,11 +190,11 @@
     <ClCompile Include="RamonaMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClCompile>
-    <ClCompile Include="PriestStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClCompile Include="RookStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Rook</Filter>
     </ClCompile>
-    <ClCompile Include="PriestMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClCompile Include="RookMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Rook</Filter>
     </ClCompile>
     <ClCompile Include="NormanStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Norman</Filter>
@@ -672,8 +672,8 @@
     <ClInclude Include="Norman.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
     </ClInclude>
-    <ClInclude Include="Priest.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClInclude Include="Rook.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
     <ClInclude Include="Ramona.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Ramona</Filter>
@@ -861,17 +861,17 @@
     <ClInclude Include="RoyStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
     </ClInclude>
-    <ClInclude Include="PriestFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClInclude Include="RookFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
-    <ClInclude Include="PriestFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClInclude Include="RookFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
-    <ClInclude Include="PriestInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClInclude Include="RookInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
-    <ClInclude Include="PriestStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClInclude Include="RookStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
     <ClInclude Include="NormanFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
@@ -963,8 +963,8 @@
     <ClInclude Include="NormanConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
     </ClInclude>
-    <ClInclude Include="PriestConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Priest</Filter>
+    <ClInclude Include="RookConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
     <ClInclude Include="RamonaConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Ramona</Filter>
@@ -2170,9 +2170,6 @@
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Roy">
       <UniqueIdentifier>{eccec2bf-663d-4ad0-821f-cd830c44a237}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Priest">
-      <UniqueIdentifier>{a9aff078-cafc-444b-89e3-72ac6d17eed2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Norman">
       <UniqueIdentifier>{d5970abc-029a-4b48-b607-d12b0e963f43}</UniqueIdentifier>
     </Filter>
@@ -2666,9 +2663,6 @@
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Norman">
       <UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Priest">
-      <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Ramona">
       <UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
     </Filter>
@@ -2761,6 +2755,12 @@
     </Filter>
     <Filter Include="3. resource\chara\atlas\cam_anims">
       <UniqueIdentifier>{a1a31a71-f181-41cb-a990-43e5c1ce0983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Rook">
+      <UniqueIdentifier>{a9aff078-cafc-444b-89e3-72ac6d17eed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Rook">
+      <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

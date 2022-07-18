@@ -12,6 +12,7 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 	this->asset_name = asset_name;
 	this->resource_dir = resource_dir;
 	this->battle_object_manager = battle_object_manager;
+	owner = battle_object_manager->stage;
 	load_params();
 	load_model_shader();
 	load_anim_list();
@@ -22,32 +23,27 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 }
 
 void StageAsset::stage_asset_main() {
+	//Execute the stage script, use it to populate funcs
 
+	while (!funcs.empty()) {
+		funcs.front().execute(this);
+		funcs.pop();
+	}
 }
 
 void StageAsset::load_model_shader() {
 	scale = glm::vec3(0.05);
 	has_model = get_param_bool("has_model");
-	has_skeleton = get_param_bool("has_skeleton");
 	if (has_model) {
-		if (has_skeleton) {
-			model.load_model(resource_dir + "/model/model.dae");
-			shader.init("vertex_main.glsl", "fragment_main.glsl");
-		}
-		else {
-			model.load_model_no_skeleton(resource_dir + "/model/model.dae");
-			shader.init("vertex_no_anim.glsl", "fragment_main.glsl");
-		}
+		model.load_model(resource_dir + "/model/model.dae");
 		model.load_textures();
+		shader.init("vertex_main.glsl", "fragment_main.glsl");
+		shader.use();
+		shader.set_int("material.diffuse", 0);
+		shader.set_int("material.specular", 1);
+		shader.set_int("material.shadow_map", 5);
+		shader.set_float("brightness_mul", 1.0);
 	}
-	else {
-		shader.init("vertex_no_anim.glsl", "fragment_main.glsl");
-	}
-	shader.use();
-	shader.set_int("material.diffuse", 0);
-	shader.set_int("material.specular", 1);
-	shader.set_int("material.shadow_map", 5);
-	shader.set_float("brightness_mul", 1.0);
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->link_shader(&shader);
 }

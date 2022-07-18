@@ -35,6 +35,9 @@ void main() {
         bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
     }
 
+    if (bone_transform == mat4(0.0)) {
+        bone_transform = mat4(1.0);
+    }
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
     
     vs_out.FragPos = vec3(view_matrix * model_matrix * total_pos);

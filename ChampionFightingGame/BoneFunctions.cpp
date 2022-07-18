@@ -21,7 +21,7 @@ glm::vec3 BattleObject::get_relative_bone_position(std::string bone_name, glm::v
 }
 
 glm::vec3 BattleObject::get_relative_bone_position(int bone_id, glm::vec3 offset) {
-	if (!has_model) {
+	if (!has_model || bone_id == -1) {
 		return offset;
 	}
 	Bone& target = model.bones[bone_id];
@@ -50,7 +50,7 @@ glm::vec3 BattleObject::get_bone_position(std::string bone_name, glm::vec3 offse
 }
 
 glm::vec3 BattleObject::get_bone_position(int bone_id, glm::vec3 offset) {
-	if (!has_model) {
+	if (!has_model || bone_id == -1) {
 		return offset;
 	}
 	Bone& target = model.bones[bone_id];

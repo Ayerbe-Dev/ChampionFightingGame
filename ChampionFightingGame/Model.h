@@ -74,7 +74,6 @@ public:
 
 	~Model();
 	void load_model(std::string path);
-	void load_model_no_skeleton(std::string path);
 	void load_textures();
 	void load_textures(std::string path);
 	void unload_model();
@@ -106,7 +105,7 @@ public:
 	int get_mesh_id(std::string mesh_name);
 	int get_bone_id(std::string bone_name, bool verbose = true);
 private:
-	void load_skeleton(std::string path);
+	bool load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);
     Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);

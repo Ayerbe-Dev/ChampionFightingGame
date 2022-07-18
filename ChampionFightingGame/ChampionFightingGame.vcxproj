@@ -500,6 +500,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="ScriptArg.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -599,6 +600,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="FighterStatus.h" />
     <ClInclude Include="StageAsset.h" />
     <ClInclude Include="StageKind.h" />
+    <ClInclude Include="StageScript.h" />
     <ClInclude Include="StageSelect.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Sully.h" />
@@ -886,7 +888,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <Image Include="resource\stage\training_room\assets\surface\model\training_color_00_con_png.jpg" />
     <Image Include="resource\stage\training_room\assets\surface\model\training_grid_01_con.png.001.png" />
     <Image Include="resource\stage\training_room\assets\surface\model\training_grid_02_con.png.001.png" />
-    <Image Include="resource\stage\training_room_old\background.png" />
     <Image Include="resource\ui\battle\ex\bar.png" />
     <Image Include="resource\ui\battle\ex\ex.png" />
     <Image Include="resource\ui\battle\ex\ex_segment.png" />

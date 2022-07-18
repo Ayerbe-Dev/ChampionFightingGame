@@ -161,7 +161,7 @@ void Fighter::process_position() {
 		(that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
 		if (is_collide(jostle_box, that->jostle_box)) {
-			if (that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH) {
+			if ((status_kind != FIGHTER_STATUS_WAIT && get_status_group() != STATUS_GROUP_CROUCH) && (that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH)) {
 				if (!that->add_pos(glm::vec3(that->get_local_param_float("jostle_walk_b_speed") * internal_facing_dir, 0.0, 0.0))) {
 					add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0));
 				}

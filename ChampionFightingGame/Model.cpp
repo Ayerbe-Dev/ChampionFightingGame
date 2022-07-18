@@ -87,29 +87,13 @@ void Model::load_model(std::string path) {
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 	std::string skeleton_path = directory + "skeleton.smd";
-	load_skeleton(skeleton_path); 
-	
-	//Note: skeleton.smd is just an smd file stripped down to the bone list. Since bones are processed in a specific order during set_bones, I want to
-	//populate the model's bone list in order of ID, and I thought this was the best way to do it. 
+	bool has_skeleton = load_skeleton(skeleton_path);
 
 	process_node(scene->mRootNode, scene);
-	process_skeleton(scene->mRootNode);
-	post_process_skeleton();
-}
-
-void Model::load_model_no_skeleton(std::string path) {
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
-
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
-		return;
-	}
-
-	directory = path.substr(0, path.find_last_of('/')) + "/";
-
-	process_node(scene->mRootNode, scene);
-}
+	if (has_skeleton) {
+		process_skeleton(scene->mRootNode);
+		post_process_skeleton();
+	}}
 
 //Used if there's only one possible texture set (I.E. the stage).
 void Model::load_textures() {
@@ -304,10 +288,14 @@ int Model::get_mesh_id(std::string mesh_name) {
 
 int Model::get_bone_id(std::string bone_name, bool verbose) {
 	if (bone_name == "model-armature") {
-		return 0;
+		if (bone_map.contains("blender_implicit")) {
+			return 0;
+		}
+		else {
+			return -1;
+		}
 	}
-	std::unordered_map<std::string, int>::const_iterator iterator = bone_map.find(bone_name);
-	if (iterator == bone_map.end()) {
+	if (!bone_map.contains(bone_name)) {
 		if (verbose) {
 			std::cout << "ERROR: Couldn't find " << bone_name << "\n";
 		}
@@ -316,13 +304,12 @@ int Model::get_bone_id(std::string bone_name, bool verbose) {
 	return bone_map[bone_name];
 }
 
-void Model::load_skeleton(std::string path) {
+bool Model::load_skeleton(std::string path) {
 	std::ifstream smd;
 	smd.open(path);
 	if (smd.fail()) {
-		std::cout << "Failed to open SMD!" << "\n";
 		smd.close();
-		return;
+		return false;
 	}
 
 	Bone new_bone;
@@ -342,6 +329,7 @@ void Model::load_skeleton(std::string path) {
 	}
 
 	smd.close();
+	return true;
 }
 void Model::process_node(aiNode* node, const aiScene* scene) {
 	for (int i = 0, max = node->mNumMeshes; i < max; i++) {
@@ -427,10 +415,14 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 	std::string name = mesh->mName.C_Str();
 
 	if (mesh->HasBones()) {
+		if (bones.size() == 0) {
+			std::cout << "ERROR: Model at " << directory << " has bones but skeleton.smd was not found!\n";
+			return Mesh(vertices, indices, textures, name);
+		}
+
 		for (int i = 0; i < mesh->mNumBones; i++) {
 			aiBone* ai_bone = mesh->mBones[i];
-			int bone_id = get_bone_id(Filter(ai_bone->mName.C_Str(), "model-armature_"));
-
+			int bone_id = get_bone_id(Filter(ai_bone->mName.C_Str(), "model-armature_"), false);
 
 			if (bone_id == -1) {
 				std::cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << "\n";

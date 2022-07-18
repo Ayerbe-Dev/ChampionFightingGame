@@ -1221,6 +1221,12 @@
     <ClInclude Include="VariadicHelpers.h">
       <Filter>1. Header Files\Helper Funcs</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptArg.h">
+      <Filter>1. Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="StageScript.h">
+      <Filter>1. Header Files\Engine\GameData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">
@@ -1971,9 +1977,6 @@
     <Image Include="resource\ui\battle\ex\ex_segment.png">
       <Filter>3. resource\ui\battle\ex</Filter>
     </Image>
-    <Image Include="resource\stage\training_room_old\background.png">
-      <Filter>3. resource\stage\training_room_old</Filter>
-    </Image>
     <Image Include="resource\stage\training_room\assets\surface\model\training_color_00_con_png.jpg">
       <Filter>3. resource\stage\training_room\assets\surface\model</Filter>
     </Image>
@@ -2334,9 +2337,6 @@
     </Filter>
     <Filter Include="3. resource\stage">
       <UniqueIdentifier>{0288e929-0826-45d6-a683-21d2ccf94278}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\stage\training_room_old">
-      <UniqueIdentifier>{3021a7e0-9ce2-4b71-9d0d-481ef51fc3d3}</UniqueIdentifier>
     </Filter>
     <Filter Include="3. resource\stage\training_room">
       <UniqueIdentifier>{7450750a-bec8-45fd-b56b-effe8e74dbc1}</UniqueIdentifier>

@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderObject.h"
+#include "StageScript.h"
 
 class StageAsset;
 class BattleObjectManager;
@@ -19,12 +20,6 @@ class Stage {
 public:
 	Stage();
 
-	void load_stage(StageInfo stage_info, BattleObjectManager* battle_object_manager);
-	void unload_stage();
-	void process();
-	void render();
-	void render_shadow();
-
 	int stage_kind;
 
 	glm::vec2 start_pos;
@@ -34,4 +29,12 @@ public:
 	std::string default_music_kind;
 	std::string resource_dir;
 	std::vector<StageAsset*> stage_assets;
+
+	std::queue<ScriptFunc<Stage>> funcs;
+
+	void load_stage(StageInfo stage_info, BattleObjectManager* battle_object_manager);
+	void unload_stage();
+	void process();
+	void render();
+	void render_shadow();
 };

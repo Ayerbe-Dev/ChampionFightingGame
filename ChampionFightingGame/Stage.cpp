@@ -70,6 +70,10 @@ void Stage::process() {
 	for (StageAsset *stage_asset : stage_assets) {
 		stage_asset->stage_asset_main();
 	}
+	while (!funcs.empty()) {
+		funcs.front().execute(this);
+		funcs.pop();
+	}
 }
 
 void Stage::render() {

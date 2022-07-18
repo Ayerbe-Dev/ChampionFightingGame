@@ -1,9 +1,11 @@
 #pragma once
+#include <queue>
 #include <vector>
 #include "RenderObject.h"
 #include "RenderManager.h"
 #include "Animation.h"
 #include "Param.h"
+#include "StageScript.h"
 
 class BattleObjectManager;
 
@@ -12,6 +14,7 @@ public:
 	StageAsset();
 	StageAsset(std::string asset_name, std::string resource_dir, BattleObjectManager* battle_object_manager);
 
+	Stage* owner;
 	BattleObjectManager* battle_object_manager;
 
 	AnimationTable anim_table;
@@ -32,6 +35,8 @@ public:
 
 	ParamTable params;
 
+	std::queue<ScriptFunc<StageAsset>> funcs;
+
 	void stage_asset_main();
 
 	void load_model_shader();
@@ -40,7 +45,6 @@ public:
 	void load_lights();
 
 	bool has_model;
-	bool has_skeleton;
 	bool has_lights;
 
 	int get_param_int(std::string param);

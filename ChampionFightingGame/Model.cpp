@@ -87,7 +87,7 @@ void Model::load_model(std::string path) {
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 	std::string skeleton_path = directory + "skeleton.smd";
-	bool has_skeleton = load_skeleton(skeleton_path);
+	has_skeleton = load_skeleton(skeleton_path);
 
 	process_node(scene->mRootNode, scene);
 	if (has_skeleton) {
@@ -431,14 +431,10 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
 				int index = ai_bone->mWeights[i2].mVertexId;
-				for (int i3 = 0; i3 < MAX_BONE_INFLUENCE; i3++) {
-					if (vertices[index].weights[i3] == 0.0) {
-						vertices[index].bone_ids[i3] = bone_id;
-						vertices[index].f_bone_ids[i3] = this->bones[bone_id].counterpart_id;
-						vertices[index].weights[i3] = ai_bone->mWeights[i2].mWeight;
-						break;
-					}
-				}
+				int weight_index = ++vertices[index].num_weights;
+				vertices[index].bone_ids[weight_index] = bone_id;
+				vertices[index].f_bone_ids[weight_index] = this->bones[bone_id].counterpart_id;
+				vertices[index].weights[weight_index] = ai_bone->mWeights[i2].mWeight;
 			}
 		}
 	}

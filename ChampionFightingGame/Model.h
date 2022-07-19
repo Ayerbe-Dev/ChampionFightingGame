@@ -32,6 +32,7 @@ struct ModelVertex {
 	int bone_ids[MAX_BONE_INFLUENCE] = { 0 };
 	int f_bone_ids[MAX_BONE_INFLUENCE] = { 0 };
 	float weights[MAX_BONE_INFLUENCE] = { 0.0 };
+	int num_weights = { 0 };
 };
 
 struct ModelTexture {
@@ -99,6 +100,8 @@ public:
 	std::unordered_map<std::string, int> bone_map;
 
 	std::string directory;
+
+	bool has_skeleton;
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
 

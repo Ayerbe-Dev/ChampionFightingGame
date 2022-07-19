@@ -486,9 +486,9 @@ void Battle::render_world() {
 
 	//SHADOW PASS
 
-	glBindFramebuffer(GL_FRAMEBUFFER, render_manager->shadow_map.FBO);
+	render_manager->shadow_map.use();
+	glViewport(0, 0, 2000, 2000);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, render_manager->shadow_map.SHADOW_WIDTH, render_manager->shadow_map.SHADOW_WIDTH);
 	
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < 2; i++) {
@@ -508,8 +508,7 @@ void Battle::render_world() {
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, render_manager->shadow_map.shadow_texture);	
+	render_manager->shadow_map.bind_textures();
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);

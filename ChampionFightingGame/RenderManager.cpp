@@ -55,26 +55,27 @@ RenderManager::RenderManager() {
 		ssao_noise.push_back(noise);
 	}
 
-	shadow_map.init();
-	
+	shadow_map.init("vertex_shadow.glsl", "fragment_shadow.glsl");
+	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, 2000, 2000, GL_DEPTH_ATTACHMENT, 5, false);
+
 	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
-	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0);
+	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
 
 	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0); //Position
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT1); //Normal
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT2); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT3); //Specular
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT1, 1); //Normal
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT3, 3); //Specular
 	
 	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
-	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0); //Output
-	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 4, 4, (void*)&ssao_noise[0]); //Noise
-	SSAO.add_read_texture(g_buffer.textures[0]); //Position, shared w/ GBuffer
-	SSAO.add_read_texture(g_buffer.textures[1]); //Ditto for Normals
+	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Output
+	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 4, 4, 1, (void*)&ssao_noise[0]); //Noise
+	SSAO.add_read_texture(g_buffer.textures[0], 2); //Position, shared w/ GBuffer
+	SSAO.add_read_texture(g_buffer.textures[1], 3); //Ditto for Normals
 
 	SSAO_blur.init("vertex_ssao_blur.glsl", "fragment_ssao_blur.glsl");
-	SSAO_blur.add_read_texture(SSAO.textures[0]);
-	g_buffer.add_read_texture(SSAO.textures[0]);
+	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
+	g_buffer.add_read_texture(SSAO.textures[0], 4);
 		
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -105,7 +106,6 @@ RenderManager::RenderManager() {
 	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	text_shader.init("vertex_text.glsl", "fragment_text.glsl");
-	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 
 	brightness_mul = 1.0;
 }
@@ -231,8 +231,6 @@ void RenderManager::update_shader_cams() {
 
 void RenderManager::update_shader_shadows() {
 	glm::mat4 shadow_matrix = (shadow_map.projection_matrix * shadow_map.view_matrix);
-	shadow_shader.use();
-	shadow_shader.set_mat4("camera_matrix", shadow_matrix);
 	for (int i = 0, max = linked_shaders.size(); i < max; i++) {
 		linked_shaders[i]->use();
 		linked_shaders[i]->set_mat4("shadow_matrix", shadow_matrix);
@@ -290,7 +288,6 @@ void RenderManager::destroy_instance() {
 	effect_shader.destroy();
 	rect_shader.destroy();
 	text_shader.destroy();
-	shadow_shader.destroy();
 	box_layer.destroy();
 	g_buffer.destroy();
 	SSAO.destroy();

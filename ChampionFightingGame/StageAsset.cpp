@@ -37,15 +37,19 @@ void StageAsset::load_model_shader() {
 	if (has_model) {
 		model.load_model(resource_dir + "/model/model.dae");
 		model.load_textures();
-		shader.init("vertex_main.glsl", "fragment_main.glsl");
+		shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
+		shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 		shader.use();
 		shader.set_int("material.diffuse", 0);
 		shader.set_int("material.specular", 1);
 		shader.set_int("material.shadow_map", 5);
 		shader.set_float("brightness_mul", 1.0);
+		shader.set_bool("has_skeleton", model.has_skeleton);
+		shadow_shader.use();
+		shadow_shader.set_bool("has_skeleton", model.has_skeleton);
+		render_manager->link_shader(&shader);
+		render_manager->link_shader(&shadow_shader);
 	}
-	RenderManager* render_manager = RenderManager::get_instance();
-	render_manager->link_shader(&shader);
 }
 
 void StageAsset::load_anim_list() {

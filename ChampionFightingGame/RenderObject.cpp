@@ -29,8 +29,7 @@ void RenderObject::render(bool flip) {
 }
 
 void RenderObject::render_shadow(bool flip) {
-	Shader &shadow = render_manager->shadow_shader;
-	shadow.use();
+	shadow_shader.use();
 	glm::mat4 model_mat = glm::mat4(1.0);
 	model_mat = glm::translate(model_mat,
 		pos / glm::vec3(
@@ -42,6 +41,6 @@ void RenderObject::render_shadow(bool flip) {
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
-	shadow.set_mat4("model_matrix", model_mat);
-	model.render_shadow(&shadow, flip);
+	shadow_shader.set_mat4("model_matrix", model_mat);
+	model.render_shadow(&shadow_shader, flip);
 }

@@ -20,6 +20,7 @@ public:
 	glm::mat4 extra_mat = glm::mat4(1.0);
 
 	Shader shader;
+	Shader shadow_shader;
 	Model model;
 
 	RenderManager* render_manager;

@@ -56,7 +56,6 @@ public:
 	Shader rect_shader;
 	Shader effect_shader;
 	Shader text_shader;
-	Shader shadow_shader;
 
 	ShadowMap shadow_map;
 	Framebuffer box_layer;

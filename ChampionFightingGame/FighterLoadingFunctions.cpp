@@ -49,17 +49,22 @@ void Fighter::load_fighter_effects() {
 }
 
 void Fighter::load_model_shader() {
-	RenderManager* render_manager = RenderManager::get_instance();
 	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
-	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
-	render_manager->link_shader(&shader);
 	model.load_model(resource_dir + "/model/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
+	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
+	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
 	shader.set_int("material.shadow_map", 5);
 	shader.set_float("brightness_mul", 1.0);
+	shader.set_bool("has_skeleton", model.has_skeleton);
+	shadow_shader.use();
+	shadow_shader.set_bool("has_skeleton", model.has_skeleton);
+
+	render_manager->link_shader(&shader);
+	render_manager->link_shader(&shadow_shader);
 }
 
 void Fighter::load_anim_list() {

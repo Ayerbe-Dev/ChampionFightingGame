@@ -8,22 +8,17 @@ const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 4;
 
 uniform mat4 model_matrix;
-uniform mat4 camera_matrix;
+uniform mat4 shadow_matrix;
 uniform mat4 bone_matrix[MAX_BONES];
-uniform bool flipped;
+uniform bool has_skeleton;
 
 void main() {
-    mat4 bone_transform = mat4(0.0);
-    float total_weights = 0.0;
+    mat4 bone_transform = mat4(!has_skeleton);
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
-        total_weights += v_weights[i];
-    }
-    if (total_weights < 1.0) {
-        bone_transform += bone_matrix[v_boneids[0]] * (1.0 - total_weights);
     }
 
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
 
-    gl_Position = camera_matrix * (model_matrix * total_pos);
+    gl_Position = shadow_matrix * (model_matrix * total_pos);
 }  

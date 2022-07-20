@@ -33,13 +33,13 @@ RenderManager::RenderManager() {
 	stbi_set_flip_vertically_on_load(true);
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < 16; i++) {
 		glm::vec3 sample(rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0));
 
 		sample = glm::normalize(sample);
 		sample *= rng_f(0.0, 1.0);
 
-		float scale = (float)i / 64.0;
+		float scale = (float)i / 16.0;
 		scale = lerp(0.1, 1.0, scale * scale);
 		sample *= scale;
 
@@ -90,7 +90,7 @@ RenderManager::RenderManager() {
 	g_buffer.shader.set_int("ssao", 4);
 
 	SSAO.shader.use();
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < 16; i++) {
 		SSAO.shader.set_vec3("samples[]", ssao_kernel[i], i);
 	}
 	SSAO.shader.set_int("window_width", s_window_width);

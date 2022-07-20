@@ -195,10 +195,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
@@ -810,6 +811,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_shadow.glsl" />
     <None Include="resource\shaders\fragment_ssao.glsl" />
     <None Include="resource\shaders\fragment_ssao_blur.glsl" />
+    <None Include="resource\shaders\fragment_ssao_legacy.glsl" />
     <None Include="resource\shaders\fragment_text.glsl" />
     <None Include="resource\shaders\geometry_effect.glsl" />
     <None Include="resource\shaders\geometry_main.glsl" />

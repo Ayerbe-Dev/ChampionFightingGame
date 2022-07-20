@@ -13,37 +13,36 @@ uniform int window_height;
 
 uniform mat4 projection_matrix;
 
-int kernelSize = 16;
+int num_kernels = 16;
 float radius = 0.1;
-float bias = 0.05;
+float bias = 0.3;
 
 void main() {    
 	vec2 noise_scale = vec2(window_width / 4, window_height / 4);
 
 	vec3 fragPos = texture(g_position, TexCoords).xyz;
 	vec3 normal = texture(g_normal, TexCoords).rgb;
-	vec3 randomVec = texture(tex_noise, TexCoords * noise_scale).xyz;
+	vec3 random_vec = texture(tex_noise, TexCoords * noise_scale).xyz;
 
-	vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+	vec3 tangent = normalize(random_vec - normal * dot(random_vec, normal));
 	vec3 bitangent = cross(normal, tangent);
 	mat3 TBN = mat3(tangent, bitangent, normal);  
 
-	float occlusion = 0.0;
-    for (int i = 0; i < kernelSize; i++) {
-        vec3 samplePos = TBN * samples[i];
-        samplePos = fragPos + samplePos * radius; 
+	int occlusion = 0;
+    for (int i = 0; i < num_kernels; i++) {
+        vec3 sample_pos = TBN * samples[i];
+        sample_pos = fragPos + sample_pos * radius; 
         
-        vec4 offset = vec4(samplePos, 1.0);
+        vec4 offset = vec4(sample_pos, 1.0);
         offset = projection_matrix * offset;
         offset.xyz /= offset.w;
         offset.xyz = offset.xyz * 0.5 + 0.5;
         
-        float sampleDepth = texture(g_position, offset.xy).z;
+        float depth = texture(g_position, offset.xy).z;
         
-        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
-        occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;           
+        if (depth < sample_pos.z - bias) {
+            occlusion++;
+        }
     }
-    occlusion /= kernelSize;
-    
-    FragColor = occlusion;
-};
+    FragColor = float(bool(occlusion >= 10));
+}

@@ -54,6 +54,7 @@ void Fighter::load_model_shader() {
 	model.load_textures("c" + std::to_string(player->alt_color));
 	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
+	outline_shader.init("vertex_main.glsl", "fragment_outline.glsl");
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);
@@ -62,9 +63,12 @@ void Fighter::load_model_shader() {
 	shader.set_bool("has_skeleton", model.has_skeleton);
 	shadow_shader.use();
 	shadow_shader.set_bool("has_skeleton", model.has_skeleton);
+	outline_shader.use();
+	outline_shader.set_bool("has_skeleton", model.has_skeleton);
 
 	render_manager->link_shader(&shader);
 	render_manager->link_shader(&shadow_shader);
+	render_manager->link_shader(&outline_shader);
 }
 
 void Fighter::load_anim_list() {

@@ -1238,7 +1238,7 @@
     <None Include="resource\shaders\fragment_fullbright.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_box_overlay.glsl">
+    <None Include="resource\shaders\fragment_passthrough.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\fragment_main.glsl">
@@ -1265,7 +1265,7 @@
     <None Include="resource\shaders\vertex_effect.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_box_overlay.glsl">
+    <None Include="resource\shaders\vertex_passthrough.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_main.glsl">
@@ -1842,6 +1842,9 @@
       <Filter>3. resource\chara\atlas\cam_anims</Filter>
     </None>
     <None Include="resource\shaders\fragment_ssao_legacy.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_outline.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
   </ItemGroup>

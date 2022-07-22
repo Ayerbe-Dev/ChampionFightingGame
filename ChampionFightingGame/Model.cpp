@@ -249,7 +249,7 @@ void Model::render(Shader* shader, bool flip) {
 	}
 }
 
-void Model::render_shadow(Shader* shader, bool flip) {
+void Model::render_no_texture(Shader* shader, bool flip) {
 	if (flip) {
 		for (int i = 0, max = bones.size(); i < max; i++) {
 			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
@@ -263,7 +263,7 @@ void Model::render_shadow(Shader* shader, bool flip) {
 
 	for (Mesh& mesh : meshes) {
 		if (mesh.visible) {
-			mesh.render_shadow();
+			mesh.render_no_texture();
 		}
 	}
 }
@@ -597,7 +597,7 @@ FORCE_INLINE void Mesh::render() {
 	glBindVertexArray(0);
 }
 
-FORCE_INLINE void Mesh::render_shadow() {
+FORCE_INLINE void Mesh::render_no_texture() {
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

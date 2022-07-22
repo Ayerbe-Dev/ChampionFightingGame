@@ -27,11 +27,14 @@ RenderManager::RenderManager() {
 	SDL_GL_SetSwapInterval(1);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	stbi_set_flip_vertically_on_load(true);
-	glClearColor(0.1, 0.1, 0.1, 0.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	for (int i = 0; i < 16; i++) {
 		glm::vec3 sample(rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0));
@@ -58,7 +61,7 @@ RenderManager::RenderManager() {
 	shadow_map.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, 2000, 2000, GL_DEPTH_ATTACHMENT, 5, false);
 
-	box_layer.init("vertex_box_overlay.glsl", "fragment_box_overlay.glsl");
+	box_layer.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
 
 	g_buffer.init("vertex_gbuffer.glsl", "fragment_gbuffer.glsl");
@@ -76,7 +79,7 @@ RenderManager::RenderManager() {
 	SSAO_blur.init("vertex_ssao_blur.glsl", "fragment_ssao_blur.glsl");
 	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
 	g_buffer.add_read_texture(SSAO.textures[0], 4);
-		
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	box_layer.shader.use();
@@ -106,6 +109,7 @@ RenderManager::RenderManager() {
 	rect_shader.init("vertex_rect.glsl", "fragment_rect.glsl");
 	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	text_shader.init("vertex_text.glsl", "fragment_text.glsl");
+	passthrough_shader.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
 
 	brightness_mul = 1.0;
 }

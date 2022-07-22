@@ -32,7 +32,7 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -133,6 +133,23 @@ void Framebuffer::bind_textures() {
 void Framebuffer::render() {
 	glDepthMask(GL_FALSE);
 	shader.use();
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+	}
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDepthMask(GL_TRUE);
+}
+
+void Framebuffer::render_passthrough() {
+	glDepthMask(GL_FALSE);
+	RenderManager::get_instance()->passthrough_shader.use();
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);

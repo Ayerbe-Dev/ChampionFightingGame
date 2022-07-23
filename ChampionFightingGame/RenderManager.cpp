@@ -73,7 +73,6 @@ RenderManager::RenderManager() {
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT1, 1); //Normal
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT3, 3); //Specular
-	g_buffer.add_write_texture(GL_STENCIL_INDEX, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_STENCIL_ATTACHMENT, 4); //Outlines
 	
 	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Output
@@ -83,7 +82,7 @@ RenderManager::RenderManager() {
 
 	SSAO_blur.init("vertex_ssao_blur.glsl", "fragment_ssao_blur.glsl");
 	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
-	g_buffer.add_read_texture(SSAO.textures[0], 5);
+	g_buffer.add_read_texture(SSAO.textures[0], 4);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

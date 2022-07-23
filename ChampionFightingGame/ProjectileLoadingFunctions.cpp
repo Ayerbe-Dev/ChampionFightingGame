@@ -31,9 +31,9 @@ void Projectile::load_model_shader() {
 	if (has_model) {
 		model.load_model(resource_dir + "/model/model.dae");
 		model.load_textures();
-		shader.init("vertex_main.glsl", "fragment_main.glsl");
+		shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
 		shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-		outline_shader.init("vertex_main.glsl", "fragment_outline.glsl");
+		outline_shader.init("vertex_outline.glsl", "fragment_outline.glsl", "geometry_outline.glsl");
 		shader.use();
 		shader.set_int("material.diffuse", 0);
 		shader.set_int("material.specular", 1);

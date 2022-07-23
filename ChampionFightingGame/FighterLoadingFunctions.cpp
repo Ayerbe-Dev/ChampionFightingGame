@@ -54,7 +54,7 @@ void Fighter::load_model_shader() {
 	model.load_textures("c" + std::to_string(player->alt_color));
 	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-	outline_shader.init("vertex_main.glsl", "fragment_outline.glsl");
+	outline_shader.init("vertex_outline.glsl", "fragment_outline.glsl", "geometry_outline.glsl");
 	shader.use();
 	shader.set_int("material.diffuse", 0);
 	shader.set_int("material.specular", 1);

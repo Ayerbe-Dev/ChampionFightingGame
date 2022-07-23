@@ -83,7 +83,9 @@ void battle_main() {
 			battle->prev_fps = battle->fps;
 		}
 
+		glStencilMask(0xFF);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glStencilMask(0x00);
 
 		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
@@ -483,6 +485,7 @@ void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE); //Face culling should be off for UI, which means we have to toggle it every frame
+
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0x00);
 
@@ -507,11 +510,7 @@ void Battle::render_world() {
 
 	render_manager->g_buffer.use();
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-	stage.render();
-
-	glStencilMask(0xFF);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
 
@@ -526,10 +525,22 @@ void Battle::render_world() {
 
 	//OUTLINE PASS
 
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glStencilMask(0x00);
-	glDisable(GL_DEPTH_TEST);
+	render_manager->outline.use();
 
+	glStencilMask(0xFF);
+	glClear(GL_STENCIL_BUFFER_BIT);
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->render(!fighter[i]->facing_right);
+		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
+			}
+		}
+	}
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
+	glDisable(GL_DEPTH_TEST);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_outline(!fighter[i]->facing_right);
 		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
@@ -538,11 +549,15 @@ void Battle::render_world() {
 			}
 		}
 	}
-
 	glEnable(GL_DEPTH_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0xFF);
+	glStencilMask(0x00);
+	
+	//More GBuffer
+
+	render_manager->g_buffer.use();
+	stage.render();
 
 	//EFFECT RENDERING
 
@@ -562,6 +577,7 @@ void Battle::render_world() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_manager->g_buffer.render();
+	render_manager->outline.render_passthrough();
 
 	//HITBOX PASS
 

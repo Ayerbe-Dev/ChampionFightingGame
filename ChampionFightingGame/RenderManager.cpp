@@ -30,11 +30,12 @@ RenderManager::RenderManager() {
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	stbi_set_flip_vertically_on_load(true);
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(0.1, 0.1, 0.1, 0.0);
+	glClearStencil(0);
 
 	for (int i = 0; i < 16; i++) {
 		glm::vec3 sample(rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0));
@@ -61,6 +62,9 @@ RenderManager::RenderManager() {
 	shadow_map.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, 2000, 2000, GL_DEPTH_ATTACHMENT, 5, false);
 
+	outline.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
+	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
+
 	box_layer.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
 
@@ -69,6 +73,7 @@ RenderManager::RenderManager() {
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT1, 1); //Normal
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT3, 3); //Specular
+	g_buffer.add_write_texture(GL_STENCIL_INDEX, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_STENCIL_ATTACHMENT, 4); //Outlines
 	
 	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Output
@@ -78,7 +83,7 @@ RenderManager::RenderManager() {
 
 	SSAO_blur.init("vertex_ssao_blur.glsl", "fragment_ssao_blur.glsl");
 	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
-	g_buffer.add_read_texture(SSAO.textures[0], 4);
+	g_buffer.add_read_texture(SSAO.textures[0], 5);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -242,6 +247,7 @@ void RenderManager::update_shader_shadows() {
 }
 
 void RenderManager::update_framebuffer_dimensions() {
+	outline.update_dimensions();
 	box_layer.update_dimensions();
 	g_buffer.update_dimensions();
 	SSAO.update_dimensions();

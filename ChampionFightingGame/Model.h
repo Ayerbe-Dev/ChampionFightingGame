@@ -50,7 +50,7 @@ public:
 	Mesh copy(); //This can't be a copy constructor because it will fuck with vectors
 	
 	void render();
-	void render_shadow();
+	void render_no_texture();
 
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
@@ -84,7 +84,7 @@ public:
 	void reset_bones();
 
     void render(Shader *shader, bool flip);
-	void render_shadow(Shader* shader, bool flip);
+	void render_no_texture(Shader* shader, bool flip);
 
 	std::vector<std::string> texture_names;
 	std::vector<unsigned int> textures_loaded;

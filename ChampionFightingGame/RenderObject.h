@@ -13,6 +13,7 @@ public:
 
 	void render(bool flip = false);
 	void render_shadow(bool flip = false);
+	void render_outline(bool flip = false);
 
 	glm::vec3 pos = glm::vec3(0.0);
 	glm::vec3 rot = glm::vec3(0.0);
@@ -21,6 +22,7 @@ public:
 
 	Shader shader;
 	Shader shadow_shader;
+	Shader outline_shader;
 	Model model;
 
 	RenderManager* render_manager;

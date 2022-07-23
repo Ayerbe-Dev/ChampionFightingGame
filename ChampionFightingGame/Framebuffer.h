@@ -27,6 +27,7 @@ public:
 	void use();
 	void bind_textures();
 	void render();
+	void render_passthrough();
 	void update_dimensions();
 
 	GLuint VAO;

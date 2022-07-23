@@ -56,8 +56,10 @@ public:
 	Shader rect_shader;
 	Shader effect_shader;
 	Shader text_shader;
+	Shader passthrough_shader;
 
 	ShadowMap shadow_map;
+	Framebuffer outline;
 	Framebuffer box_layer;
 	Framebuffer g_buffer;
 	Framebuffer SSAO;

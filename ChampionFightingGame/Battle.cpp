@@ -83,7 +83,9 @@ void battle_main() {
 			battle->prev_fps = battle->fps;
 		}
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glStencilMask(0xFF);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glStencilMask(0x00);
 
 		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
@@ -143,7 +145,7 @@ void Battle::load_game_menu() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = true;
+	visualize_boxes = false;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -484,12 +486,15 @@ void Battle::render_world() {
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE); //Face culling should be off for UI, which means we have to toggle it every frame
 
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0x00);
+
 	//SHADOW PASS
 
 	render_manager->shadow_map.use();
 	glViewport(0, 0, 2000, 2000);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	
+
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow(!fighter[i]->facing_right);
@@ -504,8 +509,8 @@ void Battle::render_world() {
 	//COLOR PASS
 
 	render_manager->g_buffer.use();
-
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
@@ -518,31 +523,64 @@ void Battle::render_world() {
 			}
 		}
 	}
-
 	stage.render();
+
+	//EFFECT RENDERING
 
 	glDisable(GL_CULL_FACE);
 	EffectManager::get_instance()->render();
 
+	//OUTLINE PASS
+
+	render_manager->outline.use();
+
+	glStencilMask(0xFF);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->render(!fighter[i]->facing_right);
+		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
+			}
+		}
+	}
+	glClear(GL_COLOR_BUFFER_BIT);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
+	glDepthMask(GL_FALSE);
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->render_outline(!fighter[i]->facing_right);
+		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+				fighter[i]->projectiles[i2]->render_outline(!fighter[i]->facing_right);
+			}
+		}
+	}
+	glDepthMask(GL_TRUE);
+
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0x00);
+
 	//SSAO PASS
 
 	render_manager->SSAO.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	render_manager->SSAO.render();
 	render_manager->SSAO_blur.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	render_manager->SSAO_blur.render();
 
 	//LIGHTING PASS
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_manager->g_buffer.render();
+	render_manager->outline.render_passthrough();
 
 	//HITBOX PASS
 
 	if (visualize_boxes) {
 		render_manager->box_layer.use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {

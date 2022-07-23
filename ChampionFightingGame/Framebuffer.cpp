@@ -31,8 +31,8 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -147,6 +147,23 @@ void Framebuffer::render() {
 	glDepthMask(GL_TRUE);
 }
 
+void Framebuffer::render_passthrough() {
+	glDepthMask(GL_FALSE);
+	RenderManager::get_instance()->passthrough_shader.use();
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+	}
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDepthMask(GL_TRUE);
+}
+
 void Framebuffer::update_dimensions() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	float width = render_manager->s_window_width;
@@ -156,5 +173,5 @@ void Framebuffer::update_dimensions() {
 		glTexImage2D(GL_TEXTURE_2D, 0, resize_textures[i].internal_format, width, height, 0, resize_textures[i].format, resize_textures[i].type, nullptr);
 	}
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 }

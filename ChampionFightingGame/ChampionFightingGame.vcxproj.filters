@@ -1841,9 +1841,6 @@
     <None Include="resource\chara\atlas\cam_anims\super_start_2.fbx">
       <Filter>3. resource\chara\atlas\cam_anims</Filter>
     </None>
-    <None Include="resource\shaders\fragment_ssao_legacy.glsl">
-      <Filter>3. resource\shaders</Filter>
-    </None>
     <None Include="resource\shaders\fragment_outline.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>

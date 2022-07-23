@@ -14,11 +14,11 @@ uniform int window_height;
 uniform mat4 projection_matrix;
 
 int kernelSize = 16;
-float radius = 0.1;
-float bias = 0.05;
+float radius = 0.2;
+float bias = 0.01;
 
 void main() {    
-	vec2 noise_scale = vec2(window_width / 4, window_height / 4);
+	vec2 noise_scale = vec2(window_width / 2, window_height / 2);
 
 	vec3 fragPos = texture(g_position, TexCoords).xyz;
 	vec3 normal = texture(g_normal, TexCoords).rgb;

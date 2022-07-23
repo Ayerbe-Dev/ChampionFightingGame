@@ -50,7 +50,7 @@ RenderManager::RenderManager() {
 		ssao_kernel.push_back(sample);
 	}
 
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 4; i++) {
 		glm::vec3 noise(
 			rng_f(0.0, 1.0) * 2.0 - 1.0,
 			rng_f(0.0, 1.0) * 2.0 - 1.0,
@@ -76,7 +76,7 @@ RenderManager::RenderManager() {
 	
 	SSAO.init("vertex_ssao.glsl", "fragment_ssao.glsl");
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Output
-	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 4, 4, 1, (void*)&ssao_noise[0]); //Noise
+	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
 	SSAO.add_read_texture(g_buffer.textures[0], 2); //Position, shared w/ GBuffer
 	SSAO.add_read_texture(g_buffer.textures[1], 3); //Ditto for Normals
 

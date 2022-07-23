@@ -564,10 +564,10 @@ void Battle::render_world() {
 	//SSAO PASS
 
 	render_manager->SSAO.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render_manager->SSAO.render();
 	render_manager->SSAO_blur.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render_manager->SSAO_blur.render();
 
 	//LIGHTING PASS

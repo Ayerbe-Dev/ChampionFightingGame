@@ -43,22 +43,22 @@ bool Eric::specific_status_attack() {
 	return false;
 }
 
-void Eric::enter_status_dash() {
+void Eric::enter_status_dash_f() {
 	change_anim("dash_f");
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 }
 
-void Eric::exit_status_dash() {
+void Eric::exit_status_dash_f() {
 	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 }
 
-void Eric::enter_status_dashb() {
+void Eric::enter_status_dash_b() {
 	change_anim("dash_b");
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 }
 
-void Eric::exit_status_dashb() {
+void Eric::exit_status_dash_b() {
 	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 }

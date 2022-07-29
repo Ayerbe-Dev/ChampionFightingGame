@@ -62,6 +62,7 @@ void Fighter::fighter_main() {
 
 	process_animate();
 	process_pre_position();
+	process_pre_input();
 	process_pre_status();
 	chara_main();
 	process_status();
@@ -115,7 +116,12 @@ void Fighter::process_animate() {
 		frame += rate * battle_object_manager->get_time_multiplier(id);
 	}
 
-	if ((internal_facing_right != facing_right) && is_actionable() && (status_kind != FIGHTER_STATUS_TURN) && (situation_kind == FIGHTER_SITUATION_GROUND)) {
+	if (internal_facing_right != facing_right 
+		&& is_actionable() 
+		&& status_kind != FIGHTER_STATUS_TURN 
+		&& status_kind != FIGHTER_STATUS_CRUMPLE
+		&& status_kind != FIGHTER_STATUS_KNOCKDOWN_START
+		&& situation_kind == FIGHTER_SITUATION_GROUND) {
 		change_status(FIGHTER_STATUS_TURN);
 		return;
 	}
@@ -178,7 +184,7 @@ void Fighter::process_post_position() {
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, 0, 0))) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0))) {
 					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
@@ -188,7 +194,7 @@ void Fighter::process_post_position() {
 				}
 			}
 			else {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
 					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
@@ -237,7 +243,7 @@ void Fighter::process_post_status() {
 	}
 
 	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0 && status_kind != FIGHTER_STATUS_KNOCKDOWN) {
-		fighter_int[FIGHTER_INT_WAKEUP_SPEED] = WAKEUP_SPEED_DEFAULT;
+		fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
 	}
 
 	for (int i = 0; i < 10; i++) {
@@ -252,28 +258,45 @@ void Fighter::process_post_status() {
 	}
 }
 
+void Fighter::process_pre_input() {
+	if (situation_kind == FIGHTER_SITUATION_AIR) {
+		if (!get_local_param_bool("has_airdash") || fighter_flag[FIGHTER_FLAG_USED_AIRDASH]) {
+			fighter_int[FIGHTER_INT_DASH_F_BUFFER] = 0;
+			fighter_int[FIGHTER_INT_DASH_B_BUFFER] = 0;
+			return;
+		}
+	}
+	if (fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6) {
+		fighter_int[FIGHTER_INT_DASH_F_BUFFER] = get_param_int("buffer_window", PARAM_FIGHTER);
+	}
+	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4) {
+		fighter_int[FIGHTER_INT_DASH_B_BUFFER] = get_param_int("buffer_window", PARAM_FIGHTER);
+	}
+}
+
 void Fighter::process_input() {
 	int stick_dir = get_stick_dir();
+	int flick_dir = get_flick_dir();
 	int dash_window = get_param_int("dash_window", PARAM_FIGHTER);
 	int tech_window = get_param_int("tech_window", PARAM_FIGHTER);
 	int motion_special_timer = get_param_int("motion_special_timer", PARAM_FIGHTER);
 
 	//Dash Input
 
-	if (get_flick_dir() == 6 && prev_stick_dir == 5) {
+	if (flick_dir == 6 && prev_stick_dir == 5) {
 		fighter_int[FIGHTER_INT_DASH_F_WINDOW] = dash_window;
 	}
-	if (get_flick_dir() == 4 && prev_stick_dir == 5) {
+	if (flick_dir == 4 && prev_stick_dir == 5) {
 		fighter_int[FIGHTER_INT_DASH_B_WINDOW] = dash_window;
 	}
 	if (status_kind != FIGHTER_STATUS_KNOCKDOWN) {
-		if (get_flick_dir() == 8 && fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
+		if (flick_dir == 8 && fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
 			fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = tech_window;
-			fighter_int[FIGHTER_INT_WAKEUP_SPEED] = WAKEUP_SPEED_FAST;
+			fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_FAST;
 		}
-		if (get_flick_dir() == 2 && fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
+		if (flick_dir == 4 && fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0) {
 			fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = tech_window;
-			fighter_int[FIGHTER_INT_WAKEUP_SPEED] = WAKEUP_SPEED_SLOW;
+			fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_BACK;
 		}
 	}
 	if (stick_dir != 6 && stick_dir != 5) {
@@ -282,6 +305,8 @@ void Fighter::process_input() {
 	if (stick_dir != 4 && stick_dir != 5) {
 		fighter_int[FIGHTER_INT_DASH_B_WINDOW] = 0;
 	}
+
+	//Motion Inputs
 
 	if (stick_dir == 1) {
 		if (fighter_int[FIGHTER_INT_214_STEP] == 1) {
@@ -402,7 +427,7 @@ void Fighter::process_input() {
 		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = 6;
 	}
 
-	prev_stick_dir = get_stick_dir();
+	prev_stick_dir = stick_dir;
 }
 
 void Fighter::process_ai() {
@@ -498,6 +523,12 @@ void Fighter::decrease_common_variables() {
 	}
 	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0) {
 		fighter_int[FIGHTER_INT_DASH_B_WINDOW]--;
+	}
+	if (fighter_int[FIGHTER_INT_DASH_F_BUFFER] != 0) {
+		fighter_int[FIGHTER_INT_DASH_F_BUFFER]--;
+	}
+	if (fighter_int[FIGHTER_INT_DASH_B_BUFFER] != 0) {
+		fighter_int[FIGHTER_INT_DASH_B_BUFFER]--;
 	}
 	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
 		fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW]--;

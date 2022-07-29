@@ -1653,13 +1653,13 @@
       <Filter>3. resource\chara\ramona\anims</Filter>
     </None>
     <None Include="resource\chara\priest\param\stats.yml">
-      <Filter>3. resource\chara\priest\param</Filter>
+      <Filter>3. resource\chara\rook\param</Filter>
     </None>
     <None Include="resource\chara\priest\param\params.yml">
-      <Filter>3. resource\chara\priest\param</Filter>
+      <Filter>3. resource\chara\rook\param</Filter>
     </None>
     <None Include="resource\chara\priest\anims\anim_list.yml">
-      <Filter>3. resource\chara\priest\anims</Filter>
+      <Filter>3. resource\chara\rook\anims</Filter>
     </None>
     <None Include="resource\chara\norman\param\stats.yml">
       <Filter>3. resource\chara\norman\param</Filter>
@@ -2500,15 +2500,6 @@
     <Filter Include="3. resource\chara\ramona\anims">
       <UniqueIdentifier>{3f3886b1-3390-44b3-b89f-889204113e56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3. resource\chara\priest">
-      <UniqueIdentifier>{cc93157a-3056-4cdb-9f48-20e80c44c456}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\priest\param">
-      <UniqueIdentifier>{d7f1730d-4c7e-4f6a-a42c-43843cc137ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\priest\anims">
-      <UniqueIdentifier>{0729d815-5793-46ee-ac03-a27bc40036d5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3. resource\chara\norman">
       <UniqueIdentifier>{06b2de9d-88f6-4bc1-a822-c4894fb9b678}</UniqueIdentifier>
     </Filter>
@@ -2770,6 +2761,15 @@
     </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Rook">
       <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rook">
+      <UniqueIdentifier>{cc93157a-3056-4cdb-9f48-20e80c44c456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rook\param">
+      <UniqueIdentifier>{d7f1730d-4c7e-4f6a-a42c-43843cc137ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rook\anims">
+      <UniqueIdentifier>{0729d815-5793-46ee-ac03-a27bc40036d5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

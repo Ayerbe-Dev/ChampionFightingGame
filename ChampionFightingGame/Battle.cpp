@@ -145,7 +145,7 @@ void Battle::load_game_menu() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = false;
+	visualize_boxes = true;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -544,6 +544,8 @@ void Battle::render_world() {
 			}
 		}
 	}
+	glStencilMask(0x00);
+	stage.render();
 	glClear(GL_COLOR_BUFFER_BIT);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
@@ -559,8 +561,7 @@ void Battle::render_world() {
 	glDepthMask(GL_TRUE);
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0x00);
-
+	
 	//SSAO PASS
 
 	render_manager->SSAO.use();

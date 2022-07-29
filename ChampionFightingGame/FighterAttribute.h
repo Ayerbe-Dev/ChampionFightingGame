@@ -67,10 +67,10 @@ const int SPECIAL_INPUT_JUST = 1;
 const int SPECIAL_INPUT_NORMAL = 2;
 const int SPECIAL_INPUT_MAX = 3;
 
-const int WAKEUP_SPEED_FAST = 0;
-const int WAKEUP_SPEED_DEFAULT = 1;
-const int WAKEUP_SPEED_SLOW = 2;
-const int WAKEUP_SPEED_MAX = 3;
+const int WAKEUP_TYPE_DEFAULT = 0;
+const int WAKEUP_TYPE_FAST = 1;
+const int WAKEUP_TYPE_BACK = 2;
+const int WAKEUP_TYPE_MAX = 3;
 
 const int CANCEL_KIND_LP = 0;
 const int CANCEL_KIND_MP = 1;
@@ -102,7 +102,9 @@ const int CANCEL_KIND_236236P = 26;
 const int CANCEL_KIND_236236K = 27;
 const int CANCEL_KIND_214214P = 28;
 const int CANCEL_KIND_214214K = 29;
-const int CANCEL_KIND_MAX = 30;
+const int CANCEL_KIND_DASH_F = 30;
+const int CANCEL_KIND_DASH_B = 31;
+const int CANCEL_KIND_MAX = 32;
 
 const int CANCEL_CAT_HIT = 0;
 const int CANCEL_CAT_BLOCK = 1;

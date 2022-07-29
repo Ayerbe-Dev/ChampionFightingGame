@@ -115,7 +115,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					attack_level = "ATTACK_LEVEL_LIGHT";
 					hit_pushback = 10.0;
 					block_pushback = 10.0;
-					damage_scale = 1;
+					damage_scale = 2;
 					hit_status = "HIT_STATUS_NORMAL";
 					counterhit_status = "HIT_STATUS_NORMAL";
 					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
@@ -128,7 +128,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					std::cin >> hit_pushback;
 					std::cout << "Block Pushback?\n";
 					std::cin >> block_pushback;
-					damage_scale = 3;
+					damage_scale = 1;
 					hit_status = "HIT_STATUS_NORMAL";
 					counterhit_status = "HIT_STATUS_NORMAL";
 					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
@@ -385,7 +385,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					command_input[i] = std::tolower(command_input[i]);
 				}
 				if (command_input == "low" || command_input == "l") {
-					attack_height = "ATTACK_KIND_LOW";
+					attack_height = "ATTACK_HEIGHT_LOW";
 					command_loop = false;
 				}
 				else if (command_input == "mid" || command_input == "medium" || command_input == "m") {
@@ -401,12 +401,20 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 				}
 			}
 			command_loop = true;
-			std::cout << "Hit advantage?\n";
-			std::cin >> hitstun;
-			hitstun += fighter->get_frames_until_actionable();
-			std::cout << "Block advantage?\n";
-			std::cin >> blockstun;
-			blockstun += fighter->get_frames_until_actionable();
+			if (attack_strength >= 4) {
+				std::cout << "Hitstun?\n";
+				std::cin >> hitstun;
+				std::cout << "Blockstun?\n";
+				std::cin >> blockstun;
+			}
+			else {
+				std::cout << "Hit Advantage?\n";
+				std::cin >> hitstun;
+				hitstun -= fighter->get_frames_until_actionable();
+				std::cout << "Block Advantage?\n";
+				std::cin >> blockstun;
+				blockstun -= fighter->get_frames_until_actionable();
+			}
 			std::cout << "Juggle Start?\n";
 			std::cin >> juggle_start;
 			std::cout << "Juggle Increase?\n";
@@ -420,13 +428,12 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			else {
 				std::cout << "Launch Info? (y initial speed, gravity, max fall speed, x speed)\n";
 				float y_init, grav, fall, x_speed;
-				std::cin.precision(1);
+				std::cin.setf(std::ios::fixed, std::ios::floatfield);
 				std::cin >> y_init >> grav >> fall >> x_speed;
 				launch_info = std::to_string(y_init) + ", " + std::to_string(grav)
 					+ ", " + std::to_string(fall) + ", " + std::to_string(x_speed);
 			}
 
-			std::cout.setf(std::ios::fixed, std::ios::floatfield);
 			std::cout.precision(1);
 			std::cout << "Script: " << fighter->active_move_script.name << ", frame: " << fighter->frame << "\n";
 			std::cout << "push_function(&Fighter::NEW_HITBOX, /*ID*/ " << active_box[active_cat] << 

@@ -69,7 +69,8 @@ public:
 	void process_pre_position(); //Resets rotation as well as any garbage position values, creates a jostle rect
 	void process_position(); //Checks collision, creates a jostle rect
 	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
-
+	
+	void process_pre_input(); //Really this one just checks if you tried to dash
 	void process_input(); //Manages specific inputs such as special motions and dashes
 	
 	void process_pre_status(); //Executes any buffered status changes
@@ -326,18 +327,18 @@ public:
 	virtual void status_wait();
 	virtual void enter_status_wait();
 	virtual void exit_status_wait();
-	virtual void status_walkf();
-	virtual void enter_status_walkf();
-	virtual void exit_status_walkf();
-	virtual void status_walkb();
-	virtual void enter_status_walkb();
-	virtual void exit_status_walkb();
-	virtual void status_dash();
-	virtual void enter_status_dash();
-	virtual void exit_status_dash();
-	virtual void status_dashb();
-	virtual void enter_status_dashb();
-	virtual void exit_status_dashb();
+	virtual void status_walk_f();
+	virtual void enter_status_walk_f();
+	virtual void exit_status_walk_f();
+	virtual void status_walk_b();
+	virtual void enter_status_walk_b();
+	virtual void exit_status_walk_b();
+	virtual void status_dash_f();
+	virtual void enter_status_dash_f();
+	virtual void exit_status_dash_f();
+	virtual void status_dash_b();
+	virtual void enter_status_dash_b();
+	virtual void exit_status_dash_b();
 	virtual void status_dash_air();
 	virtual void enter_status_dash_air();
 	virtual void exit_status_dash_air();
@@ -419,6 +420,9 @@ public:
 	virtual void status_launch();
 	virtual void enter_status_launch();
 	virtual void exit_status_launch();
+	virtual void status_blowback();
+	virtual void enter_status_blowback();
+	virtual void exit_status_blowback();
 	virtual void status_clank();
 	virtual void enter_status_clank();
 	virtual void exit_status_clank();

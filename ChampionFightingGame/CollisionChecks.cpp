@@ -449,31 +449,30 @@ bool Battle::event_hit_collide_player() {
 					is specified by the hitbox. Otherwise, reset the attacker's damage scaling.
 				*/
 				fighter[i]->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX] = hitboxes[!i]->disable_hitstun_parry;
-				fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] ++;
+				fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]++;
 				if (fighter[i]->get_status_group() != STATUS_GROUP_HITSTUN) {
 					fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
 				}
-				fighter[i]->fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = hitboxes[!i]->launch_init_y;
+				fighter[i]->fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y] = hitboxes[!i]->launch_init_y;
 				fighter[i]->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = hitboxes[!i]->launch_gravity_y;
 				fighter[i]->fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = hitboxes[!i]->launch_max_fall_speed;
-				fighter[i]->fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X] = hitboxes[!i]->launch_speed_x;
+				fighter[i]->fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X] = hitboxes[!i]->launch_speed_x * fighter[!i]->facing_dir;
 				/*
 				If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise,
 				increase it by one so that the opponent's juggle value is always going up
 				*/
-				if (fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] >= hitboxes[!i]->juggle_start) {
-					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] += hitboxes[!i]->juggle_increase;
-				}
-				else {
+				if (fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] < hitboxes[!i]->juggle_start) {
 					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = hitboxes[!i]->juggle_start;
 				}
+				fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] += hitboxes[!i]->juggle_increase;
+
 				float prev_x = fighter[i]->pos.x;
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->hit_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				if (can_counterhit(fighter[i], hitboxes[!i])) {
 					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 1.2, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.72, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * 1.2, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
-					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0; //Reset the opponent's juggle value on counterhit :)
+					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = hitboxes[!i]->juggle_increase; //Reset the opponent's juggle value on counterhit :)
 					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
 					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 					post_hit_status[i] = get_damage_status(hitboxes[!i]->counterhit_status, fighter[i]->situation_kind);
@@ -605,26 +604,24 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			if (p2->get_status_group() != STATUS_GROUP_HITSTUN) {
 				p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
 			}
-			p2->fighter_float[FIGHTER_FLOAT_INIT_LAUNCH_SPEED] = p1_hitbox->launch_init_y;
+			p2->fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y] = p1_hitbox->launch_init_y;
 			p2->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = p1_hitbox->launch_gravity_y;
 			p2->fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = p1_hitbox->launch_max_fall_speed;
-			p2->fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x;
+			p2->fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X] = p1_hitbox->launch_speed_x * p1_projectile->facing_dir;
 			/*
 			If the opponent's juggle value >= whatever the hitbox says to set it to, increase it directly to the hitbox's juggle value. Otherwise,
 			increase it by one so that the opponent's juggle value is always going up
 			*/
-			if (p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] >= p1_hitbox->juggle_start) {
-				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE]++;
-			}
-			else {
+			if (p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] < p1_hitbox->juggle_start) {
 				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_start;
 			}
+			p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] += p1_hitbox->juggle_increase;
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			if (can_counterhit(p2, p1_hitbox)) {
 				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 1.2, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.72, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * 1.2, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
-				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_increase;
 				p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
 				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);

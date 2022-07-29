@@ -45,6 +45,8 @@ unsigned int Fighter::get_status_group() {
 	switch (status_kind) {
 		case (FIGHTER_STATUS_HITSTUN):
 		case (FIGHTER_STATUS_HITSTUN_AIR):
+		case (FIGHTER_STATUS_KNOCKDOWN_START):
+		case (FIGHTER_STATUS_KNOCKDOWN):
 		case (FIGHTER_STATUS_LAUNCH_START):
 		case (FIGHTER_STATUS_LAUNCH):
 		case (FIGHTER_STATUS_CRUMPLE):
@@ -53,9 +55,9 @@ unsigned int Fighter::get_status_group() {
 			return STATUS_GROUP_HITSTUN;
 		}
 		break;
-		case (FIGHTER_STATUS_CROUCHD):
+		case (FIGHTER_STATUS_CROUCH_D):
 		case (FIGHTER_STATUS_CROUCH):
-		case (FIGHTER_STATUS_CROUCHU):
+		case (FIGHTER_STATUS_CROUCH_U):
 		{
 			return STATUS_GROUP_CROUCH;
 		}

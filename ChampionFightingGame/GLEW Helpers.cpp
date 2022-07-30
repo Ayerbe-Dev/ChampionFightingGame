@@ -34,6 +34,7 @@ unsigned int loadGLTexture(std::string file_path) {
 		stbi_image_free(data);
 	}
 	else {
+		std::cout << "Failed to load texture at " << file_path << "\n";
 		stbi_image_free(data);
 	}
 

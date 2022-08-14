@@ -7,7 +7,7 @@
 #include "Nightsaber.h"
 #include "Sully.h"
 #include "Rook.h"
-#include "Aziel.h"
+#include "Dante.h"
 #include "Bruno.h"
 #include "Tessa.h"
 #include "Alejandro.h"

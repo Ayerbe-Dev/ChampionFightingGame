@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderObject.h"
+#include "GameObject.h"
 #include "StageScript.h"
 
 class StageAsset;
@@ -11,7 +11,6 @@ public:
 	StageInfo(int stage_kind, std::string stage_name);
 
 	int stage_kind;
-	std::string default_music_kind;
 	std::string resource_dir;
 
 };

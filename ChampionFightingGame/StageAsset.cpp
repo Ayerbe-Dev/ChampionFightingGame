@@ -41,9 +41,9 @@ void StageAsset::load_model_shader() {
 		shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 		outline_shader.init("vertex_outline.glsl", "fragment_outline.glsl", "geometry_outline.glsl");
 		shader.use();
-		shader.set_int("material.diffuse", 0);
-		shader.set_int("material.specular", 1);
-		shader.set_int("material.shadow_map", 5);
+		shader.set_int("shadow_map", 0);
+		shader.set_int("material.diffuse", 1);
+		shader.set_int("material.specular", 2);
 		shader.set_float("brightness_mul", 1.0);
 		shader.set_bool("has_skeleton", model.has_skeleton);
 		shadow_shader.use();

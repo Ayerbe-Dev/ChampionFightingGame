@@ -350,38 +350,25 @@ void Fighter::status_dash_air() {
 	int min_frame = get_local_param_int("dash_f_accel_frame");
 	int max_frame = min_frame + get_local_param_int("dash_f_maintain_speed_frame");
 
-	apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
 	if (frame < max_frame) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0.0;
 	}
 	else {
-		if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_F) {
-			if (fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir > get_local_param_float("jump_x_speed")) {
-				fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = clampf(get_local_param_float("jump_x_speed"), fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * 0.95, fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED]);
-			}
-		}
-		else if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_B) {
-			if (fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir > get_local_param_float("jump_x_speed") * -1.0) {
-				fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = clampf(get_local_param_float("jump_x_speed"), fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * 0.95, fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED]);
-			}
+		if (fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] > get_local_param_float("jump_x_speed")) {
+			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = clampf(get_local_param_float("jump_x_speed"), fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * 0.95, fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED]);
 		}
 	}
-	if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_F) {
-		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
-	}
-	else {
-		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
-	}
+	common_air_status_general();
 }
 
 void Fighter::enter_status_dash_air() {
 	if (fighter_int[FIGHTER_INT_DASH_AIR_DIR] == 1) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("dash_f_speed");
+		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("dash_f_speed") * facing_dir;
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
 		change_anim("dash_air_f");
 	}
 	if (fighter_int[FIGHTER_INT_DASH_AIR_DIR] == 2) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("dash_b_speed");
+		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("dash_b_speed") * -facing_dir;
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
 		change_anim("dash_air_b");
 	}
@@ -444,13 +431,28 @@ void Fighter::enter_status_crouchu() {
 void Fighter::exit_status_crouchu() {}
 
 void Fighter::status_jumpsquat() {
-	if (frame == 4 || is_anim_end) {
+	if (get_stick_dir() == 7 || get_stick_dir() == 4 || get_stick_dir() == 1) {
+		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
+	}
+	else if (get_stick_dir() == 9 || get_stick_dir() == 6 || get_stick_dir() == 3) {
+		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
+	}
+	if (is_anim_end) {
 		change_status(FIGHTER_STATUS_JUMP);
 		return;
 	}
 }
 
 void Fighter::enter_status_jumpsquat() {
+	if (get_stick_dir() == 7 || get_stick_dir() == 4 || get_stick_dir() == 1) {
+		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
+	}
+	else if (get_stick_dir() == 9 || get_stick_dir() == 6 || get_stick_dir() == 3) {
+		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
+	}
+	else {
+		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
+	}
 	change_anim("jump_squat");
 }
 
@@ -472,21 +474,17 @@ void Fighter::status_jump() {
 }
 
 void Fighter::enter_status_jump() {
-	if (get_stick_dir() == 7 || get_stick_dir() == 4 || get_stick_dir() == 1) {
+	if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_B) {
 		change_anim("jump_b", 1.0, 0.0);
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("jump_x_speed") * -facing_dir;
 	}
-	else if (get_stick_dir() == 9 || get_stick_dir() == 6 || get_stick_dir() == 3) {
+	else if (fighter_int[FIGHTER_INT_JUMP_KIND] == JUMP_KIND_F) {
 		change_anim("jump_f", 1.0, 0.0);
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("jump_x_speed") * facing_dir;
 	}
 	else {
 		change_anim("jump", 1.0, 0.0);
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
 	}
-
 	if (fighter_flag[FIGHTER_FLAG_SHORT_HOP]) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = get_local_param_float("jump_y_init_speed_s");
 	}

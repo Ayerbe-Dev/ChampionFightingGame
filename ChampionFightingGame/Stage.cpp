@@ -5,15 +5,12 @@
 #include "BattleObjectManager.h"
 #include "ParamAccessor.h"
 #include <fstream>
-extern RenderManager g_rendermanager;
 
 StageInfo::StageInfo() {}
 
 StageInfo::StageInfo(int stage_kind, std::string stage_name) {
 	this->stage_kind = stage_kind;
 	resource_dir = "resource/stage/" + stage_name + "/";
-
-	default_music_kind = "Vesuvius_Theme"; //Change later
 }
 
 Stage::Stage() {}
@@ -22,7 +19,6 @@ void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_
 	battle_object_manager->stage = this;
 	stage_kind = stage_info.stage_kind;
 	resource_dir = stage_info.resource_dir;
-	default_music_kind = stage_info.default_music_kind;
 
 	std::ifstream stream;
 
@@ -33,7 +29,7 @@ void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_
 		return;
 	}
 
-	stream >> stage_bounds.x >> stage_bounds.y;
+	stream >> stage_bounds.x >> stage_bounds.y >> default_music_kind;
 	float center_point = (stage_bounds.x + stage_bounds.y) / 2.0;
 	float distance = get_param_float("spawn_distance", PARAM_FIGHTER) / 2.0;
 	start_pos.x = center_point - distance;

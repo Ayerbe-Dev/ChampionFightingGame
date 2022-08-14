@@ -60,7 +60,7 @@ RenderManager::RenderManager() {
 	}
 
 	shadow_map.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, 2000, 2000, GL_DEPTH_ATTACHMENT, 5, false);
+	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
 
 	outline.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
 	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
@@ -264,7 +264,7 @@ void RenderManager::refresh_sdl_renderer() {
 
 void RenderManager::buffer_event(std::string name, std::function<void(void*)> function, void* buffered_arg) {
 	event_mutex.lock();
-	if (name == "" || event_names.find(name) == event_names.end()) {
+	if (name == "" || !event_names.contains(name)) {
 		buffered_events.push_back(function);
 		buffered_args.push_back(buffered_arg);
 		if (name != "") {

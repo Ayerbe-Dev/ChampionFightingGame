@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderObject.h"
+#include "GameObject.h"
 #include "Animation.h"
 #include "MoveScript.h"
 #include "Box.h"
@@ -17,7 +17,7 @@ class SoundManager;
 class EffectManager;
 class Stage;
 
-class BattleObject : public RenderObject {
+class BattleObject : public GameObject {
 public:
 	BattleObject();
 

@@ -43,8 +43,8 @@
     <ClCompile Include="Atlas.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Atlas</Filter>
     </ClCompile>
-    <ClCompile Include="Aziel.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClCompile Include="Dante.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Dante</Filter>
     </ClCompile>
     <ClCompile Include="Bruno.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Bruno</Filter>
@@ -118,11 +118,11 @@
     <ClCompile Include="AtlasMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Atlas</Filter>
     </ClCompile>
-    <ClCompile Include="AzielStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClCompile Include="DanteStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Dante</Filter>
     </ClCompile>
-    <ClCompile Include="AzielMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClCompile Include="DanteMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Dante</Filter>
     </ClCompile>
     <ClCompile Include="BrunoStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Bruno</Filter>
@@ -280,7 +280,7 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>2. Code Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="RenderObject.cpp">
+    <ClCompile Include="GameObject.cpp">
       <Filter>2. Code Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="FighterRotationFunctions.cpp">
@@ -603,7 +603,7 @@
     <ClInclude Include="stb_image.h">
       <Filter>1. Header Files\Deps</Filter>
     </ClInclude>
-    <ClInclude Include="RenderObject.h">
+    <ClInclude Include="GameObject.h">
       <Filter>1. Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Fighter.h">
@@ -648,8 +648,8 @@
     <ClInclude Include="Atlas.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Atlas</Filter>
     </ClInclude>
-    <ClInclude Include="Aziel.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClInclude Include="Dante.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dante</Filter>
     </ClInclude>
     <ClInclude Include="Bruno.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Bruno</Filter>
@@ -729,17 +729,17 @@
     <ClInclude Include="AtlasStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Atlas</Filter>
     </ClInclude>
-    <ClInclude Include="AzielFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClInclude Include="DanteFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dante</Filter>
     </ClInclude>
-    <ClInclude Include="AzielFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClInclude Include="DanteFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dante</Filter>
     </ClInclude>
-    <ClInclude Include="AzielInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClInclude Include="DanteInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dante</Filter>
     </ClInclude>
-    <ClInclude Include="AzielStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClInclude Include="DanteStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dante</Filter>
     </ClInclude>
     <ClInclude Include="BrunoFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Bruno</Filter>
@@ -936,8 +936,8 @@
     <ClInclude Include="AtlasConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Atlas</Filter>
     </ClInclude>
-    <ClInclude Include="AzielConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Aziel</Filter>
+    <ClInclude Include="DanteConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dante</Filter>
     </ClInclude>
     <ClInclude Include="BrunoConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Bruno</Filter>
@@ -2206,9 +2206,6 @@
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Atlas">
       <UniqueIdentifier>{00a2a8c0-3885-4e9a-b3bc-b6b23cef5df8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Aziel">
-      <UniqueIdentifier>{01956d82-287b-468c-8f84-f4deee0093ac}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Objects\Projectile">
       <UniqueIdentifier>{b97d7459-b817-43f8-920b-bbe72f22989e}</UniqueIdentifier>
     </Filter>
@@ -2639,9 +2636,6 @@
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Atlas">
       <UniqueIdentifier>{eea94ffe-4b31-4d12-b834-703f6e472663}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Aziel">
-      <UniqueIdentifier>{2d6f673b-5344-48ba-aaa0-25b260597256}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Bruno">
       <UniqueIdentifier>{d49a19b3-bff5-4062-88f4-70ea9616fbe6}</UniqueIdentifier>
     </Filter>
@@ -2770,6 +2764,12 @@
     </Filter>
     <Filter Include="3. resource\chara\rook\anims">
       <UniqueIdentifier>{0729d815-5793-46ee-ac03-a27bc40036d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Dante">
+      <UniqueIdentifier>{2d6f673b-5344-48ba-aaa0-25b260597256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Dante">
+      <UniqueIdentifier>{01956d82-287b-468c-8f84-f4deee0093ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

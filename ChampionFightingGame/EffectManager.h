@@ -18,9 +18,7 @@ public:
 	static EffectManager* get_instance();
 
 	void process();
-	void prepare_render();
 	void render();
-	void render_prepared();
 
 	void activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, 
 		glm::vec4 rgba, BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame,

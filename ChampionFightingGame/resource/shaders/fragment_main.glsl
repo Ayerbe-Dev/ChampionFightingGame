@@ -9,8 +9,6 @@ struct Material {
     sampler2D specular;
     sampler2D normal;
     sampler2D height;
-    sampler2D shadow_map;
-    float shininess;
 }; 
 
 in GS_OUT {
@@ -21,6 +19,7 @@ in GS_OUT {
 } fs_in;
   
 uniform float brightness_mul;
+uniform sampler2D shadow_map;
 uniform Material material;
 
 float calc_shadow(vec4 fragPosLightSpace);
@@ -41,14 +40,14 @@ float calc_shadow(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
-    float closestDepth = texture(material.shadow_map, projCoords.xy).r; 
+    float closestDepth = texture(shadow_map, projCoords.xy).r; 
     float currentDepth = projCoords.z;
 
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(material.shadow_map, 0);
+    vec2 texelSize = 1.0 / textureSize(shadow_map, 0);
     for(int x = -1; x < 1; ++x) {
         for(int y = -1; y < 1; ++y) {
-            float pcfDepth = texture(material.shadow_map, projCoords.xy + vec2(x, y) * texelSize).r; 
+            float pcfDepth = texture(shadow_map, projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += float(currentDepth - bias > pcfDepth);        
         }    
     }

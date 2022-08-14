@@ -30,27 +30,10 @@ void EffectManager::process() {
 	}
 }
 
-void EffectManager::prepare_render() {
-	ThreadManager* thread_manager = ThreadManager::get_instance();
-	for (int i = 0, max = active_effects.size(); i < max; i++) {
-		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(), max = active_effects[i].end(); it != max; it++) {
-			it->prepare_render();
-		}
-	}
-}
-
 void EffectManager::render() {
 	for (int i = 0, max = active_effects.size(); i < max; i++) {
 		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(), max = active_effects[i].end(); it != max; it++) {
 			it->render();
-		}
-	}
-}
-
-void EffectManager::render_prepared() {
-	for (int i = 0, max = active_effects.size(); i < max; i++) {
-		for (std::list<EffectInstance>::iterator it = active_effects[i].begin(), max = active_effects[i].end(); it != max; it++) {
-			it->render_prepared();
 		}
 	}
 }

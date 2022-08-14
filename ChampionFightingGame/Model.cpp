@@ -78,6 +78,7 @@ void Model::load_model(std::string path) {
 
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals);
+	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		return;
@@ -588,7 +589,7 @@ void Mesh::init() {
 
 FORCE_INLINE void Mesh::render() {
 	for (unsigned int i = 0, max = textures.size(); i < max; i++) {
-		glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE0 + i + 1);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 

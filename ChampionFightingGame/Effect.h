@@ -52,9 +52,7 @@ public:
 		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float frame, float rate);
 
 	bool process();
-	void prepare_render();
 	void render();
-	void render_prepared();
 
 	Effect* effect;
 	float frame;
@@ -83,7 +81,4 @@ private:
 
 	bool flip;
 	float rate;
-
-	std::vector<glm::mat4> final_matrix_instance; //Only to be used when we prepare and render at diff times
-	std::vector<glm::vec4> final_rgba_instance; //(I.E. during threads)
 };

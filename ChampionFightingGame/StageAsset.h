@@ -1,7 +1,7 @@
 #pragma once
 #include <queue>
 #include <vector>
-#include "RenderObject.h"
+#include "GameObject.h"
 #include "RenderManager.h"
 #include "Animation.h"
 #include "Param.h"
@@ -9,7 +9,7 @@
 
 class BattleObjectManager;
 
-class StageAsset : public RenderObject {
+class StageAsset : public GameObject {
 public:
 	StageAsset();
 	StageAsset(std::string asset_name, std::string resource_dir, BattleObjectManager* battle_object_manager);

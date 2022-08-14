@@ -47,9 +47,9 @@ FighterInterface::FighterInterface(int chara_kind, int id, Player* player) {
 		{
 			fighter = new Rook(id, player);
 		} break;
-		case (CHARA_KIND_AZIEL):
+		case (CHARA_KIND_DANTE):
 		{
-			fighter = new Aziel(id, player);
+			fighter = new Dante(id, player);
 		} break;
 		case (CHARA_KIND_BRUNO):
 		{

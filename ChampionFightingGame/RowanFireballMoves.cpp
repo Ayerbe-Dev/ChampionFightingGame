@@ -1,7 +1,7 @@
-#include "RoyFireball.h"
-#include "RoyFireballConstants.h"
+#include "RowanFireball.h"
+#include "RowanFireballConstants.h"
 
-void RoyFireball::load_move_scripts() {
+void RowanFireball::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

@@ -73,8 +73,8 @@
     <ClCompile Include="Ramona.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClCompile>
-    <ClCompile Include="Roy.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClCompile Include="Rowan.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClCompile>
     <ClCompile Include="Sully.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Sully</Filter>
@@ -94,8 +94,8 @@
     <ClCompile Include="ProjectileTemplate.cpp">
       <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
     </ClCompile>
-    <ClCompile Include="RoyFireball.cpp">
-      <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClCompile Include="RowanFireball.cpp">
+      <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClCompile>
     <ClCompile Include="Projectile.cpp">
       <Filter>2. Code Files\Objects\Projectile\Projectile</Filter>
@@ -178,11 +178,11 @@
     <ClCompile Include="SullyMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Sully</Filter>
     </ClCompile>
-    <ClCompile Include="RoyStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClCompile Include="RowanStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClCompile>
-    <ClCompile Include="RoyMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClCompile Include="RowanMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClCompile>
     <ClCompile Include="RamonaStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Ramona</Filter>
@@ -499,11 +499,11 @@
     <ClCompile Include="ProjectileTemplateStatus.cpp">
       <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
     </ClCompile>
-    <ClCompile Include="RoyFireballMoves.cpp">
-      <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClCompile Include="RowanFireballMoves.cpp">
+      <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClCompile>
-    <ClCompile Include="RoyFireballStatus.cpp">
-      <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClCompile Include="RowanFireballStatus.cpp">
+      <Filter>2. Code Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClCompile>
     <ClCompile Include="Battle.cpp">
       <Filter>2. Code Files\Game State\Battle</Filter>
@@ -678,8 +678,8 @@
     <ClInclude Include="Ramona.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClInclude>
-    <ClInclude Include="Roy.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClInclude Include="Rowan.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
     <ClInclude Include="Sully.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
@@ -849,17 +849,17 @@
     <ClInclude Include="SullyStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClInclude Include="RowanFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClInclude Include="RowanFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
-    <ClInclude Include="RoyInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClInclude Include="RowanInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
-    <ClInclude Include="RoyStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClInclude Include="RowanStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
     <ClInclude Include="RookFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
@@ -969,8 +969,8 @@
     <ClInclude Include="RamonaConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Ramona</Filter>
     </ClInclude>
-    <ClInclude Include="RoyConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Roy</Filter>
+    <ClInclude Include="RowanConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
     <ClInclude Include="SullyConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
@@ -1005,8 +1005,8 @@
     <ClInclude Include="EricFireball.h">
       <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFireball.h">
-      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClInclude Include="RowanFireball.h">
+      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
     <ClInclude Include="EricFireballConstants.h">
       <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\EricFireball</Filter>
@@ -1038,20 +1038,20 @@
     <ClInclude Include="ProjectileTemplateConstants.h">
       <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFireballFlag.h">
-      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClInclude Include="RowanFireballFlag.h">
+      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFireballFloat.h">
-      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClInclude Include="RowanFireballFloat.h">
+      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFireballInt.h">
-      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClInclude Include="RowanFireballInt.h">
+      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFireballStatus.h">
-      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClInclude Include="RowanFireballStatus.h">
+      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
-    <ClInclude Include="RoyFireballConstants.h">
-      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball</Filter>
+    <ClInclude Include="RowanFireballConstants.h">
+      <Filter>1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
     <ClInclude Include="CharaKind.h">
       <Filter>1. Header Files\Objects\Fighter\Fighter</Filter>
@@ -1344,13 +1344,13 @@
       <Filter>3. resource\stage\training_room\assets\background\anims</Filter>
     </None>
     <None Include="resource\projectile\roy_fireball\param\params.yml">
-      <Filter>3. resource\projectile\roy_fireball\param</Filter>
+      <Filter>3. resource\projectile\rowan_fireball\param</Filter>
     </None>
     <None Include="resource\projectile\roy_fireball\param\stats.yml">
-      <Filter>3. resource\projectile\roy_fireball\param</Filter>
+      <Filter>3. resource\projectile\rowan_fireball\param</Filter>
     </None>
     <None Include="resource\projectile\roy_fireball\anims\anim_list.yml">
-      <Filter>3. resource\projectile\roy_fireball\anims</Filter>
+      <Filter>3. resource\projectile\rowan_fireball\anims</Filter>
     </None>
     <None Include="resource\projectile\eric_fireball\param\params.yml">
       <Filter>3. resource\projectile\eric_fireball\param</Filter>
@@ -1410,247 +1410,247 @@
       <Filter>3. resource\chara\sully\anims</Filter>
     </None>
     <None Include="resource\chara\roy\param\stats.yml">
-      <Filter>3. resource\chara\roy\param</Filter>
+      <Filter>3. resource\chara\rowan\param</Filter>
     </None>
     <None Include="resource\chara\roy\param\params.yml">
-      <Filter>3. resource\chara\roy\param</Filter>
+      <Filter>3. resource\chara\rowan\param</Filter>
     </None>
     <None Include="resource\chara\roy\model\skeleton.smd">
-      <Filter>3. resource\chara\roy\model</Filter>
+      <Filter>3. resource\chara\rowan\model</Filter>
     </None>
     <None Include="resource\chara\roy\model\model.dae">
-      <Filter>3. resource\chara\roy\model</Filter>
+      <Filter>3. resource\chara\rowan\model</Filter>
     </None>
     <None Include="resource\chara\roy\effects\flame\effect_info.yml">
-      <Filter>3. resource\chara\roy\effects\flame</Filter>
+      <Filter>3. resource\chara\rowan\effects\flame</Filter>
     </None>
     <None Include="resource\chara\roy\cam_anims\super_start_2.fbx">
-      <Filter>3. resource\chara\roy\cam_anims</Filter>
+      <Filter>3. resource\chara\rowan\cam_anims</Filter>
     </None>
     <None Include="resource\chara\roy\cam_anims\super_start.fbx">
-      <Filter>3. resource\chara\roy\cam_anims</Filter>
+      <Filter>3. resource\chara\rowan\cam_anims</Filter>
     </None>
     <None Include="resource\chara\roy\cam_anims\anim_list.yml">
-      <Filter>3. resource\chara\roy\cam_anims</Filter>
+      <Filter>3. resource\chara\rowan\cam_anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\walk_f.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\walk_b.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\wakeup.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\wait.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\turn_stand.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\turn_crouch.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\throw_f.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_mp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_mk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_lp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_lk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_hp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_hk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_hitstun_m.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_hitstun_l.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_hitstun_h.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_blockstun.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_block_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\stand_block.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_uppercut_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_uppercut_fall.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_uppercut.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_slide_followup.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_slide.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_fireball_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_fireball_punch.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\special_fireball_kick.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\parry_start_low.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\parry_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\parry_mid.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\parry_low.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\parry_air_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\parry_air.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\launch_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\launch.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\landing.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\knockdown_wait.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\knockdown_start.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_squat.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_mp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_mk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_lp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_lk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_hp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_hk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_f.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_b.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\grab.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\fall.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\dash_f.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\dash_b.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\dash_air_f.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\dash_air_b.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crumple.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_u.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_mp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_mk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_lp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_lk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_hp.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_hk.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_hitstun_m.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_hitstun_l.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_hitstun_h.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_d.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch_blockstun.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\crouch.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\anim_list.yml">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\advance_low.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\advance_high.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\advance_forward.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\advance_back.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\ramona\param\stats.yml">
       <Filter>3. resource\chara\ramona\param</Filter>
@@ -1830,10 +1830,10 @@
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\chara\roy\anims\jump_hitstun.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\chara\roy\anims\throw_b.fbx">
-      <Filter>3. resource\chara\roy\anims</Filter>
+      <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
     <None Include="resource\shaders\vertex_ssao_blur.glsl">
       <Filter>3. resource\shaders</Filter>
@@ -2011,49 +2011,49 @@
       <Filter>3. resource\projectile\eric_fireball\sprite</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\skin_dolly_003_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\skin_dolly_001b_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\skin_dolly_001_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\def_dolly_001_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\alp_roy_002_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\alp_dolly_003_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c1\alp_dolly_002_col.png">
-      <Filter>3. resource\chara\roy\model\c1</Filter>
+      <Filter>3. resource\chara\rowan\model\c1</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\skin_dolly_003_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\skin_dolly_001b_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\skin_dolly_001_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\def_dolly_001_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\alp_roy_002_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\alp_dolly_003_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\model\c0\alp_dolly_002_col.png">
-      <Filter>3. resource\chara\roy\model\c0</Filter>
+      <Filter>3. resource\chara\rowan\model\c0</Filter>
     </Image>
     <Image Include="resource\chara\roy\effects\flame\fireball_main.png">
-      <Filter>3. resource\chara\roy\effects\flame</Filter>
+      <Filter>3. resource\chara\rowan\effects\flame</Filter>
     </Image>
     <Image Include="resource\chara\eric\model\c0\skin_ken_001_prm.png">
       <Filter>3. resource\chara\eric\model\c0</Filter>
@@ -2185,9 +2185,6 @@
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Sully">
       <UniqueIdentifier>{313bdaf8-9c51-48bb-86e5-4233aeb09de1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Roy">
-      <UniqueIdentifier>{eccec2bf-663d-4ad0-821f-cd830c44a237}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Norman">
       <UniqueIdentifier>{d5970abc-029a-4b48-b607-d12b0e963f43}</UniqueIdentifier>
     </Filter>
@@ -2229,9 +2226,6 @@
     </Filter>
     <Filter Include="2. Code Files\Objects\Projectile\ProjectileUnique\EricFireball">
       <UniqueIdentifier>{3a453703-b814-416a-bbdc-20bf0011c723}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Objects\Projectile\ProjectileUnique\RoyFireball">
-      <UniqueIdentifier>{c46b6fe9-3200-4891-a0b4-9266d606e2b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
       <UniqueIdentifier>{a1a93eb3-3a0c-4f33-9958-fcf4723833a3}</UniqueIdentifier>
@@ -2395,15 +2389,6 @@
     <Filter Include="3. resource\projectile">
       <UniqueIdentifier>{bc27f0a5-0488-4f39-a953-d5fd4b75563a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3. resource\projectile\roy_fireball">
-      <UniqueIdentifier>{ebd6683c-b1ea-4234-9d05-c2016e9755b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\projectile\roy_fireball\param">
-      <UniqueIdentifier>{cab867dc-efce-4d9e-9bdf-f03c5b2e08c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\projectile\roy_fireball\anims">
-      <UniqueIdentifier>{8c4e8f77-200c-4d6f-8d7c-39b23fe8a2a6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3. resource\projectile\eric_fireball">
       <UniqueIdentifier>{3d02373a-a37b-422e-893f-0a9d46e5a184}</UniqueIdentifier>
     </Filter>
@@ -2466,33 +2451,6 @@
     </Filter>
     <Filter Include="3. resource\chara\sully\anims">
       <UniqueIdentifier>{9d08cf48-055c-4e45-a875-695e04c5226c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy">
-      <UniqueIdentifier>{e296d33a-ab26-42d8-b335-8ea0b74da525}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\param">
-      <UniqueIdentifier>{bd979754-63d5-4485-b167-1f1e8040be0a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\model">
-      <UniqueIdentifier>{0ae29ba8-defa-4e39-97d4-38a5b6527b9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\model\c1">
-      <UniqueIdentifier>{76e4a9d8-9184-4bd6-84d8-8b96f9d6fb33}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\model\c0">
-      <UniqueIdentifier>{dae709b0-e603-4e88-8edf-ee700277f614}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\effects">
-      <UniqueIdentifier>{264d2a7c-ddbc-460b-9b1d-4894b4efce24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\effects\flame">
-      <UniqueIdentifier>{f87a3a1f-4a9e-4cc5-8df2-93570bd039dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\cam_anims">
-      <UniqueIdentifier>{e3df8260-0fa0-402b-aff4-ff8ad2d724a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3. resource\chara\roy\anims">
-      <UniqueIdentifier>{a30c0ba1-4b74-4121-949c-36aa947a91ab}</UniqueIdentifier>
     </Filter>
     <Filter Include="3. resource\chara\ramona">
       <UniqueIdentifier>{c02bded7-551d-4083-826b-3ab35594bd40}</UniqueIdentifier>
@@ -2666,9 +2624,6 @@
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Ramona">
       <UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Roy">
-      <UniqueIdentifier>{bd654e23-229e-44d8-bd71-63c99649a964}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Sully">
       <UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
     </Filter>
@@ -2692,9 +2647,6 @@
     </Filter>
     <Filter Include="1. Header Files\Objects\Projectile\ProjectileUnique\EricFireball">
       <UniqueIdentifier>{97ef6028-95f9-4bb7-aea3-ae88d6326ed3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Objects\Projectile\ProjectileUnique\RoyFireball">
-      <UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
     </Filter>
     <Filter Include="1. Header Files\Objects\Projectile\ProjectileUnique\ProjectileTemplate">
       <UniqueIdentifier>{9d5c1f42-c2f4-4037-b140-49a0fa7c2837}</UniqueIdentifier>
@@ -2791,6 +2743,54 @@
     </Filter>
     <Filter Include="2. Code Files\Objects\GameObject\Functions">
       <UniqueIdentifier>{2650e5f7-85ad-4088-976b-f8e2b20fea0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Rowan">
+      <UniqueIdentifier>{eccec2bf-663d-4ad0-821f-cd830c44a237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Projectile\ProjectileUnique\RowanFireball">
+      <UniqueIdentifier>{c46b6fe9-3200-4891-a0b4-9266d606e2b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Rowan">
+      <UniqueIdentifier>{bd654e23-229e-44d8-bd71-63c99649a964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Projectile\ProjectileUnique\RowanFireball">
+      <UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan">
+      <UniqueIdentifier>{e296d33a-ab26-42d8-b335-8ea0b74da525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\param">
+      <UniqueIdentifier>{bd979754-63d5-4485-b167-1f1e8040be0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\model">
+      <UniqueIdentifier>{0ae29ba8-defa-4e39-97d4-38a5b6527b9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\model\c1">
+      <UniqueIdentifier>{76e4a9d8-9184-4bd6-84d8-8b96f9d6fb33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\model\c0">
+      <UniqueIdentifier>{dae709b0-e603-4e88-8edf-ee700277f614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\effects">
+      <UniqueIdentifier>{264d2a7c-ddbc-460b-9b1d-4894b4efce24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\effects\flame">
+      <UniqueIdentifier>{f87a3a1f-4a9e-4cc5-8df2-93570bd039dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\cam_anims">
+      <UniqueIdentifier>{e3df8260-0fa0-402b-aff4-ff8ad2d724a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\chara\rowan\anims">
+      <UniqueIdentifier>{a30c0ba1-4b74-4121-949c-36aa947a91ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\projectile\rowan_fireball">
+      <UniqueIdentifier>{ebd6683c-b1ea-4234-9d05-c2016e9755b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\projectile\rowan_fireball\param">
+      <UniqueIdentifier>{cab867dc-efce-4d9e-9bdf-f03c5b2e08c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3. resource\projectile\rowan_fireball\anims">
+      <UniqueIdentifier>{8c4e8f77-200c-4d6f-8d7c-39b23fe8a2a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

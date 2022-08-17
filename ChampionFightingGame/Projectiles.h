@@ -1,4 +1,4 @@
 #pragma once
 #include "ProjectileTemplate.h"
-#include "RoyFireball.h"
+#include "RowanFireball.h"
 #include "EricFireball.h"

@@ -12,9 +12,9 @@ ProjectileInterface::ProjectileInterface() {}
 
 ProjectileInterface::ProjectileInterface(int projectile_kind, int id, Player* player, Fighter* owner) {
 	switch (projectile_kind) {
-		case (PROJECTILE_KIND_ROY_FIREBALL):
+		case (PROJECTILE_KIND_ROWAN_FIREBALL):
 		default: {
-			projectile = new RoyFireball(10 * (id + 1) + owner->num_projectiles, player);
+			projectile = new RowanFireball(10 * (id + 1) + owner->num_projectiles, player);
 		}
 		break;
 		case (PROJECTILE_KIND_ERIC_FIREBALL): {

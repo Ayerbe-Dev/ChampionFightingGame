@@ -1,11 +1,11 @@
-#include "Roy.h"
-#include "RoyFireball.h"
-#include "RoyFireballConstants.h"
+#include "Rowan.h"
+#include "RowanFireball.h"
+#include "RowanFireballConstants.h"
 #include "SoundConstants.h"
 #include <glm/gtx/string_cast.hpp>
 #include "RenderManager.h"
 
-void Roy::load_move_scripts() {
+void Rowan::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});
@@ -268,7 +268,7 @@ void Roy::load_move_scripts() {
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_CHP);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_214K);
 			push_function(&Fighter::ENABLE_CANCEL, CANCEL_CAT_CONTACT, CANCEL_KIND_623P);
-			push_function(&Fighter::PLAY_VC, "roy_attack_01");
+			push_function(&Fighter::PLAY_VC, "rowan_attack_01");
 			push_function(&Fighter::NEW_EFFECT, "flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.4), glm::vec4(0.0), "HaveL", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0));
 			push_function(&Fighter::SET_RATE, 0.8);
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2{ -130, 0 }, glm::vec2{ 0, 50 });
@@ -684,7 +684,7 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_frame(5, [this]() {
-			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, 0, PROJECTILE_ROY_FIREBALL_STATUS_PUNCHED);
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, 0, PROJECTILE_ROWAN_FIREBALL_STATUS_PUNCHED);
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::ADD_PROJECTILE_POS, 0, 50.0 * facing_dir, 0.0);
@@ -695,7 +695,7 @@ void Roy::load_move_scripts() {
 
 		});
 		execute_frame(9, [this]() {
-			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, 0, PROJECTILE_ROY_FIREBALL_STATUS_KICKED);
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, 0, PROJECTILE_ROWAN_FIREBALL_STATUS_KICKED);
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::ADD_PROJECTILE_POS, 0, 30.0 * facing_dir, -40.0);

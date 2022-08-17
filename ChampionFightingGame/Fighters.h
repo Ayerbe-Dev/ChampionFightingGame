@@ -1,6 +1,6 @@
 #pragma once
 #include "CharaTemplate.h"
-#include "Roy.h"
+#include "Rowan.h"
 #include "Eric.h"
 #include "Leon.h"
 #include "Angelica.h"

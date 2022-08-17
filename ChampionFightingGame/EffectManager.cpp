@@ -11,7 +11,7 @@ EffectManager::EffectManager() {
 }
 
 void EffectManager::populate_effects() {
-	add_effect_info("flame", "resource/chara/roy/effects/flame/");
+	add_effect_info("flame", "resource/chara/rowan/effects/flame/");
 }
 
 void EffectManager::process() {

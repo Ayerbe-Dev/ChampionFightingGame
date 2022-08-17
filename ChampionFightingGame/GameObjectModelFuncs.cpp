@@ -4,6 +4,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include "GLM Helpers.h"
+#include "RenderManager.h"
 
 glm::vec3 GameObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
@@ -91,6 +92,9 @@ void GameObject::load_model(std::string resource_dir, std::string texture_dir) {
 	else {
 		model.load_textures(texture_dir);
 	}
+}
+
+void GameObject::init_shader() {
 	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
 	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
 	outline_shader.init("vertex_outline.glsl", "fragment_outline.glsl", "geometry_outline.glsl");
@@ -104,4 +108,8 @@ void GameObject::load_model(std::string resource_dir, std::string texture_dir) {
 	shadow_shader.set_bool("has_skeleton", model.has_skeleton);
 	outline_shader.use();
 	outline_shader.set_bool("has_skeleton", model.has_skeleton);
+
+	render_manager->link_shader(&shader);
+	render_manager->link_shader(&shadow_shader);
+	render_manager->link_shader(&outline_shader);
 }

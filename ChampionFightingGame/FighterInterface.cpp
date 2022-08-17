@@ -13,10 +13,10 @@ FighterInterface::FighterInterface() {
 
 FighterInterface::FighterInterface(int chara_kind, int id, Player* player) {
 	switch (chara_kind) {
-		case (CHARA_KIND_ROY):
+		case (CHARA_KIND_ROWAN):
 		default:
 		{
-			fighter = new Roy(id, player);
+			fighter = new Rowan(id, player);
 		}
 		break;
 		case (CHARA_KIND_ERIC):

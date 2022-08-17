@@ -60,7 +60,7 @@ RenderManager::RenderManager() {
 	}
 
 	shadow_map.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
+	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
 
 	outline.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
 	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
@@ -254,6 +254,20 @@ void RenderManager::update_framebuffer_dimensions() {
 	SSAO.shader.use();
 	SSAO.shader.set_int("window_width", s_window_width);
 	SSAO.shader.set_int("window_height", s_window_height);
+}
+
+void RenderManager::reset_gl_environment() {
+	glDepthMask(GL_TRUE);
+	glDisable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0x00);
+
+	buffered_events.clear();
+	buffered_args.clear();
+	event_names.clear();
+
+	camera.set_fov(45.0);
 }
 
 void RenderManager::refresh_sdl_renderer() {

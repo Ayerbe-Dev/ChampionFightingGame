@@ -11,7 +11,7 @@
 
 Fighter::Fighter() {
 	has_model = true;
-	chara_kind = CHARA_KIND_ROY;
+	chara_kind = CHARA_KIND_ROWAN;
 }
 
 Fighter::~Fighter() {

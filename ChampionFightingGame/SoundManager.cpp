@@ -27,7 +27,7 @@ SoundManager::SoundManager() {
 
 void SoundManager::populate_sounds() {
 	//VC
-	add_sound_info("roy_attack_01", "roy", SOUND_KIND_VC, SOUND_TYPE_NORMAL);
+	add_sound_info("rowan_attack_01", "rowan", SOUND_KIND_VC, SOUND_TYPE_NORMAL);
 
 	//Music
 	add_sound_info("Atlas_Theme", "stage", SOUND_KIND_MUSIC, SOUND_TYPE_LOOP);

@@ -33,6 +33,7 @@ public:
 	void update_shader_cams();
 	void update_shader_shadows();
 	void update_framebuffer_dimensions();
+	void reset_gl_environment();
 
 	void refresh_sdl_renderer();
 

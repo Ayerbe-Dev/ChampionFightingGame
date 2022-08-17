@@ -208,22 +208,22 @@
     <ClCompile Include="NightsaberMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Nightsaber</Filter>
     </ClCompile>
-    <ClCompile Include="GrabboxFunctions.cpp">
+    <ClCompile Include="BattleObjectGrabboxFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="HitboxFunctions.cpp">
+    <ClCompile Include="BattleObjectHitboxFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="HurtboxFunctions.cpp">
+    <ClCompile Include="BattleObjectHurtboxFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="ParamFunctions.cpp">
+    <ClCompile Include="BattleObjectParamFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptFunctions.cpp">
+    <ClCompile Include="BattleObjectScriptFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="LoadingFunctions.cpp">
+    <ClCompile Include="BattleObjectLoadingFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="FighterActionabilityFunctions.cpp">
@@ -268,9 +268,6 @@
     <ClCompile Include="utils.cpp">
       <Filter>2. Code Files</Filter>
     </ClCompile>
-    <ClCompile Include="StageSelect.cpp">
-      <Filter>2. Code Files\Game State</Filter>
-    </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>2. Code Files\Managers</Filter>
     </ClCompile>
@@ -279,9 +276,6 @@
     </ClCompile>
     <ClCompile Include="RenderManager.cpp">
       <Filter>2. Code Files\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>2. Code Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="FighterRotationFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
@@ -391,13 +385,13 @@
     <ClCompile Include="Particle.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="SoundFunctions.cpp">
+    <ClCompile Include="BattleObjectSoundFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="EffectFunctions.cpp">
+    <ClCompile Include="BattleObjectEffectFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="BoneFunctions.cpp">
+    <ClCompile Include="BattleObjectBoneFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="ThreadManager.cpp">
@@ -427,14 +421,11 @@
     <ClCompile Include="GameTextureSDL.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="BlockboxFunctions.cpp">
+    <ClCompile Include="BattleObjectBlockboxFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="GameMenu.cpp">
       <Filter>2. Code Files\Game State</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>2. Code Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
@@ -452,10 +443,10 @@
       <Filter>2. Code Files\Objects\Projectile\Projectile\Functions</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>2. Code Files\Objects\Camera</Filter>
+      <Filter>2. Code Files\Engine\Camera</Filter>
     </ClCompile>
     <ClCompile Include="CameraAnim.cpp">
-      <Filter>2. Code Files\Objects\Camera</Filter>
+      <Filter>2. Code Files\Engine\Camera</Filter>
     </ClCompile>
     <ClCompile Include="FighterCinematicFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
@@ -472,7 +463,7 @@
     <ClCompile Include="FighterScriptWrappers.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptWrappers.cpp">
+    <ClCompile Include="BattleObjectScriptWrappers.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileScriptWrappers.cpp">
@@ -486,9 +477,6 @@
     </ClCompile>
     <ClCompile Include="ProjectileHitboxFunctions.cpp">
       <Filter>2. Code Files\Objects\Projectile\Projectile\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationFunctions.cpp">
-      <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="FighterDataFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
@@ -538,6 +526,27 @@
     <ClCompile Include="HitboxSim.cpp">
       <Filter>2. Code Files\Game State\Battle</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>2. Code Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>2. Code Files\Objects\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectAnimationFunctions.cpp">
+      <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectModelFuncs.cpp">
+      <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectSoundFunctions.cpp">
+      <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectEffectFunctions.cpp">
+      <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="StageSelect.cpp">
+      <Filter>2. Code Files\Game State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -554,9 +563,6 @@
     </ClInclude>
     <ClInclude Include="DebugMenu.h">
       <Filter>1. Header Files\Game State</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleObject.h">
-      <Filter>1. Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="BoxConstants.h">
       <Filter>1. Header Files\Constants</Filter>
@@ -588,9 +594,6 @@
     <ClInclude Include="Loader.h">
       <Filter>1. Header Files\Global</Filter>
     </ClInclude>
-    <ClInclude Include="StageSelect.h">
-      <Filter>1. Header Files\Game State</Filter>
-    </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>1. Header Files\Managers</Filter>
     </ClInclude>
@@ -602,9 +605,6 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>1. Header Files\Deps</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>1. Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Fighter.h">
       <Filter>1. Header Files\Objects\Fighter\Fighter</Filter>
@@ -1182,9 +1182,6 @@
     <ClInclude Include="PauseBattle.h">
       <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>1. Header Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="GameMenu.h">
       <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
@@ -1210,10 +1207,10 @@
       <Filter>1. Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>1. Header Files\Objects\Camera</Filter>
+      <Filter>1. Header Files\Engine\Camera</Filter>
     </ClInclude>
     <ClInclude Include="CameraAnim.h">
-      <Filter>1. Header Files\Objects\Camera</Filter>
+      <Filter>1. Header Files\Engine\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
@@ -1226,6 +1223,18 @@
     </ClInclude>
     <ClInclude Include="StageScript.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>1. Header Files\Objects\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObject.h">
+      <Filter>1. Header Files\Objects\BattleObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>1. Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="StageSelect.h">
+      <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2230,9 +2239,6 @@
     <Filter Include="2. Code Files\Objects\Stage">
       <UniqueIdentifier>{602191a6-c76e-4f64-a1b1-c9db34231183}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Camera">
-      <UniqueIdentifier>{460ef8ad-9bc2-48e7-834b-eff8a7c561f9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Global">
       <UniqueIdentifier>{31489a1a-b655-4abe-939e-7c025d68ad6f}</UniqueIdentifier>
     </Filter>
@@ -2696,9 +2702,6 @@
     <Filter Include="1. Header Files\Objects\Stage">
       <UniqueIdentifier>{7c3a2b02-67c3-414a-ba55-3b7a76b3eb67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Camera">
-      <UniqueIdentifier>{db51de9b-a212-476b-96b6-5e3a462ec374}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Constants">
       <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
     </Filter>
@@ -2770,6 +2773,24 @@
     </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Dante">
       <UniqueIdentifier>{01956d82-287b-468c-8f84-f4deee0093ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Engine\Camera">
+      <UniqueIdentifier>{460ef8ad-9bc2-48e7-834b-eff8a7c561f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Engine\Camera">
+      <UniqueIdentifier>{db51de9b-a212-476b-96b6-5e3a462ec374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\GameObject">
+      <UniqueIdentifier>{6c9866ac-4e76-4235-934a-60cb20cc452d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\BattleObject">
+      <UniqueIdentifier>{9edda90c-9f9d-4715-abc2-5088cc8502b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\GameObject">
+      <UniqueIdentifier>{596bbeae-868a-45a3-b73b-cdbd876f3a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\GameObject\Functions">
+      <UniqueIdentifier>{2650e5f7-85ad-4088-976b-f8e2b20fea0c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

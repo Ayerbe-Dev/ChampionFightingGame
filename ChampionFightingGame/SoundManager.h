@@ -23,7 +23,9 @@ public:
 	void unload_sound(std::string name);
 	void unload_all_sounds();
 
+	int add_sound_player();
 	void add_sound_player(int object_id);
+	void remove_sound_player(int id);
 	void remove_sound_players();
 
 	std::vector<std::array<std::list<SoundInstance>, SOUND_KIND_MAX>> active_sounds;

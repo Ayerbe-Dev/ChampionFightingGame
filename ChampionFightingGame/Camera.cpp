@@ -132,27 +132,41 @@ void Camera::follow_players() {
 }
 
 void Camera::follow_anim() {
-	pos = anim_kind->keyframes[frame].pos_key;
+	CameraKeyframe keyframe = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
+	CameraKeyframe next_keyframe = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
-	yaw = anim_kind->keyframes[frame].rot_key.x;
-	pitch = anim_kind->keyframes[frame].rot_key.y * 180;
-	roll = anim_kind->keyframes[frame].rot_key.z;
+	keyframe.pos_key += (frame - (int)frame)* (next_keyframe.pos_key - keyframe.pos_key);
+	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
 
-	pos.x *= fighter[follow_id]->facing_dir;
-	yaw *= fighter[follow_id]->facing_dir;
+	pos = keyframe.pos_key;
 
+	yaw = keyframe.rot_key.x;
+	pitch = keyframe.rot_key.y * 180;
+	roll = keyframe.rot_key.z;
+	
 	pos = glm::normalize(pos);
-	pos += fighter[follow_id]->pos / glm::vec3 (
-		WINDOW_WIDTH / (100 * fighter[follow_id]->scale.x),
-		WINDOW_HEIGHT / (100 * fighter[follow_id]->scale.y),
-		WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
-	);
+
+	if (follow_id != -1) {
+		pos.x *= fighter[follow_id]->facing_dir;
+		yaw *= fighter[follow_id]->facing_dir;
+
+		pos += fighter[follow_id]->pos / glm::vec3(
+			WINDOW_WIDTH / (100 * fighter[follow_id]->scale.x),
+			WINDOW_HEIGHT / (100 * fighter[follow_id]->scale.y),
+			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
+		);
+	}
 
 	prev_pos = pos;
 
 	update_view();
 	frame += rate;
 	if (frame >= anim_kind->length) {
-		fighter[follow_id]->stop_camera_anim();
+		if (follow_id != -1) {
+			fighter[follow_id]->stop_camera_anim();
+		}
+		else {
+			anim_kind = nullptr;
+		}
 	}
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#include "Animation.h"
 #include "MoveScript.h"
 #include "Box.h"
 #include "Param.h"
@@ -13,8 +12,6 @@
 
 class Player;
 class BattleObjectManager;
-class SoundManager;
-class EffectManager;
 class Stage;
 
 class BattleObject : public GameObject {
@@ -40,16 +37,6 @@ public:
 	glm::vec2 base_jostle_anchor;
 	glm::vec2 base_jostle_offset;
 
-	AnimationTable anim_table;
-	Animation* anim_kind;
-	Animation* prev_anim_kind;
-	glm::vec3 prev_anim_offset;
-	float frame;
-	float rate;
-	float prev_anim_rate;
-	float prev_anim_frame;
-	bool is_anim_end = false;
-
 	Blockbox blockbox;
 	Hitbox hitboxes[10];
 	Grabbox grabboxes[10];
@@ -67,19 +54,11 @@ public:
 	Player* player;
 	Stage* stage;
 	BattleObjectManager* battle_object_manager;
-	SoundManager* sound_manager;
-	EffectManager* effect_manager;
 
 	//Loading
 
 	void load_stats();
 	void load_params();
-
-	//Animation
-
-	void set_rate(float rate);
-	void set_frame(float frame);
-	
 
 	//Blockbox
 

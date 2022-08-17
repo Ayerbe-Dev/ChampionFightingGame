@@ -1,9 +1,20 @@
 #include "GameObject.h"
 #include "RenderManager.h"
+#include "EffectManager.h"
+#include "SoundManager.h"
 #include "utils.h"
 
 GameObject::GameObject() {
 	render_manager = RenderManager::get_instance();
+	effect_manager = EffectManager::get_instance();
+	sound_manager = SoundManager::get_instance();
+	anim_kind = nullptr;
+	prev_anim_kind = nullptr;
+	frame = 0.0;
+	prev_anim_frame = 0.0;
+	rate = 1.0;
+	prev_anim_rate = 0.0;
+	prev_anim_offset = glm::vec3(0.0);
 }
 
 GameObject::GameObject(Model model, Shader shader) {

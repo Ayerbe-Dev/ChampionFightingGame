@@ -226,13 +226,13 @@ bool Fighter::set_pos_anim() {
 		glm::vec3 trans_offset = glm::vec3(
 			trans_bone.anim_matrix[3].z * facing_dir,
 			trans_bone.anim_matrix[3].y,
-			0.0
+			trans_bone.anim_matrix[3].x
 		);
 		trans_offset -= prev_anim_offset;
 		trans_offset /= scale;
 
 		bool ret = add_pos(trans_offset);
-		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, 0.0);
+		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, trans_bone.anim_matrix[3].x);
 		return ret;
 	}
 	else {

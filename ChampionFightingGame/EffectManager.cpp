@@ -56,6 +56,24 @@ void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 p
 	active_effects[id2index[object_id]].push_back(to_add);
 }
 
+void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
+	glm::vec4 rgba, GameObject* game_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame,
+	glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	if (effect_name_map.find(name) == effect_name_map.end()) {
+		std::cerr << "Effect " << name << " isn't loaded!\n";
+		return;
+	}
+	if (id2index.find(object_id) == id2index.end()) {
+		std::cerr << "ID " << object_id << " is not a valid effect caster!\n";
+		return;
+	}
+
+	EffectInstance to_add = loaded_effects[effect_name_map[name]].instantiate(pos, rot, scale, rgba, game_object,
+		bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+
+	active_effects[id2index[object_id]].push_back(to_add);
+}
+
 void EffectManager::clear_effect(int object_id, std::string name, int instance_id) {
 	if (id2index.find(object_id) == id2index.end()) {
 		std::cerr << "ID " << object_id << " is not a valid effect caster!\n";
@@ -143,14 +161,29 @@ void EffectManager::unload_all_effects() {
 	effect_name_map.clear();
 }
 
+int EffectManager::add_effect_caster() {
+	int i;
+	for (i = 50; id2index.contains(i); i++); //Slots 0-29 are reserved for fighters and projectiles, slots
+	//30-49 are reserved for stage assets. 50+ is where we get to things that aren't necessarily assigned
+	//their own IDs
+	id2index[i] = active_effects.size();
+	active_effects.resize(active_effects.size() + 1);
+}
+
 //Adds another index to the active effects vector, then maps our object ID to that index
 void EffectManager::add_effect_caster(int object_id) {
 	id2index[object_id] = active_effects.size();
 	active_effects.resize(active_effects.size() + 1);
 }
 
-//Note: DO NOT call this function if there are any active effects, or you will leak memory
+void EffectManager::remove_effect_caster(int id) {
+	clear_effect_all(id);
+	active_effects.erase(active_effects.begin() + id2index[id]);
+	id2index.erase(id);
+}
+
 void EffectManager::remove_effect_casters() {
+	clear_effect_all();
 	active_effects.clear();
 	id2index.clear();
 }

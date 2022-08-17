@@ -273,12 +273,28 @@ void SoundManager::unload_all_sounds() {
 	sound_name_map.clear();
 }
 
+int SoundManager::add_sound_player() {
+	int i;
+	for (i = 50; id2index.contains(i); i++); //Slots 0-29 are reserved for fighters and projectiles, slots
+	//30-49 are reserved for stage assets. 50+ is where we get to things that aren't necessarily assigned
+	//their own IDs
+	id2index[i] = active_sounds.size();
+	active_sounds.resize(active_sounds.size() + 1);
+}
+
 void SoundManager::add_sound_player(int object_id) {
 	id2index[object_id] = active_sounds.size();
 	active_sounds.resize(active_sounds.size() + 1);
 }
 
+void SoundManager::remove_sound_player(int id) {
+	stop_sound_all(id);
+	active_sounds.erase(active_sounds.begin() + id2index[id]);
+	id2index.erase(id);
+}
+
 void SoundManager::remove_sound_players() {
+	stop_sound_all();
 	active_sounds.clear();
 	id2index.clear();
 }

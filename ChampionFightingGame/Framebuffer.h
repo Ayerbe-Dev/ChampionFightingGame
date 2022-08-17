@@ -28,7 +28,7 @@ public:
 	void bind_textures();
 	void render();
 	void render_passthrough();
-	void update_dimensions();
+	void update_dimensions(float x_scale = 1.0, float y_scale = 1.0);
 
 	GLuint VAO;
 	GLuint VBO;

@@ -164,10 +164,10 @@ void Framebuffer::render_passthrough() {
 	glDepthMask(GL_TRUE);
 }
 
-void Framebuffer::update_dimensions() {
+void Framebuffer::update_dimensions(float x_scale, float y_scale) {
 	RenderManager* render_manager = RenderManager::get_instance();
-	float width = render_manager->s_window_width;
-	float height = render_manager->s_window_height;
+	float width = render_manager->s_window_width * x_scale;
+	float height = render_manager->s_window_height * y_scale;
 	for (int i = 0, max = resize_textures.size(); i < max; i++) {
 		glBindTexture(GL_TEXTURE_2D, resize_textures[i].texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, resize_textures[i].internal_format, width, height, 0, resize_textures[i].format, resize_textures[i].type, nullptr);

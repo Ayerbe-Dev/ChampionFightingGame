@@ -86,8 +86,8 @@ public:
     std::function<void(MenuObject* menu_object)> process_event;
 
     GameMenu* owner;
-
     MenuObject* parent;
+
     std::vector<MenuObject> children;
     std::vector<GameTexture> textures;
 

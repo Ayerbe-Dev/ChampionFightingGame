@@ -1,4 +1,5 @@
 #pragma once
+#define MAX_LAYERS 5
 
 enum {
 	GAME_STATE_BATTLE,

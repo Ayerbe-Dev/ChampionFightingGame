@@ -16,9 +16,9 @@ void GameLoader::loading_screen() {
 	SDL_SetTextureBlendMode(screen_texture, SDL_BLENDMODE_BLEND);
 
 	LoadIcon load_icon;
-	GameTextureSDL splash_screen("resource/ui/menu/loading/splashload.png");
-	GameTextureSDL loading_flavor("resource/ui/menu/loading/FlavorBar.png");
-	GameTextureSDL loading_bar("resource/ui/menu/loading/loadingbar.png");
+	GameTextureSDL splash_screen("resource/misc/loading/splashload.png");
+	GameTextureSDL loading_flavor("resource/misc/loading/FlavorBar.png");
+	GameTextureSDL loading_bar("resource/misc/loading/loadingbar.png");
 
 	loading_flavor.set_pos(glm::vec2(0.0, -480.0));
 	loading_bar.set_pos(glm::vec2(0.0, -480.0));
@@ -60,7 +60,7 @@ void GameLoader::loading_screen() {
 }
 
 LoadIcon::LoadIcon() {
-	texture.init("resource/ui/menu/loading/loadicon.png");
+	texture.init("resource/misc/loading/loadicon.png");
 	texture.scale_all_percent(0.4, false);
 
 	panic_setting = rng(0, 1);

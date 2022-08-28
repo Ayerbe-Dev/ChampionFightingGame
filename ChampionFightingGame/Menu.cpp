@@ -96,7 +96,7 @@ void MainMenu::load_game_menu() {
 	float x_coord = 12.0;
 	float y_coord = -12.0;
 
-	menu_objects.resize(2);
+	menu_objects.resize(MENU_GROUP_MAX);
 
 	for (int i = 0; i < 5; i++) {
 		menu_objects[MENU_GROUP_RENDER_ALWAYS].push_back(MenuObject(this, nullptr, true)); 
@@ -117,11 +117,11 @@ void MainMenu::load_game_menu() {
 
 	//Add the background textures to the "only render while active" group
 
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].add_texture("resource/ui/menu/main/missingno.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].add_texture("resource/ui/menu/main/missingno.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].add_texture("resource/ui/menu/main/vsimg.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].add_texture("resource/ui/menu/main/missingno.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].add_texture("resource/ui/menu/main/missingno.png");
+	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].add_texture("resource/game_state/menu/main/missingno.png");
+	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].add_texture("resource/game_state/menu/main/missingno.png");
+	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].add_texture("resource/game_state/menu/main/vsimg.png");
+	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].add_texture("resource/game_state/menu/main/missingno.png");
+	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].add_texture("resource/game_state/menu/main/missingno.png");
 
 	for (int i = 0; i < 5; i++) { //Quick initialization things
 		GameTexture* bg_texture = &menu_objects[MENU_GROUP_RENDER_ACTIVE][i].textures.back();
@@ -130,7 +130,7 @@ void MainMenu::load_game_menu() {
 		bg_texture->set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 
 		GameTexture& cursor = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].cursor;
-		cursor.init("resource/ui/menu/main/Cursor.png");
+		cursor.init("resource/game_state/menu/main/Cursor.png");
 		cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 		cursor.set_pos(glm::vec3(700.0, 0.0, 0.0));
 		cursor.set_width(50);
@@ -325,14 +325,14 @@ void MainMenu::load_game_menu() {
 		*this->looping = false;
 	};
 
-	table.init("resource/ui/menu/main/SubMenu.png");
+	table.init("resource/game_state/menu/main/SubMenu.png");
 	table.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 	table.set_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0));
 	table.scale_top_percent(1.2, false);
 	table.scale_bottom_percent(1.2, false);
 
-	background_texture.init("resource/ui/menu/main/bg.png");
-	background_texture.load_spritesheet("resource/ui/menu/main/bg.yml");
+	background_texture.init("resource/game_state/menu/main/bg.png");
+	background_texture.load_spritesheet("resource/game_state/menu/main/bg.yml");
 
 	inc_thread();
 	game_loader->finished = true;

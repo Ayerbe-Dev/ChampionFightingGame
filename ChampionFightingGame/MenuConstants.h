@@ -1,5 +1,4 @@
 #pragma once
-#define MAX_LAYERS 5
 
 enum {
 	MENU_LEVEL_TOP,
@@ -55,4 +54,11 @@ enum {
 	SUB_EXTRAS_GALLERY,
 
 	SUB_EXTRAS_MAX,
+};
+
+enum {
+	MENU_GROUP_RENDER_ALWAYS,
+	MENU_GROUP_RENDER_ACTIVE,
+
+	MENU_GROUP_MAX,
 };

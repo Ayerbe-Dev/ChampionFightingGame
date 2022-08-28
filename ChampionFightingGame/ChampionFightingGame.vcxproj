@@ -273,6 +273,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObjectAnimationFunctions.cpp" />
+    <ClCompile Include="GameObjectLoadingFunctions.cpp" />
     <ClCompile Include="GameObjectModelFuncs.cpp" />
     <ClCompile Include="GameObjectEffectFunctions.cpp" />
     <ClCompile Include="GameObjectSoundFunctions.cpp" />
@@ -350,6 +351,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerIndicator.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Rook.cpp" />
     <ClCompile Include="RookMoves.cpp" />
     <ClCompile Include="RookStatus.cpp" />
@@ -503,6 +505,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SaveManager.h" />
     <ClInclude Include="ScriptArg.h" />
     <ClInclude Include="ShadowMap.h" />
@@ -606,6 +609,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="StageSelect.h" />
     <ClInclude Include="StageKind.h" />
     <ClInclude Include="StageScript.h" />
+    <ClInclude Include="StageSelectConstants.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Sully.h" />
     <ClInclude Include="SullyConstants.h" />

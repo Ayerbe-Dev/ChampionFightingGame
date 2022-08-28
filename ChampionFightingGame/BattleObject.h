@@ -21,7 +21,6 @@ public:
 	int id;
 	int object_type;
 	bool has_model;
-	std::string resource_dir;
 
 	glm::vec3 prev_pos = glm::vec3(0.0);
 	glm::vec3 extra_rot = glm::vec3(0.0);

@@ -7,7 +7,7 @@ PlayerIndicator::PlayerIndicator() {
 PlayerIndicator::PlayerIndicator(Fighter* fighter, std::string nametag) {
 	this->fighter = fighter;
 	this->nametag = nametag;
-	std::string resource_dir = "resource/ui/battle/tag/";
+	std::string resource_dir = "resource/game_state/battle/ui/tag/";
 	if (fighter->id == 0) {
 		resource_dir += "p1_tag";
 	}

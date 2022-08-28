@@ -22,6 +22,7 @@
 #include "GameManager.h"
 #include "ParamAccessor.h"
 #include "RenderManager.h"
+#include "ResourceManager.h"
 #include "SaveManager.h"
 #include "SoundManager.h"
 #include "ThreadManager.h"
@@ -72,6 +73,7 @@ int main() {
 	FontManager* font_manager = FontManager::get_instance();
 	ParamAccessor* param_accessor = ParamAccessor::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+	ResourceManager* resource_manager = ResourceManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
@@ -105,6 +107,7 @@ int main() {
 	game_manager->destroy_instance();
 	param_accessor->destroy_instance();
 	render_manager->destroy_instance();
+	resource_manager->destroy_instance();
 	save_manager->destroy_instance();
 	sound_manager->destroy_instance();
 	thread_manager->destroy_instance();

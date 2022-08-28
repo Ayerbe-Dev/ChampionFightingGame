@@ -12,6 +12,7 @@
 #include "GLM Helpers.h"
 #include "GLEW Helpers.h"
 #include "RenderManager.h"
+#include "ResourceManager.h"
 
 #include "utils.h"
 
@@ -20,6 +21,9 @@ Model::Model() {
 	tpose = false;
 	global_transform = glm::mat4(1.0);
 	dummy_matrix = nullptr;
+	dummy_vec = nullptr;
+	dummy_quat = nullptr;
+	has_skeleton = false;
 	flip_matrix = glm::mat4(
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
@@ -33,34 +37,32 @@ Model::Model(std::string path) {
 	load_model(path);
 }
 
-Model Model::copy() {
-	Model ret;
-	ret.global_transform = global_transform;
-	ret.dummy_matrix = dummy_matrix;
-	ret.directory = directory;
+void Model::copy_model(Model* ret) {
+	ret->global_transform = this->global_transform;
+	ret->dummy_matrix = this->dummy_matrix;
+	ret->dummy_quat = this->dummy_quat;
+	ret->dummy_vec = this->dummy_vec;
+	ret->directory = this->directory;
 
-	for (int i = 0, max = meshes.size(); i < max; i++) {
-		ret.meshes.push_back(meshes[i].copy());
-		for (int i2 = 0, max2 = meshes[i].textures.size(); i2 < max2; i2++) {
-			ret.texture_map[meshes[i].textures[i2].filename].push_back(&ret.meshes[i].textures[i2]);
+	for (int i = 0, max = this->meshes.size(); i < max; i++) {
+		ret->meshes.push_back(Mesh());
+		this->meshes[i].copy_mesh(&ret->meshes[i]);
+		for (int i2 = 0, max2 = this->meshes[i].textures.size(); i2 < max2; i2++) {
+			ret->texture_map[meshes[i].textures[i2].filename].push_back(&ret->meshes[i].textures[i2]);
 		}
 	}
-	ret.mesh_map = mesh_map;
-	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		ret.texture_names.push_back(texture_names[i]);
+	ret->mesh_map = this->mesh_map;
+	
+	for (int i = 0, max = this->texture_names.size(); i < max; i++) {
+		ret->texture_names.push_back(this->texture_names[i]);
 	}
 
-	for (int i = 0, max = bones.size(); i < max; i++) {
-		ret.bones.push_back(bones[i]);
+	for (int i = 0, max = this->bones.size(); i < max; i++) {
+		ret->bones.push_back(this->bones[i]);
 	}
-	ret.bone_map = bone_map;
-	ret.post_process_skeleton();
-
-	return ret;
-}
-
-Model::~Model() {
-
+	ret->bone_map = this->bone_map;
+	
+	ret->post_process_skeleton();
 }
 
 void Model::load_model(std::string path) {
@@ -94,26 +96,6 @@ void Model::load_model(std::string path) {
 	if (has_skeleton) {
 		process_skeleton(scene->mRootNode);
 		post_process_skeleton();
-	}}
-
-//Used if there's only one possible texture set (I.E. the stage).
-void Model::load_textures() {
-	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		textures_loaded.push_back(loadGLTexture(directory + texture_names[i]));
-		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = textures_loaded.back();
-		}
-	}
-}
-
-//Used for specifying sub-directories from the Model folder (I.E. different textures per alt but the
-//same model data)
-void Model::load_textures(std::string texture_dir) {
-	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		textures_loaded.push_back(loadGLTexture(directory + texture_dir + "/" + texture_names[i]));
-		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = textures_loaded[i];
-		}
 	}
 }
 
@@ -126,11 +108,43 @@ void Model::unload_model() {
 		glDeleteBuffers(1, &meshes[i].VBO);
 		glDeleteBuffers(1, &meshes[i].EBO);
 	}
+	unload_texture_resources();
+}
+
+//Used if there's only one possible texture set (I.E. the stage).
+void Model::load_textures() {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		unsigned int loaded_texture = resource_manager->load_texture_instance(directory + texture_names[i]);
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			texture_map[texture_names[i]][i2]->id = loaded_texture;
+		}
+	}
+}
+
+//Used for specifying sub-directories from the Model folder (I.E. different textures per alt but the
+//same model data)
+void Model::load_textures(std::string texture_dir) {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		unsigned int loaded_texture = resource_manager->load_texture_instance(directory + texture_dir + "/" + texture_names[i]);
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			texture_map[texture_names[i]][i2]->id = loaded_texture;
+		}
+	}
 }
 
 void Model::unload_textures() {
-	for (int i = 0; i < textures_loaded.size(); i++) {
-		glDeleteTextures(1, &textures_loaded[i]);
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		resource_manager->unload_texture_instance(texture_names[i]);
+	}
+}
+
+void Model::unload_texture_resources() {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		resource_manager->unload_texture(texture_names[i]);
 	}
 }
 
@@ -332,6 +346,7 @@ bool Model::load_skeleton(std::string path) {
 	smd.close();
 	return true;
 }
+
 void Model::process_node(aiNode* node, const aiScene* scene) {
 	for (int i = 0, max = node->mNumMeshes; i < max; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -536,24 +551,26 @@ Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices,
 	init();
 }
 
-Mesh Mesh::copy() {
-	Mesh ret;
-	for (int i = 0, max = vertices.size(); i < max; i++) {
-		ret.vertices.push_back(vertices[i]);
+void Mesh::copy_mesh(Mesh* ret) {
+	for (int i = 0, max = this->vertices.size(); i < max; i++) {
+		ret->vertices.push_back(this->vertices[i]);
 	}
-	for (int i = 0, max = indices.size(); i < max; i++) {
-		ret.indices.push_back(indices[i]);
+	for (int i = 0, max = this->indices.size(); i < max; i++) {
+		ret->indices.push_back(this->indices[i]);
 	}
-	for (int i = 0, max = textures.size(); i < max; i++) {
-		ret.textures.push_back(textures[i]);
+	for (int i = 0, max = this->textures.size(); i < max; i++) {
+		ModelTexture tex;
+		tex.id = 0;
+		tex.filename = this->textures[i].filename;
+		tex.type = this->textures[i].type;
+		tex.type_string = this->textures[i].type_string;
+		ret->textures.push_back(tex);
 	}
 
-	ret.VAO = VAO;
-	ret.VBO = VBO;
-	ret.EBO = EBO;
-	ret.name = name;
-
-	return ret;
+	ret->VAO = this->VAO;
+	ret->VBO = this->VBO;
+	ret->EBO = this->EBO;
+	ret->name = this->name;
 }
 
 void Mesh::init() {

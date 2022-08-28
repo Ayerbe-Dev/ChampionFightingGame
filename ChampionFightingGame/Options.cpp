@@ -57,7 +57,7 @@ void OptionsMenu::load_game_menu() {
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 
-	panel.init("resource/ui/menu/options/overlay.png");
+	panel.init("resource/game_state/menu/options/overlay.png");
 	panel.set_width(500);
 	panel.set_height(300);
 	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);

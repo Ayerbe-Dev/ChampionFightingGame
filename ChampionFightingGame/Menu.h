@@ -8,13 +8,7 @@
 #include "GameMenu.h"
 #include "GameManager.h"
 #include "GameTexture.h"
-
-enum {
-    MENU_GROUP_RENDER_ALWAYS,
-    MENU_GROUP_RENDER_ACTIVE,
-
-    MENU_CATEGORY_MAX,
-};
+#include "MenuConstants.h"
 
 void menu_main();
 

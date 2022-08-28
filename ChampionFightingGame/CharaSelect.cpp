@@ -52,13 +52,13 @@ void chara_select_main() {
 /// </summary>
 CSS::CSS() {
 	//initialize other textures
-	background_texture.init("resource/ui/menu/css/CSSbackground.png");
+	background_texture.init("resource/game_state/chara_select/CSSbackground.png");
 	background_texture.set_width(WINDOW_WIDTH);
 	background_texture.set_height(WINDOW_HEIGHT);
-	big_bar_texture.init("resource/ui/menu/css/CSSbottombar.png");
+	big_bar_texture.init("resource/game_state/chara_select/CSSbottombar.png");
 	big_bar_texture.set_width(WINDOW_WIDTH);
 	big_bar_texture.set_height(WINDOW_HEIGHT);
-	top_bar_texture.init("resource/ui/menu/css/CSStopbar.png");
+	top_bar_texture.init("resource/game_state/chara_select/CSStopbar.png");
 	top_bar_texture.set_width(WINDOW_WIDTH);
 	top_bar_texture.set_height(WINDOW_HEIGHT);
 }
@@ -82,7 +82,7 @@ void CSS::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
-  game_loader = new GameLoader(3);
+	game_loader = new GameLoader(3);
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
@@ -110,12 +110,12 @@ void CSS::load_game_menu() {
 		}
 	}
 
-	cursors[0].init("resource/ui/menu/css/p1Cursor.png");
+	cursors[0].init("resource/game_state/chara_select/p1Cursor.png");
 	cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 
 	inc_thread();
 
-	cursors[1].init("resource/ui/menu/css/p2Cursor.png");
+	cursors[1].init("resource/game_state/chara_select/p2Cursor.png");
 	cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	inc_thread();
 
@@ -128,7 +128,7 @@ void CSS::load_game_menu() {
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
 bool CSS::load_css() {
 	std::ifstream css_file;
-	css_file.open("resource/ui/menu/css/css_param.yml");
+	css_file.open("resource/game_state/chara_select/css_param.yml");
 	int chara_kind;
 	std::string resource_dir;
 	bool selectable;
@@ -484,7 +484,7 @@ bool CssSlot::is_initialized() {
 /// <param name="textureDir">: The directory where the CSS slot's render is located.</param>
 /// <param name="name">: The name of the character for UI purposes.</param>
 void CssSlot::init(int chara_kind, std::string textureDir, std::string name) {
-	texture.init("resource/ui/menu/css/chara/" + textureDir + "/render.png");
+	texture.init("resource/game_state/chara_select/chara/" + textureDir + "/render.png");
 	texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	this->name = name;
 	this->texture_dir = textureDir;

@@ -547,6 +547,12 @@
     <ClCompile Include="StageSelect.cpp">
       <Filter>2. Code Files\Game State</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>2. Code Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectLoadingFunctions.cpp">
+      <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -558,9 +564,6 @@
     <ClInclude Include="Battle.h">
       <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>1. Header Files\Game State</Filter>
-    </ClInclude>
     <ClInclude Include="DebugMenu.h">
       <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
@@ -568,9 +571,6 @@
       <Filter>1. Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="ButtonConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuConstants.h">
       <Filter>1. Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
@@ -1233,8 +1233,20 @@
     <ClInclude Include="Player.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>1. Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>1. Header Files\Game State\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuConstants.h">
+      <Filter>1. Header Files\Game State\Menu</Filter>
+    </ClInclude>
     <ClInclude Include="StageSelect.h">
-      <Filter>1. Header Files\Game State</Filter>
+      <Filter>1. Header Files\Game State\StageSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="StageSelectConstants.h">
+      <Filter>1. Header Files\Game State\StageSelect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2791,6 +2803,12 @@
     </Filter>
     <Filter Include="3. resource\projectile\rowan_fireball\anims">
       <UniqueIdentifier>{8c4e8f77-200c-4d6f-8d7c-39b23fe8a2a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Game State\Menu">
+      <UniqueIdentifier>{fbd69fb1-4a33-4853-9a3e-e7d893825726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Game State\StageSelect">
+      <UniqueIdentifier>{e441b69e-97f9-4a7b-972c-10c0805a5266}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

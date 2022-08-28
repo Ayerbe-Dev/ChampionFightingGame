@@ -12,10 +12,11 @@ class EffectManager;
 class GameObject {
 public:
 	GameObject();
-	GameObject(Model model, Shader shader);
 
 	int id_effect = -1;
 	int id_sound = -1;
+
+	std::string resource_dir;
 
 	glm::vec3 pos = glm::vec3(0.0);
 	glm::vec3 rot = glm::vec3(0.0);

@@ -2,12 +2,13 @@
 #include "GameManager.h"
 #include "GameObject.h"
 #include "Camera.h"
+#include "StageSelectConstants.h"
 
 void stage_select_main();
 
 struct StageDemo {
 	StageDemo();
-	StageDemo(int id, std::string name, std::string default_music_kind, std::string resource_dir);
+	StageDemo(int id, std::string name, std::string resource_dir, std::string default_music_Kind);
 	int id;
 	std::string name;
 	std::string default_music_kind;
@@ -24,4 +25,7 @@ public:
 	std::vector<GameObject> charas;
 
 	void load_game_menu();
+	bool load_stage_select();
+
+	void render();
 };

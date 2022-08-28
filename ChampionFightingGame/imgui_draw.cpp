@@ -742,18 +742,18 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
         // Do we want to draw this line using a texture?
         // - For now, only draw integer-width lines using textures to avoid issues with the way scaling occurs, could be improved.
         // - If AA_SIZE is not 1.0f we cannot use the texture path.
-        const bool use_texture = (Flags & ImDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < IM_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
+        const bool load_texture_instance = (Flags & ImDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < IM_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
 
         // We should never hit this, because NewFrame() doesn't set ImDrawListFlags_AntiAliasedLinesUseTex unless ImFontAtlasFlags_NoBakedLines is off
-        IM_ASSERT_PARANOID(!use_texture || !(_Data->Font->ContainerAtlas->Flags & ImFontAtlasFlags_NoBakedLines));
+        IM_ASSERT_PARANOID(!load_texture_instance || !(_Data->Font->ContainerAtlas->Flags & ImFontAtlasFlags_NoBakedLines));
 
-        const int idx_count = use_texture ? (count * 6) : (thick_line ? count * 18 : count * 12);
-        const int vtx_count = use_texture ? (points_count * 2) : (thick_line ? points_count * 4 : points_count * 3);
+        const int idx_count = load_texture_instance ? (count * 6) : (thick_line ? count * 18 : count * 12);
+        const int vtx_count = load_texture_instance ? (points_count * 2) : (thick_line ? points_count * 4 : points_count * 3);
         PrimReserve(idx_count, vtx_count);
 
         // Temporary buffer
         // The first <points_count> items are normals at each line point, then after that there are either 2 or 4 temp points for each line point
-        ImVec2* temp_normals = (ImVec2*)alloca(points_count * ((use_texture || !thick_line) ? 3 : 5) * sizeof(ImVec2)); //-V630
+        ImVec2* temp_normals = (ImVec2*)alloca(points_count * ((load_texture_instance || !thick_line) ? 3 : 5) * sizeof(ImVec2)); //-V630
         ImVec2* temp_points = temp_normals + points_count;
 
         // Calculate normals (tangents) for each line segment
@@ -770,7 +770,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
             temp_normals[points_count - 1] = temp_normals[points_count - 2];
 
         // If we are drawing a one-pixel-wide line without a texture, or a textured line of any width, we only need 2 or 3 vertices per point
-        if (use_texture || !thick_line)
+        if (load_texture_instance || !thick_line)
         {
             // [PATH 1] Texture-based lines (thick or non-thick)
             // [PATH 2] Non texture-based lines (non-thick)
@@ -780,7 +780,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
             //   (see ImFontAtlasBuildRenderLinesTexData() function), and so alternate values won't work without changes to that code.
             // - In the non texture-based paths, we would allow AA_SIZE to potentially be != 1.0f with a patch (e.g. fringe_scale patch to
             //   allow scaling geometry while preserving one-screen-pixel AA fringe).
-            const float half_draw_size = use_texture ? ((thickness * 0.5f) + 1) : AA_SIZE;
+            const float half_draw_size = load_texture_instance ? ((thickness * 0.5f) + 1) : AA_SIZE;
 
             // If line is not closed, the first and last points need to be generated differently as there are no normals to blend
             if (!closed)
@@ -798,7 +798,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
             for (int i1 = 0; i1 < count; i1++) // i1 is the first point of the line segment
             {
                 const int i2 = (i1 + 1) == points_count ? 0 : i1 + 1; // i2 is the second point of the line segment
-                const unsigned int idx2 = ((i1 + 1) == points_count) ? _VtxCurrentIdx : (idx1 + (use_texture ? 2 : 3)); // Vertex index for end of segment
+                const unsigned int idx2 = ((i1 + 1) == points_count) ? _VtxCurrentIdx : (idx1 + (load_texture_instance ? 2 : 3)); // Vertex index for end of segment
 
                 // Average normals
                 float dm_x = (temp_normals[i1].x + temp_normals[i2].x) * 0.5f;
@@ -814,7 +814,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
                 out_vtx[1].x = points[i2].x - dm_x;
                 out_vtx[1].y = points[i2].y - dm_y;
 
-                if (use_texture)
+                if (load_texture_instance)
                 {
                     // Add indices for two triangles
                     _IdxWritePtr[0] = (ImDrawIdx)(idx2 + 0); _IdxWritePtr[1] = (ImDrawIdx)(idx1 + 0); _IdxWritePtr[2] = (ImDrawIdx)(idx1 + 1); // Right tri
@@ -835,7 +835,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
             }
 
             // Add vertexes for each point on the line
-            if (use_texture)
+            if (load_texture_instance)
             {
                 // If we're using textures we only need to emit the left/right edge vertices
                 ImVec4 tex_uvs = _Data->TexUvLines[integer_thickness];

@@ -47,7 +47,7 @@ public:
 	Mesh();
 	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
 
-	Mesh copy(); //This can't be a copy constructor because it will fuck with vectors
+	void copy_mesh(Mesh* ret);
 	
 	void render();
 	void render_no_texture();
@@ -71,14 +71,17 @@ public:
 	Model();
 	Model(std::string path);
 
-	Model copy();
+	void copy_model(Model* ret);
 
-	~Model();
 	void load_model(std::string path);
+	void unload_model();
+
 	void load_textures();
 	void load_textures(std::string path);
-	void unload_model();
+
 	void unload_textures();
+	void unload_texture_resources();
+
 	void set_move(bool move);
 	void set_bones(float frame, Animation* anim_kind, bool flip);
 	void reset_bones();
@@ -86,8 +89,12 @@ public:
     void render(Shader *shader, bool flip);
 	void render_no_texture(Shader* shader, bool flip);
 
+	void set_mesh_visibility(std::string mesh_name, bool visibility);
+
+	int get_mesh_id(std::string mesh_name);
+	int get_bone_id(std::string bone_name, bool verbose = true);
+
 	std::vector<std::string> texture_names;
-	std::vector<unsigned int> textures_loaded;
 	std::unordered_map<std::string, std::vector<ModelTexture*>> texture_map;
 
 	std::vector<Mesh> meshes;
@@ -102,11 +109,6 @@ public:
 	std::string directory;
 
 	bool has_skeleton;
-
-	void set_mesh_visibility(std::string mesh_name, bool visibility);
-
-	int get_mesh_id(std::string mesh_name);
-	int get_bone_id(std::string bone_name, bool verbose = true);
 private:
 	bool load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);

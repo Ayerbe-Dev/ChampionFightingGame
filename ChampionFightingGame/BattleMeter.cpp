@@ -10,11 +10,11 @@ BattleMeter::BattleMeter() {
 }
 
 void BattleMeter::init(Fighter* fighter) {
-	health_texture.init("resource/ui/battle/hp/health.png");
-	health_border.init("resource/ui/battle/hp/bar.png");
-	ex_texture.init("resource/ui/battle/ex/ex.png");
-	ex_segment_texture.init("resource/ui/battle/ex/ex_segment.png");
-	ex_border.init("resource/ui/battle/ex/bar.png");
+	health_texture.init("resource/game_state/battle/ui/hp/health.png");
+	health_border.init("resource/game_state/battle/ui/hp/bar.png");
+	ex_texture.init("resource/game_state/battle/ui/ex/ex.png");
+	ex_segment_texture.init("resource/game_state/battle/ui/ex/ex_segment.png");
+	ex_border.init("resource/game_state/battle/ui/ex/bar.png");
 
 	if (fighter->id) {
 		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);

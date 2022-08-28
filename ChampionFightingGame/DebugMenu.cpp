@@ -10,40 +10,48 @@
 #include <glew/glew.h>
 #include "RenderManager.h"
 #include "FontManager.h"
+#include "ResourceManager.h";
 
 void debug_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+	ResourceManager* resource_manager = ResourceManager::get_instance();
 
 	render_manager->reset_gl_environment();
 
 	DebugMenu *debug = new DebugMenu;
 	debug->load_game_menu();
 
+	resource_manager->load_model("resource/chara/rowan/model/model.dae");
+
 	GameObject go1;
-	go1.load_model("resource/chara/rowan/model/model.dae", "c0");
+	resource_manager->load_model_instance("resource/chara/rowan/model/model.dae", &go1.model);
+	go1.model.load_textures("c0");
 	go1.init_shader();
 	go1.scale *= glm::vec3(0.05);
 
 	GameObject go2;
-	go2.model = go1.model.copy();
+	resource_manager->load_model_instance("resource/chara/rowan/model/model.dae", &go2.model);
 	go2.model.load_textures("c1");
 	go2.init_shader();
 	go2.scale *= glm::vec3(0.05);
 
+
 	go1.pos = glm::vec3(-200.0, 0, 0);
 	go2.pos = glm::vec3(200.0, 0, 0);
 
-	render_manager->camera.set_fov(45.0);
 	render_manager->update_shader_cams();
 	render_manager->update_shader_lights();
 	render_manager->update_shader_shadows();
 
 	cotr_imgui_init();
 	while (*debug->looping) {
+		wait_ms();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
+
+		go1.animate();
 
 		glDepthMask(GL_TRUE);
 		glEnable(GL_CULL_FACE);
@@ -53,7 +61,8 @@ void debug_main() {
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		glCullFace(GL_FRONT);
-		go1.render_shadow(false);
+		go1.render_shadow();
+		go2.render_shadow();
 		glCullFace(GL_BACK);
 		
 		render_manager->g_buffer.use();

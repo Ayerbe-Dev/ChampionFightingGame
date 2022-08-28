@@ -17,11 +17,6 @@ GameObject::GameObject() {
 	prev_anim_offset = glm::vec3(0.0);
 }
 
-GameObject::GameObject(Model model, Shader shader) {
-	this->model = model;
-	this->shader = shader;
-}
-
 void GameObject::render(bool flip) {
 	shader.use();
 	glm::mat4 model_mat = glm::mat4(1.0);

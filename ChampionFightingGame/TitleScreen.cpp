@@ -57,11 +57,11 @@ void TitleScreen::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
-	title_l1.init("resource/ui/title/title-l1.png");
-	title_l2.init("resource/ui/title/title-l2.png");
-	title_l3.init("resource/ui/title/title-l3.png");
-	title_l4.init("resource/ui/title/title-l4.png");
-	text.init("resource/ui/title/Praeiudicium.png");
+	title_l1.init("resource/game_state/title/ui/title-l1.png");
+	title_l2.init("resource/game_state/title/ui/title-l2.png");
+	title_l3.init("resource/game_state/title/ui/title-l3.png");
+	title_l4.init("resource/game_state/title/ui/title-l4.png");
+	text.init("resource/game_state/title/ui/Praeiudicium.png");
 }
 
 void TitleScreen::render() {

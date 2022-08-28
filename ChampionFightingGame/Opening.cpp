@@ -13,10 +13,10 @@ void opening_main() {
 
 	const Uint8* keyboard_state;
 	GameTexture titleSplash;
-	titleSplash.init("resource/ui/menu/opening/game-splash-background.png");
+	titleSplash.init("resource/game_state/opening/game-splash-background.png");
 
 	GameTexture textSplash;
-	textSplash.init("resource/ui/menu/opening/game-splash-text.png");
+	textSplash.init("resource/game_state/opening/game-splash-text.png");
 
 	char title_alpha = 0;
 	char text_alpha = 0;

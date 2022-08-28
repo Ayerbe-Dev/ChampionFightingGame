@@ -1,0 +1,7 @@
+#pragma once
+
+enum {
+	STAGE_SELECT_GROUP_SLOT,
+
+	STAGE_SELECT_GROUP_MAX,
+};

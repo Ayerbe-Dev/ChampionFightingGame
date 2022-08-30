@@ -119,6 +119,7 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
+	battle->fps_font.unload_font();
 	font_manager->unload_face("Fiend-Oblique");
 	font_manager->unload_face("FiraCode");
 	battle->unload_game_menu();
@@ -562,8 +563,8 @@ void Battle::render_world() {
 			}
 		}
 	}
-	glDepthMask(GL_TRUE);
 
+	glDepthMask(GL_TRUE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	
 	//SSAO PASS
@@ -630,7 +631,8 @@ void Battle::render_world() {
 void Battle::render_ui() {
 	for (int i = 0; i < 2; i++) {
 		meters[i].render();
-		for (std::list<BattleText>::iterator it = texts[i].begin(); it != texts[i].end(); it++) {
+		std::list<BattleText>::iterator it = texts[i].begin();
+		while (it != texts[i].end()) {
 			if (it->duration == 0) {
 				if (&*it == combo_counter[i]) {
 					combo_counter[i] = nullptr;
@@ -640,6 +642,7 @@ void Battle::render_ui() {
 					it->destroy();
 					if (texts[i].size() != 1) {
 						it = texts[i].erase(it);
+						continue;
 					}
 					else {
 						texts[i].erase(it);
@@ -652,6 +655,7 @@ void Battle::render_ui() {
 			else if (it->duration != -1) {
 				it->duration--;
 			}
+			it++;
 		}
 		for (std::list<BattleText>::iterator it = texts[i].begin(); it != texts[i].end(); it++) {
 			it->render();

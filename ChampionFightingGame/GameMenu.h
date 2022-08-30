@@ -49,6 +49,10 @@ public:
     int player_id{0};
     int frame;
     int fps;
+    Font fps_font;
+    GameTexture fps_counter;
+    GameTexture fps_texture;
+    int prev_fps;
 };
 
 class MenuObject {

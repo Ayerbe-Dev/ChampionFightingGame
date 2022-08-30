@@ -18,11 +18,12 @@ void stage_select_main() {
 	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
-	StageSelect *stage_select = new StageSelect;
+	StageSelect* stage_select = new StageSelect;
 	stage_select->load_game_menu();
 
 	while (*stage_select->looping) {
-		wait_ms();
+		stage_select->frame_delay();
+
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 		}
@@ -37,9 +38,18 @@ void stage_select_main() {
 
 		game_manager->handle_menus();
 		stage_select->process();
-		stage_select->render();
+		stage_select->render();;
 
 		SDL_GL_SwapWindow(render_manager->window);
+	}
+
+	StageDemo demo = stage_select->stages[stage_select->selection];
+	if (demo.id == -1) { //Random
+		demo = stage_select->stages[rng(0, stage_select->stages.size() - 1)];
+	}
+	
+	for (int i = 0; i < 2; i++) {
+		player[i]->stage_info = StageInfo(demo.id, demo.name);
 	}
 
 	font_manager->unload_face("FiraCode");
@@ -58,7 +68,7 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_dir, std::st
 	this->default_music_kind = default_music_kind;
 	ResourceManager::get_instance()->load_model_instance("resource/stage/" + resource_dir + "/assets/demo/model/model.dae", &demo_model.model);
 	demo_model.init_shader();
-	demo_model.scale *= glm::vec3(0.05); 
+	demo_model.scale *= glm::vec3(0.05);
 	demo_anim.load_camera_anim("demo", "resource/stage/" + resource_dir + "/cam_anims/demo.fbx");
 	selected_anim.load_camera_anim("selected", "resource/stage/" + resource_dir + "/cam_anims/selected.fbx");
 
@@ -87,9 +97,25 @@ StageSelect::StageSelect() {
 	selected = false;
 }
 
+StageSelect::~StageSelect() {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	for (int i = 0, max = menu_objects.size(); i < max; i++) {
+		for (int i2 = 0, max2 = menu_objects[i2].size(); i2 < max2; i2++) {
+			menu_objects[i][i2].destroy();
+		}
+	}
+	for (int i = 0, max = stages.size(); i < max; i++) {
+		if (i != selection) {
+			resource_manager->unload_model_instance(stages[i].demo_model.model.directory + "model.dae");
+			resource_manager->unload_model(stages[i].demo_model.model.directory + "model.dae");
+		}
+	}
+}
+
 void StageSelect::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+
 	game_manager->set_menu_info(this);
 
 	menu_objects.resize(STAGE_SELECT_GROUP_MAX);
@@ -116,6 +142,12 @@ void StageSelect::load_game_menu() {
 	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_MISC][0].textures.size(); i < max; i++) {
 		menu_objects[STAGE_SELECT_GROUP_MISC][0].textures[i].set_height_scale(1.5);
 		menu_objects[STAGE_SELECT_GROUP_MISC][0].textures[i].set_width_scale(1.5);
+	}
+
+	render_manager->camera.frame = 0.0;
+	stages[selection].demo_model.model.load_textures();
+	for (int i = 0, max = stages[selection].lights.size(); i < max; i++) {
+		render_manager->add_light(&stages[selection].lights[i]);
 	}
 }
 
@@ -150,8 +182,13 @@ bool StageSelect::load_stage_select() {
 	num_slots_per_row = ceil(menu_objects[STAGE_SELECT_GROUP_SLOT].size() / 2);
 	float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
 	float slot_height = WINDOW_HEIGHT / 9;
+
 	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_SLOT].size(); i < max; i++) { 
-		//Positioning the slots
+		//Positioning the slots - Note that we should probably middle-orient these instead of 
+		//setting them to bottom left so that the text can always be in the center of the slot. I'm
+		//too lazy to calc the position right now since I'm focusing on getting the shrunken gbuffer
+		//to render, but I'd imagine it's just a matter of changing how slot_pos is calculated.
+
 		glm::vec3 slot_pos = glm::vec3(
 			STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2 + i * slot_width, 
 			slot_height * 2 + 60, 
@@ -188,7 +225,10 @@ void StageSelect::process() {
 			stages[selection].demo_model.model.load_textures();
 			render_manager->camera.frame = 0.0;
 			render_manager->remove_light();
+			std::cout << "Switching stage! New Lights are as follows: \n";
 			for (int i = 0, max = stages[selection].lights.size(); i < max; i++) {
+				std::cout << i << ": ";
+				print_vec(std::cout, stages[selection].lights[i].position);
 				render_manager->add_light(&stages[selection].lights[i]);
 			}
 		}
@@ -239,6 +279,9 @@ void StageSelect::event_up_press() {
 			selection -= num_slots_per_row;
 		}
 	}
+	else {
+
+	}
 }
 
 void StageSelect::event_down_press() {
@@ -246,6 +289,9 @@ void StageSelect::event_down_press() {
 		if (selection < num_slots_per_row) {
 			selection += num_slots_per_row;
 		}
+	}
+	else {
+
 	}
 }
 
@@ -255,6 +301,9 @@ void StageSelect::event_left_press() {
 			selection--;
 		}
 	}
+	else {
+
+	}
 }
 
 void StageSelect::event_right_press() {
@@ -263,16 +312,27 @@ void StageSelect::event_right_press() {
 			selection++;
 		}
 	}
+	else {
+
+	}
 }
 
 void StageSelect::event_select_press() {
 	if (!selected) {
-
+		selected = true;
+	}
+	else {
+		update_state(GAME_STATE_CHARA_SELECT);
+		*looping = false;
 	}
 }
 
 void StageSelect::event_back_press() {
 	if (!selected) {
-
+		update_state(GAME_STATE_MENU);
+		*looping = false;
+	}
+	else {
+		selected = false;
 	}
 }

@@ -134,10 +134,6 @@ public:
 
 	Font combo_font;
 	Font message_font;
-	Font fps_font;
-	GameTexture fps_counter;
-	GameTexture fps_texture;
-	int prev_fps;
 
 	Fighter* fighter[2];
 	Stage stage;

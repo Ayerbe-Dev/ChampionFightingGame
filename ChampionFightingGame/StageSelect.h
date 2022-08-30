@@ -22,6 +22,7 @@ struct StageDemo {
 class StageSelect : public GameMenu {
 public:
 	StageSelect();
+	~StageSelect();
 
 	void load_game_menu();
 	bool load_stage_select();

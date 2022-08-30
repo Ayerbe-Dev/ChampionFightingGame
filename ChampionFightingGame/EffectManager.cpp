@@ -168,6 +168,7 @@ int EffectManager::add_effect_caster() {
 	//their own IDs
 	id2index[i] = active_effects.size();
 	active_effects.resize(active_effects.size() + 1);
+	return i;
 }
 
 //Adds another index to the active effects vector, then maps our object ID to that index

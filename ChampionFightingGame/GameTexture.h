@@ -106,6 +106,7 @@ public:
     glm::vec3 rot;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
     std::vector<glm::vec2> spritesheet[4];
+    bool initialized;
 private:
     unsigned int VAO;
     unsigned int VBO;

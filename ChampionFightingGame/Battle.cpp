@@ -42,7 +42,7 @@
 
 extern bool debug;
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -87,7 +87,11 @@ void battle_main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glStencilMask(0x00);
 
-		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
+		#ifdef DEBUG
+			game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
+		#else
+			game_manager->handle_window_events();
+		#endif
 
 		for (int i = 0; i < 2; i++) {
 			if (player[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {

@@ -27,6 +27,7 @@ GameManager::GameManager() {
 void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_BATTLE] = &battle_main;
 	game_main[GAME_STATE_CHARA_SELECT] = &chara_select_main;
+	game_main[GAME_STATE_STAGE_SELECT] = &stage_select_main;
 	game_main[GAME_STATE_DEBUG_MENU] = &debug_main;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;

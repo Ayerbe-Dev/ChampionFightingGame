@@ -136,6 +136,9 @@ void MenuObject::render() {
 }
 
 void MenuObject::destroy() {
+	if (cursor.initialized) {
+		cursor.destroy();
+	}
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		textures[i].destroy();
 	}

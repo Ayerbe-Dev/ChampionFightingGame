@@ -85,6 +85,12 @@ void debug_main() {
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 	cotr_imgui_terminate();
+	go1.model.unload_textures();
+	go2.model.unload_textures();
+	resource_manager->unload_model_instance("resource/chara/rowan/model/model.dae");
+	resource_manager->unload_model_instance("resource/chara/rowan/model/model.dae");
+	resource_manager->unload_model("resource/chara/rowan/model/model.dae");
+	render_manager->unlink_all_shaders();
 	delete debug;
 }
 

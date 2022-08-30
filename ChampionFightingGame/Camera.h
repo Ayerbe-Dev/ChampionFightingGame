@@ -30,7 +30,10 @@ public:
 
 	void update_view();
 	void follow_players();
-	void follow_anim();
+	void follow_anim(); //Follow an animation in the camera's animation table
+	void follow_anim(CameraAnim* anim); //Follow an animation provided from outside of the anim table
+	//(Currently this is used on the Stage Select where each StageDemo keeps its own CameraAnims loaded
+	//rather than in the Camera)
 
 	glm::vec3 pos = glm::vec3(0.0);
 	glm::vec3 front = glm::vec3(0.0, 0.0, 1.0);

@@ -61,8 +61,12 @@ void Model::copy_model(Model* ret) {
 		ret->bones.push_back(this->bones[i]);
 	}
 	ret->bone_map = this->bone_map;
-	
-	ret->post_process_skeleton();
+	ret->has_skeleton = this->has_skeleton;
+
+	if (ret->has_skeleton) {
+		ret->post_process_skeleton();
+
+	}
 }
 
 void Model::load_model(std::string path) {

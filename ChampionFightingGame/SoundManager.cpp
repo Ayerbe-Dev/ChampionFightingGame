@@ -31,7 +31,7 @@ void SoundManager::populate_sounds() {
 
 	//Music
 	add_sound_info("Atlas_Theme", "stage", SOUND_KIND_MUSIC, SOUND_TYPE_LOOP);
-	add_sound_info("Vesuvius_Theme", "stage", SOUND_KIND_MUSIC, SOUND_TYPE_LOOP);
+	add_sound_info("The_Calamity", "stage", SOUND_KIND_MUSIC, SOUND_TYPE_LOOP);
 }
 
 void SoundManager::play_sound(int object_id, int sound_kind, std::string name, int volume) {
@@ -280,6 +280,7 @@ int SoundManager::add_sound_player() {
 	//their own IDs
 	id2index[i] = active_sounds.size();
 	active_sounds.resize(active_sounds.size() + 1);
+	return i;
 }
 
 void SoundManager::add_sound_player(int object_id) {

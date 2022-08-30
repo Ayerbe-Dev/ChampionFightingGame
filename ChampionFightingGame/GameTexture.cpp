@@ -9,7 +9,7 @@
 #include "ThreadManager.h"
 
 GameTexture::GameTexture() {
-
+	initialized = false;
 }
 
 GameTexture::GameTexture(std::string path) {
@@ -118,6 +118,7 @@ void GameTexture::init(std::string path) {
 	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
+	initialized = true;
 }
 
 void GameTexture::init(GLuint texture, int width, int height) {
@@ -177,6 +178,7 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
+	initialized = true;
 }
 
 void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
@@ -230,12 +232,14 @@ void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border
 	this->text = text;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
+	initialized = true;
 }
 
 void GameTexture::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteTextures(1, &texture);
+	initialized = false;
 }
 
 void GameTexture::set_pos(glm::vec3 pos) {

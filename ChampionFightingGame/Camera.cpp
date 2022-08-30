@@ -46,7 +46,7 @@ void Camera::camera_main() {
 }
 
 void Camera::load_camera_anim(std::string anim_kind, std::string anim_dir) {
-	if (camera_anim_map.find(anim_kind) != camera_anim_map.end()) {
+	if (camera_anim_map.contains(anim_kind)) {
 		return;
 	}
 	camera_anim_map[anim_kind] = camera_anims.size();
@@ -54,7 +54,7 @@ void Camera::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 }
 
 void Camera::play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame) {
-	if (camera_anim_map.find(anim_kind) == camera_anim_map.end()) {
+	if (!camera_anim_map.contains(anim_kind)) {
 		return;
 	}
 
@@ -168,5 +168,40 @@ void Camera::follow_anim() {
 		else {
 			anim_kind = nullptr;
 		}
+	}
+}
+
+void Camera::follow_anim(CameraAnim* anim) {
+	CameraKeyframe keyframe = anim->keyframes[clamp(0, floorf(frame), anim->keyframes.size() - 1)];
+	CameraKeyframe next_keyframe = anim->keyframes[clamp(0, floorf(frame + 1), anim->keyframes.size() - 1)];
+
+	keyframe.pos_key += (frame - (int)frame) * (next_keyframe.pos_key - keyframe.pos_key);
+	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
+
+	pos = keyframe.pos_key;
+
+	yaw = keyframe.rot_key.x;
+	pitch = keyframe.rot_key.y * 180;
+	roll = keyframe.rot_key.z;
+
+	pos = glm::normalize(pos);
+
+	if (follow_id != -1) {
+		pos.x *= fighter[follow_id]->facing_dir;
+		yaw *= fighter[follow_id]->facing_dir;
+
+		pos += fighter[follow_id]->pos / glm::vec3(
+			WINDOW_WIDTH / (100 * fighter[follow_id]->scale.x),
+			WINDOW_HEIGHT / (100 * fighter[follow_id]->scale.y),
+			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
+		);
+	}
+
+	prev_pos = pos;
+
+	update_view();
+	frame += rate;
+	if (frame >= anim->length) {
+		frame = 0.0;
 	}
 }

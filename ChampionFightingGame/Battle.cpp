@@ -657,10 +657,16 @@ void Battle::render_ui() {
 			}
 			it++;
 		}
-		for (std::list<BattleText>::iterator it = texts[i].begin(); it != texts[i].end(); it++) {
+
+		for (BattleText& b : texts[i]) {
+			b.render();
+			b.scale_all_percent(1.0, false);
+		}
+
+		/*for (std::list<BattleText>::iterator it = texts[i].begin(); it != texts[i].end(); it++) {
 			it->render();
 			it->scale_all_percent(1.0, false);
-		}
+		}*/
 	}
 	timer.render();
 

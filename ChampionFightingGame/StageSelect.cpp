@@ -11,6 +11,8 @@ void stage_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
+	ResourceManager::get_instance()->unload_all_models();
+
 	font_manager->load_face("FiraCode");
 
 	Player* player[2];
@@ -38,18 +40,18 @@ void stage_select_main() {
 
 		game_manager->handle_menus();
 		stage_select->process();
-		stage_select->render();;
+		stage_select->render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 
 	StageDemo demo = stage_select->stages[stage_select->selection];
-	if (demo.id == -1) { //Random
+	while (demo.id == -1) { //Random
 		demo = stage_select->stages[rng(0, stage_select->stages.size() - 1)];
 	}
 	
 	for (int i = 0; i < 2; i++) {
-		player[i]->stage_info = StageInfo(demo.id, demo.name);
+		player[i]->stage_info = StageInfo(demo.id, demo.resource_name);
 	}
 
 	font_manager->unload_face("FiraCode");
@@ -59,21 +61,21 @@ void stage_select_main() {
 StageDemo::StageDemo() {
 	this->id = -1;
 	this->name = "";
-	this->default_music_kind = "";
+	this->resource_name = "";
 }
 
-StageDemo::StageDemo(int id, std::string name, std::string resource_dir, std::string default_music_kind) {
+StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	this->id = id;
 	this->name = name;
-	this->default_music_kind = default_music_kind;
-	ResourceManager::get_instance()->load_model_instance("resource/stage/" + resource_dir + "/assets/demo/model/model.dae", &demo_model.model);
+	this->resource_name = resource_name;
+	demo_model.load_model("resource/stage/" + resource_name + "/assets/demo/model/model.dae");
 	demo_model.init_shader();
 	demo_model.scale *= glm::vec3(0.05);
-	demo_anim.load_camera_anim("demo", "resource/stage/" + resource_dir + "/cam_anims/demo.fbx");
-	selected_anim.load_camera_anim("selected", "resource/stage/" + resource_dir + "/cam_anims/selected.fbx");
+	demo_anim.load_camera_anim("demo", "resource/stage/" + resource_name + "/cam_anims/demo.fbx");
+	selected_anim.load_camera_anim("selected", "resource/stage/" + resource_name + "/cam_anims/selected.fbx");
 
 	std::ifstream light_stream;
-	light_stream.open("resource/stage/" + resource_dir + "/assets/demo/param/lights.yml");
+	light_stream.open("resource/stage/" + resource_name + "/assets/demo/param/lights.yml");
 	if (light_stream.fail()) {
 		std::cout << "Failed to load lights! \n";
 		light_stream.close();
@@ -105,11 +107,11 @@ StageSelect::~StageSelect() {
 		}
 	}
 	for (int i = 0, max = stages.size(); i < max; i++) {
-		if (i != selection) {
-			resource_manager->unload_model_instance(stages[i].demo_model.model.directory + "model.dae");
-			resource_manager->unload_model(stages[i].demo_model.model.directory + "model.dae");
+		if (stages[i].id != selection) {
+			stages[i].demo_model.model.unload_model_resource();
 		}
 	}
+	RenderManager::get_instance()->remove_light();
 }
 
 void StageSelect::load_game_menu() {
@@ -162,17 +164,16 @@ bool StageSelect::load_stage_select() {
 
 	std::string stage_name;
 	int id;
-	std::string resource_dir;
-	std::string default_music_kind;
+	std::string resource_name;
 
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
 
 	for (int i = 0; getline(stage_file, stage_name); i++) {
-		stage_file >> id >> resource_dir >> default_music_kind;
-		stages.push_back(StageDemo(id, stage_name, resource_dir, default_music_kind));
+		stage_file >> id >> resource_name;
+		stages.push_back(StageDemo(id, stage_name, resource_name));
 		menu_objects[STAGE_SELECT_GROUP_SLOT].push_back(MenuObject(this, nullptr, false));
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture("resource/stage/" + resource_dir + "/assets/demo/slot_texture.png");
+		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture("resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture(main_text_font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0));
 		getline(stage_file, stage_name);
 	}
@@ -225,12 +226,6 @@ void StageSelect::process() {
 			stages[selection].demo_model.model.load_textures();
 			render_manager->camera.frame = 0.0;
 			render_manager->remove_light();
-			std::cout << "Switching stage! New Lights are as follows: \n";
-			for (int i = 0, max = stages[selection].lights.size(); i < max; i++) {
-				std::cout << i << ": ";
-				print_vec(std::cout, stages[selection].lights[i].position);
-				render_manager->add_light(&stages[selection].lights[i]);
-			}
 		}
 		prev_selection = selection;
 		render_manager->camera.follow_anim(&stages[selection].demo_anim);

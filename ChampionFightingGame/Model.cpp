@@ -37,7 +37,19 @@ Model::Model(std::string path) {
 	load_model(path);
 }
 
-void Model::copy_model(Model* ret) {
+void Model::destroy() {
+	delete dummy_matrix;
+	delete dummy_vec;
+	delete dummy_quat;
+	for (int i = 0; i < meshes.size(); i++) {
+		glDeleteVertexArrays(1, &meshes[i].VAO);
+		glDeleteBuffers(1, &meshes[i].VBO);
+		glDeleteBuffers(1, &meshes[i].EBO);
+	}
+	unload_texture_resources();
+}
+
+void Model::copy(Model* ret) {
 	ret->global_transform = this->global_transform;
 	ret->dummy_matrix = this->dummy_matrix;
 	ret->dummy_quat = this->dummy_quat;
@@ -46,7 +58,7 @@ void Model::copy_model(Model* ret) {
 
 	for (int i = 0, max = this->meshes.size(); i < max; i++) {
 		ret->meshes.push_back(Mesh());
-		this->meshes[i].copy_mesh(&ret->meshes[i]);
+		this->meshes[i].copy(&ret->meshes[i]);
 		for (int i2 = 0, max2 = this->meshes[i].textures.size(); i2 < max2; i2++) {
 			ret->texture_map[meshes[i].textures[i2].filename].push_back(&ret->meshes[i].textures[i2]);
 		}
@@ -65,11 +77,10 @@ void Model::copy_model(Model* ret) {
 
 	if (ret->has_skeleton) {
 		ret->post_process_skeleton();
-
 	}
 }
 
-void Model::load_model(std::string path) {
+void Model::load_model_resource(std::string path) {
 	move = false;
 	tpose = false;
 	dummy_matrix = new glm::mat4(1.0);
@@ -84,7 +95,7 @@ void Model::load_model(std::string path) {
 
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals);
-	
+
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
 		return;
@@ -103,16 +114,18 @@ void Model::load_model(std::string path) {
 	}
 }
 
+void Model::load_model(std::string path) {
+	ResourceManager::get_instance()->load_model_instance(path, this);
+}
+
 void Model::unload_model() {
-	delete dummy_matrix;
-	delete dummy_vec;
-	delete dummy_quat;
-	for (int i = 0; i < meshes.size(); i++) {
-		glDeleteVertexArrays(1, &meshes[i].VAO);
-		glDeleteBuffers(1, &meshes[i].VBO);
-		glDeleteBuffers(1, &meshes[i].EBO);
-	}
-	unload_texture_resources();
+	ResourceManager::get_instance()->unload_model_instance(directory + "model.dae");
+}
+
+void Model::unload_model_resource() {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	resource_manager->unload_model_instance(directory + "model.dae");
+	resource_manager->unload_model(directory + "model.dae");
 }
 
 //Used if there's only one possible texture set (I.E. the stage).
@@ -555,7 +568,7 @@ Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices,
 	init();
 }
 
-void Mesh::copy_mesh(Mesh* ret) {
+void Mesh::copy(Mesh* ret) {
 	for (int i = 0, max = this->vertices.size(); i < max; i++) {
 		ret->vertices.push_back(this->vertices[i]);
 	}

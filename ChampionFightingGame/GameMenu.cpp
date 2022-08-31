@@ -148,19 +148,19 @@ void MenuObject::destroy() {
 }
 
 void MenuObject::add_child(bool render_all_children) {
-	children.push_back(MenuObject(owner, this, render_all_children));
+	children.emplace_back(owner, this, render_all_children);
 }
 
 void MenuObject::add_texture(std::string path) {
-	textures.push_back(GameTexture(path));
+	textures.emplace_back(path);
 }
 
 void MenuObject::add_texture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
-	textures.push_back(GameTexture(font, text, rgba, border_x, border_y));
+	textures.emplace_back(font, text, rgba, border_x, border_y);
 }
 
 void MenuObject::add_texture(const GameTexture& that) {
-	textures.push_back(that);
+	textures.emplace_back(that);
 }
 
 void MenuObject::add_texture(unsigned int texture_id) {

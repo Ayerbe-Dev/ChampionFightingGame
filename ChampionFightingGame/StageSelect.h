@@ -9,10 +9,10 @@ void stage_select_main();
 
 struct StageDemo {
 	StageDemo();
-	StageDemo(int id, std::string name, std::string resource_dir, std::string default_music_Kind);
+	StageDemo(int id, std::string name, std::string resource_name);
 	int id;
 	std::string name;
-	std::string default_music_kind;
+	std::string resource_name;
 	GameObject demo_model;
 	CameraAnim demo_anim;
 	CameraAnim selected_anim;

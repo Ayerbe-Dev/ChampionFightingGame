@@ -22,6 +22,10 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 	}
 }
 
+StageAsset::~StageAsset() {
+	model.unload_model_resource();
+}
+
 void StageAsset::stage_asset_main() {
 	//Execute the stage script, use it to populate funcs
 

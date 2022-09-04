@@ -15,7 +15,6 @@ void controls_main() {
 	const Uint8* keyboard_state;
 
 	OptionsMenu* options_menu = new OptionsMenu;
-	options_menu->load_game_menu();
 
 	while (*options_menu->looping) {
 		wait_ms();
@@ -42,14 +41,6 @@ void controls_main() {
 }
 
 OptionsMenu::OptionsMenu() {
-
-}
-
-OptionsMenu::~OptionsMenu() {
-	panel.destroy();
-}
-
-void OptionsMenu::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 
 	game_manager->set_menu_info(this);
@@ -61,6 +52,10 @@ void OptionsMenu::load_game_menu() {
 	panel.set_width(500);
 	panel.set_height(300);
 	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+}
+
+OptionsMenu::~OptionsMenu() {
+	panel.destroy();
 }
 
 void OptionsMenu::event_back_press() {

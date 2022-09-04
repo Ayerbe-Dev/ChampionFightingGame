@@ -24,7 +24,6 @@ public:
 	StageSelect();
 	~StageSelect();
 
-	void load_game_menu();
 	bool load_stage_select();
 
 	void process();

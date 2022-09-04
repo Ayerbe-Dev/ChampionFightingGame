@@ -25,10 +25,9 @@ void menu_main() {
 	const Uint8* keyboard_state;
 
 	MainMenu *main_menu = new MainMenu;
-	main_menu->load_game_menu();
 
 	while (*main_menu->looping) {
-		wait_ms();
+		main_menu->frame_delay_check_fps();
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 		}
@@ -44,6 +43,8 @@ void menu_main() {
 		game_manager->handle_menus();
 		main_menu->process_main();
 		main_menu->render();
+		main_menu->fps_texture.render();
+		main_menu->fps_counter.render();
 
 		SDL_GL_SwapWindow(render_manager->window);
 
@@ -69,17 +70,7 @@ MainMenu::MainMenu() {
 	magnitude = WINDOW_WIDTH / 1.125;
 	turn_frames = 8;
 	menu_frame = 0;
-}
 
-MainMenu::~MainMenu() {
-	for (int i = 0; i < 5; i++) {
-
-	}
-	table.destroy();
-	delete game_loader;
-}
-
-void MainMenu::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
@@ -271,16 +262,16 @@ void MainMenu::load_game_menu() {
 		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_TRAINING].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_CHARA_SELECT, GAME_CONTEXT_TRAINING);
+		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_TRAINING);
 		*this->looping = false;
 	};
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVP].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_CHARA_SELECT, GAME_CONTEXT_NORMAL);
+		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_NORMAL);
 		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVC].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_CHARA_SELECT, GAME_CONTEXT_1CPU);
+		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_1CPU);
 		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_TOURNAMENT].select_event = [this](MenuObject* menu_object) {
@@ -339,6 +330,11 @@ void MainMenu::load_game_menu() {
 
 	main_text_font.unload_font();
 	sub_text_font.unload_font();
+}
+
+MainMenu::~MainMenu() {
+	table.destroy();
+	delete game_loader;
 }
 
 void MainMenu::process_main() {

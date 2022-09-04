@@ -15,7 +15,6 @@ void pause_battle_main() {
 	const Uint8* keyboard_state;
 
 	PauseBattle* pause = new PauseBattle;
-	pause->load_game_menu();
 
 	while (*pause->looping) {
 		wait_ms();
@@ -42,14 +41,6 @@ void pause_battle_main() {
 }
 
 PauseBattle::PauseBattle() {
-
-}
-
-PauseBattle::~PauseBattle() {
-	panel.destroy();
-}
-
-void PauseBattle::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 
 	game_manager->set_menu_info(this);
@@ -63,6 +54,16 @@ void PauseBattle::load_game_menu() {
 	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }
 
+PauseBattle::~PauseBattle() {
+	panel.destroy();
+}
+
 void PauseBattle::event_start_press() {
 	*looping = false;
+}
+
+void PauseBattle::event_select_press() {
+	GameManager* game_manager = GameManager::get_instance();
+	game_manager->update_state(GAME_STATE_DEBUG_MENU);
+	game_manager->looping[--game_manager->layer] = false;
 }

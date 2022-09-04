@@ -11,7 +11,6 @@ public:
 	OptionsMenu();
 	~OptionsMenu();
 
-	void load_game_menu();
 	void event_back_press();
 
 	GameTexture panel;

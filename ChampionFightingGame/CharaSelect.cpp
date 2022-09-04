@@ -21,8 +21,7 @@ void chara_select_main() {
 	const Uint8* keyboard_state;
 
 	CSS *css = new CSS;
-	css->load_game_menu();
-
+	
 	while (*css->looping) {
 		wait_ms();
 		for (int i = 0; i < 2; i++) {
@@ -47,11 +46,7 @@ void chara_select_main() {
 	delete css;
 }
 
-/// <summary>
-/// The constructor for the CSS class.
-/// </summary>
 CSS::CSS() {
-	//initialize other textures
 	background_texture.init("resource/game_state/chara_select/CSSbackground.png");
 	background_texture.set_width(WINDOW_WIDTH);
 	background_texture.set_height(WINDOW_HEIGHT);
@@ -61,24 +56,7 @@ CSS::CSS() {
 	top_bar_texture.init("resource/game_state/chara_select/CSStopbar.png");
 	top_bar_texture.set_width(WINDOW_WIDTH);
 	top_bar_texture.set_height(WINDOW_HEIGHT);
-}
 
-CSS::~CSS() {
-	for (int i = 0; i < num_slots; i++) {
-		chara_slots[i].texture.destroy();
-	}
-	for (int i = 0; i < 2; i++) {
-		big_chara_slots[i].texture.destroy();
-		mobile_css_slots[i].destroy();
-		cursors[i].texture.destroy();
-	}
-	background_texture.destroy();
-	big_bar_texture.destroy();
-	top_bar_texture.destroy();
-	delete game_loader;
-}
-
-void CSS::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
@@ -120,6 +98,21 @@ void CSS::load_game_menu() {
 	inc_thread();
 
 	game_loader->finished = true;
+}
+
+CSS::~CSS() {
+	for (int i = 0; i < num_slots; i++) {
+		chara_slots[i].texture.destroy();
+	}
+	for (int i = 0; i < 2; i++) {
+		big_chara_slots[i].texture.destroy();
+		mobile_css_slots[i].destroy();
+		cursors[i].texture.destroy();
+	}
+	background_texture.destroy();
+	big_bar_texture.destroy();
+	top_bar_texture.destroy();
+	delete game_loader;
 }
 
 /// <summary>

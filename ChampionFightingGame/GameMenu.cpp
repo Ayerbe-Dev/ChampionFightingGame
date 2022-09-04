@@ -2,6 +2,7 @@
 #include "Loader.h"
 #include "GameManager.h"
 #include "GameTexture.h"
+#include "FontManager.h"
 
 void GameMenu::event_up_press(){}
 void GameMenu::event_down_press(){}
@@ -14,10 +15,6 @@ void GameMenu::event_pause_press() {}
 void GameMenu::event_any_press() {}
 void GameMenu::process_background() {}
 
-void GameMenu::load_game_menu() {
-	GameManager::get_instance()->set_menu_info(this);
-}
-
 GameMenu::GameMenu() {
 	average_ticks.reserve(10000);
 	looping = nullptr;
@@ -28,6 +25,30 @@ GameMenu::GameMenu() {
 	game_loader = nullptr;
 	frame = 0;
 	fps = 60;
+	prev_fps = 0;
+	FontManager* font_manager = font_manager->get_instance();
+	font_manager->load_face("FiraCode");
+
+	fps_font = font_manager->load_font("FiraCode", 12);
+	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0));
+	fps_counter.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_counter.set_pos(glm::vec3(0.0, 10.0, 0.0));
+	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0));
+	fps_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_texture.set_pos(glm::vec3(80.0, 10.0, 0.0));
+
+	font_manager->unload_face("FiraCode");
+}
+
+GameMenu::~GameMenu() {
+	for (int i = 0, max = menu_objects.size(); i < max; i++) {
+		for (int i2 = 0, max2 = menu_objects[i2].size(); i2 < max2; i2++) {
+			menu_objects[i][i2].destroy();
+		}
+	}
+	fps_font.unload_font();
+	fps_counter.destroy();
+	fps_texture.destroy();
 }
 
 void GameMenu::update_state(int game_state, int game_context) {
@@ -59,6 +80,10 @@ void GameMenu::frame_delay_check_fps() {
 	else {
 		wait_ms();
 		frame++;
+	}
+	if (prev_fps != fps) {
+		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255));
+		prev_fps = fps;
 	}
 }
 
@@ -164,7 +189,7 @@ void MenuObject::add_texture(const GameTexture& that) {
 }
 
 void MenuObject::add_texture(unsigned int texture_id) {
-	textures.push_back(GameTexture());
+	textures.emplace_back(GameTexture());
 	textures.back().init(texture_id);
 }
 

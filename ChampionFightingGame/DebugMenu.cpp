@@ -20,18 +20,17 @@ void debug_main() {
 	render_manager->reset_gl_environment();
 
 	DebugMenu *debug = new DebugMenu;
-	debug->load_game_menu();
 
-	resource_manager->load_model("resource/chara/rowan/model/model.dae");
+	resource_manager->load_model_resource("resource/chara/rowan/model/model.dae");
 
 	GameObject go1;
-	resource_manager->load_model_instance("resource/chara/rowan/model/model.dae", &go1.model);
+	resource_manager->load_model("resource/chara/rowan/model/model.dae", &go1.model);
 	go1.model.load_textures("c0");
 	go1.init_shader();
 	go1.scale *= glm::vec3(0.05);
 
 	GameObject go2;
-	resource_manager->load_model_instance("resource/chara/rowan/model/model.dae", &go2.model);
+	resource_manager->load_model("resource/chara/rowan/model/model.dae", &go2.model);
 	go2.model.load_textures("c1");
 	go2.init_shader();
 	go2.scale *= glm::vec3(0.05);
@@ -87,18 +86,14 @@ void debug_main() {
 	cotr_imgui_terminate();
 	go1.model.unload_textures();
 	go2.model.unload_textures();
-	resource_manager->unload_model_instance("resource/chara/rowan/model/model.dae");
-	resource_manager->unload_model_instance("resource/chara/rowan/model/model.dae");
 	resource_manager->unload_model("resource/chara/rowan/model/model.dae");
+	resource_manager->unload_model("resource/chara/rowan/model/model.dae");
+	resource_manager->unload_model_resource("resource/chara/rowan/model/model.dae");
 	render_manager->unlink_all_shaders();
 	delete debug;
 }
 
 DebugMenu::DebugMenu() {
-
-}
-
-void DebugMenu::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
@@ -106,4 +101,8 @@ void DebugMenu::load_game_menu() {
 	while (game_manager->get_crash_log(&crash_reason)) {
 		debug_messages.push_back(crash_reason);
 	}
+}
+
+DebugMenu::~DebugMenu() {
+
 }

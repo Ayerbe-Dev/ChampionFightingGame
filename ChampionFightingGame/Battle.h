@@ -103,9 +103,6 @@ public:
 	Battle();
 	~Battle();
 
-	void load_game_menu();
-	void unload_game_menu();
-
 	void process_main();
 	void process_debug_boxes();
 	void process_ui();

@@ -72,16 +72,11 @@ void battle_main() {
 	}
 
 	Battle *battle = new Battle;
-	battle->load_game_menu();
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
 	while (*battle->looping) {
 		battle->frame_delay_check_fps();
-		if (battle->prev_fps != battle->fps) {
-			battle->fps_counter.update_text(battle->fps_font, std::to_string(battle->fps), glm::vec4(0, 0, 0, 255));
-			battle->prev_fps = battle->fps;
-		}
 
 		glStencilMask(0xFF);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -121,16 +116,10 @@ void battle_main() {
 #endif
 	battle->fps_font.unload_font();
 	font_manager->unload_face("Fiend-Oblique");
-	font_manager->unload_face("FiraCode");
-	battle->unload_game_menu();
 	delete battle;
 }
 
-Battle::Battle() {}
-
-Battle::~Battle() {}
-
-void Battle::load_game_menu() {
+Battle::Battle() {
 	GameManager* game_manager = GameManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
@@ -158,14 +147,6 @@ void Battle::load_game_menu() {
 	battle_object_manager = BattleObjectManager::get_instance();
 
 	inc_thread();
-
-	fps_font = font_manager->load_font("FiraCode", 12);
-	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0));
-	fps_counter.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_counter.set_pos(glm::vec3(0.0, 10.0, 0.0));
-	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0));
-	fps_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_texture.set_pos(glm::vec3(80.0, 10.0, 0.0));
 
 	combo_font = font_manager->load_font("Fiend-Oblique", 64);
 	message_font = font_manager->load_font("Fiend-Oblique", 20);
@@ -261,7 +242,7 @@ void Battle::load_game_menu() {
 	ms = std::chrono::high_resolution_clock::now();
 }
 
-void Battle::unload_game_menu() {
+Battle::~Battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();

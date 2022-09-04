@@ -23,7 +23,7 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 }
 
 StageAsset::~StageAsset() {
-	model.unload_model_resource();
+	model.unload_model();
 }
 
 void StageAsset::stage_asset_main() {

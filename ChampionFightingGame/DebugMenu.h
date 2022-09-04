@@ -22,8 +22,7 @@ enum{
 class DebugMenu : public GameMenu {
 public:
     DebugMenu();
-
-    void load_game_menu();
+    ~DebugMenu();
 
     std::vector<std::string> debug_messages;
 };

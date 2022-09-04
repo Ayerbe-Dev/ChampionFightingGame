@@ -212,12 +212,19 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		}
 	}
 	if (parrying) {
-		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14;
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 12;
+		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 12 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
+		int diff = 0 - attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		if (diff > 0) {
+			defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] += diff;
+			attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] += diff;
+		}
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] += 4;
+		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] += 4;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 14 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
-		int frame_advantage = 14 - (attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + attacker->get_frames_until_actionable());
+		int frame_advantage = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] - (attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + attacker->get_frames_until_actionable());
 		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 		return hitbox->id;
 	}

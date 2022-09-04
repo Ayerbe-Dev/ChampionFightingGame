@@ -115,24 +115,24 @@ void Model::load_model_resource(std::string path) {
 }
 
 void Model::load_model(std::string path) {
-	ResourceManager::get_instance()->load_model_instance(path, this);
-}
-
-void Model::unload_model() {
-	ResourceManager::get_instance()->unload_model_instance(directory + "model.dae");
+	ResourceManager::get_instance()->load_model(path, this);
 }
 
 void Model::unload_model_resource() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
-	resource_manager->unload_model_instance(directory + "model.dae");
 	resource_manager->unload_model(directory + "model.dae");
+	resource_manager->unload_model_resource(directory + "model.dae");
+}
+
+void Model::unload_model() {
+	ResourceManager::get_instance()->unload_model(directory + "model.dae");
 }
 
 //Used if there's only one possible texture set (I.E. the stage).
 void Model::load_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->load_texture_instance(directory + texture_names[i]);
+		unsigned int loaded_texture = resource_manager->load_texture(directory + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			texture_map[texture_names[i]][i2]->id = loaded_texture;
 		}
@@ -144,7 +144,7 @@ void Model::load_textures() {
 void Model::load_textures(std::string texture_dir) {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->load_texture_instance(directory + texture_dir + "/" + texture_names[i]);
+		unsigned int loaded_texture = resource_manager->load_texture(directory + texture_dir + "/" + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			texture_map[texture_names[i]][i2]->id = loaded_texture;
 		}
@@ -154,14 +154,14 @@ void Model::load_textures(std::string texture_dir) {
 void Model::unload_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		resource_manager->unload_texture_instance(texture_names[i]);
+		resource_manager->unload_texture(texture_names[i]);
 	}
 }
 
 void Model::unload_texture_resources() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		resource_manager->unload_texture(texture_names[i]);
+		resource_manager->unload_texture_resource(texture_names[i]);
 	}
 }
 

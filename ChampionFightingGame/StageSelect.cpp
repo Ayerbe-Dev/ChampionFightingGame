@@ -13,15 +13,12 @@ void stage_select_main() {
 
 	ResourceManager::get_instance()->unload_all_models();
 
-	font_manager->load_face("FiraCode");
-
 	Player* player[2];
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 	const Uint8* keyboard_state;
 
 	StageSelect* stage_select = new StageSelect;
-	stage_select->load_game_menu();
 
 	while (*stage_select->looping) {
 		stage_select->frame_delay();
@@ -97,24 +94,7 @@ StageSelect::StageSelect() {
 	prev_selection = 0;
 	num_slots_per_row = 1;
 	selected = false;
-}
 
-StageSelect::~StageSelect() {
-	ResourceManager* resource_manager = ResourceManager::get_instance();
-	for (int i = 0, max = menu_objects.size(); i < max; i++) {
-		for (int i2 = 0, max2 = menu_objects[i2].size(); i2 < max2; i2++) {
-			menu_objects[i][i2].destroy();
-		}
-	}
-	for (int i = 0, max = stages.size(); i < max; i++) {
-		if (stages[i].id != selection) {
-			stages[i].demo_model.model.unload_model_resource();
-		}
-	}
-	RenderManager::get_instance()->remove_light();
-}
-
-void StageSelect::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
@@ -167,6 +147,7 @@ bool StageSelect::load_stage_select() {
 	std::string resource_name;
 
 	FontManager* font_manager = FontManager::get_instance();
+	font_manager->load_face("FiraCode");
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
 
 	for (int i = 0; getline(stage_file, stage_name); i++) {
@@ -216,6 +197,15 @@ bool StageSelect::load_stage_select() {
 	main_text_font.unload_font();
 
 	return true;
+}
+
+StageSelect::~StageSelect() {
+	for (int i = 0, max = stages.size(); i < max; i++) {
+		if (stages[i].id != selection) {
+			stages[i].demo_model.model.unload_model_resource();
+		}
+	}
+	RenderManager::get_instance()->remove_light();
 }
 
 void StageSelect::process() {

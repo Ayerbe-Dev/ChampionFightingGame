@@ -17,8 +17,6 @@ public:
     MainMenu();
     ~MainMenu();
 
-    void load_game_menu();
-
     void process_main();
     void render();
     void process_background();

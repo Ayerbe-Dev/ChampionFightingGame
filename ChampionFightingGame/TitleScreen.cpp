@@ -14,7 +14,6 @@ void title_screen_main() {
 	const Uint8* keyboard_state;
 
     TitleScreen *title_screen = new TitleScreen;
-	title_screen->load_game_menu();
 
     while (*title_screen->looping) {
 		wait_ms();
@@ -42,18 +41,6 @@ void title_screen_main() {
 }
 
 TitleScreen::TitleScreen() {
-
-}
-
-TitleScreen::~TitleScreen() {
-	title_l1.destroy();
-	title_l2.destroy();
-	title_l3.destroy();
-	title_l4.destroy();
-	text.destroy();
-}
-
-void TitleScreen::load_game_menu() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->set_menu_info(this);
 
@@ -62,6 +49,14 @@ void TitleScreen::load_game_menu() {
 	title_l3.init("resource/game_state/title/ui/title-l3.png");
 	title_l4.init("resource/game_state/title/ui/title-l4.png");
 	text.init("resource/game_state/title/ui/Praeiudicium.png");
+}
+
+TitleScreen::~TitleScreen() {
+	title_l1.destroy();
+	title_l2.destroy();
+	title_l3.destroy();
+	title_l4.destroy();
+	text.destroy();
 }
 
 void TitleScreen::render() {

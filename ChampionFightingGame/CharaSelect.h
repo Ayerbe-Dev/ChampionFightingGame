@@ -53,9 +53,8 @@ public:
     CSS();
     ~CSS();
 
-    void load_game_menu();
-
     bool load_css();
+
     void add_slot(int id, std::string cardDir, std::string cardName);
     int get_num_slots();
 

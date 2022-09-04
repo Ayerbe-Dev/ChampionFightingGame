@@ -14,7 +14,7 @@ ResourceManager* ResourceManager::get_instance() {
 	return instance;
 }
 
-void ResourceManager::load_model(std::string dir) {
+void ResourceManager::load_model_resource(std::string dir) {
 	if (!model_map.contains(dir)) {
 		model_map[dir] = ModelResource();
 		model_map[dir].model.load_model_resource(dir);
@@ -22,31 +22,24 @@ void ResourceManager::load_model(std::string dir) {
 	}
 }
 
-void ResourceManager::unload_model(std::string dir, bool strict) {
-	if (model_map.contains(dir)) {
-		if (model_map[dir].user_count == 0) {
-			model_map[dir].model.unload_model();
-			model_map.erase(dir);
-		}
-		else if (strict) {
-			GameManager::get_instance()->add_crash_log("ERROR: Cannot unload model " + dir 
-				+ " while " + std::to_string(model_map[dir].user_count) + " instances are still in use");
-		}
-		else {
-			std::cout << "WARNING: Model " << dir << " unloaded while " << model_map[dir].user_count << " instances are still in use.\n";
-		}
-	}
-}
-
-void ResourceManager::load_model_instance(std::string dir, Model* ret) {
+void ResourceManager::load_model(std::string dir, Model* ret) {
 	if (!model_map.contains(dir)) {
-		load_model(dir);
+		load_model_resource(dir);
 	}
 	model_map[dir].user_count++;
 	model_map[dir].model.copy(ret);
 }
 
-void ResourceManager::unload_model_instance(std::string dir) {
+void ResourceManager::unload_model_resource(std::string dir, bool strict) {
+	if (model_map.contains(dir)) {
+		if (model_map[dir].user_count == 0 || !strict) {
+			model_map[dir].model.unload_model();
+			model_map.erase(dir);
+		}
+	}
+}
+
+void ResourceManager::unload_model(std::string dir) {
 	if (model_map.contains(dir)) {
 		model_map[dir].user_count--;
 	}
@@ -59,7 +52,7 @@ void ResourceManager::unload_all_models() {
 	model_map.clear();
 }
 
-void ResourceManager::load_texture(std::string dir) {
+void ResourceManager::load_texture_resource(std::string dir) {
 	if (!texture_map.contains(dir)) {
 		texture_map[dir] = TextureResource();
 		texture_map[dir].texture = loadGLTexture(dir);
@@ -67,31 +60,24 @@ void ResourceManager::load_texture(std::string dir) {
 	}
 }
 
-void ResourceManager::unload_texture(std::string dir, bool strict) {
-	if (texture_map.contains(dir)) {
-		if (texture_map[dir].user_count == 0) {
-			glDeleteTextures(1, &texture_map[dir].texture);
-			texture_map.erase(dir);
-		}
-		else if (strict) {
-			GameManager::get_instance()->add_crash_log("ERROR: Cannot unload texture " + dir
-				+ " while " + std::to_string(texture_map[dir].user_count) + " instances are still in use");
-		}
-		else {
-			std::cout << "WARNING: Texture " << dir << " unloaded while " << texture_map[dir].user_count << " instances are still in use.\n";
-		}
-	}
-}
-
-unsigned int ResourceManager::load_texture_instance(std::string dir) {
+unsigned int ResourceManager::load_texture(std::string dir) {
 	if (!texture_map.contains(dir)) {
-		load_texture(dir);
+		load_texture_resource(dir);
 	}
 	texture_map[dir].user_count++;
 	return texture_map[dir].texture;
 }
 
-void ResourceManager::unload_texture_instance(std::string dir) {
+void ResourceManager::unload_texture_resource(std::string dir, bool strict) {
+	if (texture_map.contains(dir)) {
+		if (texture_map[dir].user_count == 0 || !strict) {
+			glDeleteTextures(1, &texture_map[dir].texture);
+			texture_map.erase(dir);
+		}
+	}
+}
+
+void ResourceManager::unload_texture(std::string dir) {
 	if (texture_map.contains(dir)) {
 		texture_map[dir].user_count--;
 	}

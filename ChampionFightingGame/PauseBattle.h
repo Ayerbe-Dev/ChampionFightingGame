@@ -10,9 +10,9 @@ class PauseBattle : public GameMenu {
 public:
 	PauseBattle();
 	~PauseBattle();
-	
-	void load_game_menu();
+
 	void event_start_press();
+	void event_select_press();
 
 	GameTexture panel;
 	Player* player[2];

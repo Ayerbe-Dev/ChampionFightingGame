@@ -24,7 +24,7 @@ void GameObject::new_effect_no_follow(std::string name, glm::vec3 pos, glm::vec3
 	glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame,
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	pos += this->pos;
-	effect_manager->activate_effect(id_effect, name, pos, rot, scale, rgba, (GameObject*)nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	effect_manager->activate_effect(id_effect, name, pos, rot, scale, rgba, nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 }
 
 void GameObject::clear_effect(std::string name, int instance) {

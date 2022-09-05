@@ -25,10 +25,6 @@ public:
 		glm::vec4 rgba, GameObject* game_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame,
 		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
 	
-	void activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, 
-		glm::vec4 rgba, BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame,
-		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
-	
 	void clear_effect(int object_id, std::string name, int instance_id = 0);
 	void clear_effect_all(int object_id = -1);
 	Effect get_effect(std::string name);

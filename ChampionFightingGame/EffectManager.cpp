@@ -39,24 +39,6 @@ void EffectManager::render() {
 }
 
 void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
-	glm::vec4 rgba, BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame,
-	glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
-	if (effect_name_map.find(name) == effect_name_map.end()) {
-		std::cerr << "Effect " << name << " isn't loaded!\n";
-		return;
-	}
-	if (id2index.find(object_id) == id2index.end()) {
-		std::cerr << "ID " << object_id << " is not a valid effect caster!\n";
-		return;
-	}
-
-	EffectInstance to_add = loaded_effects[effect_name_map[name]].instantiate(pos, rot, scale, rgba, battle_object,
-		bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
-
-	active_effects[id2index[object_id]].push_back(to_add);
-}
-
-void EffectManager::activate_effect(int object_id, std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 	glm::vec4 rgba, GameObject* game_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame,
 	glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	if (effect_name_map.find(name) == effect_name_map.end()) {

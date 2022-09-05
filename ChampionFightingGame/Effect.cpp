@@ -83,13 +83,6 @@ EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale
 	return ret;
 }
 
-EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
-	BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
-	EffectInstance ret(this, pos, rot, scale, rgba, (BattleObject*)battle_object, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
-	return ret;
-}
-
 EffectInstance::EffectInstance() {
 	effect = nullptr;
 	shader = nullptr;
@@ -143,42 +136,8 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 			WINDOW_HEIGHT / (100 * game_object->scale.y),
 			WINDOW_DEPTH / (100 * game_object->scale.z)
 		);
-	}
-	else {
-		scale_vec = glm::vec3(0.05);
-	}
-}
-
-EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
-	BattleObject* battle_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
-	this->effect = effect;
-	shader = effect->shader;
-	this->pos = pos;
-	this->rot = rot;
-	this->scale = scale;
-	this->rgba = rgba;
-	this->game_object = battle_object;
-	this->bone_id = bone_id;
-	this->bone_offset = bone_offset;
-	this->pos_frame = pos_frame;
-	this->rot_frame = rot_frame;
-	this->scale_frame = scale_frame;
-	this->rgba_frame = rgba_frame;
-	final_pos = glm::vec3(0.0);
-	final_rot = glm::vec3(0.0);
-	final_scale = glm::vec3(1.0);
-	final_rgba = glm::vec4(1.0);
-	flip = false;
-	this->rate = rate;
-	this->frame = frame;
-	if (battle_object != nullptr) {
-		scale_vec = glm::vec3(
-			WINDOW_WIDTH / (100 * battle_object->scale.x),
-			WINDOW_HEIGHT / (100 * battle_object->scale.y),
-			WINDOW_DEPTH / (100 * battle_object->scale.z)
-		);
-		if (!battle_object->facing_right) {
+		BattleObject* battle_object = static_cast<BattleObject*>(game_object);
+		if (battle_object != nullptr && !battle_object->facing_right) {
 			this->scale.y *= -1.0;
 			this->scale_frame.y *= -1.0;
 			flip = true;
@@ -200,8 +159,15 @@ bool EffectInstance::process() {
 	final_rgba = rgba + (rgba_frame * frame);
 	if (game_object != nullptr) {
 		if (bone_id != -1) {
-			final_pos += game_object->get_bone_position(bone_id, bone_offset);
-			final_rot += game_object->get_bone_rotation(bone_id);
+			BattleObject* battle_object = static_cast<BattleObject*>(game_object);
+			if (battle_object != nullptr) {
+				final_pos += battle_object->get_bone_position(bone_id, bone_offset);
+				final_rot += battle_object->get_bone_rotation(bone_id);
+			}
+			else {
+				final_pos += game_object->get_bone_position(bone_id, bone_offset);
+				final_rot += game_object->get_bone_rotation(bone_id);
+			}
 		}
 		else {
 			final_pos += game_object->pos;

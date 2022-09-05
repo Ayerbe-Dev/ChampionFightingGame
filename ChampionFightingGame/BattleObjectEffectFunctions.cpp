@@ -38,7 +38,7 @@ void BattleObject::new_effect_no_follow(std::string name, glm::vec3 pos, glm::ve
 	if (!facing_right) {
 		scale.x *= -1.0;
 	}
-	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, (GameObject*)nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 }
 
 void BattleObject::clear_effect(std::string name, int instance) {

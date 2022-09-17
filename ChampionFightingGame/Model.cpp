@@ -64,7 +64,7 @@ void Model::init(std::string path) {
 	std::string skeleton_path = directory + "skeleton.smd";
 	has_skeleton = load_skeleton(skeleton_path);
 
-	process_node(scene->mRootNode, scene);
+	process_start(scene);
 	if (has_skeleton) {
 		process_skeleton(scene->mRootNode);
 		post_process_skeleton();
@@ -75,10 +75,10 @@ void Model::destroy() {
 	delete dummy_matrix;
 	delete dummy_vec;
 	delete dummy_quat;
-	for (int i = 0; i < meshes.size(); i++) {
-		glDeleteVertexArrays(1, &meshes[i].VAO);
-		glDeleteBuffers(1, &meshes[i].VBO);
-		glDeleteBuffers(1, &meshes[i].EBO);
+	for (auto& [mesh, _] : meshes)	{
+		glDeleteVertexArrays(1, &mesh.VAO);
+		glDeleteBuffers(1, &mesh.VBO);
+		glDeleteBuffers(1, &mesh.EBO);
 	}
 	unload_texture_resources();
 }
@@ -89,19 +89,22 @@ void Model::copy(Model* ret) {
 	ret->dummy_quat = this->dummy_quat;
 	ret->dummy_vec = this->dummy_vec;
 	ret->directory = this->directory;
+	ret->flip_matrix = this->flip_matrix;
 
-	for (int i = 0, max = this->meshes.size(); i < max; i++) {
-		ret->meshes.push_back(Mesh());
-		this->meshes[i].copy(&ret->meshes[i]);
-		for (int i2 = 0, max2 = this->meshes[i].textures.size(); i2 < max2; i2++) {
-			ret->texture_map[meshes[i].textures[i2].filename].push_back(&ret->meshes[i].textures[i2]);
-		}
-	}
-	ret->mesh_map = this->mesh_map;
-	
 	for (int i = 0, max = this->texture_names.size(); i < max; i++) {
 		ret->texture_names.push_back(this->texture_names[i]);
 	}
+	ret->texture_map = this->texture_map;
+
+	for (int i = 0, max = this->meshes.size(); i < max; i++) {
+		ret->meshes.push_back(this->meshes[i]);
+	}
+	ret->mesh_map = this->mesh_map;
+
+	for (int i = 0, max = this->materials.size(); i < max; i++) {
+		ret->materials.push_back(this->materials[i]);
+	}
+	ret->texture_map = this->texture_map;
 
 	for (int i = 0, max = this->bones.size(); i < max; i++) {
 		ret->bones.push_back(this->bones[i]);
@@ -128,7 +131,8 @@ void Model::load_textures() {
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		unsigned int loaded_texture = resource_manager->load_texture(directory + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = loaded_texture;
+			const auto& [matDex, texDex] = texture_map[texture_names[i]][i2];
+			materials[matDex].textures[texDex].id = loaded_texture;
 		}
 	}
 }
@@ -140,7 +144,8 @@ void Model::load_textures(std::string texture_dir) {
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		unsigned int loaded_texture = resource_manager->load_texture(directory + texture_dir + "/" + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = loaded_texture;
+			const auto& [matDex, texDex] = texture_map[texture_names[i]][i2];
+			materials[matDex].textures[texDex].id = loaded_texture;
 		}
 	}
 }
@@ -150,7 +155,8 @@ void Model::unload_textures() {
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		resource_manager->unload_texture(texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = 0;
+			const auto& [matDex, texDex] = texture_map[texture_names[i]][i2];
+			materials[matDex].textures[texDex].id = 0;
 		}
 	}
 }
@@ -160,7 +166,8 @@ void Model::unload_texture_resources() {
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		resource_manager->unload_texture_resource(texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			texture_map[texture_names[i]][i2]->id = 0;
+			const auto& [matDex, texDex] = texture_map[texture_names[i]][i2];
+			materials[matDex].textures[texDex].id = 0;
 		}
 	}
 }
@@ -274,9 +281,9 @@ void Model::render(Shader* shader, bool flip) {
 		}
 	}
 
-	for (Mesh &mesh : meshes) {
+	for (const auto& [mesh, matDex] : meshes) {
 		if (mesh.visible) {
-			mesh.render();
+			mesh.render(&materials[matDex]);
 		}
 	}
 }
@@ -293,7 +300,7 @@ void Model::render_no_texture(Shader* shader, bool flip) {
 		}
 	}
 
-	for (Mesh& mesh : meshes) {
+	for (const auto& [mesh, _] : meshes) {
 		if (mesh.visible) {
 			mesh.render_no_texture();
 		}
@@ -306,7 +313,7 @@ void Model::set_mesh_visibility(std::string mesh_name, bool visibility) {
 		return;
 	}
 	else {
-		meshes[index].visible = visibility;
+		meshes[index].first.visible = visibility;
 	}
 }
 
@@ -364,22 +371,52 @@ bool Model::load_skeleton(std::string path) {
 	return true;
 }
 
+void Model::process_start(const aiScene* scene) {
+	//convert contents of mMaterials[] into materials, updating texture_map
+	//load_texture_data handles updates to texture_names
+	for (unsigned int matDex = 0; matDex < scene->mNumMaterials; matDex++)
+	{
+		aiMaterial* material = scene->mMaterials[matDex];
+
+		std::vector<ModelTexture> textures;
+
+		std::vector<ModelTexture> diffuseMaps = load_texture_data(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+		std::vector<ModelTexture> specularMaps = load_texture_data(material, aiTextureType_SPECULAR, "texture_specular");
+		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		std::vector<ModelTexture> normalMaps = load_texture_data(material, aiTextureType_HEIGHT, "texture_normal");
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+		std::vector<ModelTexture> heightMaps = load_texture_data(material, aiTextureType_AMBIENT, "texture_height");
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+		materials.push_back({ textures, material->GetName().C_Str() });
+		material_map[materials[matDex].name] = matDex;
+
+		//for each texture in the current material, add ordered pair to that texture to texture_map
+		for (int tex = 0, max = materials[matDex].textures.size(); tex < max; tex++)
+		{
+			texture_map[materials[matDex].textures[tex].filename].push_back({ matDex, tex });
+		}
+	}
+	process_node(scene->mRootNode, scene);
+}
+
 void Model::process_node(aiNode* node, const aiScene* scene) {
 	for (int i = 0, max = node->mNumMeshes; i < max; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		int index = meshes.size();
-		meshes.push_back(process_mesh(mesh, scene));
-		mesh_map[meshes[index].name] = index;
-		for (int i2 = 0, max2 = meshes[index].textures.size(); i2 < max2; i2++) {
-			texture_map[meshes[index].textures[i2].filename].push_back(&meshes[index].textures[i2]);
-		}
+		meshes.push_back(process_mesh(mesh));
+		mesh_map[meshes[index].first.name] = index;
 	}
 	for (unsigned int i = 0, max = node->mNumChildren; i < max; i++) {
 		process_node(node->mChildren[i], scene);
 	}
 }
 
-Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
+std::pair<Mesh, int> Model::process_mesh(aiMesh* mesh) {
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<ModelTexture> textures;
@@ -432,25 +469,12 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 		}
 	}
 
-	if (mesh->mMaterialIndex >= 0) {
-	
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<ModelTexture> diffuseMaps = load_texture_data(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		std::vector<ModelTexture> specularMaps = load_texture_data(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-		std::vector<ModelTexture> normalMaps = load_texture_data(material, aiTextureType_HEIGHT, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-		std::vector<ModelTexture> heightMaps = load_texture_data(material, aiTextureType_AMBIENT, "texture_height");
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-	}
-
 	std::string name = mesh->mName.C_Str();
 
 	if (mesh->HasBones()) {
 		if (bones.size() == 0) {
 			std::cout << "ERROR: Model at " << directory << " has bones but skeleton.smd was not found!\n";
-			return Mesh(vertices, indices, textures, name);
+			return { Mesh(vertices, indices, name), mesh->mMaterialIndex };
 		}
 
 		for (int i = 0; i < mesh->mNumBones; i++) {
@@ -472,7 +496,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 		}
 	}
 
-	return Mesh(vertices, indices, textures, name);
+	return { Mesh(vertices, indices, name), mesh->mMaterialIndex };
 }
 std::vector<ModelTexture> Model::load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name) {
 	std::vector<ModelTexture> textures;
@@ -559,35 +583,12 @@ Mesh::Mesh() {
 	EBO = 0;
 }
 
-Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name) {
+Mesh::Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::string name) {
 	this->vertices = vertices;
 	this->indices = indices;
-	this->textures = textures;
 	this->name = name;
 
 	init();
-}
-
-void Mesh::copy(Mesh* ret) {
-	for (int i = 0, max = this->vertices.size(); i < max; i++) {
-		ret->vertices.push_back(this->vertices[i]);
-	}
-	for (int i = 0, max = this->indices.size(); i < max; i++) {
-		ret->indices.push_back(this->indices[i]);
-	}
-	for (int i = 0, max = this->textures.size(); i < max; i++) {
-		ModelTexture tex;
-		tex.id = 0;
-		tex.filename = this->textures[i].filename;
-		tex.type = this->textures[i].type;
-		tex.type_string = this->textures[i].type_string;
-		ret->textures.push_back(tex);
-	}
-
-	ret->VAO = this->VAO;
-	ret->VBO = this->VBO;
-	ret->EBO = this->EBO;
-	ret->name = this->name;
 }
 
 void Mesh::init() {
@@ -621,10 +622,10 @@ void Mesh::init() {
 	visible = true;
 }
 
-FORCE_INLINE void Mesh::render() {
-	for (unsigned int i = 0, max = textures.size(); i < max; i++) {
+FORCE_INLINE void Mesh::render(const Material* const mat) const {
+	for (unsigned int i = 0, max = mat->textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + i + 1);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		glBindTexture(GL_TEXTURE_2D, mat->textures[i].id);
 	}
 
 	glBindVertexArray(VAO);
@@ -632,7 +633,7 @@ FORCE_INLINE void Mesh::render() {
 	glBindVertexArray(0);
 }
 
-FORCE_INLINE void Mesh::render_no_texture() {
+FORCE_INLINE void Mesh::render_no_texture() const {
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

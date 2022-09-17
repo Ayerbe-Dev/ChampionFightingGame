@@ -71,15 +71,14 @@ public:
 	Model();
 	Model(std::string path);
 
+	void init(std::string path);
 	void destroy();
 	void copy(Model* ret);
 
-	void load_model_resource(std::string path); //Loads a model proper
 	void load_model(std::string path); //Checks if this model is already loaded into the ResourceManager,
 	//then copies it
 
 	void unload_model(); //Tells the ResourceManager to decrease the user count for this model
-	void unload_model_resource(); //Actually unloads it
 
 	void load_textures(); //Checks if this model's textures are already loaded into the ResourceManager,
 	//then copies them and tells all of its meshes

@@ -4,12 +4,9 @@
 
 class Rowan : public Fighter {
 public:
-	//Setup
-
-	virtual void chara_id();
 	Rowan();
 	Rowan(int id, Player* player);
-	void loadRoyStatusFunctions();
+	void load_chara_status_scripts() override;
 	void load_chara_sounds() override;
 	void load_chara_effects() override;
 	void load_move_scripts() override;

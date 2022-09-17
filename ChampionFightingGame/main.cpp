@@ -53,17 +53,7 @@ int main() {
 
 	SDL_GameControllerEventState(SDL_ENABLE);
 
-	//The only Singletons that are actually necessary here are GameManager, RenderManager, SoundManager
-	//and SaveManager, the rest are just here so we can call their deletion functions from main(). 
-
-	//That being said, we can't keep them perfectly organized. RenderManager creates the window, but
-	//SaveManager has to initialize first so it knows how big the window must be.
-
-	//Just for the record, GameManager's constructor calls RenderManager::get_instance(), so the window 
-	//is actually created during GameManager(), not main()
-
-	//Wait what am I talking about of course RenderManager can go first, it can just call SaveManager
-	//as it initializes (which it was gonna do anyway).
+	//Initialize all of the singletons
 
 	AIManager* ai_manager = AIManager::get_instance();
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
@@ -78,23 +68,27 @@ int main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
+	
+
+	font_manager->load_face("FiraCode");
+
 	opening_main();
 
-	bool running = *game_manager->game_state != GAME_STATE_CLOSE;
+	bool running = game_manager->game_state != GAME_STATE_CLOSE;
 
 	while (running) {
 		for (int i = 0; i < MAX_LAYERS; i++) {
 			game_manager->looping[i] = true;
 		}
-		if (game_manager->game_main[*game_manager->game_state] != nullptr) {
-			game_manager->game_main[*game_manager->game_state]();
+		if (game_manager->game_main[game_manager->game_state] != nullptr) {
+			game_manager->game_main[game_manager->game_state]();
 		}
-		else if (*game_manager->game_state != GAME_STATE_CLOSE) {
-			game_manager->add_crash_log("Error: Game State was " + std::to_string(*game_manager->game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
+		else if (game_manager->game_state != GAME_STATE_CLOSE) {
+			game_manager->add_crash_log("Error: Game State was " + std::to_string(game_manager->game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
 			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
 		}
 
-		if (*game_manager->game_state == GAME_STATE_CLOSE) {
+		if (game_manager->game_state == GAME_STATE_CLOSE) {
 			running = false;
 		}
 	}
@@ -115,7 +109,7 @@ int main() {
 	SDL_Quit();
 
 //	ShowWindow(windowHandle, SW_SHOW);
-//	If we try to end the program without putting the window back up, it technically causes a crash. Program was about to end anyway so it doesn't really
-//	matter but ehhhhhhhhh, clean exits are nice
+//	If we try to end the program without putting the window back up, it technically causes a crash. 
+//  Program was about to end anyway so it doesn't really matter but ehhhhhhhhh, clean exits are nice.
 	return 0;
 }

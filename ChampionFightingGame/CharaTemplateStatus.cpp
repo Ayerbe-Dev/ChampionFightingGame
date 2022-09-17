@@ -21,6 +21,6 @@ bool CharaTemplate::specific_status_attack() {
 	return false;
 }
 
-void CharaTemplate::loadCharaTemplateStatusFunctions() {
+void CharaTemplate::load_chara_status_scripts() {
 
 }

@@ -21,6 +21,6 @@ bool Nightsaber::specific_status_attack() {
 	return false;
 }
 
-void Nightsaber::loadNightsaberStatusFunctions() {
+void Nightsaber::load_chara_status_scripts() {
 
 }

@@ -62,6 +62,7 @@ public:
 	int follow_id;
 
 	bool following_players;
+	bool anim_end;
 
 	CameraAnim* anim_kind;
 	float frame;

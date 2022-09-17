@@ -17,7 +17,7 @@ ResourceManager* ResourceManager::get_instance() {
 void ResourceManager::load_model_resource(std::string dir) {
 	if (!model_map.contains(dir)) {
 		model_map[dir] = ModelResource();
-		model_map[dir].model.load_model_resource(dir);
+		model_map[dir].model.init(dir);
 		model_map[dir].user_count = 0;
 	}
 }
@@ -33,7 +33,7 @@ void ResourceManager::load_model(std::string dir, Model* ret) {
 void ResourceManager::unload_model_resource(std::string dir, bool strict) {
 	if (model_map.contains(dir)) {
 		if (model_map[dir].user_count == 0 || !strict) {
-			model_map[dir].model.unload_model();
+			model_map[dir].model.destroy();
 			model_map.erase(dir);
 		}
 	}
@@ -43,13 +43,6 @@ void ResourceManager::unload_model(std::string dir) {
 	if (model_map.contains(dir)) {
 		model_map[dir].user_count--;
 	}
-}
-
-void ResourceManager::unload_all_models() {
-	for (std::map<std::string, ModelResource>::iterator it = model_map.begin(); it != model_map.end(); it++) {
-		it->second.model.destroy();
-	}
-	model_map.clear();
 }
 
 void ResourceManager::load_texture_resource(std::string dir) {
@@ -83,15 +76,32 @@ void ResourceManager::unload_texture(std::string dir) {
 	}
 }
 
-void ResourceManager::destroy_instance() {
-	if (instance != nullptr) {
-		delete instance;
+void ResourceManager::unload_unused() {
+	for (std::map<std::string, ModelResource>::iterator it = model_map.begin(); it != model_map.end(); it++) {
+		if (it->second.user_count == 0) {
+			it->second.model.destroy();
+		}
+	}
+	for (std::map<std::string, TextureResource>::iterator it = texture_map.begin(); it != texture_map.end(); it++) {
+		if (it->second.user_count == 0) {
+			glDeleteTextures(1, &it->second.texture);
+		}
 	}
 }
 
-void ResourceManager::unload_all_textures() {
+void ResourceManager::unload_all() {
+	for (std::map<std::string, ModelResource>::iterator it = model_map.begin(); it != model_map.end(); it++) {
+		it->second.model.destroy();
+	}
+	model_map.clear();
 	for (std::map<std::string, TextureResource>::iterator it = texture_map.begin(); it != texture_map.end(); it++) {
 		glDeleteTextures(1, &it->second.texture);
 	}
 	texture_map.clear();
+}
+
+void ResourceManager::destroy_instance() {
+	if (instance != nullptr) {
+		delete instance;
+	}
 }

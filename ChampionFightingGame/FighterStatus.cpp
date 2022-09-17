@@ -970,7 +970,11 @@ void Fighter::status_thrown() {
 		return;
 	}
 	apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
-	add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+	if (!add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]) && pos.y != 0.0) {
+		Fighter* that = battle_object_manager->fighter[!id];
+		//If you get thrown into the corner, the attacker should be pushed away from you.
+		that->add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * -1.3, 0.0);
+	}
 }
 
 void Fighter::enter_status_thrown() {
@@ -1562,7 +1566,7 @@ void Fighter::exit_status_wakeup() {
 
 }
 
-void Fighter::load_status_scripts() {
+void Fighter::load_fighter_status_scripts() {
 	status_script[FIGHTER_STATUS_WAIT] = &Fighter::status_wait;
 	enter_status_script[FIGHTER_STATUS_WAIT] = &Fighter::enter_status_wait;
 	exit_status_script[FIGHTER_STATUS_WAIT] = &Fighter::exit_status_wait;

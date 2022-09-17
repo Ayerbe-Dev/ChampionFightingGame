@@ -15,6 +15,7 @@ GameObject::GameObject() {
 	rate = 1.0;
 	prev_anim_rate = 0.0;
 	prev_anim_offset = glm::vec3(0.0);
+	pos = glm::vec3(0.0);
 }
 
 void GameObject::render(bool flip) {

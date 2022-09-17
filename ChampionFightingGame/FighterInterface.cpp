@@ -1,17 +1,7 @@
-#include "FighterInterface.h"
 #include "Fighters.h"
 
 Fighter* create_fighter(int chara_kind, int id, Player* player) {
-	FighterInterface fighter_interface(chara_kind, id, player);
-	Fighter* ret = fighter_interface.get_fighter();
-	return ret;
-}
-
-FighterInterface::FighterInterface() {
-
-}
-
-FighterInterface::FighterInterface(int chara_kind, int id, Player* player) {
+	Fighter* fighter;
 	switch (chara_kind) {
 		case (CHARA_KIND_ROWAN):
 		default:
@@ -89,10 +79,5 @@ FighterInterface::FighterInterface(int chara_kind, int id, Player* player) {
 		} break;
 	}
 	BattleObjectManager::get_instance()->fighter[id] = fighter;
-}
-
-FighterInterface::~FighterInterface() {}
-
-Fighter* FighterInterface::get_fighter() {
 	return fighter;
 }

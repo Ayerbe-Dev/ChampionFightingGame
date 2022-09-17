@@ -179,7 +179,7 @@ Battle::Battle() {
 	//the RenderManager's constructor like you'd assume
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->super_init();
+		fighter[i]->init();
 
 		inc_thread();
 		meters[i].init(fighter[i]);

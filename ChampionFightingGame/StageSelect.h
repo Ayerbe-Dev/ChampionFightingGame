@@ -4,12 +4,14 @@
 #include "Camera.h"
 #include "StageSelectConstants.h"
 #include "Light.h"
+#include "GameTexture.h"
 
 void stage_select_main();
 
 struct StageDemo {
 	StageDemo();
 	StageDemo(int id, std::string name, std::string resource_name);
+	
 	int id;
 	std::string name;
 	std::string resource_name;

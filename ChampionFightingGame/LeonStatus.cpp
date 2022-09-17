@@ -21,6 +21,6 @@ bool Leon::specific_status_attack() {
 	return false;
 }
 
-void Leon::loadLeonStatusFunctions() {
+void Leon::load_chara_status_scripts() {
 
 }

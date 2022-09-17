@@ -8,7 +8,7 @@ public:
 	ProjectileTemplate();
 	ProjectileTemplate(int id, Player* player);
 
-	void loadProjectileTemplateStatusFunctions();
+	void load_projectile_unique_status_scripts() override;
 	void load_move_scripts() override;
 
 	void projectile_unique_main() override;

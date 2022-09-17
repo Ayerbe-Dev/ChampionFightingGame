@@ -4,10 +4,9 @@
 
 class Rook : public Fighter {
 public:
-	virtual void chara_id();
 	Rook();
 	Rook(int id, Player* player);
-	void loadRookStatusFunctions();
+	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 
 	void chara_main() override;

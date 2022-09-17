@@ -23,7 +23,6 @@ void GameObject::init_shader() {
 	shadow_shader.set_bool("has_skeleton", model.has_skeleton);
 	outline_shader.use();
 	outline_shader.set_bool("has_skeleton", model.has_skeleton);
-
 	render_manager->link_shader(&shader);
 	render_manager->link_shader(&shadow_shader);
 	render_manager->link_shader(&outline_shader);

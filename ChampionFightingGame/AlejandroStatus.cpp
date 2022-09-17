@@ -21,7 +21,7 @@ bool Alejandro::specific_status_attack() {
 	return false;
 }
 
-void Alejandro::loadAlejandroStatusFunctions() {
+void Alejandro::load_chara_status_scripts() {
 	status_script.resize(CHARA_ALEJANDRO_STATUS_MAX, nullptr);
 	enter_status_script.resize(CHARA_ALEJANDRO_STATUS_MAX, nullptr);
 	exit_status_script.resize(CHARA_ALEJANDRO_STATUS_MAX, nullptr);

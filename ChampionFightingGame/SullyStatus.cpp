@@ -21,6 +21,6 @@ bool Sully::specific_status_attack() {
 	return false;
 }
 
-void Sully::loadSullyStatusFunctions() {
+void Sully::load_chara_status_scripts() {
 
 }

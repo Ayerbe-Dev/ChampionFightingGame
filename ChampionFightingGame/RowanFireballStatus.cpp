@@ -125,7 +125,7 @@ void RowanFireball::exit_status_rowan_fireball_ground() {
 
 }
 
-void RowanFireball::loadRowanFireballStatusFunctions() {
+void RowanFireball::load_projectile_unique_status_scripts() {
 	status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
 	enter_status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
 	exit_status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);

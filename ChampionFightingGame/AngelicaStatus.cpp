@@ -21,6 +21,6 @@ bool Angelica::specific_status_attack() {
 	return false;
 }
 
-void Angelica::loadAngelicaStatusFunctions() {
+void Angelica::load_chara_status_scripts() {
 
 }

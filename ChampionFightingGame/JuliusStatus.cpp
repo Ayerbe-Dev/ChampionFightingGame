@@ -21,6 +21,6 @@ bool Julius::specific_status_attack() {
 	return false;
 }
 
-void Julius::loadJuliusStatusFunctions() {
+void Julius::load_chara_status_scripts() {
 
 }

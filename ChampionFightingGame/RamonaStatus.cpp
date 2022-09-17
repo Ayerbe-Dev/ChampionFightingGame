@@ -21,6 +21,6 @@ bool Ramona::specific_status_attack() {
 	return false;
 }
 
-void Ramona::loadRamonaStatusFunctions() {
+void Ramona::load_chara_status_scripts() {
 
 }

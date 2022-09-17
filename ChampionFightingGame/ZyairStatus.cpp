@@ -21,6 +21,6 @@ bool Zyair::specific_status_attack() {
 	return false;
 }
 
-void Zyair::loadZyairStatusFunctions() {
+void Zyair::load_chara_status_scripts() {
 
 }

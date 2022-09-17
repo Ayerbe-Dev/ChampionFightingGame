@@ -16,10 +16,10 @@ public:
 
 	Player *player[2];
 	int layer = 0;
-	int* game_state;
-	int* prev_game_state;
-	int* game_context;
-	int* prev_game_context;
+	int game_state;
+	int prev_game_state;
+	int game_context;
+	int prev_game_context;
 	bool looping[MAX_LAYERS];
 
 	void (*game_main[GAME_STATE_MAX])();

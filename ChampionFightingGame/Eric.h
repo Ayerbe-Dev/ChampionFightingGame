@@ -4,12 +4,9 @@
 
 class Eric : public Fighter {
 public:
-	//Setup
-
-	virtual void chara_id();
 	Eric();
 	Eric(int id, Player* player);
-	void loadEricStatusFunctions();
+	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 	
 	void chara_main() override;

@@ -42,23 +42,22 @@ struct ModelTexture {
 	std::string filename;
 };
 
-struct Material {
-	std::vector<ModelTexture> textures;
-	std::string name;
-};
-
 class Mesh {
 public:
 	Mesh();
-	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::string name);
+	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures, std::string name);
+
+	void copy(Mesh* ret);
 	
-	void render(const Material* const mat) const;
-	void render_no_texture() const;
+	void render();
+	void render_no_texture();
 
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
+	std::vector<ModelTexture> textures;
 	std::string name;
 	bool visible;
+
 
 	unsigned int VAO;
 	unsigned int VBO;
@@ -104,13 +103,9 @@ public:
 	int get_bone_id(std::string bone_name, bool verbose = true);
 
 	std::vector<std::string> texture_names;
-	//std::unordered_map<std::string, std::vector<ModelTexture*>> texture_map;
-	std::unordered_map<std::string, std::vector<std::pair<int, int>>> texture_map;
+	std::unordered_map<std::string, std::vector<ModelTexture*>> texture_map;
 
-	std::vector<Material> materials;
-	std::unordered_map<std::string, int> material_map;
-
-	std::vector<std::pair<Mesh, int>> meshes;
+	std::vector<Mesh> meshes;
 	std::unordered_map<std::string, int> mesh_map;
 
 	glm::mat4 global_transform;
@@ -124,9 +119,8 @@ public:
 	bool has_skeleton;
 private:
 	bool load_skeleton(std::string path);
-	void process_start(const aiScene* scene);
     void process_node(aiNode* node, const aiScene* scene);
-    std::pair<Mesh, int> process_mesh(aiMesh* mesh);
+    Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);
 	void process_skeleton(aiNode* root);
 	void post_process_skeleton();

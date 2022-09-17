@@ -59,9 +59,9 @@ class MenuObject {
 public:
     MenuObject();
     MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children);
+    ~MenuObject();
 
     void render();
-    void destroy();
     void add_child(bool render_all_children);
     void add_texture(std::string path);
     void add_texture(Font font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);

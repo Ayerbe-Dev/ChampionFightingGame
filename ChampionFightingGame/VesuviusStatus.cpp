@@ -21,6 +21,6 @@ bool Vesuvius::specific_status_attack() {
 	return false;
 }
 
-void Vesuvius::loadVesuviusStatusFunctions() {
+void Vesuvius::load_chara_status_scripts() {
 
 }

@@ -28,7 +28,7 @@ void ProjectileTemplate::projectile_template_exit_status_template() {
 
 }
 
-void ProjectileTemplate::loadProjectileTemplateStatusFunctions() {
+void ProjectileTemplate::load_projectile_unique_status_scripts() {
 	status_script.resize(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX, nullptr);
 	enter_status_script.resize(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX, nullptr);
 	exit_status_script.resize(PROJECTILE_PROJECTILE_TEMPLATE_STATUS_MAX, nullptr);

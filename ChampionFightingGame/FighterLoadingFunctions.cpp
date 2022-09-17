@@ -6,7 +6,7 @@
 #include "GameManager.h"
 #include <fstream>
 
-void Fighter::super_init() {
+void Fighter::init() {
 	sound_manager->add_sound_player(id);
 	effect_manager->add_effect_caster(id);
 	stage = battle_object_manager->stage;
@@ -29,7 +29,8 @@ void Fighter::super_init() {
 	load_model_shader();
 	init_boxes();
 	load_anim_list();
-	load_status_scripts();
+	load_chara_status_scripts();
+	load_fighter_status_scripts();
 	load_move_scripts();
 	load_fighter_sounds();
 	load_chara_sounds();

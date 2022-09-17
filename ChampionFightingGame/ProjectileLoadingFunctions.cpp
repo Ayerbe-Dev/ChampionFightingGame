@@ -8,7 +8,7 @@
 #include "EffectManager.h"
 #include "GameManager.h"
 
-void Projectile::super_init() {
+void Projectile::init() {
 	sound_manager = SoundManager::get_instance();
 	sound_manager->add_sound_player(id);
 	effect_manager = EffectManager::get_instance();
@@ -19,7 +19,8 @@ void Projectile::super_init() {
 	load_model_shader();
 	init_boxes();
 	load_anim_list();
-	load_status_scripts();
+	load_projectile_unique_status_scripts();
+	load_projectile_status_scripts();
 	load_move_scripts();
 
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
@@ -71,7 +72,7 @@ void Projectile::load_anim_list() {
 	}
 }
 
-void Projectile::load_status_scripts() {
+void Projectile::load_projectile_status_scripts() {
 	status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::status_default;
 	enter_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::enter_status_default;
 	exit_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::exit_status_default;

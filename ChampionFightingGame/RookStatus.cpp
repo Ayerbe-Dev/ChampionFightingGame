@@ -21,6 +21,6 @@ bool Rook::specific_status_attack() {
 	return false;
 }
 
-void Rook::loadRookStatusFunctions() {
+void Rook::load_chara_status_scripts() {
 
 }

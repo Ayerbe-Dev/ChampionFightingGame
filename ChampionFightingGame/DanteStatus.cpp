@@ -21,6 +21,6 @@ bool Dante::specific_status_attack() {
 	return false;
 }
 
-void Dante::loadDanteStatusFunctions() {
+void Dante::load_chara_status_scripts() {
 
 }

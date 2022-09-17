@@ -21,6 +21,6 @@ bool Bruno::specific_status_attack() {
 	return false;
 }
 
-void Bruno::loadBrunoStatusFunctions() {
+void Bruno::load_chara_status_scripts() {
 
 }

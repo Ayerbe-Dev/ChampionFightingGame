@@ -35,7 +35,6 @@ void debug_main() {
 	go2.init_shader();
 	go2.scale *= glm::vec3(0.05);
 
-
 	go1.pos = glm::vec3(-200.0, 0, 0);
 	go2.pos = glm::vec3(200.0, 0, 0);
 

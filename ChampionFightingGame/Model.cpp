@@ -37,6 +37,40 @@ Model::Model(std::string path) {
 	load_model(path);
 }
 
+void Model::init(std::string path) {
+	move = false;
+	tpose = false;
+	dummy_matrix = new glm::mat4(1.0);
+	dummy_vec = new glm::vec3(0.0);
+	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
+	flip_matrix = glm::mat4(
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
+		return;
+	}
+
+	global_transform = ass_converter(scene->mRootNode->mTransformation.Inverse());
+
+	directory = path.substr(0, path.find_last_of('/')) + "/";
+	std::string skeleton_path = directory + "skeleton.smd";
+	has_skeleton = load_skeleton(skeleton_path);
+
+	process_node(scene->mRootNode, scene);
+	if (has_skeleton) {
+		process_skeleton(scene->mRootNode);
+		post_process_skeleton();
+	}
+}
+
 void Model::destroy() {
 	delete dummy_matrix;
 	delete dummy_vec;
@@ -80,48 +114,8 @@ void Model::copy(Model* ret) {
 	}
 }
 
-void Model::load_model_resource(std::string path) {
-	move = false;
-	tpose = false;
-	dummy_matrix = new glm::mat4(1.0);
-	dummy_vec = new glm::vec3(0.0);
-	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
-	flip_matrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, -1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	);
-
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals);
-
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
-		return;
-	}
-
-	global_transform = ass_converter(scene->mRootNode->mTransformation.Inverse());
-
-	directory = path.substr(0, path.find_last_of('/')) + "/";
-	std::string skeleton_path = directory + "skeleton.smd";
-	has_skeleton = load_skeleton(skeleton_path);
-
-	process_node(scene->mRootNode, scene);
-	if (has_skeleton) {
-		process_skeleton(scene->mRootNode);
-		post_process_skeleton();
-	}
-}
-
 void Model::load_model(std::string path) {
 	ResourceManager::get_instance()->load_model(path, this);
-}
-
-void Model::unload_model_resource() {
-	ResourceManager* resource_manager = ResourceManager::get_instance();
-	resource_manager->unload_model(directory + "model.dae");
-	resource_manager->unload_model_resource(directory + "model.dae");
 }
 
 void Model::unload_model() {
@@ -155,6 +149,9 @@ void Model::unload_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		resource_manager->unload_texture(texture_names[i]);
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			texture_map[texture_names[i]][i2]->id = 0;
+		}
 	}
 }
 
@@ -162,6 +159,9 @@ void Model::unload_texture_resources() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		resource_manager->unload_texture_resource(texture_names[i]);
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			texture_map[texture_names[i]][i2]->id = 0;
+		}
 	}
 }
 

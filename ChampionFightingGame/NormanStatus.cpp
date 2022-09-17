@@ -21,6 +21,6 @@ bool Norman::specific_status_attack() {
 	return false;
 }
 
-void Norman::loadNormanStatusFunctions() {
+void Norman::load_chara_status_scripts() {
 
 }

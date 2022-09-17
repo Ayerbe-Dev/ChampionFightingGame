@@ -8,7 +8,7 @@ public:
 	RowanFireball();
 	RowanFireball(int id, Player* player);
 
-	void loadRowanFireballStatusFunctions();
+	void load_projectile_unique_status_scripts() override;
 	void load_move_scripts() override;
 
 	void projectile_unique_main() override;

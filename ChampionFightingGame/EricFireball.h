@@ -8,7 +8,7 @@ public:
 	EricFireball();
 	EricFireball(int id, Player* player);
 
-	void loadEricFireballStatusFunctions();
+	void load_projectile_unique_status_scripts() override;
 	void load_move_scripts() override;
 
 	void projectile_unique_main() override;

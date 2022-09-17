@@ -21,6 +21,6 @@ bool Tessa::specific_status_attack() {
 	return false;
 }
 
-void Tessa::loadTessaStatusFunctions() {
+void Tessa::load_chara_status_scripts() {
 
 }

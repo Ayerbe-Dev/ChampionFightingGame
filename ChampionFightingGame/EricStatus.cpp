@@ -140,7 +140,7 @@ void Eric::eric_exit_status_special_uppercut_fall() {
 
 }
 
-void Eric::loadEricStatusFunctions() {
+void Eric::load_chara_status_scripts() {
 	status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
 	enter_status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);
 	exit_status_script.resize(CHARA_ERIC_STATUS_MAX, nullptr);

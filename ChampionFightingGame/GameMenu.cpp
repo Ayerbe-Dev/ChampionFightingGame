@@ -27,7 +27,6 @@ GameMenu::GameMenu() {
 	fps = 60;
 	prev_fps = 0;
 	FontManager* font_manager = font_manager->get_instance();
-	font_manager->load_face("FiraCode");
 
 	fps_font = font_manager->load_font("FiraCode", 12);
 	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0));
@@ -36,16 +35,9 @@ GameMenu::GameMenu() {
 	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0));
 	fps_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	fps_texture.set_pos(glm::vec3(80.0, 10.0, 0.0));
-
-	font_manager->unload_face("FiraCode");
 }
 
 GameMenu::~GameMenu() {
-	for (int i = 0, max = menu_objects.size(); i < max; i++) {
-		for (int i2 = 0, max2 = menu_objects[i2].size(); i2 < max2; i2++) {
-			menu_objects[i][i2].destroy();
-		}
-	}
 	fps_font.unload_font();
 	fps_counter.destroy();
 	fps_texture.destroy();
@@ -160,15 +152,12 @@ void MenuObject::render() {
 	}
 }
 
-void MenuObject::destroy() {
+MenuObject::~MenuObject() {
 	if (cursor.initialized) {
 		cursor.destroy();
 	}
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		textures[i].destroy();
-	}
-	for (int i = 0, max = children.size(); i < max; i++) {
-		children[i].destroy();
 	}
 }
 

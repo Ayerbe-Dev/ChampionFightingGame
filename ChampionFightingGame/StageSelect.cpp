@@ -11,7 +11,7 @@ void stage_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	ResourceManager::get_instance()->unload_all_models();
+	ResourceManager::get_instance()->unload_unused();
 
 	Player* player[2];
 	player[0] = game_manager->player[0];
@@ -51,8 +51,8 @@ void stage_select_main() {
 		player[i]->stage_info = StageInfo(demo.id, demo.resource_name);
 	}
 
-	font_manager->unload_face("FiraCode");
 	delete stage_select;
+	ResourceManager::get_instance()->unload_unused();
 }
 
 StageDemo::StageDemo() {
@@ -84,7 +84,7 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	while (light_stream >> light_pos.x) {
 		light_stream >> light_pos.y;
 		light_stream >> light_pos.z;
-		lights.push_back(Light(light_pos));
+		lights.emplace_back(light_pos);
 	}
 	light_stream.close();
 }
@@ -111,7 +111,7 @@ StageSelect::StageSelect() {
 	float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
 	float slot_height = WINDOW_HEIGHT / 9;
 
-	menu_objects[STAGE_SELECT_GROUP_MISC].push_back(MenuObject(this, nullptr, false));
+	menu_objects[STAGE_SELECT_GROUP_MISC].emplace_back(this, nullptr, false);
 	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.init("resource/game_state/stage_select/cursor.png");
 	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_width(slot_width);
 	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_height(slot_height);
@@ -133,6 +133,15 @@ StageSelect::StageSelect() {
 	}
 }
 
+StageSelect::~StageSelect() {
+	for (int i = 0, max = stages.size(); i < max; i++) {
+		if (stages[i].id != selection) {
+			stages[i].demo_model.model.unload_model();
+		}
+	}
+	RenderManager::get_instance()->remove_light();
+}
+
 bool StageSelect::load_stage_select() {
 	std::ifstream stage_file;
 	stage_file.open("resource/game_state/stage_select/stage_select_param.yml");
@@ -147,13 +156,12 @@ bool StageSelect::load_stage_select() {
 	std::string resource_name;
 
 	FontManager* font_manager = FontManager::get_instance();
-	font_manager->load_face("FiraCode");
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
 
 	for (int i = 0; getline(stage_file, stage_name); i++) {
 		stage_file >> id >> resource_name;
-		stages.push_back(StageDemo(id, stage_name, resource_name));
-		menu_objects[STAGE_SELECT_GROUP_SLOT].push_back(MenuObject(this, nullptr, false));
+		stages.emplace_back(id, stage_name, resource_name);
+		menu_objects[STAGE_SELECT_GROUP_SLOT].emplace_back(this, nullptr, false);
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture("resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture(main_text_font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0));
 		getline(stage_file, stage_name);
@@ -199,15 +207,6 @@ bool StageSelect::load_stage_select() {
 	return true;
 }
 
-StageSelect::~StageSelect() {
-	for (int i = 0, max = stages.size(); i < max; i++) {
-		if (stages[i].id != selection) {
-			stages[i].demo_model.model.unload_model_resource();
-		}
-	}
-	RenderManager::get_instance()->remove_light();
-}
-
 void StageSelect::process() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
@@ -221,6 +220,11 @@ void StageSelect::process() {
 		render_manager->camera.follow_anim(&stages[selection].demo_anim);
 		menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_target_pos(menu_objects[STAGE_SELECT_GROUP_SLOT][selection].textures[0].pos, 8);
 	}
+	else {
+		if (!render_manager->camera.anim_end) {
+			render_manager->camera.follow_anim(&stages[selection].selected_anim);
+		}
+	}
 	render_manager->execute_buffered_events();
 }
 
@@ -233,6 +237,10 @@ void StageSelect::render() {
 	render_manager->shadow_map.use();
 	glViewport(0, 0, 2000, 2000);
 	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glCullFace(GL_FRONT);
+	stages[selection].demo_model.render_shadow();
+	glCullFace(GL_BACK);
 
 	render_manager->g_buffer.use();
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
@@ -249,6 +257,7 @@ void StageSelect::render() {
 	glViewport(render_manager->s_window_width * 0.2, render_manager->s_window_height * 0.28, render_manager->s_window_width * 0.6, render_manager->s_window_height * 0.6);
 	render_manager->g_buffer.render();
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+	
 	glDepthMask(GL_FALSE);
 
 	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_SLOT].size(); i < max; i++) {
@@ -304,6 +313,9 @@ void StageSelect::event_right_press() {
 
 void StageSelect::event_select_press() {
 	if (!selected) {
+		RenderManager* render_manager = RenderManager::get_instance();
+		render_manager->camera.frame = 0.0;
+		render_manager->camera.anim_end = false;
 		selected = true;
 	}
 	else {
@@ -318,6 +330,7 @@ void StageSelect::event_back_press() {
 		*looping = false;
 	}
 	else {
+		RenderManager::get_instance()->camera.frame = 0.0;
 		selected = false;
 	}
 }

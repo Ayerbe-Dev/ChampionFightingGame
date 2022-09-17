@@ -22,13 +22,14 @@ public:
 	void load_model(std::string dir, Model* ret);
 	void unload_model_resource(std::string dir, bool strict = true);
 	void unload_model(std::string dir);
-	void unload_all_models();
 
 	void load_texture_resource(std::string dir);
 	unsigned int load_texture(std::string dir);
 	void unload_texture_resource(std::string dir, bool strict = true);
 	void unload_texture(std::string dir);
-	void unload_all_textures();
+
+	void unload_unused();
+	void unload_all();
 
 	static ResourceManager* get_instance();
 	void destroy_instance();

@@ -331,7 +331,7 @@ void Rowan::rowan_exit_status_special_uppercut_fall() {
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
 }
 
-void Rowan::loadRoyStatusFunctions() {
+void Rowan::load_chara_status_scripts() {
 	status_script.resize(CHARA_ROWAN_STATUS_MAX, nullptr);
 	enter_status_script.resize(CHARA_ROWAN_STATUS_MAX, nullptr);
 	exit_status_script.resize(CHARA_ROWAN_STATUS_MAX, nullptr);

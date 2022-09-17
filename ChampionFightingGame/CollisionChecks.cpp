@@ -212,6 +212,10 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		}
 	}
 	if (parrying) {
+
+		//This type of parry factors in blockstun
+
+/*
 		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 12;
 		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 12 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		int diff = 0 - attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
@@ -225,7 +229,18 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
 		int frame_advantage = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] - (attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + attacker->get_frames_until_actionable());
-		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
+		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;		
+*/
+
+		//This type of parry doesn't
+
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
+		attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
+		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
+		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -attacker->get_frames_until_actionable();
+
 		return hitbox->id;
 	}
 	if (blocking && hitbox->chip_damage != -1.0) {
@@ -349,12 +364,26 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		}
 	}
 	if (parrying) {
-		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 6;
+		//Factors in blockstun
+
+/*
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 6 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16 + get_param_int("parry_advantage_frames", PARAM_FIGHTER) - hitbox->blockstun;
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
-		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + 6 - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
+		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + 16 - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
+*/
+
+		//Doesn't factor in blockstun
+
+		defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
+		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
+		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
+		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + 16 - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
+		attacker->owner->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
+
 		return hitbox->id;
 	}
 	if (blocking && hitbox->chip_damage != -1.0) {

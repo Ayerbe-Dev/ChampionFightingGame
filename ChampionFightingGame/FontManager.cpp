@@ -10,7 +10,7 @@ FontManager::FontManager() {
 }
 
 void FontManager::load_face(std::string name) {
-	if (loaded_faces.find(name) != loaded_faces.end()) {
+	if (loaded_faces.contains(name)) {
 		return;
 	}
 	FT_Face face;

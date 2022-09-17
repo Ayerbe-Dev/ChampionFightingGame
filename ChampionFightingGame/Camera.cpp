@@ -20,6 +20,7 @@ Camera::Camera() {
 	pitch = 3.0;
 	roll = 0.0;
 	following_players = true;
+	anim_end = false;
 	auto_linear_scale = 3.0;
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
@@ -60,6 +61,7 @@ void Camera::play_camera_anim(int follow_id, std::string anim_kind, float rate, 
 
 	this->follow_id = follow_id;
 	following_players = false;
+	anim_end = false;
 	this->frame = frame;
 	this->rate = rate;
 	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
@@ -168,6 +170,10 @@ void Camera::follow_anim() {
 		else {
 			anim_kind = nullptr;
 		}
+		anim_end = true;
+	}
+	else {
+		anim_end = false;
 	}
 }
 
@@ -203,5 +209,9 @@ void Camera::follow_anim(CameraAnim* anim) {
 	frame += rate;
 	if (frame >= anim->length) {
 		frame = 0.0;
+		anim_end = true;
+	}
+	else {
+		anim_end = false;
 	}
 }

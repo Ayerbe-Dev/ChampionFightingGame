@@ -13,4 +13,5 @@ Norman::Norman(int id, Player* player) {
 	fighter_int.resize(CHARA_NORMAN_INT_MAX, 0);
 	fighter_float.resize(CHARA_NORMAN_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_NORMAN_FLAG_MAX, false);
+	init();
 }

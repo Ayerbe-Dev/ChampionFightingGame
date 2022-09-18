@@ -133,7 +133,7 @@ Battle::Battle() {
 	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
-	game_loader = new GameLoader(16);
+	game_loader = new GameLoader(13);
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
@@ -163,9 +163,10 @@ Battle::Battle() {
 	debug_anchor = &debug_boxes.anchor[0][0];
 	debug_offset = &debug_boxes.offset[0][0];
 	active_debug_box->set_alpha(180);
-		
+	
+	inc_thread();
+
 	for (int i = 0; i < 2; i++) {
-		inc_thread();
 		fighter[i] = create_fighter(player[i]->chara_kind, i, player[i]);
 		inc_thread();
 	}
@@ -175,13 +176,9 @@ Battle::Battle() {
 		camera->fighter[i] = fighter[i];
 	}
 	camera->stage = &stage;
-	camera->set_fov(45.0); //This function invokes the RenderManager, so we can't call it during
-	//the RenderManager's constructor like you'd assume
+	camera->set_fov(45.0);
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->init();
-
-		inc_thread();
 		meters[i].init(fighter[i]);
 	
 		inc_thread();

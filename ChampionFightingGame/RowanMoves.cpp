@@ -407,7 +407,9 @@ void Rowan::load_move_scripts() {
 		});
 	});
 	script("stand_hk", [this]() {
-
+		execute_frame(0, [this]() {
+			push_function(&Fighter::START_CINEMATIC_SEQUENCE, "super_start", 0.5, 0.0, 0.4, false, 0.0);
+		});
 	});
 	script("crouch_lp", [this]() {
 		execute_frame(0, [this]() {

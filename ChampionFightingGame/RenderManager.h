@@ -12,6 +12,7 @@
 #include <set>
 #include <mutex>
 #include "GameTexture.h"
+#include "ScriptArg.h"
 
 #define MAX_LIGHT_SOURCES 10
 
@@ -33,11 +34,11 @@ public:
 	void update_shader_cams();
 	void update_shader_shadows();
 	void update_framebuffer_dimensions();
-	void reset_gl_environment();
 
+	void reset_gl_environment();
 	void refresh_sdl_renderer();
 
-	void buffer_event(std::string name, std::function<void(void*)> function, void* buffer_arg = (void*)nullptr);
+	void buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffer_arg = ScriptArg());
 	void execute_buffered_events();
 
 	SDL_Window* window;
@@ -48,8 +49,8 @@ public:
 	std::vector<Light*>lights;
 	std::vector<Shader*> linked_shaders;
 
-	std::vector<std::function<void(void*)>> buffered_events;
-	std::vector<void*> buffered_args;
+	std::vector<std::function<void(ScriptArg)>> buffered_events;
+	std::vector<ScriptArg> buffered_args;
 	std::set<std::string> event_names;
 	std::mutex event_mutex;
 
@@ -71,8 +72,6 @@ public:
 
 	int s_window_width;
 	int s_window_height;
-
-	float brightness_mul;
 
 	static RenderManager* get_instance();
 	void destroy_instance();

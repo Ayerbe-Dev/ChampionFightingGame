@@ -114,8 +114,6 @@ RenderManager::RenderManager() {
 	effect_shader.init("vertex_effect.glsl", "fragment_effect.glsl");
 	text_shader.init("vertex_text.glsl", "fragment_text.glsl");
 	passthrough_shader.init("vertex_passthrough.glsl", "fragment_passthrough.glsl");
-
-	brightness_mul = 1.0;
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -137,7 +135,7 @@ void RenderManager::add_light(Light *light, int target) {
 			lights[target] = light;
 		}
 	}
-	buffer_event("Shader Light", [this](void* arg) {
+	buffer_event("Shader Light", [this](ScriptArg args) {
 		update_shader_lights();
 	});
 }
@@ -152,19 +150,21 @@ void RenderManager::remove_light(int target) {
 		}
 		lights.pop_back();
 	}
-	buffer_event("Shader Light", [this](void* arg) {
+	buffer_event("Shader Light", [this](ScriptArg args) {
 		update_shader_lights();
 	});
 }
 
 void RenderManager::dim_lights(float brightness_mul) {
-	this->brightness_mul = brightness_mul;
-	buffer_event("", [this](void* arg) {
+	ScriptArg args;
+	args.push_arg(brightness_mul);
+	buffer_event("", [this](ScriptArg args) {
+		UNWRAP(brightness_mul, float);
 		for (int i = 0, max = linked_shaders.size(); i < max; i++) {
 			linked_shaders[i]->use();
-			linked_shaders[i]->set_float("brightness_mul", this->brightness_mul);
+			linked_shaders[i]->set_float("brightness_mul", brightness_mul);
 		}
-	});
+	}, args);
 }
 
 //When dim_lights gets called, all shaders are updated with the new brightness multiplier. This
@@ -173,12 +173,14 @@ void RenderManager::dim_lights(float brightness_mul) {
 
 //This function is also literally the only reason RenderObjects can't share shaders
 void RenderManager::undim_shader(Shader* shader) {
-	buffer_event("", [this](void* arg) {
-		Shader* shader = (Shader*)arg;
+	ScriptArg args;
+	args.push_arg(shader);
+	buffer_event("", [this](ScriptArg args) {
+		UNWRAP(shader, Shader*);
 		shader->use();
 		shader->set_float("brightness_mul", 1.0);
 
-	}, (void*)shader);
+	}, args);
 }
 
 void RenderManager::link_shader(Shader *shader) {
@@ -276,7 +278,7 @@ void RenderManager::refresh_sdl_renderer() {
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 }
 
-void RenderManager::buffer_event(std::string name, std::function<void(void*)> function, void* buffered_arg) {
+void RenderManager::buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffered_arg) {
 	event_mutex.lock();
 	if (name == "" || !event_names.contains(name)) {
 		buffered_events.push_back(function);

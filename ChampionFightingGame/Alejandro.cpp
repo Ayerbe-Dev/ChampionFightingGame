@@ -13,4 +13,5 @@ Alejandro::Alejandro(int id, Player* player) {
 	fighter_int.resize(CHARA_ALEJANDRO_INT_MAX, 0);
 	fighter_float.resize(CHARA_ALEJANDRO_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ALEJANDRO_FLAG_MAX, false);
+	init();
 }

@@ -12,6 +12,7 @@ struct ScriptArg {
 	ScriptArg(int num_args, std::queue<std::any> args);
 
 	std::any get_arg();
+	void push_arg(std::any arg);
 	void pop();
 	int num_args;
 

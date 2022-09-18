@@ -553,6 +553,9 @@
     <ClCompile Include="GameObjectLoadingFunctions.cpp">
       <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptArg.cpp">
+      <Filter>2. Code Files\Engine\GameData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">

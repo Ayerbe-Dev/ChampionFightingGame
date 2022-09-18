@@ -383,6 +383,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="SaveManager.cpp" />
     <ClCompile Include="BattleObjectScriptFunctions.cpp" />
     <ClCompile Include="BattleObjectScriptWrappers.cpp" />
+    <ClCompile Include="ScriptArg.cpp" />
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMap.cpp" />

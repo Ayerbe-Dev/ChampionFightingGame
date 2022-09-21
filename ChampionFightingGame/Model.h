@@ -43,6 +43,7 @@ struct ModelTexture {
 };
 
 struct Material {
+	Material(std::vector<ModelTexture> textures, std::string name);
 	std::vector<ModelTexture> textures;
 	std::string name;
 };
@@ -50,13 +51,19 @@ struct Material {
 class Mesh {
 public:
 	Mesh();
-	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, std::string name);
+	Mesh(std::vector<ModelVertex> vertices, std::vector<unsigned int> indices, Material* mat, std::string name);
+	Mesh(Mesh& other);
+	Mesh(const Mesh& other);
+	Mesh operator=(Mesh& other);
+	Mesh operator=(const Mesh& other);
 
-	void render(const Material* const mat) const;
+	void render() const;
 	void render_no_texture() const;
 
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
+	Material* mat;
+	Shader* shader;
 	std::string name;
 	bool visible;
 
@@ -71,10 +78,13 @@ class Model {
 public:
 	Model();
 	Model(std::string path);
+	Model(Model& other);
+	Model(const Model& other);
+	Model operator=(Model& other);
+	Model operator=(const Model& other);
 
 	void init(std::string path);
 	void destroy();
-	void copy(Model* ret);
 
 	void load_model(std::string path); //Checks if this model is already loaded into the ResourceManager,
 	//then copies it
@@ -98,8 +108,10 @@ public:
 	void render_no_texture(Shader* shader, bool flip);
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
+	void set_mesh_mat(std::string mesh_name, std::string mat_name);
 
 	int get_mesh_id(std::string mesh_name);
+	int get_material_id(std::string material_name);
 	int get_bone_id(std::string bone_name, bool verbose = true);
 
 	std::vector<std::string> texture_names;
@@ -108,14 +120,14 @@ public:
 	std::vector<Material> materials;
 	std::unordered_map<std::string, int> material_map;
 
-	std::vector<std::pair<Mesh, int>> meshes;
+	std::vector<Mesh> meshes;
 	std::unordered_map<std::string, int> mesh_map;
 
 	glm::mat4 global_transform;
 
 	std::vector<Bone> bones;
-	std::vector<Bone*> trans_children;
 	std::unordered_map<std::string, int> bone_map;
+	std::vector<Bone*> trans_children;
 
 	std::string directory;
 
@@ -124,7 +136,7 @@ private:
 	bool load_skeleton(std::string path);
     void process_node(aiNode* node, const aiScene* scene);
 	void process_start(const aiScene* scene);
-	std::pair<Mesh, int> process_mesh(aiMesh* mesh);
+	Mesh process_mesh(aiMesh* mesh);
 	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);
 	void process_skeleton(aiNode* root);
 	void post_process_skeleton();

@@ -19,7 +19,7 @@ public:
 	void operator=(const ResourceManager& other) = delete;
 
 	void load_model_resource(std::string dir);
-	void load_model(std::string dir, Model* ret);
+	Model load_model(std::string dir);
 	void unload_model_resource(std::string dir, bool strict = true);
 	void unload_model(std::string dir);
 

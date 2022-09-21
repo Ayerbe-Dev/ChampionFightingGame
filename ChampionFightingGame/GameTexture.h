@@ -107,6 +107,7 @@ public:
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
     std::vector<glm::vec2> spritesheet[4];
     bool initialized;
+    std::string name;
 private:
     unsigned int VAO;
     unsigned int VBO;
@@ -121,7 +122,7 @@ private:
     bool h_flipped;
     bool v_flipped;
 
-    std::string name;
+
     std::string text;
     glm::mat4 matrix;
     bool depth;

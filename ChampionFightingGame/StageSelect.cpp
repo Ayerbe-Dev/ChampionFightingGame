@@ -263,6 +263,7 @@ void StageSelect::render() {
 	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_SLOT].size(); i < max; i++) {
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].render();
 	}
+
 	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.process();
 	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.render();
 }

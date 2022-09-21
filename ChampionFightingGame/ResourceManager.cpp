@@ -22,12 +22,12 @@ void ResourceManager::load_model_resource(std::string dir) {
 	}
 }
 
-void ResourceManager::load_model(std::string dir, Model* ret) {
+Model ResourceManager::load_model(std::string dir) {
 	if (!model_map.contains(dir)) {
 		load_model_resource(dir);
 	}
 	model_map[dir].user_count++;
-	model_map[dir].model.copy(ret);
+	return model_map[dir].model;
 }
 
 void ResourceManager::unload_model_resource(std::string dir, bool strict) {

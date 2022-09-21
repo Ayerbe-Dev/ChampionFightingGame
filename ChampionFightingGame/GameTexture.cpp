@@ -10,13 +10,16 @@
 
 GameTexture::GameTexture() {
 	initialized = false;
+	name = "";
 }
 
 GameTexture::GameTexture(std::string path) {
+	name = "";
 	init(path);
 }
 
 GameTexture::GameTexture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	name = "";
 	init(font, text, rgba, border_x, border_y);
 }
 
@@ -96,6 +99,7 @@ void GameTexture::init(std::string path) {
 	int width;
 	int height;
 	texture = loadGLTexture(path, &width, &height);
+
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
@@ -122,6 +126,7 @@ void GameTexture::init(std::string path) {
 }
 
 void GameTexture::init(GLuint texture, int width, int height) {
+	name = "";
 	pos = glm::vec3(0.0, 0.0, 0.0);
 	rot = glm::vec3(0.0, 0.0, 0.0);
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };

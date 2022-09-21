@@ -137,6 +137,34 @@ MenuObject::MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_chil
 	active_child = 0;
 }
 
+MenuObject::MenuObject(MenuObject&& other) noexcept {
+	this->active_child = other.active_child;
+	for (int i = 0; i < other.textures.size(); i++) {
+		this->textures.push_back(other.textures[i]);
+	}
+
+	this->cursor = other.cursor;
+
+	this->any_event = other.any_event;
+	this->up_event = other.up_event;
+	this->right_event = other.right_event;
+	this->left_event = other.left_event;
+	this->down_event = other.down_event;
+	this->select_event = other.select_event;
+	this->start_event = other.start_event;
+	this->back_event = other.back_event;
+	this->process_event = other.process_event;
+}
+
+MenuObject::~MenuObject() {
+	if (cursor.initialized) {
+		cursor.destroy();
+	}
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		textures[i].destroy();
+	}
+}
+
 void MenuObject::render() {
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		textures[i].process();
@@ -149,15 +177,6 @@ void MenuObject::render() {
 	}
 	else if (active_child != -1 && !children.empty()) {
 		children[active_child].render();
-	}
-}
-
-MenuObject::~MenuObject() {
-	if (cursor.initialized) {
-		cursor.destroy();
-	}
-	for (int i = 0, max = textures.size(); i < max; i++) {
-		textures[i].destroy();
 	}
 }
 

@@ -59,6 +59,7 @@ class MenuObject {
 public:
     MenuObject();
     MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children);
+    MenuObject(MenuObject&& other) noexcept;
     ~MenuObject();
 
     void render();

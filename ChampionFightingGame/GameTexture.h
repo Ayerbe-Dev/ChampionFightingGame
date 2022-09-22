@@ -102,12 +102,13 @@ public:
     unsigned int texture;
     TextureCoord tex_data[4];
     TextureCoord* tex_accessor[4];
-    glm::vec3 pos;
-    glm::vec3 rot;
+    glm::vec3 pos = glm::vec3(0.0);
+    glm::vec3 rot = glm::vec3(0.0);
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
     std::vector<glm::vec2> spritesheet[4];
-    bool initialized;
-    std::string name;
+    bool loaded = false;
+    bool using_resource = false;
+    std::string name = "";
 private:
     unsigned int VAO;
     unsigned int VBO;

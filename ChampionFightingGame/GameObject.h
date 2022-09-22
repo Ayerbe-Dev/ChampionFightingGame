@@ -12,6 +12,10 @@ class EffectManager;
 class GameObject {
 public:
 	GameObject();
+	GameObject(GameObject& other);
+	GameObject(const GameObject& other);
+	GameObject& operator=(GameObject& other);
+	GameObject& operator=(const GameObject& other);
 
 	int id_effect = -1;
 	int id_sound = -1;

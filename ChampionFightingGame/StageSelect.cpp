@@ -89,6 +89,58 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	light_stream.close();
 }
 
+StageDemo::StageDemo(StageDemo& other) {
+	this->id = other.id;
+	this->name = other.name;
+	this->resource_name = other.resource_name;
+	this->demo_model = other.demo_model;
+	this->demo_anim = other.demo_anim;
+	this->selected_anim = other.selected_anim;
+	this->lights = other.lights;
+}
+
+StageDemo::StageDemo(const StageDemo& other) {
+	this->id = other.id;
+	this->name = other.name;
+	this->resource_name = other.resource_name;
+	this->demo_model = other.demo_model;
+	this->demo_anim = other.demo_anim;
+	this->selected_anim = other.selected_anim;
+	this->lights = other.lights;
+}
+
+StageDemo& StageDemo::operator=(StageDemo& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	this->id = other.id;
+	this->name = other.name;
+	this->resource_name = other.resource_name;
+	this->demo_model = other.demo_model;
+	this->demo_anim = other.demo_anim;
+	this->selected_anim = other.selected_anim;
+	this->lights = other.lights;
+
+	return *this;
+}
+
+StageDemo& StageDemo::operator=(const StageDemo& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	this->id = other.id;
+	this->name = other.name;
+	this->resource_name = other.resource_name;
+	this->demo_model = other.demo_model;
+	this->demo_anim = other.demo_anim;
+	this->selected_anim = other.selected_anim;
+	this->lights = other.lights;
+
+	return *this;
+}
+
 StageSelect::StageSelect() {
 	selection = 0;
 	prev_selection = 0;
@@ -126,7 +178,7 @@ StageSelect::StageSelect() {
 		menu_objects[STAGE_SELECT_GROUP_MISC][0].textures[i].set_width_scale(1.5);
 	}
 
-	render_manager->camera.frame = 0.0;
+	render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 	stages[selection].demo_model.model.load_textures();
 	for (int i = 0, max = stages[selection].lights.size(); i < max; i++) {
 		render_manager->add_light(&stages[selection].lights[i]);
@@ -139,7 +191,10 @@ StageSelect::~StageSelect() {
 			stages[i].demo_model.model.unload_model();
 		}
 	}
-	RenderManager::get_instance()->remove_light();
+	RenderManager* render_manager = RenderManager::get_instance();
+	render_manager->remove_light();
+	render_manager->camera.anim_kind = nullptr;
+	render_manager->camera.following_players = true;
 }
 
 bool StageSelect::load_stage_select() {
@@ -180,7 +235,7 @@ bool StageSelect::load_stage_select() {
 		//to render, but I'd imagine it's just a matter of changing how slot_pos is calculated.
 
 		glm::vec3 slot_pos = glm::vec3(
-			STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2 + i * slot_width, 
+			STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2 + (i * slot_width * 2),
 			slot_height * 2 + 60, 
 			0.0
 		);
@@ -188,7 +243,7 @@ bool StageSelect::load_stage_select() {
 			if (max % 2) {
 				slot_pos.x += slot_width / 2;
 			}
-			slot_pos.x -= slot_width * num_slots_per_row;
+			slot_pos.x -= (slot_width * 2) * num_slots_per_row;
 			slot_pos.y -= slot_height * 2;
 		}
 
@@ -217,12 +272,15 @@ void StageSelect::process() {
 			render_manager->remove_light();
 		}
 		prev_selection = selection;
-		render_manager->camera.follow_anim(&stages[selection].demo_anim);
+		if (render_manager->camera.get_anim_name() == "selected" && render_manager->camera.anim_end) {
+			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+		}
+		render_manager->camera.follow_anim();
 		menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_target_pos(menu_objects[STAGE_SELECT_GROUP_SLOT][selection].textures[0].pos, 8);
 	}
 	else {
 		if (!render_manager->camera.anim_end) {
-			render_manager->camera.follow_anim(&stages[selection].selected_anim);
+			render_manager->camera.follow_anim();
 		}
 	}
 	render_manager->execute_buffered_events();
@@ -247,7 +305,6 @@ void StageSelect::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
-
 	stages[selection].demo_model.render();
 
 	glDisable(GL_CULL_FACE);
@@ -269,9 +326,11 @@ void StageSelect::render() {
 }
 
 void StageSelect::event_up_press() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		if (selection >= num_slots_per_row) {
 			selection -= num_slots_per_row;
+			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -280,9 +339,11 @@ void StageSelect::event_up_press() {
 }
 
 void StageSelect::event_down_press() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		if (selection < num_slots_per_row) {
 			selection += num_slots_per_row;
+			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -291,9 +352,11 @@ void StageSelect::event_down_press() {
 }
 
 void StageSelect::event_left_press() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		if (selection != 0 && selection != num_slots_per_row) {
 			selection--;
+			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -302,9 +365,11 @@ void StageSelect::event_left_press() {
 }
 
 void StageSelect::event_right_press() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		if (selection != num_slots_per_row - 1 && selection != menu_objects[STAGE_SELECT_GROUP_SLOT].size() - 1) {
 			selection++;
+			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -313,10 +378,11 @@ void StageSelect::event_right_press() {
 }
 
 void StageSelect::event_select_press() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		RenderManager* render_manager = RenderManager::get_instance();
 		render_manager->camera.frame = 0.0;
-		render_manager->camera.anim_end = false;
+		render_manager->camera.play_camera_anim(-1, &stages[selection].selected_anim, 1.0, 0.0);
 		selected = true;
 	}
 	else {
@@ -326,12 +392,13 @@ void StageSelect::event_select_press() {
 }
 
 void StageSelect::event_back_press() {
+	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		update_state(GAME_STATE_MENU);
 		*looping = false;
 	}
 	else {
-		RenderManager::get_instance()->camera.frame = 0.0;
+		render_manager->camera.play_camera_anim(-1, &stages[selection].selected_anim, -1.0, 0.0);
 		selected = false;
 	}
 }

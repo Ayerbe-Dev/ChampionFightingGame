@@ -103,4 +103,5 @@ public:
     int active_child;
 
     bool render_all_children;
+    bool moving;
 };

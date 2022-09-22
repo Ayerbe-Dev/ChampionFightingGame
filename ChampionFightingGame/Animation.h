@@ -21,6 +21,10 @@ public:
 class AnimationTable {
 public:
 	AnimationTable();
+	AnimationTable(AnimationTable& other);
+	AnimationTable(const AnimationTable& other);
+	AnimationTable& operator=(AnimationTable& other);
+	AnimationTable& operator=(const AnimationTable& other);
 	void load_animations(std::string resource_dir, Model* model);
 	void load_animations_no_faf(std::string resource_dir, Model* model);
 	void unload_animations();

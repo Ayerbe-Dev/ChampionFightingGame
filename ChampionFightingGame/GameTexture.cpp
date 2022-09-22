@@ -7,19 +7,15 @@
 #include <fstream>
 #include "stb_image.h"
 #include "ThreadManager.h"
+#include "ResourceManager.h"
 
-GameTexture::GameTexture() {
-	initialized = false;
-	name = "";
-}
+GameTexture::GameTexture() {}
 
 GameTexture::GameTexture(std::string path) {
-	name = "";
 	init(path);
 }
 
 GameTexture::GameTexture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
-	name = "";
 	init(font, text, rgba, border_x, border_y);
 }
 
@@ -96,10 +92,15 @@ void GameTexture::init(std::string path) {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+
+	texture = resource_manager->load_texture(path);
 	int width;
 	int height;
-	texture = loadGLTexture(path, &width, &height);
-
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
@@ -122,11 +123,12 @@ void GameTexture::init(std::string path) {
 	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
-	initialized = true;
+	loaded = true;
+	using_resource = true;
 }
 
 void GameTexture::init(GLuint texture, int width, int height) {
-	name = "";
+	name = "Unnamed GLuint Texture";
 	pos = glm::vec3(0.0, 0.0, 0.0);
 	rot = glm::vec3(0.0, 0.0, 0.0);
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
@@ -183,10 +185,11 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	text = "";
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
-	initialized = true;
+	loaded = true;
 }
 
 void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+	name = text + " Texture";
 	texture = font.create_text(text, rgba, border_x, border_y);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -237,14 +240,21 @@ void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border
 	this->text = text;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
-	initialized = true;
+	loaded = true;
 }
 
 void GameTexture::destroy() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteTextures(1, &texture);
-	initialized = false;
+	if (loaded) {
+		if (using_resource) {
+			ResourceManager::get_instance()->unload_texture(name);
+		}
+		else {
+			glDeleteVertexArrays(1, &VAO);
+			glDeleteBuffers(1, &VBO);
+			glDeleteTextures(1, &texture);
+		}
+		loaded = false;
+	}
 }
 
 void GameTexture::set_pos(glm::vec3 pos) {

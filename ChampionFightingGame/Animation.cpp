@@ -106,7 +106,49 @@ Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) 
 	}
 }
 
-AnimationTable::AnimationTable() {}
+AnimationTable::AnimationTable() {
+
+}
+
+AnimationTable::AnimationTable(AnimationTable& other) {
+	for (int i = 0, max = other.animations.size(); i < max; i++) {
+		animations.push_back(other.animations[i]);
+	}
+	anim_map = other.anim_map;
+}
+
+AnimationTable::AnimationTable(const AnimationTable& other) {
+	for (int i = 0, max = other.animations.size(); i < max; i++) {
+		animations.push_back(other.animations[i]);
+	}
+	anim_map = other.anim_map;
+}
+
+AnimationTable& AnimationTable::operator=(AnimationTable& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	for (int i = 0, max = other.animations.size(); i < max; i++) {
+		animations.push_back(other.animations[i]);
+	}
+	anim_map = other.anim_map;
+
+	return *this;
+}
+
+AnimationTable& AnimationTable::operator=(const AnimationTable& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	for (int i = 0, max = other.animations.size(); i < max; i++) {
+		animations.push_back(other.animations[i]);
+	}
+	anim_map = other.anim_map;
+
+	return *this;
+}
 
 void AnimationTable::load_animations(std::string resource_dir, Model *model) {
 	std::ifstream anim_list;

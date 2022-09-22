@@ -70,7 +70,9 @@ Model::Model(Model& other) {
 	}
 }
 
-Model::Model(const Model& other) {
+Model::Model(const Model& other) { 
+	std::cout << "Model at directory " << other.directory << " copied!\n";
+
 	this->global_transform = other.global_transform;
 	this->dummy_matrix = other.dummy_matrix;
 	this->dummy_quat = other.dummy_quat;
@@ -83,7 +85,9 @@ Model::Model(const Model& other) {
 	}
 	this->texture_map = other.texture_map;
 
-	this->materials = other.materials;
+	for (int i = 0, max = other.materials.size(); i < max; i++) {
+		this->materials.push_back(other.materials[i]);
+	}
 	this->material_map = other.material_map;
 
 	for (int i = 0, max = other.meshes.size(); i < max; i++) {
@@ -103,7 +107,7 @@ Model::Model(const Model& other) {
 	}
 }
 
-Model Model::operator=(Model& other) {
+Model& Model::operator=(Model& other) {
 	if (this == &other) {
 		return *this;
 	}
@@ -114,13 +118,15 @@ Model Model::operator=(Model& other) {
 	this->dummy_vec = other.dummy_vec;
 	this->directory = other.directory;
 	this->flip_matrix = other.flip_matrix;
-
+	
 	for (int i = 0, max = other.texture_names.size(); i < max; i++) {
 		this->texture_names.push_back(other.texture_names[i]);
 	}
 	this->texture_map = other.texture_map;
 
-	this->materials = other.materials;
+	for (int i = 0, max = other.materials.size(); i < max; i++) {
+		this->materials.push_back(other.materials[i]);
+	}
 	this->material_map = other.material_map;
 
 	for (int i = 0, max = other.meshes.size(); i < max; i++) {
@@ -141,7 +147,7 @@ Model Model::operator=(Model& other) {
 	return *this;
 }
 
-Model Model::operator=(const Model& other) {
+Model& Model::operator=(const Model& other) {
 	if (this == &other) {
 		return *this;
 	}
@@ -158,7 +164,9 @@ Model Model::operator=(const Model& other) {
 	}
 	this->texture_map = other.texture_map;
 
-	this->materials = other.materials;
+	for (int i = 0, max = other.materials.size(); i < max; i++) {
+		this->materials.push_back(other.materials[i]);
+	}
 	this->material_map = other.material_map;
 
 	for (int i = 0, max = other.meshes.size(); i < max; i++) {

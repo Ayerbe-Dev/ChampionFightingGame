@@ -11,6 +11,10 @@ void stage_select_main();
 struct StageDemo {
 	StageDemo();
 	StageDemo(int id, std::string name, std::string resource_name);
+	StageDemo(StageDemo& other);
+	StageDemo(const StageDemo& other);
+	StageDemo& operator=(StageDemo& other);
+	StageDemo& operator=(const StageDemo& other);
 	
 	int id;
 	std::string name;

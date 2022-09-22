@@ -128,6 +128,7 @@ MenuObject::MenuObject() {
 	parent = nullptr;
 	render_all_children = false;
 	active_child = 0;
+	moving = false;
 }
 
 MenuObject::MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children) {
@@ -135,6 +136,7 @@ MenuObject::MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_chil
 	this->parent = parent;
 	this->render_all_children = render_all_children;
 	active_child = 0;
+	moving = false;
 }
 
 MenuObject::MenuObject(MenuObject&& other) noexcept {
@@ -154,14 +156,18 @@ MenuObject::MenuObject(MenuObject&& other) noexcept {
 	this->start_event = other.start_event;
 	this->back_event = other.back_event;
 	this->process_event = other.process_event;
+	this->moving = false;
+	other.moving = true;
 }
 
 MenuObject::~MenuObject() {
-	if (cursor.initialized) {
-		cursor.destroy();
-	}
-	for (int i = 0, max = textures.size(); i < max; i++) {
-		textures[i].destroy();
+	if (!moving) {
+		if (cursor.loaded) {
+			cursor.destroy();
+		}
+		for (int i = 0, max = textures.size(); i < max; i++) {
+			textures[i].destroy();
+		}
 	}
 }
 

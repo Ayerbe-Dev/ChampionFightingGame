@@ -12,6 +12,44 @@ Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geo
 	init(vertex_dir, fragment_dir, geometry_dir);
 }
 
+Shader::Shader(Shader& other) {
+	this->name = other.name;
+	this->id = other.id;
+	this->loaded = true;
+	other.loaded = false;
+}
+
+Shader::Shader(const Shader& other) {
+	this->name = other.name;
+	this->id = other.id;
+	this->loaded = true;
+}
+
+Shader& Shader::operator=(Shader& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	this->name = other.name;
+	this->id = other.id;
+	this->loaded = true;
+	other.loaded = false;
+
+	return *this;
+}
+
+Shader& Shader::operator=(const Shader& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	this->name = other.name;
+	this->id = other.id;
+	this->loaded = true;
+
+	return *this;
+}
+
 Shader::~Shader() {
 	if (loaded) {
 		destroy();
@@ -20,7 +58,7 @@ Shader::~Shader() {
 
 
 void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir) {
-	program = glCreateProgram();
+	id = glCreateProgram();
 	name = vertex_dir + ", " + fragment_dir;
 	if (geometry_dir != "") {
 		name += ", " + geometry_dir;
@@ -58,7 +96,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 			std::cout << info_log << ", Shader File: " << vertex_dir << "\n";
 		}
 		else {
-			glAttachShader(program, vertex);
+			glAttachShader(id, vertex);
 		}
 	}
 
@@ -88,7 +126,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 				std::cout << info_log << ", Shader File: " << geometry_dir << "\n";
 			}
 			else {
-				glAttachShader(program, geometry);
+				glAttachShader(id, geometry);
 			}
 		}
 	}
@@ -131,15 +169,15 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 			std::cout << info_log << ", Shader File: " << fragment_dir << "\n";
 		}
 		else {
-			glAttachShader(program, fragment);
+			glAttachShader(id, fragment);
 		}
 	}
 
-	glLinkProgram(program);
+	glLinkProgram(id);
 
-	glGetShaderiv(program, GL_LINK_STATUS, &success);
+	glGetShaderiv(id, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, info_log);
+		glGetProgramInfoLog(id, 512, NULL, info_log);
 		std::cout << info_log << "\n";
 	}
 
@@ -152,59 +190,59 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 
 void Shader::destroy() {
 	if (loaded) {
-		glDeleteProgram(program);
+		glDeleteProgram(id);
 		loaded = false;
 	}
 }
 
 void Shader::use() {
-	glUseProgram(program);
+	glUseProgram(id);
 }
 
 void Shader::set_bool(const std::string& name, bool value, int index) const {
-	glUniform1i(glGetUniformLocation(program, name.c_str()) + index, (int)value);
+	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, (int)value);
 }
 
 void Shader::set_int(const std::string& name, int value, int index) const {
-	glUniform1i(glGetUniformLocation(program, name.c_str()) + index, value);
+	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, value);
 }
 
 void Shader::set_float(const std::string& name, float value, int index) const {
-	glUniform1f(glGetUniformLocation(program, name.c_str()) + index, value);
+	glUniform1f(glGetUniformLocation(id, name.c_str()) + index, value);
 }
 
 void Shader::set_vec2(const std::string& name, const glm::vec2& value, int index) const {
-	glUniform2fv(glGetUniformLocation(program, name.c_str()) + index, 1, &value[0]);
+	glUniform2fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
 }
 
 void Shader::set_vec2(const std::string& name, float x, float y, int index) const {
-	glUniform2f(glGetUniformLocation(program, name.c_str()) + index, x, y);
+	glUniform2f(glGetUniformLocation(id, name.c_str()) + index, x, y);
 }
 
 void Shader::set_vec3(const std::string& name, const glm::vec3& value, int index) const {
-	glUniform3fv(glGetUniformLocation(program, name.c_str()) + index, 1, &value[0]);
+	glUniform3fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
 }
 
 void Shader::set_vec3(const std::string& name, float x, float y, float z, int index) const {
-	glUniform3f(glGetUniformLocation(program, name.c_str()) + index, x, y, z);
+	glUniform3f(glGetUniformLocation(id, name.c_str()) + index, x, y, z);
 }
 
 void Shader::set_vec4(const std::string& name, const glm::vec4& value, int index) const {
-	glUniform4fv(glGetUniformLocation(program, name.c_str()) + index, 1, &value[0]);
+	glUniform4fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
 }
 
 void Shader::set_vec4(const std::string& name, float x, float y, float z, float w, int index) const {
-	glUniform4f(glGetUniformLocation(program, name.c_str()) + index, x, y, z, w);
+	glUniform4f(glGetUniformLocation(id, name.c_str()) + index, x, y, z, w);
 }
 
 void Shader::set_mat2(const std::string& name, const glm::mat2& mat, int index) const {
-	glUniformMatrix2fv(glGetUniformLocation(program, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
 }
 
 void Shader::set_mat3(const std::string& name, const glm::mat3& mat, int index) const {
-	glUniformMatrix3fv(glGetUniformLocation(program, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
 }
 
 void Shader::set_mat4(const std::string& name, const glm::mat4& mat, int index) const {
-	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
 }

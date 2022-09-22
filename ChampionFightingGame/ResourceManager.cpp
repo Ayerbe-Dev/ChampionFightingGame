@@ -22,7 +22,7 @@ void ResourceManager::load_model_resource(std::string dir) {
 	}
 }
 
-Model ResourceManager::load_model(std::string dir) {
+Model& ResourceManager::load_model(std::string dir) {
 	if (!model_map.contains(dir)) {
 		load_model_resource(dir);
 	}

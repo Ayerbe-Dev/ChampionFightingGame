@@ -80,8 +80,8 @@ public:
 	Model(std::string path);
 	Model(Model& other);
 	Model(const Model& other);
-	Model operator=(Model& other);
-	Model operator=(const Model& other);
+	Model& operator=(Model& other);
+	Model& operator=(const Model& other);
 
 	void init(std::string path);
 	void destroy();

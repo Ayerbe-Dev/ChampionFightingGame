@@ -9,8 +9,12 @@ class Shader {
 public:
 	Shader();
 	Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
+	Shader(Shader& other);
+	Shader(const Shader& other);
+	Shader& operator=(Shader& other);
+	Shader& operator=(const Shader& other);
 	~Shader();
-	unsigned int program = 0;
+	unsigned int id = 0;
 	std::string name;
 
 	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");

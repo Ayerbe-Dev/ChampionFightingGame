@@ -67,6 +67,15 @@ void Camera::play_camera_anim(int follow_id, std::string anim_kind, float rate, 
 	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
 }
 
+void Camera::play_camera_anim(int follow_id, CameraAnim* anim_kind, float rate, float frame) {
+	this->follow_id = follow_id;
+	following_players = false;
+	anim_end = false;
+	this->frame = frame;
+	this->rate = rate;
+	this->anim_kind = anim_kind;
+}
+
 void Camera::unload_camera_anims() {
 	camera_anims.clear();
 	camera_anim_map.clear();
@@ -137,50 +146,6 @@ void Camera::follow_anim() {
 	CameraKeyframe keyframe = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	CameraKeyframe next_keyframe = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 
-	keyframe.pos_key += (frame - (int)frame)* (next_keyframe.pos_key - keyframe.pos_key);
-	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
-
-	pos = keyframe.pos_key;
-
-	yaw = keyframe.rot_key.x;
-	pitch = keyframe.rot_key.y * 180;
-	roll = keyframe.rot_key.z;
-	
-	pos = glm::normalize(pos);
-
-	if (follow_id != -1) {
-		pos.x *= fighter[follow_id]->facing_dir;
-		yaw *= fighter[follow_id]->facing_dir;
-
-		pos += fighter[follow_id]->pos / glm::vec3(
-			WINDOW_WIDTH / (100 * fighter[follow_id]->scale.x),
-			WINDOW_HEIGHT / (100 * fighter[follow_id]->scale.y),
-			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
-		);
-	}
-
-	prev_pos = pos;
-
-	update_view();
-	frame += rate;
-	if (frame >= anim_kind->length) {
-		if (follow_id != -1) {
-			fighter[follow_id]->stop_camera_anim();
-		}
-		else {
-			anim_kind = nullptr;
-		}
-		anim_end = true;
-	}
-	else {
-		anim_end = false;
-	}
-}
-
-void Camera::follow_anim(CameraAnim* anim) {
-	CameraKeyframe keyframe = anim->keyframes[clamp(0, floorf(frame), anim->keyframes.size() - 1)];
-	CameraKeyframe next_keyframe = anim->keyframes[clamp(0, floorf(frame + 1), anim->keyframes.size() - 1)];
-
 	keyframe.pos_key += (frame - (int)frame) * (next_keyframe.pos_key - keyframe.pos_key);
 	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
 
@@ -202,16 +167,42 @@ void Camera::follow_anim(CameraAnim* anim) {
 			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
 		);
 	}
+	else {
+		yaw += 90.0;
+	}
 
 	prev_pos = pos;
 
 	update_view();
 	frame += rate;
-	if (frame >= anim->length) {
-		frame = 0.0;
+	if (frame >= anim_kind->length) {
+		if (follow_id != -1) {
+			fighter[follow_id]->stop_camera_anim();
+		}
+		else {
+			frame = 0.0;
+		}
+		anim_end = true;
+	}
+	else if (frame < 0.0) {
+		if (follow_id != -1) {
+			fighter[follow_id]->stop_camera_anim();
+		}
+		else {
+			frame = anim_kind->length - 1;
+		}
 		anim_end = true;
 	}
 	else {
 		anim_end = false;
+	}
+}
+
+std::string Camera::get_anim_name() {
+	if (anim_kind == nullptr) {
+		return "None";
+	}
+	else {
+		return anim_kind->name;
 	}
 }

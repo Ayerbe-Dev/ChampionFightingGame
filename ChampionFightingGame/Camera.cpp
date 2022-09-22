@@ -167,9 +167,6 @@ void Camera::follow_anim() {
 			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
 		);
 	}
-	else {
-		yaw += 90.0;
-	}
 
 	prev_pos = pos;
 

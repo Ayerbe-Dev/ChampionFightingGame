@@ -20,4 +20,5 @@ public:
 	std::string name;
 	int length;
 	std::vector<CameraKeyframe> keyframes;
+	glm::mat4 global_transform;
 };

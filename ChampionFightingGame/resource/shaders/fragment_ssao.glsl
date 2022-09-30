@@ -14,7 +14,7 @@ uniform int window_height;
 uniform mat4 projection_matrix;
 
 int kernelSize = 16;
-float radius = 0.2;
+float radius = 0.1;
 float bias = 0.01;
 
 void main() {    

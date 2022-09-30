@@ -6,7 +6,6 @@
 #include <iostream>
 #include <Windows.h>
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
 #include <glew/glew.h>
 #include "SDL Helpers.h"
 #include "utils.h"
@@ -45,10 +44,6 @@ int main() {
 
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
-	}
-
-	if (TTF_Init() < 0) {
-		printf("Error initializing SDL_ttf: %s\n", TTF_GetError());
 	}
 
 	SDL_GameControllerEventState(SDL_ENABLE);

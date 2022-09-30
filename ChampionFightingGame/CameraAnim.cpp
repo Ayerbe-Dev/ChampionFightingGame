@@ -7,6 +7,7 @@
 
 CameraAnim::CameraAnim() {
 	length = -1;
+	global_transform = glm::mat4(1.0);
 }
 
 CameraAnim::CameraAnim(std::string anim_kind, std::string anim_dir) {
@@ -34,24 +35,12 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 	aiNodeAnim* node = scene->mAnimations[0]->mChannels[0];
 
 	for (int i = 0; i < node->mNumPositionKeys; i++) {
-		glm::vec3 container_vec = ass_converter(node->mScalingKeys[i].mValue); //This thing handles 3 different
-		//temp vars lmao
-		glm::vec3 pos_key = ass_converter(node->mPositionKeys[i].mValue) / container_vec;
-		container_vec = pos_key;
-		pos_key.x = container_vec.y;
-		pos_key.y = container_vec.z * -1;
-		pos_key.z = container_vec.x * -1;
-		//I have a migraine, I don't care enough to make this easy to read rn (Y and Z need to be swapped, 
-		//and both need to be made negative)
+		glm::vec3 pos_key = ass_converter(node->mPositionKeys[i].mValue) / ass_converter(node->mScalingKeys[i].mValue);
 		glm::quat quat_key = ass_converter(node->mRotationKeys[i].mValue);
-		container_vec = glm::eulerAngles(quat_key) * 3.14159f / 180.f;
-		glm::vec3 rot_key;
-		rot_key.x = container_vec.x;
-		rot_key.y = container_vec.z;
-		rot_key.z = container_vec.y;
+		glm::vec3 rot_key = glm::eulerAngles(quat_key) * 180.f / 3.14f;
 
 		keyframes[node->mPositionKeys[i].mTime].pos_key = pos_key;
-		keyframes[node->mPositionKeys[i].mTime].rot_key = glm::normalize(rot_key);
+		keyframes[node->mPositionKeys[i].mTime].rot_key = rot_key + glm::vec3(90.0, -90.0, 90.0);
 
 		keyframes[node->mPositionKeys[i].mTime].keyframed = true;
 	}
@@ -84,12 +73,16 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 }
 
 void CameraAnim::interpolate_keyframe(glm::vec3& rot_key, glm::vec3 prev_rot, glm::vec3 future_rot) {
+	glm::vec3 prev_normalize_mul = prev_rot / glm::normalize(prev_rot);
+	glm::vec3 future_normalize_mul = future_rot / glm::normalize(future_rot);
+	future_rot = glm::normalize(future_rot);
+	prev_rot = glm::normalize(prev_rot);
 	for (int i = 0; i < 3; i++) {
 		if (future_rot[i] + prev_rot[i] < prev_rot[i] + 1.0 - future_rot[i]) {
-			rot_key[i] = future_rot[i] + prev_rot[i];
+			rot_key[i] = future_rot[i] * future_normalize_mul[i] + prev_normalize_mul[i] * prev_rot[i];
 		}
 		else {
-			rot_key[i] = prev_rot[i] + 1.0 - future_rot[i];
+			rot_key[i] = prev_normalize_mul[i] * prev_rot[i] + (1.0 - future_rot[i]) * future_normalize_mul[i];
 		}
 	}
 }

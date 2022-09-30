@@ -49,9 +49,9 @@ Fighter* create_fighter(int chara_kind, int id, Player* player) {
 		{
 			fighter = new Tessa(id, player);
 		} break;
-		case (CHARA_KIND_ALEJANDRO):
+		case (CHARA_KIND_HUNTER):
 		{
-			fighter = new Alejandro(id, player);
+			fighter = new Hunter(id, player);
 		} break;
 		case (CHARA_KIND_NORMAN):
 		{

@@ -4,6 +4,7 @@
 #include "utils.h"
 #include <glm/gtx/vector_angle.hpp>
 #include "RenderManager.h"
+#include "GLM Helpers.h"
 
 Camera::Camera() {
 	base_pos = glm::vec3(0.0, 0.6, 2.7);
@@ -152,10 +153,8 @@ void Camera::follow_anim() {
 	pos = keyframe.pos_key;
 
 	yaw = keyframe.rot_key.x;
-	pitch = keyframe.rot_key.y * 180;
+	pitch = keyframe.rot_key.y;
 	roll = keyframe.rot_key.z;
-
-	pos = glm::normalize(pos);
 
 	if (follow_id != -1) {
 		pos.x *= fighter[follow_id]->facing_dir;
@@ -167,6 +166,8 @@ void Camera::follow_anim() {
 			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
 		);
 	}
+
+	pos /= glm::vec3(100.0);
 
 	prev_pos = pos;
 

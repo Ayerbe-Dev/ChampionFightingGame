@@ -102,7 +102,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\lib\SDL;$(SolutionDir)\dependencies\x86\lib\glew;$(SolutionDir)\dependencies\x86\lib\assimp;$(SolutionDir)\dependencies\x86\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mtd.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mtd.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
       <Profile>true</Profile>
     </Link>
@@ -136,7 +136,7 @@ copy /Y "$(SolutionDir)dependencies\x86\bin\assimp\assimp-vc142-mt.dll" "$(Targe
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\lib\SDL;$(SolutionDir)\dependencies\x86\lib\glew;$(SolutionDir)\dependencies\x86\lib\assimp;$(SolutionDir)\dependencies\x86\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
@@ -169,7 +169,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mtd.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mtd.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <OptimizeReferences>false</OptimizeReferences>
@@ -201,7 +201,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
@@ -214,9 +214,10 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AI.cpp" />
     <ClCompile Include="AIInput.cpp" />
     <ClCompile Include="AIManager.cpp" />
-    <ClCompile Include="Alejandro.cpp" />
-    <ClCompile Include="AlejandroMoves.cpp" />
-    <ClCompile Include="AlejandroStatus.cpp" />
+    <ClCompile Include="ArbitraryCodeEditor.cpp" />
+    <ClCompile Include="Hunter.cpp" />
+    <ClCompile Include="HunterMoves.cpp" />
+    <ClCompile Include="HunterStatus.cpp" />
     <ClCompile Include="Angelica.cpp" />
     <ClCompile Include="AngelicaMoves.cpp" />
     <ClCompile Include="AngelicaStatus.cpp" />
@@ -413,12 +414,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
   <ItemGroup>
     <ClInclude Include="AI.h" />
     <ClInclude Include="AIManager.h" />
-    <ClInclude Include="Alejandro.h" />
-    <ClInclude Include="AlejandroConstants.h" />
-    <ClInclude Include="AlejandroFlag.h" />
-    <ClInclude Include="AlejandroFloat.h" />
-    <ClInclude Include="AlejandroInt.h" />
-    <ClInclude Include="AlejandroStatus.h" />
+    <ClInclude Include="ArbitraryCodeEditor.h" />
+    <ClInclude Include="Hunter.h" />
+    <ClInclude Include="HunterConstants.h" />
+    <ClInclude Include="HunterFlag.h" />
+    <ClInclude Include="HunterFloat.h" />
+    <ClInclude Include="HunterInt.h" />
+    <ClInclude Include="HunterStatus.h" />
     <ClInclude Include="Angelica.h" />
     <ClInclude Include="AngelicaConstants.h" />
     <ClInclude Include="AngelicaFlag.h" />

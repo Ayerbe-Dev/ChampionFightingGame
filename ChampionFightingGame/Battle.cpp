@@ -42,7 +42,7 @@
 
 extern bool debug;
 
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -139,7 +139,7 @@ Battle::Battle() {
 
 	thread_manager = ThreadManager::get_instance();
 
-	visualize_boxes = true;
+	visualize_boxes = false;
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];

@@ -266,8 +266,8 @@ void GameObject::render_outline(bool flip) {
 		)
 	);
 	model_mat *= glm::orientate4(rot);
-	model_mat *= extra_mat;
 	model_mat = glm::scale(model_mat, scale); 
+	model_mat *= extra_mat;
 	outline_shader.set_mat4("model_matrix", model_mat);
 	model.render_no_texture(&outline_shader, flip);
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
 #include <string>
 #include "Player.h"
 #include "GameMenu.h"

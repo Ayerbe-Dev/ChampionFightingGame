@@ -18,15 +18,15 @@ public:
 	ResourceManager(ResourceManager& other) = delete;
 	void operator=(const ResourceManager& other) = delete;
 
-	void load_model_resource(std::string dir);
-	Model& load_model(std::string dir);
-	void unload_model_resource(std::string dir, bool strict = true);
-	void unload_model(std::string dir);
+	void load_model(std::string dir);
+	Model& use_model(std::string dir);
+	void unload_model(std::string dir, bool strict = true);
+	void unuse_model(std::string dir);
 
-	void load_texture_resource(std::string dir);
-	unsigned int load_texture(std::string dir);
-	void unload_texture_resource(std::string dir, bool strict = true);
-	void unload_texture(std::string dir);
+	void load_texture(std::string dir);
+	unsigned int use_texture(std::string dir);
+	void unload_texture(std::string dir, bool strict = true);
+	void unuse_texture(std::string dir);
 
 	void unload_unused();
 	void unload_all();

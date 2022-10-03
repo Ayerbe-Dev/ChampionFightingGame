@@ -94,7 +94,7 @@ void GameTexture::init(std::string path) {
 
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 
-	texture = resource_manager->load_texture(path);
+	texture = resource_manager->use_texture(path);
 	int width;
 	int height;
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -246,7 +246,7 @@ void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border
 void GameTexture::destroy() {
 	if (loaded) {
 		if (using_resource) {
-			ResourceManager::get_instance()->unload_texture(name);
+			ResourceManager::get_instance()->unuse_texture(name);
 		}
 		else {
 			glDeleteVertexArrays(1, &VAO);

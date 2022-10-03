@@ -73,16 +73,12 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 }
 
 void CameraAnim::interpolate_keyframe(glm::vec3& rot_key, glm::vec3 prev_rot, glm::vec3 future_rot) {
-	glm::vec3 prev_normalize_mul = prev_rot / glm::normalize(prev_rot);
-	glm::vec3 future_normalize_mul = future_rot / glm::normalize(future_rot);
-	future_rot = glm::normalize(future_rot);
-	prev_rot = glm::normalize(prev_rot);
 	for (int i = 0; i < 3; i++) {
-		if (future_rot[i] + prev_rot[i] < prev_rot[i] + 1.0 - future_rot[i]) {
-			rot_key[i] = future_rot[i] * future_normalize_mul[i] + prev_normalize_mul[i] * prev_rot[i];
+		if (future_rot[i] + prev_rot[i] < prev_rot[i] + (180.0 - future_rot[i])) {
+			rot_key[i] = future_rot[i] + prev_rot[i];
 		}
 		else {
-			rot_key[i] = prev_normalize_mul[i] * prev_rot[i] + (1.0 - future_rot[i]) * future_normalize_mul[i];
+			rot_key[i] = prev_rot[i] + (180.0 - future_rot[i]);
 		}
 	}
 }

@@ -7,7 +7,7 @@
 #include "GLM Helpers.h"
 
 Camera::Camera() {
-	base_pos = glm::vec3(0.0, 0.6, 2.7);
+	base_pos = glm::vec3(0.0, 10.6, 60.0);
 	pos = base_pos;
 	prev_pos = glm::vec3(0.0);
 	flip_matrix = glm::mat4(
@@ -106,15 +106,15 @@ void Camera::adjust_view(float x, float y, float z, float speed) {
 
 void Camera::set_fov(float fov) {
 	this->fov = fov;
-	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_W_FACTOR, 0.1f, 100.0f);
+	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_W_FACTOR, 0.1f, 1000.0f);
 	update_view();
 }
 
 void Camera::update_view() {
 	glm::vec3 new_front;
-	new_front.x = cos(glm::radians(yaw - 90)) * cos(glm::radians(pitch));
+	new_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	new_front.y = sin(glm::radians(pitch));
-	new_front.z = sin(glm::radians(yaw - 90)) * cos(glm::radians(pitch));
+	new_front.z = -cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front = normalize(new_front);
 
 	right = normalize(cross(front, world_up));
@@ -129,7 +129,7 @@ void Camera::update_view() {
 }
 
 void Camera::follow_players() {
-	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / 400.0;
+	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / 20.0;
 	pos.y = clampf(base_pos.y, ((std::max(fighter[0]->pos.y, fighter[1]->pos.y)) / 200.0) - (base_pos.y / 4.0), 800.0);
 	pos.z = base_pos.z;
 	yaw = 0.0;
@@ -153,8 +153,10 @@ void Camera::follow_anim() {
 	pos = keyframe.pos_key;
 
 	yaw = keyframe.rot_key.x;
-	pitch = keyframe.rot_key.y;
+	pitch = clampf(-89.9, keyframe.rot_key.y, 89.9);
 	roll = keyframe.rot_key.z;
+
+	pos /= glm::vec3(100.0);
 
 	if (follow_id != -1) {
 		pos.x *= fighter[follow_id]->facing_dir;
@@ -166,8 +168,6 @@ void Camera::follow_anim() {
 			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
 		);
 	}
-
-	pos /= glm::vec3(100.0);
 
 	prev_pos = pos;
 

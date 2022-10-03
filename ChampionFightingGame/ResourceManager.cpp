@@ -14,7 +14,7 @@ ResourceManager* ResourceManager::get_instance() {
 	return instance;
 }
 
-void ResourceManager::load_model_resource(std::string dir) {
+void ResourceManager::load_model(std::string dir) {
 	if (!model_map.contains(dir)) {
 		model_map[dir] = ModelResource();
 		model_map[dir].model.init(dir);
@@ -22,15 +22,15 @@ void ResourceManager::load_model_resource(std::string dir) {
 	}
 }
 
-Model& ResourceManager::load_model(std::string dir) {
+Model& ResourceManager::use_model(std::string dir) {
 	if (!model_map.contains(dir)) {
-		load_model_resource(dir);
+		load_model(dir);
 	}
 	model_map[dir].user_count++;
 	return model_map[dir].model;
 }
 
-void ResourceManager::unload_model_resource(std::string dir, bool strict) {
+void ResourceManager::unload_model(std::string dir, bool strict) {
 	if (model_map.contains(dir)) {
 		if (model_map[dir].user_count == 0 || !strict) {
 			model_map[dir].model.destroy();
@@ -39,13 +39,13 @@ void ResourceManager::unload_model_resource(std::string dir, bool strict) {
 	}
 }
 
-void ResourceManager::unload_model(std::string dir) {
+void ResourceManager::unuse_model(std::string dir) {
 	if (model_map.contains(dir)) {
 		model_map[dir].user_count--;
 	}
 }
 
-void ResourceManager::load_texture_resource(std::string dir) {
+void ResourceManager::load_texture(std::string dir) {
 	if (!texture_map.contains(dir)) {
 		texture_map[dir] = TextureResource();
 		texture_map[dir].texture = loadGLTexture(dir);
@@ -53,15 +53,15 @@ void ResourceManager::load_texture_resource(std::string dir) {
 	}
 }
 
-unsigned int ResourceManager::load_texture(std::string dir) {
+unsigned int ResourceManager::use_texture(std::string dir) {
 	if (!texture_map.contains(dir)) {
-		load_texture_resource(dir);
+		load_texture(dir);
 	}
 	texture_map[dir].user_count++;
 	return texture_map[dir].texture;
 }
 
-void ResourceManager::unload_texture_resource(std::string dir, bool strict) {
+void ResourceManager::unload_texture(std::string dir, bool strict) {
 	if (texture_map.contains(dir)) {
 		if (texture_map[dir].user_count == 0 || !strict) {
 			glDeleteTextures(1, &texture_map[dir].texture);
@@ -70,7 +70,7 @@ void ResourceManager::unload_texture_resource(std::string dir, bool strict) {
 	}
 }
 
-void ResourceManager::unload_texture(std::string dir) {
+void ResourceManager::unuse_texture(std::string dir) {
 	if (texture_map.contains(dir)) {
 		texture_map[dir].user_count--;
 	}

@@ -234,18 +234,18 @@ void Model::destroy() {
 }
 
 void Model::load_model(std::string path) {
-	*this = ResourceManager::get_instance()->load_model(path);
+	*this = ResourceManager::get_instance()->use_model(path);
 }
 
 void Model::unload_model() {
-	ResourceManager::get_instance()->unload_model(directory + "model.dae");
+	ResourceManager::get_instance()->unuse_model(directory + "model.dae");
 }
 
 //Used if there's only one possible texture set (I.E. the stage).
 void Model::load_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->load_texture(directory + texture_names[i]);
+		unsigned int loaded_texture = resource_manager->use_texture(directory + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = loaded_texture;
@@ -258,7 +258,7 @@ void Model::load_textures() {
 void Model::load_textures(std::string texture_dir) {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->load_texture(directory + texture_dir + "/" + texture_names[i]);
+		unsigned int loaded_texture = resource_manager->use_texture(directory + texture_dir + "/" + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = loaded_texture;
@@ -269,7 +269,7 @@ void Model::load_textures(std::string texture_dir) {
 void Model::unload_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		resource_manager->unload_texture(texture_names[i]);
+		resource_manager->unuse_texture(texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = 0;
@@ -280,7 +280,7 @@ void Model::unload_textures() {
 void Model::unload_texture_resources() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		resource_manager->unload_texture_resource(texture_names[i]);
+		resource_manager->unload_texture(texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = 0;

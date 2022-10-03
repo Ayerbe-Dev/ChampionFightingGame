@@ -50,7 +50,7 @@ void Fighter::load_fighter_effects() {
 }
 
 void Fighter::load_model_shader() {
-	scale = glm::vec3(0.05 * get_local_param_float("model_scale"));
+	scale = glm::vec3(get_local_param_float("model_scale"));
 	model.load_model(resource_dir + "/model/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
 	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");

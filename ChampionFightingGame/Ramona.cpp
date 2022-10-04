@@ -4,8 +4,8 @@ Ramona::Ramona() {
 
 }
 
-Ramona::Ramona(int id, Player* player) {
-	this->id = id;
+Ramona::Ramona(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_RAMONA;
 	chara_name = "ramona";

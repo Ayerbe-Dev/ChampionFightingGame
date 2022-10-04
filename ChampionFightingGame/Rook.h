@@ -5,7 +5,7 @@
 class Rook : public Fighter {
 public:
 	Rook();
-	Rook(int id, Player* player);
+	Rook(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

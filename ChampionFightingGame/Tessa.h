@@ -5,7 +5,7 @@
 class Tessa : public Fighter {
 public:
 	Tessa();
-	Tessa(int id, Player* player);
+	Tessa(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

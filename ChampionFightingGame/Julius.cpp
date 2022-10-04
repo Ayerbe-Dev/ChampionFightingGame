@@ -4,8 +4,8 @@ Julius::Julius() {
 
 }
 
-Julius::Julius(int id, Player* player) {
-	this->id = id;
+Julius::Julius(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_JULIUS;
 	chara_name = "julius";

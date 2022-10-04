@@ -5,7 +5,7 @@
 class Julius : public Fighter {
 public:
 	Julius();
-	Julius(int id, Player* player);
+	Julius(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

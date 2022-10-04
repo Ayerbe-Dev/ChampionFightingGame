@@ -5,7 +5,7 @@
 class Nightsaber : public Fighter {
 public:
 	Nightsaber();
-	Nightsaber(int id, Player* player);
+	Nightsaber(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

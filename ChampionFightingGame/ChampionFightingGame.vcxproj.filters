@@ -34,8 +34,8 @@
     <ClCompile Include="FighterStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter</Filter>
     </ClCompile>
-    <ClCompile Include="Hunter.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClCompile Include="Dingo.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClCompile>
     <ClCompile Include="Angelica.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Angelica</Filter>
@@ -100,11 +100,11 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>2. Code Files\Objects\Projectile\Projectile</Filter>
     </ClCompile>
-    <ClCompile Include="HunterStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClCompile Include="DingoStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClCompile>
-    <ClCompile Include="HunterMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClCompile Include="DingoMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClCompile>
     <ClCompile Include="AngelicaStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Angelica</Filter>
@@ -645,8 +645,8 @@
     <ClInclude Include="SDL Helpers.h">
       <Filter>1. Header Files\Helper Funcs</Filter>
     </ClInclude>
-    <ClInclude Include="Hunter.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClInclude Include="Dingo.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
     <ClInclude Include="Angelica.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
@@ -699,17 +699,17 @@
     <ClInclude Include="Vesuvius.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Vesuvius</Filter>
     </ClInclude>
-    <ClInclude Include="HunterInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClInclude Include="DingoInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
-    <ClInclude Include="HunterFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClInclude Include="DingoFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
-    <ClInclude Include="HunterFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClInclude Include="DingoFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
-    <ClInclude Include="HunterStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClInclude Include="DingoStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
     <ClInclude Include="AngelicaFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
@@ -933,8 +933,8 @@
     <ClInclude Include="FighterStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Fighter</Filter>
     </ClInclude>
-    <ClInclude Include="HunterConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Hunter</Filter>
+    <ClInclude Include="DingoConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
     <ClInclude Include="AngelicaConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
@@ -2813,11 +2813,11 @@
     <Filter Include="1. Header Files\Game State\StageSelect">
       <UniqueIdentifier>{e441b69e-97f9-4a7b-972c-10c0805a5266}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Hunter">
-      <UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Hunter">
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Dingo">
       <UniqueIdentifier>{b734d982-8ea0-48d8-aac0-9ba83837f9d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Dingo">
+      <UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

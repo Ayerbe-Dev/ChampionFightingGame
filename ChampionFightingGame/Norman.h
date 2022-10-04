@@ -5,7 +5,7 @@
 class Norman : public Fighter {
 public:
 	Norman();
-	Norman(int id, Player* player);
+	Norman(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

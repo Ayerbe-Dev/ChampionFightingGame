@@ -5,7 +5,7 @@
 class Eric : public Fighter {
 public:
 	Eric();
-	Eric(int id, Player* player);
+	Eric(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 	

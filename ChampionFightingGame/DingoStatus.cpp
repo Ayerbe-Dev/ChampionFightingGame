@@ -1,0 +1,28 @@
+#include "Dingo.h"
+
+void Dingo::chara_main() {
+
+}
+
+bool Dingo::specific_ground_status_act() {
+	return false;
+}
+
+bool Dingo::specific_air_status_act() {
+	return false;
+}
+
+bool Dingo::specific_status_attack() {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
+		if (specific_ground_status_act()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void Dingo::load_chara_status_scripts() {
+	status_script.resize(CHARA_DINGO_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_DINGO_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_DINGO_STATUS_MAX, nullptr);
+}

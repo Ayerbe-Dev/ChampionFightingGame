@@ -4,8 +4,8 @@ Dante::Dante() {
 
 }
 
-Dante::Dante(int id, Player* player) {
-	this->id = id;
+Dante::Dante(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_DANTE;
 	chara_name = "dante";

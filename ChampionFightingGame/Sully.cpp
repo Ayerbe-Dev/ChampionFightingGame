@@ -4,8 +4,8 @@ Sully::Sully() {
 
 }
 
-Sully::Sully(int id, Player* player) {
-	this->id = id;
+Sully::Sully(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_SULLY;
 	chara_name = "sully";

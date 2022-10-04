@@ -4,8 +4,8 @@ Bruno::Bruno() {
 
 }
 
-Bruno::Bruno(int id, Player* player) {
-	this->id = id;
+Bruno::Bruno(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_BRUNO;
 	chara_name = "bruno";

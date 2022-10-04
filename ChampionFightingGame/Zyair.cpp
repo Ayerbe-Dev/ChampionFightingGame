@@ -4,8 +4,8 @@ Zyair::Zyair() {
 
 }
 
-Zyair::Zyair(int id, Player* player) {
-	this->id = id;
+Zyair::Zyair(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_ZYAIR;
 	chara_name = "zyair";

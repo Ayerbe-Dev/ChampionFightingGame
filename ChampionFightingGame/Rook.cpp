@@ -4,8 +4,8 @@ Rook::Rook() {
 
 }
 
-Rook::Rook(int id, Player* player) {
-	this->id = id;
+Rook::Rook(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	this->chara_kind = CHARA_KIND_ROOK;
 	chara_name = "rook";

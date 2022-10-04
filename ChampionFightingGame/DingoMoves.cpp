@@ -1,6 +1,6 @@
-#include "Hunter.h"
+#include "Dingo.h"
 
-void Hunter::load_move_scripts() {
+void Dingo::load_move_scripts() {
 	script("default", [this]() {
 		return;
 	});

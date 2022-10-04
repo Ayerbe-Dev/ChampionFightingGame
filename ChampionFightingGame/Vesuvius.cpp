@@ -4,8 +4,8 @@ Vesuvius::Vesuvius() {
 
 }
 
-Vesuvius::Vesuvius(int id, Player* player) {
-	this->id = id;
+Vesuvius::Vesuvius(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_VESUVIUS;
 	chara_name = "vesuvius";

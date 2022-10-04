@@ -5,7 +5,7 @@
 class Leon : public Fighter {
 public:
 	Leon();
-	Leon(int id, Player* player);
+	Leon(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

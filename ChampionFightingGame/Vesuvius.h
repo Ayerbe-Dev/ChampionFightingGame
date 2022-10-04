@@ -5,7 +5,7 @@
 class Vesuvius : public Fighter {
 public:
 	Vesuvius();
-	Vesuvius(int id, Player* player);
+	Vesuvius(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

@@ -5,7 +5,7 @@
 class Angelica : public Fighter {
 public:
 	Angelica();
-	Angelica(int id, Player* player);
+	Angelica(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

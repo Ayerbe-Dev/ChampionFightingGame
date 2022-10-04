@@ -1,11 +1,11 @@
 #pragma once
 #include "Fighter.h"
-#include "HunterConstants.h"
+#include "DingoConstants.h"
 
-class Hunter : public Fighter {
+class Dingo : public Fighter {
 public:
-	Hunter();
-	Hunter(int id, Player* player);
+	Dingo();
+	Dingo(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

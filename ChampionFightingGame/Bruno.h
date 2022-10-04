@@ -5,7 +5,7 @@
 class Bruno : public Fighter {
 public:
 	Bruno();
-	Bruno(int id, Player* player);
+	Bruno(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

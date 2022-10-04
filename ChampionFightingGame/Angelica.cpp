@@ -4,8 +4,8 @@ Angelica::Angelica() {
 
 }
 
-Angelica::Angelica(int id, Player* player) {
-	this->id = id;
+Angelica::Angelica(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_ANGELICA;
 	chara_name = "angelica";

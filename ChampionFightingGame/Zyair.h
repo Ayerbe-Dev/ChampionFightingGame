@@ -5,7 +5,7 @@
 class Zyair : public Fighter {
 public:
 	Zyair();
-	Zyair(int id, Player* player);
+	Zyair(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

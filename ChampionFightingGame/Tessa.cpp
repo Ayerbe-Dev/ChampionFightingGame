@@ -4,8 +4,8 @@ Tessa::Tessa() {
 
 }
 
-Tessa::Tessa(int id, Player* player) {
-	this->id = id;
+Tessa::Tessa(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_TESSA;
 	chara_name = "tessa";

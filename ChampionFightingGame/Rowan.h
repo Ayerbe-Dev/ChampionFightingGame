@@ -5,7 +5,7 @@
 class Rowan : public Fighter {
 public:
 	Rowan();
-	Rowan(int id, Player* player);
+	Rowan(Player* player);
 	void load_chara_status_scripts() override;
 	void load_chara_sounds() override;
 	void load_chara_effects() override;

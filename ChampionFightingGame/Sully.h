@@ -5,7 +5,7 @@
 class Sully : public Fighter {
 public:
 	Sully();
-	Sully(int id, Player* player);
+	Sully(Player* player);
 	void load_chara_status_scripts() override;
 	void load_move_scripts() override;
 

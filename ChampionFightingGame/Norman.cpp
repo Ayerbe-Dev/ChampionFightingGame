@@ -4,8 +4,8 @@ Norman::Norman() {
 
 }
 
-Norman::Norman(int id, Player* player) {
-	this->id = id;
+Norman::Norman(Player* player) {
+	this->id = player->id;
 	this->player = player;
 	chara_kind = CHARA_KIND_NORMAN;
 	chara_name = "norman";

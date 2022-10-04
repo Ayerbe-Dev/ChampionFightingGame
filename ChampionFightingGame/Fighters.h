@@ -10,7 +10,7 @@
 #include "Dante.h"
 #include "Bruno.h"
 #include "Tessa.h"
-#include "Hunter.h"
+#include "Dingo.h"
 #include "Norman.h"
 #include "Atlas.h"
 #include "Julius.h"

@@ -167,7 +167,7 @@ Battle::Battle() {
 	inc_thread();
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i] = create_fighter(player[i]->chara_kind, i, player[i]);
+		fighter[i] = create_fighter(player[i]);
 		inc_thread();
 	}
 

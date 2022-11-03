@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <list>
 #include <glm/glm.hpp>
 #include "Shader.h"
 #include "Model.h"
@@ -18,7 +19,6 @@ public:
 	GameObject& operator=(const GameObject& other);
 
 	int id_effect = -1;
-	int id_sound = -1;
 
 	std::string resource_dir;
 
@@ -37,6 +37,9 @@ public:
 	float prev_anim_frame;
 	bool is_anim_end = false;
 
+	std::list<unsigned int> sound_effects;
+	std::list<unsigned int> voice_clips;
+
 	Shader shader;
 	Shader shadow_shader;
 	Shader outline_shader;
@@ -45,6 +48,10 @@ public:
 	RenderManager* render_manager;
 	SoundManager* sound_manager;
 	EffectManager* effect_manager;
+
+	//Process Funcs
+
+	void process_sound();
 
 	//Render Funcs
 
@@ -75,13 +82,21 @@ public:
 
 	//Sound Functions
 
-	void play_se(std::string se, int vol = -1);
-	void play_vc(std::string vc, int vol = -1);
+	void play_se(std::string se);
+	void play_vc(std::string vc);
+	void pause_se(std::string se);
+	void pause_se_all();
+	void pause_vc(std::string vc);
+	void pause_vc_all();
+	void resume_se(std::string se);
+	void resume_se_all();
+	void resume_vc(std::string vc);
+	void resume_vc_all();
 	void stop_se(std::string se);
 	void stop_se_all();
 	void stop_vc(std::string vc);
 	void stop_vc_all();
-	void load_sound(std::string name);
+	void load_sound(std::string name, std::string dir, float volume_mod);
 	void unload_sound(std::string name);
 	void unload_all_sounds();
 

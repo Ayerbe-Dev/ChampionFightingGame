@@ -9,6 +9,8 @@ Projectile::~Projectile() {
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
 	}
+	stop_se_all();
+	stop_vc_all();
 	blockbox.rect.destroy();
 	jostle_box.destroy();
 	model.unload_model();

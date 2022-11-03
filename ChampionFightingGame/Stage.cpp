@@ -38,6 +38,8 @@ void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_
 	camera_bounds.x = stage_bounds.x + max_distance;
 	camera_bounds.y = stage_bounds.y - max_distance;
 
+	default_music_kind = "resource/sound/bgm/stage/" + default_music_kind;
+
 	stream.close();
 
 	stream.open(resource_dir + "asset_list.yml");

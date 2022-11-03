@@ -7,11 +7,10 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "GameManager.h"
+#include <fstream>
 
 void Projectile::init() {
-	sound_manager = SoundManager::get_instance();
-	sound_manager->add_sound_player(id);
-	effect_manager = EffectManager::get_instance();
+	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
 
 	load_stats();
@@ -24,6 +23,37 @@ void Projectile::init() {
 	load_move_scripts();
 
 	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
+}
+
+void Projectile::load_sound_list() {
+	std::ifstream sound_stream;
+	std::string sound_name;
+	std::string sound_file;
+	float volume_mod;
+	sound_stream.open(resource_dir + "/vc/vc_list.yml");
+	if (sound_stream.fail()) {
+		sound_stream.close();
+		GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s vc directory was incorrectly set!");
+	}
+	else {
+		while (sound_stream >> sound_name) {
+			sound_stream >> sound_file >> volume_mod;
+			sound_manager->load_sound(sound_name, resource_dir + "/vc/" + sound_file, volume_mod);
+		}
+		sound_stream.close();
+	}
+	sound_stream.open(resource_dir + "/se/se_list.yml");
+	if (sound_stream.fail()) {
+		sound_stream.close();
+		GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s se directory was incorrectly set!");
+	}
+	else {
+		while (sound_stream >> sound_name) {
+			sound_stream >> sound_file >> volume_mod;
+			sound_manager->load_sound(sound_name, resource_dir + "/se/" + sound_file, volume_mod);
+		}
+		sound_stream.close();
+	}
 }
 
 void Projectile::load_model_shader() {

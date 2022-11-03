@@ -7,8 +7,9 @@
 #include <fstream>
 
 void Fighter::init() {
-	sound_manager->add_sound_player(id);
+	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
+
 	stage = battle_object_manager->stage;
 
 	if (id == 0) {
@@ -32,8 +33,7 @@ void Fighter::init() {
 	load_chara_status_scripts();
 	load_fighter_status_scripts();
 	load_move_scripts();
-	load_fighter_sounds();
-	load_chara_sounds();
+	load_sound_list();
 	load_fighter_effects();
 	load_chara_effects();
 	set_default_vars();
@@ -41,8 +41,35 @@ void Fighter::init() {
 	change_status(FIGHTER_STATUS_WAIT, false, false);
 }
 
-void Fighter::load_fighter_sounds() {
-
+void Fighter::load_sound_list() {
+	std::ifstream sound_stream;
+	std::string sound_name;
+	std::string sound_file;
+	float volume_mod;
+	sound_stream.open(resource_dir + "/vc/vc_list.yml");
+	if (sound_stream.fail()) {
+		sound_stream.close();
+		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s vc directory was incorrectly set!");
+	}
+	else {
+		while (sound_stream >> sound_name) {
+			sound_stream >> sound_file >> volume_mod;
+			sound_manager->load_sound(sound_name, resource_dir + "/vc/" + sound_file, volume_mod);
+		}
+		sound_stream.close();
+	}
+	sound_stream.open(resource_dir + "/se/se_list.yml");
+	if (sound_stream.fail()) {
+		sound_stream.close();
+		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s se directory was incorrectly set!");
+	}
+	else {
+		while (sound_stream >> sound_name >> volume_mod) {
+			sound_stream >> sound_file;
+			sound_manager->load_sound(sound_name, resource_dir + "/se/" + sound_file, volume_mod);
+		}
+		sound_stream.close();
+	}
 }
 
 void Fighter::load_fighter_effects() {

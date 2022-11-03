@@ -81,10 +81,11 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 
 	lights.reserve(MAX_LIGHT_SOURCES);
 	glm::vec3 light_pos;
+	glm::vec3 light_col;
+	float brightness;
 	while (light_stream >> light_pos.x) {
-		light_stream >> light_pos.y;
-		light_stream >> light_pos.z;
-		lights.emplace_back(light_pos);
+		light_stream >> light_pos.y >> light_pos.z >> light_col.x >> light_col.y >> light_col.z >> brightness;
+		lights.emplace_back(light_pos, light_col, brightness);
 	}
 	light_stream.close();
 }

@@ -225,16 +225,17 @@ Battle::Battle() {
 	game_loader->finished = true;
 
 	if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_STAGE) {
-		sound_manager->add_sound_player(-1); //I'll find a better ID for the stage music later
-		sound_manager->load_sound(stage.default_music_kind);
-		sound_manager->play_sound(-1, SOUND_KIND_MUSIC, stage.default_music_kind);
+		sound_manager->load_music("Battle Music", stage.default_music_kind, 0.0);
 	}
 	else if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_CHARA) {
+//		sound_manager->load_sound("Battle Music", [a random directory for one of the characters here]);
 		//randomly play the theme of one of the characters. if online, always play the opponent's theme
 	}
 	else {
+		//sound_manager->load_sound("Battle Music", player[rng(0, 1)]->default_music_kind);
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
+	sound_manager->play_music("Battle Music");
 
 	ms = std::chrono::high_resolution_clock::now();
 }
@@ -243,6 +244,10 @@ Battle::~Battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
+	sound_manager->stop_music("Battle Music");
+	sound_manager->process_sounds();
+	sound_manager->unload_all_sounds();
+	sound_manager->unload_music("Battle Music");
 	for (int i = 0; i < 2; i++) {
 		thread_manager->kill_thread(i);
 		meters[i].destroy();
@@ -255,8 +260,7 @@ Battle::~Battle() {
 	thread_manager->kill_thread(THREAD_KIND_UI);
 	stage.unload_stage();
 	render_manager->remove_light();
-	sound_manager->stop_sound_all();
-	sound_manager->unload_all_sounds();
+	sound_manager->clear_game_objects();
 	render_manager->unlink_all_shaders();
 	effect_manager->clear_effect_all();
 	effect_manager->unload_all_effects();
@@ -275,10 +279,8 @@ void Battle::process_main() {
 	debug_controller.poll_buttons(keyboard_state);
 	if (debug_controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 		if (frame_pause) {
-			for (int i = 0; i < 2; i++) {
-				sound_manager->resume_sound_all(i, SOUND_KIND_SE);
-				sound_manager->resume_sound_all(i, SOUND_KIND_VC);
-			}
+			sound_manager->resume_se_all();
+			sound_manager->resume_vc_all();
 		}
 		frame_pause = !frame_pause;
 		timer.flip_clock();
@@ -301,7 +303,8 @@ void Battle::process_main() {
 		thread_manager->wait_thread(THREAD_KIND_UI);
 		camera->camera_main();
 	}
-//	if (*game_manager->game_context == GAME_CONTEXT_TRAINING) {
+	sound_manager->process_sounds();
+//	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
 		process_training();
 //	}
 	if (battle_object_manager->world_frame >= 0.97) {
@@ -443,10 +446,8 @@ void ui_thread(void* battle_arg) {
 void Battle::process_frame_pause() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	if (debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
-		for (int i = 0; i < 2; i++) {
-			sound_manager->resume_sound_all(i, SOUND_KIND_SE);
-			sound_manager->resume_sound_all(i, SOUND_KIND_VC);
-		}
+		sound_manager->resume_se_all();
+		sound_manager->resume_vc_all();
 		battle_object_manager->world_frame += battle_object_manager->world_rate;
 		pre_process_fighter();
 		process_fighter();
@@ -456,10 +457,8 @@ void Battle::process_frame_pause() {
 		camera->camera_main();
 	}
 	else {
-		for (int i = 0; i < 2; i++) {
-			sound_manager->pause_sound_all(i, SOUND_KIND_SE);
-			sound_manager->pause_sound_all(i, SOUND_KIND_VC);
-		}
+		sound_manager->pause_se_all();
+		sound_manager->pause_vc_all();
 		camera->update_view();
 	}
 }

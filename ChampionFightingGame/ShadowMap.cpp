@@ -4,7 +4,7 @@
 
 ShadowMap::ShadowMap() {
 	depth = 25.0;
-	fov = 5.0;
+	fov = 100.0;
 
 	light_pos = glm::vec3(0.0, 1.0, 1.0);
 	projection_matrix = glm::ortho(-fov, fov, -fov, fov, 0.1f, depth);

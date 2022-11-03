@@ -1091,7 +1091,6 @@ void Fighter::status_hitstun_air() {
 
 void Fighter::enter_status_hitstun_air() {
 	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	std::cout << fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X] << ", " << fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y] << "\n";
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_X];
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y];
 	change_anim("jump_hitstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
@@ -1302,7 +1301,7 @@ void Fighter::exit_status_launch_start() {
 void Fighter::status_launch() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
-		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir * -1, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 		if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
 			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
 			return;

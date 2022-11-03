@@ -24,13 +24,11 @@ void debug_main() {
 	go1.model = resource_manager->use_model("resource/chara/rowan/model/model.dae");
 	go1.model.load_textures("c0");
 	go1.init_shader();
-	go1.scale *= glm::vec3(0.05);
 
 	GameObject go2;
 	go2.model = resource_manager->use_model("resource/chara/rowan/model/model.dae");
 	go2.model.load_textures("c1");
 	go2.init_shader();
-	go2.scale *= glm::vec3(0.05);
 
 	go1.pos = glm::vec3(-200.0, 0, 0);
 	go2.pos = glm::vec3(200.0, 0, 0);

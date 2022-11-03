@@ -4,10 +4,11 @@
 #include "utils.h"
 #include <glm/gtx/vector_angle.hpp>
 #include "RenderManager.h"
+#include "OpenAL/al.h"
 #include "GLM Helpers.h"
 
 Camera::Camera() {
-	base_pos = glm::vec3(0.0, 10.6, 60.0);
+	base_pos = glm::vec3(0.0, 10.0, 60.0);
 	pos = base_pos;
 	prev_pos = glm::vec3(0.0);
 	flip_matrix = glm::mat4(
@@ -126,10 +127,16 @@ void Camera::update_view() {
 	view_matrix = lookAt(pos, pos + front, up);
 	camera_matrix = projection_matrix * view_matrix;
 	RenderManager::get_instance()->update_shader_cams();
+	alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
 }
 
 void Camera::follow_players() {
-	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / 20.0;
+	//This calculation won't change midgame so we COULD make an init_camera function which calculates this
+	//once per game based on the given characters if we wanted to optimize. Low priority rn but could be 
+	//done
+	float x_scaler = WINDOW_WIDTH / (100 * ((fighter[0]->scale.x + fighter[1]->scale.x) / 2.0));
+
+	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / x_scaler;
 	pos.y = clampf(base_pos.y, ((std::max(fighter[0]->pos.y, fighter[1]->pos.y)) / 200.0) - (base_pos.y / 4.0), 800.0);
 	pos.z = base_pos.z;
 	yaw = 0.0;
@@ -156,7 +163,10 @@ void Camera::follow_anim() {
 	pitch = clampf(-89.9, keyframe.rot_key.y, 89.9);
 	roll = keyframe.rot_key.z;
 
-	pos /= glm::vec3(100.0);
+	//This 2 is a magic number that seems to be based on character size. It might also be inaccurate, but
+	//atm I'm not sure how we'd actually calculate this.
+
+	pos /= glm::vec3(2.0);
 
 	if (follow_id != -1) {
 		pos.x *= fighter[follow_id]->facing_dir;

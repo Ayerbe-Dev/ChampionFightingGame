@@ -21,16 +21,12 @@ void BattleObject::NEW_BLOCKBOX(ScriptArg args) {
 
 void BattleObject::PLAY_SE(ScriptArg args) {
 	UNWRAP(se, std::string);
-	int vol = -1;
-	UNWRAP_NO_DECL(vol);
-	play_se(se, vol);
+	play_se(se);
 }
 
 void BattleObject::PLAY_VC(ScriptArg args) {
 	UNWRAP(vc, std::string);
-	int vol = -1;
-	UNWRAP_NO_DECL(vol);
-	play_vc(vc, vol);
+	play_vc(vc);
 }
 
 void BattleObject::NEW_EFFECT(ScriptArg args) {

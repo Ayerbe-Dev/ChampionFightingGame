@@ -4,8 +4,7 @@
 class Light {
 public:
 	Light();
-	Light(glm::vec3 pos = glm::vec3(0.0, 1.0, 0.0), glm::vec3 col = glm::vec3(1.0), float brightness = 1.0);
-	Light(const Light& other);
+	Light(glm::vec3 pos, glm::vec3 col, float brightness);
 
 	glm::vec3 position;
 	glm::vec3 color;

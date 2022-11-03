@@ -90,8 +90,7 @@ public:
 	void load_fighter_status_scripts();
 	virtual void load_chara_status_scripts() {};
 	virtual void load_move_scripts() {};
-	void load_fighter_sounds();
-	virtual void load_chara_sounds() {};
+	void load_sound_list();
 	void load_fighter_effects();
 	virtual void load_chara_effects() {};
 	void set_default_vars();

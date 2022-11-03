@@ -106,18 +106,6 @@ public:
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
 
-	//Sound Functions
-
-	void play_se(std::string se, int vol = -1);
-	void play_vc(std::string vc, int vol = -1);
-	void stop_se(std::string se);
-	void stop_se_all();
-	void stop_vc(std::string vc);
-	void stop_vc_all();
-	void load_sound(std::string name);
-	void unload_sound(std::string name);
-	void unload_all_sounds();
-
 	//Effect Functions
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,

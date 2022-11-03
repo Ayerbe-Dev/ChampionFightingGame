@@ -3,49 +3,65 @@
 #include <vector>
 #include <list>
 #include <array>
-#include <unordered_map>
+#include <map>
 #include "Sound.h"
+
+class GameObject;
+
+struct MusicInstance {
+	unsigned int cursor;
+	char curr_track;
+	unsigned int source;
+	std::string name;
+};
 
 class SoundManager {
 public:
 	SoundManager(SoundManager& other) = delete;
 	void operator=(const SoundManager& other) = delete;
 
-	void play_sound(int object_id, int sound_kind, std::string name, int volume = -1);
+	void register_game_object(GameObject* game_object);
+	void clear_game_objects();
 
-	void pause_sound_all(int object_id = -1, int sound_kind = -1);
-	void resume_sound_all(int object_id = -1, int sound_kind = -1);
+	void process_sounds();
 
-	void stop_sound(int object_id, int sound_kind, std::string name);
-	void stop_sound_all(int object_id = -1, int sound_kind = -1);
+	void play_music(std::string name);
+	void pause_music(std::string name);
+	void pause_music_all();
+	void resume_music(std::string name);
+	void resume_music_all();
+	void stop_music(std::string name);
+	void stop_music_all();
+;
+	void pause_vc_all();
+	void pause_se_all();
+	void resume_vc_all();
+	void resume_se_all();
 
-	void load_sound(std::string name);
+	Sound get_sound(std::string name);
+	unsigned int get_sound_buffer(std::string name);
+
+	void load_sound(std::string name, std::string dir, float volume_mod);
+	void load_music(std::string name, std::string dir, float volume_mod);
 	void unload_sound(std::string name);
+	void unload_music(std::string name);
 	void unload_all_sounds();
-
-	int add_sound_player();
-	void add_sound_player(int object_id);
-	void remove_sound_player(int id);
-	void remove_sound_players();
-
-	std::vector<std::array<std::list<SoundInstance>, SOUND_KIND_MAX>> active_sounds;
+	void unload_all_music();
 
 	static SoundManager* get_instance();
 	void destroy_instance();
 private:
 	SoundManager();
-	void populate_sounds();
-	void add_sound_info(std::string name, std::string dir, int sound_kind, int sound_type, int volume = 32);
 
-	std::vector<SoundInfo> sound_info;
-	std::unordered_map<std::string, int> sound_info_map;
+	void update_stream(MusicInstance& music);
 
-	std::vector<Sound> loaded_sounds;
-	std::unordered_map<std::string, int> sound_name_map;
+	ALCdevice* al_device;
+	ALCcontext* al_context;
 
-	std::unordered_map<int, int> id2index;
+	std::map<std::string, Sound> sound_map;
+	std::map<std::string, Music> music_map;
+	std::vector<GameObject*> objects;
+	std::list<MusicInstance> active_music;
 
 	static SoundManager* instance;
 };
-
-void audio_callback(void* unused, Uint8* stream, int len);

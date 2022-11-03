@@ -60,6 +60,7 @@ public:
 	void load_projectile_status_scripts();
 	virtual void load_projectile_unique_status_scripts() {};
 	virtual void load_move_scripts() {};
+	void load_sound_list();
 	void set_default_vars();
 	void init_boxes();
 

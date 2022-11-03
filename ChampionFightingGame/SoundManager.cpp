@@ -1,309 +1,209 @@
 ﻿#include "SoundManager.h"
 #include "SaveManager.h"
 #include "SDL/SDL_audio.h"
+#include "OpenAL/alc.h"
+#include "OpenAL/al.h"
 #include "utils.h"
+#include "GameObject.h"
 
 SoundManager::SoundManager() {
-	SDL_AudioSpec format;
-	format.freq = 22050;
-	format.format = AUDIO_F32SYS;
-	format.channels = 2;
-	format.samples = 361;
-	/*
-	The number of samples needs to be a perfect square, and that value represents how much data will go into each iteration of the callback. Since the
-	callback only runs when the program determines it is time to load in more audio data, this value also effectively sets how often the callback will
-	run. The value of 361 (19*19) causes the callback to run ~61 times per second, which allows it to sync up with frame advance.
-	*/
-	format.callback = audio_callback;
-	format.userdata = NULL;
-
-	if (SDL_OpenAudio(&format, NULL) < 0) {
-		printf("Error opening SDL_audio: %s\n", SDL_GetError());
-	}
-	SDL_PauseAudio(0);
-
-	populate_sounds();
+	al_device = alcOpenDevice(nullptr);
+	al_context = alcCreateContext(al_device, nullptr);
+	alcMakeContextCurrent(al_context);
 }
 
-void SoundManager::populate_sounds() {
-	//VC
-	add_sound_info("rowan_attack_01", "rowan", SOUND_KIND_VC, SOUND_TYPE_NORMAL);
-
-	//Music
-	add_sound_info("Atlas_Theme", "stage", SOUND_KIND_MUSIC, SOUND_TYPE_LOOP);
-	add_sound_info("The_Calamity", "stage", SOUND_KIND_MUSIC, SOUND_TYPE_LOOP);
-}
-
-void SoundManager::play_sound(int object_id, int sound_kind, std::string name, int volume) {
-	if (sound_name_map.find(name) == sound_name_map.end()) {
-		std::cerr << "Sound " << name << " not loaded!\n";
-		return;
+void SoundManager::process_sounds() {
+	for (int i = 0, max = objects.size(); i < max; i++) {
+		objects[i]->process_sound();
 	}
-	if (id2index.find(object_id) == id2index.end()) {
-		std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-		return;
-	}
-
-	SDL_LockAudio();
-	active_sounds[id2index[object_id]][sound_kind].push_back(loaded_sounds[sound_name_map[name]].instantiate(volume));
-	SDL_UnlockAudio();
-}
-
-void SoundManager::pause_sound_all(int object_id, int sound_kind) {
-	if (object_id != -1) {
-		if (id2index.find(object_id) == id2index.end()) {
-			std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-			return;
-		}
-		if (sound_kind != -1) {
-			SDL_LockAudio();
-			for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin(), max = active_sounds[id2index[object_id]][sound_kind].end(); it != max; it++) {
-				it->active = false;
+	ALint state;
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		update_stream(*music);
+		alGetSourcei(music->source, AL_SOURCE_STATE, &state);
+		if (state == AL_STOPPED) {
+			alDeleteSources(1, &(music->source));
+			if (active_music.size() != 1) {
+				music = active_music.erase(music);
 			}
-			SDL_UnlockAudio();
+			else {
+				active_music.erase(music);
+			}
+		}
+	}
+}
+
+void SoundManager::play_music(std::string name) {
+	if (!music_map.contains(name)) {
+		std::cerr << "Music " << name << " not loaded!\n";
+		return;
+	}
+	float volume_mul = SaveManager::get_instance()->get_game_setting("music_vol") / 100.0;
+	Music& music = music_map[name];
+	active_music.push_back(MusicInstance());
+	unsigned int& source = active_music.back().source;
+	alGenSources(1, &source);
+	alSourcef(source, AL_PITCH, 1);
+	alSourcef(source, AL_GAIN, (0.5 + music.volume_mod) * volume_mul);
+	alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0);
+	alSource3f(source, AL_VELOCITY, 0.0, 0.0, 0.0);
+	alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE);
+	alSourcei(source, AL_LOOPING, AL_FALSE);
+	active_music.back().name = name;
+	active_music.back().curr_track = 0;
+	active_music.back().cursor = music.num_buffers * BUFFER_SIZE;
+	unsigned int track_pos = 0;
+	while (track_pos != active_music.back().cursor) {
+		if (music.tracks[active_music.back().curr_track].data.size() < active_music.back().cursor - track_pos) {
+			track_pos += music.tracks[active_music.back().curr_track].data.size();
+			active_music.back().curr_track = music.tracks[active_music.back().curr_track].next_track;
 		}
 		else {
-			SDL_LockAudio();
-			for (int i = 0; i < SOUND_KIND_MAX; i++) {
-				for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin(), max = active_sounds[id2index[object_id]][i].end(); it != max; it++) {
-					it->active = false;
-				}
-			}
-			SDL_UnlockAudio();
+			break;
 		}
 	}
-	else {
-		SDL_LockAudio();
-		for (int i = 0, max = active_sounds.size(); i < max; i++) {
-			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-				for (std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin(), max = active_sounds[i][i2].end(); it != max; it++) {
-					it->active = false;
-				}
-			}
-		}
-		SDL_UnlockAudio();
-	}
+	active_music.back().cursor -= track_pos;
+	
+	alSourceQueueBuffers(source, music.num_buffers, &music.buffers[0]);
+	alSourcePlay(source);
 }
 
-void SoundManager::resume_sound_all(int object_id, int sound_kind) {
-	if (object_id != -1) {
-		if (id2index.find(object_id) == id2index.end()) {
-			std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-			return;
-		}
-		if (sound_kind != -1) {
-			SDL_LockAudio();
-			for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin(), max = active_sounds[id2index[object_id]][sound_kind].end(); it != max; it++) {
-				it->active = true;
-			}
-			SDL_UnlockAudio();
-		}
-		else {
-			SDL_LockAudio();
-			for (int i = 0; i < SOUND_KIND_MAX; i++) {
-				for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][i].begin(), max = active_sounds[id2index[object_id]][i].end(); it != max; it++) {
-					it->active = true;
-				}
-			}
-			SDL_UnlockAudio();
-		}
-	}
-	else {
-		SDL_LockAudio();
-		for (int i = 0, max = active_sounds.size(); i < max; i++) {
-			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-				for (std::list<SoundInstance>::iterator it = active_sounds[i][i2].begin(), max = active_sounds[i][i2].end(); it != max; it++) {
-					it->active = true;
-				}
-			}
-		}
-		SDL_UnlockAudio();
-	}
-}
-
-void SoundManager::stop_sound(int object_id, int sound_kind, std::string name) {
-	if (sound_name_map.find(name) == sound_name_map.end()) {
-		std::cerr << "Sound " << name << " not loaded!\n";
-		return;
-	}
-	if (id2index.find(object_id) == id2index.end()) {
-		std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-		return;
-	}
-	std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin();
-	for (std::list<SoundInstance>::iterator it = active_sounds[id2index[object_id]][sound_kind].begin(), max = active_sounds[id2index[object_id]][sound_kind].end(); it != max; it++) {
-		if (it->sound->info->name == name) {
-			SDL_LockAudio();
-			active_sounds[id2index[object_id]][sound_kind].erase(it);
-			SDL_UnlockAudio();
+void SoundManager::pause_music(std::string name) {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		if (music->name == name) {
+			alSourcePause(music->source);
 			return;
 		}
 	}
 }
 
-void SoundManager::stop_sound_all(int object_id, int sound_kind) {
-	if (object_id != -1) {
-		if (id2index.find(object_id) == id2index.end()) {
-			std::cerr << "ID " << object_id << " is not a valid sound player!\n";
-			return;
-		}
-		if (sound_kind != -1) {
-			SDL_LockAudio();
-			active_sounds[id2index[object_id]][sound_kind].clear();
-			SDL_UnlockAudio();
-		}
-		else {
-			SDL_LockAudio();
-			for (int i = 0; i < SOUND_KIND_MAX; i++) {
-				active_sounds[id2index[object_id]][i].clear();
-			}
-			SDL_UnlockAudio();
-		}
-	}
-	else {
-		SDL_LockAudio();
-		for (int i = 0, max = active_sounds.size(); i < max; i++) {
-			for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-				active_sounds[i][i2].clear();
-			}
-		}
-		SDL_UnlockAudio();
+void SoundManager::pause_music_all() {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		alSourcePause(music->source);
 	}
 }
 
-void SoundManager::load_sound(std::string name) {
-	if (sound_info_map.find(name) == sound_info_map.end()) {
-		std::cerr << "Sound " << name << " doesn't exist!\n";
-		return;
-	}
-	if (sound_name_map.find(name) != sound_name_map.end()) {
-		return;
-	}
-
-	SoundInfo *sound_info = &this->sound_info[sound_info_map[name]];
-
-	Sound to_load(sound_info);
-	sound_name_map[name] = loaded_sounds.size();
-
-	SDL_AudioSpec wave;
-	Uint8* data;
-	unsigned int duration;
-	SDL_AudioCVT cvt;
-	const char* file = (sound_info->dir).c_str();
-
-	if (SDL_LoadWAV(file, &wave, &data, &duration) == NULL) {
-		fprintf(stderr, "Couldn't load %s: %s\n", file, SDL_GetError());
-		return;
-	}
-	SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq, AUDIO_F32SYS, 2, 22050);
-
-	cvt.len = duration;
-	cvt.buf = (Uint8*)SDL_malloc(cvt.len * cvt.len_mult);
-	SDL_memcpy(cvt.buf, data, duration);
-
-	SDL_ConvertAudio(&cvt);
-	SDL_FreeWAV(data);
-
-	to_load.data = cvt.buf;
-	to_load.duration = cvt.len_cvt;
-
-	if (sound_info->sound_type == SOUND_TYPE_LOOP) {
-		SDL_AudioSpec loop_wave;
-		Uint8* loop_data;
-		unsigned int loop_duration;
-		SDL_AudioCVT loop_cvt;
-		const char* loop_file = (sound_info->loop_dir).c_str();
-
-		if (SDL_LoadWAV(loop_file, &loop_wave, &loop_data, &loop_duration) == NULL) {
-			fprintf(stderr, "Couldn't load %s: %s\n", loop_file, SDL_GetError());
+void SoundManager::resume_music(std::string name) {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		if (music->name == name) {
+			alSourcePlay(music->source);
 			return;
 		}
-		SDL_BuildAudioCVT(&loop_cvt, loop_wave.format, loop_wave.channels, loop_wave.freq, AUDIO_F32SYS, 2, 22050);
-
-		loop_cvt.len = loop_duration;
-		loop_cvt.buf = (Uint8*)SDL_malloc(loop_cvt.len * loop_cvt.len_mult);
-		SDL_memcpy(loop_cvt.buf, loop_data, loop_duration);
-
-		SDL_ConvertAudio(&loop_cvt);
-		SDL_FreeWAV(loop_data);
-
-		SDL_LockAudio();
-		to_load.loop_data = loop_cvt.buf;
-		to_load.loop_duration = loop_cvt.len_cvt;
-		SDL_UnlockAudio();
 	}
+}
 
-	loaded_sounds.push_back(to_load);
+void SoundManager::resume_music_all() {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		alSourcePlay(music->source);
+	}
+}
+
+void SoundManager::stop_music(std::string name) {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		if (music->name == name) {
+			alSourceStop(music->source);
+			alDeleteSources(1, &music->source);
+			active_music.erase(music);
+			return;
+		}
+	}
+}
+
+void SoundManager::stop_music_all() {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+		alSourceStop(music->source);
+		alDeleteSources(1, &music->source);
+	}
+	active_music.clear();
+}
+
+void SoundManager::pause_vc_all() {
+	for (int i = 0, max = objects.size(); i < max; i++) {
+		objects[i]->pause_vc_all();
+	}
+}
+
+void SoundManager::pause_se_all() {
+	for (int i = 0, max = objects.size(); i < max; i++) {
+		objects[i]->pause_se_all();
+	}
+}
+
+void SoundManager::resume_vc_all() {
+	for (int i = 0, max = objects.size(); i < max; i++) {
+		objects[i]->resume_vc_all();
+	}
+}
+
+void SoundManager::resume_se_all() {
+	for (int i = 0, max = objects.size(); i < max; i++) {
+		objects[i]->resume_se_all();
+	}
+}
+
+void SoundManager::register_game_object(GameObject* game_object) {
+	objects.push_back(game_object);
+}
+
+void SoundManager::clear_game_objects() {
+	objects.clear();
+}
+
+Sound SoundManager::get_sound(std::string name) {
+	if (sound_map.contains(name)) {
+		return sound_map[name];
+	}
+	std::cerr << "Sound " << name << " not loaded!\n";
+	return Sound();
+}
+
+unsigned int SoundManager::get_sound_buffer(std::string name) {
+	if (sound_map.contains(name)) {
+		return sound_map[name].buffer;
+	}
+	std::cerr << "Sound " << name << " not loaded!\n";
+	return 0;
+}
+
+void SoundManager::load_sound(std::string name, std::string dir, float volume_mod) {
+	if (sound_map.contains(name)) {
+		return;
+	}
+	sound_map[name] = Sound(dir, volume_mod);
+}
+
+void SoundManager::load_music(std::string name, std::string dir, float volume_mod) {
+	if (music_map.contains(name)) {
+		return;
+	}
+	music_map[name] = Music(dir, volume_mod);
 }
 
 void SoundManager::unload_sound(std::string name) {
-	if (sound_name_map.find(name) == sound_name_map.end()) {
-		std::cout << "Sound " << name << " is not loaded!\n";
-		return;
+	if (sound_map.contains(name)) {
+		alDeleteBuffers(1, &sound_map[name].buffer);
+		sound_map.erase(name);
 	}
-	Sound& to_unload = loaded_sounds[sound_name_map[name]];
-	if (to_unload.data != nullptr) {
-		SDL_free(to_unload.data);
-		to_unload.data = nullptr;
+}
+
+void SoundManager::unload_music(std::string name) {
+	if (music_map.contains(name)) {
+		alDeleteBuffers(music_map[name].num_buffers, &music_map[name].buffers[0]);
+		music_map.erase(name);
 	}
-	if (to_unload.loop_data != nullptr) {
-		SDL_free(to_unload.loop_data);
-		to_unload.loop_data = nullptr;
-	}
-	sound_name_map.erase(name);
-	//Note: This will leave an empty slot in the list of loaded sounds. Technically leaks memory
-	//but I know this function will rarely actually get called, and either way calling unload_all_sounds
-	//will do a proper clear
 }
 
 void SoundManager::unload_all_sounds() {
-	SDL_LockAudio();
-	for (int i = 0, max = loaded_sounds.size(); i < max; i++) {
-		if (loaded_sounds[i].data != nullptr) {
-			SDL_free(loaded_sounds[i].data);
-			loaded_sounds[i].data = nullptr;
-		}
-		if (loaded_sounds[i].loop_data != nullptr) {
-			SDL_free(loaded_sounds[i].loop_data);
-			loaded_sounds[i].loop_data = nullptr;
-		}
+	for (const auto& sound : sound_map) {
+		alDeleteBuffers(1, &sound.second.buffer);
 	}
-	SDL_UnlockAudio();
-	loaded_sounds.clear();
-	sound_name_map.clear();
+	sound_map.clear();
 }
 
-int SoundManager::add_sound_player() {
-	int i;
-	for (i = 50; id2index.contains(i); i++); //Slots 0-29 are reserved for fighters and projectiles, slots
-	//30-49 are reserved for stage assets. 50+ is where we get to things that aren't necessarily assigned
-	//their own IDs
-	id2index[i] = active_sounds.size();
-	active_sounds.resize(active_sounds.size() + 1);
-	return i;
-}
-
-void SoundManager::add_sound_player(int object_id) {
-	id2index[object_id] = active_sounds.size();
-	active_sounds.resize(active_sounds.size() + 1);
-}
-
-void SoundManager::remove_sound_player(int id) {
-	stop_sound_all(id);
-	active_sounds.erase(active_sounds.begin() + id2index[id]);
-	id2index.erase(id);
-}
-
-void SoundManager::remove_sound_players() {
-	stop_sound_all();
-	active_sounds.clear();
-	id2index.clear();
-}
-
-void SoundManager::add_sound_info(std::string name, std::string dir, int sound_kind, int sound_type, int volume) {
-	sound_info_map[name] = sound_info.size();
-	SoundInfo to_add(name, dir, sound_kind, sound_type, volume);
-	sound_info.push_back(to_add);
+void SoundManager::unload_all_music() {
+	for (const auto& music : music_map) {
+		alDeleteBuffers(music.second.num_buffers, &music.second.buffers[0]);
+	}
+	music_map.clear();
 }
 
 SoundManager* SoundManager::instance = nullptr;
@@ -315,86 +215,50 @@ SoundManager* SoundManager::get_instance() {
 }
 
 void SoundManager::destroy_instance() {
+	alcDestroyContext(al_context);
+	alcCloseDevice(al_device);
 	unload_all_sounds();
+	unload_all_music();
 	if (instance != nullptr) {
 		delete instance;
 	}
 }
 
-void audio_callback(void* unused, Uint8* stream, int len) {
-	unsigned int diff; //How much leftover space we have if the length of the stream > the length of the track
-	Uint8* source; //Audio data that will be filled by a given track
-	Uint8* data; //Will either be the regular track or the loop track; both are stored in the same sound instance if the latter exists
-	unsigned int dlen; //Ditto for length
-	unsigned int mlen; //Maximum length
-	int vol; //Volume value to be multiplied by the values in the user's settings
-	SoundManager* sound_manager = SoundManager::get_instance();
-	SaveManager* save_manager = SaveManager::get_instance();
-
-	
-	SDL_memset(stream, 0, len); //Clear the stream
-
-	for (int i = 0, max = sound_manager->active_sounds.size(); i < max; i++) {
-		for (int i2 = 0; i2 < SOUND_KIND_MAX; i2++) {
-			for (std::list<SoundInstance>::iterator it = sound_manager->active_sounds[i][i2].begin(); it != sound_manager->active_sounds[i][i2].end(); it++) {
-				if (it->active) {
-					diff = 0;
-					data = it->sound->data;
-					dlen = it->sound->duration;
-					if (it->sound->info->sound_kind == SOUND_KIND_SE) {
-						vol = save_manager->get_game_setting("se_vol") * get_relative_one_percent(it->volume, 128);
-					}
-					else if (it->sound->info->sound_kind == SOUND_KIND_VC) {
-						vol = save_manager->get_game_setting("vc_vol") * get_relative_one_percent(it->volume, 128);
-					}
-					else {
-						vol = save_manager->get_game_setting("music_vol") * get_relative_one_percent(it->volume, 128);
-					}
-
-					if (it->sound->info->sound_type == SOUND_TYPE_LOOP && it->looped) {
-						data = it->sound->loop_data;
-						dlen = it->sound->loop_duration;
-					}
-
-					source = (Uint8*)SDL_malloc(len); //Allocate enough memory to hold our sound data
-					if (it->pos + len > dlen) { //Check if we're about to hit the end of the file, and if so by how much
-						diff = (it->pos + len) - dlen;
-					}
-
-					mlen = clamp(0, len, dlen - it->pos);
-
-					//Copy as much data from the audio track as we have into the source variable, making sure not to copy data that doesn't exist.
-
-					SDL_memcpy(source, &data[it->pos], mlen);
-
-					it->pos += len; //Add the length of the stream to the audio's position.
-
-					if (diff != 0) { //If we went over
-						if (it->sound->info->sound_type == SOUND_TYPE_LOOP) {
-							if (!it->looped) { //If we've never looped before, clarify that we're getting the rest of our
-								//data from the looped version, and that we are now in the loop state.
-								it->looped = true;
-								data = it->sound->loop_data;
-							}
-							it->pos = 0;
-							SDL_memcpy(&source[len - diff], &data[it->pos], diff);
-							it->pos += diff;
-
-						}
-						else { //Otherwise just get that shit outta here
-							if (sound_manager->active_sounds[i][i2].size() != 1) {
-								it = sound_manager->active_sounds[i][i2].erase(it);
-							}
-							else {
-								sound_manager->active_sounds[i][i2].erase(it);
-								break;
-							}
-						}
-					}
-					SDL_MixAudio(stream, source, mlen, vol);
-					SDL_free(source);
-				}
+void SoundManager::update_stream(MusicInstance& music_instance) {
+	ALint buffers_processed = 0;
+	Music& music = music_map[music_instance.name];
+	for (alGetSourcei(music_instance.source, AL_BUFFERS_PROCESSED, &buffers_processed); buffers_processed > 0; buffers_processed--) {
+		ALuint buffer;
+		alSourceUnqueueBuffers(music_instance.source, 1, &buffer);
+		std::string data;
+		data.resize(BUFFER_SIZE);
+		std::memset(data.data(), 0, BUFFER_SIZE); //Set the data to be empty
+		std::size_t copied_size = 0;
+		std::string track_data = music.tracks[music_instance.curr_track].data;
+		while (copied_size != BUFFER_SIZE) { //Until we've filled the entire buffer
+			std::size_t copy_size = BUFFER_SIZE - copied_size; //Copy size is however much we have left
+			//to fill
+			if (music_instance.cursor + copy_size > track_data.size()) { //If filling that amount will
+				//bring us past the end of a track, just fill up until the end of the track
+				copy_size = track_data.size() - music_instance.cursor;
 			}
+			std::memcpy(&data[copied_size], &track_data[music_instance.cursor], copy_size); //Copy our
+			//track, from the cursor to either the buffer size or its end, into our string starting from
+			//the position of the data we already copied
+			music_instance.cursor += copy_size; //Then move our cursor forward
+
+			if (copy_size != BUFFER_SIZE - copied_size) { //If copy_size was modified, that means we
+				//hit the end of the track
+				music_instance.curr_track = music.tracks[music_instance.curr_track].next_track;
+				track_data = music.tracks[music_instance.curr_track].data;
+				music_instance.cursor = 0;
+			}
+			copied_size += copy_size; //Now to increment copied_size
 		}
+
+		//Data should now be entirely filled
+
+		alBufferData(buffer, music.format, data.c_str(), BUFFER_SIZE, music.sample_rate);
+		alSourceQueueBuffers(music_instance.source, 1, &buffer);
 	}
 }

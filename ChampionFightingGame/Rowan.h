@@ -7,7 +7,6 @@ public:
 	Rowan();
 	Rowan(Player* player);
 	void load_chara_status_scripts() override;
-	void load_chara_sounds() override;
 	void load_chara_effects() override;
 	void load_move_scripts() override;
 

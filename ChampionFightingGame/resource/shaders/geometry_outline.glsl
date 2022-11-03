@@ -7,7 +7,7 @@ in VS_OUT {
 } gs_in[];
 
 vec4 expand(vec4 position, vec3 normal) {
-    float magnitude = 0.01;
+    float magnitude = 0.2;
     vec3 direction = normal * magnitude; 
     return position + vec4(direction, 0.0);
 } 

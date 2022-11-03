@@ -6,9 +6,8 @@ void BattleObject::new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, gl
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
-	if (!facing_right) {
-		rot.y += 180.0;
-	}
+	scale.x *= facing_dir;
+	bone_offset.x *= facing_dir;
 	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 }
 
@@ -23,9 +22,7 @@ void BattleObject::new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, gl
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
-	if (!facing_right) {
-		scale.x *= -1.0;
-	}
+	scale.x *= facing_dir;
 	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 }
 
@@ -34,10 +31,8 @@ void BattleObject::new_effect_no_follow(std::string name, glm::vec3 pos, glm::ve
 	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
+	scale.x *= facing_dir;
 	pos += this->pos;
-	if (!facing_right) {
-		scale.x *= -1.0;
-	}
 	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 }
 

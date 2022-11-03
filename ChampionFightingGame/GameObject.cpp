@@ -23,7 +23,6 @@ GameObject::GameObject(GameObject& other) {
 	effect_manager = EffectManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 	this->id_effect = other.id_effect;
-	this->id_sound = other.id_sound;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
 	this->rot = other.rot;
@@ -73,7 +72,6 @@ GameObject::GameObject(const GameObject& other) {
 	effect_manager = EffectManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 	this->id_effect = other.id_effect;
-	this->id_sound = other.id_sound;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
 	this->rot = other.rot;
@@ -124,7 +122,6 @@ GameObject& GameObject::operator=(GameObject& other) {
 	sound_manager = SoundManager::get_instance();
 
 	this->id_effect = other.id_effect;
-	this->id_sound = other.id_sound;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
 	this->rot = other.rot;
@@ -177,7 +174,6 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	sound_manager = SoundManager::get_instance();
 
 	this->id_effect = other.id_effect;
-	this->id_sound = other.id_sound;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
 	this->rot = other.rot;
@@ -221,53 +217,30 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	return *this;
 }
 
-void GameObject::render(bool flip) {
-	shader.use();
-	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat,
-		pos / glm::vec3(
-			WINDOW_WIDTH / (100 * scale.x),
-			WINDOW_HEIGHT / (100 * scale.y),
-			WINDOW_DEPTH / (100 * scale.z)
-		)
-	);
-	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale);
-	model_mat *= extra_mat;
-	shader.set_mat4("model_matrix", model_mat);
-	model.render(&shader, flip);
-}
-
-void GameObject::render_shadow(bool flip) {
-	shadow_shader.use();
-	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat,
-		pos / glm::vec3(
-			WINDOW_WIDTH / (100 * scale.x),
-			WINDOW_HEIGHT / (100 * scale.y),
-			WINDOW_DEPTH / (100 * scale.z)
-		)
-	);
-	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale);
-	model_mat *= extra_mat;
-	shadow_shader.set_mat4("model_matrix", model_mat);
-	model.render_no_texture(&shadow_shader, flip);
-}
-
-void GameObject::render_outline(bool flip) {
-	outline_shader.use();
-	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat,
-		pos / glm::vec3(
-			WINDOW_WIDTH / (100 * scale.x),
-			WINDOW_HEIGHT / (100 * scale.y),
-			WINDOW_DEPTH / (100 * scale.z)
-		)
-	);
-	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale); 
-	model_mat *= extra_mat;
-	outline_shader.set_mat4("model_matrix", model_mat);
-	model.render_no_texture(&outline_shader, flip);
+void GameObject::process_sound() {
+	ALint state;
+	for (std::list<unsigned int>::iterator source = sound_effects.begin(), max = sound_effects.end(); source != max; source++) {
+		alGetSourcei(*source, AL_SOURCE_STATE, &state);
+		if (state == AL_STOPPED) {
+			alDeleteSources(1, &(*source));
+			if (sound_effects.size() != 1) {
+				source = sound_effects.erase(source);
+			}
+			else {
+				sound_effects.erase(source);
+			}
+		}
+	}
+	for (std::list<unsigned int>::iterator source = voice_clips.begin(), max = voice_clips.end(); source != max; source++) {
+		alGetSourcei(*source, AL_SOURCE_STATE, &state);
+		if (state == AL_STOPPED) {
+			alDeleteSources(1, &(*source));
+			if (voice_clips.size() != 1) {
+				source = voice_clips.erase(source);
+			}
+			else {
+				voice_clips.erase(source);
+			}
+		}
+	}
 }

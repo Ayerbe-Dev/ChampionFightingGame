@@ -138,13 +138,11 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 		);
 		BattleObject* battle_object = static_cast<BattleObject*>(game_object);
 		if (battle_object != nullptr && !battle_object->facing_right) {
-			this->scale.y *= -1.0;
-			this->scale_frame.y *= -1.0;
 			flip = true;
 		}
 	}
 	else {
-		scale_vec = glm::vec3(0.05);
+		scale_vec = glm::vec3(1.0);
 	}
 }
 

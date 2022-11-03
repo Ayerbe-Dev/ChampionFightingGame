@@ -385,9 +385,6 @@
     <ClCompile Include="Particle.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="BattleObjectSoundFunctions.cpp">
-      <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="BattleObjectEffectFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
@@ -558,6 +555,9 @@
     </ClCompile>
     <ClCompile Include="ArbitraryCodeEditor.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectRenderFunctions.cpp">
+      <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

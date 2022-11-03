@@ -3,6 +3,8 @@
 #include "Fighter.h"
 #include <fstream>
 #include "GameManager.h"
+#include "EffectManager.h"
+#include "SoundManager.h"
 
 StageAsset::StageAsset() {
 
@@ -13,6 +15,8 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 	this->resource_dir = resource_dir;
 	this->battle_object_manager = battle_object_manager;
 	owner = battle_object_manager->stage;
+	sound_manager->register_game_object(this);
+
 	load_params();
 	load_model_shader();
 	load_anim_list();

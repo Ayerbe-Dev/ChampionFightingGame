@@ -1,22 +1,18 @@
 #include "Light.h"
 
 Light::Light() {
-
+	position = glm::vec3(0.0);
+	color = glm::vec3(1.0);
+	linear = 0.0045;
+	quadratic = 0.0075;
+	enabled = true;
 }
 
 Light::Light(glm::vec3 pos, glm::vec3 col, float brightness) {
 	this->position = pos;
 	this->color = col * glm::vec3(brightness);
 
-	linear = 0.09;
-	quadratic = 0.032;
+	linear = 0.0045;
+	quadratic = 0.0075;
 	enabled = true;
-}
-
-Light::Light(const Light& other) {
-	this->position = other.position;
-	this->color = other.color;
-	this->linear = other.linear;
-	this->quadratic = other.quadratic;
-	this->enabled = other.enabled;
 }

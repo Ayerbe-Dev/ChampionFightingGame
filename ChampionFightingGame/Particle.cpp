@@ -107,13 +107,19 @@ void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	pos += this->pos + (pos_frame * frame);
-	rot += this->rot + (rot_frame * frame);
-	scale *= this->scale + (scale_frame * frame);
+	glm::vec3 rot_temp = this->rot;
+	glm::vec3 rot_frame_temp = this->rot_frame;
 	if (flip) {
-		scale.y *= -1.0;
-		rot.y *= -1.0;
+		rot_temp.y *= -1.0;
+		rot_temp.z *= -1.0;
+		rot_frame_temp.y *= -1.0;
+		rot_frame_temp.z *= -1.0;
 	}
+
+	pos += this->pos + (pos_frame * frame);
+	rot += rot_temp + (rot_frame_temp * frame);
+	scale *= this->scale + (scale_frame * frame);
+	
 	rgba += this->rgba + (rgba_frame * frame);
 	set_sprite((int)frame);
 

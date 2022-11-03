@@ -159,7 +159,7 @@ bool LoadIcon::check_corner_distance() {
 	}
 	float x_relative = abs(texture.pos.x) / WINDOW_WIDTH * 1000;
 	float y_relative = abs(texture.pos.y) / WINDOW_HEIGHT * 1000;
-	bool close_enough = (std::max(x_relative, y_relative) - std::min(x_relative, y_relative)) <= 3.0;
+	bool close_enough = abs(std::max(x_relative, y_relative) - std::min(x_relative, y_relative)) <= 10.0;
 
 	return will_hit_wall && will_hit_ceiling && close_enough;
 }

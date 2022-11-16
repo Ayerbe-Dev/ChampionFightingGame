@@ -23,6 +23,7 @@
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "SaveManager.h"
+#include "ShaderManager.h"
 #include "SoundManager.h"
 #include "ThreadManager.h"
 #include "stb_image.h"
@@ -60,6 +61,7 @@ int main() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
@@ -98,6 +100,7 @@ int main() {
 	render_manager->destroy_instance();
 	resource_manager->destroy_instance();
 	save_manager->destroy_instance();
+	shader_manager->destroy_instance();
 	sound_manager->destroy_instance();
 	thread_manager->destroy_instance();
 

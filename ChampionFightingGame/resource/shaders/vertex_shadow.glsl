@@ -8,7 +8,9 @@ const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 4;
 
 uniform mat4 model_matrix;
-uniform mat4 shadow_matrix;
+layout(std140) uniform ShadowMatrix {
+    mat4 shadow_matrix;
+};
 uniform mat4 bone_matrix[MAX_BONES];
 uniform bool has_skeleton;
 

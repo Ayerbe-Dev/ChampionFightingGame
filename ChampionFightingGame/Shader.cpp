@@ -1,15 +1,18 @@
 #include "Shader.h"
 #include <string>
 #include <fstream>
+#include "ShaderManager.h"
 
+const int SHADER_STATE_UNIFORM_BLOCK = 1;
+const int SHADER_STATE_STRUCT = 2;
 
 Shader::Shader() {
 	loaded = false;
 }
 
-Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir) {
+Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
 	loaded = false;
-	init(vertex_dir, fragment_dir, geometry_dir);
+	init(vertex_dir, fragment_dir, geometry_dir, features);
 }
 
 Shader::Shader(Shader& other) {
@@ -57,12 +60,20 @@ Shader::~Shader() {
 }
 
 
-void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir) {
+void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 	id = glCreateProgram();
 	name = vertex_dir + ", " + fragment_dir;
 	if (geometry_dir != "") {
 		name += ", " + geometry_dir;
 	}
+
+	std::string includes = get_includes(features);
+
+	int shader_state = 0;
+	std::string type_name = "";
+	std::vector<std::pair<std::string, unsigned int>> uniform_blocks;
+
 	int success;
 	char info_log[512];
 	std::ifstream shader_file;
@@ -74,15 +85,64 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 	unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	unsigned int geometry = glCreateShader(GL_GEOMETRY_SHADER);
 
-	shader_file.open("resource/shaders/" + vertex_dir);
+	shader_file.open("resource/shaders/vertex_" + vertex_dir + ".glsl");
 	if (shader_file.fail()) {
 		std::cout << "Could not open Vertex Core Shader File: " << vertex_dir << "\n";
 		shader_file.close();
 	}
 	else {
+		getline(shader_file, input);
+		source += input;
+		source += includes;
 		while (getline(shader_file, input)) {
+			if (shader_state & SHADER_STATE_UNIFORM_BLOCK) {
+				if (input.starts_with("}")) {
+					shader_state &= ~SHADER_STATE_UNIFORM_BLOCK;
+				}
+				else {
+					unsigned int type_size = shader_manager->get_type_size(
+						input.substr(input.find_first_not_of(" "), input.find_last_of(" "))
+					);
+					if (input.ends_with("];")) {
+						unsigned int num_elements = 0;
+						for (int i = 0, pos = input.size() - 2; input[--pos] != '['; i++) {
+							num_elements += input[pos] * pow(10, i);
+						}
+						type_size *= num_elements;
+					}
+					uniform_blocks.back().second += type_size;
+				}
+			}
+			else {
+				if (input.starts_with("layout(std140) uniform ")) {
+					uniform_blocks.push_back(std::pair(input.substr(23, input.find(" {") - 23), 0));
+					shader_state |= SHADER_STATE_UNIFORM_BLOCK;
+				}
+			}
+
+			if (shader_state & SHADER_STATE_STRUCT) {
+				if (input.starts_with("}")) {
+					shader_state &= ~SHADER_STATE_STRUCT;
+				}
+				else {
+					shader_manager->add_type_size(type_name, shader_manager->get_type_size(
+						input.substr(input.find_first_not_of(" "), input.find_last_of(" ")))
+					);
+				}
+			}
+			else {
+				if (input.starts_with("struct ")) {
+					type_name = input.substr(8);
+					if (shader_manager->get_type_size(type_name) == 0) {
+						shader_manager->add_type_size(type_name);
+						shader_state |= SHADER_STATE_STRUCT;
+					}
+				}
+			}
+
 			source += input + "\n";
 		}
+		shader_state = 0;
 
 		shader_file.close();
 
@@ -104,15 +164,64 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 		input = "";
 		source = "";
 
-		shader_file.open("resource/shaders/" + geometry_dir);
+		shader_file.open("resource/shaders/geometry_" + geometry_dir + ".glsl");
 		if (shader_file.fail()) {
 			std::cout << "Could not open Geometry Core Shader File: " << geometry_dir << "\n";
 			shader_file.close();
 		}
 		else {
+			getline(shader_file, input);
+			source += input;
+			source += includes;
 			while (getline(shader_file, input)) {
+				if (shader_state & SHADER_STATE_UNIFORM_BLOCK) {
+					if (input.starts_with("}")) {
+						shader_state &= ~SHADER_STATE_UNIFORM_BLOCK;
+					}
+					else {
+						unsigned int type_size = shader_manager->get_type_size(
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" "))
+						);
+						if (input.ends_with("];")) {
+							unsigned int num_elements = 0;
+							for (int i = 0, pos = input.size() - 2; input[--pos] != '['; i++) {
+								num_elements += input[pos] * pow(10, i);
+							}
+							type_size *= num_elements;
+						}
+						uniform_blocks.back().second += type_size;
+					}
+				}
+				else {
+					if (input.starts_with("layout(std140) uniform ")) {
+						uniform_blocks.push_back(std::pair(input.substr(23, input.find(" {") - 23), 0));
+						shader_state |= SHADER_STATE_UNIFORM_BLOCK;
+					}
+				}
+
+				if (shader_state & SHADER_STATE_STRUCT) {
+					if (input.starts_with("}")) {
+						shader_state &= ~SHADER_STATE_STRUCT;
+					}
+					else {
+						shader_manager->add_type_size(type_name, shader_manager->get_type_size(
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" ")))
+						);
+					}
+				}
+				else {
+					if (input.starts_with("struct ")) {
+						type_name = input.substr(8);
+						if (shader_manager->get_type_size(type_name) == 0) {
+							shader_manager->add_type_size(type_name);
+							shader_state |= SHADER_STATE_STRUCT;
+						}
+					}
+				}
+
 				source += input + "\n";
 			}
+			shader_state = 0;
 
 			shader_file.close();
 
@@ -134,28 +243,79 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 	input = "";
 	source = "";
 
-	shader_file.open("resource/shaders/" + fragment_dir);
+	shader_file.open("resource/shaders/fragment_" + fragment_dir + ".glsl");
 	if (shader_file.fail()) {
 		std::cout << "Could not open Fragment Core Shader File: " << fragment_dir << "\n";
 		shader_file.close();
 	}
 	else {
+		getline(shader_file, input);
+		source += input;
+		source += includes;
 		while (getline(shader_file, input)) {
 			if (geometry_dir == "" && input == "in GS_OUT {") {
-				//This block makes it so that if we're using a frag shader designed to work with
-				//a geometry shader and there is no geometry shader, we don't have to make another
-				//copy of the frag shader, we can just tell it to read directly from the vertex
-				//shader instead.
-
-				//That being said, because whether or not a projection matrix is used will usually 
-				//depend on the presence of a geometry shader, this probably won't matter in the
-				//long run
+				/*
+					This block makes it so that if we're using a frag shader designed to work with
+					a geometry shader and there is no geometry shader, we don't have to make another
+					copy of the frag shader, we can just tell it to read directly from the vertex
+					shader instead.
+					
+					That being said, because whether or not a projection matrix is used will usually 
+					depend on the presence of a geometry shader, this probably won't matter in the
+					long run
+				*/
 				source += "in VS_OUT {\n";
 			}
 			else {
+				if (shader_state & SHADER_STATE_UNIFORM_BLOCK) {
+					if (input.starts_with("}")) {
+						shader_state &= ~SHADER_STATE_UNIFORM_BLOCK;
+					}
+					else {
+						unsigned int type_size = shader_manager->get_type_size(
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" "))
+						);
+						if (input.ends_with("];")) {
+							unsigned int num_elements = 0;
+							for (int i = 0, pos = input.size() - 2; input[--pos] != '['; i++) {
+								num_elements += input[pos] * pow(10, i);
+							}
+							type_size *= num_elements;
+						}
+						uniform_blocks.back().second += type_size;
+					}
+				}
+				else {
+					if (input.starts_with("layout(std140) uniform ")) {
+						uniform_blocks.push_back(std::pair(input.substr(23, input.find(" {") - 23), 0));
+						shader_state |= SHADER_STATE_UNIFORM_BLOCK;
+					}
+				}
+
+				if (shader_state & SHADER_STATE_STRUCT) {
+					if (input.starts_with("}")) {
+						shader_state &= ~SHADER_STATE_STRUCT;
+					}
+					else {
+						shader_manager->add_type_size(type_name, shader_manager->get_type_size(
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" ")))
+						);
+					}
+				}
+				else {
+					if (input.starts_with("struct ")) {
+						type_name = input.substr(8);
+						if (shader_manager->get_type_size(type_name) == 0) {
+							shader_manager->add_type_size(type_name);
+							shader_state |= SHADER_STATE_STRUCT;
+						}
+					}
+				}
+
 				source += input + "\n";
 			}
 		}
+		shader_state = 0;
 
 		shader_file.close();
 
@@ -179,6 +339,10 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 	if (!success) {
 		glGetProgramInfoLog(id, 512, NULL, info_log);
 		std::cout << info_log << "\n";
+	}
+
+	for (int i = 0, max = uniform_blocks.size(); i < max; i++) {
+		shader_manager->add_ubo(uniform_blocks[i].first, id, uniform_blocks[i].second);
 	}
 
 	glUseProgram(0);
@@ -245,4 +409,14 @@ void Shader::set_mat3(const std::string& name, const glm::mat3& mat, int index) 
 
 void Shader::set_mat4(const std::string& name, const glm::mat4& mat, int index) const {
 	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+std::string get_includes(unsigned int features) {
+	std::string ret = "\n";
+
+	if (features & SHADER_FEAT_DIM_MUL) {
+		ret += "#define SHADER_FEAT_DIM_MUL\n";
+	}
+	
+	return ret;
 }

@@ -559,6 +559,9 @@
     <ClCompile Include="GameObjectRenderFunctions.cpp">
       <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>2. Code Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1256,6 +1259,9 @@
     </ClInclude>
     <ClInclude Include="ArbitraryCodeEditor.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>1. Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 
 class ThreadManager;
 class RenderManager;
+class ShaderManager;
 
 class GameRect {
 public:
@@ -34,6 +35,7 @@ private:
 	void update_buffer_data();
 	RenderManager* render_manager;
 	ThreadManager* thread_manager;
+	ShaderManager* shader_manager;
 	glm::mat4 matrix;
 
 	unsigned int VAO;

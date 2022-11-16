@@ -2,12 +2,14 @@
 #include <glew/glew.h>
 #include <glm/ext/matrix_projection.hpp>
 #include "RenderManager.h"
+#include "ShaderManager.h"
 #include "ThreadManager.h"
 #include "utils.h"
 
 GameRect::GameRect() {
 	thread_manager = ThreadManager::get_instance();
 	render_manager = RenderManager::get_instance();
+	shader_manager = ShaderManager::get_instance();
 }
 
 GameRect::GameRect(glm::vec2 c1, glm::vec2 c2) {
@@ -15,8 +17,7 @@ GameRect::GameRect(glm::vec2 c1, glm::vec2 c2) {
 }
 
 void GameRect::init() {
-	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->rect_shader);
+	attach_shader(shader_manager->get_shader("rect", "rect", "", 0));
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -40,8 +41,7 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	corners[2] = c2;
 	corners[3] = glm::vec2(c2.x, c1.y);
 
-	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->rect_shader);
+	attach_shader(shader_manager->get_shader("rect", "rect", "", 0));
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);

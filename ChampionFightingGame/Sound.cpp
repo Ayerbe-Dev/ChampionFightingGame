@@ -105,6 +105,10 @@ Music::Music(std::string dir, float volume_mod) {
 	}
 	//Read update_stream to understand what this is doing, basically we're just populating buffers the same
 	//way but starting from cursor pos 0
+	reset_buffers();
+}
+
+void Music::reset_buffers() {
 	for (int i = 0, cursor = 0, curr_track = 0; i < num_buffers; i++) {
 		std::string data;
 		data.resize(BUFFER_SIZE);

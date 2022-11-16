@@ -19,9 +19,16 @@ out VS_OUT {
 } vs_out;
 
 uniform mat4 model_matrix;
-uniform mat4 camera_matrix;
-uniform mat4 view_matrix;
-uniform mat4 shadow_matrix;
+layout(std140) uniform CameraMatrix {
+    mat4 camera_matrix;
+};
+layout(std140) uniform ViewMatrix {
+    mat4 view_matrix;
+};
+layout(std140) uniform ShadowMatrix {
+    mat4 shadow_matrix;
+};
+
 uniform mat4 bone_matrix[MAX_BONES];
 uniform bool has_skeleton;
 

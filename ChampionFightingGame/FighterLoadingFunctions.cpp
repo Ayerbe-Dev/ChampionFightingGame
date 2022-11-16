@@ -4,6 +4,7 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "GameManager.h"
+#include "ShaderManager.h"
 #include <fstream>
 
 void Fighter::init() {
@@ -80,23 +81,19 @@ void Fighter::load_model_shader() {
 	scale = glm::vec3(get_local_param_float("model_scale"));
 	model.load_model(resource_dir + "/model/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
-	shader.init("vertex_main.glsl", "fragment_main.glsl", "geometry_main.glsl");
-	shadow_shader.init("vertex_shadow.glsl", "fragment_shadow.glsl");
-	outline_shader.init("vertex_outline.glsl", "fragment_outline.glsl", "geometry_outline.glsl");
-	shader.use();
-	shader.set_int("shadow_map", 0);
-	shader.set_int("material.diffuse", 1);
-	shader.set_int("material.specular", 2);
-	shader.set_float("brightness_mul", 1.0);
-	shader.set_bool("has_skeleton", model.has_skeleton);
-	shadow_shader.use();
-	shadow_shader.set_bool("has_skeleton", model.has_skeleton);
-	outline_shader.use();
-	outline_shader.set_bool("has_skeleton", model.has_skeleton);
-
-	render_manager->link_shader(&shader);
-	render_manager->link_shader(&shadow_shader);
-	render_manager->link_shader(&outline_shader);
+	shader = shader_manager->get_shader("main", "main", "main", SHADER_FEAT_DIM_MUL);
+	shadow_shader = shader_manager->get_shader("shadow", "shadow", "", 0);
+	outline_shader = shader_manager->get_shader("outline", "outline", "outline", 0);
+	shader->use();
+	shader->set_int("shadow_map", 0);
+	shader->set_int("material.diffuse", 1);
+	shader->set_int("material.specular", 2);
+	shader->set_float("brightness_mul", 1.0);
+	shader->set_bool("has_skeleton", model.has_skeleton);
+	shadow_shader->use();
+	shadow_shader->set_bool("has_skeleton", model.has_skeleton);
+	outline_shader->use();
+	outline_shader->set_bool("has_skeleton", model.has_skeleton);
 }
 
 void Fighter::load_anim_list() {

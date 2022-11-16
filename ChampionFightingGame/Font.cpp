@@ -2,6 +2,7 @@
 #include <vector>
 #include <glew/glew.h>
 #include "RenderManager.h"
+#include "ShaderManager.h"
 #include "utils.h"
 
 Font::Font() {
@@ -11,7 +12,7 @@ Font::Font() {
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	shader = &RenderManager::get_instance()->text_shader;
+	shader = ShaderManager::get_instance()->get_shader("text", "text", "", 0);
 	shader->use();
 	shader->set_int("f_texture", 1);
 

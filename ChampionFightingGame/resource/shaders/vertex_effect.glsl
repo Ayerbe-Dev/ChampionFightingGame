@@ -4,7 +4,9 @@ layout (location = 0) in vec3 v_pos;
 layout (location = 1) in vec2 v_texcoords;
 
 uniform mat4 matrix;
-uniform mat4 camera_matrix;
+layout(std140) uniform CameraMatrix {
+    mat4 camera_matrix;
+};
 
 out VS_OUT {
     vec2 TexCoords;

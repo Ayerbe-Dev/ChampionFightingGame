@@ -245,7 +245,6 @@ Battle::~Battle() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	sound_manager->stop_music("Battle Music");
-	sound_manager->process_sounds();
 	sound_manager->unload_all_sounds();
 	sound_manager->unload_music("Battle Music");
 	for (int i = 0; i < 2; i++) {
@@ -261,7 +260,6 @@ Battle::~Battle() {
 	stage.unload_stage();
 	render_manager->remove_light();
 	sound_manager->clear_game_objects();
-	render_manager->unlink_all_shaders();
 	effect_manager->clear_effect_all();
 	effect_manager->unload_all_effects();
 	effect_manager->remove_effect_casters();

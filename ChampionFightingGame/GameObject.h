@@ -9,6 +9,7 @@
 class RenderManager;
 class SoundManager;
 class EffectManager;
+class ShaderManager;
 
 class GameObject {
 public:
@@ -40,14 +41,15 @@ public:
 	std::list<unsigned int> sound_effects;
 	std::list<unsigned int> voice_clips;
 
-	Shader shader;
-	Shader shadow_shader;
-	Shader outline_shader;
+	Shader *shader;
+	Shader *shadow_shader;
+	Shader *outline_shader;
 	Model model;
 
 	RenderManager* render_manager;
 	SoundManager* sound_manager;
 	EffectManager* effect_manager;
+	ShaderManager* shader_manager;
 
 	//Process Funcs
 

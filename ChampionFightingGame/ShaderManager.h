@@ -9,6 +9,7 @@ public:
 	void operator=(const ShaderManager& other) = delete;
 
 	Shader* get_shader(std::string vertex, std::string fragment, std::string geometry, unsigned int features);
+	Shader* get_shader_switch_features(Shader* base, unsigned int remove_features, unsigned int add_features);
 
 	void set_global_bool(const std::string& name, bool value, int index = -1) const;
 	void set_global_int(const std::string& name, int value, int index = -1) const;

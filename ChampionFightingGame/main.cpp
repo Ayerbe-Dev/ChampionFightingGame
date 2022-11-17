@@ -65,8 +65,6 @@ int main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
-	
-
 	font_manager->load_face("FiraCode");
 
 	opening_main();

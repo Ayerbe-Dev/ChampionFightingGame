@@ -17,7 +17,11 @@ void Fighter::stop_cinematic_sequence() {
 		camera->follow_id = -1;
 		battle_object_manager->reset_world_rate(id);
 		render_manager->dim_lights(1.0, nullptr);
-		shader = shader_manager->get_shader("main", "main", "main", 0);
+		unsigned int flags = SHADER_FEAT_DIM_MUL;
+		if (model.has_skeleton) {
+			flags |= SHADER_FEAT_HAS_BONES;
+		}
+		shader = shader_manager->get_shader("model", "model", "model", flags);
 	}
 }
 
@@ -60,5 +64,5 @@ void Fighter::dim_world(float brightness, bool dim_self) {
 
 void Fighter::reset_world_brightness() {
 	render_manager->dim_lights(1.0, nullptr);
-	shader = shader_manager->get_shader("main", "main", "main", 0);
+	shader = shader_manager->get_shader_switch_features(shader, 0, SHADER_FEAT_DIM_MUL);
 }

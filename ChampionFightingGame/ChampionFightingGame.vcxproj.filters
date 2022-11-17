@@ -1277,7 +1277,7 @@
     <None Include="resource\shaders\fragment_passthrough.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_main.glsl">
+    <None Include="resource\shaders\fragment_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\fragment_no_light.glsl">
@@ -1292,7 +1292,7 @@
     <None Include="resource\shaders\fragment_text.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\geometry_main.glsl">
+    <None Include="resource\shaders\geometry_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_2d_texture.glsl">
@@ -1304,7 +1304,7 @@
     <None Include="resource\shaders\vertex_passthrough.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_main.glsl">
+    <None Include="resource\shaders\vertex_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_no_anim.glsl">

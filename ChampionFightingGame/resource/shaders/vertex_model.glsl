@@ -30,13 +30,16 @@ layout(std140) uniform ShadowMatrix {
 };
 
 uniform mat4 bone_matrix[MAX_BONES];
-uniform bool has_skeleton;
 
 void main() {
-    mat4 bone_transform = mat4(!has_skeleton);
+#ifdef SHADER_FEAT_HAS_BONES
+    mat4 bone_transform = mat4(0.0);
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];
     }
+#else
+    mat4 bone_transform = mat4(1.0);
+#endif
 
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
     

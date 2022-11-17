@@ -39,6 +39,7 @@
 #include "ThreadManager.h"
 #include "SaveManager.h"
 #include "FontManager.h"
+#include "ShaderManager.h"
 
 extern bool debug;
 
@@ -53,6 +54,7 @@ void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 
 	font_manager->load_face("Fiend-Oblique");
 	font_manager->load_face("FiraCode");

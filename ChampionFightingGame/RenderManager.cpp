@@ -150,19 +150,17 @@ void RenderManager::remove_light(int target) {
 	});
 }
 
-void RenderManager::dim_lights(float brightness_mul, Shader** shader) {
+void RenderManager::dim_lights(float dim_mul, Shader** shader) {
 	ScriptArg args;
-	args.push_arg(brightness_mul);
+	args.push_arg(dim_mul);
 	args.push_arg(shader);
 	buffer_event("", [this](ScriptArg args) {
 		ShaderManager* shader_manager = ShaderManager::get_instance();
-		UNWRAP(brightness_mul, float);
+		UNWRAP(dim_mul, float);
 		UNWRAP(shader, Shader**);
-		Shader* model_shader = shader_manager->get_shader("main", "main", "main", SHADER_FEAT_DIM_MUL);
-		model_shader->use();
-		model_shader->set_float("brightness_mul", brightness_mul);
+		shader_manager->set_global_float("DimMul", dim_mul);
 		if (shader != nullptr) {
-			*shader = shader_manager->get_shader("main", "main", "main", 0);
+			*shader = shader_manager->get_shader_switch_features(*shader, SHADER_FEAT_DIM_MUL, 0);
 		}
 	}, args);
 }

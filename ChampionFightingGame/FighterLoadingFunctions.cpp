@@ -81,19 +81,18 @@ void Fighter::load_model_shader() {
 	scale = glm::vec3(get_local_param_float("model_scale"));
 	model.load_model(resource_dir + "/model/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
-	shader = shader_manager->get_shader("main", "main", "main", SHADER_FEAT_DIM_MUL);
-	shadow_shader = shader_manager->get_shader("shadow", "shadow", "", 0);
-	outline_shader = shader_manager->get_shader("outline", "outline", "outline", 0);
+	unsigned int flags = 0;
+	if (model.has_skeleton) {
+		flags |= SHADER_FEAT_HAS_BONES;
+	}
+	shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
+	shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);
+	outline_shader = shader_manager->get_shader("outline", "outline", "outline", flags);
 	shader->use();
 	shader->set_int("shadow_map", 0);
 	shader->set_int("material.diffuse", 1);
 	shader->set_int("material.specular", 2);
-	shader->set_float("brightness_mul", 1.0);
-	shader->set_bool("has_skeleton", model.has_skeleton);
-	shadow_shader->use();
-	shadow_shader->set_bool("has_skeleton", model.has_skeleton);
-	outline_shader->use();
-	outline_shader->set_bool("has_skeleton", model.has_skeleton);
+	shader_manager->set_global_float("DimMul", 1.0);
 }
 
 void Fighter::load_anim_list() {

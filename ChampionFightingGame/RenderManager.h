@@ -24,7 +24,7 @@ public:
 	void add_light(Light* light, int target = -1);
 	void remove_light(int target = -1);
 
-	void dim_lights(float brightness_mul, Shader** shader);
+	void dim_lights(float dim_mul, Shader** shader);
 
 	void update_shader_lights();
 	void update_shader_cams();

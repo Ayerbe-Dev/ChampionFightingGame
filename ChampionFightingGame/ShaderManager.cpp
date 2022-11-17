@@ -5,6 +5,7 @@ ShaderManager::ShaderManager() {
 	add_type_size("int", 4);
 	add_type_size("unsigned int", 4);
 	add_type_size("float", 4);
+	add_type_size("sampler2D", 4);
 	add_type_size("vec2", 8);
 	add_type_size("vec3", 12);
 	add_type_size("vec4", 16);
@@ -21,6 +22,10 @@ Shader* ShaderManager::get_shader(std::string vertex, std::string fragment, std:
 		shader_map[vertex][fragment][geometry][features].init(vertex, fragment, geometry, features);
 	}
 	return &shader_map[vertex][fragment][geometry][features];
+}
+
+Shader* ShaderManager::get_shader_switch_features(Shader* base, unsigned int remove_features, unsigned int add_features) {
+	return get_shader(base->vertex, base->fragment, base->geometry, (base->features | add_features) & ~remove_features);
 }
 
 void ShaderManager::set_global_bool(const std::string& name, bool value, int index) const {
@@ -186,13 +191,11 @@ void ShaderManager::add_ubo(std::string name, int shader_id, unsigned int size) 
 	unsigned int buffer;
 	unsigned int binding_point;
 	if (UBO.contains(name)) {
-		std::cout << name << ", " << UBO[name].first << ", " << UBO[name].second << "\n";
 		buffer = UBO[name].first;
 		binding_point = UBO[name].second;
 		glBindBuffer(GL_UNIFORM_BUFFER, buffer);
 	}
 	else {
-		std::cout << "Adding UBO " << name << " at binding point " << UBO.size() << "\n";
 		binding_point = UBO.size();
 		glGenBuffers(1, &buffer);
 		glBindBuffer(GL_UNIFORM_BUFFER, buffer);

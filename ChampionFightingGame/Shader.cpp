@@ -8,6 +8,10 @@ const int SHADER_STATE_STRUCT = 2;
 
 Shader::Shader() {
 	loaded = false;
+	vertex = "";
+	fragment = "";
+	geometry = "";
+	features = 0;
 }
 
 Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
@@ -16,14 +20,20 @@ Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geo
 }
 
 Shader::Shader(Shader& other) {
-	this->name = other.name;
+	this->features = other.features;
+	this->vertex = other.vertex;
+	this->fragment = other.fragment;
+	this->geometry = other.geometry;
 	this->id = other.id;
 	this->loaded = true;
 	other.loaded = false;
 }
 
 Shader::Shader(const Shader& other) {
-	this->name = other.name;
+	this->features = other.features;
+	this->vertex = other.vertex;
+	this->fragment = other.fragment;
+	this->geometry = other.geometry;
 	this->id = other.id;
 	this->loaded = true;
 }
@@ -33,7 +43,10 @@ Shader& Shader::operator=(Shader& other) {
 		return *this;
 	}
 
-	this->name = other.name;
+	this->features = other.features;
+	this->vertex = other.vertex;
+	this->fragment = other.fragment;
+	this->geometry = other.geometry;
 	this->id = other.id;
 	this->loaded = true;
 	other.loaded = false;
@@ -46,7 +59,10 @@ Shader& Shader::operator=(const Shader& other) {
 		return *this;
 	}
 
-	this->name = other.name;
+	this->features = other.features;
+	this->vertex = other.vertex;
+	this->fragment = other.fragment;
+	this->geometry = other.geometry;
 	this->id = other.id;
 	this->loaded = true;
 
@@ -63,10 +79,10 @@ Shader::~Shader() {
 void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	id = glCreateProgram();
-	name = vertex_dir + ", " + fragment_dir;
-	if (geometry_dir != "") {
-		name += ", " + geometry_dir;
-	}
+	this->vertex = vertex_dir;
+	this->fragment = fragment_dir;
+	this->geometry = geometry_dir;
+	this->features = features;
 
 	std::string includes = get_includes(features);
 
@@ -101,7 +117,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 				}
 				else {
 					unsigned int type_size = shader_manager->get_type_size(
-						input.substr(input.find_first_not_of(" "), input.find_last_of(" "))
+						input.substr(input.find_first_not_of(" "), input.find_last_of(" ") - input.find_first_not_of(" "))
 					);
 					if (input.ends_with("];")) {
 						unsigned int num_elements = 0;
@@ -125,14 +141,22 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 					shader_state &= ~SHADER_STATE_STRUCT;
 				}
 				else {
-					shader_manager->add_type_size(type_name, shader_manager->get_type_size(
-						input.substr(input.find_first_not_of(" "), input.find_last_of(" ")))
+					unsigned int type_size = shader_manager->get_type_size(
+						input.substr(input.find_first_not_of(" "), input.find_last_of(" ") - input.find_first_not_of(" "))
 					);
+					if (input.ends_with("];")) {
+						unsigned int num_elements = 0;
+						for (int i = 0, pos = input.size() - 2; input[--pos] != '['; i++) {
+							num_elements += input[pos] * pow(10, i);
+						}
+						type_size *= num_elements;
+					}
+					shader_manager->add_type_size(type_name, type_size);
 				}
 			}
 			else {
 				if (input.starts_with("struct ")) {
-					type_name = input.substr(8);
+					type_name = input.substr(7, input.find(" {") - 7);
 					if (shader_manager->get_type_size(type_name) == 0) {
 						shader_manager->add_type_size(type_name);
 						shader_state |= SHADER_STATE_STRUCT;
@@ -180,7 +204,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 					}
 					else {
 						unsigned int type_size = shader_manager->get_type_size(
-							input.substr(input.find_first_not_of(" "), input.find_last_of(" "))
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" ") - input.find_first_not_of(" "))
 						);
 						if (input.ends_with("];")) {
 							unsigned int num_elements = 0;
@@ -204,14 +228,22 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 						shader_state &= ~SHADER_STATE_STRUCT;
 					}
 					else {
-						shader_manager->add_type_size(type_name, shader_manager->get_type_size(
-							input.substr(input.find_first_not_of(" "), input.find_last_of(" ")))
+						unsigned int type_size = shader_manager->get_type_size(
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" ") - input.find_first_not_of(" "))
 						);
+						if (input.ends_with("];")) {
+							unsigned int num_elements = 0;
+							for (int i = 0, pos = input.size() - 2; input[--pos] != '['; i++) {
+								num_elements += input[pos] * pow(10, i);
+							}
+							type_size *= num_elements;
+						}
+						shader_manager->add_type_size(type_name, type_size);
 					}
 				}
 				else {
 					if (input.starts_with("struct ")) {
-						type_name = input.substr(8);
+						type_name = input.substr(7, input.find(" {") - 7);
 						if (shader_manager->get_type_size(type_name) == 0) {
 							shader_manager->add_type_size(type_name);
 							shader_state |= SHADER_STATE_STRUCT;
@@ -273,7 +305,7 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 					}
 					else {
 						unsigned int type_size = shader_manager->get_type_size(
-							input.substr(input.find_first_not_of(" "), input.find_last_of(" "))
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" ") - input.find_first_not_of(" "))
 						);
 						if (input.ends_with("];")) {
 							unsigned int num_elements = 0;
@@ -297,14 +329,22 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 						shader_state &= ~SHADER_STATE_STRUCT;
 					}
 					else {
-						shader_manager->add_type_size(type_name, shader_manager->get_type_size(
-							input.substr(input.find_first_not_of(" "), input.find_last_of(" ")))
+						unsigned int type_size = shader_manager->get_type_size(
+							input.substr(input.find_first_not_of(" "), input.find_last_of(" ") - input.find_first_not_of(" "))
 						);
+						if (input.ends_with("];")) {
+							unsigned int num_elements = 0;
+							for (int i = 0, pos = input.size() - 2; input[--pos] != '['; i++) {
+								num_elements += input[pos] * pow(10, i);
+							}
+							type_size *= num_elements;
+						}
+						shader_manager->add_type_size(type_name, type_size);
 					}
 				}
 				else {
 					if (input.starts_with("struct ")) {
-						type_name = input.substr(8);
+						type_name = input.substr(7, input.find(" {") - 7);
 						if (shader_manager->get_type_size(type_name) == 0) {
 							shader_manager->add_type_size(type_name);
 							shader_state |= SHADER_STATE_STRUCT;
@@ -416,6 +456,9 @@ std::string get_includes(unsigned int features) {
 
 	if (features & SHADER_FEAT_DIM_MUL) {
 		ret += "#define SHADER_FEAT_DIM_MUL\n";
+	}
+	if (features & SHADER_FEAT_HAS_BONES) {
+		ret += "#define SHADER_FEAT_HAS_BONES\n";
 	}
 	
 	return ret;

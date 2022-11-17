@@ -1,5 +1,6 @@
 #include "Fighter.h"
 #include "RenderManager.h"
+#include "ShaderManager.h"
 
 void Fighter::start_cinematic_sequence(std::string anim_kind, float anim_rate, float anim_frame, float world_brightness, bool dim_self, float world_rate) {
 	play_camera_anim(anim_kind, anim_rate, anim_frame);
@@ -15,7 +16,12 @@ void Fighter::stop_cinematic_sequence() {
 		camera->following_players = true;
 		camera->follow_id = -1;
 		battle_object_manager->reset_world_rate(id);
-		render_manager->dim_lights(1.0);
+		render_manager->dim_lights(1.0, nullptr);
+		unsigned int flags = SHADER_FEAT_DIM_MUL;
+		if (model.has_skeleton) {
+			flags |= SHADER_FEAT_HAS_BONES;
+		}
+		shader = shader_manager->get_shader("model", "model", "model", flags);
 	}
 }
 
@@ -48,12 +54,15 @@ void Fighter::reset_world_rate() {
 }
 
 void Fighter::dim_world(float brightness, bool dim_self) {
-	render_manager->dim_lights(brightness);
-	if (!dim_self) {
-		render_manager->undim_shader(&shader);
+	if (dim_self) {
+		render_manager->dim_lights(brightness, nullptr);
+	}
+	else {
+		render_manager->dim_lights(brightness, &shader);
 	}
 }
 
 void Fighter::reset_world_brightness() {
-	render_manager->dim_lights(1.0);
+	render_manager->dim_lights(1.0, nullptr);
+	shader = shader_manager->get_shader_switch_features(shader, 0, SHADER_FEAT_DIM_MUL);
 }

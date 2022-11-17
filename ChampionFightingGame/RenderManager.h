@@ -24,11 +24,7 @@ public:
 	void add_light(Light* light, int target = -1);
 	void remove_light(int target = -1);
 
-	void dim_lights(float brightness_mul);
-	void undim_shader(Shader* shader);
-
-	void link_shader(Shader* shader);
-	void unlink_all_shaders();
+	void dim_lights(float dim_mul, Shader** shader);
 
 	void update_shader_lights();
 	void update_shader_cams();
@@ -47,18 +43,11 @@ public:
 
 	Camera camera;
 	std::vector<Light*>lights;
-	std::vector<Shader*> linked_shaders;
 
 	std::vector<std::function<void(ScriptArg)>> buffered_events;
 	std::vector<ScriptArg> buffered_args;
 	std::set<std::string> event_names;
 	std::mutex event_mutex;
-
-	Shader game_texture_shader;
-	Shader rect_shader;
-	Shader effect_shader;
-	Shader text_shader;
-	Shader passthrough_shader;
 
 	ShadowMap shadow_map;
 	Framebuffer outline;

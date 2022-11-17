@@ -17,8 +17,12 @@ in GS_OUT {
     vec2 TexCoords;
     vec4 FragPosLightSpace;
 } fs_in;
-  
-uniform float brightness_mul;
+
+#ifdef SHADER_FEAT_DIM_MUL
+layout(std140) uniform DimMul {
+    float dim_mul;
+};
+#endif
 uniform sampler2D shadow_map;
 uniform Material material;
 
@@ -29,7 +33,13 @@ void main() {
 
     g_position = fs_in.FragPos;
     g_normal = normalize(fs_in.Normal);
-    g_diffuse.rgb = (1.0 - shadow) * brightness_mul * texture(material.diffuse, fs_in.TexCoords).rgb;
+
+#ifdef SHADER_FEAT_DIM_MUL
+    g_diffuse.rgb = (1.0 - shadow) * dim_mul * texture(material.diffuse, fs_in.TexCoords).rgb;
+#else
+    g_diffuse.rgb = (1.0 - shadow) * texture(material.diffuse, fs_in.TexCoords).rgb;
+#endif
+
     g_diffuse.a = 1.0;
     g_specular.rgb = texture(material.specular, fs_in.TexCoords).rgb;
     g_specular.a = 0.0; //We don't actually have specular textures lmao this will be used later

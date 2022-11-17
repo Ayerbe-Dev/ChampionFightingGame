@@ -1,4 +1,5 @@
 #include "Framebuffer.h"
+#include "ShaderManager.h"
 #include "RenderManager.h"
 #include "SaveManager.h"
 #include "utils.h"
@@ -16,7 +17,7 @@ Framebuffer::Framebuffer() {
 
 }
 
-void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir) {
+void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
 	float coords[] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -36,8 +37,8 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	shader.init(vertex_dir, fragment_dir, geometry_dir);
-	shader.use();
+	shader = ShaderManager::get_instance()->get_shader(vertex_dir, fragment_dir, geometry_dir, features);
+	shader->use();
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -132,7 +133,7 @@ void Framebuffer::bind_textures() {
 
 void Framebuffer::render() {
 	glDepthMask(GL_FALSE);
-	shader.use();
+	shader->use();
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
@@ -149,7 +150,7 @@ void Framebuffer::render() {
 
 void Framebuffer::render_passthrough() {
 	glDepthMask(GL_FALSE);
-	RenderManager::get_instance()->passthrough_shader.use();
+	ShaderManager::get_instance()->get_shader("passthrough", "passthrough", "", 0)->use();
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);

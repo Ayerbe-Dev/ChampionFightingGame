@@ -2,6 +2,7 @@
 #include "Particle.h"
 #include <fstream>
 #include "RenderManager.h"
+#include "ShaderManager.h"
 #include "BattleObject.h"
 #include "Fighter.h"
 #include "utils.h"
@@ -61,8 +62,8 @@ void Effect::init(EffectInfo info) {
 		}
 		particles.push_back(particle);
 	}
-	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->effect_shader);
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+	attach_shader(shader_manager->get_shader("effect", "effect", "", 0));
 	shader->use();
 }
 

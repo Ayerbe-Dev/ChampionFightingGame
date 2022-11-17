@@ -83,7 +83,6 @@ void debug_main() {
 	resource_manager->unuse_model("resource/chara/rowan/model/model.dae");
 	resource_manager->unuse_model("resource/chara/rowan/model/model.dae");
 	resource_manager->unload_model("resource/chara/rowan/model/model.dae");
-	render_manager->unlink_all_shaders();
 	delete debug;
 }
 

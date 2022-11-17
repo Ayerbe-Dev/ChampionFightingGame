@@ -8,6 +8,7 @@
 #include "stb_image.h"
 #include "ThreadManager.h"
 #include "ResourceManager.h"
+#include "ShaderManager.h"
 
 GameTexture::GameTexture() {}
 
@@ -35,8 +36,8 @@ GameTexture::GameTexture(const GameTexture& that) {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
-	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->game_texture_shader);
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+	attach_shader(shader_manager->get_shader("2d_texture", "2d_texture", "", 0));
 	shader->use();
 
 	VAO = that.VAO;
@@ -77,8 +78,8 @@ void GameTexture::init(std::string path) {
 		tex_accessor[i] = &tex_data[i];
 	}
 
-	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->game_texture_shader);
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+	attach_shader(shader_manager->get_shader("2d_texture", "2d_texture", "", 0)); 
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -139,8 +140,8 @@ void GameTexture::init(GLuint texture, int width, int height) {
 		tex_accessor[i] = &tex_data[i];
 	}
 
-	RenderManager* render_manager = RenderManager::get_instance();
-	attach_shader(&render_manager->game_texture_shader);
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+	attach_shader(shader_manager->get_shader("2d_texture", "2d_texture", "", 0));
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);
@@ -206,7 +207,8 @@ void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border
 		tex_accessor[i] = &tex_data[i];
 	}
 
-	attach_shader(&RenderManager::get_instance()->game_texture_shader);
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+	attach_shader(shader_manager->get_shader("2d_texture", "2d_texture", "", 0));
 	shader->use();
 
 	glGenVertexArrays(1, &VAO);

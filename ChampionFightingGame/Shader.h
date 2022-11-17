@@ -5,19 +5,25 @@
 #include <map>
 #include <vector>
 
+const int SHADER_FEAT_DIM_MUL = 1;
+const int SHADER_FEAT_HAS_BONES = 2;
+
 class Shader {
 public:
 	Shader();
-	Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
+	Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features);
 	Shader(Shader& other);
 	Shader(const Shader& other);
 	Shader& operator=(Shader& other);
 	Shader& operator=(const Shader& other);
 	~Shader();
 	unsigned int id = 0;
-	std::string name;
+	std::string vertex;
+	std::string fragment;
+	std::string geometry;
+	unsigned int features;
 
-	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir = "");
+	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features);
 	void destroy();
 
 	void use();
@@ -37,3 +43,5 @@ public:
 private:
 	bool loaded;
 };
+
+std::string get_includes(unsigned int features);

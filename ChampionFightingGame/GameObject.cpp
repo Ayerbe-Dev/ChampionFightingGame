@@ -1,12 +1,14 @@
 #include "GameObject.h"
 #include "RenderManager.h"
 #include "EffectManager.h"
+#include "ShaderManager.h"
 #include "SoundManager.h"
 #include "utils.h"
 
 GameObject::GameObject() {
 	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	shader_manager = ShaderManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 	anim_kind = nullptr;
 	prev_anim_kind = nullptr;
@@ -21,6 +23,7 @@ GameObject::GameObject() {
 GameObject::GameObject(GameObject& other) {
 	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	shader_manager = ShaderManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 	this->id_effect = other.id_effect;
 	this->resource_dir = other.resource_dir;
@@ -50,26 +53,13 @@ GameObject::GameObject(GameObject& other) {
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
-	if (!glIsShader(shader.id)) {
-		std::cout << "Shader " << shader.id << " deleted!\n";
-	}
-	for (int i = 0; i < render_manager->linked_shaders.size(); i++) {
-		if (render_manager->linked_shaders[i] == &other.shader) {
-			render_manager->linked_shaders[i] = &shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.shadow_shader) {
-			render_manager->linked_shaders[i] = &shadow_shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.outline_shader) {
-			render_manager->linked_shaders[i] = &outline_shader;
-		}
-	}
 	this->model = other.model;
 }
 
 GameObject::GameObject(const GameObject& other) {
 	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	shader_manager = ShaderManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 	this->id_effect = other.id_effect;
 	this->resource_dir = other.resource_dir;
@@ -99,17 +89,6 @@ GameObject::GameObject(const GameObject& other) {
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
-	for (int i = 0; i < render_manager->linked_shaders.size(); i++) {
-		if (render_manager->linked_shaders[i] == &other.shader) {
-			render_manager->linked_shaders[i] = &shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.shadow_shader) {
-			render_manager->linked_shaders[i] = &shadow_shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.outline_shader) {
-			render_manager->linked_shaders[i] = &outline_shader;
-		}
-	}
 	this->model = other.model;
 }
 
@@ -119,6 +98,7 @@ GameObject& GameObject::operator=(GameObject& other) {
 	}
 	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	shader_manager = ShaderManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 
 	this->id_effect = other.id_effect;
@@ -149,17 +129,6 @@ GameObject& GameObject::operator=(GameObject& other) {
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
-	for (int i = 0; i < render_manager->linked_shaders.size(); i++) {
-		if (render_manager->linked_shaders[i] == &other.shader) {
-			render_manager->linked_shaders[i] = &shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.shadow_shader) {
-			render_manager->linked_shaders[i] = &shadow_shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.outline_shader) {
-			render_manager->linked_shaders[i] = &outline_shader;
-		}
-	}
 	this->model = other.model;
 
 	return *this;
@@ -171,6 +140,7 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	}
 	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	shader_manager = ShaderManager::get_instance();
 	sound_manager = SoundManager::get_instance();
 
 	this->id_effect = other.id_effect;
@@ -201,17 +171,6 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
-	for (int i = 0; i < render_manager->linked_shaders.size(); i++) {
-		if (render_manager->linked_shaders[i] == &other.shader) {
-			render_manager->linked_shaders[i] = &shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.shadow_shader) {
-			render_manager->linked_shaders[i] = &shadow_shader;
-		}
-		if (render_manager->linked_shaders[i] == &other.outline_shader) {
-			render_manager->linked_shaders[i] = &outline_shader;
-		}
-	}
 	this->model = other.model;
 
 	return *this;

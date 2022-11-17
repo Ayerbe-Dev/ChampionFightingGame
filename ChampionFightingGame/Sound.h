@@ -29,6 +29,8 @@ struct Music {
 	Music();
 	Music(std::string dir, float volume_mod);
 
+	void reset_buffers();
+
 	unsigned int buffers[NUM_BUFFERS];
 	unsigned int num_buffers;
 	float volume_mod;

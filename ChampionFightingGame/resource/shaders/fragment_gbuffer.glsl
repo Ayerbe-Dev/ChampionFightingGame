@@ -13,8 +13,10 @@ struct Light {
     float quadratic;
     bool enabled;
 };
-  
-uniform vec3 view_pos;
+
+layout(std140) uniform ViewPos {
+    vec3 view_pos;
+};
 uniform Light light[MAX_LIGHT_SOURCES];
 
 uniform sampler2D g_position;

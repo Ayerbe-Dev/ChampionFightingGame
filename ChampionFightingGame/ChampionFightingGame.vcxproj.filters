@@ -559,6 +559,9 @@
     <ClCompile Include="GameObjectRenderFunctions.cpp">
       <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>2. Code Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -1257,6 +1260,9 @@
     <ClInclude Include="ArbitraryCodeEditor.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>1. Header Files\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">
@@ -1271,7 +1277,7 @@
     <None Include="resource\shaders\fragment_passthrough.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\fragment_main.glsl">
+    <None Include="resource\shaders\fragment_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\fragment_no_light.glsl">
@@ -1286,7 +1292,7 @@
     <None Include="resource\shaders\fragment_text.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\geometry_main.glsl">
+    <None Include="resource\shaders\geometry_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_2d_texture.glsl">
@@ -1298,7 +1304,7 @@
     <None Include="resource\shaders\vertex_passthrough.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_main.glsl">
+    <None Include="resource\shaders\vertex_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\vertex_no_anim.glsl">

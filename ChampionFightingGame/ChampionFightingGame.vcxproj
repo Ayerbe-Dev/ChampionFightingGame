@@ -388,6 +388,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ScriptArg.cpp" />
     <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -511,6 +512,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SaveManager.h" />
     <ClInclude Include="ScriptArg.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -815,7 +817,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_fullbright.glsl" />
     <None Include="resource\shaders\fragment_gbuffer.glsl" />
     <None Include="resource\shaders\fragment_passthrough.glsl" />
-    <None Include="resource\shaders\fragment_main.glsl" />
+    <None Include="resource\shaders\fragment_model.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
     <None Include="resource\shaders\fragment_outline.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
@@ -824,14 +826,14 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_ssao_blur.glsl" />
     <None Include="resource\shaders\fragment_text.glsl" />
     <None Include="resource\shaders\geometry_effect.glsl" />
-    <None Include="resource\shaders\geometry_main.glsl" />
+    <None Include="resource\shaders\geometry_model.glsl" />
     <None Include="resource\shaders\geometry_outline.glsl" />
     <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_effect.glsl" />
     <None Include="resource\shaders\vertex_gbuffer.glsl" />
     <None Include="resource\shaders\vertex_outline.glsl" />
     <None Include="resource\shaders\vertex_passthrough.glsl" />
-    <None Include="resource\shaders\vertex_main.glsl" />
+    <None Include="resource\shaders\vertex_model.glsl" />
     <None Include="resource\shaders\vertex_no_anim.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />
     <None Include="resource\shaders\vertex_shadow.glsl" />

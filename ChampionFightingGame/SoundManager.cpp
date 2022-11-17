@@ -18,9 +18,11 @@ void SoundManager::process_sounds() {
 	}
 	ALint state;
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
-		update_stream(*music);
 		alGetSourcei(music->source, AL_SOURCE_STATE, &state);
-		if (state == AL_STOPPED) {
+		if (state == AL_PLAYING) {
+			update_stream(*music);
+		}
+		else if (state == AL_STOPPED) {
 			alDeleteSources(1, &(music->source));
 			if (active_music.size() != 1) {
 				music = active_music.erase(music);
@@ -101,7 +103,12 @@ void SoundManager::stop_music(std::string name) {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
 		if (music->name == name) {
 			alSourceStop(music->source);
+			for (int i = 0; i < music_map[name].num_buffers; i++) {
+				unsigned int buffer;
+				alSourceUnqueueBuffers(music->source, 1, &buffer);
+			}
 			alDeleteSources(1, &music->source);
+			music_map[name].reset_buffers();
 			active_music.erase(music);
 			return;
 		}
@@ -111,7 +118,12 @@ void SoundManager::stop_music(std::string name) {
 void SoundManager::stop_music_all() {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
 		alSourceStop(music->source);
+		for (int i = 0; i < music_map[music->name].num_buffers; i++) {
+			unsigned int buffer;
+			alSourceUnqueueBuffers(music->source, 1, &buffer);
+		}
 		alDeleteSources(1, &music->source);
+		music_map[music->name].reset_buffers();
 	}
 	active_music.clear();
 }

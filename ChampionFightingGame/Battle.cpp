@@ -39,6 +39,7 @@
 #include "ThreadManager.h"
 #include "SaveManager.h"
 #include "FontManager.h"
+#include "ShaderManager.h"
 
 extern bool debug;
 
@@ -53,6 +54,7 @@ void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 
 	font_manager->load_face("Fiend-Oblique");
 	font_manager->load_face("FiraCode");
@@ -245,7 +247,6 @@ Battle::~Battle() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	sound_manager->stop_music("Battle Music");
-	sound_manager->process_sounds();
 	sound_manager->unload_all_sounds();
 	sound_manager->unload_music("Battle Music");
 	for (int i = 0; i < 2; i++) {
@@ -261,7 +262,6 @@ Battle::~Battle() {
 	stage.unload_stage();
 	render_manager->remove_light();
 	sound_manager->clear_game_objects();
-	render_manager->unlink_all_shaders();
 	effect_manager->clear_effect_all();
 	effect_manager->unload_all_effects();
 	effect_manager->remove_effect_casters();

@@ -11,7 +11,9 @@ uniform vec3 samples[16];
 uniform int window_width;
 uniform int window_height;
 
-uniform mat4 projection_matrix;
+layout(std140) uniform ProjectionMatrix {
+    mat4 projection_matrix;
+};
 
 int kernelSize = 16;
 float radius = 0.1;

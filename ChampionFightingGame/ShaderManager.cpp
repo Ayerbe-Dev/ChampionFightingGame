@@ -1,4 +1,5 @@
 #include "ShaderManager.h"
+#include "RenderManager.h"
 
 ShaderManager::ShaderManager() {
 	add_type_size("bool", 4);
@@ -12,6 +13,7 @@ ShaderManager::ShaderManager() {
 	add_type_size("mat2", 32);
 	add_type_size("mat3", 48);
 	add_type_size("mat4", 64);
+	reset_common_ubos();
 }
 
 Shader* ShaderManager::get_shader(std::string vertex, std::string fragment, std::string geometry, unsigned int features) {
@@ -226,6 +228,10 @@ unsigned int ShaderManager::get_type_size(std::string name) {
 	else {
 		return types[name];
 	}
+}
+
+void ShaderManager::reset_common_ubos() {
+	set_global_float("DimMul", 1.0);
 }
 
 ShaderManager* ShaderManager::instance = nullptr;

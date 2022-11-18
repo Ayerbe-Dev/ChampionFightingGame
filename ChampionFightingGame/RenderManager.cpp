@@ -101,14 +101,16 @@ RenderManager::RenderManager() {
 	for (int i = 0; i < 16; i++) {
 		SSAO.shader->set_vec3("samples[]", ssao_kernel[i], i);
 	}
-	SSAO.shader->set_int("window_width", s_window_width);
-	SSAO.shader->set_int("window_height", s_window_height);
 	SSAO.shader->set_int("tex_noise", 1);
 	SSAO.shader->set_int("g_position", 2);
 	SSAO.shader->set_int("g_normal", 3);
 
 	SSAO_blur.shader->use();
 	SSAO_blur.shader->set_int("ssao", 0);
+
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+	shader_manager->set_global_int("WindowWidth", s_window_width);
+	shader_manager->set_global_int("WindowHeight", s_window_height);
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -215,14 +217,14 @@ void RenderManager::update_shader_shadows() {
 }
 
 void RenderManager::update_framebuffer_dimensions() {
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 	outline.update_dimensions();
 	box_layer.update_dimensions();
 	g_buffer.update_dimensions();
 	SSAO.update_dimensions();
 	SSAO_blur.update_dimensions();
-	SSAO.shader->use();
-	SSAO.shader->set_int("window_width", s_window_width);
-	SSAO.shader->set_int("window_height", s_window_height);
+	shader_manager->set_global_int("WindowWidth", s_window_width);
+	shader_manager->set_global_int("WindowHeight", s_window_height);
 }
 
 void RenderManager::reset_gl_environment() {

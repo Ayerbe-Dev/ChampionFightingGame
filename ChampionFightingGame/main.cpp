@@ -72,6 +72,7 @@ int main() {
 	bool running = game_manager->game_state != GAME_STATE_CLOSE;
 
 	while (running) {
+		shader_manager->reset_common_ubos();
 		for (int i = 0; i < MAX_LAYERS; i++) {
 			game_manager->looping[i] = true;
 		}

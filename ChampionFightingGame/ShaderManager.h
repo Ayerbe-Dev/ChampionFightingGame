@@ -27,6 +27,7 @@ public:
 	void add_ubo(std::string name, int shader_id, unsigned int size);
 	void add_type_size(std::string name, unsigned int size = 0);
 	unsigned int get_type_size(std::string name);
+	void reset_common_ubos();
 
 	static ShaderManager* get_instance();
 	void destroy_instance();

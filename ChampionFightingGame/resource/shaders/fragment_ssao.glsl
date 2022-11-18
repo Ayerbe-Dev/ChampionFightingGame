@@ -8,8 +8,14 @@ uniform sampler2D g_normal;
 uniform sampler2D tex_noise;
 
 uniform vec3 samples[16];
-uniform int window_width;
-uniform int window_height;
+
+layout(std140) uniform WindowWidth {
+    int window_width;
+};
+
+layout(std140) uniform WindowHeight {
+    int window_height;
+};
 
 layout(std140) uniform ProjectionMatrix {
     mat4 projection_matrix;

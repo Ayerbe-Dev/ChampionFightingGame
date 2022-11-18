@@ -24,6 +24,7 @@ layout(std140) uniform DimMul {
 };
 #endif
 uniform sampler2D shadow_map;
+
 uniform Material material;
 
 float calc_shadow(vec4 fragPosLightSpace);

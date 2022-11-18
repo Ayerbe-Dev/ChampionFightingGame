@@ -74,7 +74,6 @@ void Projectile::load_model_shader() {
 		shader->set_int("shadow_map", 0);
 		shader->set_int("material.diffuse", 1);
 		shader->set_int("material.specular", 2);
-		shader_manager->set_global_float("DimMul", 1.0);
 	}
 }
 

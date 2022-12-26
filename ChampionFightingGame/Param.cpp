@@ -1,5 +1,5 @@
 #include "Param.h"
-#include <fstream>
+#include "Prmlst.h"
 
 Param::Param() {
     name = "";
@@ -16,7 +16,7 @@ ParamTable::ParamTable() {
 
 void ParamTable::load_params(std::string resource_dir) {
     std::ifstream param_file;
-    param_file.open(resource_dir);
+    param_file.open(resource_dir, std::ios::binary);
 
     if (param_file.fail()) {
         param_file.close();
@@ -24,30 +24,13 @@ void ParamTable::load_params(std::string resource_dir) {
         return;
     }
 
-    std::string stat_name;
-    for (int i = 0; param_file >> stat_name; i++) {
-        params.push_back(Param(stat_name));
-        param_file >> params[i].type;
-        switch (params[i].type) {
-            case(PARAM_TYPE_INT):
-            default:
-            {
-                param_file >> params[i].value_i;
-            } break;
-            case(PARAM_TYPE_FLOAT):
-            {
-                param_file >> params[i].value_f;
-            } break;
-            case(PARAM_TYPE_STRING):
-            {
-                param_file >> params[i].value_s;
-            } break;
-            case (PARAM_TYPE_BOOL):
-            {
-                param_file >> params[i].value_b;
-            } break;
+    for (int i = 0; !param_file.eof(); i++) {
+        Param param;
+        parse_param_entry(param_file, param.name, param.type, param.value);
+        if (i != 0 || !param_file.eof()) {
+            params.push_back(param);
+            param_map[param.name] = i;
         }
-        param_map[stat_name] = i;
     }
     param_file.close();
 }
@@ -57,39 +40,51 @@ void ParamTable::unload_params() {
 }
 
 int ParamTable::get_param_int(std::string param_name) {
-    std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
-    if (iterator == param_map.end()) {
+    if (!param_map.contains(param_name)) {
         std::cout << "Failed to find param " << param_name << "\n";
         return 0;
     }
-    return params[param_map[param_name]].value_i;
+    if (params[param_map[param_name]].value.type() != typeid(int)) {
+        std::cout << "Param " << param_name << " is not of type int\n";
+        return 0;
+    }
+    return std::any_cast<int>(params[param_map[param_name]].value);
 }
 
 float ParamTable::get_param_float(std::string param_name) {
-    std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
-    if (iterator == param_map.end()) {
+    if (!param_map.contains(param_name)) {
         std::cout << "Failed to find param " << param_name << "\n";
-        return 0;
+        return 0.0;
     }
-    return params[param_map[param_name]].value_f;
+    if (params[param_map[param_name]].value.type() != typeid(float)) {
+        std::cout << "Param " << param_name << " is not of type float\n";
+        return 0.0;
+    }
+    return std::any_cast<float>(params[param_map[param_name]].value);
 }
 
 std::string ParamTable::get_param_string(std::string param_name) {
-    std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
-    if (iterator == param_map.end()) {
+    if (!param_map.contains(param_name)) {
         std::cout << "Failed to find param " << param_name << "\n";
         return "";
     }
-    return params[param_map[param_name]].value_s;
+    if (params[param_map[param_name]].value.type() != typeid(std::string)) {
+        std::cout << "Param " << param_name << " is not of type string\n";
+        return "";
+    }
+    return std::any_cast<std::string>(params[param_map[param_name]].value);
 }
 
 bool ParamTable::get_param_bool(std::string param_name) {
-    std::unordered_map<std::string, int>::const_iterator iterator = param_map.find(param_name);
-    if (iterator == param_map.end()) {
+    if (!param_map.contains(param_name)) {
         std::cout << "Failed to find param " << param_name << "\n";
         return false;
     }
-    return params[param_map[param_name]].value_b;
+    if (params[param_map[param_name]].value.type() != typeid(bool)) {
+        std::cout << "Param " << param_name << " is not of type bool\n";
+        return false;
+    }
+    return std::any_cast<bool>(params[param_map[param_name]].value);
 }
 
 /*

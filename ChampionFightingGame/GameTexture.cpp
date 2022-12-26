@@ -16,7 +16,7 @@ GameTexture::GameTexture(std::string path) {
 	init(path);
 }
 
-GameTexture::GameTexture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+GameTexture::GameTexture(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
 	init(font, text, rgba, border_x, border_y);
 }
 
@@ -189,7 +189,7 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	loaded = true;
 }
 
-void GameTexture::init(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
 	name = text + " Texture";
 	texture = font.create_text(text, rgba, border_x, border_y);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -822,7 +822,7 @@ void GameTexture::set_sprite(int index) {
 	}
 }
 
-void GameTexture::update_text(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+void GameTexture::update_text(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
 	this->text = text;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;

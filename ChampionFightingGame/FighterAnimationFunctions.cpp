@@ -9,7 +9,7 @@ void Fighter::reenter_last_anim() {
 	set_current_move_script(prev_anim_kind->name);
 
 	if (prev_anim_kind != nullptr) {
-		model.set_move(prev_anim_kind->move);
+		model.set_move(prev_anim_kind->flag_move);
 	}
 	else {
 		player->controller.reset_buffer();
@@ -52,7 +52,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			this->rate = (target_frame / rate) * 0.8;
 			this->frame = 0.0;
 		}
-		model.set_move(new_anim->move);
+		model.set_move(new_anim->flag_move);
 		prev_anim_kind = anim_kind;
 	}
 	else {
@@ -76,7 +76,7 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 	Animation* new_anim = anim_table.get_anim(animation_name, verbose);
 
 	if (new_anim != nullptr) {
-		model.set_move(new_anim->move);
+		model.set_move(new_anim->flag_move);
 	}
 	else {
 		player->controller.reset_buffer();

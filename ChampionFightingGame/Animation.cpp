@@ -1,5 +1,4 @@
 ﻿#include "Animation.h"
-#include <fstream>
 #include "Model.h"
 #include "Bone.h"
 #include "GLM Helpers.h"
@@ -11,18 +10,22 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <assimp/Importer.hpp>
+#include "Anlst.h"
 #include "utils.h"
 
 Animation::Animation() {
 	length = 0;
 	faf = 0;
+	flag_move = false;
+	flag_no_hitlag_interp = false;
+	flag_unused = false;
 }
 
-Animation::Animation(std::string anim_kind, std::string anim_dir, Model *model) {
-	this->name = anim_kind;
+void Animation::init(std::string name, std::string filename, Model *model) {
+	this->name = name;
 
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(anim_dir, aiProcess_Triangulate);
+	const aiScene* scene = import.ReadFile(filename, aiProcess_Triangulate);
 
 	if (!scene || !scene->HasAnimations()) {
 			if (!scene) {
@@ -150,70 +153,63 @@ AnimationTable& AnimationTable::operator=(const AnimationTable& other) {
 	return *this;
 }
 
-void AnimationTable::load_animations(std::string resource_dir, Model *model) {
+void AnimationTable::load_anlst(std::string resource_dir, Model* model) {
 	std::ifstream anim_list;
-	anim_list.open(resource_dir + "/anims/anim_list.yml");
+	anim_list.open(resource_dir + "/anims/anim_list.anlst", std::ios::binary);
 
 	if (anim_list.fail()) {
 		anim_list.close();
 
 		throw std::runtime_error("Anim List Missing");
 	}
-
 	std::string name;
-	std::string path;
-	std::string faf;
-	std::string move;
-	for (int i = 0; anim_list >> name; i++) {
-		anim_list >> path >> faf >> move;
-		name = ymlChopString(name);
-		path = ymlChopString(path);
-		Animation anim(name, resource_dir + "/anims/" + path, model);
-		anim.faf = ymlChopInt(faf);
-		anim.move = ymlChopInt(move);
-		animations.push_back(anim);
-		anim_map[name] = i;
+	std::string filename;
+	int end_frame;
+	bool flag_move;
+	bool flag_no_hitlag_interp;
+	bool flag_unused;
+	if (model != nullptr) {
+		for (size_t i = 0; !anim_list.eof(); i++) {
+			parse_anlst_entry(anim_list, name, filename, end_frame, flag_move, flag_no_hitlag_interp, 
+				flag_unused);
+			if (name == "") {
+				break;
+			}
+			Animation anim;
+			if (filename != "none") { //If we're loading an animation file, we run normal code
+				anim.init(name, resource_dir + "/anims/" + filename + ".fbx", model);
+				anim.faf = end_frame;
+			}
+			else { //If there's no animation file, our end frame specifies the length instead of faf
+				anim.name = name;
+				anim.length = end_frame;
+				anim.faf = -1;
+			}
+			anim.flag_move = flag_move;
+			anim.flag_no_hitlag_interp = flag_no_hitlag_interp;
+			anim.flag_unused = flag_unused;
+			animations.push_back(anim);
+			anim_map[name] = i;
+		}
 	}
-	anim_list.close();
-}
-
-void AnimationTable::load_animations_no_faf(std::string resource_dir, Model* model) {
-	std::ifstream anim_list;
-	anim_list.open(resource_dir + "/anims/anim_list.yml");
-
-	if (anim_list.fail()) {
-		anim_list.close();
-
-		throw std::runtime_error("Anim List Missing");
-	}
-
-	std::string name;
-	std::string path_length_container;
-	if (model == nullptr) {
-		int length;
-		for (int i = 0; anim_list >> name; i++) {
-			anim_list >> path_length_container;
-			name = ymlChopString(name);
-			length = ymlChopInt(path_length_container);
+	else { //And if we don't even provide a model, we can assume there's no animation file either
+		for (size_t i = 0; !anim_list.eof(); i++) {
+			parse_anlst_entry(anim_list, name, filename, end_frame, flag_move, flag_no_hitlag_interp, 
+				flag_unused);
+			if (name == "") {
+				break;
+			}
 			Animation anim;
 			anim.name = name;
-			anim.length = length;
+			anim.length = end_frame;
+			anim.faf = -1;
+			anim.flag_move = flag_move;
+			anim.flag_no_hitlag_interp = flag_no_hitlag_interp;
+			anim.flag_unused = flag_unused;
 			animations.push_back(anim);
 			anim_map[name] = i;
 		}
 	}
-	else {
-		std::string path;
-		for (int i = 0; anim_list >> name; i++) {
-			anim_list >> path_length_container;
-			name = ymlChopString(name);
-			path = ymlChopString(path_length_container);
-			Animation anim(name, resource_dir + "/anims/" + path, model);
-			animations.push_back(anim);
-			anim_map[name] = i;
-		}
-	}
-
 	anim_list.close();
 }
 

@@ -104,8 +104,8 @@ public:
 		//min_matches buttons were pressed
 	bool check_button_trigger(unsigned int button); //Checks if a button was pressed on that frame
 	bool check_button_release(unsigned int button); //Checks if a button was released on that frame
-	int get_stick_dir(bool internal_dir = true); //Stick direction, relative to your facing direction. Returns num pad notation.
-	int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
+	unsigned int get_stick_dir(bool internal_dir = true); //Stick direction, relative to your facing direction. Returns num pad notation.
+	unsigned int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
 	bool get_attack_input(int attack_kind, unsigned int button = 0, int stick_dir = 0);
 	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
 	bool attack_cancel(int attack_kind, unsigned int button = 0, int stick_dir = 10);
@@ -420,9 +420,6 @@ public:
 	virtual void status_launch();
 	virtual void enter_status_launch();
 	virtual void exit_status_launch();
-	virtual void status_blowback();
-	virtual void enter_status_blowback();
-	virtual void exit_status_blowback();
 	virtual void status_clank();
 	virtual void enter_status_clank();
 	virtual void exit_status_clank();

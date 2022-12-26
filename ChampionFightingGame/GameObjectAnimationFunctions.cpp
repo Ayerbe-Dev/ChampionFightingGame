@@ -26,7 +26,7 @@ bool GameObject::change_anim(std::string animation_name, float rate, float frame
 			this->rate = (target_frame / rate) * 0.8;
 			this->frame = 0.0;
 		}
-		model.set_move(new_anim->move);
+		model.set_move(new_anim->flag_move);
 		prev_anim_kind = anim_kind;
 	}
 	prev_anim_offset = glm::vec3(0.0);

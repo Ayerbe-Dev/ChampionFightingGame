@@ -41,8 +41,6 @@
 #include "FontManager.h"
 #include "ShaderManager.h"
 
-extern bool debug;
-
 #define DEBUG
 #ifdef DEBUG
 #include "imgui.h"
@@ -92,7 +90,7 @@ void battle_main() {
 
 		for (int i = 0; i < 2; i++) {
 			if (player[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
-				//check_controllers now returns whether or not controls were changed, and if someone's controller
+				//check_controllers returns whether or not controls were changed, and if someone's controller
 				//gets unplugged midgame, we should probably do something about it
 			}
 		}

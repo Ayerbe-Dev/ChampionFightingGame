@@ -86,7 +86,7 @@ void Projectile::load_anim_list() {
 		model_ptr = nullptr;
 	}
 	try {
-		anim_table.load_animations_no_faf(resource_dir, model_ptr);
+		anim_table.load_anlst(resource_dir, model_ptr);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {

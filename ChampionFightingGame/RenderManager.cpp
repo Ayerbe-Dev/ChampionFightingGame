@@ -285,6 +285,7 @@ void RenderManager::destroy_instance() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_GL_DeleteContext(sdl_context);
+	
 	if (instance != nullptr) {
 		delete instance;
 	}

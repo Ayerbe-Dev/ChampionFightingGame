@@ -1,10 +1,10 @@
 #include "ParamAccessor.h"
 
 ParamAccessor::ParamAccessor() {
-	params[PARAM_FIGHTER].load_params("resource/param/battle/fighter_common.yml");
-	params[PARAM_RENDER].load_params("resource/param/battle/render_param.yml");
-	params[PARAM_MENU].load_params("resource/param/menu/menu_param.yml");
-	params[PARAM_GLOBAL].load_params("resource/param/global/global_param.yml");
+	params[PARAM_FIGHTER].load_params("resource/param/battle/fighter_common.prmlst");
+	params[PARAM_RENDER].load_params("resource/param/battle/render_param.prmlst");
+	params[PARAM_MENU].load_params("resource/param/menu/menu_param.prmlst");
+	params[PARAM_GLOBAL].load_params("resource/param/global/global_param.prmlst");
 }
 
 int get_param_int(std::string param_name, int param_table) {

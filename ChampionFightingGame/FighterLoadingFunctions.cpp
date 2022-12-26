@@ -5,7 +5,7 @@
 #include "EffectManager.h"
 #include "GameManager.h"
 #include "ShaderManager.h"
-#include <fstream>
+#include "Anlst.h"
 
 void Fighter::init() {
 	sound_manager->register_game_object(this);
@@ -96,7 +96,7 @@ void Fighter::load_model_shader() {
 
 void Fighter::load_anim_list() {
 	try {
-		anim_table.load_animations(resource_dir, &model);
+		anim_table.load_anlst(resource_dir, &model);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
@@ -107,13 +107,15 @@ void Fighter::load_anim_list() {
 		}
 	}
 	std::ifstream camera_stream;
-	camera_stream.open(resource_dir + "/cam_anims/anim_list.yml");
+	camera_stream.open(resource_dir + "/cam_anims/anim_list.anlst", std::ios::binary);
 	if (camera_stream.fail()) {
 		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s camera directory was incorrectly set!");
 	}
-	std::string cam_anim_name;
-	while (camera_stream >> cam_anim_name) {
-		render_manager->camera.load_camera_anim(cam_anim_name, resource_dir + "/cam_anims/" + cam_anim_name + ".fbx");
+	std::string name;
+	std::string filename;
+	while (!camera_stream.eof()) {
+		parse_anlst_entry(camera_stream, name, filename);
+		render_manager->camera.load_camera_anim(name, resource_dir + "/cam_anims/" + filename + ".fbx");
 	}
 }
 

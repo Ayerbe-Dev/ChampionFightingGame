@@ -137,7 +137,7 @@ void Camera::follow_players() {
 	float x_scaler = WINDOW_WIDTH / (100 * ((fighter[0]->scale.x + fighter[1]->scale.x) / 2.0));
 
 	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / x_scaler;
-	pos.y = clampf(base_pos.y, ((std::max(fighter[0]->pos.y, fighter[1]->pos.y)) / 200.0) - (base_pos.y / 4.0), 800.0);
+	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / 10.0, 100.0);
 	pos.z = base_pos.z;
 	yaw = 0.0;
 	pitch = 3.0;

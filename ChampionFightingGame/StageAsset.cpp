@@ -69,7 +69,7 @@ void StageAsset::load_anim_list() {
 		model_ptr = nullptr;
 	}
 	try {
-		anim_table.load_animations_no_faf(resource_dir, model_ptr);
+		anim_table.load_anlst(resource_dir, model_ptr);
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
@@ -82,7 +82,7 @@ void StageAsset::load_anim_list() {
 }
 
 void StageAsset::load_params() {
-	params.load_params(resource_dir + "/param/params.yml");
+	params.load_params(resource_dir + "/param/params.prmlst");
 }
 
 void StageAsset::load_lights() {

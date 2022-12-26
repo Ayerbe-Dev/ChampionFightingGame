@@ -1,6 +1,5 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
-#include "GameCoordinate.h"
 #include "Animation.h"
 #include "Projectile.h"
 #include <fstream>
@@ -112,7 +111,9 @@ void Fighter::process_post_projectiles() {
 
 void Fighter::process_animate() {
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
-		frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
+		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
+			frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
+		}
 	}
 	else {
 		frame += rate * battle_object_manager->get_time_multiplier(id);
@@ -194,7 +195,11 @@ void Fighter::process_post_position() {
 				}
 			}
 			else {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0))) {
+				float y_pushback = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
+					y_pushback = 0.0;
+				}
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, y_pushback, 0))) {
 					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
@@ -506,7 +511,8 @@ void Fighter::decrease_common_variables() {
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && anim_kind != nullptr 
+			&& !anim_kind->flag_no_hitlag_interp) {
 			frame -= 0.2;
 		}
 	}

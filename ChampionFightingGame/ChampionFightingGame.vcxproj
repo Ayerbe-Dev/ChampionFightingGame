@@ -105,6 +105,7 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mtd.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
       <Profile>true</Profile>
+      <EntryPointSymbol>_mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)dependencies\x86\bin\SDL\libwebp-4.dll" "$(TargetDir)
@@ -138,6 +139,7 @@ copy /Y "$(SolutionDir)dependencies\x86\bin\assimp\assimp-vc142-mt.dll" "$(Targe
       <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x86\lib\SDL;$(SolutionDir)\dependencies\x86\lib\glew;$(SolutionDir)\dependencies\x86\lib\assimp;$(SolutionDir)\dependencies\x86\lib\freetype;$(SolutionDir)\dependencies\x86\lib\OpenAL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
+      <EntryPointSymbol>_mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)dependencies\x86\SDL2\bin\libwebp-4.dll" "$(TargetDir)
@@ -173,6 +175,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <AdditionalOptions>/NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <OptimizeReferences>false</OptimizeReferences>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -204,6 +207,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -214,7 +218,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AI.cpp" />
     <ClCompile Include="AIInput.cpp" />
     <ClCompile Include="AIManager.cpp" />
+    <ClCompile Include="Anlst.cpp" />
     <ClCompile Include="ArbitraryCodeEditor.cpp" />
+    <ClCompile Include="Ayrbt.cpp" />
     <ClCompile Include="Dingo.cpp" />
     <ClCompile Include="DingoMoves.cpp" />
     <ClCompile Include="DingoStatus.cpp" />
@@ -311,7 +317,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterProjectileFunctions.cpp" />
     <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="FighterStatusFunctions.cpp" />
-    <ClCompile Include="GameCoordinate.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameTexture.cpp" />
@@ -353,6 +358,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerIndicator.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="Prmlst.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Rook.cpp" />
     <ClCompile Include="RookMoves.cpp" />
@@ -415,7 +421,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
   <ItemGroup>
     <ClInclude Include="AI.h" />
     <ClInclude Include="AIManager.h" />
+    <ClInclude Include="Anlst.h" />
     <ClInclude Include="ArbitraryCodeEditor.h" />
+    <ClInclude Include="Ayrbt.h" />
     <ClInclude Include="Dingo.h" />
     <ClInclude Include="DingoConstants.h" />
     <ClInclude Include="DingoFlag.h" />
@@ -491,7 +499,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="FighterInterface.h" />
     <ClInclude Include="Fighters.h" />
     <ClInclude Include="GameController.h" />
-    <ClInclude Include="GameCoordinate.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Battle.h" />
@@ -509,6 +516,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="Prmlst.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SaveManager.h" />
     <ClInclude Include="ScriptArg.h" />

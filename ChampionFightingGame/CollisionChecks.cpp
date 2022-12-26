@@ -198,13 +198,14 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 
 	bool blocking = false;
 	bool parrying = false;
-	if (defender->is_actionable() || defender->status_kind == FIGHTER_STATUS_BLOCKSTUN) {
+	if ((defender->is_actionable() || defender->status_kind == FIGHTER_STATUS_BLOCKSTUN) && defender->situation_kind == FIGHTER_SITUATION_GROUND) {
 		if (defender->get_stick_dir() == 4 && hitbox->attack_height != ATTACK_HEIGHT_LOW) {
 			blocking = true;
 		}
 		if (defender->get_stick_dir() == 1 && hitbox->attack_height != ATTACK_HEIGHT_HIGH) {
 			blocking = true;
 		}
+
 	}
 	if (defender->fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE]) {
 		if (defender->fighter_int[FIGHTER_INT_PARRY_HEIGHT] == hitbox->attack_height || defender->fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
@@ -353,16 +354,21 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 
 	bool blocking = false;
 	bool parrying = false;
-	if (defender->is_actionable() || defender->status_kind == FIGHTER_STATUS_BLOCKSTUN) {
-		if (defender->get_stick_dir() == 4 || defender->get_stick_dir() == 1) {
+	if ((defender->is_actionable() || defender->status_kind == FIGHTER_STATUS_BLOCKSTUN) && defender->situation_kind == FIGHTER_SITUATION_GROUND) {
+		if (defender->get_stick_dir() == 4 && hitbox->attack_height != ATTACK_HEIGHT_LOW) {
 			blocking = true;
 		}
+		if (defender->get_stick_dir() == 1 && hitbox->attack_height != ATTACK_HEIGHT_HIGH) {
+			blocking = true;
+		}
+
 	}
 	if (defender->fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE]) {
-		if (defender->fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID || defender->fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
+		if (defender->fighter_int[FIGHTER_INT_PARRY_HEIGHT] == hitbox->attack_height || defender->fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_ALL) {
 			parrying = true;
 		}
 	}
+
 	if (parrying) {
 		//Factors in blockstun
 
@@ -401,7 +407,8 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		return hitbox->id;
 	}
 
-	attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+ 	attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+ 	attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	attacker->projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->hitlag;
 	defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
@@ -433,9 +440,11 @@ bool Battle::event_hit_collide_player() {
 		}
 		else if (hitboxes[0]->attack_level == hitboxes[1]->attack_level) {
 			if (hitboxes[0]->clank_kind == CLANK_KIND_CONTINUE || hitboxes[1]->clank_kind == CLANK_KIND_CONTINUE) {
-				const int clank_kinds[2] = { hitboxes[0]->clank_kind, hitboxes[1]->clank_kind }; //If player 1's clank_kind is CLANK_KIND_CONTINUE, 
-				//player 2's status will change. This will cause player 2's hitbox to be destroyed before it's checked against player 1, so in order
-				//to compensate for port priority, we back up the clank_kind as a constant 
+				const int clank_kinds[2] = { hitboxes[0]->clank_kind, hitboxes[1]->clank_kind }; 
+				//If player 1's clank_kind is CLANK_KIND_CONTINUE, player 2's status will change. 
+				//This will cause player 2's hitbox to be destroyed before it's checked against player
+				//1, so in order to compensate for port priority, we back up the clank_kind as a 
+				//constant 
 				for (int i = 0; i < 2; i++) {
 					if (clank_kinds[i] == CLANK_KIND_CONTINUE) {
 						fighter[!i]->change_status(FIGHTER_STATUS_CLANK);
@@ -530,6 +539,11 @@ bool Battle::event_hit_collide_player() {
 					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
 						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
 					}
+				}
+				if (post_hit_status[i] == FIGHTER_STATUS_HITSTUN_AIR) {
+					fighter[i]->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = hitboxes[!i]->hit_pushback * fighter[!i]->facing_dir * 0.1;
+					fighter[i]->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 5.0;
+					fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] *= 1.2;
 				}
 				if (fighter[i]->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
 					texts[!i].push_back(BattleText());
@@ -673,6 +687,11 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * ((clampf(1, 10 - p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
+			}
+			if (p2_status_post_hit == FIGHTER_STATUS_HITSTUN_AIR) {
+				p2->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = p1_hitbox->hit_pushback * p1->facing_dir * 0.1;
+				p2->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 5.0;
+				p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] *= 1.2;
 			}
 			if (p2->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
 				texts[p1->id].push_back(BattleText());

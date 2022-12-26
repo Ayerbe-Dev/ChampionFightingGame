@@ -194,7 +194,7 @@ void MenuObject::add_texture(std::string path) {
 	textures.emplace_back(path);
 }
 
-void MenuObject::add_texture(Font font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+void MenuObject::add_texture(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
 	textures.emplace_back(font, text, rgba, border_x, border_y);
 }
 

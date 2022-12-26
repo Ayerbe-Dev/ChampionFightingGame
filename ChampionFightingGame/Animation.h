@@ -9,13 +9,16 @@ struct AnimBone;
 class Animation {
 public:
 	Animation();
-	Animation(std::string anim_kind, std::string anim_dir, Model* model);
+
+	void init(std::string name, std::string filename, Model* model);
 
 	std::string name;
 	std::vector<std::vector<AnimBone>> keyframes;
 	int length;
 	int faf;
-	bool move = false;
+	bool flag_move;
+	bool flag_no_hitlag_interp;
+	bool flag_unused;
 };
 
 class AnimationTable {
@@ -25,11 +28,11 @@ public:
 	AnimationTable(const AnimationTable& other);
 	AnimationTable& operator=(AnimationTable& other);
 	AnimationTable& operator=(const AnimationTable& other);
-	void load_animations(std::string resource_dir, Model* model);
-	void load_animations_no_faf(std::string resource_dir, Model* model);
+	void load_anlst(std::string resource_dir, Model* model);
 	void unload_animations();
 	Animation* get_anim(std::string anim_name, bool verbose);
 private:
 	std::vector<Animation> animations;
 	std::unordered_map<std::string, int> anim_map;
+
 };

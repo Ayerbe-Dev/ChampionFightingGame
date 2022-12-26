@@ -33,7 +33,7 @@ glm::vec3 GameObject::get_bone_position(std::string bone_name, glm::vec3 offset)
 		Bone& target = model.bones[bone_id];
 		glm::vec3 ret = target.pos;
 		ret *= glm::vec3(16.5, 11.5, 11.5);
-		if (anim_kind->move) {
+		if (anim_kind->flag_move) {
 			ret -= get_relative_bone_position("Trans");
 		}
 		return ret + pos + offset;
@@ -48,7 +48,7 @@ glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
 	Bone& target = model.bones[bone_id];
 	glm::vec3 ret = target.pos;
 	ret *= glm::vec3(16.5, 11.5, 11.5);
-	if (anim_kind->move) {
+	if (anim_kind->flag_move) {
 		ret -= get_relative_bone_position("Trans");
 	}
 

@@ -400,9 +400,6 @@
     <ClCompile Include="Button.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
-    <ClCompile Include="GameCoordinate.cpp">
-      <Filter>2. Code Files\Engine\GameData</Filter>
-    </ClCompile>
     <ClCompile Include="GameController.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
@@ -561,6 +558,15 @@
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>2. Code Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Ayrbt.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="Anlst.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="Prmlst.cpp">
+      <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1176,9 +1182,6 @@
     <ClInclude Include="Button.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
-    <ClInclude Include="GameCoordinate.h">
-      <Filter>1. Header Files\Engine\GameData</Filter>
-    </ClInclude>
     <ClInclude Include="GameController.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
@@ -1262,6 +1265,15 @@
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>1. Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Ayrbt.h">
+      <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="Anlst.h">
+      <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="Prmlst.h">
+      <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2824,6 +2836,12 @@
     </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Dingo">
       <UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\I/O">
+      <UniqueIdentifier>{37f653dd-5a1a-4e6a-aadb-b1a97bc7288e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\I/O">
+      <UniqueIdentifier>{d808a310-cc49-49e0-8174-60e93a3c59a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 #include "utils.h"
-#include "SDL/SDL.h"
 #include <sstream>
 #include <iostream>
 #include <chrono>
@@ -7,8 +6,6 @@
 #include <random>
 #include <thread>
 #include <mutex>
-#include "BattleObject.h"
-#include <boost/fusion/algorithm.hpp>
 
 extern std::mutex file_mutex;
 
@@ -34,18 +31,6 @@ float clampf(float min, float value, float max) {
 		}
 	}
 	return value;
-}
-
-int ymlChopInt(std::string line) {
-	return stoi(line.substr(line.find("=") + 1));
-}
-
-float ymlChopFloat(std::string line) {
-	return stof(line.substr(line.find("=") + 1));
-}
-
-std::string ymlChopString(std::string line) {
-	return line.substr(line.find("=") + 1);
 }
 
 /// <summary>
@@ -127,17 +112,6 @@ void update_thread_progress(int& to_update) {
 	file_mutex.unlock();
 }
 
-void print_init() {
-	std::cout << "  /$$$$$$                        /$$               /$$                                  /$$$$$$                        /$$                               /$$$$$$           /$$   /$$    " << "\n";
-	std::cout << " /$$__  $$                      | $$              | $$                                 /$$__  $$                      | $$                              |_  $$_/          |__/  | $$    " << "\n";
-	std::cout << "| $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$$| $$$$$$$   /$$$$$$   /$$$$$$       | $$  \\__/  /$$$$$$  /$$$$$$$  /$$$$$$    /$$$$$$   /$$$$$$         | $$   /$$$$$$$  /$$ /$$$$$$  " << "\n";
-	std::cout << "| $$ /$$$$ |____  $$| $$__  $$|_  $$_/   /$$_____/| $$__  $$ /$$__  $$ /$$__  $$      | $$       /$$__  $$| $$__  $$|_  $$_/   /$$__  $$ /$$__  $$        | $$  | $$__  $$| $$|_  $$_/  " << "\n";
-	std::cout << "| $$|_  $$  /$$$$$$$| $$  \\ $$  | $$    | $$      | $$  \\ $$| $$$$$$$$| $$  \\__/      | $$      | $$$$$$$$| $$  \\ $$  | $$    | $$$$$$$$| $$  \\__/        | $$  | $$  \\ $$| $$  | $$    " << "\n";
-	std::cout << "| $$  \\ $$ /$$__  $$| $$  | $$  | $$ /$$| $$      | $$  | $$| $$_____/| $$            | $$    $$| $$_____/| $$  | $$  | $$ /$$| $$_____/| $$              | $$  | $$  | $$| $$  | $$ /$$" << "\n";
-	std::cout << "|  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$            |  $$$$$$/|  $$$$$$$| $$  | $$  |  $$$$/|  $$$$$$$| $$             /$$$$$$| $$  | $$| $$  |  $$$$/" << "\n";
-	std::cout << " \\______/  \\_______/|__/  |__/   \\___/   \\_______/|__/  |__/ \\_______/|__/             \\______/  \\_______/|__/  |__/   \\___/   \_______/|__/            |______/|__/  |__/|__/   \\___/  " << "\n" << "\n";
-}
-
 int rng(const int& min, const int& max) {
 	thread_local std::mt19937* generator = nullptr;
 	std::hash<std::thread::id> hasher;
@@ -156,4 +130,17 @@ float rng_f(const float& min, const float& max) {
 
 float lerp(float a, float b, float f) {
 	return a + f * (b - a);
+}
+
+std::int32_t convert_to_int(char* buffer, std::size_t len) {
+	std::int32_t a = 0;
+	if (std::endian::native == std::endian::little) {
+		std::memcpy(&a, buffer, len);
+	}
+	else {
+		for (std::size_t i = 0; i < len; ++i) {
+			reinterpret_cast<char*>(&a)[3 - i] = buffer[i];
+		}
+	}
+	return a;
 }

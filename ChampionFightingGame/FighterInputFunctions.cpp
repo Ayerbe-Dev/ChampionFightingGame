@@ -21,7 +21,7 @@ bool Fighter::check_button_release(unsigned int button) {
 	return player->controller.check_button_release(button);
 }
 
-int Fighter::get_stick_dir(bool internal_dir) {
+unsigned int Fighter::get_stick_dir(bool internal_dir) {
 	bool right = internal_facing_right;
 	if (!internal_dir) {
 		right = facing_right;
@@ -68,7 +68,7 @@ int Fighter::get_stick_dir(bool internal_dir) {
 	}
 }
 
-int Fighter::get_flick_dir(bool internal_dir) {
+unsigned int Fighter::get_flick_dir(bool internal_dir) {
 	int stick_dir = get_stick_dir(internal_dir);
 	if (stick_dir == prev_stick_dir) {
 		return 0;

@@ -71,8 +71,6 @@ Model::Model(Model& other) {
 }
 
 Model::Model(const Model& other) { 
-	std::cout << "Model at directory " << other.directory << " copied!\n";
-
 	this->global_transform = other.global_transform;
 	this->dummy_matrix = other.dummy_matrix;
 	this->dummy_quat = other.dummy_quat;
@@ -378,13 +376,13 @@ void Model::render(Shader* shader, bool flip) {
 		//so we need to change the culling to support it.
 		if (flip) {
 			glCullFace(GL_FRONT);
-			for (int i = 0, max = bones.size(); i < max; i++) {
+			for (size_t i = 0, max = bones.size(); i < max; i++) {
 				shader->set_mat4("bone_matrix[0]", flip_matrix, i);
 			}
 		}
 		else {
 			glCullFace(GL_BACK);
-			for (int i = 0, max = bones.size(); i < max; i++) {
+			for (size_t i = 0, max = bones.size(); i < max; i++) {
 				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 			}
 		}
@@ -392,26 +390,33 @@ void Model::render(Shader* shader, bool flip) {
 	else { //But if we have keyframe data and face left, we applied 1 flip matrix to each bone to mirror
 		//the transformations, then we applied another one to the entire model, so culling is always the same
 		glCullFace(GL_BACK);
-		for (int i = 0, max = bones.size(); i < max; i++) {
+		for (size_t i = 0, max = bones.size(); i < max; i++) {
 			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 		}
 	}
 
-	for (int i = 0, max = meshes.size(); i < max; i++) {
-		if (meshes[i].visible) {
-			meshes[i].render();
+	for (const auto& mesh : meshes) {
+		if (mesh.visible) {
+			mesh.render();
 		}
 	}
 }
 
 void Model::render_no_texture(Shader* shader, bool flip) {
-	if (flip) {
-		for (int i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+	if (tpose) {
+		if (flip) {
+			for (size_t i = 0, max = bones.size(); i < max; i++) {
+				shader->set_mat4("bone_matrix[0]", flip_matrix, i);
+			}
+		}
+		else {
+			for (size_t i = 0, max = bones.size(); i < max; i++) {
+				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+			}
 		}
 	}
 	else {
-		for (int i = 0, max = bones.size(); i < max; i++) {
+		for (size_t i = 0, max = bones.size(); i < max; i++) {
 			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
 		}
 	}

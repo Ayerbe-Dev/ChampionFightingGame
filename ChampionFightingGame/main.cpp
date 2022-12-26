@@ -33,23 +33,17 @@
 #include "Loader.h"
 #undef main
 
-bool debug = false;
-
 std::mutex file_mutex;
 
 int main() {
-	//Hide the console window. It'll be a LONG time before we get to uncomment these lines
-
-//	HWND windowHandle = GetConsoleWindow();
-//	ShowWindow(windowHandle, SW_HIDE);
+	//NOTE: Eventually we will want to hide the console window. When this happens, we need to go into
+	//Properties->Linker->System and change the Sub System from CONSOLE to WINDOWS
 
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
 
 	SDL_GameControllerEventState(SDL_ENABLE);
-
-	//Initialize all of the singletons
 
 	AIManager* ai_manager = AIManager::get_instance();
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
@@ -105,8 +99,5 @@ int main() {
 
 	SDL_Quit();
 
-//	ShowWindow(windowHandle, SW_SHOW);
-//	If we try to end the program without putting the window back up, it technically causes a crash. 
-//  Program was about to end anyway so it doesn't really matter but ehhhhhhhhh, clean exits are nice.
 	return 0;
 }

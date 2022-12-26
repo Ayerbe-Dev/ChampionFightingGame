@@ -221,7 +221,7 @@ bool Fighter::set_pos_anim() {
 	if (anim_kind == nullptr) {
 		return false;
 	}
-	if (anim_kind->move) {
+	if (anim_kind->flag_move) {
 		Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
 		glm::vec3 trans_offset = glm::vec3(
 			trans_bone.anim_matrix[3].z * facing_dir,

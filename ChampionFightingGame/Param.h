@@ -2,14 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
-enum {
-	PARAM_TYPE_INT = 1,
-	PARAM_TYPE_FLOAT,
-	PARAM_TYPE_STRING,
-	PARAM_TYPE_BOOL,
-
-	PARAM_TYPE_MAX,
-};
+#include <any>
 
 class Param {
 public:
@@ -17,10 +10,7 @@ public:
 	Param(std::string name);
 	std::string name;
 	int type;
-	int value_i;
-	float value_f;
-	std::string value_s;
-	bool value_b;
+	std::any value;
 };
 
 class ParamTable {

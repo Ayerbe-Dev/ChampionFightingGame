@@ -4,12 +4,14 @@
 #include "ParamAccessor.h"
 #include "utils.h"
 #include "PlayerInfo.h"
+#include "SaveManager.h"
 
 Player::Player() {
 	id = -1;
 	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
 	controller.stick_hold_v_timer = timer;
 	controller.stick_hold_h_timer = timer;
+	player_info = nullptr;
 }
 
 Player::Player(int id) {
@@ -20,6 +22,7 @@ Player::Player(int id) {
 	chara_kind = CHARA_KIND_MAX;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	set_default_button_mappings(id);
+	player_info = nullptr;
 }
 
 void Player::set_default_button_mappings(int id) {
@@ -75,6 +78,20 @@ void Player::set_default_button_mappings(int id) {
 	}
 }
 
-void Player::load_player(PlayerInfo* player_info) {
+void Player::load_player(int index) {
+	set_default_button_mappings(id);
+	player_info = SaveManager::get_instance()->get_player_info(index);
+	this->name = player_info->name;
+	this->control_type = player_info->control_type;
+	for (size_t i = 0, max = player_info->custom_mappings.size(); i < max; i++) {
+		controller.set_button_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].k_mapping);
+		controller.set_button_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_mapping);
+		controller.set_button_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_axis);
+	}
+	this->chara_kind = player_info->preferred_chara;
+	set_alt_for_chara();
+}
 
+void Player::set_alt_for_chara() {
+	alt_color = player_info->preferred_color[chara_kind];
 }

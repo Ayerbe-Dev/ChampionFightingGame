@@ -1,5 +1,6 @@
 #include "Loader.h"
 #include "SDL Helpers.h"
+#include "utils.h"
 #include <stdlib.h>
 
 GameLoader::GameLoader() {

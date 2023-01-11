@@ -27,3 +27,4 @@ int rng(const int& min, const int& max);
 float rng_f(const float& min, const float& max);
 float lerp(float a, float b, float f);
 std::int32_t convert_to_int(char* buffer, std::size_t len);
+std::string float_to_string(float val, int precision);

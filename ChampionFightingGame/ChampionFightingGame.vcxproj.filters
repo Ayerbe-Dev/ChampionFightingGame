@@ -269,13 +269,13 @@
       <Filter>2. Code Files</Filter>
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="RenderManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="FighterRotationFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
@@ -302,7 +302,7 @@
       <Filter>2. Code Files\Objects\Stage</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="imgui.cpp">
       <Filter>2. Code Files\Deps\ImGui</Filter>
@@ -335,13 +335,13 @@
       <Filter>2. Code Files\AI</Filter>
     </ClCompile>
     <ClCompile Include="AIManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="FighterGrabFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
     <ClCompile Include="EffectManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>2. Code Files\Engine</Filter>
@@ -380,7 +380,7 @@
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="ParamAccessor.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
@@ -392,7 +392,7 @@
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="ThreadManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="Box.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
@@ -404,7 +404,7 @@
       <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
     <ClCompile Include="ControllerManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="Framebuffer.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
@@ -418,17 +418,17 @@
     <ClCompile Include="BattleObjectBlockboxFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="GameMenu.cpp">
+    <ClCompile Include="GameState.cpp">
       <Filter>2. Code Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
     <ClCompile Include="SaveManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
@@ -542,7 +542,7 @@
       <Filter>2. Code Files\Game State</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectLoadingFunctions.cpp">
       <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
@@ -557,7 +557,7 @@
       <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>2. Code Files\Managers</Filter>
+      <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="Ayrbt.cpp">
       <Filter>2. Code Files\I/O</Filter>
@@ -567,6 +567,12 @@
     </ClCompile>
     <ClCompile Include="Prmlst.cpp">
       <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainingInfo.cpp">
+      <Filter>2. Code Files\Game State\Battle</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterFrameDataFunctions.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -610,13 +616,13 @@
       <Filter>1. Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="RenderManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>1. Header Files\Deps</Filter>
@@ -641,9 +647,6 @@
     </ClInclude>
     <ClInclude Include="GLM Helpers.h">
       <Filter>1. Header Files\Helper Funcs</Filter>
-    </ClInclude>
-    <ClInclude Include="BoneConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="GLEW Helpers.h">
       <Filter>1. Header Files\Helper Funcs</Filter>
@@ -1081,7 +1084,7 @@
       <Filter>1. Header Files\Objects\Stage</Filter>
     </ClInclude>
     <ClInclude Include="BattleObjectManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="imconfig.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
@@ -1117,10 +1120,10 @@
       <Filter>1. Header Files\AI</Filter>
     </ClInclude>
     <ClInclude Include="AIManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="EffectManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>1. Header Files\Engine</Filter>
@@ -1165,7 +1168,7 @@
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="ParamAccessor.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
@@ -1174,7 +1177,7 @@
       <Filter>1. Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="ThreadManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Box.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
@@ -1186,7 +1189,7 @@
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="ControllerManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Framebuffer.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
@@ -1194,13 +1197,13 @@
     <ClInclude Include="PauseBattle.h">
       <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
-    <ClInclude Include="GameMenu.h">
+    <ClInclude Include="GameState.h">
       <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="GameTextureSDL.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
+    <ClInclude Include="GameStateConstants.h">
       <Filter>1. Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="GameStates.h">
@@ -1210,10 +1213,10 @@
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="SaveManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="FontManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
@@ -1246,7 +1249,7 @@
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>1. Header Files\Game State\Menu</Filter>
@@ -1264,7 +1267,7 @@
       <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
-      <Filter>1. Header Files\Managers</Filter>
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Ayrbt.h">
       <Filter>1. Header Files\I/O</Filter>
@@ -2272,9 +2275,6 @@
     <Filter Include="2. Code Files\Global">
       <UniqueIdentifier>{31489a1a-b655-4abe-939e-7c025d68ad6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Managers">
-      <UniqueIdentifier>{60c88659-286b-4c67-a538-a286b56bb0e8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Engine">
       <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
     </Filter>
@@ -2693,9 +2693,6 @@
     <Filter Include="1. Header Files\Global">
       <UniqueIdentifier>{965f5800-a3cd-42e6-8ad5-e5266651dbf2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Managers">
-      <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Deps">
       <UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
     </Filter>
@@ -2842,6 +2839,12 @@
     </Filter>
     <Filter Include="2. Code Files\I/O">
       <UniqueIdentifier>{d808a310-cc49-49e0-8174-60e93a3c59a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Singleton">
+      <UniqueIdentifier>{60c88659-286b-4c67-a538-a286b56bb0e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Singleton">
+      <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

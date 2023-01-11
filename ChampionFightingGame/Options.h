@@ -1,12 +1,12 @@
 #pragma once
-#include "GameMenu.h"
+#include "GameState.h"
 #include "GameTexture.h"
-#include "Player.h"
 #include "GameManager.h"
+#include "Player.h"
 
 void controls_main();
 
-class OptionsMenu : public GameMenu {
+class OptionsMenu : public GameState {
 public:
 	OptionsMenu();
 	~OptionsMenu();

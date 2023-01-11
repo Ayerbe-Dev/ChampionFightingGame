@@ -1,5 +1,6 @@
-#include "Fighter.h"
 #include <glm/gtx/string_cast.hpp>
+#include "Fighter.h"
+#include "utils.h"
 
 void Fighter::change_opponent_status(unsigned int status_kind) {
 	if ((this->status_kind == FIGHTER_STATUS_THROW || this->status_kind == FIGHTER_STATUS_THROW_AIR) && status_kind == FIGHTER_STATUS_THROWN) {
@@ -9,7 +10,11 @@ void Fighter::change_opponent_status(unsigned int status_kind) {
 }
 
 void Fighter::damage_opponent(float damage) {
-	battle_object_manager->fighter[!id]->fighter_float[FIGHTER_FLOAT_HEALTH] -= damage;
+	Fighter* that = battle_object_manager->fighter[!id];
+	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+	fighter_int[FIGHTER_INT_COMBO_COUNT]++;
+	that->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+	that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 }
 
 void Fighter::set_opponent_rot(glm::vec3 rot) {

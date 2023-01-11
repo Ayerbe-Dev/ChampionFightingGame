@@ -6,9 +6,9 @@
 void Fighter::reenter_last_anim() {
 	rate = prev_anim_rate;
 	frame = prev_anim_frame;
-	set_current_move_script(prev_anim_kind->name);
 
 	if (prev_anim_kind != nullptr) {
+		set_current_move_script(prev_anim_kind->name);
 		model.set_move(prev_anim_kind->flag_move);
 	}
 	else {

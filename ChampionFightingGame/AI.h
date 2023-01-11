@@ -1,8 +1,6 @@
 #pragma once
 #include "AIMoveList.h"
 #include "CircularBuffer.h"
-#include <iostream>
-#include <vector>
 
 struct AIInfo;
 

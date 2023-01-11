@@ -9,7 +9,7 @@
 #include "ProjectileFlag.h"
 #include "BoxConstants.h"
 #include "ButtonConstants.h"
-#include "GameState.h"
+#include "GameStateConstants.h"
 #include "MenuConstants.h"
 #include "FighterAttribute.h"
 #include "StageKind.h"

@@ -1,34 +1,106 @@
 #pragma once
-#define MAX_LAYERS 5
+#include "GameStateConstants.h"
+#include <vector>
+#include <chrono>
+#include <functional>
+#include "GameTexture.h"
 
-enum {
-	GAME_STATE_BATTLE,
-	GAME_STATE_MENU,
-	GAME_STATE_CHARA_SELECT,
-	GAME_STATE_STAGE_SELECT,
-	GAME_STATE_CLOSE,
-	GAME_STATE_DEBUG_MENU,
-	GAME_STATE_TITLE_SCREEN,
+class GameLoader;
+class MenuObject;
 
-	GAME_STATE_MAX,
+class GameState{
+public:
+    GameState();
+    ~GameState();
+    virtual void event_up_press();
+    virtual void event_down_press();
+    virtual void event_left_press();
+    virtual void event_right_press();
+    virtual void event_select_press();
+    virtual void event_start_press();
+    virtual void event_back_press();
+    virtual void event_pause_press();
+    virtual void event_any_press();
+
+    virtual void process_background();
+
+    void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
+    void inc_thread();
+    void frame_delay();
+    void frame_delay_check_fps();
+    void frame_delay_check_performance();
+
+    int* game_state;
+    int* prev_game_state;
+    int* game_context;
+    int* prev_game_context;
+    bool* looping;
+    GameLoader* game_loader;
+
+    std::vector<std::vector<MenuObject>> menu_objects;
+
+    std::chrono::steady_clock::time_point last_second;
+    std::chrono::steady_clock::time_point ms;
+    std::vector<float> average_ticks;
+    std::vector<int> tick_frequency;
+
+    int sub_state = GAME_SUBSTATE_NONE;
+    int player_id{0};
+    int frame;
+    int fps;
+    Font fps_font;
+    GameTexture fps_counter;
+    GameTexture fps_texture;
+    int prev_fps;
 };
 
-enum {
-	GAME_CONTEXT_NORMAL,
-	GAME_CONTEXT_TRAINING,
-	GAME_CONTEXT_STORY,
-	GAME_CONTEXT_ARCADE,
-	GAME_CONTEXT_1CPU,
-	GAME_CONTEXT_2CPU,
-	GAME_CONTEXT_ONLINE,
+class MenuObject {
+public:
+    MenuObject();
+    MenuObject(GameState* owner, MenuObject* parent, bool render_all_children);
+    MenuObject(MenuObject&& other) noexcept;
+    ~MenuObject();
 
-	GAME_CONTEXT_MAX,
-};
+    void render();
+    void add_child(bool render_all_children);
+    void add_texture(std::string path);
+    void add_texture(Font &font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
+    void add_texture(const GameTexture& that);
+    void add_texture(unsigned int texture_id);
 
-enum {
-	GAME_SUBSTATE_NONE,
-	GAME_SUBSTATE_CONTROLS,
-	GAME_SUBSTATE_PAUSE_BATTLE,
+    void event_up_press();
+    void event_down_press();
+    void event_left_press();
+    void event_right_press();
+    void event_select_press();
+    void event_start_press();
+    void event_back_press();
+    void event_any_press();
+    void process();
 
-	GAME_SUBSTATE_MAX,
+    std::function<void(MenuObject* menu_object)> up_event;
+    std::function<void(MenuObject* menu_object)> down_event;
+    std::function<void(MenuObject* menu_object)> left_event;
+    std::function<void(MenuObject* menu_object)> right_event;
+    std::function<void(MenuObject* menu_object)> select_event;
+    std::function<void(MenuObject* menu_object)> start_event;
+    std::function<void(MenuObject* menu_object)> back_event;
+    std::function<void(MenuObject* menu_object)> any_event;
+
+    std::function<void(MenuObject* menu_object)> process_event;
+
+    GameState* owner;
+    MenuObject* parent;
+
+    std::vector<MenuObject> children;
+    std::vector<GameTexture> textures;
+
+    GameTexture cursor; //I can't think of a single reason for a menu object
+    //to actually use its cursor. However, I CAN think of reasons for it to
+    //use its PARENT'S cursor, so here we are.
+
+    int active_child;
+
+    bool render_all_children;
+    bool moving;
 };

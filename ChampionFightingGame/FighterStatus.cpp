@@ -1181,7 +1181,9 @@ void Fighter::enter_status_parry_start() {
 	}
 }
 
-void Fighter::exit_status_parry_start() {}
+void Fighter::exit_status_parry_start() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+}
 
 void Fighter::status_parry() {
 	if (beginning_hitlag(1) || ending_hitlag(2)) {

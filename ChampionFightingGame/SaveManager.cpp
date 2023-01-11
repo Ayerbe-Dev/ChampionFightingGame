@@ -3,6 +3,7 @@
 
 SaveManager::SaveManager() {
 	load_game_settings();
+	load_player_info();
 }
 
 void SaveManager::load_game_settings() {
@@ -54,6 +55,50 @@ void SaveManager::update_game_settings() {
 	settings_file.close();
 }
 
+void SaveManager::load_player_info() {
+
+}
+
+int SaveManager::add_player_info(std::string name) {
+	if (player_info.contains(name)) {
+		int ret = 0;
+		PlayerInfo* target = &player_info[name];
+		for (std::list<PlayerInfo*>::iterator it = player_info_ordered.begin(), 
+			max = player_info_ordered.end(); it != max; it++) {
+			if (*it == target) {
+				return ret;
+			}
+			ret++;
+		}
+	}
+	PlayerInfo new_player_info(name);
+	player_info[name] = new_player_info;
+	player_info_ordered.push_front(&new_player_info);
+	return 0;
+}
+
+PlayerInfo* SaveManager::get_player_info(int index) {
+	if (player_info.size() <= (size_t)index) {
+		return nullptr;
+	}
+	std::list<PlayerInfo*>::iterator it = std::next(player_info_ordered.begin(), index);
+	PlayerInfo* ret = *it;
+	player_info_ordered.erase(it);
+	player_info_ordered.push_front(ret);
+	return ret;
+}
+
+void SaveManager::remove_player_info(int index) {
+	std::list<PlayerInfo*>::iterator it = std::next(player_info_ordered.begin(), index);
+	std::string name = (*it)->name;
+	player_info_ordered.erase(it);
+	player_info.erase(name);
+}
+
+void SaveManager::update_player_info() {
+
+}
+
 GameSetting::GameSetting() {
 	name = "";
 	val = 0;
@@ -73,6 +118,7 @@ SaveManager* SaveManager::get_instance() {
 }
 
 void SaveManager::destroy_instance() {
+	update_player_info();
 	if (instance != nullptr) {
 		delete instance;
 	}

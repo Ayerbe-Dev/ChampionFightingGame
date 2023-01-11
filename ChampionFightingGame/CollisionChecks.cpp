@@ -1,5 +1,6 @@
 ﻿#include "Battle.h"
 #include "ParamAccessor.h"
+#include "utils.h"
 
 void Battle::check_collisions() {
 	if (frame_pause && !debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
@@ -240,6 +241,7 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		attacker->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		defender->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = true;
+		defender->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = defender->fighter_float[FIGHTER_FLOAT_HEALTH];
 		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = -attacker->get_frames_until_actionable();
 
 		return hitbox->id;
@@ -254,6 +256,7 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 		defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
+		defender->fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] = 60;
 
 		int frame_advantage = defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->get_frames_until_actionable();
 		attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
@@ -268,6 +271,7 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = true;
 	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
+	defender->fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] = 0;
 
 	int frame_advantage = defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->get_frames_until_actionable();
 	attacker->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
@@ -387,6 +391,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 		defender->fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 		attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
+		defender->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = defender->fighter_float[FIGHTER_FLOAT_HEALTH];
 		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + 16 - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
 		attacker->owner->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 
@@ -402,6 +407,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		defender->fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] = hitbox->attack_height;
 		defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 		defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
+		defender->fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] = 60;
 		int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
 		attacker->owner->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 		return hitbox->id;
@@ -416,6 +422,7 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 	defender->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = round_up_odd(defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 	attacker->projectile_flag[PROJECTILE_FLAG_HIT] = true;
 	defender->fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
+	defender->fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] = 0;
 	int frame_advantage = attacker->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] + defender->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + defender->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - attacker->projectile_int[PROJECTILE_INT_OWNER_ENDLAG];
 	attacker->owner->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 	return hitbox->id;
@@ -468,15 +475,20 @@ bool Battle::event_hit_collide_player() {
 				fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + fighter[i]->get_local_param_float("meter_gain_on_parry"), get_param_int("ex_meter_size", PARAM_FIGHTER));
 				fighter[i]->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = false;
 				post_hit_status[i] = FIGHTER_STATUS_PARRY;
+				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0));
 			}
 			else if (fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
 				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.5, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
-				fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind != KO_KIND_CHIP, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->chip_damage, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+				fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - hitboxes[!i]->chip_damage, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+				if (hitboxes[!i]->ko_kind == KO_KIND_CHIP) {
+					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->chip_damage, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+				}
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->block_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = true;
 				post_hit_status[i] = FIGHTER_STATUS_BLOCKSTUN;
+				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(hitboxes[!i]->blockstun), glm::vec4(255.0));
 			}
 			else if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED]) {
 				//If Attack Connected is false but this still got set off, that means that the opponent hit you while you had armor. In this situation,
@@ -485,8 +497,8 @@ bool Battle::event_hit_collide_player() {
 
 				//Note: This is also what will happen to Leon if he gets hit while he has Right of Way armor, so if we ever want to remove the chip damage
 				//for when he gets hit with RoW, we'll need to find a way to account for that. I don't think it'll be that big of a deal though.
-				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
-				fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(1, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - (hitboxes[!i]->chip_damage / 2), fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0.0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
+				fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - (hitboxes[!i]->damage / 2), fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 			}
 			else {
 				/*
@@ -510,41 +522,49 @@ bool Battle::event_hit_collide_player() {
 					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = hitboxes[!i]->juggle_start;
 				}
 				fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] += hitboxes[!i]->juggle_increase;
-
-				float prev_x = fighter[i]->pos.x;
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->hit_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+				float damage;
+				float scale;
 				if (can_counterhit(fighter[i], hitboxes[!i])) {
+					scale = clampf(1.2, (clampf(1, 10 - fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10, 1.5);
+					damage = hitboxes[!i]->damage * scale;
 					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 1.2, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.72, get_param_int("ex_meter_size", PARAM_FIGHTER));
-					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * 1.2, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+					float accum_damage = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
+					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+					fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+					damage += accum_damage;
 					fighter[i]->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = hitboxes[!i]->juggle_increase; //Reset the opponent's juggle value on counterhit :)
 					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
-					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 					post_hit_status[i] = get_damage_status(hitboxes[!i]->counterhit_status, fighter[i]->situation_kind);
-					if (fighter[i]->status_kind == FIGHTER_STATUS_LAUNCH && hitboxes[!i]->continue_launch) {
-						post_hit_status[i] = FIGHTER_STATUS_LAUNCH;
-					}
 					texts[!i].push_back(BattleText());
 					texts[!i].back().init(&message_font, "Counter", 40, fighter[!i], glm::vec2(275.0, 450.0));
 				}
 				else {
+					scale = (clampf(1, 10 - fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10;
+					damage = hitboxes[!i]->damage * scale;
 					fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain, get_param_int("ex_meter_size", PARAM_FIGHTER));
 					fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.6, get_param_int("ex_meter_size", PARAM_FIGHTER));
-					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->damage * ((clampf(1, 10 - fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
-					fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = hitboxes[!i]->attack_level;
+					float accum_damage = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
+					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+					fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(hitboxes[!i]->ko_kind == KO_KIND_NONE, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+					damage += accum_damage;
 					post_hit_status[i] = get_damage_status(hitboxes[!i]->hit_status, fighter[i]->situation_kind);
-					if (fighter[i]->status_kind == FIGHTER_STATUS_LAUNCH && hitboxes[!i]->continue_launch) {
-						post_hit_status[i] = FIGHTER_STATUS_LAUNCH;
-					}
-					if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-						fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
-					}
 				}
+				if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
+					fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
+				}
+				if (fighter[i]->status_kind == FIGHTER_STATUS_LAUNCH && hitboxes[!i]->continue_launch) {
+					post_hit_status[i] = FIGHTER_STATUS_LAUNCH;
+				}
+				fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+				fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = hitboxes[!i]->attack_level;
 				if (post_hit_status[i] == FIGHTER_STATUS_HITSTUN_AIR) {
 					fighter[i]->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = hitboxes[!i]->hit_pushback * fighter[!i]->facing_dir * 0.1;
 					fighter[i]->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 5.0;
 					fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] *= 1.2;
 				}
+
 				if (fighter[i]->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
 					texts[!i].push_back(BattleText());
 					texts[!i].back().init(&message_font, "Punish", 40, fighter[!i], glm::vec2(275.0, 1280.0));
@@ -563,6 +583,13 @@ bool Battle::event_hit_collide_player() {
 						combo_hit[!i] = &texts[!i].back();
 					}
 				}
+				training_info[!i].hit_frame.update_text(info_font, "Hit Frame: " + float_to_string(fighter[!i]->frame, 2), glm::vec4(255.0));
+				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]), glm::vec4(255.0));
+				training_info[!i].damage.update_text(info_font,
+					"Damage: " + float_to_string(damage, 3) + "(" + float_to_string(scale * 100.0, 3) + "%)",
+					glm::vec4(255.0)
+				);
+				training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0));
 
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = false;
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
@@ -635,18 +662,23 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p2->get_local_param_float("meter_gain_on_parry"), get_param_int("ex_meter_size", PARAM_FIGHTER));
 			p2->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = false;
 			p2_status_post_hit = FIGHTER_STATUS_PARRY;
+			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0));
 		}
 		else if (p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
 			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.5, get_param_int("ex_meter_size", PARAM_FIGHTER));
 			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
-			p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind != KO_KIND_CHIP, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->chip_damage, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
+			p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - p1_hitbox->chip_damage, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+			if (p1_hitbox->ko_kind == KO_KIND_CHIP) {
+				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->chip_damage, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
+			}
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
+			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p1_hitbox->blockstun), glm::vec4(255.0));
 		}
 		else if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT]) {
-			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
-			p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage / 2, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
+			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0.0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
+			p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - p1_hitbox->damage / 2, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 		}
 		else {
 			p2->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX] = p1_hitbox->disable_hitstun_parry;
@@ -667,27 +699,42 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			}
 			p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] += p1_hitbox->juggle_increase;
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->hit_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+			float damage;
+			float scale;
 			if (can_counterhit(p2, p1_hitbox)) {
+				scale = clampf(1.2, (clampf(1, 10 - p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10, 1.5);
+				damage = p1_hitbox->damage * scale;
 				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 1.2, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.72, get_param_int("ex_meter_size", PARAM_FIGHTER));
-				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * 1.2, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
+				float accum_damage = p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
+				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+				p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+				damage += accum_damage;
 				p2->fighter_int[FIGHTER_INT_JUGGLE_VALUE] = p1_hitbox->juggle_increase;
 				p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] *= 1.2;
-				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = ATTACK_LEVEL_HEAVY;
 				p2_status_post_hit = get_damage_status(p1_hitbox->counterhit_status, p2->situation_kind);
 				texts[p1->id].push_back(BattleText());
 				texts[p1->id].back().init(&message_font, "Counter", 40, p1, glm::vec2(275.0, 450.0));
 			}
 			else {
-				if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS]) {
-					p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += p1_hitbox->damage_scale;
-				}
+				scale = (clampf(1, 10 - p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10;
+				damage = p1_hitbox->damage * scale;
 				p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain, get_param_int("ex_meter_size", PARAM_FIGHTER));
 				p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.6, get_param_int("ex_meter_size", PARAM_FIGHTER));
-				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->damage * ((clampf(1, 10 - p1->fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10), p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
-				p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;
+				float accum_damage = p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
+				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+				p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(p1_hitbox->ko_kind == KO_KIND_NONE, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, p2->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+				damage += accum_damage;
 				p2_status_post_hit = get_damage_status(p1_hitbox->hit_status, p2->situation_kind);
 			}
+			if (!p1->fighter_flag[FIGHTER_FLAG_PROJECTILE_CONNECTED_DURING_STATUS]) {
+				p2->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += p1_hitbox->damage_scale;
+			}
+			if (p2->status_kind == FIGHTER_STATUS_LAUNCH && p1_hitbox->continue_launch) {
+				p2_status_post_hit = FIGHTER_STATUS_LAUNCH;
+			}
+			p1->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+			p2->fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = p1_hitbox->attack_level;			
 			if (p2_status_post_hit == FIGHTER_STATUS_HITSTUN_AIR) {
 				p2->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = p1_hitbox->hit_pushback * p1->facing_dir * 0.1;
 				p2->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 5.0;
@@ -697,9 +744,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				texts[p1->id].push_back(BattleText());
 				texts[p1->id].back().init(&message_font, "Punish", 40, p2, glm::vec2(275.0, 1280.0));
 			}
-			if (p2->status_kind == FIGHTER_STATUS_LAUNCH && p1_hitbox->continue_launch) {
-				p2_status_post_hit = FIGHTER_STATUS_LAUNCH;
-			}
+
 			if (p1->fighter_int[FIGHTER_INT_COMBO_COUNT] != 1) {
 				if (combo_counter[p1->id] != nullptr) {
 					combo_counter[p1->id]->update(std::to_string(p1->fighter_int[FIGHTER_INT_COMBO_COUNT]), p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
@@ -714,6 +759,13 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 					combo_hit[p1->id] = &texts[p1->id].back();
 				}
 			}
+			training_info[p1->id].hit_frame.update_text(info_font, "Hit Frame: " + float_to_string((float)p1_projectile->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES], 2), glm::vec4(255.0));
+			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]), glm::vec4(255.0));
+			training_info[p1->id].damage.update_text(info_font,
+				"Damage: " + float_to_string(damage, 3) + "(" + float_to_string(scale * 100.0, 3) + "%)",
+				glm::vec4(255.0)
+			);
+			training_info[p1->id].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[p1->id]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0));
 		}
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT] = false;
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = true;

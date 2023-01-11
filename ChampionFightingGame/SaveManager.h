@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <list>
 #include <map>
 #include "PlayerInfo.h"
 
@@ -15,13 +16,19 @@ class SaveManager {
 public:
 	SaveManager(SaveManager& other) = delete;
 	void operator=(const SaveManager& other) = delete;
-
-	std::vector<PlayerInfo> player_info;
+	
+	std::list<PlayerInfo*> player_info_ordered;
 
 	void load_game_settings();
 	int get_game_setting(std::string setting);
 	void set_game_setting(std::string setting, int val);
 	void update_game_settings();
+
+	void load_player_info();
+	int add_player_info(std::string name);
+	PlayerInfo* get_player_info(int index);
+	void remove_player_info(int index);
+	void update_player_info();
 
 	static SaveManager* get_instance();
 	void destroy_instance();
@@ -30,6 +37,7 @@ private:
 
 	std::vector<GameSetting> settings;
 	std::map<std::string, int> settings_map;
+	std::map<std::string, PlayerInfo> player_info;
 
 	static SaveManager* instance;
 };

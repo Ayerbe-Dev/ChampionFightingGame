@@ -7,8 +7,8 @@ class Shader;
 
 struct TexChar {
 	unsigned int texture;
-	glm::ivec2 size;
-	glm::ivec2 bearing;
+	glm::vec2 size;
+	glm::vec2 bearing;
 	unsigned int advance;
 };
 
@@ -17,8 +17,8 @@ public:
 	Font();
 	void unload_font();
 
-	unsigned int create_text(std::string text, glm::vec4 rgba, float border_x = 0, float border_y = 0, unsigned int* texture = nullptr);
-	void write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height, float base_width, float base_height);
+	unsigned int create_text(std::string text, glm::vec4 rgba, float border_x = 0, float border_y = 0, unsigned int* texture = nullptr, float* y_offset_ret = nullptr);
+	void write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height);
 
 	unsigned int VAO;
 	unsigned int VBO;

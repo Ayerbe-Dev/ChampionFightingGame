@@ -3,6 +3,7 @@
 #include "Debugger.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
+#include "utils.h"
 
 void title_screen_main() {
 	GameManager* game_manager = GameManager::get_instance();

@@ -10,7 +10,8 @@ public:
 	Player(int id);
 
 	void set_default_button_mappings(int id);
-	void load_player(PlayerInfo* player_info);
+	void load_player(int index);
+	void set_alt_for_chara();
 
 	GameController controller;
 	int id;
@@ -19,4 +20,5 @@ public:
 	int control_type = CONTROL_TYPE_ADVANCE;
 	StageInfo stage_info;
 	std::string name;
+	PlayerInfo* player_info;
 };

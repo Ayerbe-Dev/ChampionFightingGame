@@ -50,23 +50,29 @@ public:
 class BattleMeter {
 public:
 	BattleMeter();
+
 	void init(Fighter* fighter);
 	void destroy();
 	void process();
 	void render();
 
 	GameTexture health_texture;
+	GameTexture partial_health_texture;
+	GameTexture combo_health_texture;
 	GameTexture health_border;
 	GameTexture ex_texture;
 	GameTexture ex_segment_texture;
 	GameTexture ex_border;
 
 	float* health;
+	float* partial_health;
 	float max_health;
+	const unsigned* ended_hitstun;
+	int* damage_scale;
 	float* ex;
 	float max_ex;
 	int num_bars;
-	int prev_segments = 0;
+	float prev_segments = 0.0;
 };
 
 class BattleText : public GameTexture {
@@ -98,7 +104,25 @@ public:
 	void print(Fighter* fighter);
 };
 
-class Battle : public GameMenu {
+class TrainingInfo {
+public:
+	TrainingInfo();
+
+	void init(Fighter* fighter, Font& font);
+	void render();
+
+	GameTexture hit_frame;
+	GameTexture background_texture;
+	GameTexture damage;
+	GameTexture combo_damage;
+	GameTexture stun_frames;
+	GameTexture frame_advantage;
+
+	GameTexture input_visualizer;
+	GameTexture buttons[7];
+};
+
+class Battle : public GameState {
 public:
 	Battle();
 	~Battle();
@@ -131,6 +155,7 @@ public:
 
 	Font combo_font;
 	Font message_font;
+	Font info_font;
 
 	Fighter* fighter[2];
 	Stage stage;
@@ -141,9 +166,10 @@ public:
 
 	BattleMeter meters[2];
 
-	BattleText* frame_advantage[2] = { nullptr };
 	BattleText* combo_counter[2] = { nullptr };
 	BattleText* combo_hit[2] = { nullptr };
+
+	TrainingInfo training_info[2];
 
 	std::list<BattleText> texts[2];
 

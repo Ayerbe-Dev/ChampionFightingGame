@@ -56,7 +56,7 @@ void GameManager::update_state(int game_state, int game_context) {
 	}
 }
 
-void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int hold_rate) {
+void GameManager::set_menu_info(GameState* menu_target, int init_hold_frames, int hold_rate) {
 	//Initialize GameManager values, assign the GameManager a target
 	this->init_hold_frames = init_hold_frames;
 	this->hold_rate = hold_rate;
@@ -67,14 +67,14 @@ void GameManager::set_menu_info(GameMenu* menu_target, int init_hold_frames, int
 	//Assign a few pointers from the current target to match the GameManager
 	if (this->menu_target[layer] != nullptr) {
 		this->menu_target[layer]->game_state = &game_state;
-		this->menu_target[layer]->prev_game_state = &game_state;
+		this->menu_target[layer]->prev_game_state = &prev_game_state;
 		this->menu_target[layer]->game_context = &game_context;
 		this->menu_target[layer]->prev_game_context = &prev_game_context;
 		this->menu_target[layer]->looping = &looping[layer];
 	}
 }
 
-GameMenu* GameManager::get_target(int layer) {
+GameState* GameManager::get_target(int layer) {
 	if (layer == -1) {
 		return menu_target[this->layer];
 	}
@@ -240,39 +240,39 @@ bool GameManager::is_any_menu_input(int id) {
 }
 
 void GameManager::event_up_press() {
-	(menu_target[layer]->*(&GameMenu::event_up_press))();
+	(menu_target[layer]->*(&GameState::event_up_press))();
 }
 
 void GameManager::event_down_press() {
-	(menu_target[layer]->*(&GameMenu::event_down_press))();
+	(menu_target[layer]->*(&GameState::event_down_press))();
 }
 
 void GameManager::event_left_press() {
-	(menu_target[layer]->*(&GameMenu::event_left_press))();
+	(menu_target[layer]->*(&GameState::event_left_press))();
 }
 
 void GameManager::event_right_press() {
-	(menu_target[layer]->*(&GameMenu::event_right_press))();
+	(menu_target[layer]->*(&GameState::event_right_press))();
 }
 
 void GameManager::event_start_press() {
-	(menu_target[layer]->*(&GameMenu::event_start_press))();
+	(menu_target[layer]->*(&GameState::event_start_press))();
 }
 
 void GameManager::event_select_press() {
-	(menu_target[layer]->*(&GameMenu::event_select_press))();
+	(menu_target[layer]->*(&GameState::event_select_press))();
 }
 
 void GameManager::event_back_press() {
-	(menu_target[layer]->*(&GameMenu::event_back_press))();
+	(menu_target[layer]->*(&GameState::event_back_press))();
 }
 
 void GameManager::event_pause_press() {
-	(menu_target[layer]->*(&GameMenu::event_pause_press))();
+	(menu_target[layer]->*(&GameState::event_pause_press))();
 }
 
 void GameManager::event_any_press() {
-	(menu_target[layer]->*(&GameMenu::event_any_press))();
+	(menu_target[layer]->*(&GameState::event_any_press))();
 }
 
 void GameManager::add_crash_log(std::string crash_reason) {

@@ -3,7 +3,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include "utils.h"
 #include "RenderManager.h"
 #include "GameTextureSDL.h"
 

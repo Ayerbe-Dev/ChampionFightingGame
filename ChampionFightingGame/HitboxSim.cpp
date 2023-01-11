@@ -49,7 +49,6 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 	offset.x *= fighter->facing_dir;
 	bool command_loop = true;
 	std::string command_input;
-	int command_input_i;
 	float command_input_f;
 	switch (active_cat) {
 		case 0: { //Hitboxes

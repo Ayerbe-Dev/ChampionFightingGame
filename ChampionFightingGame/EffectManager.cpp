@@ -1,9 +1,9 @@
+#include <stdexcept>
 #include "EffectManager.h"
 #include "ThreadManager.h"
 #include "Effect.h"
-#include "Particle.h";
+#include "Particle.h"
 #include "BattleObject.h"
-#include <stdexcept>
 #include "utils.h"
 
 EffectManager::EffectManager() {

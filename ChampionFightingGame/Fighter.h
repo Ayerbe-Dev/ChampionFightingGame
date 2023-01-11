@@ -18,12 +18,11 @@ class Fighter: public BattleObject {
 public:
 	int chara_kind;
 	std::string chara_name;
-	int music_kind;
 
 	Projectile* projectiles[MAX_PROJECTILES]{};
 	int num_projectiles = 0;
 
-	int prev_stick_dir;
+	int prev_stick_dir = 0;
 	
 	std::vector<int> fighter_int;
 	std::vector<float> fighter_float;
@@ -191,7 +190,6 @@ public:
 
 	//Actionability
 
-	int get_frames_until_actionable();
 	bool is_actionable();
 	bool can_kara();
 	bool has_meter(int bars);
@@ -200,6 +198,9 @@ public:
 	void disable_all_cancels();
 	void disable_cancel(int cat, int kind);
 	bool is_enable_cancel(int cancel_kind);
+
+	//Frame Data
+	int get_frames_until_actionable();
 
 	//Cinematic
 

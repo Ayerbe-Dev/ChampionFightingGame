@@ -268,6 +268,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
     <ClCompile Include="FighterCinematicFunctions.cpp" />
+    <ClCompile Include="FighterFrameDataFunctions.cpp" />
     <ClCompile Include="FighterGrabFunctions.cpp" />
     <ClCompile Include="FighterHitboxFunctions.cpp" />
     <ClCompile Include="FighterHurtboxFunctions.cpp" />
@@ -318,7 +319,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="FighterStatusFunctions.cpp" />
     <ClCompile Include="Box.cpp" />
-    <ClCompile Include="GameMenu.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="JuliusMoves.cpp" />
@@ -410,6 +411,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="TessaStatus.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="TitleScreen.cpp" />
+    <ClCompile Include="TrainingInfo.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="Vesuvius.cpp" />
     <ClCompile Include="VesuviusMoves.cpp" />
@@ -454,7 +456,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PauseBattle.h" />
     <ClInclude Include="Bone.h" />
-    <ClInclude Include="BoneConstants.h" />
     <ClInclude Include="BoxConstants.h" />
     <ClInclude Include="Bruno.h" />
     <ClInclude Include="BrunoConstants.h" />
@@ -504,9 +505,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Battle.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameMenu.h" />
-    <ClInclude Include="GameRect.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameRect.h" />
+    <ClInclude Include="GameStateConstants.h" />
     <ClInclude Include="GameStates.h" />
     <ClInclude Include="GameTexture.h" />
     <ClInclude Include="GLEW Helpers.h" />

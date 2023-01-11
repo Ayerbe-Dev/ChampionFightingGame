@@ -1,10 +1,11 @@
 #include "PauseBattle.h"
 #include "RenderManager.h"
+#include "utils.h"
 
 void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-	GameMenu* background_menu = game_manager->get_target();
+	GameState* background_menu = game_manager->get_target();
 
 	game_manager->layer++;
 
@@ -65,5 +66,5 @@ void PauseBattle::event_start_press() {
 void PauseBattle::event_select_press() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->update_state(GAME_STATE_DEBUG_MENU);
-	game_manager->looping[--game_manager->layer] = false;
+	game_manager->looping[game_manager->layer - 1] = false;
 }

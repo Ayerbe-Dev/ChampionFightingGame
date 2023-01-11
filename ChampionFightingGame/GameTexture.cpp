@@ -10,7 +10,30 @@
 #include "ResourceManager.h"
 #include "ShaderManager.h"
 
-GameTexture::GameTexture() {}
+GameTexture::GameTexture() {
+	VAO = 0;
+	VBO = 0;
+	depth = false;
+	h_flipped = false;
+	v_flipped = false;
+	width = 0;
+	height = 0;
+	width_scale_mul = 1.0;
+	height_scale_mul = 1.0;
+	width_orientation = 0;
+	height_orientation = 0;
+	matrix = glm::mat4(1.0);
+	texture = 0;
+	text_y_offset = 0.0;
+	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	for (int i = 0; i < 4; i++) {
+		tex_accessor[i] = &tex_data[i];
+	}
+	attach_shader(ShaderManager::get_instance()->get_shader("2d_texture", "2d_texture", "", 0));
+}
 
 GameTexture::GameTexture(std::string path) {
 	init(path);
@@ -36,14 +59,14 @@ GameTexture::GameTexture(const GameTexture& that) {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
-	ShaderManager* shader_manager = ShaderManager::get_instance();
-	attach_shader(shader_manager->get_shader("2d_texture", "2d_texture", "", 0));
+	shader = that.shader;
 	shader->use();
 
 	VAO = that.VAO;
 	VBO = that.VBO;
 	texture = that.texture;
 	text = that.text;
+	text_y_offset = that.text_y_offset;
 
 	width = that.width;
 	height = that.height;
@@ -122,6 +145,7 @@ void GameTexture::init(std::string path) {
 	h_flipped = false;
 	v_flipped = false;
 	text = "";
+	text_y_offset = 0.0;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 	loaded = true;
@@ -184,6 +208,7 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	h_flipped = false;
 	v_flipped = false;
 	text = "";
+	text_y_offset = 0.0;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 	loaded = true;
@@ -191,7 +216,7 @@ void GameTexture::init(GLuint texture, int width, int height) {
 
 void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
 	name = text + " Texture";
-	texture = font.create_text(text, rgba, border_x, border_y);
+	texture = font.create_text(text, rgba, border_x, border_y, nullptr, &text_y_offset);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
@@ -558,10 +583,10 @@ void GameTexture::set_left_target(float percent, float frames) {
 		return;
 	}
 	if (h_flipped) {
-		target_left_crop = (percent - tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x) / frames;
+		target_left_crop = ((1.0 - tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x) - percent) / frames;
 	}
 	else {
-		target_left_crop = (percent - tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x) / frames;
+		target_left_crop = ((1.0 - tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x) - percent) / frames;
 	}
 	this->target_left_frames = frames;
 }
@@ -597,10 +622,10 @@ void GameTexture::set_bottom_target(float percent, float frames) {
 		return;
 	}
 	if (v_flipped) {
-		target_bottom_crop = (percent - tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y) / frames;
+		target_bottom_crop = ((1.0 - tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y) - percent) / frames;
 	}
 	else {
-		target_bottom_crop = (percent - tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y) / frames;
+		target_bottom_crop = ((1.0 - tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y) - percent) / frames;
 	}
 	this->target_bottom_frames = frames;
 }
@@ -611,6 +636,14 @@ void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	}
 	this->target_pos = (target_pos - pos) / glm::vec3(frames);
 	this->target_pos_frames = glm::vec3(frames);
+}
+
+void GameTexture::add_colormod(glm::vec3 colormod) {
+	this->colormod += colormod / glm::vec3(255.0);
+}
+
+void GameTexture::set_colormod(glm::vec3 colormod) {
+	this->colormod = colormod / glm::vec3(255.0);
 }
 
 void GameTexture::add_alpha(unsigned char alpha) {
@@ -676,10 +709,10 @@ void GameTexture::process() {
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (target_bottom_frames != 0.0) {
 		if (v_flipped) {
-			scale_bottom_percent(clampf(0.0, tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_bottom_crop, 1.0));
+			scale_bottom_percent(clampf(0.0, 1.0 - (tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_bottom_crop), 1.0));
 		}
 		else {
-			scale_bottom_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + target_bottom_crop, 1.0));
+			scale_bottom_percent(clampf(0.0, 1.0 - (tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.y + target_bottom_crop), 1.0));
 		}
 		target_bottom_frames--;
 	}
@@ -694,10 +727,10 @@ void GameTexture::process() {
 	}
 	if (target_left_frames != 0.0) {
 		if (h_flipped) {
-			scale_left_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + target_left_crop, 1.0));
+			scale_left_percent(clampf(0.0, 1.0 - (tex_accessor[TEX_COORD_BOTTOM_RIGHT]->tex_coord.x + target_left_crop), 1.0));
 		}
 		else {
-			scale_left_percent(clampf(0.0, tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + target_left_crop, 1.0));
+			scale_left_percent(clampf(0.0, 1.0 - (tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord.x + target_left_crop), 1.0));
 		}
 		target_left_frames--;
 	}
@@ -718,6 +751,7 @@ void GameTexture::process() {
 
 void GameTexture::prepare_render() {
 	glm::vec3 gl_pos = pos;
+	gl_pos.y += text_y_offset;
 	switch (orientation) {
 	default:
 	case (GAME_TEXTURE_ORIENTATION_MIDDLE): {
@@ -780,6 +814,9 @@ void GameTexture::render_prepared() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->set_mat4("matrix", matrix);
+	if (shader->features & SHADER_FEAT_COLORMOD) {
+		shader->set_vec3("f_colormod", colormod);
+	}
 	shader->set_float("f_alphamod", 1.0 - ((float)alpha / 255.0));
 	glDepthMask(depth);
 	glDrawArrays(GL_QUADS, 0, 4);
@@ -822,7 +859,7 @@ void GameTexture::set_sprite(int index) {
 	}
 }
 
-void GameTexture::update_text(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgba, float border_x, float border_y) {
 	this->text = text;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
@@ -840,7 +877,7 @@ void GameTexture::update_text(Font &font, std::string text, glm::vec4 rgba, floa
 		}
 	}
 
-	texture = font.create_text(text, rgba, border_x, border_y, &texture);
+	texture = font.create_text(text, rgba, border_x, border_y, &texture, &text_y_offset);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);

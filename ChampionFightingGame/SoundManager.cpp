@@ -103,7 +103,7 @@ void SoundManager::stop_music(std::string name) {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
 		if (music->name == name) {
 			alSourceStop(music->source);
-			for (int i = 0; i < music_map[name].num_buffers; i++) {
+			for (unsigned int i = 0; i < music_map[name].num_buffers; i++) {
 				unsigned int buffer;
 				alSourceUnqueueBuffers(music->source, 1, &buffer);
 			}
@@ -118,7 +118,7 @@ void SoundManager::stop_music(std::string name) {
 void SoundManager::stop_music_all() {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
 		alSourceStop(music->source);
-		for (int i = 0; i < music_map[music->name].num_buffers; i++) {
+		for (unsigned int i = 0; i < music_map[music->name].num_buffers; i++) {
 			unsigned int buffer;
 			alSourceUnqueueBuffers(music->source, 1, &buffer);
 		}

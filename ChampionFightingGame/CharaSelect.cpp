@@ -7,6 +7,7 @@
 #include "GameTexture.h"
 #include "Loader.h"
 #include "RenderManager.h"
+#include "utils.h"
 
 /// <summary>
 /// The main function while on the character select screen.
@@ -23,7 +24,7 @@ void chara_select_main() {
 	CSS *css = new CSS;
 	
 	while (*css->looping) {
-		wait_ms();
+		css->frame_delay();
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 		}

@@ -5,14 +5,14 @@
 #include <vector>
 #include "Button.h"
 #include "Player.h"
-#include "GameMenu.h"
+#include "GameState.h"
 #include "GameManager.h"
 #include "GameTexture.h"
 #include "MenuConstants.h"
 
 void menu_main();
 
-class MainMenu: public GameMenu{
+class MainMenu: public GameState{
 public:
     MainMenu();
     ~MainMenu();

@@ -85,8 +85,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->blocklag = blocklag;
 	this->hitstun = hitstun;
 	this->blockstun = blockstun;
-	this->hit_pushback = hit_pushback * 10.0;
-	this->block_pushback = block_pushback * 10.0;
+	this->hit_pushback = hit_pushback * 10.0f;
+	this->block_pushback = block_pushback * 10.0f;
 	this->hit_status = hit_status;
 	this->counterhit_status = counterhit_status;
 	this->counterhit_type = counterhit_type;
@@ -140,8 +140,8 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->blocklag = blocklag;
 	this->hitstun = hitstun;
 	this->blockstun = blockstun;
-	this->hit_pushback = hit_pushback * 10.0;
-	this->block_pushback = block_pushback * 10.0;
+	this->hit_pushback = hit_pushback * 10.0f;
+	this->block_pushback = block_pushback * 10.0f;
 	this->hit_status = hit_status;
 	this->counterhit_status = counterhit_status;
 	this->counterhit_type = counterhit_type;

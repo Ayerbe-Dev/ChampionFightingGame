@@ -7,10 +7,16 @@
 #include "AIManager.h"
 #include "ParamAccessor.h"
 #include "ThreadManager.h"
+#include "utils.h"
 
 Fighter::Fighter() {
 	has_model = true;
 	chara_kind = CHARA_KIND_ROWAN;
+	for (int i = 0; i < CANCEL_CAT_MAX; i++) {
+		for (int i2 = 0; i2 < CANCEL_KIND_MAX; i2++) {
+			cancel_flags[i][i2] = false;
+		}
+	}
 }
 
 Fighter::~Fighter() {
@@ -238,9 +244,13 @@ void Fighter::process_status() {
 
 void Fighter::process_post_status() {
 	Fighter* that = battle_object_manager->fighter[!id];
-
+	fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN] = false;
 	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
+		if (that->fighter_int[FIGHTER_INT_COMBO_COUNT] != 0) {
+			fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN] = true;
+		}
 		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
+		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] = 0.0;
 		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
@@ -544,5 +554,11 @@ void Fighter::decrease_common_variables() {
 	}
 	else {
 		fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] != 0) {
+		fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES]--;
+	}
+	else {
+		fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH], fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] + 1.0, fighter_float[FIGHTER_FLOAT_HEALTH]);
 	}
 }

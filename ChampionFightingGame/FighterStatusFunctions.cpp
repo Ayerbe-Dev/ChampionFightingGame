@@ -50,8 +50,7 @@ unsigned int Fighter::get_status_group() {
 		case (FIGHTER_STATUS_LAUNCH_START):
 		case (FIGHTER_STATUS_LAUNCH):
 		case (FIGHTER_STATUS_CRUMPLE):
-		case (FIGHTER_STATUS_THROWN):
-		{
+		case (FIGHTER_STATUS_THROWN): {
 			return STATUS_GROUP_HITSTUN;
 		}
 		break;
@@ -103,6 +102,9 @@ bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status,
 }
 
 bool Fighter::check_hitstun_parry() {
+	if (fighter_int[FIGHTER_INT_DAMAGE_SCALE] >= 0 && !fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY]) {
+		fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
+	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] 
 		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX]) {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };

@@ -55,7 +55,6 @@ void battle_main() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 
 	font_manager->load_face("Fiend-Oblique");
-	font_manager->load_face("FiraCode");
 
 	Player* player[2];
 	for (int i = 0; i < 2; i++) {
@@ -150,6 +149,7 @@ Battle::Battle() {
 
 	combo_font = font_manager->load_font("Fiend-Oblique", 64);
 	message_font = font_manager->load_font("Fiend-Oblique", 20);
+	info_font = font_manager->load_font("FiraCode", 12);
 
 	inc_thread();
 
@@ -183,12 +183,10 @@ Battle::Battle() {
 	
 		inc_thread();
 		player_indicator[i] = PlayerIndicator(fighter[i]);
-	
+
 		inc_thread();
 
-		texts[i].push_back(BattleText());
-		texts[i].back().init(&message_font, "Frame Advantage: ", -1, fighter[i], glm::vec2(380.0, 350.0));
-		frame_advantage[i] = &texts[i].back();
+		training_info[i].init(fighter[i], info_font);
 
 		inc_thread();
 	}
@@ -258,6 +256,9 @@ Battle::~Battle() {
 	camera->unload_camera_anims();
 	thread_manager->kill_thread(THREAD_KIND_UI);
 	stage.unload_stage();
+	combo_font.unload_font();
+	message_font.unload_font();
+	info_font.unload_font();
 	render_manager->remove_light();
 	sound_manager->clear_game_objects();
 	effect_manager->clear_effect_all();
@@ -422,13 +423,18 @@ void Battle::process_ui() {
 
 void Battle::process_training() {
 	for (int i = 0; i < 2; i++) {
-		std::string frames = std::to_string(fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE]);
+		glm::vec4 color;
+		std::string advantage = std::to_string(fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE]);
 		if (fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] >= 0) {
-			frames = "+" + frames;
+			advantage = "Frame Advantage: +" + advantage;
+			color = glm::vec4(0.0, 0.0, 255.0, 255.0);
 		}
-		std::string advantage = "Frame Advantage: " + frames;
-		if (frame_advantage[i]->get_text() != advantage) {
-			frame_advantage[i]->update(advantage, -1);
+		else {
+			advantage = "Frame Advantage: " + advantage;
+			color = glm::vec4(255.0, 0.0, 0.0, 255.0);
+		}
+		if (training_info[i].frame_advantage.get_text() != advantage) {
+			training_info[i].frame_advantage.update_text(info_font, advantage, color);
 		}
 	}
 }
@@ -638,6 +644,13 @@ void Battle::render_ui() {
 		}
 	}
 	timer.render();
+	//TRAINING PASS
+
+//	if (*game_context == GAME_CONTEXT_TRAINING) {
+		for (int i = 0; i < 2; i++) {
+			training_info[i].render();
+		}
+//	}
 
 }
 

@@ -16,7 +16,7 @@ Font::Font() {
 	shader->use();
 	shader->set_int("f_texture", 1);
 
-	float coords[] = {
+	float coords[6][4] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
 		 1.0f, -1.0f,  1.0f, 0.0f,
@@ -54,35 +54,30 @@ void Font::unload_font() {
 	}
 }
 
-unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x, float border_y, unsigned int* existing_texture) {
+
+unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x, float border_y, unsigned int* existing_texture, float* y_offset_ret) {
 	RenderManager* render_manager = RenderManager::get_instance();
 	//Calculate the size the texture will need to be
 
-	float base_width = 0;
-	float base_height = 0;
-	float y_offset = 0;
+	float width = 0.0f;
+	float height = 0.0f;
+	float y_offset = 0.0f;
 
 	for (char c = 0, max = text.size(); c < max; c++) {
 		TexChar tex_char = char_map[text[c]];
-		base_width += (tex_char.advance >> 6);
-		if (base_height < tex_char.size.y) {
-			base_height = tex_char.size.y;
+		width += (tex_char.advance >> 6);
+		if (height < tex_char.size.y) {
+			height = tex_char.size.y;
 		}
 		if (y_offset < tex_char.size.y - tex_char.bearing.y) {
 			y_offset = tex_char.size.y - tex_char.bearing.y;
 		}
 	}
 
-	base_height += y_offset / 2;
+	y_offset += abs(border_y);
 
-	float width = base_width + abs(border_x);
-	float height = base_height + abs(border_y);
-
-	base_width /= 2;
-	base_height /= 2;
-
-	width /= 2;
-	height /= 2;
+	width = (width + abs(border_x)) / 2.0f;
+	height = (height + y_offset) / 2.0f;
 
 	//Create a texture using our calculated size
 
@@ -124,16 +119,15 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 	shader->use();
 	glViewport(0, 0, prev_width, prev_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
 	glViewport(0, 0, width, height);
 
 	if (border_x != 0.0 || border_y != 0.0) {
 		shader->set_vec4("f_colormod", glm::vec4(0.0, 0.0, 0.0, rgba.a));
-		write_to_fbo(text, border_x, border_y + y_offset, width, height, base_width, base_height);
+		write_to_fbo(text, border_x, border_y + y_offset, width, height);
 	}
 
 	shader->set_vec4("f_colormod", rgba);
-	write_to_fbo(text, 0, y_offset, width, height, base_width, base_height);
+	write_to_fbo(text, 0.0, y_offset, width, height);
 
 	glDepthMask(GL_TRUE);
 
@@ -147,28 +141,31 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
 
+	if (y_offset_ret != nullptr) {
+		*y_offset_ret = y_offset / height;
+	}
+
 	return texture;
 }
 
-void Font::write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height, float base_width, float base_height) {
+void Font::write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height) {
 	x_offset -= char_map[text[0]].bearing.x;
 	x_offset -= width;
-	y_offset -= base_height;
 	for (char c = 0, max = text.size(); c < max; c++) {
 		TexChar tex_char = char_map[text[c]];
 		float x_pos = (x_offset + tex_char.bearing.x) / width;
-		float y_pos = (y_offset + tex_char.bearing.y) / height;
+		float y_pos = ((y_offset - (tex_char.size.y - tex_char.bearing.y)) / height) - 1.0f;
 		float w = tex_char.size.x / width;
-		float h = -tex_char.size.y / height;
+		float h = tex_char.size.y / height;
 
-		float coords[] = {
-			x_pos, y_pos + h,		0.0f, 1.0f,
-			x_pos, y_pos,			0.0f, 0.0f,
-			x_pos + w, y_pos,		1.0f, 0.0f,
+		float coords[6][4] = {
+			{ x_pos, y_pos + h,		0.0f, 0.0f },
+			{ x_pos, y_pos,			0.0f, 1.0f },
+			{ x_pos + w, y_pos,		1.0f, 1.0f },
 
-			x_pos, y_pos + h,		0.0f, 1.0f,
-			x_pos + w, y_pos,		1.0f, 0.0f,
-			x_pos + w, y_pos + h,	1.0f, 1.0f,
+			{ x_pos, y_pos + h,		0.0f, 0.0f },
+			{ x_pos + w, y_pos,		1.0f, 1.0f },
+			{ x_pos + w, y_pos + h,	1.0f, 0.0f },
 		};
 
 		glBindTexture(GL_TEXTURE_2D, tex_char.texture);

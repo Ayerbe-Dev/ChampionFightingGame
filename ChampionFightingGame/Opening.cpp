@@ -2,6 +2,7 @@
 #include <glew/glew.h>
 #include "GameTexture.h"
 #include "RenderManager.h"
+#include "utils.h"
 
 void opening_main() {
 	GameManager* game_manager = GameManager::get_instance();

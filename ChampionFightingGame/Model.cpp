@@ -372,18 +372,19 @@ void Model::reset_bones() {
 }
 
 void Model::render(Shader* shader, bool flip) {
+	shader->set_active_uniform_location("bone_matrix[0]");
 	if (tpose) { //If we don't have any keyframe data and we're facing left, we only apply 1 flip matrix,
 		//so we need to change the culling to support it.
 		if (flip) {
 			glCullFace(GL_FRONT);
 			for (size_t i = 0, max = bones.size(); i < max; i++) {
-				shader->set_mat4("bone_matrix[0]", flip_matrix, i);
+				shader->set_active_mat4(flip_matrix, i);
 			}
 		}
 		else {
 			glCullFace(GL_BACK);
 			for (size_t i = 0, max = bones.size(); i < max; i++) {
-				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+				shader->set_active_mat4(bones[i].final_matrix, i);
 			}
 		}
 	}
@@ -391,7 +392,7 @@ void Model::render(Shader* shader, bool flip) {
 		//the transformations, then we applied another one to the entire model, so culling is always the same
 		glCullFace(GL_BACK);
 		for (size_t i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+			shader->set_active_mat4(bones[i].final_matrix, i);
 		}
 	}
 
@@ -403,21 +404,22 @@ void Model::render(Shader* shader, bool flip) {
 }
 
 void Model::render_no_texture(Shader* shader, bool flip) {
+	shader->set_active_uniform_location("bone_matrix[0]");
 	if (tpose) {
 		if (flip) {
 			for (size_t i = 0, max = bones.size(); i < max; i++) {
-				shader->set_mat4("bone_matrix[0]", flip_matrix, i);
+				shader->set_active_mat4(flip_matrix, i);
 			}
 		}
 		else {
 			for (size_t i = 0, max = bones.size(); i < max; i++) {
-				shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+				shader->set_active_mat4(bones[i].final_matrix, i);
 			}
 		}
 	}
 	else {
 		for (size_t i = 0, max = bones.size(); i < max; i++) {
-			shader->set_mat4("bone_matrix[0]", bones[i].final_matrix, i);
+			shader->set_active_mat4(bones[i].final_matrix, i);
 		}
 	}
 

@@ -1,12 +1,11 @@
 #pragma once
 #include "GameState.h"
 #include "GameTexture.h"
-#include "GameMenu.h"
 #include "GameManager.h"
 
 void title_screen_main();
 
-class TitleScreen: public GameMenu{
+class TitleScreen: public GameState{
 public:
     TitleScreen();
     ~TitleScreen();

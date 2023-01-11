@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Player.h"
 #include "GameTexture.h"
-#include "GameMenu.h"
+#include "GameState.h"
 #include "GameManager.h"
 #include "CharaKind.h"
 
@@ -48,7 +48,7 @@ private:
     float partial_y=0;
 };
 
-class CSS: public GameMenu{
+class CSS: public GameState{
 public:
     CSS();
     ~CSS();

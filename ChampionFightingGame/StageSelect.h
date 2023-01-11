@@ -25,7 +25,7 @@ struct StageDemo {
 	std::vector<Light> lights;
 };
 
-class StageSelect : public GameMenu {
+class StageSelect : public GameState {
 public:
 	StageSelect();
 	~StageSelect();

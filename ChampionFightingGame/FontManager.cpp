@@ -2,6 +2,7 @@
 #include "GameManager.h"
 #include "RenderManager.h"
 #include <glew/glew.h>
+#include "utils.h"
 
 FontManager::FontManager() {
 	if (FT_Init_FreeType(&ft)) {
@@ -25,7 +26,7 @@ void FontManager::load_face(std::string name) {
 }
 
 void FontManager::unload_face(std::string name) {
-	if (loaded_faces.find(name) == loaded_faces.end()) {
+	if (!loaded_faces.contains(name)) {
 		return;
 	}
 	FT_Done_Face(loaded_faces[name]);
@@ -34,7 +35,7 @@ void FontManager::unload_face(std::string name) {
 
 Font FontManager::load_font(std::string name, int size) {
 	size *= (WINDOW_HEIGHT / 3.34) / 72; //Font size -> Pixel size conversion
-	if (loaded_faces.find(name) == loaded_faces.end()) {
+	if (!loaded_faces.contains(name)) {
 		GameManager::get_instance()->add_crash_log("Face for font " + name + " not loaded!");
 		return Font();
 	}
@@ -45,7 +46,7 @@ Font FontManager::load_font(std::string name, int size) {
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	for (unsigned char c = 0, max = 128; c < max; c++) { //woah i said the thing
+	for (unsigned char c = 0; c < 128; c++) { //woah i said the thing
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			GameManager::get_instance()->add_crash_log("Failed to load char " + c);
 			continue;
@@ -60,8 +61,8 @@ Font FontManager::load_font(std::string name, int size) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		TexChar tex_char;
 		tex_char.texture = texture;
-		tex_char.size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
-		tex_char.bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
+		tex_char.size = glm::vec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
+		tex_char.bearing = glm::vec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
 		tex_char.advance = face->glyph->advance.x;
 		ret.char_map.insert(std::pair<char, TexChar>(c, tex_char));
 	}

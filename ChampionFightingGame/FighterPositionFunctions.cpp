@@ -2,6 +2,7 @@
 #include "Fighter.h"
 #include "ParamAccessor.h"
 #include "GameManager.h"
+#include "utils.h"
 
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot

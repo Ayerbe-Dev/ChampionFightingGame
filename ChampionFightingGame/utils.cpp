@@ -144,3 +144,13 @@ std::int32_t convert_to_int(char* buffer, std::size_t len) {
 	}
 	return a;
 }
+
+std::string float_to_string(float val, int precision) {
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(precision) << val;
+	std::string ret = ss.str();
+	for (size_t i = ret.size() - 1; ret[i] == '0' && ret[i-1] != '.'; i--) {
+		ret.pop_back();
+	}
+	return ret;
+}

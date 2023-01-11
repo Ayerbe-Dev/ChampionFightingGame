@@ -2,7 +2,7 @@
 #include <SDL/SDL.h>
 #include <string>
 #include "Player.h"
-#include "GameMenu.h"
+#include "GameState.h"
 #include "GameManager.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
@@ -18,7 +18,7 @@ enum{
     DEBUG_ITEM_ACTIVE
 };
 
-class DebugMenu : public GameMenu {
+class DebugMenu : public GameState {
 public:
     DebugMenu();
     ~DebugMenu();

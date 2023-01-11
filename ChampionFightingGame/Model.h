@@ -8,8 +8,9 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <unordered_map>
 
-#include "BoneConstants.h"
 #include "Bone.h"
+
+#define MAX_BONE_INFLUENCE 4
 
 class Animation;
 class Shader;

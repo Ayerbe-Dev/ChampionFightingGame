@@ -1,4 +1,5 @@
 #include "Fighter.h"
+#include "utils.h"
 
 void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames) {
 	Fighter* that = battle_object_manager->fighter[!id];
@@ -18,7 +19,10 @@ void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender
 
 void Fighter::throw_opponent(float damage, float x_speed, float y_speed) {
 	Fighter* that = battle_object_manager->fighter[!id];
-	that->fighter_float[FIGHTER_FLOAT_HEALTH] -= damage;
+	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+	fighter_int[FIGHTER_INT_COMBO_COUNT]++;
+	that->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+	that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = x_speed * this->facing_dir;
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = y_speed;
 	that->fighter_flag[FIGHTER_FLAG_GRABBED] = false;

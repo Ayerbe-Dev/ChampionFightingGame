@@ -5,6 +5,7 @@
 #include "Loader.h"
 #include <fstream>
 #include "GLM Helpers.h"
+#include "utils.h"
 
 void stage_select_main() {
 	FontManager* font_manager = FontManager::get_instance();

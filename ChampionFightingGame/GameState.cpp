@@ -1,21 +1,22 @@
-#include "GameMenu.h"
+#include "GameState.h"
 #include "Loader.h"
 #include "GameManager.h"
 #include "GameTexture.h"
 #include "FontManager.h"
+#include "utils.h"
 
-void GameMenu::event_up_press(){}
-void GameMenu::event_down_press(){}
-void GameMenu::event_left_press(){}
-void GameMenu::event_right_press(){}
-void GameMenu::event_start_press(){}
-void GameMenu::event_select_press(){}
-void GameMenu::event_back_press(){}
-void GameMenu::event_pause_press() {}
-void GameMenu::event_any_press() {}
-void GameMenu::process_background() {}
+void GameState::event_up_press(){}
+void GameState::event_down_press(){}
+void GameState::event_left_press(){}
+void GameState::event_right_press(){}
+void GameState::event_start_press(){}
+void GameState::event_select_press(){}
+void GameState::event_back_press(){}
+void GameState::event_pause_press() {}
+void GameState::event_any_press() {}
+void GameState::process_background() {}
 
-GameMenu::GameMenu() {
+GameState::GameState() {
 	average_ticks.reserve(10000);
 	looping = nullptr;
 	game_state = nullptr;
@@ -37,13 +38,13 @@ GameMenu::GameMenu() {
 	fps_texture.set_pos(glm::vec3(80.0, 10.0, 0.0));
 }
 
-GameMenu::~GameMenu() {
+GameState::~GameState() {
 	fps_font.unload_font();
 	fps_counter.destroy();
 	fps_texture.destroy();
 }
 
-void GameMenu::update_state(int game_state, int game_context) {
+void GameState::update_state(int game_state, int game_context) {
 	if (game_state != GAME_STATE_MAX) {
 		*prev_game_state = *this->game_state;
 		*this->game_state = game_state;
@@ -54,15 +55,15 @@ void GameMenu::update_state(int game_state, int game_context) {
 	}
 }
 
-void GameMenu::inc_thread() {
+void GameState::inc_thread() {
 	update_thread_progress(game_loader->loaded_items);
 }
 
-void GameMenu::frame_delay() {
+void GameState::frame_delay() {
 	wait_ms();
 }
 
-void GameMenu::frame_delay_check_fps() {
+void GameState::frame_delay_check_fps() {
 	if ((float)((std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_second).count()) / 1000.0) >= 1000.0) {
 		fps = frame;
 		frame = 0;
@@ -79,7 +80,7 @@ void GameMenu::frame_delay_check_fps() {
 	}
 }
 
-void GameMenu::frame_delay_check_performance() {
+void GameState::frame_delay_check_performance() {
 	int trials = 10000;
 
 	if (average_ticks.size() < trials) {
@@ -131,7 +132,7 @@ MenuObject::MenuObject() {
 	moving = false;
 }
 
-MenuObject::MenuObject(GameMenu* owner, MenuObject* parent, bool render_all_children) {
+MenuObject::MenuObject(GameState* owner, MenuObject* parent, bool render_all_children) {
 	this->owner = owner;
 	this->parent = parent;
 	this->render_all_children = render_all_children;

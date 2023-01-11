@@ -1,11 +1,12 @@
 #include "Options.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
+#include "utils.h"
 
 void controls_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-	GameMenu* background_menu = game_manager->get_target();
+	GameState* background_menu = game_manager->get_target();
 
 	game_manager->layer++;
 	Player *player[2];

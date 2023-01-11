@@ -175,60 +175,31 @@ bool is_collide(GameRect &RectA, GameRect &RectB) {
 		|| (RectB.corners[2].y >= RectA.corners[0].y && RectB.corners[2].y <= RectA.corners[2].y));
 }
 
-void calc_resulting_pos(glm::vec2 coord) {
-	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
-
-	Camera& camera = render_manager->camera;
-	Fighter* fighter = battle_object_manager->fighter[0];
-
-	coord.x /= WINDOW_WIDTH;
-	coord.y /= WINDOW_HEIGHT;
-
-	glm::mat4 scale = glm::scale(glm::mat4(1.0), fighter->scale);
-	scale = glm::scale(scale, glm::vec3(100.0));
-	glm::vec4 result = camera.camera_matrix * (scale * glm::vec4(coord, 0.0, 1.0));
-	std::cout << result.x << ", " << result.y << ", " << result.z << ", " << result.w << "\n";
-
-	glm::vec2 world_pos = (result / camera.camera_matrix) / scale;
-	world_pos.x *= WINDOW_WIDTH;
-	world_pos.y *= WINDOW_HEIGHT;
-	std::cout << world_pos.x << ", " << world_pos.y << "\n\n";
-}
-
 glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_coords) {
-	calc_resulting_pos(glm::vec2(0, 0));
-	calc_resulting_pos(glm::vec2(-1280, -720));
-	calc_resulting_pos(glm::vec2(-1280, 720));
-	calc_resulting_pos(glm::vec2(1280, 720));
-	calc_resulting_pos(glm::vec2(1280, -720));
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
 	//put the mouse in -1, 1 coords
 
-	mouse_coords.x = ((mouse_coords.x / render_manager->s_window_width) - 0.5) * 2.0;
-	mouse_coords.y = (((render_manager->s_window_height - mouse_coords.y) / render_manager->s_window_height) - 0.5) * 2.0;
+//	mouse_coords.x = ((mouse_coords.x / render_manager->s_window_width) - 0.5) * 2.0;
+//	mouse_coords.y = (((render_manager->s_window_height - mouse_coords.y) / render_manager->s_window_height) - 0.5) * 2.0;
+	mouse_coords.y = render_manager->s_window_height - mouse_coords.y;
 
 	//unproject the coords based on the camera and fighter
 
 	Camera& camera = render_manager->camera;
 	Fighter* fighter = battle_object_manager->fighter[0];
 
-	glm::mat4 unproject_mat = glm::inverse(camera.camera_matrix);
-	glm::mat4 unscale_mat = glm::inverse(
-		glm::scale(glm::scale(glm::mat4(1.0), glm::vec3(100.0)), glm::vec3(fighter->scale))
-	);
+	glm::mat4 projection_matrix = camera.projection_matrix;
+	glm::mat4 view_matrix = camera.view_matrix;
+	glm::mat4 model_matrix = glm::scale(glm::scale(glm::mat4(1.0), glm::vec3(fighter->scale)), glm::vec3(100.0));
+	glm::vec4 viewport = glm::vec4(0.0, 0.0, render_manager->s_window_width, render_manager->s_window_height);
 
-
-	glm::vec4 unproject_vec(mouse_coords.x, mouse_coords.y, camera.pos.z, 1.0);
-	glm::vec2 world_pos = unproject_mat * (unscale_mat * unproject_vec);
+	glm::vec3 ret = glm::unProject(glm::vec3(mouse_coords, 0.0), glm::inverse(view_matrix * model_matrix), glm::inverse(projection_matrix), viewport);
+	std::cout << ret.x << ", " << ret.y << ", " << ret.z << "\n";
 
 	//?????????????????????????????????????????????????????????????????????????????????????
 
-	world_pos.x *= WINDOW_WIDTH;
-	world_pos.y *= WINDOW_HEIGHT;
 
-
-	return world_pos;
+	return ret;
 }

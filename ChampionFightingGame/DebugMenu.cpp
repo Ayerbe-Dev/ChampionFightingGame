@@ -7,7 +7,7 @@
 #include <glew/glew.h>
 #include "RenderManager.h"
 #include "FontManager.h"
-#include "ResourceManager.h";
+#include "ResourceManager.h"
 
 void debug_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -39,7 +39,7 @@ void debug_main() {
 
 	cotr_imgui_init();
 	while (*debug->looping) {
-		wait_ms();
+		debug->frame_delay();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);

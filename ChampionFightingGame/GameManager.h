@@ -1,6 +1,5 @@
 #pragma once
 #include "Player.h"
-#include "GameMenu.h"
 #include "GameState.h"
 #include <functional>
 #include <queue>
@@ -28,8 +27,8 @@ public:
 	void set_game_state_functions(); //Assigns a function to each index of game_main
 
 	void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
-	void set_menu_info(GameMenu *menu_target, int init_hold_frames = 20, int hold_rate = 4);
-	GameMenu *get_target(int layer = -1);
+	void set_menu_info(GameState *menu_target, int init_hold_frames = 20, int hold_rate = 4);
+	GameState *get_target(int layer = -1);
 
 	//Handles stuff like if the user quits the program or goes full screen. You can also optionally
 	//pass a function to execute based on the SDL Events (See DebugMenu for an example).
@@ -56,7 +55,7 @@ private:
 	GameManager();
 	static GameManager* instance;
 
-	GameMenu* menu_target[MAX_LAYERS];
+	GameState* menu_target[MAX_LAYERS];
 
 	bool is_up_press(int id);
 	bool is_down_press(int id);

@@ -16,11 +16,18 @@ void MoveScript::activate() {
 }
 
 void MoveScript::execute(BattleObject* object, float frame) {
-	if (frames.empty()) {
-		return;
-	}
 	while ((!frames.empty()) && frames.front().frame <= frame) {
 		frames.front().execute(object);
+		if (frames.empty()) {
+			//If a script has a call that changes the active script, such as the call to 
+			//REENTER_LAST_ANIM in hitstun parry scripts, then the script that requested the change
+			//will no longer be active. Since we don't store the previous move script anywhere, nor
+			//do we have a reason to, it's possible for the previous script to become completely
+			//deallocated by the time it finishes executing. This won't cause problems on its own, but
+			//trying to pop the frames queue will cause a crash since the program thinks it's already
+			//empty.
+			return;
+		}
 		frames.pop();
 	}
 }
@@ -97,6 +104,12 @@ ScriptFrame::ScriptFrame(float frame) {
 void ScriptFrame::execute(BattleObject* object) {
 	while (!function_calls.empty()) {
 		std::mem_fn(function_calls.front())(object, function_args.front());
+		if (function_calls.empty() || function_args.empty()) {
+			//Same rationale as MoveScript::execute() having a check like this: It's possible for this
+			//object to silently de-allocate itself, and while it can still safely return, we need to
+			//make sure it doesn't pop something that the program already destroyed.
+			return;
+		}
 		function_calls.pop();
 		function_args.pop();
 	}

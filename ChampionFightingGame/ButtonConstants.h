@@ -1,36 +1,31 @@
 #pragma once
-enum {
-	BUTTON_UP,
-	BUTTON_DOWN,
-	BUTTON_LEFT,
-	BUTTON_RIGHT,
-	BUTTON_MENU_UP,
-	BUTTON_MENU_DOWN,
-	BUTTON_MENU_LEFT,
-	BUTTON_MENU_RIGHT,
-	BUTTON_LP,
-	BUTTON_MP,
-	BUTTON_HP,
-	BUTTON_LK,
-	BUTTON_MK,
-	BUTTON_HK,
-	BUTTON_MACRO_P,
-	BUTTON_MACRO_K,
-	BUTTON_MACRO_L,
-	BUTTON_MACRO_M,
-	BUTTON_MACRO_H,
-	BUTTON_START,
-
-	BUTTON_MENU_SELECT,
-	BUTTON_MENU_BACK,
-	BUTTON_MENU_START,
-
-	BUTTON_MENU_PAUSE,
-	BUTTON_MENU_FRAME_PAUSE,
-	BUTTON_MENU_ADVANCE,
-
-	BUTTON_MAX,
-};
+const unsigned int BUTTON_UP = 0;
+const unsigned int BUTTON_DOWN = 1;
+const unsigned int BUTTON_LEFT = 2;
+const unsigned int BUTTON_RIGHT = 3;
+const unsigned int BUTTON_MENU_UP = 4;
+const unsigned int BUTTON_MENU_DOWN = 5;
+const unsigned int BUTTON_MENU_LEFT = 6;
+const unsigned int BUTTON_MENU_RIGHT = 7;
+const unsigned int BUTTON_LP = 8;
+const unsigned int BUTTON_MP = 9;
+const unsigned int BUTTON_HP = 10;
+const unsigned int BUTTON_LK = 11;
+const unsigned int BUTTON_MK = 12;
+const unsigned int BUTTON_HK = 13;
+const unsigned int BUTTON_MACRO_P = 14;
+const unsigned int BUTTON_MACRO_K = 15;
+const unsigned int BUTTON_MACRO_L = 16;
+const unsigned int BUTTON_MACRO_M = 17;
+const unsigned int BUTTON_MACRO_H = 18;
+const unsigned int BUTTON_START = 19;
+const unsigned int BUTTON_MENU_SELECT = 20;
+const unsigned int BUTTON_MENU_START = 21;
+const unsigned int BUTTON_MENU_BACK = 22;
+const unsigned int BUTTON_MENU_PAUSE = 23;
+const unsigned int BUTTON_MENU_FRAME_PAUSE = 24;
+const unsigned int BUTTON_MENU_ADVANCE = 25;
+const unsigned int BUTTON_MAX = 26;
 
 enum {
 	BUTTON_DEBUG_ENABLE,

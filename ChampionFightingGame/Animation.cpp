@@ -37,7 +37,7 @@ void Animation::init(std::string name, std::string filename, Model *model) {
 		return;
 	}
 
-	length = scene->mAnimations[0]->mDuration;
+	length = (int)scene->mAnimations[0]->mDuration;
 	std::vector<AnimBone> base_bones;
 
 	for (int i = 0, max = model->bones.size(); i < max; i++) {
@@ -60,7 +60,7 @@ void Animation::init(std::string name, std::string filename, Model *model) {
 			std::cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton!" << "\n";
 			continue;
 		}
-		for (int i2 = 0, frame = node->mPositionKeys[i2].mTime; i2 < node->mNumPositionKeys; frame = node->mPositionKeys[++i2].mTime) { //Load the keyframes that are actually baked
+		for (unsigned i2 = 0, frame = (unsigned)node->mPositionKeys[i2].mTime; i2 < node->mNumPositionKeys; frame = (unsigned)node->mPositionKeys[++i2].mTime) { //Load the keyframes that are actually baked
 			glm::mat4 pos_mat = translate(glm::mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
 			glm::mat4 rot_mat = toMat4(ass_converter(node->mRotationKeys[i2].mValue));
 			glm::mat4 scale_mat = scale(glm::mat4(1.0), ass_converter(node->mScalingKeys[i2].mValue));

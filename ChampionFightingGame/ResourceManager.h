@@ -1,7 +1,7 @@
 #pragma once
+#include <iostream>
+#include <map>
 #include "Model.h"
-#include <iostream>;
-#include <map>;
 
 struct ModelResource {
 	Model model;

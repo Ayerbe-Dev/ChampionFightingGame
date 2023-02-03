@@ -39,9 +39,10 @@ Font::Font() {
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	prev_width = 0.0;
-	prev_height = 0.0;
+	prev_width = 0.0f;
+	prev_height = 0.0f;
+	base_height = 0.0f;
+	base_y_offset = 0.0f;
 }
 
 void Font::unload_font() {
@@ -55,29 +56,20 @@ void Font::unload_font() {
 }
 
 
-unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x, float border_y, unsigned int* existing_texture, float* y_offset_ret) {
+unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x, float border_y, unsigned int* existing_texture) {
 	RenderManager* render_manager = RenderManager::get_instance();
 	//Calculate the size the texture will need to be
 
 	float width = 0.0f;
-	float height = 0.0f;
-	float y_offset = 0.0f;
-
+	
 	for (char c = 0, max = text.size(); c < max; c++) {
 		TexChar tex_char = char_map[text[c]];
 		width += (tex_char.advance >> 6);
-		if (height < tex_char.size.y) {
-			height = tex_char.size.y;
-		}
-		if (y_offset < tex_char.size.y - tex_char.bearing.y) {
-			y_offset = tex_char.size.y - tex_char.bearing.y;
-		}
 	}
 
-	y_offset += abs(border_y);
-
 	width = (width + abs(border_x)) / 2.0f;
-	height = (height + y_offset) / 2.0f;
+	float height = (base_height + abs(border_y)) / 2.0f;
+	float y_offset = base_y_offset + abs(border_y);
 
 	//Create a texture using our calculated size
 
@@ -140,10 +132,6 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 	prev_height = height;
 
 	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
-
-	if (y_offset_ret != nullptr) {
-		*y_offset_ret = y_offset / height;
-	}
 
 	return texture;
 }

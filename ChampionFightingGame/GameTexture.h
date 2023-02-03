@@ -113,7 +113,6 @@ public:
     bool loaded = false;
     bool using_resource = false;
     std::string name = "";
-    float text_y_offset;
 private:
     unsigned int VAO;
     unsigned int VBO;

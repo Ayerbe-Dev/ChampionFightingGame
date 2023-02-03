@@ -108,6 +108,19 @@ RenderManager::RenderManager() {
 	SSAO_blur.shader->use();
 	SSAO_blur.shader->set_int("ssao", 0);
 
+	gbuffer_texture = new GameTexture; 
+	//This GameTexture must be heap-allocated in order to avoid it being default constructed on boot, 
+	//which would cause it to attempt to give itself the default texture shader before OpenGL was loaded.
+
+	//Alternatively we could make each GameTexture give itself a null shader by default, but THAT would
+	//cause a crash if we ever tried to render an unloaded texture (or would cause the program to be 
+	//slower if we safety checked every single texture on every frame as part of its render process).
+	//Since this is a debug tool anyway, I think heap-allocating it is ok even if it's a little ugly.
+
+	gbuffer_texture->init(g_buffer.textures[2]);
+	gbuffer_texture->set_scale(0.4);
+	gbuffer_texture->set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", s_window_width);
 	shader_manager->set_global_int("WindowHeight", s_window_height);
@@ -185,7 +198,7 @@ void RenderManager::update_shader_lights() {
 			}
 		}
 		else {
-			g_buffer.shader->set_bool("lights[0].enabled", false, i);
+			g_buffer.shader->set_bool("light[0].enabled", false, i);
 		}
 	}
 	if (lights.empty()) {
@@ -285,6 +298,8 @@ void RenderManager::destroy_instance() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(sdl_renderer);
 	SDL_GL_DeleteContext(sdl_context);
+
+	delete gbuffer_texture;
 	
 	if (instance != nullptr) {
 		delete instance;

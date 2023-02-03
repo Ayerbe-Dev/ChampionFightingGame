@@ -219,7 +219,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AIInput.cpp" />
     <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Anlst.cpp" />
-    <ClCompile Include="ArbitraryCodeEditor.cpp" />
     <ClCompile Include="Ayrbt.cpp" />
     <ClCompile Include="Dingo.cpp" />
     <ClCompile Include="DingoMoves.cpp" />
@@ -424,7 +423,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AI.h" />
     <ClInclude Include="AIManager.h" />
     <ClInclude Include="Anlst.h" />
-    <ClInclude Include="ArbitraryCodeEditor.h" />
     <ClInclude Include="Ayrbt.h" />
     <ClInclude Include="Dingo.h" />
     <ClInclude Include="DingoConstants.h" />

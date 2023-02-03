@@ -55,6 +55,7 @@ public:
 	Framebuffer g_buffer;
 	Framebuffer SSAO;
 	Framebuffer SSAO_blur;
+	GameTexture *gbuffer_texture;
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;

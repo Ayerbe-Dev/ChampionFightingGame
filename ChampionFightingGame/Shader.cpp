@@ -17,6 +17,7 @@ Shader::Shader() {
 
 Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
 	loaded = false;
+	active_uniform_location = 0;
 	init(vertex_dir, fragment_dir, geometry_dir, features);
 }
 
@@ -28,6 +29,7 @@ Shader::Shader(Shader& other) {
 	this->id = other.id;
 	this->loaded = true;
 	other.loaded = false;
+	this->active_uniform_location = other.active_uniform_location;
 }
 
 Shader::Shader(const Shader& other) {
@@ -37,6 +39,7 @@ Shader::Shader(const Shader& other) {
 	this->geometry = other.geometry;
 	this->id = other.id;
 	this->loaded = true;
+	this->active_uniform_location = other.active_uniform_location;
 }
 
 Shader& Shader::operator=(Shader& other) {
@@ -49,8 +52,9 @@ Shader& Shader::operator=(Shader& other) {
 	this->fragment = other.fragment;
 	this->geometry = other.geometry;
 	this->id = other.id;
-	this->loaded = true;
 	other.loaded = false;
+	this->loaded = true;
+	this->active_uniform_location = other.active_uniform_location;
 
 	return *this;
 }
@@ -66,6 +70,7 @@ Shader& Shader::operator=(const Shader& other) {
 	this->geometry = other.geometry;
 	this->id = other.id;
 	this->loaded = true;
+	this->active_uniform_location = other.active_uniform_location;
 
 	return *this;
 }
@@ -409,7 +414,7 @@ void Shader::set_active_uniform_location(const std::string& name) {
 }
 
 void Shader::set_bool(const std::string& name, bool value, int index) const {
-	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, (int)value);
+	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, value);
 }
 
 void Shader::set_active_bool(bool value, int index) const {

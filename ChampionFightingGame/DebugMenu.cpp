@@ -71,6 +71,7 @@ void debug_main() {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		render_manager->g_buffer.render();
+		render_manager->gbuffer_texture->render();
 		glDepthMask(GL_FALSE);
 
 		cotr_imgui_debug_dbmenu(debug);

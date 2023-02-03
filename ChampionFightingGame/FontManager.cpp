@@ -45,7 +45,6 @@ Font FontManager::load_font(std::string name, int size) {
 	Font ret;
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
 	for (unsigned char c = 0; c < 128; c++) { //woah i said the thing
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			GameManager::get_instance()->add_crash_log("Failed to load char " + c);
@@ -64,8 +63,16 @@ Font FontManager::load_font(std::string name, int size) {
 		tex_char.size = glm::vec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
 		tex_char.bearing = glm::vec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
 		tex_char.advance = face->glyph->advance.x;
+		if (ret.base_height < tex_char.size.y) {
+			ret.base_height = tex_char.size.y;
+		}
+		if (ret.base_y_offset < tex_char.size.y - tex_char.bearing.y) {
+			ret.base_y_offset = tex_char.size.y - tex_char.bearing.y;
+		}
+
 		ret.char_map.insert(std::pair<char, TexChar>(c, tex_char));
 	}
+	ret.base_height += ret.base_y_offset;
 
 	return ret;
 }

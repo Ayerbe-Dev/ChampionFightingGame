@@ -470,7 +470,7 @@ void Battle::process_frame_pause() {
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE); //Face culling should be off for UI, which means we have to toggle it every frame
+	glEnable(GL_CULL_FACE);
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0x00);
@@ -561,6 +561,7 @@ void Battle::render_world() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_manager->g_buffer.render();
+	render_manager->gbuffer_texture->render();
 	render_manager->outline.render_passthrough();
 
 	//HITBOX PASS

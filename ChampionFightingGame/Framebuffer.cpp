@@ -4,7 +4,12 @@
 #include "SaveManager.h"
 #include "utils.h"
 
-TextureInfo::TextureInfo() {}
+TextureInfo::TextureInfo() {
+	texture = 0;
+	internal_format = 0;
+	format = 0;
+	type = 0;
+}
 
 TextureInfo::TextureInfo(GLuint texture, GLenum internal_format, GLenum format, GLenum type) {
 	this->texture = texture;
@@ -14,7 +19,11 @@ TextureInfo::TextureInfo(GLuint texture, GLenum internal_format, GLenum format, 
 }
 
 Framebuffer::Framebuffer() {
-
+	VAO = 0;
+	VBO = 0;
+	FBO = 0;
+	RBO = 0;
+	shader = nullptr;
 }
 
 void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
@@ -34,6 +43,7 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -72,12 +82,7 @@ void Framebuffer::add_write_texture(GLenum internal_format, GLenum format, GLenu
 		resize_textures.push_back(TextureInfo(texture, internal_format, format, type));
 	}
 	active_indices.push_back(active_index);
-	GLenum* attachments = new GLenum[attachment_points.size()];
-	for (int i = 0, max = attachment_points.size(); i < max; i++) {
-		attachments[i] = attachment_points[i];
-	}
-	glDrawBuffers(attachment_points.size(), attachments);
-	delete[] attachments;
+	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
 void Framebuffer::add_write_texture(GLuint texture, GLenum attachment_point, int active_index) {
@@ -86,12 +91,7 @@ void Framebuffer::add_write_texture(GLuint texture, GLenum attachment_point, int
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point, GL_TEXTURE_2D, texture, 0);
 	textures.push_back(texture);
 	active_indices.push_back(active_index);
-	GLenum* attachments = new GLenum[attachment_points.size()];
-	for (int i = 0, max = attachment_points.size(); i < max; i++) {
-		attachments[i] = attachment_points[i];
-	}
-	glDrawBuffers(attachment_points.size(), attachments);
-	delete[] attachments;
+	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
 void Framebuffer::add_read_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, int active_index, void* source) {
@@ -134,10 +134,7 @@ void Framebuffer::bind_textures() {
 void Framebuffer::render() {
 	glDepthMask(GL_FALSE);
 	shader->use();
-	for (int i = 0, max = textures.size(); i < max; i++) {
-		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
-		glBindTexture(GL_TEXTURE_2D, textures[i]);
-	}
+	bind_textures();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

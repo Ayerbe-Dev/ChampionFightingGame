@@ -227,7 +227,7 @@ MainMenu::MainMenu() {
 			menu_object->children[menu_object->active_child].event_select_press();
 		};
 		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].process_event = [this](MenuObject* menu_object) {
-			menu_object->cursor.set_pos(glm::vec3(table.pos.x + 80, menu_object->children[menu_object->active_child].textures[0].pos.y - WINDOW_HEIGHT * 1.125, 0));
+			menu_object->cursor.set_pos(glm::vec3(table.pos.x + 80, menu_object->children[menu_object->active_child].textures[0].pos.y - WINDOW_HEIGHT * 1.1, 0));
 		};
 
 		//Also we left-orient all of the sub menu text

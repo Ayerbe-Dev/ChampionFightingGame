@@ -24,7 +24,6 @@ GameTexture::GameTexture() {
 	height_orientation = 0;
 	matrix = glm::mat4(1.0);
 	texture = 0;
-	text_y_offset = 0.0;
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
@@ -66,7 +65,6 @@ GameTexture::GameTexture(const GameTexture& that) {
 	VBO = that.VBO;
 	texture = that.texture;
 	text = that.text;
-	text_y_offset = that.text_y_offset;
 
 	width = that.width;
 	height = that.height;
@@ -145,7 +143,6 @@ void GameTexture::init(std::string path) {
 	h_flipped = false;
 	v_flipped = false;
 	text = "";
-	text_y_offset = 0.0;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 	loaded = true;
@@ -208,7 +205,6 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	h_flipped = false;
 	v_flipped = false;
 	text = "";
-	text_y_offset = 0.0;
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 	loaded = true;
@@ -216,7 +212,7 @@ void GameTexture::init(GLuint texture, int width, int height) {
 
 void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
 	name = text + " Texture";
-	texture = font.create_text(text, rgba, border_x, border_y, nullptr, &text_y_offset);
+	texture = font.create_text(text, rgba, border_x, border_y, nullptr);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
@@ -751,7 +747,6 @@ void GameTexture::process() {
 
 void GameTexture::prepare_render() {
 	glm::vec3 gl_pos = pos;
-	gl_pos.y += text_y_offset;
 	switch (orientation) {
 	default:
 	case (GAME_TEXTURE_ORIENTATION_MIDDLE): {
@@ -877,7 +872,7 @@ void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgb
 		}
 	}
 
-	texture = font.create_text(text, rgba, border_x, border_y, &texture, &text_y_offset);
+	texture = font.create_text(text, rgba, border_x, border_y, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);

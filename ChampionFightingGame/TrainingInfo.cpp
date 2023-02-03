@@ -21,19 +21,19 @@ void TrainingInfo::init(Fighter* fighter, Font& font) {
 	background_texture.set_scale(0.7);
 	if (fighter->id) {
 		background_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		hit_frame.set_pos(glm::vec3(2810.0, 320.0, 0.0));
-		damage.set_pos(glm::vec3(2810.0, 390.0, 0.0));
-		combo_damage.set_pos(glm::vec3(2810.0, 460.0, 0.0));
-		stun_frames.set_pos(glm::vec3(2810.0, 530.0, 0.0));
-		frame_advantage.set_pos(glm::vec3(2810.0, 600.0, 0.0));
+		hit_frame.set_pos(glm::vec3(2810.0, 280.0, 0.0));
+		damage.set_pos(glm::vec3(2810.0, 350.0, 0.0));
+		combo_damage.set_pos(glm::vec3(2810.0, 420.0, 0.0));
+		stun_frames.set_pos(glm::vec3(2810.0, 490.0, 0.0));
+		frame_advantage.set_pos(glm::vec3(2810.0, 560.0, 0.0));
 	}
 	else {
 		background_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		hit_frame.set_pos(glm::vec3(370.0, 320.0, 0.0));
-		damage.set_pos(glm::vec3(370.0, 390.0, 0.0));
-		combo_damage.set_pos(glm::vec3(370.0, 460.0, 0.0));
-		stun_frames.set_pos(glm::vec3(370.0, 530.0, 0.0));
-		frame_advantage.set_pos(glm::vec3(370.0, 600.0, 0.0));
+		hit_frame.set_pos(glm::vec3(370.0, 280.0, 0.0));
+		damage.set_pos(glm::vec3(370.0, 350.0, 0.0));
+		combo_damage.set_pos(glm::vec3(370.0, 420.0, 0.0));
+		stun_frames.set_pos(glm::vec3(370.0, 490.0, 0.0));
+		frame_advantage.set_pos(glm::vec3(370.0, 560.0, 0.0));
 	}
 }
 

@@ -550,9 +550,6 @@
     <ClCompile Include="ScriptArg.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
-    <ClCompile Include="ArbitraryCodeEditor.cpp">
-      <Filter>2. Code Files\Engine\GameData</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectRenderFunctions.cpp">
       <Filter>2. Code Files\Objects\GameObject\Functions</Filter>
     </ClCompile>
@@ -1262,9 +1259,6 @@
     </ClInclude>
     <ClInclude Include="StageSelectConstants.h">
       <Filter>1. Header Files\Game State\StageSelect</Filter>
-    </ClInclude>
-    <ClInclude Include="ArbitraryCodeEditor.h">
-      <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>1. Header Files\Singleton</Filter>

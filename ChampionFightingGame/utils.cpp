@@ -66,7 +66,6 @@ void wait_ms(double ms_duration, bool process_time) {
 	if (process_time) {
 		future_time -= (current_time - g_chron);
 	}
-
 	while (current_time < future_time) {
 		current_time = std::chrono::steady_clock::now();
 	}

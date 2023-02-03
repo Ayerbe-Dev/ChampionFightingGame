@@ -576,10 +576,10 @@ bool Battle::event_hit_collide_player() {
 					}
 					else {
 						texts[!i].push_back(BattleText());
-						texts[!i].back().init(&combo_font, std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], fighter[!i], glm::vec2(275.0, 540.0));
+						texts[!i].back().init(&combo_font, std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], fighter[!i], glm::vec2(275.0, 500.0));
 						combo_counter[!i] = &texts[!i].back();
 						texts[!i].push_back(BattleText());
-						texts[!i].back().init(&message_font, "hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], fighter[!i], glm::vec2(275.0, 790.0));
+						texts[!i].back().init(&message_font, "hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], fighter[!i], glm::vec2(275.0, 800.0));
 						combo_hit[!i] = &texts[!i].back();
 					}
 				}
@@ -752,10 +752,10 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				}
 				else {
 					texts[p1->id].push_back(BattleText());
-					texts[p1->id].back().init(&combo_font, std::to_string(p1->fighter_int[FIGHTER_INT_COMBO_COUNT]), p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], p1, glm::vec2(275.0, 540.0));
+					texts[p1->id].back().init(&combo_font, std::to_string(p1->fighter_int[FIGHTER_INT_COMBO_COUNT]), p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], p1, glm::vec2(275.0, 500.0));
 					combo_counter[p1->id] = &texts[p1->id].back();
 					texts[p1->id].push_back(BattleText());
-					texts[p1->id].back().init(&message_font, "hits", p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], p1, glm::vec2(275.0, 790.0));
+					texts[p1->id].back().init(&message_font, "hits", p2->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES], p1, glm::vec2(275.0, 800.0));
 					combo_hit[p1->id] = &texts[p1->id].back();
 				}
 			}

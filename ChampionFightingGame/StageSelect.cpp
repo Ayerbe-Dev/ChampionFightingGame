@@ -220,7 +220,7 @@ bool StageSelect::load_stage_select() {
 		stages.emplace_back(id, stage_name, resource_name);
 		menu_objects[STAGE_SELECT_GROUP_SLOT].emplace_back(this, nullptr, false);
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture("resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture(main_text_font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0));
+		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture(main_text_font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		getline(stage_file, stage_name);
 	}
 

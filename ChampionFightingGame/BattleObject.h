@@ -8,7 +8,7 @@
 #include "FighterInt.h"
 #include "FighterFloat.h"
 #include "FighterFlag.h"
-#include  "VariadicHelpers.h"
+#include "VariadicHelpers.h"
 
 class Player;
 class BattleObjectManager;

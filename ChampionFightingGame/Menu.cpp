@@ -84,8 +84,7 @@ MainMenu::MainMenu() {
 	Font main_text_font = font_manager->load_font("Fiend-Oblique", 36);
 	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 20);
 	glm::vec4 rgba = { 255.0, 127.0, 0.0, 255.0 };
-	float x_coord = 12.0;
-	float y_coord = -12.0;
+	glm::vec4 border_rgbs = { 1.0, 1.0, 1.0, 2.0 };
 
 	menu_objects.resize(MENU_GROUP_MAX);
 
@@ -100,11 +99,11 @@ MainMenu::MainMenu() {
 
 	//Add the rotating text to the "render no matter what" group
 
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_ONLINE].add_texture(main_text_font, "Online", rgba, x_coord, y_coord);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_SOLO].add_texture(main_text_font, "Solo", rgba, x_coord, y_coord);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_VS].add_texture(main_text_font, "VS", rgba, x_coord, y_coord);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_OPTIONS].add_texture(main_text_font, "Options", rgba, x_coord, y_coord);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_EXTRAS].add_texture(main_text_font, "Extras", rgba, x_coord, y_coord);
+	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_ONLINE].add_texture(main_text_font, "Online", rgba, border_rgbs);
+	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_SOLO].add_texture(main_text_font, "Solo", rgba, border_rgbs);
+	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_VS].add_texture(main_text_font, "VS", rgba, border_rgbs);
+	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_OPTIONS].add_texture(main_text_font, "Options", rgba, border_rgbs);
+	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_EXTRAS].add_texture(main_text_font, "Extras", rgba, border_rgbs);
 
 	//Add the background textures to the "only render while active" group
 
@@ -113,6 +112,8 @@ MainMenu::MainMenu() {
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].add_texture("resource/game_state/menu/main/vsimg.png");
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].add_texture("resource/game_state/menu/main/missingno.png");
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].add_texture("resource/game_state/menu/main/missingno.png");
+
+	border_rgbs.a = 1.0;
 
 	for (int i = 0; i < 5; i++) { //Quick initialization things
 		GameTexture* bg_texture = &menu_objects[MENU_GROUP_RENDER_ACTIVE][i].textures.back();
@@ -150,62 +151,62 @@ MainMenu::MainMenu() {
 	//when you're hovering over a sub menu option.
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_LOBBY].add_texture(
-		sub_text_font, "Lobby", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Lobby", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_QUEUE].add_texture(
-		sub_text_font, "Queue", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Queue", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_COACH].add_texture(
-		sub_text_font, "Coach", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Coach", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_STORY].add_texture(
-		sub_text_font, "Story", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Story", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_ARCADE].add_texture(
-		sub_text_font, "Arcade", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Arcade", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_TRAINING].add_texture(
-		sub_text_font, "Training", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Training", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVP].add_texture(
-		sub_text_font, "Player Vs. Player", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Player Vs. Player", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVC].add_texture(
-		sub_text_font, "Player Vs. CPU", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Player Vs. CPU", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_TOURNAMENT].add_texture(
-		sub_text_font, "Tournament", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Tournament", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_CONTROLS].add_texture(
-		sub_text_font, "Controls", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Controls", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_GRAPHICS].add_texture(
-		sub_text_font, "Graphics", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Graphics", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_AUDIO].add_texture(
-		sub_text_font, "Audio", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Audio", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[3].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[4].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_SOUND_TEST].add_texture(
-		sub_text_font, "Sound Test", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Sound Test", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_GALLERY].add_texture(
-		sub_text_font, "Gallery", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Gallery", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[2].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[3].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), 12.0, -12.0
+		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
 	);
 
 	//All top level menus have identical behavior so we can just use a loop to define their events

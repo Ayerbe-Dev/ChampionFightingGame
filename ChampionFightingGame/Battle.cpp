@@ -434,7 +434,7 @@ void Battle::process_training() {
 			color = glm::vec4(255.0, 0.0, 0.0, 255.0);
 		}
 		if (training_info[i].frame_advantage.get_text() != advantage) {
-			training_info[i].frame_advantage.update_text(info_font, advantage, color);
+			training_info[i].frame_advantage.update_text(info_font, advantage, color, glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
 	}
 }

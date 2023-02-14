@@ -475,7 +475,7 @@ bool Battle::event_hit_collide_player() {
 				fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + fighter[i]->get_local_param_float("meter_gain_on_parry"), get_param_int("ex_meter_size", PARAM_FIGHTER));
 				fighter[i]->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = false;
 				post_hit_status[i] = FIGHTER_STATUS_PARRY;
-				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0));
+				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			}
 			else if (fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
 				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.5, get_param_int("ex_meter_size", PARAM_FIGHTER));
@@ -488,7 +488,7 @@ bool Battle::event_hit_collide_player() {
 				fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = true;
 				post_hit_status[i] = FIGHTER_STATUS_BLOCKSTUN;
-				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(hitboxes[!i]->blockstun), glm::vec4(255.0));
+				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(hitboxes[!i]->blockstun), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			}
 			else if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED]) {
 				//If Attack Connected is false but this still got set off, that means that the opponent hit you while you had armor. In this situation,
@@ -583,13 +583,13 @@ bool Battle::event_hit_collide_player() {
 						combo_hit[!i] = &texts[!i].back();
 					}
 				}
-				training_info[!i].hit_frame.update_text(info_font, "Hit Frame: " + float_to_string(fighter[!i]->frame, 2), glm::vec4(255.0));
-				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]), glm::vec4(255.0));
+				training_info[!i].hit_frame.update_text(info_font, "Hit Frame: " + float_to_string(fighter[!i]->frame, 2), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 				training_info[!i].damage.update_text(info_font,
 					"Damage: " + float_to_string(damage, 3) + "(" + float_to_string(scale * 100.0, 3) + "%)",
-					glm::vec4(255.0)
+					glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 0.2)
 				);
-				training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0));
+				training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = false;
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
@@ -662,7 +662,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p2->get_local_param_float("meter_gain_on_parry"), get_param_int("ex_meter_size", PARAM_FIGHTER));
 			p2->fighter_flag[FIGHTER_FLAG_SUCCESSFUL_PARRY] = false;
 			p2_status_post_hit = FIGHTER_STATUS_PARRY;
-			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0));
+			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
 		else if (p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
 			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.5, get_param_int("ex_meter_size", PARAM_FIGHTER));
@@ -674,7 +674,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 			p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
-			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p1_hitbox->blockstun), glm::vec4(255.0));
+			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p1_hitbox->blockstun), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
 		else if (!p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT]) {
 			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0.0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.3, get_param_int("ex_meter_size", PARAM_FIGHTER));
@@ -759,13 +759,13 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 					combo_hit[p1->id] = &texts[p1->id].back();
 				}
 			}
-			training_info[p1->id].hit_frame.update_text(info_font, "Hit Frame: " + float_to_string((float)p1_projectile->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES], 2), glm::vec4(255.0));
-			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]), glm::vec4(255.0));
+			training_info[p1->id].hit_frame.update_text(info_font, "Hit Frame: " + float_to_string((float)p1_projectile->projectile_int[PROJECTILE_INT_ELAPSED_FRAMES], 2), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p2->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			training_info[p1->id].damage.update_text(info_font,
 				"Damage: " + float_to_string(damage, 3) + "(" + float_to_string(scale * 100.0, 3) + "%)",
-				glm::vec4(255.0)
+				glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 0.2)
 			);
-			training_info[p1->id].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[p1->id]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0));
+			training_info[p1->id].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[p1->id]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT] = false;
 		p1_projectile->projectile_flag[PROJECTILE_FLAG_HIT_IN_STATUS] = true;

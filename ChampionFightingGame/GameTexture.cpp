@@ -38,8 +38,8 @@ GameTexture::GameTexture(std::string path) {
 	init(path);
 }
 
-GameTexture::GameTexture(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
-	init(font, text, rgba, border_x, border_y);
+GameTexture::GameTexture(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs) {
+	init(font, text, rgba, border_rgbs);
 }
 
 /// <summary>
@@ -210,9 +210,9 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	loaded = true;
 }
 
-void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
+void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	name = text + " Texture";
-	texture = font.create_text(text, rgba, border_x, border_y, nullptr);
+	texture = font.create_text(text, rgba, border_rgbs, nullptr);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
@@ -854,7 +854,7 @@ void GameTexture::set_sprite(int index) {
 	}
 }
 
-void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgba, float border_x, float border_y) {
+void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	this->text = text;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
@@ -872,7 +872,7 @@ void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgb
 		}
 	}
 
-	texture = font.create_text(text, rgba, border_x, border_y, &texture);
+	texture = font.create_text(text, rgba, border_rgbs, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);

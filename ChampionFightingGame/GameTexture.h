@@ -26,12 +26,12 @@ class GameTexture {
 public:
     GameTexture();
     GameTexture(std::string path);
-    GameTexture(Font &font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
+    GameTexture(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     GameTexture(const GameTexture& that);
 
     void init(std::string path);
     void init(GLuint texture, int width = -1, int height = -1);
-    void init(Font &font, std::string text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
+    void init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void destroy();
     void set_pos(glm::vec3 pos);
     void add_pos(glm::vec3 pos);
@@ -83,7 +83,7 @@ public:
     void load_spritesheet(std::string spritesheet_dir);
     void set_sprite(int section);
 
-    void update_text(Font &font, const std::string& text, glm::vec4 rgba, float border_x = 0.0, float border_y = 0.0);
+    void update_text(Font &font, const std::string& text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void update_buffer_data();
     
     float target_left_crop = -2.0;

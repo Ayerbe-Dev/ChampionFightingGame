@@ -30,10 +30,10 @@ GameState::GameState() {
 	FontManager* font_manager = font_manager->get_instance();
 
 	fps_font = font_manager->load_font("FiraCode", 12);
-	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0));
+	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	fps_counter.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	fps_counter.set_pos(glm::vec3(0.0, -10.0, 0.0));
-	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0));
+	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	fps_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 	fps_texture.set_pos(glm::vec3(80.0, -10.0, 0.0));
 }
@@ -75,7 +75,7 @@ void GameState::frame_delay_check_fps() {
 		frame++;
 	}
 	if (prev_fps != fps) {
-		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255));
+		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255), glm::vec4(0.0));
 		prev_fps = fps;
 	}
 }
@@ -195,8 +195,8 @@ void MenuObject::add_texture(std::string path) {
 	textures.emplace_back(path);
 }
 
-void MenuObject::add_texture(Font &font, std::string text, glm::vec4 rgba, float border_x, float border_y) {
-	textures.emplace_back(font, text, rgba, border_x, border_y);
+void MenuObject::add_texture(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs) {
+	textures.emplace_back(font, text, rgba, border_rgbs);
 }
 
 void MenuObject::add_texture(const GameTexture& that) {

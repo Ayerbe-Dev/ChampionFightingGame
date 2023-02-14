@@ -17,7 +17,7 @@ void GameObject::init_shader() {
 	}
 	shader = shader_manager->get_shader("model", "model", "model", flags);
 	shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);
-	outline_shader = shader_manager->get_shader("outline", "outline", "outline", flags);
+	outline_shader = shader_manager->get_shader("3d_outline", "3d_outline", "3d_outline", flags);
 	shader->use();
 	shader->set_int("shadow_map", 0);
 	shader->set_int("material.diffuse", 1);

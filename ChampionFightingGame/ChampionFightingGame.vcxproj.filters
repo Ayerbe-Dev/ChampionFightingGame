@@ -1886,13 +1886,19 @@
     <None Include="resource\chara\atlas\cam_anims\super_start_2.fbx">
       <Filter>3. resource\chara\atlas\cam_anims</Filter>
     </None>
-    <None Include="resource\shaders\fragment_outline.glsl">
+    <None Include="resource\shaders\fragment_3d_outline.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\geometry_outline.glsl">
+    <None Include="resource\shaders\geometry_3d_outline.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_outline.glsl">
+    <None Include="resource\shaders\vertex_3d_outline.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_2d_outline.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_2d_outline.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
   </ItemGroup>

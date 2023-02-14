@@ -12,9 +12,16 @@ Font::Font() {
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	shader = ShaderManager::get_instance()->get_shader("text", "text", "", 0);
+	ShaderManager* shader_manager = ShaderManager::get_instance();
+
+	shader = shader_manager->get_shader("text", "text", "", 0);
 	shader->use();
 	shader->set_int("f_texture", 1);
+	shader->set_active_uniform_location("f_colormod");
+	border_shader = shader_manager->get_shader("2d_outline", "2d_outline", "", 0);
+	border_shader->set_int("f_texture", 1);
+	border_shader->set_active_uniform_location("border_offset");
+
 
 	float coords[6][4] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
@@ -56,7 +63,7 @@ void Font::unload_font() {
 }
 
 
-unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x, float border_y, unsigned int* existing_texture) {
+unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 border_rgbs, unsigned int* existing_texture) {
 	RenderManager* render_manager = RenderManager::get_instance();
 	//Calculate the size the texture will need to be
 
@@ -67,9 +74,10 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 		width += (tex_char.advance >> 6);
 	}
 
-	width = (width + abs(border_x)) / 2.0f;
-	float height = (base_height + abs(border_y)) / 2.0f;
-	float y_offset = base_y_offset + abs(border_y);
+	float x_offset = border_rgbs.a / 2.0f;
+	width = (width  + border_rgbs.a) / 2.0f;
+	float height = (base_height + border_rgbs.a) / 2.0f;
+	float y_offset = base_y_offset + (border_rgbs.a) / 2.0f;
 
 	//Create a texture using our calculated size
 
@@ -113,13 +121,32 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, float border_x,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glViewport(0, 0, width, height);
 
-	if (border_x != 0.0 || border_y != 0.0) {
-		shader->set_vec4("f_colormod", glm::vec4(0.0, 0.0, 0.0, rgba.a));
-		write_to_fbo(text, border_x, border_y + y_offset, width, height);
-	}
+	shader->set_active_vec4(rgba);
+	write_to_fbo(text, x_offset, y_offset, width, height);
 
-	shader->set_vec4("f_colormod", rgba);
-	write_to_fbo(text, 0.0, y_offset, width, height);
+	if (border_rgbs.a) {
+		glm::vec2 border_size = border_rgbs.a / glm::vec2(WINDOW_WIDTH, WINDOW_HEIGHT);
+		border_shader->use();
+		border_shader->set_active_vec2(border_size);
+		border_shader->set_vec3("border_color", border_rgbs);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		
+		float coords[6][4] = {
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f,  0.0f, 0.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f
+		};
+
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
+		
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
 
 	glDepthMask(GL_TRUE);
 

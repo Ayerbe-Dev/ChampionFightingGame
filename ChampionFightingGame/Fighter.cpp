@@ -178,39 +178,10 @@ void Fighter::process_position() {
 		if (is_collide(jostle_box, that->jostle_box)) {
 			if (!((status_kind != FIGHTER_STATUS_WAIT && get_status_group() != STATUS_GROUP_CROUCH) &&
 				(that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH))) {
-				if (!add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0))) {
-					that->add_pos(glm::vec3(that->get_local_param_float("jostle_walk_b_speed") * internal_facing_dir, 0.0, 0.0));
-				}
-			}
-		}
-	}
-}
-
-void Fighter::process_post_position() {
-	Fighter* that = battle_object_manager->fighter[!id];
-	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
-			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0))) {
-					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
-						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true; //Necessary for making sure an opponent
-						//who jumped in on us while we were at the wall only gets pushed back and not up
-					}
-				}
-			}
-			else {
-				float y_pushback = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
-					y_pushback = 0.0;
-				}
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, y_pushback, 0))) {
-					if (!fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
-						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
-					}
+				if (!add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
 				}
 			}
 		}

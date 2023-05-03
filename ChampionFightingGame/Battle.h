@@ -68,7 +68,7 @@ public:
 	float* partial_health;
 	float max_health;
 	const unsigned* ended_hitstun;
-	int* damage_scale;
+	const unsigned* disable_hitstun_parry;
 	float* ex;
 	float max_ex;
 	int num_bars;
@@ -109,6 +109,7 @@ public:
 	TrainingInfo();
 
 	void init(Fighter* fighter, Font& font);
+	void destroy();
 	void render();
 
 	GameTexture hit_frame;
@@ -147,7 +148,7 @@ public:
 	bool event_hit_collide_player();
 	void event_grab_collide_player();
 	void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox);
-	bool can_counterhit(Fighter* defender, Hitbox* hitbox);
+	int can_counterhit(Fighter* defender, Hitbox* hitbox);
 	int get_damage_status(int hit_status, int situation_kind);
 
 	void render_world();
@@ -182,7 +183,7 @@ public:
 	const Uint8* keyboard_state;
 	Mouse mouse;
 
-	HitboxSim debug_boxes;
+	HitboxSim hitbox_sim;
 	GameRect* active_debug_box;
 	glm::vec2 *debug_anchor;
 	glm::vec2 *debug_offset;

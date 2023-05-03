@@ -45,6 +45,7 @@ public:
 	MoveScriptTable move_script_table;
 	MoveScript active_move_script;
 	ScriptFrame active_script_frame;
+	ScriptCondition *active_script_condition;
 	float last_execute_frame;
 
 	ParamTable stats;
@@ -139,6 +140,7 @@ public:
 	void set_current_move_script(std::string anim_name);
 	void execute_frame(float frame, std::function<void()> execute);
 	void execute_wait(float frames, std::function<void()> execute);
+	void push_condition(std::function<bool()> condition);
 
 	template<typename ...T>
 	void push_function(void (BattleObject::* function)(ScriptArg), T... args) {
@@ -147,6 +149,42 @@ public:
 		ScriptArg sa(sizeof...(args), queue);
 		active_script_frame.function_calls.push(function);
 		active_script_frame.function_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
+	}
+
+	template<typename ...T>
+	void push_true(void (BattleObject::* function)(ScriptArg), T... args) {
+		if (active_script_condition == nullptr) {
+			GameManager::get_instance()->add_crash_log("ERROR: Tried to push conditional function to script "
+				+ active_move_script.name + " without declaring a condition.");
+			return;
+		}
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		ScriptArg sa(sizeof...(args), queue);
+		active_script_condition->true_calls.push(function);
+		active_script_condition->true_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
+	}
+
+	template<typename ...T>
+	void push_false(void (BattleObject::* function)(ScriptArg), T... args) {
+		if (active_script_condition == nullptr) {
+			GameManager::get_instance()->add_crash_log("ERROR: Tried to push conditional function to script "
+				+ active_move_script.name + " without declaring a condition.");
+			return;
+		}
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		ScriptArg sa(sizeof...(args), queue);
+		active_script_condition->false_calls.push(function);
+		active_script_condition->false_args.push(sa);
 		for (int i = 0, max = error_vec.size(); i < max; i++) {
 			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
 				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
@@ -165,4 +203,9 @@ public:
 
 	void NEW_EFFECT(ScriptArg args);
 	void NEW_EFFECT_NO_FOLLOW(ScriptArg args);
+
+	void CLEAR_EFFECT(ScriptArg args);
+	void CLEAR_EFFECT_ALL(ScriptArg args);
+
+	void PRINT_MSG_FROM_SCRIPT(ScriptArg args);
 };

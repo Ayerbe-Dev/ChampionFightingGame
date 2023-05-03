@@ -243,7 +243,7 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 
 bool Fighter::attack_cancel(int attack_kind, unsigned int button, int stick) {
 	if (is_enable_cancel(attack_kind)) {
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int("buffer_window", PARAM_FIGHTER)) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int(PARAM_FIGHTER, "buffer_window")) {
 			if (get_attack_input(attack_kind, button, stick)) {
 				int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
 				fighter_int[FIGHTER_INT_ATTACK_KIND] = attack_kind;
@@ -264,8 +264,8 @@ int Fighter::try_ex(bool punch) {
 	unsigned int no_heavy_ex_buttons[2];
 	no_heavy_ex_buttons[0] = punch ? BUTTON_LP : BUTTON_LK;
 	no_heavy_ex_buttons[1] = punch ? BUTTON_MP : BUTTON_MK;
-	int ex_meter_size = get_param_int("ex_meter_size", PARAM_FIGHTER);
-	int ex_meter_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
+	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
+	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
 	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / 2)) {
 		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / 2);
 		return SPECIAL_LEVEL_EX;

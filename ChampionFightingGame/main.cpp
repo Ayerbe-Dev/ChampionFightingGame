@@ -39,6 +39,9 @@ int main() {
 	//NOTE: Eventually we will want to hide the console window. When this happens, we need to go into
 	//Properties->Linker->System and change the Sub System from CONSOLE to WINDOWS
 
+	std::cout << std::fixed;
+	std::cin.setf(std::ios::fixed, std::ios::floatfield);
+
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}

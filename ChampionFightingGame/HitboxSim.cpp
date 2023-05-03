@@ -43,10 +43,16 @@ void HitboxSim::render() {
 void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate a hitbox at the given
 	//coordinates. Also makes some assumptions about the rest of the hitbox's behavior, and requests
 	//user input to determine the rest.
-	glm::ivec2 anchor = this->anchor[active_cat][active_box[active_cat]] - glm::vec2(fighter->pos);
-	glm::ivec2 offset = this->offset[active_cat][active_box[active_cat]] - glm::vec2(fighter->pos);
+	glm::ivec2 anchor = this->anchor[active_cat][active_box[active_cat]];
+	glm::ivec2 offset = this->offset[active_cat][active_box[active_cat]];
+	anchor -= glm::vec2(fighter->pos);
+	offset -= glm::vec2(fighter->pos);
 	anchor.x *= fighter->facing_dir;
 	offset.x *= fighter->facing_dir;
+	if (fighter->anim_kind != nullptr && !fighter->anim_kind->flag_move) {
+		anchor += glm::vec2(fighter->get_trans_offset());
+		offset += glm::vec2(fighter->get_trans_offset());
+	}
 	bool command_loop = true;
 	std::string command_input;
 	float command_input_f;
@@ -101,7 +107,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			int juggle_start;
 			int juggle_increase;
 			int juggle_max;
-			std::string ko_kind;
+			std::string damage_kind;
 			std::string continue_launch;
 			std::string disable_hitstun_parry;
 			std::string launch_info;
@@ -118,7 +124,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					hit_status = "HIT_STATUS_NORMAL";
 					counterhit_status = "HIT_STATUS_NORMAL";
 					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
-					ko_kind = "KO_KIND_NORMAL";
+					damage_kind = "DAMAGE_KIND_NORMAL";
 				} break;
 				case 2: {
 					continue_launch = "false";
@@ -131,7 +137,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					hit_status = "HIT_STATUS_NORMAL";
 					counterhit_status = "HIT_STATUS_NORMAL";
 					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
-					ko_kind = "KO_KIND_NORMAL";
+					damage_kind = "DAMAGE_KIND_NORMAL";
 				} break;
 				case 3: {
 					continue_launch = "true";
@@ -220,7 +226,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 						command_loop = false;
 					}
 					command_loop = true;
-					ko_kind = "KO_KIND_NORMAL";
+					damage_kind = "DAMAGE_KIND_NORMAL";
 				} break;
 				case 4:
 				case 5: {
@@ -304,24 +310,30 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 					}
 					command_loop = true;
 					if (attack_strength == 5) {
-						std::cout << "Can KO? (yes/no)\n";
+						std::cout << "Damage Kind? (name of the type, or \'no\' for default)\n";
 						while (command_loop) {
 							std::cin >> command_input;
-							if (command_input == "yes" || command_input == "y") {
-								ko_kind = "KO_KIND_CHIP";
-								command_loop = false;
+							for (int i = 0; i < command_input.length(); i++) {
+								command_input[i] = std::toupper(command_input[i]);
 							}
-							else if (command_input == "no" || command_input == "n") {
-								ko_kind = "KO_KIND_NONE";
-								command_loop = false;
+							if (command_input == "NO" || command_input == "N") {
+								counterhit_type = "DAMAGE_KIND_NORMAL";
 							}
 							else {
-								std::cout << "\'" << command_input << "\' unrecognized\n";
+								if (!command_input.starts_with("DAMAGE_KIND")) {
+									if (command_input.starts_with("KIND")) {
+										command_input = "DAMAGE_" + command_input;
+									}
+									else {
+										command_input = "DAMAGE_KIND_" + command_input;
+									}
+								}
+								counterhit_type = command_input;
 							}
 						}
 					}
 					else {
-						ko_kind = "KO_KIND_CHIP";
+						damage_kind = "DAMAGE_KIND_CHIP";
 					}
 				} break;
 			}
@@ -409,10 +421,10 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			else {
 				std::cout << "Hit Advantage?\n";
 				std::cin >> hitstun;
-				hitstun -= fighter->get_frames_until_actionable();
+				hitstun += fighter->get_frames_until_actionable();
 				std::cout << "Block Advantage?\n";
 				std::cin >> blockstun;
-				blockstun -= fighter->get_frames_until_actionable();
+				blockstun += fighter->get_frames_until_actionable();
 			}
 			std::cout << "Juggle Start?\n";
 			std::cin >> juggle_start;
@@ -427,7 +439,6 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 			else {
 				std::cout << "Launch Info? (y initial speed, gravity, max fall speed, x speed)\n";
 				float y_init, grav, fall, x_speed;
-				std::cin.setf(std::ios::fixed, std::ios::floatfield);
 				std::cin >> y_init >> grav >> fall >> x_speed;
 				launch_info = std::to_string(y_init) + ", " + std::to_string(grav)
 					+ ", " + std::to_string(fall) + ", " + std::to_string(x_speed);
@@ -445,7 +456,7 @@ void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate
 				<< hit_pushback << ", /*Block Pushback*/ " << block_pushback << ", /*Hit Status*/ " 
 				<< hit_status << ", /*Counterhit Status*/ " << counterhit_status << ", " << 
 				counterhit_type << ", /*Juggle Start*/ " << juggle_start << ", /*Juggle Increase*/ " <<
-				juggle_increase << ", /*Juggle Max*/ " << juggle_max << ", CLANK_KIND_NORMAL, " << ko_kind
+				juggle_increase << ", /*Juggle Max*/ " << juggle_max << ", CLANK_KIND_NORMAL, " << damage_kind
 				<< ", /*Continue Launch*/ " << continue_launch << ", /*Disable Hitstun Parry*/ false"
 				<< ", /*Launch Info*/ " << launch_info << ");\n";
 

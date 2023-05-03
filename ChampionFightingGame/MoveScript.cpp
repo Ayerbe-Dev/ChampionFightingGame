@@ -108,10 +108,48 @@ void ScriptFrame::execute(BattleObject* object) {
 			//Same rationale as MoveScript::execute() having a check like this: It's possible for this
 			//object to silently de-allocate itself, and while it can still safely return, we need to
 			//make sure it doesn't pop something that the program already destroyed.
-			return;
+			break;
 		}
 		function_calls.pop();
 		function_args.pop();
+	}
+	while (!conditions.empty()) {
+		conditions.front().execute(object);
+		if (conditions.empty()) {
+			break;
+		}
+		conditions.pop();
+	}
+}
+
+ScriptCondition::ScriptCondition() {
+	this->condition = []() {return true; };
+}
+
+ScriptCondition::ScriptCondition(std::function<bool()> condition) {
+	this->condition = condition;
+}
+
+void ScriptCondition::execute(BattleObject* object) {
+	if (condition()) {
+		while (!true_calls.empty()) {
+			std::mem_fn(true_calls.front())(object, true_args.front());
+			if (true_calls.empty() || true_args.empty()) {
+				return;
+			}
+			true_calls.pop();
+			true_args.pop();
+		}
+	}
+	else {
+		while (!false_calls.empty()) {
+			std::mem_fn(false_calls.front())(object, false_args.front());
+			if (false_calls.empty() || false_args.empty()) {
+				return;
+			}
+			false_calls.pop();
+			false_args.pop();
+		}
 	}
 }
 

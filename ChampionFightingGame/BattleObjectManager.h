@@ -18,8 +18,9 @@ public:
 	std::vector<Button [BUTTON_MAX]> player_inputs[2];
 	Stage* stage;
 
+	bool frame_elapsed();
 	bool allow_dec_var(int object_id);
-	float get_time_multiplier(int object_id);
+	float get_world_rate(int object_id);
 	void set_world_rate(int object_id, float world_rate);
 	void reset_world_rate(int object_id);
 

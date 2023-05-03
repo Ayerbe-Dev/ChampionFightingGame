@@ -280,8 +280,7 @@ void Rowan::rowan_status_special_uppercut() {
 			apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
 			situation_kind = FIGHTER_SITUATION_AIR;
 			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
-			if (pos.y <= FLOOR_GAMECOORD) {
-				change_status(FIGHTER_STATUS_LANDING);
+			if (check_landing()) {
 				return;
 			}
 		}

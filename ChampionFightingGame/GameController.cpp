@@ -41,7 +41,7 @@ int GameController::check_controllers() {
 }
 
 void GameController::poll_buttons(const Uint8* keyboard_state) {
-	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
+	int buffer_window = get_param_int(PARAM_FIGHTER, "buffer_window");
 	for (int i = 0, max = button_info.size(); i < max; i++) {
 		int button_kind = button_info[i].button_kind;
 		bool old_button = button_info[i].button_on;
@@ -247,11 +247,11 @@ bool GameController::horizontal_input(bool right) {
 	if (right) {
 		if (check_button_on(BUTTON_MENU_RIGHT)) {
 			if (check_button_trigger(BUTTON_MENU_RIGHT)) {
-				stick_hold_h_timer = get_param_int("stick_hold_timer", PARAM_MENU);
+				stick_hold_h_timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 				return true;
 			}
 			else if (stick_hold_h_timer == 0) {
-				stick_hold_h_timer = get_param_int("stick_hold_interval", PARAM_MENU);
+				stick_hold_h_timer = get_param_int(PARAM_MENU, "stick_hold_interval");
 				return true;
 			}
 			else {
@@ -263,11 +263,11 @@ bool GameController::horizontal_input(bool right) {
 	else {
 		if (check_button_on(BUTTON_MENU_LEFT)) {
 			if (check_button_trigger(BUTTON_MENU_LEFT)) {
-				stick_hold_h_timer = get_param_int("stick_hold_timer", PARAM_MENU);
+				stick_hold_h_timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 				return true;
 			}
 			else if (stick_hold_h_timer == 0) {
-				stick_hold_h_timer = get_param_int("stick_hold_interval", PARAM_MENU);
+				stick_hold_h_timer = get_param_int(PARAM_MENU, "stick_hold_interval");
 				return true;
 			}
 			else {
@@ -282,11 +282,11 @@ bool GameController::vertical_input(bool down) {
 	if (down) {
 		if (check_button_on(BUTTON_MENU_DOWN)) {
 			if (check_button_trigger(BUTTON_MENU_DOWN)) {
-				stick_hold_v_timer = get_param_int("stick_hold_timer", PARAM_MENU);
+				stick_hold_v_timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 				return true;
 			}
 			else if (stick_hold_v_timer == 0) {
-				stick_hold_v_timer = get_param_int("stick_hold_interval", PARAM_MENU);
+				stick_hold_v_timer = get_param_int(PARAM_MENU, "stick_hold_interval");
 				return true;
 			}
 			else {
@@ -301,11 +301,11 @@ bool GameController::vertical_input(bool down) {
 	else {
 		if (check_button_on(BUTTON_MENU_UP)) {
 			if (check_button_trigger(BUTTON_MENU_UP)) {
-				stick_hold_v_timer = get_param_int("stick_hold_timer", PARAM_MENU);
+				stick_hold_v_timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 				return true;
 			}
 			else if (stick_hold_v_timer == 0) {
-				stick_hold_v_timer = get_param_int("stick_hold_interval", PARAM_MENU);
+				stick_hold_v_timer = get_param_int(PARAM_MENU, "stick_hold_interval");
 				return true;
 			}
 			else {

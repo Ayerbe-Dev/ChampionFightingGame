@@ -2,13 +2,16 @@
 #include "ParamAccessor.h"
 
 bool Fighter::is_actionable() {
-	if (battle_object_manager->world_rate == 0.0 && battle_object_manager->real_time_id != id) {
+	if (battle_object_manager->world_rate == 0.0f && battle_object_manager->real_time_id != id) {
 		return false; //Disable all actions in super freeze no matter what
 	}
 	if (anim_kind == nullptr) {
 		return true;
 	}
-	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0 && fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && status_kind != FIGHTER_STATUS_GRABBED && status_kind != FIGHTER_STATUS_THROWN) {
+	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0 
+		&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
+		&& !fighter_flag[FIGHTER_FLAG_GRABBED]
+		&& status_kind != FIGHTER_STATUS_THROWN) {
 		if (anim_kind->faf == -1) {
 			return std::ceil(frame) >= anim_kind->length;
 		}
@@ -31,8 +34,8 @@ bool Fighter::can_kara() {
 }
 
 bool Fighter::has_meter(int bars) {
-	int ex_meter_size = get_param_int("ex_meter_size", PARAM_FIGHTER);
-	int ex_meter_bars = get_param_int("ex_meter_bars", PARAM_FIGHTER);
+	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
+	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
 	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / bars)) {
 		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / bars);
 		return true;

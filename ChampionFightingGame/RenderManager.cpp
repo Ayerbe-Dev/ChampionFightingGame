@@ -9,15 +9,15 @@
 
 RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
-	float width = save_manager->get_game_setting("res_x");
-	float height = save_manager->get_game_setting("res_y");
+	res_width = save_manager->get_game_setting("res_x");
+	res_height = save_manager->get_game_setting("res_y");
 	if (save_manager->get_game_setting("fullscreen")) {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL);
 	}
-	SDL_GetWindowSize(window, &s_window_width, &s_window_height);
+	SDL_GetWindowSize(window, &window_width, &window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
 	sdl_context = SDL_GL_CreateContext(window);
 	glewExperimental = GL_TRUE;
@@ -27,6 +27,7 @@ RenderManager::RenderManager() {
 	SDL_GL_MakeCurrent(window, sdl_context);
 	SDL_GL_SetSwapInterval(1);
 
+	glViewport(0, 0, window_width, window_height);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_BLEND);
@@ -60,28 +61,28 @@ RenderManager::RenderManager() {
 		ssao_noise.push_back(noise);
 	}
 
-	shadow_map.init("shadow", "shadow", "", 0);
+	shadow_map.init("shadow", "shadow", "", 0, res_width, res_height);
 	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
 
-	outline.init("passthrough", "passthrough", "", 0);
-	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
+	outline.init("passthrough", "passthrough", "", 0, res_width, res_height);
+	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
 
-	box_layer.init("passthrough", "passthrough", "", 0);
-	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0);
+	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
+	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
 
-	g_buffer.init("gbuffer", "gbuffer", "", 0);
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Position
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT1, 1); //Normal
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT3, 3); //Specular
+	g_buffer.init("gbuffer", "gbuffer", "", 0, res_width, res_height);
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Normal
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Specular
 	
-	SSAO.init("ssao", "ssao", "", 0);
-	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, width, height, GL_COLOR_ATTACHMENT0, 0); //Output
+	SSAO.init("ssao", "ssao", "", 0, res_width, res_height);
+	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
 	SSAO.add_read_texture(g_buffer.textures[0], 2); //Position, shared w/ GBuffer
 	SSAO.add_read_texture(g_buffer.textures[1], 3); //Ditto for Normals
 
-	SSAO_blur.init("ssao_blur", "ssao_blur", "", 0);
+	SSAO_blur.init("ssao_blur", "ssao_blur", "", 0, res_width, res_height);
 	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
 	g_buffer.add_read_texture(SSAO.textures[0], 4);
 
@@ -122,8 +123,8 @@ RenderManager::RenderManager() {
 	gbuffer_texture->set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 
 	ShaderManager* shader_manager = ShaderManager::get_instance();
-	shader_manager->set_global_int("WindowWidth", s_window_width);
-	shader_manager->set_global_int("WindowHeight", s_window_height);
+	shader_manager->set_global_int("WindowWidth", window_width);
+	shader_manager->set_global_int("WindowHeight", window_height);
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -231,13 +232,22 @@ void RenderManager::update_shader_shadows() {
 
 void RenderManager::update_framebuffer_dimensions() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
+	shader_manager->set_global_int("WindowWidth", window_width);
+	shader_manager->set_global_int("WindowHeight", window_height);
 	outline.update_dimensions();
 	box_layer.update_dimensions();
 	g_buffer.update_dimensions();
 	SSAO.update_dimensions();
 	SSAO_blur.update_dimensions();
-	shader_manager->set_global_int("WindowWidth", s_window_width);
-	shader_manager->set_global_int("WindowHeight", s_window_height);
+}
+
+void RenderManager::set_resolution(int width, int height) {
+	this->res_width = width;
+	this->res_height = height;
+	SDL_SetWindowSize(window, width, height);
+	SDL_GetWindowSize(window, &window_width, &window_height);
+	glViewport(0, 0, window_width, window_height);
+	update_framebuffer_dimensions();
 }
 
 void RenderManager::reset_gl_environment() {

@@ -16,7 +16,7 @@ int Fighter::get_frames_until_actionable() {
 		}
 
 		int ret = 0;
-		float sim_rate = rate * battle_object_manager->get_time_multiplier(id);
+		float sim_rate = rate * battle_object_manager->get_world_rate(id);
 
 		//TODO: This block assumes that our motion rate is constant, when we have the ability to change
 		//it midway through. We should figure out a way to read through a script and check if it
@@ -28,7 +28,7 @@ int Fighter::get_frames_until_actionable() {
 			ScriptArg args;
 			if (active_move_script.has_function(sim_frame, &BattleObject::SET_RATE, &args)) {
 				UNWRAP_NO_DECL(sim_rate);
-				sim_rate *= battle_object_manager->get_time_multiplier(id);
+				sim_rate *= battle_object_manager->get_world_rate(id);
 			}
 			ret++;
 		}
@@ -36,8 +36,8 @@ int Fighter::get_frames_until_actionable() {
 		//TODO: This block assumes that your air speed is completely constant, which is rarely going 
 		//to be the case, so we'll have to figure out a proper way to handle that
 
-		if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= FLOOR_GAMECOORD) {
-			for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= FLOOR_GAMECOORD; ret--);
+		if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= 0.0f) {
+			for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * ret) <= 0.0f; ret--);
 
 			//TODO: Figure out how to determine how many landing lag frames will be used, add that to
 			//ret

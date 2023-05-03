@@ -31,9 +31,13 @@ Model::Model() {
 		0.0, 0.0, 0.0, 1.0
 	);
 	trans_id = -1;
+	directory = "";
+	texture_dir = "";
 }
 
 Model::Model(std::string path) {
+	directory = "";
+	texture_dir = "";
 	load_model(path);
 }
 
@@ -42,8 +46,9 @@ Model::Model(Model& other) {
 	this->dummy_matrix = other.dummy_matrix;
 	this->dummy_quat = other.dummy_quat;
 	this->dummy_vec = other.dummy_vec;
-	this->directory = other.directory;
 	this->flip_matrix = other.flip_matrix;
+	this->directory = other.directory;
+	this->texture_dir = other.texture_dir;
 
 	for (int i = 0, max = other.texture_names.size(); i < max; i++) {
 		this->texture_names.push_back(other.texture_names[i]);
@@ -75,8 +80,9 @@ Model::Model(const Model& other) {
 	this->dummy_matrix = other.dummy_matrix;
 	this->dummy_quat = other.dummy_quat;
 	this->dummy_vec = other.dummy_vec;
-	this->directory = other.directory;
 	this->flip_matrix = other.flip_matrix;
+	this->directory = other.directory;
+	this->texture_dir = other.texture_dir;
 
 	for (int i = 0, max = other.texture_names.size(); i < max; i++) {
 		this->texture_names.push_back(other.texture_names[i]);
@@ -114,8 +120,9 @@ Model& Model::operator=(Model& other) {
 	this->dummy_matrix = other.dummy_matrix;
 	this->dummy_quat = other.dummy_quat;
 	this->dummy_vec = other.dummy_vec;
-	this->directory = other.directory;
 	this->flip_matrix = other.flip_matrix;
+	this->directory = other.directory;
+	this->texture_dir = other.texture_dir;
 	
 	for (int i = 0, max = other.texture_names.size(); i < max; i++) {
 		this->texture_names.push_back(other.texture_names[i]);
@@ -154,8 +161,9 @@ Model& Model::operator=(const Model& other) {
 	this->dummy_matrix = other.dummy_matrix;
 	this->dummy_quat = other.dummy_quat;
 	this->dummy_vec = other.dummy_vec;
-	this->directory = other.directory;
 	this->flip_matrix = other.flip_matrix;
+	this->directory = other.directory;
+	this->texture_dir = other.texture_dir;
 
 	for (int i = 0, max = other.texture_names.size(); i < max; i++) {
 		this->texture_names.push_back(other.texture_names[i]);
@@ -209,6 +217,7 @@ void Model::init(std::string path) {
 	global_transform = ass_converter(scene->mRootNode->mTransformation.Inverse());
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
+	texture_dir = directory;
 	std::string skeleton_path = directory + "skeleton.smd";
 	has_skeleton = load_skeleton(skeleton_path);
 
@@ -232,7 +241,11 @@ void Model::destroy() {
 }
 
 void Model::load_model(std::string path) {
-	*this = ResourceManager::get_instance()->use_model(path);
+	*this = ResourceManager::get_instance()->get_model(path);
+}
+
+void Model::load_used_model(std::string path) {
+	*this = ResourceManager::get_instance()->get_used_model(path);
 }
 
 void Model::unload_model() {
@@ -243,7 +256,18 @@ void Model::unload_model() {
 void Model::load_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->use_texture(directory + texture_names[i]);
+		unsigned int loaded_texture = resource_manager->get_texture(directory + texture_names[i]);
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
+			materials[mat_index].textures[tex_index].id = loaded_texture;
+		}
+	}
+}
+
+void Model::load_used_textures() {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		unsigned int loaded_texture = resource_manager->get_used_texture(directory + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = loaded_texture;
@@ -253,10 +277,23 @@ void Model::load_textures() {
 
 //Used for specifying sub-directories from the Model folder (I.E. different textures per alt but the
 //same model data)
-void Model::load_textures(std::string texture_dir) {
+void Model::load_textures(std::string sub_dir) {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
+	texture_dir = directory + sub_dir + "/";
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->use_texture(directory + texture_dir + "/" + texture_names[i]);
+		unsigned int loaded_texture = resource_manager->get_texture(texture_dir + texture_names[i]);
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
+			materials[mat_index].textures[tex_index].id = loaded_texture;
+		}
+	}
+}
+
+void Model::load_used_textures(std::string sub_dir) {
+	ResourceManager* resource_manager = ResourceManager::get_instance();
+	texture_dir = directory + sub_dir + "/";
+	for (int i = 0, max = texture_names.size(); i < max; i++) {
+		unsigned int loaded_texture = resource_manager->get_used_texture(texture_dir + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = loaded_texture;
@@ -267,7 +304,7 @@ void Model::load_textures(std::string texture_dir) {
 void Model::unload_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		resource_manager->unuse_texture(texture_names[i]);
+		resource_manager->unuse_texture(texture_dir + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = 0;
@@ -278,7 +315,8 @@ void Model::unload_textures() {
 void Model::unload_texture_resources() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		resource_manager->unload_texture(texture_names[i]);
+		resource_manager->unuse_texture(texture_dir + texture_names[i]);
+		resource_manager->unload_texture(texture_dir + texture_names[i]);
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
 			materials[mat_index].textures[tex_index].id = 0;

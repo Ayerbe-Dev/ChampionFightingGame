@@ -10,6 +10,14 @@ void GameObject::load_model(std::string resource_dir, std::string texture_dir) {
 	}
 }
 
+void GameObject::load_used_model(std::string resource_dir, std::string texture_dir) {
+	this->resource_dir = resource_dir;
+	model.load_used_model(resource_dir);
+	if (texture_dir != "") {
+		model.load_used_textures(texture_dir);
+	}
+}
+
 void GameObject::init_shader() {
 	unsigned int flags = 0;
 	if (model.has_skeleton) {

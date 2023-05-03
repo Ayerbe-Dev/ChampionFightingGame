@@ -176,7 +176,8 @@ void Fighter::status_wait() {
 
 void Fighter::enter_status_wait() {
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
-	pos.y = FLOOR_GAMECOORD;
+	pos.y = 0.0f;
+	pos.z = 0.0f;
 	change_anim("wait");
 
 	situation_kind = FIGHTER_SITUATION_GROUND;
@@ -876,8 +877,8 @@ void Fighter::enter_status_grab_air() {
 void Fighter::exit_status_grab_air() {}
 
 void Fighter::status_throw_air() {
-	if (pos.y <= FLOOR_GAMECOORD) {
-		set_pos(pos.x, FLOOR_GAMECOORD);
+	if (pos.y <= 0.0f) {
+		set_pos(pos.x, 0.0f);
 		situation_kind = FIGHTER_SITUATION_GROUND;
 	}
 	if (is_status_end()) {
@@ -911,6 +912,14 @@ void Fighter::exit_status_throw_air() {
 void Fighter::status_grabbed() {
 	if (fighter_flag[FIGHTER_FLAG_GRABBED]) {
 		Fighter* that = battle_object_manager->fighter[!id];
+		if (fighter_flag[FIGHTER_FLAG_ALLOW_THROW_TECH]) {
+			unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)) {
+				change_status(FIGHTER_STATUS_THROW_TECH);
+				that->change_status(FIGHTER_STATUS_THROW_TECH);
+				return;
+			}
+		}
 		glm::vec3 offset = glm::vec3(
 			fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_X], 
 			fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y], 
@@ -938,6 +947,7 @@ void Fighter::status_grabbed() {
 void Fighter::enter_status_grabbed() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
 	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
+	fighter_flag[FIGHTER_FLAG_ALLOW_THROW_TECH] = is_actionable();
 }
 
 void Fighter::exit_status_grabbed() {
@@ -1078,6 +1088,32 @@ void Fighter::enter_status_hitstun_air() {
 
 void Fighter::exit_status_hitstun_air() {
 	fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
+}
+
+void Fighter::status_hitstun_float() {
+	if (anim_kind != nullptr) {
+		is_status_end(FIGHTER_STATUS_KNOCKDOWN);
+		int end_rate_frame = get_param_int(PARAM_FIGHTER, "hitstun_float_end_rate_frame");
+		if (frame == get_param_int(PARAM_FIGHTER, "hitstun_float_start_rate_frame") && rate == 1.0f) {
+			set_rate((anim_kind->length - frame) / float(fighter_int[FIGHTER_INT_HITSTUN_FRAMES] - end_rate_frame));
+		}
+		else if (frame == end_rate_frame) {
+			set_rate(1.0);
+		}
+	}
+	else if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
+		change_status(FIGHTER_STATUS_KNOCKDOWN);
+	}
+}
+
+void Fighter::enter_status_hitstun_float() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	situation_kind = FIGHTER_SITUATION_AIR;
+	change_anim("hitstun_float", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
+}
+
+void Fighter::exit_status_hitstun_float() {
+
 }
 
 void Fighter::status_blockstun() {
@@ -1293,11 +1329,13 @@ void Fighter::exit_status_launch() {
 }
 
 void Fighter::status_clank() {
-
+	if (is_status_end()) {
+		return;
+	}
 }
 
 void Fighter::enter_status_clank() {
-
+	change_anim("clank");
 }
 
 void Fighter::exit_status_clank() {
@@ -1305,23 +1343,29 @@ void Fighter::exit_status_clank() {
 }
 
 void Fighter::status_throw_tech() {
+	if (is_status_end()) { 
+		return;
+	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 15 || fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 16) {
 		frame++;
 	}
 	else if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] < 15) {
-		add_pos(-4 * facing_dir, 0);
+		add_pos(-16 * facing_dir, 0);
 	}
 	else {
-		add_pos(-1 * facing_dir, 0);
-	}
-	if (is_anim_end) {
-		change_status(situation_kind == FIGHTER_SITUATION_GROUND ? FIGHTER_STATUS_WAIT : FIGHTER_STATUS_FALL); //woah i can do this
+		add_pos(-4 * facing_dir, 0);
 	}
 }
 
 void Fighter::enter_status_throw_tech() {
-	change_anim("throw_tech");
+	if (situation_kind == FIGHTER_SITUATION_GROUND) {
+		change_anim("throw_tech");
+	}
+	else {
+		change_anim("throw_tech_air");
+	}
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 20;
+	fighter_flag[FIGHTER_FLAG_GRABBED] = false;
 }
 
 void Fighter::exit_status_throw_tech() {}
@@ -1351,7 +1395,7 @@ void Fighter::enter_status_landing() {
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;
-	pos.y = FLOOR_GAMECOORD;
+	pos.y = 0.0f;
 }
 
 void Fighter::exit_status_landing() {}
@@ -1405,7 +1449,7 @@ void Fighter::enter_status_landing_attack() {
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;
-	pos.y = FLOOR_GAMECOORD;
+	pos.y = 0.0f;
 }
 
 void Fighter::exit_status_landing_attack() {}
@@ -1436,7 +1480,7 @@ void Fighter::enter_status_landing_hitstun() {
 	change_anim("landing_hitstun", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
 	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	situation_kind = FIGHTER_SITUATION_GROUND;
-	pos.y = FLOOR_GAMECOORD;
+	pos.y = 0.0f;
 }
 
 void Fighter::exit_status_landing_hitstun() {
@@ -1619,6 +1663,10 @@ void Fighter::load_fighter_status_scripts() {
 	status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::status_hitstun_air;
 	enter_status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::enter_status_hitstun_air;
 	exit_status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::exit_status_hitstun_air;
+
+	status_script[FIGHTER_STATUS_HITSTUN_FLOAT] = &Fighter::status_hitstun_float;
+	enter_status_script[FIGHTER_STATUS_HITSTUN_FLOAT] = &Fighter::enter_status_hitstun_float;
+	exit_status_script[FIGHTER_STATUS_HITSTUN_FLOAT] = &Fighter::exit_status_hitstun_float;
 
 	status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::status_blockstun;
 	enter_status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::enter_status_blockstun;

@@ -249,7 +249,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 5,145 }, glm::vec2{ 240, 165 });
 		});
 		execute_frame(4, [this]() {
-			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, CLANK_KIND_NORMAL, KO_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
+			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, CLANK_KIND_NORMAL, DAMAGE_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
 			push_function(&Fighter::SET_RATE, 1.0);
 		});
 		execute_wait(4, [this]() {

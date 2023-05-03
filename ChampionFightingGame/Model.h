@@ -89,14 +89,19 @@ public:
 
 	void load_model(std::string path); //Checks if this model is already loaded into the ResourceManager,
 	//then copies it
+	void load_used_model(std::string path); //load_model but doesn't increment the user_count for
+	//already-active models
 
 	void unload_model(); //Tells the ResourceManager to decrease the user count for this model
 
 	void load_textures(); //Checks if this model's textures are already loaded into the ResourceManager,
 	//then copies them and tells all of its meshes
+	void load_used_textures();
+
 	void load_textures(std::string path); //Same as above, but it will look for textures in the subdirectory
 	//passed to the function (E.G. stage models will get all of their textures from one place, player models
 	//will get them from subdirs for their respective alts)
+	void load_used_textures(std::string path);
 
 	void unload_textures(); //Tells the ResourceManager to decrease the user count for all of these textures
 	void unload_texture_resources(); //Tells the ResourceManager to actually unload these textures
@@ -131,6 +136,7 @@ public:
 	std::vector<Bone*> trans_children;
 
 	std::string directory;
+	std::string texture_dir;
 
 	bool has_skeleton;
 private:

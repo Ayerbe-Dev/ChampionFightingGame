@@ -16,7 +16,7 @@ class Framebuffer {
 public:
 	Framebuffer();
 
-	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features);
+	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features, float window_width, float window_height);
 	
 	void add_write_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, GLenum attachment_point, int active_index, bool resize = true);
 	void add_write_texture(GLuint texture, GLenum attachment_point, int active_index);

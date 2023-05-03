@@ -4,6 +4,7 @@
 #include "RenderManager.h"
 #include "ShaderManager.h"
 #include "utils.h"
+#include "debug.h"
 
 Font::Font() {
 	glGenFramebuffers(1, &FBO);
@@ -74,10 +75,10 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 		width += (tex_char.advance >> 6);
 	}
 
-	float x_offset = border_rgbs.a / 2.0f;
-	width = (width  + border_rgbs.a) / 2.0f;
-	float height = (base_height + border_rgbs.a) / 2.0f;
-	float y_offset = base_y_offset + (border_rgbs.a) / 2.0f;
+	float x_offset = border_rgbs.a * 2.0f;
+	float y_offset = base_y_offset + border_rgbs.a * 2.0f;
+	width = (width / 2.0f) + border_rgbs.a;
+	float height = (base_height / 2.0f) + border_rgbs.a;
 
 	//Create a texture using our calculated size
 
@@ -89,6 +90,12 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 		texture = *existing_texture;
 	}
 
+#ifdef DEBUG
+	float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+#else
+	float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+#endif
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -96,6 +103,7 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
 
 	//Set our RenderBuffer to the same size as our texture, which we attach to our FrameBuffer
 
@@ -125,10 +133,10 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	write_to_fbo(text, x_offset, y_offset, width, height);
 
 	if (border_rgbs.a) {
-		glm::vec2 border_size = border_rgbs.a / glm::vec2(WINDOW_WIDTH, WINDOW_HEIGHT);
+		glm::vec2 border_size = border_rgbs.a / glm::vec2(width, height);
 		border_shader->use();
 		border_shader->set_active_vec2(border_size);
-		border_shader->set_vec3("border_color", border_rgbs);
+		border_shader->set_vec4("border_color", border_rgbs.r, border_rgbs.g, border_rgbs.b, rgba.a);
 		glBindTexture(GL_TEXTURE_2D, texture);
 
 		
@@ -158,7 +166,7 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	prev_width = width;
 	prev_height = height;
 
-	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 
 	return texture;
 }

@@ -1,12 +1,9 @@
 #include "CharaSelect.h"
-#include <glew/glew.h>
-#include <glm/glm.hpp>
-#include <fstream>
-#include <cmath>
-#include "Debugger.h"
-#include "GameTexture.h"
-#include "Loader.h"
+#include "FontManager.h"
 #include "RenderManager.h"
+#include "ResourceManager.h"
+#include "Loader.h"
+#include "GLM Helpers.h"
 #include "utils.h"
 
 /// <summary>
@@ -48,33 +45,47 @@ void chara_select_main() {
 }
 
 CSS::CSS() {
-	background_texture.init("resource/game_state/chara_select/CSSbackground.png");
-	background_texture.set_width(WINDOW_WIDTH);
-	background_texture.set_height(WINDOW_HEIGHT);
-	big_bar_texture.init("resource/game_state/chara_select/CSSbottombar.png");
-	big_bar_texture.set_width(WINDOW_WIDTH);
-	big_bar_texture.set_height(WINDOW_HEIGHT);
-	top_bar_texture.init("resource/game_state/chara_select/CSStopbar.png");
-	top_bar_texture.set_width(WINDOW_WIDTH);
-	top_bar_texture.set_height(WINDOW_HEIGHT);
+	for (int i = 0; i < 2; i++) {
+		player_selected_index[i] = 0;
+		my_col[i] = 0;
+		my_row[i] = 0;
+	}
+	num_cols = 0;
+	num_rows = 0;
+	cols_offset = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_menu_info(this);
+	RenderManager* render_manager = RenderManager::get_instance();
 
-	game_loader = new GameLoader(3);
-	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
-	loading_thread.detach();
+	game_manager->set_menu_info(this);
+	menu_objects.resize(CHARA_SELECT_GROUP_MAX);
+
+	if (!load_css()) {
+		game_manager->add_crash_log("Could not load CSS!");
+		return;
+	}
+
+	menu_objects[CHARA_SELECT_GROUP_MISC].emplace_back(this, nullptr, false);
+	menu_objects[CHARA_SELECT_GROUP_MISC].emplace_back(this, nullptr, true);
+
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].add_texture("resource/game_state/chara_select/bg_1.png");
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].add_texture("resource/game_state/chara_select/bg_2.png");
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].add_texture("resource/game_state/chara_select/bg_3.png");
+
+	for (int i = 0, max = menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].textures.size(); i < max; i++) {
+		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].textures[i].set_height_scale(1.5);
+		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].textures[i].set_width_scale(1.5);
+	}
+
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].add_texture("resource/game_state/chara_select/p1_cursor.png");
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].add_texture("resource/game_state/chara_select/p2_cursor.png");
+	for (int i = 0; i < 2; i++) {
+		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	}
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 
-	if (!load_css()) {
-		game_manager->add_crash_log("Could not open CSS file!");
-		game_loader->finished = true;
-		return;
-	}
-
-	inc_thread();
 	if (num_rows == 0) {
 		my_col[0] = 1;
 		my_col[1] = 1;
@@ -88,32 +99,14 @@ CSS::CSS() {
 			mobile_css_slots[i] = chara_slots[i].texture;
 		}
 	}
-
-	cursors[0].init("resource/game_state/chara_select/p1Cursor.png");
-	cursors[0].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-
-	inc_thread();
-
-	cursors[1].init("resource/game_state/chara_select/p2Cursor.png");
-	cursors[1].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	inc_thread();
-
-	game_loader->finished = true;
 }
 
 CSS::~CSS() {
-	for (int i = 0; i < num_slots; i++) {
-		chara_slots[i].texture.destroy();
-	}
+	chara_slots.clear();
 	for (int i = 0; i < 2; i++) {
 		big_chara_slots[i].texture.destroy();
 		mobile_css_slots[i].destroy();
-		cursors[i].texture.destroy();
 	}
-	background_texture.destroy();
-	big_bar_texture.destroy();
-	top_bar_texture.destroy();
-	delete game_loader;
 }
 
 /// <summary>
@@ -121,30 +114,23 @@ CSS::~CSS() {
 /// </summary>
 /// <returns>0 if successful, -1 if the file fails to open.</returns>
 bool CSS::load_css() {
-	std::ifstream css_file;
-	css_file.open("resource/game_state/chara_select/css_param.yml");
-	int chara_kind;
-	std::string resource_dir;
-	bool selectable;
-
-	if (css_file.fail()) {
-		css_file.close();
+	ParamTable css_params("resource/game_state/chara_select/css_param.prmlst");
+	if (css_params.load_failed()) {
 		return false;
 	}
-
-	std::string chara_name;
-	for (int i = 0; getline(css_file, chara_name); i++) {
-		css_file >> chara_kind >> resource_dir >> selectable;
-		if (selectable) {
-			add_slot(chara_kind, resource_dir, chara_name);
+	size_t list_start_offset = 1; 
+	//The first spot on this param list is the number of params, so entry 0 isn't a list. We COULD bake this offset into 
+	//get_param_list(int), but I think handling it manually is ok since otherwise we'd need to store a separate vector of pointers
+	for (size_t i = list_start_offset, max = css_params.get_param_int("num_slots") + list_start_offset; i < max; i++) {
+		if (css_params.get_param_bool("selectable", i)) {
+			add_chara_slot(css_params.get_param_table(i));
 		}
-		getline(css_file, chara_name);
 	}
-	css_file.close();
 
 	int col = 0;
 	int row = 0;
-	for (int i = 0; i < num_slots; i++) {
+	for (int i = 0, max = chara_slots.size(); i < max; i++) {
+		chara_slots[i].texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
 		chara_slots[i].my_col = col;
 		chara_slots[i].my_row = row;
 		if (col == 9) {
@@ -160,7 +146,7 @@ bool CSS::load_css() {
 
 	cols_offset = NUM_COLS - num_cols;
 
-	for (int i = 0; i < num_slots; i++) {
+	for (size_t i = 0, max = chara_slots.size(); i < max; i++) {
 		if (chara_slots[i].my_row == num_rows && num_cols != NUM_COLS) {
 			chara_slots[i].my_col += (cols_offset / 2);
 		}
@@ -171,7 +157,7 @@ bool CSS::load_css() {
 		));
 	}
 
-	for (int i = 0; i < num_slots; i++) {
+	for (size_t i = 0, max = chara_slots.size(); i < max; i++) {
 		chara_slots_ordered[chara_slots[i].my_col][chara_slots[i].my_row] = &chara_slots[i];
 	}
 
@@ -187,24 +173,13 @@ bool CSS::load_css() {
 /// Adds an entry in the CSS slots array. 
 /// </summary>
 /// <param name="id">: The chara_kind the slot will correspond to.</param>
-/// <param name="cardDir">: The directory for the slot's portrait.</param>
-/// <param name="cardName">: The actual character name to display on the UI.</param>
-void CSS::add_slot(int id, std::string cardDir, std::string cardName) {
-	for (int i = 0; i < CSS_SLOTS; i++) {
-		if (!chara_slots[i].is_initialized()) {
-			chara_slots[i].init(id, cardDir, cardName);
-			num_slots++;
-			return;
-		}
-	}
-}
-
-/// <summary>
-/// Returns the number of active CSS slots.
-/// </summary>
-/// <returns>The number of active CSS slots.</returns>
-int CSS::get_num_slots() {
-	return num_slots;
+/// <param name="resource_dir">: The directory for the slot's portrait.</param>
+/// <param name="chara_name">: The actual character name to display on the UI.</param>
+void CSS::add_chara_slot(ParamTable param_table) {
+	int id = param_table.get_param_int("chara_kind");
+	std::string resource_dir = param_table.get_param_string("resource_name");
+	std::string chara_name = param_table.get_param_string("chara_name");
+	chara_slots.push_back(CssSlot(id, resource_dir, chara_name));
 }
 
 void CSS::event_select_press() {
@@ -229,7 +204,7 @@ void CSS::event_back_press() {
 		player[player_id]->chara_kind = CHARA_KIND_MAX;
 	}
 	else {
-		*game_state = GAME_STATE_MENU;
+		*game_state = GAME_STATE_STAGE_SELECT;
 		*looping = false;
 	}
 }
@@ -364,7 +339,7 @@ void CSS::event_up_press() {
 /// make sure to set that up properly if this function is copied into another menu.
 /// </summary>
 void CSS::select_slot() {
-	for (int i = 0; i < num_slots; i++) {
+	for (int i = 0, max = chara_slots.size(); i < max; i++) {
 		if (my_col[player_id] == chara_slots[i].my_col
 		&& my_row[player_id] == chara_slots[i].my_row) {
 			player_selected_index[player_id] = i;
@@ -373,8 +348,8 @@ void CSS::select_slot() {
 	}
 	big_chara_slots[player_id].texture = GameTexture(chara_slots[player_selected_index[player_id]].texture);
 
-	big_chara_slots[player_id].name = chara_slots[player_selected_index[player_id]].name;
-	big_chara_slots[player_id].texture_dir = chara_slots[player_selected_index[player_id]].texture_dir;
+	big_chara_slots[player_id].chara_name = chara_slots[player_selected_index[player_id]].chara_name;
+	big_chara_slots[player_id].resource_dir = chara_slots[player_selected_index[player_id]].resource_dir;
 
 
 	if (player_id) {
@@ -396,18 +371,14 @@ void CSS::select_slot() {
 /// Render all CSS-related textures.
 /// </summary>
 void CSS::render() {
-	background_texture.render();
-	big_bar_texture.render();
-	top_bar_texture.render();
-
-	for (int i = 0; i < num_slots; i++) {
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].render();
+	for (int i = 0, max = chara_slots.size(); i < max; i++) {
 		chara_slots[i].render();
 	}
 
-
 	for (int i = 0; i < 2; i++) {
 		big_chara_slots[i].texture.render();
-		if (big_chara_slots[i].texture_dir == "default") { //Todo: OpenGL text rendering
+		if (big_chara_slots[i].resource_dir == "default") { //Todo: OpenGL text rendering
 //			draw_text_multi_lines("FiraCode-Regular.ttf", tmpSlot.name, tmpSlot.texture.destRect.x, tmpSlot.texture.destRect.y + 70, 24, 255, 255, 255, 255);
 		}
 
@@ -423,9 +394,12 @@ void CSS::render() {
 			mobile_css_slots[i].process();
 			mobile_css_slots[i].render();
 		}
-		cursors[i].set_target(chara_slots[player_selected_index[i]].texture.pos.x, chara_slots[player_selected_index[i]].texture.pos.y);
-		cursors[i].render();
+		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_target_pos(
+			glm::vec3(chara_slots[player_selected_index[i]].texture.pos.x, chara_slots[player_selected_index[i]].texture.pos.y, 0.0f),
+			8.0f
+		);
 	}
+	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].render();
 }
 
 /// <summary>
@@ -455,6 +429,18 @@ void CSS::find_prev_chara_kind(int chara_kind) {
 	}
 }
 
+CssSlot::CssSlot() {
+	chara_kind = CHARA_KIND_MAX;
+	my_col = -1;
+	my_row = -1;
+	resource_dir = "";
+	chara_name = "";
+}
+
+CssSlot::CssSlot(int id, std::string resource_name, std::string chara_name) {
+	init(id, resource_name, chara_name);
+}
+
 /// <summary>
 /// Get the character for a CSS slot. For the record, chara_id is public so this function is kinda irrelevant.
 /// </summary>
@@ -464,26 +450,17 @@ int CssSlot::get_chara_kind() {
 }
 
 /// <summary>
-/// Check whether or not a CSS slot has been initialized. For the record, initialized is public so this function is kinda irrelevant.
-/// </summary>
-/// <returns>Whether or not a CSS slot has been initialized.</returns>
-bool CssSlot::is_initialized() {
-	return initialized;
-}
-
-/// <summary>
 /// Initialize a CSS slot with the given values.
 /// </summary>
 /// <param name="chara_kind">: The chara_kind this slot will correspond to.</param>
-/// <param name="textureDir">: The directory where the CSS slot's render is located.</param>
+/// <param name="resource_dir">: The directory where the CSS slot's render is located.</param>
 /// <param name="name">: The name of the character for UI purposes.</param>
-void CssSlot::init(int chara_kind, std::string textureDir, std::string name) {
-	texture.init("resource/game_state/chara_select/chara/" + textureDir + "/render.png");
+void CssSlot::init(int chara_kind, std::string resource_name, std::string name) {
+	texture.init("resource/game_state/chara_select/chara/" + resource_name + "/render.png");
 	texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	this->name = name;
-	this->texture_dir = textureDir;
+	this->chara_name = name;
+	this->resource_dir = resource_name;
 	this->chara_kind = chara_kind;
-	initialized = true;
 }
 
 /// <summary>
@@ -544,34 +521,4 @@ bool CssSlot::is_above(int y) {
 	else {
 		return false;
 	}
-}
-
-/// <summary>
-/// Move the CSS Cursor based on its partial and target values, and render.
-/// </summary>
-void CssCursor::render() {
-	partial_x += (target_x - partial_x) / 8;
-	partial_y += (target_y - partial_y) / 8;
-	texture.pos.x = partial_x;
-	texture.pos.y = partial_y;
-	texture.process();
-	texture.render();
-};
-
-/// <summary>
-/// Initialize the CSS Cursor
-/// </summary>
-/// <param name="texture_path">: The path to the CSS Cursor's texture.</param>
-void CssCursor::init(std::string texture_path) {
-	texture.init(texture_path);
-};
-
-/// <summary>
-/// Set the CSS Cursor's target.
-/// </summary>
-/// <param name="x">: What to set the target X to.</param>
-/// <param name="y">: What to set the target Y to.</param>
-void CssCursor::set_target(int x, int y) {
-	target_x = x;
-	target_y = y;
 }

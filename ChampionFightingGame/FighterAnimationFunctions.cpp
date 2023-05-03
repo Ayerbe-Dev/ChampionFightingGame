@@ -6,6 +6,7 @@
 void Fighter::reenter_last_anim() {
 	rate = prev_anim_rate;
 	frame = prev_anim_frame;
+	fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(frame);
 
 	if (prev_anim_kind != nullptr) {
 		set_current_move_script(prev_anim_kind->name);
@@ -35,6 +36,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			//[rate] frames
 			this->rate = rate;
 			this->frame = frame;
+			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(frame);
 		}
 		else {
 			//If the animation has an faf, that's the target frame. If the faf is either 0 or -1, the target
@@ -51,6 +53,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			}
 			this->rate = (target_frame / rate) * 0.8;
 			this->frame = 0.0;
+			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
 		}
 		model.set_move(new_anim->flag_move);
 		prev_anim_kind = anim_kind;
@@ -107,12 +110,25 @@ float Fighter::calc_launch_frames() {
 	float airtime = 0.0;
 	float simp_y = pos.y; //haha simp
 	float sims_y = fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y];
-	while (simp_y >= FLOOR_GAMECOORD) {
+	while (simp_y >= 0.0f) {
 		sims_y = clampf(fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1, sims_y - fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], sims_y);
 		simp_y += sims_y;
 		airtime++;
 	}
 	return airtime;
+}
+
+glm::vec3 Fighter::get_trans_offset() {
+	Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
+	glm::vec3 trans_offset = glm::vec3(
+		trans_bone.anim_matrix[3].z * facing_dir,
+		trans_bone.anim_matrix[3].y,
+		trans_bone.anim_matrix[3].x
+	);
+	trans_offset -= prev_anim_offset;
+	trans_offset *= glm::vec3(16.5, 11.5, 11.5);
+
+	return trans_offset;
 }
 
 std::string Fighter::get_anim() {

@@ -37,8 +37,8 @@
     <ClCompile Include="Dingo.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClCompile>
-    <ClCompile Include="Angelica.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClCompile Include="Desirae.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClCompile>
     <ClCompile Include="Atlas.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Atlas</Filter>
@@ -61,11 +61,11 @@
     <ClCompile Include="Leon.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Leon</Filter>
     </ClCompile>
-    <ClCompile Include="Nightsaber.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClCompile Include="Nightsabre.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClCompile>
-    <ClCompile Include="Norman.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClCompile Include="Wallace.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClCompile>
     <ClCompile Include="Rook.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Rook</Filter>
@@ -76,8 +76,8 @@
     <ClCompile Include="Rowan.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClCompile>
-    <ClCompile Include="Sully.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClCompile Include="Athena.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Athena</Filter>
     </ClCompile>
     <ClCompile Include="Tessa.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Tessa</Filter>
@@ -106,11 +106,11 @@
     <ClCompile Include="DingoMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClCompile>
-    <ClCompile Include="AngelicaStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClCompile Include="DesiraeStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClCompile>
-    <ClCompile Include="AngelicaMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClCompile Include="DesiraeMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClCompile>
     <ClCompile Include="AtlasStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Atlas</Filter>
@@ -172,11 +172,11 @@
     <ClCompile Include="TessaMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Tessa</Filter>
     </ClCompile>
-    <ClCompile Include="SullyStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClCompile Include="AthenaStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Athena</Filter>
     </ClCompile>
-    <ClCompile Include="SullyMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClCompile Include="AthenaMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Athena</Filter>
     </ClCompile>
     <ClCompile Include="RowanStatus.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Rowan</Filter>
@@ -196,17 +196,17 @@
     <ClCompile Include="RookMoves.cpp">
       <Filter>2. Code Files\Objects\Fighter\Chara\Rook</Filter>
     </ClCompile>
-    <ClCompile Include="NormanStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClCompile Include="WallaceStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClCompile>
-    <ClCompile Include="NormanMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClCompile Include="WallaceMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClCompile>
-    <ClCompile Include="NightsaberStatus.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClCompile Include="NightsabreStatus.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClCompile>
-    <ClCompile Include="NightsaberMoves.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClCompile Include="NightsabreMoves.cpp">
+      <Filter>2. Code Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectGrabboxFunctions.cpp">
       <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
@@ -571,13 +571,25 @@
     <ClCompile Include="FighterFrameDataFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="HxAFile.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="HxALayer.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="HxAMeta.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="HxANode.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadBytes.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
       <Filter>1. Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaSelect.h">
-      <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="Battle.h">
       <Filter>1. Header Files\Game State</Filter>
@@ -657,8 +669,8 @@
     <ClInclude Include="Dingo.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
-    <ClInclude Include="Angelica.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClInclude Include="Desirae.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClInclude>
     <ClInclude Include="Atlas.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Atlas</Filter>
@@ -681,11 +693,11 @@
     <ClInclude Include="Leon.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Leon</Filter>
     </ClInclude>
-    <ClInclude Include="Nightsaber.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClInclude Include="Nightsabre.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
-    <ClInclude Include="Norman.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClInclude Include="Wallace.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClInclude>
     <ClInclude Include="Rook.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
@@ -696,8 +708,8 @@
     <ClInclude Include="Rowan.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
-    <ClInclude Include="Sully.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClInclude Include="Athena.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Athena</Filter>
     </ClInclude>
     <ClInclude Include="Tessa.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Tessa</Filter>
@@ -720,17 +732,17 @@
     <ClInclude Include="DingoStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
-    <ClInclude Include="AngelicaFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClInclude Include="DesiraeFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClInclude>
-    <ClInclude Include="AngelicaFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClInclude Include="DesiraeFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClInclude>
-    <ClInclude Include="AngelicaInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClInclude Include="DesiraeInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClInclude>
-    <ClInclude Include="AngelicaStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClInclude Include="DesiraeStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClInclude>
     <ClInclude Include="AtlasFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Atlas</Filter>
@@ -852,17 +864,17 @@
     <ClInclude Include="TessaStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Tessa</Filter>
     </ClInclude>
-    <ClInclude Include="SullyFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClInclude Include="AthenaFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Athena</Filter>
     </ClInclude>
-    <ClInclude Include="SullyFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClInclude Include="AthenaFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Athena</Filter>
     </ClInclude>
-    <ClInclude Include="SullyInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClInclude Include="AthenaInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Athena</Filter>
     </ClInclude>
-    <ClInclude Include="SullyStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClInclude Include="AthenaStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Athena</Filter>
     </ClInclude>
     <ClInclude Include="RowanFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
@@ -888,29 +900,29 @@
     <ClInclude Include="RookStatus.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
     </ClInclude>
-    <ClInclude Include="NormanFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClInclude Include="WallaceFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClInclude>
-    <ClInclude Include="NormanFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClInclude Include="WallaceFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClInclude>
-    <ClInclude Include="NormanInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClInclude Include="WallaceInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClInclude>
-    <ClInclude Include="NormanStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClInclude Include="WallaceStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClInclude>
-    <ClInclude Include="NightsaberFlag.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClInclude Include="NightsabreFlag.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
-    <ClInclude Include="NightsaberFloat.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClInclude Include="NightsabreFloat.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
-    <ClInclude Include="NightsaberInt.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClInclude Include="NightsabreInt.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
-    <ClInclude Include="NightsaberStatus.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClInclude Include="NightsabreStatus.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
     <ClInclude Include="RamonaFlag.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Ramona</Filter>
@@ -945,8 +957,8 @@
     <ClInclude Include="DingoConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Dingo</Filter>
     </ClInclude>
-    <ClInclude Include="AngelicaConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Angelica</Filter>
+    <ClInclude Include="DesiraeConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Desirae</Filter>
     </ClInclude>
     <ClInclude Include="AtlasConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Atlas</Filter>
@@ -972,11 +984,11 @@
     <ClInclude Include="ZyairConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Zyair</Filter>
     </ClInclude>
-    <ClInclude Include="NightsaberConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsaber</Filter>
+    <ClInclude Include="NightsabreConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
-    <ClInclude Include="NormanConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Norman</Filter>
+    <ClInclude Include="WallaceConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Wallace</Filter>
     </ClInclude>
     <ClInclude Include="RookConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rook</Filter>
@@ -987,8 +999,8 @@
     <ClInclude Include="RowanConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Rowan</Filter>
     </ClInclude>
-    <ClInclude Include="SullyConstants.h">
-      <Filter>1. Header Files\Objects\Fighter\Chara\Sully</Filter>
+    <ClInclude Include="AthenaConstants.h">
+      <Filter>1. Header Files\Objects\Fighter\Chara\Athena</Filter>
     </ClInclude>
     <ClInclude Include="TessaConstants.h">
       <Filter>1. Header Files\Objects\Fighter\Chara\Tessa</Filter>
@@ -1271,6 +1283,36 @@
     </ClInclude>
     <ClInclude Include="Prmlst.h">
       <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>1. Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAFile.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAConventions.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAEnums.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxALayer.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAMeta.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxANode.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadBytes.h">
+      <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaSelect.h">
+      <Filter>1. Header Files\Game State\CharaSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaSelectConstants.h">
+      <Filter>1. Header Files\Game State\CharaSelect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2212,9 +2254,6 @@
     <Filter Include="2. Code Files\Objects\Fighter\Chara">
       <UniqueIdentifier>{1cac5f11-7660-4362-95c8-67db69e449e5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Nightsaber">
-      <UniqueIdentifier>{b73e8d82-4b5f-419a-b4ec-2eb90705c4bf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Zyair">
       <UniqueIdentifier>{d91b7ce8-0bf5-4a9a-9275-6f9e05507565}</UniqueIdentifier>
     </Filter>
@@ -2223,12 +2262,6 @@
     </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Tessa">
       <UniqueIdentifier>{31bc65ca-3ff5-479a-b0cf-06795b7a67ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Sully">
-      <UniqueIdentifier>{313bdaf8-9c51-48bb-86e5-4233aeb09de1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Norman">
-      <UniqueIdentifier>{d5970abc-029a-4b48-b607-d12b0e963f43}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Leon">
       <UniqueIdentifier>{8a54ca13-98c6-4fe2-904b-0693436c6bfa}</UniqueIdentifier>
@@ -2244,9 +2277,6 @@
     </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Bruno">
       <UniqueIdentifier>{3b3c0100-8cf4-4259-a8b2-aa5b59a3e9b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Objects\Fighter\Chara\Angelica">
-      <UniqueIdentifier>{6908fdb9-bd1a-4155-ba7e-6ee19b049746}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\Objects\Fighter\Chara\Atlas">
       <UniqueIdentifier>{00a2a8c0-3885-4e9a-b3bc-b6b23cef5df8}</UniqueIdentifier>
@@ -2627,9 +2657,6 @@
     <Filter Include="1. Header Files\Objects\Fighter\Chara">
       <UniqueIdentifier>{89f4a669-4c3a-4c9b-a36f-3feb6798647b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Angelica">
-      <UniqueIdentifier>{f4ed11fc-9f35-4f43-9f5d-79998f0e4424}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Atlas">
       <UniqueIdentifier>{eea94ffe-4b31-4d12-b834-703f6e472663}</UniqueIdentifier>
     </Filter>
@@ -2648,17 +2675,8 @@
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Leon">
       <UniqueIdentifier>{809dd26f-5c52-4ae2-82b5-5c9e37b6090b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Nightsaber">
-      <UniqueIdentifier>{b3af1407-aabb-4604-85e6-570b6d1461d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Norman">
-      <UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Ramona">
       <UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Objects\Fighter\Chara\Sully">
-      <UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
     </Filter>
     <Filter Include="1. Header Files\Objects\Fighter\Chara\Tessa">
       <UniqueIdentifier>{ef0cddad-ff51-47f2-9d3f-4849808a3e29}</UniqueIdentifier>
@@ -2845,6 +2863,39 @@
     </Filter>
     <Filter Include="1. Header Files\Singleton">
       <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\I/O\HxA">
+      <UniqueIdentifier>{2253e11c-f9fd-4963-90c2-4898f007dbc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\I/O\HxA">
+      <UniqueIdentifier>{e3593074-e1e3-4572-a336-0fbd90baf1f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Desirae">
+      <UniqueIdentifier>{f4ed11fc-9f35-4f43-9f5d-79998f0e4424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Nightsabre">
+      <UniqueIdentifier>{b3af1407-aabb-4604-85e6-570b6d1461d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Wallace">
+      <UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Objects\Fighter\Chara\Athena">
+      <UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Desirae">
+      <UniqueIdentifier>{6908fdb9-bd1a-4155-ba7e-6ee19b049746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Nightsabre">
+      <UniqueIdentifier>{b73e8d82-4b5f-419a-b4ec-2eb90705c4bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Wallace">
+      <UniqueIdentifier>{d5970abc-029a-4b48-b607-d12b0e963f43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Objects\Fighter\Chara\Athena">
+      <UniqueIdentifier>{313bdaf8-9c51-48bb-86e5-4233aeb09de1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Game State\CharaSelect">
+      <UniqueIdentifier>{44a453dd-e72f-4d25-ade7-f83ddfb6d5bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -52,7 +52,7 @@ public:
 	int juggle_max;
 
 	ClankKind clank_kind;
-	KoKind ko_kind;
+	DamageKind damage_kind;
 
 	bool continue_launch;
 	bool disable_hitstun_parry;
@@ -76,7 +76,7 @@ public:
 		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
 		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
 		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, ClankKind clank_kind, KoKind ko_kind, bool continue_launch,
+		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
 		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y, 
 		float launch_max_fall_speed, float launch_speed_x, bool use_player_pos
 	);
@@ -85,7 +85,7 @@ public:
 		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
 		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
 		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, bool trade, KoKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
+		int juggle_max, bool trade, DamageKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
 		float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x
 	);
 	

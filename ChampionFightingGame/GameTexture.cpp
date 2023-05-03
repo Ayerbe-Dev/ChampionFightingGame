@@ -74,6 +74,8 @@ GameTexture::GameTexture(const GameTexture& that) {
 	v_flipped = that.v_flipped;
 	width_orientation = that.width_orientation;
 	height_orientation = that.height_orientation;
+	loaded = that.loaded;
+	using_resource = that.using_resource;
 
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
@@ -116,7 +118,7 @@ void GameTexture::init(std::string path) {
 
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 
-	texture = resource_manager->use_texture(path);
+	texture = resource_manager->get_texture(path);
 	int width;
 	int height;
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -264,6 +266,7 @@ void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 b
 	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 	loaded = true;
+	using_resource = false;
 }
 
 void GameTexture::destroy() {
@@ -802,22 +805,24 @@ void GameTexture::render() {
 }
 
 void GameTexture::render_prepared() {
-	update_buffer_data();
-	shader->use();
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	shader->set_mat4("matrix", matrix);
-	if (shader->features & SHADER_FEAT_COLORMOD) {
-		shader->set_vec3("f_colormod", colormod);
+	if (loaded) {
+		update_buffer_data();
+		shader->use();
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		shader->set_mat4("matrix", matrix);
+		if (shader->features & SHADER_FEAT_COLORMOD) {
+			shader->set_vec3("f_colormod", colormod);
+		}
+		shader->set_float("f_alphamod", 1.0 - ((float)alpha / 255.0));
+		glDepthMask(depth);
+		glDrawArrays(GL_QUADS, 0, 4);
+		glDepthMask(GL_TRUE);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-	shader->set_float("f_alphamod", 1.0 - ((float)alpha / 255.0));
-	glDepthMask(depth);
-	glDrawArrays(GL_QUADS, 0, 4);
-	glDepthMask(GL_TRUE);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GameTexture::load_spritesheet(std::string spritesheet_dir) {

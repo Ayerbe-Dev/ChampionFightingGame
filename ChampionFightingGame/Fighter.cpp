@@ -30,6 +30,7 @@ Fighter::~Fighter() {
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
 	}
+	clear_effect_all();
 	stop_se_all();
 	stop_vc_all();
 	blockbox.rect.destroy();
@@ -116,13 +117,18 @@ void Fighter::process_post_projectiles() {
 }
 
 void Fighter::process_animate() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
+	if (fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] != 0) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
-			frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_time_multiplier(id);
+			frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_world_rate(id);
 		}
 	}
 	else {
-		frame += rate * battle_object_manager->get_time_multiplier(id);
+		float add_frame = rate * battle_object_manager->get_world_rate(id);
+		frame += add_frame;
+		if (add_frame != 0.0) {
+			fighter_int[FIGHTER_INT_EXTERNAL_FRAME]++;
+		}
+		
 	}
 
 	if (internal_facing_right != facing_right 
@@ -138,6 +144,7 @@ void Fighter::process_animate() {
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
+			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
 			active_move_script.activate();
 			clear_grabbox_all();
 			clear_hurtbox_all();
@@ -193,6 +200,38 @@ void Fighter::process_position() {
 	update_jostle_rect();
 }
 
+void Fighter::process_post_position() {
+	Fighter* that = battle_object_manager->fighter[!id];
+	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
+			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true; //Necessary for making sure an opponent
+					//who jumped in on us while we were at the wall only gets pushed back and not up
+				}
+			}
+			else {
+				float y_pushback = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
+					y_pushback = 0.0;
+				}
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
+				}
+			}
+		}
+	}
+	else {
+		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
+		fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = false;
+	}
+	update_jostle_rect();
+}
+
 void Fighter::process_pre_status() {
 	if (fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] != FIGHTER_STATUS_MAX && fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 		change_status(fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_END], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_SEPARATE]);
@@ -223,6 +262,7 @@ void Fighter::process_post_status() {
 		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
 		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] = 0.0;
 		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+		fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
@@ -253,19 +293,19 @@ void Fighter::process_pre_input() {
 		}
 	}
 	if (fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6) {
-		fighter_int[FIGHTER_INT_DASH_F_BUFFER] = get_param_int("buffer_window", PARAM_FIGHTER);
+		fighter_int[FIGHTER_INT_DASH_F_BUFFER] = get_param_int(PARAM_FIGHTER, "buffer_window");
 	}
 	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4) {
-		fighter_int[FIGHTER_INT_DASH_B_BUFFER] = get_param_int("buffer_window", PARAM_FIGHTER);
+		fighter_int[FIGHTER_INT_DASH_B_BUFFER] = get_param_int(PARAM_FIGHTER, "buffer_window");
 	}
 }
 
 void Fighter::process_input() {
 	int stick_dir = get_stick_dir();
 	int flick_dir = get_flick_dir();
-	int dash_window = get_param_int("dash_window", PARAM_FIGHTER);
-	int tech_window = get_param_int("tech_window", PARAM_FIGHTER);
-	int motion_special_timer = get_param_int("motion_special_timer", PARAM_FIGHTER);
+	int dash_window = get_param_int(PARAM_FIGHTER, "dash_window");
+	int tech_window = get_param_int(PARAM_FIGHTER, "tech_window");
+	int motion_special_timer = get_param_int(PARAM_FIGHTER, "motion_special_timer");
 
 	//Dash Input
 
@@ -434,9 +474,10 @@ void Fighter::process_ai() {
 
 void Fighter::reset() {
 	pos.x = stage->start_pos[id];
-	pos.y = FLOOR_GAMECOORD;
-	pos.z = 0;
+	pos.y = 0.0f;
+	pos.z = 0.0f;
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
+	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
 	change_status(FIGHTER_STATUS_WAIT);
 }
 
@@ -495,6 +536,7 @@ void Fighter::decrease_common_variables() {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && anim_kind != nullptr 
 			&& !anim_kind->flag_no_hitlag_interp) {
 			frame -= 0.2;
+			fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;
 		}
 	}
 	else {

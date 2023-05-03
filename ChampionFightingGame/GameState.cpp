@@ -39,6 +39,7 @@ GameState::GameState() {
 }
 
 GameState::~GameState() {
+	menu_objects.clear();
 	fps_font.unload_font();
 	fps_counter.destroy();
 	fps_texture.destroy();
@@ -129,7 +130,6 @@ MenuObject::MenuObject() {
 	parent = nullptr;
 	render_all_children = false;
 	active_child = 0;
-	moving = false;
 }
 
 MenuObject::MenuObject(GameState* owner, MenuObject* parent, bool render_all_children) {
@@ -137,7 +137,25 @@ MenuObject::MenuObject(GameState* owner, MenuObject* parent, bool render_all_chi
 	this->parent = parent;
 	this->render_all_children = render_all_children;
 	active_child = 0;
-	moving = false;
+}
+
+MenuObject::MenuObject(MenuObject& other) {
+	this->active_child = other.active_child;
+	for (int i = 0; i < other.textures.size(); i++) {
+		this->textures.push_back(other.textures[i]);
+	}
+
+	this->cursor = other.cursor;
+
+	this->any_event = other.any_event;
+	this->up_event = other.up_event;
+	this->right_event = other.right_event;
+	this->left_event = other.left_event;
+	this->down_event = other.down_event;
+	this->select_event = other.select_event;
+	this->start_event = other.start_event;
+	this->back_event = other.back_event;
+	this->process_event = other.process_event;
 }
 
 MenuObject::MenuObject(MenuObject&& other) noexcept {
@@ -157,19 +175,16 @@ MenuObject::MenuObject(MenuObject&& other) noexcept {
 	this->start_event = other.start_event;
 	this->back_event = other.back_event;
 	this->process_event = other.process_event;
-	this->moving = false;
-	other.moving = true;
 }
 
 MenuObject::~MenuObject() {
-	if (!moving) {
-		if (cursor.loaded) {
-			cursor.destroy();
-		}
-		for (int i = 0, max = textures.size(); i < max; i++) {
-			textures[i].destroy();
-		}
+	if (cursor.loaded) {
+		cursor.destroy();
 	}
+	for (int i = 0, max = textures.size(); i < max; i++) {
+		textures[i].destroy();
+	}
+	children.clear();
 }
 
 void MenuObject::render() {

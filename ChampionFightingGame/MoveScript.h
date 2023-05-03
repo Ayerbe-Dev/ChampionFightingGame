@@ -11,6 +11,22 @@ class BattleObject;
 class Fighter;
 class Projectile;
 
+class ScriptCondition {
+public:
+	ScriptCondition();
+	ScriptCondition(std::function<bool()> condition);
+
+	void execute(BattleObject* object);
+
+	std::function<bool()> condition;
+
+	std::queue<void(BattleObject::*)(ScriptArg)> true_calls;
+	std::queue<ScriptArg> true_args;
+
+	std::queue<void(BattleObject::*)(ScriptArg)> false_calls;
+	std::queue<ScriptArg> false_args;
+};
+
 class ScriptFrame {
 public:
 	ScriptFrame();
@@ -21,6 +37,7 @@ public:
 	float frame;
 	std::queue<void(BattleObject::*)(ScriptArg)> function_calls;
 	std::queue<ScriptArg> function_args;
+	std::queue<ScriptCondition> conditions;
 };
 
 class MoveScript {

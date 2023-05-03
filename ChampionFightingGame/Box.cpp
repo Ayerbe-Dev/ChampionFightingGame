@@ -7,7 +7,6 @@ Blockbox::Blockbox() {
 
 void Blockbox::init(BattleObject* object) {
 	rect.init();
-	rect.bind_scale(&object->scale);
 	rect.set_rgba(glm::vec4(255, 165, 0, 204));
 }
 
@@ -21,7 +20,6 @@ void Blockbox::activate(BattleObject* object, glm::vec2 anchor, glm::vec2 offset
 	offset.x += object->pos.x;
 	offset.y += object->pos.y;
 	this->rect.update_corners(anchor, offset);
-	this->rect.bind_scale(&object->scale);
 	this->object = object;
 	active = true;
 }
@@ -47,7 +45,6 @@ Hitbox::Hitbox() {
 
 void Hitbox::init(BattleObject* object) {
 	rect.init();
-	rect.bind_scale(&object->scale);
 	rect.set_rgba(glm::vec4(255, 0, 0, 204));
 }
 
@@ -56,7 +53,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
 	int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
 	HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-	int juggle_max, ClankKind clank_kind, KoKind ko_kind, bool continue_launch,
+	int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
 	bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
 	float launch_max_fall_speed, float launch_speed_x, bool use_player_pos) {
 	anchor.x *= object->facing_dir;
@@ -70,7 +67,6 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 		offset.y += object->pos.y;
 	}
 	this->rect.update_corners(anchor, offset);
-	this->rect.bind_scale(&object->scale);
 	this->object = object;
 	this->id = id;
 	this->multihit = multihit;
@@ -94,7 +90,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->juggle_increase = juggle_increase;
 	this->juggle_max = juggle_max;
 	this->clank_kind = clank_kind;
-	this->ko_kind = ko_kind;
+	this->damage_kind = ko_kind;
 	this->continue_launch = continue_launch;
 	this->disable_hitstun_parry = disable_hitstun_parry;
 	this->launch_init_y = launch_init_y;
@@ -113,7 +109,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
 	int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
 	HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-	int juggle_max, bool trade, KoKind ko_kind, bool continue_launch,
+	int juggle_max, bool trade, DamageKind ko_kind, bool continue_launch,
 	bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
 	float launch_max_fall_speed, float launch_speed_x) {
 	anchor.x *= object->facing_dir;
@@ -125,7 +121,6 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	offset.x += object->pos.x;
 	offset.y += object->pos.y;
 	this->rect.update_corners(anchor, offset);
-	this->rect.bind_scale(&object->scale);
 	this->object = object;
 	this->id = id;
 	this->multihit = multihit;
@@ -149,7 +144,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->juggle_increase = juggle_increase;
 	this->juggle_max = juggle_max;
 	this->trade = trade;
-	this->ko_kind = ko_kind;
+	this->damage_kind = ko_kind;
 	this->continue_launch = continue_launch;
 	this->disable_hitstun_parry = disable_hitstun_parry;
 	this->launch_init_y = launch_init_y;
@@ -190,7 +185,6 @@ Grabbox::Grabbox() {
 
 void Grabbox::init(BattleObject* object) {
 	rect.init();
-	rect.bind_scale(&object->scale);
 	rect.set_alpha(204);
 }
 
@@ -212,7 +206,6 @@ void Grabbox::activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2
 		offset.y += object->pos.y;
 	}
 	this->rect.update_corners(anchor, offset);
-	this->rect.bind_scale(&object->scale);
 	this->object = object;
 	this->id = id;
 	this->grabbox_kind = grabbox_kind;
@@ -253,7 +246,6 @@ Hurtbox::Hurtbox() {
 
 void Hurtbox::init(BattleObject* object) {
 	rect.init();
-	rect.bind_scale(&object->scale);
 	rect.set_rgba(glm::vec4(0, 0, 255, 204));
 }
 
@@ -272,7 +264,6 @@ void Hurtbox::activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2
 	offset.x += object->pos.x;
 	offset.y += object->pos.y;
 	this->rect.update_corners(anchor, offset);
-	this->rect.bind_scale(&object->scale);
 	this->object = object;
 	this->id = id;
 	this->hurtbox_kind = hurtbox_kind;

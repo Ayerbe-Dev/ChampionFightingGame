@@ -41,12 +41,12 @@
 #include "FontManager.h"
 #include "ShaderManager.h"
 
-#define DEBUG
+#include "debug.h"
 #ifdef DEBUG
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
-#endif // DEBUG
+#endif
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -113,7 +113,6 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
-	battle->fps_font.unload_font();
 	font_manager->unload_face("Fiend-Oblique");
 	delete battle;
 }
@@ -149,7 +148,7 @@ Battle::Battle() {
 
 	combo_font = font_manager->load_font("Fiend-Oblique", 64);
 	message_font = font_manager->load_font("Fiend-Oblique", 20);
-	info_font = font_manager->load_font("FiraCode", 12);
+	info_font = font_manager->load_font("FiraCode", 16);
 
 	inc_thread();
 
@@ -158,10 +157,10 @@ Battle::Battle() {
 
 	inc_thread();
 
-	debug_boxes.init();
-	active_debug_box = &debug_boxes.boxes[0][0];
-	debug_anchor = &debug_boxes.anchor[0][0];
-	debug_offset = &debug_boxes.offset[0][0];
+	hitbox_sim.init();
+	active_debug_box = &hitbox_sim.boxes[0][0];
+	debug_anchor = &hitbox_sim.anchor[0][0];
+	debug_offset = &hitbox_sim.offset[0][0];
 	active_debug_box->set_alpha(180);
 	
 	inc_thread();
@@ -199,7 +198,6 @@ Battle::Battle() {
 	inc_thread();
 
 	bool loading = true;
-	int buffer_window = get_param_int("buffer_window", PARAM_FIGHTER);
 	while (loading && *looping) {
 		game_manager->handle_window_events();
 
@@ -242,28 +240,37 @@ Battle::~Battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
+
+	//Unload each fighter and related info
+
+	effect_manager->clear_effect_all();
+	for (int i = 0; i < 2; i++) {
+		thread_manager->kill_thread(i);
+		training_info[i].destroy();
+		meters[i].destroy();
+		camera->fighter[i] = nullptr;
+		delete fighter[i];
+	}
+
+	//Sounds and effects were already removed, now fully unload them
+
 	sound_manager->stop_music("Battle Music");
 	sound_manager->unload_all_sounds();
 	sound_manager->unload_music("Battle Music");
-	for (int i = 0; i < 2; i++) {
-		thread_manager->kill_thread(i);
-		meters[i].destroy();
-		delete fighter[i];
-		camera->fighter[i] = nullptr;
-	}
-	debug_boxes.destroy();
+	sound_manager->clear_game_objects();
+	effect_manager->unload_all_effects();
+	effect_manager->remove_effect_casters();
+	render_manager->remove_light();
+
+	thread_manager->kill_thread(THREAD_KIND_UI);
+	hitbox_sim.destroy();
 	camera->stage = nullptr;
 	camera->unload_camera_anims();
-	thread_manager->kill_thread(THREAD_KIND_UI);
+
 	stage.unload_stage();
 	combo_font.unload_font();
 	message_font.unload_font();
 	info_font.unload_font();
-	render_manager->remove_light();
-	sound_manager->clear_game_objects();
-	effect_manager->clear_effect_all();
-	effect_manager->unload_all_effects();
-	effect_manager->remove_effect_casters();
 
 	delete game_loader;
 }
@@ -306,7 +313,7 @@ void Battle::process_main() {
 //	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
 		process_training();
 //	}
-	if (battle_object_manager->world_frame >= 0.97) {
+	if (battle_object_manager->frame_elapsed()) {
 		battle_object_manager->world_frame = 0.0;
 	}
 	if (game_manager->is_crash()) {
@@ -324,32 +331,32 @@ void Battle::process_debug_boxes() {
 		active_debug_box->update_corners(*debug_anchor, *debug_offset);
 	}
 	if (mouse.check_button_trigger(MOUSE_BUTTON_M2)) {
-		debug_boxes.print(fighter[0]);
+		hitbox_sim.print(fighter[0]);
 	}
 	if (mouse.check_button_trigger(MOUSE_BUTTON_M4)) {
 		active_debug_box->set_alpha(127);
-		if (debug_boxes.active_cat == 2) {
-			debug_boxes.active_cat = 0;
+		if (hitbox_sim.active_cat == 2) {
+			hitbox_sim.active_cat = 0;
 		}
 		else {
-			debug_boxes.active_cat++;
+			hitbox_sim.active_cat++;
 		}
-		active_debug_box = &debug_boxes.boxes[debug_boxes.active_cat][debug_boxes.active_box[debug_boxes.active_cat]];
-		debug_anchor = &debug_boxes.anchor[debug_boxes.active_cat][debug_boxes.active_box[debug_boxes.active_cat]];
-		debug_offset = &debug_boxes.offset[debug_boxes.active_cat][debug_boxes.active_box[debug_boxes.active_cat]];
+		active_debug_box = &hitbox_sim.boxes[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
+		debug_anchor = &hitbox_sim.anchor[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
+		debug_offset = &hitbox_sim.offset[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
 		active_debug_box->set_alpha(186);
 	}
 	if (mouse.check_button_trigger(MOUSE_BUTTON_M5)) {
 		active_debug_box->set_alpha(127);
-		if (debug_boxes.active_box[debug_boxes.active_cat] == 9) {
-			debug_boxes.active_box[debug_boxes.active_cat] = 0;
+		if (hitbox_sim.active_box[hitbox_sim.active_cat] == 9) {
+			hitbox_sim.active_box[hitbox_sim.active_cat] = 0;
 		}
 		else {
-			debug_boxes.active_box[debug_boxes.active_cat]++;
+			hitbox_sim.active_box[hitbox_sim.active_cat]++;
 		}
-		active_debug_box = &debug_boxes.boxes[debug_boxes.active_cat][debug_boxes.active_box[debug_boxes.active_cat]];
-		debug_anchor = &debug_boxes.anchor[debug_boxes.active_cat][debug_boxes.active_box[debug_boxes.active_cat]];
-		debug_offset = &debug_boxes.offset[debug_boxes.active_cat][debug_boxes.active_box[debug_boxes.active_cat]];
+		active_debug_box = &hitbox_sim.boxes[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
+		debug_anchor = &hitbox_sim.anchor[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
+		debug_offset = &hitbox_sim.offset[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
 		active_debug_box->set_alpha(186);
 	}
 }
@@ -441,10 +448,10 @@ void Battle::process_training() {
 
 void ui_thread(void* battle_arg) {
 	Battle* battle = (Battle*)battle_arg;
+	battle->timer.process();
 	for (int i = 0; i < 2; i++) {
 		battle->meters[i].process();
 	}
-	battle->timer.process();
 }
 
 void Battle::process_frame_pause() {
@@ -495,7 +502,7 @@ void Battle::render_world() {
 	//COLOR PASS
 
 	render_manager->g_buffer.use();
-	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -560,14 +567,18 @@ void Battle::render_world() {
 	//LIGHTING PASS
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 	render_manager->g_buffer.render();
+#ifdef DEBUG
 	render_manager->gbuffer_texture->render();
+#endif
 	render_manager->outline.render_passthrough();
 
 	//HITBOX PASS
 
 	if (visualize_boxes) {
 		render_manager->box_layer.use();
+		glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
@@ -603,9 +614,10 @@ void Battle::render_world() {
 			}
 			fighter[i]->jostle_box.render();
 		}
-		debug_boxes.render();
+		hitbox_sim.render();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 		render_manager->box_layer.render();
 	}
 }

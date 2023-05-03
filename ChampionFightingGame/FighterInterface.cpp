@@ -20,18 +20,18 @@ Fighter* create_fighter(Player* player) {
 			fighter = new Leon(player);
 		}
 		break;
-		case (CHARA_KIND_ANGELICA):
+		case (CHARA_KIND_DESIRAE):
 		{
-			fighter = new Angelica(player);
+			fighter = new Desirae(player);
 		}
 		break;
-		case (CHARA_KIND_NIGHTSABER):
+		case (CHARA_KIND_NIGHTSABRE):
 		{
-			fighter = new Nightsaber(player);
+			fighter = new Nightsabre(player);
 		} break;
-		case (CHARA_KIND_SULLY):
+		case (CHARA_KIND_ATHENA):
 		{
-			fighter = new Sully(player);
+			fighter = new Athena(player);
 		} break;
 		case (CHARA_KIND_ROOK):
 		{
@@ -53,9 +53,9 @@ Fighter* create_fighter(Player* player) {
 		{
 			fighter = new Dingo(player);
 		} break;
-		case (CHARA_KIND_NORMAN):
+		case (CHARA_KIND_WALLACE):
 		{
-			fighter = new Norman(player);
+			fighter = new Wallace(player);
 		} break;
 		case (CHARA_KIND_ATLAS):
 		{

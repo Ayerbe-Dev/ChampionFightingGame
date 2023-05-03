@@ -1,5 +1,7 @@
 #include "PauseBattle.h"
 #include "RenderManager.h"
+#include "BattleObjectManager.h"
+#include "Fighter.h"
 #include "utils.h"
 
 void pause_battle_main() {
@@ -67,4 +69,11 @@ void PauseBattle::event_select_press() {
 	GameManager* game_manager = GameManager::get_instance();
 	game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	game_manager->looping[game_manager->layer - 1] = false;
+}
+
+void PauseBattle::event_back_press() {
+	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
+	battle_object_manager->fighter[0]->reset();
+	battle_object_manager->fighter[1]->reset();
+	*looping = false;
 }

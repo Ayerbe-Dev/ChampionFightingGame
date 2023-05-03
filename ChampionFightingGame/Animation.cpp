@@ -218,8 +218,7 @@ void AnimationTable::unload_animations() {
 }
 
 Animation* AnimationTable::get_anim(std::string anim_name, bool verbose) {
-	std::unordered_map<std::string, int>::const_iterator iterator = anim_map.find(anim_name);
-	if (iterator == anim_map.end()) {
+	if (!anim_map.contains(anim_name)) {
 		if (verbose) {
 			std::cout << "Invalid Animation: " << anim_name << "\n";
 		}

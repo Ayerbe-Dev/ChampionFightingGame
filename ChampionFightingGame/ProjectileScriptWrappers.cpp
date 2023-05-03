@@ -25,7 +25,7 @@ void Projectile::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(juggle_increase, int);
 	UNWRAP(juggle_max, int);
 	UNWRAP(trade, bool);
-	UNWRAP(ko_kind, KoKind);
+	UNWRAP(ko_kind, DamageKind);
 	UNWRAP(continue_launch, bool);
 	UNWRAP(disable_hitstun_parry, bool);
 	UNWRAP(launch_init_y, float);

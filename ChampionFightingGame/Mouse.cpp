@@ -43,6 +43,6 @@ glm::ivec2 Mouse::get_pos() {
 
 glm::ivec2 Mouse::get_pos_flip_y() {
 	glm::ivec2 ret = pos;
-	ret.y = (RenderManager::get_instance()->s_window_height - ret.y);
+	ret.y = (RenderManager::get_instance()->window_height - ret.y);
 	return ret;
 }

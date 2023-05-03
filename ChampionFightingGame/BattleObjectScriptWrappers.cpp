@@ -98,3 +98,19 @@ void BattleObject::NEW_EFFECT_NO_FOLLOW(ScriptArg args) {
 	UNWRAP_NO_DECL(frame);
 	new_effect_no_follow(name, pos, rot, scale, rgba, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
 }
+
+void BattleObject::CLEAR_EFFECT(ScriptArg args) {
+	UNWRAP(name, std::string);
+	int instance_id = 0;
+	UNWRAP_NO_DECL(instance_id);
+	clear_effect(name, instance_id);
+}
+
+void BattleObject::CLEAR_EFFECT_ALL(ScriptArg args) {
+	clear_effect_all();
+}
+
+void BattleObject::PRINT_MSG_FROM_SCRIPT(ScriptArg args) {
+	UNWRAP(message, std::string);
+	std::cout << message;
+}

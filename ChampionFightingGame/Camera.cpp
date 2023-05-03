@@ -106,6 +106,7 @@ void Camera::adjust_view(float x, float y, float z, float speed) {
 }
 
 void Camera::set_fov(float fov) {
+	RenderManager* render_manager = RenderManager::get_instance();
 	this->fov = fov;
 	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_W_FACTOR, 0.1f, 1000.0f);
 	update_view();
@@ -131,13 +132,15 @@ void Camera::update_view() {
 }
 
 void Camera::follow_players() {
-	//This calculation won't change midgame so we COULD make an init_camera function which calculates this
-	//once per game based on the given characters if we wanted to optimize. Low priority rn but could be 
-	//done
-	float x_scaler = WINDOW_WIDTH / (100 * ((fighter[0]->scale.x + fighter[1]->scale.x) / 2.0));
+	//NOTE: Fighter scale is effectively a constant value of 1.0 rn. If changing the scale of a character breaks the
+	//camera only when they move, x_scaler may actually just be a constant value of WINDOW_WIDTH / 100.0.
+
+	//For now this will be accurate though, and shouldn't be too hard to adjust if it turns out to be wrong.
+	float x_scaler = WINDOW_WIDTH / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
+	float y_scaler = WINDOW_HEIGHT / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 
 	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / x_scaler;
-	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / 10.0, 100.0);
+	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / y_scaler, 100.0);
 	pos.z = base_pos.z;
 	yaw = 0.0;
 	pitch = 3.0;
@@ -172,10 +175,12 @@ void Camera::follow_anim() {
 		pos.x *= fighter[follow_id]->facing_dir;
 		yaw *= fighter[follow_id]->facing_dir;
 
+		RenderManager* render_manager = RenderManager::get_instance();
+
 		pos += fighter[follow_id]->pos / glm::vec3(
-			WINDOW_WIDTH / (100 * fighter[follow_id]->scale.x),
-			WINDOW_HEIGHT / (100 * fighter[follow_id]->scale.y),
-			WINDOW_DEPTH / (100 * fighter[follow_id]->scale.z)
+			WINDOW_WIDTH / (100.0f * fighter[follow_id]->scale.x),
+			WINDOW_HEIGHT / (100.0f * fighter[follow_id]->scale.y),
+			WINDOW_DEPTH / (100.0f * fighter[follow_id]->scale.z)
 		);
 	}
 

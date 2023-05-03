@@ -164,19 +164,19 @@ void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_ta
 		float add;
 		std::cout << "Enter Meter Difference: ";
 		std::cin >> add;
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, get_param_int("ex_meter_size", PARAM_FIGHTER));
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, target->fighter_float[FIGHTER_FLOAT_SUPER_METER] + add, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	}
 	if (command == "set_ex") {
 		float set;
 		std::cout << "Enter New Meter Amount: ";
 		std::cin >> set;
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, get_param_int("ex_meter_size", PARAM_FIGHTER));
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, set, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	}
 	if (command == "max_ex") {
-		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = get_param_int("ex_meter_size", PARAM_FIGHTER);
+		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = get_param_int(PARAM_FIGHTER, "ex_meter_size");
 	}
 	if (command == "max_ex_all") {
-		int ex_meter_size = get_param_int("ex_meter_size", PARAM_FIGHTER);
+		int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
 		target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = ex_meter_size;
 		not_target->fighter_float[FIGHTER_FLOAT_SUPER_METER] = ex_meter_size;
 	}

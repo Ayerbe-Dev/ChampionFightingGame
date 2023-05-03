@@ -30,7 +30,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 		return false;
 	}
-	pos *= battle_object_manager->get_time_multiplier(id);
+	pos *= battle_object_manager->get_world_rate(id);
 
 	//Ok now to actually set some positions
 
@@ -98,7 +98,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	float this_x_back = this->jostle_box.corners[0].x;
 	float that_x_back = that->jostle_box.corners[0].x;
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
-	if (x_distance > get_param_float("max_distance", PARAM_FIGHTER)) {
+	if (x_distance > get_param_float(PARAM_FIGHTER, "max_distance")) {
 		this->pos.x = prev_pos.x; //I don't know what the calculation for "make it so you're as close as possible to the max distance without going over" would
 		//look like, and frankly I don't care enough to do it
 		ret = false;
@@ -200,7 +200,7 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
 	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);
 	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
-	if (x_distance > get_param_float("max_distance", PARAM_FIGHTER)) {
+	if (x_distance > get_param_float(PARAM_FIGHTER, "max_distance")) {
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}
@@ -224,15 +224,7 @@ bool Fighter::set_pos_anim() {
 	}
 	if (anim_kind->flag_move) {
 		Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
-		glm::vec3 trans_offset = glm::vec3(
-			trans_bone.anim_matrix[3].z * facing_dir,
-			trans_bone.anim_matrix[3].y,
-			trans_bone.anim_matrix[3].x
-		);
-		trans_offset -= prev_anim_offset;
-		trans_offset *= glm::vec3(16.5, 11.5, 11.5);
-
-		bool ret = add_pos(trans_offset);
+		bool ret = add_pos(get_trans_offset());
 		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, trans_bone.anim_matrix[3].x);
 		return ret;
 	}
@@ -262,5 +254,5 @@ void Fighter::landing_crossup() {
 }
 
 void Fighter::apply_gravity(float gravity, float max_fall_speed) {
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = clampf(max_fall_speed * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] - gravity * battle_object_manager->get_time_multiplier(id), fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = clampf(max_fall_speed * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] - gravity * battle_object_manager->get_world_rate(id), fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 }

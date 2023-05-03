@@ -8,7 +8,7 @@
 
 Player::Player() {
 	id = -1;
-	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
+	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.stick_hold_v_timer = timer;
 	controller.stick_hold_h_timer = timer;
 	player_info = nullptr;
@@ -16,7 +16,7 @@ Player::Player() {
 
 Player::Player(int id) {
 	this->id = id;
-	int timer = get_param_int("stick_hold_timer", PARAM_MENU);
+	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.stick_hold_v_timer = timer;
 	controller.stick_hold_h_timer = timer;
 	chara_kind = CHARA_KIND_MAX;

@@ -26,7 +26,7 @@ Framebuffer::Framebuffer() {
 	shader = nullptr;
 }
 
-void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
+void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features, float window_width, float window_height) {
 	float coords[] = {
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -41,7 +41,7 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, window_width, window_height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -71,8 +71,8 @@ void Framebuffer::add_write_texture(GLenum internal_format, GLenum format, GLenu
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point, GL_TEXTURE_2D, texture, 0);
@@ -100,8 +100,8 @@ void Framebuffer::add_read_texture(GLenum internal_format, GLenum format, GLenum
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, source);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 	textures.push_back(texture);
@@ -164,12 +164,12 @@ void Framebuffer::render_passthrough() {
 
 void Framebuffer::update_dimensions(float x_scale, float y_scale) {
 	RenderManager* render_manager = RenderManager::get_instance();
-	float width = render_manager->s_window_width * x_scale;
-	float height = render_manager->s_window_height * y_scale;
+	float width = render_manager->res_width * x_scale;
+	float height = render_manager->res_height * y_scale;
 	for (int i = 0, max = resize_textures.size(); i < max; i++) {
 		glBindTexture(GL_TEXTURE_2D, resize_textures[i].texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, resize_textures[i].internal_format, width, height, 0, resize_textures[i].format, resize_textures[i].type, nullptr);
 	}
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, render_manager->window_width, render_manager->window_height);
 }

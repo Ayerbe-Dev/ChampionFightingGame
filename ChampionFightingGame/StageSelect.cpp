@@ -3,9 +3,10 @@
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "Loader.h"
-#include <fstream>
 #include "GLM Helpers.h"
 #include "utils.h"
+
+#include <fstream>
 
 void stage_select_main() {
 	FontManager* font_manager = FontManager::get_instance();
@@ -47,9 +48,13 @@ void stage_select_main() {
 	while (demo.id == -1) { //Random
 		demo = stage_select->stages[rng(0, stage_select->stages.size() - 1)];
 	}
-	
-	for (int i = 0; i < 2; i++) {
-		player[i]->stage_info = StageInfo(demo.id, demo.resource_name);
+
+	switch (game_manager->game_context) {
+		default: {
+			for (int i = 0; i < 2; i++) {
+				player[i]->stage_info = StageInfo(demo.id, demo.resource_name);
+			}
+		} break;
 	}
 
 	delete stage_select;
@@ -66,7 +71,7 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	this->id = id;
 	this->name = name;
 	this->resource_name = resource_name;
-	demo_model.load_model("resource/stage/" + resource_name + "/assets/demo/model/model.dae");
+	demo_model.load_used_model("resource/stage/" + resource_name + "/assets/demo/model/model.dae");
 	demo_model.init_shader();
 	demo_model.scale *= glm::vec3(0.05);
 	demo_anim.load_camera_anim("demo", "resource/stage/" + resource_name + "/cam_anims/demo.fbx");
@@ -75,7 +80,7 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	std::ifstream light_stream;
 	light_stream.open("resource/stage/" + resource_name + "/assets/demo/param/lights.yml");
 	if (light_stream.fail()) {
-		std::cout << "Failed to load lights! \n";
+		std::cout << "Failed to load lights!\n";
 		light_stream.close();
 		return;
 	}
@@ -144,21 +149,20 @@ StageDemo& StageDemo::operator=(const StageDemo& other) {
 }
 
 StageSelect::StageSelect() {
-	selection = 0;
-	prev_selection = 0;
-	num_slots_per_row = 1;
-	selected = false;
-
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
+
+	selection = game_manager->player[0]->stage_info.stage_kind;
+	prev_selection = selection;
+	num_slots_per_row = 1;
+	selected = false;
 
 	game_manager->set_menu_info(this);
 
 	menu_objects.resize(STAGE_SELECT_GROUP_MAX);
 
 	if (!load_stage_select()) {
-		game_manager->add_crash_log("Could not open CSS file!");
-		game_loader->finished = true;
+		game_manager->add_crash_log("Could not load Stage Select!");
 		return;
 	}
 
@@ -166,18 +170,18 @@ StageSelect::StageSelect() {
 	float slot_height = WINDOW_HEIGHT / 9;
 
 	menu_objects[STAGE_SELECT_GROUP_MISC].emplace_back(this, nullptr, false);
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.init("resource/game_state/stage_select/cursor.png");
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_width(slot_width);
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_height(slot_height);
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.init("resource/game_state/stage_select/cursor.png");
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_width(slot_width);
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_height(slot_height);
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].add_texture("resource/game_state/stage_select/bg_1.png");
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].add_texture("resource/game_state/stage_select/bg_2.png");
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].add_texture("resource/game_state/stage_select/bg_3.png");
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_1.png");
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_2.png");
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_3.png");
 
-	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_MISC][0].textures.size(); i < max; i++) {
-		menu_objects[STAGE_SELECT_GROUP_MISC][0].textures[i].set_height_scale(1.5);
-		menu_objects[STAGE_SELECT_GROUP_MISC][0].textures[i].set_width_scale(1.5);
+	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].textures.size(); i < max; i++) {
+		menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].textures[i].set_height_scale(1.5);
+		menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].textures[i].set_width_scale(1.5);
 	}
 
 	render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
@@ -189,7 +193,8 @@ StageSelect::StageSelect() {
 
 StageSelect::~StageSelect() {
 	for (int i = 0, max = stages.size(); i < max; i++) {
-		if (stages[i].id != selection) {
+		stages[i].demo_model.model.unload_textures();
+		if (i != selection) {
 			stages[i].demo_model.model.unload_model();
 		}
 	}
@@ -200,33 +205,53 @@ StageSelect::~StageSelect() {
 }
 
 bool StageSelect::load_stage_select() {
-	std::ifstream stage_file;
-	stage_file.open("resource/game_state/stage_select/stage_select_param.yml");
-	if (stage_file.fail()) {
-		stage_file.close();
+	ParamTable stage_params("resource/game_state/stage_select/stage_select_param.prmlst");
+	if (stage_params.load_failed()) {
 		return false;
 	}
-
-
-	std::string stage_name;
-	int id;
-	std::string resource_name;
-
+	size_t list_start_offset = 1;
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
 
-	for (int i = 0; getline(stage_file, stage_name); i++) {
-		stage_file >> id >> resource_name;
-		stages.emplace_back(id, stage_name, resource_name);
-		menu_objects[STAGE_SELECT_GROUP_SLOT].emplace_back(this, nullptr, false);
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture("resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].add_texture(main_text_font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-		getline(stage_file, stage_name);
+	switch (*game_context) { //Load the training mode versions of stages for training mode, else load the normal ones
+		case (GAME_CONTEXT_TRAINING): {
+			for (size_t i = list_start_offset, max = stage_params.get_param_int("num_slots") + list_start_offset; i < max; i++) {
+				if (stage_params.get_param_bool("selectable_training", i)) {
+					add_stage_slot(stage_params.get_param_table(i), &main_text_font);
+					if (selection == stages.back().id) { //This code is used to determine which slot index we hover over by default
+						//given the player's selected stage.
+						selection = stages.size() - 1;
+					}
+				}
+			}
+		} break;
+		default: {
+			for (size_t i = list_start_offset, max = stage_params.get_param_int("num_slots") + list_start_offset; i < max; i++) {
+				if (stage_params.get_param_bool("selectable_vs", i)) {
+					add_stage_slot(stage_params.get_param_table(i), &main_text_font);
+					if (selection == stages.back().id) {
+						selection = stages.size() - 1;
+					}
+				}
+			}
+		}
 	}
 
-	stage_file.close();
+	if (selection >= stages.size()) { 
+		//If we managed to get to the stage select with a selected ID that doesn't exist in this context, this either means that:
+		//A. We were selecting a variant of a stage that's only selectable in a different context, I.E. we went into vs. mode's 
+		//stage select while we had training mode's Training Stage as our preferred stage
+		//B. We reached the stage select with an ID that doesn't exist in ANY context, I.E. we were selecting a stage that
+		//doesn't exist in the stage select param list. 
 
-	num_slots_per_row = ceil(menu_objects[STAGE_SELECT_GROUP_SLOT].size() / 2);
+		//We'll probably handle A by merging IDs between variants but giving them different resource directories so that won't
+		//be an issue when we make variants, but if we manage to trigger B then something has gone seriously wrong.
+		GameManager::get_instance()->add_crash_log("Entered the Stage Select with a selected value of " + std::to_string(selection)
+			+ ", which does not correspond to a valid stage ID in this Game Context!");
+		return false;
+	}
+
+	num_slots_per_row = ceil((float)menu_objects[STAGE_SELECT_GROUP_SLOT].size() / 2.0f);
 	float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
 	float slot_height = WINDOW_HEIGHT / 9;
 
@@ -262,6 +287,16 @@ bool StageSelect::load_stage_select() {
 	main_text_font.unload_font();
 
 	return true;
+}
+
+void StageSelect::add_stage_slot(ParamTable param_table, Font* font) {
+	int stage_kind = param_table.get_param_int("stage_kind");
+	std::string stage_name = param_table.get_param_string("stage_name");
+	std::string resource_name = param_table.get_param_string("resource_name");
+	stages.emplace_back(stage_kind, stage_name, resource_name);
+	menu_objects[STAGE_SELECT_GROUP_SLOT].emplace_back(this, nullptr, false);
+	menu_objects[STAGE_SELECT_GROUP_SLOT].back().add_texture("resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
+	menu_objects[STAGE_SELECT_GROUP_SLOT].back().add_texture(*font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 }
 
 void StageSelect::process() {
@@ -303,7 +338,7 @@ void StageSelect::render() {
 	glCullFace(GL_BACK);
 
 	render_manager->g_buffer.use();
-	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
@@ -312,10 +347,10 @@ void StageSelect::render() {
 	glDisable(GL_CULL_FACE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].render();
-	glViewport(render_manager->s_window_width * 0.2, render_manager->s_window_height * 0.28, render_manager->s_window_width * 0.6, render_manager->s_window_height * 0.6);
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].render();
+	glViewport(render_manager->window_width * 0.2, render_manager->window_height * 0.28, render_manager->window_width * 0.6, render_manager->window_height * 0.6);
 	render_manager->g_buffer.render();
-	glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 	
 	glDepthMask(GL_FALSE);
 
@@ -343,7 +378,7 @@ void StageSelect::event_up_press() {
 void StageSelect::event_down_press() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
-		if (selection < num_slots_per_row) {
+		if (selection + num_slots_per_row < stages.size()) {
 			selection += num_slots_per_row;
 			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}

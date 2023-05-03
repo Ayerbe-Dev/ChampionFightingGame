@@ -1,6 +1,7 @@
 #include "GameRect.h"
 #include <glew/glew.h>
 #include <glm/ext/matrix_projection.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "BattleObjectManager.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
@@ -56,13 +57,13 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	glEnableVertexAttribArray(0);
 
 	for (int i = 0; i < 4; i++) {
-		corners[i].x /= WINDOW_WIDTH;
-		corners[i].y /= WINDOW_HEIGHT;
+		corners[i].x /= WINDOW_WIDTH / 100;
+		corners[i].y /= WINDOW_HEIGHT / 100;
 	}
 	glBufferData(GL_ARRAY_BUFFER, sizeof(corners), corners, GL_STATIC_DRAW);
 	for (int i = 0; i < 4; i++) {
-		corners[i].x *= WINDOW_WIDTH;
-		corners[i].y *= WINDOW_HEIGHT;
+		corners[i].x *= WINDOW_WIDTH / 100;
+		corners[i].y *= WINDOW_HEIGHT / 100;
 	}
 
 	glBindVertexArray(0);
@@ -82,23 +83,19 @@ void GameRect::update_corners(glm::vec2 c1, glm::vec2 c2) {
 
 	if (thread_manager->is_main_thread()) {
 		for (int i = 0; i < 4; i++) {
-			corners[i].x /= WINDOW_WIDTH;
-			corners[i].y /= WINDOW_HEIGHT;
+			corners[i].x /= WINDOW_WIDTH / 100;
+			corners[i].y /= WINDOW_HEIGHT / 100;
 		}
 		update_buffer_data();
 		for (int i = 0; i < 4; i++) {
-			corners[i].x *= WINDOW_WIDTH;
-			corners[i].y *= WINDOW_HEIGHT;
+			corners[i].x *= WINDOW_WIDTH / 100;
+			corners[i].y *= WINDOW_HEIGHT / 100;
 		}
 	}
 }
 
 void GameRect::attach_shader(Shader *shader) {
 	this->shader = shader;
-}
-
-void GameRect::bind_scale(glm::vec3 *scale) {
-	this->scale = scale;
 }
 
 void GameRect::set_alpha(float alpha) {
@@ -115,26 +112,10 @@ void GameRect::set_rgba(glm::vec4 rgba) {
 	this->rgba = rgba;
 }
 
-void GameRect::prepare_render() {
-	if (scale != nullptr) {
-		matrix = glm::scale(glm::mat4(1.0), *scale);
-	}
-	else {
-		matrix = glm::scale(glm::mat4(1.0), glm::vec3(0.05));
-	}
-	matrix = glm::scale(matrix, glm::vec3(100.0)); //Scaling up all GameRects by 100x makes them reasonably sized
-}
-
 void GameRect::render() {
-	prepare_render();
-	render_prepared();
-}
-
-void GameRect::render_prepared() {
 	shader->use();
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
 	glDepthMask(GL_FALSE);
 	glDrawArrays(GL_QUADS, 0, 4);
@@ -175,31 +156,25 @@ bool is_collide(GameRect &RectA, GameRect &RectB) {
 		|| (RectB.corners[2].y >= RectA.corners[0].y && RectB.corners[2].y <= RectA.corners[2].y));
 }
 
-glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_coords) {
-	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
+
+glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_pos) {
 	RenderManager* render_manager = RenderManager::get_instance();
-
-	//put the mouse in -1, 1 coords
-
-//	mouse_coords.x = ((mouse_coords.x / render_manager->s_window_width) - 0.5) * 2.0;
-//	mouse_coords.y = (((render_manager->s_window_height - mouse_coords.y) / render_manager->s_window_height) - 0.5) * 2.0;
-	mouse_coords.y = render_manager->s_window_height - mouse_coords.y;
-
-	//unproject the coords based on the camera and fighter
-
 	Camera& camera = render_manager->camera;
-	Fighter* fighter = battle_object_manager->fighter[0];
 
-	glm::mat4 projection_matrix = camera.projection_matrix;
-	glm::mat4 view_matrix = camera.view_matrix;
-	glm::mat4 model_matrix = glm::scale(glm::scale(glm::mat4(1.0), glm::vec3(fighter->scale)), glm::vec3(100.0));
-	glm::vec4 viewport = glm::vec4(0.0, 0.0, render_manager->s_window_width, render_manager->s_window_height);
+	mouse_pos.y = render_manager->res_height - mouse_pos.y;
+	glm::vec3 screen_pos = glm::vec3(mouse_pos.x, mouse_pos.y, 0.0f);
+	glReadPixels(mouse_pos.x, mouse_pos.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &screen_pos.z);
 
-	glm::vec3 ret = glm::unProject(glm::vec3(mouse_coords, 0.0), glm::inverse(view_matrix * model_matrix), glm::inverse(projection_matrix), viewport);
-	std::cout << ret.x << ", " << ret.y << ", " << ret.z << "\n";
+	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, render_manager->res_width, render_manager->res_height);
+	glm::mat4 modelview = camera.view_matrix;
+	glm::mat4 projection = camera.projection_matrix;
 
-	//?????????????????????????????????????????????????????????????????????????????????????
+	glm::vec3 world_pos = glm::unProject(screen_pos, modelview, projection, viewport);
 
+	float l = -world_pos.z / (world_pos.z - camera.pos.z);
 
-	return ret;
+	world_pos.x = (world_pos.x + l * (world_pos.x - camera.pos.x)) * (WINDOW_WIDTH / 100);
+	world_pos.y = (world_pos.y + l * (world_pos.y - camera.pos.y)) * (WINDOW_HEIGHT / 100);
+
+	return world_pos;
 }

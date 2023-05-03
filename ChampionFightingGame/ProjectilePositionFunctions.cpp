@@ -5,7 +5,7 @@ void Projectile::add_pos(float x, float y) {
 }
  
 void Projectile::add_pos(glm::vec3 pos) {
-	pos *= battle_object_manager->get_time_multiplier(id);
+	pos *= battle_object_manager->get_world_rate(id);
 	this->pos += pos;
 }
 

@@ -54,6 +54,9 @@ void GameTimer::init(int time) {
 }
 
 void GameTimer::process() {
+	if (!BattleObjectManager::get_instance()->frame_elapsed()) {
+		return;
+	}
 	if (frames == 0) {
 		if (deca_frames == 0) {
 			if (seconds == 0 && deca_seconds == 0) {

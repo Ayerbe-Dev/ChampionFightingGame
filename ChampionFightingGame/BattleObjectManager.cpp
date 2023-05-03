@@ -4,18 +4,21 @@ BattleObjectManager::BattleObjectManager() {
 	world_rate = 1.0;
 	world_frame = 0.0;
 	real_time_id = -1;
+	fighter[0] = nullptr;
+	fighter[1] = nullptr;
+	stage = nullptr;
+}
+
+bool BattleObjectManager::frame_elapsed() {
+	float factor = 1.0 / world_rate;
+	return world_frame >= world_rate * factor;
 }
 
 bool BattleObjectManager::allow_dec_var(int object_id) {
-	if (real_time_id == object_id || real_time_id == -1) {
-		return true;
-	}
-	else {
-		return world_frame >= 0.97;
-	}
+	return real_time_id == object_id || real_time_id == -1;
 }
 
-float BattleObjectManager::get_time_multiplier(int object_id) {
+float BattleObjectManager::get_world_rate(int object_id) {
 	if (real_time_id == object_id || real_time_id == -1) {
 		return 1.0;
 	}
@@ -26,6 +29,7 @@ float BattleObjectManager::get_time_multiplier(int object_id) {
 
 void BattleObjectManager::set_world_rate(int object_id, float world_rate) {
 	if (real_time_id == object_id || real_time_id == -1) {
+		world_frame = 0.0;
 		real_time_id = object_id;
 		this->world_rate = world_rate;
 	}

@@ -11,16 +11,23 @@ Param::Param(std::string name) {
 }
 
 ParamTable::ParamTable() {
+    load_fail = false;
+}
 
+ParamTable::ParamTable(std::string resource_dir) {
+    load_fail = false;
+    load_params(resource_dir);
 }
 
 void ParamTable::load_params(std::string resource_dir) {
+    load_fail = false;
     std::ifstream param_file;
     param_file.open(resource_dir, std::ios::binary);
 
     if (param_file.fail()) {
         param_file.close();
         std::cout << "Failed to open param file: " << resource_dir << "\n";
+        load_fail = true;
         return;
     }
 
@@ -28,11 +35,15 @@ void ParamTable::load_params(std::string resource_dir) {
         Param param;
         parse_param_entry(param_file, param.name, param.type, param.value);
         if (i != 0 || !param_file.eof()) {
-            params.push_back(param);
-            param_map[param.name] = i;
+            add_param(param, i);
         }
     }
     param_file.close();
+}
+
+void ParamTable::add_param(Param param, int index) {
+    params.push_back(param);
+    param_map[param.name] = index;
 }
 
 void ParamTable::unload_params() {
@@ -51,6 +62,44 @@ int ParamTable::get_param_int(std::string param_name) {
     return std::any_cast<int>(params[param_map[param_name]].value);
 }
 
+int ParamTable::get_param_int(std::string param_name, std::string sub_table_name) {
+    return get_param_table(sub_table_name).get_param_int(param_name);
+}
+
+int ParamTable::get_param_int(std::string param_name, int sub_table_index) {
+    return get_param_table(sub_table_index).get_param_int(param_name);
+}
+
+int ParamTable::get_param_int(std::string param_name, std::initializer_list<std::any> sub_tables) {
+    std::list<std::any> list(sub_tables);
+    return get_param_int(param_name, list);
+}
+
+int ParamTable::get_param_int(std::string param_name, std::list<std::any> sub_tables) {
+    std::any front = sub_tables.front();
+    sub_tables.pop_front();
+    if (front.type() == typeid(int)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<int>(front)).get_param_int(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<int>(front)).get_param_int(param_name, sub_tables);
+        }
+    }
+    else if (front.type() == typeid(std::string)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_int(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_int(param_name, sub_tables);
+        }
+    }
+    else {
+        std::cout << "ERROR: Initializer list passed to get_param_int(" << param_name << ") contained a value which was neither int nor string.\n";
+        return 0;
+    }
+}
+
 float ParamTable::get_param_float(std::string param_name) {
     if (!param_map.contains(param_name)) {
         std::cout << "Failed to find param " << param_name << "\n";
@@ -61,6 +110,44 @@ float ParamTable::get_param_float(std::string param_name) {
         return 0.0;
     }
     return std::any_cast<float>(params[param_map[param_name]].value);
+}
+
+float ParamTable::get_param_float(std::string param_name, std::string sub_table_name) {
+    return get_param_table(sub_table_name).get_param_float(param_name);
+}
+
+float ParamTable::get_param_float(std::string param_name, int sub_table_index) {
+    return get_param_table(sub_table_index).get_param_float(param_name);
+}
+
+float ParamTable::get_param_float(std::string param_name, std::initializer_list<std::any> sub_tables) {
+    std::list<std::any> list(sub_tables);
+    return get_param_float(param_name, list);
+}
+
+float ParamTable::get_param_float(std::string param_name, std::list<std::any> sub_tables) {
+    std::any front = sub_tables.front();
+    sub_tables.pop_front();
+    if (front.type() == typeid(int)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<int>(front)).get_param_float(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<int>(front)).get_param_float(param_name, sub_tables);
+        }
+    }
+    else if (front.type() == typeid(std::string)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_float(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_float(param_name, sub_tables);
+        }
+    }
+    else {
+        std::cout << "ERROR: Initializer list passed to get_param_float(" << param_name << ") contained a value which was neither int nor string.\n";
+        return 0.0f;
+    }
 }
 
 std::string ParamTable::get_param_string(std::string param_name) {
@@ -75,6 +162,44 @@ std::string ParamTable::get_param_string(std::string param_name) {
     return std::any_cast<std::string>(params[param_map[param_name]].value);
 }
 
+std::string ParamTable::get_param_string(std::string param_name, std::string sub_table_name) {
+    return get_param_table(sub_table_name).get_param_string(param_name);
+}
+
+std::string ParamTable::get_param_string(std::string param_name, int sub_table_index) {
+    return get_param_table(sub_table_index).get_param_string(param_name);
+}
+
+std::string ParamTable::get_param_string(std::string param_name, std::initializer_list<std::any> sub_tables) {
+    std::list<std::any> list(sub_tables);
+    return get_param_string(param_name, list);
+}
+
+std::string ParamTable::get_param_string(std::string param_name, std::list<std::any> sub_tables) {
+    std::any front = sub_tables.front();
+    sub_tables.pop_front();
+    if (front.type() == typeid(int)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<int>(front)).get_param_string(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<int>(front)).get_param_string(param_name, sub_tables);
+        }
+    }
+    else if (front.type() == typeid(std::string)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_string(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_string(param_name, sub_tables);
+        }
+    }
+    else {
+        std::cout << "ERROR: Initializer list passed to get_param_string(" << param_name << ") contained a value which was neither int nor string.\n";
+        return "";
+    }
+}
+
 bool ParamTable::get_param_bool(std::string param_name) {
     if (!param_map.contains(param_name)) {
         std::cout << "Failed to find param " << param_name << "\n";
@@ -85,6 +210,80 @@ bool ParamTable::get_param_bool(std::string param_name) {
         return false;
     }
     return std::any_cast<bool>(params[param_map[param_name]].value);
+}
+
+bool ParamTable::get_param_bool(std::string param_name, std::string sub_table_name) {
+    return get_param_table(sub_table_name).get_param_bool(param_name);
+}
+
+bool ParamTable::get_param_bool(std::string param_name, int sub_table_index) {
+    return get_param_table(sub_table_index).get_param_bool(param_name);
+}
+
+bool ParamTable::get_param_bool(std::string param_name, std::initializer_list<std::any> sub_tables) {
+    std::list<std::any> list(sub_tables);
+    return get_param_bool(param_name, list);
+}
+
+bool ParamTable::get_param_bool(std::string param_name, std::list<std::any> sub_tables) {
+    std::any front = sub_tables.front();
+    sub_tables.pop_front();
+    if (front.type() == typeid(int)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<int>(front)).get_param_bool(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<int>(front)).get_param_bool(param_name, sub_tables);
+        }
+    }
+    else if (front.type() == typeid(std::string)) {
+        if (sub_tables.empty()) {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_bool(param_name);
+        }
+        else {
+            return get_param_table(std::any_cast<std::string>(front)).get_param_bool(param_name, sub_tables);
+        }
+    }
+    else {
+        std::cout << "ERROR: Initializer list passed to get_param_bool(" << param_name << ") contained a value which was neither int nor string.\n";
+        return false;
+    }
+}
+
+ParamTable ParamTable::get_param_table(std::string param_name) {
+    if (!param_map.contains(param_name)) {
+        std::cout << "Failed to find param " << param_name << "\n";
+        return ParamTable();
+    }
+    if (params[param_map[param_name]].value.type() != typeid(ParamTable)) {
+        std::cout << "Param " << param_name << " is not of type param table\n";
+        return ParamTable();
+    }
+    return std::any_cast<ParamTable>(params[param_map[param_name]].value);
+}
+
+ParamTable ParamTable::get_param_table(int param_index) {
+    if (params.size() <= param_index) {
+        std::cout << "Param Index " << param_index << "is out of range\n";
+        return ParamTable();
+    }
+    if (params[param_index].value.type() != typeid(ParamTable)) {
+        std::cout << "Param Index " << param_index << " is not of type param table\n";
+        return ParamTable();
+    }
+    return std::any_cast<ParamTable>(params[param_index].value);
+}
+
+int ParamTable::get_param_type(std::string param_name) {
+    if (!param_map.contains(param_name)) {
+        std::cout << "Failed to find param " << param_name << "\n";
+        return 0;
+    }
+    return params[param_map[param_name]].type;
+}
+
+bool ParamTable::load_failed() {
+    return load_fail;
 }
 
 /*

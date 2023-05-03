@@ -4,7 +4,9 @@
 #include "Camera.h"
 #include "StageSelectConstants.h"
 #include "Light.h"
-#include "GameTexture.h"
+#include "Param.h"
+
+class Font;
 
 void stage_select_main();
 
@@ -31,6 +33,7 @@ public:
 	~StageSelect();
 
 	bool load_stage_select();
+	void add_stage_slot(ParamTable param_table, Font* font);
 
 	void process();
 	void render();

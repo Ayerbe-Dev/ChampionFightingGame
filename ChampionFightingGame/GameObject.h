@@ -80,6 +80,7 @@ public:
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
 	void load_model(std::string resource_dir, std::string texture_dir = "");
+	void load_used_model(std::string resource_dir, std::string texture_dir = "");
 	void init_shader();
 
 	//Sound Functions

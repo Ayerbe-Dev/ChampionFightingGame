@@ -29,6 +29,7 @@ void BattleObject::set_current_move_script(std::string anim_name) {
 
 void BattleObject::execute_frame(float frame, std::function<void()> execute) {
 	active_script_frame = ScriptFrame(frame);
+	active_script_condition = nullptr;
 	execute();
 	active_move_script.frames.push(active_script_frame);
 	last_execute_frame = frame;
@@ -36,7 +37,13 @@ void BattleObject::execute_frame(float frame, std::function<void()> execute) {
 
 void BattleObject::execute_wait(float frames, std::function<void()> execute) {
 	active_script_frame = ScriptFrame(frames + last_execute_frame);
+	active_script_condition = nullptr;
 	execute();
 	active_move_script.frames.push(active_script_frame);
 	last_execute_frame += frames;
+}
+
+void BattleObject::push_condition(std::function<bool()> condition) {
+	active_script_frame.conditions.emplace(condition);
+	active_script_condition = &active_script_frame.conditions.back();
 }

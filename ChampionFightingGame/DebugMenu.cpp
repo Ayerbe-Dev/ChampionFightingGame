@@ -8,6 +8,7 @@
 #include "RenderManager.h"
 #include "FontManager.h"
 #include "ResourceManager.h"
+#include "HxAFile.h"
 
 void debug_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -21,12 +22,12 @@ void debug_main() {
 	resource_manager->load_model("resource/chara/rowan/model/model.dae");
 
 	GameObject go1;
-	go1.model = resource_manager->use_model("resource/chara/rowan/model/model.dae");
+	go1.model = resource_manager->get_model("resource/chara/rowan/model/model.dae");
 	go1.model.load_textures("c0");
 	go1.init_shader();
 
 	GameObject go2;
-	go2.model = resource_manager->use_model("resource/chara/rowan/model/model.dae");
+	go2.model = resource_manager->get_model("resource/chara/rowan/model/model.dae");
 	go2.model.load_textures("c1");
 	go2.init_shader();
 
@@ -59,7 +60,7 @@ void debug_main() {
 		glCullFace(GL_BACK);
 		
 		render_manager->g_buffer.use();
-		glViewport(0, 0, render_manager->s_window_width, render_manager->s_window_height);
+		glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render_manager->shadow_map.bind_textures();
@@ -70,6 +71,7 @@ void debug_main() {
 		glDisable(GL_CULL_FACE);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 		render_manager->g_buffer.render();
 		render_manager->gbuffer_texture->render();
 		glDepthMask(GL_FALSE);

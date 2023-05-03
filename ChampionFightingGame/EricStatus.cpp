@@ -124,8 +124,7 @@ void Eric::eric_exit_status_special_uppercut() {
 }
 
 void Eric::eric_status_special_uppercut_fall() {
-	if (pos.y <= FLOOR_GAMECOORD) {
-		change_status(FIGHTER_STATUS_LANDING);
+	if (check_landing()) {
 		return;
 	}
 	apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));

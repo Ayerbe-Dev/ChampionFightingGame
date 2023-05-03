@@ -1,10 +1,12 @@
 #include "Prmlst.h"
+#include "Param.h"
 
 enum {
 	PARAM_TYPE_INT,
 	PARAM_TYPE_FLOAT,
 	PARAM_TYPE_STRING,
 	PARAM_TYPE_BOOL,
+	PARAM_TYPE_PARAMLIST,
 
 	PARAM_TYPE_MAX,
 };
@@ -59,6 +61,13 @@ void parse_param_entry(std::ifstream& stream, std::string& name, int& type, std:
 	}
 	stream.read(&input_char, 1);
 	type = (((unsigned int)input_char) & 0xC0) >> 6;
+	if (type == PARAM_TYPE_INT) {
+		//If bit 7 is turned on for an int, then the int isn't actually an int. 
+		//You've been bamboozled.
+		if (((unsigned)input_char) & 0x2) {
+			type = PARAM_TYPE_PARAMLIST;
+		}
+	}
 	switch (type) {
 		case (PARAM_TYPE_INT):
 		default: { //For ints, we may not use all the bytes, so we check how many are necessary
@@ -177,6 +186,24 @@ void parse_param_entry(std::ifstream& stream, std::string& name, int& type, std:
 		case (PARAM_TYPE_BOOL): { //For bools, we don't even need to read in another byte
 			bool value_b = input_char & 0x20;
 			value = value_b;
+		} break;
+		case (PARAM_TYPE_PARAMLIST): {
+			unsigned size = ((((unsigned)input_char) & 0x3C) >> 2) & 0xF;
+			if (input_char & 0x1) {
+				size <<= 8;
+				stream.read(&input_char, 1);
+				size += ((unsigned)input_char) & 0xFF;
+			}
+			ParamTable value_p;
+			for (size_t i = 0; i < size; i++) {
+				Param param;
+				parse_param_entry(stream, param.name, param.type, param.value);
+				if (i != 0 || !stream.eof()) {
+					value_p.add_param(param, i);
+				}
+			}
+
+			value = value_p;
 		} break;
 
 	}

@@ -8,19 +8,20 @@
 #include "Anlst.h"
 
 void Fighter::init() {
+	player->controller.reset_buffer();
 	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
 
 	stage = battle_object_manager->stage;
 
 	if (id == 0) {
-		pos = glm::vec3(stage->start_pos.x, FLOOR_GAMECOORD, 0);
+		pos = glm::vec3(stage->start_pos.x, 0.0f, 0.0f);
 		facing_right = true;
 		internal_facing_right = true;
 		facing_dir = 1.0;
 	}
 	else {
-		pos = glm::vec3(stage->start_pos.y, FLOOR_GAMECOORD, 0);
+		pos = glm::vec3(stage->start_pos.y, 0.0f, 0.0f);
 		facing_right = false;
 		internal_facing_right = false;
 		facing_dir = -1.0;
@@ -130,7 +131,6 @@ void Fighter::set_default_vars() {
 
 void Fighter::init_boxes() {
 	jostle_box.init();
-	jostle_box.bind_scale(&scale);
 	jostle_box.set_rgba(glm::vec4(0, 0, 0, 204));
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);

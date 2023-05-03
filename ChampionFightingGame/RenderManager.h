@@ -31,6 +31,8 @@ public:
 	void update_shader_shadows();
 	void update_framebuffer_dimensions();
 
+	void set_resolution(int width, int height);
+
 	void reset_gl_environment();
 	void refresh_sdl_renderer();
 
@@ -60,8 +62,11 @@ public:
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;
 
-	int s_window_width;
-	int s_window_height;
+	int res_width;
+	int res_height;
+
+	int window_width;
+	int window_height;
 
 	static RenderManager* get_instance();
 	void destroy_instance();

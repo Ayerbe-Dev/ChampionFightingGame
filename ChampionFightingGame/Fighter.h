@@ -151,7 +151,7 @@ public:
 		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
 		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
 		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, ClankKind clank_kind, KoKind ko_kind, bool continue_launch,
+		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
 		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
 		float launch_max_fall_speed, float launch_speed_x, bool use_player_pos
 	);
@@ -185,6 +185,7 @@ public:
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	float calc_launch_frames();
+	glm::vec3 get_trans_offset();
 	std::string get_anim();
 	std::string get_anim_broad();
 
@@ -268,6 +269,42 @@ public:
 		ScriptArg sa(sizeof...(args), queue);
 		active_script_frame.function_calls.push((void (BattleObject::*)(ScriptArg))function);
 		active_script_frame.function_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
+	}
+
+	template<typename ...T>
+	void push_true(void (Fighter::* function)(ScriptArg), T... args) {
+		if (active_script_condition == nullptr) {
+			GameManager::get_instance()->add_crash_log("ERROR: Tried to push conditional function to script "
+			+ active_move_script.name + " without declaring a condition.");
+			return;
+		}
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		ScriptArg sa(sizeof...(args), queue);
+		active_script_condition->true_calls.push((void (BattleObject::*)(ScriptArg))function);
+		active_script_condition->true_args.push(sa);
+		for (int i = 0, max = error_vec.size(); i < max; i++) {
+			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
+				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
+		}
+	}
+
+	template<typename ...T>
+	void push_false(void (Fighter::* function)(ScriptArg), T... args) {
+		if (active_script_condition == nullptr) {
+			GameManager::get_instance()->add_crash_log("ERROR: Tried to push conditional function to script "
+				+ active_move_script.name + " without declaring a condition.");
+			return;
+		}
+		std::vector<int> error_vec;
+		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		ScriptArg sa(sizeof...(args), queue);
+		active_script_condition->false_calls.push((void (BattleObject::*)(ScriptArg))function);
+		active_script_condition->false_args.push(sa);
 		for (int i = 0, max = error_vec.size(); i < max; i++) {
 			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
 				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
@@ -403,6 +440,9 @@ public:
 	virtual void status_hitstun_air();
 	virtual void enter_status_hitstun_air();
 	virtual void exit_status_hitstun_air();
+	virtual void status_hitstun_float();
+	virtual void enter_status_hitstun_float();
+	virtual void exit_status_hitstun_float();
 	virtual void status_blockstun();
 	virtual void enter_status_blockstun();
 	virtual void exit_status_blockstun();

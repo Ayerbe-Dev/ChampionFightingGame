@@ -58,6 +58,7 @@ class MenuObject {
 public:
     MenuObject();
     MenuObject(GameState* owner, MenuObject* parent, bool render_all_children);
+    MenuObject(MenuObject& other);
     MenuObject(MenuObject&& other) noexcept;
     ~MenuObject();
 
@@ -102,5 +103,4 @@ public:
     int active_child;
 
     bool render_all_children;
-    bool moving;
 };

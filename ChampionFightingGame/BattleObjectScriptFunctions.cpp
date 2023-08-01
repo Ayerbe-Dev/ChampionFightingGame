@@ -44,6 +44,6 @@ void BattleObject::execute_wait(float frames, std::function<void()> execute) {
 }
 
 void BattleObject::push_condition(std::function<bool()> condition) {
-	active_script_frame.conditions.emplace(condition);
+	active_script_frame.conditions.push(condition);
 	active_script_condition = &active_script_frame.conditions.back();
 }

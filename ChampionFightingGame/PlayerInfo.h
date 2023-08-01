@@ -13,5 +13,6 @@ public:
 	int control_type;
 	std::vector<Button> custom_mappings;
 	int preferred_chara;
+	int preferred_costume[CHARA_KIND_MAX];
 	int preferred_color[CHARA_KIND_MAX];
 };

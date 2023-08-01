@@ -1,6 +1,5 @@
 ﻿#include "Animation.h"
 #include "Model.h"
-#include "Bone.h"
 #include "GLM Helpers.h"
 
 #include <glm/gtx/matrix_interpolation.hpp>
@@ -9,9 +8,9 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <assimp/Importer.hpp>
 #include "Anlst.h"
 #include "utils.h"
+#include <chrono>
 
 Animation::Animation() {
 	length = 0;
@@ -21,30 +20,31 @@ Animation::Animation() {
 	flag_unused = false;
 }
 
-void Animation::init(std::string name, std::string filename, Model *model) {
+void Animation::init(std::string name, std::string filename, Skeleton skeleton) {
 	this->name = name;
 
 	Assimp::Importer import;
+
 	const aiScene* scene = import.ReadFile(filename, aiProcess_Triangulate);
 
 	if (!scene || !scene->HasAnimations()) {
-			if (!scene) {
-				std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
-			}
-			else {
-				std::cout << "Scene has no animations but Assimp doesn't seem to see the problem \n";
-			}
+		if (!scene) {
+			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
+		}
+		else {
+			std::cout << "Scene has no animations but Assimp doesn't seem to see the problem \n";
+		}
 		return;
 	}
 
 	length = (int)scene->mAnimations[0]->mDuration;
 	std::vector<AnimBone> base_bones;
 
-	for (int i = 0, max = model->bones.size(); i < max; i++) {
+	for (int i = 0, max = skeleton.bone_data.size(); i < max; i++) {
 		AnimBone new_bone;
-		new_bone.id = model->bones[i].id;
-		new_bone.name = model->bones[i].name;
-		new_bone.parent_id = model->bones[i].parent_id;
+		new_bone.id = skeleton.bone_data[i].id;
+		new_bone.name = skeleton.bone_data[i].name;
+		new_bone.parent_id = skeleton.bone_data[i].parent_id;
 		new_bone.anim_matrix = glm::mat4(1.0);
 		base_bones.push_back(new_bone);
 	}
@@ -55,7 +55,7 @@ void Animation::init(std::string name, std::string filename, Model *model) {
 		
 	for (int i = 0; i < scene->mAnimations[0]->mNumChannels; i++) {
 		aiNodeAnim* node = scene->mAnimations[0]->mChannels[i];
-		int index = model->get_bone_id(node->mNodeName.C_Str());
+		int index = skeleton.get_bone_id(node->mNodeName.C_Str());
 		if (index == -1) {
 			std::cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton!" << "\n";
 			continue;
@@ -98,7 +98,7 @@ void Animation::init(std::string name, std::string filename, Model *model) {
 	for (int i = 0, max = keyframes.size(); i < max; i++) {
 		for (int i2 = 0, max2 = keyframes[i].size(); i2 < max2; i2++) {
 			glm::decompose(keyframes[i][i2].anim_matrix, scale_vec, keyframes[i][i2].rot, keyframes[i][i2].pos, decomp_other_v3, decomp_other_v4);
-			int parent_id = model->bones[i2].parent_id;
+			int parent_id = skeleton.bone_data[i2].parent_id;
 			if (parent_id != -1) {
 				keyframes[i][i2].pos = rotate(keyframes[i][i2].pos, keyframes[i][parent_id].rot);
 				keyframes[i][i2].pos += keyframes[i][parent_id].pos;
@@ -114,6 +114,8 @@ AnimationTable::AnimationTable() {
 }
 
 AnimationTable::AnimationTable(AnimationTable& other) {
+	animations.clear();
+	anim_map.clear();
 	for (int i = 0, max = other.animations.size(); i < max; i++) {
 		animations.push_back(other.animations[i]);
 	}
@@ -121,6 +123,8 @@ AnimationTable::AnimationTable(AnimationTable& other) {
 }
 
 AnimationTable::AnimationTable(const AnimationTable& other) {
+	animations.clear();
+	anim_map.clear();
 	for (int i = 0, max = other.animations.size(); i < max; i++) {
 		animations.push_back(other.animations[i]);
 	}
@@ -131,6 +135,8 @@ AnimationTable& AnimationTable::operator=(AnimationTable& other) {
 	if (this == &other) {
 		return *this;
 	}
+	animations.clear();
+	anim_map.clear();
 
 	for (int i = 0, max = other.animations.size(); i < max; i++) {
 		animations.push_back(other.animations[i]);
@@ -144,6 +150,8 @@ AnimationTable& AnimationTable::operator=(const AnimationTable& other) {
 	if (this == &other) {
 		return *this;
 	}
+	animations.clear();
+	anim_map.clear();
 
 	for (int i = 0, max = other.animations.size(); i < max; i++) {
 		animations.push_back(other.animations[i]);
@@ -153,9 +161,9 @@ AnimationTable& AnimationTable::operator=(const AnimationTable& other) {
 	return *this;
 }
 
-void AnimationTable::load_anlst(std::string resource_dir, Model* model) {
+void AnimationTable::load_anlst(std::string resource_dir, Skeleton skeleton) {
 	std::ifstream anim_list;
-	anim_list.open(resource_dir + "/anims/anim_list.anlst", std::ios::binary);
+	anim_list.open(resource_dir + "/anim_list.anlst", std::ios::binary);
 
 	if (anim_list.fail()) {
 		anim_list.close();
@@ -168,7 +176,7 @@ void AnimationTable::load_anlst(std::string resource_dir, Model* model) {
 	bool flag_move;
 	bool flag_no_hitlag_interp;
 	bool flag_unused;
-	if (model != nullptr) {
+	if (!!skeleton) { //lol. lmao.
 		for (size_t i = 0; !anim_list.eof(); i++) {
 			parse_anlst_entry(anim_list, name, filename, end_frame, flag_move, flag_no_hitlag_interp, 
 				flag_unused);
@@ -177,7 +185,7 @@ void AnimationTable::load_anlst(std::string resource_dir, Model* model) {
 			}
 			Animation anim;
 			if (filename != "none") { //If we're loading an animation file, we run normal code
-				anim.init(name, resource_dir + "/anims/" + filename + ".fbx", model);
+				anim.init(name, resource_dir + "/" + filename + ".fbx", skeleton);
 				anim.faf = end_frame;
 			}
 			else { //If there's no animation file, our end frame specifies the length instead of faf
@@ -192,7 +200,7 @@ void AnimationTable::load_anlst(std::string resource_dir, Model* model) {
 			anim_map[name] = i;
 		}
 	}
-	else { //And if we don't even provide a model, we can assume there's no animation file either
+	else { //And if we don't even provide a skeleton, we can assume there's no animation file either
 		for (size_t i = 0; !anim_list.eof(); i++) {
 			parse_anlst_entry(anim_list, name, filename, end_frame, flag_move, flag_no_hitlag_interp, 
 				flag_unused);

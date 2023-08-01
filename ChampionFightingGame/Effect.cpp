@@ -79,8 +79,9 @@ void Effect::attach_shader(Shader* shader) {
 
 EffectInstance Effect::instantiate(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
 	GameObject* game_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
-	EffectInstance ret(this, pos, rot, scale, rgba, (GameObject*)game_object, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame) {
+	EffectInstance ret(this, pos, rot, scale, rgba, (GameObject*)game_object, bone_id, bone_offset, 
+		pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 	return ret;
 }
 
@@ -104,13 +105,15 @@ EffectInstance::EffectInstance() {
 	final_rgba = glm::vec4(1.0);
 	scale_vec = glm::vec3(1.0);
 	flip = false;
+	interp_var = nullptr;
 	frame = 0.0;
 	rate = 1.0;
+	interpolating = false;
 }
 
 EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
 	GameObject* game_object, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame) {
 	this->effect = effect;
 	shader = effect->shader;
 	this->pos = pos;
@@ -129,6 +132,7 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	final_scale = glm::vec3(1.0);
 	final_rgba = glm::vec4(1.0);
 	flip = false;
+	this->interp_var = interp_var;
 	this->rate = rate;
 	this->frame = frame;
 	if (game_object != nullptr) {
@@ -145,10 +149,25 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	else {
 		scale_vec = glm::vec3(1.0);
 	}
+	interpolating = false;
 }
 
 bool EffectInstance::process() {
-	frame += rate;
+	if (interp_var != nullptr && *interp_var) {
+		BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
+		BattleObject* battle_object = static_cast<BattleObject*>(game_object);
+		if (battle_object != nullptr) {
+			frame += 0.2 / (float)(*interp_var) * battle_object_manager->get_world_rate(battle_object->id);
+		}
+		interpolating = true;
+	}
+	else {
+		if (interpolating) {
+			frame -= 0.2;
+		}
+		interpolating = false;
+		frame += rate;
+	}
 	if (frame >= effect->duration) {
 		return false;
 	}

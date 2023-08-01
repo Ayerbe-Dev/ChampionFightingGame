@@ -4,6 +4,7 @@
 #include <chrono>
 #include <functional>
 #include "GameTexture.h"
+#include "Mouse.h"
 
 class GameLoader;
 class MenuObject;
@@ -12,6 +13,14 @@ class GameState{
 public:
     GameState();
     ~GameState();
+    
+    void process_game_state();
+    virtual void process_main();
+
+    void render_game_state();
+    virtual void render_main();
+
+
     virtual void event_up_press();
     virtual void event_down_press();
     virtual void event_left_press();
@@ -43,6 +52,8 @@ public:
     std::chrono::steady_clock::time_point ms;
     std::vector<float> average_ticks;
     std::vector<int> tick_frequency;
+
+    Mouse mouse;
 
     int sub_state = GAME_SUBSTATE_NONE;
     int player_id{0};

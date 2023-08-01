@@ -137,9 +137,12 @@ void Fighter::THROW_OPPONENT(ScriptArg args) {
 	throw_opponent(damage, x_speed, y_speed);
 }
 
-void Fighter::SET_JOSTLE_OFFSET(ScriptArg args) {
-	UNWRAP(offset, float);
-	set_jostle_offset(offset);
+void Fighter::SET_JOSTLE_DIMENSIONS(ScriptArg args) {
+	UNWRAP(x0, float);
+	UNWRAP(y0, float);
+	UNWRAP(x1, float);
+	UNWRAP(y1, float);
+	set_jostle_dimensions(x0, y0, x1, y1);
 }
 
 void Fighter::ADD_POS(ScriptArg args) {

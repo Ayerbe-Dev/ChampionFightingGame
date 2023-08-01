@@ -35,8 +35,8 @@ public:
 	bool load_stage_select();
 	void add_stage_slot(ParamTable param_table, Font* font);
 
-	void process();
-	void render();
+	void process_main();
+	void render_main();
 
 	void event_up_press();
 	void event_down_press();

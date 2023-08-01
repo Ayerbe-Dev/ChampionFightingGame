@@ -1,4 +1,6 @@
 #pragma warning(disable : 4996)
+#pragma warning(disable : 4244) //int to float
+#pragma warning(disable : 4267) //size_t to int
 #include <vector>
 #include <chrono>
 #include <thread>
@@ -39,14 +41,15 @@ int main() {
 	//NOTE: Eventually we will want to hide the console window. When this happens, we need to go into
 	//Properties->Linker->System and change the Sub System from CONSOLE to WINDOWS
 
-	std::cout << std::fixed;
+	std::cout << std::fixed; //Set up some debug info
 	std::cin.setf(std::ios::fixed, std::ios::floatfield);
 
-	if (SDL_Init(SDL_INIT_EVERYTHING)) {
+	if (SDL_Init(SDL_INIT_EVERYTHING)) { //Make the game actually boot
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
-
 	SDL_GameControllerEventState(SDL_ENABLE);
+
+	//Initialize all of the singletons
 
 	AIManager* ai_manager = AIManager::get_instance();
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
@@ -62,13 +65,21 @@ int main() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
+	//A player should always point to a player info. If none are found, it'll point to this blank 
+	//one. This could probably be a member of GameManager but imo that'd be unnecessary.
+
+	PlayerInfo default_player_info;
+	for (int i = 0; i < 2; i++) {
+		game_manager->player[i]->player_info = &default_player_info;
+	}
+
+	//FiraCode is used so often there's no reason not to keep its face loaded
+
 	font_manager->load_face("FiraCode");
 
 	opening_main();
 
-	bool running = game_manager->game_state != GAME_STATE_CLOSE;
-
-	while (running) {
+	while (game_manager->game_state != GAME_STATE_CLOSE) {
 		shader_manager->reset_common_ubos();
 		for (int i = 0; i < MAX_LAYERS; i++) {
 			game_manager->looping[i] = true;
@@ -80,11 +91,9 @@ int main() {
 			game_manager->add_crash_log("Error: Game State was " + std::to_string(game_manager->game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
 			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
 		}
-
-		if (game_manager->game_state == GAME_STATE_CLOSE) {
-			running = false;
-		}
 	}
+
+	//When we're done, kill all the things
 
 	ai_manager->destroy_instance();
 	battle_object_manager->destroy_instance();

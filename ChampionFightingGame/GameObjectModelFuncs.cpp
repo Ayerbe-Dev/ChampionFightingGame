@@ -9,7 +9,7 @@
 glm::vec3 GameObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		Bone& target = model.bones[bone_id];
+		Bone& target = model.bone_data[bone_id];
 		glm::vec3 ret = target.pos;
 		ret *= glm::vec3(16.5, 11.5, 11.5);
 		return ret + offset;
@@ -21,7 +21,7 @@ glm::vec3 GameObject::get_relative_bone_position(int bone_id, glm::vec3 offset) 
 	if (bone_id == -1) {
 		return offset;
 	}
-	Bone& target = model.bones[bone_id];
+	Bone& target = model.bone_data[bone_id];
 	glm::vec3 ret = target.pos;
 	ret *= glm::vec3(16.5, 11.5, 11.5);
 	return ret + offset;
@@ -30,7 +30,7 @@ glm::vec3 GameObject::get_relative_bone_position(int bone_id, glm::vec3 offset) 
 glm::vec3 GameObject::get_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		Bone& target = model.bones[bone_id];
+		Bone& target = model.bone_data[bone_id];
 		glm::vec3 ret = target.pos;
 		ret *= glm::vec3(16.5, 11.5, 11.5);
 		if (anim_kind->flag_move) {
@@ -45,7 +45,7 @@ glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
 	if (bone_id == -1) {
 		return offset;
 	}
-	Bone& target = model.bones[bone_id];
+	Bone& target = model.bone_data[bone_id];
 	glm::vec3 ret = target.pos;
 	ret *= glm::vec3(16.5, 11.5, 11.5);
 	if (anim_kind->flag_move) {
@@ -58,14 +58,14 @@ glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
 glm::quat GameObject::get_bone_rotation_quat(std::string bone_name) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		glm::quat ret = model.bones[bone_id].rot;
+		glm::quat ret = model.bone_data[bone_id].rot;
 		return ret;
 	}
 	return glm::quat();
 }
 
 glm::quat GameObject::get_bone_rotation_quat(int bone_id) {
-	glm::quat ret = model.bones[bone_id].rot;
+	glm::quat ret = model.bone_data[bone_id].rot;
 	return ret;
 }
 

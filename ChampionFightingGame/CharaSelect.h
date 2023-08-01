@@ -16,23 +16,42 @@ void chara_select_main();
 class CssSlot {
 public:
     CssSlot();
-    CssSlot(int id, std::string resource_name, std::string chara_name);
-    void init(int id, std::string resource_name, std::string chara_name);
-    void set_x_pos(int x);
-    void set_y_pos(int y);
-    int get_texture_width();
-    int get_chara_kind();
-    void render();
-    bool is_below(int y);
-    bool is_above(int y);
+    CssSlot(ParamTable param_table);
 
-    GameTexture texture;
+    void init(ParamTable param_table);
+    void render();
+
+    int get_chara_kind() const;
+
     int my_col;
     int my_row;
     int chara_kind;
     std::string resource_dir;
     std::string chara_name;
-};;
+
+    std::vector<std::pair<std::string, int>> costumes;
+
+    GameTexture render_texture;
+    AnimationTable anim_table;
+};
+
+class CssPlayer {
+public:
+    CssPlayer();
+    void init(PlayerInfo* player_info);
+
+    int my_row;
+    int my_col;
+
+    int selected_index;
+    int selected_costume;
+    int selected_color;
+
+    CharaSelectionState state;
+
+    GameTexture mobile_css_slot;
+    GameObject demo_model;
+};
 
 class CSS: public GameState{
 public:
@@ -40,7 +59,6 @@ public:
     ~CSS();
 
     bool load_css();
-    void add_chara_slot(ParamTable param_table);
 
     void event_select_press();
     void event_back_press();
@@ -50,26 +68,39 @@ public:
     void event_left_press();
     void event_right_press();
     
-    void render();
+    void process_main();
+    void render_main();
 
     int get_chara_kind(int player_id);
-    void select_slot();
-    void find_prev_chara_kind(int chara_kind);
-
-    int player_selected_index[2];
-    int my_col[2];
-    int my_row[2];
 
     int num_cols;
     int num_rows;
     int cols_offset;
 
     Player *player[2];
-    GameTexture mobile_css_slots[2];
-    bool mobile_slots_active[2] = { false };
+    CssPlayer css_player[2];
+
+    GameObject stage_demo;
+
     std::vector<CssSlot> chara_slots;
+    std::vector<Light> lights;
+
+    int loaded_chars;
+    int thread_loaded_chars;
 private:
-    CssSlot big_chara_slots[2];
+    void select_slot();
+    void select_costume();
+    void select_color();
+
+    void select_default_chara_kind(int chara_kind);
+
+    GameTexture big_chara_slots[2];
     CssSlot *chara_slots_ordered[10][4];
     bool is_last_input_right[2]{ false };
+    
+    int gbuffer_window_counter;
+    glm::vec4 gbuffer_mul;
+    glm::vec4 gbuffer_mul_offset;
 };
+
+void gamestate_charaselect_loading_thread(void* charaselect_arg);

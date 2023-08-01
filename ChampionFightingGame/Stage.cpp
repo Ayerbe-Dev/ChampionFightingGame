@@ -6,14 +6,21 @@
 #include "ParamAccessor.h"
 #include <fstream>
 
-StageInfo::StageInfo() {}
+StageInfo::StageInfo() {
+	stage_kind = 0;
+}
 
 StageInfo::StageInfo(int stage_kind, std::string stage_name) {
 	this->stage_kind = stage_kind;
 	resource_dir = "resource/stage/" + stage_name + "/";
 }
 
-Stage::Stage() {}
+Stage::Stage() {
+	camera_bounds = glm::vec2(0.0, 0.0);
+	stage_bounds = glm::vec2(0.0, 0.0);
+	stage_kind = 0;
+	start_pos = glm::vec2(0.0);
+}
 
 void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_manager) {
 	battle_object_manager->stage = this;

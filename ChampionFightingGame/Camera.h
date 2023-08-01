@@ -28,7 +28,8 @@ public:
 	void adjust_view(float x, float y, float z, float speed = 0.0);
 
 	void set_fov(float fov);
-
+	
+	void reset_camera();
 	void update_view();
 	void follow_players();
 	void follow_anim();
@@ -53,7 +54,6 @@ public:
 	glm::vec3 base_pos;
 	glm::mat4 flip_matrix;
 
-	//imagine having self documenting names, couldnt be me. This determines the linear scale on which the camera rotates in auto mode
 	float auto_linear_scale;
 
 	Fighter* fighter[2];

@@ -18,6 +18,9 @@ GameObject::GameObject() {
 	prev_anim_rate = 0.0;
 	prev_anim_offset = glm::vec3(0.0);
 	pos = glm::vec3(0.0);
+	shader = nullptr;
+	shadow_shader = nullptr;
+	outline_shader = nullptr;
 }
 
 GameObject::GameObject(GameObject& other) {

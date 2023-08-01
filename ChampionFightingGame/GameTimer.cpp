@@ -14,11 +14,21 @@ GameTimer::GameTimer(int time) {
 };
 
 void GameTimer::init(int time) {
-	deca_seconds = time / 10;
-	seconds = time % 10;
-	deca_frames = 5;
-	frames = 9;
-	clock_mode = 1;
+	max_time = time;
+	if (time == -1) {
+		deca_seconds = 9;
+		seconds = 9;
+		deca_frames = 5;
+		frames = 9;
+		clock_mode = 1;
+	}
+	else {
+		deca_seconds = time / 10;
+		seconds = time % 10;
+		deca_frames = 5;
+		frames = 9;
+		clock_mode = 1;
+	}
 
 	clock.init("resource/game_state/battle/ui/timer/clockface.png");
 	second_texture.init("resource/game_state/battle/ui/timer/bigtypeface.png");
@@ -53,6 +63,15 @@ void GameTimer::init(int time) {
 	clock.set_sprite(1);
 }
 
+void GameTimer::reset() {
+	deca_seconds = max_time / 10;
+	seconds = max_time % 10;
+	deca_frames = 5;
+	frames = 9;
+	clock_mode = 1;
+	time_up = false;
+}
+
 void GameTimer::process() {
 	if (!BattleObjectManager::get_instance()->frame_elapsed()) {
 		return;
@@ -65,13 +84,16 @@ void GameTimer::process() {
 			else {
 				deca_frames = 5;
 				frames = 9;
-				if (seconds == 0) {
-					deca_seconds--;
-					seconds = 9;
-				}
-				else {
-					seconds--;
-				}
+				if (max_time != -1) {
+					if (seconds == 0) {
+						deca_seconds--;
+						seconds = 9;
+					}
+					else {
+						seconds--;
+					}
+
+				}			
 			}
 		}
 		else {

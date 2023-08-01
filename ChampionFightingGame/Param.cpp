@@ -264,7 +264,7 @@ ParamTable ParamTable::get_param_table(std::string param_name) {
 
 ParamTable ParamTable::get_param_table(int param_index) {
     if (params.size() <= param_index) {
-        std::cout << "Param Index " << param_index << "is out of range\n";
+        std::cout << "Param Index " << param_index << " is out of range\n";
         return ParamTable();
     }
     if (params[param_index].value.type() != typeid(ParamTable)) {
@@ -282,8 +282,12 @@ int ParamTable::get_param_type(std::string param_name) {
     return params[param_map[param_name]].type;
 }
 
-bool ParamTable::load_failed() {
+bool ParamTable::load_failed() const {
     return load_fail;
+}
+
+int ParamTable::get_num_params() const {
+    return params.size();
 }
 
 /*

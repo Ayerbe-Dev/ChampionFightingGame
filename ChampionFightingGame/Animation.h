@@ -3,14 +3,13 @@
 #include <unordered_map>
 #include <iostream>
 
-class Model;
-struct AnimBone;
+#include "Bone.h"
 
 class Animation {
 public:
 	Animation();
 
-	void init(std::string name, std::string filename, Model* model);
+	void init(std::string name, std::string filename, Skeleton skeleton);
 
 	std::string name;
 	std::vector<std::vector<AnimBone>> keyframes;
@@ -28,7 +27,7 @@ public:
 	AnimationTable(const AnimationTable& other);
 	AnimationTable& operator=(AnimationTable& other);
 	AnimationTable& operator=(const AnimationTable& other);
-	void load_anlst(std::string resource_dir, Model* model);
+	void load_anlst(std::string resource_dir, Skeleton skeleton);
 	void unload_animations();
 	Animation* get_anim(std::string anim_name, bool verbose);
 private:

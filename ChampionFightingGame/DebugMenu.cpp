@@ -19,15 +19,15 @@ void debug_main() {
 
 	DebugMenu *debug = new DebugMenu;
 
-	resource_manager->load_model("resource/chara/rowan/model/model.dae");
+	resource_manager->load_model("resource/chara/rowan/model/m0/model.dae");
 
 	GameObject go1;
-	go1.model = resource_manager->get_model("resource/chara/rowan/model/model.dae");
+	go1.model.load_model_instance("resource/chara/rowan/model/m0/model.dae");
 	go1.model.load_textures("c0");
 	go1.init_shader();
 
 	GameObject go2;
-	go2.model = resource_manager->get_model("resource/chara/rowan/model/model.dae");
+	go2.model.load_model_instance("resource/chara/rowan/model/m0/model.dae");
 	go2.model.load_textures("c1");
 	go2.init_shader();
 
@@ -81,11 +81,12 @@ void debug_main() {
 		SDL_GL_SwapWindow(render_manager->window);
 	}
 	cotr_imgui_terminate();
+
 	go1.model.unload_textures();
 	go2.model.unload_textures();
-	resource_manager->unuse_model("resource/chara/rowan/model/model.dae");
-	resource_manager->unuse_model("resource/chara/rowan/model/model.dae");
-	resource_manager->unload_model("resource/chara/rowan/model/model.dae");
+	resource_manager->unuse_model("resource/chara/rowan/model/m0/model.dae");
+	resource_manager->unuse_model("resource/chara/rowan/model/m0/model.dae");
+	resource_manager->unload_model("resource/chara/rowan/model/m0/model.dae");
 	delete debug;
 }
 

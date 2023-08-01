@@ -18,7 +18,7 @@ public:
     ~MainMenu();
 
     void process_main();
-    void render();
+    void render_main();
     void process_background();
 
     void event_up_press();

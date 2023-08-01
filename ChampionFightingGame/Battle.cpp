@@ -40,19 +40,15 @@
 #include "SaveManager.h"
 #include "FontManager.h"
 #include "ShaderManager.h"
-
-#include "debug.h"
-#ifdef DEBUG
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl3.h"
-#endif
+#include "ResourceManager.h"
+#include "utils.h"
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 	ShaderManager* shader_manager = ShaderManager::get_instance();
+	ResourceManager* resource_manager = ResourceManager::get_instance();
 
 	font_manager->load_face("Fiend-Oblique");
 
@@ -61,7 +57,9 @@ void battle_main() {
 		player[i] = game_manager->player[i];
 	}
 
-	if (player[0]->chara_kind == player[1]->chara_kind && player[0]->alt_color == player[1]->alt_color) {
+	if (player[0]->chara_kind == player[1]->chara_kind 
+		&& player[0]->alt_costume == player[1]->alt_costume
+		&& player[0]->alt_color == player[1]->alt_color) {
 		if (player[0]->alt_color == 0) {
 			player[1]->alt_color++;
 		}
@@ -71,9 +69,11 @@ void battle_main() {
 	}
 
 	Battle *battle = new Battle;
+
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
+
 	while (*battle->looping) {
 		battle->frame_delay_check_fps();
 
@@ -94,14 +94,12 @@ void battle_main() {
 			}
 		}
 
-		battle->process_main();
-		render_manager->execute_buffered_events();
-		battle->render_world();
-		battle->render_ui();
-		battle->fps_counter.render();
-		battle->fps_texture.render();
+		battle->process_game_state();
+		battle->render_game_state();
 
-		battle->check_collisions();
+		if (battle->state == BATTLE_STATE_BATTLE) {
+			battle->check_collisions();
+		}
 
 #ifdef DEBUG
 		cotr_imgui_debug_battle(battle);
@@ -109,10 +107,10 @@ void battle_main() {
 
 		SDL_GL_SwapWindow(render_manager->window);
 	}
-
 #ifdef DEBUG
 	cotr_imgui_terminate();
 #endif
+
 	font_manager->unload_face("Fiend-Oblique");
 	delete battle;
 }
@@ -124,6 +122,20 @@ Battle::Battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
+
+	num_rounds = 2;
+	sudden_death = false;
+	ko_timer = 0;
+
+	switch (game_manager->game_context) {
+		case (GAME_CONTEXT_STORY):
+		case (GAME_CONTEXT_TRAINING): {
+			state = BATTLE_STATE_BATTLE;
+		} break;
+		default: {
+			state = BATTLE_STATE_PRE_INTRO;
+		} break;
+	}
 
 	game_manager->set_menu_info(this);
 
@@ -171,6 +183,7 @@ Battle::Battle() {
 	}
 
 	camera = &render_manager->camera;
+	camera->reset_camera();
 	for (int i = 0; i < 2; i++) {
 		camera->fighter[i] = fighter[i];
 	}
@@ -178,14 +191,14 @@ Battle::Battle() {
 	camera->set_fov(45.0);
 
 	for (int i = 0; i < 2; i++) {
-		meters[i].init(fighter[i]);
+		meters[i].init(fighter[i], 0);
 	
 		inc_thread();
 		player_indicator[i] = PlayerIndicator(fighter[i]);
 
 		inc_thread();
 
-		training_info[i].init(fighter[i], info_font);
+		training_info[i].init(fighter[i], &info_font);
 
 		inc_thread();
 	}
@@ -194,18 +207,21 @@ Battle::Battle() {
 	render_manager->update_shader_lights();
 	render_manager->update_shader_shadows();
 	
-	timer.init(99);
+	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
+		timer.init(-1);
+	}
+	else {
+		timer.init(99);
+	}
 	inc_thread();
 
 	bool loading = true;
 	while (loading && *looping) {
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
-
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.poll_buttons();
 			if (player[i]->controller.is_any_inputs()) {
 				loading = false;
 				
@@ -215,9 +231,9 @@ Battle::Battle() {
 		}
 	}
 	for (int i = 0; i < 2; i++) {
-		thread_manager->add_thread(i, fighter_thread, (void*)fighter[i]);
+		thread_manager->add_thread(i, gamestate_battle_fighter_thread, (void*)fighter[i]);
 	}
-	thread_manager->add_thread(THREAD_KIND_UI, ui_thread, (void*)this);
+	thread_manager->add_thread(THREAD_KIND_UI, gamestate_battle_ui_thread, (void*)this);
 	game_loader->finished = true;
 
 	if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_STAGE) {
@@ -240,6 +256,7 @@ Battle::~Battle() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
+	camera->reset_camera();
 
 	//Unload each fighter and related info
 
@@ -276,13 +293,71 @@ Battle::~Battle() {
 }
 
 void Battle::process_main() {
+	switch (state) {
+	case(BATTLE_STATE_PRE_INTRO): {
+		process_pre_intro();
+	} break;
+	case (BATTLE_STATE_INTRO): {
+		process_intro();
+	} break;
+	default:
+	case (BATTLE_STATE_BATTLE): {
+		process_battle();
+	} break;
+	case (BATTLE_STATE_KO): {
+		process_ko();
+	} break;
+	case (BATTLE_STATE_OUTRO): {
+		process_outro();
+	} break;
+	}
+}
+
+void Battle::process_pre_intro() {
+	state = BATTLE_STATE_INTRO;
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->change_anim("intro");
+	}
+}
+
+void Battle::process_intro() {
+	SoundManager* sound_manager = SoundManager::get_instance();
+	for (int i = 0; i < 2; i++) {
+		player[i]->controller.poll_buttons();
+		fighter[i]->rot.z = glm::radians(90.0);
+		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
+			player[i]->controller.poll_buttons();
+			goto POST_INTRO;
+		}
+	}
+	if (!fighter[0]->is_anim_end) {
+		fighter[0]->process_animate();
+		fighter[0]->active_move_script.execute(fighter[0], fighter[0]->frame);
+		fighter[0]->process_post_animate();
+		sound_manager->process_sounds();
+	}
+	else if (!fighter[1]->is_anim_end) {
+		fighter[1]->process_animate();
+		fighter[1]->active_move_script.execute(fighter[1], fighter[1]->frame);
+		fighter[1]->process_post_animate();
+		sound_manager->process_sounds();
+	}
+	else {
+		POST_INTRO:
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
+		}
+		process_battle();
+		state = BATTLE_STATE_BATTLE;
+	}
+}
+
+void Battle::process_battle() {
 	GameManager* game_manager = GameManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
-	keyboard_state = SDL_GetKeyboardState(NULL);
-	mouse.poll_buttons();
 	process_debug_boxes();
 
-	debug_controller.poll_buttons(keyboard_state);
+	debug_controller.poll_buttons();
 	if (debug_controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 		if (frame_pause) {
 			sound_manager->resume_se_all();
@@ -310,15 +385,166 @@ void Battle::process_main() {
 		camera->camera_main();
 	}
 	sound_manager->process_sounds();
-//	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
+	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
 		process_training();
-//	}
+	}
 	if (battle_object_manager->frame_elapsed()) {
 		battle_object_manager->world_frame = 0.0;
+	}
+	if (timer.time_up) {
+		state = BATTLE_STATE_KO;
+		ko_timer = 300;
 	}
 	if (game_manager->is_crash()) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
+}
+
+void Battle::process_ko() {
+	SoundManager* sound_manager = SoundManager::get_instance();
+
+	battle_object_manager->world_frame += battle_object_manager->world_rate;
+	pre_process_fighter();
+	for (int i = 0; i < 2; i++) {
+		thread_manager->notify_thread(i);
+	}
+	process_ui();
+	stage.process();
+	post_process_fighter();
+	thread_manager->wait_thread(THREAD_KIND_UI);
+	camera->camera_main();
+	sound_manager->process_sounds();
+
+	if (battle_object_manager->frame_elapsed()) {
+		battle_object_manager->world_frame = 0.0;
+	}
+
+	int winner = 2;
+	if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
+		winner = 0;
+	}
+	if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
+		winner--; //If player 1's health is at 0, this will drop our winner from 2 to 1, indicating
+		//player 2 winning. If not, it will drop our winner from 0 to -1, indicating a timeout
+	}
+	if (winner != 2 && winner != -1 && fighter[!winner]->status_kind == FIGHTER_STATUS_KNOCKDOWN) {
+		fighter[!winner]->change_status(FIGHTER_STATUS_ROUND_END);
+	}
+
+	if (ko_timer > 180) {
+		ko_timer--;
+	}
+	else {
+		if (winner != 2 && winner != -1) {
+			//Single KO
+			if (fighter[winner]->is_actionable() && fighter[winner]->situation_kind == FIGHTER_SITUATION_GROUND) {
+				if (meters[winner].wins == num_rounds) {
+					state = BATTLE_STATE_OUTRO;
+				}
+				else {
+					fighter[winner]->change_status(FIGHTER_STATUS_ROUND_END);
+					fighter[!winner]->change_status(FIGHTER_STATUS_ROUND_END, false);
+					if (fighter[winner]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[winner]->get_local_param_float("health")) {
+						fighter[winner]->change_anim("round_win_perfect");
+					}
+					else {
+						fighter[winner]->change_anim("round_win");
+					}
+				}
+			}
+			else {
+				if (fighter[winner]->status_kind != FIGHTER_STATUS_ROUND_END) {
+					ko_timer--;
+					if (!ko_timer) { //If you remain inactionable for 5 seconds after KOing the
+						//opponent for whatever reason, we just skip to the next round without you
+						if (meters[winner].wins == num_rounds) {
+							state = BATTLE_STATE_OUTRO;
+						}
+						else {
+							meters[winner].wins++;
+							for (int i = 0; i < 2; i++) {
+								fighter[i]->reset();
+							}
+							state = BATTLE_STATE_BATTLE;
+						}
+					}
+				}
+				else {
+					if (fighter[winner]->is_anim_end) {
+						meters[winner].wins++;
+						for (int i = 0; i < 2; i++) {
+							fighter[i]->reset();
+						}
+						state = BATTLE_STATE_BATTLE;
+					}
+				}
+			}
+		}
+		else {
+			//Double KO or Timeout Draw
+			if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+				if (meters[0].wins == num_rounds - 1 && meters[1].wins == num_rounds - 1) {
+					for (int i = 0; i < 2; i++) {
+						fighter[i]->reset();
+					}
+					sudden_death = true;
+					state = BATTLE_STATE_BATTLE;
+				}
+				else {
+					bool game_over = false;
+					for (int i = 0; i < 2; i++) {
+						fighter[i]->reset();
+						meters[i].wins++;
+						if (meters[i].wins == num_rounds) {
+							game_over = true;
+						}
+					}
+					if (game_over) {
+						state = BATTLE_STATE_OUTRO;
+					}
+					else {
+						state = BATTLE_STATE_BATTLE;
+					}
+				}
+			}
+			else {
+				//Timeout with a winner
+				if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] > fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+					winner = 0;
+				}
+				else {
+					winner = 1;
+				}
+				if (fighter[0]->is_actionable() && fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
+					&& fighter[1]->is_actionable() && fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					if (meters[winner].wins == num_rounds) {
+						state = BATTLE_STATE_OUTRO;
+					}
+					else {
+						fighter[winner]->change_status(FIGHTER_STATUS_ROUND_END);
+						fighter[winner]->change_anim("round_win_timeout");
+						fighter[!winner]->change_status(FIGHTER_STATUS_ROUND_END);
+						fighter[!winner]->change_anim("round_lose_timeout");
+					}
+				}
+				else {
+					ko_timer--;
+					if ((fighter[winner]->is_anim_end && fighter[!winner]->is_anim_end) || !ko_timer) {
+						meters[winner].wins++;
+						for (int i = 0; i < 2; i++) {
+							fighter[i]->reset();
+						}
+						timer.reset();
+						state = BATTLE_STATE_BATTLE;
+					}
+				}
+			}
+		}
+	}	
+}
+
+void Battle::process_outro() {
+
 }
 
 void Battle::process_debug_boxes() {
@@ -392,8 +618,8 @@ void Battle::pre_process_fighter() {
 						fighter[!i]->internal_facing_right = false;
 						fighter[!i]->internal_facing_dir = -1.0;
 					}
-					fighter[i]->add_pos(glm::vec3(-1.0 * fighter[i]->facing_dir, 0, 0));
-					fighter[!i]->add_pos(glm::vec3(-1.0 * fighter[!i]->facing_dir, 0, 0));
+					fighter[i]->add_pos(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
+					fighter[!i]->add_pos(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
 
 					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
 					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
@@ -405,12 +631,12 @@ void Battle::pre_process_fighter() {
 
 void Battle::process_fighter() {	
 	for (int i = 0; i < 2; i++) {
-		player[i]->controller.poll_buttons(keyboard_state);
+		player[i]->controller.poll_buttons();
 		thread_manager->notify_thread(i);
 	}
 }
 
-void fighter_thread(void* fighter_arg) {
+void gamestate_battle_fighter_thread(void* fighter_arg) {
 	Fighter* fighter = (Fighter*)fighter_arg;
 	fighter->fighter_main();
 }
@@ -443,10 +669,49 @@ void Battle::process_training() {
 		if (training_info[i].frame_advantage.get_text() != advantage) {
 			training_info[i].frame_advantage.update_text(info_font, advantage, color, glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
+		if (fighter[i]->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] == 0) {
+			fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH], fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] + 10.0, fighter[i]->get_local_param_float("health"));
+			fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
+
+		}
+
+		short new_input_code = fighter[i]->get_stick_dir_no_lr() << 7;
+		for (int i2 = 0; i2 < 6; i2++) {
+			if (fighter[i]->check_button_on(BUTTON_LP + i2)) {
+				new_input_code |= 1 << i2;
+			}
+		}
+		if (new_input_code != training_info[i].mini_visualizers.front().input_code) {
+			training_info[i].mini_visualizers.front().keep_frames = false;
+			training_info[i].mini_visualizers.pop_back();
+			for (std::list<InputVisualizer>::iterator it = training_info[i].mini_visualizers.begin(), 
+				max = training_info[i].mini_visualizers.end(); it != max; it++) {
+				for (int i2 = 0; i2 < 6; i2++) {
+					it->buttons[i2].add_pos(glm::vec3(0.0, 90.0, 0.0));
+				}
+				
+				it->stick[(it->input_code >> 7) - 1].add_pos(glm::vec3(0.0, 90.0, 0.0));
+				it->num_frames.add_pos(glm::vec3(0.0, 90.0, 0.0));
+				it->background.add_pos(glm::vec3(0.0, 90.0, 0.0));
+			}
+			training_info[i].mini_visualizers.push_front(InputVisualizer());
+			training_info[i].mini_visualizers.front().init(fighter[i], &info_font, true);
+			training_info[i].mini_visualizers.front().input_code = new_input_code;
+		}
+		else if ((!frame_pause) || (frame_pause && debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE))) {
+			training_info[i].mini_visualizers.front().frame_timer = clamp(
+				training_info[i].mini_visualizers.front().frame_timer, 
+				training_info[i].mini_visualizers.front().frame_timer + 1, 99
+			);
+			training_info[i].mini_visualizers.front().num_frames.update_text(info_font, 
+				std::to_string(training_info[i].mini_visualizers.front().frame_timer), 
+				glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 1.0)
+			);
+		}
 	}
 }
 
-void ui_thread(void* battle_arg) {
+void gamestate_battle_ui_thread(void* battle_arg) {
 	Battle* battle = (Battle*)battle_arg;
 	battle->timer.process();
 	for (int i = 0; i < 2; i++) {
@@ -474,8 +739,16 @@ void Battle::process_frame_pause() {
 	}
 }
 
+void Battle::render_main() {
+	render_world();
+	if (state == BATTLE_STATE_BATTLE) {
+		render_ui();
+	}
+}
+
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
+	render_manager->execute_buffered_events();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 
@@ -659,11 +932,11 @@ void Battle::render_ui() {
 	timer.render();
 	//TRAINING PASS
 
-//	if (*game_context == GAME_CONTEXT_TRAINING) {
+	if (*game_context == GAME_CONTEXT_TRAINING) {
 		for (int i = 0; i < 2; i++) {
 			training_info[i].render();
 		}
-//	}
+	}
 
 }
 

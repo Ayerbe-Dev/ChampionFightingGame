@@ -8,6 +8,11 @@
 
 Player::Player() {
 	id = -1;
+	chara_kind = CHARA_KIND_ROWAN;
+	alt_costume = 0;
+	alt_color = 0;
+	control_type = CONTROL_TYPE_ADVANCE;
+
 	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.stick_hold_v_timer = timer;
 	controller.stick_hold_h_timer = timer;
@@ -93,5 +98,6 @@ void Player::load_player(int index) {
 }
 
 void Player::set_alt_for_chara() {
+	alt_costume = player_info->preferred_costume[chara_kind];
 	alt_color = player_info->preferred_color[chara_kind];
 }

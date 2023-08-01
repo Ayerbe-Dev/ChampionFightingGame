@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+#include "PlayerInfo.h"
 #include "GameState.h"
 #include <functional>
 #include <queue>
@@ -12,7 +13,7 @@ public:
 	void operator=(const GameManager& other) = delete;
 
 	RenderManager* render_manager;
-
+	
 	Player *player[2];
 	int layer = 0;
 	int game_state;

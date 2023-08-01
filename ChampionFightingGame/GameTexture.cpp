@@ -1,14 +1,17 @@
 #include "GameTexture.h"
-#include "GLEW Helpers.h"
+
+#include <fstream>
 #include <glew/glew.h>
+#include "stb_image.h"
+
 #include "Shader.h"
 #include "RenderManager.h"
-#include "utils.h"
-#include <fstream>
-#include "stb_image.h"
 #include "ThreadManager.h"
 #include "ResourceManager.h"
 #include "ShaderManager.h"
+
+#include "GLEW Helpers.h"
+#include "utils.h"
 
 GameTexture::GameTexture() {
 	VAO = 0;
@@ -18,8 +21,8 @@ GameTexture::GameTexture() {
 	v_flipped = false;
 	width = 0;
 	height = 0;
-	width_scale_mul = 1.0;
-	height_scale_mul = 1.0;
+	width_scale = 1.0;
+	height_scale = 1.0;
 	width_orientation = 0;
 	height_orientation = 0;
 	matrix = glm::mat4(1.0);
@@ -49,44 +52,36 @@ GameTexture::GameTexture(Font &font, std::string text, glm::vec4 rgba, glm::vec4
 /// <param name="that"></param>
 GameTexture::GameTexture(const GameTexture& that) {
 	name = that.name;
-	pos = glm::vec3(0.0, 0.0, 0.0);
-	rot = glm::vec3(0.0, 0.0, 0.0);
-	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
-	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
-	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
-	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	pos = that.pos;
+	rot = that.rot;
+
 	for (int i = 0; i < 4; i++) {
+		tex_data[i] = that.tex_data[i];
 		tex_accessor[i] = &tex_data[i];
 	}
 	shader = that.shader;
-	shader->use();
 
 	VAO = that.VAO;
 	VBO = that.VBO;
 	texture = that.texture;
 	text = that.text;
 
+	colormod = that.colormod;
+	alpha = that.alpha;
+	orientation = that.orientation;
+
 	width = that.width;
 	height = that.height;
-	width_scale_mul = that.width_scale_mul;
-	height_scale_mul = that.height_scale_mul;
-	h_flipped = that.h_flipped;
-	v_flipped = that.v_flipped;
+
+	width_scale = that.width_scale;
+	height_scale = that.height_scale;
 	width_orientation = that.width_orientation;
 	height_orientation = that.height_orientation;
+
+	h_flipped = that.h_flipped;
+	v_flipped = that.v_flipped;
 	loaded = that.loaded;
 	using_resource = that.using_resource;
-
-	float width_scale = (float)width / (float)WINDOW_WIDTH;
-	float height_scale = (float)height / (float)WINDOW_HEIGHT;
-	for (int i = 0; i < 4; i++) {
-		tex_data[i].pos.x *= width_scale;
-		tex_data[i].pos.y *= height_scale;
-	}
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	shader->set_int("f_texture", 0);
 }
 
 void GameTexture::init(std::string path) {
@@ -129,8 +124,8 @@ void GameTexture::init(std::string path) {
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	this->width = width;
 	this->height = height;
-	width_scale_mul = 1.0;
-	height_scale_mul = 1.0;
+	this->width_scale = 1.0;
+	this->height_scale = 1.0;
 
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x *= width_scale;
@@ -191,8 +186,8 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	this->height = height;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
-	width_scale_mul = 1.0;
-	height_scale_mul = 1.0;
+	this->width_scale = 1.0;
+	this->height_scale = 1.0;
 
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x *= width_scale;
@@ -247,8 +242,8 @@ void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 b
 
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
-	width_scale_mul = 1.0;
-	height_scale_mul = 1.0;
+	this->width_scale = 1.0;
+	this->height_scale = 1.0;
 
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x *= width_scale;
@@ -513,51 +508,51 @@ void GameTexture::scale_all_percent(float percent, bool crop) {
 }
 
 void GameTexture::set_width(int new_width) {
-	float old_width_scale = ((float)width * width_scale_mul) / (float)WINDOW_WIDTH;
+	float old_width_scale = ((float)width * width_scale) / (float)WINDOW_WIDTH;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x /= old_width_scale;
 	}
-	float width_scale = ((float)new_width * width_scale_mul) / (float)WINDOW_WIDTH;
+	float new_width_scale = ((float)new_width * width_scale) / (float)WINDOW_WIDTH;
 	for (int i = 0; i < 4; i++) {
-		tex_data[i].pos.x *= width_scale;
+		tex_data[i].pos.x *= new_width_scale;
 	}
 	width = new_width;
 }
 
 void GameTexture::set_width_scale(float scale) {
-	float old_width_scale = ((float)width * width_scale_mul) / (float)WINDOW_WIDTH;
+	float old_width_scale = ((float)width * width_scale) / (float)WINDOW_WIDTH;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.x /= old_width_scale;
 	}
-	float width_scale = ((float)width * scale) / (float)WINDOW_WIDTH;
+	float new_width_scale = ((float)width * scale) / (float)WINDOW_WIDTH;
 	for (int i = 0; i < 4; i++) {
-		tex_data[i].pos.x *= width_scale;
+		tex_data[i].pos.x *= new_width_scale;
 	}
-	width_scale_mul = scale;
+	width_scale = scale;
 }
 
 void GameTexture::set_height(int new_height) {
-	float old_height_scale = ((float)height * height_scale_mul) / (float)WINDOW_HEIGHT;
+	float old_height_scale = ((float)height * height_scale) / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.y /= old_height_scale;
 	}
-	float height_scale = ((float)new_height * height_scale_mul) / (float)WINDOW_HEIGHT;
+	float new_height_scale = ((float)new_height * height_scale) / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
-		tex_data[i].pos.y *= height_scale;
+		tex_data[i].pos.y *= new_height_scale;
 	}
 	height = new_height;
 }
 
 void GameTexture::set_height_scale(float scale) {
-	float old_height_scale = ((float)height * height_scale_mul) / (float)WINDOW_HEIGHT;
+	float old_height_scale = ((float)height * height_scale) / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
 		tex_data[i].pos.y /= old_height_scale;
 	}
-	float height_scale = ((float)height * scale) / (float)WINDOW_HEIGHT;
+	float new_height_scale = ((float)height * scale) / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
-		tex_data[i].pos.y *= height_scale;
+		tex_data[i].pos.y *= new_height_scale;
 	}
-	height_scale_mul = scale;
+	height_scale = scale;
 }
 
 void GameTexture::set_scale(float scale) {
@@ -565,12 +560,28 @@ void GameTexture::set_scale(float scale) {
 	set_height_scale(scale);
 }
 
-int GameTexture::get_width() {
+int GameTexture::get_base_width() {
 	return width;
 }
 
-int GameTexture::get_height() {
+int GameTexture::get_base_height() {
 	return height;
+}
+
+float GameTexture::get_width_scale() {
+	return width_scale;
+}
+
+float GameTexture::get_height_scale() {
+	return height_scale;
+}
+
+float GameTexture::get_width() {
+	return width * width_scale;
+}
+
+float GameTexture::get_height() {
+	return height * height_scale;
 }
 
 std::string GameTexture::get_text() {
@@ -633,7 +644,8 @@ void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	if (frames == 0.0) {
 		return;
 	}
-	this->target_pos = (target_pos - pos) / glm::vec3(frames);
+	this->target_pos = target_pos;
+	this->target_pos_per_frame = (target_pos - pos) / glm::vec3(frames);
 	this->target_pos_frames = glm::vec3(frames);
 }
 
@@ -693,8 +705,8 @@ void GameTexture::reorient() {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
-	width_scale_mul = 1.0;
-	height_scale_mul = 1.0;
+	width_scale = 1.0;
+	height_scale = 1.0;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	for (int i = 0; i < 4; i++) {
@@ -743,7 +755,12 @@ void GameTexture::process() {
 		target_right_frames--;
 	}
 	if (target_pos_frames != glm::vec3(0.0)) {
-		pos += target_pos;
+		if (target_pos_frames == glm::vec3(1.0)) { //Compensates for rounding errors
+			pos = target_pos;
+		}
+		else {
+			pos += target_pos_per_frame;
+		}
 		target_pos_frames -= glm::vec3(1.0);
 	}
 }
@@ -756,38 +773,38 @@ void GameTexture::prepare_render() {
 
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
-		gl_pos.x -= WINDOW_WIDTH - (width * width_scale_mul);
-		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale_mul);
+		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
+		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
-		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale_mul);
+		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
 		gl_pos.x *= -1.0;
-		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale_mul);
-		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale_mul);
+		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
+		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
-		gl_pos.x -= WINDOW_WIDTH - (width * width_scale_mul);
+		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
 		gl_pos.x *= -1.0;
-		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale_mul);
+		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_TOP_LEFT): {
 		gl_pos.y *= -1.0;
-		gl_pos.x -= WINDOW_WIDTH - (width * width_scale_mul);
-		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale_mul);
+		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
+		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE): {
 		gl_pos.y *= -1.0;
-		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale_mul);
+		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
 	} break;
 	case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT): {
 		gl_pos.x *= -1.0;
 		gl_pos.y *= -1.0;
-		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale_mul);
-		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale_mul);
+		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
+		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
 	} break;
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;

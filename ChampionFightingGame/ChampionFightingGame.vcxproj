@@ -238,6 +238,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleMeter.cpp" />
     <ClCompile Include="CollisionChecks.cpp" />
     <ClCompile Include="BattleText.cpp" />
+    <ClCompile Include="EasyGifReader.cpp" />
     <ClCompile Include="EricFireballMoves.cpp" />
     <ClCompile Include="EricFireballStatus.cpp" />
     <ClCompile Include="FighterDataFunctions.cpp" />
@@ -432,7 +433,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AIManager.h" />
     <ClInclude Include="Anlst.h" />
     <ClInclude Include="Ayrbt.h" />
+    <ClInclude Include="BattleConstants.h" />
     <ClInclude Include="CharaSelectConstants.h" />
+    <ClInclude Include="EasyGifReader.h" />
     <ClInclude Include="HxAConventions.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="Dingo.h" />

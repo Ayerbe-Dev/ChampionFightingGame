@@ -52,7 +52,7 @@ void GameTextureSDL::process() {
 		target_bottom_frames--;
 	}
 	if (target_pos_frames != glm::vec2(0.0)) {
-		pos += target_pos;
+		pos += target_pos_per_frame;
 		target_pos_frames -= glm::vec2(1.0);
 	}
 }
@@ -192,7 +192,7 @@ void GameTextureSDL::set_target_pos(glm::vec2 target, float frames) {
 	if (frames == 0.0) {
 		return;
 	}
-	this->target_pos = (target_pos - pos) / glm::vec2(frames);
+	this->target_pos_per_frame = (target_pos_per_frame - pos) / glm::vec2(frames);
 	this->target_pos_frames = glm::vec2(frames);
 }
 

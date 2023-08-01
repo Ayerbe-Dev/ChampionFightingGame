@@ -1,10 +1,11 @@
 #include "GameState.h"
 #include "Loader.h"
-#include "GameManager.h"
 #include "GameTexture.h"
 #include "FontManager.h"
 #include "utils.h"
 
+void GameState::process_main() {}
+void GameState::render_main() {}
 void GameState::event_up_press(){}
 void GameState::event_down_press(){}
 void GameState::event_left_press(){}
@@ -43,6 +44,17 @@ GameState::~GameState() {
 	fps_font.unload_font();
 	fps_counter.destroy();
 	fps_texture.destroy();
+}
+
+void GameState::process_game_state() {
+	mouse.poll_buttons();
+	process_main();
+}
+
+void GameState::render_game_state() {
+	render_main();
+	fps_counter.render();
+	fps_texture.render();
 }
 
 void GameState::update_state(int game_state, int game_context) {

@@ -3,6 +3,8 @@
 #include "utils.h"
 
 ThreadObject::ThreadObject() {
+	cv_start = false;
+	cv_end = false;
 	execution_arg = nullptr;
 	active = false;
 }
@@ -105,6 +107,10 @@ void ThreadManager::wait_thread(int id) {
 	bool& cv_end = threads[id].cv_end;
 	threads[id].cv.wait(lock, [&] {return cv_end; });
 	cv_end = false;
+}
+
+bool ThreadManager::is_active(int id) {
+	return threads[id].active;
 }
 
 bool ThreadManager::is_active(std::thread::id& id) {

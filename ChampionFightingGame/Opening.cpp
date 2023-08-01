@@ -12,7 +12,6 @@ void opening_main() {
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 
-	const Uint8* keyboard_state;
 	GameTexture titleSplash;
 	titleSplash.init("resource/game_state/opening/game-splash-background.png");
 
@@ -31,11 +30,10 @@ void opening_main() {
 
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.poll_buttons();
 			if (player[i]->controller.is_any_inputs()) {
 				game_manager->looping[game_manager->layer] = false;
 			}

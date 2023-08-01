@@ -15,7 +15,7 @@ public:
 	GameController();
 
 	int check_controllers();
-	void poll_buttons(const Uint8* keyboard_state);
+	void poll_buttons();
 
 	void add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerButton c_mapping);
 	void add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerAxis c_axis);

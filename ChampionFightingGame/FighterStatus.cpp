@@ -30,6 +30,10 @@ bool Fighter::common_ground_status_act(bool crouch) {
 			check_button_input(BUTTON_HK) 
 		};
 		if (std::find(std::begin(inputs), std::end(inputs), true) != std::end(inputs)) {
+			unsigned int all_buttons[6] = { BUTTON_LP, BUTTON_LK, BUTTON_MP, BUTTON_MK, BUTTON_HP, BUTTON_HK };
+			if (check_button_input(all_buttons, 6)) {
+				return change_status(FIGHTER_STATUS_TAUNT);
+			}
 			unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
 			if (check_button_input(grab_buttons, 2)) {
 				return change_status(FIGHTER_STATUS_GRAB);
@@ -144,7 +148,6 @@ bool Fighter::common_air_status_act() {
 		}
 		if (fighter_int[FIGHTER_INT_DASH_F_BUFFER] != 0) {
 			fighter_int[FIGHTER_INT_DASH_AIR_DIR] = 1;
-			fighter_flag[FIGHTER_FLAG_USED_AIRDASH] = true;
 			return change_status(FIGHTER_STATUS_DASH_AIR);
 		}
 		if (fighter_int[FIGHTER_INT_DASH_B_BUFFER] != 0) {
@@ -391,6 +394,7 @@ void Fighter::status_crouch() {
 
 void Fighter::enter_status_crouch() {
 	change_anim("crouch");
+	common_ground_status_act();
 }
 
 void Fighter::exit_status_crouch() {}
@@ -457,6 +461,7 @@ void Fighter::enter_status_jump() {
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_local_param_float("jump_x_speed") * -facing_dir;
 		} break;
 		case (JUMP_KIND_N): {
+			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
 			change_anim("jump", 1.0, 0.0);
 		} break;
 	}
@@ -926,20 +931,20 @@ void Fighter::status_grabbed() {
 			0.0
 		);
 		glm::vec3 offset_bone_pos = get_relative_bone_position(fighter_int[FIGHTER_INT_GRABBED_BONE_ID]);
-		glm::vec3 target_pos = that->get_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
-		if (pos == target_pos) {
+		glm::vec3 target_pos_per_frame = that->get_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
+		if (pos == target_pos_per_frame) {
 			fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] = 0;
 		}
 		if (fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] > 0) {
 			if (battle_object_manager->allow_dec_var(id)) {
 				fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES]--;
 			}
-			glm::vec3 distance = target_pos - (pos + offset_bone_pos);
+			glm::vec3 distance = target_pos_per_frame - (pos + offset_bone_pos);
 			distance /= fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES];
 			add_pos(distance);
 		}
 		else {
-			set_pos(target_pos - offset_bone_pos);
+			set_pos(target_pos_per_frame - offset_bone_pos);
 		}
 	}
 }
@@ -977,7 +982,7 @@ void Fighter::enter_status_thrown() {
 		fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_local_param_float("max_fall_speed");
 	}
 	fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y] = fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED];
-	change_anim("knockdown_start", calc_launch_frames(), -1.0);
+	change_anim("thrown", calc_launch_frames(), -1.0);
 }
 
 void Fighter::exit_status_thrown() {
@@ -1075,7 +1080,7 @@ void Fighter::status_hitstun_air() {
 		}
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		apply_gravity(get_local_param_float("gravity"), get_local_param_float("max_fall_speed"));
+		apply_gravity(get_local_param_float("gravity") * 2.0, get_local_param_float("max_fall_speed"));
 		add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 	}
 }
@@ -1390,7 +1395,7 @@ void Fighter::status_landing() {
 
 void Fighter::enter_status_landing() {
 	landing_crossup();
-	fighter_int[FIGHTER_INT_LANDING_LAG] = 2;
+	fighter_int[FIGHTER_INT_LANDING_LAG] = get_local_param_int("empty_landing_lag");
 	change_anim("landing", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
@@ -1559,6 +1564,32 @@ void Fighter::exit_status_wakeup() {
 
 }
 
+void Fighter::status_taunt() {
+	if (is_status_end(FIGHTER_STATUS_WAIT)) {
+		return;
+	}
+}
+
+void Fighter::enter_status_taunt() {
+	change_anim("taunt");
+}
+
+void Fighter::exit_status_taunt() {
+
+}
+
+void Fighter::status_round_end() {
+
+}
+
+void Fighter::enter_status_round_end() {
+
+}
+
+void Fighter::exit_status_round_end() {
+
+}
+
 void Fighter::load_fighter_status_scripts() {
 	status_script[FIGHTER_STATUS_WAIT] = &Fighter::status_wait;
 	enter_status_script[FIGHTER_STATUS_WAIT] = &Fighter::enter_status_wait;
@@ -1723,4 +1754,12 @@ void Fighter::load_fighter_status_scripts() {
 	status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::status_wakeup;
 	enter_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::enter_status_wakeup;
 	exit_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::exit_status_wakeup;
+
+	status_script[FIGHTER_STATUS_TAUNT] = &Fighter::status_taunt;
+	enter_status_script[FIGHTER_STATUS_TAUNT] = &Fighter::enter_status_taunt;
+	exit_status_script[FIGHTER_STATUS_TAUNT] = &Fighter::exit_status_taunt;
+
+	status_script[FIGHTER_STATUS_ROUND_END] = &Fighter::status_round_end;
+	enter_status_script[FIGHTER_STATUS_ROUND_END] = &Fighter::enter_status_round_end;
+	exit_status_script[FIGHTER_STATUS_ROUND_END] = &Fighter::exit_status_round_end;
 }

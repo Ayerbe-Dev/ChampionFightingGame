@@ -223,7 +223,7 @@ bool Fighter::set_pos_anim() {
 		return false;
 	}
 	if (anim_kind->flag_move) {
-		Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
+		Bone& trans_bone = model.bone_data[model.get_bone_id("Trans")];
 		bool ret = add_pos(get_trans_offset());
 		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, trans_bone.anim_matrix[3].x);
 		return ret;

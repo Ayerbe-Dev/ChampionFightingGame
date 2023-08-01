@@ -68,6 +68,48 @@ unsigned int Fighter::get_stick_dir(bool internal_dir) {
 	}
 }
 
+unsigned int Fighter::get_stick_dir_no_lr() {
+	if (check_button_on(BUTTON_UP) && !check_button_on(BUTTON_DOWN)) {
+		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+			if (check_button_on(BUTTON_RIGHT)) {
+				return 9;
+			}
+			else {
+				return 7;
+			}
+		}
+		else {
+			return 8;
+		}
+	}
+	else if (check_button_on(BUTTON_DOWN) && !check_button_on(BUTTON_UP)) {
+		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+			if (check_button_on(BUTTON_RIGHT)) {
+				return 3;
+			}
+			else {
+				return 1;
+			}
+		}
+		else {
+			return 2;
+		}
+	}
+	else {
+		if ((check_button_on(BUTTON_RIGHT) || check_button_on(BUTTON_LEFT)) && !(check_button_on(BUTTON_RIGHT) && check_button_on(BUTTON_LEFT))) {
+			if (check_button_on(BUTTON_RIGHT)) {
+				return 6;
+			}
+			else {
+				return 4;
+			}
+		}
+		else {
+			return 5;
+		}
+	}
+}
+
 unsigned int Fighter::get_flick_dir(bool internal_dir) {
 	int stick_dir = get_stick_dir(internal_dir);
 	if (stick_dir == prev_stick_dir) {

@@ -28,7 +28,7 @@ StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleO
 }
 
 StageAsset::~StageAsset() {
-	model.unload_model();
+	model.unload_model_instance();
 }
 
 void StageAsset::stage_asset_main() {
@@ -44,10 +44,10 @@ void StageAsset::load_model_shader() {
 	scale = glm::vec3(get_param_float("model_scale"));
 	has_model = get_param_bool("has_model");
 	if (has_model) {
-		model.load_model(resource_dir + "/model/model.dae");
+		model.load_model_instance(resource_dir + "/model/model.dae");
 		model.load_textures();
 		unsigned int flags = 0;
-		if (model.has_skeleton) {
+		if (model.has_skeleton()) {
 			flags |= SHADER_FEAT_HAS_BONES;
 		}
 		shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
@@ -61,15 +61,13 @@ void StageAsset::load_model_shader() {
 }
 
 void StageAsset::load_anim_list() {
-	Model* model_ptr;
-	if (has_model) {
-		model_ptr = &model;
-	}
-	else {
-		model_ptr = nullptr;
-	}
 	try {
-		anim_table.load_anlst(resource_dir, model_ptr);
+		if (has_model) {
+			anim_table.load_anlst(resource_dir + "/anims", model.get_skeleton());
+		}
+		else {
+			anim_table.load_anlst(resource_dir + "/anims", Skeleton());
+		}
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {

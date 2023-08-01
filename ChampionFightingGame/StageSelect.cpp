@@ -13,17 +13,14 @@ void stage_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	ResourceManager::get_instance()->unload_unused();
-
 	Player* player[2];
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
-	const Uint8* keyboard_state;
 
 	StageSelect* stage_select = new StageSelect;
 
 	while (*stage_select->looping) {
-		stage_select->frame_delay();
+		stage_select->frame_delay_check_fps();
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
@@ -32,16 +29,11 @@ void stage_select_main() {
 
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.poll_buttons(keyboard_state);
-		}
-
-		game_manager->handle_menus();
-		stage_select->process();
-		stage_select->render();
+		stage_select->process_game_state();
+		stage_select->render_game_state();
 
 		SDL_GL_SwapWindow(render_manager->window);
+		
 	}
 
 	StageDemo demo = stage_select->stages[stage_select->selection];
@@ -71,9 +63,8 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	this->id = id;
 	this->name = name;
 	this->resource_name = resource_name;
-	demo_model.load_used_model("resource/stage/" + resource_name + "/assets/demo/model/model.dae");
+	demo_model.load_model("resource/stage/" + resource_name + "/assets/demo/model/model.dae");
 	demo_model.init_shader();
-	demo_model.scale *= glm::vec3(0.05);
 	demo_anim.load_camera_anim("demo", "resource/stage/" + resource_name + "/cam_anims/demo.fbx");
 	selected_anim.load_camera_anim("selected", "resource/stage/" + resource_name + "/cam_anims/selected.fbx");
 
@@ -153,7 +144,6 @@ StageSelect::StageSelect() {
 	RenderManager* render_manager = RenderManager::get_instance();
 
 	selection = game_manager->player[0]->stage_info.stage_kind;
-	prev_selection = selection;
 	num_slots_per_row = 1;
 	selected = false;
 
@@ -165,6 +155,7 @@ StageSelect::StageSelect() {
 		game_manager->add_crash_log("Could not load Stage Select!");
 		return;
 	}
+	prev_selection = selection;
 
 	float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
 	float slot_height = WINDOW_HEIGHT / 9;
@@ -186,22 +177,27 @@ StageSelect::StageSelect() {
 
 	render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 	stages[selection].demo_model.model.load_textures();
-	for (int i = 0, max = stages[selection].lights.size(); i < max; i++) {
+	for (size_t i = 0, max = stages[selection].lights.size(); i < max; i++) {
 		render_manager->add_light(&stages[selection].lights[i]);
 	}
 }
 
 StageSelect::~StageSelect() {
 	for (int i = 0, max = stages.size(); i < max; i++) {
-		stages[i].demo_model.model.unload_textures();
 		if (i != selection) {
-			stages[i].demo_model.model.unload_model();
+			stages[i].demo_model.model.unload_textures();
+			stages[i].demo_model.model.unload_model_instance();
 		}
 	}
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->remove_light();
 	render_manager->camera.anim_kind = nullptr;
 	render_manager->camera.following_players = true;
+	render_manager->camera.pos = render_manager->camera.base_pos;
+	render_manager->camera.yaw = 0;
+	render_manager->camera.pitch = 3;
+	render_manager->camera.fov = 45;
+	render_manager->camera.update_view();
 }
 
 bool StageSelect::load_stage_select() {
@@ -212,10 +208,10 @@ bool StageSelect::load_stage_select() {
 	size_t list_start_offset = 1;
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
-
+	stages.reserve(stage_params.get_param_int("num_slots"));
 	switch (*game_context) { //Load the training mode versions of stages for training mode, else load the normal ones
 		case (GAME_CONTEXT_TRAINING): {
-			for (size_t i = list_start_offset, max = stage_params.get_param_int("num_slots") + list_start_offset; i < max; i++) {
+			for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
 				if (stage_params.get_param_bool("selectable_training", i)) {
 					add_stage_slot(stage_params.get_param_table(i), &main_text_font);
 					if (selection == stages.back().id) { //This code is used to determine which slot index we hover over by default
@@ -226,7 +222,7 @@ bool StageSelect::load_stage_select() {
 			}
 		} break;
 		default: {
-			for (size_t i = list_start_offset, max = stage_params.get_param_int("num_slots") + list_start_offset; i < max; i++) {
+			for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
 				if (stage_params.get_param_bool("selectable_vs", i)) {
 					add_stage_slot(stage_params.get_param_table(i), &main_text_font);
 					if (selection == stages.back().id) {
@@ -299,7 +295,13 @@ void StageSelect::add_stage_slot(ParamTable param_table, Font* font) {
 	menu_objects[STAGE_SELECT_GROUP_SLOT].back().add_texture(*font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 }
 
-void StageSelect::process() {
+void StageSelect::process_main() {
+	GameManager* game_manager = GameManager::get_instance();
+	for (int i = 0; i < 2; i++) {
+		game_manager->player[i]->controller.poll_buttons();
+	}
+	game_manager->handle_menus();
+
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		if (selection != prev_selection) {
@@ -307,6 +309,9 @@ void StageSelect::process() {
 			stages[selection].demo_model.model.load_textures();
 			render_manager->camera.frame = 0.0;
 			render_manager->remove_light();
+			for (size_t i = 0, max = stages[selection].lights.size(); i < max; i++) {
+				render_manager->add_light(&stages[selection].lights[i]);
+			}
 		}
 		prev_selection = selection;
 		if (render_manager->camera.get_anim_name() == "selected" && render_manager->camera.anim_end) {
@@ -323,7 +328,7 @@ void StageSelect::process() {
 	render_manager->execute_buffered_events();
 }
 
-void StageSelect::render() {
+void StageSelect::render_main() {
 	RenderManager* render_manager = RenderManager::get_instance();
 
 	glDepthMask(GL_TRUE);
@@ -338,7 +343,7 @@ void StageSelect::render() {
 	glCullFace(GL_BACK);
 
 	render_manager->g_buffer.use();
-	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
+	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
@@ -348,9 +353,9 @@ void StageSelect::render() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].render();
-	glViewport(render_manager->window_width * 0.2, render_manager->window_height * 0.28, render_manager->window_width * 0.6, render_manager->window_height * 0.6);
+	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.28, render_manager->res_width * 0.6, render_manager->res_height * 0.6);
 	render_manager->g_buffer.render();
-	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
+	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	
 	glDepthMask(GL_FALSE);
 

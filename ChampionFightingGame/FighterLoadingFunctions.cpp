@@ -80,10 +80,10 @@ void Fighter::load_fighter_effects() {
 
 void Fighter::load_model_shader() {
 	scale = glm::vec3(get_local_param_float("model_scale"));
-	model.load_model(resource_dir + "/model/model.dae");
+	model.load_model_instance(resource_dir + "/model/m" + std::to_string(player->alt_costume) + "/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
 	unsigned int flags = 0;
-	if (model.has_skeleton) {
+	if (model.has_skeleton()) {
 		flags |= SHADER_FEAT_HAS_BONES;
 	}
 	shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
@@ -97,7 +97,7 @@ void Fighter::load_model_shader() {
 
 void Fighter::load_anim_list() {
 	try {
-		anim_table.load_anlst(resource_dir, &model);
+		anim_table.load_anlst(resource_dir + "/anims/battle", model.get_skeleton());
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
@@ -123,6 +123,7 @@ void Fighter::load_anim_list() {
 void Fighter::set_default_vars() {
 	base_jostle_anchor = glm::vec2(get_local_param_float("jostle_x0"), get_local_param_float("jostle_y0"));
 	base_jostle_offset = glm::vec2(get_local_param_float("jostle_x1"), get_local_param_float("jostle_y1"));
+	reset_jostle_dimensions();
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
 	fighter_flag[FIGHTER_FLAG_CAN_TECH] = true;

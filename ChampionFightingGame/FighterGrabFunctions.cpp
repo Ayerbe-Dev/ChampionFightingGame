@@ -18,6 +18,7 @@ void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender
 }
 
 void Fighter::throw_opponent(float damage, float x_speed, float y_speed) {
+	damage *= (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10.0;
 	Fighter* that = battle_object_manager->fighter[!id];
 	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
 	fighter_int[FIGHTER_INT_COMBO_COUNT]++;

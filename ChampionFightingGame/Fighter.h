@@ -104,6 +104,7 @@ public:
 	bool check_button_trigger(unsigned int button); //Checks if a button was pressed on that frame
 	bool check_button_release(unsigned int button); //Checks if a button was released on that frame
 	unsigned int get_stick_dir(bool internal_dir = true); //Stick direction, relative to your facing direction. Returns num pad notation.
+	unsigned int get_stick_dir_no_lr();
 	unsigned int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
 	bool get_attack_input(int attack_kind, unsigned int button = 0, int stick_dir = 0);
 	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
@@ -175,7 +176,8 @@ public:
 	//Jostle Box
 
 	void update_jostle_rect();
-	void set_jostle_offset(float offset);
+	void set_jostle_dimensions(float x0, float y0, float x1, float y1);
+	void reset_jostle_dimensions();
 
 	//Animation
 	
@@ -332,7 +334,7 @@ public:
 	void GRAB_OPPONENT(ScriptArg args);
 	void THROW_OPPONENT(ScriptArg args);
 
-	void SET_JOSTLE_OFFSET(ScriptArg args);
+	void SET_JOSTLE_DIMENSIONS(ScriptArg args);
 
 	void ADD_POS(ScriptArg args);
 	void SET_POS(ScriptArg args);
@@ -485,6 +487,12 @@ public:
 	virtual void status_wakeup();
 	virtual void enter_status_wakeup();
 	virtual void exit_status_wakeup();
+	virtual void status_taunt();
+	virtual void enter_status_taunt();
+	virtual void exit_status_taunt();
+	virtual void status_round_end();
+	virtual void enter_status_round_end();
+	virtual void exit_status_round_end();
 
 	virtual void chara_template_status_template() {};
 	virtual void chara_template_enter_status_template() {};

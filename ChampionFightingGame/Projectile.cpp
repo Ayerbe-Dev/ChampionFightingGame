@@ -1,7 +1,11 @@
 #include "Projectile.h"
 #include "Battle.h"
 
-Projectile::Projectile() {}
+Projectile::Projectile() {
+	owner = nullptr;
+	owner_id = 0;
+	projectile_kind = 0;
+}
 
 Projectile::~Projectile() {
 	for (int i = 0; i < 10; i++) {
@@ -13,7 +17,7 @@ Projectile::~Projectile() {
 	stop_vc_all();
 	blockbox.rect.destroy();
 	jostle_box.destroy();
-	model.unload_model();
+	model.unload_model_instance();
 	projectile_int.clear();
 	projectile_float.clear();
 	projectile_flag.clear();
@@ -27,11 +31,13 @@ Projectile::~Projectile() {
 }
 
 void Projectile::projectile_main() {
-	process_animate();
-	process_position();
-	projectile_unique_main();
-	process_status();
-	process_post_animate();
+		process_animate();
+		process_position();
+	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
+		projectile_unique_main();
+		process_status();
+	}
+		process_post_animate();
 	if (battle_object_manager->allow_dec_var(id)) {
 		decrease_common_variables();
 	}
@@ -49,7 +55,14 @@ void Projectile::process_status() {
 }
 
 void Projectile::process_animate() {	
-	frame += rate;
+	if (projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] != 0) {
+		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
+			frame += (0.2 / (float)(projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_world_rate(id);
+		}
+	}
+	else {
+		frame += rate * battle_object_manager->get_world_rate(id);
+	}
 
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length && anim_kind->length != -1) {
@@ -84,10 +97,12 @@ void Projectile::process_post_position() {
 }
 
 void Projectile::decrease_common_variables() {
-	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {
-		projectile_int[PROJECTILE_INT_ACTIVE_TIME] --;
-	}
 	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] != 0) {
 		projectile_int[PROJECTILE_INT_HITLAG_FRAMES] --;
+	}
+	else {
+		if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {
+			projectile_int[PROJECTILE_INT_ACTIVE_TIME] --;
+		}
 	}
 }

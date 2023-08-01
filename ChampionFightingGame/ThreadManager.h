@@ -5,14 +5,14 @@
 #include <map>
 #include <functional>
 
-enum {
-	THREAD_KIND_PLAYER_1,
-	THREAD_KIND_PLAYER_2,
-	THREAD_KIND_UI,
-	THREAD_KIND_AI,
+const int THREAD_KIND_PLAYER_1 = 0;
+const int THREAD_KIND_PLAYER_2 = 1;
+const int THREAD_KIND_UI = 2;
+const int THREAD_KIND_AI = 3;
 
-	THREAD_KIND_MAX
-};
+const int THREAD_KIND_LOAD = 0;
+
+const int THREAD_KIND_MAX = 4;
 
 class ThreadObject {
 public:
@@ -45,6 +45,7 @@ public:
 	void notify_thread(int id);
 	void wait_thread(int id);
 	void kill_thread(int id);
+	bool is_active(int id);
 	bool is_active(std::thread::id &id);
 	bool is_main_thread();
 

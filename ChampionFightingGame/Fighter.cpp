@@ -41,7 +41,7 @@ Fighter::~Fighter() {
 	status_script.clear();
 	enter_status_script.clear();
 	exit_status_script.clear();
-	model.unload_model();
+	model.unload_model_instance();
 	anim_table.unload_animations();
 	move_script_table.wipe_scripts();
 	params.unload_params();
@@ -182,20 +182,54 @@ void Fighter::process_position() {
 	if ((situation_kind == FIGHTER_SITUATION_GROUND || situation_kind == FIGHTER_SITUATION_DOWN) && 
 		(that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)
 	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
-		if (is_collide(jostle_box, that->jostle_box)) {
-			if (!((status_kind != FIGHTER_STATUS_WAIT && get_status_group() != STATUS_GROUP_CROUCH) &&
-				(that->status_kind == FIGHTER_STATUS_WAIT || that->get_status_group() == STATUS_GROUP_CROUCH))) {
-				if (!add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
-					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
+		if (is_collide(jostle_box, that->jostle_box) && status_kind != FIGHTER_STATUS_WALK_B) {
+			float x_diff = (pos.x - prev_pos.x) * internal_facing_dir;
+			float that_x_diff = (that->pos.x - that->prev_pos.x) * that->internal_facing_dir;
+
+			//TODO: This code is ok, but it has a side effect where if one player is walking towards
+			//another, cornered player and the cornered player starts walking towards them, the
+			//cornered player can push them back and cause some weird stutters for a bit before
+			//it corrects itself. This is because when we walk toward a cornered opponent, our
+			//x_diff will always be 0.0 even though we're attempting to move. I'm not 100% sure how
+			//to fix this issue, but will revisit in the future.
+
+			if (x_diff != 0.0 && that_x_diff != 0.0) {
+				if (abs(x_diff) > abs(that_x_diff)) {
+					if (!that->add_pos(glm::vec3(-that_x_diff * internal_facing_dir, 0, 0), true)) {
+						add_pos(glm::vec3(-x_diff * that->internal_facing_dir, 0, 0), true);
+					}
+				}
+				else if (x_diff == that_x_diff) {
+					pos.x = prev_pos.x;
+					that->pos.x = that->prev_pos.x;
+				}
+			}
+			else {
+				if (x_diff == 0.0 && that_x_diff == 0.0) {
+					if (!add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+						that->add_pos(glm::vec3(get_local_param_float("jostle_walk_f_speed") * internal_facing_dir, 0.0, 0.0));
+
+						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
+					}
+				}
+				else if (that_x_diff == 0.0) {
+					if (!that->add_pos(glm::vec3(
+						get_local_param_float("jostle_walk_f_speed") * internal_facing_dir, 
+						0.0, 0.0)
+					)) {
+						pos.x = prev_pos.x;
+					}
+					else {
+						add_pos(glm::vec3((get_local_param_float("jostle_walk_f_speed") -
+							get_local_param_float("walk_f_speed")) * internal_facing_dir,
+							0.0, 0.0)
+						);
+					}
 				}
 			}
 		}
-	}
-	else {
-		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
-		fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = false;
 	}
 	update_jostle_rect();
 }
@@ -205,19 +239,29 @@ void Fighter::process_post_position() {
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true; //Necessary for making sure an opponent
-					//who jumped in on us while we were at the wall only gets pushed back and not up
+					if (!that->fighter_flag[FIGHTER_FLAG_SHORT_HOP]) {
+						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
+						//If an opponent does a fullhop air attack while we're cornered, we get pushed
+						//back. If they do a shorthop instead, we get pushed back and up.
+					}
 				}
 			}
 			else {
+				//This code was originally designed to push an aerial attacker up when they hit a
+				//jumping opponent in the corner, but was later bugged to also execute when we hit
+				//grounded opponents in the corner. Since aerial defenders no longer experience
+				//normal pushback, it should be completely impossible to meet the conditions for
+				//it to trigger at all, but I'm leaving it commented because it looked cool when we
+				//did it to grounded opponents and we might want to use it for certain air attacks.
+
 				float y_pushback = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
 				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
 					y_pushback = 0.0;
 				}
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
 					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
@@ -263,6 +307,12 @@ void Fighter::process_post_status() {
 		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] = 0.0;
 		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 		fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
+		if (fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] != 0) {
+			fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER]--;
+		}
+	}
+	else {
+		fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] = 60;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
@@ -440,9 +490,6 @@ void Fighter::process_input() {
 			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		}
 	}
-
-	//Charge Inputs (disgusting)
-
 	if (stick_dir < 4) {
 		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = 6;
 		fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;

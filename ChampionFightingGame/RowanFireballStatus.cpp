@@ -14,16 +14,6 @@ void RowanFireball::status_default() {
 	change_status(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER);
 }
 
-void RowanFireball::status_hit() {
-	if (is_anim_end) {
-		active = false;
-	}
-}
-
-void RowanFireball::enter_status_hit() {
-	change_anim("hit");
-}
-
 void RowanFireball::status_rowan_fireball_hover() {
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		if (owner->status_kind != CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH

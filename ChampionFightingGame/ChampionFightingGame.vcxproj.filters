@@ -346,12 +346,6 @@
     <ClCompile Include="Sound.cpp">
       <Filter>2. Code Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>2. Code Files\Engine\Visuals</Filter>
-    </ClCompile>
-    <ClCompile Include="Bone.cpp">
-      <Filter>2. Code Files\Engine\Visuals</Filter>
-    </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
@@ -362,9 +356,6 @@
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-      <Filter>2. Code Files\Engine\Visuals</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
       <Filter>2. Code Files\Engine\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="MoveScript.cpp">
@@ -586,13 +577,22 @@
     <ClCompile Include="ReadBytes.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>2. Code Files\Engine\Visuals\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>2. Code Files\Engine\Visuals\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>2. Code Files\Engine\Visuals\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyGifReader.cpp">
+      <Filter>2. Code Files\Deps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
       <Filter>1. Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Battle.h">
-      <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="DebugMenu.h">
       <Filter>1. Header Files\Game State</Filter>
@@ -1143,12 +1143,6 @@
     <ClInclude Include="LoopingVector.h">
       <Filter>1. Header Files\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>1. Header Files\Engine\Visuals</Filter>
-    </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>1. Header Files\Engine\Visuals</Filter>
-    </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
     </ClInclude>
@@ -1159,9 +1153,6 @@
       <Filter>1. Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
-      <Filter>1. Header Files\Engine\Visuals</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
@@ -1202,9 +1193,6 @@
     </ClInclude>
     <ClInclude Include="Framebuffer.h">
       <Filter>1. Header Files\Engine\Visuals</Filter>
-    </ClInclude>
-    <ClInclude Include="PauseBattle.h">
-      <Filter>1. Header Files\Game State</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>1. Header Files\Game State</Filter>
@@ -1313,6 +1301,27 @@
     </ClInclude>
     <ClInclude Include="CharaSelectConstants.h">
       <Filter>1. Header Files\Game State\CharaSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>1. Header Files\Engine\Visuals\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>1. Header Files\Engine\Visuals\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>1. Header Files\Engine\Visuals\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle.h">
+      <Filter>1. Header Files\Game State\Battle</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseBattle.h">
+      <Filter>1. Header Files\Game State\PauseBattle</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleConstants.h">
+      <Filter>1. Header Files\Game State\Battle</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyGifReader.h">
+      <Filter>1. Header Files\Deps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2896,6 +2905,18 @@
     </Filter>
     <Filter Include="1. Header Files\Game State\CharaSelect">
       <UniqueIdentifier>{44a453dd-e72f-4d25-ade7-f83ddfb6d5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Engine\Visuals\Model">
+      <UniqueIdentifier>{f3a34406-233c-4788-b869-f848132901c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Engine\Visuals\Model">
+      <UniqueIdentifier>{ad600433-b537-41c3-85d9-40edec794964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Game State\Battle">
+      <UniqueIdentifier>{1cfd0bfe-24b0-4ce2-a4dc-05ba68c2e7f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Game State\PauseBattle">
+      <UniqueIdentifier>{59d945f7-e9b4-4480-a490-1d41d967c21a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

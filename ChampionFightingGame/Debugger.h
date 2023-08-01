@@ -8,7 +8,10 @@
 #include "imgui_impl_opengl3.h"
 
 #include "GameManager.h"
-#include "Battle.h"
+#include "debug.h"
+
+class Battle;
+class StageSelect;
 
 class Fighter;
 class GameRect;

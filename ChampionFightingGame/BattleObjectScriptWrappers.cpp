@@ -56,23 +56,25 @@ void BattleObject::NEW_EFFECT(ScriptArg args) {
 	UNWRAP(rot_frame, glm::vec3);
 	UNWRAP(scale_frame, glm::vec3);
 	UNWRAP(rgba_frame, glm::vec4);
+	int* interp_var = nullptr;
+	UNWRAP_NO_DECL(interp_var);
 	float rate = 1.0;
 	UNWRAP_NO_DECL(rate);
 	float frame = 0.0;
 	UNWRAP_NO_DECL(frame);
 	switch (overload) {
 		case (0): {
-			new_effect(name, pos, rot, scale, rgba, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+			new_effect(name, pos, rot, scale, rgba, pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 		} break;
 		case (1): {
 			int bone_id = std::any_cast<int>(bone_container);
 			glm::vec3 bone_offset = std::any_cast<glm::vec3>(offset_container);
-			new_effect(name, pos, rot, scale, rgba, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+			new_effect(name, pos, rot, scale, rgba, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 		} break;
 		case (2): {
 			std::string bone_name = std::any_cast<std::string>(bone_container);
 			glm::vec3 bone_offset = std::any_cast<glm::vec3>(offset_container);
-			new_effect(name, pos, rot, scale, rgba, bone_name, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+			new_effect(name, pos, rot, scale, rgba, bone_name, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 		} break;
 		default: {
 			GameManager::get_instance()->add_crash_log("ERROR: Arg 6 of NEW_EFFECT in script " 
@@ -92,11 +94,13 @@ void BattleObject::NEW_EFFECT_NO_FOLLOW(ScriptArg args) {
 	UNWRAP(rot_frame, glm::vec3);
 	UNWRAP(scale_frame, glm::vec3);
 	UNWRAP(rgba_frame, glm::vec4);
+	int* interp_var = nullptr;
+	UNWRAP_NO_DECL(interp_var);
 	float rate = 1.0;
 	UNWRAP_NO_DECL(rate);
 	float frame = 0.0;
 	UNWRAP_NO_DECL(frame);
-	new_effect_no_follow(name, pos, rot, scale, rgba, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	new_effect_no_follow(name, pos, rot, scale, rgba, pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 }
 
 void BattleObject::CLEAR_EFFECT(ScriptArg args) {

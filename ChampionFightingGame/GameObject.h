@@ -44,12 +44,20 @@ public:
 	Shader *shader;
 	Shader *shadow_shader;
 	Shader *outline_shader;
-	Model model;
+	ModelInstance model;
 
 	RenderManager* render_manager;
 	SoundManager* sound_manager;
 	EffectManager* effect_manager;
 	ShaderManager* shader_manager;
+
+	//Loading Funcs
+
+	void load_model(std::string resource_dir, std::string texture_dir = "");
+	void load_used_model(std::string resource_dir, std::string texture_dir = "");
+	void init_shader();
+	void load_anim_table(std::string anim_dir);
+	void load_anim_table_unloaded_model(std::string anim_dir, std::string directory);
 
 	//Process Funcs
 
@@ -66,7 +74,7 @@ public:
 	void set_rate(float rate);
 	void set_frame(float frame);
 	bool change_anim(std::string animation_name, float rate, float frame);
-	void animate();
+	void animate(bool flip = false);
 
 	//Model Funcs
 
@@ -79,9 +87,6 @@ public:
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
-	void load_model(std::string resource_dir, std::string texture_dir = "");
-	void load_used_model(std::string resource_dir, std::string texture_dir = "");
-	void init_shader();
 
 	//Sound Functions
 

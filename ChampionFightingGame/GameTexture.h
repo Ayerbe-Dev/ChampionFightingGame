@@ -53,8 +53,12 @@ public:
     void set_height(int new_height);
     void set_height_scale(float scale);
     void set_scale(float scale);
-    int get_width();
-    int get_height();
+    int get_base_width();
+    int get_base_height();
+    float get_width_scale();
+    float get_height_scale();
+    float get_width();
+    float get_height();
     std::string get_text();
 
     void set_left_target(float percent, float frames);
@@ -62,7 +66,7 @@ public:
     void set_top_target(float percent, float frames);
     void set_bottom_target(float percent, float frames);
 
-    void set_target_pos(glm::vec3 target, float frames);
+    void set_target_pos(glm::vec3 target_pos, float frames);
 
     void add_alpha(unsigned char alpha);
     void set_alpha(unsigned char alpha);
@@ -97,6 +101,7 @@ public:
     float target_bottom_frames = 0.0;
 
     glm::vec3 target_pos = glm::vec3(0.0);
+    glm::vec3 target_pos_per_frame = glm::vec3(0.0);
     glm::vec3 target_pos_frames = glm::vec3(0.0);
     
     glm::vec3 colormod = glm::vec3(0.0);
@@ -119,8 +124,8 @@ private:
     float width;
     float height;
 
-    float width_scale_mul;
-    float height_scale_mul;
+    float width_scale;
+    float height_scale;
     float width_orientation;
     float height_orientation;
 

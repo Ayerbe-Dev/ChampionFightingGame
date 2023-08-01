@@ -2,6 +2,8 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <vector>
+#include <unordered_map>
 
 struct Bone {
 	std::string name = "";
@@ -35,4 +37,13 @@ struct AnimBone {
 	glm::vec3 pos = glm::vec3(0.0);
 	glm::quat rot = glm::quat(1.0, 0.0, 0.0, 0.0);
 	bool keyframed = false;
+};
+
+struct Skeleton {
+	bool operator!();
+	bool load_skeleton(std::string path);
+	int get_bone_id(std::string bone_name);
+
+	std::vector<Bone> bone_data;
+	std::unordered_map<std::string, int> bone_map;
 };

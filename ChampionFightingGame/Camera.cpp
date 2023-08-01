@@ -112,6 +112,25 @@ void Camera::set_fov(float fov) {
 	update_view();
 }
 
+void Camera::reset_camera() {
+	pos = base_pos;
+	prev_pos = glm::vec3(0.0);
+	fov = 45.0;
+	yaw = 0.0;
+	pitch = 3.0;
+	roll = 0.0;
+	following_players = true;
+	anim_end = false;
+	auto_linear_scale = 3.0;
+	follow_id = -1;
+	frame = 0.0;
+	rate = 1.0;
+	projection_matrix = glm::mat4(1.0);
+	view_matrix = glm::mat4(1.0);
+	camera_matrix = glm::mat4(1.0);
+	update_view();
+}
+
 void Camera::update_view() {
 	glm::vec3 new_front;
 	new_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -139,8 +158,8 @@ void Camera::follow_players() {
 	float x_scaler = WINDOW_WIDTH / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 	float y_scaler = WINDOW_HEIGHT / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 
-	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0, stage->camera_bounds.y) / x_scaler;
-	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / y_scaler, 100.0);
+	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0f, stage->camera_bounds.y) / x_scaler;
+	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / y_scaler, 100.0f);
 	pos.z = base_pos.z;
 	yaw = 0.0;
 	pitch = 3.0;
@@ -155,7 +174,7 @@ void Camera::follow_players() {
 
 void Camera::follow_anim() {
 	CameraKeyframe keyframe = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
-	CameraKeyframe next_keyframe = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
+	CameraKeyframe next_keyframe = anim_kind->keyframes[clamp(0, floorf(frame + 1.0f), anim_kind->keyframes.size() - 1)];
 
 	keyframe.pos_key += (frame - (int)frame) * (next_keyframe.pos_key - keyframe.pos_key);
 	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);

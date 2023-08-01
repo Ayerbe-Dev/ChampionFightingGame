@@ -4,6 +4,8 @@
 void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
 	projectiles[id]->active = true;
 	set_projectile_int(id, PROJECTILE_INT_ELAPSED_FRAMES, 0);
+	set_projectile_int(id, PROJECTILE_INT_INIT_HITLAG_FRAMES, 0);
+	set_projectile_int(id, PROJECTILE_INT_HITLAG_FRAMES, 0);
 	projectiles[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir);
 	projectiles[id]->pos.y = init_pos.y + pos.y;
 	projectiles[id]->pos.z = init_pos.z + pos.z;

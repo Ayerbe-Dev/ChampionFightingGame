@@ -13,7 +13,6 @@ void controls_main() {
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 
-	const Uint8* keyboard_state;
 
 	OptionsMenu* options_menu = new OptionsMenu;
 
@@ -23,10 +22,9 @@ void controls_main() {
 
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons(keyboard_state);
+			player[i]->controller.poll_buttons();
 		}
 
 		game_manager->handle_menus();

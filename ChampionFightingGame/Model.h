@@ -58,6 +58,8 @@ public:
 	Mesh operator=(Mesh& other);
 	Mesh operator=(const Mesh& other);
 
+	void init_gl();
+
 	void render() const;
 	void render_no_texture() const;
 
@@ -71,88 +73,92 @@ public:
 	unsigned int VAO;
 	unsigned int VBO;
 	unsigned int EBO;
-private:
-	void init();
 };
 
-class Model {
+//The base model that is stored by ResourceManager. Does not hold its own textures.
+class ModelData {
 public:
-	Model();
-	Model(std::string path);
-	Model(Model& other);
-	Model(const Model& other);
-	Model& operator=(Model& other);
-	Model& operator=(const Model& other);
+	ModelData();
+	ModelData(std::string path);
+	void load_model(std::string path);
+	void unload_model();
 
-	void init(std::string path);
-	void destroy();
+	void init_gl_meshes();
 
-	void load_model(std::string path); //Checks if this model is already loaded into the ResourceManager,
-	//then copies it
-	void load_used_model(std::string path); //load_model but doesn't increment the user_count for
-	//already-active models
+	glm::mat4 get_global_transform() const;
+	std::string get_directory() const;
+	std::size_t get_trans_id() const;
+	bool has_skeleton() const;
 
-	void unload_model(); //Tells the ResourceManager to decrease the user count for this model
+	std::unordered_map<std::string, int> material_map;
+	std::unordered_map<std::string, int> mesh_map;
+	std::unordered_map<std::string, std::vector<std::pair<int, int>>> texture_map;
 
-	void load_textures(); //Checks if this model's textures are already loaded into the ResourceManager,
-	//then copies them and tells all of its meshes
-	void load_used_textures();
+	std::vector<Material> material_data;
+	std::vector<Mesh> mesh_data;
+	std::vector<std::string> texture_names;
+	Skeleton skeleton;
 
-	void load_textures(std::string path); //Same as above, but it will look for textures in the subdirectory
-	//passed to the function (E.G. stage models will get all of their textures from one place, player models
-	//will get them from subdirs for their respective alts)
-	void load_used_textures(std::string path);
+	glm::mat4 flip_matrix;
+	glm::mat4* dummy_matrix;
+	glm::vec3* dummy_vec;
+	glm::quat* dummy_quat;
+private:
+	void process_scene(const aiScene* scene);
+	void process_node(aiNode* node, const aiScene* scene);
+	Mesh process_mesh(aiMesh* mesh);
+	std::vector<ModelTexture> load_texture_names(aiMaterial* mat, aiTextureType type, std::string type_name);
+	void process_skeleton(aiNode* root);
 
-	void unload_textures(); //Tells the ResourceManager to decrease the user count for all of these textures
-	void unload_texture_resources(); //Tells the ResourceManager to actually unload these textures
+	glm::mat4 global_transform;
+	std::string directory;
+	std::size_t trans_id;
+	bool skeleton_loaded;
+};
+
+//Data that is specific to a given model, basically this is what actually gets rendered.
+class ModelInstance {
+public:
+	ModelInstance();
+	ModelInstance(std::string path);
+	~ModelInstance();
+
+	void load_model_instance(std::string path);
+	void load_used_model_instance(std::string path);
+	void unload_model_instance();
 
 	void set_move(bool move);
 	void set_bones(float frame, Animation* anim_kind, bool flip);
 	void reset_bones();
 
-    void render(Shader *shader, bool flip);
-	void render_no_texture(Shader* shader, bool flip);
+	void load_textures();
+	void load_textures(std::string path);
+	void unload_textures();
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
 	void set_mesh_mat(std::string mesh_name, std::string mat_name);
 
 	int get_mesh_id(std::string mesh_name);
 	int get_material_id(std::string material_name);
-	int get_bone_id(std::string bone_name, bool verbose = true);
+	int get_bone_id(std::string bone_name) const;
+	Skeleton get_skeleton() const;
 
-	std::vector<std::string> texture_names;
-	std::unordered_map<std::string, std::vector<std::pair<int, int>>> texture_map;
+	bool has_skeleton();
+	bool is_loaded() const;
+
+	void render(Shader* shader, bool flip);
+	void render_no_texture(Shader* shader, bool flip);
 
 	std::vector<Material> materials;
-	std::unordered_map<std::string, int> material_map;
-
 	std::vector<Mesh> meshes;
-	std::unordered_map<std::string, int> mesh_map;
-
-	glm::mat4 global_transform;
-
-	std::vector<Bone> bones;
-	std::unordered_map<std::string, int> bone_map;
+	std::vector<Bone> bone_data;
 	std::vector<Bone*> trans_children;
 
-	std::string directory;
 	std::string texture_dir;
-
-	bool has_skeleton;
 private:
-	bool load_skeleton(std::string path);
-    void process_node(aiNode* node, const aiScene* scene);
-	void process_start(const aiScene* scene);
-	Mesh process_mesh(aiMesh* mesh);
-	std::vector<ModelTexture> load_texture_data(aiMaterial* mat, aiTextureType type, std::string type_name);
-	void process_skeleton(aiNode* root);
-	void post_process_skeleton();
+	void process_skeleton_instance();
 
-	glm::mat4 flip_matrix;
-	glm::mat4* dummy_matrix;
-	glm::vec3* dummy_vec;
-	glm::quat* dummy_quat;
+	ModelData* model;
 	bool move;
 	bool tpose;
-	size_t trans_id;
 };

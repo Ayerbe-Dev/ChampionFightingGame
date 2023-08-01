@@ -16,7 +16,7 @@ void Fighter::reenter_last_anim() {
 		player->controller.reset_buffer();
 	}
 	prev_anim_offset = glm::vec3(0.0);
-	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
+	reset_jostle_dimensions();
 	is_anim_end = false;
 	Animation* saved_prev_anim_kind = prev_anim_kind;
 	if (anim_kind != prev_anim_kind) {
@@ -63,7 +63,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	}
 
 	prev_anim_offset = glm::vec3(0.0);
-	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
+	reset_jostle_dimensions();
 	is_anim_end = false;
 	anim_kind = new_anim;
 
@@ -84,8 +84,8 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 	else {
 		player->controller.reset_buffer();
 	}
-	fighter_float[FIGHTER_FLOAT_JOSTLE_OFFSET_X] = 0.0;
 	is_anim_end = false;
+	reset_jostle_dimensions();
 	if (anim_kind != new_anim) {
 		prev_anim_kind = anim_kind;
 	}
@@ -119,7 +119,7 @@ float Fighter::calc_launch_frames() {
 }
 
 glm::vec3 Fighter::get_trans_offset() {
-	Bone& trans_bone = model.bones[model.get_bone_id("Trans")];
+	Bone& trans_bone = model.bone_data[model.get_bone_id("Trans")];
 	glm::vec3 trans_offset = glm::vec3(
 		trans_bone.anim_matrix[3].z * facing_dir,
 		trans_bone.anim_matrix[3].y,

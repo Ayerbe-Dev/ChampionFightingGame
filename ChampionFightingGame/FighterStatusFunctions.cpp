@@ -11,6 +11,7 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = false;
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
+		fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = false;
 		disable_all_cancels();
 		if (call_end_status) {
 			(this->*exit_status_script[status_kind])();
@@ -95,10 +96,14 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 }
 
 bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status, bool require_different_status) {
+	bool ret = false;
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && pos.y <= 0.0f && fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] < 0.0) {
-		return change_status(post_status_kind, call_end_status, require_different_status);
+		ret = change_status(post_status_kind, call_end_status, require_different_status);
+		if (ret) { //The frame we land counts as a frame of landing lag
+			(this->*status_script[status_kind])();
+		}
 	}
-	return false;
+	return ret;
 }
 
 bool Fighter::check_hitstun_parry() {
@@ -109,7 +114,7 @@ bool Fighter::check_hitstun_parry() {
 		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX]) {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
-			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -5;
+			fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -2;
 			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = true;
 			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = true;
 			player->controller.reset_buffer();

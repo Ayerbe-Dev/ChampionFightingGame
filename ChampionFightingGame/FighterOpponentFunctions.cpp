@@ -62,7 +62,7 @@ void Fighter::attach_opponent(std::string bone_name) {
 	glm::vec3 final_rot = rot;
 	final_rot.z += glm::radians(90.0 * facing_dir);
 	final_rot += extra_rot;
-	that->extra_mat = inverse(glm::scale(model.bones[index].final_matrix, glm::vec3(facing_dir, 1.0, 1.0)) * orientate4(final_rot));
+	that->extra_mat = inverse(glm::scale(model.bone_data[index].final_matrix, glm::vec3(facing_dir, 1.0, 1.0)) * orientate4(final_rot));
 }
 
 void Fighter::detach_opponent() {

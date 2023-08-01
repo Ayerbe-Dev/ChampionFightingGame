@@ -1,5 +1,4 @@
 #include "ShaderManager.h"
-#include "RenderManager.h"
 
 ShaderManager::ShaderManager() {
 	add_type_size("bool", 4);

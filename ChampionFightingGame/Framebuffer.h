@@ -5,7 +5,7 @@
 
 struct TextureInfo {
 	TextureInfo();
-	TextureInfo(GLuint texture, GLenum internal_format, GLenum format, GLenum type);
+	TextureInfo(GLuint render_texture, GLenum internal_format, GLenum format, GLenum type);
 	GLuint texture;
 	GLenum internal_format;
 	GLenum format;
@@ -19,9 +19,9 @@ public:
 	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features, float window_width, float window_height);
 	
 	void add_write_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, GLenum attachment_point, int active_index, bool resize = true);
-	void add_write_texture(GLuint texture, GLenum attachment_point, int active_index);
+	void add_write_texture(GLuint render_texture, GLenum attachment_point, int active_index);
 	void add_read_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, int active_index, void* source = nullptr);
-	void add_read_texture(GLuint texture, int active_index);
+	void add_read_texture(GLuint render_texture, int active_index);
 
 	void destroy();
 	void use();

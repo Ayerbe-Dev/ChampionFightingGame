@@ -12,6 +12,7 @@ public:
 	void operator=(const ControllerManager& other) = delete;
 
 	ControllerInfo registered_controllers[2];
+	const Uint8* keyboard_state;
 
 	static ControllerManager* get_instance();
 	void destroy_instance();

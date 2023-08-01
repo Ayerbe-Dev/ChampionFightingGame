@@ -40,7 +40,8 @@ int GameController::check_controllers() {
 	return GAME_CONTROLLER_UPDATE_NONE;
 }
 
-void GameController::poll_buttons(const Uint8* keyboard_state) {
+void GameController::poll_buttons() {
+	const Uint8* keyboard_state = ControllerManager::get_instance()->keyboard_state;
 	int buffer_window = get_param_int(PARAM_FIGHTER, "buffer_window");
 	for (int i = 0, max = button_info.size(); i < max; i++) {
 		int button_kind = button_info[i].button_kind;

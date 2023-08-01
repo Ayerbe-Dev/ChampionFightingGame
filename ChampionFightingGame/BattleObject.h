@@ -111,20 +111,20 @@ public:
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 		glm::vec4 rgba, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-		glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
+		glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var = nullptr, float rate = 1.0, float frame = 0.0);
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 		glm::vec4 rgba, std::string bone_name, glm::vec3 bone_offset, glm::vec3 pos_frame,
-		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate = 1.0,
+		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var = nullptr, float rate = 1.0,
 		float frame = 0.0);
 
 	void new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 		glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame,
-		glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
+		glm::vec4 rgba_frame, int* interp_var = nullptr, float rate = 1.0, float frame = 0.0);
 
 	void new_effect_no_follow(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 		glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame,
-		glm::vec4 rgba_frame, float rate = 1.0, float frame = 0.0);
+		glm::vec4 rgba_frame, int* interp_var = nullptr, float rate = 1.0, float frame = 0.0);
 
 	void clear_effect(std::string name, int instance = 0);
 	void clear_effect_all();

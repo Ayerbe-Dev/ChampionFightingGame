@@ -76,7 +76,7 @@ public:
     float target_top_frames = 0.0;
     float target_bottom_frames = 0.0;
 
-    glm::vec2 target_pos = glm::vec2(0.0);
+    glm::vec2 target_pos_per_frame = glm::vec2(0.0);
     glm::vec2 target_pos_frames = glm::vec2(0.0);
     glm::vec2 pos;
     int orientation = GAME_TEXTURE_SDL_ORIENTATION_MIDDLE;

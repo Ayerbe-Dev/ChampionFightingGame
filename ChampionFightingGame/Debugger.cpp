@@ -6,6 +6,9 @@
 #include "DebugMenu.h"
 #include "utils.h"
 
+#include "Battle.h"
+#include "StageSelect.h"
+
 Debugger::Debugger() {
 	button_info[BUTTON_DEBUG_ENABLE].k_mapping = SDL_SCANCODE_LSHIFT;
 	button_info[BUTTON_DEBUG_ADVANCE].k_mapping = SDL_SCANCODE_LCTRL;
@@ -198,7 +201,7 @@ void Debugger::debug_query(std::string command, Fighter* target, Fighter* not_ta
 void cotr_imgui_init() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGuiIO& io = ImGui::GetIO();
 	ImGui::StyleColorsDark();
 	ImGui_ImplSDL2_InitForOpenGL(RenderManager::get_instance()->window, RenderManager::get_instance()->sdl_context);
 	ImGui_ImplOpenGL3_Init();
@@ -221,12 +224,14 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	
 	ImGui::Begin("Debug Menu\n");		
 	
-	if (ImGui::MenuItem("Debug Menu", "This screen")) {
+	if (ImGui::MenuItem("Debug Menu")) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
-		game_manager->looping[game_manager->layer] = false;
 	}
-	if (ImGui::MenuItem("1v1 Game", "With Default settings")) {
-		game_manager->update_state(GAME_STATE_BATTLE);
+	if (ImGui::MenuItem("Training Mode (Battle)")) {
+		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_TRAINING);
+	}
+	if (ImGui::MenuItem("1v1 Game")) {
+		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_NORMAL);
 	}
 	if (ImGui::MenuItem("Character Select Screen")) {
 		game_manager->update_state(GAME_STATE_CHARA_SELECT);
@@ -260,10 +265,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug Menu");
-
 	{
-		//ImGui::PlotLines("Frame Times", ftime, IM_ARRAYSIZE(ftime));
-
 		if (ImGui::TreeNode("Camera")) {
 			ImGui::DragFloat("Camera X", &render_manager->camera.pos[0], 0.01);
 			ImGui::DragFloat("Camera Y", &render_manager->camera.pos[1], 0.01);
@@ -278,18 +280,6 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				ImGui::TreePop();
 				render_manager->camera.update_view();
 			}
-			ImGui::TreePop();
-		}	
-
-		if (ImGui::TreeNode("Shadow Light")) { //tbh this block doesn't really make sense anymore since
-			//by design it should always be the same as render_manager->lights[0]
-			ImGui::DragFloat("Shadow Camera X", &render_manager->shadow_map.light_pos.x, 0.01);
-			ImGui::DragFloat("Shadow Camera Y", &render_manager->shadow_map.light_pos.y, 0.01);
-			ImGui::DragFloat("Shadow Camera Z", &render_manager->shadow_map.light_pos.z, 0.01);
-			
-			ImGui::DragFloat("fov", &render_manager->shadow_map.fov, 0.01);
-			ImGui::DragFloat("depth", &render_manager->shadow_map.depth, 0.01);
-
 			ImGui::TreePop();
 		}
 

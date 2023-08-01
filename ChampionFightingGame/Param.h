@@ -46,7 +46,8 @@ public:
 	int get_param_type(std::string param_name);
 
 	void add_param(Param param, int index);
-	bool load_failed();
+	bool load_failed() const;
+	int get_num_params() const;
 private:
 	int get_param_int(std::string param_name, std::list<std::any> sub_tables);
 	float get_param_float(std::string param_name, std::list<std::any> sub_tables);

@@ -11,7 +11,7 @@ Mouse::Mouse() {
 	buttons[MOUSE_BUTTON_M1].mapping = SDL_BUTTON_LEFT;
 	buttons[MOUSE_BUTTON_M2].mapping = SDL_BUTTON_RIGHT; //SDL_BUTTON_RIGHT being 3 and not 2 fills
 	buttons[MOUSE_BUTTON_M3].mapping = SDL_BUTTON_MIDDLE; //me with indescribable rage over the fact
-	buttons[MOUSE_BUTTON_M4].mapping = SDL_BUTTON_X1; //over the fact that we can't use a for loop here
+	buttons[MOUSE_BUTTON_M4].mapping = SDL_BUTTON_X1; //that we can't use a for loop here
 	buttons[MOUSE_BUTTON_M5].mapping = SDL_BUTTON_X2;
 	pos = glm::ivec2(0);
 }

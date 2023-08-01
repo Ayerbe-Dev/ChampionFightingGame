@@ -1,4 +1,5 @@
 #include "Projectile.h"
+#include "Fighter.h"
 
 void Projectile::status_default() {
 
@@ -18,6 +19,7 @@ void Projectile::status_move() {
 }
 
 void Projectile::enter_status_move() {
+	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
 	change_anim("move");
 }
 
@@ -26,11 +28,13 @@ void Projectile::exit_status_move() {
 }
 
 void Projectile::status_hit() {
-
+	if (is_anim_end) {
+		active = false;
+	}
 }
 
 void Projectile::enter_status_hit() {
-
+	change_anim("hit");
 }
 
 void Projectile::exit_status_hit() {

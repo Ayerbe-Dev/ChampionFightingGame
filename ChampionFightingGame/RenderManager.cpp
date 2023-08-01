@@ -185,7 +185,7 @@ void RenderManager::update_shader_lights() {
 	glm::vec3 shadow_total = glm::vec3(0.0);
 	float shadow_factor = 0.0;
 	g_buffer.shader->use();
-	for (int i = 0, max = MAX_LIGHT_SOURCES; i < max; i++) {
+	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
 		if (i < lights.size()) {
 			g_buffer.shader->set_vec3("light[0].position", lights[i]->position, i);
 			g_buffer.shader->set_vec3("light[0].color", lights[i]->color, i);

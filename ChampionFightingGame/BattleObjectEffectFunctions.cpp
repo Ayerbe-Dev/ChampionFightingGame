@@ -3,37 +3,37 @@
 
 void BattleObject::new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 	glm::vec4 rgba, int bone_id, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
 	scale.x *= facing_dir;
 	bone_offset.x *= facing_dir;
-	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, bone_id, bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 }
 
 void BattleObject::new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 	glm::vec4 rgba, std::string bone_name, glm::vec3 bone_offset, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
-	new_effect(name, pos, rot, scale, rgba, model.get_bone_id(bone_name, false), bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame) {
+	new_effect(name, pos, rot, scale, rgba, model.get_bone_id(bone_name), bone_offset, pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 }
 
 void BattleObject::new_effect(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 	glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
 	scale.x *= facing_dir;
-	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, this, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 }
 
 void BattleObject::new_effect_no_follow(std::string name, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
 	glm::vec4 rgba, glm::vec3 pos_frame, glm::vec3 rot_frame,
-	glm::vec3 scale_frame, glm::vec4 rgba_frame, float rate, float frame) {
+	glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame) {
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
 	scale.x *= facing_dir;
 	pos += this->pos;
-	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, rate, frame);
+	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 }
 
 void BattleObject::clear_effect(std::string name, int instance) {

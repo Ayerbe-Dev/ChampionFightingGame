@@ -11,7 +11,11 @@ bool Fighter::is_actionable() {
 	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0 
 		&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
 		&& !fighter_flag[FIGHTER_FLAG_GRABBED]
-		&& status_kind != FIGHTER_STATUS_THROWN) {
+		&& status_kind != FIGHTER_STATUS_THROWN
+		&& status_kind != FIGHTER_STATUS_ROUND_END) {
+		if (fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY]) {
+			return true;
+		}
 		if (anim_kind->faf == -1) {
 			return std::ceil(frame) >= anim_kind->length;
 		}

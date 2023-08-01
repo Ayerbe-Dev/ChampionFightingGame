@@ -198,7 +198,7 @@ void parse_param_entry(std::ifstream& stream, std::string& name, int& type, std:
 			for (size_t i = 0; i < size; i++) {
 				Param param;
 				parse_param_entry(stream, param.name, param.type, param.value);
-				if (i != 0 || !stream.eof()) {
+				if (!stream.eof() || i == size - 1) {
 					value_p.add_param(param, i);
 				}
 			}

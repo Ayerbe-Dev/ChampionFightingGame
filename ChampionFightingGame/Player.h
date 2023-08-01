@@ -15,9 +15,10 @@ public:
 
 	GameController controller;
 	int id;
-	int chara_kind = 0;
-	int alt_color = 0;
-	int control_type = CONTROL_TYPE_ADVANCE;
+	int chara_kind;
+	int alt_costume;
+	int alt_color;
+	int control_type;
 	StageInfo stage_info;
 	std::string name;
 	PlayerInfo* player_info;

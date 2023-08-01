@@ -5,6 +5,7 @@ ControllerManager::ControllerManager() {
 		registered_controllers[i].controller = nullptr;
 		registered_controllers[i].id = -1;
 	}
+	keyboard_state = SDL_GetKeyboardState(nullptr);
 }
 
 ControllerManager* ControllerManager::instance = nullptr;

@@ -35,16 +35,8 @@ void menu_main() {
 
 		game_manager->handle_window_events();
 
-		keyboard_state = SDL_GetKeyboardState(NULL);
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.poll_buttons(keyboard_state);
-		}
-		
-		game_manager->handle_menus();
-		main_menu->process_main();
-		main_menu->render();
-		main_menu->fps_texture.render();
-		main_menu->fps_counter.render();
+		main_menu->process_game_state();
+		main_menu->render_game_state();
 
 		SDL_GL_SwapWindow(render_manager->window);
 
@@ -339,6 +331,13 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::process_main() {
+	GameManager* game_manager = GameManager::get_instance();
+	for (int i = 0; i < 2; i++) {
+		game_manager->player[i]->controller.poll_buttons();
+	}
+
+	game_manager->handle_menus();
+
 	if (menu_level == MENU_LEVEL_TOP) {
 		if (menu_frame > 0) {
 			menu_frame--;
@@ -360,7 +359,7 @@ void MainMenu::process_main() {
 	}
 }
 
-void MainMenu::render() {
+void MainMenu::render_main() {
 	background_texture.render();
 
 	//prebuffer render
@@ -399,7 +398,7 @@ void MainMenu::render() {
 
 void MainMenu::process_background() {
 	process_main();
-	render();
+	render_main();
 }
 
 void MainMenu::event_up_press() {

@@ -14,8 +14,6 @@ public:
 	void projectile_unique_main() override;
 
 	void status_default() override;
-	void status_hit() override;
-	void enter_status_hit() override;
 	
 	void status_rowan_fireball_hover();
 	void enter_status_rowan_fireball_hover();

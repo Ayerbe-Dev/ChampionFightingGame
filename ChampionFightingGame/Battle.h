@@ -1,11 +1,11 @@
 #pragma once
+#include "BattleConstants.h"
 #include "Player.h"
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
 #include "GameManager.h"
 #include "GameTexture.h"
-#include "Mouse.h"
 
 class ThreadManager;
 class Camera;
@@ -28,6 +28,7 @@ public:
 	GameTimer(int time);
 
 	void init(int time);
+	void reset();
 	void process();
 	void render();
 	void flip_clock();
@@ -40,6 +41,8 @@ public:
 	int deca_frames;
 	int frames;
 
+	int max_time;
+
 	GameTexture second_texture;
 	GameTexture deca_second_texture;
 	GameTexture frame_texture;
@@ -51,7 +54,7 @@ class BattleMeter {
 public:
 	BattleMeter();
 
-	void init(Fighter* fighter);
+	void init(Fighter* fighter, int num_rounds);
 	void destroy();
 	void process();
 	void render();
@@ -63,6 +66,7 @@ public:
 	GameTexture ex_texture;
 	GameTexture ex_segment_texture;
 	GameTexture ex_border;
+	std::vector<GameTexture> round_counter;
 
 	float* health;
 	float* partial_health;
@@ -72,7 +76,8 @@ public:
 	float* ex;
 	float max_ex;
 	int num_bars;
-	float prev_segments = 0.0;
+	float prev_segments;
+	int wins;
 };
 
 class BattleText : public GameTexture {
@@ -104,11 +109,30 @@ public:
 	void print(Fighter* fighter);
 };
 
+class InputVisualizer {
+public:
+	InputVisualizer();
+	void init(Fighter* fighter, Font* font, bool keep_frames);
+	void render();
+
+	Fighter* fighter;
+	Font* font;
+
+	GameTexture background;
+	GameTexture buttons[6];
+	GameTexture stick[9];
+	GameTexture num_frames;
+
+	short input_code;
+	bool keep_frames;
+	int frame_timer;
+};
+
 class TrainingInfo {
 public:
 	TrainingInfo();
 
-	void init(Fighter* fighter, Font& font);
+	void init(Fighter* fighter, Font* font);
 	void destroy();
 	void render();
 
@@ -119,8 +143,10 @@ public:
 	GameTexture stun_frames;
 	GameTexture frame_advantage;
 
-	GameTexture input_visualizer;
-	GameTexture buttons[7];
+	Fighter* fighter;
+
+	InputVisualizer input_visualizer;
+	std::list<InputVisualizer> mini_visualizers;
 };
 
 class Battle : public GameState {
@@ -129,6 +155,14 @@ public:
 	~Battle();
 
 	void process_main();
+	void render_main();
+
+	void process_pre_intro();
+	void process_intro();
+	void process_battle();
+	void process_ko();
+	void process_outro();
+
 	void process_debug_boxes();
 	void process_ui();
 	void pre_process_fighter();
@@ -149,39 +183,38 @@ public:
 	void event_grab_collide_player();
 	void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox);
 	int can_counterhit(Fighter* defender, Hitbox* hitbox);
-	int get_damage_status(int hit_status, int situation_kind);
+	int get_damage_status(Fighter* defender, Hitbox* hitbox, int counterhit_val);
 
 	void render_world();
 	void render_ui();
+
+	BattleObjectManager* battle_object_manager;
+	ThreadManager* thread_manager;
 
 	Font combo_font;
 	Font message_font;
 	Font info_font;
 
+	Player* player[2];
 	Fighter* fighter[2];
 	Stage stage;
-	BattleObjectManager* battle_object_manager;
-	ThreadManager* thread_manager;
-
-	Player* player[2];
+	Camera* camera;
+	BattleState state;
 
 	BattleMeter meters[2];
-
 	BattleText* combo_counter[2] = { nullptr };
 	BattleText* combo_hit[2] = { nullptr };
-
-	TrainingInfo training_info[2];
-
 	std::list<BattleText> texts[2];
+	int num_rounds;
+	int ko_timer;
+	bool sudden_death;
 
 	PlayerIndicator player_indicator[2];
 	GameTimer timer;
 
-	Camera *camera;
+	TrainingInfo training_info[2];
 
 	GameController debug_controller;
-	const Uint8* keyboard_state;
-	Mouse mouse;
 
 	HitboxSim hitbox_sim;
 	GameRect* active_debug_box;
@@ -189,12 +222,11 @@ public:
 	glm::vec2 *debug_offset;
 
 	bool visualize_boxes;
-	bool pause;
 	bool frame_pause;
 };
 
-void fighter_thread(void* fighter_arg);
-void ui_thread(void* battle_arg);
+void gamestate_battle_fighter_thread(void* fighter_arg);
+void gamestate_battle_ui_thread(void* battle_arg);
 
 //Demoknight TF2 has been evicted from UI.cpp as that file no longer exists
 

@@ -12,9 +12,11 @@ BattleMeter::BattleMeter() {
 	ex = nullptr;
 	max_ex = 0.0;
 	num_bars = 0;
+	prev_segments = 0.0;
+	wins = 0;
 }
 
-void BattleMeter::init(Fighter* fighter) {
+void BattleMeter::init(Fighter* fighter, int num_rounds) {
 	health_texture.init("resource/game_state/battle/ui/hp/health.png");
 	partial_health_texture.init("resource/game_state/battle/ui/hp/health.png");
 	combo_health_texture.init("resource/game_state/battle/ui/hp/combo_health.png");
@@ -66,9 +68,11 @@ void BattleMeter::init(Fighter* fighter) {
 	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
 	max_ex = (float)get_param_int(PARAM_FIGHTER, "ex_meter_size");
 	num_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
-
 	ex_texture.scale_right_percent(0.0);
 	ex_segment_texture.scale_right_percent(0.0);
+	for (int i = 0; i < num_rounds; i++) {
+		
+	}
 }
 
 void BattleMeter::destroy() {
@@ -85,7 +89,7 @@ void BattleMeter::process() {
 	if (*partial_health < *health) {
 		combo_health_texture.scale_left_percent(*partial_health / max_health);
 	}
-	else if (*ended_hitstun) {
+	if (*ended_hitstun) {
 		combo_health_texture.set_left_target(clampf(0.0, *health / max_health, 1.0), 5.0);
 	}
 	if (*disable_hitstun_parry) {

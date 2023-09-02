@@ -10,6 +10,7 @@ void Fighter::change_opponent_status(unsigned int status_kind) {
 }
 
 void Fighter::damage_opponent(float damage) {
+	damage *= (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10.0;
 	Fighter* that = battle_object_manager->fighter[!id];
 	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
 	fighter_int[FIGHTER_INT_COMBO_COUNT]++;
@@ -58,7 +59,7 @@ void Fighter::attach_opponent(std::string bone_name) {
 		return;
 	}
 	that->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
-	that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+	that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 	glm::vec3 final_rot = rot;
 	final_rot.z += glm::radians(90.0 * facing_dir);
 	final_rot += extra_rot;
@@ -68,6 +69,6 @@ void Fighter::attach_opponent(std::string bone_name) {
 void Fighter::detach_opponent() {
 	Fighter* that = battle_object_manager->fighter[!id];
 	that->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
-	that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+	that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 	that->extra_mat = glm::mat4(1.0);
 }

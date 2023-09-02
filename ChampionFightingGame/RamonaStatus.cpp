@@ -4,17 +4,17 @@ void Ramona::chara_main() {
 
 }
 
-bool Ramona::specific_ground_status_act() {
+bool Ramona::chara_ground_status_act() {
 	return false;
 }
 
-bool Ramona::specific_air_status_act() {
+bool Ramona::chara_air_status_act() {
 	return false;
 }
 
-bool Ramona::specific_status_attack() {
+bool Ramona::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (specific_ground_status_act()) {
+		if (chara_ground_status_act()) {
 			return true;
 		}
 	}

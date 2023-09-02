@@ -13,30 +13,12 @@ class Fighter;
 
 class Projectile: public BattleObject {
 public:
-	int projectile_kind;
-	std::string projectile_name;
-	int owner_id;
-
-	Fighter* owner;
-
-	bool active = false;
-
-	std::vector<int> projectile_int;
-	std::vector<float> projectile_float;
-	std::vector<bool> projectile_flag;
-
-	std::vector<void (Projectile::*)(void)> status_script;
-	std::vector<void (Projectile::*)(void)> enter_status_script;
-	std::vector<void (Projectile::*)(void)> exit_status_script;
-
-	/*
-		FUNCTIONS
-	*/
-
-	//Constructors
-
 	Projectile();
 	~Projectile();
+
+	/*
+		PROJECTILE FUNCTIONS
+	*/
 
 	//Main
 
@@ -64,9 +46,7 @@ public:
 	void set_default_vars();
 	void init_boxes();
 
-	void add_pos(float x, float y);
 	void add_pos(glm::vec3 pos);
-	void set_pos(float x, float y);
 	void set_pos(glm::vec3 pos);
 
 	//Animation
@@ -76,18 +56,6 @@ public:
 	//Status
 
 	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
-
-	//Hitbox
-
-	void new_hitbox(int id, int multihit, float damage, float chip_damage,
-		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, SituationHit situation_hit,
-		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
-		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
-		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, bool trade, DamageKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
-		float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x);
-	void clear_hitbox(int id);
-	void clear_hitbox_all();
 
 	//Balogna (thanks fez)
 
@@ -149,9 +117,6 @@ public:
 
 
 	//Script Wrappers
-
-	void NEW_HITBOX(ScriptArg args);
-
 	void SET_INT(ScriptArg args);
 	void SET_FLOAT(ScriptArg args);
 	void SET_FLAG(ScriptArg args);
@@ -163,15 +128,31 @@ public:
 
 	//Status Scripts
 
-	virtual void status_default();
-	virtual void enter_status_default();
-	virtual void exit_status_default();
-	virtual void status_move();
-	virtual void enter_status_move();
-	virtual void exit_status_move();
-	virtual void status_hit();
-	virtual void enter_status_hit();
-	virtual void exit_status_hit();
+	virtual void process_hit();
+
+	virtual void status_activate();
+	virtual void enter_status_activate();
+	virtual void exit_status_activate();
+
+	virtual void status_deactivate();
+	virtual void enter_status_deactivate();
+	virtual void exit_status_deactivate();
+
+	int projectile_kind;
+	std::string projectile_name;
+	int owner_id;
+
+	Fighter* owner;
+
+	bool active = false;
+
+	std::vector<int> projectile_int;
+	std::vector<float> projectile_float;
+	std::vector<bool> projectile_flag;
+
+	std::vector<void (Projectile::*)(void)> status_script;
+	std::vector<void (Projectile::*)(void)> enter_status_script;
+	std::vector<void (Projectile::*)(void)> exit_status_script;
 };
 
 /*

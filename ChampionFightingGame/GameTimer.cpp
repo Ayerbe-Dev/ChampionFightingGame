@@ -30,23 +30,17 @@ void GameTimer::init(int time) {
 		clock_mode = 1;
 	}
 
-	clock.init("resource/game_state/battle/ui/timer/clockface.png");
-	second_texture.init("resource/game_state/battle/ui/timer/bigtypeface.png");
-	deca_second_texture.init("resource/game_state/battle/ui/timer/bigtypeface.png");
-	frame_texture.init("resource/game_state/battle/ui/timer/smalltypeface.png");
-	deca_frame_texture.init("resource/game_state/battle/ui/timer/smalltypeface.png");
+	second_texture.init("resource/game_state/battle/ui/timer/bigtypeface.gif");
+	clock.init("resource/game_state/battle/ui/timer/clockface.gif");
+	deca_second_texture.init("resource/game_state/battle/ui/timer/bigtypeface.gif");
+	frame_texture.init("resource/game_state/battle/ui/timer/smalltypeface.gif");
+	deca_frame_texture.init("resource/game_state/battle/ui/timer/smalltypeface.gif");
 
 	clock.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 	second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 	deca_second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 	frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
 	deca_frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
-
-	clock.load_spritesheet("resource/game_state/battle/ui/timer/clockface.yml");
-	second_texture.load_spritesheet("resource/game_state/battle/ui/timer/bigtypeface.yml");
-	deca_second_texture.load_spritesheet("resource/game_state/battle/ui/timer/bigtypeface.yml");
-	frame_texture.load_spritesheet("resource/game_state/battle/ui/timer/smalltypeface.yml");
-	deca_frame_texture.load_spritesheet("resource/game_state/battle/ui/timer/smalltypeface.yml");
 
 	clock.set_scale(1.5);
 	deca_second_texture.set_scale(1.5);

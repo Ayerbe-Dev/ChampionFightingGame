@@ -2,7 +2,6 @@
 #include "Projectile.h"
 
 void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
-	projectiles[id]->active = true;
 	set_projectile_int(id, PROJECTILE_INT_ELAPSED_FRAMES, 0);
 	set_projectile_int(id, PROJECTILE_INT_INIT_HITLAG_FRAMES, 0);
 	set_projectile_int(id, PROJECTILE_INT_HITLAG_FRAMES, 0);
@@ -12,11 +11,11 @@ void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
 
 	projectiles[id]->facing_right = facing_right;
 	projectiles[id]->facing_dir = facing_dir;
-	projectiles[id]->change_status(PROJECTILE_STATUS_DEFAULT, false, false);
+	projectiles[id]->change_status(PROJECTILE_STATUS_ACTIVATE, false, false);
 }
 
 void Fighter::deactivate_projectile(int id) {
-	projectiles[id]->active = false;
+	projectiles[id]->change_status(PROJECTILE_STATUS_DEACTIVATE);
 }
 
 void Fighter::set_projectile_int(int projectile, int target, int val) {
@@ -37,21 +36,9 @@ void Fighter::set_projectile_flag(int projectile, int target, bool val) {
 	}
 }
 
-void Fighter::add_projectile_pos(int projectile, int pos_x, int pos_y) {
-	if (projectiles[projectile]->active) {
-		projectiles[projectile]->add_pos(pos_x, pos_y);
-	}
-}
-
 void Fighter::add_projectile_pos(int projectile, glm::vec3 pos) {
 	if (projectiles[projectile]->active) {
 		projectiles[projectile]->add_pos(pos);
-	}
-}
-
-void Fighter::set_projectile_pos(int projectile, int pos_x, int pos_y) {
-	if (projectiles[projectile]->active) {
-		projectiles[projectile]->set_pos(pos_x, pos_y);
 	}
 }
 

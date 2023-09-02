@@ -3,12 +3,12 @@
 
 void EricFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
-		change_status(PROJECTILE_STATUS_HIT);
+
 	}
 }
 
-void EricFireball::status_default() {
-	change_status(PROJECTILE_STATUS_MOVE);
+void EricFireball::status_activate() {
+
 }
 
 void EricFireball::load_projectile_unique_status_scripts() {

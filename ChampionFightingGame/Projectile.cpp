@@ -12,11 +12,11 @@ Projectile::~Projectile() {
 		hitboxes[i].rect.destroy();
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
+		pushboxes[i].rect.destroy();
 	}
 	stop_se_all();
 	stop_vc_all();
 	blockbox.rect.destroy();
-	jostle_box.destroy();
 	model.unload_model_instance();
 	projectile_int.clear();
 	projectile_float.clear();
@@ -31,13 +31,13 @@ Projectile::~Projectile() {
 }
 
 void Projectile::projectile_main() {
-		process_animate();
-		process_position();
+	process_animate();
+	process_position();
 	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
 		projectile_unique_main();
 		process_status();
 	}
-		process_post_animate();
+	process_post_animate();
 	if (battle_object_manager->allow_dec_var(id)) {
 		decrease_common_variables();
 	}
@@ -99,6 +99,11 @@ void Projectile::process_post_position() {
 void Projectile::decrease_common_variables() {
 	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] != 0) {
 		projectile_int[PROJECTILE_INT_HITLAG_FRAMES] --;
+		if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0 && anim_kind != nullptr
+			&& !anim_kind->flag_no_hitlag_interp) {
+			projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 0;
+			frame -= 0.2;
+		}
 	}
 	else {
 		if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {

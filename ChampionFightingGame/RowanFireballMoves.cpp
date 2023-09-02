@@ -14,22 +14,22 @@ void RowanFireball::load_move_scripts() {
 		execute_frame(1, [this]() {
 			push_function(&Projectile::NEW_EFFECT, "flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0), glm::vec4(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0), &projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES]);
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 18.0, 18.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
-				push_function(&Projectile::NEW_HITBOX, 1, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), SITUATION_HIT_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 0.0, 0.0, 15.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 18.0, 18.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 1, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 1.3, 15.0, 15.0);
 			}
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 40.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 18.0, 18.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
-				push_function(&Projectile::NEW_HITBOX, 1, 0, 40.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), SITUATION_HIT_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 0.0, 0.0, 15.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 40.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 18.0, 18.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 1, 0, 40.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 1.3, 15.0, 15.0);
 			}
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 50.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 18.0, 18.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
-				push_function(&Projectile::NEW_HITBOX, 1, 0, 50.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), SITUATION_HIT_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 0.0, 0.0, 15.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 50.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 18.0, 18.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 1, 0, 50.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 1.3, 15.0, 15.0);
 			}
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 4, 4, 18, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
-				push_function(&Projectile::NEW_HITBOX, 1, 1, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 10, 10, 13.0, 13.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
-				push_function(&Projectile::NEW_HITBOX, 2, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), SITUATION_HIT_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 4, 4, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 0.0, 0.0, 15.0);
-				push_function(&Projectile::NEW_HITBOX, 3, 1, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), SITUATION_HIT_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 10, 10, 18.0, 18.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 0.0, 0.0, 15.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 4, 4, 18, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 1, 1, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 10, 10, 13.0, 13.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 2, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 4, 4, 18, 10, 23.0, 23.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 1.3, 15.0, 15.0);
+				push_function(&Projectile::NEW_HITBOX, 3, 1, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 5.0), HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 10, 10, 10, 10, 18.0, 18.0, HIT_STATUS_LAUNCH, HIT_STATUS_LAUNCH, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 15.0, 1.3, 15.0, 15.0);
 			}
 		});
 	});
@@ -37,27 +37,24 @@ void RowanFireball::load_move_scripts() {
 		execute_frame(0, [this]() {
 			push_function(&Projectile::NEW_EFFECT, "flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.8), glm::vec4(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0), &projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES]);
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
 			}
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 40.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 40.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
 			}
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 50.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 50.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
 			}
 			if (battle_object_manager->fighter[owner_id]->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
-				push_function(&Projectile::NEW_HITBOX, 1, 1, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 0.0, 0.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
+				push_function(&Projectile::NEW_HITBOX, 1, 1, 30.0, 5.0, 1, 15.0, glm::vec2(-50.0, -35.0), glm::vec2(50.0, 35.0), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_HEAVY, ATTACK_HEIGHT_MID, 16, 16, 10, 10, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, true, DAMAGE_KIND_CHIP_KO, true, false, 10.0, 1.3, 15.0, 1.0);
 			}
 		});
 	});
 	script("hit", [this]() {
 
 	});
-	script("fall", [this]() {
-
-	});
-	script("ground", [this]() {
+	script("deactivate", [this]() {
 
 	});
 }

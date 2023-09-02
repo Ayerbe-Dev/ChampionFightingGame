@@ -23,7 +23,7 @@ void Projectile::init() {
 	load_projectile_status_scripts();
 	load_move_scripts();
 
-	change_status(PROJECTILE_STATUS_DEFAULT, false, false);
+	status_kind = PROJECTILE_STATUS_DEACTIVATE;
 }
 
 void Projectile::load_sound_list() {
@@ -97,17 +97,13 @@ void Projectile::load_anim_list() {
 }
 
 void Projectile::load_projectile_status_scripts() {
-	status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::status_default;
-	enter_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::enter_status_default;
-	exit_status_script[PROJECTILE_STATUS_DEFAULT] = &Projectile::exit_status_default;
+	status_script[PROJECTILE_STATUS_ACTIVATE] = &Projectile::status_activate;
+	enter_status_script[PROJECTILE_STATUS_ACTIVATE] = &Projectile::enter_status_activate;
+	exit_status_script[PROJECTILE_STATUS_ACTIVATE] = &Projectile::exit_status_activate;
 
-	status_script[PROJECTILE_STATUS_MOVE] = &Projectile::status_move;
-	enter_status_script[PROJECTILE_STATUS_MOVE] = &Projectile::enter_status_move;
-	exit_status_script[PROJECTILE_STATUS_MOVE] = &Projectile::exit_status_move;
-
-	status_script[PROJECTILE_STATUS_HIT] = &Projectile::status_hit;
-	enter_status_script[PROJECTILE_STATUS_HIT] = &Projectile::enter_status_hit;
-	exit_status_script[PROJECTILE_STATUS_HIT] = &Projectile::exit_status_hit;
+	status_script[PROJECTILE_STATUS_DEACTIVATE] = &Projectile::status_deactivate;
+	enter_status_script[PROJECTILE_STATUS_DEACTIVATE] = &Projectile::enter_status_deactivate;
+	exit_status_script[PROJECTILE_STATUS_DEACTIVATE] = &Projectile::exit_status_deactivate;
 }
 
 void Projectile::set_default_vars() {
@@ -115,8 +111,11 @@ void Projectile::set_default_vars() {
 }
 
 void Projectile::init_boxes() {
-	for (int i = 0; i < HITBOX_COUNT_MAX; i++) {
+	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);
+		hurtboxes[i].init(this);
+		grabboxes[i].init(this);
+		pushboxes[i].init(this);
 	}
 	blockbox.init(this);
 }

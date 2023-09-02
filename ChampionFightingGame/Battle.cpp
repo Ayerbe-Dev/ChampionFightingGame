@@ -28,7 +28,7 @@
 #include "Model.h"
 #include "RenderManager.h"
 
-#include "Debugger.h"
+#include "cotr_imgui_debugger.h"
 #include "ParamAccessor.h"
 
 #include "EffectManager.h"
@@ -88,7 +88,8 @@ void battle_main() {
 		#endif
 
 		for (int i = 0; i < 2; i++) {
-			if (player[i]->controller.check_controllers() == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
+			int controller_update = player[i]->controller.check_controllers();
+			if (controller_update == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
 				//check_controllers returns whether or not controls were changed, and if someone's controller
 				//gets unplugged midgame, we should probably do something about it
 			}
@@ -143,7 +144,7 @@ Battle::Battle() {
 	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
-	game_loader = new GameLoader(13);
+	game_loader = new GameLoader(12);
 	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
 	loading_thread.detach();
 
@@ -166,14 +167,6 @@ Battle::Battle() {
 
 	int rng = rand() % 2;
 	stage.load_stage(player[rng]->stage_info, battle_object_manager);
-
-	inc_thread();
-
-	hitbox_sim.init();
-	active_debug_box = &hitbox_sim.boxes[0][0];
-	debug_anchor = &hitbox_sim.anchor[0][0];
-	debug_offset = &hitbox_sim.offset[0][0];
-	active_debug_box->set_alpha(180);
 	
 	inc_thread();
 
@@ -181,6 +174,9 @@ Battle::Battle() {
 		fighter[i] = create_fighter(player[i]);
 		inc_thread();
 	}
+
+	active_hitbox_object = fighter[0];
+	active_hitbox_object_index = 0;
 
 	camera = &render_manager->camera;
 	camera->reset_camera();
@@ -280,7 +276,6 @@ Battle::~Battle() {
 	render_manager->remove_light();
 
 	thread_manager->kill_thread(THREAD_KIND_UI);
-	hitbox_sim.destroy();
 	camera->stage = nullptr;
 	camera->unload_camera_anims();
 
@@ -548,42 +543,13 @@ void Battle::process_outro() {
 }
 
 void Battle::process_debug_boxes() {
-	if (mouse.check_button_on(MOUSE_BUTTON_M1)) {
+	if (mouse.check_button_on(MOUSE_BUTTON_M2) && active_hitbox_object != nullptr &&
+		hitbox_sim[active_hitbox_object->get_anim()].active_box != nullptr) {
 		glm::vec2 game_rect_coords = mouse_pos_to_rect_coord(mouse.get_pos());
-		*debug_offset = game_rect_coords;
-		if (mouse.check_button_trigger(MOUSE_BUTTON_M1)) {
-			*debug_anchor = game_rect_coords;
+		hitbox_sim[active_hitbox_object->get_anim()].active_box->offset = game_rect_coords;
+		if (mouse.check_button_trigger(MOUSE_BUTTON_M2)) {
+			hitbox_sim[active_hitbox_object->get_anim()].active_box->anchor = game_rect_coords;
 		}
-		active_debug_box->update_corners(*debug_anchor, *debug_offset);
-	}
-	if (mouse.check_button_trigger(MOUSE_BUTTON_M2)) {
-		hitbox_sim.print(fighter[0]);
-	}
-	if (mouse.check_button_trigger(MOUSE_BUTTON_M4)) {
-		active_debug_box->set_alpha(127);
-		if (hitbox_sim.active_cat == 2) {
-			hitbox_sim.active_cat = 0;
-		}
-		else {
-			hitbox_sim.active_cat++;
-		}
-		active_debug_box = &hitbox_sim.boxes[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
-		debug_anchor = &hitbox_sim.anchor[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
-		debug_offset = &hitbox_sim.offset[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
-		active_debug_box->set_alpha(186);
-	}
-	if (mouse.check_button_trigger(MOUSE_BUTTON_M5)) {
-		active_debug_box->set_alpha(127);
-		if (hitbox_sim.active_box[hitbox_sim.active_cat] == 9) {
-			hitbox_sim.active_box[hitbox_sim.active_cat] = 0;
-		}
-		else {
-			hitbox_sim.active_box[hitbox_sim.active_cat]++;
-		}
-		active_debug_box = &hitbox_sim.boxes[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
-		debug_anchor = &hitbox_sim.anchor[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
-		debug_offset = &hitbox_sim.offset[hitbox_sim.active_cat][hitbox_sim.active_box[hitbox_sim.active_cat]];
-		active_debug_box->set_alpha(186);
 	}
 }
 
@@ -609,10 +575,11 @@ void Battle::pre_process_fighter() {
 				fighter[i]->internal_facing_dir = 1.0;
 			}
 			else { //If both players are stuck inside each other, stop that !
-				if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND && fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
-					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-					if (fighter[i]->pos.x == fighter[!i]->pos.x) {
+				if (fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
+					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
+					if (fighter[i]->pos.x == fighter[!i]->pos.x 
+						&& fighter[i]->internal_facing_dir == fighter[!i]->internal_facing_dir) {
 						fighter[i]->internal_facing_right = true;
 						fighter[i]->internal_facing_dir = 1.0;
 						fighter[!i]->internal_facing_right = false;
@@ -621,8 +588,8 @@ void Battle::pre_process_fighter() {
 					fighter[i]->add_pos(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
 					fighter[!i]->add_pos(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
 
-					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
-					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
+					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 				}
 			}
 		}
@@ -856,6 +823,11 @@ void Battle::render_world() {
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {
+				if (fighter[i]->pushboxes[i2].active) {
+					fighter[i]->pushboxes[i2].rect.render();
+				}
+			}
+			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->hurtboxes[i2].active) {
 					fighter[i]->hurtboxes[i2].rect.render();
 				}
@@ -885,9 +857,11 @@ void Battle::render_world() {
 					}
 				}
 			}
-			fighter[i]->jostle_box.render();
 		}
-		hitbox_sim.render();
+		if (active_hitbox_object) {
+			hitbox_sim[active_hitbox_object->get_anim()].update(active_hitbox_object);
+			hitbox_sim[active_hitbox_object->get_anim()].render(active_hitbox_object);
+		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, render_manager->window_width, render_manager->window_height);

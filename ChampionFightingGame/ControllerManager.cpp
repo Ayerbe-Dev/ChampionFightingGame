@@ -17,6 +17,13 @@ ControllerManager* ControllerManager::get_instance() {
 }
 
 void ControllerManager::destroy_instance() {
+	for (int i = 0; i < 2; i++) {
+		if (registered_controllers[i].controller != nullptr) {
+			SDL_GameControllerClose(registered_controllers[i].controller);
+			registered_controllers[i].controller = nullptr;
+		}
+		registered_controllers[i].id = -1;
+	}
 	if (instance != nullptr) {
 		delete instance;
 	}

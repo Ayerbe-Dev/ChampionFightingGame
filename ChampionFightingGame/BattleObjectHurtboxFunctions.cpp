@@ -1,5 +1,11 @@
 #include "BattleObject.h"
 
+void BattleObject::new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, HurtboxKind hurtbox_kind, bool armor, IntangibleKind intangible_kind) {
+	if (id < 10) {
+		hurtboxes[id].activate(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+	}
+}
+
 /// <summary>
 /// Updates the position of a hurtbox relative to the object. 
 /// </summary>

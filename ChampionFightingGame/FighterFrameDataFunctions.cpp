@@ -25,7 +25,6 @@ int Fighter::get_frames_until_actionable() {
 		//Update: I hope past Henry knows the bullshit he put me through to make the following possible.
 
 		for (float sim_frame = frame + sim_rate; sim_frame < target_frame; sim_frame += sim_rate) {
-			std::cout << sim_frame << ", " << sim_rate << "\n";
 			ScriptArg args;
 			if (active_move_script.has_function(sim_frame, &BattleObject::SET_RATE, &args)) {
 				UNWRAP_NO_DECL(sim_rate);

@@ -13,9 +13,7 @@ public:
 
 	void projectile_unique_main() override;
 	
-	void status_default() override;
-	void status_hit() override;
-	void enter_status_hit() override;
+	void status_activate() override;
 
 	void projectile_template_status_template();
 	void projectile_template_enter_status_template();

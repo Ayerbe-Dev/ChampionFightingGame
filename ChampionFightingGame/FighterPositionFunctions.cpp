@@ -34,16 +34,14 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 	//Ok now to actually set some positions
 
-	float this_x_front = this->jostle_box.corners[2].x - (((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir) / 2 * this->facing_dir);
-	float that_x_front = that->jostle_box.corners[2].x - (((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir) / 2 * that->facing_dir);
 	bool ret = true;
-	bool opponent_right = this_x_front > that_x_front;
+	bool opponent_right = this->pos.x > that->pos.x;
 
 	//Add positions, then do a whole bunch of checks to see if we'll need to change to a different position.
 
 	this->pos += pos;
 
-	update_jostle_rect();
+	update_pushbox_pos();
 
 	//Note: The prev arg determines what should happen should a position check fail. If it's true, the changes to position on that axis are canceled
 	//completely. If not, the position is moved to the closest valid position.
@@ -78,7 +76,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 				this->pos.y = prev_pos.y;
 			}
 			else {
-				this->pos.y = 0; //Pretty sure this will get autocorrected to FLOOR_GAMECOORD on the next frame anyway
+				this->pos.y = 0;
 			}
 			ret = false;
 		}
@@ -95,23 +93,29 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 	//Check if a player is about to walk out of the camera range even if they would stay in bounds.
 
-	float this_x_back = this->jostle_box.corners[0].x;
-	float that_x_back = that->jostle_box.corners[0].x;
-	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
+	float x_distance = std::max(this->pos.x, that->pos.x) - std::min(this->pos.x, that->pos.x);
 	if (x_distance > get_param_float(PARAM_FIGHTER, "max_distance")) {
-		this->pos.x = prev_pos.x; //I don't know what the calculation for "make it so you're as close as possible to the max distance without going over" would
-		//look like, and frankly I don't care enough to do it
+		if (prev) {
+			this->pos.x = prev_pos.x;
+		}
+		else {
+			if (pos.x < that->pos.x) {
+				this->pos.x = that->pos.x - get_param_float(PARAM_FIGHTER, "max_distance");
+			}
+			else {
+				this->pos.x = that->pos.x + get_param_float(PARAM_FIGHTER, "max_distance");
+			}
+		}
+
 		ret = false;
 	}
 
 	//Check to see if you crossed up the opponent by changing positions
 
-	float new_this_x_front = this->jostle_box.corners[2].x - (((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir) / 2 * this->facing_dir);
-	bool new_opponent_right = new_this_x_front > that_x_front;
+	bool new_opponent_right = this->pos.x > that->pos.x;
 
 	if (opponent_right != new_opponent_right  //We crossed the front of the opponent's jostle box
-		&& (this_x_front - new_this_x_front) * facing_dir < 0 //We're moving towards them
-		&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] //We aren't allowed to cross up
+		&& !fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] //We aren't allowed to cross up
 		&& situation_kind == FIGHTER_SITUATION_GROUND //We're on the ground
 		&& (that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)) { //And so are they
 		this->pos.x = prev_pos.x;
@@ -119,10 +123,6 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	}
 
 	return ret;
-}
-
-bool Fighter::add_pos(float x, float y, float z, bool prev) {
-	return add_pos(glm::vec3(x, y, z), prev);
 }
 
 bool Fighter::set_pos(glm::vec3 pos, bool prev) {
@@ -197,25 +197,35 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 			ret = false;
 		}
 	}
-	float this_x_back = this->pos.x + ((this->jostle_box.corners[2].x - this->pos.x) * this->facing_dir / -2);
-	float that_x_back = that->pos.x + ((that->jostle_box.corners[2].x - that->pos.x) * that->facing_dir / -2);
-	float x_distance = std::max(this_x_back, that_x_back) - std::min(this_x_back, that_x_back);
+
+	float x_distance = std::max(this->pos.x, that->pos.x) - std::min(this->pos.x, that->pos.x);
 	if (x_distance > get_param_float(PARAM_FIGHTER, "max_distance")) {
-		this->pos.x = prev_pos.x;
+		if (prev) {
+			this->pos.x = prev_pos.x;
+		}
+		else {
+			if (this->pos.x < that->pos.x) {
+				this->pos.x = that->pos.x - get_param_float(PARAM_FIGHTER, "max_distance");
+			}
+			else {
+				this->pos.x = that->pos.x + get_param_float(PARAM_FIGHTER, "max_distance");
+			}
+		}
 		ret = false;
 	}
-	bool new_opponent_right = this->pos.x > that->pos.x;
 
-	if (opponent_right != new_opponent_right && !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && situation_kind == FIGHTER_SITUATION_GROUND && that->situation_kind == FIGHTER_SITUATION_GROUND) {
+	bool new_opponent_right = this->pos.x > that->pos.x;
+	if (opponent_right != new_opponent_right 
+		&& !fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] 
+		&& !that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP]
+		&& (that->situation_kind == FIGHTER_SITUATION_GROUND 
+			|| that->situation_kind == FIGHTER_SITUATION_DOWN)
+		&& situation_kind == FIGHTER_SITUATION_GROUND) {
 		this->pos.x = prev_pos.x;
 		ret = false;
 	}
 
 	return ret;
-}
-
-bool Fighter::set_pos(float x, float y, float z, bool prev) {
-	return set_pos(glm::vec3(x, y, z), prev);
 }
 
 bool Fighter::set_pos_anim() {
@@ -235,21 +245,16 @@ bool Fighter::set_pos_anim() {
 
 void Fighter::landing_crossup() {
 	Fighter* that = battle_object_manager->fighter[!id];
-	if (is_collide(jostle_box, that->jostle_box) && pos.x == that->pos.x) {
-		bool prev_allowed_crossup = fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP];
-		bool that_prev_allowed_crossup = that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP];
-		fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-		that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
-		if (that->internal_facing_right) {
-			add_pos(-20.0, 0.0);
-			that->add_pos(20.0, 0.0);
+	if (pos.x == that->pos.x) return;
+	internal_facing_right = pos.x < that->pos.x;
+	if (internal_facing_right != facing_right) {
+		facing_right = internal_facing_right;
+		if (facing_right) {
+			facing_dir = 1.0;
 		}
 		else {
-			add_pos(20.0, 0.0);
-			that->add_pos(-20.0, 0.0);
+			facing_dir = -1.0;
 		}
-		fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = prev_allowed_crossup;
-		that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = that_prev_allowed_crossup;
 	}
 }
 

@@ -15,24 +15,22 @@ int GameController::check_controllers() {
 	if (controller == nullptr) {
 		SDL_GameController* new_controller;
 		for (int i = 0; i < SDL_NumJoysticks(); i++) {
-			if (SDL_IsGameController(i)) {
-				if (controller_manager->registered_controllers[!id].id != i) {
-					new_controller = SDL_GameControllerOpen(i);
-					if (is_any_controller_input(new_controller)) {
-						controller = new_controller;
-						controller_manager->registered_controllers[id].id = i;
-						controller_manager->registered_controllers[id].controller = controller;
-						return GAME_CONTROLLER_UPDATE_REGISTERED;
-					}
-					SDL_GameControllerClose(new_controller);
+			if (SDL_IsGameController(i) && controller_manager->registered_controllers[!id].id != i) {
+				new_controller = SDL_GameControllerOpen(i);
+				if (is_any_controller_input(new_controller)) {
+					controller = new_controller;
+					controller_manager->registered_controllers[id].id = i;
+					controller_manager->registered_controllers[id].controller = controller;
+					return GAME_CONTROLLER_UPDATE_REGISTERED;
 				}
+				SDL_GameControllerClose(new_controller);
 			}
 		}
 	}
 	else {
 		if (!SDL_GameControllerGetAttached(controller)) {
 			controller_manager->registered_controllers[id].id = -1;
-			controller_manager->registered_controllers[id].controller = nullptr;;
+			controller_manager->registered_controllers[id].controller = nullptr;
 			controller = nullptr;
 			return GAME_CONTROLLER_UPDATE_UNREGISTERED;
 		}

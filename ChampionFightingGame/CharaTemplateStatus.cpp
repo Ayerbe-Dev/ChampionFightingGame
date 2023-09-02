@@ -4,17 +4,17 @@ void CharaTemplate::chara_main() {
 
 }
 
-bool CharaTemplate::specific_ground_status_act() {
+bool CharaTemplate::chara_ground_status_act() {
 	return false;
 }
 
-bool CharaTemplate::specific_air_status_act() {
+bool CharaTemplate::chara_air_status_act() {
 	return false;
 }
 
-bool CharaTemplate::specific_status_attack() {
+bool CharaTemplate::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (specific_ground_status_act()) {
+		if (chara_ground_status_act()) {
 			return true;
 		}
 	}

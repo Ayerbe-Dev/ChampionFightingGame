@@ -73,6 +73,7 @@ public:
 	float max_health;
 	const unsigned* ended_hitstun;
 	const unsigned* disable_hitstun_parry;
+	int* post_hitstun_timer;
 	float* ex;
 	float max_ex;
 	int num_bars;
@@ -92,21 +93,107 @@ public:
 	int duration;
 };
 
+class Simbox {
+public:
+	Simbox();
+	void render(BattleObject* active_object);
+	virtual void print_start(BattleObject* battle_object) = 0;
+	virtual void print_end(BattleObject* object) = 0;
+	void update_rect(BattleObject* object);
+	float frame_start;
+	float frame_end;
+	GameRect rect;
+	int id;
+	glm::vec2 anchor;
+	glm::vec2 offset;
+	glm::vec2 relative_anchor;
+	glm::vec2 relative_offset;
+	glm::vec2 prev_anchor;
+	glm::vec2 prev_offset;
+	glm::vec2 prev_relative_anchor;
+	glm::vec2 prev_relative_offset;
+};
+
+class SimHitbox : public Simbox {
+public:
+	SimHitbox();
+	void print_start(BattleObject* battle_object);
+	void print_end(BattleObject* object);
+
+	int multihit;
+	float damage;
+	float chip_damage;
+	int damage_scale;
+	float meter_gain;
+	HitKind hit_kind;
+	AttackLevel attack_level;
+	AttackHeight attack_height;
+	int hitlag;
+	int blocklag;
+	int hit_advantage;
+	int block_advantage;
+	float hit_pushback;
+	float block_pushback;
+	HitStatus hit_status;
+	HitStatus counterhit_status;
+	CounterhitType counterhit_type;
+	int juggle_start;
+	int juggle_increase;
+	int juggle_max;
+	ClankKind clank_kind;
+	DamageKind damage_kind;
+	bool continue_launch;
+	bool disable_hitstun_parry;
+	float launch_init_y;
+	float launch_gravity_y;
+	float launch_max_fall_speed;
+	float launch_speed_x;
+};
+
+class SimHurtbox : public Simbox {
+public:
+	SimHurtbox();
+	void print_start(BattleObject* battle_object);
+	void print_end(BattleObject* object);
+	HurtboxKind hurtbox_kind;
+	bool armor;
+	IntangibleKind intangible_kind;
+};
+
+class SimGrabbox : public Simbox {
+public:
+	SimGrabbox();
+	void print_start(BattleObject* battle_object);
+	void print_end(BattleObject* object);
+	GrabboxKind grabbox_kind;
+	HitKind hit_kind;
+	std::string attacker_status;
+	std::string defender_status;
+};
+
+class SimPushbox : public Simbox {
+public:
+	SimPushbox();
+	void print_start(BattleObject* battle_object);
+	void print_end(BattleObject* object);
+};
+
 class HitboxSim {
 public:
 	HitboxSim();
 
-	int active_cat;
-	int active_box[3];
-
-	GameRect boxes[3][10];
-	glm::vec2 anchor[3][10];
-	glm::vec2 offset[3][10];
-
-	void init();
 	void destroy();
-	void render();
-	void print(Fighter* fighter);
+	void render(BattleObject* active_object);
+	void update(BattleObject* active_object);
+	void print(BattleObject* active_object);
+	void print_all(BattleObject* active_object);
+
+	Simbox* active_box;
+
+	std::vector<SimHitbox> hitboxes;
+	std::vector<SimHurtbox> hurtboxes;
+	std::vector<SimGrabbox> grabboxes;
+	std::vector<SimPushbox> pushboxes;
 };
 
 class InputVisualizer {
@@ -179,8 +266,8 @@ public:
 	int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox);
 	int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox);
 	int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox);
-	bool event_hit_collide_player();
-	void event_grab_collide_player();
+	void event_hit_collide_player();
+	bool event_grab_collide_player();
 	void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox);
 	int can_counterhit(Fighter* defender, Hitbox* hitbox);
 	int get_damage_status(Fighter* defender, Hitbox* hitbox, int counterhit_val);
@@ -216,10 +303,9 @@ public:
 
 	GameController debug_controller;
 
-	HitboxSim hitbox_sim;
-	GameRect* active_debug_box;
-	glm::vec2 *debug_anchor;
-	glm::vec2 *debug_offset;
+	BattleObject* active_hitbox_object;
+	int active_hitbox_object_index;
+	std::map<std::string, HitboxSim> hitbox_sim;
 
 	bool visualize_boxes;
 	bool frame_pause;

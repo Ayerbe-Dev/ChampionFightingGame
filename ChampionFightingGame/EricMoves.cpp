@@ -214,9 +214,7 @@ void Eric::load_move_scripts() {
 			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
 		});
 		execute_wait(9, [this]() {
-			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
 			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-			reenter_last_anim();
 		});
 	});
 	script("hitstun_parry_air_start", [this]() {
@@ -232,9 +230,7 @@ void Eric::load_move_scripts() {
 			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
 		});
 		execute_wait(9, [this]() {
-			fighter_flag[FIGHTER_FLAG_USED_HITSTUN_PARRY] = false;
 			fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-			reenter_last_anim();
 		});
 	});
 	script("stand_lp", [this]() {
@@ -249,7 +245,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 5,145 }, glm::vec2{ 240, 165 });
 		});
 		execute_frame(4, [this]() {
-			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), SITUATION_HIT_GROUND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, CLANK_KIND_NORMAL, DAMAGE_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
+			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_NORMAL, 1, 1, 4, CLANK_KIND_NORMAL, DAMAGE_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
 			push_function(&Fighter::SET_RATE, 1.0);
 		});
 		execute_wait(4, [this]() {
@@ -475,7 +471,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(3, [this]() {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
+			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, HIT_KIND_GROUND | HIT_KIND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
 		});
 	});
 	script("throw_f", [this]() {
@@ -485,7 +481,7 @@ void Eric::load_move_scripts() {
 			set_opponent_thrown_ticks();
 		});
 		execute_frame(24, [this]() {
-			throw_opponent(30.0, 15.0, 8.0);
+			throw_opponent(30.0, 15.0, 8.0, 1.3, 15.0);
 		});
 	});
 	script("throw_b", [this]() {
@@ -495,8 +491,7 @@ void Eric::load_move_scripts() {
 			set_opponent_thrown_ticks();
 		});
 		execute_frame(10, [this]() {
-			throw_opponent(30.0, -15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
+			throw_opponent(30.0, -15.0, 8.0, 1.3, 15.0);
 		});
 	});
 	script("grab_air", [this]() {
@@ -506,7 +501,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(3, [this]() {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, SITUATION_HIT_GROUND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
+			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, HIT_KIND_GROUND | HIT_KIND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
 		});
 	});
 	script("throw_f_air", [this]() {
@@ -516,7 +511,7 @@ void Eric::load_move_scripts() {
 			set_opponent_thrown_ticks();
 		});
 		execute_frame(22, [this]() {
-			throw_opponent(30.0, 15.0, 8.0);
+			throw_opponent(30.0, 15.0, 8.0, 1.3, 15.0);
 		});
 	});
 	script("throw_b_air", [this]() {
@@ -526,8 +521,7 @@ void Eric::load_move_scripts() {
 			set_opponent_thrown_ticks();
 		});
 		execute_frame(10, [this]() {
-			throw_opponent(30.0, -15.0, 8.0);
-			change_opponent_status(FIGHTER_STATUS_THROWN);
+			throw_opponent(30.0, -15.0, 8.0, 1.3, 15.0);
 		});
 	});
 	script("special_uppercut_start", [this]() {

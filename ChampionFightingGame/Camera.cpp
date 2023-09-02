@@ -8,7 +8,7 @@
 #include "GLM Helpers.h"
 
 Camera::Camera() {
-	base_pos = glm::vec3(0.0, 10.0, 60.0);
+	base_pos = glm::vec3(0.0, 8.0, 55.0);
 	pos = base_pos;
 	prev_pos = glm::vec3(0.0);
 	flip_matrix = glm::mat4(

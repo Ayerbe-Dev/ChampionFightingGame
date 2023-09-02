@@ -4,17 +4,17 @@ void Zyair::chara_main() {
 
 }
 
-bool Zyair::specific_ground_status_act() {
+bool Zyair::chara_ground_status_act() {
 	return false;
 }
 
-bool Zyair::specific_air_status_act() {
+bool Zyair::chara_air_status_act() {
 	return false;
 }
 
-bool Zyair::specific_status_attack() {
+bool Zyair::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (specific_ground_status_act()) {
+		if (chara_ground_status_act()) {
 			return true;
 		}
 	}

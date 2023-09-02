@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "Player.h"
 #include <math.h>
-#include "Debugger.h"
+#include "cotr_imgui_debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
 #include "Loader.h"
@@ -315,8 +315,7 @@ MainMenu::MainMenu() {
 	table.scale_top_percent(1.2, false);
 	table.scale_bottom_percent(1.2, false);
 
-	background_texture.init("resource/game_state/menu/main/bg.png");
-	background_texture.load_spritesheet("resource/game_state/menu/main/bg.yml");
+	background_texture.init("resource/game_state/menu/main/bg.gif");
 
 	inc_thread();
 	game_loader->finished = true;

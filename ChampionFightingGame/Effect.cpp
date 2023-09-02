@@ -55,11 +55,8 @@ void Effect::init(EffectInfo info) {
 		stream >> scale_frame.x >> scale_frame.y >> scale_frame.z;
 		stream >> rgba_frame.x >> rgba_frame.y >> rgba_frame.z >> rgba_frame.w;
 		stream >> has_spritesheet;
-		Particle particle(info.dir + particle_name + ".png", pos, rot, scale, rgba, pos_frame, 
+		Particle particle(info.dir + particle_name, pos, rot, scale, rgba, pos_frame, 
 			rot_frame, scale_frame, rgba_frame);
-		if (has_spritesheet) {
-			particle.load_spritesheet(info.dir + particle_name + ".yml");
-		}
 		particles.push_back(particle);
 	}
 	ShaderManager* shader_manager = ShaderManager::get_instance();

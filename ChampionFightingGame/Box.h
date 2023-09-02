@@ -6,21 +6,35 @@ class BattleObject;
 
 class Blockbox {
 public:
-	BattleObject* object;
-	GameRect rect;
-	glm::vec2 init_anchor;
-	glm::vec2 init_offset;
-	bool active;
-
 	Blockbox();
 	void init(BattleObject* object);
 	void activate(BattleObject* object, glm::vec2 anchor, glm::vec2 offset);
 	void update_pos();
 	void clear();
+
+	BattleObject* object;
+	GameRect rect;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
+	bool active;
 };
 
 class Hitbox {
 public:
+	Hitbox();
+	void init(BattleObject* object);
+	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage,
+		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, HitKind hit_kind,
+		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
+		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
+		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
+		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
+		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
+		float launch_max_fall_speed, float launch_speed_x);
+
+	void update_pos();
+	void clear();
+
 	BattleObject* object;
 
 	int id;
@@ -32,7 +46,7 @@ public:
 	int damage_scale;
 	float meter_gain;
 
-	SituationHit situation_hit;
+	HitKind hit_kind;
 	AttackLevel attack_level;
 	AttackHeight attack_height;
 
@@ -62,76 +76,67 @@ public:
 	float launch_max_fall_speed;
 	float launch_speed_x;
 
-	bool use_player_pos;
-	bool trade;
-
 	glm::vec2 init_anchor;
 	glm::vec2 init_offset;
 	bool active;
-
-	Hitbox();
-	void init(BattleObject* object);
-	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage,
-		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, SituationHit situation_hit,
-		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
-		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
-		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
-		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y, 
-		float launch_max_fall_speed, float launch_speed_x, bool use_player_pos
-	);
-	void activate(BattleObject* object, int id, int multihit, float damage, float chip_damage,
-		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, SituationHit situation_hit,
-		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
-		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
-		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, bool trade, DamageKind ko_kind, bool continue_launch, bool disable_hitstun_parry,
-		float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, float launch_speed_x
-	);
-	
-	void update_pos();
-	void clear();
-};
-
-class Grabbox {
-public:
-	BattleObject* object;
-	int id;
-	GameRect rect;
-	int grabbox_kind;
-	int situation_hit;
-	unsigned int attacker_status_if_hit;
-	unsigned int defender_status_if_hit;
-	glm::vec2 init_anchor;
-	glm::vec2 init_offset;
-	bool use_player_pos;
-	bool active;
-
-	Grabbox();
-	void init(BattleObject* object);
-	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
-		unsigned int defender_status_if_hit, bool use_player_pos = true);
-
-	void update_pos();
-	void clear();
 };
 
 class Hurtbox {
 public:
+	Hurtbox();
+	void init(BattleObject* object);
+	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, 
+		HurtboxKind hurtbox_kind, bool is_armor, IntangibleKind intangible_kind);
+
+	void update_pos();
+	void clear();
+
 	BattleObject* object;
 	int id;
 	GameRect rect;
-	int hurtbox_kind;
+	HurtboxKind hurtbox_kind;
 	bool is_armor;
-	int intangible_kind;
+	IntangibleKind intangible_kind;
 	glm::vec2 init_anchor;
 	glm::vec2 init_offset;
 	bool active;
+};
 
-	Hurtbox();
+class Grabbox {
+public:
+	Grabbox();
 	void init(BattleObject* object);
-	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind, bool is_armor, int intangible_kind);
-	
+	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset, 
+		GrabboxKind grabbox_kind, HitKind hit_kind, unsigned int attacker_status_if_hit,
+		unsigned int defender_status_if_hit);
+
 	void update_pos();
 	void clear();
+
+	BattleObject* object;
+	int id;
+	GameRect rect;
+	GrabboxKind grabbox_kind;
+	HitKind hit_kind;
+	unsigned int attacker_status_if_hit;
+	unsigned int defender_status_if_hit;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
+	bool active;
+};
+
+class Pushbox {
+public:
+	Pushbox();
+	void init(BattleObject* object);
+	void activate(BattleObject* object, int id, glm::vec2 anchor, glm::vec2 offset);
+	void update_pos();
+	void clear();
+
+	BattleObject* object;
+	int id;
+	GameRect rect;
+	glm::vec2 init_anchor;
+	glm::vec2 init_offset;
+	bool active;
 };

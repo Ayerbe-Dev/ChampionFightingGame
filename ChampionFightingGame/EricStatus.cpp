@@ -4,7 +4,7 @@ void Eric::chara_main() {
 
 }
 
-bool Eric::specific_ground_status_act() {
+bool Eric::chara_ground_status_act() {
 	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
@@ -24,16 +24,16 @@ bool Eric::specific_ground_status_act() {
 	return false;
 }
 
-bool Eric::specific_air_status_act() {
+bool Eric::chara_air_status_act() {
 	return false;
 }
 
-bool Eric::specific_status_attack() {
+bool Eric::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (situation_kind == FIGHTER_SITUATION_GROUND && specific_ground_status_act()) {
+		if (situation_kind == FIGHTER_SITUATION_GROUND && chara_ground_status_act()) {
 			return true;
 		}
-		else if (situation_kind == FIGHTER_SITUATION_AIR && specific_air_status_act()) {
+		else if (situation_kind == FIGHTER_SITUATION_AIR && chara_air_status_act()) {
 			return true;
 		}
 		else {
@@ -45,22 +45,22 @@ bool Eric::specific_status_attack() {
 
 void Eric::enter_status_dash_f() {
 	change_anim("dash_f");
-	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 }
 
 void Eric::exit_status_dash_f() {
 	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
-	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 }
 
 void Eric::enter_status_dash_b() {
 	change_anim("dash_b");
-	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = true;
+	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 }
 
 void Eric::exit_status_dash_b() {
 	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
-	fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] = false;
+	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 }
 
 void Eric::eric_status_special_uppercut_start() {
@@ -90,7 +90,7 @@ void Eric::eric_status_special_uppercut() {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
 			situation_kind = FIGHTER_SITUATION_AIR;
-			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+			add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
 			if (is_anim_end) {
 				change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL);
 				return;
@@ -102,7 +102,7 @@ void Eric::eric_status_special_uppercut() {
 			change_anim("special_uppercut");
 		}
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-			add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, 0);
+			add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, 0, 0));
 		}
 	}
 }
@@ -128,7 +128,7 @@ void Eric::eric_status_special_uppercut_fall() {
 		return;
 	}
 	apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
-	add_pos(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
 }
 void Eric::eric_enter_status_special_uppercut_fall() {
 	change_anim("special_uppercut_fall");

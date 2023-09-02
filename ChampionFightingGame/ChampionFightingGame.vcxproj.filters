@@ -13,9 +13,6 @@
     <ClCompile Include="Menu.cpp">
       <Filter>2. Code Files\Game State</Filter>
     </ClCompile>
-    <ClCompile Include="Debugger.cpp">
-      <Filter>2. Code Files\Global</Filter>
-    </ClCompile>
     <ClCompile Include="Loader.cpp">
       <Filter>2. Code Files\Global</Filter>
     </ClCompile>
@@ -233,9 +230,6 @@
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
     <ClCompile Include="FighterInputFunctions.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="FighterJostleFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
     <ClCompile Include="FighterOpponentFunctions.cpp">
@@ -457,12 +451,6 @@
     <ClCompile Include="FighterHitboxFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="FighterHurtboxFunctions.cpp">
-      <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectileHitboxFunctions.cpp">
-      <Filter>2. Code Files\Objects\Projectile\Projectile\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="FighterDataFunctions.cpp">
       <Filter>2. Code Files\Objects\Fighter\Fighter\Functions</Filter>
     </ClCompile>
@@ -586,8 +574,20 @@
     <ClCompile Include="Model.cpp">
       <Filter>2. Code Files\Engine\Visuals\Model</Filter>
     </ClCompile>
+    <ClCompile Include="cotr_imgui_debugger.cpp">
+      <Filter>2. Code Files\Deps\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleObjectPushboxFunctions.cpp">
+      <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
+    </ClCompile>
     <ClCompile Include="EasyGifReader.cpp">
       <Filter>2. Code Files\Deps</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleObjectAnimationFunctions.cpp">
+      <Filter>2. Code Files\Objects\BattleObject\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_stdlib.cpp">
+      <Filter>2. Code Files\Deps\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -617,9 +617,6 @@
     </ClInclude>
     <ClInclude Include="SettingConstants.h">
       <Filter>1. Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="Debugger.h">
-      <Filter>1. Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="Loader.h">
       <Filter>1. Header Files\Global</Filter>
@@ -1320,8 +1317,17 @@
     <ClInclude Include="BattleConstants.h">
       <Filter>1. Header Files\Game State\Battle</Filter>
     </ClInclude>
+    <ClInclude Include="cotr_imgui_debugger.h">
+      <Filter>1. Header Files\Deps\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectConstants.h">
+      <Filter>1. Header Files\Objects\BattleObject</Filter>
+    </ClInclude>
     <ClInclude Include="EasyGifReader.h">
       <Filter>1. Header Files\Deps</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_stdlib.h">
+      <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

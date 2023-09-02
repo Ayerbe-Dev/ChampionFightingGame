@@ -1,6 +1,6 @@
 #include "TitleScreen.h"
 #include "GameTexture.h"
-#include "Debugger.h"
+#include "cotr_imgui_debugger.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
 #include "utils.h"

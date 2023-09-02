@@ -4,17 +4,17 @@ void Rook::chara_main() {
 
 }
 
-bool Rook::specific_ground_status_act() {
+bool Rook::chara_ground_status_act() {
 	return false;
 }
 
-bool Rook::specific_air_status_act() {
+bool Rook::chara_air_status_act() {
 	return false;
 }
 
-bool Rook::specific_status_attack() {
+bool Rook::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (specific_ground_status_act()) {
+		if (chara_ground_status_act()) {
 			return true;
 		}
 	}

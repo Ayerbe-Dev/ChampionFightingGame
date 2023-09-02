@@ -5,6 +5,7 @@
 ThreadObject::ThreadObject() {
 	cv_start = false;
 	cv_end = false;
+	sync_var = false;
 	execution_arg = nullptr;
 	active = false;
 }
@@ -109,6 +110,13 @@ void ThreadManager::wait_thread(int id) {
 	cv_end = false;
 }
 
+NO_INLINE void ThreadManager::sync_threads(int id1, int id2) {
+	while (threads[id1].sync_var);
+	threads[id1].sync_var = true;
+	while (!threads[id2].sync_var);
+	threads[id2].sync_var = false;
+}
+
 bool ThreadManager::is_active(int id) {
 	return threads[id].active;
 }
@@ -130,11 +138,15 @@ bool ThreadManager::is_active(std::thread::id& id) {
 
 bool ThreadManager::is_main_thread() {
 	std::thread::id id = std::this_thread::get_id();
-	return id == instance->main_thread_id; //For whatever reason, sometimes `this` will stop being valid
-	//so we need to deref the instance instead
+	return id == main_thread_id;
+}
 
-	//I'm not too worried for now since the instance still isn't getting corrupted, but I'm not sure
-	//what exactly is causing it
+ThreadObject& ThreadManager::get_thread(int id) {
+	if (id >= THREAD_KIND_MAX) {
+		std::cout << "Thread ID " << id << " out of range, returning default thread.\n";
+		return threads[0];
+	}
+	return threads[id];
 }
 
 ThreadManager* ThreadManager::instance = nullptr;

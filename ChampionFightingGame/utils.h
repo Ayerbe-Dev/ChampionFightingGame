@@ -12,7 +12,8 @@
 #define FONT_COUNT 2
 #define MAX_SOUNDS 20
 #define MAX_SHADERS 4
-#define FORCE_INLINE [[gnu::always_inline]] inline
+#define FORCE_INLINE __forceinline
+#define NO_INLINE __declspec(noinline)
 
 int twoPointDistance(int x0, int y0, int x1, int y1);
 void wait_ms(double ms_duration = 16.667, bool process_time = true);
@@ -26,5 +27,6 @@ void update_thread_progress(int& to_update);
 int rng(const int& min, const int& max);
 float rng_f(const float& min, const float& max);
 float lerp(float a, float b, float f);
+bool is_between(float a, float mid, float b);
 std::int32_t convert_to_int(char* buffer, std::size_t len);
 std::string float_to_string(float val, int precision);

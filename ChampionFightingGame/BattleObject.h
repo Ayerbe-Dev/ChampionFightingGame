@@ -3,12 +3,8 @@
 #include "MoveScript.h"
 #include "Box.h"
 #include "Param.h"
-#include "FighterStatus.h"
-#include "FighterAttribute.h"
-#include "FighterInt.h"
-#include "FighterFloat.h"
-#include "FighterFlag.h"
 #include "VariadicHelpers.h"
+#include "BattleObjectConstants.h"
 
 class Player;
 class BattleObjectManager;
@@ -19,7 +15,7 @@ public:
 	BattleObject();
 
 	int id;
-	int object_type;
+	BattleObjectType object_type;
 	bool has_model;
 
 	glm::vec3 prev_pos = glm::vec3(0.0);
@@ -29,17 +25,14 @@ public:
 	bool facing_right = true;
 	bool internal_facing_right = true;
 
-	unsigned int status_kind = FIGHTER_STATUS_WAIT;
-	unsigned int situation_kind = FIGHTER_SITUATION_GROUND;
-
-	GameRect jostle_box;
-	glm::vec2 base_jostle_anchor;
-	glm::vec2 base_jostle_offset;
+	unsigned int status_kind = 0;
+	unsigned int situation_kind = 0;
 
 	Blockbox blockbox;
 	Hitbox hitboxes[10];
-	Grabbox grabboxes[10];
 	Hurtbox hurtboxes[10];
+	Grabbox grabboxes[10];
+	Pushbox pushboxes[10];
 	bool multihit_connected[10] = { false };
 
 	MoveScriptTable move_script_table;
@@ -68,21 +61,52 @@ public:
 
 	//Hitbox
 
+	void new_hitbox(int id, int multihit, float damage, float chip_damage,
+		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, HitKind hit_kind,
+		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
+		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
+		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
+		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
+		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
+		float launch_max_fall_speed, float launch_speed_x
+	);
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos();
 	bool is_hitbox_active(int multihit = -1);
+	virtual void clear_hitbox(int id);
+	virtual void clear_hitbox_all();
+
+	//Hurtbox
+
+	void new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, HurtboxKind hurtbox_kind, bool armor, IntangibleKind intangible_kind);
+	void update_hurtbox_pos();
+	void clear_hurtbox(int id);
+	void clear_hurtbox_all();
 
 	//Grabbox
 
+	void new_grabbox(int id, glm::vec2 anchor, glm::vec2 offset, GrabboxKind grabbox_kind, 
+		HitKind hit_kind, unsigned int attacker_status_if_hit, unsigned int defender_status_if_hit);
 	void update_grabbox_pos();
 	void clear_grabbox(int id);
 	void clear_grabbox_all();
 
-	//Hurtbox
+	//Pushbox
 
-	void update_hurtbox_pos();
-	void clear_hurtbox(int id);
-	void clear_hurtbox_all();
+	void new_pushbox(int id, glm::vec2 anchor, glm::vec2 offset);
+	void update_pushbox_pos();
+	void clear_pushbox(int id);
+	void clear_pushbox_all();
+	bool pushboxes_touching(BattleObject* object);
+	float get_pushbox_front();
+	float get_pushbox_back();
+
+	//Anim Funcs
+
+	glm::vec3 get_trans_offset();
+	std::string get_anim();
+	std::string get_anim_broad();
+	int get_anim_length(std::string anim_name);
 
 	//Param Funcs
 
@@ -197,6 +221,22 @@ public:
 	void SET_FRAME(ScriptArg args);
 
 	void NEW_BLOCKBOX(ScriptArg args);
+
+	void NEW_HITBOX(ScriptArg args);
+	void CLEAR_HITBOX(ScriptArg args);
+	void CLEAR_HITBOX_ALL(ScriptArg args);
+
+	void NEW_HURTBOX(ScriptArg args);
+	void CLEAR_HURTBOX(ScriptArg args);
+	void CLEAR_HURTBOX_ALL(ScriptArg args);
+	
+	void NEW_GRABBOX(ScriptArg args);
+	void CLEAR_GRABBOX(ScriptArg args);
+	void CLEAR_GRABBOX_ALL(ScriptArg args);
+
+	void NEW_PUSHBOX(ScriptArg args);
+	void CLEAR_PUSHBOX(ScriptArg args);
+	void CLEAR_PUSHBOX_ALL(ScriptArg args);
 
 	void PLAY_SE(ScriptArg args);
 	void PLAY_VC(ScriptArg args);

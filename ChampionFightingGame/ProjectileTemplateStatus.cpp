@@ -4,15 +4,8 @@
 void ProjectileTemplate::projectile_unique_main() {
 
 }
-void ProjectileTemplate::status_default() {
 
-}
-
-void ProjectileTemplate::status_hit() {
-
-}
-
-void ProjectileTemplate::enter_status_hit() {
+void ProjectileTemplate::status_activate() {
 
 }
 

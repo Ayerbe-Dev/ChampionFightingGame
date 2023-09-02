@@ -1,42 +1,41 @@
 #include "Projectile.h"
 #include "Fighter.h"
 
-void Projectile::status_default() {
+void Projectile::process_hit() {
+	projectile_int[PROJECTILE_INT_HEALTH]--;
+	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
+		change_status(PROJECTILE_STATUS_DEACTIVATE);
+	}
+}
+
+void Projectile::status_activate() {
 
 }
 
-void Projectile::enter_status_default() {
+void Projectile::enter_status_activate() {
+	active = true;
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("active_frames");
 	projectile_int[PROJECTILE_INT_HEALTH] = get_local_param_int("health");
+	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = 0;
+	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] = 0;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 0;
+	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 0;
 }
 
-void Projectile::exit_status_default() {
-
-}
-
-void Projectile::status_move() {
-	add_pos(get_local_param_float("move_x_speed") * facing_dir, 0);
-}
-
-void Projectile::enter_status_move() {
-	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
-	change_anim("move");
-}
-
-void Projectile::exit_status_move() {
+void Projectile::exit_status_activate() {
 
 }
 
-void Projectile::status_hit() {
+void Projectile::status_deactivate() {
 	if (is_anim_end) {
 		active = false;
 	}
 }
 
-void Projectile::enter_status_hit() {
-	change_anim("hit");
+void Projectile::enter_status_deactivate() {
+	active = false;
 }
 
-void Projectile::exit_status_hit() {
+void Projectile::exit_status_deactivate() {
 
 }

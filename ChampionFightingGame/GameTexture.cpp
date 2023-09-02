@@ -26,7 +26,7 @@ GameTexture::GameTexture() {
 	width_orientation = 0;
 	height_orientation = 0;
 	matrix = glm::mat4(1.0);
-	texture = 0;
+	sprite_index = 0;
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
@@ -65,6 +65,7 @@ GameTexture::GameTexture(const GameTexture& that) {
 	VBO = that.VBO;
 	texture = that.texture;
 	text = that.text;
+	sprite_index = that.sprite_index;
 
 	colormod = that.colormod;
 	alpha = that.alpha;
@@ -112,11 +113,16 @@ void GameTexture::init(std::string path) {
 	glEnableVertexAttribArray(1);
 
 	ResourceManager* resource_manager = ResourceManager::get_instance();
-
-	texture = resource_manager->get_texture(path);
+	if (path.ends_with(".gif")) {
+		texture = resource_manager->get_textures(path);
+	}
+	else {
+		texture.push_back(resource_manager->get_texture(path));
+	}
+	sprite_index = 0;
 	int width;
 	int height;
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -181,7 +187,8 @@ void GameTexture::init(GLuint texture, int width, int height) {
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	this->texture = texture;
+	this->texture.push_back(texture);
+	sprite_index = 0;
 	this->width = width;
 	this->height = height;
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
@@ -209,8 +216,9 @@ void GameTexture::init(GLuint texture, int width, int height) {
 
 void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	name = text + " Texture";
-	texture = font.create_text(text, rgba, border_rgbs, nullptr);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	texture.push_back(font.create_text(text, rgba, border_rgbs, nullptr));
+	sprite_index = 0;
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
@@ -272,7 +280,9 @@ void GameTexture::destroy() {
 		else {
 			glDeleteVertexArrays(1, &VAO);
 			glDeleteBuffers(1, &VBO);
-			glDeleteTextures(1, &texture);
+			for (int i = 0, max = texture.size(); i < max; i++) {
+				glDeleteTextures(1, &texture[i]);
+			}
 		}
 		loaded = false;
 	}
@@ -828,7 +838,7 @@ void GameTexture::render_prepared() {
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, texture[sprite_index]);
 		shader->set_mat4("matrix", matrix);
 		if (shader->features & SHADER_FEAT_COLORMOD) {
 			shader->set_vec3("f_colormod", colormod);
@@ -842,37 +852,18 @@ void GameTexture::render_prepared() {
 	}
 }
 
-void GameTexture::load_spritesheet(std::string spritesheet_dir) {
-	std::ifstream spritesheet_file;
-	spritesheet_file.open(spritesheet_dir);
-	if (spritesheet_file.fail()) {
-		std::cout << "Failed to open spritesheet at " << spritesheet_dir << "!\n";
-		spritesheet_file.close();
-		return;
-	}
-	int frame;
-	glm::vec2 corners[4];
-	while (spritesheet_file >> frame) {
-		spritesheet_file >> corners[TEX_COORD_BOTTOM_LEFT].x >> corners[TEX_COORD_BOTTOM_LEFT].y;
-		spritesheet_file >> corners[TEX_COORD_BOTTOM_RIGHT].x >> corners[TEX_COORD_BOTTOM_RIGHT].y;
-		spritesheet_file >> corners[TEX_COORD_TOP_RIGHT].x >> corners[TEX_COORD_TOP_RIGHT].y;
-		spritesheet_file >> corners[TEX_COORD_TOP_LEFT].x >> corners[TEX_COORD_TOP_LEFT].y;
-		for (int i = 0; i < 4; i++) {
-			corners[i].x /= width;
-			corners[i].y /= height;
-			spritesheet[i].push_back(corners[i]);
-		}
-	}
-	spritesheet_file.close();
-	set_width(spritesheet[TEX_COORD_TOP_RIGHT][0].x * width);
-	set_height(spritesheet[TEX_COORD_TOP_RIGHT][0].y * height);
-	set_sprite(0);
+void GameTexture::set_sprite(int index) {
+	if (index >= texture.size()) return;
+	sprite_index = index;
 }
 
-void GameTexture::set_sprite(int index) {
-	if (spritesheet[0].size() <= index) return;
-	for (int i = 0; i < 4; i++) {
-		tex_accessor[i]->tex_coord = spritesheet[i][index];
+void GameTexture::next_sprite() {
+	if (texture.size() == 0) return;
+	if (sprite_index + 1 == texture.size()) {
+		sprite_index = 0;
+	}
+	else {
+		sprite_index++;
 	}
 }
 
@@ -894,8 +885,8 @@ void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgb
 		}
 	}
 
-	texture = font.create_text(text, rgba, border_rgbs, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	texture[0] = font.create_text(text, rgba, border_rgbs, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);

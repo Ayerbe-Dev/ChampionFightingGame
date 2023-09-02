@@ -158,8 +158,8 @@ bool LoadIcon::check_corner_distance() {
 	|| (texture.pos.y > SDL_WINDOW_HEIGHT - panic_distance && !move_down)) {
 		will_hit_ceiling = true;
 	}
-	float x_relative = abs(texture.pos.x) / WINDOW_WIDTH * 1000;
-	float y_relative = abs(texture.pos.y) / WINDOW_HEIGHT * 1000;
+	float x_relative = abs(texture.pos.x) / SDL_WINDOW_WIDTH * 1000;
+	float y_relative = abs(texture.pos.y) / SDL_WINDOW_HEIGHT * 1000;
 	bool close_enough = abs(std::max(x_relative, y_relative) - std::min(x_relative, y_relative)) <= 10.0;
 
 	return will_hit_wall && will_hit_ceiling && close_enough;

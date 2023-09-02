@@ -19,6 +19,116 @@ void BattleObject::NEW_BLOCKBOX(ScriptArg args) {
 	new_blockbox(anchor, offset);
 }
 
+void BattleObject::NEW_HITBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	UNWRAP(multihit, int);
+	UNWRAP(damage, float);
+	UNWRAP(chip_damage, float);
+	UNWRAP(damage_scale, int);
+	UNWRAP(meter_gain, float);
+	UNWRAP(anchor, glm::vec2);
+	UNWRAP(offset, glm::vec2);
+	UNWRAP(hit_kind, HitKind);
+	UNWRAP(attack_level, AttackLevel);
+	UNWRAP(attack_height, AttackHeight);
+	UNWRAP(hitlag, int);
+	UNWRAP(blocklag, int);
+	UNWRAP(hitstun, int);
+	UNWRAP(blockstun, int);
+	UNWRAP(hit_pushback, float);
+	UNWRAP(block_pushback, float);
+	UNWRAP(hit_status, HitStatus);
+	UNWRAP(counterhit_status, HitStatus);
+	UNWRAP(counterhit_type, CounterhitType);
+	UNWRAP(juggle_start, int);
+	UNWRAP(juggle_increase, int);
+	UNWRAP(juggle_max, int);
+	UNWRAP(clank_kind, ClankKind);
+	UNWRAP(ko_kind, DamageKind);
+	UNWRAP(continue_launch, bool);
+	UNWRAP(disable_hitstun_parry, bool);
+	UNWRAP(launch_init_y, float);
+	UNWRAP(launch_gravity_y, float);
+	UNWRAP(launch_max_fall_speed, float);
+	UNWRAP(launch_speed_x, float);
+	new_hitbox(id, multihit, damage, chip_damage, damage_scale, meter_gain,
+		anchor, offset, hit_kind, attack_level, attack_height, hitlag, blocklag, hitstun,
+		blockstun, hit_pushback, block_pushback, hit_status, counterhit_status, counterhit_type,
+		juggle_start, juggle_increase, juggle_max, clank_kind, ko_kind, continue_launch,
+		disable_hitstun_parry, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x);
+}
+
+void BattleObject::CLEAR_HITBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	clear_hitbox(id);
+}
+
+void BattleObject::CLEAR_HITBOX_ALL(ScriptArg args) {
+	clear_hitbox_all();
+}
+
+void BattleObject::NEW_GRABBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	UNWRAP(anchor, glm::vec2);
+	UNWRAP(offset, glm::vec2);
+	UNWRAP(grabbox_kind, GrabboxKind);
+	UNWRAP(hit_kind, HitKind);
+	UNWRAP(attacker_status_if_hit, unsigned int);
+	UNWRAP(defender_status_if_hit, unsigned int);
+	new_grabbox(id, anchor, offset, grabbox_kind, hit_kind, attacker_status_if_hit, defender_status_if_hit);
+}
+
+void BattleObject::CLEAR_GRABBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	clear_grabbox(id);
+}
+
+void BattleObject::CLEAR_GRABBOX_ALL(ScriptArg args) {
+	clear_grabbox_all();
+}
+
+
+void BattleObject::NEW_HURTBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	UNWRAP(anchor, glm::vec2);
+	UNWRAP(offset, glm::vec2);
+
+	HurtboxKind hurtbox_kind = HURTBOX_KIND_NORMAL;
+	bool armor = false;
+	IntangibleKind intangible_kind = INTANGIBLE_KIND_NONE;
+
+	UNWRAP_NO_DECL(hurtbox_kind);
+	UNWRAP_NO_DECL(armor);
+	UNWRAP_NO_DECL(intangible_kind);
+
+	new_hurtbox(id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+}
+
+void BattleObject::CLEAR_HURTBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	clear_hurtbox(id);
+}
+
+void BattleObject::CLEAR_HURTBOX_ALL(ScriptArg args) {
+	clear_hurtbox_all();
+}
+
+void BattleObject::NEW_PUSHBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	UNWRAP(anchor, glm::vec2);
+	UNWRAP(offset, glm::vec2);
+	new_pushbox(id, anchor, offset);
+}
+
+void BattleObject::CLEAR_PUSHBOX(ScriptArg args) {
+	UNWRAP(id, int);
+	clear_pushbox(id);
+}
+
+void BattleObject::CLEAR_PUSHBOX_ALL(ScriptArg args) {
+	clear_pushbox_all();
+}
+
 void BattleObject::PLAY_SE(ScriptArg args) {
 	UNWRAP(se, std::string);
 	play_se(se);

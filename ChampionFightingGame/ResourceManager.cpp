@@ -72,7 +72,12 @@ void ResourceManager::unuse_model(std::string dir) {
 void ResourceManager::load_texture(std::string dir) {
 	if (!texture_map.contains(dir)) {
 		texture_map[dir] = TextureResource();
-		texture_map[dir].texture = loadGLTexture(dir);
+		if (dir.ends_with(".gif")) {
+			texture_map[dir].texture = loadGLTextures(dir);
+		}
+		else {
+			texture_map[dir].texture.push_back(loadGLTexture(dir));
+		}
 		texture_map[dir].user_count = 0;
 	}
 }
@@ -82,10 +87,25 @@ unsigned int ResourceManager::get_texture(std::string dir) {
 		load_texture(dir);
 	}
 	texture_map[dir].user_count++;
-	return texture_map[dir].texture;
+	return texture_map[dir].texture[0];
 }
 
 unsigned int ResourceManager::get_texture_keep_user_count(std::string dir) {
+	if (!texture_map.contains(dir)) {
+		load_texture(dir);
+	}
+	return texture_map[dir].texture[0];
+}
+
+std::vector<unsigned int> ResourceManager::get_textures(std::string dir) {
+	if (!texture_map.contains(dir)) {
+		load_texture(dir);
+	}
+	texture_map[dir].user_count++;
+	return texture_map[dir].texture;
+}
+
+std::vector<unsigned int> ResourceManager::get_textures_keep_user_count(std::string dir) {
 	if (!texture_map.contains(dir)) {
 		load_texture(dir);
 	}
@@ -95,7 +115,9 @@ unsigned int ResourceManager::get_texture_keep_user_count(std::string dir) {
 void ResourceManager::unload_texture(std::string dir, bool strict) {
 	if (texture_map.contains(dir)) {
 		if (texture_map[dir].user_count == 0 || !strict) {
-			glDeleteTextures(1, &texture_map[dir].texture);
+			for (int i = 0, max = texture_map[dir].texture.size(); i < max; i++) {
+				glDeleteTextures(1, &texture_map[dir].texture[i]);
+			}
 			texture_map.erase(dir);
 		}
 	}
@@ -116,7 +138,9 @@ void ResourceManager::unload_unused() {
 	}
 	for (std::map<std::string, TextureResource>::iterator it = texture_map.begin(); it != texture_map.end(); it++) {
 		if (it->second.user_count == 0) {
-			glDeleteTextures(1, &it->second.texture);
+			for (int i = 0, max = it->second.texture.size(); i < max; i++) {
+				glDeleteTextures(1, &it->second.texture[i]);
+			}
 			texture_map.erase(it->first);
 		}
 	}
@@ -128,7 +152,9 @@ void ResourceManager::unload_all() {
 	}
 	model_map.clear();
 	for (std::map<std::string, TextureResource>::iterator it = texture_map.begin(); it != texture_map.end(); it++) {
-		glDeleteTextures(1, &it->second.texture);
+		for (int i = 0, max = it->second.texture.size(); i < max; i++) {
+			glDeleteTextures(1, &it->second.texture[i]);
+		}
 	}
 	texture_map.clear();
 }

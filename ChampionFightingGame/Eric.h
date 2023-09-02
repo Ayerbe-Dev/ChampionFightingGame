@@ -11,10 +11,10 @@ public:
 	
 	void chara_main() override;
 
-	bool specific_ground_status_act() override;
-	bool specific_air_status_act() override;
+	bool chara_ground_status_act() override;
+	bool chara_air_status_act() override;
 
-	bool specific_status_attack() override;
+	bool chara_status_attack() override;
 	
 	//Statuses
 	void enter_status_dash_f() override;

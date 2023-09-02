@@ -16,7 +16,6 @@ void Fighter::reenter_last_anim() {
 		player->controller.reset_buffer();
 	}
 	prev_anim_offset = glm::vec3(0.0);
-	reset_jostle_dimensions();
 	is_anim_end = false;
 	Animation* saved_prev_anim_kind = prev_anim_kind;
 	if (anim_kind != prev_anim_kind) {
@@ -51,7 +50,12 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			if (target_frame < 1) {
 				target_frame = new_anim->length;
 			}
-			this->rate = (target_frame / rate) * 0.8;
+			if (rate == 1.0) {
+				this->rate = 1.0;
+			}
+			else {
+				this->rate = (target_frame / rate) * 0.8;
+			}
 			this->frame = 0.0;
 			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
 		}
@@ -63,7 +67,6 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	}
 
 	prev_anim_offset = glm::vec3(0.0);
-	reset_jostle_dimensions();
 	is_anim_end = false;
 	anim_kind = new_anim;
 
@@ -85,7 +88,6 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 		player->controller.reset_buffer();
 	}
 	is_anim_end = false;
-	reset_jostle_dimensions();
 	if (anim_kind != new_anim) {
 		prev_anim_kind = anim_kind;
 	}
@@ -103,52 +105,18 @@ bool Fighter::ending_hitlag(int frames) {
 }
 
 float Fighter::calc_launch_frames() {
-	if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] == 0) {
-		GameManager::get_instance()->add_crash_log("Player " + std::to_string((!id) + 1) + " needs a gravity value on their launcher!");
-		return 1;
+	float sim_gravity = fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY];
+	if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] == 0 || fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
+		return 1.0;
 	}
 	float airtime = 0.0;
 	float simp_y = pos.y; //haha simp
 	float sims_y = fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y];
 	while (simp_y >= 0.0f) {
-		sims_y = clampf(fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1, sims_y - fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], sims_y);
+		sims_y = clampf(fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1, 
+			sims_y - fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], sims_y);
 		simp_y += sims_y;
 		airtime++;
 	}
 	return airtime;
-}
-
-glm::vec3 Fighter::get_trans_offset() {
-	Bone& trans_bone = model.bone_data[model.get_bone_id("Trans")];
-	glm::vec3 trans_offset = glm::vec3(
-		trans_bone.anim_matrix[3].z * facing_dir,
-		trans_bone.anim_matrix[3].y,
-		trans_bone.anim_matrix[3].x
-	);
-	trans_offset -= prev_anim_offset;
-	trans_offset *= glm::vec3(16.5, 11.5, 11.5);
-
-	return trans_offset;
-}
-
-std::string Fighter::get_anim() {
-	if (anim_kind == nullptr) {
-		return "default";
-	}
-	else {
-		return anim_kind->name;
-	}
-}
-
-std::string Fighter::get_anim_broad() {
-	if (anim_kind == nullptr) {
-		return "default";
-	}
-	else {
-		std::string ret = anim_kind->name;
-		if (ret.find("_air") != std::string::npos) {
-			ret = Filter(ret, "_air");
-		}
-		return ret;
-	}
 }

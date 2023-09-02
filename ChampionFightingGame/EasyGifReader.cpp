@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <giflib/gif_lib.h>
 
+#define EASY_GIF_DECODER_BOTTOM_TO_TOP_ROWS
+
 using std::size_t;
 using std::uint32_t;
 

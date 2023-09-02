@@ -355,7 +355,8 @@ void ModelInstance::load_used_model_instance(std::string path) {
 
 void ModelInstance::unload_model_instance() {
 	if (model != nullptr) {
-		ResourceManager::get_instance()->unuse_model(model->get_directory() + "model.dae");
+		std::string dir = model->get_directory() + "model.dae";
+		ResourceManager::get_instance()->unuse_model(dir);
 		unload_textures();
 		materials.clear();
 		meshes.clear();

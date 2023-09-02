@@ -24,7 +24,6 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 	this->name = name;
 
 	Assimp::Importer import;
-
 	const aiScene* scene = import.ReadFile(filename, aiProcess_Triangulate);
 
 	if (!scene || !scene->HasAnimations()) {

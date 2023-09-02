@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <map>
 #include <functional>
+#include "utils.h"
 
 const int THREAD_KIND_PLAYER_1 = 0;
 const int THREAD_KIND_PLAYER_2 = 1;
@@ -24,6 +25,7 @@ public:
 	std::condition_variable cv;
 	bool cv_start;
 	bool cv_end;
+	volatile bool sync_var;
 	bool active;
 	
 	std::function<void(void*)> to_execute;
@@ -44,10 +46,12 @@ public:
 	bool is_thread_unlocked(int id = -1);
 	void notify_thread(int id);
 	void wait_thread(int id);
+	NO_INLINE void sync_threads(int id1, int id2);
 	void kill_thread(int id);
 	bool is_active(int id);
 	bool is_active(std::thread::id &id);
 	bool is_main_thread();
+	ThreadObject& get_thread(int id);
 
 	static ThreadManager* get_instance();
 	void destroy_instance();

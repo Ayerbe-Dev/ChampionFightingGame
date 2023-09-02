@@ -131,6 +131,10 @@ float lerp(float a, float b, float f) {
 	return a + f * (b - a);
 }
 
+bool is_between(float a, float mid, float b) {
+	return (a > mid && b < mid) || (a < mid && b > mid);
+}
+
 std::int32_t convert_to_int(char* buffer, std::size_t len) {
 	std::int32_t a = 0;
 	if (std::endian::native == std::endian::little) {

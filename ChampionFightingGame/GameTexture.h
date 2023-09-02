@@ -84,8 +84,8 @@ public:
     void render();
     void render_prepared();
 
-    void load_spritesheet(std::string spritesheet_dir);
     void set_sprite(int section);
+    void next_sprite();
 
     void update_text(Font &font, const std::string& text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void update_buffer_data();
@@ -108,13 +108,13 @@ public:
     unsigned char alpha = 255;
 
     Shader *shader;
-    unsigned int texture;
+    std::vector<unsigned int> texture;
     TextureCoord tex_data[4];
     TextureCoord* tex_accessor[4];
     glm::vec3 pos = glm::vec3(0.0);
     glm::vec3 rot = glm::vec3(0.0);
+    int sprite_index;
     int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
-    std::vector<glm::vec2> spritesheet[4];
     bool loaded = false;
     bool using_resource = false;
     std::string name = "";

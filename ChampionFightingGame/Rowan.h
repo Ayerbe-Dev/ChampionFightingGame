@@ -12,10 +12,11 @@ public:
 
 	void chara_main() override;
 
-	bool specific_ground_status_act() override;
-	bool specific_air_status_act() override;
+	bool chara_ground_status_act() override;
+	bool chara_air_status_act() override;
 
-	bool specific_status_attack() override;
+	bool chara_status_attack() override;
+	void chara_enter_status_attack_other() override;
 
 	//Statuses
 
@@ -43,4 +44,10 @@ public:
 	void rowan_status_special_uppercut_fall();
 	void rowan_enter_status_special_uppercut_fall();
 	void rowan_exit_status_special_uppercut_fall();
+	void rowan_status_special_uppercut_land();
+	void rowan_enter_status_special_uppercut_land();
+	void rowan_exit_status_special_uppercut_land();
+	void rowan_status_special_upkick();
+	void rowan_enter_status_special_upkick();
+	void rowan_exit_status_special_upkick();
 };

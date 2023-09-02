@@ -1,582 +1,659 @@
 #include "Battle.h"
 
 HitboxSim::HitboxSim() {
-	active_cat = 0;
-	for (int i = 0; i < 3; i++) {
-		active_box[i] = 0;
-		for (int i2 = 0; i2 < 10; i2++) {
-			anchor[i][i2] = glm::ivec2(0);
-			offset[i][i2] = glm::ivec2(0);
-		}
-	}
-}
-
-void HitboxSim::init() {
-	for (int i = 0; i < 3; i++) {
-		for (int i2 = 0; i2 < 10; i2++) {
-			boxes[i][i2].init();
-		}
-	}
-	for (int i = 0; i < 10; i++) {
-		boxes[0][i].set_rgba(glm::vec4(255, 0, 0, 127));
-		boxes[1][i].set_rgba(glm::vec4(0, 255, 0, 127));
-		boxes[2][i].set_rgba(glm::vec4(0, 0, 255, 127));
-	}
+	active_box = nullptr;
 }
 
 void HitboxSim::destroy() {
-	for (int i = 0; i < 3; i++) {
-		for (int i2 = 0; i2 < 10; i2++) {
-			boxes[i][i2].destroy();
-		}
+	active_box = nullptr;
+	hitboxes.clear();
+	hurtboxes.clear();
+	grabboxes.clear();
+	pushboxes.clear();
+}
+
+void HitboxSim::update(BattleObject* active_object) {
+	for (size_t i = 0, max = hitboxes.size(); i < max; i++) {
+		hitboxes[i].update_rect(active_object);
+	}
+	for (size_t i = 0, max = hurtboxes.size(); i < max; i++) {
+		hurtboxes[i].update_rect(active_object);
+	}
+	for (size_t i = 0, max = grabboxes.size(); i < max; i++) {
+		grabboxes[i].update_rect(active_object);
+	}
+	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
+		pushboxes[i].update_rect(active_object);
 	}
 }
 
-void HitboxSim::render() {
-	for (int i = 0; i < 3; i++) {
-		for (int i2 = 0; i2 < 10; i2++) {
-			boxes[i][i2].render();
-		}
+void HitboxSim::render(BattleObject* active_object) {
+	for (size_t i = 0, max = hitboxes.size(); i < max; i++) {
+		hitboxes[i].render(active_object);
+	}
+	for (size_t i = 0, max = hurtboxes.size(); i < max; i++) {
+		hurtboxes[i].render(active_object);
+	}
+	for (size_t i = 0, max = grabboxes.size(); i < max; i++) {
+		grabboxes[i].render(active_object);
+	}
+	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
+		pushboxes[i].render(active_object);
 	}
 }
 
-void HitboxSim::print(Fighter* fighter) { //Prints the info required to generate a hitbox at the given
-	//coordinates. Also makes some assumptions about the rest of the hitbox's behavior, and requests
-	//user input to determine the rest.
-	glm::ivec2 anchor = this->anchor[active_cat][active_box[active_cat]];
-	glm::ivec2 offset = this->offset[active_cat][active_box[active_cat]];
-	anchor -= glm::vec2(fighter->pos);
-	offset -= glm::vec2(fighter->pos);
-	anchor.x *= fighter->facing_dir;
-	offset.x *= fighter->facing_dir;
-	if (fighter->anim_kind != nullptr && !fighter->anim_kind->flag_move) {
-		anchor += glm::vec2(fighter->get_trans_offset());
-		offset += glm::vec2(fighter->get_trans_offset());
+void HitboxSim::print(BattleObject* active_object) {
+	if (!(active_box || active_object)) return;
+	std::cout.precision(1);
+	active_box->print_start(active_object);
+}
+
+void HitboxSim::print_all(BattleObject* active_object) {
+	if (!active_object) return;
+	std::cout.precision(1);
+	std::vector<std::pair<float,std::vector<Simbox*>>> frames_start;
+	std::vector<std::pair<float, std::vector<Simbox*>>> frames_end;
+
+	//This code is a kind of gross way of organizing our script commands, but printing is slow as
+	//fuck no matter what so I'm ok with it here.
+
+	for (size_t i = 0, max = hitboxes.size(); i < max; i++) {
+		int frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
+			if (hitboxes[i].frame_start == frames_start[i2].first) {
+				frame_index = i2;
+				break;
+			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_start.size();
+			std::vector<Simbox*> vec;
+			frames_start.push_back(std::pair(hitboxes[i].frame_start, vec));
+		}
+		frames_start[frame_index].second.push_back(&hitboxes[i]);
+		if (hitboxes[i].frame_end == -1) continue;
+		frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
+			if (hitboxes[i].frame_end == frames_end[i2].first) {
+				frame_index = i2;
+				break;
+			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_end.size();
+			std::vector<Simbox*> vec;
+			frames_end.push_back(std::pair(hitboxes[i].frame_end, vec));
+		}
+		frames_end[frame_index].second.push_back(&hitboxes[i]);
 	}
-	bool command_loop = true;
-	std::string command_input;
-	float command_input_f;
-	switch (active_cat) {
-		case 0: { //Hitboxes
-			int attack_strength;
-			int attack_kind = fighter->fighter_int[FIGHTER_INT_ATTACK_KIND];
-			switch (attack_kind) {
-				case (ATTACK_KIND_LP):
-				case (ATTACK_KIND_LK):
-				case (ATTACK_KIND_CLP):
-				case (ATTACK_KIND_CLK): {
-					attack_strength = 1;
-				} break;
-				case (ATTACK_KIND_MP):
-				case (ATTACK_KIND_MK):
-				case (ATTACK_KIND_CMP):
-				case (ATTACK_KIND_CMK): {
-					attack_strength = 2;
-				} break;
-				case (ATTACK_KIND_HP):
-				case (ATTACK_KIND_HK):
-				case (ATTACK_KIND_CHP):
-				case (ATTACK_KIND_CHK): {
-					attack_strength = 3;
-				} break;
-				case (ATTACK_KIND_SUPER_236236):
-				case (ATTACK_KIND_SUPER_214214): {
-					attack_strength = 5;
-				}
-				default: {
-					attack_strength = 4;
-				}
+	for (size_t i = 0, max = hurtboxes.size(); i < max; i++) {
+		int frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
+			if (hurtboxes[i].frame_start == frames_start[i2].first) {
+				frame_index = i2;
+				break;
 			}
-			int multihit;
-			float damage;
-			float chip_damage;
-			float meter_gain;
-			int damage_scale;
-			std::string situation_hit;
-			std::string attack_level;
-			std::string attack_height;
-			int hitlag;
-			int blocklag;
-			int hitstun;
-			int blockstun;
-			float hit_pushback;
-			float block_pushback;
-			std::string hit_status;
-			std::string counterhit_status;
-			std::string counterhit_type;
-			int juggle_start;
-			int juggle_increase;
-			int juggle_max;
-			std::string damage_kind;
-			std::string continue_launch;
-			std::string disable_hitstun_parry;
-			std::string launch_info;
-			damage = 20 + (10 * attack_strength);
-			hitlag = 6 + (2 * attack_strength);
-			blocklag = 4 + (4 * attack_strength);
-			switch (attack_strength) {
-				case 1: {
-					continue_launch = "false";
-					attack_level = "ATTACK_LEVEL_LIGHT";
-					hit_pushback = 10.0;
-					block_pushback = 10.0;
-					damage_scale = 2;
-					hit_status = "HIT_STATUS_NORMAL";
-					counterhit_status = "HIT_STATUS_NORMAL";
-					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
-					damage_kind = "DAMAGE_KIND_NORMAL";
-				} break;
-				case 2: {
-					continue_launch = "false";
-					attack_level = "ATTACK_LEVEL_MEDIUM";
-					std::cout << "Hit Pushback?\n";
-					std::cin >> hit_pushback;
-					std::cout << "Block Pushback?\n";
-					std::cin >> block_pushback;
-					damage_scale = 1;
-					hit_status = "HIT_STATUS_NORMAL";
-					counterhit_status = "HIT_STATUS_NORMAL";
-					counterhit_type = "COUNTERHIT_TYPE_NORMAL";
-					damage_kind = "DAMAGE_KIND_NORMAL";
-				} break;
-				case 3: {
-					continue_launch = "true";
-					attack_level = "ATTACK_LEVEL_HEAVY";
-					std::cout << "Hit Pushback?\n";
-					std::cin >> hit_pushback;
-					std::cout << "Block Pushback?\n";
-					std::cin >> block_pushback;
-					damage_scale = 1;
-					if (attack_kind == ATTACK_KIND_CHK) {
-						hit_status = "HIT_STATUS_KNOCKDOWN";
-						counterhit_status = "HIT_STATUS_KNOCKDOWN";
-					}
-					else if (attack_kind == ATTACK_KIND_CHP) {
-						hit_status = "HIT_STATUS_NORMAL";
-						counterhit_status = "HIT_STATUS_LAUNCH";
-					}
-					else {
-						std::cout << "Hit status? (name of the status, or \'no\' for default)\n";
-						while (command_loop) {
-							std::cin >> command_input;
-							for (int i = 0; i < command_input.length(); i++) {
-								command_input[i] = std::toupper(command_input[i]);
-							}
-							if (command_input == "NO" || command_input == "N") {
-								hit_status = "HIT_STATUS_NORMAL";
-							}
-							else {
-								if (!command_input.starts_with("HIT_STATUS")) {
-									if (command_input.starts_with("STATUS")) {
-										command_input = "HIT_" + command_input;
-									}
-									else {
-										command_input = "HIT_STATUS_" + command_input;
-									}
-								}
-								hit_status = command_input;
-							}
-							command_loop = false;
-						}
-						command_loop = true;
-						std::cout << "Counterhit status? (name of the status, or \'no\' for default)\n";
-						while (command_loop) {
-							std::cin >> command_input;
-							for (int i = 0; i < command_input.length(); i++) {
-								command_input[i] = std::toupper(command_input[i]);
-							}
-							if (command_input == "NO" || command_input == "N") {
-								counterhit_status = "HIT_STATUS_NORMAL";
-							}
-							else {
-								if (!command_input.starts_with("HIT_STATUS")) {
-									if (command_input.starts_with("STATUS")) {
-										command_input = "HIT_" + command_input;
-									}
-									else {
-										command_input = "HIT_STATUS_" + command_input;
-									}
-								}
-								counterhit_status = command_input;
-							}
-							command_loop = false;
-						}
-						command_loop = true;
-					}
-					std::cout << "Counterhit Type? (name of the type, or \'no\' for default)\n";
-					while (command_loop) {
-						std::cin >> command_input;
-						for (int i = 0; i < command_input.length(); i++) {
-							command_input[i] = std::toupper(command_input[i]);
-						}
-						if (command_input == "NO" || command_input == "N") {
-							counterhit_type = "COUNTERHIT_TYPE_NORMAL";
-						}
-						else {
-							if (!command_input.starts_with("HIT_STATUS")) {
-								if (command_input.starts_with("STATUS")) {
-									command_input = "COUNTERHIT_" + command_input;
-								}
-								else {
-									command_input = "COUNTERHIT_TYPE_" + command_input;
-								}
-							}
-							counterhit_type = command_input;
-						}
-						command_loop = false;
-					}
-					command_loop = true;
-					damage_kind = "DAMAGE_KIND_NORMAL";
-				} break;
-				case 4:
-				case 5: {
-					std::cout << "Damage?\n";
-					std::cin >> damage;
-					std::cout << "Damage Scale?\n";
-					std::cin >> damage_scale;
-					continue_launch = "true";
-					attack_level = "ATTACK_LEVEL_HEAVY";
-					std::cout << "Hit Pushback?\n";
-					std::cin >> hit_pushback;
-					std::cout << "Block Pushback?\n";
-					std::cin >> block_pushback;
-					std::cout << "Hit status? (name of the status, or \'no\' for default)\n";
-					while (command_loop) {
-						std::cin >> command_input;
-						for (int i = 0; i < command_input.length(); i++) {
-							command_input[i] = std::toupper(command_input[i]);
-						}
-						if (command_input == "NO" || command_input == "N") {
-							hit_status = "HIT_STATUS_NORMAL";
-						}
-						else {
-							if (!command_input.starts_with("HIT_STATUS")) {
-								if (command_input.starts_with("STATUS")) {
-									command_input = "HIT_" + command_input;
-								}
-								else {
-									command_input = "HIT_STATUS_" + command_input;
-								}
-							}
-							hit_status = command_input;
-						}
-						command_loop = false;
-					}
-					command_loop = true;
-					std::cout << "Counterhit status? (name of the status, or \'no\' for default)\n";
-					while (command_loop) {
-						std::cin >> command_input;
-						for (int i = 0; i < command_input.length(); i++) {
-							command_input[i] = std::toupper(command_input[i]);
-						}
-						if (command_input == "NO" || command_input == "N") {
-							counterhit_status = "HIT_STATUS_NORMAL";
-						}
-						else {
-							if (!command_input.starts_with("HIT_STATUS")) {
-								if (command_input.starts_with("STATUS")) {
-									command_input = "HIT_" + command_input;
-								}
-								else {
-									command_input = "HIT_STATUS_" + command_input;
-								}
-							}
-							counterhit_status = command_input;
-						}
-						command_loop = false;
-					}
-					command_loop = true;
-					std::cout << "Counterhit Type? (name of the type, or \'no\' for default)\n";
-					while (command_loop) {
-						std::cin >> command_input;
-						for (int i = 0; i < command_input.length(); i++) {
-							command_input[i] = std::toupper(command_input[i]);
-						}
-						if (command_input == "NO" || command_input == "N") {
-							counterhit_type = "COUNTERHIT_TYPE_NORMAL";
-						}
-						else {
-							if (!command_input.starts_with("HIT_STATUS")) {
-								if (command_input.starts_with("STATUS")) {
-									command_input = "COUNTERHIT_" + command_input;
-								}
-								else {
-									command_input = "COUNTERHIT_TYPE_" + command_input;
-								}
-							}
-							counterhit_type = command_input;
-						}
-						command_loop = false;
-					}
-					command_loop = true;
-					if (attack_strength == 5) {
-						std::cout << "Damage Kind? (name of the type, or \'no\' for default)\n";
-						while (command_loop) {
-							std::cin >> command_input;
-							for (int i = 0; i < command_input.length(); i++) {
-								command_input[i] = std::toupper(command_input[i]);
-							}
-							if (command_input == "NO" || command_input == "N") {
-								counterhit_type = "DAMAGE_KIND_NORMAL";
-							}
-							else {
-								if (!command_input.starts_with("DAMAGE_KIND")) {
-									if (command_input.starts_with("KIND")) {
-										command_input = "DAMAGE_" + command_input;
-									}
-									else {
-										command_input = "DAMAGE_KIND_" + command_input;
-									}
-								}
-								counterhit_type = command_input;
-							}
-						}
-					}
-					else {
-						damage_kind = "DAMAGE_KIND_CHIP";
-					}
-				} break;
+		}
+		if (frame_index == -1) {
+			frame_index = frames_start.size();
+			std::vector<Simbox*> vec;
+			frames_start.push_back(std::pair(hurtboxes[i].frame_start, vec));
+		}
+		frames_start[frame_index].second.push_back(&hurtboxes[i]);
+		if (hurtboxes[i].frame_end == -1) continue;
+		frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
+			if (hurtboxes[i].frame_end == frames_end[i2].first) {
+				frame_index = i2;
+				break;
 			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_end.size();
+			std::vector<Simbox*> vec;
+			frames_end.push_back(std::pair(hurtboxes[i].frame_end, vec));
+		}
+		frames_end[frame_index].second.push_back(&hurtboxes[i]);
+	}
+	for (size_t i = 0, max = grabboxes.size(); i < max; i++) {
+		int frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
+			if (grabboxes[i].frame_start == frames_start[i2].first) {
+				frame_index = i2;
+				break;
+			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_start.size();
+			std::vector<Simbox*> vec;
+			frames_start.push_back(std::pair(grabboxes[i].frame_start, vec));
+		}
+		frames_start[frame_index].second.push_back(&grabboxes[i]);
+		if (grabboxes[i].frame_end == -1) continue;
+		frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
+			if (grabboxes[i].frame_end == frames_end[i2].first) {
+				frame_index = i2;
+				break;
+			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_end.size();
+			std::vector<Simbox*> vec;
+			frames_end.push_back(std::pair(grabboxes[i].frame_end, vec));
+		}
+		frames_end[frame_index].second.push_back(&grabboxes[i]);
+	}
+	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
+		int frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
+			if (pushboxes[i].frame_start == frames_start[i2].first) {
+				frame_index = i2;
+				break;
+			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_start.size();
+			std::vector<Simbox*> vec;
+			frames_start.push_back(std::pair(pushboxes[i].frame_start, vec));
+		}
+		frames_start[frame_index].second.push_back(&pushboxes[i]);
+		if (pushboxes[i].frame_end == -1) continue;
+		frame_index = -1;
+		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
+			if (pushboxes[i].frame_end == frames_end[i2].first) {
+				frame_index = i2;
+				break;
+			}
+		}
+		if (frame_index == -1) {
+			frame_index = frames_end.size();
+			std::vector<Simbox*> vec;
+			frames_end.push_back(std::pair(pushboxes[i].frame_end, vec));
+		}
+		frames_end[frame_index].second.push_back(&pushboxes[i]);
+	}
+	for (size_t i = 0, max = frames_start.size(); i < max; i++) {
+		std::cout << "execute_frame(" << frames_start[i].first << ", [this]() {\n";
+		for (size_t i2 = 0, max2 = frames_start[i].second.size(); i2 < max2; i2++) {
+			frames_start[i].second[i2]->print_start(active_object);
+		}
+		for (size_t i2 = 0, max2 = frames_end[i].second.size(); i2 < max2; i2++) {
+			frames_end[i].second[i2]->print_end(active_object);
+		}
+		std::cout << "});\n";
+	}
+}
 
-			std::cout << "Multihit? (yes/no)\n";
-			while (command_loop) {
-				std::cin >> command_input;
-				if (command_input == "yes" || command_input == "y") {
-					multihit = 1;
-					command_loop = false;
-				}
-				else if (command_input == "no" || command_input == "n") {
-					multihit = 0;
-					command_loop = false;
-				}
-				else {
-					std::cout << "\'" << command_input << "\' unrecognized\n";
-				}
-			}
-			command_loop = true;
-			std::cout << "Chip Damage? (enter as % of damage)\n";
-			std::cin >> command_input_f;
-			chip_damage = (command_input_f / 100.0) * damage;
-			meter_gain = damage * 0.8;
-			std::cout << "Hits which situations? (ground/air/both/otg/all)\n";
-			while (command_loop) {
-				std::cin >> command_input;
-				for (int i = 0; i < command_input.length(); i++) {
-					command_input[i] = std::tolower(command_input[i]);
-				}
-				if (command_input == "ground" || command_input == "g") {
-					situation_hit = "SITUATION_HIT_GROUND";
-					command_loop = false;
-				}
-				else if (command_input == "air" || command_input == "a") {
-					situation_hit = "SITUATION_HIT_AIR";
-					command_loop = false;
-				}
-				else if (command_input == "both" || command_input == "b") {
-					situation_hit = "SITUATION_HIT_GROUND_AIR";
-					command_loop = false;
-				}
-				else if (command_input == "otg" || command_input == "o") {
-					situation_hit = "SITUATION_HIT_OTG";
-					command_loop = false;
-				}
-				else if (command_input == "all" || command_input == "a") {
-					situation_hit = "SITUATION_HIT_ALL";
-					command_loop = false;
-				}
-				else {
-					std::cout << "\'" << command_input << "\' unrecognized\n";
-				}
-			}
-			command_loop = true;
-			std::cout << "Attack Height? (low/mid/overhead)\n";
-			while (command_loop) {
-				std::cin >> command_input;
-				for (int i = 0; i < command_input.length(); i++) {
-					command_input[i] = std::tolower(command_input[i]);
-				}
-				if (command_input == "low" || command_input == "l") {
-					attack_height = "ATTACK_HEIGHT_LOW";
-					command_loop = false;
-				}
-				else if (command_input == "mid" || command_input == "medium" || command_input == "m") {
-					attack_height = "ATTACK_HEIGHT_MID";
-					command_loop = false;
-				}
-				else if (command_input == "overhead" || command_input == "high" || command_input == "o" || command_input == "h") {
-					attack_height = "ATTACK_HEIGHT_HIGH";
-					command_loop = false;
-				}
-				else {
-					std::cout << "\'" << command_input << "\' unrecognized\n";
-				}
-			}
-			command_loop = true;
-			if (attack_strength >= 4) {
-				std::cout << "Hitstun?\n";
-				std::cin >> hitstun;
-				std::cout << "Blockstun?\n";
-				std::cin >> blockstun;
-			}
-			else {
-				std::cout << "Hit Advantage?\n";
-				std::cin >> hitstun;
-				hitstun += fighter->get_frames_until_actionable();
-				std::cout << "Block Advantage?\n";
-				std::cin >> blockstun;
-				blockstun += fighter->get_frames_until_actionable();
-			}
-			std::cout << "Juggle Start?\n";
-			std::cin >> juggle_start;
-			std::cout << "Juggle Increase?\n";
-			std::cin >> juggle_increase;
-			std::cout << "Juggle Max?\n";
-			std::cin >> juggle_max;
+Simbox::Simbox() {
+	rect.init();
+	anchor = glm::vec2(0, 0);
+	offset = glm::vec2(0, 0);
+	relative_anchor = glm::vec2(0, 0);
+	relative_offset = glm::vec2(0, 0);
+	prev_anchor = glm::vec2(0, 0);
+	prev_offset = glm::vec2(0, 0);
+	prev_relative_anchor = glm::vec2(0, 0);
+	prev_relative_offset = glm::vec2(0, 0);
+	frame_start = -1;
+	frame_end = -1;
+	id = -1;
+}
 
-			if (continue_launch == "false" && hit_status != "HIT_STATUS_LAUNCH" && counterhit_status != "HIT_STATUS_LAUNCH") {
-				launch_info = "10.0, 0.0, 0.0, 1.0";
-			}
-			else {
-				std::cout << "Launch Info? (y initial speed, gravity, max fall speed, x speed)\n";
-				float y_init, grav, fall, x_speed;
-				std::cin >> y_init >> grav >> fall >> x_speed;
-				launch_info = std::to_string(y_init) + ", " + std::to_string(grav)
-					+ ", " + std::to_string(fall) + ", " + std::to_string(x_speed);
-			}
+void Simbox::update_rect(BattleObject* object) {
+	if (prev_anchor != anchor) {
+		prev_anchor = anchor;
+		relative_anchor = anchor - glm::vec2(object->pos);
+		relative_anchor.x *= object->facing_dir;
+		if (object->anim_kind != nullptr && !object->anim_kind->flag_move) {
+			relative_anchor.x += object->get_trans_offset().x;
+		}
+		prev_relative_anchor = relative_anchor;
+	}
+	if (prev_offset != offset) {
+		prev_offset = offset;
+		relative_offset = offset - glm::vec2(object->pos);
+		relative_offset.x *= object->facing_dir;
+		if (object->anim_kind != nullptr && !object->anim_kind->flag_move) {
+			relative_offset.x += object->get_trans_offset().x;
+		}
+		prev_relative_offset = relative_offset;
+	}
+	if (prev_relative_anchor != relative_anchor) {
+		prev_relative_anchor = relative_anchor;
+		anchor = relative_anchor + glm::vec2(object->pos);
+		prev_anchor = anchor;
+	}
+	if (prev_relative_offset != relative_offset) {
+		prev_relative_offset = relative_offset;
+		offset = relative_offset + glm::vec2(object->pos);
+		prev_offset = offset;
+	}
+	rect.update_corners(anchor, offset);
+}
 
-			std::cout.precision(1);
-			std::cout << "Script: " << fighter->active_move_script.name << ", frame: " << fighter->frame << "\n";
-			std::cout << "push_function(&Fighter::NEW_HITBOX, /*ID*/ " << active_box[active_cat] << 
-				", /*Multihit ID*/ " << multihit << ", /*Damage*/ " << damage << ", /*Chip Damage*/ "
-				<< chip_damage << ", /*Damage Scale*/ " << damage_scale << ", /*Meter Gain*/ " << 
-				meter_gain << ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << 
-				", " << offset.y << "), " << situation_hit << ", " << attack_level << ", " <<
-				attack_height << ", /*Hitlag*/ " << hitlag << ", /*Blocklag*/ " << blocklag << 
-				", /*Hitstun*/ " << hitstun << ", /*Blockstun*/ " << blockstun << ", /*Hit Pushback*/ "
-				<< hit_pushback << ", /*Block Pushback*/ " << block_pushback << ", /*Hit Status*/ " 
-				<< hit_status << ", /*Counterhit Status*/ " << counterhit_status << ", " << 
-				counterhit_type << ", /*Juggle Start*/ " << juggle_start << ", /*Juggle Increase*/ " <<
-				juggle_increase << ", /*Juggle Max*/ " << juggle_max << ", CLANK_KIND_NORMAL, " << damage_kind
-				<< ", /*Continue Launch*/ " << continue_launch << ", /*Disable Hitstun Parry*/ false"
-				<< ", /*Launch Info*/ " << launch_info << ");\n";
+void Simbox::render(BattleObject* active_object) {
+	if (active_object->frame >= frame_start && (active_object->frame < frame_end || frame_end == -1)) {
+		rect.render();
+	}
+}
 
+SimHitbox::SimHitbox() {
+	multihit = 0;
+	damage = 0.0;
+	chip_damage = 0.0;
+	damage_scale = 1;
+	meter_gain = 0.0;
+	hit_kind = HIT_KIND_GROUND;
+	attack_level = ATTACK_LEVEL_LIGHT;
+	attack_height = ATTACK_HEIGHT_MID;
+	hitlag = 0;
+	blocklag = 0;
+	hit_advantage = 0;
+	block_advantage = 0;
+	hit_pushback = 10.0;
+	block_pushback = 10.0;
+	hit_status = HIT_STATUS_NORMAL;
+	counterhit_status = HIT_STATUS_NORMAL;
+	counterhit_type = COUNTERHIT_TYPE_NORMAL;
+	juggle_start = 0;
+	juggle_increase = 0;
+	juggle_max = 0;
+	clank_kind = CLANK_KIND_NORMAL;
+	damage_kind = DAMAGE_KIND_NORMAL;
+	continue_launch = false;
+	disable_hitstun_parry = false;
+	launch_init_y = 0.0;
+	launch_gravity_y = 0.0;
+	launch_max_fall_speed = 0.0;
+	launch_speed_x = 0.0;
+	rect.set_rgba(glm::vec4(255.0, 0.0, 0.0, 127.0));
+}
+
+void SimHitbox::print_start(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::NEW_HITBOX, /*ID*/ ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::NEW_HITBOX, /*ID*/ ";
+	}
+	std::string hit_kind_text = "";
+	switch (hit_kind) {
+		case (HIT_KIND_GROUND): {
+			hit_kind_text = ", HIT_KIND_GROUND";
 		} break;
-		case 1: { //Grabboxes
-			std::string grabbox_kind;
-			std::string situation_hit;
-			std::string atk_status;
-			std::string def_status;
-			if (fighter->get_anim().starts_with("grab")) {
-				if (fighter->situation_kind == FIGHTER_SITUATION_AIR) {
-					grabbox_kind = "GRABBOX_KIND_HITSTUN";
-				}
-				else {
-					grabbox_kind = "GRABBOX_KIND_NORMAL";
-				}
-				situation_hit = "SITUATION_HIT_GROUND_AIR";
-				atk_status = "FIGHTER_STATUS_GRAB";
-				def_status = "FIGHTER_STATUS_GRABBED";
-			}
-			else {
-				std::cout << "Connects during hitstun? (yes/no)\n";
-				while (command_loop) {
-					std::cin >> command_input;
-					for (int i = 0; i < command_input.length(); i++) {
-						command_input[i] = std::tolower(command_input[i]);
-					}
-					if (command_input == "yes" || command_input == "y") {
-						grabbox_kind = "GRABBOX_KIND_HITSTUN_NOTECH";
-						command_loop = false;
-					}
-					else if (command_input == "no" || command_input == "n") {
-						grabbox_kind = "GRABBOX_KIND_NOTECH";
-						command_loop = false;
-					}
-					else {
-						std::cout << "\'" << command_input << "\' unrecognized\n";
-					}
-				}
-				command_loop = true;
-				std::cout << "Hits which situations? (ground/air/both)\n";
-				while (command_loop) {
-					std::cin >> command_input;
-					for (int i = 0; i < command_input.length(); i++) {
-						command_input[i] = std::tolower(command_input[i]);
-					}
-					if (command_input == "ground" || command_input == "g") {
-						situation_hit = "SITUATION_HIT_GROUND";
-						command_loop = false;
-					}
-					else if (command_input == "air" || command_input == "a") {
-						situation_hit = "SITUATION_HIT_AIR";
-						command_loop = false;
-					}
-					else if (command_input == "both" || command_input == "b") {
-						situation_hit = "SITUATION_HIT_GROUND_AIR";
-						command_loop = false;
-					}
-					else {
-						std::cout << "\'" << command_input << "\' unrecognized\n";
-					}
-				}
-				command_loop = true;
-				std::cout << "Custom attacker status? (name of the status, or \'no\')\n";
-				while (command_loop) {
-					std::cin >> command_input;
-					for (int i = 0; i < command_input.length(); i++) {
-						command_input[i] = std::toupper(command_input[i]);
-					}
-					if (command_input == "NO" || command_input == "N") {
-						atk_status = "FIGHTER_STATUS_GRAB";
-					}
-					else {
-						if (!command_input.starts_with("FIGHTER_STATUS") && !command_input.starts_with("CHARA_")) {
-							if (command_input.starts_with("STATUS")) {
-								command_input = "FIGHTER_" + command_input;
-							}
-							else {
-								command_input = "FIGHTER_STATUS_" + command_input;
-							}
-						}
-						atk_status = command_input;
-					}
-					command_loop = false;
-				}
-				command_loop = true;
-				std::cout << "Custom defender status? (name of the status, or \'no\')\n";
-				while (command_loop) {
-					std::cin >> command_input;
-					for (int i = 0; i < command_input.length(); i++) {
-						command_input[i] = std::toupper(command_input[i]);
-					}
-					if (command_input == "NO" || command_input == "N") {
-						def_status = "FIGHTER_STATUS_GRABBED";
-					}
-					else {
-						if (!command_input.starts_with("FIGHTER_STATUS") && !command_input.starts_with("CHARA_")) {
-							if (command_input.starts_with("STATUS")) {
-								command_input = "FIGHTER_" + command_input;
-							}
-							else {
-								command_input = "FIGHTER_STATUS_" + command_input;
-							}
-						}
-						def_status = command_input;
-					}
-					command_loop = false;
-				}
-			}
-			std::cout << "Script: " << fighter->active_move_script.name << ", frame: " << fighter->frame << "\n";
-			std::cout << "push_function(&Fighter::NEW_GRABBOX, " << active_box[active_cat] <<
-				", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << ", " <<
-				offset.y << "), " << grabbox_kind << ", " << situation_hit << ", " << atk_status << ", "
-				<< def_status << ");\n";
+		case (HIT_KIND_AIR): {
+			hit_kind_text = ", HIT_KIND_AIR";
 		} break;
-		case 2: { //Hurtboxes
-			std::cout << "Script: " << fighter->active_move_script.name << ", frame: " << fighter->frame << "\n";
-			std::cout << "push_function(&Fighter::NEW_HURTBOX, " << active_box[active_cat] <<
-				", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2(" << offset.x << ", " <<
-				offset.y << "), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);\n";
+		case (HIT_KIND_DOWN): {
+			hit_kind_text = ", HIT_KIND_DOWN";
+		} break;
+		case (HIT_KIND_PROJECTILE): {
+			hit_kind_text = ", HIT_KIND_PROJECTILE";
+		} break;
+		case (HIT_KIND_SOFT_INTANGIBLE): {
+			hit_kind_text = ", HIT_KIND_SOFT_INTANGIBLE";
+		} break;
+		case (HIT_KIND_ARMOR): {
+			hit_kind_text = ", HIT_KIND_ARMOR";
 		} break;
 	}
+	std::string attack_level_text = "";
+	switch (attack_level) {
+		case (ATTACK_LEVEL_LIGHT): {
+			attack_level_text = ", ATTACK_LEVEL_LIGHT";
+		} break;
+		case (ATTACK_LEVEL_MEDIUM): {
+			attack_level_text = ", ATTACK_LEVEL_MEDIUM";
+		} break;
+		case (ATTACK_LEVEL_HEAVY): {
+			attack_level_text = ", ATTACK_LEVEL_HEAVY";
+		} break;
+		default: {
+			attack_level_text = ", ATTACK_LEVEL_MAX";
+		} break;
+	}
+	std::string attack_height_text = "";
+	switch (attack_height) {
+		case (ATTACK_HEIGHT_LOW): {
+			attack_height_text = ", ATTACK_HEIGHT_LOW";
+		} break;
+		case (ATTACK_HEIGHT_MID): {
+			attack_height_text = ", ATTACK_HEIGHT_MID";
+		} break;
+		case (ATTACK_HEIGHT_HIGH): {
+			attack_height_text = ", ATTACK_HEIGHT_HIGH";
+		} break;
+		default: {
+			attack_height_text = ", ATTACK_HEIGHT_MAX";
+		} break;
+	}
+
+	int hitstun_frames;
+	int blockstun_frames;
+	switch (object->object_type) {
+		case (BATTLE_OBJECT_TYPE_FIGHTER): {
+			Fighter* fighter = (Fighter*)object;
+			hitstun_frames = hit_advantage + fighter->get_frames_until_actionable();
+			blockstun_frames = block_advantage + fighter->get_frames_until_actionable();
+		} break;
+		case (BATTLE_OBJECT_TYPE_PROJECTILE): {
+			Projectile* projectile = (Projectile*)object;
+			hitstun_frames = hit_advantage - hitlag + projectile->projectile_int[PROJECTILE_INT_OWNER_ENDLAG] - 1;
+			blockstun_frames = block_advantage - blocklag + projectile->projectile_int[PROJECTILE_INT_OWNER_ENDLAG] - 1;
+		} break;
+		default: {
+			hitstun_frames = 0;
+			blockstun_frames = 0;
+		} break;
+	}
+	if (object->object_type == BATTLE_OBJECT_TYPE_FIGHTER) {
+		hitstun_frames = hit_advantage + ((Fighter*)object)->get_frames_until_actionable();
+	}
+	
+	std::string hit_status_text = "";
+	switch (hit_status) {
+		case (HIT_STATUS_NORMAL): {
+			hit_status_text = ", /*Hit Status*/ HIT_STATUS_NORMAL";
+		} break;
+		case (HIT_STATUS_KNOCKDOWN): {
+			hit_status_text = ", /*Hit Status*/ HIT_STATUS_KNOCKDOWN";
+		} break;
+		case (HIT_STATUS_LAUNCH): {
+			hit_status_text = ", /*Hit Status*/ HIT_STATUS_LAUNCH";
+		} break;
+		case (HIT_STATUS_FLOAT): {
+			hit_status_text = ", /*Hit Status*/ HIT_STATUS_FLOAT";
+		} break;
+		case (HIT_STATUS_CRUMPLE): {
+			hit_status_text = ", /*Hit Status*/ HIT_STATUS_CRUMPLE";
+		} break;
+		default: {
+			hit_status_text = ", /*Hit Status*/ HIT_STATUS_MAX";
+		} break;
+	}
+	std::string counterhit_status_text = "";
+	switch (counterhit_status) {
+		case (HIT_STATUS_NORMAL): {
+			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_NORMAL";
+		} break;
+		case (HIT_STATUS_KNOCKDOWN): {
+			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_KNOCKDOWN";
+		} break;
+		case (HIT_STATUS_LAUNCH): {
+			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_LAUNCH";
+		} break;
+		case (HIT_STATUS_FLOAT): {
+			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_FLOAT";
+		} break;
+		case (HIT_STATUS_CRUMPLE): {
+			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_CRUMPLE";
+		} break;
+		default: {
+			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_MAX";
+		} break;
+	}
+	std::string counterhit_type_text = "";
+	switch (counterhit_type) {
+		case (COUNTERHIT_TYPE_NORMAL): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_NORMAL";
+		} break;
+		case (COUNTERHIT_TYPE_PUNISH): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_PUNISH";
+		} break;
+		case (COUNTERHIT_TYPE_COUNTER_ONLY): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_COUNTER_ONLY";
+		} break;
+		case (COUNTERHIT_TYPE_PUNISH_ONLY): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_PUNISH_ONLY";
+		} break;
+		case (COUNTERHIT_TYPE_AERIAL_ONLY): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_AERIAL_ONLY";
+		} break;
+		case (COUNTERHIT_TYPE_NONE): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_NONE";
+		} break;
+		default: {
+			counterhit_type_text = ", COUNTERHIT_TYPE_MAX";
+		} break;
+	}
+
+	std::string clank_text = "";
+	switch (clank_kind) {
+		case (CLANK_KIND_NORMAL): {
+			clank_text = ", CLANK_KIND_NORMAL";
+		} break;
+		case (CLANK_KIND_CLANK): {
+			clank_text = ", CLANK_KIND_CLANK";
+		} break;
+		case (CLANK_KIND_CONTINUE): {
+			clank_text = ", CLANK_KIND_CONTINUE";
+		} break;
+		default: {
+			clank_text = ", CLANK_KIND_MAX";
+		} break;
+	}
+
+	std::string damage_kind_text = "";
+	switch (damage_kind) {
+		case (DAMAGE_KIND_NORMAL): {
+			damage_kind_text = ", DAMAGE_KIND_NORMAL";
+		} break;
+		case (DAMAGE_KIND_CHIP): {
+			damage_kind_text = ", DAMAGE_KIND_CHIP";
+		} break;
+		case (DAMAGE_KIND_CHIP_KO): {
+			damage_kind_text = ", DAMAGE_KIND_CHIP_KO";
+		} break;
+		case (DAMAGE_KIND_NO_KO): {
+			damage_kind_text = ", DAMAGE_KIND_NO_KO";
+		} break;
+		default: {
+			damage_kind_text = ", DAMAGE_KIND_MAX";
+		} break;
+	}
+	std::string continue_launch_text = ", /*Continue Launch*/ false";
+	if (continue_launch) {
+		continue_launch_text = ", /*Continue Launch*/ true";
+	}
+	std::string disable_hitstun_parry_text = ", /*Disable Hitstun Parry*/ false";
+	if (disable_hitstun_parry) {
+		disable_hitstun_parry_text = ", /*Disable Hitstun Parry*/ true";
+	}
+	glm::ivec2 anchor = this->relative_anchor;
+	glm::ivec2 offset = this->relative_offset;
+	std::cout << padding << id << ", /*Multihit ID*/ " << multihit << ", /*Damage*/ " << damage
+		<< ", /*Chip Damage*/ " << chip_damage << ", /*Damage Scale*/ " << damage_scale
+		<< ", /*Meter Gain*/ " << meter_gain << ", glm::vec2(" << anchor.x << ", " << anchor.y
+		<< "), glm::vec2(" << offset.x << ", " << offset.y << ")" << hit_kind_text
+		<< attack_level_text << attack_height_text << ", /*Hitlag*/ " << hitlag << ", /*Blocklag*/ "
+		<< blocklag << ", /*Hitstun*/ " << hitstun_frames << ", /*Blockstun*/ " << blockstun_frames
+		<< ", /*Hit Pushback*/ " << hit_pushback << ", /*Block Pushback*/ " << block_pushback
+		<< hit_status_text << counterhit_status_text << counterhit_type_text
+		<< ", /*Juggle Start*/ " << juggle_start << ", /*Juggle Increase*/ " << juggle_increase
+		<< ", /*Juggle Max*/ " << juggle_max << clank_text << damage_kind_text
+		<< continue_launch_text << disable_hitstun_parry_text << ", /*Launch Init Y Speed*/ " 
+		<< launch_init_y << ", /*Launch Gravity*/ " << launch_gravity_y 
+		<< ", /*Launch Max Fall Speed*/ " << launch_max_fall_speed << ", /*Launch X Speed*/ " 
+		<< launch_speed_x << ");\n";
+}
+
+void SimHitbox::print_end(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::CLEAR_HITBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::CLEAR_HITBOX, ";
+	}
+	std::cout << padding << id << ");\n";
+}
+
+SimHurtbox::SimHurtbox() {
+	hurtbox_kind = HURTBOX_KIND_NORMAL;
+	armor = false;
+	intangible_kind = INTANGIBLE_KIND_NONE;
+	rect.set_rgba(glm::vec4(0.0, 0.0, 255.0, 127.0));
+}
+
+void SimHurtbox::print_start(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::NEW_HURTBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::NEW_HURTBOX, ";
+	}
+	std::string hurtbox_text = "";
+	switch (hurtbox_kind) {
+		case (HURTBOX_KIND_NORMAL): {
+			hurtbox_text = ", HURTBOX_KIND_NORMAL";
+		} break;
+		case (HURTBOX_KIND_COUNTER): {
+			hurtbox_text = ", HURTBOX_KIND_COUNTER";
+		} break;
+		case (HURTBOX_KIND_RIGHT_OF_WAY): {
+			hurtbox_text = ", HURTBOX_KIND_RIGHT_OF_WAY";
+		} break;
+		default: {
+			hurtbox_text = ", HURTBOX_KIND_MAX";
+		} break;
+	}
+
+	std::string armor_text = ", false";
+	if (armor) {
+		armor_text = ", true";
+	}
+
+	std::string intangible_text = "";
+	switch (intangible_kind) {
+		case (INTANGIBLE_KIND_NONE): {
+			intangible_text = ", INTANGIBLE_KIND_NONE";
+		} break;
+		case (INTANGIBLE_KIND_HIGH): {
+			intangible_text = ", INTANGIBLE_KIND_HIGH";
+		} break;
+		case (INTANGIBLE_KIND_MID): {
+			intangible_text = ", INTANGIBLE_KIND_MID";
+		} break;
+		case (INTANGIBLE_KIND_LOW): {
+			intangible_text = ", INTANGIBLE_KIND_LOW";
+		} break;
+		case (INTANGIBLE_KIND_AERIAL): {
+			intangible_text = ", INTANGIBLE_KIND_AERIAL";
+		} break;
+		case (INTANGIBLE_KIND_STRIKE): {
+			intangible_text = ", INTANGIBLE_KIND_STRIKE";
+		} break;
+		case (INTANGIBLE_KIND_THROW): {
+			intangible_text = ", INTANGIBLE_KIND_THROW";
+		} break;
+		case (INTANGIBLE_KIND_PROJECTILE): {
+			intangible_text = ", INTANGIBLE_KIND_PROJECTILE";
+		} break;
+		case (INTANGIBLE_KIND_INVINCIBLE): {
+			intangible_text = ", INTANGIBLE_KIND_INVINCIBLE";
+		} break;
+		case (INTANGIBLE_KIND_SOFT): {
+			intangible_text = ", INTANGIBLE_KIND_SOFT";
+		} break;
+		default: {
+			intangible_text = ", INTANGIBLE_KIND_MAX";
+		} break;
+	}
+	glm::ivec2 anchor = this->relative_anchor;
+	glm::ivec2 offset = this->relative_offset;
+	std::cout << padding << id << ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2("
+		<< offset.x << ", " << offset.y << ")" << hurtbox_text << armor_text << intangible_text 
+		<< ");\n";
+}
+
+void SimHurtbox::print_end(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::CLEAR_HURTBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::CLEAR_HURTBOX, ";
+	}
+	std::cout << padding << id << ");\n";
+}
+
+SimGrabbox::SimGrabbox() {
+	grabbox_kind = GRABBOX_KIND_NORMAL;
+	hit_kind = HIT_KIND_GROUND;
+	attacker_status = "FIGHTER_STATUS_THROW";
+	defender_status = "FIGHTER_STATUS_GRABBED";
+	rect.set_rgba(glm::vec4(0.0, 255.0, 0.0, 127.0));
+}
+
+void SimGrabbox::print_start(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::NEW_GRABBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::NEW_GRABBOX, ";
+	}
+	std::string grabbox_text = "";
+	switch (grabbox_kind) {
+		case (GRABBOX_KIND_NORMAL): {
+			grabbox_text = ", GRABBOX_KIND_NORMAL";
+		} break;
+		case (GRABBOX_KIND_HITSTUN): {
+			grabbox_text = ", GRABBOX_KIND_HITSTUN";
+		} break;
+		case (GRABBOX_KIND_NOTECH): {
+			grabbox_text = ", GRABBOX_KIND_NOTECH";
+		} break;
+		case (GRABBOX_KIND_HITSTUN_NOTECH): {
+			grabbox_text = ", GRABBOX_KIND_HITSTUN_NOTECH";
+		} break;
+		default: {
+			grabbox_text = ", GRABBOX_KIND_MAX";
+		} break;
+	}
+	std::string hit_kind_text = "";
+	switch (hit_kind) {
+		case (HIT_KIND_GROUND): {
+			hit_kind_text = ", HIT_KIND_GROUND";
+		} break;
+		case (HIT_KIND_AIR): {
+			hit_kind_text = ", HIT_KIND_AIR";
+		} break;
+		case (HIT_KIND_DOWN): {
+			hit_kind_text = ", HIT_KIND_DOWN";
+		} break;
+		case (HIT_KIND_PROJECTILE): {
+			hit_kind_text = ", HIT_KIND_PROJECTILE";
+		} break;
+		case (HIT_KIND_SOFT_INTANGIBLE): {
+			hit_kind_text = ", HIT_KIND_SOFT_INTANGIBLE";
+		} break;
+		case (HIT_KIND_ARMOR): {
+			hit_kind_text = ", HIT_KIND_ARMOR";
+		} break;
+	}
+	glm::ivec2 anchor = this->relative_anchor;
+	glm::ivec2 offset = this->relative_offset;
+	std::cout << padding << id << ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2("
+		<< offset.x << ", " << offset.y << ")" << grabbox_text << hit_kind_text << ", " 
+		<< attacker_status << ", " << defender_status << ");\n";
+}
+
+void SimGrabbox::print_end(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::CLEAR_GRABBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::CLEAR_GRABBOX, ";
+	}
+	std::cout << padding << id << ");\n";
+}
+
+SimPushbox::SimPushbox() {
+	rect.set_rgba(glm::vec4(255.0, 255.0, 0.0, 127.0));
+}
+
+void SimPushbox::print_start(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::NEW_PUSHBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::NEW_PUSHBOX, ";
+	}
+	glm::ivec2 anchor = this->relative_anchor;
+	glm::ivec2 offset = this->relative_offset;
+	std::cout << padding << id << ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2("
+		<< offset.x << ", " << offset.y << "));\n";
+}
+
+void SimPushbox::print_end(BattleObject* object) {
+	std::string padding = "	push_function(&Fighter::CLEAR_PUSHBOX, ";
+	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
+		padding = "	push_function(&Projectile::CLEAR_PUSHBOX, ";
+	}
+	std::cout << padding << id << ");\n";
 }

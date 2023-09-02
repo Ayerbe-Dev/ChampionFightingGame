@@ -4,17 +4,17 @@ void Dingo::chara_main() {
 
 }
 
-bool Dingo::specific_ground_status_act() {
+bool Dingo::chara_ground_status_act() {
 	return false;
 }
 
-bool Dingo::specific_air_status_act() {
+bool Dingo::chara_air_status_act() {
 	return false;
 }
 
-bool Dingo::specific_status_attack() {
+bool Dingo::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (specific_ground_status_act()) {
+		if (chara_ground_status_act()) {
 			return true;
 		}
 	}

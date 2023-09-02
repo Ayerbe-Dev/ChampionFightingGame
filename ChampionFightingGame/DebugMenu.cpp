@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 #include "DebugMenu.h"
-#include "Debugger.h"
+#include "cotr_imgui_debugger.h"
 #include "Loader.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
@@ -84,10 +84,9 @@ void debug_main() {
 
 	go1.model.unload_textures();
 	go2.model.unload_textures();
-	resource_manager->unuse_model("resource/chara/rowan/model/m0/model.dae");
-	resource_manager->unuse_model("resource/chara/rowan/model/m0/model.dae");
-	resource_manager->unload_model("resource/chara/rowan/model/m0/model.dae");
+
 	delete debug;
+	resource_manager->unload_model("resource/chara/rowan/model/m0/model.dae");
 }
 
 DebugMenu::DebugMenu() {

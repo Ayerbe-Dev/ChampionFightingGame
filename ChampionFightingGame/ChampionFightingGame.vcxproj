@@ -203,8 +203,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;$(SolutionDir)\dependencies\x64\lib\OpenAL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;$(SolutionDir)\dependencies\x64\lib\OpenAL;$(SolutionDir)\dependencies\x64\lib\tinyimageloader;$(SolutionDir)\dependencies\x64\lib\giflib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mt.lib;freetype.lib;TinyImageLoader.lib;libgif.a;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
@@ -223,6 +223,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Anlst.cpp" />
     <ClCompile Include="Ayrbt.cpp" />
+    <ClCompile Include="BattleObjectAnimationFunctions.cpp" />
     <ClCompile Include="Dingo.cpp" />
     <ClCompile Include="DingoMoves.cpp" />
     <ClCompile Include="DingoStatus.cpp" />
@@ -256,7 +257,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="CharaTemplateMoves.cpp" />
     <ClCompile Include="CharaTemplateStatus.cpp" />
     <ClCompile Include="ControllerManager.cpp" />
-    <ClCompile Include="Debugger.cpp" />
+    <ClCompile Include="cotr_imgui_debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
     <ClCompile Include="AIDecision.cpp" />
     <ClCompile Include="Effect.cpp" />
@@ -274,7 +275,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterFrameDataFunctions.cpp" />
     <ClCompile Include="FighterGrabFunctions.cpp" />
     <ClCompile Include="FighterHitboxFunctions.cpp" />
-    <ClCompile Include="FighterHurtboxFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
     <ClCompile Include="FighterScriptFunctions.cpp" />
@@ -299,7 +299,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="HitboxSim.cpp" />
     <ClCompile Include="BattleObjectHurtboxFunctions.cpp" />
     <ClCompile Include="FighterInputFunctions.cpp" />
-    <ClCompile Include="FighterJostleFunctions.cpp" />
     <ClCompile Include="FighterLoadingFunctions.cpp" />
     <ClCompile Include="FighterOpponentFunctions.cpp" />
     <ClCompile Include="HxAFile.cpp" />
@@ -311,6 +310,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui_impl_sdl.cpp" />
+    <ClCompile Include="imgui_stdlib.cpp" />
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -345,6 +345,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Nightsabre.cpp" />
     <ClCompile Include="NightsabreMoves.cpp" />
     <ClCompile Include="NightsabreStatus.cpp" />
+    <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
     <ClCompile Include="Wallace.cpp" />
     <ClCompile Include="WallaceMoves.cpp" />
     <ClCompile Include="WallaceStatus.cpp" />
@@ -376,7 +377,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="ProjectileAnimationFunctions.cpp" />
     <ClCompile Include="ProjectileDataFunctions.cpp" />
-    <ClCompile Include="ProjectileHitboxFunctions.cpp" />
     <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
     <ClCompile Include="ProjectilePositionFunctions.cpp" />
@@ -434,6 +434,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Anlst.h" />
     <ClInclude Include="Ayrbt.h" />
     <ClInclude Include="BattleConstants.h" />
+    <ClInclude Include="BattleObjectConstants.h" />
     <ClInclude Include="CharaSelectConstants.h" />
     <ClInclude Include="EasyGifReader.h" />
     <ClInclude Include="HxAConventions.h" />
@@ -470,6 +471,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="HxALayer.h" />
     <ClInclude Include="HxAMeta.h" />
     <ClInclude Include="HxANode.h" />
+    <ClInclude Include="imgui_stdlib.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="PauseBattle.h" />
     <ClInclude Include="Bone.h" />
@@ -492,7 +494,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="ControllerManager.h" />
-    <ClInclude Include="Debugger.h" />
+    <ClInclude Include="cotr_imgui_debugger.h" />
     <ClInclude Include="DebugMenu.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectManager.h" />

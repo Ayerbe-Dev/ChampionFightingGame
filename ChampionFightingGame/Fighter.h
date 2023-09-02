@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "FighterConstants.h"
 #include "BattleObjectManager.h"
+#include "ParamAccessor.h"
 
 #define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
 #define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
@@ -16,40 +17,12 @@ class Projectile;
 
 class Fighter: public BattleObject {
 public:
-	int chara_kind;
-	std::string chara_name;
-
-	Projectile* projectiles[MAX_PROJECTILES]{};
-	int num_projectiles = 0;
-
-	int prev_stick_dir = 0;
-	
-	std::vector<int> fighter_int;
-	std::vector<float> fighter_float;
-	std::vector<bool> fighter_flag;
-	
-	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
-	int connected_hitbox = -1;
-	int connected_grabbox = -1;
-	int connected_projectile_hitbox = -1;
-
-	//Array of pointers to the corressponding function for each status
-	std::vector<void (Fighter::*)(void)> status_script;
-	std::vector<void (Fighter::*)(void)> enter_status_script;
-	std::vector<void (Fighter::*)(void)> exit_status_script;
-
-	//Array of flags to determine what can and cannot be canceled into
-
-	bool cancel_flags[CANCEL_CAT_MAX][CANCEL_KIND_MAX];
-
-	/*
-		FUNCTIONS
-	*/
-
-	//Constructors
-
 	Fighter();
 	~Fighter();
+
+	/*
+		FIGHTER FUNCTIONS
+	*/
 
 	//Main
 
@@ -65,8 +38,8 @@ public:
 	void process_animate(); //Increments the frame and determines whether or not the end of an animation has been reached
 	void process_post_animate(); //Rotates all of the bones once animation and frame have been finalized
 
-	void process_pre_position(); //Resets rotation as well as any garbage position values, creates a jostle rect
-	void process_position(); //Checks collision, creates a jostle rect
+	void process_pre_position(); //Resets rotation as well as any garbage position values
+	void process_position(); //Checks collision
 	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
 	
 	void process_pre_input(); //Really this one just checks if you tried to dash
@@ -124,9 +97,7 @@ public:
 		//to where you want to go to, so if your x would be higher than the window bounds, your x position would be set to the window bounds.
 
 	bool add_pos(glm::vec3 pos, bool prev = false);
-	bool add_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos(glm::vec3 pos, bool prev = false);
-	bool set_pos(float x, float y, float z = 0.0, bool prev = false);
 	bool set_pos_anim();
 	void landing_crossup();
 	void apply_gravity(float gravity, float fall_speed);
@@ -147,37 +118,13 @@ public:
 
 	//Hitbox
 	
-	void new_hitbox(int id, int multihit, float damage, float chip_damage,
-		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, SituationHit situation_hit,
-		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
-		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
-		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
-		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
-		float launch_max_fall_speed, float launch_speed_x, bool use_player_pos
-	);
-	void clear_hitbox(int id);
-	void clear_hitbox_all();
-
-	//Grabbox
-	
-	void new_grabbox(int id, glm::vec2 anchor, glm::vec2 offset, int grabbox_kind, int situation_hit, unsigned int attacker_status_if_hit,
-		unsigned int defender_status_if_hit, bool use_player_pos = true);
-	
-	//Hurtbox
-	
-	void new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, int hurtbox_kind = HURTBOX_KIND_NORMAL, bool armor = false, int intangible_kind = INTANGIBLE_KIND_NONE);
+	void clear_hitbox(int id) override;
+	void clear_hitbox_all() override;	
 
 	//Grab Functions
 
 	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames);
-	void throw_opponent(float damage, float x_speed = 0, float y_speed = 0);
-
-	//Jostle Box
-
-	void update_jostle_rect();
-	void set_jostle_dimensions(float x0, float y0, float x1, float y1);
-	void reset_jostle_dimensions();
+	void throw_opponent(float damage, float x_speed, float y_speed, float gravity, float max_fall_speed);
 
 	//Animation
 	
@@ -187,9 +134,6 @@ public:
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
 	float calc_launch_frames();
-	glm::vec3 get_trans_offset();
-	std::string get_anim();
-	std::string get_anim_broad();
 
 	//Actionability
 
@@ -223,15 +167,17 @@ public:
 
 	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	bool change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool buffer_status_pre_enable_cancel(unsigned int new_status_kind, unsigned int cancel_kind, bool call_end_status = true, bool require_different_status = true);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
 	bool common_ground_status_act(bool crouch = true);
 	bool common_air_status_act();
 	bool common_air_status_general();
-	virtual bool specific_ground_status_act() { return false; };
-	virtual bool specific_air_status_act() { return false; };
-	virtual bool specific_status_attack() { return false; };
+	virtual bool chara_ground_status_act() { return false; };
+	virtual bool chara_air_status_act() { return false; };
+	virtual bool chara_status_attack() { return false; };
+	virtual void chara_enter_status_attack_other() {};
 	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
 	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true, bool require_different_status = true);
 	unsigned int get_status_group();
@@ -245,9 +191,7 @@ public:
 	void set_projectile_int(int projectile, int target, int val);
 	void set_projectile_float(int projectile, int target, float val);
 	void set_projectile_flag(int projectile, int target, bool val);
-	void add_projectile_pos(int projectile, int pos_x, int pos_y);
 	void add_projectile_pos(int projectile, glm::vec3 pos);
-	void set_projectile_pos(int projectile, int pos_x, int pos_y);
 	void set_projectile_pos(int projectile, glm::vec3 pos);
 	void change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
 
@@ -319,22 +263,8 @@ public:
 	void SET_FLOAT(ScriptArg args);
 	void SET_FLAG(ScriptArg args);
 
-	void NEW_HITBOX(ScriptArg args);
-	void CLEAR_HITBOX(ScriptArg args);
-	void CLEAR_HITBOX_ALL(ScriptArg args);
-
-	void NEW_GRABBOX(ScriptArg args);
-	void CLEAR_GRABBOX(ScriptArg args);
-	void CLEAR_GRABBOX_ALL(ScriptArg args);
-
-	void NEW_HURTBOX(ScriptArg args);
-	void CLEAR_HURTBOX(ScriptArg args);
-	void CLEAR_HURTBOX_ALL(ScriptArg args);
-
 	void GRAB_OPPONENT(ScriptArg args);
 	void THROW_OPPONENT(ScriptArg args);
-
-	void SET_JOSTLE_DIMENSIONS(ScriptArg args);
 
 	void ADD_POS(ScriptArg args);
 	void SET_POS(ScriptArg args);
@@ -451,6 +381,12 @@ public:
 	virtual void status_parry_start();
 	virtual void enter_status_parry_start();
 	virtual void exit_status_parry_start();
+	virtual void status_hitstun_parry_start();
+	virtual void enter_status_hitstun_parry_start();
+	virtual void exit_status_hitstun_parry_start();
+	virtual void status_launch_parry_start();
+	virtual void enter_status_launch_parry_start();
+	virtual void exit_status_launch_parry_start();
 	virtual void status_parry();
 	virtual void enter_status_parry();
 	virtual void exit_status_parry();
@@ -497,4 +433,30 @@ public:
 	virtual void chara_template_status_template() {};
 	virtual void chara_template_enter_status_template() {};
 	virtual void chara_template_exit_status_template() {};
+
+	int chara_kind;
+	std::string chara_name;
+
+	Projectile* projectiles[MAX_PROJECTILES]{};
+	int num_projectiles = 0;
+
+	int prev_stick_dir = 0;
+
+	std::vector<int> fighter_int;
+	std::vector<float> fighter_float;
+	std::vector<bool> fighter_flag;
+
+	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
+	int connected_hitbox = -1;
+	int connected_grabbox = -1;
+	int connected_projectile_hitbox = -1;
+
+	//Array of pointers to the corressponding function for each status
+	std::vector<void (Fighter::*)(void)> status_script;
+	std::vector<void (Fighter::*)(void)> enter_status_script;
+	std::vector<void (Fighter::*)(void)> exit_status_script;
+
+	//Array of flags to determine what can and cannot be canceled into
+
+	bool cancel_flags[CANCEL_CAT_MAX][CANCEL_KIND_MAX];
 };

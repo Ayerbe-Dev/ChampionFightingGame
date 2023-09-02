@@ -1,5 +1,4 @@
 #include "Fighter.h"
-#include "ParamAccessor.h"
 
 bool Fighter::check_button_on(unsigned int button) {
 	return player->controller.check_button_on(button);
@@ -162,117 +161,165 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 		}
 	}
 	if (button_check) {
-		if (special_kind == ATTACK_KIND_SPECIAL_236) {
-			if (fighter_int[FIGHTER_INT_236_STEP] == 2 && get_stick_dir() == 6) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_236_STEP] == 3) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_236_STEP] = 0;
-				fighter_int[FIGHTER_INT_236_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SPECIAL_214) {
-			if (fighter_int[FIGHTER_INT_214_STEP] == 2 && get_stick_dir() == 4) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_214_STEP] == 3) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_214_STEP] = 0;
-				fighter_int[FIGHTER_INT_214_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SPECIAL_623) {
-			if (fighter_int[FIGHTER_INT_623_STEP] == 2 && get_stick_dir() == 3) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_623_STEP] == 3) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_623_STEP] = 0;
-				fighter_int[FIGHTER_INT_623_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SPECIAL_41236) {
-			if (fighter_int[FIGHTER_INT_41236_STEP] == 4 && get_stick_dir() == 6) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_41236_STEP] == 5) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_41236_STEP] = 0;
-				fighter_int[FIGHTER_INT_41236_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SPECIAL_63214) {
-			if (fighter_int[FIGHTER_INT_63214_STEP] == 4 && get_stick_dir() == 4) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_63214_STEP] == 5) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_63214_STEP] = 0;
-				fighter_int[FIGHTER_INT_63214_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SUPER_236236) {
-			if (fighter_int[FIGHTER_INT_236236_STEP] == 5 && get_stick_dir() == 6) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_236236_STEP] == 6) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_236236_STEP] = 0;
-				fighter_int[FIGHTER_INT_236236_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SUPER_214214) {
-			if (fighter_int[FIGHTER_INT_214214_STEP] == 5 && get_stick_dir() == 4) {
-				button_check = SPECIAL_INPUT_JUST;
-				input_check = true;
-			}
-			else if (fighter_int[FIGHTER_INT_214214_STEP] == 6) {
-				input_check = true;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_214_STEP] = 0;
-				fighter_int[FIGHTER_INT_214_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SPECIAL_CHARGE_DOWN) {
-			input_check = (fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 8);
-			if (input_check && get_flick_dir() == 8) {
-				button_check = SPECIAL_INPUT_JUST;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
-				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
-				fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = 0;
-			}
-		}
-		else if (special_kind == ATTACK_KIND_SPECIAL_CHARGE_BACK) {
-			input_check = (fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 6);
-			if (input_check && get_flick_dir() == 6) {
-				button_check = SPECIAL_INPUT_JUST;
-			}
-			if (input_check) {
-				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
-				fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = 0;
-			}
+		switch (special_kind) {
+			case (ATTACK_KIND_SPECIAL_236): {
+				if (fighter_int[FIGHTER_INT_236_STEP] == 2 && get_stick_dir() == 6) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_236_STEP] == 3) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_236_STEP] = 0;
+					fighter_int[FIGHTER_INT_236_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_214): {
+				if (fighter_int[FIGHTER_INT_214_STEP] == 2 && get_stick_dir() == 4) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_214_STEP] == 3) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_214_STEP] = 0;
+					fighter_int[FIGHTER_INT_214_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_623): {
+				if (fighter_int[FIGHTER_INT_623_STEP] == 2 && get_stick_dir() == 3) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_623_STEP] == 3) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_623_STEP] = 0;
+					fighter_int[FIGHTER_INT_623_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_41236): {
+				if (fighter_int[FIGHTER_INT_41236_STEP] == 4 && get_stick_dir() == 6) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_41236_STEP] == 5) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_41236_STEP] = 0;
+					fighter_int[FIGHTER_INT_41236_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_63214): {
+				if (fighter_int[FIGHTER_INT_63214_STEP] == 4 && get_stick_dir() == 4) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_63214_STEP] == 5) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_63214_STEP] = 0;
+					fighter_int[FIGHTER_INT_63214_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_632): {
+				if (fighter_int[FIGHTER_INT_632_STEP] == 2 && get_stick_dir() == 2) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_632_STEP] == 3) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_632_STEP] = 0;
+					fighter_int[FIGHTER_INT_632_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_22): {
+				if (fighter_int[FIGHTER_INT_22_STEP] == 2 && get_stick_dir() == 2) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_22_STEP] == 3) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_22_STEP] = 0;
+					fighter_int[FIGHTER_INT_22_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_28): {
+				input_check = (fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] >= charge_frames && get_stick_dir() > 6);
+				if (input_check && get_flick_dir() > 6) {
+					button_check = SPECIAL_INPUT_JUST;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+					fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+					fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SPECIAL_46): {
+				input_check = (fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] >= charge_frames && get_stick_dir() == 6);
+				if (input_check && get_flick_dir() == 6) {
+					button_check = SPECIAL_INPUT_JUST;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+					fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SUPER_236236): {
+				if (fighter_int[FIGHTER_INT_236236_STEP] == 5 && get_stick_dir() == 6) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_236236_STEP] == 6) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_236236_STEP] = 0;
+					fighter_int[FIGHTER_INT_236236_TIMER] = 0;
+					fighter_int[FIGHTER_INT_236_STEP] = 0;
+					fighter_int[FIGHTER_INT_236_TIMER] = 0;
+				}
+			} break;
+			case(ATTACK_KIND_SUPER_214214): {
+				if (fighter_int[FIGHTER_INT_214214_STEP] == 5 && get_stick_dir() == 4) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_214214_STEP] == 6) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_214214_STEP] = 0;
+					fighter_int[FIGHTER_INT_214214_TIMER] = 0;
+					fighter_int[FIGHTER_INT_214_STEP] = 0;
+					fighter_int[FIGHTER_INT_214_TIMER] = 0;
+				}
+			} break;
+			case (ATTACK_KIND_SUPER_4646): {
+				if (fighter_int[FIGHTER_INT_4646_STEP] == 3 && get_stick_dir() == 6) {
+					button_check = SPECIAL_INPUT_JUST;
+					input_check = true;
+				}
+				else if (fighter_int[FIGHTER_INT_4646_STEP] == 4) {
+					input_check = true;
+				}
+				if (input_check) {
+					fighter_int[FIGHTER_INT_4646_STEP] = 0;
+					fighter_int[FIGHTER_INT_4646_TIMER] = 0;
+				}
+			} break;
+			default: {
+
+			} break;
 		}
 	}
 	if (input_check) {
@@ -306,10 +353,7 @@ int Fighter::try_ex(bool punch) {
 	unsigned int no_heavy_ex_buttons[2];
 	no_heavy_ex_buttons[0] = punch ? BUTTON_LP : BUTTON_LK;
 	no_heavy_ex_buttons[1] = punch ? BUTTON_MP : BUTTON_MK;
-	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
-	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
-	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / 2)) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / 2);
+	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= get_param_int(PARAM_FIGHTER, "ex_meter_size") / (get_param_int(PARAM_FIGHTER, "ex_meter_bars") / 2)) {
 		return SPECIAL_LEVEL_EX;
 	}
 	else if (check_button_input(no_heavy_ex_buttons, 2, 2)) {

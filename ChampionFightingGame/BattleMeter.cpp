@@ -8,6 +8,7 @@ BattleMeter::BattleMeter() {
 	partial_health = nullptr;
 	ended_hitstun = nullptr;
 	disable_hitstun_parry = nullptr;
+	post_hitstun_timer = nullptr;
 	max_health = 0.0;
 	ex = nullptr;
 	max_ex = 0.0;
@@ -64,6 +65,7 @@ void BattleMeter::init(Fighter* fighter, int num_rounds) {
 	partial_health = &fighter->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 	ended_hitstun = fighter->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr();
 	disable_hitstun_parry = fighter->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]._Getptr();
+	post_hitstun_timer = &fighter->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER];
 	max_health = fighter->get_local_param_float("health");
 	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
 	max_ex = (float)get_param_int(PARAM_FIGHTER, "ex_meter_size");
@@ -91,6 +93,9 @@ void BattleMeter::process() {
 	}
 	if (*ended_hitstun) {
 		combo_health_texture.set_left_target(clampf(0.0, *health / max_health, 1.0), 5.0);
+	}
+	if (*post_hitstun_timer == 0) {
+		combo_health_texture.scale_left_percent(clampf(0.0, *health / max_health, 1.0));
 	}
 	if (*disable_hitstun_parry) {
 		combo_health_texture.set_colormod(glm::vec3(-30.0, 0.0, 40.0));

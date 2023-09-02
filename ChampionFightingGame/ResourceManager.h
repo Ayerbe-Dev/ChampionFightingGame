@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <vector>
 #include "Model.h"
 
 struct ModelResource {
@@ -9,7 +10,7 @@ struct ModelResource {
 };
 
 struct TextureResource {
-	unsigned int texture;
+	std::vector<unsigned int> texture;
 	int user_count;
 };
 
@@ -29,6 +30,8 @@ public:
 	void load_texture(std::string dir);
 	unsigned int get_texture(std::string dir);
 	unsigned int get_texture_keep_user_count(std::string dir);
+	std::vector<unsigned int> get_textures(std::string dir); //gif version
+	std::vector<unsigned int> get_textures_keep_user_count(std::string dir);
 	void unload_texture(std::string dir, bool strict = true);
 	void unuse_texture(std::string dir);
 

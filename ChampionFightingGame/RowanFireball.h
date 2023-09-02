@@ -13,7 +13,7 @@ public:
 
 	void projectile_unique_main() override;
 
-	void status_default() override;
+	void status_activate() override;
 	
 	void status_rowan_fireball_hover();
 	void enter_status_rowan_fireball_hover();
@@ -24,10 +24,4 @@ public:
 	void status_rowan_fireball_kicked();
 	void enter_status_rowan_fireball_kicked();
 	void exit_status_rowan_fireball_kicked();
-	void status_rowan_fireball_fall();
-	void enter_status_rowan_fireball_fall();
-	void exit_status_rowan_fireball_fall();
-	void status_rowan_fireball_ground();
-	void enter_status_rowan_fireball_ground();
-	void exit_status_rowan_fireball_ground();
 };

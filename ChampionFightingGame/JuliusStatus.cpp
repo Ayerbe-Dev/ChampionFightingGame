@@ -4,17 +4,17 @@ void Julius::chara_main() {
 
 }
 
-bool Julius::specific_ground_status_act() {
+bool Julius::chara_ground_status_act() {
 	return false;
 }
 
-bool Julius::specific_air_status_act() {
+bool Julius::chara_air_status_act() {
 	return false;
 }
 
-bool Julius::specific_status_attack() {
+bool Julius::chara_status_attack() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
-		if (specific_ground_status_act()) {
+		if (chara_ground_status_act()) {
 			return true;
 		}
 	}

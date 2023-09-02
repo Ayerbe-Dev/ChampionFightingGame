@@ -17,7 +17,7 @@ void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender
 	that->fighter_flag[FIGHTER_FLAG_GRABBED] = true;
 }
 
-void Fighter::throw_opponent(float damage, float x_speed, float y_speed) {
+void Fighter::throw_opponent(float damage, float x_speed, float y_speed, float y_gravity, float max_fall_speed) {
 	damage *= (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10.0;
 	Fighter* that = battle_object_manager->fighter[!id];
 	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
@@ -26,7 +26,10 @@ void Fighter::throw_opponent(float damage, float x_speed, float y_speed) {
 	that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = x_speed * this->facing_dir;
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = y_speed;
+	that->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = y_gravity;
+	that->fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = max_fall_speed;
 	that->fighter_flag[FIGHTER_FLAG_GRABBED] = false;
+	that->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] = 60;
 	if (that->pos.x != pos.x) {
 		that->facing_right = that->pos.x < pos.x;
 		that->facing_dir = that->facing_right ? 1.0 : -1.0;

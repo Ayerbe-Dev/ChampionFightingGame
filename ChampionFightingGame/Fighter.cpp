@@ -29,12 +29,12 @@ Fighter::~Fighter() {
 		hitboxes[i].rect.destroy();
 		hurtboxes[i].rect.destroy();
 		grabboxes[i].rect.destroy();
+		pushboxes[i].rect.destroy();
 	}
 	clear_effect_all();
 	stop_se_all();
 	stop_vc_all();
 	blockbox.rect.destroy();
-	jostle_box.destroy();
 	fighter_int.clear();
 	fighter_float.clear();
 	fighter_flag.clear();
@@ -91,10 +91,11 @@ void Fighter::fighter_post() {
 	}
 	process_post_position();
 	update_hitbox_pos();
-	update_grabbox_pos();
 	update_hurtbox_pos();
+	update_grabbox_pos();
+	update_pushbox_pos();
 	update_blockbox_pos();
-	update_jostle_rect();
+
 	rot.z += glm::radians(90.0);
 	rot += extra_rot;
 	process_post_projectiles();
@@ -132,7 +133,7 @@ void Fighter::process_animate() {
 	}
 
 	if (internal_facing_right != facing_right 
-		&& is_actionable() 
+		&& is_actionable()
 		&& status_kind != FIGHTER_STATUS_TURN 
 		&& status_kind != FIGHTER_STATUS_CRUMPLE
 		&& status_kind != FIGHTER_STATUS_KNOCKDOWN_START
@@ -167,71 +168,257 @@ void Fighter::process_post_animate() {
 void Fighter::process_pre_position() {
 	rot = glm::vec3(0.0);
 	extra_rot = glm::vec3(0.0);
+	if (isnan(pos.x)) {
+		pos.x = 0;
+	}
 	if (isnan(pos.y)) {
 		pos.y = 0;
 	}
+	if (isnan(pos.z)) {
+		pos.z = 0;
+	}
 
-	update_jostle_rect();
+	update_pushbox_pos();
 
 	prev_pos = pos;
 }
 
 void Fighter::process_position() {
 	Fighter* that = battle_object_manager->fighter[!id];
-	update_jostle_rect();
-	if ((situation_kind == FIGHTER_SITUATION_GROUND || situation_kind == FIGHTER_SITUATION_DOWN) && 
-		(that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)
-	&& !fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP] && !that->fighter_flag[FIGHTER_FLAG_ALLOW_GROUND_CROSSUP]) {
-		if (is_collide(jostle_box, that->jostle_box) && status_kind != FIGHTER_STATUS_WALK_B) {
-			float x_diff = (pos.x - prev_pos.x) * internal_facing_dir;
-			float that_x_diff = (that->pos.x - that->prev_pos.x) * that->internal_facing_dir;
+	
+	update_pushbox_pos();
+	ThreadManager* thread_manager = ThreadManager::get_instance();
+	thread_manager->sync_threads(id, !id);
+	if (pushboxes_touching(that)) {
+		float x_diff = fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED];
+		float that_x_diff = that->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED];
+		if (status_kind == FIGHTER_STATUS_JUMP && x_diff != 0.0
+			&& pos.x == that->pos.x && x_diff > 0.0 == facing_dir > 0.0) {
+			if (pushboxes_touching(that)) {
+				//This code enables corner crossups
+				if (x_diff > 0.0) {
+					that->pos.x -= 6;
+				}
+				else {
+					that->pos.x += 6;
+				}
+				that->update_pushbox_pos();
+			}
+		}
+		thread_manager->sync_threads(id, !id);
 
-			//TODO: This code is ok, but it has a side effect where if one player is walking towards
-			//another, cornered player and the cornered player starts walking towards them, the
-			//cornered player can push them back and cause some weird stutters for a bit before
-			//it corrects itself. This is because when we walk toward a cornered opponent, our
-			//x_diff will always be 0.0 even though we're attempting to move. I'm not 100% sure how
-			//to fix this issue, but will revisit in the future.
+		bool allow_crossup = fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP];
+		fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
+		float pushbox_front = pos.x + get_pushbox_front();
+		float pushbox_back = pos.x + get_pushbox_back();
+		float that_pushbox_front = that->pos.x + that->get_pushbox_front();
+		float that_pushbox_back = that->pos.x + that->get_pushbox_back();
 
-			if (x_diff != 0.0 && that_x_diff != 0.0) {
-				if (abs(x_diff) > abs(that_x_diff)) {
-					if (!that->add_pos(glm::vec3(-that_x_diff * internal_facing_dir, 0, 0), true)) {
-						add_pos(glm::vec3(-x_diff * that->internal_facing_dir, 0, 0), true);
+		if (x_diff != 0.0 && that_x_diff != 0.0) { 
+			//Both players are moving. Behavior depends on if we're moving towards each other.
+			bool forward = x_diff > 0.0 == pos.x < that->pos.x;
+			bool that_forward = that_x_diff > 0.0 == that->pos.x < pos.x;
+			if (forward == that_forward) { 
+				if (forward) {
+					if (abs(x_diff) == abs(that_x_diff)) {
+						//We're moving at equal speed, so just force our positions to be whatever 
+						//they were last frame
+						pos.x = prev_pos.x;
+						that->pos.x = that->prev_pos.x;
+					}
+					else if (abs(x_diff) > abs(that_x_diff)) {
+						//We're moving faster, so push them back the same way we would as if they 
+						//weren't moving towards us at all, with the caveat that we get pushed away 
+						//at their speed first.
+						pos.x += that_x_diff;
+						update_pushbox_pos();
+						bool facing_that = x_diff > 0.0 == facing_dir > 0.0;
+						bool facing_same = facing_dir == that->facing_dir;
+						if (facing_that) { //Whether we use our front/back pushbox isn't a 
+							//distance thing in this case, it depends entirely on if we're facing
+							//the opponent as we move towards them.
+							if (facing_same) {
+								//The same applies to the opponent. We never want to use the same
+								//side of the pushbox as the opponent if we're facing in the same
+								//direction
+								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+									set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true);
+								}
+							}
+							else {
+								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+									set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(), pos.y, pos.z), true);
+								}
+							}
+						}
+						else {
+							if (facing_same) {
+								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+									set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(), pos.y, pos.z), true);
+								}
+							}
+							else {
+								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+									set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(), pos.y, pos.z), true);
+								}
+							}
+						}
 					}
 				}
-				else if (x_diff == that_x_diff) {
-					pos.x = prev_pos.x;
-					that->pos.x = that->prev_pos.x;
+				else { //We're both moving away. Push both of us back the way we would as if only we
+					//were moving away, albeit without ever trying to push the opponent
+					bool facing_that = x_diff > 0.0 != facing_dir > 0.0;
+					bool facing_same = facing_dir == that->facing_dir;
+					if (facing_that) {
+						if (facing_same) {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(), pos.y, pos.z), true);
+						}
+						else {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(), pos.y, pos.z), true);
+						}
+					}
+					else {
+						if (facing_same) {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true);
+						}
+						else {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(), pos.y, pos.z), true);
+						}
+					}
+				}
+			}
+			else if (forward) { 
+				//We're moving towards, they're moving away. Once again, we move them back as though
+				//they're stationary and we're not.
+				
+				bool facing_that = x_diff > 0.0 == facing_dir > 0.0;
+				bool facing_same = facing_dir == that->facing_dir;
+				if (facing_that) {
+					if (facing_same) {
+						if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(), pos.y, pos.z), true);
+						}
+					}
+					else {
+						if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(), pos.y, pos.z), true);
+						}
+					}
+				}
+				else {
+					if (facing_same) {
+						if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true);
+						}
+					}
+					else {
+						if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(), pos.y, pos.z), true);
+						}
+					}
+				}		
+			}
+		}
+		else if (x_diff == 0.0 && that_x_diff == 0.0) {
+			//No one is moving. If the two players are facing in opposite directions, the only
+			//valid pushbox orientations are back to back or front to front. Otherwise, front
+			//to back or back to front. 
+
+			//If the movement ever fails, defaulting to front front is a safe bet.
+
+			//Note: We'll use the external facing_dir var because that's the one that affects 
+			//box orientation
+			bool facing_that = pos.x < that->pos.x == facing_dir > 0.0;
+			bool facing_same = facing_dir == that->facing_dir;
+			if (facing_that) {
+				if (facing_same) {
+					set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(), pos.y, pos.z), true);
+				}
+				else {
+					set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(), pos.y, pos.z), true);
 				}
 			}
 			else {
-				if (x_diff == 0.0 && that_x_diff == 0.0) {
-					if (!add_pos(glm::vec3(get_local_param_float("jostle_walk_b_speed") * that->internal_facing_dir, 0.0, 0.0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
-						that->add_pos(glm::vec3(get_local_param_float("jostle_walk_f_speed") * internal_facing_dir, 0.0, 0.0));
-
-						that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-						that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
-					}
+				if (facing_same) {
+					set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true);
 				}
-				else if (that_x_diff == 0.0) {
-					if (!that->add_pos(glm::vec3(
-						get_local_param_float("jostle_walk_f_speed") * internal_facing_dir, 
-						0.0, 0.0)
-					)) {
-						pos.x = prev_pos.x;
+				else {
+					set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(), pos.y, pos.z), true);
+				}
+			}
+		}
+		else if (x_diff != 0.0) { 
+			//Only we are moving.
+			if (x_diff > 0.0 == pos.x < that->pos.x) { //We're moving towards them
+				bool facing_that = x_diff > 0.0 == facing_dir > 0.0;
+				bool facing_same = facing_dir == that->facing_dir;
+				if (facing_that) { //Whether we use our front/back pushbox isn't a 
+					//distance thing in this case, it depends entirely on if we're facing
+					//the opponent as we move away from them.
+					if (facing_same) {
+						//The same applies to the opponent. We never want to use the same
+						//side of the pushbox as the opponent if we're facing in the same
+						//direction
+						if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(), pos.y, pos.z), true);
+						}
 					}
 					else {
-						add_pos(glm::vec3((get_local_param_float("jostle_walk_f_speed") -
-							get_local_param_float("walk_f_speed")) * internal_facing_dir,
-							0.0, 0.0)
-						);
+						if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(), pos.y, pos.z), true);
+						}
+					}
+				}
+				else {
+					if (facing_same) {
+						if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true);
+						}
+					}
+					else {
+						if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(), pos.y, pos.z), true);
+						}
+					}
+				}
+			}
+			else {  //We're moving away from them
+				//This code is almost entirely identical to the moving towards case, but we try
+				//moving ourselves instead of moving the opponent. That being said, we still move the
+				//opponent in the "move away, back to back" case, because that's for crossups
+				bool facing_that = x_diff > 0.0 != facing_dir > 0.0;
+				bool facing_same = facing_dir == that->facing_dir;
+				if (facing_that) {
+					if (facing_same) {
+						if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true)) {
+							that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(), that->pos.y, that->pos.z), true);
+						}
+					}
+					else {
+						if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(), pos.y, pos.z), true)) {
+							that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(), that->pos.y, that->pos.z), true);
+						}
+					}
+				}
+				else {
+					if (facing_same) {
+						if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(), pos.y, pos.z), true);
+						}
+					}
+					else {
+						//This is the one that happens when we jump over someone, so even if it seems
+						//like we should be the ones being pushed, we shouldn't
+						if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(), that->pos.y, that->pos.z), true)) {
+							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(), pos.y, pos.z), true);
+						}
 					}
 				}
 			}
 		}
+		fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = allow_crossup;
 	}
-	update_jostle_rect();
+	update_pushbox_pos();
 }
 
 void Fighter::process_post_position() {
@@ -242,7 +429,7 @@ void Fighter::process_post_position() {
 				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-					if (!that->fighter_flag[FIGHTER_FLAG_SHORT_HOP]) {
+					if (!(that->fighter_flag[FIGHTER_FLAG_SHORT_HOP] && that->fighter_flag[FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK])) {
 						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
 						//If an opponent does a fullhop air attack while we're cornered, we get pushed
 						//back. If they do a shorthop instead, we get pushed back and up.
@@ -261,7 +448,7 @@ void Fighter::process_post_position() {
 				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
 					y_pushback = 0.0;
 				}
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -internal_facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
 					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
@@ -273,13 +460,26 @@ void Fighter::process_post_position() {
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
 		fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = false;
 	}
-	update_jostle_rect();
+	update_pushbox_pos();
 }
 
 void Fighter::process_pre_status() {
-	if (fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] != FIGHTER_STATUS_MAX && fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		change_status(fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_END], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_SEPARATE]);
-		fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] = FIGHTER_STATUS_MAX;
+	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
+		if (fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] != FIGHTER_STATUS_MAX) {
+			change_status(fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_END], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_SEPARATE]);
+			fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] = FIGHTER_STATUS_MAX; 
+		}
+		else if (fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] != FIGHTER_STATUS_MAX 
+			&& is_enable_cancel(fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_KIND])
+			&& fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER]) {
+			change_status(fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS], fighter_flag[FIGHTER_FLAG_PRE_ENABLE_CANCEL_STATUS_END], fighter_flag[FIGHTER_FLAG_PRE_ENABLE_CANCEL_STATUS_SEPARATE]);
+		}
+		if (fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER] > 0) {
+			fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER]--;
+		}
+		else {
+			fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] = FIGHTER_STATUS_MAX;
+		}
 	}
 }
 
@@ -306,13 +506,9 @@ void Fighter::process_post_status() {
 		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
 		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] = 0.0;
 		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
-		fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
 		if (fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] != 0) {
 			fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER]--;
 		}
-	}
-	else {
-		fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] = 60;
 	}
 	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
@@ -389,10 +585,6 @@ void Fighter::process_input() {
 			fighter_int[FIGHTER_INT_214_STEP] ++;
 			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
 		}
-		if (fighter_int[FIGHTER_INT_214214_STEP] == 1 || fighter_int[FIGHTER_INT_214214_STEP] == 4) {
-			fighter_int[FIGHTER_INT_214214_STEP] ++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
-		}
 		if (fighter_int[FIGHTER_INT_41236_STEP] == 1) {
 			fighter_int[FIGHTER_INT_41236_STEP] ++;
 			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
@@ -401,15 +593,45 @@ void Fighter::process_input() {
 			fighter_int[FIGHTER_INT_63214_STEP] ++;
 			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
+		if (fighter_int[FIGHTER_INT_214214_STEP] == 1 || fighter_int[FIGHTER_INT_214214_STEP] == 4) {
+			fighter_int[FIGHTER_INT_214214_STEP]++;
+			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
+		}
 	}
 	if (stick_dir == 2) {
-		fighter_int[FIGHTER_INT_236_STEP] = 1;
-		fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
-		fighter_int[FIGHTER_INT_214_STEP] = 1;
-		fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
+		if (fighter_int[FIGHTER_INT_236_STEP] == 0) {
+			fighter_int[FIGHTER_INT_236_STEP] ++;
+			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_214_STEP] == 0) {
+			fighter_int[FIGHTER_INT_214_STEP]++;
+			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
+		}		
 		if (fighter_int[FIGHTER_INT_623_STEP] == 1) {
 			fighter_int[FIGHTER_INT_623_STEP] ++;
 			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_41236_STEP] == 2) {
+			fighter_int[FIGHTER_INT_41236_STEP]++;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_63214_STEP] == 2) {
+			fighter_int[FIGHTER_INT_63214_STEP]++;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_632_STEP] == 2) {
+			fighter_int[FIGHTER_INT_632_STEP]++;
+			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_22_STEP] == 0 || fighter_int[FIGHTER_INT_22_STEP] == 2) {
+			if (prev_stick_dir == 5) {
+				fighter_int[FIGHTER_INT_22_STEP] ++;
+				fighter_int[FIGHTER_INT_22_TIMER] = motion_special_timer;
+			}
+			else {
+				fighter_int[FIGHTER_INT_22_STEP] = 0;
+				fighter_int[FIGHTER_INT_22_TIMER] = 0;
+			}
 		}
 		if (fighter_int[FIGHTER_INT_214214_STEP] == 1) {
 			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
@@ -425,27 +647,25 @@ void Fighter::process_input() {
 			fighter_int[FIGHTER_INT_236236_STEP] ++;
 			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 2) {
-			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 2) {
-			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
-		}
 	}
 	if (stick_dir == 3) {
 		if (fighter_int[FIGHTER_INT_236_STEP] == 1) {
 			fighter_int[FIGHTER_INT_236_STEP] ++;
 			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
 		}
-		if (fighter_int[FIGHTER_INT_623_STEP] == 2) {
+		if (fighter_int[FIGHTER_INT_236_STEP] == 3) { 
+			//This check is weird, but it essentially prevents conflicts with DP motions by making
+			//it so finishing a QCF motion and then inputting Down Forward makes it so you have to
+			//input forward again in order to QCF. This both makes it so inputting double DP doesn't
+			//get read as QCF on characters where QCF has priority, and prevents obviously 
+			//unintended QCFs from being buffered if you do crouch -> walk forward -> crouch again
+			//before pressing a button.
+			fighter_int[FIGHTER_INT_236_STEP]--;
+			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_623_STEP] == 0 || fighter_int[FIGHTER_INT_623_STEP] == 2) {
 			fighter_int[FIGHTER_INT_623_STEP] ++;
 			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_236236_STEP] == 1 || fighter_int[FIGHTER_INT_236236_STEP] == 4) {
-			fighter_int[FIGHTER_INT_236236_STEP] ++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_41236_STEP] == 3) {
 			fighter_int[FIGHTER_INT_41236_STEP] ++;
@@ -455,49 +675,115 @@ void Fighter::process_input() {
 			fighter_int[FIGHTER_INT_63214_STEP] ++;
 			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
+		if (fighter_int[FIGHTER_INT_632_STEP] == 1) {
+			fighter_int[FIGHTER_INT_632_STEP]++;
+			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+		}
+		//Same deal as before but like the other way
+		if (fighter_int[FIGHTER_INT_632_STEP] == 3) {
+			fighter_int[FIGHTER_INT_632_STEP]--;
+			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_236236_STEP] == 1 || fighter_int[FIGHTER_INT_236236_STEP] == 4) {
+			fighter_int[FIGHTER_INT_236236_STEP]++;
+			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
+		}
 	}
 	if (stick_dir == 4) {
-		fighter_int[FIGHTER_INT_41236_STEP] = 1;
-		fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
 		if (fighter_int[FIGHTER_INT_214_STEP] == 2) {
-			fighter_int[FIGHTER_INT_214_STEP] ++;
+			fighter_int[FIGHTER_INT_214_STEP]++;
 			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_41236_STEP] == 0) {
+			fighter_int[FIGHTER_INT_41236_STEP] ++;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_63214_STEP] == 4) {
+			fighter_int[FIGHTER_INT_63214_STEP]++;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_214214_STEP] == 2 || fighter_int[FIGHTER_INT_214214_STEP] == 5) {
 			fighter_int[FIGHTER_INT_214214_STEP] ++;
 			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
 		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 4) {
-			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+		if (fighter_int[FIGHTER_INT_4646_STEP] == 2) {
+			fighter_int[FIGHTER_INT_4646_STEP]++;
+			fighter_int[FIGHTER_INT_4646_TIMER] = motion_special_timer;
+		}
+	}
+	if (stick_dir == 5) {
+		if (fighter_int[FIGHTER_INT_22_STEP] == 1) {
+			fighter_int[FIGHTER_INT_22_STEP]++;
+			fighter_int[FIGHTER_INT_22_TIMER] = motion_special_timer;
 		}
 	}
 	if (stick_dir == 6) {
-		fighter_int[FIGHTER_INT_623_STEP] = 1;
-		fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
-		fighter_int[FIGHTER_INT_63214_STEP] = 1;
-		fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
 		if (fighter_int[FIGHTER_INT_236_STEP] == 2) {
 			fighter_int[FIGHTER_INT_236_STEP] ++;
 			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_623_STEP] == 0) {
+			fighter_int[FIGHTER_INT_623_STEP]++;
+			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_41236_STEP] == 4) {
+			fighter_int[FIGHTER_INT_41236_STEP]++;
+			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_63214_STEP] == 0) {
+			fighter_int[FIGHTER_INT_63214_STEP]++;
+			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+		}
+		if (fighter_int[FIGHTER_INT_632_STEP] == 0) {
+			fighter_int[FIGHTER_INT_632_STEP]++;
+			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
 		}
 		if (fighter_int[FIGHTER_INT_236236_STEP] == 2 || fighter_int[FIGHTER_INT_236236_STEP] == 5) {
 			fighter_int[FIGHTER_INT_236236_STEP] ++;
 			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
 		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 4) {
-			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+		if (fighter_int[FIGHTER_INT_4646_STEP] == 1 || fighter_int[FIGHTER_INT_4646_STEP] == 3) {
+			fighter_int[FIGHTER_INT_4646_STEP]++;
+			fighter_int[FIGHTER_INT_4646_TIMER] = motion_special_timer;
+		}
+
+		//If you're inputting forward, it's very unlikely that you still want to do an input that
+		//ends in a quarter circle back. We shouldn't completely rule out the possibility of 
+		//microwalk qcb inputs, but we'll make it so the qcb input only stays in the buffer for
+		//3 frames as opposed to the usual 11.
+
+		//Note: We aren't doing this for QCD motions because the act of inputting a 3 already 
+		//decrements the step by 1. If you did a QCD and then immediately hit forward without
+		//ever hitting down forward, that was definitely planned.
+
+		if (fighter_int[FIGHTER_INT_214_STEP] == 3 && fighter_int[FIGHTER_INT_214_TIMER] > 3) {
+			fighter_int[FIGHTER_INT_214_TIMER] = 3;
+		}
+		if (fighter_int[FIGHTER_INT_214214_STEP] == 6 && fighter_int[FIGHTER_INT_214214_TIMER] > 3) {
+			fighter_int[FIGHTER_INT_214214_TIMER] = 3;
+		}
+		if (fighter_int[FIGHTER_INT_63214_STEP] == 5 && fighter_int[FIGHTER_INT_63214_TIMER] > 3) {
+			fighter_int[FIGHTER_INT_63214_TIMER] = 3;
 		}
 	}
 	if (stick_dir < 4) {
-		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = 6;
-		fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;
+		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = motion_special_timer;
+		if (prev_stick_dir < 4) {
+			fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;
+		}
+		else {
+			fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+		}
 	}
 
-	if (stick_dir == 1 || stick_dir == 4 || stick_dir == 7) {
-		fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES]++;
-		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = 6;
+	if (stick_dir % 3 == 1) {
+		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = motion_special_timer;
+		if (prev_stick_dir % 3 == 1) {
+			fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES]++;
+		}
+		else {
+			fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+		}
 	}
 
 	prev_stick_dir = stick_dir;
@@ -560,6 +846,18 @@ void Fighter::decrease_common_variables() {
 	else {
 		fighter_int[FIGHTER_INT_63214_STEP] = 0;
 	}
+	if (fighter_int[FIGHTER_INT_632_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_632_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_632_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_22_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_22_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_22_STEP] = 0;
+	}
 	if (fighter_int[FIGHTER_INT_236236_TIMER] != 0) {
 		fighter_int[FIGHTER_INT_236236_TIMER] --;
 	}
@@ -572,11 +870,23 @@ void Fighter::decrease_common_variables() {
 	else {
 		fighter_int[FIGHTER_INT_214214_STEP] = 0;
 	}
+	if (fighter_int[FIGHTER_INT_4646_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_4646_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_4646_STEP] = 0;
+	}
 	if (fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] != 0) {
 		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER]--;
 	}
 	else {
 		fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
 	}
 	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
 		fighter_int[FIGHTER_INT_HITLAG_FRAMES]--;
@@ -608,12 +918,6 @@ void Fighter::decrease_common_variables() {
 	}
 	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
 		fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW]--;
-	}
-	if (fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] != 0) {
-		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER]--;
-	}
-	else {
-		fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
 	}
 	if (fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] != 0) {
 		fighter_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES]--;

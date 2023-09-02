@@ -121,9 +121,6 @@ void Fighter::load_anim_list() {
 }
 
 void Fighter::set_default_vars() {
-	base_jostle_anchor = glm::vec2(get_local_param_float("jostle_x0"), get_local_param_float("jostle_y0"));
-	base_jostle_offset = glm::vec2(get_local_param_float("jostle_x1"), get_local_param_float("jostle_y1"));
-	reset_jostle_dimensions();
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
 	fighter_flag[FIGHTER_FLAG_CAN_TECH] = true;
@@ -131,12 +128,11 @@ void Fighter::set_default_vars() {
 }
 
 void Fighter::init_boxes() {
-	jostle_box.init();
-	jostle_box.set_rgba(glm::vec4(0, 0, 0, 204));
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);
 		hurtboxes[i].init(this);
 		grabboxes[i].init(this);
+		pushboxes[i].init(this);
 	}
 	blockbox.init(this);
 }

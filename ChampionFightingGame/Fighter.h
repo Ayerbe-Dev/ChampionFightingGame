@@ -13,8 +13,6 @@
 #define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
 #define ADD_FIGHTER_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Fighter::*)(void))(status_func))
 
-class Projectile;
-
 class Fighter: public BattleObject {
 public:
 	Fighter();
@@ -39,7 +37,6 @@ public:
 	void process_post_animate(); //Rotates all of the bones once animation and frame have been finalized
 
 	void process_pre_position(); //Resets rotation as well as any garbage position values
-	void process_position(); //Checks collision
 	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
 	
 	void process_pre_input(); //Really this one just checks if you tried to dash
@@ -140,6 +137,7 @@ public:
 	bool is_actionable();
 	bool can_kara();
 	bool has_meter(int bars);
+	void spend_meter(int bars);
 	void enable_all_cancels();
 	void enable_cancel(int cat, int kind);
 	void disable_all_cancels();
@@ -147,6 +145,7 @@ public:
 	bool is_enable_cancel(int cancel_kind);
 
 	//Frame Data
+
 	int get_frames_until_actionable();
 
 	//Cinematic
@@ -165,7 +164,7 @@ public:
 
 	//Status
 
-	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true) override;
 	bool change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
 	bool buffer_status_pre_enable_cancel(unsigned int new_status_kind, unsigned int cancel_kind, bool call_end_status = true, bool require_different_status = true);
 	virtual void chara_status() {};
@@ -206,6 +205,83 @@ public:
 	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
 	void attach_opponent(std::string bone_name);
 	void detach_opponent();
+
+	//Collision Functions
+
+	void process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes, std::vector<Pushbox> that_pushboxes);
+	void process_projectile_pushbox_collisions(std::vector<Pushbox> pushboxes, std::vector<Pushbox> that_pushboxes);
+	bool is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Fighter* attacker) override;
+	bool is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Projectile* attacker) override;
+
+	void process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* defender) override;
+	void process_incoming_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_blocked(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_parried(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_armored(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_invincibility(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender) override;
+
+	virtual void unique_process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_blocked(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_parried(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_armored(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_invincibility(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender){};
+
+	void check_incoming_grabbox_collisions(std::vector<Grabbox*> grabboxes);
+	bool is_valid_incoming_grabbox_collision(Hurtbox* hurtbox, Grabbox* grabbox);
+
+	void process_incoming_grabbox_collision(Grabbox* grabbox, BattleObject* attacker);
+	void process_incoming_fighter_grabbox_collision(Grabbox* grabbox, Fighter* attacker);
+	void process_incoming_projectile_grabbox_collision(Grabbox* grabbox, Projectile* attacker);
+	void process_outgoing_fighter_grabbox_collision(Grabbox* grabbox, Fighter* defender);
+
+	virtual void unique_process_incoming_grabbox_collision(Grabbox* grabbox, BattleObject* attacker) {};
+	virtual void unique_process_incoming_fighter_grabbox_collision(Grabbox* grabbox, Fighter* attacker) {};
+	virtual void unique_process_incoming_projectile_grabbox_collision(Grabbox* grabbox, Projectile* attacker) {};
+	virtual void unique_process_outgoing_fighter_grabbox_collision(Grabbox* grabbox, Fighter* defender) {};
+
+	int get_counterhit_val(Hitbox* hitbox);
+	void set_post_collision_status(Hitbox* hitbox, int counterhit_val);
 
 	//Script Functions
 	template<typename ...T>
@@ -294,6 +370,9 @@ public:
 
 	//Status Scripts
 
+	virtual void status_none();
+	virtual void enter_status_none();
+	virtual void exit_status_none();
 	virtual void status_wait();
 	virtual void enter_status_wait();
 	virtual void exit_status_wait();
@@ -437,19 +516,13 @@ public:
 	int chara_kind;
 	std::string chara_name;
 
-	Projectile* projectiles[MAX_PROJECTILES]{};
-	int num_projectiles = 0;
+	std::vector<Projectile*> projectiles;
 
-	int prev_stick_dir = 0;
+	int prev_stick_dir;
 
 	std::vector<int> fighter_int;
 	std::vector<float> fighter_float;
 	std::vector<bool> fighter_flag;
-
-	//Used to determine which ID of the opponent's hitboxes connected with this player. Set every frame by the collision checks, default value is -1.
-	int connected_hitbox = -1;
-	int connected_grabbox = -1;
-	int connected_projectile_hitbox = -1;
 
 	//Array of pointers to the corressponding function for each status
 	std::vector<void (Fighter::*)(void)> status_script;

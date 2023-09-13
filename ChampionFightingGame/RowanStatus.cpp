@@ -115,7 +115,7 @@ bool Rowan::chara_status_attack() {
 	}
 	
 	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(false);
 		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_SLIDE, CANCEL_KIND_214K);
 	}
 	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
@@ -154,7 +154,7 @@ bool Rowan::chara_status_attack() {
 	}
 
 	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_MACRO_K, 45) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
+		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(false);
 		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPKICK, CANCEL_KIND_28K);
 	}
 	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_LK, 45) != SPECIAL_INPUT_NONE) {
@@ -225,7 +225,7 @@ void Rowan::rowan_status_special_fireball_start() {
 
 void Rowan::rowan_enter_status_special_fireball_start() {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= get_param_int(PARAM_FIGHTER, "ex_meter_size") / (get_param_int(PARAM_FIGHTER, "ex_meter_bars") / 2);
+		spend_meter(2);
 	}
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_236;
 	change_anim("special_fireball_start", 1.0);	
@@ -282,7 +282,7 @@ void Rowan::rowan_status_special_slide() {
 
 void Rowan::rowan_enter_status_special_slide() {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= get_param_int(PARAM_FIGHTER, "ex_meter_size") / (get_param_int(PARAM_FIGHTER, "ex_meter_bars") / 2);
+		spend_meter(2);
 	}
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_214;
 	change_anim("special_slide");
@@ -309,7 +309,7 @@ void Rowan::rowan_exit_status_special_slide_followup() {
 }
 
 void Rowan::rowan_status_special_uppercut_start() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED])) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED])) {
 		change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
@@ -320,7 +320,7 @@ void Rowan::rowan_status_special_uppercut_start() {
 
 void Rowan::rowan_enter_status_special_uppercut_start() {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= get_param_int(PARAM_FIGHTER, "ex_meter_size") / (get_param_int(PARAM_FIGHTER, "ex_meter_bars") / 2);
+		spend_meter(2);
 	}
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_623;
 	change_anim("special_uppercut_start");
@@ -331,7 +331,7 @@ void Rowan::rowan_exit_status_special_uppercut_start() {
 }
 
 void Rowan::rowan_status_special_uppercut() {
-	fighter_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT] = fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED];
+	fighter_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT] = fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED];
 	if (is_anim_end) {
 		change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_FALL);
 		return;
@@ -463,7 +463,7 @@ void Rowan::rowan_status_special_upkick() {
 
 void Rowan::rowan_enter_status_special_upkick() {
 	if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= get_param_int(PARAM_FIGHTER, "ex_meter_size") / (get_param_int(PARAM_FIGHTER, "ex_meter_bars") / 2);
+		spend_meter(2);
 	}
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_SPECIAL_28;
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float_special("special_uppercut_x") * facing_dir * 2.3;

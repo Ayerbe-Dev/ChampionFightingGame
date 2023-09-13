@@ -29,7 +29,7 @@ void Fighter::throw_opponent(float damage, float x_speed, float y_speed, float y
 	that->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = y_gravity;
 	that->fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = max_fall_speed;
 	that->fighter_flag[FIGHTER_FLAG_GRABBED] = false;
-	that->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] = 60;
+	that->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
 	if (that->pos.x != pos.x) {
 		that->facing_right = that->pos.x < pos.x;
 		that->facing_dir = that->facing_right ? 1.0 : -1.0;

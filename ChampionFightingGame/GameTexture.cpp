@@ -305,7 +305,7 @@ void GameTexture::add_rot(glm::vec3 rot) {
 }
 
 void GameTexture::set_orientation(int orientation) {
-	if (orientation != GAME_TEXTURE_ORIENTATION_MAX) {
+	if (orientation != SCREEN_TEXTURE_ORIENTATION_MAX) {
 		this->orientation = orientation;
 	}
 }
@@ -318,46 +318,46 @@ glm::vec3 GameTexture::get_pos_vacuum(GameTexture *that) {
 	glm::vec3 pos = this->pos;
 	switch (this->orientation) {
 		default:
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE):
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE):
 		{
 
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT):
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT):
 		{
 			pos.x -= WINDOW_WIDTH - width;
 			pos.y -= WINDOW_HEIGHT - height;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
 		{
 			pos.y -= WINDOW_HEIGHT - height;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
 		{
 			pos.x *= -1.0;
 			pos.x += WINDOW_WIDTH - width_orientation;
 			pos.y -= WINDOW_HEIGHT - height;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT):
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT):
 		{
 			pos.x -= WINDOW_WIDTH - width;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT):
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT):
 		{
 			pos.x *= -1.0;
 			pos.x += WINDOW_WIDTH - width_orientation;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT):
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_LEFT):
 		{
 			pos.x -= WINDOW_WIDTH - width;
 			pos.y *= -1.0;
 			pos.y += WINDOW_HEIGHT - height_orientation;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE):
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE):
 		{
 			pos.y *= -1.0;
 			pos.y += WINDOW_HEIGHT - height_orientation;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT):
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT):
 		{
 			pos.x *= -1.0;
 			pos.y *= -1.0;
@@ -367,47 +367,47 @@ glm::vec3 GameTexture::get_pos_vacuum(GameTexture *that) {
 	} //Translate from the actual orientation to its middle-oriented equivalent
 	switch (that->orientation) {
 		default:
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE):
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE):
 		{
 
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT):
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT):
 		{
 			pos.x += WINDOW_WIDTH - width;
 			pos.y += WINDOW_HEIGHT - height;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE):
 		{
 			pos.y += WINDOW_HEIGHT - height;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT):
 		{
 			pos.x -= WINDOW_WIDTH - that->width_orientation;
 			pos.x *= -1.0;
 			pos.y += WINDOW_HEIGHT - height;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT):
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT):
 		{
 			pos.x += WINDOW_WIDTH - width;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT):
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT):
 		{
 			pos.x -= WINDOW_WIDTH - that->width_orientation;
 			pos.x *= -1.0;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_TOP_LEFT):
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_LEFT):
 		{
 			pos.y -= WINDOW_HEIGHT - that->height_orientation;
 			pos.y *= -1.0;
 			pos.x += WINDOW_WIDTH - width;
 
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE):
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE):
 		{
 			pos.y -= WINDOW_HEIGHT - that->height_orientation;
 			pos.y *= -1.0;
 		} break;
-		case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT):
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT):
 		{
 			pos.x -= WINDOW_WIDTH - that->width_orientation;
 			pos.y -= WINDOW_HEIGHT - that->height_orientation;
@@ -779,38 +779,38 @@ void GameTexture::prepare_render() {
 	glm::vec3 gl_pos = pos;
 	switch (orientation) {
 	default:
-	case (GAME_TEXTURE_ORIENTATION_MIDDLE): {
+	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE): {
 
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
+	case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
 		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
 		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
+	case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
 		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
+	case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
 		gl_pos.x *= -1.0;
 		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
 		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
+	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
 		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
+	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
 		gl_pos.x *= -1.0;
 		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_TOP_LEFT): {
+	case (SCREEN_TEXTURE_ORIENTATION_TOP_LEFT): {
 		gl_pos.y *= -1.0;
 		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
 		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_TOP_MIDDLE): {
+	case (SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE): {
 		gl_pos.y *= -1.0;
 		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
 	} break;
-	case (GAME_TEXTURE_ORIENTATION_TOP_RIGHT): {
+	case (SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT): {
 		gl_pos.x *= -1.0;
 		gl_pos.y *= -1.0;
 		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
@@ -858,12 +858,22 @@ void GameTexture::set_sprite(int index) {
 }
 
 void GameTexture::next_sprite() {
-	if (texture.size() == 0) return;
+	if (texture.size() < 2) return;
 	if (sprite_index + 1 == texture.size()) {
 		sprite_index = 0;
 	}
 	else {
 		sprite_index++;
+	}
+}
+
+void GameTexture::prev_sprite() {
+	if (texture.size() < 2) return;
+	if (sprite_index == 0) {
+		sprite_index = texture.size() - 1;
+	}
+	else {
+		sprite_index--;
 	}
 }
 

@@ -120,7 +120,7 @@ RenderManager::RenderManager() {
 
 	gbuffer_texture->init(g_buffer.textures[2]);
 	gbuffer_texture->set_scale(0.4);
-	gbuffer_texture->set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+	gbuffer_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);

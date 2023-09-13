@@ -50,7 +50,7 @@ OptionsMenu::OptionsMenu() {
 	panel.init("resource/game_state/menu/options/overlay.png");
 	panel.set_width(500);
 	panel.set_height(300);
-	panel.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+	panel.set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 }
 
 OptionsMenu::~OptionsMenu() {

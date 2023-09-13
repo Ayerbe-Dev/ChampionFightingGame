@@ -13,7 +13,7 @@ bool Tessa::chara_air_status_act() {
 }
 
 bool Tessa::chara_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT]) {
 		if (chara_ground_status_act()) {
 			return true;
 		}

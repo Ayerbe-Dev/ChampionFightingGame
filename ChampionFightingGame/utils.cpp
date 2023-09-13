@@ -85,17 +85,6 @@ int get_blank(std::string s) {
 	return 0;
 }
 
-/*
-mankind knew that they cannot change find_nearest_css_slot. So instead of reflecting on themselves, they blamed std
-\param heaven
-\param or
-\param hell
-\param LET'S_ROCK!!
-*/
-int twoPointDistance(int x0, int y0, int x1, int y1) {
-	return std::sqrt(std::pow(x0 - x1, 2) + std::pow(y0 - y1, 2));
-}
-
 float get_relative_one_percent(float val, float denom) {
 	float mul = denom / 100.0;
 	return (val / 100.0) * mul;

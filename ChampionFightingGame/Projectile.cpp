@@ -5,6 +5,7 @@ Projectile::Projectile() {
 	owner = nullptr;
 	owner_id = 0;
 	projectile_kind = 0;
+	object_type = BATTLE_OBJECT_TYPE_PROJECTILE;
 }
 
 Projectile::~Projectile() {
@@ -14,9 +15,9 @@ Projectile::~Projectile() {
 		grabboxes[i].rect.destroy();
 		pushboxes[i].rect.destroy();
 	}
+	blockbox.rect.destroy();
 	stop_se_all();
 	stop_vc_all();
-	blockbox.rect.destroy();
 	model.unload_model_instance();
 	projectile_int.clear();
 	projectile_float.clear();
@@ -41,12 +42,10 @@ void Projectile::projectile_main() {
 	if (battle_object_manager->allow_dec_var(id)) {
 		decrease_common_variables();
 	}
-	process_post_position();
 }
 
 void Projectile::projectile_post() {
-	update_hitbox_pos();
-	update_blockbox_pos();
+	process_post_position();
 }
 
 void Projectile::process_status() {
@@ -90,10 +89,17 @@ void Projectile::process_post_animate() {
 
 void Projectile::process_position() {
 	prev_pos = pos;
+	if (pos.x < stage->stage_bounds.x || pos.x > stage->stage_bounds.y) {
+		change_status(PROJECTILE_STATUS_DEACTIVATE);
+	}
 }
 
 void Projectile::process_post_position() {
 	update_hitbox_pos();
+	update_hurtbox_pos();
+	update_grabbox_pos();
+	update_pushbox_pos();
+	update_blockbox_pos();
 }
 
 void Projectile::decrease_common_variables() {

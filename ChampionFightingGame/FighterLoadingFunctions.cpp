@@ -40,7 +40,7 @@ void Fighter::init() {
 	load_chara_effects();
 	set_default_vars();
 
-	change_status(FIGHTER_STATUS_WAIT, false, false);
+	change_status(FIGHTER_STATUS_NONE, false, false);
 }
 
 void Fighter::load_sound_list() {
@@ -123,7 +123,7 @@ void Fighter::load_anim_list() {
 void Fighter::set_default_vars() {
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
-	fighter_flag[FIGHTER_FLAG_CAN_TECH] = true;
+	fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 }
 

@@ -94,7 +94,7 @@ CSS::CSS() {
 	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].add_texture("resource/game_state/chara_select/p1_cursor.png");
 	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].add_texture("resource/game_state/chara_select/p2_cursor.png");
 	for (int i = 0; i < 2; i++) {
-		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_scale(0.8);
 	}
 
@@ -229,10 +229,10 @@ void CSS::event_select_press() {
 			css_player[player_id].mobile_css_slot = GameTexture(chara_slots[css_player[player_id].selected_index].render_texture);
 
 			if (player_id) {
-				css_player[player_id].mobile_css_slot.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
+				css_player[player_id].mobile_css_slot.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
 			}
 			else {
-				css_player[player_id].mobile_css_slot.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				css_player[player_id].mobile_css_slot.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 			}
 			css_player[player_id].mobile_css_slot.set_pos(chara_slots[css_player[player_id].selected_index].render_texture.get_pos_vacuum(&css_player[player_id].mobile_css_slot));
 			css_player[player_id].mobile_css_slot.set_target_pos(big_chara_slots[player_id].pos, 16.0);
@@ -623,10 +623,10 @@ void CSS::select_slot() {
 
 
 	if (player_id) {
-		big_chara_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
+		big_chara_slots[player_id].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
 	}
 	else {
-		big_chara_slots[player_id].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		big_chara_slots[player_id].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 	}
 	big_chara_slots[player_id].set_pos(glm::vec3(
 		40 + (player_id * (WINDOW_WIDTH - 270)),
@@ -746,7 +746,7 @@ void CssSlot::init(ParamTable param_table) {
 	}
 
 	render_texture.init("resource/game_state/chara_select/chara/" + resource_dir + "/render.png");
-	render_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	render_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 	render_texture.set_scale(0.8);
 }
 

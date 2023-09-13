@@ -36,11 +36,11 @@ void GameTimer::init(int time) {
 	frame_texture.init("resource/game_state/battle/ui/timer/smalltypeface.gif");
 	deca_frame_texture.init("resource/game_state/battle/ui/timer/smalltypeface.gif");
 
-	clock.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
-	second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
-	deca_second_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
-	frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
-	deca_frame_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	clock.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	second_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	deca_second_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	frame_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
+	deca_frame_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
 
 	clock.set_scale(1.5);
 	deca_second_texture.set_scale(1.5);

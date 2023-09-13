@@ -7,13 +7,14 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		clear_grabbox_all();
 		clear_pushbox_all();
 		fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
-		fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = false;
+		fighter_flag[FIGHTER_FLAG_ATTACK_HIT] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = false;
 		fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = false;
-		fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = false;
+		fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
 		fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = false;
 		fighter_flag[FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK] = false;
+		fighter_int[FIGHTER_INT_SUCCESS_COUNTERHIT_VAL] = 0;
 		fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] = FIGHTER_STATUS_MAX;
 		disable_all_cancels();
 		if (call_end_status) {

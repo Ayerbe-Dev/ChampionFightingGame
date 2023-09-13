@@ -96,11 +96,10 @@ void battle_main() {
 		}
 
 		battle->process_game_state();
-		battle->render_game_state();
-
 		if (battle->state == BATTLE_STATE_BATTLE) {
 			battle->check_collisions();
 		}
+		battle->render_game_state();
 
 #ifdef DEBUG
 		cotr_imgui_debug_battle(battle);
@@ -340,6 +339,7 @@ void Battle::process_intro() {
 	else {
 		POST_INTRO:
 		for (int i = 0; i < 2; i++) {
+			std::cout << "what\n";
 			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
 		}
 		process_battle();
@@ -636,10 +636,12 @@ void Battle::process_training() {
 		if (training_info[i].frame_advantage.get_text() != advantage) {
 			training_info[i].frame_advantage.update_text(info_font, advantage, color, glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
-		if (fighter[i]->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] == 0) {
+		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] == 0) {
 			fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH], fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] + 10.0, fighter[i]->get_local_param_float("health"));
 			fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
-
+		}
+		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] == 0) {
+			fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER], fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + 10.0, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		}
 
 		short new_input_code = fighter[i]->get_stick_dir_no_lr() << 7;
@@ -731,7 +733,7 @@ void Battle::render_world() {
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow(!fighter[i]->facing_right);
-		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render_shadow(!fighter[i]->facing_right);
 			}
@@ -750,7 +752,7 @@ void Battle::render_world() {
 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);
-		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
 			}
@@ -771,7 +773,7 @@ void Battle::render_world() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render(!fighter[i]->facing_right);
-		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
 			}
@@ -785,7 +787,7 @@ void Battle::render_world() {
 	glDepthMask(GL_FALSE);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_outline(!fighter[i]->facing_right);
-		for (int i2 = 0; i2 < fighter[i]->num_projectiles; i2++) {
+		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render_outline(!fighter[i]->facing_right);
 			}
@@ -845,10 +847,25 @@ void Battle::render_world() {
 					fighter[i]->hitboxes[i2].rect.render();
 				}
 			}
-			for (int i2 = 0; i2 < 10; i2++) {
+			for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->active) {
+					for (int i3 = 0; i3 < 10; i3++) {
+						if (fighter[i]->projectiles[i2]->pushboxes[i3].active) {
+							fighter[i]->projectiles[i2]->pushboxes[i3].rect.render();
+						}
+					}
+					for (int i3 = 0; i3 < 10; i3++) {
+						if (fighter[i]->projectiles[i2]->hurtboxes[i3].active) {
+							fighter[i]->projectiles[i2]->hurtboxes[i3].rect.render();
+						}
+					}
 					if (fighter[i]->projectiles[i2]->blockbox.active) {
 						fighter[i]->projectiles[i2]->blockbox.rect.render();
+					}
+					for (int i3 = 0; i3 < 10; i3++) {
+						if (fighter[i]->projectiles[i2]->grabboxes[i3].active) {
+							fighter[i]->projectiles[i2]->grabboxes[i3].rect.render();
+						}
 					}
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->hitboxes[i3].active) {

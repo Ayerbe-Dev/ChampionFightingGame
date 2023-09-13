@@ -15,7 +15,7 @@ void Fighter::clear_hitbox(int id) {
 	}
 	multihit_connected[multihit] = false;
 	if (!active_move_script.has_function(&Fighter::NEW_HITBOX)) {
-		fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = true;
+		fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = true;
 	}
 }
 
@@ -30,6 +30,6 @@ void Fighter::clear_hitbox_all() {
 	}
 	clear_blockbox();
 	if (!active_move_script.has_function(&Fighter::NEW_HITBOX)) {
-		fighter_flag[FIGHTER_FLAG_IN_ENDLAG] = true;
+		fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = true;
 	}
 }

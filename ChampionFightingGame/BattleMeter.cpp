@@ -28,13 +28,13 @@ void BattleMeter::init(Fighter* fighter, int num_rounds) {
 	ex_border.init("resource/game_state/battle/ui/ex/bar.png");
 
 	if (fighter->id) {
-		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		partial_health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		combo_health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		health_border.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
-		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
-		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
-		ex_border.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		health_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+		partial_health_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+		combo_health_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+		health_border.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+		ex_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_segment_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		ex_border.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 
 		health_texture.flip_h();
 		partial_health_texture.flip_h();
@@ -45,13 +45,13 @@ void BattleMeter::init(Fighter* fighter, int num_rounds) {
 		ex_border.flip_h();
 	}
 	else {
-		health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		partial_health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		combo_health_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		health_border.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-		ex_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-		ex_segment_texture.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-		ex_border.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		health_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+		partial_health_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+		combo_health_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+		health_border.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+		ex_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		ex_segment_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		ex_border.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 	}
 	health_texture.set_alpha(127);
 	health_texture.set_pos(glm::vec3(50.0, 57.0, 0.0));
@@ -65,7 +65,7 @@ void BattleMeter::init(Fighter* fighter, int num_rounds) {
 	partial_health = &fighter->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 	ended_hitstun = fighter->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr();
 	disable_hitstun_parry = fighter->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]._Getptr();
-	post_hitstun_timer = &fighter->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER];
+	post_hitstun_timer = &fighter->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER];
 	max_health = fighter->get_local_param_float("health");
 	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
 	max_ex = (float)get_param_int(PARAM_FIGHTER, "ex_meter_size");

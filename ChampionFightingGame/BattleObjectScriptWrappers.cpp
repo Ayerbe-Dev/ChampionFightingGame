@@ -73,8 +73,8 @@ void BattleObject::NEW_GRABBOX(ScriptArg args) {
 	UNWRAP(offset, glm::vec2);
 	UNWRAP(grabbox_kind, GrabboxKind);
 	UNWRAP(hit_kind, HitKind);
-	UNWRAP(attacker_status_if_hit, unsigned int);
-	UNWRAP(defender_status_if_hit, unsigned int);
+	UNWRAP(attacker_status_if_hit, int);
+	UNWRAP(defender_status_if_hit, int);
 	new_grabbox(id, anchor, offset, grabbox_kind, hit_kind, attacker_status_if_hit, defender_status_if_hit);
 }
 
@@ -92,14 +92,9 @@ void BattleObject::NEW_HURTBOX(ScriptArg args) {
 	UNWRAP(id, int);
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
-
-	HurtboxKind hurtbox_kind = HURTBOX_KIND_NORMAL;
-	bool armor = false;
-	IntangibleKind intangible_kind = INTANGIBLE_KIND_NONE;
-
-	UNWRAP_NO_DECL(hurtbox_kind);
-	UNWRAP_NO_DECL(armor);
-	UNWRAP_NO_DECL(intangible_kind);
+	UNWRAP(hurtbox_kind, HurtboxKind);
+	UNWRAP(armor, bool);
+	UNWRAP(intangible_kind, IntangibleKind);
 
 	new_hurtbox(id, anchor, offset, hurtbox_kind, armor, intangible_kind);
 }

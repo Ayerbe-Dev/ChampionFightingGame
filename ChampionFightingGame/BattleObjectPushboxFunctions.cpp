@@ -47,24 +47,10 @@ bool BattleObject::pushboxes_touching(BattleObject* object) {
 	return false;
 }
 
-float BattleObject::get_pushbox_front() {
-	float front = 0.0;
-	for (int i = 0; i < 10; i++) {
-		if (!pushboxes[i].active) continue;
-		if (abs(pushboxes[i].rect.corners[2].x) > front) {
-			front = pushboxes[i].rect.corners[2].x;
-		}
-	}
-	return front - pos.x;
+float BattleObject::get_pushbox_front(size_t id) {
+	return pushboxes[id].rect.corners[2].x - pos.x;
 }
 
-float BattleObject::get_pushbox_back() {
-	float back = 0.0;
-	for (int i = 0; i < 10; i++) {
-		if (!pushboxes[i].active) continue;
-		if (abs(pushboxes[i].rect.corners[0].x) > back) {
-			back = pushboxes[i].rect.corners[0].x;
-		}
-	}
-	return back - pos.x;
+float BattleObject::get_pushbox_back(size_t id) {
+	return pushboxes[id].rect.corners[0].x - pos.x;
 }

@@ -164,7 +164,7 @@ StageSelect::StageSelect() {
 	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.init("resource/game_state/stage_select/cursor.png");
 	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_width(slot_width);
 	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_height(slot_height);
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 
 	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_1.png");
 	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_2.png");
@@ -270,8 +270,8 @@ bool StageSelect::load_stage_select() {
 			slot_pos.y -= slot_height * 2;
 		}
 
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[1].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[1].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_pos(slot_pos);
 		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[1].set_pos(slot_pos);

@@ -108,7 +108,7 @@ void Camera::adjust_view(float x, float y, float z, float speed) {
 void Camera::set_fov(float fov) {
 	RenderManager* render_manager = RenderManager::get_instance();
 	this->fov = fov;
-	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_W_FACTOR, 0.1f, 1000.0f);
+	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_FACTOR, 0.1f, 1000.0f);
 	update_view();
 }
 

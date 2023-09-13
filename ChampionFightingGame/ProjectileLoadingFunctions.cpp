@@ -14,6 +14,8 @@ void Projectile::init() {
 	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
 
+	stage = battle_object_manager->stage;
+
 	load_stats();
 	load_params();
 	load_model_shader();
@@ -23,7 +25,7 @@ void Projectile::init() {
 	load_projectile_status_scripts();
 	load_move_scripts();
 
-	status_kind = PROJECTILE_STATUS_DEACTIVATE;
+	change_status(PROJECTILE_STATUS_NONE, false, false);
 }
 
 void Projectile::load_sound_list() {
@@ -94,16 +96,6 @@ void Projectile::load_anim_list() {
 			std::cout << err.what() << "\n";
 		}
 	}
-}
-
-void Projectile::load_projectile_status_scripts() {
-	status_script[PROJECTILE_STATUS_ACTIVATE] = &Projectile::status_activate;
-	enter_status_script[PROJECTILE_STATUS_ACTIVATE] = &Projectile::enter_status_activate;
-	exit_status_script[PROJECTILE_STATUS_ACTIVATE] = &Projectile::exit_status_activate;
-
-	status_script[PROJECTILE_STATUS_DEACTIVATE] = &Projectile::status_deactivate;
-	enter_status_script[PROJECTILE_STATUS_DEACTIVATE] = &Projectile::enter_status_deactivate;
-	exit_status_script[PROJECTILE_STATUS_DEACTIVATE] = &Projectile::exit_status_deactivate;
 }
 
 void Projectile::set_default_vars() {

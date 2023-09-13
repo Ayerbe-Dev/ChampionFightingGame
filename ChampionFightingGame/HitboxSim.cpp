@@ -255,7 +255,7 @@ SimHitbox::SimHitbox() {
 	block_pushback = 10.0;
 	hit_status = HIT_STATUS_NORMAL;
 	counterhit_status = HIT_STATUS_NORMAL;
-	counterhit_type = COUNTERHIT_TYPE_NORMAL;
+	counterhit_type = COUNTERHIT_TYPE_COUNTER;
 	juggle_start = 0;
 	juggle_increase = 0;
 	juggle_max = 0;
@@ -393,20 +393,17 @@ void SimHitbox::print_start(BattleObject* object) {
 	}
 	std::string counterhit_type_text = "";
 	switch (counterhit_type) {
-		case (COUNTERHIT_TYPE_NORMAL): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_NORMAL";
+		case (COUNTERHIT_TYPE_COUNTER): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_COUNTER";
+		} break;
+		case (COUNTERHIT_TYPE_ANY): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_ANY";
 		} break;
 		case (COUNTERHIT_TYPE_PUNISH): {
 			counterhit_type_text = ", COUNTERHIT_TYPE_PUNISH";
 		} break;
-		case (COUNTERHIT_TYPE_COUNTER_ONLY): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_COUNTER_ONLY";
-		} break;
-		case (COUNTERHIT_TYPE_PUNISH_ONLY): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_PUNISH_ONLY";
-		} break;
-		case (COUNTERHIT_TYPE_AERIAL_ONLY): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_AERIAL_ONLY";
+		case (COUNTERHIT_TYPE_JUMP_COUNTER): {
+			counterhit_type_text = ", COUNTERHIT_TYPE_JUMP_COUNTER";
 		} break;
 		case (COUNTERHIT_TYPE_NONE): {
 			counterhit_type_text = ", COUNTERHIT_TYPE_NONE";

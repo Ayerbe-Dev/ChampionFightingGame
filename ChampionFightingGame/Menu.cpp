@@ -111,11 +111,11 @@ MainMenu::MainMenu() {
 		GameTexture* bg_texture = &menu_objects[MENU_GROUP_RENDER_ACTIVE][i].textures.back();
 		bg_texture->set_width_scale(1.5);
 		bg_texture->set_height_scale(1.5);
-		bg_texture->set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+		bg_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 
 		GameTexture& cursor = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].cursor;
 		cursor.init("resource/game_state/menu/main/Cursor.png");
-		cursor.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		cursor.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		cursor.set_pos(glm::vec3(700.0, 0.0, 0.0));
 		cursor.set_width(50);
 		cursor.set_height(50);
@@ -226,7 +226,7 @@ MainMenu::MainMenu() {
 		//Also we left-orient all of the sub menu text
 
 		for (int i2 = 0, max2 = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children.size(); i2 < max2; i2++) {
-			menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children[i2].textures[0].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children[i2].textures[0].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		}
 	}
 
@@ -310,7 +310,7 @@ MainMenu::MainMenu() {
 	};
 
 	table.init("resource/game_state/menu/main/SubMenu.png");
-	table.set_orientation(GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+	table.set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 	table.set_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0));
 	table.scale_top_percent(1.2, false);
 	table.scale_bottom_percent(1.2, false);

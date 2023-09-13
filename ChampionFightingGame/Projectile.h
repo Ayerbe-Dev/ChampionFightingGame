@@ -55,15 +55,53 @@ public:
 
 	//Status
 
-	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true) override;
 
-	//Balogna (thanks fez)
+	//Data Functions
 
 	void set_int(int target, int val);
 	void inc_int(int target);
 	void dec_int(int target);
 	void set_float(int target, float val);
 	void set_flag(int target, bool val);
+
+	//Collision Functions
+
+	bool is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Fighter* attacker) override;
+	bool is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Projectile* attacker) override;
+
+	void process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* defender) override;
+	void process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* defender) override;
+	void process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* attacker) override;
+	void process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker) override;
+	void process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender) override;
+	void process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender) override;
+
+	virtual void unique_process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* defender){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* attacker){};
+	virtual void unique_process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker){};
+	virtual void unique_process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender){};
+	virtual void unique_process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender){};
+
+	void process_outgoing_fighter_grabbox_collision(Grabbox* grabbox, Fighter* defender);
+	virtual void unique_process_outgoing_fighter_grabbox_collision(Grabbox* grabbox, Fighter* defender) {};
 
 	//Script Functions
 	template<typename ...T>
@@ -129,6 +167,10 @@ public:
 	//Status Scripts
 
 	virtual void process_hit();
+
+	virtual void status_none();
+	virtual void enter_status_none();
+	virtual void exit_status_none();
 
 	virtual void status_activate();
 	virtual void enter_status_activate();

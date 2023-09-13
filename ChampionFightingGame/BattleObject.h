@@ -9,44 +9,12 @@
 class Player;
 class BattleObjectManager;
 class Stage;
+class Fighter;
+class Projectile;
 
 class BattleObject : public GameObject {
 public:
 	BattleObject();
-
-	int id;
-	BattleObjectType object_type;
-	bool has_model;
-
-	glm::vec3 prev_pos = glm::vec3(0.0);
-	glm::vec3 extra_rot = glm::vec3(0.0);
-	float facing_dir = 1.0;
-	float internal_facing_dir = 1.0;
-	bool facing_right = true;
-	bool internal_facing_right = true;
-
-	unsigned int status_kind = 0;
-	unsigned int situation_kind = 0;
-
-	Blockbox blockbox;
-	Hitbox hitboxes[10];
-	Hurtbox hurtboxes[10];
-	Grabbox grabboxes[10];
-	Pushbox pushboxes[10];
-	bool multihit_connected[10] = { false };
-
-	MoveScriptTable move_script_table;
-	MoveScript active_move_script;
-	ScriptFrame active_script_frame;
-	ScriptCondition *active_script_condition;
-	float last_execute_frame;
-
-	ParamTable stats;
-	ParamTable params;
-
-	Player* player;
-	Stage* stage;
-	BattleObjectManager* battle_object_manager;
 
 	//Loading
 
@@ -98,8 +66,8 @@ public:
 	void clear_pushbox(int id);
 	void clear_pushbox_all();
 	bool pushboxes_touching(BattleObject* object);
-	float get_pushbox_front();
-	float get_pushbox_back();
+	float get_pushbox_front(size_t id);
+	float get_pushbox_back(size_t id);
 
 	//Anim Funcs
 
@@ -157,7 +125,78 @@ public:
 	void unload_effect(std::string name);
 	void unload_all_effects();
 
-	//Scripting functions
+	//Status Functions
+
+	virtual bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+
+	//Collision Functions
+
+	void check_incoming_hitbox_collisions(std::vector<Hitbox*> hitboxes);
+	bool is_valid_incoming_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox);
+	virtual bool is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Fighter* attacker);
+	virtual bool is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Projectile* attacker);
+
+	void process_incoming_hitbox_collision(Hitbox* hitbox, BattleObject* attacker);
+	
+	void process_incoming_hitbox_collision_hit(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_hit(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender);
+	virtual void process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* defender);
+
+	void process_incoming_hitbox_collision_blocked(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_blocked(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_blocked(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender);
+
+	void process_incoming_hitbox_collision_parried(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_parried(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_parried(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* defender);
+
+	void process_incoming_hitbox_collision_hitstun_parried(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_hitstun_parried(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender);
+
+	void process_incoming_hitbox_collision_armored(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_armored(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_armored(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* defender);
+
+	void process_incoming_hitbox_collision_right_of_way_armored(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_right_of_way_armored(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* defender);
+
+	void process_incoming_hitbox_collision_invincibility(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_invincibility(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_invincibility(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* defender);
+
+	void process_incoming_hitbox_collision_counter(Hitbox* hitbox, BattleObject* attacker);
+	virtual void process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* attacker);
+	virtual void process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker);
+
+	void process_outgoing_hitbox_collision_counter(Hitbox* hitbox, BattleObject* defender);
+	virtual void process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender);
+	virtual void process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender);
+
+	//Scripting Functions
 
 	void script(std::string name, std::function<void()> move_script);
 	void wipe_scripts();
@@ -248,4 +287,43 @@ public:
 	void CLEAR_EFFECT_ALL(ScriptArg args);
 
 	void PRINT_MSG_FROM_SCRIPT(ScriptArg args);
+
+	int id;
+	BattleObjectType object_type;
+	bool has_model;
+
+	glm::vec3 prev_pos;
+	glm::vec3 extra_rot;
+	float facing_dir;
+	float internal_facing_dir;
+	bool facing_right;
+	bool internal_facing_right;
+
+	unsigned int status_kind;
+	unsigned int situation_kind;
+
+	Blockbox blockbox;
+	Hitbox hitboxes[10];
+	Hurtbox hurtboxes[10];
+	Grabbox grabboxes[10];
+	Pushbox pushboxes[10];
+	bool multihit_connected[10];
+
+	Hitbox* connected_hitbox;
+	Grabbox* connected_grabbox;
+	IncomingCollisionKind incoming_collision_kind;
+	unsigned int post_collision_status;
+
+	MoveScriptTable move_script_table;
+	MoveScript active_move_script;
+	ScriptFrame active_script_frame;
+	ScriptCondition* active_script_condition;
+	float last_execute_frame;
+
+	ParamTable stats;
+	ParamTable params;
+
+	Player* player;
+	Stage* stage;
+	BattleObjectManager* battle_object_manager;
 };

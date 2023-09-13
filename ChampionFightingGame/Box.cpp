@@ -3,10 +3,14 @@
 
 Pushbox::Pushbox() {
 	id = -1;
+	object = nullptr;
+	init_anchor = glm::vec2(0.0);
+	init_offset = glm::vec2(0.0);
 	active = false;
 }
 
 void Pushbox::init(BattleObject* object) {
+	this->object = object;
 	rect.init();
 	rect.set_rgba(glm::vec4(255, 255, 0, 204));
 }
@@ -48,6 +52,7 @@ Blockbox::Blockbox() {
 }
 
 void Blockbox::init(BattleObject* object) {
+	this->object = object;
 	rect.init();
 	rect.set_rgba(glm::vec4(255, 165, 0, 204));
 }
@@ -81,11 +86,43 @@ void Blockbox::clear() {
 }
 
 Hitbox::Hitbox() {
+	object = nullptr;
 	id = -1;
+	multihit = 0;
+	damage = 0.0;
+	chip_damage = 0.0;
+	damage_scale = 0;
+	meter_gain = 0.0;
+	init_anchor = glm::vec2(0.0);
+	init_offset = glm::vec2(0.0);
+	hit_kind = HIT_KIND_GROUND;
+	attack_level = ATTACK_LEVEL_LIGHT;
+	attack_height = ATTACK_HEIGHT_MID;
+	hitlag = 0;
+	blocklag = 0;
+	hitstun = 0;
+	blockstun = 0;
+	hit_pushback = 0.0;
+	block_pushback = 0.0;
+	hit_status = HIT_STATUS_NORMAL;
+	counterhit_status = HIT_STATUS_NORMAL;
+	counterhit_type = COUNTERHIT_TYPE_COUNTER;
+	juggle_start = 0;
+	juggle_increase = 0;
+	juggle_max = 0;
+	clank_kind = CLANK_KIND_NORMAL;
+	damage_kind = DAMAGE_KIND_NORMAL;
+	continue_launch = false;
+	disable_hitstun_parry = false;
+	launch_init_y = 0.0;
+	launch_gravity_y = 0.0;
+	launch_max_fall_speed = 0.0;
+	launch_speed_x = 0.0;
 	active = false;
 }
 
 void Hitbox::init(BattleObject* object) {
+	this->object = object;
 	rect.init();
 	rect.set_rgba(glm::vec4(255, 0, 0, 204));
 }
@@ -95,7 +132,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
 	int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
 	HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-	int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
+	int juggle_max, ClankKind clank_kind, DamageKind damage_kind, bool continue_launch,
 	bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
 	float launch_max_fall_speed, float launch_speed_x) {
 	anchor.x *= object->facing_dir;
@@ -130,7 +167,7 @@ void Hitbox::activate(BattleObject* object, int id, int multihit, float damage, 
 	this->juggle_increase = juggle_increase;
 	this->juggle_max = juggle_max;
 	this->clank_kind = clank_kind;
-	this->damage_kind = ko_kind;
+	this->damage_kind = damage_kind;
 	this->continue_launch = continue_launch;
 	this->disable_hitstun_parry = disable_hitstun_parry;
 	this->launch_init_y = launch_init_y;
@@ -162,11 +199,19 @@ void Hitbox::clear() {
 }
 
 Grabbox::Grabbox() {
+	object = nullptr;
 	id = -1;
+	init_anchor = glm::vec2(0.0);
+	init_offset = glm::vec2(0.0);
+	grabbox_kind = GRABBOX_KIND_NORMAL;
+	hit_kind = HIT_KIND_GROUND;
+	attacker_status_if_hit = 0;
+	defender_status_if_hit = 0;
 	active = false;
 }
 
 void Grabbox::init(BattleObject* object) {
+	this->object = object;
 	rect.init();
 	rect.set_alpha(204);
 }
@@ -219,11 +264,18 @@ void Grabbox::clear() {
 }
 
 Hurtbox::Hurtbox() {
+	object = nullptr;
 	id = -1;
+	init_anchor = glm::vec2(0.0);
+	init_offset = glm::vec2(0.0);
+	hurtbox_kind = HURTBOX_KIND_NORMAL;
+	is_armor = false;
+	intangible_kind = INTANGIBLE_KIND_NONE;
 	active = false;
 }
 
 void Hurtbox::init(BattleObject* object) {
+	this->object = object;
 	rect.init();
 	rect.set_rgba(glm::vec4(0, 0, 255, 204));
 }

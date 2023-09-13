@@ -9,10 +9,10 @@ bool Fighter::is_actionable() {
 		return true;
 	}
 	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0 
-		&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
-		&& !fighter_flag[FIGHTER_FLAG_GRABBED]
-		&& status_kind != FIGHTER_STATUS_THROWN
-		&& status_kind != FIGHTER_STATUS_ROUND_END) {
+	&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
+	&& !fighter_flag[FIGHTER_FLAG_GRABBED]
+	&& status_kind != FIGHTER_STATUS_THROWN
+	&& status_kind != FIGHTER_STATUS_ROUND_END) {
 		if (fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY]) {
 			return true;
 		}
@@ -41,10 +41,16 @@ bool Fighter::has_meter(int bars) {
 	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
 	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
 	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / bars)) {
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / bars);
 		return true;
 	}
 	return false;
+}
+
+void Fighter::spend_meter(int bars) {
+	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
+	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
+	fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] = 60;
+	fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / bars);
 }
 
 void Fighter::enable_all_cancels() {
@@ -89,8 +95,8 @@ void Fighter::disable_cancel(int cat, int kind) {
 
 bool Fighter::is_enable_cancel(int cancel_kind) {
 	if (fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
-		if (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
-			return (fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
+		if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
+			return (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
 				|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && cancel_flags[CANCEL_CAT_BLOCK][cancel_kind]);
 		}
 		else if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX]) {

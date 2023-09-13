@@ -32,10 +32,10 @@ GameState::GameState() {
 
 	fps_font = font_manager->load_font("FiraCode", 12);
 	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	fps_counter.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_counter.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 	fps_counter.set_pos(glm::vec3(0.0, -10.0, 0.0));
 	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	fps_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 	fps_texture.set_pos(glm::vec3(80.0, -10.0, 0.0));
 }
 

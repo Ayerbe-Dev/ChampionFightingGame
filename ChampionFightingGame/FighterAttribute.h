@@ -124,3 +124,11 @@ const int CANCEL_CAT_MAX = 3;
 const int CANCEL_CAT_FILLER = 4; //Used as part of a stupid safety check, dw about it
 const int CANCEL_CAT_CONTACT = 5;
 const int CANCEL_CAT_ALL = 6;
+
+const int UI_TEXT_TYPE_NONE = 0;
+const int UI_TEXT_TYPE_COUNTER = 1;
+const int UI_TEXT_TYPE_COUNTER_PUNISH = 2;
+const int UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY = 3;
+const int UI_TEXT_TYPE_COUNTER_JUMP = 4;
+const int UI_TEXT_TYPE_ARMOR_BREAK = 5;
+const int UI_TEXT_TYPE_REVERSAL = 6;

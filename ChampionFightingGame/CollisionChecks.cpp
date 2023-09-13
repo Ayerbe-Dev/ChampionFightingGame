@@ -6,8 +6,180 @@ void Battle::check_collisions() {
 	if (frame_pause && !debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
 		return;
 	}
-	check_projectile_collisions();
-	check_fighter_collisions();
+	std::vector<Hitbox*> hitboxes[2];
+	std::vector<Grabbox*> grabboxes[2];
+	std::vector<Pushbox> fighter_pushboxes[2];
+	std::vector<Pushbox> projectile_pushboxes[2];
+	std::vector<BattleObject*> objects[2];
+
+	//Get a list of every active hit, grab, and pushbox. Specifically for pushboxes, we should
+	//also sort by whether or not we're working with a projectile, as the fighter pushbox code
+	//only runs for P1, while the projectile pushbox code runs for both.
+
+	for (int i = 0; i < 2; i++) {
+		objects[i].push_back(fighter[i]);
+		for (int i2 = 0; i2 < 10; i2++) {
+			if (fighter[i]->hitboxes[i2].active) {
+				hitboxes[i].push_back(&fighter[i]->hitboxes[i2]);
+			}
+			if (fighter[i]->grabboxes[i2].active) {
+				grabboxes[i].push_back(&fighter[i]->grabboxes[i2]);
+			}
+			if (fighter[i]->pushboxes[i2].active) {
+				fighter_pushboxes[i].push_back(fighter[i]->pushboxes[i2]);
+			}
+		}
+		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
+			if (!fighter[i]->projectiles[i2]->active) continue;
+			objects[i].push_back(fighter[i]->projectiles[i2]);
+			for (int i3 = 0; i3 < 10; i3++) {
+				if (fighter[i]->projectiles[i2]->hitboxes[i3].active) {
+					hitboxes[i].push_back(&fighter[i]->projectiles[i2]->hitboxes[i3]);
+				}
+				if (fighter[i]->projectiles[i2]->grabboxes[i3].active) {
+					grabboxes[i].push_back(&fighter[i]->projectiles[i2]->grabboxes[i3]);
+				}
+				if (fighter[i]->projectiles[i2]->pushboxes[i3].active) {
+					projectile_pushboxes[i].push_back(fighter[i]->projectiles[i2]->pushboxes[i3]);
+				}
+			}
+		}
+	}
+
+	//First we check any pushbox collisions between P1 and P2. Then we check for collisions between
+	//their projectiles.
+
+	fighter[0]->process_fighter_pushbox_collisions(fighter_pushboxes[0], fighter_pushboxes[1]);
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->process_projectile_pushbox_collisions(fighter_pushboxes[i], projectile_pushboxes[!i]);
+		fighter[i]->update_hitbox_pos();
+		fighter[i]->update_hurtbox_pos();
+		fighter[i]->update_grabbox_pos();
+		fighter[i]->update_pushbox_pos();
+		fighter[i]->update_blockbox_pos();
+	}
+
+	for (int i = 0; i < 2; i++) {
+		fighter[i]->check_incoming_grabbox_collisions(grabboxes[!i]);
+		for (int i2 = 0; i2 < objects[i].size(); i2++) {
+			objects[i][i2]->check_incoming_hitbox_collisions(hitboxes[!i]);
+		}
+	}
+	//If both fighters get grabbed on the same frame, we need to resolve that in some way:
+	// - If one is techable and the other one isn't, the untechable one wins. 
+	// - If one came from a projectile and one didn't, the projectile wins. 
+	// - If all other factors are equal, both grabboxes are deactivated, and if a throw tech is
+	//	possible, both fighters change their status to it.
+	if (fighter[0]->connected_grabbox != nullptr && fighter[1]->connected_grabbox != nullptr) {
+		if ((fighter[0]->connected_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH) == 
+			(fighter[1]->connected_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH)) {
+			if (fighter[0]->connected_grabbox->object->object_type > 
+				fighter[1]->connected_grabbox->object->object_type) {
+				fighter[1]->connected_grabbox = nullptr;
+			}
+			else if (fighter[0]->connected_grabbox->object->object_type < 
+				fighter[1]->connected_grabbox->object->object_type) {
+				fighter[0]->connected_grabbox = nullptr;
+			}
+			else {
+				fighter[0]->connected_grabbox->object->clear_grabbox_all();
+				fighter[1]->connected_grabbox->object->clear_grabbox_all();
+				if (!(fighter[0]->connected_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH)) {
+					fighter[0]->post_collision_status = FIGHTER_STATUS_THROW_TECH;
+					fighter[1]->post_collision_status = FIGHTER_STATUS_THROW_TECH;
+				}
+				fighter[0]->connected_grabbox = nullptr;
+				fighter[1]->connected_grabbox = nullptr;
+			}
+		}
+		else if (fighter[0]->connected_grabbox->grabbox_kind & GRABBOX_KIND_NOTECH) {
+			fighter[1]->connected_grabbox = nullptr;
+		}
+		else {
+			fighter[0]->connected_grabbox = nullptr;
+		}
+	}
+	//If both fighters hit each other on the same frame, we resolve this based on the attack levels
+	//and then, if they match, the clank kinds.
+	else if (fighter[0]->connected_hitbox != nullptr && fighter[0]->connected_hitbox->object == fighter[1]
+		&& fighter[1]->connected_hitbox != nullptr && fighter[1]->connected_hitbox->object == fighter[0]) {		
+		if (fighter[0]->connected_hitbox->attack_level == fighter[1]->connected_hitbox->attack_level) {
+			if (fighter[0]->connected_hitbox->clank_kind == CLANK_KIND_CONTINUE ||
+				fighter[1]->connected_hitbox->clank_kind == CLANK_KIND_CONTINUE) {
+				if (fighter[0]->connected_hitbox->clank_kind == fighter[1]->connected_hitbox->clank_kind) {
+					fighter[0]->update_hitbox_connect(fighter[1]->connected_hitbox->multihit);
+					fighter[1]->update_hitbox_connect(fighter[0]->connected_hitbox->multihit);
+					fighter[0]->connected_hitbox = nullptr;
+					fighter[1]->connected_hitbox = nullptr;
+				}
+				else if (fighter[0]->connected_hitbox->clank_kind == CLANK_KIND_CONTINUE) {
+					fighter[1]->update_hitbox_connect(fighter[0]->connected_hitbox->multihit);
+					fighter[0]->post_collision_status = FIGHTER_STATUS_CLANK;
+					fighter[0]->connected_hitbox = nullptr;
+					fighter[1]->connected_hitbox = nullptr;
+				}
+				else {
+					fighter[0]->update_hitbox_connect(fighter[1]->connected_hitbox->multihit);
+					fighter[1]->post_collision_status = FIGHTER_STATUS_CLANK;
+					fighter[0]->connected_hitbox = nullptr;
+					fighter[1]->connected_hitbox = nullptr;
+				}
+			}
+			else if (fighter[0]->connected_hitbox->clank_kind == CLANK_KIND_CLANK ||
+					fighter[1]->connected_hitbox->clank_kind == CLANK_KIND_CLANK) {
+				fighter[0]->change_status(FIGHTER_STATUS_CLANK);
+				fighter[1]->change_status(FIGHTER_STATUS_CLANK);
+				fighter[0]->connected_hitbox = nullptr;
+				fighter[1]->connected_hitbox = nullptr;
+			}
+		}
+		else if (fighter[0]->connected_hitbox->attack_level > fighter[1]->connected_hitbox->attack_level) {
+			fighter[1]->connected_hitbox = nullptr;
+		}
+		else {
+			fighter[0]->connected_hitbox = nullptr;
+		}
+	}
+
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < objects[i].size(); i2++) {
+			if (objects[i][i2]->connected_grabbox == nullptr) {
+				if (objects[i][i2]->connected_hitbox != nullptr) {
+					objects[i][i2]->process_incoming_hitbox_collision(
+						objects[i][i2]->connected_hitbox,
+						objects[i][i2]->connected_hitbox->object
+					);
+				}
+			}
+			else {
+				//This is kind of a degenerate way of handling grabbox collisions. Essentially,
+				//only fighters can get grabbed, which means that:
+				// 
+				//	A. The incoming grabbox collision doesn't even exist for things that aren't 
+				//	fighters
+				//	
+				//	B. If an object has a connected grabbox, we know for a fact that it is a fighter
+				//	so we can access the fighter directly rather than using our object vector.
+
+				//you may not like it, but this is what peak performance looks like
+				fighter[i]->process_incoming_grabbox_collision(
+					fighter[i]->connected_grabbox, 
+					fighter[i]->connected_grabbox->object
+				);
+			}
+		}
+	}
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < objects[i].size(); i2++) {
+			if (objects[i][i2]->post_collision_status != FIGHTER_STATUS_NONE) {
+				objects[i][i2]->change_status(objects[i][i2]->post_collision_status, true, false);
+				objects[i][i2]->post_collision_status = FIGHTER_STATUS_NONE;
+			}
+			objects[i][i2]->connected_hitbox = nullptr;
+			objects[i][i2]->connected_grabbox = nullptr;
+		}
+	}
+
 	if (GameManager::get_instance()->game_context != GAME_CONTEXT_TRAINING &&
 		(fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0
 		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0)) {
@@ -17,9 +189,9 @@ void Battle::check_collisions() {
 }
 
 void Battle::check_projectile_collisions() {
-	for (int i = 0; i < fighter[0]->num_projectiles; i++) {
+	for (int i = 0; i < fighter[0]->projectiles.size(); i++) {
 		if (fighter[0]->projectiles[i]->active) {
-			for (int i2 = 0; i2 < fighter[1]->num_projectiles; i2++) {
+			for (int i2 = 0; i2 < fighter[1]->projectiles.size(); i2++) {
 				if (fighter[1]->projectiles[i2]->active) {
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[0]->projectiles[i]->hitboxes[i3].active) {
@@ -51,9 +223,9 @@ void Battle::check_projectile_collisions() {
 
 void Battle::check_fighter_collisions() {
 	for (int i = 0; i < 2; i++) {
-		int hitbox_to_use = HITBOX_COUNT_MAX;
-		int projectile_hitbox_to_use = HITBOX_COUNT_MAX;
-		int grabbox_to_use = HITBOX_COUNT_MAX;
+		int hitbox_to_use = -1;
+		int projectile_hitbox_to_use = -1;
+		int grabbox_to_use = -1;
 		fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = false;
 		for (Hurtbox& hurtbox : fighter[i]->hurtboxes) {
 			if (hurtbox.active) {
@@ -61,19 +233,19 @@ void Battle::check_fighter_collisions() {
 				if (blockbox.active) {
 					fighter[i]->fighter_flag[FIGHTER_FLAG_PROX_GUARD] = is_collide(blockbox.rect, hurtbox.rect);
 				}
-				if (hitbox_to_use == HITBOX_COUNT_MAX) {
+				if (hitbox_to_use == -1) {
 					for (Hitbox& hitbox : fighter[!i]->hitboxes) {
 						if (hitbox.active) {
 							if (is_collide(hitbox.rect, hurtbox.rect)) {
 								hitbox_to_use = get_event_hit_collide_player(fighter[!i], fighter[i], &hitbox, &hurtbox);
 							}
-							if (hitbox_to_use != HITBOX_COUNT_MAX) {
+							if (hitbox_to_use != -1) {
 								break;
 							}
 						}
 					}
 				}
-				if (projectile_hitbox_to_use == HITBOX_COUNT_MAX) {
+				if (projectile_hitbox_to_use == -1) {
 					for (Projectile* projectile : fighter[!i]->projectiles) {
 						if (projectile != nullptr && projectile->active) {
 							for (Hitbox& hitbox : projectile->hitboxes) {
@@ -81,7 +253,7 @@ void Battle::check_fighter_collisions() {
 									if (is_collide(hitbox.rect, hurtbox.rect)) {
 										projectile_hitbox_to_use = get_event_hit_collide_projectile(projectile, fighter[i], &hitbox, &hurtbox);
 									}
-									if (projectile_hitbox_to_use != HITBOX_COUNT_MAX) {
+									if (projectile_hitbox_to_use != -1) {
 										break;
 									}
 								}
@@ -89,13 +261,13 @@ void Battle::check_fighter_collisions() {
 						}
 					}
 				}
-				if (grabbox_to_use == HITBOX_COUNT_MAX) {
+				if (grabbox_to_use == -1) {
 					for (Grabbox& grabbox : fighter[!i]->grabboxes) {
 						if (grabbox.active) {
 							if (is_collide(grabbox.rect, hurtbox.rect)) {
 								grabbox_to_use = get_event_grab_collide_player(fighter[!i], fighter[i], &grabbox, &hurtbox);
 							}
-							if (grabbox_to_use != HITBOX_COUNT_MAX) {
+							if (grabbox_to_use != -1) {
 								break;
 							}
 						}
@@ -103,9 +275,19 @@ void Battle::check_fighter_collisions() {
 				}
 			}
 		}
-		fighter[i]->connected_hitbox = hitbox_to_use;
-		fighter[i]->connected_grabbox = grabbox_to_use;
-		fighter[i]->connected_projectile_hitbox = projectile_hitbox_to_use;
+		if (hitbox_to_use != -1) {
+			fighter[i]->connected_hitbox = &fighter[!i]->hitboxes[hitbox_to_use];
+		}
+		else {
+			fighter[i]->connected_hitbox = nullptr;
+		}
+		if (grabbox_to_use != -1) {
+			fighter[i]->connected_grabbox = &fighter[!i]->grabboxes[grabbox_to_use];
+		}
+		else {
+			fighter[i]->connected_grabbox = nullptr;
+		}
+//		fighter[i]->connected_projectile_hitbox = projectile_hitbox_to_use;
 	}
 	if (!event_grab_collide_player()) {
 		event_hit_collide_player();
@@ -113,7 +295,7 @@ void Battle::check_fighter_collisions() {
 	for (int i = 0; i < 2; i++) {
 		for (Projectile* projectile : fighter[i]->projectiles) {
 			if (projectile != nullptr && projectile->active) {
-				event_hit_collide_projectile(fighter[i], fighter[!i], projectile, &projectile->hitboxes[fighter[!i]->connected_projectile_hitbox]);
+//				event_hit_collide_projectile(fighter[i], fighter[!i], projectile, &projectile->hitboxes[fighter[!i]->connected_projectile_hitbox]);
 			}
 		}
 	}
@@ -166,18 +348,18 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 	//in hitlag
 	if (attacker->multihit_connected[hitbox->multihit] 
 	|| attacker->fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) { 
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	//Verify that the hitbox is designed to hit the opponent in their current situation
 	if (defender->situation_kind == FIGHTER_SITUATION_GROUND && !(hitbox->hit_kind & HIT_KIND_GROUND)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->situation_kind == FIGHTER_SITUATION_AIR && !(hitbox->hit_kind & HIT_KIND_AIR)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->situation_kind == FIGHTER_SITUATION_DOWN && !(hitbox->hit_kind & HIT_KIND_DOWN)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 
@@ -188,13 +370,13 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 		&& !(hitbox->hit_kind & HIT_KIND_SOFT_INTANGIBLE))
 		|| (hurtbox->intangible_kind == INTANGIBLE_KIND_AERIAL 
 		&& attacker->situation_kind == FIGHTER_SITUATION_AIR)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	//Make sure that we can juggle the opponent
 	if (defender->situation_kind == FIGHTER_SITUATION_AIR 
 		&& hitbox->juggle_max < defender->fighter_int[FIGHTER_INT_JUGGLE_VALUE]) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	//Then, check if the hurtbox is invincible. If it is, the attacker's entire attack has failed. 
@@ -238,14 +420,13 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 			switch (hitbox->attack_height) {
 				case (ATTACK_HEIGHT_HIGH): {
 					if (defender->get_stick_dir() >= 4) {
-						defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 						return hitbox->id;
 					}
 				} break;
 				case (ATTACK_HEIGHT_LOW): {
 					if (defender->get_stick_dir() < 4) {
 						case (ATTACK_HEIGHT_MID): {
-							defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
+
 							return hitbox->id;
 						}
 					}
@@ -256,7 +437,6 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 			//While not in blockstun, we need to specifically block using back or down back
 			if ((defender->get_stick_dir() == 4 && hitbox->attack_height != ATTACK_HEIGHT_LOW)
 				|| (defender->get_stick_dir() == 1 && hitbox->attack_height != ATTACK_HEIGHT_HIGH)) {
-				defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 				return hitbox->id;
 			}
 		}
@@ -264,7 +444,6 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 
 	//If we haven't found a reason to return yet, that means our hitbox has connected
 
-	attacker->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = true;
 	return hitbox->id;
 }
 
@@ -279,22 +458,22 @@ int Battle::get_event_hit_collide_player(Fighter* attacker, Fighter* defender, H
 /// <returns>Either the first grabbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different grabbox ID must be checked.</returns>
 int Battle::get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox) {
 	if (defender->situation_kind == FIGHTER_SITUATION_GROUND && !(grabbox->hit_kind & HIT_KIND_GROUND)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->situation_kind == FIGHTER_SITUATION_AIR && !(grabbox->hit_kind & HIT_KIND_AIR)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->situation_kind == FIGHTER_SITUATION_DOWN && !(grabbox->hit_kind & HIT_KIND_DOWN)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	if (hurtbox->intangible_kind == INTANGIBLE_KIND_THROW 
 		|| (hurtbox->intangible_kind == INTANGIBLE_KIND_SOFT
 		&& !(grabbox->hit_kind & HIT_KIND_SOFT_INTANGIBLE))) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->get_status_group() == STATUS_GROUP_HITSTUN && (grabbox->grabbox_kind & GRABBOX_KIND_HITSTUN) == 0) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	return grabbox->id;
@@ -311,17 +490,17 @@ int Battle::get_event_grab_collide_player(Fighter* attacker, Fighter* defender, 
 /// <returns>Either the first hitbox ID to successfully trigger a collision event, or HITBOX_KIND_MAX if a different hitbox ID must be checked.</returns>
 int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox) {
 	if (attacker->multihit_connected[hitbox->multihit] || attacker->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] != 0) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	if (defender->situation_kind == FIGHTER_SITUATION_GROUND && !(hitbox->hit_kind & HIT_KIND_GROUND)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->situation_kind == FIGHTER_SITUATION_AIR && !(hitbox->hit_kind & HIT_KIND_AIR)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 	if (defender->situation_kind == FIGHTER_SITUATION_DOWN && !(hitbox->hit_kind & HIT_KIND_DOWN)) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 
@@ -330,11 +509,11 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 		|| hurtbox->intangible_kind == INTANGIBLE_KIND_PROJECTILE
 		|| (hurtbox->intangible_kind == INTANGIBLE_KIND_SOFT
 		&& !(hitbox->hit_kind & HIT_KIND_SOFT_INTANGIBLE))) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	if (defender->situation_kind == FIGHTER_SITUATION_AIR && hitbox->juggle_max < defender->fighter_int[FIGHTER_INT_JUGGLE_VALUE]) {
-		return HITBOX_COUNT_MAX;
+		return -1;
 	}
 
 	//Then, check if the hurtbox is invincible. If it is, the attacker's entire attack has failed. This will be pretty rare tbh.
@@ -369,14 +548,12 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 			switch (hitbox->attack_height) {
 			case (ATTACK_HEIGHT_HIGH): {
 				if (defender->get_stick_dir() >= 4) {
-					defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 					return hitbox->id;
 				}
 			} break;
 			case (ATTACK_HEIGHT_LOW): {
 				if (defender->get_stick_dir() < 4) {
 			case (ATTACK_HEIGHT_MID): {
-				defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 				return hitbox->id;
 			}
 				}
@@ -387,7 +564,6 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 			//While not in blockstun, we need to specifically block using back or down back
 			if ((defender->get_stick_dir() == 4 && hitbox->attack_height != ATTACK_HEIGHT_LOW)
 				|| (defender->get_stick_dir() == 1 && hitbox->attack_height != ATTACK_HEIGHT_HIGH)) {
-				defender->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = true;
 				return hitbox->id;
 			}
 		}
@@ -402,8 +578,8 @@ int Battle::get_event_hit_collide_projectile(Projectile* attacker, Fighter* defe
 /// </summary>
 /// <returns>Nothing.</returns>
 void Battle::event_hit_collide_player() {
-	Hitbox* hitboxes[2] = { &(fighter[0]->hitboxes[fighter[1]->connected_hitbox]), &(fighter[1]->hitboxes[fighter[0]->connected_hitbox]) };
-	bool players_hit[2] = { hitboxes[1]->id != -1, hitboxes[0]->id != -1 };
+	Hitbox* hitboxes[2] = { fighter[1]->connected_hitbox, fighter[0]->connected_hitbox };
+	bool players_hit[2] = { hitboxes[1] != nullptr, hitboxes[0] != nullptr };
 	unsigned int post_hit_status[2] = { fighter[0]->status_kind, fighter[1]->status_kind };
 	if (players_hit[0] && players_hit[1]) { 
 		//First, we determine what to do if both people hit each other
@@ -445,7 +621,7 @@ void Battle::event_hit_collide_player() {
 				post_hit_status[i] = FIGHTER_STATUS_PARRY;
 				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			}
-			else if (fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
+			else if (true) { //BLOCK
 				fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[!i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 				fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitboxes[!i]->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 				fighter[!i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitboxes[!i]->blocklag;
@@ -467,12 +643,11 @@ void Battle::event_hit_collide_player() {
 					fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] - hitboxes[!i]->chip_damage, fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 				}
 				fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitboxes[!i]->block_pushback / fighter[i]->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-				fighter[i]->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = true;
 				post_hit_status[i] = FIGHTER_STATUS_BLOCKSTUN;
 				training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(hitboxes[!i]->blockstun), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			}
-			else if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED]) {
+			else if (!false) { //ARMOR
 				//If Attack Connected is false but this still got set off, that means that the opponent hit you while you had armor. In this situation,
 				//the attacker gets the same meter gain as if they got blocked, and the defender takes half the usual amount of chip damage. However, this
 				//chip damage is incapable of KOing the defender no matter what they got hit by.
@@ -543,7 +718,7 @@ void Battle::event_hit_collide_player() {
 					damage += accum_damage;
 				}
 				post_hit_status[i] = get_damage_status(fighter[i], hitboxes[!i], counterhit_val);
-				if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED]) {
+				if (!fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_HIT]) {
 					fighter[i]->fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitboxes[!i]->damage_scale;
 				}
 				fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
@@ -552,8 +727,8 @@ void Battle::event_hit_collide_player() {
 					fighter[i]->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = fighter[i]->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * fighter[!i]->facing_dir * 0.3;
 					fighter[i]->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 25.0;
 				}
-				fighter[i]->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] = 60;
-				if (fighter[i]->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
+				fighter[i]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
+				if (fighter[i]->fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
 					texts[!i].push_back(BattleText());
 					texts[!i].back().init(&message_font, "Punish", 40, fighter[!i], glm::vec2(275.0, 300.0));
 				}
@@ -603,8 +778,7 @@ void Battle::event_hit_collide_player() {
 				);
 				training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 
-				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_SUCCEEDED] = false;
-				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_CONNECTED] = true;
+				fighter[!i]->fighter_flag[FIGHTER_FLAG_ATTACK_HIT] = true;
 			}
 		}
 	}
@@ -620,9 +794,9 @@ void Battle::event_hit_collide_player() {
 /// Handle any potential grabbox collision events between two Fighters on this frame and change statuses accordingly.
 /// </summary>
 bool Battle::event_grab_collide_player() {
-	Grabbox* grabboxes[2] = { &(fighter[0]->grabboxes[fighter[1]->connected_grabbox]), &(fighter[1]->grabboxes[fighter[0]->connected_grabbox]) };
-	bool players_hit[2] = { grabboxes[1]->id != -1, grabboxes[0]->id != -1 };
-	bool players_tech[2] = { !grabboxes[1]->grabbox_kind & GRABBOX_KIND_NOTECH, !grabboxes[0]->grabbox_kind & GRABBOX_KIND_NOTECH };
+	Grabbox* grabboxes[2] = { fighter[1]->connected_grabbox, fighter[0]->connected_grabbox };
+	bool players_hit[2] = { grabboxes[1] != nullptr, grabboxes[0] != nullptr };
+	bool players_tech[2] = { (players_hit[0] && !grabboxes[1]->grabbox_kind & GRABBOX_KIND_NOTECH), (players_hit[1] && !grabboxes[0]->grabbox_kind & GRABBOX_KIND_NOTECH) };
 	if (players_hit[0] && players_hit[1]) {
 		if (players_tech[0] == players_tech[1]) {
 			for (int i = 0; i < 2; i++) {
@@ -688,7 +862,7 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 			p2_status_post_hit = FIGHTER_STATUS_PARRY;
 			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: 0", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
-		else if (p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN]) {
+		else if (true) { //BLOCK
 			p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p1->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 			p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, p2->fighter_float[FIGHTER_FLOAT_SUPER_METER] + p1_hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 			p1_projectile->projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = p1_hitbox->blocklag;
@@ -710,7 +884,6 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				p2->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, p2->fighter_float[FIGHTER_FLOAT_HEALTH] - p1_hitbox->chip_damage, p2->fighter_float[FIGHTER_FLOAT_HEALTH]);
 			}
 			p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = p1_hitbox->block_pushback / p2->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-			p2->fighter_flag[FIGHTER_FLAG_ENTER_BLOCKSTUN] = false;
 			p2_status_post_hit = FIGHTER_STATUS_BLOCKSTUN;
 			training_info[p1->id].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(p1_hitbox->blockstun), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
@@ -782,8 +955,8 @@ void Battle::event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* 
 				p2->fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = p2->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * p1->facing_dir * 0.3;
 				p2->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 25.0;
 			}
-			p2->fighter_int[FIGHTER_INT_POST_HITSTUN_TIMER] = 60;
-			if (p2->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
+			p2->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
+			if (p2->fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
 				texts[p1->id].push_back(BattleText());
 				texts[p1->id].back().init(&message_font, "Punish", 40, p2, glm::vec2(275.0, 300.0));
 			}
@@ -862,33 +1035,27 @@ int Battle::can_counterhit(Fighter* defender, Hitbox* hitbox) {
 		return 0;
 	}
 	switch (hitbox->counterhit_type) {
-		case (COUNTERHIT_TYPE_NORMAL):
+		case (COUNTERHIT_TYPE_COUNTER):
 		default: { 
 			//If the counterhit flag is on, apply the counterhit multipliers and counterhit status
 			return (int)(defender->fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) * 2;
 		} break;
-		case (COUNTERHIT_TYPE_PUNISH): { 
+		case (COUNTERHIT_TYPE_ANY): { 
 			//Apply the counterhit multipliers and status if either the counterhit flag or the endlag flag is on
 			return (int)(defender->fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] 
-				|| defender->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) * 2;
+				|| defender->fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) * 2;
 		} break;
-		case (COUNTERHIT_TYPE_COUNTER_ONLY): {
-			//Apply the counterhit multipliers as long as the counterhit flag is on, but only apply the status if the endlag
-			//flag is OFF
-			return (int)(defender->fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) * 2
-				- (int)(defender->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]);
-		} break;
-		case (COUNTERHIT_TYPE_PUNISH_ONLY): {
+		case (COUNTERHIT_TYPE_PUNISH): {
 			//Apply the counterhit multipliers and status if the endlag flag is on, apply only the
 			//mutlipliers if the counterhit flag is on
-			if (defender->fighter_flag[FIGHTER_FLAG_IN_ENDLAG]) {
+			if (defender->fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
 				return 2;
 			}
 			else {
 				return (int)defender->fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT];
 			}
 		} break;
-		case (COUNTERHIT_TYPE_AERIAL_ONLY): {
+		case (COUNTERHIT_TYPE_JUMP_COUNTER): {
 			//Apply the counterhit multipliers as long as the counterhit flag is on, but only apply the status if the opponent
 			//is in the air
 			if (defender->fighter_flag[FIGHTER_FLAG_ENABLE_JUMP_COUNTERHIT]) {

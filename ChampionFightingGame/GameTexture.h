@@ -8,20 +8,6 @@
 
 class Shader;
 
-enum {
-    GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT,
-    GAME_TEXTURE_ORIENTATION_BOTTOM_MIDDLE,
-    GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT,
-    GAME_TEXTURE_ORIENTATION_MIDDLE_LEFT,
-    GAME_TEXTURE_ORIENTATION_MIDDLE,
-    GAME_TEXTURE_ORIENTATION_MIDDLE_RIGHT,
-    GAME_TEXTURE_ORIENTATION_TOP_LEFT,
-    GAME_TEXTURE_ORIENTATION_TOP_MIDDLE,
-    GAME_TEXTURE_ORIENTATION_TOP_RIGHT,
-
-    GAME_TEXTURE_ORIENTATION_MAX,
-};
-
 class GameTexture {
 public:
     GameTexture();
@@ -84,8 +70,9 @@ public:
     void render();
     void render_prepared();
 
-    void set_sprite(int section);
+    void set_sprite(int sprite);
     void next_sprite();
+    void prev_sprite();
 
     void update_text(Font &font, const std::string& text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void update_buffer_data();
@@ -114,7 +101,7 @@ public:
     glm::vec3 pos = glm::vec3(0.0);
     glm::vec3 rot = glm::vec3(0.0);
     int sprite_index;
-    int orientation = GAME_TEXTURE_ORIENTATION_MIDDLE;
+    int orientation = SCREEN_TEXTURE_ORIENTATION_MIDDLE;
     bool loaded = false;
     bool using_resource = false;
     std::string name = "";

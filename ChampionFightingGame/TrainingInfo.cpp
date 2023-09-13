@@ -28,24 +28,24 @@ void InputVisualizer::init(Fighter* fighter, Font* font, bool keep_frames) {
 		}
 		for (int i = 0; i < 6; i++) {
 			buttons[i].set_pos(glm::vec3(x, 50.0, 0.0));
-			buttons[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			buttons[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			buttons[i].set_scale(0.2);
 		}
 		for (int i = 0; i < 9; i++) {
 			stick[i].init("resource/game_state/battle/ui/training/" + std::to_string(i + 1) + ".png");
 			stick[i].set_pos(glm::vec3(x, 50.0, 0.0));
-			stick[i].set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+			stick[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			stick[i].set_scale(0.2);
 		}
 		background.set_pos(glm::vec3(x, 50.0, 0.0));
-		background.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		background.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		background.set_scale(0.2);
 		frame_timer = 1;
 		num_frames.init(*font, "1", glm::vec4(255.0),
 			glm::vec4(0.0, 0.0, 0.0, 1.0)
 		);
 		num_frames.set_pos(glm::vec3(x + 200.0, 50.0, 0.0));
-		num_frames.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		num_frames.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 
 
 	}
@@ -59,21 +59,21 @@ void InputVisualizer::init(Fighter* fighter, Font* font, bool keep_frames) {
 		}
 		background.set_pos(glm::vec3(925.0, 0.0, 0.0));
 		if (fighter->id) {
-			background.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+			background.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 			for (int i = 0; i < 9; i++) {
-				stick[i].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+				stick[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 			}
 			for (int i = 0; i < 6; i++) {
-				buttons[i].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+				buttons[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 			}
 		}
 		else {
-			background.set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+			background.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 			for (int i = 0; i < 9; i++) {
-				stick[i].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				stick[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 			}
 			for (int i = 0; i < 6; i++) {
-				buttons[i].set_orientation(GAME_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				buttons[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 			}
 		}
 	}
@@ -119,11 +119,11 @@ void TrainingInfo::init(Fighter* fighter, Font* font) {
 	stun_frames.init(*font, "Stun Frames: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 	frame_advantage.init(*font, "Frame Advantage: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 
-	hit_frame.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	damage.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	combo_damage.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	stun_frames.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
-	frame_advantage.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+	hit_frame.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	damage.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	combo_damage.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	stun_frames.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	frame_advantage.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 
 	background_texture.set_pos(glm::vec3(350.0, 150.0, 0.0));
 	background_texture.set_scale(0.7);
@@ -133,7 +133,7 @@ void TrainingInfo::init(Fighter* fighter, Font* font) {
 	stun_frames.set_scale(0.8);
 	frame_advantage.set_scale(0.8);
 	if (fighter->id) {
-		background_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_RIGHT);
+		background_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		hit_frame.set_pos(glm::vec3(2680.0, 280.0, 0.0));
 		damage.set_pos(glm::vec3(2680.0, 350.0, 0.0));
 		combo_damage.set_pos(glm::vec3(2680.0, 420.0, 0.0));
@@ -141,7 +141,7 @@ void TrainingInfo::init(Fighter* fighter, Font* font) {
 		frame_advantage.set_pos(glm::vec3(2680.0, 560.0, 0.0));
 	}
 	else {
-		background_texture.set_orientation(GAME_TEXTURE_ORIENTATION_TOP_LEFT);
+		background_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		hit_frame.set_pos(glm::vec3(440.0, 280.0, 0.0));
 		damage.set_pos(glm::vec3(440.0, 350.0, 0.0));
 		combo_damage.set_pos(glm::vec3(440.0, 420.0, 0.0));

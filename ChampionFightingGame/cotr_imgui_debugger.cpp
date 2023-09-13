@@ -102,13 +102,12 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				"HIT_STATUS_LAUNCH",
 				"HIT_STATUS_KNOCKDOWN"
 			};
-			const char* counterhit_types[6]{
+			const char* counterhit_types[5]{
 				"COUNTERHIT_TYPE_NONE",
-				"COUNTERHIT_TYPE_NORMAL",
+				"COUNTERHIT_TYPE_COUNTER",
+				"COUNTERHIT_TYPE_ANY",
 				"COUNTERHIT_TYPE_PUNISH",
-				"COUNTERHIT_TYPE_COUNTER_ONLY",
-				"COUNTERHIT_TYPE_PUNISH_ONLY",
-				"COUNTERHIT_TYPE_AERIAL_ONLY"
+				"COUNTERHIT_TYPE_JUMP_COUNTER"
 			};
 			const char* clank_kinds[3]{
 				"CLANK_KIND_NORMAL",
@@ -152,7 +151,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			objects.push_back(battle->fighter[0]);
 			objects.push_back(battle->fighter[1]);
 			for (int i = 0; i < 2; i++) {
-				for (int i2 = 0; i2 < battle->fighter[i]->num_projectiles; i2++) {
+				for (int i2 = 0; i2 < battle->fighter[i]->projectiles.size(); i2++) {
 					if (battle->fighter[i]->projectiles[i2]->active) {
 						items.push_back("Fighter " + std::to_string(i + 1) +
 							" Projectile " + std::to_string(i2 + 1));
@@ -284,7 +283,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 							ImGui::EndCombo();
 						}
 						if (ImGui::BeginCombo(("Counterhit Type" + internal_label).c_str(), current_counterhit_type)) {
-							for (size_t i2 = 0; i2 < 6; i2++) {
+							for (size_t i2 = 0; i2 < 5; i2++) {
 								bool selected = current_counterhit_type == counterhit_types[i2];
 								if (ImGui::Selectable(counterhit_types[i2], selected)) {
 									current_counterhit_type = counterhit_types[i2];

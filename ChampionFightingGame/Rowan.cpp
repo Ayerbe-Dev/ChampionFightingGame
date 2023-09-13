@@ -16,7 +16,7 @@ Rowan::Rowan(Player* player) {
 	fighter_int.resize(CHARA_ROWAN_INT_MAX, 0);
 	fighter_float.resize(CHARA_ROWAN_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ROWAN_FLAG_MAX, false);
-	projectiles[0] = create_projectile(PROJECTILE_KIND_ROWAN_FIREBALL, player, this);
+	projectiles.push_back(create_projectile(PROJECTILE_KIND_ROWAN_FIREBALL, player, this));
 	init();
 }
 

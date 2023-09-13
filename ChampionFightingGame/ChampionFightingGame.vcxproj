@@ -224,6 +224,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Anlst.cpp" />
     <ClCompile Include="Ayrbt.cpp" />
     <ClCompile Include="BattleObjectAnimationFunctions.cpp" />
+    <ClCompile Include="BattleObjectCollisionFunctions.cpp" />
+    <ClCompile Include="BattleObjectStatusFunctions.cpp" />
     <ClCompile Include="Dingo.cpp" />
     <ClCompile Include="DingoMoves.cpp" />
     <ClCompile Include="DingoStatus.cpp" />
@@ -242,6 +244,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="EasyGifReader.cpp" />
     <ClCompile Include="EricFireballMoves.cpp" />
     <ClCompile Include="EricFireballStatus.cpp" />
+    <ClCompile Include="FighterCollisionFunctions.cpp" />
     <ClCompile Include="FighterDataFunctions.cpp" />
     <ClCompile Include="BattleObjectBlockboxFunctions.cpp" />
     <ClCompile Include="Bone.cpp" />
@@ -346,6 +349,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="NightsabreMoves.cpp" />
     <ClCompile Include="NightsabreStatus.cpp" />
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
+    <ClCompile Include="ProjectileCollisionFunctions.cpp" />
+    <ClCompile Include="ScreenText.cpp" />
+    <ClCompile Include="ScreenTexture.cpp" />
+    <ClCompile Include="TextUI.cpp" />
+    <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Wallace.cpp" />
     <ClCompile Include="WallaceMoves.cpp" />
     <ClCompile Include="WallaceStatus.cpp" />
@@ -424,6 +432,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Vesuvius.cpp" />
     <ClCompile Include="VesuviusMoves.cpp" />
     <ClCompile Include="VesuviusStatus.cpp" />
+    <ClCompile Include="WorldTexture.cpp" />
     <ClCompile Include="Zyair.cpp" />
     <ClCompile Include="ZyairMoves.cpp" />
     <ClCompile Include="ZyairStatus.cpp" />
@@ -540,6 +549,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ReadBytes.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="ScreenText.h" />
+    <ClInclude Include="ScreenTexture.h" />
     <ClInclude Include="ScriptArg.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShadowMap.h" />
@@ -577,6 +588,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="NightsabreFloat.h" />
     <ClInclude Include="NightsabreInt.h" />
     <ClInclude Include="NightsabreStatus.h" />
+    <ClInclude Include="TextUI.h" />
+    <ClInclude Include="UIManager.h" />
     <ClInclude Include="Wallace.h" />
     <ClInclude Include="BattleObject.h" />
     <ClInclude Include="CharaKind.h" />
@@ -669,6 +682,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="VesuviusFloat.h" />
     <ClInclude Include="VesuviusInt.h" />
     <ClInclude Include="VesuviusStatus.h" />
+    <ClInclude Include="WorldTexture.h" />
     <ClInclude Include="Zyair.h" />
     <ClInclude Include="ZyairConstants.h" />
     <ClInclude Include="ZyairFlag.h" />

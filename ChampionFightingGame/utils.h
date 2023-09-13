@@ -4,18 +4,13 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 #define WINDOW_DEPTH 2000
-#define WINDOW_FACTOR WINDOW_HEIGHT / WINDOW_WIDTH
-#define WINDOW_W_FACTOR WINDOW_WIDTH / WINDOW_HEIGHT
+#define WINDOW_FACTOR WINDOW_WIDTH / WINDOW_HEIGHT
 #define SDL_WINDOW_WIDTH (WINDOW_WIDTH / 2)
 #define SDL_WINDOW_HEIGHT (WINDOW_HEIGHT / 2)
 
-#define FONT_COUNT 2
-#define MAX_SOUNDS 20
-#define MAX_SHADERS 4
 #define FORCE_INLINE __forceinline
 #define NO_INLINE __declspec(noinline)
 
-int twoPointDistance(int x0, int y0, int x1, int y1);
 void wait_ms(double ms_duration = 16.667, bool process_time = true);
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);

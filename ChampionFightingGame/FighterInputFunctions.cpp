@@ -353,7 +353,7 @@ int Fighter::try_ex(bool punch) {
 	unsigned int no_heavy_ex_buttons[2];
 	no_heavy_ex_buttons[0] = punch ? BUTTON_LP : BUTTON_LK;
 	no_heavy_ex_buttons[1] = punch ? BUTTON_MP : BUTTON_MK;
-	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= get_param_int(PARAM_FIGHTER, "ex_meter_size") / (get_param_int(PARAM_FIGHTER, "ex_meter_bars") / 2)) {
+	if (has_meter(2)) {
 		return SPECIAL_LEVEL_EX;
 	}
 	else if (check_button_input(no_heavy_ex_buttons, 2, 2)) {

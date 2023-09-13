@@ -1,7 +1,10 @@
 #include "AIManager.h"
 
 AIInfo::AIInfo() {
-
+	frame = 0.0;
+	rate = 0.0;
+	x_pos = 0.0;
+	y_pos = 0.0;
 }
 
 AIInfo::AIInfo(float x_pos, float y_pos, std::string anim_kind, float frame, float rate) {

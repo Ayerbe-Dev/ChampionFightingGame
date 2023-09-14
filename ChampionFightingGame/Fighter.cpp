@@ -269,10 +269,6 @@ void Fighter::process_post_status() {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
 	}
 
-	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] == 0 && status_kind != FIGHTER_STATUS_KNOCKDOWN) {
-		fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
-	}
-
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].active) {
 			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] = true;

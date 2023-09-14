@@ -1708,7 +1708,7 @@ void Fighter::enter_status_wakeup() {
 				change_anim("wakeup_back_up");
 			} break;
 			default: {
-				change_anim("wakeup_down");
+				change_anim("wakeup_up");
 			} break;
 		}
 	}

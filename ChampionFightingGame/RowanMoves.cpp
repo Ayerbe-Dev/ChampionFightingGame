@@ -1105,7 +1105,18 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-74, -11), glm::vec2(91, 136), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
 		});
 	});
-	script("knockdown_start", [this]() {
+	script("launch_hkd", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-74, -11), glm::vec2(91, 136), HURTBOX_KIND_NORMAL, false, INTANGIBLE_KIND_NONE);
+		});
+	});
+	script("knockdown_start_up", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 90.0));
+		});
+	});
+	script("knockdown_start_down", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 90.0));
 		});
@@ -1130,12 +1141,22 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 90.0));
 		});
 	});
-	script("wakeup_fast", [this]() {
+	script("wakeup_fast_up", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 90.0));
 		});
 	});
-	script("wakeup_back", [this]() {
+	script("wakeup_fast_down", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 90.0));
+		});
+	});
+	script("wakeup_back_up", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 160.0));
+		});
+	});	
+	script("wakeup_back_down", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-50.0, 0.0), glm::vec2(100.0, 160.0));
 		});

@@ -33,7 +33,7 @@ ModelData::ModelData() {
 	skeleton_loaded = false;
 }
 
-ModelData::ModelData(std::string path) {
+ModelData::ModelData(std::string path) { 
 	load_model(path);
 }
 

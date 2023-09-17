@@ -29,7 +29,6 @@
 #include "SoundManager.h"
 #include "ThreadManager.h"
 #include "stb_image.h"
-#include "tinyimageloader/TinyImageLoader.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
 //undefine it before we include Loader.h.
 #undef LoadIcon
@@ -49,7 +48,6 @@ int main() {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
-	til::TIL_Init();
 
 	//Initialize all of the singletons
 
@@ -111,7 +109,6 @@ int main() {
 	sound_manager->destroy_instance();
 	thread_manager->destroy_instance();
 
-	til::TIL_ShutDown();
 	SDL_Quit();
 
 	return 0;

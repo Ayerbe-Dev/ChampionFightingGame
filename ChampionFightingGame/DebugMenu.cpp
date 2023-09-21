@@ -39,11 +39,11 @@ void debug_main() {
 	render_manager->update_shader_shadows();
 
 	cotr_imgui_init();
-	while (*debug->looping) {
-		debug->frame_delay();
+	while (debug->looping) {
+		game_manager->frame_delay();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
+		render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
 		go1.animate();
 
@@ -73,7 +73,7 @@ void debug_main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 		render_manager->g_buffer.render();
-		render_manager->gbuffer_texture->render();
+		render_manager->gbuffer_texture.render();
 		glDepthMask(GL_FALSE);
 
 		cotr_imgui_debug_dbmenu(debug);
@@ -91,7 +91,7 @@ void debug_main() {
 
 DebugMenu::DebugMenu() {
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_menu_info(this);
+	game_manager->set_game_state(this);
 
 	std::string crash_reason;
 	while (game_manager->get_crash_log(&crash_reason)) {

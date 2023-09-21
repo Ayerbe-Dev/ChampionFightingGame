@@ -34,16 +34,23 @@ bool Fighter::common_ground_status_act(bool crouch) {
 			if (check_button_input(all_buttons, 6)) {
 				return change_status(FIGHTER_STATUS_TAUNT);
 			}
-			if (check_button_input(BUTTON_LP) && check_button_on(BUTTON_LK)
+			unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)
+				|| check_button_input(BUTTON_LP) && check_button_on(BUTTON_LK)
 				|| check_button_input(BUTTON_LK) && check_button_on(BUTTON_LP)) {
 				return change_status(FIGHTER_STATUS_GRAB);
 			}
-			if (check_button_input(BUTTON_MP) && check_button_on(BUTTON_MK)
+			unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+			if (check_button_input(parry_buttons, 2)
+				|| check_button_input(BUTTON_MP) && check_button_on(BUTTON_MK)
 				|| check_button_input(BUTTON_MK) && check_button_on(BUTTON_MP)) {
 				return change_status(FIGHTER_STATUS_PARRY_START);
 			}
-			if ((check_button_input(BUTTON_HP) && check_button_on(BUTTON_HK)
-			|| check_button_input(BUTTON_HK) && check_button_on(BUTTON_HP)) && player->control_type == CONTROL_TYPE_ADVANCE) {
+			unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
+			if ((check_button_input(advance_buttons, 2)
+				|| check_button_input(BUTTON_HP) && check_button_on(BUTTON_HK)
+				|| check_button_input(BUTTON_HK) && check_button_on(BUTTON_HP)) 
+				&& player->control_type == CONTROL_TYPE_ADVANCE) {
 				switch (stick_dir) {
 					case (6): {
 						if (has_meter(1)) {
@@ -71,7 +78,38 @@ bool Fighter::common_ground_status_act(bool crouch) {
 			if (stick_dir < 4) {
 				fighter_int[FIGHTER_INT_ATTACK_KIND] += ATTACK_KIND_CLP;
 			}
-			return change_status(FIGHTER_STATUS_ATTACK, true, false);
+		
+			if (change_status(FIGHTER_STATUS_ATTACK, true, false)) {
+				//We don't enable these for chained normals, so it can't just go in the move scripts
+				//or the attack status.
+				switch (fighter_int[FIGHTER_INT_ATTACK_KIND]) {
+					case (ATTACK_KIND_LP):
+					case (ATTACK_KIND_LK):
+					case (ATTACK_KIND_CLP):
+					case (ATTACK_KIND_CLK): {
+						enable_cancel(CANCEL_CAT_WHIFF, CANCEL_KIND_GRAB);
+					} break;
+					case (ATTACK_KIND_MP):
+					case (ATTACK_KIND_MK):
+					case (ATTACK_KIND_CMP):
+					case (ATTACK_KIND_CMK): {
+						enable_cancel(CANCEL_CAT_WHIFF, CANCEL_KIND_PARRY_START);
+					} break;
+					case (ATTACK_KIND_HP):
+					case (ATTACK_KIND_HK):
+					case (ATTACK_KIND_CHP):
+					case (ATTACK_KIND_CHK): {
+						enable_cancel(CANCEL_CAT_WHIFF, CANCEL_KIND_ADVANCE);
+					} break;
+					default: {
+
+					} break;
+				}
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		switch (stick_dir) {
 			case (1):
@@ -130,13 +168,17 @@ bool Fighter::common_air_status_act() {
 			check_button_input(BUTTON_HK)
 		};
 		if (std::find(std::begin(inputs), std::end(inputs), true) != std::end(inputs)) {
-			if (check_button_input(BUTTON_LP) && check_button_on(BUTTON_LK)
+			unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+			if (check_button_input(grab_buttons, 2)
+				|| check_button_input(BUTTON_LP) && check_button_on(BUTTON_LK)
 				|| check_button_input(BUTTON_LK) && check_button_on(BUTTON_LP)) {
-				return change_status(FIGHTER_STATUS_GRAB_AIR, false, false);
+				return change_status(FIGHTER_STATUS_GRAB_AIR);
 			}
-			if (check_button_input(BUTTON_MP) && check_button_on(BUTTON_MK)
+			unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+			if (check_button_input(parry_buttons, 2)
+				|| check_button_input(BUTTON_MP) && check_button_on(BUTTON_MK)
 				|| check_button_input(BUTTON_MK) && check_button_on(BUTTON_MP)) {
-				return change_status(FIGHTER_STATUS_PARRY_START, false, false);
+				return change_status(FIGHTER_STATUS_PARRY_START);
 			}
 			for (int i = 5; i >= 0; i--) {
 				if (inputs[i]) {
@@ -441,6 +483,9 @@ void Fighter::enter_status_crouchu() {
 void Fighter::exit_status_crouchu() {}
 
 void Fighter::status_jumpsquat() {
+	if (is_status_end(FIGHTER_STATUS_JUMP)) {
+		return;
+	}
 	if (frame < 3.0) {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
@@ -467,9 +512,6 @@ void Fighter::status_jumpsquat() {
 	else if (stick_dir == 0) {
 		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
 	}
-	if (is_status_end(FIGHTER_STATUS_JUMP)) {
-		return;
-	}
 }
 
 void Fighter::enter_status_jumpsquat() {
@@ -488,7 +530,7 @@ void Fighter::status_jump() {
 		return;
 	}
 	common_air_status_general();
-	if (is_status_end(FIGHTER_STATUS_FALL, false)) {
+	if (is_status_end(FIGHTER_STATUS_FALL)) {
 		return;
 	}
 }
@@ -619,11 +661,6 @@ void Fighter::status_attack() {
 	if (chara_status_attack()) {
 		return;
 	}
-	for (int i = 0; i < 12; i++) {
-		if (attack_cancel(i)) {
-			return;
-		}
-	}
 	if (fighter_int[FIGHTER_INT_ATTACK_KIND] > ATTACK_KIND_HK 
 		&& fighter_int[FIGHTER_INT_ATTACK_KIND] != ATTACK_KIND_OTHER) { //If we're in a crouching attack, change to the crouch animation on animation end. 
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
@@ -635,53 +672,36 @@ void Fighter::status_attack() {
 			return;
 		}
 	}
-	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
+	unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
+	if (is_enable_cancel(CANCEL_KIND_GRAB) && check_button_input(grab_buttons, 2)) {
 		change_status(FIGHTER_STATUS_GRAB);
 		return;
 	}
-	switch (fighter_int[FIGHTER_INT_ATTACK_KIND]) {
-		case ATTACK_KIND_MP:
-		case ATTACK_KIND_MK:
-		case ATTACK_KIND_CMP:
-		case ATTACK_KIND_CMK: {
-			if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
-				if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
-					change_status(FIGHTER_STATUS_PARRY_START);
-					return;
-				}
-			}
-		} break;
-		case ATTACK_KIND_HP:
-		case ATTACK_KIND_HK:
-		case ATTACK_KIND_CHP:
-		case ATTACK_KIND_CHK: {
-			if (check_button_on(BUTTON_HP) && check_button_on(BUTTON_HK) && player->control_type == CONTROL_TYPE_ADVANCE) {
-				if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
-					if (get_stick_dir() == 6) {
-						if (has_meter(1)) {
-							change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false);
-							return;
-						}
-					}
-					else if (get_stick_dir() == 4) {
-						if (has_meter(1)) {
-							change_status(FIGHTER_STATUS_ADVANCE_BACK, true, false);
-							return;
-						}
-					}
-					else {
-						if (has_meter(1)) {
-							change_status(FIGHTER_STATUS_ADVANCE, true, false);
-							return;
-						}
-					}
-				}
-			}
-		} break;
-		case ATTACK_KIND_OTHER:
-		default: {
-
-		} break;
+	unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
+	if (is_enable_cancel(CANCEL_KIND_PARRY_START) && check_button_input(parry_buttons, 2)) {
+		change_status(FIGHTER_STATUS_PARRY_START);
+		return;
+	}
+	unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
+	if (is_enable_cancel(CANCEL_KIND_ADVANCE) && check_button_input(advance_buttons, 2)
+		&& has_meter(1) && player->control_type == CONTROL_TYPE_ADVANCE) {
+		if (get_stick_dir() == 6) {
+			change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false);
+			return;
+		}
+		else if (get_stick_dir() == 4) {
+			change_status(FIGHTER_STATUS_ADVANCE_BACK, true, false);
+			return;
+		}
+		else {
+			change_status(FIGHTER_STATUS_ADVANCE, true, false);
+			return;
+		}
+	}
+	for (int i = 0; i < 12; i++) {
+		if (attack_cancel(i)) {
+			return;
+		}
 	}
 	if (get_stick_dir() > 6) {
 		buffer_status_pre_enable_cancel(FIGHTER_STATUS_JUMPSQUAT, CANCEL_KIND_JUMP);
@@ -782,17 +802,13 @@ void Fighter::status_attack_air() {
 	if (is_status_end()) {
 		return;
 	}
-	if (can_kara() && check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK)) {
+	if (check_button_on(BUTTON_LP) && check_button_on(BUTTON_LK) && is_enable_cancel(CANCEL_KIND_GRAB)) {
 		change_status(FIGHTER_STATUS_GRAB_AIR);
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_MK || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_CMK) {
-		if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK)) {
-			if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] && !fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
-				change_status(FIGHTER_STATUS_PARRY_START);
-				return;
-			}
-		}
+	if (check_button_on(BUTTON_MP) && check_button_on(BUTTON_MK) && is_enable_cancel(CANCEL_KIND_PARRY_START)) {
+		change_status(FIGHTER_STATUS_PARRY_START);
+		return;
 	}
 	common_air_status_general();
 }

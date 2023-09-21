@@ -26,29 +26,29 @@ void menu_main() {
 
 	MainMenu *main_menu = new MainMenu;
 
-	while (*main_menu->looping) {
-		main_menu->frame_delay_check_fps();
+	while (main_menu->looping) {
+		game_manager->frame_delay_check_fps();
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events();
+		render_manager->handle_window_events();
 
 		main_menu->process_game_state();
 		main_menu->render_game_state();
 
 		SDL_GL_SwapWindow(render_manager->window);
 
-		if (main_menu->sub_state != GAME_SUBSTATE_NONE) {
-			if (game_manager->game_substate_main[main_menu->sub_state] != nullptr) {
-				game_manager->game_substate_main[main_menu->sub_state]();
+		if (main_menu->sub_state != GAME_STATE_NONE) {
+			if (game_manager->game_main[main_menu->sub_state] != nullptr) {
+				game_manager->game_main[main_menu->sub_state]();
 			}
 			else {
-				game_manager->add_crash_log("Error: Game Substate was " + std::to_string(main_menu->sub_state) + " (not GAME_SUBSTATE_NONE) but there was no associated function!");
+				game_manager->add_crash_log("Error: Game State was " + std::to_string(main_menu->sub_state) + " (not GAME_SUBSTATE_NONE) but there was no associated function!");
 				game_manager->update_state(GAME_STATE_DEBUG_MENU);
 			}
-			main_menu->sub_state = GAME_SUBSTATE_NONE;
+			main_menu->sub_state = GAME_STATE_NONE;
 		}
 	}
 
@@ -64,7 +64,7 @@ MainMenu::MainMenu() {
 	menu_frame = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_menu_info(this);
+	game_manager->set_game_state(this);
 
 	RenderManager* render_manager = RenderManager::get_instance();
 
@@ -235,78 +235,63 @@ MainMenu::MainMenu() {
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_LOBBY].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
+		this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_QUEUE].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_COACH].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_STORY].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_ARCADE].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_TRAINING].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_TRAINING);
-		*this->looping = false;
 	};
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVP].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_NORMAL);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVC].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_1CPU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_TOURNAMENT].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_CONTROLS].select_event = [this](MenuObject* menu_object) {
-
+		this->update_state(GAME_STATE_DEBUG_MENU);
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_GRAPHICS].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_AUDIO].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
+		
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[3].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[4].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_SOUND_TEST].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_GALLERY].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[2].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[3].select_event = [this](MenuObject* menu_object) {
 		this->update_state(GAME_STATE_DEBUG_MENU);
-		*this->looping = false;
 	};
 
 	table.init("resource/game_state/menu/main/SubMenu.png");
@@ -335,7 +320,7 @@ void MainMenu::process_main() {
 		game_manager->player[i]->controller.poll_buttons();
 	}
 
-	game_manager->handle_menus();
+	game_manager->process_game_state_events();
 
 	if (menu_level == MENU_LEVEL_TOP) {
 		if (menu_frame > 0) {
@@ -443,8 +428,7 @@ void MainMenu::event_right_press() {
 }
 
 void MainMenu::event_start_press() {
-	*game_state = GAME_STATE_DEBUG_MENU;
-	*looping = false;
+	update_state(GAME_STATE_DEBUG_MENU);
 }
 
 void MainMenu::event_select_press() {
@@ -460,7 +444,6 @@ void MainMenu::event_select_press() {
 void MainMenu::event_back_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
 		update_state(GAME_STATE_TITLE_SCREEN);
-		*looping = false;
 	}
 	else {
 		table.set_target_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0), 6);

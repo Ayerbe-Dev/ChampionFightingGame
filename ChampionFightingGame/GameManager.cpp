@@ -1,120 +1,91 @@
 #include "GameManager.h"
+#include "FontManager.h"
 #include "GameStates.h"
-#include "RenderManager.h"
+#include "utils.h"
 
 GameManager::GameManager() {
-	player[0] = new Player(0);
-	player[1] = new Player(1);
+	for (int i = 0; i < 2; i++) {
+		player[i] = new Player(i);
+		u_hold_frames[i] = 0;
+		d_hold_frames[i] = 0;
+		l_hold_frames[i] = 0;
+		r_hold_frames[i] = 0;
+	}
 	for (int i = 0; i < GAME_STATE_MAX; i++) {
 		game_main[i] = nullptr;
 	}
-	for (int i = 0; i < GAME_SUBSTATE_MAX; i++) {
-		game_substate_main[i] = nullptr;
-	}
-	set_game_state_functions();
-
-	game_state = GAME_STATE_DEBUG_MENU;
-	prev_game_state = game_state;
-	game_context = GAME_CONTEXT_NORMAL;
-	prev_game_context = game_context;
-	render_manager = RenderManager::get_instance();
-}
-
-void GameManager::set_game_state_functions() {
 	game_main[GAME_STATE_BATTLE] = &battle_main;
 	game_main[GAME_STATE_CHARA_SELECT] = &chara_select_main;
 	game_main[GAME_STATE_STAGE_SELECT] = &stage_select_main;
 	game_main[GAME_STATE_DEBUG_MENU] = &debug_main;
 	game_main[GAME_STATE_MENU] = &menu_main;
 	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
+	game_main[GAME_STATE_CONTROLS] = &controls_main;
+	game_main[GAME_STATE_PAUSE_BATTLE] = &pause_battle_main;
 
-	game_substate_main[GAME_SUBSTATE_CONTROLS] = &controls_main;
-	game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE] = &pause_battle_main;
+	next_game_state = GAME_STATE_DEBUG_MENU;
+	next_game_context = GAME_CONTEXT_NORMAL;
 
+	FontManager* font_manager = font_manager->get_instance();
+	average_ticks.reserve(10000);
+	frame = 0;
+	fps = 60;
+	prev_fps = 0;
+	fps_font = font_manager->load_font("FiraCode", 12);
+	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
+	fps_counter.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_counter.set_pos(glm::vec3(0.0, -10.0, 0.0));
+	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
+	fps_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	fps_texture.set_pos(glm::vec3(80.0, -10.0, 0.0));
 }
 
-void GameManager::update_state(int game_state, int game_context) {
-	if (game_state != GAME_STATE_MAX) {
-		if (game_state != this->game_state) {
-			prev_game_state = this->game_state;
-			this->game_state = game_state;
+void GameManager::update_state(int next_game_state, int next_game_context) {
+	if (next_game_state != GAME_STATE_MAX) {
+		if (next_game_state != this->next_game_state) {
+			this->next_game_state = next_game_state;
 		}
-		if (game_state == GAME_STATE_CLOSE) {
-			for (int i = 0; i < MAX_LAYERS; i++) {
-				looping[i] = false;
+		if (next_game_state == GAME_STATE_CLOSE) {
+			for (int i = 0; i < game_state.size(); i++) {
+				game_state[i]->looping = false;
 			}
 		}
 		else {
-			looping[layer] = false;
+			game_state.back()->looping = false;
 		}
 	}
-	if (game_context != GAME_CONTEXT_MAX) {
-		if (game_context != this->game_context) {
-			prev_game_context = this->game_context;
-			this->game_context = game_context;
+	if (next_game_context != GAME_CONTEXT_MAX) {
+		if (next_game_context != this->next_game_context) {
+			this->next_game_context = next_game_context;
 		}
 	}
 }
 
-void GameManager::set_menu_info(GameState* menu_target, int init_hold_frames, int hold_rate) {
+void GameManager::set_game_state(GameState* game_state, int init_hold_frames, int hold_rate) {
 	//Initialize GameManager values, assign the GameManager a target
 	this->init_hold_frames = init_hold_frames;
 	this->hold_rate = hold_rate;
-	this->menu_target[layer] = menu_target;
-
-	looping[layer] = true;
-
-	//Assign a few pointers from the current target to match the GameManager
-	if (this->menu_target[layer] != nullptr) {
-		this->menu_target[layer]->game_state = &game_state;
-		this->menu_target[layer]->prev_game_state = &prev_game_state;
-		this->menu_target[layer]->game_context = &game_context;
-		this->menu_target[layer]->prev_game_context = &prev_game_context;
-		this->menu_target[layer]->looping = &looping[layer];
-	}
+	this->game_state.push_back(game_state);
+	game_state->game_context = next_game_context;
 }
 
-GameState* GameManager::get_target(int layer) {
-	if (layer == -1) {
-		return menu_target[this->layer];
-	}
-	else if (layer >= MAX_LAYERS) {
-		std::cout << "Tried to get invalid layer target: " << layer << "\n";
-		return menu_target[this->layer];
+void GameManager::delete_game_state() {
+	game_state.pop_back();
+}
+
+GameState* GameManager::get_game_state(int depth) {
+	if (depth >= game_state.size()) {
+		std::cout << "Tried to get GameState from invalid depth: " << depth << "\n";
+		return game_state.back();
 	}
 	else {
-		return menu_target[layer];
+		return game_state[game_state.size() - 1 - depth];
 	}
 }
 
-void GameManager::handle_window_events(std::function<void(SDL_Event*)> event_handler) {
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		if (event_handler != nullptr) {
-			event_handler(&event);
-		}
-		switch (event.type) {
-		case SDL_QUIT: {
-			update_state(GAME_STATE_CLOSE);
-		} break;
-		case SDL_WINDOWEVENT:
-		{
-			switch (event.window.event) {
-			case SDL_WINDOWEVENT_MAXIMIZED: {
-				SDL_GetWindowSize(render_manager->window, &render_manager->window_width, &render_manager->window_height);
-				glViewport(0, 0, render_manager->window_width, render_manager->window_height);
-				render_manager->update_framebuffer_dimensions();
-			} break;
-			}
-		} break;
-		}
-	}
-	SDL_PumpEvents();
-}
-
-void GameManager::handle_menus() {
+void GameManager::process_game_state_events() {
 	for (int i = 0; i < 2; i++) {
-		menu_target[layer]->player_id = i;
+		game_state.back()->player_id = i;
 		if (is_up_press(i)) {
 			event_up_press();
 		}
@@ -146,6 +117,14 @@ void GameManager::handle_menus() {
 	if (is_crash()) {
 		update_state(GAME_STATE_DEBUG_MENU);
 	}
+}
+
+void GameManager::render_game_states() {
+	for (size_t i = 0, max = game_state.size(); i < max; i++) {
+		game_state[i]->render_main();
+	}
+	fps_texture.render();
+	fps_counter.render();
 }
 
 bool GameManager::is_up_press(int id) {
@@ -238,39 +217,39 @@ bool GameManager::is_any_menu_input(int id) {
 }
 
 void GameManager::event_up_press() {
-	(menu_target[layer]->*(&GameState::event_up_press))();
+	(get_game_state()->*(&GameState::event_up_press))();
 }
 
 void GameManager::event_down_press() {
-	(menu_target[layer]->*(&GameState::event_down_press))();
+	(get_game_state()->*(&GameState::event_down_press))();
 }
 
 void GameManager::event_left_press() {
-	(menu_target[layer]->*(&GameState::event_left_press))();
+	(get_game_state()->*(&GameState::event_left_press))();
 }
 
 void GameManager::event_right_press() {
-	(menu_target[layer]->*(&GameState::event_right_press))();
+	(get_game_state()->*(&GameState::event_right_press))();
 }
 
 void GameManager::event_start_press() {
-	(menu_target[layer]->*(&GameState::event_start_press))();
+	(get_game_state()->*(&GameState::event_start_press))();
 }
 
 void GameManager::event_select_press() {
-	(menu_target[layer]->*(&GameState::event_select_press))();
+	(get_game_state()->*(&GameState::event_select_press))();
 }
 
 void GameManager::event_back_press() {
-	(menu_target[layer]->*(&GameState::event_back_press))();
+	(get_game_state()->*(&GameState::event_back_press))();
 }
 
 void GameManager::event_pause_press() {
-	(menu_target[layer]->*(&GameState::event_pause_press))();
+	(get_game_state()->*(&GameState::event_pause_press))();
 }
 
 void GameManager::event_any_press() {
-	(menu_target[layer]->*(&GameState::event_any_press))();
+	(get_game_state()->*(&GameState::event_any_press))();
 }
 
 void GameManager::add_crash_log(std::string crash_reason) {
@@ -292,6 +271,71 @@ bool GameManager::is_crash() {
 	return !crash_log.empty();
 }
 
+void GameManager::frame_delay() {
+	wait_ms();
+}
+
+void GameManager::frame_delay_check_fps() {
+	if ((float)((std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_second).count()) / 1000.0) >= 1000.0) {
+		fps = frame;
+		frame = 0;
+		wait_ms();
+		last_second = std::chrono::high_resolution_clock::now();
+	}
+	else {
+		wait_ms();
+		frame++;
+	}
+	if (prev_fps != fps) {
+		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255), glm::vec4(0.0));
+		prev_fps = fps;
+	}
+}
+
+void GameManager::frame_delay_check_performance() {
+	int trials = 10000;
+
+	if (average_ticks.size() < trials) {
+		average_ticks.push_back((float)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - ms).count()) / 1000.0);
+	}
+	else {
+		float highest = average_ticks[0];
+		while (highest >= tick_frequency.size()) {
+			tick_frequency.push_back(0);
+		}
+		int freq = 0;
+		int frame_freq = 0;
+		float total = 0;
+		for (int i = 0; i < trials; i++) {
+			total += average_ticks[i];
+			if (average_ticks[i] >= 16.667) {
+				frame_freq++;
+			}
+			if (average_ticks[i] > highest) {
+				highest = average_ticks[i];
+				while (highest >= tick_frequency.size()) {
+					tick_frequency.push_back(0);
+				}
+				freq = 1;
+			}
+			else if (average_ticks[i] == highest) {
+				freq++;
+			}
+			tick_frequency[(int)average_ticks[i]]++;
+		}
+		total /= (float)trials;
+		std::cout << "Lengths of all iterations across " << trials << " tests: " << "\n";
+		for (int i = 0; i < tick_frequency.size(); i++) {
+			std::cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << "\n";
+		}
+		std::cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << "\n";
+		average_ticks.clear();
+		tick_frequency.clear();
+	}
+	wait_ms();
+	ms = std::chrono::high_resolution_clock::now();
+}
+
 GameManager* GameManager::instance = nullptr;
 GameManager* GameManager::get_instance() {
 	if (instance == nullptr) {
@@ -303,6 +347,9 @@ GameManager* GameManager::get_instance() {
 void GameManager::destroy_instance() {
 	delete player[0];
 	delete player[1];
+	fps_font.unload_font();
+	fps_counter.destroy();
+	fps_texture.destroy();
 	if (instance != nullptr) {
 		delete instance;
 	}

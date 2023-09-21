@@ -8,11 +8,9 @@ void RowanFireball::projectile_unique_main() {
 }
 
 void RowanFireball::status_activate() {
-	if (owner->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] >= SPECIAL_LEVEL_H) {
-		projectile_int[PROJECTILE_INT_HEALTH] = 2;
-	}
 	if (owner->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 		projectile_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
+		projectile_int[PROJECTILE_INT_HEALTH] = 2;
 	}
 	change_status(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER);
 }

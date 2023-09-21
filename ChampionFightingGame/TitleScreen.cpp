@@ -15,19 +15,19 @@ void title_screen_main() {
 
     TitleScreen *title_screen = new TitleScreen;
 
-    while (*title_screen->looping) {
+    while (title_screen->looping) {
 		wait_ms();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events();
+		render_manager->handle_window_events();
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 			player[i]->controller.poll_buttons();
 		}
 
-		game_manager->handle_menus();
+		game_manager->process_game_state_events();
 
 		title_screen->render();
 
@@ -41,7 +41,7 @@ void title_screen_main() {
 
 TitleScreen::TitleScreen() {
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_menu_info(this);
+	game_manager->set_game_state(this);
 
 	title_l1.init("resource/game_state/title/ui/title-l1.png");
 	title_l2.init("resource/game_state/title/ui/title-l2.png");
@@ -67,5 +67,5 @@ void TitleScreen::render() {
 }
 
 void TitleScreen::event_any_press() {
-	*looping = false;
+	looping = false;
 }

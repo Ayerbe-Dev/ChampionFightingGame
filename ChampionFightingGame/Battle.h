@@ -261,16 +261,6 @@ public:
 	void process_background();
 
 	void check_collisions();
-	void check_projectile_collisions();
-	void check_fighter_collisions();
-	int get_event_hit_collide_player(Fighter* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox);
-	int get_event_grab_collide_player(Fighter* attacker, Fighter* defender, Grabbox* grabbox, Hurtbox* hurtbox);
-	int get_event_hit_collide_projectile(Projectile* attacker, Fighter* defender, Hitbox* hitbox, Hurtbox* hurtbox);
-	void event_hit_collide_player();
-	bool event_grab_collide_player();
-	void event_hit_collide_projectile(Fighter* p1, Fighter* p2, Projectile* p1_projectile, Hitbox* p1_hitbox);
-	int can_counterhit(Fighter* defender, Hitbox* hitbox);
-	int get_damage_status(Fighter* defender, Hitbox* hitbox, int counterhit_val);
 
 	void render_world();
 	void render_ui();

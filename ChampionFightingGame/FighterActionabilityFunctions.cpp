@@ -28,19 +28,10 @@ bool Fighter::is_actionable() {
 	}
 }
 
-bool Fighter::can_kara() {
-	if (((fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LP || fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_LK) && !fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) || fighter_flag[FIGHTER_FLAG_KARA_ENABLED]) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
 bool Fighter::has_meter(int bars) {
 	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
 	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
-	if (fighter_float[FIGHTER_FLOAT_SUPER_METER] >= ex_meter_size / (ex_meter_bars / bars)) {
+	if (fighter_float[FIGHTER_FLOAT_EX_METER] >= ex_meter_size / (ex_meter_bars / bars)) {
 		return true;
 	}
 	return false;
@@ -50,7 +41,7 @@ void Fighter::spend_meter(int bars) {
 	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
 	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
 	fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] = 60;
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] -= ex_meter_size / (ex_meter_bars / bars);
+	fighter_float[FIGHTER_FLOAT_EX_METER] -= ex_meter_size / (ex_meter_bars / bars);
 }
 
 void Fighter::enable_all_cancels() {
@@ -94,14 +85,12 @@ void Fighter::disable_cancel(int cat, int kind) {
 }
 
 bool Fighter::is_enable_cancel(int cancel_kind) {
-	if (fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS]) {
-		if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
-			return (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
-				|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && cancel_flags[CANCEL_CAT_BLOCK][cancel_kind]);
-		}
-		else if (!fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX]) {
-			return cancel_flags[CANCEL_CAT_WHIFF][cancel_kind];
-		}
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
+		return (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
+			|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && cancel_flags[CANCEL_CAT_BLOCK][cancel_kind]);
+	}
+	else {
+		return cancel_flags[CANCEL_CAT_WHIFF][cancel_kind];
 	}
 	return false;
 }

@@ -1,4 +1,5 @@
 #include "Loader.h"
+#include "RenderManager.h"
 #include "SDL Helpers.h"
 #include "utils.h"
 #include <stdlib.h>

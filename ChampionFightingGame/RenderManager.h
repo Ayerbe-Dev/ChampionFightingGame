@@ -39,6 +39,8 @@ public:
 	void buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffer_arg = ScriptArg());
 	void execute_buffered_events();
 
+	void handle_window_events(std::function<void(SDL_Event*)> event_handler = nullptr);
+
 	SDL_Window* window;
 	SDL_Renderer* sdl_renderer;
 	SDL_GLContext sdl_context;
@@ -57,7 +59,8 @@ public:
 	Framebuffer g_buffer;
 	Framebuffer SSAO;
 	Framebuffer SSAO_blur;
-	GameTexture *gbuffer_texture;
+
+	GameTexture gbuffer_texture;
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;

@@ -265,6 +265,7 @@ void Rowan::rowan_exit_status_special_fireball_kick() {
 }
 
 void Rowan::rowan_status_special_slide() {
+	Fighter* that = battle_object_manager->fighter[!id];
 	if (is_status_end()) {
 		return;
 	}
@@ -290,7 +291,7 @@ void Rowan::rowan_enter_status_special_slide() {
 }
 
 void Rowan::rowan_exit_status_special_slide() {
-
+	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
 }
 
 void Rowan::rowan_status_special_slide_followup() {

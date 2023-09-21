@@ -135,7 +135,6 @@ public:
 	//Actionability
 
 	bool is_actionable();
-	bool can_kara();
 	bool has_meter(int bars);
 	void spend_meter(int bars);
 	void enable_all_cancels();

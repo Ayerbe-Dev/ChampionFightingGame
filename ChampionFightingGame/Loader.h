@@ -3,7 +3,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include "RenderManager.h"
 #include "GameTextureSDL.h"
 
 extern std::mutex file_mutex;

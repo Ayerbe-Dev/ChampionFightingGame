@@ -115,7 +115,10 @@ const int CANCEL_KIND_4646K = 35;
 const int CANCEL_KIND_DASH_F = 36;
 const int CANCEL_KIND_DASH_B = 37;
 const int CANCEL_KIND_JUMP = 38;
-const int CANCEL_KIND_MAX = 39;
+const int CANCEL_KIND_GRAB = 39;
+const int CANCEL_KIND_PARRY_START = 40;
+const int CANCEL_KIND_ADVANCE = 41;
+const int CANCEL_KIND_MAX = 42;
 
 const int CANCEL_CAT_HIT = 0;
 const int CANCEL_CAT_BLOCK = 1;

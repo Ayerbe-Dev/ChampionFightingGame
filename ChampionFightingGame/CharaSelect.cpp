@@ -23,14 +23,14 @@ void chara_select_main() {
 
 	CSS *css = new CSS;
 	
-	while (*css->looping) {
-		css->frame_delay_check_fps();
+	while (css->looping) {
+		game_manager->frame_delay_check_fps();
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events();
+		render_manager->handle_window_events();
 
 		css->process_game_state();
 		css->render_game_state();
@@ -67,7 +67,7 @@ CSS::CSS() {
 	stage_demo.init_shader();
 	stage_demo.model.load_textures();
 
-	game_manager->set_menu_info(this);
+	game_manager->set_game_state(this);
 	menu_objects.resize(CHARA_SELECT_GROUP_MAX);
 
 	if (!load_css()) {
@@ -253,8 +253,7 @@ void CSS::event_select_press() {
 void CSS::event_back_press() {
 	switch (css_player[player_id].state) {
 		case (CHARA_SELECTION_STATE_DESELECTED): {
-			*game_state = GAME_STATE_STAGE_SELECT;
-			*looping = false;
+			update_state(GAME_STATE_STAGE_SELECT);
 		} break;
 		case (CHARA_SELECTION_STATE_SELECTED_CHARA): {
 			if (css_player[player_id].selected_index < loaded_chars) {
@@ -276,8 +275,7 @@ void CSS::event_start_press() {
 			player[i]->alt_costume = css_player[i].selected_costume;
 			player[i]->alt_color = css_player[i].selected_color;
 		}
-		*game_state = GAME_STATE_BATTLE;
-		*looping = false;
+		update_state(GAME_STATE_BATTLE);
 	}
 }
 
@@ -357,8 +355,7 @@ void CSS::event_down_press() {
 					}
 					if (!valid_col) {
 						GameManager::get_instance()->add_crash_log("Couldn't find a valid column!");
-						*looping = false;
-						*game_state = GAME_STATE_DEBUG_MENU;
+						update_state(GAME_STATE_DEBUG_MENU);
 						return;
 					}
 				}
@@ -426,8 +423,7 @@ void CSS::event_up_press() {
 					}
 					if (!valid_col) {
 						GameManager::get_instance()->add_crash_log("Couldn't find a valid column!");
-						*looping = false;
-						*game_state = GAME_STATE_DEBUG_MENU;
+						update_state(GAME_STATE_DEBUG_MENU);
 						return;
 					}
 				}
@@ -473,7 +469,7 @@ void CSS::process_main() {
 	for (int i = 0; i < 2; i++) {
 		player[i]->controller.poll_buttons();
 	}
-	game_manager->handle_menus();
+	game_manager->process_game_state_events();
 
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 	if (thread_manager->is_active(THREAD_KIND_LOAD)) {

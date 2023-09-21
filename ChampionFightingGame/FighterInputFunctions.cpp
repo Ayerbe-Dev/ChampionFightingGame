@@ -331,18 +331,27 @@ int Fighter::get_special_input(int special_kind, unsigned int button, int charge
 }
 
 bool Fighter::attack_cancel(int attack_kind, unsigned int button, int stick) {
-	if (is_enable_cancel(attack_kind)) {
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int(PARAM_FIGHTER, "buffer_window")) {
-			if (get_attack_input(attack_kind, button, stick)) {
-				int prev_attack_kind = fighter_int[FIGHTER_INT_ATTACK_KIND];
+	if (get_attack_input(attack_kind, button, stick)) {
+		if (is_enable_cancel(attack_kind)) {
+			if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] <= get_param_int(PARAM_FIGHTER, "buffer_window")) {
+				fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == attack_kind);
 				fighter_int[FIGHTER_INT_ATTACK_KIND] = attack_kind;
-				fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == prev_attack_kind);
 				if (situation_kind == FIGHTER_SITUATION_GROUND) {
 					return change_status_after_hitlag(FIGHTER_STATUS_ATTACK, true, false);
 				}
 				else {
 					return change_status_after_hitlag(FIGHTER_STATUS_ATTACK_AIR, true, false);
 				}
+			}
+		}
+		else {
+			fighter_int[FIGHTER_INT_PRE_ENABLE_ATTACK_KIND] = attack_kind;
+			fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == fighter_int[FIGHTER_INT_PRE_ENABLE_ATTACK_KIND]);
+			if (situation_kind == FIGHTER_SITUATION_GROUND) {
+				return buffer_status_pre_enable_cancel(FIGHTER_STATUS_ATTACK, attack_kind, true, false);
+			}
+			else {
+				return buffer_status_pre_enable_cancel(FIGHTER_STATUS_ATTACK_AIR, attack_kind, true, false);
 			}
 		}
 	}

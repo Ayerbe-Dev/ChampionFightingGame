@@ -13,8 +13,9 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 	that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 	if (pushboxes_touching(that)) {
 		if (pos.x == that->pos.x) {
-			if (status_kind == FIGHTER_STATUS_JUMP && x_diff != 0.0
-				&& x_diff > 0.0 == facing_dir > 0.0) {
+			if ((status_kind == FIGHTER_STATUS_JUMP 
+				|| status_kind == FIGHTER_STATUS_FALL) && x_diff != 0.0
+				&& (x_diff > 0.0 == facing_dir > 0.0)) {
 				float walk_f_speed = that->get_local_param_float("walk_f_speed") * 2;
 				if (x_diff > 0.0) {
 					that->pos.x -= walk_f_speed;
@@ -24,8 +25,9 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 				}
 				that->update_pushbox_pos();
 			}
-			if (that->status_kind == FIGHTER_STATUS_JUMP && that_x_diff != 0.0
-				&& that_x_diff > 0.0 == that->facing_dir > 0.0) {
+			if ((that->status_kind == FIGHTER_STATUS_JUMP 
+				|| that->status_kind == FIGHTER_STATUS_FALL) && that_x_diff != 0.0
+				&& (that_x_diff > 0.0 == that->facing_dir > 0.0)) {
 				float walk_f_speed = get_local_param_float("walk_f_speed") * 2;
 				if (that_x_diff > 0.0) {
 					pos.x -= walk_f_speed;
@@ -46,37 +48,32 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 				float that_pushbox_back = that->pos.x + that->get_pushbox_back(i2);
 
 				if (x_diff != 0.0 && that_x_diff != 0.0) {
-					//Both players are moving. Behavior depends on if we're moving towards each other.
+					//Both players are moving.
 					bool forward = x_diff > 0.0 == pos.x < that->pos.x;
 					bool that_forward = that_x_diff > 0.0 == that->pos.x < pos.x;
 					if (forward == that_forward) {
 						if (forward) {
+							//Both players are moving forward.
 							if (abs(x_diff) == abs(that_x_diff)) {
-								//We're moving at equal speed, so just force our positions to be whatever 
-								//they were last frame
+								//Both players moving forward at the same speed.
 								pos.x = prev_pos.x;
 								that->pos.x = that->prev_pos.x;
 							}
 							else if (abs(x_diff) > abs(that_x_diff)) {
-								//We're moving faster, so push them back the same way we would as if they 
-								//weren't moving towards us at all, with the caveat that we get pushed away 
-								//at their speed first.
+								//P1 moving faster than P2.
 								pos.x += that_x_diff;
 								update_pushbox_pos();
 								bool facing_that = x_diff > 0.0 == facing_dir > 0.0;
 								bool facing_same = facing_dir == that->facing_dir;
-								if (facing_that) { //Whether we use our front/back pushbox isn't a 
-									//distance thing in this case, it depends entirely on if we're facing
-									//the opponent as we move towards them.
+								if (facing_that) {
 									if (facing_same) {
-										//The same applies to the opponent. We never want to use the same
-										//side of the pushbox as the opponent if we're facing in the same
-										//direction
+										//P1 facing P2, P2 facing away from P1.
 										if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 											set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
 										}
 									}
 									else {
+										//P1 and P2 facing each other.
 										if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 											set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
 										}
@@ -84,18 +81,21 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 								}
 								else {
 									if (facing_same) {
+										//P1 is facing away from P2, P2 facing P1.
 										if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 											set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
 										}
 									}
 									else {
+										//P1 and P2 facing away from each other.
 										if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 											set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
 										}
 									}
 								}
 							}
-							else { //They're moving faster
+							else {
+								//P2 is moving faster than P1.
 								that->pos.x += x_diff;
 								that->update_pushbox_pos();
 								bool facing_that = that_x_diff > 0.0 == that->facing_dir > 0.0;
@@ -126,26 +126,30 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 								}
 							}
 						}
-						else { //We're both moving away. Push both of us back the way we would as if only we
-							//were moving away, albeit without ever trying to push the opponent
+						else { 
+							//Both players are moving backward.
 							bool facing_that = x_diff > 0.0 != facing_dir > 0.0;
 							bool facing_same = facing_dir == that->facing_dir;
 							if (facing_that) {
 								if (facing_same) {
+									//P1 facing P2, P2 facing away from P1.
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
-									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
+									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
 								else {
+									//P1 and P2 facing each other.
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
 								if (facing_same) {
+									//P1 facing away from P2, P2 facing P1.
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
-									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
+									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
 								else {
+									//P1 and P2 facing away from each other.
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
 									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
@@ -153,46 +157,51 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 						}
 					}
 					else if (forward) {
-						//We're moving towards, they're moving away. Once again, we move them back as though
-						//they're stationary and we're not.
-
+						//P1 moving forward, P2 moving backward.
 						bool facing_that = x_diff > 0.0 == facing_dir > 0.0;
 						bool facing_same = facing_dir == that->facing_dir;
 						if (facing_that) {
 							if (facing_same) {
+								//P1 moving towards, P2 moving away, P1 front to P2 back.
 								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
 								}
 							}
 							else {
+								//P1 moving towards, P2 moving away, face to face.
 								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
 								}
 							}
 						}
 						else {
+							//P1 moving towards, P2 moving away, P1 back to P2 front.
 							if (facing_same) {
 								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
 								}
 							}
 							else {
+								//P1 moving towards, P2 moving away, back to back.
 								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
 								}
 							}
 						}
 					}
-					else { //They're moving towards, we're moving away
+					else {
+						//P2 moving forward, P1 moving backward
 						bool facing_that = that_x_diff > 0.0 == that->facing_dir > 0.0;
 						bool facing_same = facing_dir == that->facing_dir;
 						if (facing_that) {
 							if (facing_same) {
+								//P2 moving towards, P1 moving away, P2 front to P1 back.
 								if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
+								//P2 moving towards, P1 moving away, face to face.
 								if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
@@ -200,11 +209,13 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 						}
 						else {
 							if (facing_same) {
+								//P2 moving towards, P1 moving away, P2 back to P1 front.
 								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
+								//P2 moving towards, P1 moving away, back to back.
 								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
@@ -213,54 +224,61 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 					}
 				}
 				else if (x_diff == 0.0 && that_x_diff == 0.0) {
-					//No one is moving. If the two players are facing in opposite directions, the only
-					//valid pushbox orientations are back to back or front to front. Otherwise, front
-					//to back or back to front. 
-
-					//If the movement ever fails, defaulting to front front is a safe bet.
-
-					//Note: We'll use the external facing_dir var because that's the one that affects 
-					//box orientation
 					bool facing_that = pos.x < that->pos.x == facing_dir > 0.0;
 					bool facing_same = facing_dir == that->facing_dir;
+					float pos_x = pos.x;
 					if (facing_that) {
 						if (facing_same) {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
-							that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
+							if (abs(that_pushbox_back - pushbox_front) >= 1.0) {
+								//No movement, P1 front to P2 back.
+								set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
+								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+							}
 						}
 						else {
-							set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
-							that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
+							if (abs(that_pushbox_front - pushbox_front) >= 1.0) {
+								//No movement, face to face.
+								set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
+								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+							}
 						}
 					}
 					else {
 						if (facing_same) {
-							set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
-							that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
+							if (abs(that_pushbox_front - pushbox_back) >= 1.0) {
+								//No movement, P1 back to P2 front.
+								set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
+								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+							}
 						}
 						else {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
-							that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
+							if (abs(that_pushbox_back - pushbox_back) >= 1.0) {
+								//No movement, back to back.
+								set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
+								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+							}
 						}
 					}
 				}
 				else if (x_diff != 0.0) {
-					//Only we are moving.
-					if (x_diff > 0.0 == pos.x < that->pos.x) { //We're moving towards them
+					//P1 is moving, P2 is not.
+					if (x_diff > 0.0 == pos.x < that->pos.x) {
+						//P1 moving forward.
 						bool facing_that = x_diff > 0.0 == facing_dir > 0.0;
 						bool facing_same = facing_dir == that->facing_dir;
-						if (facing_that) { //Whether we use our front/back pushbox isn't a 
-							//distance thing in this case, it depends entirely on if we're facing
-							//the opponent as we move away from them.
+						if (facing_that) {
 							if (facing_same) {
-								//The same applies to the opponent. We never want to use the same
-								//side of the pushbox as the opponent if we're facing in the same
-								//direction
+								//Only P1 moving forward, P1 front to P2 back.
 								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
 								}
 							}
 							else {
+								//Only P1 moving forward, face to face.
 								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
 								}
@@ -268,30 +286,32 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 						}
 						else {
 							if (facing_same) {
+								//Only P1 moving forward, P1 back to P2 front.
 								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
 								}
 							}
 							else {
+								//Only P1 moving forward, back to back.
 								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
 								}
 							}
 						}
 					}
-					else {  //We're moving away from them
-						//This code is almost entirely identical to the moving towards case, but we try
-						//moving ourselves instead of moving the opponent. That being said, we still move the
-						//opponent in the "move away, back to back" case, because that's for crossups
+					else {  
+						//P1 moving backward.
 						bool facing_that = x_diff > 0.0 != facing_dir > 0.0;
 						bool facing_same = facing_dir == that->facing_dir;
 						if (facing_that) {
 							if (facing_same) {
-								if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true)) {
-									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
+								//Only P1 moving backward, P1 front to P2 back.
+								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true)) {
+									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
+								//Only P1 moving backward, face to face.
 								if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
@@ -299,13 +319,13 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 						}
 						else {
 							if (facing_same) {
+								//Only P1 moving backward, P1 back to P2 front.
 								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
 								}
 							}
 							else {
-								//This is the one that happens when we jump over someone, so even if it seems
-								//like we should be the ones being pushed, we shouldn't
+								//Only P1 moving backward, back to back.
 								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
 								}
@@ -314,17 +334,20 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 					}
 				}
 				else {
-					//Only they are moving.
+					//P2 is moving, P1 is not.
 					if (that_x_diff > 0.0 == that->pos.x < pos.x) {
+						//P2 moving forward.
 						bool facing_that = that_x_diff > 0.0 == that->facing_dir > 0.0;
 						bool facing_same = facing_dir == that->facing_dir;
 						if (facing_that) {
 							if (facing_same) {
+								//Only P2 moving forward, P2 front to P1 back.
 								if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
+								//Only P2 moving forward, face to face.
 								if (!set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
 								}
@@ -332,27 +355,32 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 						}
 						else {
 							if (facing_same) {
+								//Only P2 moving forward, P2 back to P1 front.
 								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
+								//Only P2 moving forward, back to back.
 								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 						}
 					}
-					else {  //They're moving away from us
+					else {
+						//P2 moving backward.
 						bool facing_that = that_x_diff > 0.0 != that->facing_dir > 0.0;
 						bool facing_same = facing_dir == that->facing_dir;
 						if (facing_that) {
 							if (facing_same) {
-								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true)) {
-									set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
+								//Only P2 moving backward, P2 front to P1 back.
+								if (!that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
+									set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
 								}
 							}
 							else {
+								//Only P2 moving backward, face to face.
 								if (!that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true)) {
 									set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
 								}
@@ -360,11 +388,13 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 						}
 						else {
 							if (facing_same) {
+								//Only P2 moving backward, P2 back to P1 front.
 								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
 							}
 							else {
+								//Only P2 moving backward, back to back.
 								if (!set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true)) {
 									that->set_pos(glm::vec3(pushbox_back - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
 								}
@@ -455,18 +485,18 @@ bool Fighter::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbo
 
 	switch (situation_kind) {
 		case FIGHTER_SITUATION_GROUND: {
-			if (!hitbox->hit_kind & HIT_KIND_GROUND) {
+			if (!(hitbox->hit_kind & HIT_KIND_GROUND)) {
 				return false;
 			}
 		} break;
 		case FIGHTER_SITUATION_AIR: {
-			if ((!hitbox->hit_kind & HIT_KIND_AIR)
+			if ((!(hitbox->hit_kind & HIT_KIND_AIR))
 			|| hitbox->juggle_max < fighter_int[FIGHTER_INT_JUGGLE_VALUE]) {
 				return false;
 			}
 		} break;
 		case FIGHTER_SITUATION_DOWN: {
-			if (!hitbox->hit_kind & HIT_KIND_DOWN) {
+			if (!(hitbox->hit_kind & HIT_KIND_DOWN)) {
 				return false;
 			}
 		} break;
@@ -660,18 +690,18 @@ bool Fighter::is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hi
 
 	switch (situation_kind) {
 		case FIGHTER_SITUATION_GROUND: {
-			if (!hitbox->hit_kind & HIT_KIND_GROUND) {
+			if (!(hitbox->hit_kind & HIT_KIND_GROUND)) {
 				return false;
 			}
 		} break;
 		case FIGHTER_SITUATION_AIR: {
-			if ((!hitbox->hit_kind & HIT_KIND_AIR)
+			if ((!(hitbox->hit_kind & HIT_KIND_AIR))
 				|| hitbox->juggle_max < fighter_int[FIGHTER_INT_JUGGLE_VALUE]) {
 				return false;
 			}
 		} break;
 		case FIGHTER_SITUATION_DOWN: {
-			if (!hitbox->hit_kind & HIT_KIND_DOWN) {
+			if (!(hitbox->hit_kind & HIT_KIND_DOWN)) {
 				return false;
 			}
 		} break;
@@ -882,8 +912,8 @@ void Fighter::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Figh
 		fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -counterhit_val;
 		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 12)) / 10;
 		damage = hitbox->damage * scale;
-		attacker->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, attacker->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 1.2, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.72, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		attacker->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, attacker->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 1.2, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.72, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		float accum_damage = fighter_float[FIGHTER_FLOAT_HEALTH] - fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 		fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 		fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -895,8 +925,8 @@ void Fighter::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Figh
 	else {
 		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 12)) / 10;
 		damage = hitbox->damage * scale;
-		attacker->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, attacker->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.6, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		attacker->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, attacker->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.6, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		float accum_damage = fighter_float[FIGHTER_FLOAT_HEALTH] - fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 		fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 		fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -910,14 +940,16 @@ void Fighter::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Figh
 	if (!attacker->fighter_flag[FIGHTER_FLAG_ATTACK_HIT]) {
 		fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitbox->damage_scale;
 	}
-	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+	fighter_float[FIGHTER_FLOAT_LAST_DAMAGE] = damage;
+	fighter_float[FIGHTER_FLOAT_LAST_DAMAGE_SCALE] = scale;
+	attacker->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
 	fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = hitbox->attack_level;
 	
 	set_post_collision_status(hitbox, counterhit_val);
 	
 	if (post_collision_status == FIGHTER_STATUS_HITSTUN_AIR) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * attacker->facing_dir * 0.3;
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 25.0;
+		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 25.0 + (3.0 * hitbox->attack_level);
 	}
 	fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
 
@@ -959,8 +991,8 @@ void Fighter::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, P
 		fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -counterhit_val;
 		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 12)) / 10;
 		damage = hitbox->damage * scale;
-		attacker->owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, attacker->owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 1.2, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.72, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		attacker->owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, attacker->owner->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 1.2, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.72, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		float accum_damage = fighter_float[FIGHTER_FLOAT_HEALTH] - fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 		fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 		fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -972,8 +1004,8 @@ void Fighter::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, P
 	else {
 		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 12)) / 10;
 		damage = hitbox->damage * scale;
-		attacker->owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, attacker->owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
-		fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.6, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		attacker->owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, attacker->owner->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+		fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.6, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		float accum_damage = fighter_float[FIGHTER_FLOAT_HEALTH] - fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 		fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 		fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(hitbox->damage_kind == DAMAGE_KIND_NO_KO, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -987,12 +1019,14 @@ void Fighter::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, P
 	if (!attacker->owner->fighter_flag[FIGHTER_FLAG_PROJECTILE_CONNECTED_DURING_STATUS]) {
 		fighter_int[FIGHTER_INT_DAMAGE_SCALE] += hitbox->damage_scale;
 	}
-	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+	fighter_float[FIGHTER_FLOAT_LAST_DAMAGE] = damage;
+	fighter_float[FIGHTER_FLOAT_LAST_DAMAGE_SCALE] = scale;
+	attacker->owner->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
 	fighter_int[FIGHTER_INT_HITSTUN_LEVEL] = hitbox->attack_level;
 	set_post_collision_status(hitbox, counterhit_val);
 	if (post_collision_status == FIGHTER_STATUS_HITSTUN_AIR) {
 		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * attacker->facing_dir * 0.3;
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 25.0;
+		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 25.0 + (3.0 * hitbox->attack_level);
 	}
 	fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
 	unique_process_incoming_projectile_hitbox_collision_hit(hitbox, attacker);
@@ -1014,7 +1048,7 @@ void Fighter::process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox, P
 }
 
 void Fighter::process_incoming_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* attacker) {
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = hitbox->blockstun;
@@ -1040,7 +1074,7 @@ void Fighter::process_incoming_projectile_hitbox_collision_blocked(Hitbox* hitbo
 
 void Fighter::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->multihit);
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = fighter_int[FIGHTER_INT_HITLAG_FRAMES];
 	fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = true;
@@ -1048,7 +1082,7 @@ void Fighter::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, 
 }
 
 void Fighter::process_incoming_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* attacker) {
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 16;
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
@@ -1058,7 +1092,7 @@ void Fighter::process_incoming_fighter_hitbox_collision_parried(Hitbox* hitbox, 
 }
 
 void Fighter::process_incoming_projectile_hitbox_collision_parried(Hitbox* hitbox, Projectile* attacker) {
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 16;
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
@@ -1069,14 +1103,14 @@ void Fighter::process_incoming_projectile_hitbox_collision_parried(Hitbox* hitbo
 
 void Fighter::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->multihit);
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 16;
 	unique_process_outgoing_fighter_hitbox_collision_parried(hitbox, defender);
 }
 
 void Fighter::process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* attacker) {
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	//TODO: We're actually going to set the hitlag to 1 and have the camera zoom in on the player
 	//who parried here.
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 50;
@@ -1088,7 +1122,7 @@ void Fighter::process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* 
 }
 
 void Fighter::process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbox* hitbox, Projectile* attacker) {
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 16;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 16;
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
@@ -1100,7 +1134,7 @@ void Fighter::process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbo
 
 void Fighter::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->multihit);
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = true; //Consider using a timer to make
 	//it so you can only cancel the recovery 2f after you get hitstun parried. It's fine if getting
 	//parried out of your own combo isn't a guaranteed punish, but you should probably still at least
@@ -1127,7 +1161,7 @@ void Fighter::process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, 
 	update_hitbox_connect(hitbox->multihit);
 	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = fighter_int[FIGHTER_INT_HITLAG_FRAMES];
-	fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0.0, fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0.0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	unique_process_outgoing_fighter_hitbox_collision_armored(hitbox, defender);
 }
 
@@ -1277,10 +1311,17 @@ void Fighter::process_outgoing_fighter_grabbox_collision(Grabbox* grabbox, Fight
 int Fighter::get_counterhit_val(Hitbox* hitbox) {
 	//Note: Returning 1 means we apply the damage multipliers, returning 2 means we apply the
 	//specific counterhit status as well.
+	Fighter* attacker = nullptr;
+	if (hitbox->object->object_type == BATTLE_OBJECT_TYPE_FIGHTER) {
+		attacker = (Fighter*)hitbox->object;
+	}
+	else {
+		attacker = (Fighter*)((Projectile*)hitbox->object)->owner;
+	}
 	if (anim_kind != nullptr) {
 		if (status_kind == FIGHTER_STATUS_HITSTUN_PARRY_START
 			|| status_kind == FIGHTER_STATUS_LAUNCH_PARRY_START) {
-			fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY;
+			attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY;
 			return 2;
 		}
 		else {
@@ -1288,44 +1329,44 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 				case (COUNTERHIT_TYPE_COUNTER):
 				default: {
 					if (fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) {
-						fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
+						attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
 						return 2;
 					}
 				} break;
 				case (COUNTERHIT_TYPE_ANY): {
 					if (fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] || fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
 						if (fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) {
-							fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
+							attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
 						}
 						if (fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
-							fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_PUNISH;
+							attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_PUNISH;
 						}
 						return 2;
 					}
 				} break;
 				case (COUNTERHIT_TYPE_PUNISH): {
 					if (fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
-						fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_PUNISH;
+						attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_PUNISH;
 						return 2;
 					}
 					else if (fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) {
-						fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
+						attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
 						return 1;
 					}
 				} break;
 				case (COUNTERHIT_TYPE_JUMP_COUNTER): {
 					if (fighter_flag[FIGHTER_FLAG_ENABLE_JUMP_COUNTERHIT]) {
-						fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_JUMP;
+						attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER_JUMP;
 						return 2;
 					}
 					else if (fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) {
-						fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
+						attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
 						return 1;
 					}
 				} break;
 				case (COUNTERHIT_TYPE_NONE): {
 					if (fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) {
-						fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
+						attacker->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_COUNTER;
 						return 1;
 					}
 				} break;
@@ -1342,7 +1383,7 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 	}
 
 	if (fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0f &&
-		GameManager::get_instance()->game_context != GAME_CONTEXT_TRAINING) {
+		GameManager::get_instance()->get_game_state()->game_context != GAME_CONTEXT_TRAINING) {
 		if (hitbox->attack_level == ATTACK_LEVEL_LIGHT && situation_kind == FIGHTER_SITUATION_GROUND) {
 			post_collision_status = FIGHTER_STATUS_CRUMPLE;
 		}

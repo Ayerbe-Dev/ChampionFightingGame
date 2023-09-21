@@ -6,7 +6,6 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		clear_hurtbox_all();
 		clear_grabbox_all();
 		clear_pushbox_all();
-		fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_HIT] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = false;
 		fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = false;
@@ -106,15 +105,19 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 		}
 		return change_status(post_status_kind, call_end_status, require_different_status);
 	}
-	else if (is_actionable()) {
-		if (situation_kind == FIGHTER_SITUATION_GROUND) {
-			return common_ground_status_act();
-		}
-		else {
-			return common_air_status_act();
+	else {
+		switch (situation_kind) {
+			case FIGHTER_SITUATION_GROUND: {
+				return common_ground_status_act();
+			} break;
+			case FIGHTER_SITUATION_AIR: {
+				return common_air_status_act();
+			} break;
+			default: {
+				return false;
+			} break;
 		}
 	}
-	return false;
 }
 
 bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status, bool require_different_status) {

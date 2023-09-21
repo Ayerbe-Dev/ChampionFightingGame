@@ -83,7 +83,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbo
 	}
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-	owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	unique_process_outgoing_fighter_hitbox_collision_blocked(hitbox, defender);
 }
 
@@ -95,7 +95,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbo
 	}
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 16;
-	owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	unique_process_outgoing_fighter_hitbox_collision_parried(hitbox, defender);
 }
 
@@ -103,7 +103,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbo
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 16;
-	owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(hitbox, defender);
 }
 
@@ -111,7 +111,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbo
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-	owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(0.0, owner->fighter_float[FIGHTER_FLOAT_SUPER_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0.0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 	unique_process_outgoing_fighter_hitbox_collision_armored(hitbox, defender);
 }
 

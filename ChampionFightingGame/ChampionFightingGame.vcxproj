@@ -277,7 +277,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterCinematicFunctions.cpp" />
     <ClCompile Include="FighterFrameDataFunctions.cpp" />
     <ClCompile Include="FighterGrabFunctions.cpp" />
-    <ClCompile Include="FighterHitboxFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
     <ClCompile Include="FighterScriptFunctions.cpp" />

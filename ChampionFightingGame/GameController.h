@@ -10,6 +10,17 @@ enum {
 	GAME_CONTROLLER_UPDATE_MAX,
 };
 
+const int BUFFER_LP = 1;
+const int BUFFER_MP = 2;
+const int BUFFER_HP = 4;
+const int BUFFER_LK = 8;
+const int BUFFER_MK = 16;
+const int BUFFER_HK = 32;
+const int BUFFER_STICK_L = 64;
+const int BUFFER_STICK_R = 128;
+const int BUFFER_STICK_U = 256;
+const int BUFFER_STICK_D = 512;
+
 class GameController {
 public:
 	GameController();
@@ -38,19 +49,26 @@ public:
 	void set_button_on(unsigned int button_kind, int duration = 1);
 	void set_button_off(unsigned int button_kind);
 
+	void add_buffer_button(unsigned int button_kind, unsigned int buffer_kind);
 	bool is_valid_buffer_button(unsigned int button_kind);
 	void reset_buffer();
-	void sort_buffer(unsigned int button);
+	short get_buffer_code();
 
+	void set_id(int id);
+	void set_stick_hold_timer(int h, int v);
+private:
 	int id;
+	int stick_hold_h_timer;
+	int stick_hold_v_timer;
+
 	std::unordered_map<unsigned int, unsigned int> button_map;
 	std::unordered_map<unsigned int, unsigned int> key_map[2];
 	std::unordered_map<SDL_GameControllerButton, unsigned int> controller_map[2];
 	std::unordered_map<SDL_GameControllerAxis, unsigned int> axis_map[2];
 
+	std::unordered_map<unsigned int, unsigned int> buffer_buttons;
+
 	std::vector<Button> button_info;
-	unsigned int buffer_order[6] = { BUTTON_LP, BUTTON_MP, BUTTON_HP, BUTTON_LK, BUTTON_MK, BUTTON_HK };
+	short buffer_code = 0;
 	SDL_GameController* controller;
-	int stick_hold_h_timer;
-	int stick_hold_v_timer;
 };

@@ -147,8 +147,6 @@ StageSelect::StageSelect() {
 	num_slots_per_row = 1;
 	selected = false;
 
-	game_manager->set_game_state(this);
-
 	menu_objects.resize(STAGE_SELECT_GROUP_MAX);
 
 	if (!load_stage_select()) {

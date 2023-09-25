@@ -50,6 +50,7 @@ public:
 	void update_hurtbox_pos();
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();
+	void set_hurtbox_intangible_kind(int id, IntangibleKind intangible_kind);
 
 	//Grabbox
 
@@ -268,6 +269,7 @@ public:
 	void NEW_HURTBOX(ScriptArg args);
 	void CLEAR_HURTBOX(ScriptArg args);
 	void CLEAR_HURTBOX_ALL(ScriptArg args);
+	void SET_HURTBOX_INTANGIBLE_KIND(ScriptArg args);
 	
 	void NEW_GRABBOX(ScriptArg args);
 	void CLEAR_GRABBOX(ScriptArg args);

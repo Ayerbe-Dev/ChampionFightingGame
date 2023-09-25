@@ -33,3 +33,7 @@ void BattleObject::clear_hurtbox_all() {
 		hurtboxes[i].clear();
 	}
 }
+
+void BattleObject::set_hurtbox_intangible_kind(int id, IntangibleKind intangible_kind) {
+	hurtboxes[id].intangible_kind = intangible_kind;
+}

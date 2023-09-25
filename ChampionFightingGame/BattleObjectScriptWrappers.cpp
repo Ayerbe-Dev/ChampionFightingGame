@@ -108,6 +108,12 @@ void BattleObject::CLEAR_HURTBOX_ALL(ScriptArg args) {
 	clear_hurtbox_all();
 }
 
+void BattleObject::SET_HURTBOX_INTANGIBLE_KIND(ScriptArg args) {
+	UNWRAP(id, int);
+	UNWRAP(intangible_kind, IntangibleKind);
+	set_hurtbox_intangible_kind(id, intangible_kind);
+}
+
 void BattleObject::NEW_PUSHBOX(ScriptArg args) {
 	UNWRAP(id, int);
 	UNWRAP(anchor, glm::vec2);

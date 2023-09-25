@@ -119,10 +119,57 @@ unsigned int Fighter::get_flick_dir(bool internal_dir) {
 	}
 }
 
+unsigned int Fighter::get_buffer_stick_dir(bool internal_dir) {
+	short buffer_code = player->controller.get_buffer_code();
+	bool right = internal_facing_right;
+	if (!internal_dir) {
+		right = facing_right;
+	}
+	if ((buffer_code & BUFFER_STICK_U) && !(buffer_code & BUFFER_STICK_D)) {
+		if (((buffer_code & BUFFER_STICK_L) || (buffer_code & BUFFER_STICK_R)) && !((buffer_code & BUFFER_STICK_L) && (buffer_code & BUFFER_STICK_R))) {
+			if ((bool)(buffer_code & BUFFER_STICK_R) == right) {
+				return 9;
+			}
+			else {
+				return 7;
+			}
+		}
+		else {
+			return 8;
+		}
+	}
+	else if (!(buffer_code & BUFFER_STICK_U) && (buffer_code & BUFFER_STICK_D)) {
+		if (((buffer_code & BUFFER_STICK_L) || (buffer_code & BUFFER_STICK_R)) && !((buffer_code & BUFFER_STICK_L) && (buffer_code & BUFFER_STICK_R))) {
+			if ((bool)(buffer_code & BUFFER_STICK_R) == right) {
+				return 3;
+			}
+			else {
+				return 1;
+			}
+		}
+		else {
+			return 2;
+		}
+	}
+	else {
+		if (((buffer_code & BUFFER_STICK_L) || (buffer_code & BUFFER_STICK_R)) && !((buffer_code & BUFFER_STICK_L) && (buffer_code & BUFFER_STICK_R))) {
+			if ((bool)(buffer_code & BUFFER_STICK_R) == right) {
+				return 6;
+			}
+			else {
+				return 4;
+			}
+		}
+		else {
+			return 5;
+		}
+	}
+}
+
 bool Fighter::get_attack_input(int attack_kind, unsigned int button, int stick_dir) {
 	if (attack_kind >= ATTACK_KIND_OTHER) {
 		if (attack_kind == ATTACK_KIND_OTHER) {
-			return check_button_input(button) && get_stick_dir() == stick_dir;
+			return check_button_input(button) && get_buffer_stick_dir() == stick_dir;
 		}
 		return false;
 	}
@@ -131,7 +178,7 @@ bool Fighter::get_attack_input(int attack_kind, unsigned int button, int stick_d
 	bool stick_check;
 	
 	button_check = check_button_input((attack_kind % 6) + 8);
-	stick_check = (attack_kind >= 6) == (get_stick_dir() < 4); 
+	stick_check = (attack_kind >= 6) == (get_buffer_stick_dir() < 4); 
 	return button_check && (stick_check || situation_kind != FIGHTER_SITUATION_GROUND);
 }
 

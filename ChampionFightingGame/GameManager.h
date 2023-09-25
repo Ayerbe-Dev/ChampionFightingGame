@@ -18,7 +18,7 @@ public:
 	void (*game_main[GAME_STATE_MAX])();
 
 	void update_state(int next_game_state = GAME_STATE_MAX, int next_game_context = GAME_CONTEXT_MAX);
-	void set_game_state(GameState *game_state, int init_hold_frames = 20, int hold_rate = 4);
+	void set_game_state(GameState *game_state);
 	GameState *get_game_state(int depth = 0);
 	void delete_game_state();
 

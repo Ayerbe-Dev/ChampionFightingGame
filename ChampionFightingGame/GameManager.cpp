@@ -61,10 +61,8 @@ void GameManager::update_state(int next_game_state, int next_game_context) {
 	}
 }
 
-void GameManager::set_game_state(GameState* game_state, int init_hold_frames, int hold_rate) {
+void GameManager::set_game_state(GameState* game_state) {
 	//Initialize GameManager values, assign the GameManager a target
-	this->init_hold_frames = init_hold_frames;
-	this->hold_rate = hold_rate;
 	this->game_state.push_back(game_state);
 	game_state->game_context = next_game_context;
 }

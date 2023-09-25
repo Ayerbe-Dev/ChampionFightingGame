@@ -14,17 +14,15 @@ Player::Player() {
 	control_type = CONTROL_TYPE_ADVANCE;
 
 	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
-	controller.stick_hold_v_timer = timer;
-	controller.stick_hold_h_timer = timer;
+	controller.set_stick_hold_timer(timer, timer);
 	player_info = nullptr;
 }
 
 Player::Player(int id) {
 	this->id = id;
 	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
-	controller.stick_hold_v_timer = timer;
-	controller.stick_hold_h_timer = timer;
-	controller.id = id;
+	controller.set_id(id);
+	controller.set_stick_hold_timer(timer, timer);
 	chara_kind = CHARA_KIND_MAX;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	set_default_button_mappings(id);

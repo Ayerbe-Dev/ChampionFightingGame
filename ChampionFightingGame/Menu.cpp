@@ -64,8 +64,6 @@ MainMenu::MainMenu() {
 	menu_frame = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_game_state(this);
-
 	RenderManager* render_manager = RenderManager::get_instance();
 
 	game_loader = new GameLoader(1);

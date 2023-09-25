@@ -397,9 +397,6 @@
     <ClCompile Include="ProjectileScriptWrappers.cpp">
       <Filter>2. Code Files\Object\Projectile\Projectile\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="FighterHitboxFunctions.cpp">
-      <Filter>2. Code Files\Object\Fighter\Fighter\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="FighterDataFunctions.cpp">
       <Filter>2. Code Files\Object\Fighter\Fighter\Functions</Filter>
     </ClCompile>

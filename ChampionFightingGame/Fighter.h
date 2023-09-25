@@ -76,6 +76,7 @@ public:
 	unsigned int get_stick_dir(bool internal_dir = true); //Stick direction, relative to your facing direction. Returns num pad notation.
 	unsigned int get_stick_dir_no_lr();
 	unsigned int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
+	unsigned int get_buffer_stick_dir(bool internal_dir = true); //Reads from the buffer code instead of the current frame
 	bool get_attack_input(int attack_kind, unsigned int button = 0, int stick_dir = 0);
 	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
 	bool attack_cancel(int attack_kind, unsigned int button = 0, int stick_dir = 10);
@@ -112,11 +113,6 @@ public:
 	void dec_int(int target);
 	void set_float(int target, float val);
 	void set_flag(int target, bool val);
-
-	//Hitbox
-	
-	void clear_hitbox(int id) override;
-	void clear_hitbox_all() override;	
 
 	//Grab Functions
 
@@ -417,6 +413,9 @@ public:
 	virtual void status_attack_air();
 	virtual void enter_status_attack_air();
 	virtual void exit_status_attack_air();
+	virtual void status_backdash_attack();
+	virtual void enter_status_backdash_attack();
+	virtual void exit_status_backdash_attack();
 	virtual void status_advance();
 	virtual void enter_status_advance();
 	virtual void exit_status_advance();

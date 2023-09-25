@@ -67,7 +67,6 @@ CSS::CSS() {
 	stage_demo.init_shader();
 	stage_demo.model.load_textures();
 
-	game_manager->set_game_state(this);
 	menu_objects.resize(CHARA_SELECT_GROUP_MAX);
 
 	if (!load_css()) {

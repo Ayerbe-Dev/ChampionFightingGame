@@ -41,7 +41,6 @@ void title_screen_main() {
 
 TitleScreen::TitleScreen() {
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_game_state(this);
 
 	title_l1.init("resource/game_state/title/ui/title-l1.png");
 	title_l2.init("resource/game_state/title/ui/title-l2.png");

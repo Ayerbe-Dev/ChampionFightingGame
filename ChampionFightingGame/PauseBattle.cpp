@@ -40,8 +40,6 @@ void pause_battle_main() {
 PauseBattle::PauseBattle() {
 	GameManager* game_manager = GameManager::get_instance();
 
-	game_manager->set_game_state(this);
-
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 

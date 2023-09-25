@@ -232,16 +232,16 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 							if (abs(that_pushbox_back - pushbox_front) >= 1.0) {
 								//No movement, P1 front to P2 back.
 								set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
-								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
-								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								that->add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
+								add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
 							}
 						}
 						else {
 							if (abs(that_pushbox_front - pushbox_front) >= 1.0) {
 								//No movement, face to face.
 								set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
-								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
-								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								that->add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
+								add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
 							}
 						}
 					}
@@ -250,16 +250,16 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 							if (abs(that_pushbox_front - pushbox_back) >= 1.0) {
 								//No movement, P1 back to P2 front.
 								set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
-								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
-								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								that->add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
+								add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
 							}
 						}
 						else {
 							if (abs(that_pushbox_back - pushbox_back) >= 1.0) {
 								//No movement, back to back.
 								set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
-								that->add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
-								add_pos(glm::vec3(-abs(pos_x - pos.x) / 2, 0, 0));
+								that->add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
+								add_pos(glm::vec3(abs(pos_x - pos.x) / 2 * facing_dir, 0, 0));
 							}
 						}
 					}
@@ -1410,6 +1410,7 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 	if (hitbox->continue_launch && (status_kind == FIGHTER_STATUS_LAUNCH
 		|| status_kind == FIGHTER_STATUS_HITSTUN_FLOAT)) {
 		post_collision_status = FIGHTER_STATUS_LAUNCH;
+		return;
 	}
 	switch (hit_status) {
 	case (HIT_STATUS_NORMAL):

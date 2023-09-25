@@ -123,8 +123,6 @@ Battle::Battle() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 
-	game_manager->set_game_state(this);
-
 	num_rounds = 2;
 	sudden_death = false;
 	ko_timer = 0;

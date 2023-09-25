@@ -24,6 +24,7 @@ GameState::GameState() {
 	game_loader = nullptr;
 	game_context = GAME_CONTEXT_NORMAL;
 	player_id = 0;
+	GameManager::get_instance()->set_game_state(this);
 }
 
 GameState::~GameState() {
@@ -37,7 +38,7 @@ void GameState::process_game_state() {
 }
 
 void GameState::render_game_state() {
-	render_main();
+	GameManager::get_instance()->render_game_states();
 }
 
 void GameState::update_state(int game_state, int game_context) {

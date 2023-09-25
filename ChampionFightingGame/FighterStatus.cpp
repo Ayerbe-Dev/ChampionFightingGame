@@ -14,6 +14,7 @@ bool Fighter::common_ground_status_act(bool crouch) {
 		return true;
 	}
 	unsigned int stick_dir = get_stick_dir();
+	unsigned int buffer_stick_dir = get_buffer_stick_dir();
 	if (is_actionable()) {
 		if (stick_dir < 4) {
 			fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_CROUCH;
@@ -75,7 +76,7 @@ bool Fighter::common_ground_status_act(bool crouch) {
 					break;
 				}
 			}
-			if (stick_dir < 4) {
+			if (buffer_stick_dir < 4) {
 				fighter_int[FIGHTER_INT_ATTACK_KIND] += ATTACK_KIND_CLP;
 			}
 		
@@ -322,19 +323,24 @@ void Fighter::status_dash_f() {
 	}
 	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
 
-	if (frame >= get_local_param_int("dash_f_cancel_frame")) {
-		if (!fighter_flag[FIGHTER_FLAG_DASH_CANCEL]) {
-			if (get_stick_dir(false) == 4) {
-				if (get_local_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE) {
-					fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
-				}
+	if (frame >= get_local_param_int("dash_f_cancel_frame") && get_stick_dir(false) == 4) {
+		switch (get_local_param_int("dash_cancel_kind")) {
+			case (DASH_CANCEL_KIND_INFINITE): {
 				change_status(FIGHTER_STATUS_DASH_B, false);
 				return;
-			}
-		}
-		else if (get_local_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP) {
-			//TODO: Decide what the input for dash followups will be, make the status for it, and
-			//run the input check for it here
+			} break;
+			case (DASH_CANCEL_KIND_WHIFF_PUNISH_OFFENSIVE): {
+				if (!fighter_flag[FIGHTER_FLAG_DASH_CANCEL]) {
+					fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
+					change_status(FIGHTER_STATUS_DASH_B, false);
+					return;
+				}
+			} break;
+			case (DASH_CANCEL_KIND_WHIFF_PUNISH_DEFENSIVE):
+			case (DASH_CANCEL_KIND_NONE):
+			default: {
+
+			} break;
 		}
 	}
 }
@@ -366,18 +372,48 @@ void Fighter::status_dash_b() {
 	}
 	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
 
-	if (frame >= get_local_param_int("dash_b_cancel_frame")) {
-		if (!fighter_flag[FIGHTER_FLAG_DASH_CANCEL]) {
-			if (get_stick_dir(false) == 6) {
-				if (get_local_param_int("dash_cancel_kind") != DASH_CANCEL_KIND_INDEFINITE) {
-					fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
-				}
-				change_status(FIGHTER_STATUS_DASH_F, false);
+	if (frame >= get_local_param_int("dash_b_cancel_frame") && get_stick_dir(false) == 6) {
+		switch (get_local_param_int("dash_cancel_kind")) {
+			case (DASH_CANCEL_KIND_INFINITE): {
+				change_status(FIGHTER_STATUS_DASH_F);
 				return;
-			}
-		}
-		else if (get_local_param_int("dash_cancel_kind") == DASH_CANCEL_KIND_FOLLOWUP) {
-			//See note during dash_f status but for backdash followups
+			} break;
+			case (DASH_CANCEL_KIND_WHIFF_PUNISH_OFFENSIVE): {
+				std::array<bool, 6> inputs = {
+					check_button_input(BUTTON_LP),
+					check_button_input(BUTTON_MP),
+					check_button_input(BUTTON_HP),
+					check_button_input(BUTTON_LK),
+					check_button_input(BUTTON_MK),
+					check_button_input(BUTTON_HK)
+				};
+				if (std::find(std::begin(inputs), std::end(inputs), true) != std::end(inputs)) {
+					fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_OTHER;
+					change_status(FIGHTER_STATUS_BACKDASH_ATTACK);
+					return;
+				}
+			} break;
+			case (DASH_CANCEL_KIND_WHIFF_PUNISH_DEFENSIVE): {
+				if (check_button_input(BUTTON_HP) || check_button_input(BUTTON_HK)) {
+					fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_HP;
+					change_status(FIGHTER_STATUS_BACKDASH_ATTACK);
+					return;
+				}
+				if (check_button_input(BUTTON_MP) || check_button_input(BUTTON_MK)) {
+					fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_MP;
+					change_status(FIGHTER_STATUS_BACKDASH_ATTACK);
+					return;
+				}
+				if (check_button_input(BUTTON_LP) || check_button_input(BUTTON_LK)) {
+					fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_LP;
+					change_status(FIGHTER_STATUS_BACKDASH_ATTACK);
+					return;
+				}
+			} break;
+			case (DASH_CANCEL_KIND_NONE):
+			default: {
+
+			} break;
 		}
 	}
 }
@@ -841,6 +877,39 @@ void Fighter::enter_status_attack_air() {
 }
 
 void Fighter::exit_status_attack_air() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	stop_vc_all();
+	clear_effect_all();
+}
+
+void Fighter::status_backdash_attack() {
+	if (is_status_end()) {
+		return;
+	}
+}
+
+void Fighter::enter_status_backdash_attack() {
+	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+	switch (fighter_int[FIGHTER_INT_ATTACK_KIND]) {
+		case (ATTACK_KIND_LP): {
+			change_anim("backdash_attack_l");
+		} break;
+		case (ATTACK_KIND_MP): {
+			change_anim("backdash_attack_m");
+		} break;
+		case (ATTACK_KIND_HP): {
+			change_anim("backdash_attack_h");
+		} break;
+		case (ATTACK_KIND_OTHER): {
+			change_anim("backdash_attack");
+		} break;
+		default: {
+
+		} break;
+	}
+}
+
+void Fighter::exit_status_backdash_attack() {
 	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
 	stop_vc_all();
 	clear_effect_all();
@@ -1561,6 +1630,7 @@ void Fighter::status_landing_attack() {
 
 void Fighter::enter_status_landing_attack() {
 	landing_crossup();
+	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = true;
 	switch (fighter_int[FIGHTER_INT_ATTACK_KIND]) {
 		case ATTACK_KIND_LP: {
 			fighter_int[FIGHTER_INT_LANDING_LAG] = get_local_param_int("lp_landing_lag");
@@ -1585,6 +1655,10 @@ void Fighter::enter_status_landing_attack() {
 		case ATTACK_KIND_HK: {
 			fighter_int[FIGHTER_INT_LANDING_LAG] = get_local_param_int("hk_landing_lag");
 			change_anim("landing_hk", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
+		} break;
+		default: {
+			fighter_int[FIGHTER_INT_LANDING_LAG] = get_local_param_int("empty_landing_lag");
+			change_anim("landing", fighter_int[FIGHTER_INT_LANDING_LAG], -1.0);
 		} break;
 	}
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
@@ -1826,6 +1900,10 @@ void Fighter::load_fighter_status_scripts() {
 	status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::status_attack_air;
 	enter_status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::enter_status_attack_air;
 	exit_status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::exit_status_attack_air;
+
+	status_script[FIGHTER_STATUS_BACKDASH_ATTACK] = &Fighter::status_backdash_attack;
+	enter_status_script[FIGHTER_STATUS_BACKDASH_ATTACK] = &Fighter::enter_status_backdash_attack;
+	exit_status_script[FIGHTER_STATUS_BACKDASH_ATTACK] = &Fighter::exit_status_backdash_attack;
 
 	status_script[FIGHTER_STATUS_ADVANCE_FORWARD] = &Fighter::status_advance_forward;
 	enter_status_script[FIGHTER_STATUS_ADVANCE_FORWARD] = &Fighter::enter_status_advance_forward;

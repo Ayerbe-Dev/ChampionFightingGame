@@ -91,7 +91,6 @@ void debug_main() {
 
 DebugMenu::DebugMenu() {
 	GameManager* game_manager = GameManager::get_instance();
-	game_manager->set_game_state(this);
 
 	std::string crash_reason;
 	while (game_manager->get_crash_log(&crash_reason)) {

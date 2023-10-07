@@ -13,5 +13,5 @@ EricFireball::EricFireball(int id, Player* player) {
 	projectile_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
 	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
 
-	init();
+	load_projectile();
 }

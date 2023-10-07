@@ -11,6 +11,8 @@ public:
 	void load_projectile_unique_status_scripts() override;
 	void load_move_scripts() override;
 
+	void unique_process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender) override;
+
 	void projectile_unique_main() override;
 
 	void status_activate() override;

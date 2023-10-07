@@ -36,7 +36,7 @@ public:
 
 	//Setup
 	
-	void init();
+	void load_projectile();
 	void load_model_shader();
 	void load_anim_list();
 	void load_projectile_status_scripts();
@@ -44,7 +44,7 @@ public:
 	virtual void load_move_scripts() {};
 	void load_sound_list();
 	void set_default_vars();
-	void init_boxes();
+	void load_collision_boxes();
 
 	void add_pos(glm::vec3 pos);
 	void set_pos(glm::vec3 pos);
@@ -165,8 +165,6 @@ public:
 	void CHANGE_STATUS(ScriptArg args);
 
 	//Status Scripts
-
-	virtual void process_hit();
 
 	virtual void status_none();
 	virtual void enter_status_none();

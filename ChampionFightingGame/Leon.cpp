@@ -20,5 +20,5 @@ Leon::Leon(Player* player) {
 	fighter_int.resize(CHARA_LEON_INT_MAX, 0);
 	fighter_float.resize(CHARA_LEON_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_LEON_FLAG_MAX, false);
-	init();
+	load_fighter();
 }

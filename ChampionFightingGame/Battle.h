@@ -121,33 +121,50 @@ public:
 	void print_end(BattleObject* object);
 
 	int multihit;
+
+	bool collision_kind_ground;
+	bool collision_kind_air;
+	bool collision_kind_down;
+	bool collision_kind_projectile;
+	bool collision_kind_soft_intangible;
+	bool collision_kind_armor;
+
+	CounterhitType counterhit_type;
+	HitStatus hit_status;
+	std::string custom_hit_status;
+	HitStatus counterhit_status;
+	std::string custom_counterhit_status;
+	bool down_face_down;
+	bool continue_launch;
+	int juggle_start;
+	int juggle_increase;
+	int juggle_max;
+	HitHeight hit_height;
 	float damage;
 	float chip_damage;
 	int damage_scale;
 	float meter_gain;
-	HitKind hit_kind;
-	AttackLevel attack_level;
-	AttackHeight attack_height;
 	int hitlag;
 	int blocklag;
 	int hit_advantage;
 	int block_advantage;
-	float hit_pushback;
-	float block_pushback;
-	HitStatus hit_status;
-	HitStatus counterhit_status;
-	CounterhitType counterhit_type;
-	int juggle_start;
-	int juggle_increase;
-	int juggle_max;
-	ClankKind clank_kind;
-	DamageKind damage_kind;
-	bool continue_launch;
 	bool disable_hitstun_parry;
+	float pushback_ground_hit;
+	float pushback_ground_block;
+	float pushback_air_x;
+	float pushback_air_y;
+	int pushback_frames;
+
+	bool has_launch_target_pos;
+	glm::vec3 launch_target_pos;
 	float launch_init_y;
 	float launch_gravity_y;
 	float launch_max_fall_speed;
 	float launch_speed_x;
+	DamageKind damage_kind;
+	HitLevel hit_level;
+	int hit_effect_id;
+	int hit_sound_id;
 };
 
 class SimHurtbox : public Simbox {
@@ -156,8 +173,15 @@ public:
 	void print_start(BattleObject* battle_object);
 	void print_end(BattleObject* object);
 	HurtboxKind hurtbox_kind;
-	bool armor;
-	IntangibleKind intangible_kind;
+	int armor_hits;
+	bool intangible_kind_high;
+	bool intangible_kind_mid;
+	bool intangible_kind_low;
+	bool intangible_kind_aerial;
+	bool intangible_kind_throw;
+	bool intangible_kind_projectile;
+	bool intangible_kind_invincible;
+	bool intangible_kind_soft;
 };
 
 class SimGrabbox : public Simbox {
@@ -165,8 +189,17 @@ public:
 	SimGrabbox();
 	void print_start(BattleObject* battle_object);
 	void print_end(BattleObject* object);
-	GrabboxKind grabbox_kind;
-	HitKind hit_kind;
+
+	bool grabbox_kind_notech;
+	bool grabbox_kind_hitstun;
+	
+	bool collision_kind_ground;
+	bool collision_kind_air;
+	bool collision_kind_down;
+	bool collision_kind_projectile;
+	bool collision_kind_soft_intangible;
+	bool collision_kind_armor;
+
 	std::string attacker_status;
 	std::string defender_status;
 };

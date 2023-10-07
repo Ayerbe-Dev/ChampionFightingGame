@@ -10,7 +10,7 @@ void BattleObject::SET_RATE(ScriptArg args) {
 
 void BattleObject::SET_FRAME(ScriptArg args) {
 	UNWRAP(frame, float);
-	set_rate(frame);
+	set_frame(frame);
 }
 
 void BattleObject::NEW_BLOCKBOX(ScriptArg args) {
@@ -22,40 +22,126 @@ void BattleObject::NEW_BLOCKBOX(ScriptArg args) {
 void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(id, int);
 	UNWRAP(multihit, int);
-	UNWRAP(damage, float);
-	UNWRAP(chip_damage, float);
-	UNWRAP(damage_scale, int);
-	UNWRAP(meter_gain, float);
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
-	UNWRAP(hit_kind, HitKind);
-	UNWRAP(attack_level, AttackLevel);
-	UNWRAP(attack_height, AttackHeight);
-	UNWRAP(hitlag, int);
-	UNWRAP(blocklag, int);
-	UNWRAP(hitstun, int);
-	UNWRAP(blockstun, int);
-	UNWRAP(hit_pushback, float);
-	UNWRAP(block_pushback, float);
-	UNWRAP(hit_status, HitStatus);
-	UNWRAP(counterhit_status, HitStatus);
+	UNWRAP(collision_kind, CollisionKind);
 	UNWRAP(counterhit_type, CounterhitType);
-	UNWRAP(juggle_start, int);
-	UNWRAP(juggle_increase, int);
-	UNWRAP(juggle_max, int);
-	UNWRAP(clank_kind, ClankKind);
-	UNWRAP(ko_kind, DamageKind);
-	UNWRAP(continue_launch, bool);
-	UNWRAP(disable_hitstun_parry, bool);
-	UNWRAP(launch_init_y, float);
-	UNWRAP(launch_gravity_y, float);
-	UNWRAP(launch_max_fall_speed, float);
-	UNWRAP(launch_speed_x, float);
-	new_hitbox(id, multihit, damage, chip_damage, damage_scale, meter_gain,
-		anchor, offset, hit_kind, attack_level, attack_height, hitlag, blocklag, hitstun,
-		blockstun, hit_pushback, block_pushback, hit_status, counterhit_status, counterhit_type,
-		juggle_start, juggle_increase, juggle_max, clank_kind, ko_kind, continue_launch,
-		disable_hitstun_parry, launch_init_y, launch_gravity_y, launch_max_fall_speed, launch_speed_x);
+	UNWRAP(hit_status, HitStatus);
+	int custom_hit_status = 0;
+	if (hit_status == HIT_STATUS_CUSTOM) { //Only unwrap a custom status if we say there is one
+		UNWRAP_NO_DECL(custom_hit_status);
+	}
+	HitStatus counterhit_status = HIT_STATUS_NONE;
+	int custom_counterhit_status = 0;
+	if (counterhit_type != COUNTERHIT_TYPE_NONE) { //Don't bother unwrapping counterhit statuses if
+		//the move can't ever use the counterhit status
+		UNWRAP_NO_DECL(counterhit_status);
+		if (counterhit_status == HIT_STATUS_CUSTOM) {
+			UNWRAP_NO_DECL(custom_counterhit_status);
+		}
+	}
+	bool knockdown_face_down = false;
+	if (hit_status == HIT_STATUS_KNOCKDOWN || counterhit_status == HIT_STATUS_KNOCKDOWN ||
+		hit_status == HIT_STATUS_FLOAT || counterhit_status == HIT_STATUS_FLOAT) {
+		UNWRAP_NO_DECL(knockdown_face_down);
+	}
+	bool continue_launch = false;
+	if (hit_status != HIT_STATUS_LAUNCH && (collision_kind & COLLISION_KIND_AIR))  { //We don't need to 
+		//check if the counterhit status isn't launch bc launch parry is ts own status so counterhitting 
+		//an already-launched opponent isn't possible
+		UNWRAP_NO_DECL(continue_launch);
+	}
+	int juggle_start = 0;
+	int juggle_increase = 0;
+	int juggle_max = 0;
+	if ((collision_kind & COLLISION_KIND_AIR) || hit_status == HIT_STATUS_LAUNCH
+		|| counterhit_status == HIT_STATUS_LAUNCH) {
+		UNWRAP_NO_DECL(juggle_start);
+		if (collision_kind & COLLISION_KIND_AIR) {
+			UNWRAP_NO_DECL(juggle_increase);
+			UNWRAP_NO_DECL(juggle_max);
+		}
+	}
+	UNWRAP(hit_height, HitHeight);
+	UNWRAP(damage, float);
+	float chip_damage = 0.0;
+	if (collision_kind & COLLISION_KIND_GROUND) {
+		UNWRAP_NO_DECL(chip_damage);
+	}
+	UNWRAP(damage_scale, int);
+	UNWRAP(meter_gain, float);
+	UNWRAP(hitlag, int);
+	int hitstun = 0;
+	int blocklag = 0;
+	int blockstun = 0;
+	if (collision_kind & COLLISION_KIND_GROUND) {
+		UNWRAP_NO_DECL(blocklag);
+	}
+	if (hit_status != HIT_STATUS_LAUNCH || (counterhit_status != HIT_STATUS_LAUNCH
+		&& counterhit_status != HIT_STATUS_NONE)) {
+		UNWRAP_NO_DECL(hitstun);
+	}
+	if (collision_kind & COLLISION_KIND_GROUND) {
+		UNWRAP_NO_DECL(blockstun);
+	}
+	bool disable_hitstun_parry = false;
+	if (hit_status == HIT_STATUS_NORMAL || hit_status == HIT_STATUS_LAUNCH
+	|| counterhit_status == HIT_STATUS_NORMAL || counterhit_status == HIT_STATUS_LAUNCH) {
+		UNWRAP_NO_DECL(disable_hitstun_parry);
+	}
+	float pushback_ground_hit = 0.0;
+	float pushback_ground_block = 0.0;
+	float pushback_air_x = 0.0;
+	float pushback_air_y = 0.0;
+	int pushback_frames = 0;
+	if (hit_status == HIT_STATUS_NORMAL || counterhit_status == HIT_STATUS_NORMAL) {
+		if (collision_kind & COLLISION_KIND_GROUND) {
+			UNWRAP_NO_DECL(pushback_ground_hit);
+			UNWRAP_NO_DECL(pushback_ground_block);
+		}
+		if (collision_kind & COLLISION_KIND_AIR) {
+			UNWRAP_NO_DECL(pushback_air_x);
+			UNWRAP_NO_DECL(pushback_air_y);
+		}
+		UNWRAP_NO_DECL(pushback_frames);
+	}
+	else if (collision_kind & COLLISION_KIND_GROUND) {
+		UNWRAP_NO_DECL(pushback_ground_block);
+		UNWRAP_NO_DECL(pushback_frames);
+	}
+	bool has_launch_target_pos = false;
+	glm::vec3 launch_target_pos = glm::vec3(0.0);
+	float launch_init_y = 0.0;
+	float launch_gravity = 0.0;
+	float launch_max_fall_speed = 0.0;
+	float launch_speed_x = 0.0;
+	if (hit_status == HIT_STATUS_LAUNCH || counterhit_status == HIT_STATUS_LAUNCH
+		|| hit_status == HIT_STATUS_FLOAT || counterhit_status == HIT_STATUS_FLOAT
+		|| continue_launch) {
+		if (GET_NEXT_TYPEID == typeid(glm::vec3)) {
+			has_launch_target_pos = true;
+			UNWRAP_NO_DECL(launch_target_pos);
+		}
+		else {
+			UNWRAP_NO_DECL(launch_init_y);
+			UNWRAP_NO_DECL(launch_gravity);
+			UNWRAP_NO_DECL(launch_max_fall_speed);
+			UNWRAP_NO_DECL(launch_speed_x);
+		}
+	}
+	UNWRAP(damage_kind, DamageKind);
+	UNWRAP(hit_level, HitLevel);
+	UNWRAP(hit_effect_id, int);
+	UNWRAP(hit_sound_id, int);
+	new_hitbox(id, multihit, anchor, offset, collision_kind, counterhit_type,
+		hit_status, custom_hit_status, counterhit_status, custom_counterhit_status,
+		knockdown_face_down, continue_launch, juggle_start, juggle_increase, juggle_max, hit_height,
+		damage, chip_damage, damage_scale, meter_gain, hitlag, blocklag, hitstun, blockstun,
+		disable_hitstun_parry, pushback_ground_hit, pushback_ground_block, pushback_air_x,
+		pushback_air_y, pushback_frames, launch_init_y, launch_gravity, launch_max_fall_speed,
+		launch_speed_x, launch_target_pos, has_launch_target_pos, damage_kind, hit_level,
+		hit_effect_id, hit_sound_id
+	);
 }
 
 void BattleObject::CLEAR_HITBOX(ScriptArg args) {
@@ -72,7 +158,7 @@ void BattleObject::NEW_GRABBOX(ScriptArg args) {
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
 	UNWRAP(grabbox_kind, GrabboxKind);
-	UNWRAP(hit_kind, HitKind);
+	UNWRAP(hit_kind, CollisionKind);
 	UNWRAP(attacker_status_if_hit, int);
 	UNWRAP(defender_status_if_hit, int);
 	new_grabbox(id, anchor, offset, grabbox_kind, hit_kind, attacker_status_if_hit, defender_status_if_hit);
@@ -93,10 +179,10 @@ void BattleObject::NEW_HURTBOX(ScriptArg args) {
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
 	UNWRAP(hurtbox_kind, HurtboxKind);
-	UNWRAP(armor, bool);
+	UNWRAP(armor_hits, int);
 	UNWRAP(intangible_kind, IntangibleKind);
 
-	new_hurtbox(id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+	new_hurtbox(id, anchor, offset, hurtbox_kind, armor_hits, intangible_kind);
 }
 
 void BattleObject::CLEAR_HURTBOX(ScriptArg args) {

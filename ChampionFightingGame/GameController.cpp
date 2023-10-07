@@ -78,27 +78,27 @@ void GameController::poll_buttons() {
 		else {
 			button_info[i].button_on = keyboard_state[button_info[i].k_mapping];
 		}
-		if (button_kind == BUTTON_MACRO_L && button_info[i].button_on) {
+		if (button_kind == BUTTON_2L && button_info[i].button_on) {
 			for (int i = BUTTON_LP; i <= BUTTON_LK; i += 3) {
 				button_info[button_map[i]].button_on = true;
 			}
 		}
-		if (button_kind == BUTTON_MACRO_M && button_info[i].button_on) {
+		if (button_kind == BUTTON_2M && button_info[i].button_on) {
 			for (int i = BUTTON_MP; i <= BUTTON_MK; i += 3) {
 				button_info[button_map[i]].button_on = true;
 			}
 		}
-		if (button_kind == BUTTON_MACRO_H && button_info[i].button_on) {
+		if (button_kind == BUTTON_2H && button_info[i].button_on) {
 			for (int i = BUTTON_HP; i <= BUTTON_HK; i += 3) {
 				button_info[button_map[i]].button_on = true;
 			}
 		}
-		if (button_kind == BUTTON_MACRO_P && button_info[i].button_on) {
+		if (button_kind == BUTTON_3P && button_info[i].button_on) {
 			for (int i = BUTTON_LP; i <= BUTTON_HP; i++) {
 				button_info[button_map[i]].button_on = true;
 			}
 		}
-		if (button_kind == BUTTON_MACRO_K && button_info[i].button_on) {
+		if (button_kind == BUTTON_3K && button_info[i].button_on) {
 			for (int i = BUTTON_LK; i <= BUTTON_HK; i++) {
 				button_info[button_map[i]].button_on = true;
 			}

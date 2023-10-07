@@ -13,8 +13,11 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
 		fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = false;
 		fighter_flag[FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK] = false;
+		fighter_int[FIGHTER_INT_ARMOR_HITS] = 0;
 		fighter_int[FIGHTER_INT_SUCCESS_COUNTERHIT_VAL] = 0;
-		fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] = FIGHTER_STATUS_MAX;
+		fighter_int[FIGHTER_INT_BUFFER_STATUS] = FIGHTER_STATUS_MAX;
+		fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND] = 0;
+		fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO] = 0;
 		disable_all_cancels();
 		if (call_end_status) {
 			(this->*exit_status_script[status_kind])();
@@ -28,28 +31,32 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 	}
 }
 
-bool Fighter::change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status, bool require_different_status) {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		return change_status(new_status_kind, call_end_status, require_different_status);
+bool Fighter::buffer_change_status(unsigned int new_status_kind, unsigned int cancel_kind, bool call_end_status, bool require_different_status) {
+	if (is_enable_cancel(cancel_kind) || is_actionable()) {
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
+			if (new_status_kind == FIGHTER_STATUS_ATTACK || new_status_kind == FIGHTER_STATUS_ATTACK_AIR) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND];
+				if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_OTHER) {
+					fighter_int[FIGHTER_INT_ATTACK_OTHER_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO];
+				}
+			}
+			return change_status(new_status_kind, call_end_status, require_different_status);
+		}
+		else {
+			fighter_int[FIGHTER_INT_BUFFER_STATUS] = new_status_kind;
+			fighter_int[FIGHTER_INT_BUFFER_CANCEL_KIND] = CANCEL_KIND_MAX;
+			fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER] = 1;
+			fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_END] = call_end_status;
+			fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_SEPARATE] = require_different_status;
+			return true;
+		}
 	}
-	else {
-		fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] = new_status_kind;
-		fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_END] = call_end_status;
-		fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_SEPARATE] = require_different_status;
-		return true;
-	}
-}
-
-bool Fighter::buffer_status_pre_enable_cancel(unsigned int new_status_kind, unsigned int cancel_kind, bool call_end_status, bool require_different_status) {
-	if (is_enable_cancel(cancel_kind)) {
-		return change_status_after_hitlag(new_status_kind, call_end_status, require_different_status);
-	}
-	else if (fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
-		fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] = new_status_kind;
-		fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_KIND] = cancel_kind;
-		fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER] = get_param_int(PARAM_FIGHTER, "motion_special_timer");
-		fighter_flag[FIGHTER_FLAG_PRE_ENABLE_CANCEL_STATUS_END] = call_end_status;
-		fighter_flag[FIGHTER_FLAG_PRE_ENABLE_CANCEL_STATUS_SEPARATE] = require_different_status;
+	else if (status_kind != new_status_kind || !require_different_status) {
+		fighter_int[FIGHTER_INT_BUFFER_STATUS] = new_status_kind;
+		fighter_int[FIGHTER_INT_BUFFER_CANCEL_KIND] = cancel_kind;
+		fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER] = get_param_int(PARAM_FIGHTER, "motion_special_timer");
+		fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_END] = call_end_status;
+		fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_SEPARATE] = require_different_status;
 		return true;
 	}
 	return false;
@@ -105,7 +112,7 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 		}
 		return change_status(post_status_kind, call_end_status, require_different_status);
 	}
-	else {
+	else if (is_actionable()) {
 		switch (situation_kind) {
 			case FIGHTER_SITUATION_GROUND: {
 				return common_ground_status_act();
@@ -118,6 +125,7 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 			} break;
 		}
 	}
+	return false;
 }
 
 bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status, bool require_different_status) {

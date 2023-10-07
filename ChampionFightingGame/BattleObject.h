@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "MoveScript.h"
-#include "Box.h"
+#include "CollisionBox.h"
 #include "Param.h"
 #include "VariadicHelpers.h"
 #include "BattleObjectConstants.h"
@@ -29,14 +29,16 @@ public:
 
 	//Hitbox
 
-	void new_hitbox(int id, int multihit, float damage, float chip_damage,
-		int damage_scale, float meter_gain, glm::vec2 anchor, glm::vec2 offset, HitKind hit_kind,
-		AttackLevel attack_level, AttackHeight attack_height, int hitlag, int blocklag, int hitstun,
-		int blockstun, float hit_pushback, float block_pushback, HitStatus hit_status,
-		HitStatus counterhit_status, CounterhitType counterhit_type, int juggle_start, int juggle_increase,
-		int juggle_max, ClankKind clank_kind, DamageKind ko_kind, bool continue_launch,
-		bool disable_hitstun_parry, float launch_init_y, float launch_gravity_y,
-		float launch_max_fall_speed, float launch_speed_x
+	void new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, CollisionKind collision_kind,
+		CounterhitType counterhit_type, HitStatus hit_status, unsigned int custom_hit_status,
+		HitStatus counterhit_status, unsigned int custom_counterhit_status, bool knockdown_face_down,
+		bool continue_launch, int juggle_start, int juggle_increase, int juggle_max, HitHeight hit_height,
+		float damage, float chip_damage, int damage_scale, float meter_gain, int hitlag, int blocklag,
+		int hitstun, int blockstun, bool disable_hitstun_parry, float pushback_ground_hit,
+		float pushback_ground_block, float pushback_air_x, float pushback_air_y, int pushback_frames,
+		float launch_init_y, float launch_gravity, float launch_max_fall_speed, float launch_speed_x,
+		glm::vec3 launch_target_pos, bool has_launch_target_pos, DamageKind damage_kind,
+		HitLevel hit_level, int hit_effect_id, int hit_sound_id
 	);
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos();
@@ -46,7 +48,7 @@ public:
 
 	//Hurtbox
 
-	void new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, HurtboxKind hurtbox_kind, bool armor, IntangibleKind intangible_kind);
+	void new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, HurtboxKind hurtbox_kind, int armor_hits, IntangibleKind intangible_kind);
 	void update_hurtbox_pos();
 	void clear_hurtbox(int id);
 	void clear_hurtbox_all();
@@ -55,7 +57,7 @@ public:
 	//Grabbox
 
 	void new_grabbox(int id, glm::vec2 anchor, glm::vec2 offset, GrabboxKind grabbox_kind, 
-		HitKind hit_kind, unsigned int attacker_status_if_hit, unsigned int defender_status_if_hit);
+		CollisionKind hit_kind, unsigned int attacker_status_if_hit, unsigned int defender_status_if_hit);
 	void update_grabbox_pos();
 	void clear_grabbox(int id);
 	void clear_grabbox_all();

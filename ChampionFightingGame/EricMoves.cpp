@@ -245,7 +245,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 5,145 }, glm::vec2{ 240, 165 });
 		});
 		execute_frame(4, [this]() {
-			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), HIT_KIND_GROUND | HIT_KIND_AIR, ATTACK_LEVEL_LIGHT, ATTACK_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_COUNTER, 1, 1, 4, CLANK_KIND_NORMAL, DAMAGE_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
+			push_function(&Fighter::NEW_HITBOX, 0, 0, 30.0, 5.0, 1, 15.0, glm::vec2(5, 145), glm::vec2(200, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_LEVEL_LIGHT, HIT_HEIGHT_MID, 8, 6, 10, 4, 10.0, 10.0, HIT_STATUS_NORMAL, HIT_STATUS_NORMAL, COUNTERHIT_TYPE_COUNTER, 1, 1, 4, DAMAGE_KIND_NORMAL, false, false, 10.0, 0.0, 0.0, 1.0);
 			push_function(&Fighter::SET_RATE, 1.0);
 		});
 		execute_wait(4, [this]() {
@@ -471,7 +471,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(3, [this]() {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, HIT_KIND_GROUND | HIT_KIND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
+			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_NORMAL, COLLISION_KIND_GROUND | COLLISION_KIND_AIR, FIGHTER_STATUS_THROW, FIGHTER_STATUS_GRABBED);
 		});
 	});
 	script("throw_f", [this]() {
@@ -501,7 +501,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ -15, 55 }, glm::vec2{ 35, 95 });
 		});
 		execute_frame(3, [this]() {
-			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, HIT_KIND_GROUND | HIT_KIND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
+			new_grabbox(0, glm::vec2{ 15, 55 }, glm::vec2{ 70, 100 }, GRABBOX_KIND_HITSTUN, COLLISION_KIND_GROUND | COLLISION_KIND_AIR, FIGHTER_STATUS_THROW_AIR, FIGHTER_STATUS_GRABBED);
 		});
 	});
 	script("throw_f_air", [this]() {

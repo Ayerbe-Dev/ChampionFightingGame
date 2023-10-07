@@ -538,9 +538,6 @@
     <ClCompile Include="Sound.cpp">
       <Filter>2. Code Files\Engine\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
-      <Filter>2. Code Files\Object\ObjectComponent</Filter>
-    </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>2. Code Files\Engine\Polling</Filter>
     </ClCompile>
@@ -613,19 +610,13 @@
     <ClCompile Include="ScreenText.cpp">
       <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionBox.cpp">
+      <Filter>2. Code Files\Object\ObjectComponent\CollisionBox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
       <Filter>1. Header Files\Game State</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>1. Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="TitleScreen.h">
       <Filter>1. Header Files\Game State</Filter>
@@ -655,9 +646,6 @@
       <Filter>1. Header Files\Deps</Filter>
     </ClInclude>
     <ClInclude Include="Fighter.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterInterface.h">
       <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
     </ClInclude>
     <ClInclude Include="Projectile.h">
@@ -954,24 +942,6 @@
     <ClInclude Include="RamonaStatus.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Ramona</Filter>
     </ClInclude>
-    <ClInclude Include="FighterAttribute.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterConstants.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterFlag.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterFloat.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterInt.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterStatus.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
-    </ClInclude>
     <ClInclude Include="DingoConstants.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Dingo</Filter>
     </ClInclude>
@@ -1097,9 +1067,6 @@
     </ClInclude>
     <ClInclude Include="RowanFireballConstants.h">
       <Filter>1. Header Files\Object\Projectile\ProjectileUnique\RowanFireball</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaKind.h">
-      <Filter>1. Header Files\Object\Fighter\Fighter</Filter>
     </ClInclude>
     <ClInclude Include="Stage.h">
       <Filter>1. Header Files\Object\Stage</Filter>
@@ -1287,9 +1254,6 @@
     <ClInclude Include="Sound.h">
       <Filter>1. Header Files\Engine\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
-      <Filter>1. Header Files\Object\ObjectComponent</Filter>
-    </ClInclude>
     <ClInclude Include="MoveScript.h">
       <Filter>1. Header Files\Object\ObjectComponent</Filter>
     </ClInclude>
@@ -1367,6 +1331,39 @@
     </ClInclude>
     <ClInclude Include="ScreenText.h">
       <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBox.h">
+      <Filter>1. Header Files\Object\ObjectComponent\CollisionBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBoxConstants.h">
+      <Filter>1. Header Files\Object\ObjectComponent\CollisionBox</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonConstants.h">
+      <Filter>1. Header Files\Engine\Polling</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterAttribute.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterConstants.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterFlag.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterFloat.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterInt.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterInterface.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterStatus.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaKind.h">
+      <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3010,6 +3007,15 @@
     </Filter>
     <Filter Include="2. Code Files\Engine\Rendering\2DRendering\TextureComponent">
       <UniqueIdentifier>{14cc8768-d758-4a2c-8add-d44f1c56402d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Object\ObjectComponent\CollisionBox">
+      <UniqueIdentifier>{e3c98c90-8f36-41b9-8dc4-8b8597e858f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Object\ObjectComponent\CollisionBox">
+      <UniqueIdentifier>{325d1283-98d4-4ef8-9be0-a255a9df67d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Object\Fighter\Fighter\Fighter Component">
+      <UniqueIdentifier>{42cd51f1-61e5-47f3-9610-778452954a0c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

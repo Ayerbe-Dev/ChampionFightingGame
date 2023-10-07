@@ -7,84 +7,84 @@ void Rowan::chara_main() {
 
 bool Rowan::chara_ground_status_act() {
 	if (!projectiles[0]->active) {
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_3P)) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-			return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
+			return change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
 		}
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_LP)) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-			return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
+			return change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
 		}
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MP)) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-			return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
+			return change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
 		}
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_HP)) {
 			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-			return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
+			return change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START);
 		}
 	}
 
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_3K)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_LK)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MK) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MK)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_HK) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_HK)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_SLIDE);
 	}
 
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_3P)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START);
+			return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START);
 		}
 		else {
-			return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
+			return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
 		}
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
 	}
 
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_MACRO_K, 45) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_3K, 45)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_LK, 45) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_LK, 45)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_MK, 45) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_MK, 45)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_HK, 45) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_HK, 45)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
+		return change_status(CHARA_ROWAN_STATUS_SPECIAL_UPKICK);
 	}
 
 	if (get_attack_input(ATTACK_KIND_OTHER, BUTTON_HP, 6)) {
 		fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_OTHER;
 		fighter_int[FIGHTER_INT_ATTACK_OTHER_KIND] = 1;
-		return change_status_after_hitlag(FIGHTER_STATUS_ATTACK);
+		return change_status(FIGHTER_STATUS_ATTACK);
 	}
 
 	return false;
@@ -96,78 +96,62 @@ bool Rowan::chara_air_status_act() {
 
 bool Rowan::chara_status_attack() {
 	if (!projectiles[0]->active) {
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-			return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, CANCEL_KIND_236P);
+		if (special_cancel(ATTACK_KIND_SPECIAL_236, CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, BUTTON_3P)) {
+			return true;
 		}
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-			return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, CANCEL_KIND_236P);
+		if (special_cancel(ATTACK_KIND_SPECIAL_236, CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, BUTTON_HP)) {
+			return true;
 		}
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-			return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, CANCEL_KIND_236P);
+		if (special_cancel(ATTACK_KIND_SPECIAL_236, CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, BUTTON_MP)) {
+			return true;
 		}
-		if (get_special_input(ATTACK_KIND_SPECIAL_236, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-			fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-			return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, CANCEL_KIND_236P);
+		if (special_cancel(ATTACK_KIND_SPECIAL_236, CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, BUTTON_LP)) {
+			return true;
 		}
-	}
-	
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MACRO_K) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(false);
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_SLIDE, CANCEL_KIND_214K);
-	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_LK) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_SLIDE, CANCEL_KIND_214K);
-	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_MK) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_SLIDE, CANCEL_KIND_214K);
-	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_214, BUTTON_HK) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_SLIDE, CANCEL_KIND_214K);
 	}
 
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START, CANCEL_KIND_623P);
-		}
-		else {
-			return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT, CANCEL_KIND_623P);
-		}
+	if (special_cancel(ATTACK_KIND_SPECIAL_214, CHARA_ROWAN_STATUS_SPECIAL_SLIDE, BUTTON_3K)) {
+		return true;
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START, CANCEL_KIND_623P);
+	if (special_cancel(ATTACK_KIND_SPECIAL_214, CHARA_ROWAN_STATUS_SPECIAL_SLIDE, BUTTON_HK)) {
+		return true;
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT, CANCEL_KIND_623P);
+	if (special_cancel(ATTACK_KIND_SPECIAL_214, CHARA_ROWAN_STATUS_SPECIAL_SLIDE, BUTTON_MK)) {
+		return true;
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT, CANCEL_KIND_623P);
+	if (special_cancel(ATTACK_KIND_SPECIAL_214, CHARA_ROWAN_STATUS_SPECIAL_SLIDE, BUTTON_LK)) {
+		return true;
 	}
 
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_MACRO_K, 45) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(false);
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPKICK, CANCEL_KIND_28K);
+	if (special_cancel(ATTACK_KIND_SPECIAL_623, CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START, BUTTON_3P)) {
+		return true;
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_LK, 45) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPKICK, CANCEL_KIND_28K);
+	if (special_cancel(ATTACK_KIND_SPECIAL_623, CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT, BUTTON_HP)) {
+		return true;
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_MK, 45) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPKICK, CANCEL_KIND_28K);
+	if (special_cancel(ATTACK_KIND_SPECIAL_623, CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT, BUTTON_MP)) {
+		return true;
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_28, BUTTON_HK, 45) != SPECIAL_INPUT_NONE) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return buffer_status_pre_enable_cancel(CHARA_ROWAN_STATUS_SPECIAL_UPKICK, CANCEL_KIND_28K);
+	if (special_cancel(ATTACK_KIND_SPECIAL_623, CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_START, BUTTON_LP)) {
+		return true;
+	}
+
+	if (special_cancel(ATTACK_KIND_SPECIAL_28, CHARA_ROWAN_STATUS_SPECIAL_UPKICK, BUTTON_3K)) {
+		return true;
+	}
+	if (special_cancel(ATTACK_KIND_SPECIAL_28, CHARA_ROWAN_STATUS_SPECIAL_UPKICK, BUTTON_HK)) {
+		return true;
+	}
+	if (special_cancel(ATTACK_KIND_SPECIAL_28, CHARA_ROWAN_STATUS_SPECIAL_UPKICK, BUTTON_MK)) {
+		return true;
+	}
+	if (special_cancel(ATTACK_KIND_SPECIAL_28, CHARA_ROWAN_STATUS_SPECIAL_UPKICK, BUTTON_LK)) {
+		return true;
+	}
+
+
+	if (attack_cancel(ATTACK_KIND_OTHER, BUTTON_HP, 6)) {
+		return true;
 	}
 	
 	return false;
@@ -234,7 +218,6 @@ void Rowan::rowan_enter_status_special_fireball_start() {
 void Rowan::rowan_exit_status_special_fireball_start() {
 
 }
-
 
 void Rowan::rowan_status_special_fireball_punch() {
 	if (is_status_end()) {
@@ -311,7 +294,7 @@ void Rowan::rowan_exit_status_special_slide_followup() {
 
 void Rowan::rowan_status_special_uppercut_start() {
 	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED])) {
-		change_status_after_hitlag(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
+		buffer_change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}
 	if (is_status_end()) {

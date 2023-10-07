@@ -1,4 +1,5 @@
 #include "Battle.h"
+#include "glm/gtx/string_cast.hpp"
 
 HitboxSim::HitboxSim() {
 	active_box = nullptr;
@@ -51,135 +52,146 @@ void HitboxSim::print(BattleObject* active_object) {
 void HitboxSim::print_all(BattleObject* active_object) {
 	if (!active_object) return;
 	std::cout.precision(1);
-	std::vector<std::pair<float,std::vector<Simbox*>>> frames_start;
-	std::vector<std::pair<float, std::vector<Simbox*>>> frames_end;
+	std::vector<std::pair<float, std::pair<std::vector<Simbox*>, std::vector<Simbox*>>>> frames;
 
 	//This code is a kind of gross way of organizing our script commands, but printing is slow as
 	//fuck no matter what so I'm ok with it here.
 
 	for (size_t i = 0, max = hitboxes.size(); i < max; i++) {
 		int frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
-			if (hitboxes[i].frame_start == frames_start[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (hitboxes[i].frame_start == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_start.size();
-			std::vector<Simbox*> vec;
-			frames_start.push_back(std::pair(hitboxes[i].frame_start, vec));
+			frame_index = frames.size();
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(hitboxes[i].frame_start, std::pair(vec_start, vec_end)));
 		}
-		frames_start[frame_index].second.push_back(&hitboxes[i]);
+		frames[frame_index].second.first.push_back(&hitboxes[i]);
 		if (hitboxes[i].frame_end == -1) continue;
 		frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
-			if (hitboxes[i].frame_end == frames_end[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (hitboxes[i].frame_end == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_end.size();
+			frame_index = frames.size();
 			std::vector<Simbox*> vec;
-			frames_end.push_back(std::pair(hitboxes[i].frame_end, vec));
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(hitboxes[i].frame_end, std::pair(vec_start, vec_end)));
 		}
-		frames_end[frame_index].second.push_back(&hitboxes[i]);
+		frames[frame_index].second.second.push_back(&hitboxes[i]);
 	}
 	for (size_t i = 0, max = hurtboxes.size(); i < max; i++) {
 		int frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
-			if (hurtboxes[i].frame_start == frames_start[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (hurtboxes[i].frame_start == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_start.size();
-			std::vector<Simbox*> vec;
-			frames_start.push_back(std::pair(hurtboxes[i].frame_start, vec));
+			frame_index = frames.size();
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(hurtboxes[i].frame_start, std::pair(vec_start, vec_end)));
 		}
-		frames_start[frame_index].second.push_back(&hurtboxes[i]);
+		frames[frame_index].second.first.push_back(&hurtboxes[i]);
 		if (hurtboxes[i].frame_end == -1) continue;
 		frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
-			if (hurtboxes[i].frame_end == frames_end[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (hurtboxes[i].frame_end == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_end.size();
+			frame_index = frames.size();
 			std::vector<Simbox*> vec;
-			frames_end.push_back(std::pair(hurtboxes[i].frame_end, vec));
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(hurtboxes[i].frame_end, std::pair(vec_start, vec_end)));
 		}
-		frames_end[frame_index].second.push_back(&hurtboxes[i]);
+		frames[frame_index].second.second.push_back(&hurtboxes[i]);
 	}
 	for (size_t i = 0, max = grabboxes.size(); i < max; i++) {
 		int frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
-			if (grabboxes[i].frame_start == frames_start[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (grabboxes[i].frame_start == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_start.size();
-			std::vector<Simbox*> vec;
-			frames_start.push_back(std::pair(grabboxes[i].frame_start, vec));
+			frame_index = frames.size();
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(grabboxes[i].frame_start, std::pair(vec_start, vec_end)));
 		}
-		frames_start[frame_index].second.push_back(&grabboxes[i]);
+		frames[frame_index].second.first.push_back(&grabboxes[i]);
 		if (grabboxes[i].frame_end == -1) continue;
 		frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
-			if (grabboxes[i].frame_end == frames_end[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (hitboxes[i].frame_end == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_end.size();
+			frame_index = frames.size();
 			std::vector<Simbox*> vec;
-			frames_end.push_back(std::pair(grabboxes[i].frame_end, vec));
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(grabboxes[i].frame_end, std::pair(vec_start, vec_end)));
 		}
-		frames_end[frame_index].second.push_back(&grabboxes[i]);
+		frames[frame_index].second.second.push_back(&grabboxes[i]);
 	}
 	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
 		int frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_start.size(); i2 < max2; i2++) {
-			if (pushboxes[i].frame_start == frames_start[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (pushboxes[i].frame_start == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_start.size();
-			std::vector<Simbox*> vec;
-			frames_start.push_back(std::pair(pushboxes[i].frame_start, vec));
+			frame_index = frames.size();
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(pushboxes[i].frame_start, std::pair(vec_start, vec_end)));
 		}
-		frames_start[frame_index].second.push_back(&pushboxes[i]);
+		frames[frame_index].second.first.push_back(&pushboxes[i]);
 		if (pushboxes[i].frame_end == -1) continue;
 		frame_index = -1;
-		for (size_t i2 = 0, max2 = frames_end.size(); i2 < max2; i2++) {
-			if (pushboxes[i].frame_end == frames_end[i2].first) {
+		for (size_t i2 = 0, max2 = frames.size(); i2 < max2; i2++) {
+			if (pushboxes[i].frame_end == frames[i2].first) {
 				frame_index = i2;
 				break;
 			}
 		}
 		if (frame_index == -1) {
-			frame_index = frames_end.size();
+			frame_index = frames.size();
 			std::vector<Simbox*> vec;
-			frames_end.push_back(std::pair(pushboxes[i].frame_end, vec));
+			std::vector<Simbox*> vec_start;
+			std::vector<Simbox*> vec_end;
+			frames.push_back(std::pair(pushboxes[i].frame_end, std::pair(vec_start, vec_end)));
 		}
-		frames_end[frame_index].second.push_back(&pushboxes[i]);
+		frames[frame_index].second.second.push_back(&pushboxes[i]);
 	}
-	for (size_t i = 0, max = frames_start.size(); i < max; i++) {
-		std::cout << "execute_frame(" << frames_start[i].first << ", [this]() {\n";
-		for (size_t i2 = 0, max2 = frames_start[i].second.size(); i2 < max2; i2++) {
-			frames_start[i].second[i2]->print_start(active_object);
+	for (size_t i = 0, max = frames.size(); i < max; i++) {
+		std::cout << "execute_frame(" << frames[i].first << ", [this]() {\n";
+		for (size_t i2 = 0, max2 = frames[i].second.first.size(); i2 < max2; i2++) {
+			frames[i].second.first[i2]->print_start(active_object);
 		}
-		for (size_t i2 = 0, max2 = frames_end[i].second.size(); i2 < max2; i2++) {
-			frames_end[i].second[i2]->print_end(active_object);
+		for (size_t i2 = 0, max2 = frames[i].second.second.size(); i2 < max2; i2++) {
+			frames[i].second.second[i2]->print_end(active_object);
 		}
 		std::cout << "});\n";
 	}
@@ -229,6 +241,12 @@ void Simbox::update_rect(BattleObject* object) {
 		offset = relative_offset + glm::vec2(object->pos);
 		prev_offset = offset;
 	}
+	if (object->prev_pos != object->pos) {
+		anchor = relative_anchor + glm::vec2(object->pos);
+		prev_anchor = anchor;
+		offset = relative_offset + glm::vec2(object->pos);
+		prev_offset = offset;
+	}
 	rect.update_corners(anchor, offset);
 }
 
@@ -240,93 +258,219 @@ void Simbox::render(BattleObject* active_object) {
 
 SimHitbox::SimHitbox() {
 	multihit = 0;
+	collision_kind_ground = false;
+	collision_kind_air = false;
+	collision_kind_down = false;
+	collision_kind_projectile = false;
+	collision_kind_soft_intangible = false;
+	collision_kind_armor = false;
+	counterhit_type = COUNTERHIT_TYPE_COUNTER;
+	hit_status = HIT_STATUS_NORMAL;
+	custom_hit_status = "";
+	counterhit_status = HIT_STATUS_NORMAL;
+	custom_counterhit_status = "";
+	down_face_down = false;
+	continue_launch = false;
+	juggle_start = 0;
+	juggle_increase = 0;
+	juggle_max = 0;
+	hit_height = HIT_HEIGHT_MID;
 	damage = 0.0;
 	chip_damage = 0.0;
 	damage_scale = 1;
 	meter_gain = 0.0;
-	hit_kind = HIT_KIND_GROUND;
-	attack_level = ATTACK_LEVEL_LIGHT;
-	attack_height = ATTACK_HEIGHT_MID;
 	hitlag = 0;
 	blocklag = 0;
 	hit_advantage = 0;
 	block_advantage = 0;
-	hit_pushback = 10.0;
-	block_pushback = 10.0;
-	hit_status = HIT_STATUS_NORMAL;
-	counterhit_status = HIT_STATUS_NORMAL;
-	counterhit_type = COUNTERHIT_TYPE_COUNTER;
-	juggle_start = 0;
-	juggle_increase = 0;
-	juggle_max = 0;
-	clank_kind = CLANK_KIND_NORMAL;
-	damage_kind = DAMAGE_KIND_NORMAL;
-	continue_launch = false;
 	disable_hitstun_parry = false;
+	pushback_ground_hit = 10.0;
+	pushback_ground_block = 10.0;
+	pushback_air_x = 3.0;
+	pushback_air_y = 25.0;
+	pushback_frames = 10;
+	has_launch_target_pos = false;
+	launch_target_pos = glm::vec3(0.0);
 	launch_init_y = 0.0;
 	launch_gravity_y = 0.0;
 	launch_max_fall_speed = 0.0;
 	launch_speed_x = 0.0;
+	damage_kind = DAMAGE_KIND_NORMAL;
+	hit_level = HIT_LEVEL_LIGHT;
+	hit_effect_id = -1;
+	hit_sound_id = -1;
 	rect.set_rgba(glm::vec4(255.0, 0.0, 0.0, 127.0));
 }
 
 void SimHitbox::print_start(BattleObject* object) {
-	std::string padding = "	push_function(&Fighter::NEW_HITBOX, /*ID*/ ";
+	std::string output = "	push_function(&Fighter::NEW_HITBOX, /*ID*/ ";
 	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
-		padding = "	push_function(&Projectile::NEW_HITBOX, /*ID*/ ";
+		output = "	push_function(&Projectile::NEW_HITBOX, /*ID*/ ";
 	}
-	std::string hit_kind_text = "";
-	switch (hit_kind) {
-		case (HIT_KIND_GROUND): {
-			hit_kind_text = ", HIT_KIND_GROUND";
-		} break;
-		case (HIT_KIND_AIR): {
-			hit_kind_text = ", HIT_KIND_AIR";
-		} break;
-		case (HIT_KIND_DOWN): {
-			hit_kind_text = ", HIT_KIND_DOWN";
-		} break;
-		case (HIT_KIND_PROJECTILE): {
-			hit_kind_text = ", HIT_KIND_PROJECTILE";
-		} break;
-		case (HIT_KIND_SOFT_INTANGIBLE): {
-			hit_kind_text = ", HIT_KIND_SOFT_INTANGIBLE";
-		} break;
-		case (HIT_KIND_ARMOR): {
-			hit_kind_text = ", HIT_KIND_ARMOR";
-		} break;
+	output += std::to_string(id) + ", /*Multihit ID*/ " + std::to_string(multihit)
+		+ ", " + glm::to_string(relative_anchor) + ", " + glm::to_string(relative_offset);
+	std::string collision_kind_text = ", ";
+	if (collision_kind_ground) {
+		collision_kind_text += "COLLISION_KIND_GROUND";
 	}
-	std::string attack_level_text = "";
-	switch (attack_level) {
-		case (ATTACK_LEVEL_LIGHT): {
-			attack_level_text = ", ATTACK_LEVEL_LIGHT";
-		} break;
-		case (ATTACK_LEVEL_MEDIUM): {
-			attack_level_text = ", ATTACK_LEVEL_MEDIUM";
-		} break;
-		case (ATTACK_LEVEL_HEAVY): {
-			attack_level_text = ", ATTACK_LEVEL_HEAVY";
-		} break;
-		default: {
-			attack_level_text = ", ATTACK_LEVEL_MAX";
-		} break;
+	if (collision_kind_air) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_AIR";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_AIR";
+		}
 	}
-	std::string attack_height_text = "";
-	switch (attack_height) {
-		case (ATTACK_HEIGHT_LOW): {
-			attack_height_text = ", ATTACK_HEIGHT_LOW";
-		} break;
-		case (ATTACK_HEIGHT_MID): {
-			attack_height_text = ", ATTACK_HEIGHT_MID";
-		} break;
-		case (ATTACK_HEIGHT_HIGH): {
-			attack_height_text = ", ATTACK_HEIGHT_HIGH";
-		} break;
-		default: {
-			attack_height_text = ", ATTACK_HEIGHT_MAX";
-		} break;
+	if (collision_kind_down) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_DOWN";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_DOWN";
+		}
 	}
+	if (collision_kind_projectile) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_PROJECTILE";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_PROJECTILE";
+		}
+	}
+	if (collision_kind_soft_intangible) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_SOFT_INTANGIBLE";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_SOFT_INTANGIBLE";
+		}
+	}
+	if (collision_kind_armor) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_ARMOR";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_ARMOR";
+		}
+	}
+	output += collision_kind_text;
 
+	output += ", COUNTERHIT_TYPE_";
+	switch (counterhit_type) {
+		case (COUNTERHIT_TYPE_COUNTER): {
+			output += "COUNTER";
+		} break;
+		case (COUNTERHIT_TYPE_ANY): {
+			output += "ANY";
+		} break;
+		case (COUNTERHIT_TYPE_PUNISH): {
+			output += "PUNISH";
+		} break;
+		case (COUNTERHIT_TYPE_JUMP_COUNTER): {
+			output += "JUMP_COUNTER";
+		} break;
+		case (COUNTERHIT_TYPE_NONE): {
+			output += "NONE";
+		} break;
+		default: {
+			output += "MAX";
+		} break;
+	}
+	output += ", /*Hit Status*/ HIT_STATUS_";
+	switch (hit_status) {
+		case (HIT_STATUS_NORMAL): {
+			output += "NORMAL";
+		} break;
+		case (HIT_STATUS_KNOCKDOWN): {
+			output += "KNOCKDOWN";
+		} break;
+		case (HIT_STATUS_LAUNCH): {
+			output += "LAUNCH";
+		} break;
+		case (HIT_STATUS_FLOAT): {
+			output += "FLOAT";
+		} break;
+		case (HIT_STATUS_CRUMPLE): {
+			output += "CRUMPLE";
+		} break;
+		case (HIT_STATUS_CUSTOM): {
+			output += "CUSTOM, /*Custom Hit Status*/ " + custom_hit_status;
+		} break;
+		case (HIT_STATUS_NONE): {
+			output += "NONE";
+		} break;
+		default: {
+			output = "MAX";
+		} break;
+	}
+	if (counterhit_type != COUNTERHIT_TYPE_NONE) {
+		output += ", /*Counterhit Status*/ HIT_STATUS_";
+		switch (counterhit_status) {
+			case (HIT_STATUS_NORMAL): {
+				output += "NORMAL";
+			} break;
+			case (HIT_STATUS_KNOCKDOWN): {
+				output += "KNOCKDOWN";
+			} break;
+			case (HIT_STATUS_LAUNCH): {
+				output += "LAUNCH";
+			} break;
+			case (HIT_STATUS_FLOAT): {
+				output += "FLOAT";
+			} break;
+			case (HIT_STATUS_CRUMPLE): {
+				output += "CRUMPLE";
+			} break;
+			case (HIT_STATUS_CUSTOM): {
+				output += "CUSTOM, /*Custom Counterhit Status*/ " + custom_counterhit_status;
+			} break;
+			case (HIT_STATUS_NONE): {
+				output += "NONE";
+			} break;
+			default: {
+				output = "MAX";
+			} break;
+		}
+	}
+	if (hit_status == HIT_STATUS_KNOCKDOWN || hit_status == HIT_STATUS_FLOAT
+		|| (counterhit_type != COUNTERHIT_TYPE_NONE && 
+			(counterhit_status == HIT_STATUS_KNOCKDOWN || counterhit_status == HIT_STATUS_FLOAT))) {
+		output += ", /*Down Face Down*/ " + (down_face_down) ? "true" : "false";
+	}
+	if (hit_status != HIT_STATUS_LAUNCH && collision_kind_air) {
+		output += ", /*Continue Launch*/ " + (continue_launch) ? "true" : "false";
+	}
+	if (collision_kind_air || hit_status == HIT_STATUS_LAUNCH || counterhit_status == HIT_STATUS_LAUNCH) {
+		output += ", /*Juggle Start*/ " + std::to_string(juggle_start);
+		if (collision_kind_air) {
+			output += ", /*Juggle Increase*/ " + std::to_string(juggle_increase) + ", /*Juggle Max*/ "
+				+ std::to_string(juggle_max);
+		}
+	}
+	output += ", HIT_HEIGHT_";
+	switch (hit_height) {
+		case (HIT_HEIGHT_LOW): {
+			output += "LOW";
+		} break;
+		case (HIT_HEIGHT_MID): {
+			output += "MID";
+		} break;
+		case (HIT_HEIGHT_HIGH): {
+			output += "HIGH";
+		} break;
+		default: {
+			output += "MAX";
+		} break;
+	}
+	output += ", /*Damage*/ " + std::to_string(damage);
+	if (collision_kind_ground) {
+		output += ", /*Chip Damage*/ " + std::to_string(chip_damage);
+	}
+	output += ", /*Damage Scale*/ " + std::to_string(damage_scale) + ", /*Meter Gain*/ "
+		+ std::to_string(meter_gain) + ", /*Hitlag*/ " + std::to_string(hitlag);
+	if (collision_kind_ground) {
+		output += ", /*Blocklag*/ " + std::to_string(blocklag);
+	}
 	int hitstun_frames;
 	int blockstun_frames;
 	switch (object->object_type) {
@@ -345,132 +489,87 @@ void SimHitbox::print_start(BattleObject* object) {
 			blockstun_frames = 0;
 		} break;
 	}
-	if (object->object_type == BATTLE_OBJECT_TYPE_FIGHTER) {
-		hitstun_frames = hit_advantage + ((Fighter*)object)->get_frames_until_actionable();
+	if (hit_status != HIT_STATUS_LAUNCH || (counterhit_status != HIT_STATUS_LAUNCH
+		&& counterhit_type != COUNTERHIT_TYPE_NONE)) {
+		output += ", /*Hitstun*/ " + std::to_string(hitstun_frames);
 	}
-	
-	std::string hit_status_text = "";
-	switch (hit_status) {
-		case (HIT_STATUS_NORMAL): {
-			hit_status_text = ", /*Hit Status*/ HIT_STATUS_NORMAL";
-		} break;
-		case (HIT_STATUS_KNOCKDOWN): {
-			hit_status_text = ", /*Hit Status*/ HIT_STATUS_KNOCKDOWN";
-		} break;
-		case (HIT_STATUS_LAUNCH): {
-			hit_status_text = ", /*Hit Status*/ HIT_STATUS_LAUNCH";
-		} break;
-		case (HIT_STATUS_FLOAT): {
-			hit_status_text = ", /*Hit Status*/ HIT_STATUS_FLOAT";
-		} break;
-		case (HIT_STATUS_CRUMPLE): {
-			hit_status_text = ", /*Hit Status*/ HIT_STATUS_CRUMPLE";
-		} break;
-		default: {
-			hit_status_text = ", /*Hit Status*/ HIT_STATUS_MAX";
-		} break;
+	if (collision_kind_ground) {
+		output += ", /*Blockstun*/ " + std::to_string(blockstun_frames);
 	}
-	std::string counterhit_status_text = "";
-	switch (counterhit_status) {
-		case (HIT_STATUS_NORMAL): {
-			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_NORMAL";
-		} break;
-		case (HIT_STATUS_KNOCKDOWN): {
-			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_KNOCKDOWN";
-		} break;
-		case (HIT_STATUS_LAUNCH): {
-			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_LAUNCH";
-		} break;
-		case (HIT_STATUS_FLOAT): {
-			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_FLOAT";
-		} break;
-		case (HIT_STATUS_CRUMPLE): {
-			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_CRUMPLE";
-		} break;
-		default: {
-			counterhit_status_text = ", /*Counterhit Status*/ HIT_STATUS_MAX";
-		} break;
+	if (hit_status == HIT_STATUS_NORMAL || hit_status == HIT_STATUS_LAUNCH 
+		|| (counterhit_type != COUNTERHIT_TYPE_NONE && 
+			(counterhit_status == HIT_STATUS_NORMAL  || counterhit_status == HIT_STATUS_LAUNCH))) {
+		output += ", /*Disable Hitstun Parry*/ " + (disable_hitstun_parry) ? "true" : "false";
 	}
-	std::string counterhit_type_text = "";
-	switch (counterhit_type) {
-		case (COUNTERHIT_TYPE_COUNTER): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_COUNTER";
-		} break;
-		case (COUNTERHIT_TYPE_ANY): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_ANY";
-		} break;
-		case (COUNTERHIT_TYPE_PUNISH): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_PUNISH";
-		} break;
-		case (COUNTERHIT_TYPE_JUMP_COUNTER): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_JUMP_COUNTER";
-		} break;
-		case (COUNTERHIT_TYPE_NONE): {
-			counterhit_type_text = ", COUNTERHIT_TYPE_NONE";
-		} break;
-		default: {
-			counterhit_type_text = ", COUNTERHIT_TYPE_MAX";
-		} break;
+	if (hit_status == HIT_STATUS_NORMAL || (counterhit_type != COUNTERHIT_TYPE_NONE
+		&& counterhit_status == HIT_STATUS_NORMAL)) {
+		if (collision_kind_ground) {
+			output += ", /*Pushback Ground Hit*/ " + std::to_string(pushback_ground_hit)
+				+ ", /*Pushback Ground Block*/ " + std::to_string(pushback_ground_block);
+		}
+		if (collision_kind_air) {
+			output += ", /*Pushback Air X*/ " + std::to_string(pushback_air_x)
+				+ ", /*Pushback Air Y*/ " + std::to_string(pushback_air_y);
+		}
+		output += ", /*Pushback Frames*/ " + std::to_string(pushback_frames);
 	}
-
-	std::string clank_text = "";
-	switch (clank_kind) {
-		case (CLANK_KIND_NORMAL): {
-			clank_text = ", CLANK_KIND_NORMAL";
-		} break;
-		case (CLANK_KIND_CLANK): {
-			clank_text = ", CLANK_KIND_CLANK";
-		} break;
-		case (CLANK_KIND_CONTINUE): {
-			clank_text = ", CLANK_KIND_CONTINUE";
-		} break;
-		default: {
-			clank_text = ", CLANK_KIND_MAX";
-		} break;
+	else if (collision_kind_ground) {
+		output += ", /*Pushback Ground Block*/ " + std::to_string(pushback_ground_block)
+			+ ", /*Pushback Frames*/ " + std::to_string(pushback_frames);
 	}
-
-	std::string damage_kind_text = "";
+	if (hit_status == HIT_STATUS_LAUNCH || hit_status == HIT_STATUS_FLOAT
+		|| (counterhit_type != COUNTERHIT_TYPE_NONE && (counterhit_status == HIT_STATUS_LAUNCH 
+		|| counterhit_status == HIT_STATUS_FLOAT)) || continue_launch) {
+		if (has_launch_target_pos) {
+			output += ", /*Launch Target Pos*/ " + glm::to_string(launch_target_pos);
+		}
+		else {
+			output += ", /*Launch Init Y*/ " + std::to_string(launch_init_y) 
+				+ ", /*Launch Gravity*/ " + std::to_string(launch_gravity_y) 
+				+ ", /*Launch Max Fall Speed*/ " + std::to_string(launch_max_fall_speed) 
+				+ ", /*Launch Speed X*/ " + std::to_string(launch_speed_x);
+		}
+	}
+	output += ", DAMAGE_KIND_";
 	switch (damage_kind) {
-		case (DAMAGE_KIND_NORMAL): {
-			damage_kind_text = ", DAMAGE_KIND_NORMAL";
+	case (DAMAGE_KIND_NORMAL): {
+		output += "NORMAL";
+	} break;
+	case (DAMAGE_KIND_CHIP): {
+		output += "CHIP";
+	} break;
+	case (DAMAGE_KIND_CHIP_KO): {
+		output += "CHIP_KO";
+	} break;
+	case (DAMAGE_KIND_NO_KO): {
+		output += "NO_KO";
+	} break;
+	default: {
+		output += "MAX";
+	} break;
+	}
+
+	output += ", HIT_LEVEL_";
+
+	switch (hit_level) {
+		case (HIT_LEVEL_LIGHT): {
+			output += "LIGHT";
 		} break;
-		case (DAMAGE_KIND_CHIP): {
-			damage_kind_text = ", DAMAGE_KIND_CHIP";
+		case (HIT_LEVEL_MEDIUM): {
+			output += "MEDIUM";
 		} break;
-		case (DAMAGE_KIND_CHIP_KO): {
-			damage_kind_text = ", DAMAGE_KIND_CHIP_KO";
-		} break;
-		case (DAMAGE_KIND_NO_KO): {
-			damage_kind_text = ", DAMAGE_KIND_NO_KO";
+		case (HIT_LEVEL_HEAVY): {
+			output += "HEAVY";
 		} break;
 		default: {
-			damage_kind_text = ", DAMAGE_KIND_MAX";
+			output += "MAX";
 		} break;
 	}
-	std::string continue_launch_text = ", /*Continue Launch*/ false";
-	if (continue_launch) {
-		continue_launch_text = ", /*Continue Launch*/ true";
-	}
-	std::string disable_hitstun_parry_text = ", /*Disable Hitstun Parry*/ false";
-	if (disable_hitstun_parry) {
-		disable_hitstun_parry_text = ", /*Disable Hitstun Parry*/ true";
-	}
-	glm::ivec2 anchor = this->relative_anchor;
-	glm::ivec2 offset = this->relative_offset;
-	std::cout << padding << id << ", /*Multihit ID*/ " << multihit << ", /*Damage*/ " << damage
-		<< ", /*Chip Damage*/ " << chip_damage << ", /*Damage Scale*/ " << damage_scale
-		<< ", /*Meter Gain*/ " << meter_gain << ", glm::vec2(" << anchor.x << ", " << anchor.y
-		<< "), glm::vec2(" << offset.x << ", " << offset.y << ")" << hit_kind_text
-		<< attack_level_text << attack_height_text << ", /*Hitlag*/ " << hitlag << ", /*Blocklag*/ "
-		<< blocklag << ", /*Hitstun*/ " << hitstun_frames << ", /*Blockstun*/ " << blockstun_frames
-		<< ", /*Hit Pushback*/ " << hit_pushback << ", /*Block Pushback*/ " << block_pushback
-		<< hit_status_text << counterhit_status_text << counterhit_type_text
-		<< ", /*Juggle Start*/ " << juggle_start << ", /*Juggle Increase*/ " << juggle_increase
-		<< ", /*Juggle Max*/ " << juggle_max << clank_text << damage_kind_text
-		<< continue_launch_text << disable_hitstun_parry_text << ", /*Launch Init Y Speed*/ " 
-		<< launch_init_y << ", /*Launch Gravity*/ " << launch_gravity_y 
-		<< ", /*Launch Max Fall Speed*/ " << launch_max_fall_speed << ", /*Launch X Speed*/ " 
-		<< launch_speed_x << ");\n";
+
+	output += ", /*Hit Effect ID*/ " + std::to_string(hit_effect_id)
+		+ ", /*Hit Sound ID*/ " + std::to_string(hit_sound_id) + ");";
+
+	std::cout << output << "\n";
 }
 
 void SimHitbox::print_end(BattleObject* object) {
@@ -483,8 +582,15 @@ void SimHitbox::print_end(BattleObject* object) {
 
 SimHurtbox::SimHurtbox() {
 	hurtbox_kind = HURTBOX_KIND_NORMAL;
-	armor = false;
-	intangible_kind = INTANGIBLE_KIND_NONE;
+	armor_hits = 0;
+	intangible_kind_high = false;
+	intangible_kind_mid = false;
+	intangible_kind_low = false;
+	intangible_kind_aerial = false;
+	intangible_kind_throw = false;
+	intangible_kind_projectile = false;
+	intangible_kind_invincible = false;
+	intangible_kind_soft = false;
 	rect.set_rgba(glm::vec4(0.0, 0.0, 255.0, 127.0));
 }
 
@@ -509,46 +615,67 @@ void SimHurtbox::print_start(BattleObject* object) {
 		} break;
 	}
 
-	std::string armor_text = ", false";
-	if (armor) {
-		armor_text = ", true";
-	}
+	std::string armor_text = ", " + armor_hits;
 
-	std::string intangible_text = "";
-	switch (intangible_kind) {
-		case (INTANGIBLE_KIND_NONE): {
-			intangible_text = ", INTANGIBLE_KIND_NONE";
-		} break;
-		case (INTANGIBLE_KIND_HIGH): {
-			intangible_text = ", INTANGIBLE_KIND_HIGH";
-		} break;
-		case (INTANGIBLE_KIND_MID): {
+	std::string intangible_text = ", INTANGIBLE_KIND_NONE";
+	if (intangible_kind_high) {
+		intangible_text = ", INTANGIBLE_KIND_HIGH";
+	}
+	if (intangible_kind_mid) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_MID";
-		} break;
-		case (INTANGIBLE_KIND_LOW): {
+		}
+		else {
+			intangible_text += " | INTANGIBLE_KIND_MID";
+		}
+	}
+	if (intangible_kind_low) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_LOW";
-		} break;
-		case (INTANGIBLE_KIND_AERIAL): {
+		}
+		else {
+			intangible_text += " | INTANGIBLE_KIND_LOW";
+		}
+	}
+	if (intangible_kind_aerial) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_AERIAL";
-		} break;
-		case (INTANGIBLE_KIND_STRIKE): {
-			intangible_text = ", INTANGIBLE_KIND_STRIKE";
-		} break;
-		case (INTANGIBLE_KIND_THROW): {
+		}
+		else {
+			intangible_text += " | INTANGIBLE_KIND_AERIAL";
+		}
+	}
+	if (intangible_kind_throw) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_THROW";
-		} break;
-		case (INTANGIBLE_KIND_PROJECTILE): {
+		}
+		else {
+			intangible_text += " | INTANGIBLE_KIND_THROW";
+		}
+	}
+	if (intangible_kind_projectile) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_PROJECTILE";
-		} break;
-		case (INTANGIBLE_KIND_INVINCIBLE): {
+		}
+		else {
+			intangible_text += " | INTANGIBLE_KIND_PROJECTILE";
+		}
+	}
+	if (intangible_kind_invincible) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_INVINCIBLE";
-		} break;
-		case (INTANGIBLE_KIND_SOFT): {
+		}
+		else {
+
+		}
+	}
+	if (intangible_kind_soft) {
+		if (intangible_text == ", INTANGIBLE_KIND_NONE") {
 			intangible_text = ", INTANGIBLE_KIND_SOFT";
-		} break;
-		default: {
-			intangible_text = ", INTANGIBLE_KIND_MAX";
-		} break;
+		}
+		else {
+			intangible_text += " | INTANGIBLE_KIND_SOFT";
+		}
 	}
 	glm::ivec2 anchor = this->relative_anchor;
 	glm::ivec2 offset = this->relative_offset;
@@ -566,8 +693,14 @@ void SimHurtbox::print_end(BattleObject* object) {
 }
 
 SimGrabbox::SimGrabbox() {
-	grabbox_kind = GRABBOX_KIND_NORMAL;
-	hit_kind = HIT_KIND_GROUND;
+	grabbox_kind_hitstun = false;
+	grabbox_kind_notech = false;
+	collision_kind_ground = false;
+	collision_kind_air = false;
+	collision_kind_down = false;
+	collision_kind_projectile = false;
+	collision_kind_soft_intangible = false;
+	collision_kind_armor = false;
 	attacker_status = "FIGHTER_STATUS_THROW";
 	defender_status = "FIGHTER_STATUS_GRABBED";
 	rect.set_rgba(glm::vec4(0.0, 255.0, 0.0, 127.0));
@@ -578,49 +711,66 @@ void SimGrabbox::print_start(BattleObject* object) {
 	if (object->object_type == BATTLE_OBJECT_TYPE_PROJECTILE) {
 		padding = "	push_function(&Projectile::NEW_GRABBOX, ";
 	}
-	std::string grabbox_text = "";
-	switch (grabbox_kind) {
-		case (GRABBOX_KIND_NORMAL): {
-			grabbox_text = ", GRABBOX_KIND_NORMAL";
-		} break;
-		case (GRABBOX_KIND_HITSTUN): {
-			grabbox_text = ", GRABBOX_KIND_HITSTUN";
-		} break;
-		case (GRABBOX_KIND_NOTECH): {
-			grabbox_text = ", GRABBOX_KIND_NOTECH";
-		} break;
-		case (GRABBOX_KIND_HITSTUN_NOTECH): {
-			grabbox_text = ", GRABBOX_KIND_HITSTUN_NOTECH";
-		} break;
-		default: {
-			grabbox_text = ", GRABBOX_KIND_MAX";
-		} break;
+	std::string grabbox_text = "GRABBOX_KIND_NORMAL";
+	if (grabbox_kind_notech) {
+		grabbox_text = "GRABBOX_KIND_NOTECH";
 	}
-	std::string hit_kind_text = "";
-	switch (hit_kind) {
-		case (HIT_KIND_GROUND): {
-			hit_kind_text = ", HIT_KIND_GROUND";
-		} break;
-		case (HIT_KIND_AIR): {
-			hit_kind_text = ", HIT_KIND_AIR";
-		} break;
-		case (HIT_KIND_DOWN): {
-			hit_kind_text = ", HIT_KIND_DOWN";
-		} break;
-		case (HIT_KIND_PROJECTILE): {
-			hit_kind_text = ", HIT_KIND_PROJECTILE";
-		} break;
-		case (HIT_KIND_SOFT_INTANGIBLE): {
-			hit_kind_text = ", HIT_KIND_SOFT_INTANGIBLE";
-		} break;
-		case (HIT_KIND_ARMOR): {
-			hit_kind_text = ", HIT_KIND_ARMOR";
-		} break;
+	if (grabbox_kind_hitstun) {
+		if (grabbox_text == "GRABBOX_KIND_NORMAL") {
+			grabbox_text = "GRABBOX_KIND_HITSTUN";
+		}
+		else {
+			grabbox_text += "| GRABBOX_KIND_HITSTUN";
+		}
+	}
+	std::string collision_kind_text = ", ";
+	if (collision_kind_ground) {
+		collision_kind_text += "COLLISION_KIND_GROUND";
+	}
+	if (collision_kind_air) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_AIR";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_AIR";
+		}
+	}
+	if (collision_kind_down) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_DOWN";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_DOWN";
+		}
+	}
+	if (collision_kind_projectile) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_PROJECTILE";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_PROJECTILE";
+		}
+	}
+	if (collision_kind_soft_intangible) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_SOFT_INTANGIBLE";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_SOFT_INTANGIBLE";
+		}
+	}
+	if (collision_kind_armor) {
+		if (collision_kind_text == ", ") {
+			collision_kind_text += "COLLISION_KIND_ARMOR";
+		}
+		else {
+			collision_kind_text += " | COLLISION_KIND_ARMOR";
+		}
 	}
 	glm::ivec2 anchor = this->relative_anchor;
 	glm::ivec2 offset = this->relative_offset;
 	std::cout << padding << id << ", glm::vec2(" << anchor.x << ", " << anchor.y << "), glm::vec2("
-		<< offset.x << ", " << offset.y << ")" << grabbox_text << hit_kind_text << ", " 
+		<< offset.x << ", " << offset.y << ")" << grabbox_text << collision_kind_text << ", " 
 		<< attacker_status << ", " << defender_status << ");\n";
 }
 

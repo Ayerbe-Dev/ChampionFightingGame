@@ -8,11 +8,12 @@ bool Fighter::is_actionable() {
 	if (anim_kind == nullptr) {
 		return true;
 	}
-	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0 
-	&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
-	&& !fighter_flag[FIGHTER_FLAG_GRABBED]
-	&& status_kind != FIGHTER_STATUS_THROWN
-	&& status_kind != FIGHTER_STATUS_ROUND_END) {
+	if (!fighter_flag[FIGHTER_FLAG_GRABBED]
+		&& status_kind != FIGHTER_STATUS_THROWN
+		&& (get_status_group() != STATUS_GROUP_HITSTUN || ((status_kind == FIGHTER_STATUS_HITSTUN 
+		|| status_kind == FIGHTER_STATUS_HITSTUN_AIR) && !fighter_int[FIGHTER_INT_HITSTUN_FRAMES]))
+		&& !fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]
+		&& status_kind != FIGHTER_STATUS_ROUND_END) {
 		if (fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY]) {
 			return true;
 		}
@@ -85,12 +86,17 @@ void Fighter::disable_cancel(int cat, int kind) {
 }
 
 bool Fighter::is_enable_cancel(int cancel_kind) {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
-		return (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
-			|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && cancel_flags[CANCEL_CAT_BLOCK][cancel_kind]);
+	if (cancel_kind == CANCEL_KIND_MAX) {
+		return true;
 	}
-	else {
-		return cancel_flags[CANCEL_CAT_WHIFF][cancel_kind];
+	else if (cancel_kind < CANCEL_KIND_MAX) {
+		if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
+			return (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] && cancel_flags[CANCEL_CAT_HIT][cancel_kind])
+				|| (fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && cancel_flags[CANCEL_CAT_BLOCK][cancel_kind]);
+		}
+		else {
+			return cancel_flags[CANCEL_CAT_WHIFF][cancel_kind];
+		}
 	}
 	return false;
 }

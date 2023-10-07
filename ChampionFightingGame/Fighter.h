@@ -3,7 +3,6 @@
 #include <string>
 #include "Button.h"
 #include "Animation.h"
-#include "Box.h"
 #include "Player.h"
 #include "FighterConstants.h"
 #include "BattleObjectManager.h"
@@ -53,7 +52,7 @@ public:
 
 	//Setup
 
-	void init();
+	void load_fighter();
 	void load_model_shader();
 	void load_anim_list();
 	void load_fighter_status_scripts();
@@ -63,7 +62,7 @@ public:
 	void load_fighter_effects();
 	virtual void load_chara_effects() {};
 	void set_default_vars();
-	void init_boxes();
+	void load_collision_boxes();
 
 	//Inputs
 
@@ -77,11 +76,13 @@ public:
 	unsigned int get_stick_dir_no_lr();
 	unsigned int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
 	unsigned int get_buffer_stick_dir(bool internal_dir = true); //Reads from the buffer code instead of the current frame
-	bool get_attack_input(int attack_kind, unsigned int button = 0, int stick_dir = 0);
-	int get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
+	bool get_attack_input(int attack_kind, unsigned int button = 0, int stick_dir = 10);
+	bool get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
 	bool attack_cancel(int attack_kind, unsigned int button = 0, int stick_dir = 10);
+	bool special_cancel(int special_kind, unsigned int status_kind, unsigned int button, int charge_frames = 0);
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
+	unsigned int get_attack_other_kind(unsigned int button, unsigned int stick_dir);
 
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
@@ -160,8 +161,7 @@ public:
 	//Status
 
 	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true) override;
-	bool change_status_after_hitlag(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
-	bool buffer_status_pre_enable_cancel(unsigned int new_status_kind, unsigned int cancel_kind, bool call_end_status = true, bool require_different_status = true);
+	bool buffer_change_status(unsigned int new_status_kind, unsigned int cancel_kind = CANCEL_KIND_MAX, bool call_end_status = true, bool require_different_status = true);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
@@ -443,6 +443,12 @@ public:
 	virtual void status_thrown();
 	virtual void enter_status_thrown();
 	virtual void exit_status_thrown();
+	virtual void status_throw_tech();
+	virtual void enter_status_throw_tech();
+	virtual void exit_status_throw_tech();
+	virtual void status_blockstun();
+	virtual void enter_status_blockstun();
+	virtual void exit_status_blockstun();
 	virtual void status_hitstun();
 	virtual void enter_status_hitstun();
 	virtual void exit_status_hitstun();
@@ -452,9 +458,24 @@ public:
 	virtual void status_hitstun_float();
 	virtual void enter_status_hitstun_float();
 	virtual void exit_status_hitstun_float();
-	virtual void status_blockstun();
-	virtual void enter_status_blockstun();
-	virtual void exit_status_blockstun();
+	virtual void enter_status_launch_start();
+	virtual void exit_status_launch_start();
+	virtual void status_launch();
+	virtual void enter_status_launch();
+	virtual void exit_status_launch();
+	virtual void status_landing();
+	virtual void status_crumple();
+	virtual void enter_status_crumple();
+	virtual void exit_status_crumple();
+	virtual void status_knockdown_start();
+	virtual void enter_status_knockdown_start();
+	virtual void exit_status_knockdown_start();
+	virtual void status_knockdown();
+	virtual void enter_status_knockdown();
+	virtual void exit_status_knockdown();
+	virtual void status_wakeup();
+	virtual void enter_status_wakeup();
+	virtual void exit_status_wakeup();
 	virtual void status_parry_start();
 	virtual void enter_status_parry_start();
 	virtual void exit_status_parry_start();
@@ -467,22 +488,7 @@ public:
 	virtual void status_parry();
 	virtual void enter_status_parry();
 	virtual void exit_status_parry();
-	virtual void status_crumple();
-	virtual void enter_status_crumple();
-	virtual void exit_status_crumple();
 	virtual void status_launch_start();
-	virtual void enter_status_launch_start();
-	virtual void exit_status_launch_start();
-	virtual void status_launch();
-	virtual void enter_status_launch();
-	virtual void exit_status_launch();
-	virtual void status_clank();
-	virtual void enter_status_clank();
-	virtual void exit_status_clank();
-	virtual void status_throw_tech();
-	virtual void enter_status_throw_tech();
-	virtual void exit_status_throw_tech();
-	virtual void status_landing();
 	virtual void enter_status_landing();
 	virtual void exit_status_landing();
 	virtual void status_landing_attack();
@@ -491,15 +497,6 @@ public:
 	virtual void status_landing_hitstun();
 	virtual void enter_status_landing_hitstun();
 	virtual void exit_status_landing_hitstun();
-	virtual void status_knockdown_start();
-	virtual void enter_status_knockdown_start();
-	virtual void exit_status_knockdown_start();
-	virtual void status_knockdown();
-	virtual void enter_status_knockdown();
-	virtual void exit_status_knockdown();
-	virtual void status_wakeup();
-	virtual void enter_status_wakeup();
-	virtual void exit_status_wakeup();
 	virtual void status_taunt();
 	virtual void enter_status_taunt();
 	virtual void exit_status_taunt();
@@ -530,4 +527,6 @@ public:
 	//Array of flags to determine what can and cannot be canceled into
 
 	bool cancel_flags[CANCEL_CAT_MAX][CANCEL_KIND_MAX];
+
+	std::map<unsigned int, std::map<unsigned int, unsigned int>> attack_other_map;
 };

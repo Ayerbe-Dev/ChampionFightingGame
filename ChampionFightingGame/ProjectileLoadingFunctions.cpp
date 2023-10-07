@@ -1,7 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Projectile.h"
 #include "RenderManager.h"
-#include "BoxConstants.h"
 #include "Fighter.h"
 #include "BattleObjectManager.h"
 #include "SoundManager.h"
@@ -10,7 +9,7 @@
 #include "ShaderManager.h"
 #include <fstream>
 
-void Projectile::init() {
+void Projectile::load_projectile() {
 	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
 
@@ -19,7 +18,7 @@ void Projectile::init() {
 	load_stats();
 	load_params();
 	load_model_shader();
-	init_boxes();
+	load_collision_boxes();
 	load_anim_list();
 	load_projectile_unique_status_scripts();
 	load_projectile_status_scripts();
@@ -102,7 +101,7 @@ void Projectile::set_default_vars() {
 
 }
 
-void Projectile::init_boxes() {
+void Projectile::load_collision_boxes() {
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);
 		hurtboxes[i].init(this);

@@ -2,7 +2,7 @@
 
 void BattleObject::new_pushbox(int id, glm::vec2 anchor, glm::vec2 offset) {
 	if (id < 10) {
-		pushboxes[id].activate(this, id, anchor, offset);
+		pushboxes[id].activate(id, anchor, offset);
 	}
 }
 

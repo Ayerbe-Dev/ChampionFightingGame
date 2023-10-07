@@ -99,47 +99,6 @@ void Battle::check_collisions() {
 			fighter[0]->connected_grabbox = nullptr;
 		}
 	}
-	//If both fighters hit each other on the same frame, we resolve this based on the attack levels
-	//and then, if they match, the clank kinds.
-	else if (fighter[0]->connected_hitbox != nullptr && fighter[0]->connected_hitbox->object == fighter[1]
-		&& fighter[1]->connected_hitbox != nullptr && fighter[1]->connected_hitbox->object == fighter[0]) {		
-		if (fighter[0]->connected_hitbox->attack_level == fighter[1]->connected_hitbox->attack_level) {
-			if (fighter[0]->connected_hitbox->clank_kind == CLANK_KIND_CONTINUE ||
-				fighter[1]->connected_hitbox->clank_kind == CLANK_KIND_CONTINUE) {
-				if (fighter[0]->connected_hitbox->clank_kind == fighter[1]->connected_hitbox->clank_kind) {
-					fighter[0]->update_hitbox_connect(fighter[1]->connected_hitbox->multihit);
-					fighter[1]->update_hitbox_connect(fighter[0]->connected_hitbox->multihit);
-					fighter[0]->connected_hitbox = nullptr;
-					fighter[1]->connected_hitbox = nullptr;
-				}
-				else if (fighter[0]->connected_hitbox->clank_kind == CLANK_KIND_CONTINUE) {
-					fighter[1]->update_hitbox_connect(fighter[0]->connected_hitbox->multihit);
-					fighter[0]->post_collision_status = FIGHTER_STATUS_CLANK;
-					fighter[0]->connected_hitbox = nullptr;
-					fighter[1]->connected_hitbox = nullptr;
-				}
-				else {
-					fighter[0]->update_hitbox_connect(fighter[1]->connected_hitbox->multihit);
-					fighter[1]->post_collision_status = FIGHTER_STATUS_CLANK;
-					fighter[0]->connected_hitbox = nullptr;
-					fighter[1]->connected_hitbox = nullptr;
-				}
-			}
-			else if (fighter[0]->connected_hitbox->clank_kind == CLANK_KIND_CLANK ||
-					fighter[1]->connected_hitbox->clank_kind == CLANK_KIND_CLANK) {
-				fighter[0]->change_status(FIGHTER_STATUS_CLANK);
-				fighter[1]->change_status(FIGHTER_STATUS_CLANK);
-				fighter[0]->connected_hitbox = nullptr;
-				fighter[1]->connected_hitbox = nullptr;
-			}
-		}
-		else if (fighter[0]->connected_hitbox->attack_level > fighter[1]->connected_hitbox->attack_level) {
-			fighter[1]->connected_hitbox = nullptr;
-		}
-		else {
-			fighter[0]->connected_hitbox = nullptr;
-		}
-	}
 
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < objects[i].size(); i2++) {

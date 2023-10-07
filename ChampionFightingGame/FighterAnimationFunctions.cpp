@@ -54,7 +54,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 				this->rate = 1.0;
 			}
 			else {
-				this->rate = (target_frame / rate) * 0.8;
+				this->rate = (target_frame - 1) / rate;
 			}
 			this->frame = 0.0;
 			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
@@ -62,9 +62,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 		model.set_move(new_anim->flag_move);
 		prev_anim_kind = anim_kind;
 	}
-	else {
-		player->controller.reset_buffer();
-	}
+	player->controller.reset_buffer();
 
 	prev_anim_offset = glm::vec3(0.0);
 	is_anim_end = false;

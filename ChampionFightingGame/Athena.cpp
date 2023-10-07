@@ -13,5 +13,5 @@ Athena::Athena(Player* player) {
 	fighter_int.resize(CHARA_ATHENA_INT_MAX, 0);
 	fighter_float.resize(CHARA_ATHENA_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ATHENA_FLAG_MAX, false);
-	init();
+	load_fighter();
 }

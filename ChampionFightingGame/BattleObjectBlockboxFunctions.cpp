@@ -1,7 +1,7 @@
 #include "BattleObject.h"
 
 void BattleObject::new_blockbox(glm::vec2 anchor, glm::vec2 offset) {
-	blockbox.activate(this, anchor, offset);
+	blockbox.activate(anchor, offset);
 }
 
 void BattleObject::update_blockbox_pos() {

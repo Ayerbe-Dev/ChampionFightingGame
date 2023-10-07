@@ -1,8 +1,8 @@
 #include "BattleObject.h"
 
-void BattleObject::new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, HurtboxKind hurtbox_kind, bool armor, IntangibleKind intangible_kind) {
+void BattleObject::new_hurtbox(int id, glm::vec2 anchor, glm::vec2 offset, HurtboxKind hurtbox_kind, int armor_hits, IntangibleKind intangible_kind) {
 	if (id < 10) {
-		hurtboxes[id].activate(this, id, anchor, offset, hurtbox_kind, armor, intangible_kind);
+		hurtboxes[id].activate(id, anchor, offset, hurtbox_kind, armor_hits, intangible_kind);
 	}
 }
 

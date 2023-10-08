@@ -999,8 +999,8 @@ void Fighter::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Figh
 	}
 
 	if (counterhit_val >= 1) {
-		fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -counterhit_val * 2;
-		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 14)) / 10;
+		fighter_int[FIGHTER_INT_DAMAGE_SCALE] = -counterhit_val;
+		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 12)) / 10;
 		damage = hitbox->damage * scale;
 		attacker->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, attacker->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 1.2, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.72, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
@@ -1013,7 +1013,7 @@ void Fighter::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Figh
 		fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
 	}
 	else {
-		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 14)) / 10;
+		scale = (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 12)) / 10;
 		damage = hitbox->damage * scale;
 		attacker->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, attacker->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.6, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
@@ -1254,10 +1254,9 @@ void Fighter::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, 
 
 void Fighter::process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* attacker) {
 	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry"), get_param_int(PARAM_FIGHTER, "ex_meter_size"));
-	//TODO: We're actually going to set the hitlag to 1 and have the camera zoom in on the player
-	//who parried here.
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 50;
-	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 50;
+	start_cinematic_sequence("hitstun_parry", 1.0, 1.0, 0.6, false, 0.02);
+	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 48;
+	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 48;
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
 	post_collision_status = FIGHTER_STATUS_PARRY;
 	unique_process_incoming_fighter_hitbox_collision_hitstun_parried(hitbox, attacker);
@@ -1278,10 +1277,9 @@ void Fighter::process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbo
 void Fighter::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->multihit);
 	fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
-	fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER] = 2;
-	//TODO: Once the cam animation is implemented, set both of these values to 1.
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 50;
-	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 50;
+	fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER] = 3;
+	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 1;
+	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 1;
 	unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(hitbox, defender);
 }
 
@@ -1530,7 +1528,7 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 
 void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 	int hit_status = hitbox->hit_status;
-	if (counterhit_val == 2) {
+	if (counterhit_val == 2 && hitbox->counterhit_status != HIT_STATUS_NONE) {
 		hit_status = hitbox->counterhit_status;
 	}
 

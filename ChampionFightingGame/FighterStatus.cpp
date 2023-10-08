@@ -1679,8 +1679,9 @@ void Fighter::exit_status_launch_parry_start() {
 }
 
 void Fighter::status_parry() {
+	player->controller.set_hold_buffer(true);
 	if (beginning_hitlag(1) || ending_hitlag(2)) {
-		frame += battle_object_manager->world_rate;
+		frame++;
 	}
 	if (situation_kind == FIGHTER_SITUATION_GROUND && fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
@@ -1695,6 +1696,7 @@ void Fighter::status_parry() {
 }
 
 void Fighter::enter_status_parry() {
+	fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = false;
 	fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
 	if (situation_kind == FIGHTER_SITUATION_AIR) {
 		change_anim("parry_air");
@@ -1718,6 +1720,7 @@ void Fighter::enter_status_parry() {
 
 void Fighter::exit_status_parry() {
 	fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MAX;
+	player->controller.set_hold_buffer(false);
 }
 
 void Fighter::status_landing() {

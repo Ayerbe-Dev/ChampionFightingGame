@@ -14,6 +14,7 @@ GameController::GameController() {
 	add_buffer_button(BUTTON_LK, BUFFER_LK);
 	add_buffer_button(BUTTON_MK, BUFFER_MK);
 	add_buffer_button(BUTTON_HK, BUFFER_HK);
+	hold_buffer = false;
 }
 
 int GameController::check_controllers() {
@@ -110,7 +111,9 @@ void GameController::poll_buttons() {
 	for (size_t i = 0, max = button_info.size(); i < max; i++) {
 		button_info[i].changed = button_info[i].button_on != old_button[i];
 		if (is_valid_buffer_button(button_info[i].button_kind)) {
-			button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
+			if (!hold_buffer) {
+				button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
+			}
 			if (button_info[i].changed && button_info[i].button_on) {
 				button_info[i].buffer = buffer_window;
 				any_new_buttons = true;
@@ -363,4 +366,8 @@ void GameController::set_id(int id) {
 void GameController::set_stick_hold_timer(int h, int v) {
 	this->stick_hold_h_timer = h;
 	this->stick_hold_v_timer = v;
+}
+
+void GameController::set_hold_buffer(bool hold_buffer) {
+	this->hold_buffer = hold_buffer;
 }

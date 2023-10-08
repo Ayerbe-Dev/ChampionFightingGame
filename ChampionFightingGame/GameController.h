@@ -56,6 +56,7 @@ public:
 
 	void set_id(int id);
 	void set_stick_hold_timer(int h, int v);
+	void set_hold_buffer(bool hold_buffer);
 private:
 	int id;
 	int stick_hold_h_timer;
@@ -65,6 +66,8 @@ private:
 	std::unordered_map<unsigned int, unsigned int> key_map[2];
 	std::unordered_map<SDL_GameControllerButton, unsigned int> controller_map[2];
 	std::unordered_map<SDL_GameControllerAxis, unsigned int> axis_map[2];
+
+	bool hold_buffer;
 
 	std::unordered_map<unsigned int, unsigned int> buffer_buttons;
 

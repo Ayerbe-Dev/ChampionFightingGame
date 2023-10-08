@@ -586,6 +586,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="NightsabreFloat.h" />
     <ClInclude Include="NightsabreInt.h" />
     <ClInclude Include="NightsabreStatus.h" />
+    <ClInclude Include="TargetVar.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Wallace.h" />

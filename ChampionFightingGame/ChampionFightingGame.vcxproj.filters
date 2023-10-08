@@ -1365,6 +1365,9 @@
     <ClInclude Include="CharaKind.h">
       <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
     </ClInclude>
+    <ClInclude Include="TargetVar.h">
+      <Filter>1. Header Files\Engine\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">

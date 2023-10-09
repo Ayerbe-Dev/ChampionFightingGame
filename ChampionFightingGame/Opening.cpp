@@ -23,19 +23,19 @@ void opening_main() {
 	int fade_count = 0;
 	int fade_state = 0;
 
-	game_manager->looping[game_manager->layer] = true;
+	bool loop = true;
 
-	while (game_manager->looping[game_manager->layer]) {
+	while (loop && game_manager->next_game_state != GAME_STATE_CLOSE) {
 		wait_ms(66.667);
 
-		game_manager->handle_window_events();
+		render_manager->handle_window_events();
 
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 			player[i]->controller.poll_buttons();
 			if (player[i]->controller.is_any_inputs()) {
-				game_manager->looping[game_manager->layer] = false;
+				loop = false;
 			}
 		}
 
@@ -62,7 +62,7 @@ void opening_main() {
 			text_alpha -= 10;
 			fade_count++;
 			if (fade_count == 24) {
-				game_manager->looping[game_manager->layer] = false;
+				loop = false;
 			}
 		}
 

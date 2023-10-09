@@ -1,9 +1,9 @@
 #include "BattleObject.h"
 
 void BattleObject::new_grabbox(int id, glm::vec2 anchor, glm::vec2 offset, GrabboxKind grabbox_kind,
-	HitKind hit_kind, unsigned int attacker_status_if_hit, unsigned int defender_status_if_hit) {
+	CollisionKind hit_kind, unsigned int attacker_status_if_hit, unsigned int defender_status_if_hit) {
 	if (id < 10) {
-		grabboxes[id].activate(this, id, anchor, offset, grabbox_kind, hit_kind, 
+		grabboxes[id].activate(id, anchor, offset, grabbox_kind, hit_kind, 
 			attacker_status_if_hit, defender_status_if_hit);
 	}
 }

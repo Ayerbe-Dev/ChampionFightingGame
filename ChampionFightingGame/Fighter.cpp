@@ -127,9 +127,7 @@ void Fighter::process_animate() {
 
 	if (internal_facing_right != facing_right 
 		&& is_actionable()
-		&& status_kind != FIGHTER_STATUS_TURN 
-		&& status_kind != FIGHTER_STATUS_CRUMPLE
-		&& status_kind != FIGHTER_STATUS_KNOCKDOWN_START
+		&& status_kind != FIGHTER_STATUS_TURN
 		&& situation_kind == FIGHTER_SITUATION_GROUND) {
 		change_status(FIGHTER_STATUS_TURN);
 		return;
@@ -144,7 +142,6 @@ void Fighter::process_animate() {
 			clear_hurtbox_all();
 			clear_hitbox_all();
 			fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-			fighter_flag[FIGHTER_FLAG_KARA_ENABLED] = false;
 			is_anim_end = true;
 		}
 		else {
@@ -181,7 +178,7 @@ void Fighter::process_post_position() {
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
 					if (!(that->fighter_flag[FIGHTER_FLAG_SHORT_HOP] && that->fighter_flag[FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK])) {
@@ -203,7 +200,7 @@ void Fighter::process_post_position() {
 				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
 					y_pushback = 0.0;
 				}
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -internal_facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->internal_facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
 					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
 					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
@@ -220,20 +217,27 @@ void Fighter::process_post_position() {
 
 void Fighter::process_pre_status() {
 	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
-		if (fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] != FIGHTER_STATUS_MAX) {
-			change_status(fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_END], fighter_flag[FIGHTER_FLAG_BUFFER_HITLAG_STATUS_SEPARATE]);
-			fighter_int[FIGHTER_INT_BUFFER_HITLAG_STATUS] = FIGHTER_STATUS_MAX; 
+		if (fighter_int[FIGHTER_INT_BUFFER_STATUS] != FIGHTER_STATUS_MAX
+			&& is_enable_cancel(fighter_int[FIGHTER_INT_BUFFER_CANCEL_KIND])
+			&& fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER]) {
+			if (fighter_int[FIGHTER_INT_BUFFER_STATUS] == FIGHTER_STATUS_ATTACK
+			|| fighter_int[FIGHTER_INT_BUFFER_STATUS] == FIGHTER_STATUS_ATTACK_AIR) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND];
+				if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_OTHER) {
+					fighter_int[FIGHTER_INT_ATTACK_OTHER_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO];
+				}
+			}
+			else if (fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND]) {
+				fighter_int[FIGHTER_INT_ATTACK_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND];
+				fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO];
+			}
+			change_status(fighter_int[FIGHTER_INT_BUFFER_STATUS], fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_END], fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_SEPARATE]);
 		}
-		else if (fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] != FIGHTER_STATUS_MAX 
-			&& is_enable_cancel(fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_KIND])
-			&& fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER]) {
-			change_status(fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS], fighter_flag[FIGHTER_FLAG_PRE_ENABLE_CANCEL_STATUS_END], fighter_flag[FIGHTER_FLAG_PRE_ENABLE_CANCEL_STATUS_SEPARATE]);
-		}
-		if (fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER] > 0) {
-			fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_TIMER]--;
+		if (fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER] > 0) {
+			fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER]--;
 		}
 		else {
-			fighter_int[FIGHTER_INT_PRE_ENABLE_CANCEL_STATUS] = FIGHTER_STATUS_MAX;
+			fighter_int[FIGHTER_INT_BUFFER_STATUS] = FIGHTER_STATUS_MAX;
 		}
 	}
 }
@@ -638,8 +642,11 @@ void Fighter::decrease_common_variables() {
 		}
 	}
 	else {
-		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
-			fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
+		if (status_kind == FIGHTER_STATUS_HITSTUN || status_kind == FIGHTER_STATUS_HITSTUN_AIR
+			|| status_kind == FIGHTER_STATUS_BLOCKSTUN) {
+			if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
+				fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
+			}
 		}
 		if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 			fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]--;
@@ -668,5 +675,11 @@ void Fighter::decrease_common_variables() {
 	}
 	if (fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] != 0) {
 		fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER]--;
+	}
+	if (fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER]--;
+		if (fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER] == 0) {
+			fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = true;
+		}
 	}
 }

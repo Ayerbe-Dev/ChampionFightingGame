@@ -2,6 +2,7 @@
 #include "Projectile.h"
 
 void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
+	projectiles[id]->change_status(PROJECTILE_STATUS_ACTIVATE, false, false);
 	set_projectile_int(id, PROJECTILE_INT_ELAPSED_FRAMES, 0);
 	set_projectile_int(id, PROJECTILE_INT_INIT_HITLAG_FRAMES, 0);
 	set_projectile_int(id, PROJECTILE_INT_HITLAG_FRAMES, 0);
@@ -11,7 +12,6 @@ void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
 
 	projectiles[id]->facing_right = facing_right;
 	projectiles[id]->facing_dir = facing_dir;
-	projectiles[id]->change_status(PROJECTILE_STATUS_ACTIVATE, false, false);
 }
 
 void Fighter::deactivate_projectile(int id) {

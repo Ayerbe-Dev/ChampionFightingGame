@@ -1,13 +1,6 @@
 #include "Projectile.h"
 #include "Fighter.h"
 
-void Projectile::process_hit() {
-	projectile_int[PROJECTILE_INT_HEALTH]--;
-	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		change_status(PROJECTILE_STATUS_DEACTIVATE);
-	}
-}
-
 void Projectile::status_none() {
 
 }
@@ -29,9 +22,7 @@ void Projectile::enter_status_activate() {
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("active_frames");
 	projectile_int[PROJECTILE_INT_HEALTH] = get_local_param_int("health");
 	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = 0;
-	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES] = 0;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 0;
-	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 0;
+	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = false;
 }
 
 void Projectile::exit_status_activate() {

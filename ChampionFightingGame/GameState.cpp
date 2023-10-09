@@ -2,6 +2,8 @@
 #include "Loader.h"
 #include "GameTexture.h"
 #include "FontManager.h"
+#include "GameManager.h"
+#include "RenderManager.h"
 #include "utils.h"
 
 void GameState::process_main() {}
@@ -18,32 +20,16 @@ void GameState::event_any_press() {}
 void GameState::process_background() {}
 
 GameState::GameState() {
-	average_ticks.reserve(10000);
-	looping = nullptr;
-	game_state = nullptr;
-	prev_game_state = nullptr;
-	game_context = nullptr;
-	prev_game_context = nullptr;
+	looping = true;
 	game_loader = nullptr;
-	frame = 0;
-	fps = 60;
-	prev_fps = 0;
-	FontManager* font_manager = font_manager->get_instance();
-
-	fps_font = font_manager->load_font("FiraCode", 12);
-	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	fps_counter.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_counter.set_pos(glm::vec3(0.0, -10.0, 0.0));
-	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	fps_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_texture.set_pos(glm::vec3(80.0, -10.0, 0.0));
+	game_context = GAME_CONTEXT_NORMAL;
+	player_id = 0;
+	GameManager::get_instance()->set_game_state(this);
 }
 
 GameState::~GameState() {
 	menu_objects.clear();
-	fps_font.unload_font();
-	fps_counter.destroy();
-	fps_texture.destroy();
+	GameManager::get_instance()->delete_game_state();
 }
 
 void GameState::process_game_state() {
@@ -52,89 +38,15 @@ void GameState::process_game_state() {
 }
 
 void GameState::render_game_state() {
-	render_main();
-	fps_counter.render();
-	fps_texture.render();
+	GameManager::get_instance()->render_game_states();
 }
 
 void GameState::update_state(int game_state, int game_context) {
-	if (game_state != GAME_STATE_MAX) {
-		*prev_game_state = *this->game_state;
-		*this->game_state = game_state;
-	}
-	if (game_context != GAME_CONTEXT_MAX) {
-		*prev_game_context = *this->game_context;
-		*this->game_context = game_context;
-	}
+	GameManager::get_instance()->update_state(game_state, game_context);
 }
 
 void GameState::inc_thread() {
 	update_thread_progress(game_loader->loaded_items);
-}
-
-void GameState::frame_delay() {
-	wait_ms();
-}
-
-void GameState::frame_delay_check_fps() {
-	if ((float)((std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_second).count()) / 1000.0) >= 1000.0) {
-		fps = frame;
-		frame = 0;
-		wait_ms();
-		last_second = std::chrono::high_resolution_clock::now();
-	}
-	else {
-		wait_ms();
-		frame++;
-	}
-	if (prev_fps != fps) {
-		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255), glm::vec4(0.0));
-		prev_fps = fps;
-	}
-}
-
-void GameState::frame_delay_check_performance() {
-	int trials = 10000;
-
-	if (average_ticks.size() < trials) {
-		average_ticks.push_back((float)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - ms).count())/1000.0);
-	}
-	else {
-		float highest = average_ticks[0];
-		while (highest >= tick_frequency.size()) {
-			tick_frequency.push_back(0);
-		}
-		int freq = 0;
-		int frame_freq = 0;
-		float total = 0;
-		for (int i = 0; i < trials; i++) {
-			total += average_ticks[i];
-			if (average_ticks[i] >= 16.667) {
-				frame_freq++;
-			}
-			if (average_ticks[i] > highest) {
-				highest = average_ticks[i];
-				while (highest >= tick_frequency.size()) {
-					tick_frequency.push_back(0);
-				}
-				freq = 1;
-			}
-			else if (average_ticks[i] == highest) {
-				freq++;
-			}
-			tick_frequency[(int)average_ticks[i]]++;
-		}
-		total /= (float)trials;
-		std::cout << "Lengths of all iterations across " << trials << " tests: " << "\n";
-		for (int i = 0; i < tick_frequency.size(); i++) {
-			std::cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << "\n";
-		}
-		std::cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << "\n";
-		average_ticks.clear();
-		tick_frequency.clear();
-	}
-	wait_ms();
-	ms = std::chrono::high_resolution_clock::now();
 }
 
 MenuObject::MenuObject() {

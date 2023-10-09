@@ -5,21 +5,21 @@ void Eric::chara_main() {
 }
 
 bool Eric::chara_ground_status_act() {
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MACRO_P) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_3P)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP) != SPECIAL_INPUT_NONE) {
+	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP)) {
 		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return change_status_after_hitlag(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
+		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
 	}
 	return false;
 }

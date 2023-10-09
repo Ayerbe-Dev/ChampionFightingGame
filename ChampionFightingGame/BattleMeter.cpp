@@ -67,7 +67,7 @@ void BattleMeter::init(Fighter* fighter, int num_rounds) {
 	disable_hitstun_parry = fighter->fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]._Getptr();
 	post_hitstun_timer = &fighter->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER];
 	max_health = fighter->get_local_param_float("health");
-	ex = &fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER];
+	ex = &fighter->fighter_float[FIGHTER_FLOAT_EX_METER];
 	max_ex = (float)get_param_int(PARAM_FIGHTER, "ex_meter_size");
 	num_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
 	ex_texture.scale_right_percent(0.0);

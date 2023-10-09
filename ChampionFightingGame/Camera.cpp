@@ -180,15 +180,9 @@ void Camera::follow_anim() {
 	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
 
 	pos = keyframe.pos_key;
-
 	yaw = keyframe.rot_key.x;
 	pitch = clampf(-89.9, keyframe.rot_key.y, 89.9);
 	roll = keyframe.rot_key.z;
-
-	//This 2 is a magic number that seems to be based on character size. It might also be inaccurate, but
-	//atm I'm not sure how we'd actually calculate this.
-
-	pos /= glm::vec3(2.0);
 
 	if (follow_id != -1) {
 		pos.x *= fighter[follow_id]->facing_dir;

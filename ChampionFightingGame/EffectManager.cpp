@@ -72,7 +72,7 @@ void EffectManager::clear_effect(int object_id, std::string name, int instance_i
 			}
 		}
 	}
-	std::cerr << "Instance ID not found!\n";
+	std::cerr << "Clear Effect: Instance ID for effect " << name << " not found!\n";
 }
 
 //If no argument is passed, every effect across all objects will be cleared.
@@ -96,7 +96,7 @@ Effect EffectManager::get_effect(std::string name) {
 }
 
 EffectInstance& EffectManager::get_effect_instance(int object_id, std::string name, int instance_id) {
-	if (id2index.find(object_id) == id2index.end()) {
+	if (!id2index.contains(object_id)) {
 		throw std::range_error("ID of object caster not in EffectManager!");
 	}
 	for (std::list<EffectInstance>::iterator it = active_effects[id2index[object_id]].begin(), max = active_effects[id2index[object_id]].end(); it != max; it++) {
@@ -109,7 +109,7 @@ EffectInstance& EffectManager::get_effect_instance(int object_id, std::string na
 			}
 		}
 	}
-	throw std::range_error("Instance ID not found!");
+	throw std::range_error("Get Effect Instance: Instance ID for effect " + name + " not found!");
 }
 
 void EffectManager::load_effect(std::string name) {

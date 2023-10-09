@@ -34,7 +34,9 @@ GameTexture::GameTexture() {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
-	attach_shader(ShaderManager::get_instance()->get_shader("2d_texture", "2d_texture", "", 0));
+	if (SDL_GL_GetCurrentContext() != nullptr) {
+		attach_shader(ShaderManager::get_instance()->get_shader("2d_texture", "2d_texture", "", 0));
+	}
 }
 
 GameTexture::GameTexture(std::string path) {

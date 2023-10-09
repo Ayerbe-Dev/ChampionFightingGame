@@ -19,15 +19,15 @@ void stage_select_main() {
 
 	StageSelect* stage_select = new StageSelect;
 
-	while (*stage_select->looping) {
-		stage_select->frame_delay_check_fps();
+	while (stage_select->looping) {
+		game_manager->frame_delay_check_fps();
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		game_manager->handle_window_events();
+		render_manager->handle_window_events();
 
 		stage_select->process_game_state();
 		stage_select->render_game_state();
@@ -41,7 +41,7 @@ void stage_select_main() {
 		demo = stage_select->stages[rng(0, stage_select->stages.size() - 1)];
 	}
 
-	switch (game_manager->game_context) {
+	switch (stage_select->game_context) {
 		default: {
 			for (int i = 0; i < 2; i++) {
 				player[i]->stage_info = StageInfo(demo.id, demo.resource_name);
@@ -147,8 +147,6 @@ StageSelect::StageSelect() {
 	num_slots_per_row = 1;
 	selected = false;
 
-	game_manager->set_menu_info(this);
-
 	menu_objects.resize(STAGE_SELECT_GROUP_MAX);
 
 	if (!load_stage_select()) {
@@ -209,7 +207,7 @@ bool StageSelect::load_stage_select() {
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
 	stages.reserve(stage_params.get_param_int("num_slots"));
-	switch (*game_context) { //Load the training mode versions of stages for training mode, else load the normal ones
+	switch (game_context) { //Load the training mode versions of stages for training mode, else load the normal ones
 		case (GAME_CONTEXT_TRAINING): {
 			for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
 				if (stage_params.get_param_bool("selectable_training", i)) {
@@ -300,7 +298,7 @@ void StageSelect::process_main() {
 	for (int i = 0; i < 2; i++) {
 		game_manager->player[i]->controller.poll_buttons();
 	}
-	game_manager->handle_menus();
+	game_manager->process_game_state_events();
 
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
@@ -429,7 +427,6 @@ void StageSelect::event_select_press() {
 	}
 	else {
 		update_state(GAME_STATE_CHARA_SELECT);
-		*looping = false;
 	}
 }
 
@@ -437,7 +434,6 @@ void StageSelect::event_back_press() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		update_state(GAME_STATE_MENU);
-		*looping = false;
 	}
 	else {
 		render_manager->camera.play_camera_anim(-1, &stages[selection].selected_anim, -1.0, 0.0);

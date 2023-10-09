@@ -15,6 +15,14 @@ struct TextureCoord {
     glm::vec2 tex_coord;
 };
 
+const int TEXTURE_RIGHT = 1;
+const int TEXTURE_LEFT = 2;
+const int TEXTURE_H_MID = TEXTURE_RIGHT | TEXTURE_LEFT;
+const int TEXTURE_TOP = 4;
+const int TEXTURE_BOTTOM = 8;
+const int TEXTURE_V_MID = TEXTURE_TOP | TEXTURE_BOTTOM;
+const int TEXTURE_MID = TEXTURE_H_MID | TEXTURE_V_MID;
+
 enum {
     SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT,
     SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE,

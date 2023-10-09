@@ -7,7 +7,7 @@
 #include "ShaderManager.h"
 #include "Anlst.h"
 
-void Fighter::init() {
+void Fighter::load_fighter() {
 	player->controller.reset_buffer();
 	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
@@ -30,7 +30,7 @@ void Fighter::init() {
 	load_stats();
 	load_params();
 	load_model_shader();
-	init_boxes();
+	load_collision_boxes();
 	load_anim_list();
 	load_chara_status_scripts();
 	load_fighter_status_scripts();
@@ -127,7 +127,7 @@ void Fighter::set_default_vars() {
 	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
 }
 
-void Fighter::init_boxes() {
+void Fighter::load_collision_boxes() {
 	for (int i = 0; i < 10; i++) {
 		hitboxes[i].init(this);
 		hurtboxes[i].init(this);

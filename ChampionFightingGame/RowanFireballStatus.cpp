@@ -1,6 +1,12 @@
 #include "RowanFireball.h"
 #include "RowanFireballConstants.h"
 
+void RowanFireball::unique_process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender) {
+	if (status_kind == PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER) {
+		projectile_int[PROJECTILE_INT_HEALTH]++;
+	}
+}
+
 void RowanFireball::projectile_unique_main() {
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0 && status_kind != PROJECTILE_STATUS_DEACTIVATE) {
 		change_status(PROJECTILE_STATUS_DEACTIVATE);
@@ -8,11 +14,9 @@ void RowanFireball::projectile_unique_main() {
 }
 
 void RowanFireball::status_activate() {
-	if (owner->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] >= SPECIAL_LEVEL_H) {
-		projectile_int[PROJECTILE_INT_HEALTH] = 2;
-	}
 	if (owner->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 		projectile_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
+		projectile_int[PROJECTILE_INT_HEALTH] = 2;
 	}
 	change_status(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER);
 }
@@ -47,6 +51,7 @@ void RowanFireball::status_rowan_fireball_punched() {
 void RowanFireball::enter_status_rowan_fireball_punched() {
 	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("punch_active_time", params);
+	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
 	switch (owner->fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
 		case SPECIAL_LEVEL_L: {
 			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("punch_move_x_speed_l", params) * facing_dir;
@@ -77,8 +82,9 @@ void RowanFireball::status_rowan_fireball_kicked() {
 
 void RowanFireball::enter_status_rowan_fireball_kicked() {
 	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
-	set_pos(owner->get_bone_position("FootR", glm::vec3(20.0, -25.0, 0.0)));
 	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("kick_active_time", params);
+	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
+	set_pos(owner->get_bone_position("FootR", glm::vec3(20.0, -25.0, 0.0)));
 	switch (owner->fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
 	case SPECIAL_LEVEL_L: {
 		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("kick_move_x_speed_l", params) * facing_dir;

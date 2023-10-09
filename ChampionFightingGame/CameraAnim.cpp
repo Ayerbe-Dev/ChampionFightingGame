@@ -36,11 +36,13 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 
 	for (int i = 0; i < node->mNumPositionKeys; i++) {
 		glm::vec3 pos_key = ass_converter(node->mPositionKeys[i].mValue) / ass_converter(node->mScalingKeys[i].mValue);
+		std::swap(pos_key.x, pos_key.z);
+		pos_key.z *= -1;
 		glm::quat quat_key = ass_converter(node->mRotationKeys[i].mValue);
 		glm::vec3 rot_key = glm::eulerAngles(quat_key) * 180.f / 3.14f;
 
 		keyframes[node->mPositionKeys[i].mTime].pos_key = pos_key;
-		keyframes[node->mPositionKeys[i].mTime].rot_key = rot_key + glm::vec3(90.0, -90.0, 90.0);
+		keyframes[node->mPositionKeys[i].mTime].rot_key = rot_key;
 
 		keyframes[node->mPositionKeys[i].mTime].keyframed = true;
 	}

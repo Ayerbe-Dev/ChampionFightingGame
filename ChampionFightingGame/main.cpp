@@ -51,14 +51,16 @@ int main() {
 
 	//Initialize all of the singletons
 
+	RenderManager* render_manager = RenderManager::get_instance();
+	FontManager* font_manager = FontManager::get_instance();
+	font_manager->load_face("FiraCode");
+	GameManager* game_manager = GameManager::get_instance();
+
 	AIManager* ai_manager = AIManager::get_instance();
 	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
 	ControllerManager* controller_manager = ControllerManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
-	GameManager* game_manager = GameManager::get_instance();
-	FontManager* font_manager = FontManager::get_instance();
 	ParamAccessor* param_accessor = ParamAccessor::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
 	ShaderManager* shader_manager = ShaderManager::get_instance();
@@ -73,22 +75,15 @@ int main() {
 		game_manager->player[i]->player_info = &default_player_info;
 	}
 
-	//FiraCode is used so often there's no reason not to keep its face loaded
-
-	font_manager->load_face("FiraCode");
-
 	opening_main();
 
-	while (game_manager->game_state != GAME_STATE_CLOSE) {
+	while (game_manager->next_game_state != GAME_STATE_CLOSE) {
 		shader_manager->reset_common_ubos();
-		for (int i = 0; i < MAX_LAYERS; i++) {
-			game_manager->looping[i] = true;
+		if (game_manager->game_main[game_manager->next_game_state] != nullptr) {
+			game_manager->game_main[game_manager->next_game_state]();
 		}
-		if (game_manager->game_main[game_manager->game_state] != nullptr) {
-			game_manager->game_main[game_manager->game_state]();
-		}
-		else if (game_manager->game_state != GAME_STATE_CLOSE) {
-			game_manager->add_crash_log("Error: Game State was " + std::to_string(game_manager->game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
+		else if (game_manager->next_game_state != GAME_STATE_CLOSE) {
+			game_manager->add_crash_log("Error: Next Game State was " + std::to_string(game_manager->next_game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
 			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
 		}
 	}

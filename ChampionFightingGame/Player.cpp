@@ -14,17 +14,15 @@ Player::Player() {
 	control_type = CONTROL_TYPE_ADVANCE;
 
 	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
-	controller.stick_hold_v_timer = timer;
-	controller.stick_hold_h_timer = timer;
+	controller.set_stick_hold_timer(timer, timer);
 	player_info = nullptr;
 }
 
 Player::Player(int id) {
 	this->id = id;
 	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
-	controller.stick_hold_v_timer = timer;
-	controller.stick_hold_h_timer = timer;
-	controller.id = id;
+	controller.set_id(id);
+	controller.set_stick_hold_timer(timer, timer);
 	chara_kind = CHARA_KIND_MAX;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	set_default_button_mappings(id);
@@ -43,11 +41,11 @@ void Player::set_default_button_mappings(int id) {
 		controller.add_button_mapping(BUTTON_LK, SDL_SCANCODE_H, SDL_CONTROLLER_BUTTON_B);
 		controller.add_button_mapping(BUTTON_MK, SDL_SCANCODE_J, SDL_CONTROLLER_BUTTON_Y);
 		controller.add_button_mapping(BUTTON_HK, SDL_SCANCODE_K, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-		controller.add_button_mapping(BUTTON_MACRO_P, SDL_SCANCODE_O, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-		controller.add_button_mapping(BUTTON_MACRO_K, SDL_SCANCODE_L, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-		controller.add_button_mapping(BUTTON_MACRO_L);
-		controller.add_button_mapping(BUTTON_MACRO_M);
-		controller.add_button_mapping(BUTTON_MACRO_H);
+		controller.add_button_mapping(BUTTON_3P, SDL_SCANCODE_O, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		controller.add_button_mapping(BUTTON_3K, SDL_SCANCODE_L, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		controller.add_button_mapping(BUTTON_2L);
+		controller.add_button_mapping(BUTTON_2M);
+		controller.add_button_mapping(BUTTON_2H);
 		controller.add_button_mapping(BUTTON_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_START);
 		controller.add_button_mapping(BUTTON_MENU_UP, SDL_SCANCODE_W, SDL_CONTROLLER_BUTTON_DPAD_UP);
 		controller.add_button_mapping(BUTTON_MENU_LEFT, SDL_SCANCODE_A, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
@@ -68,11 +66,11 @@ void Player::set_default_button_mappings(int id) {
 		controller.add_button_mapping(BUTTON_LK, SDL_SCANCODE_B, SDL_CONTROLLER_BUTTON_B);
 		controller.add_button_mapping(BUTTON_MK, SDL_SCANCODE_N, SDL_CONTROLLER_BUTTON_Y);
 		controller.add_button_mapping(BUTTON_HK, SDL_SCANCODE_M, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-		controller.add_button_mapping(BUTTON_MACRO_P, SDL_SCANCODE_V, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-		controller.add_button_mapping(BUTTON_MACRO_K, SDL_SCANCODE_COMMA, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-		controller.add_button_mapping(BUTTON_MACRO_L);
-		controller.add_button_mapping(BUTTON_MACRO_M);
-		controller.add_button_mapping(BUTTON_MACRO_H);
+		controller.add_button_mapping(BUTTON_3P, SDL_SCANCODE_V, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		controller.add_button_mapping(BUTTON_3K, SDL_SCANCODE_COMMA, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		controller.add_button_mapping(BUTTON_2L);
+		controller.add_button_mapping(BUTTON_2M);
+		controller.add_button_mapping(BUTTON_2H);
 		controller.add_button_mapping(BUTTON_START, SDL_SCANCODE_RETURN, SDL_CONTROLLER_BUTTON_START);
 		controller.add_button_mapping(BUTTON_MENU_UP, SDL_SCANCODE_UP, SDL_CONTROLLER_BUTTON_DPAD_UP);
 		controller.add_button_mapping(BUTTON_MENU_LEFT, SDL_SCANCODE_LEFT, SDL_CONTROLLER_BUTTON_DPAD_LEFT);

@@ -74,17 +74,17 @@ void battle_main() {
 	cotr_imgui_init();
 #endif
 
-	while (*battle->looping) {
-		battle->frame_delay_check_fps();
+	while (battle->looping) {
+		game_manager->frame_delay_check_fps();
 
 		glStencilMask(0xFF);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glStencilMask(0x00);
 
 		#ifdef DEBUG
-			game_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
+			render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 		#else
-			game_manager->handle_window_events();
+			render_manager->handle_window_events();
 		#endif
 
 		for (int i = 0; i < 2; i++) {
@@ -127,7 +127,7 @@ Battle::Battle() {
 	sudden_death = false;
 	ko_timer = 0;
 
-	switch (game_manager->game_context) {
+	switch (game_context) {
 		case (GAME_CONTEXT_STORY):
 		case (GAME_CONTEXT_TRAINING): {
 			state = BATTLE_STATE_BATTLE;
@@ -136,9 +136,7 @@ Battle::Battle() {
 			state = BATTLE_STATE_PRE_INTRO;
 		} break;
 	}
-
-	game_manager->set_menu_info(this);
-
+	
 	debug_controller.add_button_mapping(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
@@ -159,7 +157,7 @@ Battle::Battle() {
 	inc_thread();
 
 	combo_font = font_manager->load_font("Fiend-Oblique", 64);
-	message_font = font_manager->load_font("Fiend-Oblique", 20);
+	message_font = font_manager->load_font("Fiend-Oblique", 24);
 	info_font = font_manager->load_font("FiraCode", 16);
 
 	inc_thread();
@@ -202,7 +200,7 @@ Battle::Battle() {
 	render_manager->update_shader_lights();
 	render_manager->update_shader_shadows();
 	
-	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == GAME_CONTEXT_TRAINING) {
 		timer.init(-1);
 	}
 	else {
@@ -211,8 +209,8 @@ Battle::Battle() {
 	inc_thread();
 
 	bool loading = true;
-	while (loading && *looping) {
-		game_manager->handle_window_events();
+	while (loading && looping) {
+		render_manager->handle_window_events();
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
@@ -243,8 +241,6 @@ Battle::Battle() {
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
 	sound_manager->play_music("Battle Music");
-
-	ms = std::chrono::high_resolution_clock::now();
 }
 
 Battle::~Battle() {
@@ -363,7 +359,7 @@ void Battle::process_battle() {
 	}
 	for (int i = 0; i < 2; i++) {
 		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
-			game_manager->game_substate_main[GAME_SUBSTATE_PAUSE_BATTLE]();
+			game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
 		}
 	}
 	if (frame_pause) {
@@ -380,7 +376,7 @@ void Battle::process_battle() {
 		camera->camera_main();
 	}
 	sound_manager->process_sounds();
-	if (game_manager->game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == GAME_CONTEXT_TRAINING) {
 		process_training();
 	}
 	if (battle_object_manager->frame_elapsed()) {
@@ -555,9 +551,41 @@ void Battle::process_debug_boxes() {
 
 void Battle::pre_process_fighter() {
 	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]) {
-			return;
+		switch (fighter[i]->fighter_int[FIGHTER_INT_UI_TEXT_TYPE]) {
+			case UI_TEXT_TYPE_NONE:
+			default: {
+
+			} break;
+			case UI_TEXT_TYPE_ARMOR_BREAK: {
+				texts[i].push_back(BattleText());
+				texts[i].back().init(&message_font, "Armor Break", 40, fighter[i], glm::vec2(275.0, 450.0));
+			} break;
+			case UI_TEXT_TYPE_COUNTER: {
+				texts[i].push_back(BattleText());
+				texts[i].back().init(&message_font, "Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+			} break;
+			case UI_TEXT_TYPE_COUNTER_PUNISH: {
+				texts[i].push_back(BattleText());
+				texts[i].back().init(&message_font, "Punish Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+			} break;
+			case UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY: {
+				texts[i].push_back(BattleText());
+				texts[i].back().init(&message_font, "Hitstun Parry Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+			} break;
+			case UI_TEXT_TYPE_COUNTER_JUMP: {
+				texts[i].push_back(BattleText());
+				texts[i].back().init(&message_font, "Jump Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+			} break;
+			case UI_TEXT_TYPE_REVERSAL: {
+				texts[i].push_back(BattleText());
+				texts[i].back().init(&message_font, "Reversal", 40, fighter[i], glm::vec2(275.0, 450.0));
+			} break;
 		}
+		fighter[i]->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_NONE;
+	}
+	if (fighter[0]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] 
+		|| fighter[1]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]) {
+		return;
 	}
 	for (int i = 0; i < 2; i++) {
 		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND) {
@@ -641,7 +669,7 @@ void Battle::process_training() {
 			fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
 		}
 		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] == 0) {
-			fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER], fighter[i]->fighter_float[FIGHTER_FLOAT_SUPER_METER] + 10.0, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+			fighter[i]->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_EX_METER], fighter[i]->fighter_float[FIGHTER_FLOAT_EX_METER] + 10.0, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
 		}
 
 		short new_input_code = fighter[i]->get_stick_dir_no_lr() << 7;
@@ -812,7 +840,7 @@ void Battle::render_world() {
 	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 	render_manager->g_buffer.render();
 #ifdef DEBUG
-	render_manager->gbuffer_texture->render();
+	render_manager->gbuffer_texture.render();
 #endif
 	render_manager->outline.render_passthrough();
 
@@ -923,7 +951,7 @@ void Battle::render_ui() {
 	timer.render();
 	//TRAINING PASS
 
-	if (*game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == GAME_CONTEXT_TRAINING) {
 		for (int i = 0; i < 2; i++) {
 			training_info[i].render();
 		}

@@ -10,6 +10,7 @@ BattleObjectManager::BattleObjectManager() {
 }
 
 bool BattleObjectManager::frame_elapsed() {
+	if (world_rate == 0.0f) return false;
 	float factor = 1.0 / world_rate;
 	return world_frame >= world_rate * factor;
 }

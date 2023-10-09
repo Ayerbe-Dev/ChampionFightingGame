@@ -13,5 +13,5 @@ ProjectileTemplate::ProjectileTemplate(int id, Player* player) {
 	projectile_float.resize(PROJECTILE_PROJECTILE_TEMPLATE_FLOAT_MAX, 0.0);
 	projectile_flag.resize(PROJECTILE_PROJECTILE_TEMPLATE_FLAG_MAX, false);
 
-	init();
+	load_projectile();
 }

@@ -8,6 +8,13 @@ GameController::GameController() {
 	controller = nullptr;
 	stick_hold_h_timer = 0;
 	stick_hold_v_timer = 0;
+	add_buffer_button(BUTTON_LP, BUFFER_LP);
+	add_buffer_button(BUTTON_MP, BUFFER_MP);
+	add_buffer_button(BUTTON_HP, BUFFER_HP);
+	add_buffer_button(BUTTON_LK, BUFFER_LK);
+	add_buffer_button(BUTTON_MK, BUFFER_MK);
+	add_buffer_button(BUTTON_HK, BUFFER_HK);
+	hold_buffer = false;
 }
 
 int GameController::check_controllers() {
@@ -41,9 +48,10 @@ int GameController::check_controllers() {
 void GameController::poll_buttons() {
 	const Uint8* keyboard_state = ControllerManager::get_instance()->keyboard_state;
 	int buffer_window = get_param_int(PARAM_FIGHTER, "buffer_window");
-	for (int i = 0, max = button_info.size(); i < max; i++) {
+	std::vector<bool> old_button;
+	for (size_t i = 0, max = button_info.size(); i < max; i++) {
 		int button_kind = button_info[i].button_kind;
-		bool old_button = button_info[i].button_on;
+		old_button.push_back(button_info[i].button_on);
 		if (button_info[i].force_duration > 0) {
 			button_info[i].button_on = true;
 			button_info[i].force_duration--;
@@ -71,78 +79,72 @@ void GameController::poll_buttons() {
 		else {
 			button_info[i].button_on = keyboard_state[button_info[i].k_mapping];
 		}
-		bool new_button = button_info[i].button_on;
-		button_info[i].changed = (old_button != new_button);
-		if (button_kind == BUTTON_MACRO_L && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_LP; i <= BUTTON_LK; i += 3) {
-					bool button_already_changed = button_info[button_map[i]].changed;
-					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
-					button_info[button_map[i]].button_on = true;
-					if (button_info[button_map[i]].changed || button_already_changed) {
-						sort_buffer(i);
-						button_info[button_map[i]].buffer = buffer_window;
-					}
+		if (button_kind == BUTTON_2L && button_info[i].button_on) {
+			for (int i = BUTTON_LP; i <= BUTTON_LK; i += 3) {
+				button_info[button_map[i]].button_on = true;
+			}
+		}
+		if (button_kind == BUTTON_2M && button_info[i].button_on) {
+			for (int i = BUTTON_MP; i <= BUTTON_MK; i += 3) {
+				button_info[button_map[i]].button_on = true;
+			}
+		}
+		if (button_kind == BUTTON_2H && button_info[i].button_on) {
+			for (int i = BUTTON_HP; i <= BUTTON_HK; i += 3) {
+				button_info[button_map[i]].button_on = true;
+			}
+		}
+		if (button_kind == BUTTON_3P && button_info[i].button_on) {
+			for (int i = BUTTON_LP; i <= BUTTON_HP; i++) {
+				button_info[button_map[i]].button_on = true;
+			}
+		}
+		if (button_kind == BUTTON_3K && button_info[i].button_on) {
+			for (int i = BUTTON_LK; i <= BUTTON_HK; i++) {
+				button_info[button_map[i]].button_on = true;
+			}
+		}
+	}
+	bool any_new_buttons = false;
+	short buffer_code_buttons = 0;
+	short new_buffer_code_buttons = 0;
+	for (size_t i = 0, max = button_info.size(); i < max; i++) {
+		button_info[i].changed = button_info[i].button_on != old_button[i];
+		if (is_valid_buffer_button(button_info[i].button_kind)) {
+			if (!hold_buffer) {
+				button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
+			}
+			if (button_info[i].changed && button_info[i].button_on) {
+				button_info[i].buffer = buffer_window;
+				any_new_buttons = true;
+			}
+			if (button_info[i].buffer) {
+				buffer_code_buttons |= buffer_buttons[button_info[i].button_kind];
+				if (button_info[i].button_on) {
+					new_buffer_code_buttons |= buffer_buttons[button_info[i].button_kind];
 				}
 			}
 		}
-		if (button_kind == BUTTON_MACRO_M && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_MP; i <= BUTTON_MK; i += 3) {
-					bool button_already_changed = button_info[button_map[i]].changed;
-					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
-					button_info[button_map[i]].button_on = true;
-					if (button_info[button_map[i]].changed || button_already_changed) {
-						sort_buffer(i);
-						button_info[button_map[i]].buffer = buffer_window;
-					}
-				}
-			}
+	}
+	if (any_new_buttons) {
+		short buffer_code_stick = 0;
+		if (button_info[button_map[BUTTON_LEFT]].button_on) {
+			buffer_code_stick |= BUFFER_STICK_L;
 		}
-		if (button_kind == BUTTON_MACRO_H && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_HP; i <= BUTTON_HK; i += 3) {
-					bool button_already_changed = button_info[button_map[i]].changed;
-					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
-					button_info[button_map[i]].button_on = true;
-					if (button_info[button_map[i]].changed || button_already_changed) {
-						sort_buffer(i);
-						button_info[button_map[i]].buffer = buffer_window;
-					}
-				}
-			}
+		if (button_info[button_map[BUTTON_RIGHT]].button_on) {
+			buffer_code_stick |= BUFFER_STICK_R;
 		}
-		if (button_kind == BUTTON_MACRO_P && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_LP; i <= BUTTON_HP; i++) {
-					bool button_already_changed = button_info[button_map[i]].changed;
-					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
-					button_info[button_map[i]].button_on = true;
-					if (button_info[button_map[i]].changed || button_already_changed) {
-						sort_buffer(i);
-						button_info[button_map[i]].buffer = buffer_window;
-					}
-				}
-			}
+		if (button_info[button_map[BUTTON_UP]].button_on) {
+			buffer_code_stick |= BUFFER_STICK_U;
 		}
-		if (button_kind == BUTTON_MACRO_K && button_info[i].changed) {
-			if (new_button) {
-				for (int i = BUTTON_LK; i <= BUTTON_HK; i++) {
-					bool button_already_changed = button_info[button_map[i]].changed;
-					button_info[button_map[i]].changed = !button_info[button_map[i]].button_on;
-					button_info[button_map[i]].button_on = true;
-					if (button_info[button_map[i]].changed || button_already_changed) {
-						sort_buffer(i);
-						button_info[button_map[i]].buffer = buffer_window;
-					}
-				}
-			}
+		if (button_info[button_map[BUTTON_DOWN]].button_on) {
+			buffer_code_stick |= BUFFER_STICK_D;
 		}
-		button_info[i].buffer = clamp(0, button_info[i].buffer - 1, button_info[i].buffer);
-		if (button_info[i].changed && button_info[i].button_on && is_valid_buffer_button(button_info[i].button_kind)) {
-			sort_buffer(button_info[i].button_kind);
-			button_info[i].buffer = buffer_window;
-		}
+		buffer_code = new_buffer_code_buttons + buffer_code_stick;
+	}
+	else {
+		short buffer_code_stick = (buffer_code >> 6) << 6;
+		buffer_code = buffer_code_buttons + buffer_code_stick;
 	}
 }
 
@@ -212,7 +214,7 @@ bool GameController::check_button_on(unsigned int button_kind) {
 }
 
 bool GameController::check_button_input(unsigned int button_kind) {
-	return buffer_order[0] == button_kind && button_info[button_map[button_kind]].buffer > 0;
+	return buffer_code & buffer_buttons[button_kind];
 }
 
 bool GameController::check_button_input(unsigned int button[], int length, int min_matches) {
@@ -221,12 +223,8 @@ bool GameController::check_button_input(unsigned int button[], int length, int m
 	}
 	int matches = 0;
 	for (int i = 0; i < length; i++) {
-		unsigned int button_kind = button_map[button[i]];
-		for (int i2 = 0; i2 < length; i2++) {
-			if (buffer_order[i2] == button[i] && button_info[button_kind].buffer > 0) {
-				matches += 1;
-				break;
-			}
+		if (buffer_code & buffer_buttons[button[i]]) {
+			matches += 1;
 		}
 	}
 	return matches >= min_matches;
@@ -342,32 +340,34 @@ void GameController::set_button_off(unsigned int button_kind) {
 	button_info[button_kind].force_duration = 0;
 }
 
+void GameController::add_buffer_button(unsigned int button_kind, unsigned int buffer_kind) {
+	buffer_buttons[button_kind] = buffer_kind;
+}
+
 bool GameController::is_valid_buffer_button(unsigned int button_kind) {
-	return button_kind == BUTTON_LP || button_kind == BUTTON_MP || button_kind == BUTTON_HP 
-		|| button_kind == BUTTON_LK || button_kind == BUTTON_MK || button_kind == BUTTON_HK;
+	return buffer_buttons.contains(button_kind);
 }
 
 void GameController::reset_buffer() {
 	for (int i = 0, max = button_info.size(); i < max; i++) {
 		button_info[i].buffer = 0;
 	}
+	buffer_code = 0;
 }
 
-void GameController::sort_buffer(unsigned int button) {
-	int button_index = 0;
-	for (int i = 0; i < 6; i++) {
-		if (buffer_order[i] == button) {
-			if (i == 0) {
-				return;
-			}
-			else {
-				button_index = i;
-				break;
-			}
-		}
-	}
-	for (int i = button_index; i > 0; i--) {
-		buffer_order[i] = buffer_order[i - 1];
-	}
-	buffer_order[0] = button;
+short GameController::get_buffer_code() {
+	return buffer_code;
+}
+
+void GameController::set_id(int id) {
+	this->id = id;
+}
+
+void GameController::set_stick_hold_timer(int h, int v) {
+	this->stick_hold_h_timer = h;
+	this->stick_hold_v_timer = v;
+}
+
+void GameController::set_hold_buffer(bool hold_buffer) {
+	this->hold_buffer = hold_buffer;
 }

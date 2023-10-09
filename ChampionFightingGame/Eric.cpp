@@ -16,5 +16,5 @@ Eric::Eric(Player* player) {
 	fighter_float.resize(CHARA_ERIC_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ERIC_FLAG_MAX, false);
 	projectiles.push_back(create_projectile(PROJECTILE_KIND_ERIC_FIREBALL, player, this));
-	init();
+	load_fighter();
 }

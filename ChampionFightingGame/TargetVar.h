@@ -3,6 +3,9 @@
 template <typename T> class TargetVar {
 public:
 	TargetVar<T>() {
+		val = T();
+		target_val = T();
+		target_change_per_frame = T();
 		frames = 0;
 	}
 

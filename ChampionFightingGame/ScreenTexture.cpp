@@ -7,14 +7,14 @@ ScreenTexture::ScreenTexture() {
 	texture_orientation = TEXTURE_MID;
 	pos = glm::vec3(0.0);
 	rot = glm::vec3(0.0);
-	right_edge_scale = 0.0;
-	right_edge_crop = 0.0;
-	left_edge_scale = 0.0;
-	left_edge_crop = 0.0;
-	top_edge_scale = 0.0;
-	top_edge_crop = 0.0;
-	bottom_edge_scale = 0.0;
-	bottom_edge_crop = 0.0;
+	right_edge_scale = 100.0;
+	right_edge_crop = 100.0;
+	left_edge_scale = 100.0;
+	left_edge_crop = 100.0;
+	top_edge_scale = 100.0;
+	top_edge_crop = 100.0;
+	bottom_edge_scale = 100.0;
+	bottom_edge_crop = 100.0;
 	width = 0;
 	width_scale = 1.0;
 	height = 0;
@@ -31,23 +31,151 @@ ScreenTexture::ScreenTexture(std::string path) {
 	init(path);
 }
 
+ScreenTexture::ScreenTexture(std::vector<std::vector<char>> texture, int width, int height) {
+	init(texture, width, height);
+}
+
+ScreenTexture::ScreenTexture(ScreenTexture& other) {
+	path = other.path;
+	texture = other.texture;
+	screen_orientation = other.screen_orientation;
+	texture_orientation = other.texture_orientation;
+	pos = other.pos;
+	rot = other.rot;
+	right_edge_scale = other.right_edge_scale;
+	right_edge_crop = other.right_edge_crop;
+	left_edge_scale = other.left_edge_scale;
+	left_edge_crop = other.left_edge_crop;
+	top_edge_scale = other.top_edge_scale;
+	top_edge_crop = other.top_edge_crop;
+	bottom_edge_scale = other.bottom_edge_scale;
+	bottom_edge_crop = other.bottom_edge_crop;
+	width = other.width;
+	width_scale = other.width_scale;
+	height = other.height;
+	height_scale = other.height_scale;
+	alpha = other.alpha;
+	colormod = other.colormod;
+	h_flipped = other.h_flipped;
+	v_flipped = other.v_flipped;
+	sprite = other.sprite;
+	loaded = false;
+}
+
+ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
+	path = other.path;
+	texture = other.texture;
+	screen_orientation = other.screen_orientation;
+	texture_orientation = other.texture_orientation;
+	pos = other.pos;
+	rot = other.rot;
+	right_edge_scale = other.right_edge_scale;
+	right_edge_crop = other.right_edge_crop;
+	left_edge_scale = other.left_edge_scale;
+	left_edge_crop = other.left_edge_crop;
+	top_edge_scale = other.top_edge_scale;
+	top_edge_crop = other.top_edge_crop;
+	bottom_edge_scale = other.bottom_edge_scale;
+	bottom_edge_crop = other.bottom_edge_crop;
+	width = other.width;
+	width_scale = other.width_scale;
+	height = other.height;
+	height_scale = other.height_scale;
+	alpha = other.alpha;
+	colormod = other.colormod;
+	h_flipped = other.h_flipped;
+	v_flipped = other.v_flipped;
+	sprite = other.sprite;
+	loaded = other.loaded;
+	other.loaded = false;
+}
+
+ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
+	if (this != &other) {
+		path = other.path;
+		texture = other.texture;
+		screen_orientation = other.screen_orientation;
+		texture_orientation = other.texture_orientation;
+		pos = other.pos;
+		rot = other.rot;
+		right_edge_scale = other.right_edge_scale;
+		right_edge_crop = other.right_edge_crop;
+		left_edge_scale = other.left_edge_scale;
+		left_edge_crop = other.left_edge_crop;
+		top_edge_scale = other.top_edge_scale;
+		top_edge_crop = other.top_edge_crop;
+		bottom_edge_scale = other.bottom_edge_scale;
+		bottom_edge_crop = other.bottom_edge_crop;
+		width = other.width;
+		width_scale = other.width_scale;
+		height = other.height;
+		height_scale = other.height_scale;
+		alpha = other.alpha;
+		colormod = other.colormod;
+		h_flipped = other.h_flipped;
+		v_flipped = other.v_flipped;
+		sprite = other.sprite;
+		loaded = false;
+	}
+	return *this;
+}
+
+ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
+	if (this != &other) {
+		path = other.path;
+		texture = other.texture;
+		screen_orientation = other.screen_orientation;
+		texture_orientation = other.texture_orientation;
+		pos = other.pos;
+		rot = other.rot;
+		right_edge_scale = other.right_edge_scale;
+		right_edge_crop = other.right_edge_crop;
+		left_edge_scale = other.left_edge_scale;
+		left_edge_crop = other.left_edge_crop;
+		top_edge_scale = other.top_edge_scale;
+		top_edge_crop = other.top_edge_crop;
+		bottom_edge_scale = other.bottom_edge_scale;
+		bottom_edge_crop = other.bottom_edge_crop;
+		width = other.width;
+		width_scale = other.width_scale;
+		height = other.height;
+		height_scale = other.height_scale;
+		alpha = other.alpha;
+		colormod = other.colormod;
+		h_flipped = other.h_flipped;
+		v_flipped = other.v_flipped;
+		sprite = other.sprite;
+		loaded = other.loaded;
+		other.loaded = false;
+	}
+	return *this;
+}
+
+ScreenTexture::~ScreenTexture() {
+	if (loaded) {
+		destroy();
+	}
+}
+
 void ScreenTexture::init(std::string path) {
 	//Load Image, call some vulkan stuff probably
 }
 
-void ScreenTexture::destroy() {
-	if (loaded) {
-		//Call some Vulkan stuff and tell the ResourceManager to unuse one instance of this texture info
-	}
+void ScreenTexture::init(std::vector<std::vector<char>> texture, int width, int height) {
+
 }
 
-ScreenTexture ScreenTexture::new_instance() {
+void ScreenTexture::destroy() {
+	//Call some Vulkan stuff and tell the ResourceManager to unuse one instance of this texture info
+}
+
+ScreenTexture ScreenTexture::init_copy() {
 	ScreenTexture ret;
-	if (path == "") {
-		//Call an init function for ret directly using texture info
+	if (path != "") {
+		ret.init(path);
 	}
 	else {
-		ret.init(path);
+		ret.init(texture);
 	}
 	return ret;
 }
@@ -281,19 +409,28 @@ bool ScreenTexture::get_flip_v() const {
 	return v_flipped;
 }
 
-void ScreenTexture::set_sprite(int sprite) {
-	this->sprite = sprite;
+void ScreenTexture::set_sprite(unsigned int sprite) {
+	if (sprite < texture.size()) {
+		this->sprite = sprite;
+	}
 }
+	
 
 void ScreenTexture::next_sprite() {
+	if (sprite == texture.size() - 1) {
+		sprite -= texture.size();
+	}
 	sprite++;
 }
 
 void ScreenTexture::prev_sprite() {
+	if (sprite == 0) {
+		sprite = texture.size();
+	}
 	sprite--;
 }
 
-int ScreenTexture::get_sprite() const {
+unsigned int ScreenTexture::get_sprite() const {
 	return sprite;
 }
 
@@ -319,7 +456,7 @@ void ScreenTexture::render() {
 		}
 	}
 	if (!(texture_orientation & TEXTURE_H_MID)) {
-		if (!(texture_orientation & TEXTURE_LEFT)) {
+		if (texture_orientation & TEXTURE_LEFT) {
 			render_pos.x += get_width() / 2;
 		}
 		else {
@@ -327,7 +464,7 @@ void ScreenTexture::render() {
 		}
 	}
 	if (!(texture_orientation & TEXTURE_V_MID)) {
-		if (!(texture_orientation & TEXTURE_TOP)) {
+		if (texture_orientation & TEXTURE_TOP) {
 			render_pos.y -= get_height() / 2;
 		}
 		else {

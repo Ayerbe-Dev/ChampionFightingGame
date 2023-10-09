@@ -10,10 +10,18 @@ class ScreenTexture {
 public:
 	ScreenTexture();
 	ScreenTexture(std::string path);
+	ScreenTexture(std::vector<std::vector<char>> texture, int width = -1, int height = -1);
+	ScreenTexture(ScreenTexture& that);
+	ScreenTexture(ScreenTexture&& that) noexcept;
+	ScreenTexture& operator=(ScreenTexture& that);
+	ScreenTexture& operator=(ScreenTexture&& that) noexcept;
+	~ScreenTexture();
+
 
 	void init(std::string path);
+	void init(std::vector<std::vector<char>> texture, int width = -1, int height = -1);
 	void destroy();
-	ScreenTexture new_instance();
+	ScreenTexture init_copy();
 
 	std::string get_path() const;
 
@@ -81,13 +89,14 @@ public:
 	void set_flip_v(bool flip_v);
 	bool get_flip_v() const;
 
-	void set_sprite(int sprite);
+	void set_sprite(unsigned int sprite);
 	void next_sprite();
 	void prev_sprite();
-	int get_sprite() const;
+	unsigned int get_sprite() const;
 
 	void render();
 private:
+	std::vector<std::vector<char>> texture;
 	std::string path;
 
 	int screen_orientation;
@@ -115,7 +124,7 @@ private:
 	bool h_flipped;
 	bool v_flipped;
 
-	int sprite;
+	unsigned int sprite;
 
 	bool loaded;
 };

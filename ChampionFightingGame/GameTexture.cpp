@@ -317,7 +317,7 @@ void GameTexture::attach_shader(Shader* shader) {
 }
 
 glm::vec3 GameTexture::get_pos_vacuum(GameTexture *that) {
-	glm::vec3 pos = this->pos;
+	glm::vec3 pos = this->pos.get_val();
 	switch (this->orientation) {
 		default:
 		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE):
@@ -656,9 +656,10 @@ void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	if (frames == 0.0) {
 		return;
 	}
-	this->target_pos = target_pos;
-	this->target_pos_per_frame = (target_pos - pos) / glm::vec3(frames);
-	this->target_pos_frames = glm::vec3(frames);
+//	this->target_pos = target_pos;
+//	this->target_pos_per_frame = (target_pos - pos) / glm::vec3(frames);
+//	this->target_pos_frames = glm::vec3(frames);
+	pos.set_target_val(target_pos, frames);
 }
 
 void GameTexture::add_colormod(glm::vec3 colormod) {
@@ -766,19 +767,19 @@ void GameTexture::process() {
 		}
 		target_right_frames--;
 	}
-	if (target_pos_frames != glm::vec3(0.0)) {
-		if (target_pos_frames == glm::vec3(1.0)) { //Compensates for rounding errors
-			pos = target_pos;
-		}
-		else {
-			pos += target_pos_per_frame;
-		}
-		target_pos_frames -= glm::vec3(1.0);
-	}
+//	if (target_pos_frames != glm::vec3(0.0)) {
+//		if (target_pos_frames == glm::vec3(1.0)) { //Compensates for rounding errors
+//			pos = target_pos;
+//		}
+//		else {
+//			pos += target_pos_per_frame;
+//		}
+//		target_pos_frames -= glm::vec3(1.0);
+//	}
 }
 
 void GameTexture::prepare_render() {
-	glm::vec3 gl_pos = pos;
+	glm::vec3 gl_pos = pos.get_val();;
 	switch (orientation) {
 	default:
 	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE): {

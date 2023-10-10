@@ -316,7 +316,7 @@ void StageSelect::process_main() {
 			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}
 		render_manager->camera.follow_anim();
-		menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_target_pos(menu_objects[STAGE_SELECT_GROUP_SLOT][selection].textures[0].pos, 8);
+		menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_target_pos(menu_objects[STAGE_SELECT_GROUP_SLOT][selection].textures[0].pos.get_val(), 8);
 	}
 	else {
 		if (!render_manager->camera.anim_end) {

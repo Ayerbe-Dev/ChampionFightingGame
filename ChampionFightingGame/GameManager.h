@@ -5,6 +5,8 @@
 #include <functional>
 #include <queue>
 #include <stack>
+#include <list>
+#include <any>
 
 class GameManager {
 public:
@@ -50,6 +52,9 @@ private:
 	static GameManager* instance;
 
 	std::vector<GameState*> game_state;
+	std::vector<std::list<BaseTargetVar*>> game_state_targets;
+	std::list<BaseTargetVar*> unset_targets;
+
 
 	bool is_up_press(int id);
 	bool is_down_press(int id);

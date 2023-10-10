@@ -1,26 +1,31 @@
 #pragma once
+#include "TargetVarManager.h"
 
-template <typename T> class TargetVar {
+class BaseTargetVar {
 public:
-	TargetVar<T>() {
-		val = T();
-		target_val = T();
-		target_change_per_frame = T();
-		frames = 0;
+	BaseTargetVar() {
+		TargetVarManager::get_instance()->register_target_var(this);
+	}
+	virtual	~BaseTargetVar() {
+		TargetVarManager::get_instance()->unregister_target_var(this);
 	}
 
-	~TargetVar<T>() {
+	virtual void process() {}
+};
 
-	}
+template <class T> class TargetVar : public BaseTargetVar {
+public:
+	TargetVar() = default;
 
-	TargetVar<T>(T& other) {
+
+	TargetVar(T& other) {
 		if (val != other) {
 			val = other;
 			frames = 0;
 		}
 	}
-
-	TargetVar<T>(const T& other) {
+	
+	TargetVar(const T& other) {
 		if (val != other) {
 			val = other;
 			frames = 0;
@@ -45,26 +50,6 @@ public:
 	template <typename U>
 	T operator/(const U& rhs) {
 		return val / rhs;
-	}
-
-	template <typename U>
-	T operator+(const TargetVar<U>& rhs) {
-		return val + rhs.get_val();
-	}
-
-	template <typename U>
-	T operator-(const TargetVar<U>& rhs) {
-		return val - rhs.get_val();
-	}
-
-	template <typename U>
-	T operator*(const TargetVar<U>& rhs) {
-		return val * rhs.get_val();
-	}
-
-	template <typename U>
-	T operator/(const TargetVar<U>& rhs) {
-		return val / rhs.get_val();
 	}
 
 	template <typename U>
@@ -100,6 +85,36 @@ public:
 		val /= rhs;
 		frames = 0;
 		return *this;
+	}
+
+	template <typename U>
+	bool operator==(const U& rhs) {
+		return val == rhs;
+	}
+
+	template <typename U>
+	bool operator!=(const U& rhs) {
+		return val != rhs;
+	}
+
+	template <typename U>
+	T operator+(const TargetVar<U>& rhs) {
+		return val + rhs.get_val();
+	}
+
+	template <typename U>
+	T operator-(const TargetVar<U>& rhs) {
+		return val - rhs.get_val();
+	}
+
+	template <typename U>
+	T operator*(const TargetVar<U>& rhs) {
+		return val * rhs.get_val();
+	}
+
+	template <typename U>
+	T operator/(const TargetVar<U>& rhs) {
+		return val / rhs.get_val();
 	}
 
 	template <typename U>
@@ -147,7 +162,17 @@ public:
 		return *this;
 	}
 
-	void process() {
+	template <typename U>
+	bool operator==(const TargetVar<U>& rhs) {
+		return val == rhs.get_val();
+	}
+
+	template <typename U>
+	bool operator!=(const TargetVar<U>& rhs) {
+		return val != rhs.get_val();
+	}
+
+	void process() override {
 		if (frames) {
 			val += target_change_per_frame;
 			frames--;
@@ -157,8 +182,8 @@ public:
 		}
 	}
 	
-	void set_target_val(T target, int frames) {
-		if (target_val == this->target_val && frames == this->frames - 1) return;
+	void set_target_val(T target_val, unsigned int frames) {
+		if (target_val == this->target_val) return;
 		this->target_val = target_val;
 		target_change_per_frame = target_val - val;
 		target_change_per_frame /= frames;
@@ -185,8 +210,8 @@ public:
 		return frames;
 	}
 private:
-	T val;
-	T target_val;
-	T target_change_per_frame;
-	unsigned int frames;
+	T val{};
+	T target_val{};
+	T target_change_per_frame{};
+	unsigned int frames = 0;
 };

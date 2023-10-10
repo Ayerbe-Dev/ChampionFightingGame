@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include "TextureCoord.h"
 #include "Font.h"
+#include "TargetVar.h"
 
 class Shader;
 
@@ -98,7 +99,7 @@ public:
     std::vector<unsigned int> texture;
     TextureCoord tex_data[4];
     TextureCoord* tex_accessor[4];
-    glm::vec3 pos = glm::vec3(0.0);
+    TargetVar<glm::vec3> pos = glm::vec3(0.0);
     glm::vec3 rot = glm::vec3(0.0);
     int sprite_index;
     int orientation = SCREEN_TEXTURE_ORIENTATION_MIDDLE;

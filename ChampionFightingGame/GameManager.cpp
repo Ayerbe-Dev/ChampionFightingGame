@@ -2,6 +2,7 @@
 #include "FontManager.h"
 #include "GameStates.h"
 #include "utils.h"
+#include "TargetVar.h"
 
 GameManager::GameManager() {
 	for (int i = 0; i < 2; i++) {
@@ -64,11 +65,13 @@ void GameManager::update_state(int next_game_state, int next_game_context) {
 void GameManager::set_game_state(GameState* game_state) {
 	//Initialize GameManager values, assign the GameManager a target
 	this->game_state.push_back(game_state);
+	TargetVarManager::get_instance()->push_game_state_target_set();
 	game_state->game_context = next_game_context;
 }
 
 void GameManager::delete_game_state() {
 	game_state.pop_back();
+	TargetVarManager::get_instance()->pop_game_state_target_set();
 }
 
 GameState* GameManager::get_game_state(int depth) {
@@ -270,6 +273,7 @@ bool GameManager::is_crash() {
 }
 
 void GameManager::frame_delay() {
+	TargetVarManager::get_instance()->process_targets();
 	wait_ms();
 }
 
@@ -277,11 +281,11 @@ void GameManager::frame_delay_check_fps() {
 	if ((float)((std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_second).count()) / 1000.0) >= 1000.0) {
 		fps = frame;
 		frame = 0;
-		wait_ms();
+		frame_delay();
 		last_second = std::chrono::high_resolution_clock::now();
 	}
 	else {
-		wait_ms();
+		frame_delay();
 		frame++;
 	}
 	if (prev_fps != fps) {
@@ -330,7 +334,7 @@ void GameManager::frame_delay_check_performance() {
 		average_ticks.clear();
 		tick_frequency.clear();
 	}
-	wait_ms();
+	frame_delay();
 	ms = std::chrono::high_resolution_clock::now();
 }
 

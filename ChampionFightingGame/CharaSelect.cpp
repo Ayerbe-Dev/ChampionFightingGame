@@ -234,7 +234,7 @@ void CSS::event_select_press() {
 				css_player[player_id].mobile_css_slot.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 			}
 			css_player[player_id].mobile_css_slot.set_pos(chara_slots[css_player[player_id].selected_index].render_texture.get_pos_vacuum(&css_player[player_id].mobile_css_slot));
-			css_player[player_id].mobile_css_slot.set_target_pos(big_chara_slots[player_id].pos, 16.0);
+			css_player[player_id].mobile_css_slot.set_target_pos(big_chara_slots[player_id].pos.get_val(), 16.0);
 			if (css_player[player_id].selected_index < loaded_chars) {
 				css_player[player_id].demo_model.change_anim("selected", 1.0f, 0.0f);
 			}
@@ -582,7 +582,7 @@ void CSS::render_main() {
 			css_player[i].mobile_css_slot.render();
 		}
 		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_target_pos(
-			glm::vec3(chara_slots[css_player[i].selected_index].render_texture.pos.x, chara_slots[css_player[i].selected_index].render_texture.pos.y, 0.0f),
+			glm::vec3(chara_slots[css_player[i].selected_index].render_texture.pos.get_val().x, chara_slots[css_player[i].selected_index].render_texture.pos.get_val().y, 0.0f),
 			8.0f
 		);
 	}

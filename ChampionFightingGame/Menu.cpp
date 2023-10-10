@@ -218,7 +218,7 @@ MainMenu::MainMenu() {
 			menu_object->children[menu_object->active_child].event_select_press();
 		};
 		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].process_event = [this](MenuObject* menu_object) {
-			menu_object->cursor.set_pos(glm::vec3(table.pos.x + 80, menu_object->children[menu_object->active_child].textures[0].pos.y - WINDOW_HEIGHT * 1.1, 0));
+			menu_object->cursor.set_pos(glm::vec3(table.pos.get_val().x + 80, menu_object->children[menu_object->active_child].textures[0].pos.get_val().y - WINDOW_HEIGHT * 1.1, 0));
 		};
 
 		//Also we left-orient all of the sub menu text
@@ -335,7 +335,7 @@ void MainMenu::process_main() {
 	table.process();
 	for (int i = 0; i < 5; i++) {
 		for (int i2 = 0, max2 = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children.size(); i2 < max2; i2++) {
-			menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children[i2].textures[0].set_pos(glm::vec3(table.pos.x + 160, (float)WINDOW_HEIGHT * 0.5 + (i2 * 130), 0.0));
+			menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children[i2].textures[0].set_pos(glm::vec3(table.pos.get_val().x + 160, (float)WINDOW_HEIGHT * 0.5 + (i2 * 130), 0.0));
 		}
 		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].process();
 	}

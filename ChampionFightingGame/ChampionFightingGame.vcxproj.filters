@@ -613,6 +613,9 @@
     <ClCompile Include="CollisionBox.cpp">
       <Filter>2. Code Files\Object\ObjectComponent\CollisionBox</Filter>
     </ClCompile>
+    <ClCompile Include="TargetVarManager.cpp">
+      <Filter>2. Code Files\Singleton</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -1366,7 +1369,10 @@
       <Filter>1. Header Files\Object\Fighter\Fighter\Fighter Component</Filter>
     </ClInclude>
     <ClInclude Include="TargetVar.h">
-      <Filter>1. Header Files\Engine\Misc</Filter>
+      <Filter>1. Header Files\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetVarManager.h">
+      <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

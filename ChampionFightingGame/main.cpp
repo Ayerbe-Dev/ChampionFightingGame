@@ -27,6 +27,7 @@
 #include "SaveManager.h"
 #include "ShaderManager.h"
 #include "SoundManager.h"
+#include "TargetVarManager.h"
 #include "ThreadManager.h"
 #include "stb_image.h"
 //Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
@@ -65,6 +66,7 @@ int main() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
+	TargetVarManager* target_var_manager = TargetVarManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
 	//A player should always point to a player info. If none are found, it'll point to this blank 
@@ -102,6 +104,7 @@ int main() {
 	save_manager->destroy_instance();
 	shader_manager->destroy_instance();
 	sound_manager->destroy_instance();
+	target_var_manager->destroy_instance();
 	thread_manager->destroy_instance();
 
 	SDL_Quit();

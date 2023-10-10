@@ -28,10 +28,56 @@ ScreenTexture::ScreenTexture() {
 }
 
 ScreenTexture::ScreenTexture(std::string path) {
+	path = "";
+	screen_orientation = TEXTURE_MID;
+	texture_orientation = TEXTURE_MID;
+	pos = glm::vec3(0.0);
+	rot = glm::vec3(0.0);
+	right_edge_scale = 100.0;
+	right_edge_crop = 100.0;
+	left_edge_scale = 100.0;
+	left_edge_crop = 100.0;
+	top_edge_scale = 100.0;
+	top_edge_crop = 100.0;
+	bottom_edge_scale = 100.0;
+	bottom_edge_crop = 100.0;
+	width = 0;
+	width_scale = 1.0;
+	height = 0;
+	height_scale = 1.0;
+	alpha = 255;
+	colormod = glm::vec3(0.0);
+	h_flipped = false;
+	v_flipped = false;
+	sprite = 0;
+	loaded = false;
 	init(path);
 }
 
 ScreenTexture::ScreenTexture(std::vector<std::vector<char>> texture, int width, int height) {
+	path = "";
+	screen_orientation = TEXTURE_MID;
+	texture_orientation = TEXTURE_MID;
+	pos = glm::vec3(0.0);
+	rot = glm::vec3(0.0);
+	right_edge_scale = 100.0;
+	right_edge_crop = 100.0;
+	left_edge_scale = 100.0;
+	left_edge_crop = 100.0;
+	top_edge_scale = 100.0;
+	top_edge_crop = 100.0;
+	bottom_edge_scale = 100.0;
+	bottom_edge_crop = 100.0;
+	width = 0;
+	width_scale = 1.0;
+	height = 0;
+	height_scale = 1.0;
+	alpha = 255;
+	colormod = glm::vec3(0.0);
+	h_flipped = false;
+	v_flipped = false;
+	sprite = 0;
+	loaded = false;
 	init(texture, width, height);
 }
 

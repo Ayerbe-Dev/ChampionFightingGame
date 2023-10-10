@@ -351,6 +351,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
+    <ClCompile Include="TargetVarManager.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Wallace.cpp" />
@@ -587,6 +588,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="NightsabreInt.h" />
     <ClInclude Include="NightsabreStatus.h" />
     <ClInclude Include="TargetVar.h" />
+    <ClInclude Include="TargetVarManager.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Wallace.h" />

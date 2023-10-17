@@ -41,7 +41,7 @@ bool GameObject::change_anim(std::string animation_name, float rate, float frame
 	return new_anim != nullptr;
 }
 
-void GameObject::animate(bool flip) {
+void GameObject::animate() {
 	frame += rate;
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
@@ -53,7 +53,7 @@ void GameObject::animate(bool flip) {
 		}
 	}
 	if (model.has_skeleton()) {
-		model.set_bones(frame, anim_kind, flip);
+		model.set_bones(frame, anim_kind);
 		Bone& trans_bone = model.bone_data[model.get_bone_id("Trans")];
 		glm::vec3 trans_offset = glm::vec3(
 			trans_bone.anim_matrix[3].z,

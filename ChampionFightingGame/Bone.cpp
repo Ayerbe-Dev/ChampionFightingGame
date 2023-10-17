@@ -36,7 +36,7 @@ bool Skeleton::load_skeleton(std::string path) {
 
 int Skeleton::get_bone_id(std::string bone_name) {
 	if (bone_name == "model-armature") {
-		if (bone_map.contains("blender_implicit")) {
+		if (bone_map.contains("")) {
 			return 0;
 		}
 		else {

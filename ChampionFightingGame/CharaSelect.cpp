@@ -491,6 +491,7 @@ void CSS::process_main() {
 					else {
 						css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
 					}
+					css_player[i].demo_model.model.set_flip(i);
 				}
 			}
 
@@ -522,19 +523,25 @@ void CSS::render_main() {
 	glCullFace(GL_FRONT);
 	stage_demo.render_shadow();
 	for (int i = 0; i < 2; i++) {
+		if (css_player[i].demo_model.anim_kind == nullptr) {
+			css_player[i].demo_model.rot = glm::vec3(glm::radians(-90.0), 0.0, glm::radians(90.0 * (i*-2 + 1)));
+		}
+		else {
+			css_player[i].demo_model.rot = glm::vec3(0.0, 0.0, glm::radians(90.0));
+		}
 		if (css_player[i].selected_index < loaded_chars) {
-			css_player[i].demo_model.animate(i);
+			css_player[i].demo_model.animate();
 			if (css_player[i].demo_model.is_anim_end) {
 				if (css_player[i].demo_model.anim_kind->name == "selected") {
 					css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
-					css_player[i].demo_model.animate(i);
+					css_player[i].demo_model.animate();
 				}
 				else if (css_player[i].demo_model.anim_kind->name == "deselected") {
 					css_player[i].demo_model.change_anim("deselected_wait", 1.0f, 0.0f);
-					css_player[i].demo_model.animate(i);
+					css_player[i].demo_model.animate();
 				}
 			}
-			css_player[i].demo_model.render_shadow(i);
+			css_player[i].demo_model.render_shadow();
 		}
 	}
 	glCullFace(GL_BACK);
@@ -550,7 +557,7 @@ void CSS::render_main() {
 
 	for (int i = 0; i < 2; i++) {
 		if (css_player[i].selected_index < loaded_chars) {
-			css_player[i].demo_model.render(i);
+			css_player[i].demo_model.render();
 		}
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -1418,9 +1418,6 @@
     <None Include="resource\shaders\vertex_model.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_no_anim.glsl">
-      <Filter>3. resource\shaders</Filter>
-    </None>
     <None Include="resource\shaders\vertex_rect.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>

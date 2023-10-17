@@ -1,8 +1,8 @@
 #version 330 core
 
 layout (location = 0) in vec3 v_pos;
-layout (location = 5) in ivec4 v_boneids;
-layout (location = 6) in vec4 v_weights;
+layout (location = 5) in vec4 v_weights;
+layout (location = 6) in ivec4 v_boneids;
 
 const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 4;

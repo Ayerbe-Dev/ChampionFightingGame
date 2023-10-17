@@ -10,6 +10,10 @@ void Projectile::change_anim(std::string animation_name, float frame_rate, float
 	if (new_anim != nullptr) {
 		frame = entry_frame;
 		rate = frame_rate;
+		if (has_model) {
+			model.set_move(new_anim->flag_move);
+			model.set_flip(!facing_right);
+		}
 	}
 	is_anim_end = false;
 	if (anim_kind != new_anim) {

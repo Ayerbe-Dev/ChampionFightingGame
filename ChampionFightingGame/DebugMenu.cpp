@@ -19,24 +19,31 @@ void debug_main() {
 
 	DebugMenu *debug = new DebugMenu;
 
-	resource_manager->load_model("resource/chara/rowan/model/m0/model.dae");
-
-	GameObject go1;
-	go1.model.load_model_instance("resource/chara/rowan/model/m0/model.dae");
+	GameObject go1, go2;
+	go1.model.load_model_instance("resource/chara/atlas/model/m0/model.dae");
 	go1.model.load_textures("c0");
 	go1.init_shader();
 
-	GameObject go2;
-	go2.model.load_model_instance("resource/chara/rowan/model/m0/model.dae");
-	go2.model.load_textures("c1");
+	go1.pos = glm::vec3(-200.0, 0.0, 0.0);
+	go1.rot.z = glm::radians(90.0);
+	go1.load_anim_table("resource/chara/atlas/anims/battle");
+	go1.change_anim("wait", 0.5, 0.0);
+
+
+	go2.model.load_model_instance("resource/chara/atlas/model/m0/model.dae");
+	go2.model.load_textures("c0");
 	go2.init_shader();
 
-	go1.pos = glm::vec3(-200.0, 0, 0);
-	go2.pos = glm::vec3(200.0, 0, 0);
+	go2.pos = glm::vec3(200.0, 0.0, 0.0);
+	go2.rot.z = glm::radians(90.0);
+	go2.load_anim_table("resource/chara/atlas/anims/battle");
+	go2.change_anim("wait", 0.5, 0.0);
+	go2.model.set_flip(true);
 
 	render_manager->update_shader_cams();
 	render_manager->update_shader_lights();
 	render_manager->update_shader_shadows();
+
 
 	cotr_imgui_init();
 	while (debug->looping) {
@@ -46,6 +53,7 @@ void debug_main() {
 		render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
 		go1.animate();
+		go2.animate();
 
 		glDepthMask(GL_TRUE);
 		glEnable(GL_CULL_FACE);
@@ -84,9 +92,9 @@ void debug_main() {
 
 	go1.model.unload_textures();
 	go2.model.unload_textures();
-
 	delete debug;
 	resource_manager->unload_model("resource/chara/rowan/model/m0/model.dae");
+	resource_manager->unload_model("resource/chara/atlas/model/m0/model.dae");
 }
 
 DebugMenu::DebugMenu() {

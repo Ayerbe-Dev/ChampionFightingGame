@@ -30,10 +30,9 @@ struct ModelVertex {
 	glm::vec2 tex_coords;
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
+	float bone_weights[MAX_BONE_INFLUENCE] = { 0.0 };
 	int bone_ids[MAX_BONE_INFLUENCE] = { 0 };
-	int f_bone_ids[MAX_BONE_INFLUENCE] = { 0 };
-	float weights[MAX_BONE_INFLUENCE] = { 0.0 };
-	int num_weights = { 0 };
+	int num_bone_weights = { 0 };
 };
 
 struct ModelTexture {
@@ -60,8 +59,8 @@ public:
 
 	void init_gl();
 
+	void bind_materials() const;
 	void render() const;
-	void render_no_texture() const;
 
 	std::vector<ModelVertex> vertices;
 	std::vector<unsigned int> indices;
@@ -99,7 +98,6 @@ public:
 	std::vector<std::string> texture_names;
 	Skeleton skeleton;
 
-	glm::mat4 flip_matrix;
 	glm::mat4* dummy_matrix;
 	glm::vec3* dummy_vec;
 	glm::quat* dummy_quat;
@@ -114,6 +112,7 @@ private:
 	std::string directory;
 	std::size_t trans_id;
 	bool skeleton_loaded;
+	int skipped_verts;
 };
 
 //Data that is specific to a given model, basically this is what actually gets rendered.
@@ -128,7 +127,8 @@ public:
 	void unload_model_instance();
 
 	void set_move(bool move);
-	void set_bones(float frame, Animation* anim_kind, bool flip);
+	void set_flip(bool flip);
+	void set_bones(float frame, Animation* anim_kind);
 	void reset_bones();
 
 	void load_textures();
@@ -146,8 +146,8 @@ public:
 	bool has_skeleton();
 	bool is_loaded() const;
 
-	void render(Shader* shader, bool flip);
-	void render_no_texture(Shader* shader, bool flip);
+	void render(Shader* shader);
+	void render_no_texture(Shader* shader);
 
 	std::vector<Material> materials;
 	std::vector<Mesh> meshes;
@@ -160,5 +160,5 @@ private:
 
 	ModelData* model;
 	bool move;
-	bool tpose;
+	bool flip;
 };

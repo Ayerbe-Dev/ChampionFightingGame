@@ -54,8 +54,6 @@ public:
 	glm::vec3 base_pos;
 	glm::mat4 flip_matrix;
 
-	float auto_linear_scale;
-
 	Fighter* fighter[2];
 
 	Stage* stage;
@@ -63,6 +61,7 @@ public:
 
 	bool following_players;
 	bool anim_end;
+	bool camera_locked;
 
 	CameraAnim* anim_kind;
 	float frame;

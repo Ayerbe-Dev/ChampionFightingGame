@@ -11,6 +11,7 @@ void Fighter::reenter_last_anim() {
 	if (prev_anim_kind != nullptr) {
 		set_current_move_script(prev_anim_kind->name);
 		model.set_move(prev_anim_kind->flag_move);
+		model.set_flip(!facing_right);
 	}
 	else {
 		player->controller.reset_buffer();
@@ -60,6 +61,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
 		}
 		model.set_move(new_anim->flag_move);
+		model.set_flip(!facing_right);
 		prev_anim_kind = anim_kind;
 	}
 	player->controller.reset_buffer();
@@ -81,6 +83,7 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 
 	if (new_anim != nullptr) {
 		model.set_move(new_anim->flag_move);
+		model.set_flip(!facing_right);
 	}
 	else {
 		player->controller.reset_buffer();

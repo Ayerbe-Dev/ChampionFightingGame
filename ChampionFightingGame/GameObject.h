@@ -65,16 +65,16 @@ public:
 
 	//Render Funcs
 
-	void render(bool flip = false);
-	void render_shadow(bool flip = false);
-	void render_outline(bool flip = false);
+	void render();
+	void render_shadow();
+	void render_outline();
 
 	//Animation Funcs
 
 	void set_rate(float rate);
 	void set_frame(float frame);
 	bool change_anim(std::string animation_name, float rate, float frame);
-	void animate(bool flip = false);
+	void animate();
 
 	//Model Funcs
 

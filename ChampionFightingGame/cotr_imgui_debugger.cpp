@@ -597,29 +597,59 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (ImGui::TreeNode("Camera")) {
-			ImGui::DragFloat("Camera X", &render_manager->camera.pos[0], 0.01);
-			ImGui::DragFloat("Camera Y", &render_manager->camera.pos[1], 0.01);
-			ImGui::DragFloat("Camera Z", &render_manager->camera.pos[2], 0.01);
-			if (ImGui::TreeNode("Camera Properties")) {
-				ImGui::Checkbox("Auto Camera", &render_manager->camera.following_players);
-				ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f);
-				ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f);
-				ImGui::SliderFloat("Roll", &render_manager->camera.roll, -180.0f, 180.0f);
-				ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, render_manager->camera.max_fov);
-				ImGui::SliderFloat("Auto Yaw Scale", &render_manager->camera.auto_linear_scale, 1.0f, 6.0f);
-				ImGui::TreePop();
+			bool update = false;
+			if (ImGui::DragFloat("Pos X", &render_manager->camera.pos[0], 0.01)) {
+				update = true;
+			}
+			if (ImGui::DragFloat("Pos Y", &render_manager->camera.pos[1], 0.01)) {
+				update = true;
+			}
+			if (ImGui::DragFloat("Pos Z", &render_manager->camera.pos[2], 0.01)) {
+				update = true;
+			}
+			if (ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f)) {
+				update = true;
+			}
+			if (ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f)) {
+				update = true;
+			}
+			if (ImGui::SliderFloat("Roll", &render_manager->camera.roll, -180.0f, 180.0f)) {
+				update = true;
+			}
+			if (ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, render_manager->camera.max_fov)) {
+				update = true;
+			}
+			if (ImGui::Checkbox("Auto Camera", &render_manager->camera.following_players)) {
+				update = true;
+			}
+			if (ImGui::Checkbox("Camera Locked", &render_manager->camera.camera_locked)) {
+				update = true;
+			}
+			if (update) {
 				render_manager->camera.update_view();
 			}
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("Players")) {
-			ImGui::SliderFloat("p1 X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p1 Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p1 Z", &battle->fighter[0]->pos[2], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p2 X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p2 Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
-			ImGui::SliderFloat("p2 Z", &battle->fighter[1]->pos[2], -3000.0f, 3000.0f);
+			if (ImGui::TreeNode("P1")) {
+				ImGui::SliderFloat("Pos X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Z", &battle->fighter[0]->pos[2], -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Rot X", &battle->fighter[0]->rot[0], -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Y", &battle->fighter[0]->rot[1], -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Z", &battle->fighter[0]->rot[2], -3.14f, 3.14f);
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNode("P2")) {
+				ImGui::SliderFloat("Pos X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Z", &battle->fighter[1]->pos[2], -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Rot X", &battle->fighter[1]->rot[0], -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Y", &battle->fighter[1]->rot[1], -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Z", &battle->fighter[1]->rot[2], -3.14f, 3.14f);
+				ImGui::TreePop();
+			}
 			ImGui::TreePop();
 		}
 

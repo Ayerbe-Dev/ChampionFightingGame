@@ -18,12 +18,6 @@
 #include "utils.h"
 
 ModelData::ModelData() {
-	flip_matrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, -1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	);
 	dummy_matrix = nullptr;
 	dummy_vec = nullptr;
 	dummy_quat = nullptr;
@@ -31,6 +25,7 @@ ModelData::ModelData() {
 	directory = "";
 	trans_id = -1;
 	skeleton_loaded = false;
+	skipped_verts = 0;
 }
 
 ModelData::ModelData(std::string path) {
@@ -50,13 +45,22 @@ void ModelData::load_model(std::string path) {
 		return;
 	}
 
-	global_transform = ass_converter(scene->mRootNode->mTransformation.Inverse());
+	aiNode* root = scene->mRootNode;
+	global_transform = ass_converter(root->mTransformation.Inverse());
+
+	aiNode *model = root->FindNode("Model");
+	if (model) {
+		global_transform = ass_converter(model->mTransformation.Inverse());
+	}
 
 	directory = path.substr(0, path.find_last_of('/')) + "/";
 	std::string skeleton_path = directory.substr(0, directory.find_last_of('m')) + "skeleton.smd";
 	skeleton_loaded = skeleton.load_skeleton(skeleton_path);
 
 	process_scene(scene);
+	if (skipped_verts) {
+		std::cout << "Model " << path << " skipped " << skipped_verts << " verts due to improper weighting\n";
+	}
 	if (skeleton_loaded) {
 		process_skeleton(scene->mRootNode);
 	}
@@ -204,7 +208,7 @@ Mesh ModelData::process_mesh(aiMesh* mesh) {
 		for (int i = 0; i < mesh->mNumBones; i++) {
 			aiBone* ai_bone = mesh->mBones[i];
 			int bone_id = -1;
-			std::string bone_name = Filter(ai_bone->mName.C_Str(), "model-armature_");
+			std::string bone_name = Filter(ai_bone->mName.C_Str(), "Model_");
 			if (skeleton.bone_map.contains(bone_name)) {
 				bone_id = skeleton.bone_map[bone_name];
 			}
@@ -216,10 +220,13 @@ Mesh ModelData::process_mesh(aiMesh* mesh) {
 
 			for (int i2 = 0; i2 < ai_bone->mNumWeights; i2++) {
 				int index = ai_bone->mWeights[i2].mVertexId;
-				int weight_index = ++vertices[index].num_weights;
+				int weight_index = vertices[index].num_bone_weights++;
+				if (weight_index > MAX_BONE_INFLUENCE - 1) {
+					skipped_verts++;
+					continue;
+				}
 				vertices[index].bone_ids[weight_index] = bone_id;
-				vertices[index].f_bone_ids[weight_index] = skeleton.bone_data[bone_id].counterpart_id;
-				vertices[index].weights[weight_index] = ai_bone->mWeights[i2].mWeight;
+				vertices[index].bone_weights[weight_index] = ai_bone->mWeights[i2].mWeight;
 			}
 		}
 	}
@@ -254,11 +261,11 @@ void ModelData::process_skeleton(aiNode* root) {
 	std::vector<Bone>& bone_data = skeleton.bone_data;
 	for (int i = 0, max = bone_data.size(); i < max; i++) {
 		aiNode* node;
-		if (root->mName.C_Str() == "model-armature_" + bone_data[i].name) {
+		if (root->mName.C_Str() == "Model_" + bone_data[i].name) {
 			node = root;
 		}
 		else {
-			node = root->FindNode(("model-armature_" + bone_data[i].name).c_str());
+			node = root->FindNode(("Model_" + bone_data[i].name).c_str());
 		}
 		if (node == nullptr) {
 			continue;
@@ -288,7 +295,7 @@ void ModelData::process_skeleton(aiNode* root) {
 		glm::decompose(bone_data[i].bind_matrix, scale_vec, bone_data[i].base_rot, bone_data[i].base_pos, decomp_other_v3, decomp_other_v4);
 
 		if (bone_data[i].parent_id != -1) {
-			bone_data[i].model_flip_matrix = bone_data[bone_data[i].counterpart_id].model_matrix;
+			bone_data[i].counterpart_model_matrix = bone_data[bone_data[i].counterpart_id].model_matrix;
 
 			bone_data[i].base_pos = rotate(bone_data[i].base_pos, bone_data[bone_data[i].parent_id].base_rot);
 			bone_data[i].base_pos += bone_data[bone_data[i].parent_id].base_pos;
@@ -302,7 +309,7 @@ ModelInstance::ModelInstance() {
 	texture_dir = "";
 	model = nullptr;
 	move = false;
-	tpose = false;
+	flip = false;
 }
 
 ModelInstance::ModelInstance(std::string path) {
@@ -315,7 +322,6 @@ ModelInstance::~ModelInstance() {
 
 void ModelInstance::load_model_instance(std::string path) {
 	move = false;
-	tpose = false;
 	texture_dir = "";
 	
 	model = ResourceManager::get_instance()->get_model(path);
@@ -335,7 +341,6 @@ void ModelInstance::load_model_instance(std::string path) {
 
 void ModelInstance::load_used_model_instance(std::string path) {
 	move = false;
-	tpose = false;
 	texture_dir = "";
 
 	model = ResourceManager::get_instance()->get_model_keep_user_count(path);
@@ -396,27 +401,42 @@ void ModelInstance::set_move(bool move) {
 	this->move = move;
 }
 
-void ModelInstance::set_bones(float frame, Animation* anim_kind, bool flip) {
+void ModelInstance::set_flip(bool flip) {
+	if (this->flip == flip) {
+		return;
+	}
+
+
+
+	this->flip = flip;
+}
+
+void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 	if (anim_kind == nullptr) {
 		return reset_bones();
 	}
-	tpose = false;
 
 	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 	float interp_mul = (frame - (int)frame);
 
-	glm::mat4 model_flip_matrix = model->flip_matrix;
 	glm::mat4 global_transform = model->get_global_transform();
+	glm::mat4 flip_matrix = glm::mat4(
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+	glm::vec3 flip_vec = glm::vec3(-1.0, 1.0, 1.0);
 
 	if (flip) {
 		for (size_t i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += interp_mul * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 			keyframes[i].pos += interp_mul * (next_keyframes[i].pos - keyframes[i].pos);
 			keyframes[i].rot += interp_mul * (next_keyframes[i].rot - keyframes[i].rot);
-
+			
 			bone_data[i].anim_matrix = *bone_data[i].parent_matrix * keyframes[i].anim_matrix;
-			bone_data[bone_data[i].counterpart_id].final_matrix = model_flip_matrix * ((bone_data[i].anim_matrix * model_flip_matrix) * bone_data[i].model_flip_matrix * global_transform);
+			bone_data[bone_data[i].counterpart_id].final_matrix = flip_matrix * (glm::scale(bone_data[i].anim_matrix * bone_data[i].model_matrix, flip_vec) * global_transform);
 
 			bone_data[i].pos = keyframes[i].pos;
 			bone_data[i].rot = keyframes[i].rot;
@@ -448,10 +468,9 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind, bool flip) {
 
 void ModelInstance::reset_bones() {
 	for (Bone& bone : bone_data) {
-		bone.anim_matrix = glm::mat4(1.0);
-		bone.final_matrix = glm::mat4(1.0);
+		bone.anim_matrix = model->get_global_transform();
+		bone.final_matrix = model->get_global_transform();
 	}
-	tpose = true;
 }
 
 void ModelInstance::load_textures() {
@@ -553,66 +572,31 @@ bool ModelInstance::is_loaded() const {
 	return model != nullptr;
 }
 
-void ModelInstance::render(Shader* shader, bool flip) {
+void ModelInstance::render(Shader* shader) {
 	shader->set_active_uniform_location("bone_matrix[0]");
-	if (tpose) { //If we don't have any keyframe data and we're facing left, we only apply 1 flip matrix,
-		//so we need to change the culling to support it.
-		if (flip) {
-			glCullFace(GL_FRONT);
-			for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-				shader->set_active_mat4(model->flip_matrix, i);
-			}
-		}
-		else {
-			glCullFace(GL_BACK);
-			for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-				shader->set_active_mat4(bone_data[i].final_matrix, i);
-			}
-		}
-	}
-	else { 
-		//But if we have keyframe data and face left, we applied 1 flip matrix to each bone to mirror
-		//the transformations, then we applied another one to the entire model, so culling is always the
-		//same
-		glCullFace(GL_BACK);
-		for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-			shader->set_active_mat4(bone_data[i].final_matrix, i);
-		}
+	glCullFace(GL_BACK);
+	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
+		shader->set_active_mat4(bone_data[i].final_matrix, i);
 	}
 
 	for (const auto& mesh : meshes) {
 		if (mesh.visible) {
+			mesh.bind_materials();
 			mesh.render();
 		}
 	}
 }
 
-void ModelInstance::render_no_texture(Shader* shader, bool flip) {
+void ModelInstance::render_no_texture(Shader* shader) {
 	shader->set_active_uniform_location("bone_matrix[0]");
-	if (tpose) {
-		if (flip) {
-			glCullFace(GL_FRONT);
-			for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-				shader->set_active_mat4(model->flip_matrix, i);
-			}
-		}
-		else {
-			glCullFace(GL_BACK);
-			for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-				shader->set_active_mat4(bone_data[i].final_matrix, i);
-			}
-		}
-	}
-	else { 
-		glCullFace(GL_BACK);
-		for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-			shader->set_active_mat4(bone_data[i].final_matrix, i);
-		}
+	glCullFace(GL_BACK);
+	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
+		shader->set_active_mat4(bone_data[i].final_matrix, i);
 	}
 
 	for (const auto& mesh : meshes) {
 		if (mesh.visible) {
-			mesh.render_no_texture();
+			mesh.render();
 		}
 	}
 }
@@ -654,12 +638,9 @@ void Mesh::init_gl() {
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
 		glGenBuffers(1, &EBO);
-
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(ModelVertex), &vertices[0], GL_STATIC_DRAW);
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
@@ -674,10 +655,11 @@ void Mesh::init_gl() {
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, bitangent));
 		glEnableVertexAttribArray(5);
-		glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(ModelVertex), (void*)offsetof(ModelVertex, bone_ids));
+		glVertexAttribPointer(5, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, bone_weights));
 		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, weights));
+		glVertexAttribIPointer(6, MAX_BONE_INFLUENCE, GL_INT, sizeof(ModelVertex), (void*)offsetof(ModelVertex, bone_ids));		
 		glBindVertexArray(0);
+
 		visible = true;
 	}
 }
@@ -762,19 +744,15 @@ Mesh Mesh::operator=(const Mesh& other) {
 	return *this;
 }
 
-void Mesh::render() const {
+void Mesh::bind_materials() const {
 	if (this == nullptr) return;
 	for (unsigned int i = 0, max = mat->textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + i + 1);
 		glBindTexture(GL_TEXTURE_2D, mat->textures[i].id);
 	}
-
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
 }
 
-void Mesh::render_no_texture() const {
+void Mesh::render() const {
 	if (this == nullptr) return;
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

@@ -88,8 +88,13 @@ void Fighter::fighter_post() {
 		(this->*status_script[status_kind])();
 	}
 	process_post_position();
-
-	rot.z += glm::radians(90.0);
+	if (anim_kind == nullptr) {
+		rot.x -= glm::radians(90.0);
+		rot.z += glm::radians(90.0 * facing_dir);
+	}
+	else {
+		rot.z += glm::radians(90.0);
+	}
 	rot += extra_rot;
 	process_post_projectiles();
 }
@@ -127,6 +132,7 @@ void Fighter::process_animate() {
 
 	if (internal_facing_right != facing_right 
 		&& is_actionable()
+		&& status_kind != FIGHTER_STATUS_JUMPSQUAT
 		&& status_kind != FIGHTER_STATUS_TURN
 		&& situation_kind == FIGHTER_SITUATION_GROUND) {
 		change_status(FIGHTER_STATUS_TURN);
@@ -151,7 +157,7 @@ void Fighter::process_animate() {
 }
 
 void Fighter::process_post_animate() {
-	model.set_bones(frame, anim_kind, !facing_right);
+	model.set_bones(frame, anim_kind);
 	set_pos_anim();
 }
 

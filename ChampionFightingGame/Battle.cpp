@@ -61,10 +61,10 @@ void battle_main() {
 		&& player[0]->alt_costume == player[1]->alt_costume
 		&& player[0]->alt_color == player[1]->alt_color) {
 		if (player[0]->alt_color == 0) {
-			player[1]->alt_color++;
+//			player[1]->alt_color++;
 		}
 		else {
-			player[1]->alt_color--;
+//			player[1]->alt_color--;
 		}
 	}
 
@@ -335,7 +335,6 @@ void Battle::process_intro() {
 	else {
 		POST_INTRO:
 		for (int i = 0; i < 2; i++) {
-			std::cout << "what\n";
 			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
 		}
 		process_battle();
@@ -760,10 +759,10 @@ void Battle::render_world() {
 
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render_shadow(!fighter[i]->facing_right);
+		fighter[i]->render_shadow();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render_shadow(!fighter[i]->facing_right);
+				fighter[i]->projectiles[i2]->render_shadow();
 			}
 		}
 	}
@@ -779,10 +778,10 @@ void Battle::render_world() {
 	render_manager->shadow_map.bind_textures();
 
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render(!fighter[i]->facing_right);
+		fighter[i]->render();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
+				fighter[i]->projectiles[i2]->render();
 			}
 		}
 	}
@@ -800,10 +799,10 @@ void Battle::render_world() {
 	glStencilMask(0xFF);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render(!fighter[i]->facing_right);
+		fighter[i]->render();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render(!fighter[i]->facing_right);
+				fighter[i]->projectiles[i2]->render();
 			}
 		}
 	}
@@ -814,10 +813,10 @@ void Battle::render_world() {
 
 	glDepthMask(GL_FALSE);
 	for (int i = 0; i < 2; i++) {
-		fighter[i]->render_outline(!fighter[i]->facing_right);
+		fighter[i]->render_outline();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render_outline(!fighter[i]->facing_right);
+				fighter[i]->projectiles[i2]->render_outline();
 			}
 		}
 	}

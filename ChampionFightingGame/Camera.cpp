@@ -23,7 +23,7 @@ Camera::Camera() {
 	roll = 0.0;
 	following_players = true;
 	anim_end = false;
-	auto_linear_scale = 3.0;
+	camera_locked = false;
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
 	projection_matrix = glm::mat4(1.0);
@@ -40,6 +40,7 @@ Camera::Camera() {
 }
 
 void Camera::camera_main() {
+	if (camera_locked) return;
 	if (anim_kind != nullptr) {
 		follow_anim();
 	}
@@ -121,7 +122,7 @@ void Camera::reset_camera() {
 	roll = 0.0;
 	following_players = true;
 	anim_end = false;
-	auto_linear_scale = 3.0;
+	camera_locked = false;
 	follow_id = -1;
 	frame = 0.0;
 	rate = 1.0;

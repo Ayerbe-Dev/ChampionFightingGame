@@ -5,8 +5,8 @@ layout (location = 1) in vec3 v_nor;
 layout (location = 2) in vec2 v_texcoords;
 layout (location = 3) in vec3 v_tangent;
 layout (location = 4) in vec3 v_bitangent;
-layout (location = 5) in ivec4 v_boneids;
-layout (location = 6) in vec4 v_weights;
+layout (location = 5) in vec4 v_weights;
+layout (location = 6) in ivec4 v_boneids;
 
 const int MAX_BONES = 200;
 const int MAX_BONE_INFLUENCE = 4;

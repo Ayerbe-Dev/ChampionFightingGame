@@ -14,7 +14,7 @@
 void wait_ms(double ms_duration = 16.667, bool process_time = true);
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
-std::string Filter(const std::string& to, const std::string& remove);
+std::string filter_string(const std::string& to, const std::string& remove);
 int get_blank(std::string s);
 float get_relative_one_percent(float val, float denom);
 int round_up_odd(int val);

@@ -43,13 +43,11 @@ bool GameObject::change_anim(std::string animation_name, float rate, float frame
 
 void GameObject::animate() {
 	frame += rate;
+	is_anim_end = false;
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
 			is_anim_end = true;
-		}
-		else {
-			is_anim_end = false;
 		}
 	}
 	if (model.has_skeleton()) {

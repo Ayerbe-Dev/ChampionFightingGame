@@ -8,6 +8,7 @@
 #include "GameManager.h"
 #include "ShaderManager.h"
 #include <fstream>
+#include "Sndlst.h"
 
 void Projectile::load_projectile() {
 	sound_manager->register_game_object(this);
@@ -23,36 +24,44 @@ void Projectile::load_projectile() {
 	load_projectile_unique_status_scripts();
 	load_projectile_status_scripts();
 	load_move_scripts();
+	load_sound_list();
 
 	change_status(PROJECTILE_STATUS_NONE, false, false);
 }
 
 void Projectile::load_sound_list() {
 	std::ifstream sound_stream;
-	std::string sound_name;
-	std::string sound_file;
+	std::string name;
+	std::string file;
 	float volume_mod;
-	sound_stream.open(resource_dir + "/vc/vc_list.yml");
+	sound_stream.open(resource_dir + "/vc/vc_list.sndlst");
 	if (sound_stream.fail()) {
 		sound_stream.close();
 		GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s vc directory was incorrectly set!");
 	}
 	else {
-		while (sound_stream >> sound_name) {
-			sound_stream >> sound_file >> volume_mod;
-			sound_manager->load_sound(sound_name, resource_dir + "/vc/" + sound_file, volume_mod);
+		while (!sound_stream.eof()) {
+			parse_sndlst_entry(sound_stream, name, file, volume_mod);
+			if (name == "") {
+				break;
+			}
+			sound_manager->load_sound(name, resource_dir + "/vc/" + file, volume_mod);
 		}
 		sound_stream.close();
 	}
-	sound_stream.open(resource_dir + "/se/se_list.yml");
+	sound_stream.open(resource_dir + "/se/se_list.sndlst");
 	if (sound_stream.fail()) {
 		sound_stream.close();
 		GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s se directory was incorrectly set!");
 	}
 	else {
-		while (sound_stream >> sound_name) {
-			sound_stream >> sound_file >> volume_mod;
-			sound_manager->load_sound(sound_name, resource_dir + "/se/" + sound_file, volume_mod);
+		while (!sound_stream.eof()) {
+			parse_sndlst_entry(sound_stream, name, file, volume_mod);
+			if (name == "") {
+				break;
+			}
+			sound_manager->load_sound(name, resource_dir + "/se/" + file, volume_mod);
+
 		}
 		sound_stream.close();
 	}
@@ -89,7 +98,7 @@ void Projectile::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s resource directory was incorrectly set!");
+			GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s animation directory has no anim list!");
 		}
 		else {
 			std::cout << err.what() << "\n";

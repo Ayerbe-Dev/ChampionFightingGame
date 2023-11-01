@@ -39,7 +39,7 @@ float clampf(float min, float value, float max) {
 /// <param name="to">: Base string</param>
 /// <param name="remove">: Part of the string to remove</param>
 /// <returns>Filtered string</returns>
-std::string Filter(const std::string& to, const std::string& remove) {
+std::string filter_string(const std::string& to, const std::string& remove) {
 	std::string ret = "";
 	std::string ret2 = "";
 	int removal_index = to.find(remove);
@@ -50,7 +50,7 @@ std::string Filter(const std::string& to, const std::string& remove) {
 	ret = to.substr(0, removal_index);
 	ret2 = to.substr(cont_index, to.length());
 
-	return Filter(ret + ret2, remove);
+	return filter_string(ret + ret2, remove);
 }
 
 /// <summary>

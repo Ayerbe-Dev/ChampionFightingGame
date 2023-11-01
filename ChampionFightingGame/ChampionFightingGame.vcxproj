@@ -242,6 +242,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="CollisionChecks.cpp" />
     <ClCompile Include="BattleText.cpp" />
     <ClCompile Include="EasyGifReader.cpp" />
+    <ClCompile Include="Efct.cpp" />
+    <ClCompile Include="Eftlst.cpp" />
     <ClCompile Include="EricFireballMoves.cpp" />
     <ClCompile Include="EricFireballStatus.cpp" />
     <ClCompile Include="FighterCollisionFunctions.cpp" />
@@ -255,10 +257,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraAnim.cpp" />
-    <ClCompile Include="CharaTemplate.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
-    <ClCompile Include="CharaTemplateMoves.cpp" />
-    <ClCompile Include="CharaTemplateStatus.cpp" />
     <ClCompile Include="ControllerManager.cpp" />
     <ClCompile Include="cotr_imgui_debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
@@ -303,6 +302,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterInputFunctions.cpp" />
     <ClCompile Include="FighterLoadingFunctions.cpp" />
     <ClCompile Include="FighterOpponentFunctions.cpp" />
+    <ClCompile Include="HxA.cpp" />
     <ClCompile Include="HxAFile.cpp" />
     <ClCompile Include="HxALayer.cpp" />
     <ClCompile Include="HxAMeta.cpp" />
@@ -321,6 +321,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="MoveScript.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
+    <ClCompile Include="ParticleEffect.cpp" />
     <ClCompile Include="ParamAccessor.cpp" />
     <ClCompile Include="BattleObjectParamFunctions.cpp" />
     <ClCompile Include="FighterPositionFunctions.cpp" />
@@ -351,6 +352,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
+    <ClCompile Include="Sndlst.cpp" />
     <ClCompile Include="TargetVarManager.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="UIManager.cpp" />
@@ -392,8 +394,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ProjectileScriptWrappers.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
     <ClCompile Include="ProjectileStatusFunctions.cpp" />
-    <ClCompile Include="ProjectileTemplateMoves.cpp" />
-    <ClCompile Include="ProjectileTemplateStatus.cpp" />
     <ClCompile Include="Ramona.cpp" />
     <ClCompile Include="RamonaMoves.cpp" />
     <ClCompile Include="RamonaStatus.cpp" />
@@ -416,7 +416,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
-    <ClCompile Include="ProjectileTemplate.cpp" />
     <ClCompile Include="StageAsset.cpp" />
     <ClCompile Include="StageSelect.cpp" />
     <ClCompile Include="Athena.cpp" />
@@ -446,7 +445,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="BattleObjectConstants.h" />
     <ClInclude Include="CharaSelectConstants.h" />
     <ClInclude Include="EasyGifReader.h" />
-    <ClInclude Include="HxAConventions.h" />
+    <ClInclude Include="Efct.h" />
+    <ClInclude Include="Eftlst.h" />
+    <ClInclude Include="HxA.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="Dingo.h" />
     <ClInclude Include="DingoConstants.h" />
@@ -475,13 +476,15 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameTextureSDL.h" />
-    <ClInclude Include="HxAFile.h" />
+    <ClInclude Include="HxAConventions.h" />
     <ClInclude Include="HxAEnums.h" />
+    <ClInclude Include="HxAFile.h" />
     <ClInclude Include="HxALayer.h" />
     <ClInclude Include="HxAMeta.h" />
     <ClInclude Include="HxANode.h" />
     <ClInclude Include="imgui_stdlib.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="PauseBattle.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="CollisionBoxConstants.h" />
@@ -493,13 +496,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="BrunoStatus.h" />
     <ClInclude Include="ButtonConstants.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CharaTemplate.h" />
     <ClInclude Include="CharaSelect.h" />
-    <ClInclude Include="CharaTemplateConstants.h" />
-    <ClInclude Include="CharaTemplateFlag.h" />
-    <ClInclude Include="CharaTemplateFloat.h" />
-    <ClInclude Include="CharaTemplateInt.h" />
-    <ClInclude Include="CharaTemplateStatus.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="ControllerManager.h" />
     <ClInclude Include="cotr_imgui_debugger.h" />
@@ -587,6 +584,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="NightsabreFloat.h" />
     <ClInclude Include="NightsabreInt.h" />
     <ClInclude Include="NightsabreStatus.h" />
+    <ClInclude Include="Sndlst.h" />
     <ClInclude Include="TargetVar.h" />
     <ClInclude Include="TargetVarManager.h" />
     <ClInclude Include="TextUI.h" />
@@ -619,11 +617,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ProjectileKind.h" />
     <ClInclude Include="Projectiles.h" />
     <ClInclude Include="ProjectileStatus.h" />
-    <ClInclude Include="ProjectileTemplateConstants.h" />
-    <ClInclude Include="ProjectileTemplateFlag.h" />
-    <ClInclude Include="ProjectileTemplateFloat.h" />
-    <ClInclude Include="ProjectileTemplateInt.h" />
-    <ClInclude Include="ProjectileTemplateStatus.h" />
     <ClInclude Include="Ramona.h" />
     <ClInclude Include="RamonaConstants.h" />
     <ClInclude Include="RamonaFlag.h" />
@@ -651,7 +644,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="SoundConstants.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Stage.h" />
-    <ClInclude Include="ProjectileTemplate.h" />
     <ClInclude Include="FighterStatus.h" />
     <ClInclude Include="StageAsset.h" />
     <ClInclude Include="StageSelect.h" />

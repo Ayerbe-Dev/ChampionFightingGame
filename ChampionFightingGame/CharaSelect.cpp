@@ -13,7 +13,6 @@
 /// <summary>
 /// The main function while on the character select screen.
 /// </summary>
-/// <param name="game_manager">: The GameManager instance that gets passed around everywhere.</param>
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
@@ -67,8 +66,6 @@ CSS::CSS() {
 	stage_demo.init_shader();
 	stage_demo.model.load_textures();
 
-	menu_objects.resize(CHARA_SELECT_GROUP_MAX);
-
 	if (!load_css()) {
 		game_manager->add_crash_log("Could not load CSS!");
 		return;
@@ -78,24 +75,29 @@ CSS::CSS() {
 	thread_manager->add_thread(THREAD_KIND_LOAD, gamestate_charaselect_loading_thread, this);
 	thread_manager->notify_thread(THREAD_KIND_LOAD);
 
-	menu_objects[CHARA_SELECT_GROUP_MISC].emplace_back(this, nullptr, false);
-	menu_objects[CHARA_SELECT_GROUP_MISC].emplace_back(this, nullptr, true);
+	push_menu_object("background");
+		push_menu_texture("bg1", "resource/game_state/chara_select/bg_1.png");
+		push_menu_texture("bg2", "resource/game_state/chara_select/bg_2.png");
+		push_menu_texture("bg3", "resource/game_state/chara_select/bg_3.png");
+	pop_menu_stack();
+	
+	push_menu_object("cursor");
+		push_menu_texture("p1_cursor", "resource/game_state/chara_select/p1_cursor.png");
+			last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			last_pushed_texture->set_scale(0.8);
+		push_menu_texture("p2_cursor", "resource/game_state/chara_select/p2_cursor.png");
+			last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			last_pushed_texture->set_scale(0.8);
+		push_menu_process_function([this](MenuObject* object) {
+			for (int i = 0; i < 2; i++) {
+				object->get_texture(i).set_target_pos(
+					glm::vec3(chara_slots[css_player[i].selected_index].render_texture.pos.get_val().x, chara_slots[css_player[i].selected_index].render_texture.pos.get_val().y, 0.0f),
+					8.0f
+				);
+			}
+		});
+	pop_menu_stack();
 
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].add_texture("resource/game_state/chara_select/bg_1.png");
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].add_texture("resource/game_state/chara_select/bg_2.png");
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].add_texture("resource/game_state/chara_select/bg_3.png");
-
-	for (int i = 0, max = menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].textures.size(); i < max; i++) {
-		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].textures[i].set_height_scale(1.5);
-		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].textures[i].set_width_scale(1.5);
-	}
-
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].add_texture("resource/game_state/chara_select/p1_cursor.png");
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].add_texture("resource/game_state/chara_select/p2_cursor.png");
-	for (int i = 0; i < 2; i++) {
-		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_scale(0.8);
-	}
 
 	lights.reserve(MAX_LIGHT_SOURCES);
 	std::ifstream light_stream;
@@ -532,6 +534,8 @@ void CSS::render_main() {
 		if (css_player[i].selected_index < loaded_chars) {
 			css_player[i].demo_model.animate();
 			if (css_player[i].demo_model.is_anim_end) {
+				//is_anim_end will always be false when anim_kind is nullptr, so we don't
+				//need to worry about this
 				if (css_player[i].demo_model.anim_kind->name == "selected") {
 					css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
 					css_player[i].demo_model.animate();
@@ -561,7 +565,7 @@ void CSS::render_main() {
 		}
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_BG].render();
+	render_menu_object("background");
 	glViewport(render_manager->res_width * gbuffer_mul.x, render_manager->res_height * gbuffer_mul.y, render_manager->res_width * gbuffer_mul.z, render_manager->res_height * gbuffer_mul.w);
 	render_manager->g_buffer.render();
 	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
@@ -588,12 +592,8 @@ void CSS::render_main() {
 			css_player[i].mobile_css_slot.process();
 			css_player[i].mobile_css_slot.render();
 		}
-		menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].textures[i].set_target_pos(
-			glm::vec3(chara_slots[css_player[i].selected_index].render_texture.pos.get_val().x, chara_slots[css_player[i].selected_index].render_texture.pos.get_val().y, 0.0f),
-			8.0f
-		);
 	}
-	menu_objects[CHARA_SELECT_GROUP_MISC][CHARA_SELECT_MISC_CURSOR].render();
+	render_menu_object("cursor");
 }
 
 /// <summary>

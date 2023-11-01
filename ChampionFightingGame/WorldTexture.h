@@ -78,11 +78,14 @@ public:
 	glm::vec3 get_colormod() const;
 
 	void flip_h();
-	void set_flip_h(bool flip_h);
-	bool get_flip_h() const;
+	void set_h_flipped(bool h_flipped);
+	bool is_h_flipped() const;
 	void flip_v();
-	void set_flip_v(bool flip_v);
-	bool get_flip_v() const;
+	void set_v_flipped(bool v_flipped);
+	bool is_v_flipped() const;
+
+	void set_billboarded(bool billboarded);
+	bool is_billboarded() const;
 
 	void set_sprite(unsigned int sprite);
 	void next_sprite();
@@ -115,6 +118,7 @@ private:
 
 	bool h_flipped;
 	bool v_flipped;
+	bool billboarded;
 
 	unsigned int sprite;
 

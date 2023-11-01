@@ -7,11 +7,11 @@
 #include <fstream>
 #include "GLEW Helpers.h"
 
-Particle::Particle() {
+OldParticle::OldParticle() {
 
 }
 
-Particle::Particle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
+OldParticle::OldParticle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba,
 	glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame) {
 	init(path);
 	this->pos = pos;
@@ -24,7 +24,7 @@ Particle::Particle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca
 	this->rgba_frame = rgba_frame;
 }
 
-void Particle::init(std::string path) {
+void OldParticle::init(std::string path) {
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
@@ -45,7 +45,6 @@ void Particle::init(std::string path) {
 
 	int width;
 	int height;
-	int num_components;
 	texture = loadGLTexture(path.c_str(), &width, &height);
 	this->width = width;
 	this->height = height;
@@ -55,17 +54,17 @@ void Particle::init(std::string path) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Particle::destroy() {
+void OldParticle::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteTextures(1, &texture);
 }
 
-unsigned int Particle::get_texture() {
+unsigned int OldParticle::get_texture() {
 	return texture;
 }
 
-void Particle::load_spritesheet(std::string spritesheet_dir) {
+void OldParticle::load_spritesheet(std::string spritesheet_dir) {
 	std::ifstream spritesheet_file;
 	spritesheet_file.open(spritesheet_dir);
 	if (spritesheet_file.fail()) {
@@ -92,7 +91,7 @@ void Particle::load_spritesheet(std::string spritesheet_dir) {
 	set_sprite(0);
 }
 
-void Particle::set_sprite(int index) {
+void OldParticle::set_sprite(int index) {
 	if (spritesheet[0].size() <= index || index < 0) {
 		return;
 	}
@@ -102,7 +101,7 @@ void Particle::set_sprite(int index) {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
 }
 
-void Particle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,  glm::vec4 rgba, glm::vec3 scale_vec, bool flip, float frame) {
+void OldParticle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,  glm::vec4 rgba, glm::vec3 scale_vec, bool flip, float frame) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindTexture(GL_TEXTURE_2D, texture);

@@ -108,6 +108,9 @@ void parse_anlst_entry(std::ifstream& stream, std::string& name, std::string& fi
 			}
 		}
 	}
+	if (filename != "none") {
+		filename += ".fbx";
+	}
 
 	stream.read(&input_char, 1);
 	end_frame = (((unsigned short)input_char & 0xFF) << 5) & 0x1FFF;
@@ -223,6 +226,9 @@ void parse_anlst_entry(std::ifstream& stream, std::string& name, std::string& fi
 				} break;
 			}
 		}
+	}
+	if (filename != "none") {
+		filename += ".fbx";
 	}
 
 	stream.read(&input_char, 1);

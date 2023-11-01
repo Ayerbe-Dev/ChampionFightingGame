@@ -61,10 +61,10 @@ void battle_main() {
 		&& player[0]->alt_costume == player[1]->alt_costume
 		&& player[0]->alt_color == player[1]->alt_color) {
 		if (player[0]->alt_color == 0) {
-//			player[1]->alt_color++;
+			player[1]->alt_color++;
 		}
 		else {
-//			player[1]->alt_color--;
+			player[1]->alt_color--;
 		}
 	}
 

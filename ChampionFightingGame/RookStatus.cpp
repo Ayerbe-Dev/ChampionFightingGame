@@ -22,5 +22,7 @@ bool Rook::chara_status_attack() {
 }
 
 void Rook::load_chara_status_scripts() {
-
+	status_script.resize(CHARA_ROOK_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_ROOK_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_ROOK_STATUS_MAX, nullptr);
 }

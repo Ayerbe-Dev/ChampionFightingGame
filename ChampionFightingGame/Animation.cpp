@@ -184,7 +184,7 @@ void AnimationTable::load_anlst(std::string resource_dir, Skeleton skeleton) {
 			}
 			Animation anim;
 			if (filename != "none") { //If we're loading an animation file, we run normal code
-				anim.init(name, resource_dir + "/" + filename + ".fbx", skeleton);
+				anim.init(name, resource_dir + "/" + filename, skeleton);
 				anim.faf = end_frame;
 			}
 			else { //If there's no animation file, our end frame specifies the length instead of faf

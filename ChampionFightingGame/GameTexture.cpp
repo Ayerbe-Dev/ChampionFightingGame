@@ -34,6 +34,7 @@ GameTexture::GameTexture() {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
+	shader = nullptr;
 	if (SDL_GL_GetCurrentContext() != nullptr) {
 		attach_shader(ShaderManager::get_instance()->get_shader("2d_texture", "2d_texture", "", 0));
 	}
@@ -72,6 +73,7 @@ GameTexture::GameTexture(const GameTexture& that) {
 	colormod = that.colormod;
 	alpha = that.alpha;
 	orientation = that.orientation;
+	anchor_pos = that.anchor_pos;
 
 	width = that.width;
 	height = that.height;
@@ -314,6 +316,10 @@ void GameTexture::set_orientation(int orientation) {
 
 void GameTexture::attach_shader(Shader* shader) {
 	this->shader = shader;
+}
+
+void GameTexture::attach_anchor_pos(glm::vec3* anchor) {
+	this->anchor_pos = anchor;
 }
 
 glm::vec3 GameTexture::get_pos_vacuum(GameTexture *that) {
@@ -656,9 +662,6 @@ void GameTexture::set_target_pos(glm::vec3 target_pos, float frames) {
 	if (frames == 0.0) {
 		return;
 	}
-//	this->target_pos = target_pos;
-//	this->target_pos_per_frame = (target_pos - pos) / glm::vec3(frames);
-//	this->target_pos_frames = glm::vec3(frames);
 	pos.set_target_val(target_pos, frames);
 }
 
@@ -767,58 +770,52 @@ void GameTexture::process() {
 		}
 		target_right_frames--;
 	}
-//	if (target_pos_frames != glm::vec3(0.0)) {
-//		if (target_pos_frames == glm::vec3(1.0)) { //Compensates for rounding errors
-//			pos = target_pos;
-//		}
-//		else {
-//			pos += target_pos_per_frame;
-//		}
-//		target_pos_frames -= glm::vec3(1.0);
-//	}
 }
 
 void GameTexture::prepare_render() {
-	glm::vec3 gl_pos = pos.get_val();;
+	glm::vec3 gl_pos = pos.get_val();
 	switch (orientation) {
-	default:
-	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE): {
+		default:
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE): {
 
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
-		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
-		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
-		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
-		gl_pos.x *= -1.0;
-		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
-		gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
-		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
-		gl_pos.x *= -1.0;
-		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_TOP_LEFT): {
-		gl_pos.y *= -1.0;
-		gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
-		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE): {
-		gl_pos.y *= -1.0;
-		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
-	} break;
-	case (SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT): {
-		gl_pos.x *= -1.0;
-		gl_pos.y *= -1.0;
-		gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
-		gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
-	} break;
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
+			gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
+			gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
+			gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
+			gl_pos.x *= -1.0;
+			gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
+			gl_pos.y -= WINDOW_HEIGHT - (height * height_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
+			gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
+			gl_pos.x *= -1.0;
+			gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_LEFT): {
+			gl_pos.y *= -1.0;
+			gl_pos.x -= WINDOW_WIDTH - (width * width_scale);
+			gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE): {
+			gl_pos.y *= -1.0;
+			gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
+		} break;
+		case (SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT): {
+			gl_pos.x *= -1.0;
+			gl_pos.y *= -1.0;
+			gl_pos.x += WINDOW_WIDTH - (width_orientation * width_scale);
+			gl_pos.y += WINDOW_HEIGHT - (height_orientation * height_scale);
+		} break;
+	}
+	if (anchor_pos != nullptr) {
+		gl_pos += *anchor_pos;
 	}
 	gl_pos.x /= (float)WINDOW_WIDTH;
 	gl_pos.y /= (float)WINDOW_HEIGHT;

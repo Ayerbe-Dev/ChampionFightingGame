@@ -32,7 +32,7 @@ std::string BattleObject::get_anim_broad() {
 	else {
 		std::string ret = anim_kind->name;
 		if (ret.find("_air") != std::string::npos) {
-			ret = Filter(ret, "_air");
+			ret = filter_string(ret, "_air");
 		}
 		return ret;
 	}

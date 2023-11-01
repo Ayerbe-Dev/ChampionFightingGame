@@ -20,24 +20,24 @@ void debug_main() {
 	DebugMenu *debug = new DebugMenu;
 
 	GameObject go1, go2;
-	go1.model.load_model_instance("resource/chara/atlas/model/m0/model.dae");
+	go1.model.load_model_instance("resource/chara/eric/model/m0/model.dae");
 	go1.model.load_textures("c0");
 	go1.init_shader();
 
 	go1.pos = glm::vec3(-200.0, 0.0, 0.0);
 	go1.rot.z = glm::radians(90.0);
-	go1.load_anim_table("resource/chara/atlas/anims/battle");
-	go1.change_anim("wait", 0.5, 0.0);
+//	go1.load_anim_table("resource/chara/atlas/anims/battle");
+//	go1.change_anim("wait", 0.5, 0.0);
 
 
-	go2.model.load_model_instance("resource/chara/atlas/model/m0/model.dae");
-	go2.model.load_textures("c0");
+	go2.model.load_model_instance("resource/chara/eric/model/m0/model.dae");
+	go2.model.load_textures("c1");
 	go2.init_shader();
 
 	go2.pos = glm::vec3(200.0, 0.0, 0.0);
 	go2.rot.z = glm::radians(90.0);
-	go2.load_anim_table("resource/chara/atlas/anims/battle");
-	go2.change_anim("wait", 0.5, 0.0);
+//	go2.load_anim_table("resource/chara/atlas/anims/battle");
+//	go2.change_anim("wait", 0.5, 0.0);
 	go2.model.set_flip(true);
 
 	render_manager->update_shader_cams();
@@ -93,8 +93,7 @@ void debug_main() {
 	go1.model.unload_textures();
 	go2.model.unload_textures();
 	delete debug;
-	resource_manager->unload_model("resource/chara/rowan/model/m0/model.dae");
-	resource_manager->unload_model("resource/chara/atlas/model/m0/model.dae");
+	resource_manager->unload_model("resource/chara/eric/model/m0/model.dae");
 }
 
 DebugMenu::DebugMenu() {

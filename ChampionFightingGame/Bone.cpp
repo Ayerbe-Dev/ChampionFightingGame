@@ -7,27 +7,50 @@ bool Skeleton::operator!() {
 }
 
 bool Skeleton::load_skeleton(std::string path) {
+	std::unordered_map<std::string, int> bone_pair_map;
 	std::ifstream smd;
 	smd.open(path);
 	if (smd.fail()) {
 		smd.close();
 		return false;
 	}
+	char version_num = '2';
+	if (smd.peek() == 'v') {
+		smd.get(); //'v'
+		version_num = smd.get(); //The actual version num
+		smd.get(); //'\n'
+	}
 
 	Bone new_bone;
-	int bone_id;
-	std::string bone_name;
-	int parent_id;
-	int counterpart_id;
-	while (smd >> bone_id) {
-		smd >> bone_name >> parent_id >> counterpart_id;
-		bone_name = Filter(bone_name, "\""); //Remove the "s from the SMD's bone names
-		new_bone.name = bone_name;
-		new_bone.id = bone_id;
-		new_bone.parent_id = parent_id;
-		new_bone.counterpart_id = counterpart_id;
+	while (smd >> new_bone.id) {
+		smd >> new_bone.name >> new_bone.parent_id;
+		new_bone.name = filter_string(new_bone.name, "\""); //Remove the "s from the SMD's bone names
+		switch (version_num) {
+			case '1': {
+				smd >> new_bone.counterpart_id;
+			} break;
+			case '2': {
+				if (new_bone.name.ends_with("_L") || new_bone.name.ends_with("_R")) {
+					std::string pair_name = new_bone.name.ends_with("_L") ? 
+						filter_string(new_bone.name, "_L") : filter_string(new_bone.name, "_R");
+					if (bone_pair_map.contains(pair_name)) {
+						new_bone.counterpart_id = bone_pair_map[pair_name];
+						bone_data[new_bone.counterpart_id].counterpart_id = new_bone.id;
+					}
+					else {
+						bone_pair_map[pair_name] = new_bone.id;
+					}
+				}
+				else {
+					new_bone.counterpart_id = new_bone.id;
+				}
+			} break;
+			default: {
+	
+			} break;
+		}
 		bone_data.push_back(new_bone);
-		bone_map[bone_name] = bone_id;
+		bone_map[new_bone.name] = new_bone.id;
 	}
 
 	smd.close();

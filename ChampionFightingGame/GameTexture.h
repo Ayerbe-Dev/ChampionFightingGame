@@ -26,6 +26,7 @@ public:
     void add_rot(glm::vec3 rot);
     void set_orientation(int orientation);
     void attach_shader(Shader* shader);
+    void attach_anchor_pos(glm::vec3* pos);
 
     glm::vec3 get_pos_vacuum(GameTexture *that);
 
@@ -87,10 +88,6 @@ public:
     float target_right_frames = 0.0;
     float target_top_frames = 0.0;
     float target_bottom_frames = 0.0;
-
-    glm::vec3 target_pos = glm::vec3(0.0);
-    glm::vec3 target_pos_per_frame = glm::vec3(0.0);
-    glm::vec3 target_pos_frames = glm::vec3(0.0);
     
     glm::vec3 colormod = glm::vec3(0.0);
     unsigned char alpha = 255;
@@ -100,6 +97,7 @@ public:
     TextureCoord tex_data[4];
     TextureCoord* tex_accessor[4];
     TargetVar<glm::vec3> pos = glm::vec3(0.0);
+    glm::vec3* anchor_pos = nullptr;
     glm::vec3 rot = glm::vec3(0.0);
     int sprite_index;
     int orientation = SCREEN_TEXTURE_ORIENTATION_MIDDLE;

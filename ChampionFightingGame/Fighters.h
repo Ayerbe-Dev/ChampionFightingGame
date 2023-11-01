@@ -1,5 +1,4 @@
 #pragma once
-#include "CharaTemplate.h"
 #include "Rowan.h"
 #include "Eric.h"
 #include "Leon.h"

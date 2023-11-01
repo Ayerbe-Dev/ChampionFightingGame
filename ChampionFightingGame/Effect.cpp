@@ -55,7 +55,7 @@ void Effect::init(EffectInfo info) {
 		stream >> scale_frame.x >> scale_frame.y >> scale_frame.z;
 		stream >> rgba_frame.x >> rgba_frame.y >> rgba_frame.z >> rgba_frame.w;
 		stream >> has_spritesheet;
-		Particle particle(info.dir + particle_name, pos, rot, scale, rgba, pos_frame, 
+		OldParticle particle(info.dir + particle_name, pos, rot, scale, rgba, pos_frame, 
 			rot_frame, scale_frame, rgba_frame);
 		particles.push_back(particle);
 	}

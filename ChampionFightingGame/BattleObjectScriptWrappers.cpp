@@ -71,16 +71,12 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(damage_scale, int);
 	UNWRAP(meter_gain, float);
 	UNWRAP(hitlag, int);
-	int hitstun = 0;
 	int blocklag = 0;
 	int blockstun = 0;
 	if (collision_kind & COLLISION_KIND_GROUND) {
 		UNWRAP_NO_DECL(blocklag);
 	}
-	if (hit_status != HIT_STATUS_LAUNCH || (counterhit_status != HIT_STATUS_LAUNCH
-		&& counterhit_status != HIT_STATUS_NONE)) {
-		UNWRAP_NO_DECL(hitstun);
-	}
+	UNWRAP(hitstun, int);
 	if (collision_kind & COLLISION_KIND_GROUND) {
 		UNWRAP_NO_DECL(blockstun);
 	}

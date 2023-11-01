@@ -6,10 +6,10 @@
 
 class Shader;
 
-class Particle {
+class OldParticle {
 public:
-	Particle();
-	Particle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
+	OldParticle();
+	OldParticle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, 
 		glm::vec3 pos_frame, glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame);
 
 	void init(std::string path);

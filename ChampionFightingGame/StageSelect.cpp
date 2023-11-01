@@ -147,31 +147,19 @@ StageSelect::StageSelect() {
 	num_slots_per_row = 1;
 	selected = false;
 
-	menu_objects.resize(STAGE_SELECT_GROUP_MAX);
+	menu_objects.reserve(2);
+	push_menu_object("Background"); {
+		push_menu_texture("bg1", "resource/game_state/stage_select/bg_1.png");
+		push_menu_texture("bg2", "resource/game_state/stage_select/bg_2.png");
+		push_menu_texture("bg3", "resource/game_state/stage_select/bg_3.png");
+	} pop_menu_stack();
+
 
 	if (!load_stage_select()) {
 		game_manager->add_crash_log("Could not load Stage Select!");
 		return;
 	}
 	prev_selection = selection;
-
-	float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
-	float slot_height = WINDOW_HEIGHT / 9;
-
-	menu_objects[STAGE_SELECT_GROUP_MISC].emplace_back(this, nullptr, false);
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.init("resource/game_state/stage_select/cursor.png");
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_width(slot_width);
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_height(slot_height);
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].cursor.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_1.png");
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_2.png");
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].add_texture("resource/game_state/stage_select/bg_3.png");
-
-	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].textures.size(); i < max; i++) {
-		menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].textures[i].set_height_scale(1.5);
-		menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].textures[i].set_width_scale(1.5);
-	}
 
 	render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 	stages[selection].demo_model.model.load_textures();
@@ -207,76 +195,87 @@ bool StageSelect::load_stage_select() {
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("FiraCode", 12);
 	stages.reserve(stage_params.get_param_int("num_slots"));
-	switch (game_context) { //Load the training mode versions of stages for training mode, else load the normal ones
-		case (GAME_CONTEXT_TRAINING): {
-			for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
-				if (stage_params.get_param_bool("selectable_training", i)) {
-					add_stage_slot(stage_params.get_param_table(i), &main_text_font);
-					if (selection == stages.back().id) { //This code is used to determine which slot index we hover over by default
-						//given the player's selected stage.
-						selection = stages.size() - 1;
+	push_menu_object("Stage Select"); {
+		object_stack.top()->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+		push_menu_activity_group("Stage Slots", &selection, false, stage_params.get_param_int("num_slots")); {
+			switch (game_context) { //Load the training mode versions of stages for training mode, else load the normal ones
+				case (GAME_CONTEXT_TRAINING): {
+					for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
+						if (stage_params.get_param_bool("selectable_training", i)) {
+							add_stage_slot(stage_params.get_param_table(i), &main_text_font);
+							if (selection == stages.back().id) { //This code is used to determine which slot index we hover over by default
+								//given the player's selected stage.
+								selection = stages.size() - 1;
+							}
+						}
+					}
+				} break;
+				default: {
+					for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
+						if (stage_params.get_param_bool("selectable_vs", i)) {
+							add_stage_slot(stage_params.get_param_table(i), &main_text_font);
+							if (selection == stages.back().id) {
+								selection = stages.size() - 1;
+							}
+						}
 					}
 				}
 			}
-		} break;
-		default: {
-			for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {
-				if (stage_params.get_param_bool("selectable_vs", i)) {
-					add_stage_slot(stage_params.get_param_table(i), &main_text_font);
-					if (selection == stages.back().id) {
-						selection = stages.size() - 1;
+
+			if (selection >= stages.size()) {
+				//If we managed to get to the stage select with a selected ID that doesn't exist in this context, this either means that:
+				//A. We were selecting a variant of a stage that's only selectable in a different context, I.E. we went into vs. mode's 
+				//stage select while we had training mode's Training Stage as our preferred stage
+				//B. We reached the stage select with an ID that doesn't exist in ANY context, I.E. we were selecting a stage that
+				//doesn't exist in the stage select param list. 
+
+				//We'll probably handle A by merging IDs between variants but giving them different resource directories so that won't
+				//be an issue when we make variants, but if we manage to trigger B then something has gone seriously wrong.
+				GameManager::get_instance()->add_crash_log("Entered the Stage Select with a selected value of " + std::to_string(selection)
+					+ ", which does not correspond to a valid stage ID in this Game Context!");
+				return false;
+			}
+
+			MenuActivityGroup& stage_slots = *activity_group_stack.top();
+			num_slots_per_row = ceil((float)stage_slots.num_children() / 2.0f);
+			float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
+			float slot_height = WINDOW_HEIGHT / 9;
+
+			for (int i = 0, max = stage_slots.num_children(); i < max; i++) {
+				//Positioning the slots - Note that we should probably middle-orient these instead of 
+				//setting them to bottom left so that the text can always be in the center of the slot. I'm
+				//too lazy to calc the position right now since I'm focusing on getting the shrunken gbuffer
+				//to render, but I'd imagine it's just a matter of changing how slot_pos is calculated.
+
+				glm::vec3 slot_pos = glm::vec3(
+					STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2 + (i * slot_width * 2) + slot_width,
+					slot_height * 2 + 60,
+					0.0
+				);
+				if (i >= num_slots_per_row) {
+					if (max % 2) {
+						slot_pos.x += slot_width / 2;
 					}
+					slot_pos.x -= (slot_width * 2) * num_slots_per_row;
+					slot_pos.y -= slot_height * 2;
 				}
+
+				stage_slots.get_child(i).set_pos(slot_pos);
+
+				stage_slots.get_child(i).get_texture(0).set_width(slot_width);
+				stage_slots.get_child(i).get_texture(0).set_height(slot_height);
 			}
-		}
-	}
-
-	if (selection >= stages.size()) { 
-		//If we managed to get to the stage select with a selected ID that doesn't exist in this context, this either means that:
-		//A. We were selecting a variant of a stage that's only selectable in a different context, I.E. we went into vs. mode's 
-		//stage select while we had training mode's Training Stage as our preferred stage
-		//B. We reached the stage select with an ID that doesn't exist in ANY context, I.E. we were selecting a stage that
-		//doesn't exist in the stage select param list. 
-
-		//We'll probably handle A by merging IDs between variants but giving them different resource directories so that won't
-		//be an issue when we make variants, but if we manage to trigger B then something has gone seriously wrong.
-		GameManager::get_instance()->add_crash_log("Entered the Stage Select with a selected value of " + std::to_string(selection)
-			+ ", which does not correspond to a valid stage ID in this Game Context!");
-		return false;
-	}
-
-	num_slots_per_row = ceil((float)menu_objects[STAGE_SELECT_GROUP_SLOT].size() / 2.0f);
-	float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
-	float slot_height = WINDOW_HEIGHT / 9;
-
-	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_SLOT].size(); i < max; i++) { 
-		//Positioning the slots - Note that we should probably middle-orient these instead of 
-		//setting them to bottom left so that the text can always be in the center of the slot. I'm
-		//too lazy to calc the position right now since I'm focusing on getting the shrunken gbuffer
-		//to render, but I'd imagine it's just a matter of changing how slot_pos is calculated.
-
-		glm::vec3 slot_pos = glm::vec3(
-			STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2 + (i * slot_width * 2),
-			slot_height * 2 + 60, 
-			0.0
-		);
-		if (i >= num_slots_per_row) {
-			if (max % 2) {
-				slot_pos.x += slot_width / 2;
+		} pop_menu_stack();
+		push_menu_child("Cursor"); {
+			push_menu_texture("cursor", "resource/game_state/stage_select/cursor.png"); {
+				float slot_width = (WINDOW_WIDTH - STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE * 2) / num_slots_per_row;
+				float slot_height = WINDOW_HEIGHT / 9;
+				last_pushed_texture->set_width(slot_width);
+				last_pushed_texture->set_height(slot_height);
 			}
-			slot_pos.x -= (slot_width * 2) * num_slots_per_row;
-			slot_pos.y -= slot_height * 2;
-		}
-
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[1].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
-
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_pos(slot_pos);
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[1].set_pos(slot_pos);
-
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_width(slot_width);
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].textures[0].set_height(slot_height);
-	}
+		} pop_menu_stack();
+		object_stack.top()->get_activity_group("Stage Slots").get_child(selection).event_on_selected();
+	} pop_menu_stack();
 
 	main_text_font.unload_font();
 
@@ -288,9 +287,13 @@ void StageSelect::add_stage_slot(ParamTable param_table, Font* font) {
 	std::string stage_name = param_table.get_param_string("stage_name");
 	std::string resource_name = param_table.get_param_string("resource_name");
 	stages.emplace_back(stage_kind, stage_name, resource_name);
-	menu_objects[STAGE_SELECT_GROUP_SLOT].emplace_back(this, nullptr, false);
-	menu_objects[STAGE_SELECT_GROUP_SLOT].back().add_texture("resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
-	menu_objects[STAGE_SELECT_GROUP_SLOT].back().add_texture(*font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+	push_menu_child(stage_name); {
+		push_menu_texture("slot_texture", "resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
+		push_menu_texture("name_text", *font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+		push_menu_on_selected_event_function([this](MenuObject* object) {
+			object->parent->get_child("Cursor").set_pos(object->get_pos(), 6);
+		});
+	} pop_menu_stack();
 }
 
 void StageSelect::process_main() {
@@ -316,7 +319,6 @@ void StageSelect::process_main() {
 			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}
 		render_manager->camera.follow_anim();
-		menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.set_target_pos(menu_objects[STAGE_SELECT_GROUP_SLOT][selection].textures[0].pos.get_val(), 8);
 	}
 	else {
 		if (!render_manager->camera.anim_end) {
@@ -350,19 +352,14 @@ void StageSelect::render_main() {
 	glDisable(GL_CULL_FACE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	menu_objects[STAGE_SELECT_GROUP_MISC][STAGE_SELECT_MISC_BG].render();
+	render_menu_object("Background");
 	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.28, render_manager->res_width * 0.6, render_manager->res_height * 0.6);
 	render_manager->g_buffer.render();
 	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	
 	glDepthMask(GL_FALSE);
 
-	for (int i = 0, max = menu_objects[STAGE_SELECT_GROUP_SLOT].size(); i < max; i++) {
-		menu_objects[STAGE_SELECT_GROUP_SLOT][i].render();
-	}
-
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.process();
-	menu_objects[STAGE_SELECT_GROUP_MISC][0].cursor.render();
+	render_menu_object("Stage Select");
 }
 
 void StageSelect::event_up_press() {
@@ -407,7 +404,7 @@ void StageSelect::event_left_press() {
 void StageSelect::event_right_press() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
-		if (selection != num_slots_per_row - 1 && selection != menu_objects[STAGE_SELECT_GROUP_SLOT].size() - 1) {
+		if (selection != num_slots_per_row - 1 && selection != get_menu_object("Stage Select").get_activity_group("Stage Slots").num_children() - 1) {
 			selection++;
 			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
 		}

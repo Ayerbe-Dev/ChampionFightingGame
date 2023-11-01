@@ -435,11 +435,11 @@ void ScreenTexture::flip_h() {
 	h_flipped = !h_flipped;
 }
 
-void ScreenTexture::set_flip_h(bool flip_h) {
-	h_flipped = flip_h;
+void ScreenTexture::set_h_flipped(bool h_flipped) {
+	this->h_flipped = h_flipped;
 }
 
-bool ScreenTexture::get_flip_h() const {
+bool ScreenTexture::is_h_flipped() const {
 	return h_flipped;
 }
 
@@ -447,11 +447,11 @@ void ScreenTexture::flip_v() {
 	v_flipped = !v_flipped;
 }
 
-void ScreenTexture::set_flip_v(bool flip_v) {
-	v_flipped = flip_v;
+void ScreenTexture::set_v_flipped(bool v_flipped) {
+	this->v_flipped = v_flipped;
 }
 
-bool ScreenTexture::get_flip_v() const {
+bool ScreenTexture::is_v_flipped() const {
 	return v_flipped;
 }
 

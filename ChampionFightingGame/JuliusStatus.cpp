@@ -22,5 +22,7 @@ bool Julius::chara_status_attack() {
 }
 
 void Julius::load_chara_status_scripts() {
-
+	status_script.resize(CHARA_JULIUS_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_JULIUS_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_JULIUS_STATUS_MAX, nullptr);
 }

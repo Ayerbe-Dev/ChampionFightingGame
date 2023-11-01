@@ -272,10 +272,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 						if (sim_hitbox.collision_kind_ground) {
 							ImGui::InputInt(("Blocklag" + internal_label).c_str(), &sim_hitbox.blocklag);
 						}
-						if (sim_hitbox.hit_status != HIT_STATUS_LAUNCH || (sim_hitbox.counterhit_status != HIT_STATUS_LAUNCH
-							&& sim_hitbox.counterhit_type != COUNTERHIT_TYPE_NONE)) {
-							ImGui::InputInt(("Hit Advantage" + internal_label).c_str(), &sim_hitbox.hit_advantage);
-						}
+						ImGui::InputInt(("Hit Advantage" + internal_label).c_str(), &sim_hitbox.hit_advantage);
 						if (sim_hitbox.collision_kind_ground) {
 							ImGui::InputInt(("Block Advantage" + internal_label).c_str(), &sim_hitbox.block_advantage);
 						}

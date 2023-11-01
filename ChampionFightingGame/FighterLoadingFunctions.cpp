@@ -6,6 +6,7 @@
 #include "GameManager.h"
 #include "ShaderManager.h"
 #include "Anlst.h"
+#include "Sndlst.h"
 
 void Fighter::load_fighter() {
 	player->controller.reset_buffer();
@@ -45,30 +46,36 @@ void Fighter::load_fighter() {
 
 void Fighter::load_sound_list() {
 	std::ifstream sound_stream;
-	std::string sound_name;
-	std::string sound_file;
+	std::string name;
+	std::string file;
 	float volume_mod;
-	sound_stream.open(resource_dir + "/vc/vc_list.yml");
+	sound_stream.open(resource_dir + "/vc/vc_list.sndlst");
 	if (sound_stream.fail()) {
 		sound_stream.close();
 		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s vc directory was incorrectly set!");
 	}
 	else {
-		while (sound_stream >> sound_name) {
-			sound_stream >> sound_file >> volume_mod;
-			sound_manager->load_sound(sound_name, resource_dir + "/vc/" + sound_file, volume_mod);
+		while (!sound_stream.eof()) {
+			parse_sndlst_entry(sound_stream, name, file, volume_mod);
+			if (name == "") {
+				break;
+			}
+			sound_manager->load_sound(name, resource_dir + "/vc/" + file, volume_mod);
 		}
 		sound_stream.close();
 	}
-	sound_stream.open(resource_dir + "/se/se_list.yml");
+	sound_stream.open(resource_dir + "/se/se_list.sndlst");
 	if (sound_stream.fail()) {
 		sound_stream.close();
 		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s se directory was incorrectly set!");
 	}
 	else {
-		while (sound_stream >> sound_name >> volume_mod) {
-			sound_stream >> sound_file;
-			sound_manager->load_sound(sound_name, resource_dir + "/se/" + sound_file, volume_mod);
+		while (!sound_stream.eof()) {
+			parse_sndlst_entry(sound_stream, name, file, volume_mod);
+			if (name == "") {
+				break;
+			}
+			sound_manager->load_sound(name, resource_dir + "/se/" + file, volume_mod);
 		}
 		sound_stream.close();
 	}
@@ -101,7 +108,7 @@ void Fighter::load_anim_list() {
 	}
 	catch (std::runtime_error err) {
 		if (err.what() == "Anim List Missing") {
-			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s animation directory was incorrectly set!");
+			GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s animation directory has no anim list!");
 		}
 		else {
 			std::cout << err.what() << "\n";
@@ -110,14 +117,18 @@ void Fighter::load_anim_list() {
 	std::ifstream camera_stream;
 	camera_stream.open(resource_dir + "/cam_anims/anim_list.anlst", std::ios::binary);
 	if (camera_stream.fail()) {
-		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s camera directory was incorrectly set!");
+		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s camera directory has no anim list!");
 	}
 	std::string name;
 	std::string filename;
 	while (!camera_stream.eof()) {
 		parse_anlst_entry(camera_stream, name, filename);
-		render_manager->camera.load_camera_anim(name, resource_dir + "/cam_anims/" + filename + ".fbx");
+		if (name == "") {
+			break;
+		}
+		render_manager->camera.load_camera_anim(name, resource_dir + "/cam_anims/" + filename);
 	}
+	camera_stream.close();
 }
 
 void Fighter::set_default_vars() {

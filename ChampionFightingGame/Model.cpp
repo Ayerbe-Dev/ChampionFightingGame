@@ -201,20 +201,21 @@ Mesh ModelData::process_mesh(aiMesh* mesh) {
 
 	if (mesh->HasBones()) {
 		if (bone_data.size() == 0) {
-			std::cout << "ERROR: Model at " << directory << " has bones but skeleton.smd was not found!\n";
+			std::string skeleton_path = directory.substr(0, directory.find_last_of('m')) + "skeleton.smd";
+			std::cout << "ERROR: Model at " << skeleton_path << " has bones but no skeleton.smd\n";
 			return Mesh(vertices, indices, &material_data[mesh->mMaterialIndex], name);
 		}
 
 		for (int i = 0; i < mesh->mNumBones; i++) {
 			aiBone* ai_bone = mesh->mBones[i];
 			int bone_id = -1;
-			std::string bone_name = Filter(ai_bone->mName.C_Str(), "Model_");
+			std::string bone_name = filter_string(ai_bone->mName.C_Str(), "Model_");
 			if (skeleton.bone_map.contains(bone_name)) {
 				bone_id = skeleton.bone_map[bone_name];
 			}
 
 			if (bone_id == -1) {
-				std::cout << "ERROR: skeleton.smd at " << directory << " does not match the skeleton for this model!" << "\n";
+				std::cout << "ERROR: skeleton.smd at " << directory << " does not contain bone " << bone_name << "\n";
 				continue;
 			}
 

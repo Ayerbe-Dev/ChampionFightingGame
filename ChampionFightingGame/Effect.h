@@ -7,7 +7,7 @@
 
 class GameObject;
 class BattleObject;
-class Particle;
+class OldParticle;
 class EffectInstance;
 
 //EffectInfo contains the data to be loaded at the start of every match. Essentially it's info that we should
@@ -35,7 +35,7 @@ public:
 		glm::vec3 rot_frame, glm::vec3 scale_frame, glm::vec4 rgba_frame, int* interp_var, float rate, float frame);
 
 	EffectInfo info;
-	std::vector<Particle> particles;
+	std::vector<OldParticle> particles;
 	int duration;
 	Shader *shader;
 };

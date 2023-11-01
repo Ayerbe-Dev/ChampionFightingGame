@@ -76,229 +76,333 @@ MainMenu::MainMenu() {
 	glm::vec4 rgba = { 255.0, 127.0, 0.0, 255.0 };
 	glm::vec4 border_rgbs = { 1.0, 1.0, 1.0, 2.0 };
 
-	menu_objects.resize(MENU_GROUP_MAX);
-
-	for (int i = 0; i < 5; i++) {
-		menu_objects[MENU_GROUP_RENDER_ALWAYS].push_back(MenuObject(this, nullptr, true)); 
-		//This menu object group handles text and everything that generally always renders
-		
-		menu_objects[MENU_GROUP_RENDER_ACTIVE].push_back(MenuObject(this, nullptr, true)); 
-		//This menu object group handles the bg image and sub menu contents, basically the stuff that
-		//only renders based on what you selected
-	}
-
-	//Add the rotating text to the "render no matter what" group
-
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_ONLINE].add_texture(main_text_font, "Online", rgba, border_rgbs);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_SOLO].add_texture(main_text_font, "Solo", rgba, border_rgbs);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_VS].add_texture(main_text_font, "VS", rgba, border_rgbs);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_OPTIONS].add_texture(main_text_font, "Options", rgba, border_rgbs);
-	menu_objects[MENU_GROUP_RENDER_ALWAYS][SUB_MENU_EXTRAS].add_texture(main_text_font, "Extras", rgba, border_rgbs);
-
-	//Add the background textures to the "only render while active" group
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].add_texture("resource/game_state/menu/main/missingno.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].add_texture("resource/game_state/menu/main/missingno.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].add_texture("resource/game_state/menu/main/vsimg.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].add_texture("resource/game_state/menu/main/missingno.png");
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].add_texture("resource/game_state/menu/main/missingno.png");
-
+	menu_objects.reserve(2);
+	push_menu_object("Background", 2); {
+		push_menu_texture("bg", "resource/game_state/menu/main/bg.gif");
+		push_menu_process_function([this](MenuObject* object) {
+			object->get_texture("bg").set_sprite(menu_frame);
+		});
+		push_menu_activity_group("Game State Background", &top_selection, true, 5); {
+			push_menu_child("Online Background"); {
+				push_menu_texture("Online Demo", "resource/game_state/menu/main/missingno.png");
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				//TODO: Add a description text after each demo image
+			} pop_menu_stack();
+			push_menu_child("Solo Background"); {
+				push_menu_texture("Solo Demo", "resource/game_state/menu/main/missingno.png");
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+			} pop_menu_stack();
+			push_menu_child("VS Background"); {
+				push_menu_texture("VS Demo", "resource/game_state/menu/main/vsimg.png");
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+			} pop_menu_stack();
+			push_menu_child("Options Background"); {
+				push_menu_texture("Options Demo", "resource/game_state/menu/main/missingno.png");
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+			} pop_menu_stack();
+			push_menu_child("Extras Background"); {
+				push_menu_texture("Extras Demo", "resource/game_state/menu/main/missingno.png");
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+			} pop_menu_stack();
+		} pop_menu_stack();
+		push_menu_child("Rotating Text"); {
+			push_menu_pre_render_function([this](MenuObject* object) {
+				for (int i = 0; i < 5; i++) {
+					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
+					object->textures[i].set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
+					object->textures[i].render();
+					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + i * offset)), 0.0));
+					object->textures[i].set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
+				}
+			});
+			push_menu_post_render_function([this](MenuObject* object) {
+				for (int i = 0; i < 5; i++) {
+					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
+					object->textures[i].set_rot(glm::vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
+					object->textures[i].render();
+				}
+			});
+			push_menu_texture("Online Label", main_text_font, "Online", rgba, border_rgbs);
+			push_menu_texture("Solo Label", main_text_font, "Solo", rgba, border_rgbs);
+			push_menu_texture("VS Label", main_text_font, "VS", rgba, border_rgbs);
+			push_menu_texture("Options Label", main_text_font, "Options", rgba, border_rgbs);
+			push_menu_texture("Extras Label", main_text_font, "Extras", rgba, border_rgbs);
+		} pop_menu_stack();
+	} pop_menu_stack();
 	border_rgbs.a = 1.0;
-
-	for (int i = 0; i < 5; i++) { //Quick initialization things
-		GameTexture* bg_texture = &menu_objects[MENU_GROUP_RENDER_ACTIVE][i].textures.back();
-		bg_texture->set_width_scale(1.5);
-		bg_texture->set_height_scale(1.5);
-		bg_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
-
-		GameTexture& cursor = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].cursor;
-		cursor.init("resource/game_state/menu/main/Cursor.png");
-		cursor.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-		cursor.set_pos(glm::vec3(700.0, 0.0, 0.0));
-		cursor.set_width(50);
-		cursor.set_height(50);
-	}
-
-	//Add a new child for each sub option. At the moment it'd probably be better to add new textures instead
-	//of new children, but their behavior is going to become more complex later so it makes sense.
-
-	for (int i = 0; i < 3; i++) {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].add_child(false);
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].add_child(false);
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].add_child(false);
-	}
-
-	for (int i = 0; i < 5; i++) {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].add_child(false);
-	}
-
-	for (int i = 0; i < 4; i++) {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].add_child(false);
-	}
-
-	//Admittedly the deeper down the tree we go, the more ridiculous this code starts to look. This section
-	//is creating the text for each sub menu object. Later on, we'll also add a description text to render
-	//when you're hovering over a sub menu option.
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_LOBBY].add_texture(
-		sub_text_font, "Lobby", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_QUEUE].add_texture(
-		sub_text_font, "Queue", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_COACH].add_texture(
-		sub_text_font, "Coach", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_STORY].add_texture(
-		sub_text_font, "Story", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_ARCADE].add_texture(
-		sub_text_font, "Arcade", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_TRAINING].add_texture(
-		sub_text_font, "Training", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVP].add_texture(
-		sub_text_font, "Player Vs. Player", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVC].add_texture(
-		sub_text_font, "Player Vs. CPU", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_TOURNAMENT].add_texture(
-		sub_text_font, "Tournament", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_CONTROLS].add_texture(
-		sub_text_font, "Controls", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_GRAPHICS].add_texture(
-		sub_text_font, "Graphics", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_AUDIO].add_texture(
-		sub_text_font, "Audio", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[3].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[4].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_SOUND_TEST].add_texture(
-		sub_text_font, "Sound Test", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_GALLERY].add_texture(
-		sub_text_font, "Gallery", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[2].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[3].add_texture(
-		sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs
-	);
-
-	//All top level menus have identical behavior so we can just use a loop to define their events
-
-	for (int i = 0; i < 5; i++) {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].up_event = [](MenuObject* menu_object) {
-			menu_object->active_child--;
-			if (menu_object->active_child == -1) {
-				menu_object->active_child += menu_object->children.size();
-			}
-		};
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].down_event = [](MenuObject* menu_object) {
-			menu_object->active_child++;
-			if (menu_object->active_child == menu_object->children.size()) {
-				menu_object->active_child = 0;
-			}
-		};
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].select_event = [](MenuObject* menu_object) {
-			menu_object->children[menu_object->active_child].event_select_press();
-		};
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].process_event = [this](MenuObject* menu_object) {
-			menu_object->cursor.set_pos(glm::vec3(table.pos.get_val().x + 80, menu_object->children[menu_object->active_child].textures[0].pos.get_val().y - WINDOW_HEIGHT * 1.1, 0));
-		};
-
-		//Also we left-orient all of the sub menu text
-
-		for (int i2 = 0, max2 = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children.size(); i2 < max2; i2++) {
-			menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children[i2].textures[0].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+	push_menu_object("Sub Table", 1); {
+		object_stack.top()->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+		object_stack.top()->set_pos(glm::vec3(glm::vec3(-450.0, 1080.0, 0.0)));
+		push_menu_texture("table", "resource/game_state/menu/main/SubMenu.png"); {
+			last_pushed_texture->set_height_scale(1.2);
 		}
-	}
-
-	//now we create the events for each menu option. for now these just set the state to update to but
-	//things will get weird when we set up the options menu
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_LOBBY].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-		this->looping = false;
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_QUEUE].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_ONLINE].children[SUB_ONLINE_COACH].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_STORY].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_ARCADE].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_SOLO].children[SUB_SOLO_TRAINING].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_TRAINING);
-	};
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVP].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_NORMAL);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_PVC].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_1CPU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_VS].children[SUB_VS_TOURNAMENT].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_CONTROLS].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_GRAPHICS].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[SUB_OPTIONS_AUDIO].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-		
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[3].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_OPTIONS].children[4].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_SOUND_TEST].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[SUB_EXTRAS_GALLERY].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[2].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][SUB_MENU_EXTRAS].children[3].select_event = [this](MenuObject* menu_object) {
-		this->update_state(GAME_STATE_DEBUG_MENU);
-	};
-
-	table.init("resource/game_state/menu/main/SubMenu.png");
-	table.set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
-	table.set_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0));
-	table.scale_top_percent(1.2, false);
-	table.scale_bottom_percent(1.2, false);
-
-	background_texture.init("resource/game_state/menu/main/bg.gif");
+		push_menu_texture("cursor", "resource/game_state/menu/main/Cursor.png"); {
+			last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+			last_pushed_texture->set_pos(glm::vec3(1550.0, 0.0, 0.0));
+			last_pushed_texture->set_width(50);
+			last_pushed_texture->set_height(50);
+		}
+		push_menu_activity_group("Sub Entries", &top_selection, true, 5); {
+			push_menu_child("Sub Online"); {
+				push_menu_int_var("Sub Selection", 0);
+				push_menu_up_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection--;
+					if (selection == -1) {
+						selection += object->num_textures();
+					}
+				});
+				push_menu_down_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection++;
+					if (selection == object->num_textures()) {
+						selection = 0;
+					}
+				});
+				push_menu_select_event_function([this](MenuObject* object) {
+					switch (object->int_var("Sub Selection")) {
+						case (0): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (1): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (2): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						default: {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+					}
+				});
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						GameTexture& texture = object->parent->get_texture("cursor");
+						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
+					}
+				});
+				push_menu_texture("Lobby Label", sub_text_font, "Lobby", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 520.0, 0.0));
+				push_menu_texture("Queue Label", sub_text_font, "Queue", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 320.0, 0.0));
+				push_menu_texture("Coach Label", sub_text_font, "Coach", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
+			} pop_menu_stack();
+			push_menu_child("Sub Solo"); {
+				push_menu_int_var("Sub Selection", 0);
+				push_menu_up_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection--;
+					if (selection == -1) {
+						selection += object->num_textures();
+					}
+				});
+				push_menu_down_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection++;
+					if (selection == object->num_textures()) {
+						selection = 0;
+					}
+				});
+				push_menu_select_event_function([this](MenuObject* object) {
+					switch (object->int_var("Sub Selection")) {
+						case (0): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (1): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (2): {
+							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_TRAINING);
+						} break;
+						default: {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+					}
+				});
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						GameTexture& texture = object->parent->get_texture("cursor");
+						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
+					}
+				});
+				push_menu_texture("Story Label", sub_text_font, "Story", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 520.0, 0.0));
+				push_menu_texture("Arcade Label", sub_text_font, "Arcade", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 320.0, 0.0));
+				push_menu_texture("Training Label", sub_text_font, "Training", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
+			} pop_menu_stack();
+			push_menu_child("Sub VS"); {
+				push_menu_int_var("Sub Selection", 0);
+				push_menu_up_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection--;
+					if (selection == -1) {
+						selection += object->num_textures();
+					}
+				});
+				push_menu_down_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection++;
+					if (selection == object->num_textures()) {
+						selection = 0;
+					}
+				});
+				push_menu_select_event_function([this](MenuObject* object) {
+					switch (object->int_var("Sub Selection")) {
+						case (0): {
+							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_NORMAL);
+						} break;
+						case (1): {
+							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_1CPU);
+						} break;
+						case (2): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						default: {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+					}
+				});
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						GameTexture& texture = object->parent->get_texture("cursor");
+						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
+					}
+				});
+				push_menu_texture("Battle Label", sub_text_font, "Battle", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 520.0, 0.0));
+				push_menu_texture("CPU Label", sub_text_font, "CPU Battle", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 320.0, 0.0));
+				push_menu_texture("Tournament Label", sub_text_font, "Tournament", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
+			} pop_menu_stack();
+			push_menu_child("Sub Options"); {
+				push_menu_int_var("Sub Selection", 0);
+				push_menu_up_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection--;
+					if (selection == -1) {
+						selection += object->num_textures();
+					}
+				});
+				push_menu_down_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection++;
+					if (selection == object->num_textures()) {
+						selection = 0;
+					}
+				});
+				push_menu_select_event_function([this](MenuObject* object) {
+					switch (object->int_var("Sub Selection")) {
+						case (0): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (1): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (2): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (3): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (4): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						default: {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+					}
+				});
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						GameTexture& texture = object->parent->get_texture("cursor");
+						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
+					}
+				});
+				push_menu_texture("Controls Label", sub_text_font, "Controls", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 520.0, 0.0));
+				push_menu_texture("Graphics Label", sub_text_font, "Graphics", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 320.0, 0.0));
+				push_menu_texture("Audio Label", sub_text_font, "Audio", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
+				push_menu_texture("Placeholder Label", sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, -80.0, 0.0));
+				push_menu_texture("Placeholder2 Label", sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, -280.0, 0.0));
+			} pop_menu_stack();
+			push_menu_child("Sub Gallery"); {
+				push_menu_int_var("Sub Selection", 0);
+				push_menu_up_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection--;
+					if (selection == -1) {
+						selection += object->num_textures();
+					}
+				});
+				push_menu_down_event_function([this](MenuObject* object) {
+					int& selection = object->int_var("Sub Selection");
+					selection++;
+					if (selection == object->num_textures()) {
+						selection = 0;
+					}
+				});
+				push_menu_select_event_function([this](MenuObject* object) {
+					switch (object->int_var("Sub Selection")) {
+						case (0): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (1): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (2): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						case (3): {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+						default: {
+							this->update_state(GAME_STATE_DEBUG_MENU);
+						} break;
+					}
+				});
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						GameTexture& texture = object->parent->get_texture("cursor");
+						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
+					}
+				});
+				push_menu_texture("Gallery Label", sub_text_font, "Gallery", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 520.0, 0.0));
+				push_menu_texture("Sound Test Label", sub_text_font, "Sound Test", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 320.0, 0.0));
+				push_menu_texture("Placeholder3 Label", sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
+				push_menu_texture("Placeholder4 Label", sub_text_font, "Placeholder", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+				last_pushed_texture->set_pos(glm::vec3(1650.0, -80.0, 0.0));
+			} pop_menu_stack();
+		} pop_menu_stack();
+	} pop_menu_stack();
 
 	inc_thread();
 	game_loader->finished = true;
@@ -308,7 +412,6 @@ MainMenu::MainMenu() {
 }
 
 MainMenu::~MainMenu() {
-	table.destroy();
 	delete game_loader;
 }
 
@@ -330,50 +433,11 @@ void MainMenu::process_main() {
 			menu_frame++;
 		}
 	}
-	background_texture.set_sprite(menu_frame);
-
-	table.process();
-	for (int i = 0; i < 5; i++) {
-		for (int i2 = 0, max2 = menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children.size(); i2 < max2; i2++) {
-			menu_objects[MENU_GROUP_RENDER_ACTIVE][i].children[i2].textures[0].set_pos(glm::vec3(table.pos.get_val().x + 160, (float)WINDOW_HEIGHT * 0.5 + (i2 * 130), 0.0));
-		}
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][i].process();
-	}
 }
 
 void MainMenu::render_main() {
-	background_texture.render();
-
-	//prebuffer render
-	for (int i = 0; i < 5; i++) {
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].render();
-
-	}
-
-	//real render
-	table.render();
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].cursor.render();
-	for (int i = 0; i < 5; i++) {
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + i * offset)), 0.0));
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].render();
-
-
-		for (int i2 = 0, max2 = menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].children.size(); i2 < max2; i2++) {
-			menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].children[i2].render();
-		}
-	}
-
-	//postbuffer render
-	for (int i = 0; i < 5; i++) {
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].set_rot(glm::vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
-		menu_objects[MENU_GROUP_RENDER_ALWAYS][i].textures[0].render();
-	}
-
-	menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].textures[0].render();
+	render_menu_object("Background");
+	render_menu_object("Sub Table");
 
 	theta += ((top_selection * -offset) - theta) / turn_frames;
 }
@@ -394,7 +458,7 @@ void MainMenu::event_up_press() {
 		}
 	}
 	else {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].event_up_press();
+		get_menu_object("Sub Table").get_activity_group("Sub Entries").children[top_selection].event_up_press();
 	}
 }
 
@@ -409,7 +473,7 @@ void MainMenu::event_down_press() {
 		}
 	}
 	else {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].event_down_press();
+		get_menu_object("Sub Table").get_activity_group("Sub Entries").children[top_selection].event_down_press();
 	}
 }
 
@@ -431,11 +495,11 @@ void MainMenu::event_start_press() {
 
 void MainMenu::event_select_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		table.set_target_pos(glm::vec3(WINDOW_WIDTH * 1.535, 0.0, 0.0), 6);
+		get_menu_object("Sub Table").set_pos(glm::vec3(450.0, 1080.0, 0.0), 6);
 		menu_level = MENU_LEVEL_SUB;
 	}
 	else {
-		menu_objects[MENU_GROUP_RENDER_ACTIVE][top_selection].event_select_press();
+		get_menu_object("Sub Table").get_activity_group("Sub Entries").children[top_selection].event_select_press();
 	}
 }
 
@@ -444,7 +508,7 @@ void MainMenu::event_back_press() {
 		update_state(GAME_STATE_TITLE_SCREEN);
 	}
 	else {
-		table.set_target_pos(glm::vec3(WINDOW_WIDTH * 2, 0.0, 0.0), 6);
+		get_menu_object("Sub Table").set_pos(glm::vec3(-450.0, 1080.0, 0.0), 6);
 		menu_level = MENU_LEVEL_TOP;
 	}
 }

@@ -13,6 +13,7 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
 		fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = false;
 		fighter_flag[FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK] = false;
+		fighter_flag[FIGHTER_FLAG_HITSTUN_COUNTER_PARRY] = false;
 		fighter_int[FIGHTER_INT_ARMOR_HITS] = 0;
 		fighter_int[FIGHTER_INT_SUCCESS_COUNTERHIT_VAL] = 0;
 		fighter_int[FIGHTER_INT_BUFFER_STATUS] = FIGHTER_STATUS_MAX;
@@ -24,6 +25,8 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		}
 		status_kind = new_status_kind;
 		(this->*enter_status_script[status_kind])();
+		fighter_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED] = false;
+		fighter_flag[FIGHTER_FLAG_DISABLE_THROW_TECH] = false;
 		return true;
 	}
 	else {
@@ -140,8 +143,8 @@ bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status,
 }
 
 bool Fighter::check_hitstun_parry() {
-	if (fighter_int[FIGHTER_INT_DAMAGE_SCALE] >= 0 //Damage scale has to be at least 0, so you can't
-		//hitstun parry the first hit after a counterhit.
+	if (fighter_int[FIGHTER_INT_DAMAGE_SCALE] >= 3 //Damage scale has to be at least 3, so you can't
+		//hitstun parry the first 3 hits of a combo (4 on counterhit, 5 on special counterhits)
 		&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 //Can't start the hitstun parry during hitlag
 		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] //Can't hitstun parry if you already
 		//tried it during this combo

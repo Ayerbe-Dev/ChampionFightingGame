@@ -22,5 +22,7 @@ bool Vesuvius::chara_status_attack() {
 }
 
 void Vesuvius::load_chara_status_scripts() {
-
+	status_script.resize(CHARA_VESUVIUS_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_VESUVIUS_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_VESUVIUS_STATUS_MAX, nullptr);
 }

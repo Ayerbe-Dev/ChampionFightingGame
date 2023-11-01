@@ -362,11 +362,11 @@ void WorldTexture::flip_h() {
 	h_flipped = !h_flipped;
 }
 
-void WorldTexture::set_flip_h(bool flip_h) {
-	h_flipped = flip_h;
+void WorldTexture::set_h_flipped(bool h_flipped) {
+	this->h_flipped = h_flipped;
 }
 
-bool WorldTexture::get_flip_h() const {
+bool WorldTexture::is_h_flipped() const {
 	return h_flipped;
 }
 
@@ -374,12 +374,20 @@ void WorldTexture::flip_v() {
 	v_flipped = !v_flipped;
 }
 
-void WorldTexture::set_flip_v(bool flip_v) {
-	v_flipped = flip_v;
+void WorldTexture::set_v_flipped(bool v_flipped) {
+	this->v_flipped = v_flipped;
 }
 
-bool WorldTexture::get_flip_v() const {
+bool WorldTexture::is_v_flipped() const {
 	return v_flipped;
+}
+
+void WorldTexture::set_billboarded(bool billboarded) {
+	this->billboarded = billboarded;
+}
+
+bool WorldTexture::is_billboarded() const {
+	return billboarded;
 }
 
 void WorldTexture::set_sprite(unsigned int sprite) {

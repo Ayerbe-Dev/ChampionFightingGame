@@ -40,7 +40,4 @@ private:
     int top_selection = SUB_MENU_VS;
     int sub_selection = GAME_STATE_BATTLE;
     int menu_level = MENU_LEVEL_TOP;
-
-    GameTexture table;
-    GameTexture background_texture;
 };

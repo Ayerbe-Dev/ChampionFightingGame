@@ -705,27 +705,27 @@ void Fighter::status_attack() {
 	}
 	unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
 	if (is_enable_cancel(CANCEL_KIND_GRAB) && check_button_input(grab_buttons, 2)) {
-		change_status(FIGHTER_STATUS_GRAB);
+		buffer_change_status(FIGHTER_STATUS_GRAB);
 		return;
 	}
 	unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 	if (is_enable_cancel(CANCEL_KIND_PARRY_START) && check_button_input(parry_buttons, 2)) {
-		change_status(FIGHTER_STATUS_PARRY_START);
+		buffer_change_status(FIGHTER_STATUS_PARRY_START);
 		return;
 	}
 	unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
 	if (is_enable_cancel(CANCEL_KIND_ADVANCE) && check_button_input(advance_buttons, 2)
 		&& has_meter(1) && player->control_type == CONTROL_TYPE_ADVANCE) {
 		if (get_stick_dir() == 6) {
-			change_status(FIGHTER_STATUS_ADVANCE_FORWARD, true, false);
+			buffer_change_status(FIGHTER_STATUS_ADVANCE_FORWARD, CANCEL_KIND_MAX, true, false);
 			return;
 		}
 		else if (get_stick_dir() == 4) {
-			change_status(FIGHTER_STATUS_ADVANCE_BACK, true, false);
+			buffer_change_status(FIGHTER_STATUS_ADVANCE_BACK, CANCEL_KIND_MAX, true, false);
 			return;
 		}
 		else {
-			change_status(FIGHTER_STATUS_ADVANCE, true, false);
+			buffer_change_status(FIGHTER_STATUS_ADVANCE, CANCEL_KIND_MAX, true, false);
 			return;
 		}
 	}
@@ -1103,7 +1103,8 @@ void Fighter::status_grabbed() {
 void Fighter::enter_status_grabbed() {
 	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
-	fighter_flag[FIGHTER_FLAG_ALLOW_THROW_TECH] = is_actionable();
+	fighter_flag[FIGHTER_FLAG_ALLOW_THROW_TECH] = !fighter_flag[FIGHTER_FLAG_DISABLE_THROW_TECH] 
+		&& (is_actionable() || fighter_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED]);
 }
 
 void Fighter::exit_status_grabbed() {
@@ -1617,6 +1618,9 @@ void Fighter::enter_status_parry_start() {
 	else {
 		change_anim("parry_start_high");
 		fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+	}
+	if (fighter_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED]) {
+		fighter_flag[FIGHTER_FLAG_HITSTUN_COUNTER_PARRY] = true;
 	}
 }
 

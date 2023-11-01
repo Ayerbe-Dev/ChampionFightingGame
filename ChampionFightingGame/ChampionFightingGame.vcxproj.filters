@@ -52,9 +52,6 @@
     <ClCompile Include="Julius.cpp">
       <Filter>2. Code Files\Object\Fighter\Chara\Julius</Filter>
     </ClCompile>
-    <ClCompile Include="CharaTemplate.cpp">
-      <Filter>2. Code Files\Object\Fighter\Chara\CharaTemplate</Filter>
-    </ClCompile>
     <ClCompile Include="Leon.cpp">
       <Filter>2. Code Files\Object\Fighter\Chara\Leon</Filter>
     </ClCompile>
@@ -87,9 +84,6 @@
     </ClCompile>
     <ClCompile Include="EricFireball.cpp">
       <Filter>2. Code Files\Object\Projectile\ProjectileUnique\EricFireball</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectileTemplate.cpp">
-      <Filter>2. Code Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
     </ClCompile>
     <ClCompile Include="RowanFireball.cpp">
       <Filter>2. Code Files\Object\Projectile\ProjectileUnique\RowanFireball</Filter>
@@ -138,12 +132,6 @@
     </ClCompile>
     <ClCompile Include="JuliusMoves.cpp">
       <Filter>2. Code Files\Object\Fighter\Chara\Julius</Filter>
-    </ClCompile>
-    <ClCompile Include="CharaTemplateStatus.cpp">
-      <Filter>2. Code Files\Object\Fighter\Chara\CharaTemplate</Filter>
-    </ClCompile>
-    <ClCompile Include="CharaTemplateMoves.cpp">
-      <Filter>2. Code Files\Object\Fighter\Chara\CharaTemplate</Filter>
     </ClCompile>
     <ClCompile Include="LeonStatus.cpp">
       <Filter>2. Code Files\Object\Fighter\Chara\Leon</Filter>
@@ -412,12 +400,6 @@
     <ClCompile Include="EricFireballStatus.cpp">
       <Filter>2. Code Files\Object\Projectile\ProjectileUnique\EricFireball</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectileTemplateMoves.cpp">
-      <Filter>2. Code Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectileTemplateStatus.cpp">
-      <Filter>2. Code Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClCompile>
     <ClCompile Include="RowanFireballMoves.cpp">
       <Filter>2. Code Files\Object\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClCompile>
@@ -495,18 +477,6 @@
     </ClCompile>
     <ClCompile Include="FighterFrameDataFunctions.cpp">
       <Filter>2. Code Files\Object\Fighter\Fighter\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="HxAFile.cpp">
-      <Filter>2. Code Files\I/O\HxA</Filter>
-    </ClCompile>
-    <ClCompile Include="HxALayer.cpp">
-      <Filter>2. Code Files\I/O\HxA</Filter>
-    </ClCompile>
-    <ClCompile Include="HxAMeta.cpp">
-      <Filter>2. Code Files\I/O\HxA</Filter>
-    </ClCompile>
-    <ClCompile Include="HxANode.cpp">
-      <Filter>2. Code Files\I/O\HxA</Filter>
     </ClCompile>
     <ClCompile Include="ReadBytes.cpp">
       <Filter>2. Code Files\I/O</Filter>
@@ -616,6 +586,33 @@
     <ClCompile Include="TargetVarManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
+    <ClCompile Include="HxA.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="HxANode.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="HxALayer.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="HxAMeta.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="HxAFile.cpp">
+      <Filter>2. Code Files\I/O\HxA</Filter>
+    </ClCompile>
+    <ClCompile Include="Sndlst.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>2. Code Files\Engine\Rendering\3DRendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Efct.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="Eftlst.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -689,9 +686,6 @@
     </ClInclude>
     <ClInclude Include="Bruno.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Bruno</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplate.h">
-      <Filter>1. Header Files\Object\Fighter\Chara\CharaTemplate</Filter>
     </ClInclude>
     <ClInclude Include="Eric.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Eric</Filter>
@@ -788,18 +782,6 @@
     </ClInclude>
     <ClInclude Include="BrunoStatus.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Bruno</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplateFlag.h">
-      <Filter>1. Header Files\Object\Fighter\Chara\CharaTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplateFloat.h">
-      <Filter>1. Header Files\Object\Fighter\Chara\CharaTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplateInt.h">
-      <Filter>1. Header Files\Object\Fighter\Chara\CharaTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaTemplateStatus.h">
-      <Filter>1. Header Files\Object\Fighter\Chara\CharaTemplate</Filter>
     </ClInclude>
     <ClInclude Include="EricFlag.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Eric</Filter>
@@ -960,9 +942,6 @@
     <ClInclude Include="BrunoConstants.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Bruno</Filter>
     </ClInclude>
-    <ClInclude Include="CharaTemplateConstants.h">
-      <Filter>1. Header Files\Object\Fighter\Chara\CharaTemplate</Filter>
-    </ClInclude>
     <ClInclude Include="EricConstants.h">
       <Filter>1. Header Files\Object\Fighter\Chara\Eric</Filter>
     </ClInclude>
@@ -1017,9 +996,6 @@
     <ClInclude Include="ProjectileKind.h">
       <Filter>1. Header Files\Object\Projectile\Projectile</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectileTemplate.h">
-      <Filter>1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClInclude>
     <ClInclude Include="EricFireball.h">
       <Filter>1. Header Files\Object\Projectile\ProjectileUnique\EricFireball</Filter>
     </ClInclude>
@@ -1040,21 +1016,6 @@
     </ClInclude>
     <ClInclude Include="EricFireballFlag.h">
       <Filter>1. Header Files\Object\Projectile\ProjectileUnique\EricFireball</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplateFlag.h">
-      <Filter>1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplateFloat.h">
-      <Filter>1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplateInt.h">
-      <Filter>1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplateStatus.h">
-      <Filter>1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileTemplateConstants.h">
-      <Filter>1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate</Filter>
     </ClInclude>
     <ClInclude Include="RowanFireballFlag.h">
       <Filter>1. Header Files\Object\Projectile\ProjectileUnique\RowanFireball</Filter>
@@ -1206,24 +1167,6 @@
     <ClInclude Include="debug.h">
       <Filter>1. Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HxAFile.h">
-      <Filter>1. Header Files\I/O\HxA</Filter>
-    </ClInclude>
-    <ClInclude Include="HxAConventions.h">
-      <Filter>1. Header Files\I/O\HxA</Filter>
-    </ClInclude>
-    <ClInclude Include="HxAEnums.h">
-      <Filter>1. Header Files\I/O\HxA</Filter>
-    </ClInclude>
-    <ClInclude Include="HxALayer.h">
-      <Filter>1. Header Files\I/O\HxA</Filter>
-    </ClInclude>
-    <ClInclude Include="HxAMeta.h">
-      <Filter>1. Header Files\I/O\HxA</Filter>
-    </ClInclude>
-    <ClInclude Include="HxANode.h">
-      <Filter>1. Header Files\I/O\HxA</Filter>
-    </ClInclude>
     <ClInclude Include="ReadBytes.h">
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
@@ -1373,6 +1316,39 @@
     </ClInclude>
     <ClInclude Include="TargetVarManager.h">
       <Filter>1. Header Files\Singleton</Filter>
+    </ClInclude>
+    <ClInclude Include="HxA.h">
+      <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAConventions.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAEnums.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAFile.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxAMeta.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxANode.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="HxALayer.h">
+      <Filter>1. Header Files\I/O\HxA</Filter>
+    </ClInclude>
+    <ClInclude Include="Sndlst.h">
+      <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>1. Header Files\Engine\Rendering\3DRendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Efct.h">
+      <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="Eftlst.h">
+      <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2735,12 +2711,6 @@
     <Filter Include="1. Header Files\Singleton">
       <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\I/O\HxA">
-      <UniqueIdentifier>{2253e11c-f9fd-4963-90c2-4898f007dbc5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\I/O\HxA">
-      <UniqueIdentifier>{e3593074-e1e3-4572-a336-0fbd90baf1f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Game State\CharaSelect">
       <UniqueIdentifier>{44a453dd-e72f-4d25-ade7-f83ddfb6d5bf}</UniqueIdentifier>
     </Filter>
@@ -2813,9 +2783,6 @@
     <Filter Include="1. Header Files\Object\Fighter\Chara\Bruno">
       <UniqueIdentifier>{d49a19b3-bff5-4062-88f4-70ea9616fbe6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Object\Fighter\Chara\CharaTemplate">
-      <UniqueIdentifier>{8226793e-5c9f-44ad-be88-86bb98615d00}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Object\Fighter\Chara\Eric">
       <UniqueIdentifier>{0bdc1526-7a6d-4a41-8711-ef0e50fd1f8b}</UniqueIdentifier>
     </Filter>
@@ -2873,9 +2840,6 @@
     <Filter Include="1. Header Files\Object\Projectile\ProjectileUnique\EricFireball">
       <UniqueIdentifier>{97ef6028-95f9-4bb7-aea3-ae88d6326ed3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Object\Projectile\ProjectileUnique\ProjectileTemplate">
-      <UniqueIdentifier>{9d5c1f42-c2f4-4037-b140-49a0fa7c2837}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Object\Projectile\ProjectileUnique\RowanFireball">
       <UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
     </Filter>
@@ -2923,9 +2887,6 @@
     </Filter>
     <Filter Include="2. Code Files\Object\Fighter\Chara\Julius">
       <UniqueIdentifier>{9e554fe0-9117-406b-b673-04fbb02104a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Object\Fighter\Chara\CharaTemplate">
-      <UniqueIdentifier>{4caf2d83-3c93-4ed4-bf64-2f34f66e1cf4}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\Object\Fighter\Chara\Bruno">
       <UniqueIdentifier>{3b3c0100-8cf4-4259-a8b2-aa5b59a3e9b3}</UniqueIdentifier>
@@ -2975,9 +2936,6 @@
     <Filter Include="2. Code Files\Object\Projectile\ProjectileUnique\EricFireball">
       <UniqueIdentifier>{3a453703-b814-416a-bbdc-20bf0011c723}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Object\Projectile\ProjectileUnique\ProjectileTemplate">
-      <UniqueIdentifier>{a1a93eb3-3a0c-4f33-9958-fcf4723833a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Object\Projectile\ProjectileUnique\RowanFireball">
       <UniqueIdentifier>{c46b6fe9-3200-4891-a0b4-9266d606e2b2}</UniqueIdentifier>
     </Filter>
@@ -3022,6 +2980,12 @@
     </Filter>
     <Filter Include="1. Header Files\Object\Fighter\Fighter\Fighter Component">
       <UniqueIdentifier>{42cd51f1-61e5-47f3-9610-778452954a0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\I/O\HxA">
+      <UniqueIdentifier>{cb00b470-c2d8-47a3-bc9c-4507e54ef41d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\I/O\HxA">
+      <UniqueIdentifier>{af3c76b4-5f80-46ed-ab2b-9d7e505bcb8c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

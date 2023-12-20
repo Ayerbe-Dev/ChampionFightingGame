@@ -15,7 +15,7 @@ void Fighter::stop_cinematic_sequence() {
 		camera->anim_kind = nullptr;
 		camera->following_players = true;
 		camera->follow_id = -1;
-		battle_object_manager->reset_world_rate(id);
+		object_manager->reset_world_rate(this);
 		render_manager->dim_lights(1.0, nullptr);
 		unsigned int flags = SHADER_FEAT_DIM_MUL;
 		if (model.has_skeleton()) {
@@ -46,11 +46,11 @@ void Fighter::stop_camera_anim() {
 }
 
 void Fighter::slow_world(float world_rate) {
-	battle_object_manager->set_world_rate(id, world_rate);
+	object_manager->set_world_rate(this, world_rate);
 }
 
 void Fighter::reset_world_rate() {
-	battle_object_manager->reset_world_rate(id);
+	object_manager->reset_world_rate(this);
 }
 
 void Fighter::dim_world(float brightness, bool dim_self) {

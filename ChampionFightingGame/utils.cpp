@@ -2,12 +2,8 @@
 #include <sstream>
 #include <iostream>
 #include <chrono>
-#include <time.h>
 #include <random>
 #include <thread>
-#include <mutex>
-
-extern std::mutex file_mutex;
 
 int clamp(int min, int value, int max) {
 	if (min <= max) {
@@ -53,27 +49,6 @@ std::string filter_string(const std::string& to, const std::string& remove) {
 	return filter_string(ret + ret2, remove);
 }
 
-/// <summary>
-/// Pauses the current thread until 1 frame since the last time this function was called. Also called by loadSDLTexture in order to pause the loading
-/// thread long enough for the main thread to consistently render.
-/// </summary>
-thread_local std::chrono::steady_clock::time_point g_chron = std::chrono::steady_clock::now();
-void wait_ms(double ms_duration, bool process_time) {
-	std::chrono::steady_clock::time_point current_time = std::chrono::steady_clock::now();
-	std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::nano>> future_time = std::chrono::steady_clock::now() + std::chrono::duration<double, std::milli>(ms_duration);
-
-	//reduce the future time to account for processing time
-	if (process_time) {
-		future_time -= (current_time - g_chron);
-	}
-	while (current_time < future_time) {
-		current_time = std::chrono::steady_clock::now();
-	}
-	if (process_time) {
-		g_chron = std::chrono::steady_clock::now();
-	}
-};
-
 //Check the first character in a string that is a space
 int get_blank(std::string s) {
 	const char* c = s.c_str();
@@ -92,12 +67,6 @@ float get_relative_one_percent(float val, float denom) {
 
 int round_up_odd(int val) {
 	return (val / 2) + (val % 2);
-}
-
-void update_thread_progress(int& to_update) {
-	file_mutex.lock();
-	to_update++;
-	file_mutex.unlock();
 }
 
 int rng(const int& min, const int& max) {

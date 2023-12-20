@@ -30,7 +30,7 @@ void Projectile::exit_status_activate() {
 }
 
 void Projectile::status_deactivate() {
-	if (is_anim_end) {
+	if (anim_end) {
 		change_status(PROJECTILE_STATUS_NONE);
 	}
 }

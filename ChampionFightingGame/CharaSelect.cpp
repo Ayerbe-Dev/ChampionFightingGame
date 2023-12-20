@@ -3,12 +3,11 @@
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "ThreadManager.h"
-#include "Loader.h"
 #include "GLM Helpers.h"
 #include "PlayerInfo.h"
-#include "utils.h"
 #include "debug.h"
 #include <fstream>
+#include "WindowConstants.h"
 
 /// <summary>
 /// The main function while on the character select screen.
@@ -34,7 +33,7 @@ void chara_select_main() {
 		css->process_game_state();
 		css->render_game_state();
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 	}
 
 	delete css;
@@ -75,7 +74,7 @@ CSS::CSS() {
 	thread_manager->add_thread(THREAD_KIND_LOAD, gamestate_charaselect_loading_thread, this);
 	thread_manager->notify_thread(THREAD_KIND_LOAD);
 
-	push_menu_object("background");
+	push_menu_object("background", 3);
 		push_menu_texture("bg1", "resource/game_state/chara_select/bg_1.png");
 		push_menu_texture("bg2", "resource/game_state/chara_select/bg_2.png");
 		push_menu_texture("bg3", "resource/game_state/chara_select/bg_3.png");
@@ -97,7 +96,6 @@ CSS::CSS() {
 			}
 		});
 	pop_menu_stack();
-
 
 	lights.reserve(MAX_LIGHT_SOURCES);
 	std::ifstream light_stream;
@@ -507,6 +505,9 @@ void CSS::process_main() {
 		gbuffer_mul += gbuffer_mul_offset;
 		gbuffer_window_counter--;
 	}
+	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
+		menu_objects[i].event_process();
+	}
 }
 
 /// <summary>
@@ -533,7 +534,7 @@ void CSS::render_main() {
 		}
 		if (css_player[i].selected_index < loaded_chars) {
 			css_player[i].demo_model.animate();
-			if (css_player[i].demo_model.is_anim_end) {
+			if (css_player[i].demo_model.anim_end) {
 				//is_anim_end will always be false when anim_kind is nullptr, so we don't
 				//need to worry about this
 				if (css_player[i].demo_model.anim_kind->name == "selected") {

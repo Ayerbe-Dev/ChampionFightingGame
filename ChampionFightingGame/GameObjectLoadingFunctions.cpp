@@ -48,9 +48,9 @@ void GameObject::load_anim_table(std::string anim_dir) {
 	}
 }
 
-void GameObject::load_anim_table_unloaded_model(std::string anim_dir, std::string directory) {
+void GameObject::load_anim_table_unloaded_model(std::string anim_dir, std::string model_filename) {
 	if (!model.is_loaded()) {
-		ModelData* model_data = ResourceManager::get_instance()->get_model_keep_user_count(directory);
+		ModelData* model_data = ResourceManager::get_instance()->get_model_keep_user_count(model_filename);
 		try {
 			anim_table.load_anlst(anim_dir, model_data->skeleton);
 		}
@@ -65,5 +65,19 @@ void GameObject::load_anim_table_unloaded_model(std::string anim_dir, std::strin
 	}
 	else {
 		load_anim_table(anim_dir);
+	}
+}
+
+void GameObject::load_anim_single(std::string name, std::string anim_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp) {
+	anim_table.load_anim_single(name, anim_filename, end_frame, flag_move, flag_no_hitlag_interp, model.get_skeleton());
+}
+
+void GameObject::load_anim_single_unloaded_model(std::string name, std::string anim_filename, std::string model_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp) {
+	if (!model.is_loaded()) {
+		ModelData* model_data = ResourceManager::get_instance()->get_model_keep_user_count(model_filename);
+		anim_table.load_anim_single(name, anim_filename, end_frame, flag_move, flag_no_hitlag_interp, model_data->skeleton);
+	}
+	else {
+		load_anim_single(name, anim_filename, end_frame, flag_move, flag_no_hitlag_interp);
 	}
 }

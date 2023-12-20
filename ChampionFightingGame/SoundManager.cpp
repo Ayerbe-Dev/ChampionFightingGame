@@ -5,6 +5,15 @@
 #include "OpenAL/al.h"
 #include "utils.h"
 #include "GameObject.h"
+#include "SoundPlayer.h"
+
+SoundResource::SoundResource() {
+	user_count = 0;
+}
+
+MusicResource::MusicResource() {
+	user_count = 0;
+}
 
 SoundManager::SoundManager() {
 	al_device = alcOpenDevice(nullptr);
@@ -13,8 +22,8 @@ SoundManager::SoundManager() {
 }
 
 void SoundManager::process_sounds() {
-	for (int i = 0, max = objects.size(); i < max; i++) {
-		objects[i]->process_sound();
+	for (SoundPlayer* sound_player : sound_players) {
+		sound_player->process_sound();
 	}
 	ALint state;
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
@@ -34,23 +43,23 @@ void SoundManager::process_sounds() {
 	}
 }
 
-void SoundManager::play_music(std::string name) {
-	if (!music_map.contains(name)) {
-		std::cerr << "Music " << name << " not loaded!\n";
-		return;
+MusicInstance* SoundManager::play_music(std::string dir, float volume_mod) {
+	if (!music_map.contains(dir)) {
+		std::cerr << "Music " << dir << " not loaded!\n";
+		return nullptr;
 	}
 	float volume_mul = SaveManager::get_instance()->get_game_setting("music_vol") / 100.0;
-	Music& music = music_map[name];
+	Music& music = music_map[dir].music;
 	active_music.push_back(MusicInstance());
 	unsigned int& source = active_music.back().source;
 	alGenSources(1, &source);
 	alSourcef(source, AL_PITCH, 1);
-	alSourcef(source, AL_GAIN, (0.5 + music.volume_mod) * volume_mul);
+	alSourcef(source, AL_GAIN, volume_mod + volume_mul);
 	alSource3f(source, AL_POSITION, 0.0, 0.0, 0.0);
 	alSource3f(source, AL_VELOCITY, 0.0, 0.0, 0.0);
 	alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE);
 	alSourcei(source, AL_LOOPING, AL_FALSE);
-	active_music.back().name = name;
+	active_music.back().dir = dir;
 	active_music.back().curr_track = 0;
 	active_music.back().cursor = music.num_buffers * BUFFER_SIZE;
 	unsigned int track_pos = 0;
@@ -67,11 +76,12 @@ void SoundManager::play_music(std::string name) {
 	
 	alSourceQueueBuffers(source, music.num_buffers, &music.buffers[0]);
 	alSourcePlay(source);
+	return &active_music.back();
 }
 
 void SoundManager::pause_music(std::string name) {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
-		if (music->name == name) {
+		if (music->dir == name) {
 			alSourcePause(music->source);
 			return;
 		}
@@ -86,7 +96,7 @@ void SoundManager::pause_music_all() {
 
 void SoundManager::resume_music(std::string name) {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
-		if (music->name == name) {
+		if (music->dir == name) {
 			alSourcePlay(music->source);
 			return;
 		}
@@ -101,14 +111,14 @@ void SoundManager::resume_music_all() {
 
 void SoundManager::stop_music(std::string name) {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
-		if (music->name == name) {
+		if (music->dir == name) {
 			alSourceStop(music->source);
-			for (unsigned int i = 0; i < music_map[name].num_buffers; i++) {
+			for (unsigned int i = 0; i < music_map[name].music.num_buffers; i++) {
 				unsigned int buffer;
 				alSourceUnqueueBuffers(music->source, 1, &buffer);
 			}
 			alDeleteSources(1, &music->source);
-			music_map[name].reset_buffers();
+			music_map[name].music.reset_buffers();
 			active_music.erase(music);
 			return;
 		}
@@ -118,104 +128,135 @@ void SoundManager::stop_music(std::string name) {
 void SoundManager::stop_music_all() {
 	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
 		alSourceStop(music->source);
-		for (unsigned int i = 0; i < music_map[music->name].num_buffers; i++) {
+		for (unsigned int i = 0; i < music_map[music->dir].music.num_buffers; i++) {
 			unsigned int buffer;
 			alSourceUnqueueBuffers(music->source, 1, &buffer);
 		}
 		alDeleteSources(1, &music->source);
-		music_map[music->name].reset_buffers();
+		music_map[music->dir].music.reset_buffers();
 	}
 	active_music.clear();
 }
 
-void SoundManager::pause_vc_all() {
-	for (int i = 0, max = objects.size(); i < max; i++) {
-		objects[i]->pause_vc_all();
+void SoundManager::pause_all_reserved_sounds() {
+	for (SoundPlayer* player : sound_players) {
+		player->pause_reserved_sound();
 	}
 }
 
-void SoundManager::pause_se_all() {
-	for (int i = 0, max = objects.size(); i < max; i++) {
-		objects[i]->pause_se_all();
+void SoundManager::pause_all_sounds() {
+	for (SoundPlayer* player : sound_players) {
+		player->pause_sound_all();
 	}
 }
 
-void SoundManager::resume_vc_all() {
-	for (int i = 0, max = objects.size(); i < max; i++) {
-		objects[i]->resume_vc_all();
+void SoundManager::resume_all_reserved_sounds() {
+	for (SoundPlayer* player : sound_players) {
+		player->resume_reserved_sound();
 	}
 }
 
-void SoundManager::resume_se_all() {
-	for (int i = 0, max = objects.size(); i < max; i++) {
-		objects[i]->resume_se_all();
+void SoundManager::resume_all_sounds() {
+	for (SoundPlayer* player : sound_players) {
+		player->resume_sound_all();
 	}
 }
 
-void SoundManager::register_game_object(GameObject* game_object) {
-	objects.push_back(game_object);
+void SoundManager::register_sound_player(SoundPlayer* sound_player) {
+	sound_players.push_back(sound_player);
 }
 
-void SoundManager::clear_game_objects() {
-	objects.clear();
+void SoundManager::unregister_sound_player(SoundPlayer* sound_player) {
+	sound_players.remove(sound_player);
 }
 
-Sound SoundManager::get_sound(std::string name) {
-	if (sound_map.contains(name)) {
-		return sound_map[name];
+void SoundManager::clear_sound_players() {
+	sound_players.clear();
+}
+
+Sound& SoundManager::get_sound(std::string dir) {
+	if (!sound_map.contains(dir)) {
+		load_sound(dir);
 	}
-	std::cerr << "Sound " << name << " not loaded!\n";
-	return Sound();
+	sound_map[dir].user_count++;
+	return sound_map[dir].sound;
 }
 
-unsigned int SoundManager::get_sound_buffer(std::string name) {
-	if (sound_map.contains(name)) {
-		return sound_map[name].buffer;
+Music& SoundManager::get_music(std::string dir) {
+	if (!music_map.contains(dir)) {
+		load_music(dir);
 	}
-	std::cerr << "Sound " << name << " not loaded!\n";
-	return 0;
+	music_map[dir].user_count++;
+	return music_map[dir].music;
 }
 
-void SoundManager::load_sound(std::string name, std::string dir, float volume_mod) {
-	if (sound_map.contains(name)) {
-		return;
-	}
-	sound_map[name] = Sound(dir, volume_mod);
+void SoundManager::load_sound(std::string dir) {
+	sound_map[dir].sound = Sound(dir);
+	sound_map[dir].user_count = 0;
 }
 
-void SoundManager::load_music(std::string name, std::string dir, float volume_mod) {
-	if (music_map.contains(name)) {
-		return;
-	}
-	music_map[name] = Music(dir, volume_mod);
+void SoundManager::load_music(std::string dir) {
+	music_map[dir].music = Music(dir);
+	music_map[dir].user_count = 0;
 }
 
-void SoundManager::unload_sound(std::string name) {
-	if (sound_map.contains(name)) {
-		alDeleteBuffers(1, &sound_map[name].buffer);
-		sound_map.erase(name);
+void SoundManager::unuse_sound(std::string dir) {
+	if (sound_map.contains(dir)) {
+		sound_map[dir].user_count--;
 	}
 }
 
-void SoundManager::unload_music(std::string name) {
-	if (music_map.contains(name)) {
-		alDeleteBuffers(music_map[name].num_buffers, &music_map[name].buffers[0]);
-		music_map.erase(name);
+void SoundManager::unuse_music(std::string dir) {
+	if (music_map.contains(dir)) {
+		music_map[dir].user_count--;
+	}
+}
+
+void SoundManager::unload_sound(std::string dir, bool strict) {
+	if (sound_map.contains(dir)) {
+		if (sound_map[dir].user_count == 0 || !strict) {
+			alDeleteBuffers(1, &sound_map[dir].sound.buffer);
+			sound_map.erase(dir);
+		}
+	}
+}
+
+void SoundManager::unload_music(std::string dir, bool strict) {
+	if (music_map.contains(dir)) {
+		if (music_map[dir].user_count == 0 || !strict) {
+			alDeleteBuffers(music_map[dir].music.num_buffers, &music_map[dir].music.buffers[0]);
+			music_map.erase(dir);
+		}
 	}
 }
 
 void SoundManager::unload_all_sounds() {
 	for (const auto& sound : sound_map) {
-		alDeleteBuffers(1, &sound.second.buffer);
+		alDeleteBuffers(1, &sound.second.sound.buffer);
 	}
 	sound_map.clear();
 }
 
 void SoundManager::unload_all_music() {
 	for (const auto& music : music_map) {
-		alDeleteBuffers(music.second.num_buffers, &music.second.buffers[0]);
+		alDeleteBuffers(music.second.music.num_buffers, &music.second.music.buffers[0]);
 	}
 	music_map.clear();
+}
+
+void SoundManager::unload_unused() {
+	for (const auto& sound : sound_map) {
+		if (!sound.second.user_count) {
+			alDeleteBuffers(1, &sound.second.sound.buffer);
+			sound_map.erase(sound.first);
+		}
+	}
+	for (const auto& music : music_map) {
+		if (!music.second.user_count) {
+			alDeleteBuffers(music.second.music.num_buffers, &music.second.music.buffers[0]);
+			music_map.erase(music.first);
+		}
+	}
 }
 
 SoundManager* SoundManager::instance = nullptr;
@@ -238,7 +279,7 @@ void SoundManager::destroy_instance() {
 
 void SoundManager::update_stream(MusicInstance& music_instance) {
 	ALint buffers_processed = 0;
-	Music& music = music_map[music_instance.name];
+	Music& music = music_map[music_instance.dir].music;
 	for (alGetSourcei(music_instance.source, AL_BUFFERS_PROCESSED, &buffers_processed); buffers_processed > 0; buffers_processed--) {
 		ALuint buffer;
 		alSourceUnqueueBuffers(music_instance.source, 1, &buffer);

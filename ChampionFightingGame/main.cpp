@@ -16,7 +16,7 @@
 #include "cotr_imgui_debugger.h"
 #include "Stage.h"
 #include "AIManager.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "ControllerManager.h"
 #include "EffectManager.h"
 #include "FontManager.h"
@@ -30,10 +30,6 @@
 #include "TargetVarManager.h"
 #include "ThreadManager.h"
 #include "stb_image.h"
-//Windows.h has a constant named LoadIcon, while Loader.h has a class named LoadIcon. C++ will always assume we mean the constant, so we need to 
-//undefine it before we include Loader.h.
-#undef LoadIcon
-#include "Loader.h"
 #undef main
 
 std::mutex file_mutex;
@@ -58,7 +54,7 @@ int main() {
 	GameManager* game_manager = GameManager::get_instance();
 
 	AIManager* ai_manager = AIManager::get_instance();
-	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
+	ObjectManager* object_manager = ObjectManager::get_instance();
 	ControllerManager* controller_manager = ControllerManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	ParamAccessor* param_accessor = ParamAccessor::get_instance();
@@ -93,7 +89,7 @@ int main() {
 	//When we're done, kill all the things
 
 	ai_manager->destroy_instance();
-	battle_object_manager->destroy_instance();
+	object_manager->destroy_instance();
 	controller_manager->destroy_instance();
 	effect_manager->destroy_instance();
 	font_manager->destroy_instance();

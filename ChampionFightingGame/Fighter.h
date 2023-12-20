@@ -5,7 +5,7 @@
 #include "Animation.h"
 #include "Player.h"
 #include "FighterConstants.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "ParamAccessor.h"
 
 #define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
@@ -82,7 +82,8 @@ public:
 	bool special_cancel(int special_kind, unsigned int status_kind, unsigned int button, int charge_frames = 0);
 	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
 		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
-	unsigned int get_attack_other_kind(unsigned int button, unsigned int stick_dir);
+	unsigned int get_attack_other_kind_ground(unsigned int button, unsigned int stick_dir);
+	unsigned int get_attack_other_kind_air(unsigned int button, unsigned int stick_dir);
 
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
@@ -115,9 +116,13 @@ public:
 	void set_float(int target, float val);
 	void set_flag(int target, bool val);
 
+	bool can_spend_ex(float ex);
+	void spend_ex(float ex);
+	void gain_ex(float ex);
+
 	//Grab Functions
 
-	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames);
+	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec3 offset);
 	void throw_opponent(float damage, float x_speed, float y_speed, float gravity, float max_fall_speed);
 
 	//Animation
@@ -132,8 +137,6 @@ public:
 	//Actionability
 
 	bool is_actionable();
-	bool has_meter(int bars);
-	void spend_meter(int bars);
 	void enable_all_cancels();
 	void enable_cancel(int cat, int kind);
 	void disable_all_cancels();
@@ -171,12 +174,15 @@ public:
 	virtual bool chara_ground_status_act() { return false; };
 	virtual bool chara_air_status_act() { return false; };
 	virtual bool chara_status_attack() { return false; };
+	virtual bool chara_status_attack_air() { return false; };
 	virtual void chara_enter_status_attack_other() {};
+	virtual void chara_enter_status_attack_air_other() {};
 	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
 	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true, bool require_different_status = true);
 	unsigned int get_status_group();
 	bool check_hitstun_parry();
 	bool is_status_delay();
+	bool is_ko();
 
 	//Projectiles
 
@@ -198,8 +204,6 @@ public:
 	void reset_opponent_rot();
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
 	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
-	void attach_opponent(std::string bone_name);
-	void detach_opponent();
 
 	//Collision Functions
 
@@ -425,12 +429,18 @@ public:
 	virtual void status_advance_back();
 	virtual void enter_status_advance_back();
 	virtual void exit_status_advance_back();
+	virtual void status_grab_start();
+	virtual void enter_status_grab_start();
+	virtual void exit_status_grab_start();
 	virtual void status_grab();
 	virtual void enter_status_grab();
 	virtual void exit_status_grab();
 	virtual void status_throw();
 	virtual void enter_status_throw();
 	virtual void exit_status_throw();
+	virtual void status_grab_air_start();
+	virtual void enter_status_grab_air_start();
+	virtual void exit_status_grab_air_start();
 	virtual void status_grab_air();
 	virtual void enter_status_grab_air();
 	virtual void exit_status_grab_air();
@@ -500,6 +510,9 @@ public:
 	virtual void status_taunt();
 	virtual void enter_status_taunt();
 	virtual void exit_status_taunt();
+	virtual void status_ko();
+	virtual void enter_status_ko();
+	virtual void exit_status_ko();
 	virtual void status_round_end();
 	virtual void enter_status_round_end();
 	virtual void exit_status_round_end();
@@ -528,5 +541,8 @@ public:
 
 	bool cancel_flags[CANCEL_CAT_MAX][CANCEL_KIND_MAX];
 
-	std::map<unsigned int, std::map<unsigned int, unsigned int>> attack_other_map;
+	std::map<unsigned int, std::map<unsigned int, unsigned int>> attack_other_map_ground;
+	std::map<unsigned int, std::map<unsigned int, unsigned int>> attack_other_map_air;
+	std::map<unsigned int, std::string> throw_map_ground;
+	std::map<unsigned int, std::string> throw_map_air;
 };

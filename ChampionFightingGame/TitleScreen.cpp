@@ -3,7 +3,7 @@
 #include "cotr_imgui_debugger.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
-#include "utils.h"
+#include "TimeFuncs.h"
 
 void title_screen_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -31,7 +31,7 @@ void title_screen_main() {
 
 		title_screen->render();
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 	}
 
 

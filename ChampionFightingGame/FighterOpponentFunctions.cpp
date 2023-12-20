@@ -6,12 +6,12 @@ void Fighter::change_opponent_status(unsigned int status_kind) {
 	if ((this->status_kind == FIGHTER_STATUS_THROW || this->status_kind == FIGHTER_STATUS_THROW_AIR) && status_kind == FIGHTER_STATUS_THROWN) {
 		fighter_flag[FIGHTER_FLAG_THREW_OPPONENT] = true;
 	}
-	battle_object_manager->fighter[!id]->change_status(status_kind);
+	object_manager->fighter[!id]->change_status(status_kind);
 }
 
 void Fighter::damage_opponent(float damage) {
 	damage *= (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10.0;
-	Fighter* that = battle_object_manager->fighter[!id];
+	Fighter* that = object_manager->fighter[!id];
 	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
 	fighter_int[FIGHTER_INT_COMBO_COUNT]++;
 	that->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -20,27 +20,27 @@ void Fighter::damage_opponent(float damage) {
 
 void Fighter::set_opponent_rot(glm::vec3 rot) {
 	rot.x *= facing_dir;
-	battle_object_manager->fighter[!id]->set_rot(rot);
+	object_manager->fighter[!id]->set_rot(rot);
 }
 
 void Fighter::add_opponent_rot(glm::vec3 rot) {
 	rot.x *= facing_dir;
-	battle_object_manager->fighter[!id]->add_rot(rot);
+	object_manager->fighter[!id]->add_rot(rot);
 }
 
 void Fighter::reset_opponent_rot() {
-	battle_object_manager->fighter[!id]->reset_rot();
+	object_manager->fighter[!id]->reset_rot();
 }
 
 void Fighter::set_opponent_thrown_ticks() {
-	if (anim_kind == nullptr || battle_object_manager->fighter[!id]->anim_kind == nullptr) {
+	if (anim_kind == nullptr || object_manager->fighter[!id]->anim_kind == nullptr) {
 		return;
 	}
-	battle_object_manager->fighter[!id]->rate = ((anim_kind->length / this->rate) / battle_object_manager->fighter[!id]->anim_kind->length);
+	object_manager->fighter[!id]->rate = ((anim_kind->length / this->rate) / object_manager->fighter[!id]->anim_kind->length);
 }
 
 void Fighter::change_opponent_anim(std::string anim_kind, float frame_rate, float entry_frame) {
-	Fighter* that = battle_object_manager->fighter[!id];
+	Fighter* that = object_manager->fighter[!id];
 	bool scale = false;
 	if (frame_rate == -1.0) {
 		scale = true;
@@ -50,25 +50,4 @@ void Fighter::change_opponent_anim(std::string anim_kind, float frame_rate, floa
 	if (scale && this->anim_kind != nullptr) {
 		that->rate = (float)that->anim_kind->length / (((float)this->anim_kind->length - this->frame) / this->rate);
 	}
-}
-
-void Fighter::attach_opponent(std::string bone_name) {
-	Fighter* that = battle_object_manager->fighter[!id];
-	int index = model.get_bone_id(bone_name);
-	if (index == -1) {
-		return;
-	}
-	that->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
-	that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
-	glm::vec3 final_rot = rot;
-	final_rot.z += glm::radians(90.0 * facing_dir);
-	final_rot += extra_rot;
-	that->extra_mat = inverse(glm::scale(model.bone_data[index].final_matrix, glm::vec3(facing_dir, 1.0, 1.0)) * orientate4(final_rot));
-}
-
-void Fighter::detach_opponent() {
-	Fighter* that = battle_object_manager->fighter[!id];
-	that->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
-	that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
-	that->extra_mat = glm::mat4(1.0);
 }

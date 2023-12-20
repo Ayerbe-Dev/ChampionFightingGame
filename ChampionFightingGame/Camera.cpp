@@ -1,11 +1,12 @@
 #include "Camera.h"
 #include "Fighter.h"
 #include "Stage.h"
-#include "utils.h"
+#include "WindowConstants.h"
 #include <glm/gtx/vector_angle.hpp>
 #include "RenderManager.h"
 #include "OpenAL/al.h"
 #include "GLM Helpers.h"
+#include "utils.h"
 
 Camera::Camera() {
 	base_pos = glm::vec3(0.0, 8.0, 55.0);
@@ -26,7 +27,7 @@ Camera::Camera() {
 	camera_locked = false;
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
-	projection_matrix = glm::mat4(1.0);
+	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_FACTOR, 0.1f, 1000.0f);
 	view_matrix = glm::mat4(1.0);
 	camera_matrix = glm::mat4(1.0);
 	anim_kind = nullptr;
@@ -115,18 +116,18 @@ void Camera::set_fov(float fov) {
 
 void Camera::reset_camera() {
 	pos = base_pos;
-	prev_pos = glm::vec3(0.0);
-	fov = 45.0;
+	prev_pos = base_pos;
+	set_fov(45.0);
 	yaw = 0.0;
 	pitch = 3.0;
 	roll = 0.0;
 	following_players = true;
+	anim_kind = nullptr;
 	anim_end = false;
 	camera_locked = false;
 	follow_id = -1;
 	frame = 0.0;
 	rate = 1.0;
-	projection_matrix = glm::mat4(1.0);
 	view_matrix = glm::mat4(1.0);
 	camera_matrix = glm::mat4(1.0);
 	update_view();
@@ -182,7 +183,7 @@ void Camera::follow_anim() {
 
 	pos = keyframe.pos_key;
 	yaw = keyframe.rot_key.x;
-	pitch = clampf(-89.9, keyframe.rot_key.y, 89.9);
+	pitch = keyframe.rot_key.y;
 	roll = keyframe.rot_key.z;
 
 	if (follow_id != -1) {

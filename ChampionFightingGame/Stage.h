@@ -3,7 +3,7 @@
 #include "StageScript.h"
 
 class StageAsset;
-class BattleObjectManager;
+class ObjectManager;
 
 class StageInfo {
 public:
@@ -31,7 +31,7 @@ public:
 
 	std::queue<ScriptFunc<Stage>> funcs;
 
-	void load_stage(StageInfo stage_info, BattleObjectManager* battle_object_manager);
+	void load_stage(StageInfo stage_info, ObjectManager* object_manager);
 	void unload_stage();
 	void process();
 	void render();

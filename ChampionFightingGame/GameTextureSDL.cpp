@@ -1,6 +1,7 @@
 #include "GameTextureSDL.h"
 #include "SDL Helpers.h"
 #include "RenderManager.h"
+#include "WindowConstants.h"
 #include "utils.h"
 
 GameTextureSDL::GameTextureSDL() {

@@ -7,16 +7,16 @@
 #include "Param.h"
 #include "StageScript.h"
 
-class BattleObjectManager;
+class ObjectManager;
 
 class StageAsset : public GameObject {
 public:
 	StageAsset();
-	StageAsset(std::string asset_name, std::string resource_dir, BattleObjectManager* battle_object_manager);
+	StageAsset(std::string asset_name, std::string resource_dir, ObjectManager* object_manager);
 	~StageAsset();
 
 	Stage* owner;
-	BattleObjectManager* battle_object_manager;
+	ObjectManager* object_manager;
 
 	AnimationTable anim_table;
 	Animation* anim_kind;

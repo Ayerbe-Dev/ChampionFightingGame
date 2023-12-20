@@ -1,8 +1,8 @@
 #include "PauseBattle.h"
 #include "RenderManager.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "Fighter.h"
-#include "utils.h"
+#include "TimeFuncs.h"
 
 void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -16,22 +16,18 @@ void pause_battle_main() {
 	PauseBattle* pause = new PauseBattle;
 
 	while (pause->looping) {
-		wait_ms();
+		game_manager->frame_delay_check_fps();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		render_manager->handle_window_events();
-		
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons();
 		}
 
-		game_manager->process_game_state_events();
+		render_manager->handle_window_events();
 
-		background_menu->process_background();
-		pause->panel.render();
-
-		SDL_GL_SwapWindow(render_manager->window);
+		pause->process_game_state();
+		pause->render_game_state();
+		
+		render_manager->update_screen();
 	}
 
 	delete pause;
@@ -40,17 +36,48 @@ void pause_battle_main() {
 PauseBattle::PauseBattle() {
 	GameManager* game_manager = GameManager::get_instance();
 
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
+	if (game_context == GAME_CONTEXT_TRAINING) {
+		push_menu_object("Pause"); {
+			push_menu_texture("Panel", "resource/game_state/menu/options/overlay.png");
+			push_menu_left_event_function([this](MenuObject* object) {
+				object->get_activity_group("Training Pages").inc_active_child(-1);
+			});
+			push_menu_right_event_function([this](MenuObject* object) {
+				object->get_activity_group("Training Pages").inc_active_child(-1);
+			});
+			push_menu_activity_group("Training Pages", nullptr, true); {
+				push_menu_child("Pause Page"); {
+					push_menu_activity_group("Pause Page Buttons", nullptr, false); {
 
-	panel.init("resource/game_state/menu/options/overlay.png");
-	panel.set_width(500);
-	panel.set_height(300);
-	panel.set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
+					} pop_menu_stack();
+				} pop_menu_stack();
+			} pop_menu_stack();
+		} pop_menu_stack();
+	}
+	else {
+		push_menu_object("Pause"); {
+			push_menu_texture("Panel", "resource/game_state/menu/options/overlay.png");
+		} pop_menu_stack();
+	}
 }
 
 PauseBattle::~PauseBattle() {
-	panel.destroy();
+	
+}
+
+void PauseBattle::process_main() {
+	GameManager* game_manager = GameManager::get_instance();
+	for (int i = 0; i < 2; i++) {
+		game_manager->player[i]->controller.poll_buttons();
+	}
+	game_manager->process_game_state_events();
+	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
+		menu_objects[i].event_process();
+	}
+}
+
+void PauseBattle::render_main() {
+	render_menu_object("Pause");
 }
 
 void PauseBattle::event_start_press() {
@@ -64,8 +91,24 @@ void PauseBattle::event_select_press() {
 }
 
 void PauseBattle::event_back_press() {
-	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
-	battle_object_manager->fighter[0]->reset();
-	battle_object_manager->fighter[1]->reset();
+	ObjectManager* object_manager = ObjectManager::get_instance();
+	object_manager->fighter[0]->reset();
+	object_manager->fighter[1]->reset();
 	looping = false;
+}
+
+void PauseBattle::event_up_press() {
+	get_menu_object("Pause").event_up_press();
+}
+
+void PauseBattle::event_down_press() {
+	get_menu_object("Pause").event_down_press();
+}
+
+void PauseBattle::event_left_press() {
+	get_menu_object("Pause").event_left_press();
+}
+
+void PauseBattle::event_right_press() {
+	get_menu_object("Pause").event_right_press();
 }

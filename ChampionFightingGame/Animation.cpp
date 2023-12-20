@@ -175,7 +175,7 @@ void AnimationTable::load_anlst(std::string resource_dir, Skeleton skeleton) {
 	bool flag_move;
 	bool flag_no_hitlag_interp;
 	bool flag_unused;
-	if (!!skeleton) { //lol. lmao.
+	if (skeleton) {
 		for (size_t i = 0; !anim_list.eof(); i++) {
 			parse_anlst_entry(anim_list, name, filename, end_frame, flag_move, flag_no_hitlag_interp, 
 				flag_unused);
@@ -218,6 +218,23 @@ void AnimationTable::load_anlst(std::string resource_dir, Skeleton skeleton) {
 		}
 	}
 	anim_list.close();
+}
+
+void AnimationTable::load_anim_single(std::string name, std::string anim_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp, Skeleton skeleton) {
+	Animation anim;
+	if (anim_filename != "none") {
+		anim.init(name, anim_filename, skeleton);
+		anim.faf = end_frame;
+	}
+	else {
+		anim.name = name;
+		anim.length = end_frame;
+		anim.faf = -1;
+	}
+	anim.flag_move = flag_move;
+	anim.flag_no_hitlag_interp = flag_no_hitlag_interp;
+	anim_map[name] = animations.size();
+	animations.push_back(anim);
 }
 
 void AnimationTable::unload_animations() {

@@ -348,6 +348,15 @@ bool GameController::is_valid_buffer_button(unsigned int button_kind) {
 	return buffer_buttons.contains(button_kind);
 }
 
+void GameController::reset_all_buttons() {
+	for (int i = 0, max = button_info.size(); i < max; i++) {
+		button_info[i].button_on = false;
+		button_info[i].buffer = 0;
+		button_info[i].changed = false;
+	}
+	buffer_code = 0;
+}
+
 void GameController::reset_buffer() {
 	for (int i = 0, max = button_info.size(); i < max; i++) {
 		button_info[i].buffer = 0;

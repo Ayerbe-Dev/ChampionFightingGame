@@ -2,8 +2,8 @@
 #include "FontManager.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
-#include "Loader.h"
 #include "GLM Helpers.h"
+#include "WindowConstants.h"
 #include "utils.h"
 
 #include <fstream>
@@ -32,7 +32,7 @@ void stage_select_main() {
 		stage_select->process_game_state();
 		stage_select->render_game_state();
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 		
 	}
 
@@ -147,8 +147,7 @@ StageSelect::StageSelect() {
 	num_slots_per_row = 1;
 	selected = false;
 
-	menu_objects.reserve(2);
-	push_menu_object("Background"); {
+	push_menu_object("Background", 3); {
 		push_menu_texture("bg1", "resource/game_state/stage_select/bg_1.png");
 		push_menu_texture("bg2", "resource/game_state/stage_select/bg_2.png");
 		push_menu_texture("bg3", "resource/game_state/stage_select/bg_3.png");
@@ -177,13 +176,7 @@ StageSelect::~StageSelect() {
 	}
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->remove_light();
-	render_manager->camera.anim_kind = nullptr;
-	render_manager->camera.following_players = true;
-	render_manager->camera.pos = render_manager->camera.base_pos;
-	render_manager->camera.yaw = 0;
-	render_manager->camera.pitch = 3;
-	render_manager->camera.fov = 45;
-	render_manager->camera.update_view();
+	render_manager->camera.reset_camera();
 }
 
 bool StageSelect::load_stage_select() {
@@ -326,6 +319,9 @@ void StageSelect::process_main() {
 		}
 	}
 	render_manager->execute_buffered_events();
+	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
+		menu_objects[i].event_process();
+	}
 }
 
 void StageSelect::render_main() {

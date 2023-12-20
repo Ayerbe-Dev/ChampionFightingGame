@@ -13,9 +13,6 @@
     <ClCompile Include="Menu.cpp">
       <Filter>2. Code Files\Game State</Filter>
     </ClCompile>
-    <ClCompile Include="Loader.cpp">
-      <Filter>2. Code Files\Global</Filter>
-    </ClCompile>
     <ClCompile Include="TitleScreen.cpp">
       <Filter>2. Code Files\Game State</Filter>
     </ClCompile>
@@ -280,7 +277,7 @@
     <ClCompile Include="StageAsset.cpp">
       <Filter>2. Code Files\Object\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="BattleObjectManager.cpp">
+    <ClCompile Include="ObjectManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="imgui.cpp">
@@ -409,16 +406,7 @@
     <ClCompile Include="Battle.cpp">
       <Filter>2. Code Files\Game State\Battle</Filter>
     </ClCompile>
-    <ClCompile Include="BattleMeter.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTimer.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
-    </ClCompile>
     <ClCompile Include="BattleText.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerIndicator.cpp">
       <Filter>2. Code Files\Game State\Battle</Filter>
     </ClCompile>
     <ClCompile Include="CollisionChecks.cpp">
@@ -506,7 +494,7 @@
       <Filter>2. Code Files\Object\BattleObject\Functions</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
-      <Filter>2. Code Files\Engine\Misc</Filter>
+      <Filter>2. Code Files\Engine\Sound</Filter>
     </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>2. Code Files\Engine\Polling</Filter>
@@ -613,6 +601,18 @@
     <ClCompile Include="Eftlst.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
+    <ClCompile Include="VectorBoolPointer.cpp">
+      <Filter>2. Code Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeFuncs.cpp">
+      <Filter>2. Code Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundPlayer.cpp">
+      <Filter>2. Code Files\Engine\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectProcessFuncs.cpp">
+      <Filter>2. Code Files\Object\GameObject\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -629,9 +629,6 @@
     </ClInclude>
     <ClInclude Include="SettingConstants.h">
       <Filter>1. Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="Loader.h">
-      <Filter>1. Header Files\Global</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1041,7 +1038,7 @@
     <ClInclude Include="StageAsset.h">
       <Filter>1. Header Files\Object\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="BattleObjectManager.h">
+    <ClInclude Include="ObjectManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="imconfig.h">
@@ -1198,7 +1195,7 @@
       <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
-      <Filter>1. Header Files\Engine\Misc</Filter>
+      <Filter>1. Header Files\Engine\Sound</Filter>
     </ClInclude>
     <ClInclude Include="MoveScript.h">
       <Filter>1. Header Files\Object\ObjectComponent</Filter>
@@ -1349,6 +1346,18 @@
     </ClInclude>
     <ClInclude Include="Eftlst.h">
       <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorBoolPointer.h">
+      <Filter>1. Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowConstants.h">
+      <Filter>1. Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeFuncs.h">
+      <Filter>1. Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPlayer.h">
+      <Filter>1. Header Files\Engine\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2272,9 +2281,6 @@
     <Filter Include="2. Code Files\Game State">
       <UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Global">
-      <UniqueIdentifier>{31489a1a-b655-4abe-939e-7c025d68ad6f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Engine">
       <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
     </Filter>
@@ -2612,9 +2618,6 @@
     <Filter Include="1. Header Files\Constants">
       <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Global">
-      <UniqueIdentifier>{965f5800-a3cd-42e6-8ad5-e5266651dbf2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Deps">
       <UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
     </Filter>
@@ -2725,12 +2728,6 @@
     </Filter>
     <Filter Include="2. Code Files\Engine\Rendering">
       <UniqueIdentifier>{6f45579d-1787-44cc-828c-efd522f8e63c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Misc">
-      <UniqueIdentifier>{0cb3cf38-37a7-455e-871c-f05847d43090}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Misc">
-      <UniqueIdentifier>{ed5d40d3-ae57-4fc4-b5bd-d8bd6115f34a}</UniqueIdentifier>
     </Filter>
     <Filter Include="1. Header Files\Engine\Polling">
       <UniqueIdentifier>{34c695d4-0b1a-498a-a9e5-91f08764a52b}</UniqueIdentifier>
@@ -2986,6 +2983,12 @@
     </Filter>
     <Filter Include="2. Code Files\I/O\HxA">
       <UniqueIdentifier>{af3c76b4-5f80-46ed-ab2b-9d7e505bcb8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Engine\Sound">
+      <UniqueIdentifier>{0cb3cf38-37a7-455e-871c-f05847d43090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Engine\Sound">
+      <UniqueIdentifier>{ed5d40d3-ae57-4fc4-b5bd-d8bd6115f34a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

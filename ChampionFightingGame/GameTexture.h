@@ -90,7 +90,7 @@ public:
     float target_bottom_frames = 0.0;
     
     glm::vec3 colormod = glm::vec3(0.0);
-    unsigned char alpha = 255;
+    TargetVar<unsigned char> alpha = 255;
 
     Shader *shader;
     std::vector<unsigned int> texture;

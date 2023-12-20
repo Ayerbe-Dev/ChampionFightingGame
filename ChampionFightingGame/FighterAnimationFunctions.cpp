@@ -17,7 +17,7 @@ void Fighter::reenter_last_anim() {
 		player->controller.reset_buffer();
 	}
 	prev_anim_offset = glm::vec3(0.0);
-	is_anim_end = false;
+	anim_end = false;
 	Animation* saved_prev_anim_kind = prev_anim_kind;
 	if (anim_kind != prev_anim_kind) {
 		prev_anim_kind = anim_kind;
@@ -67,7 +67,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	player->controller.reset_buffer();
 
 	prev_anim_offset = glm::vec3(0.0);
-	is_anim_end = false;
+	anim_end = false;
 	anim_kind = new_anim;
 
 	set_current_move_script(animation_name);
@@ -88,7 +88,7 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 	else {
 		player->controller.reset_buffer();
 	}
-	is_anim_end = false;
+	anim_end = false;
 	if (anim_kind != new_anim) {
 		prev_anim_kind = anim_kind;
 	}

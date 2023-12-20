@@ -1,5 +1,5 @@
 #include "StageAsset.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "Fighter.h"
 #include <fstream>
 #include "GameManager.h"
@@ -11,12 +11,11 @@ StageAsset::StageAsset() {
 
 }
 
-StageAsset::StageAsset(std::string asset_name, std::string resource_dir, BattleObjectManager* battle_object_manager) {
+StageAsset::StageAsset(std::string asset_name, std::string resource_dir, ObjectManager* object_manager) {
 	this->asset_name = asset_name;
 	this->resource_dir = resource_dir;
-	this->battle_object_manager = battle_object_manager;
-	owner = battle_object_manager->stage;
-	sound_manager->register_game_object(this);
+	this->object_manager = object_manager;
+	owner = object_manager->stage;
 
 	load_params();
 	load_model_shader();

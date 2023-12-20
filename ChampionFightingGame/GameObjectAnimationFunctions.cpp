@@ -12,7 +12,7 @@ bool GameObject::change_anim(std::string animation_name, float rate, float frame
 	prev_anim_rate = this->rate;
 	prev_anim_frame = this->frame;
 	prev_anim_offset = glm::vec3(0.0);
-	is_anim_end = false;
+	anim_end = false;
 
 	Animation* new_anim = anim_table.get_anim(animation_name, true);
 	if (new_anim != nullptr) {
@@ -43,11 +43,11 @@ bool GameObject::change_anim(std::string animation_name, float rate, float frame
 
 void GameObject::animate() {
 	frame += rate;
-	is_anim_end = false;
+	anim_end = false;
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
-			is_anim_end = true;
+			anim_end = true;
 		}
 	}
 	if (model.has_skeleton()) {

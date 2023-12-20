@@ -3,7 +3,7 @@
 #include "Animation.h"
 #include "Projectile.h"
 #include <fstream>
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "AIManager.h"
 #include "ParamAccessor.h"
 #include "ThreadManager.h"
@@ -20,6 +20,16 @@ Fighter::Fighter() {
 		}
 	}
 	object_type = BATTLE_OBJECT_TYPE_FIGHTER;
+	for (int i = 1; i < 10; i++) {
+		if (i % 3 == 1) {
+			throw_map_ground[i] = "throw_b";
+			throw_map_air[i] = "throw_b_air";
+		}
+		else {
+			throw_map_ground[i] = "throw_f";
+			throw_map_air[i] = "throw_f_air";
+		}
+	}
 }
 
 Fighter::~Fighter() {
@@ -31,8 +41,8 @@ Fighter::~Fighter() {
 		pushboxes[i].rect.destroy();
 	}
 	clear_effect_all();
-	stop_se_all();
-	stop_vc_all();
+	stop_sound_all();
+	stop_reserved_sound();
 	blockbox.rect.destroy();
 	fighter_int.clear();
 	fighter_float.clear();
@@ -76,7 +86,7 @@ void Fighter::fighter_main() {
 	process_post_animate();
 	process_projectiles();
 	process_input();
-	if (battle_object_manager->allow_dec_var(id)) {
+	if (object_manager->is_allow_realtime_process(this)) {
 		decrease_common_variables();
 	}
 	process_post_status();
@@ -118,11 +128,11 @@ void Fighter::process_post_projectiles() {
 void Fighter::process_animate() {
 	if (fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] != 0) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
-			frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_world_rate(id);
+			frame += (0.2 / (float)(fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
 		}
 	}
 	else {
-		float add_frame = rate * battle_object_manager->get_world_rate(id);
+		float add_frame = rate * object_manager->get_world_rate(this);
 		frame += add_frame;
 		if (add_frame != 0.0) {
 			fighter_int[FIGHTER_INT_EXTERNAL_FRAME]++;
@@ -148,10 +158,10 @@ void Fighter::process_animate() {
 			clear_hurtbox_all();
 			clear_hitbox_all();
 			fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-			is_anim_end = true;
+			anim_end = true;
 		}
 		else {
-			is_anim_end = false;
+			anim_end = false;
 		}
 	}
 }
@@ -180,7 +190,7 @@ void Fighter::process_pre_position() {
 }
 
 void Fighter::process_post_position() {
-	Fighter* that = battle_object_manager->fighter[!id];
+	Fighter* that = object_manager->fighter[!id];
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
 			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
@@ -223,6 +233,7 @@ void Fighter::process_post_position() {
 
 void Fighter::process_pre_status() {
 	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
+		fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI] = fighter_int[FIGHTER_INT_DAMAGE_SCALE];
 		if (fighter_int[FIGHTER_INT_BUFFER_STATUS] != FIGHTER_STATUS_MAX
 			&& is_enable_cancel(fighter_int[FIGHTER_INT_BUFFER_CANCEL_KIND])
 			&& fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER]) {
@@ -249,7 +260,7 @@ void Fighter::process_pre_status() {
 }
 
 void Fighter::process_status() {
-	bool execute_after_status = is_anim_end;
+	bool execute_after_status = anim_end;
 	if (!execute_after_status) {
 		active_move_script.execute(this, frame);
 	}
@@ -262,7 +273,7 @@ void Fighter::process_status() {
 }
 
 void Fighter::process_post_status() {
-	Fighter* that = battle_object_manager->fighter[!id];
+	Fighter* that = object_manager->fighter[!id];
 	fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN] = false;
 	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
 		if (that->fighter_int[FIGHTER_INT_COMBO_COUNT] != 0) {
@@ -270,7 +281,11 @@ void Fighter::process_post_status() {
 		}
 		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
 		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] = 0.0;
-		fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+		if (situation_kind == FIGHTER_SITUATION_GROUND) {
+			fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+		}
+		fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
+		fighter_int[FIGHTER_INT_PREV_DAMAGE_SCALE] = 0;
 		if (fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] != 0) {
 			fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]--;
 		}

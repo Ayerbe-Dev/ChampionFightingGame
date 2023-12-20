@@ -2,10 +2,11 @@
 #include "Fighter.h"
 #include "ParamAccessor.h"
 #include "GameManager.h"
+#include "WindowConstants.h"
 #include "utils.h"
 
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
-	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	Fighter* that = object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
 	glm::vec3 prev_pos = this->pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
@@ -30,7 +31,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 		return false;
 	}
-	pos *= battle_object_manager->get_world_rate(id);
+	pos *= object_manager->get_world_rate(this);
 
 	//Ok now to actually set some positions
 
@@ -70,7 +71,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_GRABBED]) {
+	if (!fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]) {
 		if (this->pos.y < 0) { //If you're about to land in the floor
 			if (prev) {
 				this->pos.y = prev_pos.y;
@@ -126,7 +127,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 }
 
 bool Fighter::set_pos(glm::vec3 pos, bool prev) {
-	Fighter* that = battle_object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	Fighter* that = object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
 	glm::vec3 prev_pos = this->pos;
 	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
 	//still helpful to know for debugging
@@ -177,7 +178,7 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_GRABBED]) {
+	if (!fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]) {
 		if (this->pos.y < 0) {
 			if (prev) {
 				this->pos.y = prev_pos.y;
@@ -244,7 +245,7 @@ bool Fighter::set_pos_anim() {
 }
 
 void Fighter::landing_crossup() {
-	Fighter* that = battle_object_manager->fighter[!id];
+	Fighter* that = object_manager->fighter[!id];
 	if (pos.x == that->pos.x) return;
 	internal_facing_right = pos.x < that->pos.x;
 	if (internal_facing_right != facing_right) {
@@ -259,5 +260,5 @@ void Fighter::landing_crossup() {
 }
 
 void Fighter::apply_gravity(float gravity, float max_fall_speed) {
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = clampf(max_fall_speed * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] - gravity * battle_object_manager->get_world_rate(id), fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = clampf(max_fall_speed * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] - gravity * object_manager->get_world_rate(this), fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
 }

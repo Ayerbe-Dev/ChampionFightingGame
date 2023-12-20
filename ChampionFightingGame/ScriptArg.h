@@ -7,7 +7,7 @@
 //Same as the above, but for variables that were already declared
 #define UNWRAP_NO_DECL(var_name) if (!args.args.empty()) { var_name = std::any_cast<decltype(var_name)>(args.get_arg()); }
 //Get the typeid for the next arg
-#define GET_NEXT_TYPEID args.args.front().type()
+#define NEXT_TYPEID(type_id) (!args.args.empty()) && args.args.front().type() == type_id
 
 struct ScriptArg {
 	ScriptArg();

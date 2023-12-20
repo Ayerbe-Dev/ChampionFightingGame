@@ -264,7 +264,7 @@ SimHitbox::SimHitbox() {
 	collision_kind_projectile = false;
 	collision_kind_soft_intangible = false;
 	collision_kind_armor = false;
-	counterhit_type = COUNTERHIT_TYPE_COUNTER;
+	counterhit_type = SPECIAL_STATUS_CONDITION_COUNTERHIT;
 	hit_status = HIT_STATUS_NORMAL;
 	custom_hit_status = "";
 	counterhit_status = HIT_STATUS_NORMAL;
@@ -357,19 +357,16 @@ void SimHitbox::print_start(BattleObject* object) {
 
 	output += ", COUNTERHIT_TYPE_";
 	switch (counterhit_type) {
-		case (COUNTERHIT_TYPE_COUNTER): {
+		case (SPECIAL_STATUS_CONDITION_COUNTERHIT): {
 			output += "COUNTER";
 		} break;
-		case (COUNTERHIT_TYPE_ANY): {
-			output += "ANY";
-		} break;
-		case (COUNTERHIT_TYPE_PUNISH): {
+		case (SPECIAL_STATUS_CONDITION_PUNISH): {
 			output += "PUNISH";
 		} break;
-		case (COUNTERHIT_TYPE_JUMP_COUNTER): {
+		case (SPECIAL_STATUS_CONDITION_JUMP_COUNTERHIT): {
 			output += "JUMP_COUNTER";
 		} break;
-		case (COUNTERHIT_TYPE_NONE): {
+		case (SPECIAL_STATUS_CONDITION_NONE): {
 			output += "NONE";
 		} break;
 		default: {
@@ -403,7 +400,7 @@ void SimHitbox::print_start(BattleObject* object) {
 			output = "MAX";
 		} break;
 	}
-	if (counterhit_type != COUNTERHIT_TYPE_NONE) {
+	if (counterhit_type != SPECIAL_STATUS_CONDITION_NONE) {
 		output += ", /*Counterhit Status*/ HIT_STATUS_";
 		switch (counterhit_status) {
 			case (HIT_STATUS_NORMAL): {
@@ -433,7 +430,7 @@ void SimHitbox::print_start(BattleObject* object) {
 		}
 	}
 	if (hit_status == HIT_STATUS_KNOCKDOWN || hit_status == HIT_STATUS_FLOAT
-		|| (counterhit_type != COUNTERHIT_TYPE_NONE && 
+		|| (counterhit_type != SPECIAL_STATUS_CONDITION_NONE && 
 			(counterhit_status == HIT_STATUS_KNOCKDOWN || counterhit_status == HIT_STATUS_FLOAT))) {
 		output += ", /*Down Face Down*/ " + (down_face_down) ? "true" : "false";
 	}
@@ -490,18 +487,18 @@ void SimHitbox::print_start(BattleObject* object) {
 		} break;
 	}
 	if (hit_status != HIT_STATUS_LAUNCH || (counterhit_status != HIT_STATUS_LAUNCH
-		&& counterhit_type != COUNTERHIT_TYPE_NONE)) {
+		&& counterhit_type != SPECIAL_STATUS_CONDITION_NONE)) {
 		output += ", /*Hitstun*/ " + std::to_string(hitstun_frames);
 	}
 	if (collision_kind_ground) {
 		output += ", /*Blockstun*/ " + std::to_string(blockstun_frames);
 	}
 	if (hit_status == HIT_STATUS_NORMAL || hit_status == HIT_STATUS_LAUNCH 
-		|| (counterhit_type != COUNTERHIT_TYPE_NONE && 
+		|| (counterhit_type != SPECIAL_STATUS_CONDITION_NONE && 
 			(counterhit_status == HIT_STATUS_NORMAL  || counterhit_status == HIT_STATUS_LAUNCH))) {
 		output += ", /*Disable Hitstun Parry*/ " + (disable_hitstun_parry) ? "true" : "false";
 	}
-	if (hit_status == HIT_STATUS_NORMAL || (counterhit_type != COUNTERHIT_TYPE_NONE
+	if (hit_status == HIT_STATUS_NORMAL || (counterhit_type != SPECIAL_STATUS_CONDITION_NONE
 		&& counterhit_status == HIT_STATUS_NORMAL)) {
 		if (collision_kind_ground) {
 			output += ", /*Pushback Ground Hit*/ " + std::to_string(pushback_ground_hit)
@@ -518,7 +515,7 @@ void SimHitbox::print_start(BattleObject* object) {
 			+ ", /*Pushback Frames*/ " + std::to_string(pushback_frames);
 	}
 	if (hit_status == HIT_STATUS_LAUNCH || hit_status == HIT_STATUS_FLOAT
-		|| (counterhit_type != COUNTERHIT_TYPE_NONE && (counterhit_status == HIT_STATUS_LAUNCH 
+		|| (counterhit_type != SPECIAL_STATUS_CONDITION_NONE && (counterhit_status == HIT_STATUS_LAUNCH 
 		|| counterhit_status == HIT_STATUS_FLOAT)) || continue_launch) {
 		if (has_launch_target_pos) {
 			output += ", /*Launch Target Pos*/ " + glm::to_string(launch_target_pos);

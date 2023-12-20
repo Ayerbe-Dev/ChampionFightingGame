@@ -16,8 +16,8 @@ Projectile::~Projectile() {
 		pushboxes[i].rect.destroy();
 	}
 	blockbox.rect.destroy();
-	stop_se_all();
-	stop_vc_all();
+	stop_sound_all();
+	stop_reserved_sound();
 	model.unload_model_instance();
 	projectile_int.clear();
 	projectile_float.clear();
@@ -39,7 +39,7 @@ void Projectile::projectile_main() {
 		process_status();
 	}
 	process_post_animate();
-	if (battle_object_manager->allow_dec_var(id)) {
+	if (object_manager->is_allow_realtime_process(this)) {
 		decrease_common_variables();
 	}
 }
@@ -56,11 +56,11 @@ void Projectile::process_status() {
 void Projectile::process_animate() {	
 	if (projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] != 0) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
-			frame += (0.2 / (float)(projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES])) * battle_object_manager->get_world_rate(id);
+			frame += (0.2 / (float)(projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
 		}
 	}
 	else {
-		frame += rate * battle_object_manager->get_world_rate(id);
+		frame += rate * object_manager->get_world_rate(this);
 	}
 
 	if (anim_kind != nullptr) {
@@ -68,10 +68,10 @@ void Projectile::process_animate() {
 			frame = 0.0;
 			active_move_script.activate();
 			clear_hitbox_all();
-			is_anim_end = true;
+			anim_end = true;
 		}
 		else {
-			is_anim_end = false;
+			anim_end = false;
 		}
 	}
 }

@@ -40,7 +40,7 @@ struct AnimBone {
 };
 
 struct Skeleton {
-	bool operator!();
+	operator bool();
 	bool load_skeleton(std::string path);
 	int get_bone_id(std::string bone_name);
 

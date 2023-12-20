@@ -80,7 +80,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbo
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->gain_ex(hitbox->meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_blocked(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
@@ -92,7 +92,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbo
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 16;
-	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->gain_ex(hitbox->meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_parried(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
@@ -104,7 +104,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbo
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 16;
-	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + get_local_param_float("meter_gain_on_parry") * 0.5, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->gain_ex(hitbox->meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
@@ -116,7 +116,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbo
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-	owner->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(0.0, owner->fighter_float[FIGHTER_FLOAT_EX_METER] + hitbox->meter_gain * 0.3, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+	owner->gain_ex(hitbox->meter_gain * 0.3);
 	unique_process_outgoing_fighter_hitbox_collision_armored(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;

@@ -1,6 +1,9 @@
 #include "Sound.h"
 #include <fstream>
 #include <vector>
+#include "RenderManager.h"
+#include "SoundManager.h"
+#include "SaveManager.h"
 #include "utils.h"
 
 MusicTrack::MusicTrack() {
@@ -14,15 +17,15 @@ MusicTrack::MusicTrack(std::string data, char next_track) {
 }
 
 Sound::Sound() {
+	dir = "";
 	buffer = 0;
-	volume_mod = 0.0;
 	sample_rate = 0;
 	format = AL_FORMAT_MONO8;
 	track = "";
 }
 
-Sound::Sound(std::string dir, float volume_mod) {
-	this->volume_mod = volume_mod;
+Sound::Sound(std::string dir) {
+	this->dir = dir;
 	std::uint8_t channels;
 	std::uint8_t bits_per_sample;
 	track = load_wav(dir, sample_rate, channels, bits_per_sample);
@@ -53,18 +56,60 @@ Sound::Sound(std::string dir, float volume_mod) {
 	alBufferData(buffer, format, track.c_str(), track.size(), sample_rate);
 }
 
+SoundInstance Sound::instantiate(float volume_mod) {
+	return SoundInstance(buffer, volume_mod);
+}
+
+SoundInstance::SoundInstance() {
+	sound_source = 0;
+	volume_mod = 1.0f;
+	al_source = 0;
+	buffered = false;
+	active = false;
+}
+
+SoundInstance::SoundInstance(unsigned int sound_source, float volume_mod) {
+	this->sound_source = sound_source;
+	this->volume_mod = volume_mod;
+	al_source = 0;
+	buffered = false;
+	active = true;
+}
+
+void SoundInstance::start(glm::vec3* pos) {
+	float volume_mul = SaveManager::get_instance()->get_game_setting("se_vol") / 100.0;
+	alGenSources(1, &al_source);
+	alSourcef(al_source, AL_PITCH, 1);
+	if (pos != nullptr) {
+		alSourcef(al_source, AL_GAIN, (1.0 + abs(RenderManager::get_instance()->camera.pos.z / 10.0) 
+			+ volume_mod) * volume_mul);
+		alSource3f(al_source, AL_POSITION, pos->x, pos->y, pos->z);
+		alSourcei(al_source, AL_SOURCE_RELATIVE, AL_FALSE);
+	}
+	else {
+		alSourcef(al_source, AL_GAIN, (1.0 + volume_mod) * volume_mul);
+		alSource3f(al_source, AL_POSITION, 0.0, 0.0, 0.0);
+		alSourcei(al_source, AL_SOURCE_RELATIVE, AL_TRUE);
+	}
+	alSource3f(al_source, AL_VELOCITY, 0.0, 0.0, 0.0);
+	alSourcei(al_source, AL_LOOPING, AL_FALSE);
+	alSourcei(al_source, AL_BUFFER, sound_source);
+	alSourcePlay(al_source);
+	buffered = true;
+}
+
 Music::Music() {
+	dir = "";
 	for (int i = 0; i < NUM_BUFFERS; i++) {
 		buffers[i] = 0;
 	}
 	num_buffers = NUM_BUFFERS;
-	volume_mod = 0.0;
 	sample_rate = 0;
 	format = AL_FORMAT_MONO8;
 }
 
-Music::Music(std::string dir, float volume_mod) {
-	this->volume_mod = volume_mod;
+Music::Music(std::string dir) {
+	this->dir = dir;
 	std::uint8_t channels;
 	std::uint8_t bits_per_sample;
 	num_buffers = NUM_BUFFERS;
@@ -132,6 +177,18 @@ void Music::reset_buffers() {
 		}
 		alBufferData(buffers[i], format, data.c_str(), BUFFER_SIZE, sample_rate);
 	}
+}
+
+MusicInstance* Music::instantiate(float volume_mod) {
+	return SoundManager::get_instance()->play_music(dir, volume_mod);
+}
+
+MusicInstance::MusicInstance() {
+	dir = "";
+	volume_mod = 1.0;
+	cursor = 0;
+	curr_track = 0;
+	source = 0;
 }
 
 bool load_wav_file_header(std::ifstream& file,
@@ -212,11 +269,26 @@ bool load_wav_file_header(std::ifstream& file,
 	bits_per_sample = convert_to_int(buffer, 2);
 
 	if (!file.read(buffer, 4)) {
-		std::cerr << "ERROR: could not read data chunk header\n";
+		std::cerr << "ERROR: could not read what should be either data or LIST chunk header\n";
 		return false;
 	}
+	if (std::strncmp(buffer, "LIST", 4) == 0) {
+		if (!file.read(buffer, 4)) {
+			std::cerr << "ERROR: could not read size of LIST data\n";
+			return false;
+		}
+		if (!file.ignore(convert_to_int(buffer, 4))) {
+			std::cerr << "ERROR: could not pretend to read through the LIST data\n";
+			return false;
+		}
+		if (!file.read(buffer, 4)) {
+			std::cerr << "ERROR: could not read data chunk header\n";
+			return false;
+		}
+	}
 	if (std::strncmp(buffer, "data", 4) != 0) {
-		std::cerr << "ERROR: file is not a valid WAVE file (doesn't have 'data' tag)\n";
+		std::cerr << "ERROR: file is not a valid WAVE file (doesn't have 'data' tag), instead has "
+			<< buffer << "\n";
 		return false;
 	}
 

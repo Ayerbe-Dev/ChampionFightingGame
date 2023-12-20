@@ -1,7 +1,7 @@
 #include "GameManager.h"
 #include "FontManager.h"
 #include "GameStates.h"
-#include "utils.h"
+#include "TimeFuncs.h"
 #include "TargetVar.h"
 
 GameManager::GameManager() {

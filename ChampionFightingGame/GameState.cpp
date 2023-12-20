@@ -1,10 +1,10 @@
 #include "GameState.h"
-#include "Loader.h"
 #include "GameTexture.h"
 #include "FontManager.h"
 #include "GameManager.h"
+#include "ObjectManager.h"
 #include "RenderManager.h"
-#include "utils.h"
+#include "WindowConstants.h"
 
 void GameState::process_main() {}
 void GameState::render_main() {}
@@ -21,10 +21,15 @@ void GameState::process_background() {}
 
 GameState::GameState() {
 	looping = true;
-	game_loader = nullptr;
 	last_pushed_texture = nullptr;
 	game_context = GAME_CONTEXT_NORMAL;
+	sub_state = GAME_STATE_NONE;
+	internal_frame = 0;
+	internal_state = 0;
+	prev_internal_state = 0;
+	prev_executed_frame = 0;
 	player_id = 0;
+	menu_objects.reserve(2);
 	GameManager::get_instance()->set_game_state(this);
 }
 
@@ -35,11 +40,16 @@ GameState::~GameState() {
 }
 
 void GameState::process_game_state() {
+	if (prev_internal_state != internal_state) {
+		internal_frame = 0;
+		conditions.clear();
+	}
+	prev_internal_state = internal_state;
 	mouse.poll_buttons();
 	process_main();
-	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
-		menu_objects[i].event_process();
-	}
+	ObjectManager::get_instance()->process();
+	SoundManager::get_instance()->process_sounds();
+	internal_frame++;
 }
 
 void GameState::render_game_state() {
@@ -50,13 +60,9 @@ void GameState::update_state(int game_state, int game_context) {
 	GameManager::get_instance()->update_state(game_state, game_context);
 }
 
-void GameState::inc_thread() {
-	update_thread_progress(game_loader->loaded_items);
-}
-
-void GameState::push_menu_object(std::string name, int hint) {
+void GameState::push_menu_object(std::string name, int texture_hint, int child_hint, int activity_hint) {
 	menu_object_map[name] = menu_objects.size();
-	menu_objects.emplace_back(MenuObject(this, nullptr, name, hint));
+	menu_objects.emplace_back(this, nullptr, name, texture_hint, child_hint, activity_hint);
 	object_stack.push(&menu_objects.back());
 	last_push_type_stack.push(true);
 }
@@ -76,13 +82,33 @@ void GameState::render_menu_object(std::string name) {
 	menu_objects[menu_object_map[name]].render();
 }
 
-void GameState::push_menu_child(std::string name, int hint) {
+void GameState::push_menu_pos(glm::vec3 pos) {
+	object_stack.top()->set_pos(pos);
+}
+
+void GameState::push_menu_orientation(int orientation) {
+	object_stack.top()->set_orientation(orientation);
+}
+
+void GameState::push_menu_dimensions(int width, int height) {
+	object_stack.top()->set_dimensions(width, height);
+}
+
+void GameState::push_menu_dimensions(int texture_id) {
+	object_stack.top()->set_dimensions(texture_id);
+}
+
+void GameState::push_menu_dimensions(std::string texture) {
+	object_stack.top()->set_dimensions(texture);
+}
+
+void GameState::push_menu_child(std::string name, int texture_hint, int child_hint, int activity_hint) {
 	if (last_push_type_stack.top()) {
-		object_stack.top()->add_child(name, hint);
+		object_stack.top()->add_child(name, texture_hint, child_hint, activity_hint);
 		object_stack.push(&(object_stack.top()->children.back()));
 	}
 	else {
-		activity_group_stack.top()->add_child(name, hint);
+		activity_group_stack.top()->add_child(name, texture_hint, child_hint, activity_hint);
 		object_stack.push(&(activity_group_stack.top()->children.back()));
 	}
 	last_push_type_stack.push(true);
@@ -197,6 +223,46 @@ void GameState::pop_menu_stack() {
 	last_pushed_texture = nullptr;
 }
 
+bool GameState::execute_if(std::string name, int num_allowed_executions, bool condition) {
+	bool ret = false;
+	if (!conditions.contains(name)) {
+		conditions[name].num_allowed_executions = num_allowed_executions;
+		conditions[name].executed_frame = -1;
+	}
+	if (conditions[name].num_allowed_executions && condition) {
+		if (conditions[name].num_allowed_executions != -1) conditions[name].num_allowed_executions--;
+		conditions[name].executed_frame = internal_frame;
+		ret = true;
+	}
+	if (conditions[name].executed_frame != -1) {
+		prev_executed_frame = conditions[name].executed_frame;
+	}
+	else {
+		prev_executed_frame = internal_frame;
+	}
+	return ret;
+}
+
+bool GameState::execute_wait(std::string name, int num_allowed_executions, unsigned int frames) {
+	bool ret = false;
+	if (!conditions.contains(name)) {
+		conditions[name].num_allowed_executions = num_allowed_executions;
+		conditions[name].executed_frame = -1;
+	}
+	if (conditions[name].num_allowed_executions && (prev_executed_frame + frames <= internal_frame)) {
+		if (conditions[name].num_allowed_executions != -1) conditions[name].num_allowed_executions--;
+		conditions[name].executed_frame = internal_frame;
+		ret = true;
+	}
+	if (conditions[name].executed_frame != -1) {
+		prev_executed_frame = conditions[name].executed_frame;
+	}
+	else {
+		prev_executed_frame = internal_frame;
+	}
+	return ret;
+}
+
 MenuActivityGroup::MenuActivityGroup() {
 	this->owner = nullptr;
 	this->parent = nullptr;
@@ -212,9 +278,7 @@ MenuActivityGroup::MenuActivityGroup(GameState* owner, MenuObject* parent, std::
 	this->active_index = active_index;
 	this->prev_active_index = *active_index;
 	this->only_render_active = only_render_active;
-	if (hint != -1) {
-		children.reserve(hint);
-	}
+	children.reserve(hint);
 }
 
 MenuActivityGroup::MenuActivityGroup(MenuActivityGroup& other) {
@@ -280,10 +344,10 @@ void MenuActivityGroup::process() {
 		children[*active_index].event_on_selected();
 		children[*active_index].bool_var("Active") = true;
 	}
+	prev_active_index = *active_index;
 	for (size_t i = 0, max = children.size(); i < max; i++) {
 		children[i].event_process();
 	}
-	prev_active_index = *active_index;
 }
 
 void MenuActivityGroup::render() {
@@ -297,10 +361,10 @@ void MenuActivityGroup::render() {
 	}
 }
 
-void MenuActivityGroup::add_child(std::string name, int hint) {
+void MenuActivityGroup::add_child(std::string name, int texture_hint, int child_hint, int activity_hint) {
 	int idx = children.size();
 	child_map[name] = idx;
-	children.emplace_back(owner, this->parent, name, hint);
+	children.emplace_back(owner, this->parent, name, texture_hint, child_hint, activity_hint);
 	children.back().name = name;
 	if (idx == *active_index) {
 		children.back().push_bool_var("Active", true);
@@ -308,6 +372,8 @@ void MenuActivityGroup::add_child(std::string name, int hint) {
 	else {
 		children.back().push_bool_var("Active", false);
 	}
+	children.back().push_ptr_var("Activity Group", this);
+	children.back().push_ptr_var("Active Index", active_index);
 }
 
 int MenuActivityGroup::num_children() {
@@ -325,6 +391,29 @@ MenuObject& MenuActivityGroup::get_child(int idx) {
 	return children[idx];
 }
 
+MenuObject& MenuActivityGroup::get_active_child() {
+	return children[*active_index];
+}
+
+int MenuActivityGroup::get_active_child_index() {
+	return *active_index;
+}
+
+void MenuActivityGroup::set_active_child(std::string name) {
+	if (!child_map.contains(name)) {
+		GameManager::get_instance()->add_crash_log("Failed to find Child: " + name + " in MenuActivityGroup " + this->name);
+	}
+	*active_index = child_map[name];
+}
+
+void MenuActivityGroup::set_active_child(int idx) {
+	*active_index = idx;
+}
+
+void MenuActivityGroup::inc_active_child(int idx) {
+	*active_index = std::max(0, *active_index + idx) % children.size();
+}
+
 MenuObject::MenuObject() {
 	owner = nullptr;
 	parent = nullptr;
@@ -332,6 +421,8 @@ MenuObject::MenuObject() {
 	pos = glm::vec3(0.0);
 	orientated_pos = glm::vec3(0.0);
 	orientation = SCREEN_TEXTURE_ORIENTATION_MIDDLE;
+	width = 0;
+	height = 0;
 	up_event_function = [](MenuObject* object) {};
 	down_event_function = [](MenuObject* object) {};
 	left_event_function = [](MenuObject* object) {};
@@ -348,13 +439,15 @@ MenuObject::MenuObject() {
 	on_deselected_event_function = [](MenuObject* object) {};
 }
 
-MenuObject::MenuObject(GameState* owner, MenuObject* parent, std::string name, int hint) {
+MenuObject::MenuObject(GameState* owner, MenuObject* parent, std::string name, int texture_hint, int child_hint, int activity_hint) {
 	this->owner = owner;
 	this->parent = parent;
 	this->name = name;
 	pos = glm::vec3(0.0);
 	orientated_pos = glm::vec3(0.0);
 	orientation = SCREEN_TEXTURE_ORIENTATION_MIDDLE;
+	width = 0;
+	height = 0;
 	up_event_function = [](MenuObject* object) {};
 	down_event_function = [](MenuObject* object) {};
 	left_event_function = [](MenuObject* object) {};
@@ -369,10 +462,9 @@ MenuObject::MenuObject(GameState* owner, MenuObject* parent, std::string name, i
 	post_render_function = [](MenuObject* object) {};
 	on_selected_event_function = [](MenuObject* object) {};
 	on_deselected_event_function = [](MenuObject* object) {};
-	if (hint != -1) {
-		children.reserve(hint);
-		activity_groups.reserve(hint);
-	}
+	textures.reserve(texture_hint);
+	children.reserve(child_hint);
+	activity_groups.reserve(activity_hint);
 }
 
 MenuObject::MenuObject(MenuObject& other) {
@@ -382,6 +474,8 @@ MenuObject::MenuObject(MenuObject& other) {
 	this->pos = other.pos;
 	this->orientated_pos = other.orientated_pos;
 	this->orientation = other.orientation;
+	this->width = other.width;
+	this->height = other.height;
 	for (size_t i = 0; i < other.textures.size(); i++) {
 		this->textures.push_back(other.textures[i]);
 		this->textures.back().attach_anchor_pos(&this->orientated_pos);
@@ -426,6 +520,8 @@ MenuObject::MenuObject(const MenuObject& other) {
 	this->pos = other.pos;
 	this->orientated_pos = other.orientated_pos;
 	this->orientation = other.orientation;
+	this->width = other.width;
+	this->height = other.height;
 	for (size_t i = 0; i < other.textures.size(); i++) {
 		this->textures.push_back(other.textures[i]);
 		this->textures.back().attach_anchor_pos(&this->orientated_pos);
@@ -470,6 +566,8 @@ MenuObject::MenuObject(MenuObject&& other) noexcept {
 	this->pos = other.pos;
 	this->orientated_pos = other.orientated_pos;
 	this->orientation = other.orientation;
+	this->width = other.width;
+	this->height = other.height;
 	for (size_t i = 0; i < other.textures.size(); i++) {
 		this->textures.push_back(other.textures[i]);
 		this->textures.back().attach_anchor_pos(&this->orientated_pos);
@@ -514,6 +612,8 @@ MenuObject::MenuObject(const MenuObject&& other) noexcept {
 	this->pos = other.pos;
 	this->orientated_pos = other.orientated_pos;
 	this->orientation = other.orientation;
+	this->width = other.width;
+	this->height = other.height;
 	for (size_t i = 0; i < other.textures.size(); i++) {
 		this->textures.push_back(other.textures[i]);
 		this->textures.back().attach_anchor_pos(&this->orientated_pos);
@@ -555,6 +655,9 @@ MenuObject::~MenuObject() {
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		textures[i].destroy();
 	}
+	sound_player.stop_sound_all();
+	sound_player.stop_reserved_sound();
+	sound_player.unload_all_sounds();
 	int_vars.clear();
 	float_vars.clear();
 	bool_vars.clear();
@@ -571,93 +674,100 @@ void MenuObject::render() {
 
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT): {
-			orientated_pos.x -= WINDOW_WIDTH;
-			orientated_pos.y -= WINDOW_HEIGHT;
+			orientated_pos.x -= WINDOW_WIDTH - width;
+			orientated_pos.y -= WINDOW_HEIGHT - height;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE): {
-			orientated_pos.y -= WINDOW_HEIGHT;
+			orientated_pos.y -= WINDOW_HEIGHT - height;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT): {
 			orientated_pos.x *= -1.0;
-			orientated_pos.x += WINDOW_WIDTH;
-			orientated_pos.y -= WINDOW_HEIGHT;
+			orientated_pos.x += WINDOW_WIDTH - width;
+			orientated_pos.y -= WINDOW_HEIGHT - height;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT): {
-			orientated_pos.x -= WINDOW_WIDTH;
+			orientated_pos.x -= WINDOW_WIDTH - width;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT): {
 			orientated_pos.x *= -1.0;
-			orientated_pos.x += WINDOW_WIDTH;
+			orientated_pos.x += WINDOW_WIDTH - width;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_TOP_LEFT): {
 			orientated_pos.y *= -1.0;
-			orientated_pos.x -= WINDOW_WIDTH;
-			orientated_pos.y += WINDOW_HEIGHT;
+			orientated_pos.x -= WINDOW_WIDTH - width;
+			orientated_pos.y += WINDOW_HEIGHT - height;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE): {
 			orientated_pos.y *= -1.0;
-			orientated_pos.y += WINDOW_HEIGHT;
+			orientated_pos.y += WINDOW_HEIGHT - height;
 		} break;
 		case (SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT): {
 			orientated_pos.x *= -1.0;
 			orientated_pos.y *= -1.0;
-			orientated_pos.x += WINDOW_WIDTH;
-			orientated_pos.y += WINDOW_HEIGHT;
+			orientated_pos.x += WINDOW_WIDTH - width;
+			orientated_pos.y += WINDOW_HEIGHT - height;
 		} break;
 	}
 	if (parent != nullptr) {
 		orientated_pos += parent->orientated_pos;
 	}
 	pre_render_function(this);
-	for (int i = 0, max = textures.size(); i < max; i++) {
-		textures[i].process(); //Once we transition from GameTexture to ScreenTexture, this line is gone
-		textures[i].render();
-	}
-	
-	for (size_t i = 0, i2 = 0, max = children.size(), max2 = activity_group_orders.size(); i < max || i2 < max2; i++) {
-		if (i2 < max2 && i == activity_group_orders[i2]) {
-			activity_groups[i2].render();
-			i2++;
-		}
-		if (i < max) {
-			children[i].render();
+	for (size_t i = 0, max = render_vec.size(); i < max; i++) {
+		switch (render_vec[i].second) {
+			case (RENDER_TYPE_TEXTURE): {
+				GameTexture* texture = (GameTexture*)render_vec[i].first;
+				texture->process();
+				texture->render();
+			} break;
+			case (RENDER_TYPE_CHILD): {
+				MenuObject* child = (MenuObject*)render_vec[i].first;
+				child->render();
+			} break;
+			case (RENDER_TYPE_ACTIVITY): {
+				MenuActivityGroup* activity_group = (MenuActivityGroup*)render_vec[i].first;
+				activity_group->render();
+			} break;
 		}
 	}
 	post_render_function(this);
 }
 
-void MenuObject::add_child(std::string name, int hint) {
+void MenuObject::add_child(std::string name, int texture_hint, int child_hint, int activity_hint) {
 	child_map[name] = children.size();
-	children.emplace_back(owner, this, name, hint);
+	children.emplace_back(owner, this, name, texture_hint, child_hint, activity_hint);
 	children.back().name = name;
+	render_vec.push_back(std::pair(&children.back(), RENDER_TYPE_CHILD));
 }
 
 void MenuObject::add_activity_group(std::string name, int* active_index, bool only_render_active, int hint) {
 	activity_group_map[name] = activity_groups.size();
-	activity_group_orders.emplace_back(children.size());
 	if (active_index == nullptr) {
 		active_indices.push_back(0);
 		active_index = &active_indices.back();
 	}
 	activity_groups.emplace_back(owner, this, name, active_index, only_render_active, hint);
+	render_vec.push_back(std::pair(&activity_groups.back(), RENDER_TYPE_ACTIVITY));
 }
 
 void MenuObject::add_texture(std::string name, std::string path) {
 	texture_map[name] = textures.size();
 	textures.emplace_back(path);
 	textures.back().attach_anchor_pos(&orientated_pos);
+	render_vec.push_back(std::pair(&textures.back(), RENDER_TYPE_TEXTURE));
 }
 
 void MenuObject::add_texture(std::string name, Font& font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	texture_map[name] = textures.size();
 	textures.emplace_back(font, text, rgba, border_rgbs);
 	textures.back().attach_anchor_pos(&orientated_pos);
+	render_vec.push_back(std::pair(&textures.back(), RENDER_TYPE_TEXTURE));
 }
 
 void MenuObject::add_texture(std::string name, const GameTexture& that) {
 	texture_map[name] = textures.size();
 	textures.emplace_back(that);
 	textures.back().attach_anchor_pos(&orientated_pos);
+	render_vec.push_back(std::pair(&textures.back(), RENDER_TYPE_TEXTURE));
 }
 
 void MenuObject::add_texture(std::string name, unsigned int texture_id) {
@@ -665,6 +775,7 @@ void MenuObject::add_texture(std::string name, unsigned int texture_id) {
 	textures.emplace_back(GameTexture());
 	textures.back().init(texture_id);
 	textures.back().attach_anchor_pos(&orientated_pos);
+	render_vec.push_back(std::pair(&textures.back(), RENDER_TYPE_TEXTURE));
 }
 
 int MenuObject::num_children() {
@@ -708,6 +819,20 @@ GameTexture& MenuObject::get_texture(int idx) {
 	return textures[idx];
 }
 
+std::string MenuObject::get_name() {
+	return name;
+}
+
+void MenuObject::set_active_sibling(std::string name) {
+	if (ptr_var("Activity Group") == nullptr) return;
+	((MenuActivityGroup*)ptr_var("Activity Group"))->set_active_child(name);
+}
+
+void MenuObject::set_active_sibling(int idx) {
+	if (ptr_var("Activity Group") == nullptr) return;
+	((MenuActivityGroup*)ptr_var("Activity Group"))->set_active_child(idx);
+}
+
 void MenuObject::set_orientation(int orientation) {
 	this->orientation = orientation;
 }
@@ -726,6 +851,21 @@ void MenuObject::set_pos(glm::vec3 pos) {
 
 void MenuObject::set_pos(glm::vec3 pos, int frames) {
 	this->pos.set_target_val(pos, frames);
+}
+
+void MenuObject::set_dimensions(int width, int height) {
+	this->width = width;
+	this->height = height;
+}
+
+void MenuObject::set_dimensions(int texture_id) {
+	this->width = textures[texture_id].get_width();
+	this->height = textures[texture_id].get_height();
+}
+
+void MenuObject::set_dimensions(std::string texture) {
+	this->width = get_texture(texture).get_width();
+	this->height = get_texture(texture).get_height();
 }
 
 void MenuObject::push_int_var(std::string name, int val) {

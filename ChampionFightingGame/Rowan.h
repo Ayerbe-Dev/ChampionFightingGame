@@ -16,7 +16,9 @@ public:
 	bool chara_air_status_act() override;
 
 	bool chara_status_attack() override;
+	bool chara_status_attack_air() override;
 	void chara_enter_status_attack_other() override;
+	void chara_enter_status_attack_air_other() override;
 
 	//Statuses
 
@@ -47,7 +49,7 @@ public:
 	void rowan_status_special_uppercut_land();
 	void rowan_enter_status_special_uppercut_land();
 	void rowan_exit_status_special_uppercut_land();
-	void rowan_status_special_upkick();
-	void rowan_enter_status_special_upkick();
-	void rowan_exit_status_special_upkick();
+	void rowan_status_special_install();
+	void rowan_enter_status_special_install();
+	void rowan_exit_status_special_install();
 };

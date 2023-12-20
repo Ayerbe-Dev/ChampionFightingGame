@@ -23,10 +23,12 @@ const int JUMP_KIND_B = 1;
 const int JUMP_KIND_N = 2;
 const int JUMP_KIND_MAX = 3;
 
-const int HITSTUN_HEIGHT_STAND = 0;
-const int HITSTUN_HEIGHT_CROUCH = 1;
-const int HITSTUN_HEIGHT_NONE = 2;
-const int HITSTUN_HEIGHT_MAX = 3;
+const int HITSTUN_HEIGHT_NONE = 0;
+const int HITSTUN_HEIGHT_STAND = 1;
+const int HITSTUN_HEIGHT_FORCE_STAND = 2;
+const int HITSTUN_HEIGHT_CROUCH = 3;
+const int HITSTUN_HEIGHT_FORCE_CROUCH = 4;
+const int HITSTUN_HEIGHT_MAX = 5;
 
 const int PARRY_HEIGHT_HIGH = 0;
 const int PARRY_HEIGHT_MID = 1;
@@ -66,7 +68,8 @@ const int SPECIAL_LEVEL_L = 0;
 const int SPECIAL_LEVEL_M = 1;
 const int SPECIAL_LEVEL_H = 2;
 const int SPECIAL_LEVEL_EX = 3;
-const int SPECIAL_LEVEL_MAX = 4;
+const int SPECIAL_LEVEL_NONE = 4;
+const int SPECIAL_LEVEL_MAX = 5;
 
 const int WAKEUP_TYPE_DEFAULT = 0;
 const int WAKEUP_TYPE_FAST = 1;
@@ -116,7 +119,9 @@ const int CANCEL_KIND_JUMP = 39;
 const int CANCEL_KIND_GRAB = 40;
 const int CANCEL_KIND_PARRY_START = 41;
 const int CANCEL_KIND_ADVANCE = 42;
-const int CANCEL_KIND_MAX = 43;
+const int CANCEL_KIND_ADVANCE_FORWARD = 43;
+const int CANCEL_KIND_ADVANCE_BACK = 44;
+const int CANCEL_KIND_MAX = 45;
 
 const int CANCEL_CAT_HIT = 0;
 const int CANCEL_CAT_BLOCK = 1;
@@ -137,4 +142,4 @@ const int UI_TEXT_TYPE_REVERSAL = 6;
 const int COUNTERHIT_VAL_NONE = 0;
 const int COUNTERHIT_VAL_COUNTER = 1;
 const int COUNTERHIT_VAL_PUNISH = 2;
-const int COUNTERHIT_VAL_UNIQUE_STATUS = 3;
+const int COUNTERHIT_VAL_SPECIAL_STATUS = 3;

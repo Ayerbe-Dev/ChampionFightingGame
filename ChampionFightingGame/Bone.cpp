@@ -2,8 +2,8 @@
 #include <fstream>
 #include "utils.h"
 
-bool Skeleton::operator!() {
-	return bone_data.empty();
+Skeleton::operator bool() {
+	return !bone_data.empty();
 }
 
 bool Skeleton::load_skeleton(std::string path) {

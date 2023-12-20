@@ -1,7 +1,7 @@
 #include "Projectile.h"
  
 void Projectile::add_pos(glm::vec3 pos) {
-	pos *= battle_object_manager->get_world_rate(id);
+	pos *= object_manager->get_world_rate(this);
 	this->pos += pos;
 }
 

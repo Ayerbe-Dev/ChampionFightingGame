@@ -26,6 +26,8 @@ public:
 
 	void dim_lights(float dim_mul, Shader** shader);
 
+	void start_fade_sequence(unsigned char fade_frames, std::function<void()> mid_fade_func);
+
 	void update_shader_lights();
 	void update_shader_cams();
 	void update_shader_shadows();
@@ -38,6 +40,8 @@ public:
 
 	void buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffer_arg = ScriptArg());
 	void execute_buffered_events();
+
+	void update_screen();
 
 	void handle_window_events(std::function<void(SDL_Event*)> event_handler = nullptr);
 
@@ -61,6 +65,7 @@ public:
 	Framebuffer SSAO_blur;
 
 	GameTexture gbuffer_texture;
+	GameTexture fade_texture;
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;
@@ -76,4 +81,8 @@ public:
 private:
 	RenderManager();
 	static RenderManager* instance;
+
+	unsigned char fade_frames;
+	std::function<void()> mid_fade_func;
+	bool fading;
 };

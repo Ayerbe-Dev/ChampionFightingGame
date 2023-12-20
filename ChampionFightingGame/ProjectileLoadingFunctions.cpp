@@ -2,7 +2,7 @@
 #include "Projectile.h"
 #include "RenderManager.h"
 #include "Fighter.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "GameManager.h"
@@ -11,10 +11,9 @@
 #include "Sndlst.h"
 
 void Projectile::load_projectile() {
-	sound_manager->register_game_object(this);
 	effect_manager->add_effect_caster(id);
 
-	stage = battle_object_manager->stage;
+	stage = object_manager->stage;
 
 	load_stats();
 	load_params();
@@ -33,7 +32,6 @@ void Projectile::load_sound_list() {
 	std::ifstream sound_stream;
 	std::string name;
 	std::string file;
-	float volume_mod;
 	sound_stream.open(resource_dir + "/vc/vc_list.sndlst");
 	if (sound_stream.fail()) {
 		sound_stream.close();
@@ -41,11 +39,11 @@ void Projectile::load_sound_list() {
 	}
 	else {
 		while (!sound_stream.eof()) {
-			parse_sndlst_entry(sound_stream, name, file, volume_mod);
+			parse_sndlst_entry(sound_stream, name, file);
 			if (name == "") {
 				break;
 			}
-			sound_manager->load_sound(name, resource_dir + "/vc/" + file, volume_mod);
+			sound_player.load_sound(name, resource_dir + "/vc/" + file);
 		}
 		sound_stream.close();
 	}
@@ -56,11 +54,11 @@ void Projectile::load_sound_list() {
 	}
 	else {
 		while (!sound_stream.eof()) {
-			parse_sndlst_entry(sound_stream, name, file, volume_mod);
+			parse_sndlst_entry(sound_stream, name, file);
 			if (name == "") {
 				break;
 			}
-			sound_manager->load_sound(name, resource_dir + "/se/" + file, volume_mod);
+			sound_player.load_sound(name, resource_dir + "/se/" + file);
 
 		}
 		sound_stream.close();

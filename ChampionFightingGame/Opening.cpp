@@ -2,7 +2,7 @@
 #include <glew/glew.h>
 #include "GameTexture.h"
 #include "RenderManager.h"
-#include "utils.h"
+#include "TimeFuncs.h"
 
 void opening_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -71,7 +71,7 @@ void opening_main() {
 		titleSplash.render();
 		textSplash.render();
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 	}
 
 	titleSplash.destroy();

@@ -1,13 +1,12 @@
 #pragma warning(disable : 4996)
 #include "Menu.h"
 #include <glew/glew.h>
-#include "utils.h"
+#include "WindowConstants.h"
 #include "Player.h"
 #include <math.h>
 #include "cotr_imgui_debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
-#include "Loader.h"
 #include "RenderManager.h"
 #include "FontManager.h"
 #include "SoundManager.h"
@@ -22,7 +21,6 @@ void menu_main() {
 	Player *player[2];
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
-	const Uint8* keyboard_state;
 
 	MainMenu *main_menu = new MainMenu;
 
@@ -38,7 +36,7 @@ void menu_main() {
 		main_menu->process_game_state();
 		main_menu->render_game_state();
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 
 		if (main_menu->sub_state != GAME_STATE_NONE) {
 			if (game_manager->game_main[main_menu->sub_state] != nullptr) {
@@ -66,10 +64,6 @@ MainMenu::MainMenu() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	game_loader = new GameLoader(1);
-	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
-	loading_thread.detach();
-
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("Fiend-Oblique", 36);
 	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 20);
@@ -77,7 +71,7 @@ MainMenu::MainMenu() {
 	glm::vec4 border_rgbs = { 1.0, 1.0, 1.0, 2.0 };
 
 	menu_objects.reserve(2);
-	push_menu_object("Background", 2); {
+	push_menu_object("Background"); {
 		push_menu_texture("bg", "resource/game_state/menu/main/bg.gif");
 		push_menu_process_function([this](MenuObject* object) {
 			object->get_texture("bg").set_sprite(menu_frame);
@@ -105,7 +99,7 @@ MainMenu::MainMenu() {
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 			} pop_menu_stack();
 		} pop_menu_stack();
-		push_menu_child("Rotating Text"); {
+		push_menu_child("Rotating Text", 5); {
 			push_menu_pre_render_function([this](MenuObject* object) {
 				for (int i = 0; i < 5; i++) {
 					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
@@ -130,7 +124,7 @@ MainMenu::MainMenu() {
 		} pop_menu_stack();
 	} pop_menu_stack();
 	border_rgbs.a = 1.0;
-	push_menu_object("Sub Table", 1); {
+	push_menu_object("Sub Table"); {
 		object_stack.top()->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		object_stack.top()->set_pos(glm::vec3(glm::vec3(-450.0, 1080.0, 0.0)));
 		push_menu_texture("table", "resource/game_state/menu/main/SubMenu.png"); {
@@ -143,7 +137,7 @@ MainMenu::MainMenu() {
 			last_pushed_texture->set_height(50);
 		}
 		push_menu_activity_group("Sub Entries", &top_selection, true, 5); {
-			push_menu_child("Sub Online"); {
+			push_menu_child("Sub Online", 3); {
 				push_menu_int_var("Sub Selection", 0);
 				push_menu_up_event_function([this](MenuObject* object) {
 					int& selection = object->int_var("Sub Selection");
@@ -191,7 +185,7 @@ MainMenu::MainMenu() {
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
 			} pop_menu_stack();
-			push_menu_child("Sub Solo"); {
+			push_menu_child("Sub Solo", 3); {
 				push_menu_int_var("Sub Selection", 0);
 				push_menu_up_event_function([this](MenuObject* object) {
 					int& selection = object->int_var("Sub Selection");
@@ -239,7 +233,7 @@ MainMenu::MainMenu() {
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
 			} pop_menu_stack();
-			push_menu_child("Sub VS"); {
+			push_menu_child("Sub VS", 3); {
 				push_menu_int_var("Sub Selection", 0);
 				push_menu_up_event_function([this](MenuObject* object) {
 					int& selection = object->int_var("Sub Selection");
@@ -261,10 +255,10 @@ MainMenu::MainMenu() {
 							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_NORMAL);
 						} break;
 						case (1): {
-							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_1CPU);
+							this->update_state(GAME_STATE_DEBUG_MENU);
 						} break;
 						case (2): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_SPECIAL);
 						} break;
 						default: {
 							this->update_state(GAME_STATE_DEBUG_MENU);
@@ -280,14 +274,14 @@ MainMenu::MainMenu() {
 				push_menu_texture("Battle Label", sub_text_font, "Battle", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				last_pushed_texture->set_pos(glm::vec3(1650.0, 520.0, 0.0));
-				push_menu_texture("CPU Label", sub_text_font, "CPU Battle", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				push_menu_texture("Tournament Label", sub_text_font, "Tournament", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				last_pushed_texture->set_pos(glm::vec3(1650.0, 320.0, 0.0));
-				push_menu_texture("Tournament Label", sub_text_font, "Tournament", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
+				push_menu_texture("Special Label", sub_text_font, "Special Match", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				last_pushed_texture->set_pos(glm::vec3(1650.0, 120.0, 0.0));
 			} pop_menu_stack();
-			push_menu_child("Sub Options"); {
+			push_menu_child("Sub Options", 5); {
 				push_menu_int_var("Sub Selection", 0);
 				push_menu_up_event_function([this](MenuObject* object) {
 					int& selection = object->int_var("Sub Selection");
@@ -347,7 +341,7 @@ MainMenu::MainMenu() {
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				last_pushed_texture->set_pos(glm::vec3(1650.0, -280.0, 0.0));
 			} pop_menu_stack();
-			push_menu_child("Sub Gallery"); {
+			push_menu_child("Sub Gallery", 4); {
 				push_menu_int_var("Sub Selection", 0);
 				push_menu_up_event_function([this](MenuObject* object) {
 					int& selection = object->int_var("Sub Selection");
@@ -404,15 +398,12 @@ MainMenu::MainMenu() {
 		} pop_menu_stack();
 	} pop_menu_stack();
 
-	inc_thread();
-	game_loader->finished = true;
-
 	main_text_font.unload_font();
 	sub_text_font.unload_font();
 }
 
 MainMenu::~MainMenu() {
-	delete game_loader;
+
 }
 
 void MainMenu::process_main() {
@@ -432,6 +423,9 @@ void MainMenu::process_main() {
 		if (menu_frame < 1) { //TODO: When a full spritesheet is implemented, replace 1 w the number of frames
 			menu_frame++;
 		}
+	}
+	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
+		menu_objects[i].event_process();
 	}
 }
 

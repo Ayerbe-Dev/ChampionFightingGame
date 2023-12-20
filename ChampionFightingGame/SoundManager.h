@@ -6,47 +6,58 @@
 #include <map>
 #include "Sound.h"
 
-class GameObject;
-
-struct MusicInstance {
-	unsigned int cursor;
-	char curr_track;
-	unsigned int source;
-	std::string name;
+struct SoundResource {
+	SoundResource();
+	Sound sound;
+	int user_count;
 };
+
+struct MusicResource {
+	MusicResource();
+	Music music;
+	int user_count;
+};
+
+class SoundPlayer;
 
 class SoundManager {
 public:
 	SoundManager(SoundManager& other) = delete;
 	void operator=(const SoundManager& other) = delete;
 
-	void register_game_object(GameObject* game_object);
-	void clear_game_objects();
+	void register_sound_player(SoundPlayer* sound_player);
+	void unregister_sound_player(SoundPlayer* sound_player);
+
+	void clear_sound_players();
 
 	void process_sounds();
 
-	void play_music(std::string name);
-	void pause_music(std::string name);
+	MusicInstance* play_music(std::string dir, float volume_mod);
+	void pause_music(std::string dir);
 	void pause_music_all();
-	void resume_music(std::string name);
+	void resume_music(std::string dir);
 	void resume_music_all();
-	void stop_music(std::string name);
+	void stop_music(std::string dir);
 	void stop_music_all();
 ;
-	void pause_vc_all();
-	void pause_se_all();
-	void resume_vc_all();
-	void resume_se_all();
+	void pause_all_reserved_sounds();
+	void pause_all_sounds();
+	void resume_all_reserved_sounds();
+	void resume_all_sounds();
 
-	Sound get_sound(std::string name);
-	unsigned int get_sound_buffer(std::string name);
 
-	void load_sound(std::string name, std::string dir, float volume_mod);
-	void load_music(std::string name, std::string dir, float volume_mod);
-	void unload_sound(std::string name);
-	void unload_music(std::string name);
+	Sound& get_sound(std::string dir);
+	Music& get_music(std::string dir);
+	void load_sound(std::string dir);
+	void load_music(std::string dir);
+	void unuse_sound(std::string dir);
+	void unuse_music(std::string dir);
+	void unload_sound(std::string dir, bool strict = true);
+	void unload_music(std::string dir, bool strict = true);
 	void unload_all_sounds();
 	void unload_all_music();
+
+	void unload_unused();
 
 	static SoundManager* get_instance();
 	void destroy_instance();
@@ -58,9 +69,9 @@ private:
 	ALCdevice* al_device;
 	ALCcontext* al_context;
 
-	std::map<std::string, Sound> sound_map;
-	std::map<std::string, Music> music_map;
-	std::vector<GameObject*> objects;
+	std::map<std::string, SoundResource> sound_map;
+	std::map<std::string, MusicResource> music_map;
+	std::list<SoundPlayer*> sound_players;
 	std::list<MusicInstance> active_music;
 
 	static SoundManager* instance;

@@ -1,25 +1,24 @@
 #include "Fighter.h"
 #include "utils.h"
 
-void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec2 offset, int frames) {
-	Fighter* that = battle_object_manager->fighter[!id];
+void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec3 offset) {
+	Fighter* that = object_manager->fighter[!id];
 	int attacker_index = model.get_bone_id(attacker_bone_name);
 	int defender_index = model.get_bone_id(defender_bone_name);
 	if (attacker_index == -1 || defender_index == -1) {
 		return;
 	}
-	that->fighter_int[FIGHTER_INT_GRAB_INIT_POS_CHANGE_FRAMES] = frames;
-	that->fighter_int[FIGHTER_INT_GRAB_POS_CHANGE_FRAMES] = frames;
 	that->fighter_int[FIGHTER_INT_GRAB_BONE_ID] = attacker_index;
 	that->fighter_int[FIGHTER_INT_GRABBED_BONE_ID] = defender_index;
 	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_X] = offset.x * facing_dir;
 	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y] = offset.y;
-	that->fighter_flag[FIGHTER_FLAG_GRABBED] = true;
+	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Z] = offset.z;
+	that->fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW] = status_kind == FIGHTER_STATUS_GRAB || status_kind == FIGHTER_STATUS_GRAB_AIR;
 }
 
 void Fighter::throw_opponent(float damage, float x_speed, float y_speed, float y_gravity, float max_fall_speed) {
 	damage *= (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10.0;
-	Fighter* that = battle_object_manager->fighter[!id];
+	Fighter* that = object_manager->fighter[!id];
 	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
 	fighter_int[FIGHTER_INT_COMBO_COUNT]++;
 	that->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -28,7 +27,6 @@ void Fighter::throw_opponent(float damage, float x_speed, float y_speed, float y
 	that->fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = y_speed;
 	that->fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = y_gravity;
 	that->fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = max_fall_speed;
-	that->fighter_flag[FIGHTER_FLAG_GRABBED] = false;
 	that->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
 	if (that->pos.x != pos.x) {
 		that->facing_right = that->pos.x < pos.x;

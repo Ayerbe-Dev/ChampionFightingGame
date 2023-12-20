@@ -8,6 +8,8 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		clear_pushbox_all();
 		fighter_flag[FIGHTER_FLAG_ATTACK_HIT] = false;
 		fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = false;
+		fighter_flag[FIGHTER_FLAG_PROJECTILE_HIT_DURING_STATUS] = false;
+		fighter_flag[FIGHTER_FLAG_PROJECTILE_BLOCKED_DURING_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = false;
 		fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
 		fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
@@ -23,6 +25,11 @@ bool Fighter::change_status(unsigned int new_status_kind, bool call_end_status, 
 		if (call_end_status) {
 			(this->*exit_status_script[status_kind])();
 		}
+		if (fighter_flag[FIGHTER_FLAG_FLIP_FACING_ON_STATUS_END]) {
+			facing_right = !facing_right;
+			facing_dir *= -1;
+		}
+		fighter_flag[FIGHTER_FLAG_FLIP_FACING_ON_STATUS_END] = false;
 		status_kind = new_status_kind;
 		(this->*enter_status_script[status_kind])();
 		fighter_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED] = false;
@@ -109,7 +116,7 @@ unsigned int Fighter::get_status_group() {
 /// When it's time to transition out of the current status, this changes to the proper status. If no arg is given, this will change status to wait or
 /// fall based on your situation_kind
 bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status, bool require_different_status) {
-	if (is_anim_end) {
+	if (anim_end) {
 		if (situation_kind == FIGHTER_SITUATION_AIR && post_status_kind == FIGHTER_STATUS_WAIT) {
 			post_status_kind = FIGHTER_STATUS_FALL;
 		}
@@ -146,12 +153,9 @@ bool Fighter::check_hitstun_parry() {
 	if (fighter_int[FIGHTER_INT_DAMAGE_SCALE] >= 3 //Damage scale has to be at least 3, so you can't
 		//hitstun parry the first 3 hits of a combo (4 on counterhit, 5 on special counterhits)
 		&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 //Can't start the hitstun parry during hitlag
-		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] //Can't hitstun parry if you already
-		//tried it during this combo
-		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY_HITBOX]) {
+		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]) {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
-			fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY] = true;
 			player->controller.reset_buffer();
 			return true;
 		}
@@ -170,4 +174,8 @@ bool Fighter::is_status_delay() {
 		}
 		break;
 	}
+}
+
+bool Fighter::is_ko() {
+	return fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0f && GameManager::get_instance()->get_game_state()->game_context != GAME_CONTEXT_TRAINING;
 }

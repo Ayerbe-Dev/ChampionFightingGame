@@ -3,7 +3,7 @@
 #include "ProjectileConstants.h"
 #include <glm/glm.hpp>
 #include <iostream>
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 
 #define ADD_PROJECTILE_STATUS(index, status_func) (status_script[index] = (void (Projectile::*)(void))status_func)
 #define ADD_PROJECTILE_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Projectile::*)(void))(status_func))

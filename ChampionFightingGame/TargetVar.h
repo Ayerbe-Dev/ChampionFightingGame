@@ -187,6 +187,11 @@ public:
 		this->target_val = target_val;
 		target_change_per_frame = target_val - val;
 		target_change_per_frame /= frames;
+		if (target_change_per_frame == T(0)) {
+			target_change_per_frame = val - target_val;
+			target_change_per_frame /= frames;
+			target_change_per_frame *= -1;
+		}
 		this->frames = frames;
 	}
 

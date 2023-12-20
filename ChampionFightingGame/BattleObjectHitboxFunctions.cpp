@@ -1,24 +1,25 @@
 #include "BattleObject.h"
 
 void BattleObject::new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, 
-	CollisionKind collision_kind, CounterhitType counterhit_type, HitStatus hit_status, 
-	unsigned int custom_hit_status, HitStatus counterhit_status, unsigned int custom_counterhit_status, 
-	bool knockdown_face_down, bool continue_launch, int juggle_start, int juggle_increase, 
-	int juggle_max, HitHeight hit_height, float damage, float chip_damage, int damage_scale, 
-	float meter_gain, int hitlag, int blocklag, int hitstun, int blockstun, bool disable_hitstun_parry, 
-	float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, float pushback_air_y, 
-	int pushback_frames, float launch_init_y, float launch_gravity, float launch_max_fall_speed, 
-	float launch_speed_x, glm::vec3 launch_target_pos, bool has_launch_target_pos, 
-	DamageKind damage_kind, HitLevel hit_level, int hit_effect_id, int hit_sound_id) {
+	CollisionKind collision_kind,  HitStatus hit_status, unsigned int custom_hit_status, 
+	HitFlag hit_flags, SpecialStatusCondition special_status_condition, HitStatus special_status, 
+	unsigned int custom_special_status, HitFlag special_hit_flags, int juggle_start, 
+	int juggle_increase, int juggle_max, HitHeight hit_height, float damage, float chip_damage, 
+	int damage_scale, float meter_gain, int hitlag, int blocklag, int hitstun, int blockstun, 
+	float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, 
+	float pushback_air_y, int pushback_frames, float launch_init_y, float launch_gravity, 
+	float launch_max_fall_speed, float launch_speed_x, glm::vec3 launch_target_pos, 
+	bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, int hit_effect_id, 
+	int hit_sound_id) {
 	if (id < 10) {
-		hitboxes[id].activate(id, multihit, anchor, offset, collision_kind, counterhit_type,
-			hit_status, custom_hit_status, counterhit_status, custom_counterhit_status,
-			knockdown_face_down, continue_launch, juggle_start, juggle_increase, juggle_max, hit_height,
-			damage, chip_damage, damage_scale, meter_gain, hitlag, blocklag, hitstun, blockstun,
-			disable_hitstun_parry, pushback_ground_hit, pushback_ground_block, pushback_air_x,
-			pushback_air_y, pushback_frames, launch_init_y, launch_gravity, launch_max_fall_speed,
-			launch_speed_x, launch_target_pos, has_launch_target_pos, damage_kind, hit_level,
-			hit_effect_id, hit_sound_id
+		hitboxes[id].activate(id, multihit, anchor, offset, collision_kind,
+			hit_status, custom_hit_status, hit_flags, special_status_condition, special_status, 
+			custom_special_status, special_hit_flags, juggle_start, juggle_increase, juggle_max, 
+			hit_height, damage, chip_damage, damage_scale, meter_gain, hitlag, blocklag, hitstun, 
+			blockstun, pushback_ground_hit, pushback_ground_block, pushback_air_x, pushback_air_y, 
+			pushback_frames, launch_init_y, launch_gravity, launch_max_fall_speed, launch_speed_x, 
+			launch_target_pos, has_launch_target_pos, damage_kind, hit_level, hit_effect_id, 
+			hit_sound_id
 		);
 	}
 }

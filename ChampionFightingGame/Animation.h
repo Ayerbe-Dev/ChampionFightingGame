@@ -28,6 +28,7 @@ public:
 	AnimationTable& operator=(AnimationTable& other);
 	AnimationTable& operator=(const AnimationTable& other);
 	void load_anlst(std::string resource_dir, Skeleton skeleton);
+	void load_anim_single(std::string name, std::string anim_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp, Skeleton skeleton);
 	void unload_animations();
 	Animation* get_anim(std::string anim_name, bool verbose);
 private:

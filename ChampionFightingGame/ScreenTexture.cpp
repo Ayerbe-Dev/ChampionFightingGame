@@ -1,5 +1,5 @@
 #include "ScreenTexture.h"
-#include "utils.h"
+#include "WindowConstants.h"
 
 ScreenTexture::ScreenTexture() {
 	path = "";

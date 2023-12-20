@@ -160,15 +160,15 @@ void Battle::check_collisions() {
 						combo_hit[!i] = &texts[!i].back();
 					}
 				}
-				training_info[!i].hit_frame.update_text(info_font, "Hit Frame: " + std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_EXTERNAL_FRAME] + 1), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-				training_info[!i].damage.update_text(info_font,
-					"Damage: " + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_LAST_DAMAGE], 3) + "(" + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_LAST_DAMAGE_SCALE] * 100.0, 3) + "%)",
-					glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0)
-				);
-				training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-
-				int stun_frames = 0;
-				switch (fighter[i]->status_kind) {
+				if (game_context == GAME_CONTEXT_TRAINING) {
+					training_info[!i].hit_frame.update_text(info_font, "Hit Frame: " + std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_EXTERNAL_FRAME] + 1), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					training_info[!i].damage.update_text(info_font,
+						"Damage: " + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_LAST_DAMAGE], 3) + "(" + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_LAST_DAMAGE_SCALE] * 100.0, 3) + "%)",
+						glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0)
+					);
+					training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					int stun_frames = 0;
+					switch (fighter[i]->status_kind) {
 					default: {
 						stun_frames = fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES];
 						training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(stun_frames), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
@@ -192,9 +192,10 @@ void Battle::check_collisions() {
 						stun_frames += fighter[i]->get_anim_length("wakeup_fast_up");
 						training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(stun_frames) + "/" + std::to_string(stun_frames_slow), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					} break;
+					}
+					int frame_advantage = stun_frames - fighter[!i]->get_frames_until_actionable();
+					fighter[!i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 				}
-				int frame_advantage = stun_frames - fighter[!i]->get_frames_until_actionable();
-				fighter[!i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] = frame_advantage;
 			}
 			objects[i][i2]->connected_hitbox = nullptr;
 			objects[i][i2]->connected_grabbox = nullptr;
@@ -203,11 +204,10 @@ void Battle::check_collisions() {
 
 
 
-	if (game_context != GAME_CONTEXT_TRAINING &&
-		(fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0
+	if (game_context != GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE 
+		&& (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0
 		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0)) {
-		ko_timer = 300;
-		state = BATTLE_STATE_KO;
+		internal_state = BATTLE_STATE_KO;
 	}
 }
 

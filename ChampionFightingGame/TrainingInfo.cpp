@@ -51,13 +51,16 @@ void InputVisualizer::init(Fighter* fighter, Font* font, bool keep_frames) {
 	}
 	else {
 		for (int i = 0; i < 6; i++) {
-			buttons[i].set_pos(glm::vec3(925.0, 0.0, 0.0));
+			buttons[i].set_pos(glm::vec3(1150.0, 0.0, 0.0));
+			buttons[i].set_scale(0.8);
 		}
 		for (int i = 0; i < 9; i++) {
 			stick[i].init("resource/game_state/battle/ui/training/" + std::to_string(i + 1) + ".png");
-			stick[i].set_pos(glm::vec3(925.0, 0.0, 0.0));
+			stick[i].set_pos(glm::vec3(1150.0, 0.0, 0.0));
+			stick[i].set_scale(0.8);
 		}
-		background.set_pos(glm::vec3(925.0, 0.0, 0.0));
+		background.set_pos(glm::vec3(1150.0, 0.0, 0.0));
+		background.set_scale(0.8);
 		if (fighter->id) {
 			background.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 			for (int i = 0; i < 9; i++) {

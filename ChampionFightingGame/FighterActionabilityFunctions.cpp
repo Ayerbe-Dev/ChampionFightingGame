@@ -2,13 +2,13 @@
 #include "ParamAccessor.h"
 
 bool Fighter::is_actionable() {
-	if (battle_object_manager->world_rate == 0.0f && battle_object_manager->real_time_id != id) {
+	if (object_manager->world_rate == 0.0f && object_manager->real_time_id != id) {
 		return false; //Disable all actions in super freeze no matter what
 	}
 	if (anim_kind == nullptr) {
 		return true;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_GRABBED]
+	if (!fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]
 		&& status_kind != FIGHTER_STATUS_THROWN
 		&& (get_status_group() != STATUS_GROUP_HITSTUN || ((status_kind == FIGHTER_STATUS_HITSTUN 
 		|| status_kind == FIGHTER_STATUS_HITSTUN_AIR) && !fighter_int[FIGHTER_INT_HITSTUN_FRAMES]))
@@ -27,22 +27,6 @@ bool Fighter::is_actionable() {
 	else {
 		return false;
 	}
-}
-
-bool Fighter::has_meter(int bars) {
-	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
-	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
-	if (fighter_float[FIGHTER_FLOAT_EX_METER] >= ex_meter_size / (ex_meter_bars / bars)) {
-		return true;
-	}
-	return false;
-}
-
-void Fighter::spend_meter(int bars) {
-	int ex_meter_size = get_param_int(PARAM_FIGHTER, "ex_meter_size");
-	int ex_meter_bars = get_param_int(PARAM_FIGHTER, "ex_meter_bars");
-	fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] = 60;
-	fighter_float[FIGHTER_FLOAT_EX_METER] -= ex_meter_size / (ex_meter_bars / bars);
 }
 
 void Fighter::enable_all_cancels() {

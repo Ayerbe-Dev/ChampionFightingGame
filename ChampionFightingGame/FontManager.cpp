@@ -2,7 +2,7 @@
 #include "GameManager.h"
 #include "RenderManager.h"
 #include <glew/glew.h>
-#include "utils.h"
+#include "WindowConstants.h"
 
 FontManager::FontManager() {
 	if (FT_Init_FreeType(&ft)) {

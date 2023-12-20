@@ -1,5 +1,5 @@
 #include "BattleObject.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 
 BattleObject::BattleObject() {
 	id = -1;
@@ -24,5 +24,4 @@ BattleObject::BattleObject() {
 	last_execute_frame = 0.0;
 	player = nullptr;
 	stage = nullptr;
-	battle_object_manager = BattleObjectManager::get_instance();
 }

@@ -8,10 +8,21 @@
 #include <stack>
 #include "GameTexture.h"
 #include "Mouse.h"
+#include "SoundPlayer.h"
 
-class GameLoader;
 class MenuObject;
 class MenuActivityGroup;
+
+enum RenderType {
+    RENDER_TYPE_TEXTURE,
+    RENDER_TYPE_CHILD,
+    RENDER_TYPE_ACTIVITY
+};
+
+struct StateCondition {
+    int executed_frame;
+    int num_allowed_executions;
+};
 
 class GameState{
 public:
@@ -24,13 +35,18 @@ public:
     void render_game_state();
     virtual void render_main();
     void update_state(int game_state = GAME_STATE_MAX, int game_context = GAME_CONTEXT_MAX);
-    void inc_thread();
-    void push_menu_object(std::string name, int hint = -1);
+    void push_menu_object(std::string name, int texture_hint = 2, int child_hint = 2, int activity_hint = 2);
     MenuObject& get_menu_object(std::string name);
     void render_menu_object(std::string name);
 
-    void push_menu_child(std::string name, int hint = -1);
-    void push_menu_activity_group(std::string name, int* active_index, bool only_render_active, int hint = -1);
+    void push_menu_pos(glm::vec3 pos);
+    void push_menu_orientation(int orientation);
+    void push_menu_dimensions(int width, int height);
+    void push_menu_dimensions(int texture_id);
+    void push_menu_dimensions(std::string texture);
+
+    void push_menu_child(std::string name, int texture_hint = 2, int child_hint = 2, int activity_hint = 2);
+    void push_menu_activity_group(std::string name, int* active_index, bool only_render_active, int hint = 2);
     void push_menu_texture(std::string name, std::string path);
     void push_menu_texture(std::string name, Font& font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void push_menu_texture(std::string name, const GameTexture& that);
@@ -70,9 +86,11 @@ public:
 
     virtual void process_background();
 
+    bool execute_if(std::string name, int num_allowed_executions, bool condition);
+    bool execute_wait(std::string name, int num_allowed_executions, unsigned int frames);
+
     bool looping;
     int game_context;
-    GameLoader* game_loader;
 
     std::vector<MenuObject> menu_objects;
     std::unordered_map<std::string, unsigned int> menu_object_map;
@@ -85,14 +103,20 @@ public:
 
     Mouse mouse;
 
-    int sub_state = GAME_STATE_NONE;
     int player_id;
+    int sub_state;
+    
+    int internal_frame;
+    int prev_executed_frame;
+    int internal_state;
+    int prev_internal_state;
+    std::unordered_map<std::string, StateCondition> conditions;
 };
 
 class MenuActivityGroup {
 public:
     MenuActivityGroup();
-    MenuActivityGroup(GameState* owner, MenuObject* parent, std::string name, int* active_index, bool only_render_active, int hint = -1);
+    MenuActivityGroup(GameState* owner, MenuObject* parent, std::string name, int* active_index, bool only_render_active, int hint);
     MenuActivityGroup(MenuActivityGroup& other);
     MenuActivityGroup(const MenuActivityGroup& other);
     MenuActivityGroup(MenuActivityGroup&& other) noexcept;
@@ -101,10 +125,18 @@ public:
 
     void process();
     void render();
-    void add_child(std::string name, int hint = -1);
+    void add_child(std::string name, int texture_hint, int child_hint, int activity_hint);
     int num_children();
     MenuObject& get_child(std::string name);
     MenuObject& get_child(int idx);
+
+    MenuObject& get_active_child();
+    int get_active_child_index();
+
+    void set_active_child(std::string name);
+    void set_active_child(int idx);
+
+    void inc_active_child(int idx);
 
     int* active_index;
     int prev_active_index;
@@ -123,7 +155,7 @@ protected:
 class MenuObject {
 public:
     MenuObject();
-    MenuObject(GameState* owner, MenuObject* parent, std::string name, int hint = -1);
+    MenuObject(GameState* owner, MenuObject* parent, std::string name, int texture_hint, int child_hint, int activity_hint);
     MenuObject(MenuObject& other);
     MenuObject(const MenuObject& other);
     MenuObject(MenuObject&& other) noexcept;
@@ -131,8 +163,8 @@ public:
     ~MenuObject();
 
     void render();
-    void add_child(std::string name, int hint = -1);
-    void add_activity_group(std::string name, int* active_index, bool only_render_active, int hint = -1);
+    void add_child(std::string name, int texture_hint, int child_hint, int activity_hint);
+    void add_activity_group(std::string name, int* active_index, bool only_render_active, int hint);
     void add_texture(std::string name, std::string path);
     void add_texture(std::string name, Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void add_texture(std::string name, const GameTexture& that);
@@ -145,12 +177,19 @@ public:
     MenuActivityGroup& get_activity_group(int idx);
     GameTexture& get_texture(std::string name);
     GameTexture& get_texture(int idx);
+    std::string get_name();
+
+    void set_active_sibling(std::string name);
+    void set_active_sibling(int idx);
 
     void set_orientation(int orientation);
     glm::vec3 get_pos();
     void add_pos(glm::vec3 pos);
     void set_pos(glm::vec3 pos);
     void set_pos(glm::vec3 pos, int frames);
+    void set_dimensions(int width, int height);
+    void set_dimensions(int texture_id);
+    void set_dimensions(std::string name);
 
     void push_int_var(std::string name, int val);
     void push_float_var(std::string name, float val);
@@ -175,6 +214,8 @@ public:
     void event_on_selected();
     void event_on_deselected();
 
+    SoundPlayer sound_player;
+
     friend class GameState;
     friend class MainMenu;
     friend class StageSelect;
@@ -189,10 +230,12 @@ private:
     TargetVar<glm::vec3> pos;
     glm::vec3 orientated_pos;
     int orientation;
+    int width;
+    int height;
     std::unordered_map<std::string, unsigned int> child_map;
     std::unordered_map<std::string, unsigned int> texture_map;
     std::unordered_map<std::string, unsigned int> activity_group_map;
-    std::vector<size_t> activity_group_orders;
+    std::vector<std::pair<void*, RenderType>> render_vec;
     std::list<int> active_indices;
 protected:
     GameState* owner;

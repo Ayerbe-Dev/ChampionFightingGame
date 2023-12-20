@@ -110,9 +110,6 @@ void parse_sndlst_entry(std::ifstream& stream, std::string& name, std::string& f
 	for (size_t i = 0; i < 4; i++) {
 		result += (((unsigned int)chars[i]) & 0xFF) << (8 * (3 - i));
 	}
-	float value_f;
-	memcpy(&value_f, &result, sizeof(unsigned int));
-	volume_mod = value_f;
 	stream.peek();
 }
 

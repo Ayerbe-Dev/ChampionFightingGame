@@ -2,12 +2,12 @@
 #include <glew/glew.h>
 #include <glm/ext/matrix_projection.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "RenderManager.h"
 #include "ShaderManager.h"
 #include "ThreadManager.h"
 #include "Fighter.h"
-#include "utils.h"
+#include "WindowConstants.h"
 
 GameRect::GameRect() {
 	thread_manager = ThreadManager::get_instance();

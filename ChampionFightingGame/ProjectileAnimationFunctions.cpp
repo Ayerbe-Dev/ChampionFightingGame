@@ -15,7 +15,7 @@ void Projectile::change_anim(std::string animation_name, float frame_rate, float
 			model.set_flip(!facing_right);
 		}
 	}
-	is_anim_end = false;
+	anim_end = false;
 	if (anim_kind != new_anim) {
 		prev_anim_kind = anim_kind;
 	}

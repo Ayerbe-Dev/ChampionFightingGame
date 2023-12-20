@@ -1,7 +1,7 @@
 #include "Options.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
-#include "utils.h"
+#include "TimeFuncs.h"
 
 void controls_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -31,7 +31,7 @@ void controls_main() {
 		background_menu->process_background();
 		options_menu->panel.render();
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 	}
 
 	delete options_menu;

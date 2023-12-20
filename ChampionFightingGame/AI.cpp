@@ -24,11 +24,11 @@ AI::AI(int id, int judgement, int precision, int execution, int reaction, int st
 void AI::init(int id, int judgement, int precision, int execution, int reaction, int stubbornness) {
 	this->id = id;
 
-	BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
-	load_chara_info(battle_object_manager->fighter[id]->chara_name, move_list);
-	load_chara_info(battle_object_manager->fighter[!id]->chara_name, opponent_move_list);
+	ObjectManager* object_manager = ObjectManager::get_instance();
+	load_chara_info(object_manager->fighter[id]->chara_name, move_list);
+	load_chara_info(object_manager->fighter[!id]->chara_name, opponent_move_list);
 
-	fighter = battle_object_manager->fighter[id];
+	fighter = object_manager->fighter[id];
 	controller = &fighter->player->controller;
 
 	this->judgement = judgement;

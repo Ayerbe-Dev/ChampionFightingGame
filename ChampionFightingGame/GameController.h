@@ -51,6 +51,7 @@ public:
 
 	void add_buffer_button(unsigned int button_kind, unsigned int buffer_kind);
 	bool is_valid_buffer_button(unsigned int button_kind);
+	void reset_all_buttons();
 	void reset_buffer();
 	short get_buffer_code();
 

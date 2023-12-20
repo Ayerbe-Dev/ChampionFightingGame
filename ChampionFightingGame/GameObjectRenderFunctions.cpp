@@ -1,16 +1,10 @@
 #include "GameObject.h"
-#include "utils.h"
+#include "WindowConstants.h"
 
 void GameObject::render() {
 	shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat,
-		pos / glm::vec3(
-			WINDOW_WIDTH / (100 * scale.x),
-			WINDOW_HEIGHT / (100 * scale.y),
-			WINDOW_DEPTH / (100 * scale.z)
-		)
-	);
+	model_mat = glm::translate(model_mat, render_pos);
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
@@ -21,13 +15,7 @@ void GameObject::render() {
 void GameObject::render_shadow() {
 	shadow_shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat,
-		pos / glm::vec3(
-			WINDOW_WIDTH / (100 * scale.x),
-			WINDOW_HEIGHT / (100 * scale.y),
-			WINDOW_DEPTH / (100 * scale.z)
-		)
-	);
+	model_mat = glm::translate(model_mat, render_pos);
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
@@ -38,13 +26,7 @@ void GameObject::render_shadow() {
 void GameObject::render_outline() {
 	outline_shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat,
-		pos / glm::vec3(
-			WINDOW_WIDTH / (100 * scale.x),
-			WINDOW_HEIGHT / (100 * scale.y),
-			WINDOW_DEPTH / (100 * scale.z)
-		)
-	);
+	model_mat = glm::translate(model_mat, render_pos);
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;

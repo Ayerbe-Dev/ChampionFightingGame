@@ -5,13 +5,13 @@ void Projectile::set_int(int target, int val) {
 }
 
 void Projectile::inc_int(int target) {
-	if (battle_object_manager->allow_dec_var(id)) {
+	if (object_manager->is_allow_realtime_process(this)) {
 		projectile_int[target]++;
 	}
 }
 
 void Projectile::dec_int(int target) {
-	if (battle_object_manager->allow_dec_var(id)) {
+	if (object_manager->is_allow_realtime_process(this)) {
 		projectile_int[target]--;
 	}
 }

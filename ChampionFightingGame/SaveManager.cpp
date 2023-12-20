@@ -8,9 +8,9 @@ SaveManager::SaveManager() {
 
 void SaveManager::load_game_settings() {
 	std::ifstream settings_file;
-	settings_file.open("resource/save/game_settings.yml");
+	settings_file.open("resource/save/saved_settings.yml");
 	if (settings_file.fail()) {
-		std::cout << "Failed to open settings file! \n";
+		std::cout << "Failed to open saved settings file!\n";
 		settings_file.close();
 		return;
 	}
@@ -23,15 +23,29 @@ void SaveManager::load_game_settings() {
 		settings_map[name] = i; 
 	}
 	settings_file.close();
+	settings_file.open("resource/save/unsaved_settings.yml");
+	if (settings_file.fail()) {
+		std::cout << "Failed to open unsaved settings file!\n";
+		settings_file.close();
+		return;
+	}
+	for (int i = 0; settings_file >> name; i++) {
+		settings_file >> val;
+		GameSetting setting(name, val);
+		unsaved_settings.push_back(setting);
+		unsaved_settings_map[name] = i;
+	}
+	settings_file.close();
 }
 
 int SaveManager::get_game_setting(std::string setting) {
-	if (settings_map.find(setting) == settings_map.end()) {
-		return 0;
-	}
-	else {
+	if (settings_map.contains(setting)) {
 		return settings[settings_map[setting]].val;
 	}
+	if (unsaved_settings_map.contains(setting)) {
+		return unsaved_settings[unsaved_settings_map[setting]].val;
+	}
+	return 0;
 }
 
 void SaveManager::set_game_setting(std::string setting, int val) {
@@ -41,11 +55,11 @@ void SaveManager::set_game_setting(std::string setting, int val) {
 	settings[settings_map[setting]].val = val;
 }
 
-void SaveManager::update_game_settings() {
+void SaveManager::save_game_settings() {
 	std::ofstream settings_file;
-	settings_file.open("resource/save/game_settings.yml", std::ofstream::trunc);
+	settings_file.open("resource/save/saved_settings.yml", std::ofstream::trunc);
 	if (settings_file.fail()) {
-		std::cout << "Failed to open settings file! \n";
+		std::cout << "Failed to open saved settings file!\n";
 		settings_file.close();
 		return;
 	}

@@ -2,7 +2,7 @@
 #include "StageKind.h"
 #include "StageAsset.h"
 #include "Animation.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 #include "ParamAccessor.h"
 #include <fstream>
 
@@ -22,8 +22,8 @@ Stage::Stage() {
 	start_pos = glm::vec2(0.0);
 }
 
-void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_manager) {
-	battle_object_manager->stage = this;
+void Stage::load_stage(StageInfo stage_info, ObjectManager *object_manager) {
+	object_manager->stage = this;
 	stage_kind = stage_info.stage_kind;
 	resource_dir = stage_info.resource_dir;
 
@@ -59,7 +59,7 @@ void Stage::load_stage(StageInfo stage_info, BattleObjectManager *battle_object_
 	std::string asset_name;
 	while (stream >> asset_name) {
 		std::string resource_dir = this->resource_dir + "assets/" + asset_name;
-		stage_assets.push_back(new StageAsset(asset_name, resource_dir, battle_object_manager));
+		stage_assets.push_back(new StageAsset(asset_name, resource_dir, object_manager));
 	}
 
 	stream.close();

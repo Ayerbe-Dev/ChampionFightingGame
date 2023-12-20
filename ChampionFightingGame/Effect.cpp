@@ -5,7 +5,7 @@
 #include "ShaderManager.h"
 #include "BattleObject.h"
 #include "Fighter.h"
-#include "utils.h"
+#include "WindowConstants.h"
 
 EffectInfo::EffectInfo() {
 
@@ -151,10 +151,10 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 
 bool EffectInstance::process() {
 	if (interp_var != nullptr && *interp_var) {
-		BattleObjectManager* battle_object_manager = BattleObjectManager::get_instance();
+		ObjectManager* object_manager = ObjectManager::get_instance();
 		BattleObject* battle_object = static_cast<BattleObject*>(game_object);
 		if (battle_object != nullptr) {
-			frame += 0.2 / (float)(*interp_var) * battle_object_manager->get_world_rate(battle_object->id);
+			frame += 0.2 / (float)(*interp_var) * object_manager->get_world_rate(battle_object);
 		}
 		interpolating = true;
 	}

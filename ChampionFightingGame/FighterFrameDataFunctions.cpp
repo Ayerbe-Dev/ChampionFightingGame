@@ -16,7 +16,7 @@ int Fighter::get_frames_until_actionable() {
 		}
 
 		int ret = 0;
-		float sim_rate = rate * battle_object_manager->get_world_rate(id);
+		float sim_rate = rate * object_manager->get_world_rate(this);
 
 		//TODO: This block assumes that our motion rate is constant, when we have the ability to change
 		//it midway through. We should figure out a way to read through a script and check if it
@@ -28,7 +28,7 @@ int Fighter::get_frames_until_actionable() {
 			ScriptArg args;
 			if (active_move_script.has_function(sim_frame, &BattleObject::SET_RATE, &args)) {
 				UNWRAP_NO_DECL(sim_rate);
-				sim_rate *= battle_object_manager->get_world_rate(id);
+				sim_rate *= object_manager->get_world_rate(this);
 			}
 			if (active_move_script.has_function(sim_frame, (void (BattleObject::*)(ScriptArg)) &Fighter::SET_FLAG, &args)) {
 				UNWRAP(flag, int);

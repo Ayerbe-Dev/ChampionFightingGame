@@ -21,7 +21,6 @@ public:
 
 	void load_model(std::string dir);
 	void init_gl_model(std::string dir);
-
 	ModelData* get_model(std::string dir);
 	ModelData* get_model_keep_user_count(std::string dir);
 	void unload_model(std::string dir, bool strict = true);

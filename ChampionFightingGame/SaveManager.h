@@ -22,7 +22,7 @@ public:
 	void load_game_settings();
 	int get_game_setting(std::string setting);
 	void set_game_setting(std::string setting, int val);
-	void update_game_settings();
+	void save_game_settings();
 
 	void load_player_info();
 	int add_player_info(std::string name);
@@ -36,7 +36,9 @@ private:
 	SaveManager();
 
 	std::vector<GameSetting> settings;
+	std::vector<GameSetting> unsaved_settings;
 	std::map<std::string, int> settings_map;
+	std::map<std::string, int> unsaved_settings_map;
 	std::map<std::string, PlayerInfo> player_info;
 
 	static SaveManager* instance;

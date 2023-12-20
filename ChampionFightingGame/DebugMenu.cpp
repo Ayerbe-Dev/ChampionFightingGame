@@ -3,7 +3,6 @@
 #include <sstream>
 #include "DebugMenu.h"
 #include "cotr_imgui_debugger.h"
-#include "Loader.h"
 #include <glew/glew.h>
 #include "RenderManager.h"
 #include "FontManager.h"
@@ -86,7 +85,7 @@ void debug_main() {
 
 		cotr_imgui_debug_dbmenu(debug);
 		
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 	}
 	cotr_imgui_terminate();
 

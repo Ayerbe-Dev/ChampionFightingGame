@@ -17,7 +17,7 @@ Rowan::Rowan(Player* player) {
 	fighter_float.resize(CHARA_ROWAN_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ROWAN_FLAG_MAX, false);
 	projectiles.push_back(create_projectile(PROJECTILE_KIND_ROWAN_FIREBALL, player, this));
-	attack_other_map[BUTTON_HP][6] = 1;
+	attack_other_map_ground[BUTTON_HP][6] = 1;
 	load_fighter();
 }
 

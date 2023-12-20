@@ -114,6 +114,12 @@ RenderManager::RenderManager() {
 	gbuffer_texture.set_scale(0.4);
 	gbuffer_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
 
+	fade_texture.init("resource/misc/fade.png");
+	fade_texture.alpha = 0;
+	fade_frames = 0;
+	fading = false;
+	mid_fade_func = nullptr;
+
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
 	shader_manager->set_global_int("WindowHeight", window_height);
@@ -171,6 +177,14 @@ void RenderManager::dim_lights(float dim_mul, Shader** shader) {
 			*shader = shader_manager->get_shader_switch_features(*shader, SHADER_FEAT_DIM_MUL, 0);
 		}
 	}, args);
+}
+
+void RenderManager::start_fade_sequence(unsigned char fade_frames, std::function<void()> mid_fade_func) {
+	if (fading) return;
+	fade_texture.alpha.set_target_val(255, fade_frames);
+	this->fade_frames = fade_frames;
+	this->mid_fade_func = mid_fade_func;
+	fading = true;
 }
 
 void RenderManager::update_shader_lights() {
@@ -283,6 +297,24 @@ void RenderManager::execute_buffered_events() {
 	event_names.clear();
 }
 
+void RenderManager::update_screen() {
+	if (fading) {
+		if (fade_texture.alpha == 0 && fade_frames == 0) {
+			fading = false;
+		}
+		if (fade_texture.alpha == 255) {
+			fade_texture.alpha.set_target_val(0, fade_frames);
+			mid_fade_func();
+			mid_fade_func = nullptr;
+			fade_frames = 0;
+		}
+
+		fade_texture.render();
+	}
+	fade_texture.alpha.process();
+	SDL_GL_SwapWindow(window);
+}
+
 void RenderManager::handle_window_events(std::function<void(SDL_Event*)> event_handler) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -323,6 +355,7 @@ void RenderManager::destroy_instance() {
 	SSAO_blur.destroy();
 
 	gbuffer_texture.destroy();
+	fade_texture.destroy();
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(sdl_renderer);

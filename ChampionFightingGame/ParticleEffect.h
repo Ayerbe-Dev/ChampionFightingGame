@@ -8,7 +8,7 @@ class Particle {
 public:
 	Particle();
 	void render(ParticleEffectInstance* effect);
-	virtual void render_unique(ParticleEffectInstance* effect);
+	virtual void render_unique(ParticleEffectInstance* effect, float frame);
 protected:
 	glm::vec3 pos_base;
 	glm::vec3 rot_base;
@@ -18,14 +18,14 @@ protected:
 	glm::vec3 rot_frame;
 	glm::vec3 scale_frame;
 	glm::vec4 rgba_frame;
-	float duration;
+	unsigned short duration;
 	bool loop;
 };
 
 class ParticleModel : public Particle {
 public:
 	ParticleModel();
-	void render_unique(ParticleEffectInstance* effect);
+	void render_unique(ParticleEffectInstance* effect, float frame);
 private:
 	ModelInstance model;
 	Animation* anim;
@@ -34,7 +34,7 @@ private:
 class ParticleBillboard : public Particle {
 public:
 	ParticleBillboard();
-	void render_unique(ParticleEffectInstance* effect);
+	void render_unique(ParticleEffectInstance* effect, float frame);
 private:
 	WorldTexture texture;
 };
@@ -42,7 +42,7 @@ private:
 class ParticleTexture : public Particle {
 public:
 	ParticleTexture();
-	void render_unique(ParticleEffectInstance* effect);
+	void render_unique(ParticleEffectInstance* effect, float frame);
 private:
 	WorldTexture texture;
 };
@@ -50,7 +50,7 @@ private:
 class ParticleTrail : public Particle {
 public:
 	ParticleTrail();
-	void render_unique(ParticleEffectInstance* effect);
+	void render_unique(ParticleEffectInstance* effect, float frame);
 private:
 	WorldTexture texture[2];
 };

@@ -12,75 +12,6 @@ class Camera;
 
 void battle_main();
 
-class PlayerIndicator {
-public:
-	Fighter* fighter;
-	GameTexture texture;
-	std::string nametag;
-
-	PlayerIndicator();
-	PlayerIndicator(Fighter* fighter, std::string nametag = "");
-};
-
-class GameTimer {
-public:
-	GameTimer();
-	GameTimer(int time);
-
-	void init(int time);
-	void reset();
-	void process();
-	void render();
-	void flip_clock();
-
-	bool time_up;
-	int clock_mode;
-
-	int deca_seconds;
-	int seconds;
-	int deca_frames;
-	int frames;
-
-	int max_time;
-
-	GameTexture second_texture;
-	GameTexture deca_second_texture;
-	GameTexture frame_texture;
-	GameTexture deca_frame_texture;
-	GameTexture clock;
-};
-
-class BattleMeter {
-public:
-	BattleMeter();
-
-	void init(Fighter* fighter, int num_rounds);
-	void destroy();
-	void process();
-	void render();
-
-	GameTexture health_texture;
-	GameTexture partial_health_texture;
-	GameTexture combo_health_texture;
-	GameTexture health_border;
-	GameTexture ex_texture;
-	GameTexture ex_segment_texture;
-	GameTexture ex_border;
-	std::vector<GameTexture> round_counter;
-
-	float* health;
-	float* partial_health;
-	float max_health;
-	const unsigned* ended_hitstun;
-	const unsigned* disable_hitstun_parry;
-	int* post_hitstun_timer;
-	float* ex;
-	float max_ex;
-	int num_bars;
-	float prev_segments;
-	int wins;
-};
-
 class BattleText : public GameTexture {
 public:
 	BattleText();
@@ -129,7 +60,7 @@ public:
 	bool collision_kind_soft_intangible;
 	bool collision_kind_armor;
 
-	CounterhitType counterhit_type;
+	SpecialStatusCondition counterhit_type;
 	HitStatus hit_status;
 	std::string custom_hit_status;
 	HitStatus counterhit_status;
@@ -274,31 +205,32 @@ public:
 	Battle();
 	~Battle();
 
+	void load_world();
+	void load_ui();
+
 	void process_main();
 	void render_main();
 
 	void process_pre_intro();
 	void process_intro();
+	void process_round_start();
 	void process_battle();
 	void process_ko();
 	void process_outro();
 
 	void process_debug_boxes();
 	void process_ui();
-	void pre_process_fighter();
-	void process_fighter();
-	void post_process_fighter();
+	void process_fighters();
+	void post_process_fighters();
 	void process_frame_pause();
 	void process_training();
-
-	void process_background();
 
 	void check_collisions();
 
 	void render_world();
 	void render_ui();
 
-	BattleObjectManager* battle_object_manager;
+	ObjectManager* object_manager;
 	ThreadManager* thread_manager;
 
 	Font combo_font;
@@ -309,18 +241,14 @@ public:
 	Fighter* fighter[2];
 	Stage stage;
 	Camera* camera;
-	BattleState state;
 
-	BattleMeter meters[2];
 	BattleText* combo_counter[2] = { nullptr };
 	BattleText* combo_hit[2] = { nullptr };
 	std::list<BattleText> texts[2];
-	int num_rounds;
 	int ko_timer;
-	bool sudden_death;
+	int actionable_timer;
 
-	PlayerIndicator player_indicator[2];
-	GameTimer timer;
+	MusicInstance* battle_music;
 
 	TrainingInfo training_info[2];
 
@@ -329,8 +257,10 @@ public:
 	BattleObject* active_hitbox_object;
 	int active_hitbox_object_index;
 	std::map<std::string, HitboxSim> hitbox_sim;
+	int curr_round;
+	int round_count_setting;
+	TimerSetting timer_setting;
 
-	bool visualize_boxes;
 	bool frame_pause;
 };
 

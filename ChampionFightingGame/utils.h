@@ -1,24 +1,15 @@
 #pragma once
 #include <iostream>
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
-#define WINDOW_DEPTH 2000
-#define WINDOW_FACTOR WINDOW_WIDTH / WINDOW_HEIGHT
-#define SDL_WINDOW_WIDTH (WINDOW_WIDTH / 2)
-#define SDL_WINDOW_HEIGHT (WINDOW_HEIGHT / 2)
-
 #define FORCE_INLINE __forceinline
 #define NO_INLINE __declspec(noinline)
 
-void wait_ms(double ms_duration = 16.667, bool process_time = true);
 int clamp(int min, int value, int max);
 float clampf(float min, float value, float max);
 std::string filter_string(const std::string& to, const std::string& remove);
 int get_blank(std::string s);
 float get_relative_one_percent(float val, float denom);
 int round_up_odd(int val);
-void update_thread_progress(int& to_update);
 int rng(const int& min, const int& max);
 float rng_f(const float& min, const float& max);
 float lerp(float a, float b, float f);

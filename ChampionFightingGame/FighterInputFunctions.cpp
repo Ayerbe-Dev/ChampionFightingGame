@@ -392,13 +392,17 @@ bool Fighter::attack_cancel(int attack_kind, unsigned int button, int stick) {
 	if (get_attack_input(attack_kind, button, stick)) {
 		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = (fighter_int[FIGHTER_INT_ATTACK_KIND] == attack_kind);
 		fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND] = attack_kind;
-		if (attack_kind == ATTACK_KIND_OTHER) {
-			fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO] = get_attack_other_kind(button, stick);
-		}
+		
 		if (situation_kind == FIGHTER_SITUATION_GROUND) {
+			if (attack_kind == ATTACK_KIND_OTHER) {
+				fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO] = get_attack_other_kind_ground(button, stick);
+			}
 			return buffer_change_status(FIGHTER_STATUS_ATTACK, attack_kind, true, false);
 		}
 		else {
+			if (attack_kind == ATTACK_KIND_OTHER) {
+				fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO] = get_attack_other_kind_air(button, stick);
+			}
 			return buffer_change_status(FIGHTER_STATUS_ATTACK_AIR, attack_kind, true, false);
 		}
 	}
@@ -441,7 +445,7 @@ bool Fighter::special_cancel(int special_kind, unsigned int status_kind, unsigne
 			cancel_kind++;
 			[[fallthrough]];
 			case (BUTTON_3P): {
-				if (!has_meter(2)) return false;
+				if (!can_spend_ex(200.0)) return false;
 				special_level = SPECIAL_LEVEL_EX;
 			}
 		} break;
@@ -459,7 +463,7 @@ int Fighter::try_ex(bool punch) {
 	unsigned int no_heavy_ex_buttons[2];
 	no_heavy_ex_buttons[0] = punch ? BUTTON_LP : BUTTON_LK;
 	no_heavy_ex_buttons[1] = punch ? BUTTON_MP : BUTTON_MK;
-	if (has_meter(2)) {
+	if (can_spend_ex(200.0)) {
 		return SPECIAL_LEVEL_EX;
 	}
 	else if (check_button_input(no_heavy_ex_buttons, 2, 2)) {
@@ -470,12 +474,22 @@ int Fighter::try_ex(bool punch) {
 	}
 }
 
-unsigned int Fighter::get_attack_other_kind(unsigned int button, unsigned int stick) {
-	if (!attack_other_map.contains(button)) {
+unsigned int Fighter::get_attack_other_kind_ground(unsigned int button, unsigned int stick) {
+	if (!attack_other_map_ground.contains(button)) {
 		return 0;
 	}
-	if (!attack_other_map[button].contains(stick)) {
+	if (!attack_other_map_ground[button].contains(stick)) {
 		return 0;
 	}
-	return attack_other_map[button][stick];
+	return attack_other_map_ground[button][stick];
+}
+
+unsigned int Fighter::get_attack_other_kind_air(unsigned int button, unsigned int stick) {
+	if (!attack_other_map_air.contains(button)) {
+		return 0;
+	}
+	if (!attack_other_map_air[button].contains(stick)) {
+		return 0;
+	}
+	return attack_other_map_air[button][stick];
 }

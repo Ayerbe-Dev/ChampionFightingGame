@@ -238,7 +238,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Dante.cpp" />
     <ClCompile Include="DanteMoves.cpp" />
     <ClCompile Include="DanteStatus.cpp" />
-    <ClCompile Include="BattleMeter.cpp" />
     <ClCompile Include="CollisionChecks.cpp" />
     <ClCompile Include="BattleText.cpp" />
     <ClCompile Include="EasyGifReader.cpp" />
@@ -269,7 +268,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="EricFireball.cpp" />
     <ClCompile Include="EricMoves.cpp" />
     <ClCompile Include="EricStatus.cpp" />
-    <ClCompile Include="BattleObjectManager.cpp" />
+    <ClCompile Include="GameObjectProcessFuncs.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="FighterActionabilityFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
@@ -292,7 +292,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="GameObjectSoundFunctions.cpp" />
     <ClCompile Include="GameRect.cpp" />
     <ClCompile Include="GameTextureSDL.cpp" />
-    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GLEW Helpers.cpp" />
     <ClCompile Include="GLM Helpers.cpp" />
     <ClCompile Include="BattleObjectGrabboxFunctions.cpp" />
@@ -337,7 +336,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Leon.cpp" />
     <ClCompile Include="LeonMoves.cpp" />
     <ClCompile Include="LeonStatus.cpp" />
-    <ClCompile Include="Loader.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -353,9 +351,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
     <ClCompile Include="Sndlst.cpp" />
+    <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="TargetVarManager.cpp" />
     <ClCompile Include="TextUI.cpp" />
+    <ClCompile Include="TimeFuncs.cpp" />
     <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="VectorBoolPointer.cpp" />
     <ClCompile Include="Wallace.cpp" />
     <ClCompile Include="WallaceMoves.cpp" />
     <ClCompile Include="WallaceStatus.cpp" />
@@ -375,7 +376,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PauseBattle.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerIndicator.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Prmlst.cpp" />
     <ClCompile Include="ReadBytes.cpp" />
@@ -520,7 +520,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="FighterFlag.h" />
     <ClInclude Include="FighterFloat.h" />
     <ClInclude Include="FighterInt.h" />
-    <ClInclude Include="BattleObjectManager.h" />
+    <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="FighterInterface.h" />
     <ClInclude Include="Fighters.h" />
     <ClInclude Include="GameController.h" />
@@ -572,7 +572,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="LeonInt.h" />
     <ClInclude Include="LeonStatus.h" />
     <ClInclude Include="Light.h" />
-    <ClInclude Include="Loader.h" />
     <ClInclude Include="LoopingVector.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />
@@ -585,10 +584,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="NightsabreInt.h" />
     <ClInclude Include="NightsabreStatus.h" />
     <ClInclude Include="Sndlst.h" />
+    <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="TargetVar.h" />
     <ClInclude Include="TargetVarManager.h" />
     <ClInclude Include="TextUI.h" />
+    <ClInclude Include="TimeFuncs.h" />
     <ClInclude Include="UIManager.h" />
+    <ClInclude Include="VectorBoolPointer.h" />
     <ClInclude Include="Wallace.h" />
     <ClInclude Include="BattleObject.h" />
     <ClInclude Include="CharaKind.h" />
@@ -675,6 +677,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="VesuviusFloat.h" />
     <ClInclude Include="VesuviusInt.h" />
     <ClInclude Include="VesuviusStatus.h" />
+    <ClInclude Include="WindowConstants.h" />
     <ClInclude Include="WorldTexture.h" />
     <ClInclude Include="Zyair.h" />
     <ClInclude Include="ZyairConstants.h" />

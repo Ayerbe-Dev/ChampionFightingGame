@@ -18,12 +18,10 @@
 
 #include "BattleObject.h"
 #include "Fighter.h"
-#include "BattleObjectManager.h"
+#include "ObjectManager.h"
 
 #include "Projectile.h"
 #include "Projectiles.h"
-
-#include "Loader.h"
 
 #include "Model.h"
 #include "RenderManager.h"
@@ -42,6 +40,7 @@
 #include "ShaderManager.h"
 #include "ResourceManager.h"
 #include "utils.h"
+#include "VectorBoolPointer.h"
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -96,16 +95,14 @@ void battle_main() {
 		}
 
 		battle->process_game_state();
-		if (battle->state == BATTLE_STATE_BATTLE) {
-			battle->check_collisions();
-		}
+		battle->check_collisions();
 		battle->render_game_state();
 
 #ifdef DEBUG
 		cotr_imgui_debug_battle(battle);
 #endif
 
-		SDL_GL_SwapWindow(render_manager->window);
+		render_manager->update_screen();
 	}
 #ifdef DEBUG
 	cotr_imgui_terminate();
@@ -117,23 +114,39 @@ void battle_main() {
 
 Battle::Battle() {
 	GameManager* game_manager = GameManager::get_instance();
-	EffectManager* effect_manager = EffectManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
-	FontManager* font_manager = FontManager::get_instance();
+	object_manager = ObjectManager::get_instance();
+	thread_manager = ThreadManager::get_instance();
 
-	num_rounds = 2;
-	sudden_death = false;
+	round_count_setting = save_manager->get_game_setting("round_count");
 	ko_timer = 0;
+	curr_round = 0;
 
 	switch (game_context) {
-		case (GAME_CONTEXT_STORY):
-		case (GAME_CONTEXT_TRAINING): {
-			state = BATTLE_STATE_BATTLE;
+		case (GAME_CONTEXT_NORMAL): {
+			internal_state = BATTLE_STATE_PRE_INTRO;
+			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
-		default: {
-			state = BATTLE_STATE_PRE_INTRO;
+		case (GAME_CONTEXT_TRAINING): {
+			internal_state = BATTLE_STATE_BATTLE;
+			timer_setting = TIMER_SETTING_TRAINING;
+		} break;
+		case (GAME_CONTEXT_ARCADE): {
+			internal_state = BATTLE_STATE_INTRO;
+			timer_setting = TIMER_SETTING_NORMAL;
+		} break;
+		case (GAME_CONTEXT_STORY): {
+			internal_state = BATTLE_STATE_BATTLE;
+			timer_setting = TIMER_SETTING_NONE;
+		} break;
+		case (GAME_CONTEXT_ONLINE): {
+			internal_state = BATTLE_STATE_PRE_INTRO;
+			timer_setting = TIMER_SETTING_NORMAL;
+		} break;
+		case (GAME_CONTEXT_SPECIAL): {
+			internal_state = BATTLE_STATE_PRE_INTRO;
+			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
 	}
 	
@@ -141,96 +154,23 @@ Battle::Battle() {
 	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
-	game_loader = new GameLoader(12);
-	std::thread loading_thread(&GameLoader::loading_screen, game_loader);
-	loading_thread.detach();
-
-	thread_manager = ThreadManager::get_instance();
-
-	visualize_boxes = true;
-
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 
-	battle_object_manager = BattleObjectManager::get_instance();
-
-	inc_thread();
-
-	combo_font = font_manager->load_font("Fiend-Oblique", 64);
-	message_font = font_manager->load_font("Fiend-Oblique", 24);
-	info_font = font_manager->load_font("FiraCode", 16);
-
-	inc_thread();
-
-	int rng = rand() % 2;
-	stage.load_stage(player[rng]->stage_info, battle_object_manager);
-	
-	inc_thread();
-
-	for (int i = 0; i < 2; i++) {
-		fighter[i] = create_fighter(player[i]);
-		inc_thread();
-	}
+	load_world();
+	load_ui();
 
 	active_hitbox_object = fighter[0];
 	active_hitbox_object_index = 0;
 
-	camera = &render_manager->camera;
-	camera->reset_camera();
-	for (int i = 0; i < 2; i++) {
-		camera->fighter[i] = fighter[i];
-	}
-	camera->stage = &stage;
-	camera->set_fov(45.0);
-
-	for (int i = 0; i < 2; i++) {
-		meters[i].init(fighter[i], 0);
-	
-		inc_thread();
-		player_indicator[i] = PlayerIndicator(fighter[i]);
-
-		inc_thread();
-
-		training_info[i].init(fighter[i], &info_font);
-
-		inc_thread();
-	}
-
-	render_manager->update_shader_cams();
-	render_manager->update_shader_lights();
-	render_manager->update_shader_shadows();
-	
-	if (game_context == GAME_CONTEXT_TRAINING) {
-		timer.init(-1);
-	}
-	else {
-		timer.init(99);
-	}
-	inc_thread();
-
-	bool loading = true;
-	while (loading && looping) {
-		render_manager->handle_window_events();
-
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons();
-			if (player[i]->controller.is_any_inputs()) {
-				loading = false;
-				
-				player[i]->controller.reset_buffer();
-				player[!i]->controller.reset_buffer();
-			}
-		}
-	}
 	for (int i = 0; i < 2; i++) {
 		thread_manager->add_thread(i, gamestate_battle_fighter_thread, (void*)fighter[i]);
 	}
 	thread_manager->add_thread(THREAD_KIND_UI, gamestate_battle_ui_thread, (void*)this);
-	game_loader->finished = true;
 
+	Music music;
 	if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_STAGE) {
-		sound_manager->load_music("Battle Music", stage.default_music_kind, 0.0);
+		music = sound_manager->get_music(stage.default_music_kind);
 	}
 	else if (save_manager->get_game_setting("music_setting") == MUSIC_SETTING_CHARA) {
 //		sound_manager->load_sound("Battle Music", [a random directory for one of the characters here]);
@@ -240,7 +180,7 @@ Battle::Battle() {
 		//sound_manager->load_sound("Battle Music", player[rng(0, 1)]->default_music_kind);
 		//randomly play the theme for one of the players' tags. if online, always play the user's theme
 	}
-	sound_manager->play_music("Battle Music");
+	battle_music = music.instantiate(0.0);
 }
 
 Battle::~Battle() {
@@ -255,17 +195,16 @@ Battle::~Battle() {
 	for (int i = 0; i < 2; i++) {
 		thread_manager->kill_thread(i);
 		training_info[i].destroy();
-		meters[i].destroy();
 		camera->fighter[i] = nullptr;
 		delete fighter[i];
 	}
 
 	//Sounds and effects were already removed, now fully unload them
 
-	sound_manager->stop_music("Battle Music");
+	sound_manager->stop_music_all();
 	sound_manager->unload_all_sounds();
-	sound_manager->unload_music("Battle Music");
-	sound_manager->clear_game_objects();
+	sound_manager->unload_all_music();
+	sound_manager->clear_sound_players();
 	effect_manager->unload_all_effects();
 	effect_manager->remove_effect_casters();
 	render_manager->remove_light();
@@ -278,33 +217,559 @@ Battle::~Battle() {
 	combo_font.unload_font();
 	message_font.unload_font();
 	info_font.unload_font();
+}
 
-	delete game_loader;
+void Battle::load_world() {
+	RenderManager* render_manager = RenderManager::get_instance();
+
+	int rng = rand() % 2;
+	stage.load_stage(player[rng]->stage_info, object_manager);
+
+	for (int i = 0; i < 2; i++) {
+		fighter[i] = create_fighter(player[i]);
+	}
+
+	camera = &render_manager->camera;
+	camera->reset_camera();
+	for (int i = 0; i < 2; i++) {
+		camera->fighter[i] = fighter[i];
+	}
+	camera->stage = &stage;
+
+	render_manager->update_shader_cams();
+	render_manager->update_shader_lights();
+	render_manager->update_shader_shadows();
+}
+
+void Battle::load_ui() {
+	FontManager* font_manager = FontManager::get_instance();
+	combo_font = font_manager->load_font("Fiend-Oblique", 64);
+	message_font = font_manager->load_font("Fiend-Oblique", 24);
+	info_font = font_manager->load_font("FiraCode", 16);
+
+	push_menu_object("Background", 1, 10, 3); {
+		push_menu_child("P1 Health", 3); {
+			push_menu_process_function([this](MenuObject* object) {
+				float max_health = object->float_var("max_health");
+				float health = *(float*)(object->ptr_var("health"));
+				float partial_health = *(float*)(object->ptr_var("partial_health"));
+				bool ended_hitstun = get_value_at_vector_bool_addr((unsigned*)(object->ptr_var("ended_hitstun")), FIGHTER_FLAG_ENDED_HITSTUN);
+				int training_health_recovery_timer = *(int*)(object->ptr_var("health_recovery_timer"));
+				if (partial_health < health) {
+					object->get_texture("Combo Health").scale_left_percent(partial_health / max_health);
+				}
+				if (ended_hitstun) {
+					object->get_texture("Combo Health").set_left_target(clampf(0.0, health / max_health, 1.0), 5.0);
+				}
+				if (training_health_recovery_timer == 0) {
+					object->get_texture("Combo Health").scale_left_percent(clampf(0.0, health / max_health, 1.0));
+				}
+				object->get_texture("Health").scale_left_percent(health / max_health);
+				object->get_texture("Partial Health").scale_left_percent(partial_health / max_health);
+			});
+
+			push_menu_float_var("max_health", fighter[0]->get_local_param_float("health"));
+			push_menu_ptr_var("health", &fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+			push_menu_ptr_var("partial_health", &fighter[0]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
+			push_menu_ptr_var("health_recovery_timer", &fighter[0]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);
+
+			push_menu_texture("Combo Health", "resource/game_state/battle/ui/meter/combo_health.png");
+			push_menu_texture("Health", "resource/game_state/battle/ui/meter/health.png");
+			last_pushed_texture->set_alpha(127);
+			push_menu_texture("Partial Health", "resource/game_state/battle/ui/meter/health.png");
+			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			push_menu_pos(glm::vec3(66.0, 114.0, 0.0));
+			push_menu_dimensions("Health");
+		} pop_menu_stack();
+		push_menu_child("P2 Health", 3); {
+			push_menu_process_function([this](MenuObject* object) {
+				float max_health = object->float_var("max_health");
+				float health = *(float*)(object->ptr_var("health"));
+				float partial_health = *(float*)(object->ptr_var("partial_health"));
+				bool ended_hitstun = get_value_at_vector_bool_addr((unsigned*)(object->ptr_var("ended_hitstun")), FIGHTER_FLAG_ENDED_HITSTUN);
+				int training_health_recovery_timer = *(int*)(object->ptr_var("health_recovery_timer"));
+				if (partial_health < health) {
+					object->get_texture("Combo Health").scale_left_percent(partial_health / max_health);
+				}
+				if (ended_hitstun) {
+					object->get_texture("Combo Health").set_left_target(clampf(0.0, health / max_health, 1.0), 5.0);
+				}
+				if (training_health_recovery_timer == 0) {
+					object->get_texture("Combo Health").scale_left_percent(clampf(0.0, health / max_health, 1.0));
+				}
+				object->get_texture("Health").scale_left_percent(health / max_health);
+				object->get_texture("Partial Health").scale_left_percent(partial_health / max_health);
+			});
+			push_menu_float_var("max_health", fighter[1]->get_local_param_float("health"));
+			push_menu_ptr_var("health", &fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]);
+			push_menu_ptr_var("partial_health", &fighter[1]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
+			push_menu_ptr_var("health_recovery_timer", &fighter[1]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);			
+			push_menu_texture("Combo Health", "resource/game_state/battle/ui/meter/combo_health.png");
+			last_pushed_texture->flip_h();
+			push_menu_texture("Health", "resource/game_state/battle/ui/meter/health.png");
+			last_pushed_texture->flip_h();
+			last_pushed_texture->set_alpha(127);
+			push_menu_texture("Partial Health", "resource/game_state/battle/ui/meter/health.png");
+			last_pushed_texture->flip_h();
+			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+			push_menu_pos(glm::vec3(66.0, 114.0, 0.0));
+			push_menu_dimensions("Health");
+		} pop_menu_stack();
+		push_menu_child("P1 Scale"); {
+			push_menu_process_function([this](MenuObject* object) {
+				int& texture_frame = object->int_var("texture_frame");
+				if (get_value_at_vector_bool_addr((unsigned*)object->ptr_var("ended_hitstun"), FIGHTER_FLAG_ENDED_HITSTUN)) {
+					texture_frame = object->get_texture("Damage Scale").sprite_index;
+				}
+				if (texture_frame != -1) {
+					if (texture_frame < 2) {
+						texture_frame++;
+					}
+					else if (texture_frame > 2) {
+						texture_frame--;
+					}
+					object->get_texture("Damage Scale").set_sprite(texture_frame);
+					
+					if (object->get_texture("Damage Scale").sprite_index != 2
+					&& *(int*)object->ptr_var("damage_scale") == 0) {
+						texture_frame = object->get_texture("Damage Scale").sprite_index;
+						return;
+					}
+					texture_frame = -1;
+				}
+				object->get_texture("Damage Scale").set_sprite(*(int*)object->ptr_var("damage_scale") + 2);
+			});
+			push_menu_ptr_var("damage_scale", &fighter[0]->fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI]);
+			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
+			push_menu_int_var("texture_frame", -1);
+			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.gif");
+			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			push_menu_pos(glm::vec3(1002.0, 244.0, 0.0));
+			push_menu_dimensions("Damage Scale");
+		} pop_menu_stack();
+		push_menu_child("P2 Scale"); {
+			push_menu_process_function([this](MenuObject* object) {
+				int& texture_frame = object->int_var("texture_frame");
+				if (get_value_at_vector_bool_addr((unsigned*)object->ptr_var("ended_hitstun"), FIGHTER_FLAG_ENDED_HITSTUN)) {
+					texture_frame = object->get_texture("Damage Scale").sprite_index;
+				}
+				if (texture_frame != -1) {
+					if (texture_frame < 2) {
+						texture_frame++;
+					}
+					else if (texture_frame > 2) {
+						texture_frame--;
+					}
+					object->get_texture("Damage Scale").set_sprite(texture_frame);
+
+					if (object->get_texture("Damage Scale").sprite_index != 2
+						&& *(int*)object->ptr_var("damage_scale") == 0) {
+						texture_frame = object->get_texture("Damage Scale").sprite_index;
+						return;
+					}
+					texture_frame = -1;
+				}
+				object->get_texture("Damage Scale").set_sprite(*(int*)object->ptr_var("damage_scale") + 2);
+			});
+			push_menu_ptr_var("damage_scale", &fighter[1]->fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI]);
+			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
+			push_menu_int_var("texture_frame", -1);
+			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.gif");
+			last_pushed_texture->flip_h();
+			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+			push_menu_pos(glm::vec3(1002.0, 244.0, 0.0));
+			push_menu_dimensions("Damage Scale");
+		} pop_menu_stack();
+		push_menu_child("P1 EX"); {
+			push_menu_process_function([this](MenuObject* object) {
+				float max_ex = object->float_var("max_ex");
+				float ex = *(float*)object->ptr_var("ex");
+				float &prev_segments = object->float_var("prev_segments");
+				object->get_texture("EX").set_left_target(ex / max_ex, 6);
+				float segments = floor(ex / 100.0);
+				if (prev_segments != segments) {
+					object->get_texture("EX Segment").set_left_target(clampf(0.0, segments / 6.0, 1.0), 4);
+				}
+				prev_segments = segments;
+			});
+
+			push_menu_float_var("max_ex", get_param_float(PARAM_FIGHTER, "ex_meter_size"));
+			push_menu_ptr_var("ex", &fighter[0]->fighter_float[FIGHTER_FLOAT_EX_METER]);
+			push_menu_float_var("prev_segments", 0.0);
+			
+			push_menu_texture("EX", "resource/game_state/battle/ui/meter/ex.png");
+			last_pushed_texture->scale_left_percent(0.0);
+			push_menu_texture("EX Segment", "resource/game_state/battle/ui/meter/ex_segment.png");
+			last_pushed_texture->scale_left_percent(0.0);
+			push_menu_pos(glm::vec3(324.0, 180.0, 0.0));
+			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+			push_menu_dimensions("EX");
+		} pop_menu_stack();
+		push_menu_child("P2 EX"); {
+			push_menu_process_function([this](MenuObject* object) {
+				float max_ex = object->float_var("max_ex");
+				float ex = *(float*)object->ptr_var("ex");
+				float &prev_segments = object->float_var("prev_segments");
+				object->get_texture("EX").set_left_target(ex / max_ex, 6);
+				float segments = floor(ex / 100.0);
+				if (prev_segments != segments) {
+					object->get_texture("EX Segment").set_left_target(clampf(0.0, segments / 6.0, 1.0), 4);
+				}
+				prev_segments = segments;
+			});
+
+			push_menu_float_var("max_ex", get_param_float(PARAM_FIGHTER, "ex_meter_size"));
+			push_menu_ptr_var("ex", &fighter[1]->fighter_float[FIGHTER_FLOAT_EX_METER]);
+			push_menu_float_var("prev_segments", 0.0);
+
+			push_menu_texture("EX", "resource/game_state/battle/ui/meter/ex.png");
+			last_pushed_texture->flip_h();
+			last_pushed_texture->scale_left_percent(0.0);
+			push_menu_texture("EX Segment", "resource/game_state/battle/ui/meter/ex_segment.png");
+			last_pushed_texture->flip_h();
+			last_pushed_texture->scale_left_percent(0.0);
+			push_menu_pos(glm::vec3(324.0, 180.0, 0.0));
+			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+			push_menu_dimensions("EX");
+		} pop_menu_stack();
+		push_menu_activity_group("P1 Super", nullptr, true); {
+			push_menu_child("SuperAG"); {
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						float super = *(float*)object->ptr_var("super");
+						float max_super = object->float_var("max_super");
+						if (super == max_super) {
+							object->set_active_sibling("Super FullAG");
+							return;
+						}
+						object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
+					}
+					
+				});
+				push_menu_ptr_var("super", &fighter[0]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
+				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
+				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				push_menu_dimensions("Super");
+			} pop_menu_stack();
+			push_menu_child("Super FullAG"); {
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						float super = *(float*)object->ptr_var("super");
+						if (super != object->float_var("max_super")) {
+							object->set_active_sibling("Super AG");
+							return;
+						}
+						object->get_texture("Super Full").next_sprite();
+					}
+				});
+				push_menu_ptr_var("super", &fighter[0]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
+				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
+				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				push_menu_dimensions("Super Full");
+			} pop_menu_stack();
+		} pop_menu_stack();
+		push_menu_activity_group("P2 Super", nullptr, true); {
+			push_menu_child("SuperAG"); {
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						float super = *(float*)object->ptr_var("super");
+						float max_super = object->float_var("max_super");
+						if (super == max_super) {
+							object->set_active_sibling("Super FullAG");
+							return;
+						}
+						object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
+					}
+
+					});
+				push_menu_ptr_var("super", &fighter[1]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
+				last_pushed_texture->flip_h();
+				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
+				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+				push_menu_dimensions("Super");
+			} pop_menu_stack();
+			push_menu_child("Super FullAG"); {
+				push_menu_process_function([this](MenuObject* object) {
+					if (object->bool_var("Active")) {
+						float super = *(float*)object->ptr_var("super");
+						if (super != object->float_var("max_super")) {
+							object->set_active_sibling("Super AG");
+							return;
+						}
+						object->get_texture("Super Full").next_sprite();
+					}
+				});
+				push_menu_ptr_var("super", &fighter[1]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
+				last_pushed_texture->flip_h();
+				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
+				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+				push_menu_dimensions("Super Full");
+			} pop_menu_stack();
+		} pop_menu_stack();
+		push_menu_activity_group("KO Text", nullptr, true, 5); {
+			push_menu_child("None"); {
+				push_menu_texture("Message", combo_font, "", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				last_pushed_texture->set_alpha(0);
+			} pop_menu_stack();
+			push_menu_child("KO"); {
+				push_menu_texture("Message", combo_font, "K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
+				last_pushed_texture->set_alpha(0);
+			} pop_menu_stack();
+			push_menu_child("Perfect KO"); {
+				push_menu_texture("Message", combo_font, "Perfect K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
+				last_pushed_texture->set_alpha(0);
+			} pop_menu_stack();
+			push_menu_child("Time"); {
+				push_menu_texture("Message", combo_font, "Time", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
+				last_pushed_texture->set_alpha(0);
+			} pop_menu_stack();
+			push_menu_child("Double KO"); {
+				push_menu_texture("Message", combo_font, "Double K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
+				last_pushed_texture->set_alpha(0);
+			} pop_menu_stack();
+		} pop_menu_stack();
+		push_menu_child("Round Start Text"); {
+			push_menu_activity_group("Round Start AG", &curr_round, true, 6); {
+				push_menu_child("Round1"); {
+					if (round_count_setting == 1) {
+						push_menu_texture("Round", combo_font, "Ready...", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					}
+					else {
+						push_menu_texture("Round", combo_font, "Round 1", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					}
+					last_pushed_texture->set_alpha(0);
+				} pop_menu_stack();
+				push_menu_child("Round2"); {
+					push_menu_texture("Round", combo_font, "Round 2", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					last_pushed_texture->set_alpha(0);
+				} pop_menu_stack();
+				push_menu_child("Round3"); {
+					if (round_count_setting == 2) {
+						push_menu_texture("Round", combo_font, "Final Round", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					}
+					else {
+						push_menu_texture("Round", combo_font, "Round 3", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					}
+					last_pushed_texture->set_alpha(0);
+				} pop_menu_stack();
+				push_menu_child("Round4"); {
+					push_menu_texture("Round", combo_font, "Round 4", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					last_pushed_texture->set_alpha(0);
+				} pop_menu_stack();
+				push_menu_child("Round5"); {
+					push_menu_texture("Round", combo_font, "Final Round", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					last_pushed_texture->set_alpha(0);
+				} pop_menu_stack();
+				push_menu_child("Round6"); {
+					push_menu_texture("Round", combo_font, "Sudden Death", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					last_pushed_texture->set_alpha(0);
+				} pop_menu_stack();
+			} pop_menu_stack();
+			push_menu_texture("Fight", combo_font, "Fight!", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+			last_pushed_texture->set_alpha(0);
+		} pop_menu_stack();
+
+		push_menu_texture("HUD", "resource/game_state/battle/ui/battle_hud.png");
+
+		if (game_context != GAME_CONTEXT_TRAINING) {
+			push_menu_child("Round Counter P1", round_count_setting + 1); {
+				push_menu_int_var("Wins", 0);
+				switch (round_count_setting) {
+					case (1): {
+						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo1_l.gif");
+						last_pushed_texture->set_pos(glm::vec3(6.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo1.png");
+					} break;
+					case (2): {
+						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo3_l.gif");
+						last_pushed_texture->set_pos(glm::vec3(204.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo3_l.gif");
+						last_pushed_texture->set_pos(glm::vec3(-192.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo3.png");
+					} break;
+					case (3): {
+						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo5_l.gif");
+						last_pushed_texture->set_pos(glm::vec3(270.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo5_l.gif");
+						last_pushed_texture->set_pos(glm::vec3(6.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Win3", "resource/game_state/battle/ui/rounds/round_win_bo5_l.gif");
+						last_pushed_texture->set_pos(glm::vec3(-258.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo5.png");
+					} break;
+					default: {
+
+					} break;
+				}
+				push_menu_pos(glm::vec3(1002.0, 62.0, 0.0));
+				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+				push_menu_dimensions("Round Bar");
+			} pop_menu_stack();
+			push_menu_child("Round Counter P2", round_count_setting + 1); {
+				push_menu_int_var("Wins", 0);
+				switch (round_count_setting) {
+					case (1): {
+						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo1_r.gif");
+						last_pushed_texture->set_pos(glm::vec3(-6.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo1.png");
+					} break;
+					case (2): {
+						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo3_r.gif");
+						last_pushed_texture->set_pos(glm::vec3(-204.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo3_r.gif");
+						last_pushed_texture->set_pos(glm::vec3(192.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo3.png");
+					} break;
+					case (3): {
+						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo5_r.gif");
+						last_pushed_texture->set_pos(glm::vec3(-270.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo5_r.gif");
+						last_pushed_texture->set_pos(glm::vec3(-6.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Win3", "resource/game_state/battle/ui/rounds/round_win_bo5_r.gif");
+						last_pushed_texture->set_pos(glm::vec3(258.0, -5.0, 0.0));
+						last_pushed_texture->set_alpha(0);
+						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo5.png");
+					} break;
+					default: {
+
+					} break;
+				}
+				last_pushed_texture->flip_h();
+				push_menu_pos(glm::vec3(1002.0, 62.0, 0.0));
+				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+				push_menu_dimensions("Round Bar");
+			} pop_menu_stack();
+		}
+		else {
+			for (int i = 0; i < 2; i++) {
+				training_info[i].init(fighter[i], &info_font);
+			}
+		}
+
+		push_menu_child("Timer", 5); {
+			push_menu_bool_var("pause", false);
+			push_menu_bool_var("time_up", false);
+			switch (timer_setting) {
+				case (TIMER_SETTING_NORMAL): {
+					push_menu_process_function([this](MenuObject* object) {
+						if (!object->bool_var("pause") && !object->bool_var("time_up")) {
+							int& frame = object->int_var("frame");
+							if (frame == 0) {
+								frame = 9;
+								int& deca_frame = object->int_var("deca_frame");
+								if (deca_frame == 0) {
+									deca_frame = 5;
+									object->get_texture("Deca Frame").set_sprite(6);
+									int& sec = object->int_var("sec");
+									if (sec == 0) {
+										sec = 9;
+										int& deca_sec = object->int_var("deca_sec");
+										if (deca_sec == 0) {
+											object->bool_var("time_up") = true;
+										}
+										else {
+											deca_sec--;
+										}
+										object->get_texture("Deca Second").prev_sprite();
+									}
+									else {
+										sec--;
+									}
+									object->get_texture("Second").prev_sprite();
+								}
+								else {
+									deca_frame--;
+								}
+								object->get_texture("Deca Frame").prev_sprite();
+							}
+							else {
+								frame--;
+							}
+							object->get_texture("Frame").prev_sprite();
+						}
+					});
+					push_menu_int_var("deca_sec", 9);
+					push_menu_int_var("sec", 9);
+					push_menu_int_var("deca_frame", 5);
+					push_menu_int_var("frame", 9);
+					push_menu_texture("Background", "resource/game_state/battle/ui/timer/timer.png");
+					push_menu_texture("Deca Second", "resource/game_state/battle/ui/timer/sec.gif");
+					last_pushed_texture->set_pos(glm::vec3(-38.0, 19.0, 0.0));
+					last_pushed_texture->set_sprite(9);
+					push_menu_texture("Second", "resource/game_state/battle/ui/timer/sec.gif");
+					last_pushed_texture->set_pos(glm::vec3(38.0, 19.0, 0.0));
+					last_pushed_texture->set_sprite(9);
+					push_menu_texture("Deca Frame", "resource/game_state/battle/ui/timer/frame.gif");
+					last_pushed_texture->set_pos(glm::vec3(-18.0, -84.0, 0.0));
+					last_pushed_texture->set_sprite(5);
+					push_menu_texture("Frame", "resource/game_state/battle/ui/timer/frame.gif");
+					last_pushed_texture->set_pos(glm::vec3(18.0, -84.0, 0.0));
+					last_pushed_texture->set_sprite(9);
+					push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
+					push_menu_dimensions("Background");
+					push_menu_pos(glm::vec3(0.0, 74.0, 0.0));
+				} break;
+				case (TIMER_SETTING_TRAINING): {
+					//Timer in this mode will show like the status and shit
+				} break;
+				case (TIMER_SETTING_NONE): {
+
+				} break;
+			}
+		}
+	} pop_menu_stack();
 }
 
 void Battle::process_main() {
-	switch (state) {
-	case(BATTLE_STATE_PRE_INTRO): {
-		process_pre_intro();
-	} break;
-	case (BATTLE_STATE_INTRO): {
-		process_intro();
-	} break;
-	default:
-	case (BATTLE_STATE_BATTLE): {
-		process_battle();
-	} break;
-	case (BATTLE_STATE_KO): {
-		process_ko();
-	} break;
-	case (BATTLE_STATE_OUTRO): {
-		process_outro();
-	} break;
+	switch (internal_state) {
+		case(BATTLE_STATE_PRE_INTRO): {
+			process_pre_intro();
+		} break;
+		case (BATTLE_STATE_INTRO): {
+			process_intro();
+		} break;
+		case (BATTLE_STATE_ROUND_START): {
+			process_round_start();
+		} break;
+		default:
+		case (BATTLE_STATE_BATTLE): {
+			process_battle();
+		} break;
+		case (BATTLE_STATE_KO): {
+			process_ko();
+		} break;
+		case (BATTLE_STATE_OUTRO): {
+			process_outro();
+		} break;
 	}
 }
 
 void Battle::process_pre_intro() {
-	state = BATTLE_STATE_INTRO;
+	internal_state = BATTLE_STATE_INTRO;
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->change_anim("intro");
 	}
@@ -316,29 +781,74 @@ void Battle::process_intro() {
 		player[i]->controller.poll_buttons();
 		fighter[i]->rot.z = glm::radians(90.0);
 		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
-			player[i]->controller.poll_buttons();
-			goto POST_INTRO;
+			for (int i = 0; i < 2; i++) {
+				fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
+			}
+			internal_state = BATTLE_STATE_ROUND_START;
+			return;
 		}
 	}
-	if (!fighter[0]->is_anim_end) {
+	if (!fighter[0]->anim_end) {
 		fighter[0]->process_animate();
 		fighter[0]->active_move_script.execute(fighter[0], fighter[0]->frame);
 		fighter[0]->process_post_animate();
-		sound_manager->process_sounds();
 	}
-	else if (!fighter[1]->is_anim_end) {
+	else if (!fighter[1]->anim_end) {
 		fighter[1]->process_animate();
 		fighter[1]->active_move_script.execute(fighter[1], fighter[1]->frame);
 		fighter[1]->process_post_animate();
-		sound_manager->process_sounds();
 	}
 	else {
-		POST_INTRO:
 		for (int i = 0; i < 2; i++) {
 			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
 		}
-		process_battle();
-		state = BATTLE_STATE_BATTLE;
+		internal_state = BATTLE_STATE_ROUND_START;
+	}
+}
+
+void Battle::process_round_start() {
+	SoundManager* sound_manager = SoundManager::get_instance();
+	MenuObject& round_start = get_menu_object("Background").get_child("Round Start Text");
+	if (execute_if("Init", 1, true)) {
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->fighter_flag[FIGHTER_FLAG_ROUND_START] = true;
+			fighter[i]->reset();
+		}
+		MenuObject& timer = get_menu_object("Background").get_child("Timer");
+		timer.bool_var("time_up") = false;
+		timer.bool_var("pause") = true;
+		timer.int_var("deca_frame") = 5;
+		timer.int_var("frame") = 9;
+		timer.int_var("sec") = 9;
+		timer.int_var("deca_sec") = 9;
+		timer.get_texture("Deca Second").set_sprite(9);
+		timer.get_texture("Second").set_sprite(9);
+		timer.get_texture("Deca Frame").set_sprite(5);
+		timer.get_texture("Frame").set_sprite(9);
+		round_start.get_activity_group("Round Start AG").get_active_child().get_texture("Round")
+			.set_alpha(255);
+	}
+	for (int i = 0; i < 2; i++) {
+		player[i]->controller.poll_buttons();
+	}
+	process_fighters();
+	process_ui();
+	stage.process();
+	post_process_fighters();
+	thread_manager->wait_thread(THREAD_KIND_UI);
+	camera->camera_main();
+	if (execute_wait("Round X Timer", 1, 120)) {
+		round_start.get_activity_group("Round Start AG").get_active_child().get_texture("Round")
+			.set_alpha(0);
+		round_start.get_texture("Fight").set_alpha(255);
+	}
+	if (execute_wait("Fight! Timer", 1, 60)) {
+		round_start.get_texture("Fight").set_alpha(0);
+		internal_state = BATTLE_STATE_BATTLE;
+		get_menu_object("Background").get_child("Timer").bool_var("pause") = false;
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->fighter_flag[FIGHTER_FLAG_ROUND_START] = false;
+		}
 	}
 }
 
@@ -350,40 +860,38 @@ void Battle::process_battle() {
 	debug_controller.poll_buttons();
 	if (debug_controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 		if (frame_pause) {
-			sound_manager->resume_se_all();
-			sound_manager->resume_vc_all();
+			sound_manager->resume_all_sounds();
+			sound_manager->resume_all_reserved_sounds();
 		}
+		bool& timer_pause = get_menu_object("Background").get_child("Timer").bool_var("pause");
+		timer_pause = !timer_pause;
 		frame_pause = !frame_pause;
-		timer.flip_clock();
-	}
-	for (int i = 0; i < 2; i++) {
-		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
-			game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
-		}
 	}
 	if (frame_pause) {
 		process_frame_pause();
 	}
 	else {
-		battle_object_manager->world_frame += battle_object_manager->world_rate;
-		pre_process_fighter();
-		process_fighter();
+		for (int i = 0; i < 2; i++) {
+			player[i]->controller.poll_buttons();
+		}
+		process_fighters();
 		process_ui();
 		stage.process();
-		post_process_fighter();
+		post_process_fighters();
 		thread_manager->wait_thread(THREAD_KIND_UI);
 		camera->camera_main();
 	}
-	sound_manager->process_sounds();
 	if (game_context == GAME_CONTEXT_TRAINING) {
 		process_training();
 	}
-	if (battle_object_manager->frame_elapsed()) {
-		battle_object_manager->world_frame = 0.0;
+	if (get_menu_object("Background").get_child("Timer").bool_var("time_up")) {
+		internal_state = BATTLE_STATE_KO;
 	}
-	if (timer.time_up) {
-		state = BATTLE_STATE_KO;
-		ko_timer = 300;
+
+	if (game_context != GAME_CONTEXT_ONLINE &&
+		(player[0]->controller.check_button_trigger(BUTTON_START)
+		|| player[1]->controller.check_button_trigger(BUTTON_START))) {
+		game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
 	}
 	if (game_manager->is_crash()) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
@@ -392,149 +900,375 @@ void Battle::process_battle() {
 
 void Battle::process_ko() {
 	SoundManager* sound_manager = SoundManager::get_instance();
+	RenderManager* render_manager = RenderManager::get_instance();
 
-	battle_object_manager->world_frame += battle_object_manager->world_rate;
-	pre_process_fighter();
-	for (int i = 0; i < 2; i++) {
-		thread_manager->notify_thread(i);
+	MenuObject& p1_round = get_menu_object("Background").get_child("Round Counter P1");
+	MenuObject& p2_round = get_menu_object("Background").get_child("Round Counter P2");
+	int& p1_wins = p1_round.int_var("Wins");
+	int& p2_wins = p2_round.int_var("Wins");
+
+	if (execute_if("Init", 1, true)) {
+		if (object_manager->real_time_id == -1) {
+			object_manager->set_world_rate(nullptr, 0.0067);
+		}
+		for (int i = 0; i < 2; i++) {
+			player[i]->controller.reset_all_buttons();
+			fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = 0;
+		}
+		ko_timer = 120;
+		actionable_timer = 600;
+		get_menu_object("Background").get_child("Timer").bool_var("pause") = true;
+		if (curr_round != 5) {
+			if (get_menu_object("Background").get_child("Timer").bool_var("time_up")) {
+				p1_round.get_texture("Round Win" + std::to_string(
+					p1_round.int_var("Wins") + 1)
+				).set_sprite(ROUND_ICON_TIMEOUT);
+				p2_round.get_texture("Round Win" + std::to_string(
+					p2_round.int_var("Wins") + 1)
+				).set_sprite(ROUND_ICON_TIMEOUT);
+			}
+			else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0 && fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0) {
+				p1_round.get_texture("Round Win" + std::to_string(
+					p1_round.int_var("Wins") + 1)
+				).set_sprite(ROUND_ICON_DOUBLE);
+				p2_round.get_texture("Round Win" + std::to_string(
+					p2_round.int_var("Wins") + 1)
+				).set_sprite(ROUND_ICON_DOUBLE);
+			}
+			else {
+				if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_local_param_float("health")) {
+					p1_round.get_texture("Round Win" + std::to_string(
+						p1_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_PERFECT);
+				}
+				/*
+				else if (p1 did ex super) {
+					p1_round.get_texture("Round Win" + std::to_string(
+						p1_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_EX_SUPER);
+				}
+				else if (p1 did champion super) {
+					p1_round.get_texture("Round Win" + std::to_string(
+						p1_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_CHAMPION_SUPER);
+				}
+				*/
+				else {
+					p1_round.get_texture("Round Win" + std::to_string(
+						p1_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_KO);
+				}
+
+				if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_local_param_float("health")) {
+					p2_round.get_texture("Round Win" + std::to_string(
+						p2_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_PERFECT);
+				}
+				/*
+				else if (p2 did ex super) {
+					p2_round.get_texture("Round Win" + std::to_string(
+						p2_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_EX_SUPER);
+				}
+				else if (p2 did champion super) {
+					p2_round.get_texture("Round Win" + std::to_string(
+						p2_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_CHAMPION_SUPER);
+				}
+				*/
+				else {
+					p2_round.get_texture("Round Win" + std::to_string(
+						p2_round.int_var("Wins") + 1)
+					).set_sprite(ROUND_ICON_KO);
+				}
+			}
+		}
+		if (get_menu_object("Background").get_child("Timer").bool_var("time_up")) {
+			get_menu_object("Background").get_activity_group("KO Text").set_active_child("Time");
+		}
+		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_local_param_float("health")
+		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_local_param_float("health")) {
+			get_menu_object("Background").get_activity_group("KO Text").set_active_child("Perfect KO");
+		}
+		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+			get_menu_object("Background").get_activity_group("KO Text").set_active_child("Double KO");
+		}
+		else {
+			get_menu_object("Background").get_activity_group("KO Text").set_active_child("KO");
+		}
+		get_menu_object("Background").get_activity_group("KO Text").get_active_child().get_texture("Message").set_alpha(255);
+		get_menu_object("Background").get_activity_group("KO Text").get_active_child().sound_player.play_reserved_sound("KO", 0.0);
 	}
+
+	if (execute_if("Remove KO Message", 1, get_menu_object("Background").get_activity_group("KO Text")
+		.get_active_child().sound_player.is_sound_end())) {
+
+		object_manager->reset_world_rate(nullptr);
+		get_menu_object("Background").get_activity_group("KO Text").get_active_child().get_texture("Message").set_alpha(0);
+		get_menu_object("Background").get_activity_group("KO Text").set_active_child("None");
+	}
+
+	if (fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END || fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) {
+		for (int i = 0; i < 2; i++) {
+			player[i]->controller.poll_buttons();
+			if (player[i]->controller.check_button_trigger(BUTTON_START)) {
+				actionable_timer = 0;
+			}
+		}
+	}
+	process_fighters();
 	process_ui();
 	stage.process();
-	post_process_fighter();
+	post_process_fighters();
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] > 0.0) {
+			fighter[i]->clear_hurtbox_all();
+		}
+	}
 	thread_manager->wait_thread(THREAD_KIND_UI);
 	camera->camera_main();
-	sound_manager->process_sounds();
 
-	if (battle_object_manager->frame_elapsed()) {
-		battle_object_manager->world_frame = 0.0;
-	}
-
-	int winner = 2;
+	int winner = ROUND_WIN_DOUBLE_KO;
 	if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
-		winner = 0;
+		winner = ROUND_WIN_P1;
 	}
 	if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
 		winner--; //If player 1's health is at 0, this will drop our winner from 2 to 1, indicating
 		//player 2 winning. If not, it will drop our winner from 0 to -1, indicating a timeout
 	}
-	if (winner != 2 && winner != -1 && fighter[!winner]->status_kind == FIGHTER_STATUS_KNOCKDOWN) {
-		fighter[!winner]->change_status(FIGHTER_STATUS_ROUND_END);
-	}
 
-	if (ko_timer > 180) {
-		ko_timer--;
-	}
-	else {
-		if (winner != 2 && winner != -1) {
-			//Single KO
-			if (fighter[winner]->is_actionable() && fighter[winner]->situation_kind == FIGHTER_SITUATION_GROUND) {
-				if (meters[winner].wins == num_rounds) {
-					state = BATTLE_STATE_OUTRO;
-				}
-				else {
-					fighter[winner]->change_status(FIGHTER_STATUS_ROUND_END);
-					fighter[!winner]->change_status(FIGHTER_STATUS_ROUND_END, false);
-					if (fighter[winner]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[winner]->get_local_param_float("health")) {
-						fighter[winner]->change_anim("round_win_perfect");
+	switch (winner) {
+		case (ROUND_WIN_TIMEOUT): {
+			if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+				if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !actionable_timer) {
+					if (curr_round == 5) {
+						render_manager->start_fade_sequence(40, [&]() {
+							internal_state = BATTLE_STATE_ROUND_START;
+						});
 					}
-					else {
-						fighter[winner]->change_anim("round_win");
-					}
-				}
-			}
-			else {
-				if (fighter[winner]->status_kind != FIGHTER_STATUS_ROUND_END) {
-					ko_timer--;
-					if (!ko_timer) { //If you remain inactionable for 5 seconds after KOing the
-						//opponent for whatever reason, we just skip to the next round without you
-						if (meters[winner].wins == num_rounds) {
-							state = BATTLE_STATE_OUTRO;
+					else if (p1_wins + 1 == round_count_setting
+					|| p2_wins + 1 == round_count_setting) {
+						if (p1_wins + 1 == round_count_setting
+						&& p2_wins + 1 == round_count_setting) {
+							p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
+							p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
+							render_manager->start_fade_sequence(40, [&]() {
+								p1_round.int_var("Wins")++;
+								p2_round.int_var("Wins")++;
+								curr_round = 5;
+								internal_state = BATTLE_STATE_ROUND_START;
+							});
 						}
 						else {
-							meters[winner].wins++;
-							for (int i = 0; i < 2; i++) {
-								fighter[i]->reset();
-							}
-							state = BATTLE_STATE_BATTLE;
+							p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
+							p2_round.get_texture("Round Win" + std::to_string(++p2_wins)).alpha.set_target_val(255, 20);
+							internal_state = BATTLE_STATE_OUTRO;
 						}
+					}
+					else if (fighter[0]->anim_end || fighter[1]->anim_end || !actionable_timer) {
+						p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
+						p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
+						render_manager->start_fade_sequence(40, [&]() {
+							p1_wins++;
+							p2_wins++;
+							curr_round += 2;
+							internal_state = BATTLE_STATE_ROUND_START;
+						});
 					}
 				}
 				else {
-					if (fighter[winner]->is_anim_end) {
-						meters[winner].wins++;
-						for (int i = 0; i < 2; i++) {
-							fighter[i]->reset();
+					if (fighter[0]->is_actionable() && fighter[1]->is_actionable()
+						&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
+						&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						if (ko_timer) {
+							ko_timer--;
 						}
-						state = BATTLE_STATE_BATTLE;
+						else {
+							fighter[0]->change_status(FIGHTER_STATUS_ROUND_END);
+							fighter[0]->change_anim("round_lose_timeout");
+							fighter[1]->change_status(FIGHTER_STATUS_ROUND_END);
+							fighter[1]->change_anim("round_lose_timeout");
+						}
+						return;
 					}
+					actionable_timer--;
 				}
 			}
-		}
-		else {
-			//Double KO or Timeout Draw
-			if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
-				if (meters[0].wins == num_rounds - 1 && meters[1].wins == num_rounds - 1) {
-					for (int i = 0; i < 2; i++) {
-						fighter[i]->reset();
+			else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] > fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+				if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !actionable_timer) {
+					if (p1_wins + 1 == round_count_setting) {
+						p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
+						internal_state = BATTLE_STATE_OUTRO;
 					}
-					sudden_death = true;
-					state = BATTLE_STATE_BATTLE;
+					else if (fighter[0]->anim_end || !actionable_timer) {
+						p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
+						render_manager->start_fade_sequence(40, [&]() {
+							p1_wins++;
+							curr_round++;
+							internal_state = BATTLE_STATE_ROUND_START;
+						});
+					}
 				}
 				else {
-					bool game_over = false;
-					for (int i = 0; i < 2; i++) {
-						fighter[i]->reset();
-						meters[i].wins++;
-						if (meters[i].wins == num_rounds) {
-							game_over = true;
+					if (fighter[0]->is_actionable() && fighter[1]->is_actionable()
+						&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
+						&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						if (ko_timer) {
+							ko_timer--;
 						}
+						else {
+							fighter[0]->change_status(FIGHTER_STATUS_ROUND_END);
+							fighter[0]->change_anim("round_win_timeout");
+							fighter[1]->change_status(FIGHTER_STATUS_ROUND_END);
+							fighter[1]->change_anim("round_lose_timeout");
+						}
+						return;
 					}
-					if (game_over) {
-						state = BATTLE_STATE_OUTRO;
-					}
-					else {
-						state = BATTLE_STATE_BATTLE;
-					}
+					actionable_timer--;
 				}
 			}
 			else {
-				//Timeout with a winner
-				if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] > fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
-					winner = 0;
+				if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !actionable_timer) {
+					if (p2_wins + 1 == round_count_setting) {
+						p2_round.get_texture("Round Win" + std::to_string(++p2_wins)).alpha.set_target_val(255, 20);
+						internal_state = BATTLE_STATE_OUTRO;
+					}
+					else if (fighter[1]->anim_end || !actionable_timer) {
+						p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
+						render_manager->start_fade_sequence(40, [&]() {
+							p2_wins++;
+							curr_round++;
+							internal_state = BATTLE_STATE_ROUND_START;
+						});
+					}
 				}
 				else {
-					winner = 1;
+					if (fighter[0]->is_actionable() && fighter[1]->is_actionable()
+						&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
+						&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						if (ko_timer) {
+							ko_timer--;
+						}
+						else {
+							fighter[1]->change_status(FIGHTER_STATUS_ROUND_END);
+							fighter[1]->change_anim("round_win_timeout");
+							fighter[0]->change_status(FIGHTER_STATUS_ROUND_END);
+							fighter[0]->change_anim("round_lose_timeout");
+						}
+						return;
+					}
+					actionable_timer--;
 				}
-				if (fighter[0]->is_actionable() && fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
-					&& fighter[1]->is_actionable() && fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
-					if (meters[winner].wins == num_rounds) {
-						state = BATTLE_STATE_OUTRO;
+			}
+		} break;
+		case (ROUND_WIN_DOUBLE_KO): {
+			if (fighter[0]->status_kind == FIGHTER_STATUS_KO && fighter[1]->status_kind == FIGHTER_STATUS_KO) {
+				if (ko_timer) {
+					ko_timer--;
+				}
+				else {
+					if (curr_round == 5) {
+						render_manager->start_fade_sequence(40, [&]() {
+							internal_state = BATTLE_STATE_ROUND_START;
+						});
+					}
+					else if (p1_wins + 1 == round_count_setting
+					|| p2_wins + 1 == round_count_setting) {
+						if (p1_wins + 1 == round_count_setting
+						&& p2_wins + 1 == round_count_setting) {
+							p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
+							p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
+							render_manager->start_fade_sequence(40, [&]() {
+								p1_wins++;
+								p2_wins++;
+								curr_round = 5;
+								internal_state = BATTLE_STATE_ROUND_START;
+							});
+						}
+						else {
+							p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
+							p2_round.get_texture("Round Win" + std::to_string(++p2_wins)).alpha.set_target_val(255, 20);
+							curr_round += 2;
+							internal_state = BATTLE_STATE_OUTRO;
+						}
 					}
 					else {
-						fighter[winner]->change_status(FIGHTER_STATUS_ROUND_END);
-						fighter[winner]->change_anim("round_win_timeout");
-						fighter[!winner]->change_status(FIGHTER_STATUS_ROUND_END);
-						fighter[!winner]->change_anim("round_lose_timeout");
-					}
-				}
-				else {
-					ko_timer--;
-					if ((fighter[winner]->is_anim_end && fighter[!winner]->is_anim_end) || !ko_timer) {
-						meters[winner].wins++;
-						for (int i = 0; i < 2; i++) {
-							fighter[i]->reset();
-						}
-						timer.reset();
-						state = BATTLE_STATE_BATTLE;
+						p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
+						p2_round.get_texture("Round Win" + std::to_string(++p2_wins)).alpha.set_target_val(255, 20);
+
+						render_manager->start_fade_sequence(40, [&]() {
+							curr_round += 2;
+							internal_state = BATTLE_STATE_ROUND_START;
+						});
 					}
 				}
 			}
-		}
-	}	
+		} break;
+		case (ROUND_WIN_P1): {
+			if (fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END || !actionable_timer) {
+				if (p1_wins + 1 == round_count_setting) {
+					p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
+					internal_state = BATTLE_STATE_OUTRO;
+					return;
+				}
+				else if (fighter[0]->anim_end || !actionable_timer) {
+					p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
+					render_manager->start_fade_sequence(40, [&]() {
+						p1_wins++;
+						curr_round++;
+						internal_state = BATTLE_STATE_ROUND_START;
+					});
+				}
+			}
+			else {
+				if (fighter[0]->is_actionable()
+					&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					if (ko_timer) {
+						ko_timer--;
+					}
+					else {
+						fighter[0]->change_status(FIGHTER_STATUS_ROUND_END);
+					}
+					return;
+				}
+				actionable_timer--;
+			}
+		} break;
+		case (ROUND_WIN_P2): {
+			if (fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END || !actionable_timer) {
+				if (p2_wins + 1 == round_count_setting) {
+					p2_round.get_texture("Round Win" + std::to_string(++p2_wins)).alpha.set_target_val(255, 20);
+					internal_state = BATTLE_STATE_OUTRO;
+					return;
+				}
+				else if (fighter[1]->anim_end || !actionable_timer) {
+					p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
+					render_manager->start_fade_sequence(40, [&]() {
+						p2_wins++;
+						curr_round++;
+						internal_state = BATTLE_STATE_ROUND_START;
+					});
+				}
+			}
+			else {
+				if (fighter[1]->is_actionable()
+					&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					if (ko_timer) {
+						ko_timer--;
+					}
+					else {
+						fighter[1]->change_status(FIGHTER_STATUS_ROUND_END);
+					}
+					return;
+				}
+				actionable_timer--;
+			}
+		} break;
+	}
 }
 
 void Battle::process_outro() {
-
+	GameManager::get_instance()->update_state(GAME_STATE_DEBUG_MENU);
 }
 
 void Battle::process_debug_boxes() {
@@ -548,84 +1282,74 @@ void Battle::process_debug_boxes() {
 	}
 }
 
-void Battle::pre_process_fighter() {
+void Battle::process_fighters() {	
 	for (int i = 0; i < 2; i++) {
 		switch (fighter[i]->fighter_int[FIGHTER_INT_UI_TEXT_TYPE]) {
-			case UI_TEXT_TYPE_NONE:
-			default: {
+		case UI_TEXT_TYPE_NONE:
+		default: {
 
-			} break;
-			case UI_TEXT_TYPE_ARMOR_BREAK: {
-				texts[i].push_back(BattleText());
-				texts[i].back().init(&message_font, "Armor Break", 40, fighter[i], glm::vec2(275.0, 450.0));
-			} break;
-			case UI_TEXT_TYPE_COUNTER: {
-				texts[i].push_back(BattleText());
-				texts[i].back().init(&message_font, "Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
-			} break;
-			case UI_TEXT_TYPE_COUNTER_PUNISH: {
-				texts[i].push_back(BattleText());
-				texts[i].back().init(&message_font, "Punish Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
-			} break;
-			case UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY: {
-				texts[i].push_back(BattleText());
-				texts[i].back().init(&message_font, "Hitstun Parry Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
-			} break;
-			case UI_TEXT_TYPE_COUNTER_JUMP: {
-				texts[i].push_back(BattleText());
-				texts[i].back().init(&message_font, "Jump Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
-			} break;
-			case UI_TEXT_TYPE_REVERSAL: {
-				texts[i].push_back(BattleText());
-				texts[i].back().init(&message_font, "Reversal", 40, fighter[i], glm::vec2(275.0, 450.0));
-			} break;
+		} break;
+		case UI_TEXT_TYPE_ARMOR_BREAK: {
+			texts[i].push_back(BattleText());
+			texts[i].back().init(&message_font, "Armor Break", 40, fighter[i], glm::vec2(275.0, 450.0));
+		} break;
+		case UI_TEXT_TYPE_COUNTER: {
+			texts[i].push_back(BattleText());
+			texts[i].back().init(&message_font, "Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+		} break;
+		case UI_TEXT_TYPE_COUNTER_PUNISH: {
+			texts[i].push_back(BattleText());
+			texts[i].back().init(&message_font, "Punish Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+		} break;
+		case UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY: {
+			texts[i].push_back(BattleText());
+			texts[i].back().init(&message_font, "Hitstun Parry Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+		} break;
+		case UI_TEXT_TYPE_COUNTER_JUMP: {
+			texts[i].push_back(BattleText());
+			texts[i].back().init(&message_font, "Jump Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+		} break;
+		case UI_TEXT_TYPE_REVERSAL: {
+			texts[i].push_back(BattleText());
+			texts[i].back().init(&message_font, "Reversal", 40, fighter[i], glm::vec2(275.0, 450.0));
+		} break;
 		}
 		fighter[i]->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_NONE;
 	}
-	if (fighter[0]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] 
-		|| fighter[1]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]) {
-		return;
-	}
-	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND) {
-			int pos_threshold = 0;
-			if (fighter[!i]->situation_kind == FIGHTER_SITUATION_AIR) {
-				pos_threshold = 5;
-			}
-			if (fighter[i]->pos.x > fighter[!i]->pos.x + pos_threshold) { //If you only crossed someone up by 5 pixels, don't worry about turning
-				//around just yet, or else walking under a launched opponent can get weird if your x speed is close enough to the opponent's
-				fighter[i]->internal_facing_right = false;
-				fighter[i]->internal_facing_dir = -1.0;
-			}
-			else if (fighter[i]->pos.x < fighter[!i]->pos.x - pos_threshold) {
-				fighter[i]->internal_facing_right = true;
-				fighter[i]->internal_facing_dir = 1.0;
-			}
-			else { //If both players are stuck inside each other, stop that !
-				if (fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
-					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
-					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
-					if (fighter[i]->pos.x == fighter[!i]->pos.x 
-						&& fighter[i]->internal_facing_dir == fighter[!i]->internal_facing_dir) {
-						fighter[i]->internal_facing_right = true;
-						fighter[i]->internal_facing_dir = 1.0;
-						fighter[!i]->internal_facing_right = false;
-						fighter[!i]->internal_facing_dir = -1.0;
-					}
-					fighter[i]->add_pos(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
-					fighter[!i]->add_pos(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
+	if (!(fighter[0]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]
+		|| fighter[1]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION])) {
+		for (int i = 0; i < 2; i++) {
+			if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+				if (fighter[i]->pos.x > fighter[!i]->pos.x) {
+					fighter[i]->internal_facing_right = false;
+					fighter[i]->internal_facing_dir = -1.0;
+				}
+				else if (fighter[i]->pos.x < fighter[!i]->pos.x) {
+					fighter[i]->internal_facing_right = true;
+					fighter[i]->internal_facing_dir = 1.0;
+				}
+				else { //If both players are stuck inside each other, stop that !
+					if (fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
+						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
+						if (fighter[i]->pos.x == fighter[!i]->pos.x
+							&& fighter[i]->internal_facing_dir == fighter[!i]->internal_facing_dir) {
+							fighter[i]->internal_facing_right = true;
+							fighter[i]->internal_facing_dir = 1.0;
+							fighter[!i]->internal_facing_right = false;
+							fighter[!i]->internal_facing_dir = -1.0;
+						}
+						fighter[i]->add_pos(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
+						fighter[!i]->add_pos(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
 
-					fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
-					fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
+						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
+						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
+					}
 				}
 			}
 		}
 	}
-}
-
-void Battle::process_fighter() {	
 	for (int i = 0; i < 2; i++) {
-		player[i]->controller.poll_buttons();
 		thread_manager->notify_thread(i);
 	}
 }
@@ -635,7 +1359,7 @@ void gamestate_battle_fighter_thread(void* fighter_arg) {
 	fighter->fighter_main();
 }
 
-void Battle::post_process_fighter() {
+void Battle::post_process_fighters() {
 	thread_manager->wait_thread(THREAD_KIND_PLAYER_1);
 	thread_manager->wait_thread(THREAD_KIND_PLAYER_2);
 	for (int i = 0; i < 2; i++) {
@@ -668,7 +1392,7 @@ void Battle::process_training() {
 			fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
 		}
 		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] == 0) {
-			fighter[i]->fighter_float[FIGHTER_FLOAT_EX_METER] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_EX_METER], fighter[i]->fighter_float[FIGHTER_FLOAT_EX_METER] + 10.0, get_param_int(PARAM_FIGHTER, "ex_meter_size"));
+			fighter[i]->gain_ex(1.0);
 		}
 
 		short new_input_code = fighter[i]->get_stick_dir_no_lr() << 7;
@@ -709,35 +1433,35 @@ void Battle::process_training() {
 
 void gamestate_battle_ui_thread(void* battle_arg) {
 	Battle* battle = (Battle*)battle_arg;
-	battle->timer.process();
-	for (int i = 0; i < 2; i++) {
-		battle->meters[i].process();
+	for (size_t i = 0, max = battle->menu_objects.size(); i < max; i++) {
+		battle->menu_objects[i].event_process();
 	}
 }
 
 void Battle::process_frame_pause() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	if (debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
-		sound_manager->resume_se_all();
-		sound_manager->resume_vc_all();
-		battle_object_manager->world_frame += battle_object_manager->world_rate;
-		pre_process_fighter();
-		process_fighter();
+		sound_manager->resume_all_sounds();
+		sound_manager->resume_all_reserved_sounds();
+		for (int i = 0; i < 2; i++) {
+			player[i]->controller.poll_buttons();
+		}
+		process_fighters();
 		process_ui();
-		post_process_fighter();
+		post_process_fighters();
 		thread_manager->wait_thread(THREAD_KIND_UI);
 		camera->camera_main();
 	}
 	else {
-		sound_manager->pause_se_all();
-		sound_manager->pause_vc_all();
+		sound_manager->pause_all_sounds();
+		sound_manager->pause_all_reserved_sounds();
 		camera->update_view();
 	}
 }
 
 void Battle::render_main() {
 	render_world();
-	if (state == BATTLE_STATE_BATTLE) {
+	if (internal_state != BATTLE_STATE_PRE_INTRO && internal_state != BATTLE_STATE_INTRO) {
 		render_ui();
 	}
 }
@@ -746,7 +1470,10 @@ void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->execute_buffered_events();
 	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
+
+	//Uncomment the following line if the Rowan model ever becomes capable of rendering 
+	//his sleeves with culling enabled
+//	glEnable(GL_CULL_FACE);
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0x00);
@@ -845,7 +1572,7 @@ void Battle::render_world() {
 
 	//HITBOX PASS
 
-	if (visualize_boxes) {
+	if (SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
 		render_manager->box_layer.use();
 		glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -914,8 +1641,8 @@ void Battle::render_world() {
 }
 
 void Battle::render_ui() {
+	render_menu_object("Background");
 	for (int i = 0; i < 2; i++) {
-		meters[i].render();
 		std::list<BattleText>::iterator it = texts[i].begin();
 		while (it != texts[i].end()) {
 			if (it->duration == 0) {
@@ -947,7 +1674,6 @@ void Battle::render_ui() {
 			text.scale_all_percent(1.0, false);
 		}
 	}
-	timer.render();
 	//TRAINING PASS
 
 	if (game_context == GAME_CONTEXT_TRAINING) {
@@ -956,9 +1682,4 @@ void Battle::render_ui() {
 		}
 	}
 
-}
-
-void Battle::process_background() {
-	render_world();
-	render_ui();
 }

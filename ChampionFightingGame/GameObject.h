@@ -5,11 +5,13 @@
 #include "Shader.h"
 #include "Model.h"
 #include "Animation.h"
+#include "SoundPlayer.h"
 
 class RenderManager;
 class SoundManager;
 class EffectManager;
 class ShaderManager;
+class ObjectManager;
 
 class GameObject {
 public:
@@ -18,38 +20,10 @@ public:
 	GameObject(const GameObject& other);
 	GameObject& operator=(GameObject& other);
 	GameObject& operator=(const GameObject& other);
+	~GameObject();
 
-	int id_effect = -1;
-
-	std::string resource_dir;
-
-	glm::vec3 pos = glm::vec3(0.0);
-	glm::vec3 rot = glm::vec3(0.0);
-	glm::vec3 scale = glm::vec3(1.0);
-	glm::mat4 extra_mat = glm::mat4(1.0);
-
-	AnimationTable anim_table;
-	Animation* anim_kind;
-	Animation* prev_anim_kind;
-	glm::vec3 prev_anim_offset;
-	float frame;
-	float rate;
-	float prev_anim_rate;
-	float prev_anim_frame;
-	bool is_anim_end = false;
-
-	std::list<unsigned int> sound_effects;
-	std::list<unsigned int> voice_clips;
-
-	Shader *shader;
-	Shader *shadow_shader;
-	Shader *outline_shader;
-	ModelInstance model;
-
-	RenderManager* render_manager;
-	SoundManager* sound_manager;
-	EffectManager* effect_manager;
-	ShaderManager* shader_manager;
+	//Process Funcs
+	void process_render_pos();
 
 	//Loading Funcs
 
@@ -57,24 +31,15 @@ public:
 	void load_used_model(std::string resource_dir, std::string texture_dir = "");
 	void init_shader();
 	void load_anim_table(std::string anim_dir);
-	void load_anim_table_unloaded_model(std::string anim_dir, std::string directory);
-
-	//Process Funcs
-
-	void process_sound();
+	void load_anim_table_unloaded_model(std::string anim_dir, std::string model_filename);
+	void load_anim_single(std::string name, std::string anim_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp);
+	void load_anim_single_unloaded_model(std::string name, std::string anim_filename, std::string model_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp);
 
 	//Render Funcs
 
 	void render();
 	void render_shadow();
 	void render_outline();
-
-	//Animation Funcs
-
-	void set_rate(float rate);
-	void set_frame(float frame);
-	bool change_anim(std::string animation_name, float rate, float frame);
-	void animate();
 
 	//Model Funcs
 
@@ -88,23 +53,27 @@ public:
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
 
+	//Animation Funcs
+
+	void set_rate(float rate);
+	void set_frame(float frame);
+	bool change_anim(std::string animation_name, float rate, float frame);
+	void animate();
+
 	//Sound Functions
 
-	void play_se(std::string se);
-	void play_vc(std::string vc);
-	void pause_se(std::string se);
-	void pause_se_all();
-	void pause_vc(std::string vc);
-	void pause_vc_all();
-	void resume_se(std::string se);
-	void resume_se_all();
-	void resume_vc(std::string vc);
-	void resume_vc_all();
-	void stop_se(std::string se);
-	void stop_se_all();
-	void stop_vc(std::string vc);
-	void stop_vc_all();
-	void load_sound(std::string name, std::string dir, float volume_mod);
+	void play_sound(std::string sound, float volume_mod);
+	void pause_sound(std::string sound);
+	void pause_sound_all();
+	void resume_sound(std::string sound);
+	void resume_sound_all();
+	void stop_sound(std::string sound);
+	void stop_sound_all();
+	void play_reserved_sound(std::string sound, float volume_mod);
+	void pause_reserved_sound();
+	void resume_reserved_sound();
+	void stop_reserved_sound();
+	void load_sound(std::string name, std::string dir);
 	void unload_sound(std::string name);
 	void unload_all_sounds();
 
@@ -133,4 +102,36 @@ public:
 	void load_effect(std::string name);
 	void unload_effect(std::string name);
 	void unload_all_effects();
+
+	RenderManager* render_manager;
+	SoundManager* sound_manager;
+	EffectManager* effect_manager;
+	ShaderManager* shader_manager;
+	ObjectManager* object_manager;
+
+	std::string resource_dir;
+
+	glm::vec3 pos;
+	glm::vec3 render_pos;
+	glm::vec3 rot;
+	glm::vec3 scale;
+	glm::mat4 extra_mat;
+
+	AnimationTable anim_table;
+	Animation* anim_kind;
+	Animation* prev_anim_kind;
+	glm::vec3 prev_anim_offset;
+	float frame;
+	float rate;
+	float prev_anim_rate;
+	float prev_anim_frame;
+	bool anim_end;
+
+	SoundPlayer sound_player;
+	int id_effect;
+
+	Shader* shader;
+	Shader* shadow_shader;
+	Shader* outline_shader;
+	ModelInstance model;
 };

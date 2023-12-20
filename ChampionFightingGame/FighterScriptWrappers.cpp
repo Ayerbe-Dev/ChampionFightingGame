@@ -24,9 +24,8 @@ void Fighter::SET_FLAG(ScriptArg args) {
 void Fighter::GRAB_OPPONENT(ScriptArg args) {
 	UNWRAP(attacker_bone_name, std::string);
 	UNWRAP(defender_bone_name, std::string);
-	UNWRAP(offset, glm::vec2);
-	UNWRAP(frames, int);
-	grab_opponent(attacker_bone_name, defender_bone_name, offset, frames);
+	UNWRAP(offset, glm::vec3);
+	grab_opponent(attacker_bone_name, defender_bone_name, offset);
 }
 
 void Fighter::THROW_OPPONENT(ScriptArg args) {

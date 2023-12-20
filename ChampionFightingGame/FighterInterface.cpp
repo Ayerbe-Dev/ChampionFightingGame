@@ -78,6 +78,6 @@ Fighter* create_fighter(Player* player) {
 			fighter = new Vesuvius(player);
 		} break;
 	}
-	BattleObjectManager::get_instance()->fighter[player->id] = fighter;
+	ObjectManager::get_instance()->fighter[player->id] = fighter;
 	return fighter;
 }

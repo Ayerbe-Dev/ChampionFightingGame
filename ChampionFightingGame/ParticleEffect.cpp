@@ -14,21 +14,17 @@ Particle::Particle() {
 }
 
 void Particle::render(ParticleEffectInstance* effect) {
-	float frame = effect->frame;
-	if (frame >= duration) {
-		if (!loop) return;
-		frame -= duration;
-	}
-	render_unique(effect);
+	if (effect->frame >= duration && !loop) return;
+	render_unique(effect, std::fmod(effect->frame, duration));
 }
 
-void Particle::render_unique(ParticleEffectInstance* effect) {}
+void Particle::render_unique(ParticleEffectInstance* effect, float frame) {}
 
 ParticleModel::ParticleModel() {
 	anim = nullptr;
 }
 
-void ParticleModel::render_unique(ParticleEffectInstance* effect) {
+void ParticleModel::render_unique(ParticleEffectInstance* effect, float frame) {
 
 }
 
@@ -36,7 +32,7 @@ ParticleBillboard::ParticleBillboard() {
 
 }
 
-void ParticleBillboard::render_unique(ParticleEffectInstance* effect) {
+void ParticleBillboard::render_unique(ParticleEffectInstance* effect, float frame) {
 
 }
 
@@ -44,7 +40,7 @@ ParticleTexture::ParticleTexture() {
 
 }
 
-void ParticleTexture::render_unique(ParticleEffectInstance* effect) {
+void ParticleTexture::render_unique(ParticleEffectInstance* effect, float frame) {
 
 }
 
@@ -52,7 +48,7 @@ ParticleTrail::ParticleTrail() {
 
 }
 
-void ParticleTrail::render_unique(ParticleEffectInstance* effect) {
+void ParticleTrail::render_unique(ParticleEffectInstance* effect, float frame) {
 
 }
 

@@ -12,6 +12,21 @@ EricFireball::EricFireball(int id, Player* player) {
 	projectile_int.resize(PROJECTILE_ERIC_FIREBALL_INT_MAX, 0);
 	projectile_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
 	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
+	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_STRING_MAX, "");
 
 	load_projectile();
+}
+
+void EricFireball::projectile_unique_main() {
+	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
+
+	}
+}
+
+void EricFireball::unique_activate() {
+
+}
+
+void EricFireball::unique_deactivate() {
+
 }

@@ -1,5 +1,9 @@
 #include "Leon.h"
 
+void Leon::load_move_list() {
+
+}
+
 void Leon::load_move_scripts() {
 	script("default", [this]() {
 		return;

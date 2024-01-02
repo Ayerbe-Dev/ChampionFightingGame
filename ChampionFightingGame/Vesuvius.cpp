@@ -13,5 +13,10 @@ Vesuvius::Vesuvius(Player* player) {
 	fighter_int.resize(CHARA_VESUVIUS_INT_MAX, 0);
 	fighter_float.resize(CHARA_VESUVIUS_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_VESUVIUS_FLAG_MAX, false);
+	fighter_string.resize(CHARA_VESUVIUS_STRING_MAX, "");
 	load_fighter();
+}
+
+void Vesuvius::chara_main() {
+
 }

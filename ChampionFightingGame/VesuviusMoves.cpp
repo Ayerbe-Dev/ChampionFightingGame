@@ -1,5 +1,9 @@
 #include "Vesuvius.h"
 
+void Vesuvius::load_move_list() {
+
+}
+
 void Vesuvius::load_move_scripts() {
 	script("default", [this]() {
 		return;

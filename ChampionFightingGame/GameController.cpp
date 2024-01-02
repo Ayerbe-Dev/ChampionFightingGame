@@ -108,6 +108,11 @@ void GameController::poll_buttons() {
 	bool any_new_buttons = false;
 	short buffer_code_buttons = 0;
 	short new_buffer_code_buttons = 0;
+	for (int i = BUTTON_LP; i <= BUTTON_HK && buffer_lockout_code != 0; i++) {
+		if ((buffer_lockout_code & (1 << (i - BUTTON_LP))) && !button_info[button_map[i]].button_on) {
+			button_info[button_map[i]].buffer = 0;
+		}
+	}
 	for (size_t i = 0, max = button_info.size(); i < max; i++) {
 		button_info[i].changed = button_info[i].button_on != old_button[i];
 		if (is_valid_buffer_button(button_info[i].button_kind)) {
@@ -146,6 +151,8 @@ void GameController::poll_buttons() {
 		short buffer_code_stick = (buffer_code >> 6) << 6;
 		buffer_code = buffer_code_buttons + buffer_code_stick;
 	}
+	
+	buffer_lockout_code &= buffer_code;
 }
 
 void GameController::add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerButton c_mapping) {
@@ -366,6 +373,14 @@ void GameController::reset_buffer() {
 
 short GameController::get_buffer_code() {
 	return buffer_code;
+}
+
+short GameController::get_buffer_lockout_code() {
+	return buffer_lockout_code;
+}
+
+void GameController::set_buffer_lockout_code(short buffer_lockout_code) {
+	this->buffer_lockout_code = buffer_lockout_code;
 }
 
 void GameController::set_id(int id) {

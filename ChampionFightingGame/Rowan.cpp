@@ -16,9 +16,14 @@ Rowan::Rowan(Player* player) {
 	fighter_int.resize(CHARA_ROWAN_INT_MAX, 0);
 	fighter_float.resize(CHARA_ROWAN_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ROWAN_FLAG_MAX, false);
+	fighter_string.resize(CHARA_ROWAN_STRING_MAX, "");
 	projectiles.push_back(create_projectile(PROJECTILE_KIND_ROWAN_FIREBALL, player, this));
-	attack_other_map_ground[BUTTON_HP][6] = 1;
+
 	load_fighter();
+}
+
+void Rowan::chara_main() {
+
 }
 
 void Rowan::load_chara_effects() {

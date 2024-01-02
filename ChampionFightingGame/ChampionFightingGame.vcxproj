@@ -268,9 +268,10 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="EricFireball.cpp" />
     <ClCompile Include="EricMoves.cpp" />
     <ClCompile Include="EricStatus.cpp" />
+    <ClCompile Include="FighterMovelist.cpp" />
     <ClCompile Include="GameObjectProcessFuncs.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
-    <ClCompile Include="FighterActionabilityFunctions.cpp" />
+    <ClCompile Include="FighterActionFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
     <ClCompile Include="FighterCinematicFunctions.cpp" />
@@ -278,7 +279,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterGrabFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterRotationFunctions.cpp" />
-    <ClCompile Include="FighterScriptFunctions.cpp" />
     <ClCompile Include="FighterScriptWrappers.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
@@ -347,6 +347,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="NightsabreMoves.cpp" />
     <ClCompile Include="NightsabreStatus.cpp" />
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
+    <ClCompile Include="ProjectileActivationFunctions.cpp" />
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
@@ -440,13 +441,22 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AI.h" />
     <ClInclude Include="AIManager.h" />
     <ClInclude Include="Anlst.h" />
+    <ClInclude Include="AthenaString.h" />
+    <ClInclude Include="AtlasString.h" />
     <ClInclude Include="Ayrbt.h" />
     <ClInclude Include="BattleConstants.h" />
     <ClInclude Include="BattleObjectConstants.h" />
+    <ClInclude Include="BrunoString.h" />
     <ClInclude Include="CharaSelectConstants.h" />
+    <ClInclude Include="DanteString.h" />
+    <ClInclude Include="DesiraeString.h" />
+    <ClInclude Include="DingoString.h" />
     <ClInclude Include="EasyGifReader.h" />
     <ClInclude Include="Efct.h" />
     <ClInclude Include="Eftlst.h" />
+    <ClInclude Include="EricFireballString.h" />
+    <ClInclude Include="EricString.h" />
+    <ClInclude Include="FighterString.h" />
     <ClInclude Include="HxA.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="Dingo.h" />
@@ -483,7 +493,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="HxAMeta.h" />
     <ClInclude Include="HxANode.h" />
     <ClInclude Include="imgui_stdlib.h" />
+    <ClInclude Include="JuliusString.h" />
+    <ClInclude Include="LeonString.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="FighterMovelist.h" />
+    <ClInclude Include="NightsabreString.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="PauseBattle.h" />
     <ClInclude Include="Bone.h" />
@@ -542,8 +556,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Prmlst.h" />
+    <ClInclude Include="ProjectileString.h" />
+    <ClInclude Include="RamonaString.h" />
     <ClInclude Include="ReadBytes.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RookString.h" />
+    <ClInclude Include="RowanFireballString.h" />
+    <ClInclude Include="RowanString.h" />
     <ClInclude Include="SaveManager.h" />
     <ClInclude Include="ScreenText.h" />
     <ClInclude Include="ScreenTexture.h" />
@@ -587,10 +606,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="TargetVar.h" />
     <ClInclude Include="TargetVarManager.h" />
+    <ClInclude Include="TessaString.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="TimeFuncs.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VectorBoolPointer.h" />
+    <ClInclude Include="VesuviusString.h" />
     <ClInclude Include="Wallace.h" />
     <ClInclude Include="BattleObject.h" />
     <ClInclude Include="CharaKind.h" />
@@ -677,6 +698,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="VesuviusFloat.h" />
     <ClInclude Include="VesuviusInt.h" />
     <ClInclude Include="VesuviusStatus.h" />
+    <ClInclude Include="WallaceString.h" />
     <ClInclude Include="WindowConstants.h" />
     <ClInclude Include="WorldTexture.h" />
     <ClInclude Include="Zyair.h" />
@@ -685,6 +707,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ZyairFloat.h" />
     <ClInclude Include="ZyairInt.h" />
     <ClInclude Include="ZyairStatus.h" />
+    <ClInclude Include="ZyairString.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\chara\alejandro\anims\anim_list.yml" />

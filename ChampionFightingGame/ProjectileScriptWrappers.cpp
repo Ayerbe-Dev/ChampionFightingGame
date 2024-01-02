@@ -21,6 +21,13 @@ void Projectile::SET_FLAG(ScriptArg args) {
 	set_flag(target, val);
 }
 
+void Projectile::SET_STRING(ScriptArg args) {
+	UNWRAP(target, int);
+	UNWRAP(val, std::string);
+
+	set_string(target, val);
+}
+
 void Projectile::ADD_POS(ScriptArg args) {
 	UNWRAP(pos, glm::vec3);
 	add_pos(pos);

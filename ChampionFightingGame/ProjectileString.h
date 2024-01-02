@@ -1,0 +1,7 @@
+#pragma once
+
+enum {
+	_PROJECTILE_STRING_MAX
+};
+
+const int PROJECTILE_STRING_MAX = _PROJECTILE_STRING_MAX;

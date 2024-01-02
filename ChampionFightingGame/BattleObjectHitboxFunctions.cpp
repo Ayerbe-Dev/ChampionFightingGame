@@ -9,8 +9,8 @@ void BattleObject::new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 
 	float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, 
 	float pushback_air_y, int pushback_frames, float launch_init_y, float launch_gravity, 
 	float launch_max_fall_speed, float launch_speed_x, glm::vec3 launch_target_pos, 
-	bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, int hit_effect_id, 
-	int hit_sound_id) {
+	bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, 
+	std::string hit_sound) {
 	if (id < 10) {
 		hitboxes[id].activate(id, multihit, anchor, offset, collision_kind,
 			hit_status, custom_hit_status, hit_flags, special_status_condition, special_status, 
@@ -18,8 +18,8 @@ void BattleObject::new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 
 			hit_height, damage, chip_damage, damage_scale, meter_gain, hitlag, blocklag, hitstun, 
 			blockstun, pushback_ground_hit, pushback_ground_block, pushback_air_x, pushback_air_y, 
 			pushback_frames, launch_init_y, launch_gravity, launch_max_fall_speed, launch_speed_x, 
-			launch_target_pos, has_launch_target_pos, damage_kind, hit_level, hit_effect_id, 
-			hit_sound_id
+			launch_target_pos, has_launch_target_pos, damage_kind, hit_level, hit_effect, 
+			hit_sound
 		);
 	}
 }

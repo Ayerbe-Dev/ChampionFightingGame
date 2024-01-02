@@ -1,5 +1,9 @@
 #include "Nightsabre.h"
 
+void Nightsabre::load_move_list() {
+
+}
+
 void Nightsabre::load_move_scripts() {
 	script("default", [this]() {
 		return;

@@ -5,4 +5,5 @@
 #include "FighterInt.h"
 #include "FighterFlag.h"
 #include "FighterFloat.h"
+#include "FighterString.h"
 #include "FighterStatus.h"

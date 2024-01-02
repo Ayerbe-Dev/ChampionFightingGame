@@ -1,5 +1,9 @@
 #include "Dante.h"
 
+void Dante::load_move_list() {
+
+}
+
 void Dante::load_move_scripts() {
 	script("default", [this]() {
 		return;

@@ -53,7 +53,7 @@ void Projectile::process_status() {
 	active_move_script.execute(this, frame);
 }
 
-void Projectile::process_animate() {	
+void Projectile::process_animate() {
 	if (projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] != 0) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
 			frame += (0.2 / (float)(projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
@@ -89,9 +89,6 @@ void Projectile::process_post_animate() {
 
 void Projectile::process_position() {
 	prev_pos = pos;
-	if (pos.x < stage->stage_bounds.x || pos.x > stage->stage_bounds.y) {
-		change_status(PROJECTILE_STATUS_DEACTIVATE);
-	}
 }
 
 void Projectile::process_post_position() {
@@ -100,6 +97,9 @@ void Projectile::process_post_position() {
 	update_grabbox_pos();
 	update_pushbox_pos();
 	update_blockbox_pos();
+	if (!is_in_camera_range() && projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB]) {
+		deactivate();
+	}
 }
 
 void Projectile::decrease_common_variables() {

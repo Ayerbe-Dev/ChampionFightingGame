@@ -1,5 +1,9 @@
 #include "Desirae.h"
 
+void Desirae::load_move_list() {
+
+}
+
 void Desirae::load_move_scripts() {
 	script("default", [this]() {
 		return;

@@ -39,7 +39,7 @@ void Projectile::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, F
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	unique_process_incoming_fighter_hitbox_collision_hit(hitbox, attacker);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 	attacker->process_outgoing_projectile_hitbox_collision_hit(hitbox, this);
 }
@@ -50,7 +50,7 @@ void Projectile::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = hitbox->hitlag;
 	unique_process_incoming_projectile_hitbox_collision_hit(hitbox, attacker);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 	attacker->process_outgoing_projectile_hitbox_collision_hit(hitbox, this);
 }
@@ -64,7 +64,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, F
 	owner->fighter_flag[FIGHTER_FLAG_PROJECTILE_HIT_DURING_STATUS] = true;
 	unique_process_outgoing_fighter_hitbox_collision_hit(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -83,7 +83,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbo
 	owner->gain_ex(hitbox->meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_blocked(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -95,7 +95,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbo
 	owner->gain_ex(hitbox->meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_parried(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -107,7 +107,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbo
 	owner->gain_ex(hitbox->meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -119,7 +119,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbo
 	owner->gain_ex(hitbox->meter_gain * 0.3);
 	unique_process_outgoing_fighter_hitbox_collision_armored(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -130,7 +130,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_right_of_way_armored(
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	unique_process_outgoing_fighter_hitbox_collision_right_of_way_armored(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -141,7 +141,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_invincibility(Hitbox*
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	unique_process_outgoing_fighter_hitbox_collision_invincibility(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -173,7 +173,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbo
 	}
 	unique_process_outgoing_fighter_hitbox_collision_counter(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 
@@ -187,7 +187,7 @@ void Projectile::process_outgoing_projectile_hitbox_collision_counter(Hitbox* hi
 	}
 	unique_process_outgoing_projectile_hitbox_collision_counter(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
-		post_collision_status = PROJECTILE_STATUS_DEACTIVATE;
+		deactivate();
 	}
 }
 

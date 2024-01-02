@@ -1,23 +1,14 @@
 #include "Vesuvius.h"
 
-void Vesuvius::chara_main() {
-
-}
-
 bool Vesuvius::chara_ground_status_act() {
 	return false;
 }
 
-bool Vesuvius::chara_air_status_act() {
+bool Vesuvius::chara_status_attack() {
 	return false;
 }
 
-bool Vesuvius::chara_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT]) {
-		if (chara_ground_status_act()) {
-			return true;
-		}
-	}
+bool Vesuvius::chara_status_attack_air() {
 	return false;
 }
 

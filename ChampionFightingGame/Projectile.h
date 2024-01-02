@@ -64,6 +64,7 @@ public:
 	void dec_int(int target);
 	void set_float(int target, float val);
 	void set_flag(int target, bool val);
+	void set_string(int target, std::string val);
 
 	//Collision Functions
 
@@ -158,25 +159,25 @@ public:
 	void SET_INT(ScriptArg args);
 	void SET_FLOAT(ScriptArg args);
 	void SET_FLAG(ScriptArg args);
+	void SET_STRING(ScriptArg args);
 
 	void ADD_POS(ScriptArg args);
 	void SET_POS(ScriptArg args);
 
 	void CHANGE_STATUS(ScriptArg args);
 
+	//Activation
+
+	void activate();
+	void deactivate();
+	virtual void unique_activate();
+	virtual void unique_deactivate();
+
 	//Status Scripts
 
 	virtual void status_none();
 	virtual void enter_status_none();
 	virtual void exit_status_none();
-
-	virtual void status_activate();
-	virtual void enter_status_activate();
-	virtual void exit_status_activate();
-
-	virtual void status_deactivate();
-	virtual void enter_status_deactivate();
-	virtual void exit_status_deactivate();
 
 	int projectile_kind;
 	std::string projectile_name;
@@ -189,6 +190,7 @@ public:
 	std::vector<int> projectile_int;
 	std::vector<float> projectile_float;
 	std::vector<bool> projectile_flag;
+	std::vector<std::string> projectile_string;
 
 	std::vector<void (Projectile::*)(void)> status_script;
 	std::vector<void (Projectile::*)(void)> enter_status_script;

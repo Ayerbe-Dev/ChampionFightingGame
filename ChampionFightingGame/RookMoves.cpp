@@ -1,5 +1,9 @@
 #include "Rook.h"
 
+void Rook::load_move_list() {
+
+}
+
 void Rook::load_move_scripts() {
 	script("default", [this]() {
 		return;

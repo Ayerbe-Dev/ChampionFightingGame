@@ -1,5 +1,9 @@
 #include "Dingo.h"
 
+void Dingo::load_move_list() {
+
+}
+
 void Dingo::load_move_scripts() {
 	script("default", [this]() {
 		return;

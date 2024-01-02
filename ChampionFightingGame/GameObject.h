@@ -37,6 +37,7 @@ public:
 
 	//Render Funcs
 
+	bool is_in_camera_range();
 	void render();
 	void render_shadow();
 	void render_outline();
@@ -52,6 +53,7 @@ public:
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
+	void set_scale(glm::vec3 scale);
 
 	//Animation Funcs
 
@@ -115,6 +117,7 @@ public:
 	glm::vec3 render_pos;
 	glm::vec3 rot;
 	glm::vec3 scale;
+	glm::vec3 scale_vec;
 	glm::mat4 extra_mat;
 
 	AnimationTable anim_table;

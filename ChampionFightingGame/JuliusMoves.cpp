@@ -1,5 +1,9 @@
 #include "Julius.h"
 
+void Julius::load_move_list() {
+
+}
+
 void Julius::load_move_scripts() {
 	script("default", [this]() {
 		return;

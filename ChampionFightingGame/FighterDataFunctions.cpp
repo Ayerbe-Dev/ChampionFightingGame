@@ -26,12 +26,16 @@ void Fighter::set_flag(int target, bool val) {
 	fighter_flag[target] = val;
 }
 
+void Fighter::set_string(int target, std::string val) {
+	fighter_string[target] = val;
+}
+
 bool Fighter::can_spend_ex(float ex) {
 	return fighter_float[FIGHTER_FLOAT_EX_METER] >= ex && !fighter_flag[FIGHTER_FLAG_LOCK_EX];
 }
 
 void Fighter::spend_ex(float ex) {
-	if (fighter_flag[FIGHTER_FLAG_LOCK_EX]) return;
+	if (fighter_flag[FIGHTER_FLAG_LOCK_EX] || ex == 0.0f) return;
 	fighter_float[FIGHTER_FLOAT_EX_METER] -= ex;
 	fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] = 60;
 }

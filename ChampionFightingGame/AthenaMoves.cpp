@@ -1,5 +1,9 @@
 #include "Athena.h"
 
+void Athena::load_move_list() {
+
+}
+
 void Athena::load_move_scripts() {
 	script("default", [this]() {
 		return;

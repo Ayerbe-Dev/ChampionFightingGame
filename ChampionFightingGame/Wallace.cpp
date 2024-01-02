@@ -13,5 +13,10 @@ Wallace::Wallace(Player* player) {
 	fighter_int.resize(CHARA_WALLACE_INT_MAX, 0);
 	fighter_float.resize(CHARA_WALLACE_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_WALLACE_FLAG_MAX, false);
+	fighter_string.resize(CHARA_WALLACE_STRING_MAX, "");
 	load_fighter();
+}
+
+void Wallace::chara_main() {
+
 }

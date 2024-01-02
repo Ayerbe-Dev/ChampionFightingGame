@@ -34,9 +34,10 @@ void Fighter::load_fighter() {
 	load_anim_list();
 	load_chara_status_scripts();
 	load_fighter_status_scripts();
+	load_move_list();
 	load_move_scripts();
 	load_sound_list();
-	load_fighter_effects();
+	load_effect_list();
 	load_chara_effects();
 	set_default_vars();
 
@@ -79,7 +80,7 @@ void Fighter::load_sound_list() {
 	}
 }
 
-void Fighter::load_fighter_effects() {
+void Fighter::load_effect_list() {
 
 }
 
@@ -132,8 +133,7 @@ void Fighter::load_anim_list() {
 void Fighter::set_default_vars() {
 	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
-	fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
-	fighter_int[FIGHTER_INT_ATTACK_KIND] = ATTACK_KIND_NONE;
+	fighter_string[FIGHTER_STRING_MOVE_KIND] = "none";
 }
 
 void Fighter::load_collision_boxes() {

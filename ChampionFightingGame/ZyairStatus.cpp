@@ -1,23 +1,14 @@
 #include "Zyair.h"
 
-void Zyair::chara_main() {
-
-}
-
 bool Zyair::chara_ground_status_act() {
 	return false;
 }
 
-bool Zyair::chara_air_status_act() {
+bool Zyair::chara_status_attack() {
 	return false;
 }
 
-bool Zyair::chara_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT]) {
-		if (chara_ground_status_act()) {
-			return true;
-		}
-	}
+bool Zyair::chara_status_attack_air() {
 	return false;
 }
 

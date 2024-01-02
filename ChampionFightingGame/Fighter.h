@@ -7,6 +7,7 @@
 #include "FighterConstants.h"
 #include "ObjectManager.h"
 #include "ParamAccessor.h"
+#include "FighterMovelist.h"
 
 #define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
 #define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
@@ -37,8 +38,7 @@ public:
 
 	void process_pre_position(); //Resets rotation as well as any garbage position values
 	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
-	
-	void process_pre_input(); //Really this one just checks if you tried to dash
+
 	void process_input(); //Manages specific inputs such as special motions and dashes
 	
 	void process_pre_status(); //Executes any buffered status changes
@@ -50,7 +50,7 @@ public:
 	void decrease_common_variables();
 	void reset();
 
-	//Setup
+	//Loading
 
 	void load_fighter();
 	void load_model_shader();
@@ -58,8 +58,9 @@ public:
 	void load_fighter_status_scripts();
 	virtual void load_chara_status_scripts() {};
 	virtual void load_move_scripts() {};
+	virtual void load_move_list() {};
 	void load_sound_list();
-	void load_fighter_effects();
+	void load_effect_list();
 	virtual void load_chara_effects() {};
 	void set_default_vars();
 	void load_collision_boxes();
@@ -76,15 +77,7 @@ public:
 	unsigned int get_stick_dir_no_lr();
 	unsigned int get_flick_dir(bool internal_dir = true); //Same as above, but returns 0 if your direction didn't change on that frame
 	unsigned int get_buffer_stick_dir(bool internal_dir = true); //Reads from the buffer code instead of the current frame
-	bool get_attack_input(int attack_kind, unsigned int button = 0, int stick_dir = 10);
-	bool get_special_input(int special_kind, unsigned int button, int charge_frames = 0); //Checks if you're making a special input
-	bool attack_cancel(int attack_kind, unsigned int button = 0, int stick_dir = 10);
-	bool special_cancel(int special_kind, unsigned int status_kind, unsigned int button, int charge_frames = 0);
-	int try_ex(bool punch); //Checks if you had enough meter to use an EX special. If you did, done. If you didn't, check whether or not one of your
-		//buttons in the EX input were Heavy. If so, use a Heavy special, otherwise use a Medium special.
-	unsigned int get_attack_other_kind_ground(unsigned int button, unsigned int stick_dir);
-	unsigned int get_attack_other_kind_air(unsigned int button, unsigned int stick_dir);
-
+	
 	//Param Helper Funcs - Call the normal get_param functions but will append the move strength of the special you're in
 
 	int get_param_int_special(std::string param);
@@ -115,6 +108,7 @@ public:
 	void dec_int(int target);
 	void set_float(int target, float val);
 	void set_flag(int target, bool val);
+	void set_string(int target, std::string val);
 
 	bool can_spend_ex(float ex);
 	void spend_ex(float ex);
@@ -134,14 +128,17 @@ public:
 	bool ending_hitlag(int frames);
 	float calc_launch_frames();
 
-	//Actionability
+	//Actions
 
 	bool is_actionable();
-	void enable_all_cancels();
-	void enable_cancel(int cat, int kind);
+	bool is_enable_free_cancel();
+	void enable_free_cancel();
+	void enable_cancel(std::string move_kind, CancelKind cancel_kind);
 	void disable_all_cancels();
-	void disable_cancel(int cat, int kind);
-	bool is_enable_cancel(int cancel_kind);
+	void disable_cancel(std::string move_kind, CancelKind cancel_kind);
+	bool is_enable_cancel(std::string move_kind);
+	FighterMoveListEntry get_curr_move();
+	void check_movelist_inputs();
 
 	//Frame Data
 
@@ -164,20 +161,16 @@ public:
 	//Status
 
 	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true) override;
-	bool buffer_change_status(unsigned int new_status_kind, unsigned int cancel_kind = CANCEL_KIND_MAX, bool call_end_status = true, bool require_different_status = true);
+	void change_situation(unsigned int new_situation_kind);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
 	bool common_ground_status_act(bool crouch = true);
-	bool common_air_status_act();
 	bool common_air_status_general();
 	virtual bool chara_ground_status_act() { return false; };
-	virtual bool chara_air_status_act() { return false; };
 	virtual bool chara_status_attack() { return false; };
 	virtual bool chara_status_attack_air() { return false; };
-	virtual void chara_enter_status_attack_other() {};
-	virtual void chara_enter_status_attack_air_other() {};
-	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_WAIT, bool call_end_status = true, bool require_different_status = true);
+	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_NONE, bool call_end_status = true, bool require_different_status = true);
 	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true, bool require_different_status = true);
 	unsigned int get_status_group();
 	bool check_hitstun_parry();
@@ -191,6 +184,7 @@ public:
 	void set_projectile_int(int projectile, int target, int val);
 	void set_projectile_float(int projectile, int target, float val);
 	void set_projectile_flag(int projectile, int target, bool val);
+	void set_projectile_string(int projectile, int target, std::string val);
 	void add_projectile_pos(int projectile, glm::vec3 pos);
 	void set_projectile_pos(int projectile, glm::vec3 pos);
 	void change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
@@ -337,6 +331,7 @@ public:
 	void SET_INT(ScriptArg args);
 	void SET_FLOAT(ScriptArg args);
 	void SET_FLAG(ScriptArg args);
+	void SET_STRING(ScriptArg args);
 
 	void GRAB_OPPONENT(ScriptArg args);
 	void THROW_OPPONENT(ScriptArg args);
@@ -362,6 +357,7 @@ public:
 	void SET_PROJECTILE_INT(ScriptArg args);
 	void SET_PROJECTILE_FLOAT(ScriptArg args);
 	void SET_PROJECTILE_FLAG(ScriptArg args);
+	void SET_PROJECTILE_STRING(ScriptArg args);
 	void CHANGE_PROJECTILE_STATUS(ScriptArg args);
 
 	void CHANGE_OPPONENT_STATUS(ScriptArg args);
@@ -468,12 +464,15 @@ public:
 	virtual void status_hitstun_float();
 	virtual void enter_status_hitstun_float();
 	virtual void exit_status_hitstun_float();
+	virtual void status_launch_start();
 	virtual void enter_status_launch_start();
 	virtual void exit_status_launch_start();
 	virtual void status_launch();
 	virtual void enter_status_launch();
 	virtual void exit_status_launch();
 	virtual void status_landing();
+	virtual void enter_status_landing();
+	virtual void exit_status_landing();
 	virtual void status_crumple();
 	virtual void enter_status_crumple();
 	virtual void exit_status_crumple();
@@ -498,9 +497,6 @@ public:
 	virtual void status_parry();
 	virtual void enter_status_parry();
 	virtual void exit_status_parry();
-	virtual void status_launch_start();
-	virtual void enter_status_landing();
-	virtual void exit_status_landing();
 	virtual void status_landing_attack();
 	virtual void enter_status_landing_attack();
 	virtual void exit_status_landing_attack();
@@ -531,18 +527,15 @@ public:
 	std::vector<int> fighter_int;
 	std::vector<float> fighter_float;
 	std::vector<bool> fighter_flag;
+	std::vector<std::string> fighter_string;
 
 	//Array of pointers to the corressponding function for each status
 	std::vector<void (Fighter::*)(void)> status_script;
 	std::vector<void (Fighter::*)(void)> enter_status_script;
 	std::vector<void (Fighter::*)(void)> exit_status_script;
 
-	//Array of flags to determine what can and cannot be canceled into
+	FighterMoveList move_list[FIGHTER_SITUATION_MAX];
 
-	bool cancel_flags[CANCEL_CAT_MAX][CANCEL_KIND_MAX];
-
-	std::map<unsigned int, std::map<unsigned int, unsigned int>> attack_other_map_ground;
-	std::map<unsigned int, std::map<unsigned int, unsigned int>> attack_other_map_air;
 	std::map<unsigned int, std::string> throw_map_ground;
 	std::map<unsigned int, std::string> throw_map_air;
 };

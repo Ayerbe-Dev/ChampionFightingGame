@@ -1,5 +1,9 @@
 #include "Bruno.h"
 
+void Bruno::load_move_list() {
+
+}
+
 void Bruno::load_move_scripts() {
 	script("default", [this]() {
 		return;

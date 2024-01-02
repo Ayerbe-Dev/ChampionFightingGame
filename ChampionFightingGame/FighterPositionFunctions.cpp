@@ -8,19 +8,9 @@
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
 	glm::vec3 prev_pos = this->pos;
-	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
-	//still helpful to know for debugging
-	if (pos.x == -0.0) {
-		pos.x = 0.0;
-	}
-	if (pos.y == -0.0) {
-		pos.y = 0.0;
-	}
-	if (pos.z == -0.0) {
-		pos.z = 0.0;
-	}
-	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
-		//previous X/Y coords. This will make debugging easier.
+	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a
+		//number, crash to debug and print both the statuses and our previous X/Y coords. This will 
+		//make debugging easier.
 		GameManager* game_manager = GameManager::get_instance();
 		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " + 
 			std::to_string(status_kind) + ". Pos X: " + std::to_string(prev_pos.x) + ", Pos Y: " + 
@@ -71,7 +61,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]) {
+	if (status_kind != FIGHTER_STATUS_GRABBED) {
 		if (this->pos.y < 0) { //If you're about to land in the floor
 			if (prev) {
 				this->pos.y = prev_pos.y;
@@ -129,17 +119,6 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	Fighter* that = object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
 	glm::vec3 prev_pos = this->pos;
-	//Check if the X or Y coord is -0.0. If it is, we shouldn't necessarily cause a crash since sometimes that'd cause stuff to break, but it's
-	//still helpful to know for debugging
-	if (pos.x == -0.0) {
-		pos.x = 0.0;
-	}
-	if (pos.y == -0.0) {
-		pos.y = 0.0;
-	}
-	if (pos.z == -0.0) {
-		pos.z = 0.0;
-	}
 	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
 		//previous X/Y coords. This will make debugging easier.
 		GameManager* game_manager = GameManager::get_instance();
@@ -178,7 +157,7 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 		}
 		ret = false;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]) {
+	if (status_kind != FIGHTER_STATUS_GRABBED) {
 		if (this->pos.y < 0) {
 			if (prev) {
 				this->pos.y = prev_pos.y;
@@ -249,6 +228,9 @@ void Fighter::landing_crossup() {
 	if (pos.x == that->pos.x) return;
 	internal_facing_right = pos.x < that->pos.x;
 	if (internal_facing_right != facing_right) {
+		std::swap(fighter_int[FIGHTER_INT_66_STEP], fighter_int[FIGHTER_INT_44_STEP]);
+		std::swap(fighter_int[FIGHTER_INT_66_TIMER], fighter_int[FIGHTER_INT_44_TIMER]);
+		move_list[FIGHTER_SITUATION_GROUND].swap_buffers("dash_f", "dash_b");
 		facing_right = internal_facing_right;
 		if (facing_right) {
 			facing_dir = 1.0;

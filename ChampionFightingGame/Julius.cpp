@@ -13,5 +13,10 @@ Julius::Julius(Player* player) {
 	fighter_int.resize(CHARA_JULIUS_INT_MAX, 0);
 	fighter_float.resize(CHARA_JULIUS_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_JULIUS_FLAG_MAX, false);
+	fighter_string.resize(CHARA_JULIUS_STRING_MAX, "");
 	load_fighter();
+}
+
+void Julius::chara_main() {
+
 }

@@ -247,7 +247,7 @@ void Battle::load_ui() {
 	message_font = font_manager->load_font("Fiend-Oblique", 24);
 	info_font = font_manager->load_font("FiraCode", 16);
 
-	push_menu_object("Background", 1, 10, 3); {
+	set_hints(1, 10, 3); {
 		push_menu_child("P1 Health", 3); {
 			push_menu_process_function([this](MenuObject* object) {
 				float max_health = object->float_var("max_health");
@@ -808,13 +808,13 @@ void Battle::process_intro() {
 
 void Battle::process_round_start() {
 	SoundManager* sound_manager = SoundManager::get_instance();
-	MenuObject& round_start = get_menu_object("Background").get_child("Round Start Text");
+	MenuObject& round_start = get_child("Round Start Text");
 	if (execute_if("Init", 1, true)) {
 		for (int i = 0; i < 2; i++) {
 			fighter[i]->fighter_flag[FIGHTER_FLAG_ROUND_START] = true;
 			fighter[i]->reset();
 		}
-		MenuObject& timer = get_menu_object("Background").get_child("Timer");
+		MenuObject& timer = get_child("Timer");
 		timer.bool_var("time_up") = false;
 		timer.bool_var("pause") = true;
 		timer.int_var("deca_frame") = 5;
@@ -825,8 +825,7 @@ void Battle::process_round_start() {
 		timer.get_texture("Second").set_sprite(9);
 		timer.get_texture("Deca Frame").set_sprite(5);
 		timer.get_texture("Frame").set_sprite(9);
-		round_start.get_activity_group("Round Start AG").get_active_child().get_texture("Round")
-			.set_alpha(255);
+		round_start.get_active_child("Round Start AG").get_texture("Round").set_alpha(255);
 	}
 	for (int i = 0; i < 2; i++) {
 		player[i]->controller.poll_buttons();
@@ -838,14 +837,13 @@ void Battle::process_round_start() {
 	thread_manager->wait_thread(THREAD_KIND_UI);
 	camera->camera_main();
 	if (execute_wait("Round X Timer", 1, 120)) {
-		round_start.get_activity_group("Round Start AG").get_active_child().get_texture("Round")
-			.set_alpha(0);
+		round_start.get_active_child("Round Start AG").get_texture("Round").set_alpha(0);
 		round_start.get_texture("Fight").set_alpha(255);
 	}
 	if (execute_wait("Fight! Timer", 1, 60)) {
 		round_start.get_texture("Fight").set_alpha(0);
 		internal_state = BATTLE_STATE_BATTLE;
-		get_menu_object("Background").get_child("Timer").bool_var("pause") = false;
+		get_child("Timer").bool_var("pause") = false;
 		for (int i = 0; i < 2; i++) {
 			fighter[i]->fighter_flag[FIGHTER_FLAG_ROUND_START] = false;
 		}
@@ -863,7 +861,7 @@ void Battle::process_battle() {
 			sound_manager->resume_all_sounds();
 			sound_manager->resume_all_reserved_sounds();
 		}
-		bool& timer_pause = get_menu_object("Background").get_child("Timer").bool_var("pause");
+		bool& timer_pause = get_child("Timer").bool_var("pause");
 		timer_pause = !timer_pause;
 		frame_pause = !frame_pause;
 	}
@@ -884,7 +882,7 @@ void Battle::process_battle() {
 	if (game_context == GAME_CONTEXT_TRAINING) {
 		process_training();
 	}
-	if (get_menu_object("Background").get_child("Timer").bool_var("time_up")) {
+	if (get_child("Timer").bool_var("time_up")) {
 		internal_state = BATTLE_STATE_KO;
 	}
 
@@ -902,8 +900,8 @@ void Battle::process_ko() {
 	SoundManager* sound_manager = SoundManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	MenuObject& p1_round = get_menu_object("Background").get_child("Round Counter P1");
-	MenuObject& p2_round = get_menu_object("Background").get_child("Round Counter P2");
+	MenuObject& p1_round = get_child("Round Counter P1");
+	MenuObject& p2_round = get_child("Round Counter P2");
 	int& p1_wins = p1_round.int_var("Wins");
 	int& p2_wins = p2_round.int_var("Wins");
 
@@ -917,9 +915,9 @@ void Battle::process_ko() {
 		}
 		ko_timer = 120;
 		actionable_timer = 600;
-		get_menu_object("Background").get_child("Timer").bool_var("pause") = true;
+		get_child("Timer").bool_var("pause") = true;
 		if (curr_round != 5) {
-			if (get_menu_object("Background").get_child("Timer").bool_var("time_up")) {
+			if (get_child("Timer").bool_var("time_up")) {
 				p1_round.get_texture("Round Win" + std::to_string(
 					p1_round.int_var("Wins") + 1)
 				).set_sprite(ROUND_ICON_TIMEOUT);
@@ -983,29 +981,29 @@ void Battle::process_ko() {
 				}
 			}
 		}
-		if (get_menu_object("Background").get_child("Timer").bool_var("time_up")) {
-			get_menu_object("Background").get_activity_group("KO Text").set_active_child("Time");
+		if (get_child("Timer").bool_var("time_up")) {
+			get_activity_group("KO Text").set_active_child("Time");
 		}
 		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_local_param_float("health")
 		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_local_param_float("health")) {
-			get_menu_object("Background").get_activity_group("KO Text").set_active_child("Perfect KO");
+			get_activity_group("KO Text").set_active_child("Perfect KO");
 		}
 		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
-			get_menu_object("Background").get_activity_group("KO Text").set_active_child("Double KO");
+			get_activity_group("KO Text").set_active_child("Double KO");
 		}
 		else {
-			get_menu_object("Background").get_activity_group("KO Text").set_active_child("KO");
+			get_activity_group("KO Text").set_active_child("KO");
 		}
-		get_menu_object("Background").get_activity_group("KO Text").get_active_child().get_texture("Message").set_alpha(255);
-		get_menu_object("Background").get_activity_group("KO Text").get_active_child().sound_player.play_reserved_sound("KO", 0.0);
+		get_activity_group("KO Text").get_active_child().get_texture("Message").set_alpha(255);
+		get_activity_group("KO Text").get_active_child().sound_player.play_reserved_sound("KO", 0.0);
 	}
 
-	if (execute_if("Remove KO Message", 1, get_menu_object("Background").get_activity_group("KO Text")
+	if (execute_if("Remove KO Message", 1, get_activity_group("KO Text")
 		.get_active_child().sound_player.is_sound_end())) {
 
 		object_manager->reset_world_rate(nullptr);
-		get_menu_object("Background").get_activity_group("KO Text").get_active_child().get_texture("Message").set_alpha(0);
-		get_menu_object("Background").get_activity_group("KO Text").set_active_child("None");
+		get_activity_group("KO Text").get_active_child().get_texture("Message").set_alpha(0);
+		get_activity_group("KO Text").set_active_child("None");
 	}
 
 	if (fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END || fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) {
@@ -1433,6 +1431,7 @@ void Battle::process_training() {
 
 void gamestate_battle_ui_thread(void* battle_arg) {
 	Battle* battle = (Battle*)battle_arg;
+	battle->main_object.event_process();
 	for (size_t i = 0, max = battle->menu_objects.size(); i < max; i++) {
 		battle->menu_objects[i].event_process();
 	}
@@ -1641,7 +1640,7 @@ void Battle::render_world() {
 }
 
 void Battle::render_ui() {
-	render_menu_object("Background");
+	main_object.render();
 	for (int i = 0; i < 2; i++) {
 		std::list<BattleText>::iterator it = texts[i].begin();
 		while (it != texts[i].end()) {

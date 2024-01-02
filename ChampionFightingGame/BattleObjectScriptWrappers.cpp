@@ -127,15 +127,15 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	}
 	UNWRAP(damage_kind, DamageKind);
 	UNWRAP(hit_level, HitLevel);
-	UNWRAP(hit_effect_id, int);
-	UNWRAP(hit_sound_id, int);
+	UNWRAP(hit_effect, std::string);
+	UNWRAP(hit_sound, std::string);;
 	new_hitbox(id, multihit, anchor, offset, collision_kind, hit_status, custom_hit_status, hit_flags,
 		special_status_condition, special_status, custom_special_status, special_hit_flags, 
 		juggle_start, juggle_increase, juggle_max, hit_height, damage, chip_damage, damage_scale, 
 		meter_gain, hitlag, blocklag, hitstun, blockstun, pushback_ground_hit, pushback_ground_block, 
 		pushback_air_x, pushback_air_y, pushback_frames, launch_init_y, launch_gravity, 
 		launch_max_fall_speed, launch_speed_x, launch_target_pos, has_launch_target_pos, damage_kind, 
-		hit_level, hit_effect_id, hit_sound_id
+		hit_level, hit_effect, hit_sound
 	);
 }
 

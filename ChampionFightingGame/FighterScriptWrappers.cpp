@@ -21,6 +21,13 @@ void Fighter::SET_FLAG(ScriptArg args) {
 	set_flag(target, val);
 }
 
+void Fighter::SET_STRING(ScriptArg args) {
+	UNWRAP(target, int);
+	UNWRAP(val, std::string);
+
+	set_string(target, val);
+}
+
 void Fighter::GRAB_OPPONENT(ScriptArg args) {
 	UNWRAP(attacker_bone_name, std::string);
 	UNWRAP(defender_bone_name, std::string);
@@ -66,15 +73,15 @@ void Fighter::RESET_WORLD_RATE(ScriptArg args) {
 }
 
 void Fighter::ENABLE_CANCEL(ScriptArg args) {
-	UNWRAP(cat, int);
-	UNWRAP(kind, int);
-	enable_cancel(cat, kind);
+	UNWRAP(move, std::string);
+	UNWRAP(kind, CancelKind);
+	enable_cancel(move, kind);
 }
 
 void Fighter::DISABLE_CANCEL(ScriptArg args) {
-	UNWRAP(cat, int);
-	UNWRAP(kind, int);
-	disable_cancel(cat, kind);
+	UNWRAP(move, std::string);
+	UNWRAP(kind, CancelKind);
+	disable_cancel(move, kind);
 }
 
 void Fighter::DISABLE_ALL_CANCELS(ScriptArg args) {
@@ -114,7 +121,7 @@ void Fighter::SET_PROJECTILE_FLOAT(ScriptArg args) {
 	UNWRAP(target, int);
 	UNWRAP(val, float);
 
-	set_projectile_int(projectile, target, val);
+	set_projectile_float(projectile, target, val);
 }
 
 void Fighter::SET_PROJECTILE_FLAG(ScriptArg args) {
@@ -122,7 +129,15 @@ void Fighter::SET_PROJECTILE_FLAG(ScriptArg args) {
 	UNWRAP(target, int);
 	UNWRAP(val, bool);
 
-	set_projectile_int(projectile, target, val);
+	set_projectile_flag(projectile, target, val);
+}
+
+void Fighter::SET_PROJECTILE_STRING(ScriptArg args) {
+	UNWRAP(projectile, int);
+	UNWRAP(target, int);
+	UNWRAP(val, std::string);
+
+	set_projectile_string(projectile, target, val);
 }
 
 void Fighter::ADD_PROJECTILE_POS(ScriptArg args) {

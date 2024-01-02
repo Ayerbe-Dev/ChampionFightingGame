@@ -2,20 +2,17 @@
 #include "Projectile.h"
 
 void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
-	projectiles[id]->change_status(PROJECTILE_STATUS_ACTIVATE, false, false);
-	set_projectile_int(id, PROJECTILE_INT_ELAPSED_FRAMES, 0);
-	set_projectile_int(id, PROJECTILE_INT_INIT_HITLAG_FRAMES, 0);
-	set_projectile_int(id, PROJECTILE_INT_HITLAG_FRAMES, 0);
-	projectiles[id]->pos.x = ((init_pos.x + (pos.x * facing_dir)) * facing_dir);
+	projectiles[id]->pos.x = (init_pos.x * facing_dir) + pos.x;
 	projectiles[id]->pos.y = init_pos.y + pos.y;
 	projectiles[id]->pos.z = init_pos.z + pos.z;
 
 	projectiles[id]->facing_right = facing_right;
 	projectiles[id]->facing_dir = facing_dir;
+	projectiles[id]->activate();
 }
 
 void Fighter::deactivate_projectile(int id) {
-	projectiles[id]->change_status(PROJECTILE_STATUS_DEACTIVATE);
+	projectiles[id]->deactivate();
 }
 
 void Fighter::set_projectile_int(int projectile, int target, int val) {
@@ -33,6 +30,12 @@ void Fighter::set_projectile_float(int projectile, int target, float val) {
 void Fighter::set_projectile_flag(int projectile, int target, bool val) {
 	if (projectiles[projectile]->active) {
 		projectiles[projectile]->set_flag(target, val);
+	}
+}
+
+void Fighter::set_projectile_string(int projectile, int target, std::string val) {
+	if (projectiles[projectile]->active) {
+		projectiles[projectile]->set_string(target, val);
 	}
 }
 

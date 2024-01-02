@@ -38,8 +38,8 @@ public:
 		float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, 
 		float pushback_air_y, int pushback_frames, float launch_init_y, float launch_gravity, 
 		float launch_max_fall_speed, float launch_speed_x, glm::vec3 launch_target_pos, 
-		bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, int hit_effect_id, 
-		int hit_sound_id
+		bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, 
+		std::string hit_sound
 	);
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos();

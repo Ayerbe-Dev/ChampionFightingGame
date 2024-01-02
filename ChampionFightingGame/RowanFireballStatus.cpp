@@ -7,25 +7,11 @@ void RowanFireball::unique_process_outgoing_fighter_hitbox_collision_hit(Hitbox*
 	}
 }
 
-void RowanFireball::projectile_unique_main() {
-	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0 && status_kind != PROJECTILE_STATUS_DEACTIVATE) {
-		change_status(PROJECTILE_STATUS_DEACTIVATE);
-	}
-}
-
-void RowanFireball::status_activate() {
-	if (owner->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		projectile_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
-		projectile_int[PROJECTILE_INT_HEALTH] = 2;
-	}
-	change_status(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER);
-}
-
 void RowanFireball::status_rowan_fireball_hover() {
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		if (owner->status_kind != CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH
 			&& owner->status_kind != CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK) {
-			change_status(PROJECTILE_STATUS_DEACTIVATE);
+			deactivate();
 		}
 	}
 }
@@ -44,7 +30,7 @@ void RowanFireball::status_rowan_fireball_punched() {
 	add_pos(glm::vec3(projectile_float[PROJECTILE_FLOAT_SPEED_X], projectile_float[PROJECTILE_FLOAT_SPEED_Y], 0));
 	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
-		change_status(PROJECTILE_STATUS_DEACTIVATE);
+		deactivate();
 	}
 }
 
@@ -76,7 +62,7 @@ void RowanFireball::status_rowan_fireball_kicked() {
 	add_pos(glm::vec3(projectile_float[PROJECTILE_FLOAT_SPEED_X], projectile_float[PROJECTILE_FLOAT_SPEED_Y], 0));
 	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
 	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
-		change_status(PROJECTILE_STATUS_DEACTIVATE);
+		deactivate();
 	}
 }
 

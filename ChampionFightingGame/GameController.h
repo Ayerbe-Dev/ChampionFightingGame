@@ -21,6 +21,13 @@ const int BUFFER_STICK_R = 128;
 const int BUFFER_STICK_U = 256;
 const int BUFFER_STICK_D = 512;
 
+const int BUFFER_2L = BUFFER_LP | BUFFER_LK;
+const int BUFFER_2M = BUFFER_MP | BUFFER_MK;
+const int BUFFER_2H = BUFFER_HP | BUFFER_HK;
+const int BUFFER_3P = BUFFER_LP | BUFFER_MP | BUFFER_HP;
+const int BUFFER_3K = BUFFER_LK | BUFFER_MK | BUFFER_HK;
+const int BUFFER_6B = BUFFER_3P | BUFFER_3K;
+
 class GameController {
 public:
 	GameController();
@@ -54,6 +61,8 @@ public:
 	void reset_all_buttons();
 	void reset_buffer();
 	short get_buffer_code();
+	short get_buffer_lockout_code();
+	void set_buffer_lockout_code(short last_used_buffer_code);
 
 	void set_id(int id);
 	void set_stick_hold_timer(int h, int v);
@@ -74,5 +83,6 @@ private:
 
 	std::vector<Button> button_info;
 	short buffer_code = 0;
+	short buffer_lockout_code = 0;
 	SDL_GameController* controller;
 };

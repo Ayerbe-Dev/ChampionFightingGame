@@ -13,5 +13,10 @@ Rook::Rook(Player* player) {
 	fighter_int.resize(CHARA_ROOK_INT_MAX, 0);
 	fighter_float.resize(CHARA_ROOK_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ROOK_FLAG_MAX, false);
+	fighter_string.resize(CHARA_ROOK_STRING_MAX, "");
 	load_fighter();
+}
+
+void Rook::chara_main() {
+
 }

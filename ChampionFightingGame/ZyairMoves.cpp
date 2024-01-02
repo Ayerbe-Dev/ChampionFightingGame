@@ -1,5 +1,9 @@
 #include "Zyair.h"
 
+void Zyair::load_move_list() {
+
+}
+
 void Zyair::load_move_scripts() {
 	script("default", [this]() {
 		return;

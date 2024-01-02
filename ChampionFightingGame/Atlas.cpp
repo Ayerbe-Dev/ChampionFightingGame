@@ -13,5 +13,10 @@ Atlas::Atlas(Player* player) {
 	fighter_int.resize(CHARA_ATLAS_INT_MAX, 0);
 	fighter_float.resize(CHARA_ATLAS_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_ATLAS_FLAG_MAX, false);
+	fighter_string.resize(CHARA_ATLAS_STRING_MAX, "");
 	load_fighter();
+}
+
+void Atlas::chara_main() {
+
 }

@@ -23,3 +23,7 @@ void Projectile::set_float(int target, float val) {
 void Projectile::set_flag(int target, bool val) {
 	projectile_flag[target] = val;
 }
+
+void Projectile::set_string(int target, std::string val) {
+	projectile_string[target] = val;
+}

@@ -2,6 +2,10 @@
 #include "EricFireball.h"
 #include "EricFireballConstants.h"
 
+void Eric::load_move_list() {
+
+}
+
 void Eric::load_move_scripts() {
 	script("default", [this]() {
 		return;

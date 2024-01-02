@@ -82,6 +82,32 @@ void GameState::render_menu_object(std::string name) {
 	menu_objects[menu_object_map[name]].render();
 }
 
+MenuObject& GameState::get_child(std::string name) {
+	return main_object.get_child(name);
+}
+
+MenuObject& GameState::get_child(int idx) {
+	return main_object.get_child(idx);
+}
+
+MenuActivityGroup& GameState::get_activity_group(std::string name) {
+	return main_object.get_activity_group(name);
+}
+
+MenuActivityGroup& GameState::get_activity_group(int idx) {
+	return main_object.get_activity_group(idx);
+}
+
+void GameState::set_hints(int texture_hint, int child_hint, int activity_hint) {
+	main_object.set_hints(texture_hint, child_hint, activity_hint);
+	while (!object_stack.empty()) {
+		object_stack.pop();
+		last_push_type_stack.pop();
+	}
+	object_stack.push(&main_object);
+	last_push_type_stack.push(true);
+}
+
 void GameState::push_menu_pos(glm::vec3 pos) {
 	object_stack.top()->set_pos(pos);
 }
@@ -666,6 +692,12 @@ MenuObject::~MenuObject() {
 	children.clear();
 }
 
+void MenuObject::set_hints(int texture_hint, int child_hint, int activity_hint) {
+	textures.reserve(texture_hint);
+	children.reserve(child_hint);
+	activity_groups.reserve(activity_hint);
+}
+
 void MenuObject::render() {
 	orientated_pos = pos.get_val();
 	switch (orientation) {
@@ -795,6 +827,14 @@ MenuObject& MenuObject::get_child(std::string name) {
 
 MenuObject& MenuObject::get_child(int idx) {
 	return children[idx];
+}
+
+MenuObject& MenuObject::get_active_child(std::string activity_group) {
+	return get_activity_group(activity_group).get_active_child();
+}
+
+int MenuObject::get_active_child_index(std::string activity_group) {
+	return get_activity_group(activity_group).get_active_child_index();
 }
 
 MenuActivityGroup& MenuObject::get_activity_group(std::string name) {

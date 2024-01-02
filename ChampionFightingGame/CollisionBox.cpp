@@ -108,8 +108,8 @@ Hitbox::Hitbox() {
 	has_launch_target_pos = false;
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_level = HIT_LEVEL_LIGHT;
-	hit_effect_id = -1;
-	hit_sound_id = -1;
+	hit_effect = "";
+	hit_sound = "";
 }
 
 void Hitbox::init(BattleObject* object) {
@@ -125,9 +125,9 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, 
 	int juggle_increase, int juggle_max, HitHeight hit_height, float damage, float chip_damage, 
 	int damage_scale, float meter_gain, int hitlag, int blocklag, int hitstun, int blockstun, 
 	float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, float pushback_air_y,
-	int pushback_frames, float launch_init_y, float launch_gravity, float launch_max_fall_speed, 
+	int pushback_frames, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed, 
 	float launch_speed_x, glm::vec3 launch_target_pos, bool has_launch_target_pos, 
-	DamageKind damage_kind, HitLevel hit_level, int hit_effect_id, int hit_sound_id) {
+	DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, std::string hit_sound) {
 	this->id = id;
 	this->multihit = multihit;
 	anchor.x *= object->facing_dir;
@@ -172,8 +172,8 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, 
 	this->has_launch_target_pos = has_launch_target_pos;
 	this->damage_kind = damage_kind;
 	this->hit_level = hit_level;
-	this->hit_effect_id = hit_effect_id;
-	this->hit_sound_id = hit_sound_id;
+	this->hit_effect = hit_effect;
+	this->hit_sound = hit_sound;
 	this->active = true;
 }
 
@@ -201,8 +201,8 @@ DefiniteHitbox::DefiniteHitbox() {
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_level = HIT_LEVEL_LIGHT;
 	anim_kind = "";
-	hit_effect_id = -1;
-	hit_sound_id = -1;
+	hit_effect = "";
+	hit_sound = "";
 	active = false;
 	object = nullptr;
 }
@@ -220,9 +220,8 @@ void DefiniteHitbox::set_properties(unsigned int hit_status, HitFlag hit_flags, 
 	int hitlag, int hitstun, float pushback_ground, float pushback_air_x, float pushback_air_y,
 	int pushback_frames, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed,
 	float launch_speed_x, glm::vec3 launch_target_pos, bool has_launch_target_pos,
-	DamageKind damage_kind, HitLevel hit_level, std::string anim_kind, int hit_effect_id,
-	int hit_sound_id
-) {
+	DamageKind damage_kind, HitLevel hit_level, std::string anim_kind, std::string hit_effect,
+	std::string hit_sound) {
 	this->hit_status = hit_status;
 	this->hit_flags = hit_flags;
 	this->juggle_start = juggle_start;
@@ -246,8 +245,8 @@ void DefiniteHitbox::set_properties(unsigned int hit_status, HitFlag hit_flags, 
 	this->damage_kind = damage_kind;
 	this->hit_level = hit_level;
 	this->anim_kind = anim_kind;
-	this->hit_effect_id = hit_effect_id;
-	this->hit_sound_id = hit_sound_id;
+	this->hit_effect = hit_effect;
+	this->hit_sound = hit_sound;
 }
 
 void DefiniteHitbox::activate() {
@@ -278,8 +277,8 @@ void DefiniteHitbox::clear() {
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_level = HIT_LEVEL_LIGHT;
 	anim_kind = "";
-	hit_effect_id = -1;
-	hit_sound_id = -1;
+	hit_effect = "";
+	hit_sound = "";
 	active = false;
 }
 

@@ -13,5 +13,10 @@ Nightsabre::Nightsabre(Player* player) {
 	fighter_int.resize(CHARA_NIGHTSABRE_INT_MAX, 0);
 	fighter_float.resize(CHARA_NIGHTSABRE_FLOAT_MAX, 0.0);
 	fighter_flag.resize(CHARA_NIGHTSABRE_FLAG_MAX, false);
+	fighter_string.resize(CHARA_NIGHTSABRE_STRING_MAX, "");
 	load_fighter();
+}
+
+void Nightsabre::chara_main() {
+
 }

@@ -1,5 +1,9 @@
 #include "Tessa.h"
 
+void Tessa::load_move_list() {
+
+}
+
 void Tessa::load_move_scripts() {
 	script("default", [this]() {
 		return;

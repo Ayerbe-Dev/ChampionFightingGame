@@ -33,7 +33,7 @@ int Fighter::get_frames_until_actionable() {
 			if (active_move_script.has_function(sim_frame, (void (BattleObject::*)(ScriptArg)) &Fighter::SET_FLAG, &args)) {
 				UNWRAP(flag, int);
 				UNWRAP(val, bool);
-				if ((flag == FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY) && val) {
+				if ((flag == FIGHTER_FLAG_ALLOW_FREE_CANCEL) && val) {
 					break;
 				}
 			}
@@ -45,28 +45,11 @@ int Fighter::get_frames_until_actionable() {
 
 		if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * (ret - 1)) <= 0.0f) {
 			for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * (ret - 1)) <= 0.0f; ret--);
-			switch (fighter_int[FIGHTER_INT_ATTACK_KIND]) {
-				case (ATTACK_KIND_LP): {
-					ret += get_local_param_int("lp_landing_lag");
-				} break;
-				case (ATTACK_KIND_MP): {
-					ret += get_local_param_int("mp_landing_lag");
-				} break;
-				case (ATTACK_KIND_HP): {
-					ret += get_local_param_int("hp_landing_lag");
-				} break;
-				case (ATTACK_KIND_LK): {
-					ret += get_local_param_int("lk_landing_lag");
-				} break;
-				case (ATTACK_KIND_MK): {
-					ret += get_local_param_int("mk_landing_lag");
-				} break;
-				case (ATTACK_KIND_HK): {
-					ret += get_local_param_int("hk_landing_lag");
-				} break;
-				default: {
-					ret += get_local_param_int("empty_landing_lag");
-				} break;
+			if (fighter_string[FIGHTER_STRING_MOVE_KIND] == "") {
+				ret += get_local_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "empty_landing_lag");
+			}
+			else {
+				ret += get_local_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
 			}
 		}
 

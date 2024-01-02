@@ -14,11 +14,6 @@ Fighter::Fighter() {
 	chara_kind = CHARA_KIND_ROWAN;
 	chara_name = "Rowan";
 	prev_stick_dir = 0;
-	for (int i = 0; i < CANCEL_CAT_MAX; i++) {
-		for (int i2 = 0; i2 < CANCEL_KIND_MAX; i2++) {
-			cancel_flags[i][i2] = false;
-		}
-	}
 	object_type = BATTLE_OBJECT_TYPE_FIGHTER;
 	for (int i = 1; i < 10; i++) {
 		if (i % 3 == 1) {
@@ -79,13 +74,13 @@ void Fighter::fighter_main() {
 
 	process_animate();
 	process_pre_position();
-	process_pre_input();
 	process_pre_status();
+	process_input();
 	chara_main();
 	process_status();
 	process_post_animate();
 	process_projectiles();
-	process_input();
+	
 	if (object_manager->is_allow_realtime_process(this)) {
 		decrease_common_variables();
 	}
@@ -234,28 +229,6 @@ void Fighter::process_post_position() {
 void Fighter::process_pre_status() {
 	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
 		fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI] = fighter_int[FIGHTER_INT_DAMAGE_SCALE];
-		if (fighter_int[FIGHTER_INT_BUFFER_STATUS] != FIGHTER_STATUS_MAX
-			&& is_enable_cancel(fighter_int[FIGHTER_INT_BUFFER_CANCEL_KIND])
-			&& fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER]) {
-			if (fighter_int[FIGHTER_INT_BUFFER_STATUS] == FIGHTER_STATUS_ATTACK
-			|| fighter_int[FIGHTER_INT_BUFFER_STATUS] == FIGHTER_STATUS_ATTACK_AIR) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND];
-				if (fighter_int[FIGHTER_INT_ATTACK_KIND] == ATTACK_KIND_OTHER) {
-					fighter_int[FIGHTER_INT_ATTACK_OTHER_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO];
-				}
-			}
-			else if (fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND]) {
-				fighter_int[FIGHTER_INT_ATTACK_KIND] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_KIND];
-				fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = fighter_int[FIGHTER_INT_BUFFER_ATTACK_OTHER_INFO];
-			}
-			change_status(fighter_int[FIGHTER_INT_BUFFER_STATUS], fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_END], fighter_flag[FIGHTER_FLAG_BUFFER_STATUS_SEPARATE]);
-		}
-		if (fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER] > 0) {
-			fighter_int[FIGHTER_INT_BUFFER_CANCEL_TIMER]--;
-		}
-		else {
-			fighter_int[FIGHTER_INT_BUFFER_STATUS] = FIGHTER_STATUS_MAX;
-		}
 	}
 }
 
@@ -290,9 +263,6 @@ void Fighter::process_post_status() {
 			fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]--;
 		}
 	}
-	if (get_status_group() != STATUS_GROUP_ATTACK || is_actionable() || that->fighter_int[FIGHTER_INT_COMBO_COUNT] == 0) {
-		fighter_flag[FIGHTER_FLAG_SELF_CANCEL] = false;
-	}
 
 	for (int i = 0; i < 10; i++) {
 		if (hitboxes[i].active) {
@@ -304,254 +274,289 @@ void Fighter::process_post_status() {
 			fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX] = false;
 		}
 	}
-}
-
-void Fighter::process_pre_input() {
-	if (situation_kind == FIGHTER_SITUATION_AIR) {
-		if (!get_local_param_bool("has_airdash") || fighter_flag[FIGHTER_FLAG_USED_AIRDASH]) {
-			fighter_int[FIGHTER_INT_DASH_F_BUFFER] = 0;
-			fighter_int[FIGHTER_INT_DASH_B_BUFFER] = 0;
-			return;
-		}
-	}
-	if (fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0 && get_flick_dir() == 6) {
-		fighter_int[FIGHTER_INT_DASH_F_BUFFER] = get_param_int(PARAM_FIGHTER, "buffer_window");
-	}
-	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0 && get_flick_dir() == 4) {
-		fighter_int[FIGHTER_INT_DASH_B_BUFFER] = get_param_int(PARAM_FIGHTER, "buffer_window");
-	}
+	prev_stick_dir = get_stick_dir();
 }
 
 void Fighter::process_input() {
-	int stick_dir = get_stick_dir();
-	int flick_dir = get_flick_dir();
-	int dash_window = get_param_int(PARAM_FIGHTER, "dash_window");
 	int motion_special_timer = get_param_int(PARAM_FIGHTER, "motion_special_timer");
-
-	//Dash Input
-
-	if (flick_dir == 6 && prev_stick_dir == 5) {
-		fighter_int[FIGHTER_INT_DASH_F_WINDOW] = dash_window;
-	}
-	if (flick_dir == 4 && prev_stick_dir == 5) {
-		fighter_int[FIGHTER_INT_DASH_B_WINDOW] = dash_window;
-	}
-	if (stick_dir != 6 && stick_dir != 5) {
-		fighter_int[FIGHTER_INT_DASH_F_WINDOW] = 0;
-	}
-	if (stick_dir != 4 && stick_dir != 5) {
-		fighter_int[FIGHTER_INT_DASH_B_WINDOW] = 0;
-	}
+	int flick_special_timer = get_param_int(PARAM_FIGHTER, "flick_special_timer");
 
 	//Motion Inputs
 
-	if (stick_dir == 1) {
-		if (fighter_int[FIGHTER_INT_214_STEP] == 1) {
-			fighter_int[FIGHTER_INT_214_STEP] ++;
-			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 1) {
-			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 3) {
-			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_214214_STEP] == 1 || fighter_int[FIGHTER_INT_214214_STEP] == 4) {
-			fighter_int[FIGHTER_INT_214214_STEP]++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
-		}
-	}
-	if (stick_dir == 2) {
-		if (fighter_int[FIGHTER_INT_236_STEP] == 0) {
-			fighter_int[FIGHTER_INT_236_STEP] ++;
-			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_214_STEP] == 0) {
-			fighter_int[FIGHTER_INT_214_STEP]++;
-			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
-		}		
-		if (fighter_int[FIGHTER_INT_623_STEP] == 1) {
-			fighter_int[FIGHTER_INT_623_STEP] ++;
-			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 2) {
-			fighter_int[FIGHTER_INT_41236_STEP]++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 2) {
-			fighter_int[FIGHTER_INT_63214_STEP]++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_632_STEP] == 2) {
-			fighter_int[FIGHTER_INT_632_STEP]++;
-			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_22_STEP] == 0 || fighter_int[FIGHTER_INT_22_STEP] == 2) {
-			if (prev_stick_dir == 5) {
-				fighter_int[FIGHTER_INT_22_STEP] ++;
-				fighter_int[FIGHTER_INT_22_TIMER] = motion_special_timer;
+	switch (get_stick_dir()) {
+		case (1): {
+			if (fighter_int[FIGHTER_INT_214_STEP] == 1) {
+				fighter_int[FIGHTER_INT_214_STEP]++;
+				fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_41236_STEP] == 1) {
+				fighter_int[FIGHTER_INT_41236_STEP]++;
+				fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_63214_STEP] == 3) {
+				fighter_int[FIGHTER_INT_63214_STEP]++;
+				fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_214214_STEP] == 1 || fighter_int[FIGHTER_INT_214214_STEP] == 4) {
+				fighter_int[FIGHTER_INT_214214_STEP]++;
+				fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
+			}
+			fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = motion_special_timer;
+			if (prev_stick_dir < 4) {
+				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;
 			}
 			else {
-				fighter_int[FIGHTER_INT_22_STEP] = 0;
-				fighter_int[FIGHTER_INT_22_TIMER] = 0;
+				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
 			}
-		}
-		if (fighter_int[FIGHTER_INT_214214_STEP] == 1) {
-			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_214214_STEP] == 0 || fighter_int[FIGHTER_INT_214214_STEP] == 3) {
-			fighter_int[FIGHTER_INT_214214_STEP] ++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_236236_STEP] == 1) {
-			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_236236_STEP] == 0 || fighter_int[FIGHTER_INT_236236_STEP] == 3) {
-			fighter_int[FIGHTER_INT_236236_STEP] ++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
-		}
-	}
-	if (stick_dir == 3) {
-		if (fighter_int[FIGHTER_INT_236_STEP] == 1) {
-			fighter_int[FIGHTER_INT_236_STEP] ++;
-			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_236_STEP] == 3) { 
-			//This check is weird, but it essentially prevents conflicts with DP motions by making
-			//it so finishing a QCF motion and then inputting Down Forward makes it so you have to
-			//input forward again in order to QCF. This both makes it so inputting double DP doesn't
-			//get read as QCF on characters where QCF has priority, and prevents obviously 
-			//unintended QCFs from being buffered if you do crouch -> walk forward -> crouch again
-			//before pressing a button.
-			fighter_int[FIGHTER_INT_236_STEP]--;
-			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_623_STEP] == 0 || fighter_int[FIGHTER_INT_623_STEP] == 2) {
-			fighter_int[FIGHTER_INT_623_STEP] ++;
-			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 3) {
-			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 1) {
-			fighter_int[FIGHTER_INT_63214_STEP] ++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_632_STEP] == 1) {
-			fighter_int[FIGHTER_INT_632_STEP]++;
-			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
-		}
-		//Same deal as before but like the other way
-		if (fighter_int[FIGHTER_INT_632_STEP] == 3) {
-			fighter_int[FIGHTER_INT_632_STEP]--;
-			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_236236_STEP] == 1 || fighter_int[FIGHTER_INT_236236_STEP] == 4) {
-			fighter_int[FIGHTER_INT_236236_STEP]++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
-		}
-	}
-	if (stick_dir == 4) {
-		if (fighter_int[FIGHTER_INT_214_STEP] == 2) {
-			fighter_int[FIGHTER_INT_214_STEP]++;
-			fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 0) {
-			fighter_int[FIGHTER_INT_41236_STEP] ++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 4) {
-			fighter_int[FIGHTER_INT_63214_STEP]++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_214214_STEP] == 2 || fighter_int[FIGHTER_INT_214214_STEP] == 5) {
-			fighter_int[FIGHTER_INT_214214_STEP] ++;
-			fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_4646_STEP] == 2) {
-			fighter_int[FIGHTER_INT_4646_STEP]++;
-			fighter_int[FIGHTER_INT_4646_TIMER] = motion_special_timer;
-		}
-	}
-	if (stick_dir == 5) {
-		if (fighter_int[FIGHTER_INT_22_STEP] == 1) {
-			fighter_int[FIGHTER_INT_22_STEP]++;
-			fighter_int[FIGHTER_INT_22_TIMER] = motion_special_timer;
-		}
-	}
-	if (stick_dir == 6) {
-		if (fighter_int[FIGHTER_INT_236_STEP] == 2) {
-			fighter_int[FIGHTER_INT_236_STEP] ++;
-			fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_623_STEP] == 0) {
-			fighter_int[FIGHTER_INT_623_STEP]++;
-			fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_41236_STEP] == 4) {
-			fighter_int[FIGHTER_INT_41236_STEP]++;
-			fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 0) {
-			fighter_int[FIGHTER_INT_63214_STEP]++;
-			fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_632_STEP] == 0) {
-			fighter_int[FIGHTER_INT_632_STEP]++;
-			fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_236236_STEP] == 2 || fighter_int[FIGHTER_INT_236236_STEP] == 5) {
-			fighter_int[FIGHTER_INT_236236_STEP] ++;
-			fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
-		}
-		if (fighter_int[FIGHTER_INT_4646_STEP] == 1 || fighter_int[FIGHTER_INT_4646_STEP] == 3) {
-			fighter_int[FIGHTER_INT_4646_STEP]++;
-			fighter_int[FIGHTER_INT_4646_TIMER] = motion_special_timer;
-		}
+			fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = motion_special_timer;
+			if (prev_stick_dir % 3 == 1) {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES]++;
+			}
+			else {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+			}
+		} break;
+		case (2): {
+			if (fighter_int[FIGHTER_INT_236_STEP] == 0) {
+				fighter_int[FIGHTER_INT_236_STEP]++;
+				fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_214_STEP] == 0) {
+				fighter_int[FIGHTER_INT_214_STEP]++;
+				fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_623_STEP] == 1) {
+				fighter_int[FIGHTER_INT_623_STEP]++;
+				fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_41236_STEP] == 2) {
+				fighter_int[FIGHTER_INT_41236_STEP]++;
+				fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_63214_STEP] == 2) {
+				fighter_int[FIGHTER_INT_63214_STEP]++;
+				fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_632_STEP] == 2) {
+				fighter_int[FIGHTER_INT_632_STEP]++;
+				fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_22_STEP] == 0 || fighter_int[FIGHTER_INT_22_STEP] == 2) {
+				if (prev_stick_dir == 5) {
+					fighter_int[FIGHTER_INT_22_STEP]++;
+					fighter_int[FIGHTER_INT_22_TIMER] = flick_special_timer;
+				}
+				else {
+					fighter_int[FIGHTER_INT_22_STEP] = 0;
+					fighter_int[FIGHTER_INT_22_TIMER] = 0;
+				}
+			}
+			if (fighter_int[FIGHTER_INT_214214_STEP] == 1) {
+				fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_214214_STEP] == 0 || fighter_int[FIGHTER_INT_214214_STEP] == 3) {
+				fighter_int[FIGHTER_INT_214214_STEP]++;
+				fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_236236_STEP] == 1) {
+				fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_236236_STEP] == 0 || fighter_int[FIGHTER_INT_236236_STEP] == 3) {
+				fighter_int[FIGHTER_INT_236236_STEP]++;
+				fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
+			}
+			fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = motion_special_timer;
+			if (prev_stick_dir < 4) {
+				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;
+			}
+			else {
+				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+			}
+		} break;
+		case (3): {
+			if (fighter_int[FIGHTER_INT_236_STEP] == 1) {
+				fighter_int[FIGHTER_INT_236_STEP]++;
+				fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_236_STEP] == 3) {
+				//This check is weird, but it essentially prevents conflicts with DP motions by making
+				//it so finishing a QCF motion and then inputting Down Forward makes it so you have to
+				//input forward again in order to QCF. This both makes it so inputting double DP doesn't
+				//get read as QCF on characters where QCF has priority, and prevents obviously 
+				//unintended QCFs from being buffered if you do crouch -> walk forward -> crouch again
+				//before pressing a button.
+				fighter_int[FIGHTER_INT_236_STEP]--;
+				fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_623_STEP] == 0 || fighter_int[FIGHTER_INT_623_STEP] == 2) {
+				fighter_int[FIGHTER_INT_623_STEP]++;
+				fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_41236_STEP] == 3) {
+				fighter_int[FIGHTER_INT_41236_STEP]++;
+				fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_63214_STEP] == 1) {
+				fighter_int[FIGHTER_INT_63214_STEP]++;
+				fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_632_STEP] == 1) {
+				fighter_int[FIGHTER_INT_632_STEP]++;
+				fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+			}
+			//Same deal as before but like the other way
+			if (fighter_int[FIGHTER_INT_632_STEP] == 3) {
+				fighter_int[FIGHTER_INT_632_STEP]--;
+				fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_236236_STEP] == 1 || fighter_int[FIGHTER_INT_236236_STEP] == 4) {
+				fighter_int[FIGHTER_INT_236236_STEP]++;
+				fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
+			}
+			fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = motion_special_timer;
+			if (prev_stick_dir < 4) {
+				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;
+			}
+			else {
+				fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
+			}
+		} break;
+		case (4): {
+			if (fighter_int[FIGHTER_INT_214_STEP] == 2) {
+				fighter_int[FIGHTER_INT_214_STEP]++;
+				fighter_int[FIGHTER_INT_214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_41236_STEP] == 0) {
+				fighter_int[FIGHTER_INT_41236_STEP]++;
+				fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_63214_STEP] == 4) {
+				fighter_int[FIGHTER_INT_63214_STEP]++;
+				fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_44_STEP] == 0 || fighter_int[FIGHTER_INT_44_STEP] == 2) {
+				if (prev_stick_dir % 3 != 1) {
+					fighter_int[FIGHTER_INT_44_STEP]++;
+					fighter_int[FIGHTER_INT_44_TIMER] = flick_special_timer;
+				}
+				else {
+					fighter_int[FIGHTER_INT_44_STEP] = 0;
+					fighter_int[FIGHTER_INT_44_TIMER] = 0;
+				}
+			}
+			if (fighter_int[FIGHTER_INT_214214_STEP] == 2 || fighter_int[FIGHTER_INT_214214_STEP] == 5) {
+				fighter_int[FIGHTER_INT_214214_STEP]++;
+				fighter_int[FIGHTER_INT_214214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_4646_STEP] == 0 || fighter_int[FIGHTER_INT_4646_STEP] == 2) {
+				fighter_int[FIGHTER_INT_4646_STEP]++;
+				fighter_int[FIGHTER_INT_4646_TIMER] = motion_special_timer;
+			}
 
-		//If you're inputting forward, it's very unlikely that you still want to do an input that
-		//ends in a quarter circle back. We shouldn't completely rule out the possibility of 
-		//microwalk qcb inputs, but we'll make it so the qcb input only stays in the buffer for
-		//3 frames as opposed to the usual 11.
+			//Uncommenting the following block removes some really cool charging tech. Charge Supers
+			//check both that you inputted the correct sequence and that you charged for a specific
+			//amount of time, but it doesn't require that you finish charging before you input 4646.
+			//If you 4646, then start inputting back to finish the charge, you can finish it after 
+			//and activate the super while blocking.
 
-		//Note: We aren't doing this for QCD motions because the act of inputting a 3 already 
-		//decrements the step by 1. If you did a QCD and then immediately hit forward without
-		//ever hitting down forward, that was definitely planned.
+		/*
+			if (fighter_int[FIGHTER_INT_4646_STEP] == 5) {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+			}
+		*/
+			fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = motion_special_timer;
+			if (prev_stick_dir % 3 == 1) {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES]++;
+			}
+			else {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+			}
+		} break;
+		case (5): {
+			if (fighter_int[FIGHTER_INT_66_STEP] == 1) {
+				fighter_int[FIGHTER_INT_66_STEP]++;
+				fighter_int[FIGHTER_INT_66_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_44_STEP] == 1) {
+				fighter_int[FIGHTER_INT_44_STEP]++;
+				fighter_int[FIGHTER_INT_44_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_22_STEP] == 1) {
+				fighter_int[FIGHTER_INT_22_STEP]++;
+				fighter_int[FIGHTER_INT_22_TIMER] = motion_special_timer;
+			}
+		} break;
+		case (6): {
+			if (fighter_int[FIGHTER_INT_236_STEP] == 2) {
+				fighter_int[FIGHTER_INT_236_STEP]++;
+				fighter_int[FIGHTER_INT_236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_623_STEP] == 0) {
+				fighter_int[FIGHTER_INT_623_STEP]++;
+				fighter_int[FIGHTER_INT_623_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_41236_STEP] == 4) {
+				fighter_int[FIGHTER_INT_41236_STEP]++;
+				fighter_int[FIGHTER_INT_41236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_63214_STEP] == 0) {
+				fighter_int[FIGHTER_INT_63214_STEP]++;
+				fighter_int[FIGHTER_INT_63214_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_632_STEP] == 0) {
+				fighter_int[FIGHTER_INT_632_STEP]++;
+				fighter_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_66_STEP] == 0 || fighter_int[FIGHTER_INT_66_STEP] == 2) {
+				if (prev_stick_dir % 3) {
+					fighter_int[FIGHTER_INT_66_STEP]++;
+					fighter_int[FIGHTER_INT_66_TIMER] = flick_special_timer;
+				}
+				else {
+					fighter_int[FIGHTER_INT_66_STEP] = 0;
+					fighter_int[FIGHTER_INT_66_TIMER] = 0;
+				}
+			}
+			if (fighter_int[FIGHTER_INT_236236_STEP] == 2 || fighter_int[FIGHTER_INT_236236_STEP] == 5) {
+				fighter_int[FIGHTER_INT_236236_STEP]++;
+				fighter_int[FIGHTER_INT_236236_TIMER] = motion_special_timer;
+			}
+			if (fighter_int[FIGHTER_INT_4646_STEP] == 1 || fighter_int[FIGHTER_INT_4646_STEP] == 3) {
+				fighter_int[FIGHTER_INT_4646_STEP]++;
+				fighter_int[FIGHTER_INT_4646_TIMER] = motion_special_timer;
+			}
 
-		if (fighter_int[FIGHTER_INT_214_STEP] == 3 && fighter_int[FIGHTER_INT_214_TIMER] > 3) {
-			fighter_int[FIGHTER_INT_214_TIMER] = 3;
-		}
-		if (fighter_int[FIGHTER_INT_214214_STEP] == 6 && fighter_int[FIGHTER_INT_214214_TIMER] > 3) {
-			fighter_int[FIGHTER_INT_214214_TIMER] = 3;
-		}
-		if (fighter_int[FIGHTER_INT_63214_STEP] == 5 && fighter_int[FIGHTER_INT_63214_TIMER] > 3) {
-			fighter_int[FIGHTER_INT_63214_TIMER] = 3;
-		}
+			//If you're inputting forward, it's very unlikely that you still want to do an input that
+			//ends in a quarter circle back. We shouldn't completely rule out the possibility of 
+			//microwalk qcb inputs, but we'll make it so the qcb input only stays in the buffer for
+			//3 frames as opposed to the usual 11.
+
+			//Note: We aren't doing this for QCD motions because the act of inputting a 3 already 
+			//decrements the step by 1. If you did a QCD and then immediately hit forward without
+			//ever hitting down forward, that was definitely planned.
+
+			if (fighter_int[FIGHTER_INT_214_STEP] == 3 && fighter_int[FIGHTER_INT_214_TIMER] > 3) {
+				fighter_int[FIGHTER_INT_214_TIMER] = 3;
+			}
+			if (fighter_int[FIGHTER_INT_214214_STEP] == 6 && fighter_int[FIGHTER_INT_214214_TIMER] > 3) {
+				fighter_int[FIGHTER_INT_214214_TIMER] = 3;
+			}
+			if (fighter_int[FIGHTER_INT_63214_STEP] == 5 && fighter_int[FIGHTER_INT_63214_TIMER] > 3) {
+				fighter_int[FIGHTER_INT_63214_TIMER] = 3;
+			}
+		} break;
+		case (7): {
+			fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = motion_special_timer;
+			if (prev_stick_dir % 3 == 1) {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES]++;
+			}
+			else {
+				fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
+			}
+		} break;
 	}
-	if (stick_dir < 4) {
-		fighter_int[FIGHTER_INT_DOWN_CHARGE_TIMER] = motion_special_timer;
-		if (prev_stick_dir < 4) {
-			fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES]++;
-		}
-		else {
-			fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] = 0;
-		}
-	}
 
-	if (stick_dir % 3 == 1) {
-		fighter_int[FIGHTER_INT_BACK_CHARGE_TIMER] = motion_special_timer;
-		if (prev_stick_dir % 3 == 1) {
-			fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES]++;
-		}
-		else {
-			fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] = 0;
-		}
-	}
-
-	prev_stick_dir = stick_dir;
+	check_movelist_inputs();
 }
 
 void Fighter::process_ai() {
@@ -617,6 +622,18 @@ void Fighter::decrease_common_variables() {
 	else {
 		fighter_int[FIGHTER_INT_632_STEP] = 0;
 	}
+	if (fighter_int[FIGHTER_INT_66_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_66_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_66_STEP] = 0;
+	}
+	if (fighter_int[FIGHTER_INT_44_TIMER] != 0) {
+		fighter_int[FIGHTER_INT_44_TIMER]--;
+	}
+	else {
+		fighter_int[FIGHTER_INT_44_STEP] = 0;
+	}
 	if (fighter_int[FIGHTER_INT_22_TIMER] != 0) {
 		fighter_int[FIGHTER_INT_22_TIMER]--;
 	}
@@ -673,18 +690,6 @@ void Fighter::decrease_common_variables() {
 			fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]--;
 		}
 	}
-	if (fighter_int[FIGHTER_INT_DASH_F_WINDOW] != 0) {
-		fighter_int[FIGHTER_INT_DASH_F_WINDOW]--;
-	}
-	if (fighter_int[FIGHTER_INT_DASH_B_WINDOW] != 0) {
-		fighter_int[FIGHTER_INT_DASH_B_WINDOW]--;
-	}
-	if (fighter_int[FIGHTER_INT_DASH_F_BUFFER] != 0) {
-		fighter_int[FIGHTER_INT_DASH_F_BUFFER]--;
-	}
-	if (fighter_int[FIGHTER_INT_DASH_B_BUFFER] != 0) {
-		fighter_int[FIGHTER_INT_DASH_B_BUFFER]--;
-	}
 	if (fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] != 0) {
 		fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW]--;
 	}
@@ -700,7 +705,7 @@ void Fighter::decrease_common_variables() {
 	if (fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER] != 0) {
 		fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER]--;
 		if (fighter_int[FIGHTER_INT_ATTACK_ENABLE_CANCEL_TIMER] == 0) {
-			fighter_flag[FIGHTER_FLAG_ALLOW_CANCEL_RECOVERY] = true;
+			fighter_flag[FIGHTER_FLAG_ALLOW_FREE_CANCEL] = true;
 		}
 	}
 }

@@ -13,5 +13,6 @@ public:
 
 	void projectile_unique_main() override;
 
-	virtual void status_activate() override;
+	void unique_activate() override;
+	void unique_deactivate() override;
 };

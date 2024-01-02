@@ -1,45 +1,14 @@
 #include "Eric.h"
 
-void Eric::chara_main() {
-
-}
-
 bool Eric::chara_ground_status_act() {
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_3P)) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = try_ex(true);
-		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
-	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_LP)) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_L;
-		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
-	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_MP)) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_M;
-		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
-	}
-	if (get_special_input(ATTACK_KIND_SPECIAL_623, BUTTON_HP)) {
-		fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = SPECIAL_LEVEL_H;
-		return buffer_change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_START);
-	}
-	return false;
-}
-
-bool Eric::chara_air_status_act() {
 	return false;
 }
 
 bool Eric::chara_status_attack() {
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_HIT]) {
-		if (situation_kind == FIGHTER_SITUATION_GROUND && chara_ground_status_act()) {
-			return true;
-		}
-		else if (situation_kind == FIGHTER_SITUATION_AIR && chara_air_status_act()) {
-			return true;
-		}
-		else {
-			
-		}
-	}
+	return false;
+}
+
+bool Eric::chara_status_attack_air() {
 	return false;
 }
 

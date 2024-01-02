@@ -38,8 +38,8 @@ public:
 		float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, 
 		float pushback_air_y, int pushback_frames, float launch_init_y, float launch_gravity, 
 		float launch_max_fall_speed, float launch_speed_x, glm::vec3 launch_target_pos, 
-		bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, int hit_effect_id, 
-		int hit_sound_id
+		bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, 
+		std::string hit_sound
 	);
 
 	int id;
@@ -77,8 +77,8 @@ public:
 	bool has_launch_target_pos;
 	DamageKind damage_kind;
 	HitLevel hit_level;
-	int hit_effect_id;
-	int hit_sound_id;
+	std::string hit_effect;
+	std::string hit_sound;
 };
 
 class DefiniteHitbox { 
@@ -97,8 +97,8 @@ public:
 		int hitlag, int hitstun, float pushback_ground, float pushback_air_x, float pushback_air_y,
 		int pushback_frames, float launch_init_y, float launch_gravity_y, float launch_max_fall_speed,
 		float launch_speed_x, glm::vec3 launch_target_pos, bool has_launch_target_pos,
-		DamageKind damage_kind, HitLevel hit_level, std::string anim_kind, int hit_effect_id,
-		int hit_sound_id
+		DamageKind damage_kind, HitLevel hit_level, std::string anim_kind, std::string hit_effect,
+		std::string hit_sound
 	);
 	void activate();
 	void clear();
@@ -126,8 +126,8 @@ public:
 	DamageKind damage_kind;
 	HitLevel hit_level;
 	std::string anim_kind; //Calculated based on the hitbox, or just set manually
-	int hit_effect_id;
-	int hit_sound_id;
+	std::string hit_effect;
+	std::string hit_sound;
 
 	bool active;
 	BattleObject* object;

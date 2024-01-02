@@ -1,5 +1,9 @@
 #include "Ramona.h"
 
+void Ramona::load_move_list() {
+
+}
+
 void Ramona::load_move_scripts() {
 	script("default", [this]() {
 		return;

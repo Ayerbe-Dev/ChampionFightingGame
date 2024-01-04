@@ -60,13 +60,29 @@ public:
 	bool collision_kind_soft_intangible;
 	bool collision_kind_armor;
 
-	SpecialStatusCondition counterhit_type;
 	HitStatus hit_status;
 	std::string custom_hit_status;
-	HitStatus counterhit_status;
-	std::string custom_counterhit_status;
+
+	bool force_stand;
+	bool force_crouch;
+	bool force_aerial;
 	bool down_face_down;
+	bool hard_knockdown;
 	bool continue_launch;
+	bool disable_hitstun_parry;
+
+	CriticalCondition critical_condition;
+	HitStatus critical_status;
+	std::string custom_critical_status;
+
+	bool critical_force_stand;
+	bool critical_force_crouch;
+	bool critical_force_aerial;
+	bool critical_down_face_down;
+	bool critical_hard_knockdown;
+	bool critical_continue_launch;
+	bool critical_disable_hitstun_parry;
+
 	int juggle_start;
 	int juggle_increase;
 	int juggle_max;
@@ -79,7 +95,6 @@ public:
 	int blocklag;
 	int hit_advantage;
 	int block_advantage;
-	bool disable_hitstun_parry;
 	float pushback_ground_hit;
 	float pushback_ground_block;
 	float pushback_air_x;
@@ -94,8 +109,8 @@ public:
 	float launch_speed_x;
 	DamageKind damage_kind;
 	HitLevel hit_level;
-	int hit_effect_id;
-	int hit_sound_id;
+	std::string hit_effect;
+	std::string hit_sound;
 };
 
 class SimHurtbox : public Simbox {

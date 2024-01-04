@@ -51,11 +51,11 @@ enum HitFlag {
 
 	HIT_FLAG_FORCE_STAND = 1,
 	HIT_FLAG_FORCE_CROUCH = 2,
-	HIT_FLAG_FORCE_AERIAL = 4,
-	HIT_FLAG_KNOCKDOWN_FACE_DOWN = 8,
-	HIT_FLAG_HARD_KNOCKDOWN = 16,
-	HIT_FLAG_CONTINUE_LAUNCH = 32,
-	HIT_FLAG_DISABLE_HITSTUN_PARRY = 64,
+	HIT_FLAG_FORCE_AERIAL = 3,
+	HIT_FLAG_KNOCKDOWN_FACE_DOWN = 4,
+	HIT_FLAG_HARD_KNOCKDOWN = 8,
+	HIT_FLAG_CONTINUE_LAUNCH = 16,
+	HIT_FLAG_DISABLE_HITSTUN_PARRY = 32,
 
 	HIT_FLAG_MAX = 255,
 };
@@ -64,17 +64,17 @@ inline HitFlag operator|(HitFlag a, HitFlag b) {
 	return static_cast<HitFlag>(static_cast<unsigned char>(a) | static_cast<unsigned char>(b));
 }
 
-enum SpecialStatusCondition {
-	SPECIAL_STATUS_CONDITION_NONE = 0,
-	SPECIAL_STATUS_CONDITION_COUNTERHIT = 1,
-	SPECIAL_STATUS_CONDITION_PUNISH = 2,
-	SPECIAL_STATUS_CONDITION_JUMP_COUNTERHIT = 4,
+enum CriticalCondition {
+	CRITICAL_CONDITION_NONE = 0,
+	CRITICAL_CONDITION_COUNTERHIT = 1,
+	CRITICAL_CONDITION_PUNISH = 2,
+	CRITICAL_CONDITION_JUMP_COUNTERHIT = 4,
 
-	SPECIAL_STATUS_CONDITION_MAX = 255,
+	CRITICAL_CONDITION_MAX = 255,
 };
 
-inline SpecialStatusCondition operator|(SpecialStatusCondition a, SpecialStatusCondition b) {
-	return static_cast<SpecialStatusCondition>(static_cast<unsigned char>(a) | static_cast<unsigned char>(b));
+inline CriticalCondition operator|(CriticalCondition a, CriticalCondition b) {
+	return static_cast<CriticalCondition>(static_cast<unsigned char>(a) | static_cast<unsigned char>(b));
 }
 
 enum DamageKind {

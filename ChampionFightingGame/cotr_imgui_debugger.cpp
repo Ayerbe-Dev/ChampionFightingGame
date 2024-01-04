@@ -165,8 +165,8 @@ void cotr_imgui_debug_battle(Battle* battle) {
 						const char* current_hit_level = hit_levels[sim_hitbox.hit_level];
 						const char* current_hit_height = hit_heights[sim_hitbox.hit_height];
 						const char* current_hit_status = hit_statuses[sim_hitbox.hit_status];
-						const char* current_counterhit_status = hit_statuses[sim_hitbox.counterhit_status];
-						const char* current_counterhit_type = counterhit_types[sim_hitbox.counterhit_type];
+						const char* current_counterhit_status = hit_statuses[sim_hitbox.critical_status];
+						const char* current_counterhit_type = counterhit_types[sim_hitbox.critical_condition];
 						const char* current_damage_kind = damage_kinds[sim_hitbox.damage_kind];
 
 						ImGui::InputFloat(("Frame Start" + internal_label).c_str(), &sim_hitbox.frame_start);
@@ -189,7 +189,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 								bool selected = current_counterhit_type == counterhit_types[i2];
 								if (ImGui::Selectable(counterhit_types[i2], selected)) {
 									current_counterhit_type = counterhit_types[i2];
-									sim_hitbox.counterhit_type = (SpecialStatusCondition)i2;
+									sim_hitbox.critical_condition = (CriticalCondition)i2;
 								}
 								if (selected) {
 									ImGui::SetItemDefaultFocus();
@@ -214,13 +214,13 @@ void cotr_imgui_debug_battle(Battle* battle) {
 						if (sim_hitbox.hit_status == HIT_STATUS_CUSTOM) {
 							ImGui::InputText(("Custom Hit Status" + internal_label).c_str(), &sim_hitbox.custom_hit_status);
 						}
-						if (sim_hitbox.counterhit_type != SPECIAL_STATUS_CONDITION_NONE) {
+						if (sim_hitbox.critical_condition != CRITICAL_CONDITION_NONE) {
 							if (ImGui::BeginCombo(("Counterhit Status" + internal_label).c_str(), current_counterhit_status)) {
 								for (size_t i2 = 0; i2 < 7; i2++) {
 									bool selected = current_counterhit_status == hit_statuses[i2];
 									if (ImGui::Selectable(hit_statuses[i2], selected)) {
 										current_counterhit_status = hit_statuses[i2];
-										sim_hitbox.counterhit_status = (HitStatus)i2;
+										sim_hitbox.critical_status = (HitStatus)i2;
 									}
 									if (selected) {
 										ImGui::SetItemDefaultFocus();
@@ -228,20 +228,20 @@ void cotr_imgui_debug_battle(Battle* battle) {
 								}
 								ImGui::EndCombo();
 							}
-							if (sim_hitbox.counterhit_status == HIT_STATUS_CUSTOM) {
-								ImGui::InputText(("Custom Counterhit Status" + internal_label).c_str(), &sim_hitbox.custom_counterhit_status);
+							if (sim_hitbox.critical_status == HIT_STATUS_CUSTOM) {
+								ImGui::InputText(("Custom Counterhit Status" + internal_label).c_str(), &sim_hitbox.custom_critical_status);
 							}
 						}
 
 						if (sim_hitbox.hit_status == HIT_STATUS_KNOCKDOWN || sim_hitbox.hit_status == HIT_STATUS_FLOAT
-							|| (sim_hitbox.counterhit_type != SPECIAL_STATUS_CONDITION_NONE && (sim_hitbox.counterhit_status == HIT_STATUS_KNOCKDOWN || sim_hitbox.counterhit_status == HIT_STATUS_FLOAT))) {
+							|| (sim_hitbox.critical_condition != CRITICAL_CONDITION_NONE && (sim_hitbox.critical_status == HIT_STATUS_KNOCKDOWN || sim_hitbox.critical_status == HIT_STATUS_FLOAT))) {
 							ImGui::Checkbox(("Down Face Down" + internal_label).c_str(), &sim_hitbox.down_face_down);
 						}
 						if (sim_hitbox.hit_status != HIT_STATUS_LAUNCH && sim_hitbox.collision_kind_air) {
 							ImGui::Checkbox(("Continue Launch" + internal_label).c_str(), &sim_hitbox.continue_launch);
 						}
 						if (sim_hitbox.collision_kind_air || sim_hitbox.hit_status == HIT_STATUS_LAUNCH
-							|| (sim_hitbox.counterhit_type != SPECIAL_STATUS_CONDITION_NONE && sim_hitbox.counterhit_status == HIT_STATUS_LAUNCH)) {
+							|| (sim_hitbox.critical_condition != CRITICAL_CONDITION_NONE && sim_hitbox.critical_status == HIT_STATUS_LAUNCH)) {
 							ImGui::InputInt(("Juggle Start" + internal_label).c_str(), &sim_hitbox.juggle_start);
 							if (sim_hitbox.collision_kind_air) {
 								ImGui::InputInt(("Juggle Increase" + internal_label).c_str(), &sim_hitbox.juggle_increase);
@@ -277,12 +277,12 @@ void cotr_imgui_debug_battle(Battle* battle) {
 							ImGui::InputInt(("Block Advantage" + internal_label).c_str(), &sim_hitbox.block_advantage);
 						}
 						if (sim_hitbox.hit_status == HIT_STATUS_NORMAL || sim_hitbox.hit_status == HIT_STATUS_LAUNCH
-							|| (sim_hitbox.counterhit_type != SPECIAL_STATUS_CONDITION_NONE &&
-								(sim_hitbox.counterhit_status == HIT_STATUS_NORMAL || sim_hitbox.counterhit_status == HIT_STATUS_LAUNCH))) {
+							|| (sim_hitbox.critical_condition != CRITICAL_CONDITION_NONE &&
+								(sim_hitbox.critical_status == HIT_STATUS_NORMAL || sim_hitbox.critical_status == HIT_STATUS_LAUNCH))) {
 							ImGui::Checkbox(("Disable Hitstun Parry" + internal_label).c_str(), &sim_hitbox.disable_hitstun_parry);
 						}
-						if (sim_hitbox.hit_status == HIT_STATUS_NORMAL || (sim_hitbox.counterhit_type != SPECIAL_STATUS_CONDITION_NONE
-							&& sim_hitbox.counterhit_status == HIT_STATUS_NORMAL)){
+						if (sim_hitbox.hit_status == HIT_STATUS_NORMAL || (sim_hitbox.critical_condition != CRITICAL_CONDITION_NONE
+							&& sim_hitbox.critical_status == HIT_STATUS_NORMAL)){
 							if (sim_hitbox.collision_kind_ground) {
 								ImGui::InputFloat(("Pushback Ground Hit" + internal_label).c_str(), &sim_hitbox.pushback_ground_hit);
 								ImGui::InputFloat(("Pushback Ground Block" + internal_label).c_str(), &sim_hitbox.pushback_ground_block);
@@ -298,8 +298,8 @@ void cotr_imgui_debug_battle(Battle* battle) {
 							ImGui::InputInt(("Pushback Frames" + internal_label).c_str(), &sim_hitbox.pushback_frames);
 						}
 						if (sim_hitbox.hit_status == HIT_STATUS_LAUNCH || sim_hitbox.hit_status == HIT_STATUS_FLOAT
-							|| (sim_hitbox.counterhit_type != SPECIAL_STATUS_CONDITION_NONE && (sim_hitbox.counterhit_status == HIT_STATUS_LAUNCH
-							|| sim_hitbox.counterhit_status == HIT_STATUS_FLOAT)) || sim_hitbox.continue_launch) {
+							|| (sim_hitbox.critical_condition != CRITICAL_CONDITION_NONE && (sim_hitbox.critical_status == HIT_STATUS_LAUNCH
+							|| sim_hitbox.critical_status == HIT_STATUS_FLOAT)) || sim_hitbox.continue_launch) {
 							ImGui::Checkbox(("Has Launch Target Pos" + internal_label).c_str(), &sim_hitbox.has_launch_target_pos);
 							if (sim_hitbox.has_launch_target_pos) {
 								ImGui::InputFloat(("Launch Target X" + internal_label).c_str(), &sim_hitbox.launch_target_pos.x);
@@ -340,8 +340,8 @@ void cotr_imgui_debug_battle(Battle* battle) {
 							}
 							ImGui::EndCombo();
 						}
-						ImGui::InputInt(("Hit Effect ID" + internal_label).c_str(), &sim_hitbox.hit_effect_id);
-						ImGui::InputInt(("Hit Sound ID" + internal_label).c_str(), &sim_hitbox.hit_sound_id);
+						ImGui::InputText(("Hit Effect" + internal_label).c_str(), &sim_hitbox.hit_effect);
+						ImGui::InputText(("Hit Sound" + internal_label).c_str(), &sim_hitbox.hit_sound);
 						if (ImGui::Button(("Start On This Frame" + internal_label).c_str())) {
 							sim_hitbox.frame_start = battle->active_hitbox_object->frame;
 						}

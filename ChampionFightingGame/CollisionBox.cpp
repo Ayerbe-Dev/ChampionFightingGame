@@ -76,13 +76,13 @@ Hitbox::Hitbox() {
 	id = -1;
 	multihit = 0;
 	collision_kind = COLLISION_KIND_GROUND;
-	special_status_condition = SPECIAL_STATUS_CONDITION_NONE;
+	critical_condition = CRITICAL_CONDITION_NONE;
 	hit_status = HIT_STATUS_NONE;
 	custom_hit_status = 0;
 	hit_flags = HIT_FLAG_NONE;
-	special_status = HIT_STATUS_NONE;
-	custom_special_status = 0;
-	special_hit_flags = HIT_FLAG_NONE;
+	critical_status = HIT_STATUS_NONE;
+	custom_critical_status = 0;
+	critical_hit_flags = HIT_FLAG_NONE;
 	juggle_start = 0;
 	juggle_increase = 0;
 	juggle_max = 0;
@@ -120,7 +120,7 @@ void Hitbox::init(BattleObject* object) {
 
 void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, CollisionKind collision_kind,
 	HitStatus hit_status, unsigned int custom_hit_status, HitFlag hit_flags, 
-	SpecialStatusCondition special_status_condition, HitStatus special_status, 
+	CriticalCondition special_status_condition, HitStatus special_status, 
 	unsigned int custom_special_status, HitFlag special_hit_flags, int juggle_start, 
 	int juggle_increase, int juggle_max, HitHeight hit_height, float damage, float chip_damage, 
 	int damage_scale, float meter_gain, int hitlag, int blocklag, int hitstun, int blockstun, 
@@ -143,10 +143,10 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, 
 	this->hit_status = hit_status;
 	this->custom_hit_status = custom_hit_status;
 	this->hit_flags = hit_flags;
-	this->special_status_condition = special_status_condition;
-	this->special_status = special_status;
-	this->custom_special_status = custom_special_status;
-	this->special_hit_flags = special_hit_flags;
+	this->critical_condition = special_status_condition;
+	this->critical_status = special_status;
+	this->custom_critical_status = custom_special_status;
+	this->critical_hit_flags = special_hit_flags;
 	this->juggle_start = juggle_start;
 	this->juggle_increase = juggle_increase;
 	this->juggle_max = juggle_max;

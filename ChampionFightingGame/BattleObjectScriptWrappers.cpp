@@ -30,28 +30,21 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	else {
 		UNWRAP_NO_DECL(hit_status, HitStatus);
 	}
-	HitFlag hit_flags = HIT_FLAG_NONE;
-	if (NEXT_TYPEID(typeid(HitFlag))) {
-		UNWRAP_NO_DECL(hit_flags);
-	}
-	SpecialStatusCondition special_status_condition = SPECIAL_STATUS_CONDITION_NONE;
+	UNWRAP(hit_flags, HitFlag);
+	UNWRAP(critical_condition, CriticalCondition);
 	HitStatus special_status = hit_status;
 	int custom_special_status = custom_hit_status;
 	HitFlag special_hit_flags = hit_flags;
-	if (NEXT_TYPEID(typeid(SpecialStatusCondition))) {
-		UNWRAP_NO_DECL(special_status_condition);
+	if (critical_condition != CRITICAL_CONDITION_NONE) {
 		special_status = HIT_STATUS_CUSTOM;
 		custom_special_status = 0;
-		special_hit_flags = HIT_FLAG_NONE;
 		if (NEXT_TYPEID(typeid(int))) {
 			UNWRAP_NO_DECL(custom_special_status);
 		}
 		else {
 			UNWRAP_NO_DECL(special_status, HitStatus);
 		}
-		if (NEXT_TYPEID(typeid(HitFlag))) {
-			UNWRAP_NO_DECL(special_hit_flags);
-		}
+		UNWRAP_NO_DECL(special_hit_flags);
 	}
 	int juggle_start = 0;
 	int juggle_increase = 0;
@@ -88,7 +81,8 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	float pushback_air_x = 0.0;
 	float pushback_air_y = 0.0;
 	int pushback_frames = 0;
-	if (hit_status == HIT_STATUS_NORMAL || special_status == HIT_STATUS_NORMAL) {
+	if (hit_status == HIT_STATUS_NORMAL || special_status == HIT_STATUS_NORMAL
+	|| hit_status == HIT_STATUS_CRUMPLE || special_status == HIT_STATUS_CRUMPLE) {
 		if (collision_kind & COLLISION_KIND_GROUND) {
 			UNWRAP_NO_DECL(pushback_ground_hit);
 			UNWRAP_NO_DECL(pushback_ground_block);
@@ -130,7 +124,7 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(hit_effect, std::string);
 	UNWRAP(hit_sound, std::string);;
 	new_hitbox(id, multihit, anchor, offset, collision_kind, hit_status, custom_hit_status, hit_flags,
-		special_status_condition, special_status, custom_special_status, special_hit_flags, 
+		critical_condition, special_status, custom_special_status, special_hit_flags, 
 		juggle_start, juggle_increase, juggle_max, hit_height, damage, chip_damage, damage_scale, 
 		meter_gain, hitlag, blocklag, hitstun, blockstun, pushback_ground_hit, pushback_ground_block, 
 		pushback_air_x, pushback_air_y, pushback_frames, launch_init_y, launch_gravity, 

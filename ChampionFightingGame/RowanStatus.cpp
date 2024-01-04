@@ -14,36 +14,40 @@ bool Rowan::chara_status_attack_air() {
 }
 
 void Rowan::rowan_status_special_fireball_start() {
-	if (frame >= get_param_int_special("special_fireball_transition_frame") && projectiles[0]->active) {
-		if (check_button_input(BUTTON_LP)) {
-			fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
-			change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
-			return;
+	if (projectiles[0]->active) {
+		if (frame >= get_local_param_int("special_fireball_transition_frame_punch", params)) {
+			if (check_button_input(BUTTON_LP)) {
+				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
+				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
+				return;
+			}
+			if (check_button_input(BUTTON_MP)) {
+				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
+				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
+				return;
+			}
+			if (check_button_input(BUTTON_HP)) {
+				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
+				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
+				return;
+			}
 		}
-		if (check_button_input(BUTTON_MP)) {
-			fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
-			change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
-			return;
-		}
-		if (check_button_input(BUTTON_HP)) {
-			fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
-			change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
-			return;
-		}
-		if (check_button_input(BUTTON_LK)) {
-			fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
-			change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
-			return;
-		}
-		if (check_button_input(BUTTON_MK)) {
-			fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
-			change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
-			return;
-		}
-		if (check_button_input(BUTTON_HK)) {
-			fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
-			change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
-			return;
+		if (frame >= get_local_param_int("special_fireball_transition_frame_kick", params)) {
+			if (check_button_input(BUTTON_LK)) {
+				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
+				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
+				return;
+			}
+			if (check_button_input(BUTTON_MK)) {
+				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_M;
+				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
+				return;
+			}
+			if (check_button_input(BUTTON_HK)) {
+				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_H;
+				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
+				return;
+			}
 		}
 	}
 	if (anim_end) {

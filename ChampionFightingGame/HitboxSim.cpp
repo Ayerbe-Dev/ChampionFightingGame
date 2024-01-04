@@ -264,11 +264,11 @@ SimHitbox::SimHitbox() {
 	collision_kind_projectile = false;
 	collision_kind_soft_intangible = false;
 	collision_kind_armor = false;
-	counterhit_type = SPECIAL_STATUS_CONDITION_COUNTERHIT;
+	critical_condition = CRITICAL_CONDITION_COUNTERHIT;
 	hit_status = HIT_STATUS_NORMAL;
 	custom_hit_status = "";
-	counterhit_status = HIT_STATUS_NORMAL;
-	custom_counterhit_status = "";
+	critical_status = HIT_STATUS_NORMAL;
+	custom_critical_status = "";
 	down_face_down = false;
 	continue_launch = false;
 	juggle_start = 0;
@@ -297,8 +297,8 @@ SimHitbox::SimHitbox() {
 	launch_speed_x = 0.0;
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_level = HIT_LEVEL_LIGHT;
-	hit_effect_id = -1;
-	hit_sound_id = -1;
+	hit_effect = -1;
+	hit_sound = -1;
 	rect.set_rgba(glm::vec4(255.0, 0.0, 0.0, 127.0));
 }
 
@@ -309,135 +309,220 @@ void SimHitbox::print_start(BattleObject* object) {
 	}
 	output += std::to_string(id) + ", /*Multihit ID*/ " + std::to_string(multihit)
 		+ ", " + glm::to_string(relative_anchor) + ", " + glm::to_string(relative_offset);
-	std::string collision_kind_text = ", ";
+	std::string sub_output = ", ";
 	if (collision_kind_ground) {
-		collision_kind_text += "COLLISION_KIND_GROUND";
+		sub_output += "COLLISION_KIND_GROUND";
 	}
 	if (collision_kind_air) {
-		if (collision_kind_text == ", ") {
-			collision_kind_text += "COLLISION_KIND_AIR";
+		if (sub_output == ", ") {
+			sub_output += "COLLISION_KIND_AIR";
 		}
 		else {
-			collision_kind_text += " | COLLISION_KIND_AIR";
+			sub_output += " | COLLISION_KIND_AIR";
 		}
 	}
 	if (collision_kind_down) {
-		if (collision_kind_text == ", ") {
-			collision_kind_text += "COLLISION_KIND_DOWN";
+		if (sub_output == ", ") {
+			sub_output += "COLLISION_KIND_DOWN";
 		}
 		else {
-			collision_kind_text += " | COLLISION_KIND_DOWN";
+			sub_output += " | COLLISION_KIND_DOWN";
 		}
 	}
 	if (collision_kind_projectile) {
-		if (collision_kind_text == ", ") {
-			collision_kind_text += "COLLISION_KIND_PROJECTILE";
+		if (sub_output == ", ") {
+			sub_output += "COLLISION_KIND_PROJECTILE";
 		}
 		else {
-			collision_kind_text += " | COLLISION_KIND_PROJECTILE";
+			sub_output += " | COLLISION_KIND_PROJECTILE";
 		}
 	}
 	if (collision_kind_soft_intangible) {
-		if (collision_kind_text == ", ") {
-			collision_kind_text += "COLLISION_KIND_SOFT_INTANGIBLE";
+		if (sub_output == ", ") {
+			sub_output += "COLLISION_KIND_SOFT_INTANGIBLE";
 		}
 		else {
-			collision_kind_text += " | COLLISION_KIND_SOFT_INTANGIBLE";
+			sub_output += " | COLLISION_KIND_SOFT_INTANGIBLE";
 		}
 	}
 	if (collision_kind_armor) {
-		if (collision_kind_text == ", ") {
-			collision_kind_text += "COLLISION_KIND_ARMOR";
+		if (sub_output == ", ") {
+			sub_output += "COLLISION_KIND_ARMOR";
 		}
 		else {
-			collision_kind_text += " | COLLISION_KIND_ARMOR";
+			sub_output += " | COLLISION_KIND_ARMOR";
 		}
 	}
-	output += collision_kind_text;
-
-	output += ", COUNTERHIT_TYPE_";
-	switch (counterhit_type) {
-		case (SPECIAL_STATUS_CONDITION_COUNTERHIT): {
-			output += "COUNTER";
-		} break;
-		case (SPECIAL_STATUS_CONDITION_PUNISH): {
-			output += "PUNISH";
-		} break;
-		case (SPECIAL_STATUS_CONDITION_JUMP_COUNTERHIT): {
-			output += "JUMP_COUNTER";
-		} break;
-		case (SPECIAL_STATUS_CONDITION_NONE): {
-			output += "NONE";
-		} break;
-		default: {
-			output += "MAX";
-		} break;
-	}
-	output += ", /*Hit Status*/ HIT_STATUS_";
+	output += sub_output;
 	switch (hit_status) {
 		case (HIT_STATUS_NORMAL): {
-			output += "NORMAL";
+			output += ", /*Hit Status*/ HIT_STATUS_NORMAL";
 		} break;
 		case (HIT_STATUS_KNOCKDOWN): {
-			output += "KNOCKDOWN";
+			output += ", /*Hit Status*/ HIT_STATUS_KNOCKDOWN";
 		} break;
 		case (HIT_STATUS_LAUNCH): {
-			output += "LAUNCH";
+			output += ", /*Hit Status*/ HIT_STATUS_LAUNCH";
 		} break;
 		case (HIT_STATUS_FLOAT): {
-			output += "FLOAT";
+			output += ", /*Hit Status*/ HIT_STATUS_FLOAT";
 		} break;
 		case (HIT_STATUS_CRUMPLE): {
-			output += "CRUMPLE";
+			output += ", /*Hit Status*/ HIT_STATUS_CRUMPLE";
 		} break;
 		case (HIT_STATUS_CUSTOM): {
-			output += "CUSTOM, /*Custom Hit Status*/ " + custom_hit_status;
+			output += ", /*Custom Hit Status*/ " + custom_hit_status;
 		} break;
 		case (HIT_STATUS_NONE): {
-			output += "NONE";
+			output += ", /*Hit Status*/ HIT_STATUS_NONE";
 		} break;
 		default: {
-			output = "MAX";
+			output = ", /*Hit Status*/ HIT_STATUS_MAX";
 		} break;
 	}
-	if (counterhit_type != SPECIAL_STATUS_CONDITION_NONE) {
-		output += ", /*Counterhit Status*/ HIT_STATUS_";
-		switch (counterhit_status) {
-			case (HIT_STATUS_NORMAL): {
-				output += "NORMAL";
-			} break;
-			case (HIT_STATUS_KNOCKDOWN): {
-				output += "KNOCKDOWN";
-			} break;
-			case (HIT_STATUS_LAUNCH): {
-				output += "LAUNCH";
-			} break;
-			case (HIT_STATUS_FLOAT): {
-				output += "FLOAT";
-			} break;
-			case (HIT_STATUS_CRUMPLE): {
-				output += "CRUMPLE";
-			} break;
-			case (HIT_STATUS_CUSTOM): {
-				output += "CUSTOM, /*Custom Counterhit Status*/ " + custom_counterhit_status;
-			} break;
-			case (HIT_STATUS_NONE): {
-				output += "NONE";
-			} break;
-			default: {
-				output = "MAX";
-			} break;
+	sub_output = ", ";
+	if (force_stand) {
+		sub_output += "HIT_FLAG_FORCE_STAND";
+	}
+	else if (force_crouch) {
+		sub_output += "HIT_FLAG_FORCE_CROUCH";
+	}
+	else {
+		if (force_aerial) {
+			sub_output += "HIT_FLAG_FORCE_AERIAL";
+		}
+		if (down_face_down) {
+			if (sub_output == ", ") {
+				sub_output += "HIT_FLAG_DOWN_FACE_DOWN";
+			}
+			else {
+				sub_output += " | HIT_FLAG_DOWN_FACE_DOWN";
+			}
+		}
+		if (hard_knockdown) {
+			if (sub_output == ", ") {
+				sub_output += "HIT_FLAG_HARD_KNOCKDOWN";
+			}
+			else {
+				sub_output += " | HIT_FLAG_HARD_KNOCKDOWN";
+			}
+		}
+		if (continue_launch) {
+			if (sub_output == ", ") {
+				sub_output += "HIT_FLAG_CONTINUE_LAUNCH";
+			}
+			else {
+				sub_output += " | HIT_FLAG_CONTINUE_LAUNCH";
+			}
+		}
+		if (disable_hitstun_parry) {
+			if (sub_output == ", ") {
+				sub_output += "HIT_FLAG_DISABLE_HITSTUN_PARRY";
+			}
+			else {
+				sub_output += " | HIT_FLAG_DISABLE_HITSTUN_PARRY";
+			}
 		}
 	}
-	if (hit_status == HIT_STATUS_KNOCKDOWN || hit_status == HIT_STATUS_FLOAT
-		|| (counterhit_type != SPECIAL_STATUS_CONDITION_NONE && 
-			(counterhit_status == HIT_STATUS_KNOCKDOWN || counterhit_status == HIT_STATUS_FLOAT))) {
-		output += ", /*Down Face Down*/ " + (down_face_down) ? "true" : "false";
+	if (sub_output == ", ") {
+		sub_output += "HIT_FLAG_NONE";
 	}
-	if (hit_status != HIT_STATUS_LAUNCH && collision_kind_air) {
-		output += ", /*Continue Launch*/ " + (continue_launch) ? "true" : "false";
+	output += sub_output;
+	switch (critical_condition) {
+		case (CRITICAL_CONDITION_COUNTERHIT): {
+			output += ", CRITICAL_CONDITION_COUNTERHIT";
+		} break;
+		case (CRITICAL_CONDITION_PUNISH): {
+			output += ", CRITICAL_CONDITION_PUNISH";
+		} break;
+		case (CRITICAL_CONDITION_JUMP_COUNTERHIT): {
+			output += ", CRITICAL_CONDITION_JUMP_COUNTERHIT";
+		} break;
+		case (CRITICAL_CONDITION_NONE): {
+			output += ", CRITICAL_CONDITION_NONE";
+		} break;
+		default: {
+			output += ", CRITICAL_CONDITION_MAX";
+		} break;
 	}
-	if (collision_kind_air || hit_status == HIT_STATUS_LAUNCH || counterhit_status == HIT_STATUS_LAUNCH) {
+	if (critical_condition != CRITICAL_CONDITION_NONE) {
+		switch (critical_status) {
+			case (HIT_STATUS_NORMAL): {
+				output += ", /*Critical Status*/ HIT_STATUS_NORMAL";
+			} break;
+			case (HIT_STATUS_KNOCKDOWN): {
+				output += ", /*Critical Status*/ HIT_STATUS_KNOCKDOWN";
+			} break;
+			case (HIT_STATUS_LAUNCH): {
+				output += ", /*Critical Status*/ HIT_STATUS_LAUNCH";
+			} break;
+			case (HIT_STATUS_FLOAT): {
+				output += ", /*Critical Status*/ HIT_STATUS_FLOAT";
+			} break;
+			case (HIT_STATUS_CRUMPLE): {
+				output += ", /*Critical Status*/ HIT_STATUS_CRUMPLE";
+			} break;
+			case (HIT_STATUS_CUSTOM): {
+				output += ", /*Custom Critical Status*/ " + custom_critical_status;
+			} break;
+			case (HIT_STATUS_NONE): {
+				output += ", /*Critical Status*/ HIT_STATUS_NONE";
+			} break;
+			default: {
+				output = ", /*Critical Status*/ HIT_STATUS_MAX";
+			} break;
+		}
+
+		sub_output = ", ";
+		if (critical_force_stand) {
+			sub_output += "HIT_FLAG_FORCE_STAND";
+		}
+		else if (critical_force_crouch) {
+			sub_output += "HIT_FLAG_FORCE_CROUCH";
+		}
+		else {
+			if (critical_force_aerial) {
+				sub_output += "HIT_FLAG_FORCE_AERIAL";
+			}
+			if (critical_down_face_down) {
+				if (sub_output == ", ") {
+					sub_output += "HIT_FLAG_DOWN_FACE_DOWN";
+				}
+				else {
+					sub_output += " | HIT_FLAG_DOWN_FACE_DOWN";
+				}
+			}
+			if (critical_hard_knockdown) {
+				if (sub_output == ", ") {
+					sub_output += "HIT_FLAG_HARD_KNOCKDOWN";
+				}
+				else {
+					sub_output += " | HIT_FLAG_HARD_KNOCKDOWN";
+				}
+			}
+			if (critical_continue_launch) {
+				if (sub_output == ", ") {
+					sub_output += "HIT_FLAG_CONTINUE_LAUNCH";
+				}
+				else {
+					sub_output += " | HIT_FLAG_CONTINUE_LAUNCH";
+				}
+			}
+			if (critical_disable_hitstun_parry) {
+				if (sub_output == ", ") {
+					sub_output += "HIT_FLAG_DISABLE_HITSTUN_PARRY";
+				}
+				else {
+					sub_output += " | HIT_FLAG_DISABLE_HITSTUN_PARRY";
+				}
+			}
+		}
+		if (sub_output != ", ") {
+			sub_output += "HIT_FLAG_NONE";
+		}
+		output += sub_output;
+	}
+	if (collision_kind_air || hit_status == HIT_STATUS_LAUNCH || critical_status == HIT_STATUS_LAUNCH) {
 		output += ", /*Juggle Start*/ " + std::to_string(juggle_start);
 		if (collision_kind_air) {
 			output += ", /*Juggle Increase*/ " + std::to_string(juggle_increase) + ", /*Juggle Max*/ "
@@ -486,20 +571,12 @@ void SimHitbox::print_start(BattleObject* object) {
 			blockstun_frames = 0;
 		} break;
 	}
-	if (hit_status != HIT_STATUS_LAUNCH || (counterhit_status != HIT_STATUS_LAUNCH
-		&& counterhit_type != SPECIAL_STATUS_CONDITION_NONE)) {
-		output += ", /*Hitstun*/ " + std::to_string(hitstun_frames);
-	}
+	output += ", /*Hitstun*/ " + std::to_string(hitstun_frames);
 	if (collision_kind_ground) {
 		output += ", /*Blockstun*/ " + std::to_string(blockstun_frames);
 	}
-	if (hit_status == HIT_STATUS_NORMAL || hit_status == HIT_STATUS_LAUNCH 
-		|| (counterhit_type != SPECIAL_STATUS_CONDITION_NONE && 
-			(counterhit_status == HIT_STATUS_NORMAL  || counterhit_status == HIT_STATUS_LAUNCH))) {
-		output += ", /*Disable Hitstun Parry*/ " + (disable_hitstun_parry) ? "true" : "false";
-	}
-	if (hit_status == HIT_STATUS_NORMAL || (counterhit_type != SPECIAL_STATUS_CONDITION_NONE
-		&& counterhit_status == HIT_STATUS_NORMAL)) {
+	if (hit_status == HIT_STATUS_NORMAL || (critical_condition != CRITICAL_CONDITION_NONE
+		&& critical_status == HIT_STATUS_NORMAL)) {
 		if (collision_kind_ground) {
 			output += ", /*Pushback Ground Hit*/ " + std::to_string(pushback_ground_hit)
 				+ ", /*Pushback Ground Block*/ " + std::to_string(pushback_ground_block);
@@ -515,8 +592,8 @@ void SimHitbox::print_start(BattleObject* object) {
 			+ ", /*Pushback Frames*/ " + std::to_string(pushback_frames);
 	}
 	if (hit_status == HIT_STATUS_LAUNCH || hit_status == HIT_STATUS_FLOAT
-		|| (counterhit_type != SPECIAL_STATUS_CONDITION_NONE && (counterhit_status == HIT_STATUS_LAUNCH 
-		|| counterhit_status == HIT_STATUS_FLOAT)) || continue_launch) {
+		|| (critical_condition != CRITICAL_CONDITION_NONE && (critical_status == HIT_STATUS_LAUNCH 
+		|| critical_status == HIT_STATUS_FLOAT)) || continue_launch) {
 		if (has_launch_target_pos) {
 			output += ", /*Launch Target Pos*/ " + glm::to_string(launch_target_pos);
 		}
@@ -563,8 +640,8 @@ void SimHitbox::print_start(BattleObject* object) {
 		} break;
 	}
 
-	output += ", /*Hit Effect ID*/ " + std::to_string(hit_effect_id)
-		+ ", /*Hit Sound ID*/ " + std::to_string(hit_sound_id) + ");";
+	output += ", /*Hit Effect*/ \"" + hit_effect
+		+ "\", /*Hit Sound*/ \"" + hit_sound + "\");";
 
 	std::cout << output << "\n";
 }

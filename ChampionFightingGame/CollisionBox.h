@@ -31,7 +31,7 @@ public:
 	void init(BattleObject* object);
 	void activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, CollisionKind collision_kind,
 		HitStatus hit_status, unsigned int custom_hit_status, HitFlag hit_flags, 
-		SpecialStatusCondition special_status_condition, HitStatus special_status, 
+		CriticalCondition special_status_condition, HitStatus special_status, 
 		unsigned int custom_special_status, HitFlag special_hit_flags, int juggle_start, 
 		int juggle_increase, int juggle_max, HitHeight hit_height, float damage, float chip_damage, 
 		int damage_scale, float meter_gain, int hitlag, int blocklag, int hitstun, int blockstun, 
@@ -45,13 +45,13 @@ public:
 	int id;
 	int multihit;
 	CollisionKind collision_kind;
-	SpecialStatusCondition special_status_condition;
+	CriticalCondition critical_condition;
 	HitStatus hit_status;
 	unsigned int custom_hit_status;
 	HitFlag hit_flags;
-	HitStatus special_status;
-	unsigned int custom_special_status;
-	HitFlag special_hit_flags;
+	HitStatus critical_status;
+	unsigned int custom_critical_status;
+	HitFlag critical_hit_flags;
 	int juggle_start;
 	int juggle_increase;
 	int juggle_max;

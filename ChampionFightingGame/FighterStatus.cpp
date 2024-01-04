@@ -975,6 +975,7 @@ void Fighter::enter_status_hitstun() {
 					change_anim("stand_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 				} break;
 				case (HIT_LEVEL_CRITICAL): {
+					std::cout << "This anim doesn't exist rn but dw about it\n";
 					change_anim("stand_hitstun_c", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 				} break;
 			}
@@ -1179,7 +1180,6 @@ void Fighter::exit_status_launch() {
 
 void Fighter::status_crumple() {
 	if (anim_end) {
-		fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN] = true;
 		fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
 		fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = 0;
 		if (is_ko()) {
@@ -1191,8 +1191,12 @@ void Fighter::status_crumple() {
 		return;
 	}
 	if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES]) {
-		int end_rate_frame = get_local_param_int("crumple_hitstun_end_frame");
-		if (frame == get_local_param_int("crumple_hitstun_start_frame") && rate == 1.0f) {
+		std::string param_text_add = "_up";
+		if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+			param_text_add = "_down";
+		}
+		int end_rate_frame = get_local_param_int("crumple_hitstun_end_frame" + param_text_add);
+		if (frame == get_local_param_int("crumple_hitstun_start_frame" + param_text_add) && rate == 1.0f) {
 			set_rate((end_rate_frame - frame) / (float)fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
 		}
 		else if (frame > end_rate_frame) {
@@ -1202,7 +1206,12 @@ void Fighter::status_crumple() {
 }
 
 void Fighter::enter_status_crumple() {
-	change_anim("crumple");
+	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+		change_anim("crumple_down");
+	}
+	else {
+		change_anim("crumple_up");
+	}
 }
 
 void Fighter::exit_status_crumple() {

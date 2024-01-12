@@ -185,7 +185,7 @@ void Rowan::rowan_status_special_uppercut() {
 	if (frame > 4.0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
-			situation_kind = FIGHTER_SITUATION_AIR;
+			change_situation(FIGHTER_SITUATION_AIR);
 			add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
 			if (check_landing()) {
 				return;
@@ -273,7 +273,7 @@ void Rowan::rowan_enter_status_special_uppercut_land() {
 	change_anim("special_uppercut_land", fighter_int[FIGHTER_INT_LANDING_LAG], -1);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
-	situation_kind = FIGHTER_SITUATION_GROUND;
+	change_situation(FIGHTER_SITUATION_GROUND);
 	pos.y = 0.0f;
 }
 

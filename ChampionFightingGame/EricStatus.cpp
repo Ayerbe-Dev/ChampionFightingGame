@@ -58,7 +58,7 @@ void Eric::eric_status_special_uppercut() {
 	if (get_anim() == "special_uppercut") {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
 			apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
-			situation_kind = FIGHTER_SITUATION_AIR;
+			change_situation(FIGHTER_SITUATION_AIR);
 			add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * facing_dir, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
 			if (anim_end) {
 				change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT_FALL);

@@ -3,9 +3,6 @@
 #include <SDL/SDL_render.h>
 #include "utils.h"
 #include "RenderManager.h"
-#include <mutex>
-
-extern std::mutex file_mutex;
 
 /// <summary>
 /// Loads SDL textures. This should generally be avoided during normal gameplay as everything should be loaded beforehand.

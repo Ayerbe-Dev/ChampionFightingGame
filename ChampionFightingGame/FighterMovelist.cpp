@@ -261,7 +261,7 @@ bool FighterMoveListEntry::try_change_status(Fighter* fighter) {
 		}
 	}
 	fighter->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = special_level;
-	fighter->change_status(status_kind, true, false);
+	fighter->change_status(status_kind);
 	fighter->player->controller.set_buffer_lockout_code(buttons_pressed);
 	return true;
 }

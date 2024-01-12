@@ -5,22 +5,22 @@
       <Filter>2. Code Files</Filter>
     </ClCompile>
     <ClCompile Include="CharaSelect.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="DebugMenu.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="Menu.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="TitleScreen.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="Opening.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="Options.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="Dingo.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter\Chara\Dingo</Filter>
@@ -295,9 +295,6 @@
     <ClCompile Include="AIManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
-    <ClCompile Include="FighterGrabFunctions.cpp">
-      <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterFunctions</Filter>
-    </ClCompile>
     <ClCompile Include="EffectManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
@@ -320,13 +317,13 @@
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="PauseBattle.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectBlockboxFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
     </ClCompile>
     <ClCompile Include="GameState.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
@@ -383,16 +380,16 @@
       <Filter>2. Code Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClCompile>
     <ClCompile Include="Battle.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
+      <Filter>2. Code Files\GameState\Battle</Filter>
     </ClCompile>
     <ClCompile Include="BattleText.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
+      <Filter>2. Code Files\GameState\Battle</Filter>
     </ClCompile>
     <ClCompile Include="CollisionChecks.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
+      <Filter>2. Code Files\GameState\Battle</Filter>
     </ClCompile>
     <ClCompile Include="HitboxSim.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
+      <Filter>2. Code Files\GameState\Battle</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>2. Code Files\Engine\GameData</Filter>
@@ -410,7 +407,7 @@
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
     </ClCompile>
     <ClCompile Include="StageSelect.cpp">
-      <Filter>2. Code Files\Game State</Filter>
+      <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
@@ -437,7 +434,7 @@
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
     <ClCompile Include="TrainingInfo.cpp">
-      <Filter>2. Code Files\Game State\Battle</Filter>
+      <Filter>2. Code Files\GameState\Battle</Filter>
     </ClCompile>
     <ClCompile Include="FighterFrameDataFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterFunctions</Filter>
@@ -577,9 +574,6 @@
     <ClCompile Include="Eftlst.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
-    <ClCompile Include="VectorBoolPointer.cpp">
-      <Filter>2. Code Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="TimeFuncs.cpp">
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
@@ -616,22 +610,25 @@
     <ClCompile Include="ProjectileActivationFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Projectile\ProjectileFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="BattleObjectDefiniteHitboxFunctions.cpp">
+      <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorBoolPointer.cpp">
+      <Filter>2. Code Files\Container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
-      <Filter>1. Header Files\Game State</Filter>
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="TitleScreen.h">
-      <Filter>1. Header Files\Game State</Filter>
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="Opening.h">
-      <Filter>1. Header Files\Game State</Filter>
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="Options.h">
-      <Filter>1. Header Files\Game State</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -656,9 +653,6 @@
     </ClInclude>
     <ClInclude Include="GLEW Helpers.h">
       <Filter>1. Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
     </ClInclude>
     <ClInclude Include="SDL Helpers.h">
       <Filter>1. Header Files\Utils</Filter>
@@ -1075,13 +1069,7 @@
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
-      <Filter>1. Header Files\Game State</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateConstants.h">
-      <Filter>1. Header Files\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStates.h">
-      <Filter>1. Header Files\Constants</Filter>
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="PlayerInfo.h">
       <Filter>1. Header Files\Engine\GameData</Filter>
@@ -1111,16 +1099,16 @@
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
-      <Filter>1. Header Files\Game State\Menu</Filter>
+      <Filter>1. Header Files\GameState\Menu</Filter>
     </ClInclude>
     <ClInclude Include="MenuConstants.h">
-      <Filter>1. Header Files\Game State\Menu</Filter>
+      <Filter>1. Header Files\GameState\Menu</Filter>
     </ClInclude>
     <ClInclude Include="StageSelect.h">
-      <Filter>1. Header Files\Game State\StageSelect</Filter>
+      <Filter>1. Header Files\GameState\StageSelect</Filter>
     </ClInclude>
     <ClInclude Include="StageSelectConstants.h">
-      <Filter>1. Header Files\Game State\StageSelect</Filter>
+      <Filter>1. Header Files\GameState\StageSelect</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1141,19 +1129,19 @@
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
     <ClInclude Include="CharaSelect.h">
-      <Filter>1. Header Files\Game State\CharaSelect</Filter>
+      <Filter>1. Header Files\GameState\CharaSelect</Filter>
     </ClInclude>
     <ClInclude Include="CharaSelectConstants.h">
-      <Filter>1. Header Files\Game State\CharaSelect</Filter>
+      <Filter>1. Header Files\GameState\CharaSelect</Filter>
     </ClInclude>
     <ClInclude Include="Battle.h">
-      <Filter>1. Header Files\Game State\Battle</Filter>
+      <Filter>1. Header Files\GameState\Battle</Filter>
     </ClInclude>
     <ClInclude Include="PauseBattle.h">
-      <Filter>1. Header Files\Game State\PauseBattle</Filter>
+      <Filter>1. Header Files\GameState\PauseBattle</Filter>
     </ClInclude>
     <ClInclude Include="BattleConstants.h">
-      <Filter>1. Header Files\Game State\Battle</Filter>
+      <Filter>1. Header Files\GameState\Battle</Filter>
     </ClInclude>
     <ClInclude Include="cotr_imgui_debugger.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
@@ -1317,9 +1305,6 @@
     <ClInclude Include="Eftlst.h">
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
-    <ClInclude Include="VectorBoolPointer.h">
-      <Filter>1. Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="WindowConstants.h">
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
@@ -1427,6 +1412,18 @@
     </ClInclude>
     <ClInclude Include="RowanFireballString.h">
       <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateConstants.h">
+      <Filter>1. Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundConstants.h">
+      <Filter>1. Header Files\Engine\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates.h">
+      <Filter>1. Header Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorBoolPointer.h">
+      <Filter>1. Header Files\Containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2347,9 +2344,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="2. Code Files\Game State">
-      <UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Engine">
       <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
     </Filter>
@@ -2681,12 +2675,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="1. Header Files\Game State">
-      <UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Constants">
-      <UniqueIdentifier>{f09bc0b3-7cc9-4ec3-acce-13682e4078c5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Deps">
       <UniqueIdentifier>{f5716e76-6f61-4fca-a2de-0a8f388daec4}</UniqueIdentifier>
     </Filter>
@@ -2707,9 +2695,6 @@
     </Filter>
     <Filter Include="1. Header Files\Containers">
       <UniqueIdentifier>{8de0fa31-4bf8-4696-8a02-690b90a79a4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Game State\Battle">
-      <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
     </Filter>
     <Filter Include="3. resource\chara\atlas\cam_anims">
       <UniqueIdentifier>{a1a31a71-f181-41cb-a990-43e5c1ce0983}</UniqueIdentifier>
@@ -2765,12 +2750,6 @@
     <Filter Include="3. resource\projectile\rowan_fireball\anims">
       <UniqueIdentifier>{8c4e8f77-200c-4d6f-8d7c-39b23fe8a2a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Game State\Menu">
-      <UniqueIdentifier>{fbd69fb1-4a33-4853-9a3e-e7d893825726}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Game State\StageSelect">
-      <UniqueIdentifier>{e441b69e-97f9-4a7b-972c-10c0805a5266}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\I/O">
       <UniqueIdentifier>{37f653dd-5a1a-4e6a-aadb-b1a97bc7288e}</UniqueIdentifier>
     </Filter>
@@ -2782,15 +2761,6 @@
     </Filter>
     <Filter Include="1. Header Files\Singleton">
       <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Game State\CharaSelect">
-      <UniqueIdentifier>{44a453dd-e72f-4d25-ade7-f83ddfb6d5bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Game State\Battle">
-      <UniqueIdentifier>{1cfd0bfe-24b0-4ce2-a4dc-05ba68c2e7f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Game State\PauseBattle">
-      <UniqueIdentifier>{59d945f7-e9b4-4480-a490-1d41d967c21a}</UniqueIdentifier>
     </Filter>
     <Filter Include="1. Header Files\Engine\Rendering">
       <UniqueIdentifier>{b5166abb-9cd9-4431-b494-47b5d743b007}</UniqueIdentifier>
@@ -3049,6 +3019,33 @@
     </Filter>
     <Filter Include="2. Code Files\GameObject\BattleObject\Fighter\FighterComponent">
       <UniqueIdentifier>{b20cc018-15ea-4edc-beaf-0e9e00133936}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameState">
+      <UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameState\Menu">
+      <UniqueIdentifier>{fbd69fb1-4a33-4853-9a3e-e7d893825726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameState\StageSelect">
+      <UniqueIdentifier>{e441b69e-97f9-4a7b-972c-10c0805a5266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameState\CharaSelect">
+      <UniqueIdentifier>{44a453dd-e72f-4d25-ade7-f83ddfb6d5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameState\Battle">
+      <UniqueIdentifier>{1cfd0bfe-24b0-4ce2-a4dc-05ba68c2e7f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameState\PauseBattle">
+      <UniqueIdentifier>{59d945f7-e9b4-4480-a490-1d41d967c21a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\GameState">
+      <UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\GameState\Battle">
+      <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Container">
+      <UniqueIdentifier>{257c034c-04c5-467f-b9cb-c7a2822d538f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -51,3 +51,18 @@ void Fighter::change_opponent_anim(std::string anim_kind, float frame_rate, floa
 		that->rate = (float)that->anim_kind->length / (((float)this->anim_kind->length - this->frame) / this->rate);
 	}
 }
+
+void Fighter::grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec3 offset) {
+	Fighter* that = object_manager->fighter[!id];
+	int attacker_index = model.get_bone_id(attacker_bone_name);
+	int defender_index = model.get_bone_id(defender_bone_name);
+	if (attacker_index == -1 || defender_index == -1) {
+		return;
+	}
+	that->fighter_int[FIGHTER_INT_GRAB_BONE_ID] = attacker_index;
+	that->fighter_int[FIGHTER_INT_GRABBED_BONE_ID] = defender_index;
+	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_X] = offset.x * facing_dir;
+	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y] = offset.y;
+	that->fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Z] = offset.z;
+	that->fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW] = status_kind == FIGHTER_STATUS_GRAB || status_kind == FIGHTER_STATUS_GRAB_AIR;
+}

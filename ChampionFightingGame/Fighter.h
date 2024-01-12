@@ -36,7 +36,7 @@ public:
 	void process_animate(); //Increments the frame and determines whether or not the end of an animation has been reached
 	void process_post_animate(); //Rotates all of the bones once animation and frame have been finalized
 
-	void process_pre_position(); //Resets rotation as well as any garbage position values
+	void process_position(); //Resets rotation as well as any garbage position values
 	void process_post_position(); //Adds pushback, rotates the character based on their facing direction
 
 	void process_input(); //Manages specific inputs such as special motions and dashes
@@ -114,11 +114,6 @@ public:
 	void spend_ex(float ex);
 	void gain_ex(float ex);
 
-	//Grab Functions
-
-	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec3 offset);
-	void throw_opponent(float damage, float x_speed, float y_speed, float gravity, float max_fall_speed);
-
 	//Animation
 	
 	void reenter_last_anim();
@@ -160,18 +155,18 @@ public:
 
 	//Status
 
-	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true) override;
+	void change_status(unsigned int new_status_kind, bool call_end_status = true) override;
 	void change_situation(unsigned int new_situation_kind);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
-	bool common_ground_status_act(bool crouch = true);
-	bool common_air_status_general();
+	bool common_ground_status_act();
+	void common_air_status_general();
 	virtual bool chara_ground_status_act() { return false; };
 	virtual bool chara_status_attack() { return false; };
 	virtual bool chara_status_attack_air() { return false; };
 	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_NONE, bool call_end_status = true, bool require_different_status = true);
-	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true, bool require_different_status = true);
+	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true);
 	unsigned int get_status_group();
 	bool check_hitstun_parry();
 	bool is_status_delay();
@@ -187,7 +182,7 @@ public:
 	void set_projectile_string(int projectile, int target, std::string val);
 	void add_projectile_pos(int projectile, glm::vec3 pos);
 	void set_projectile_pos(int projectile, glm::vec3 pos);
-	void change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	void change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status = true);
 
 	//Opponent
 
@@ -198,6 +193,8 @@ public:
 	void reset_opponent_rot();
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
 	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
+	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec3 offset);
+
 
 	//Collision Functions
 
@@ -273,6 +270,8 @@ public:
 	virtual void unique_process_incoming_projectile_grabbox_collision(Grabbox* grabbox, Projectile* attacker) {};
 	virtual void unique_process_outgoing_fighter_grabbox_collision(Grabbox* grabbox, Fighter* defender) {};
 
+	void process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter* attacker);
+
 	int get_counterhit_val(Hitbox* hitbox);
 	void set_post_collision_status(Hitbox* hitbox, int counterhit_val);
 
@@ -333,9 +332,6 @@ public:
 	void SET_FLAG(ScriptArg args);
 	void SET_STRING(ScriptArg args);
 
-	void GRAB_OPPONENT(ScriptArg args);
-	void THROW_OPPONENT(ScriptArg args);
-
 	void ADD_POS(ScriptArg args);
 	void SET_POS(ScriptArg args);
 
@@ -362,6 +358,7 @@ public:
 
 	void CHANGE_OPPONENT_STATUS(ScriptArg args);
 	void CHANGE_OPPONENT_ANIM(ScriptArg args);
+	void GRAB_OPPONENT(ScriptArg args);
 
 	//Status Scripts
 

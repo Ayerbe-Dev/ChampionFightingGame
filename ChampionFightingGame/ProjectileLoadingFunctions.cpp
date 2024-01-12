@@ -25,7 +25,7 @@ void Projectile::load_projectile() {
 	load_move_scripts();
 	load_sound_list();
 
-	change_status(PROJECTILE_STATUS_NONE, false, false);
+	change_status(PROJECTILE_STATUS_NONE, false);
 }
 
 void Projectile::load_sound_list() {

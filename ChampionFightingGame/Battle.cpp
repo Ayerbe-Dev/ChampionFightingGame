@@ -7,40 +7,29 @@
 #include <cmath>
 #include <SDL/SDL.h>
 #include <glew/glew.h>
-#include "SDL Helpers.h"
-#include "Stage.h"
-#include "Menu.h"
-#include "SoundManager.h"
-#include "GameTexture.h"
-
-#include "Fighters.h"
-#include "FighterInterface.h"
 
 #include "BattleObject.h"
 #include "Fighter.h"
-#include "ObjectManager.h"
-
+#include "FighterInterface.h"
 #include "Projectile.h"
 #include "Projectiles.h"
-
-#include "Model.h"
-#include "RenderManager.h"
-
-#include "cotr_imgui_debugger.h"
-#include "ParamAccessor.h"
+#include "Stage.h"
 
 #include "EffectManager.h"
-#include "Effect.h"
-#include "Particle.h"
-#include "Camera.h"
-
-#include "ThreadManager.h"
-#include "SaveManager.h"
 #include "FontManager.h"
-#include "ShaderManager.h"
+#include "ObjectManager.h"
+#include "ParamAccessor.h"
+#include "RenderManager.h"
 #include "ResourceManager.h"
-#include "utils.h"
+#include "SaveManager.h"
+#include "ShaderManager.h"
+#include "SoundManager.h"
+#include "ThreadManager.h"
+
+#include "cotr_imgui_debugger.h"
+
 #include "VectorBoolPointer.h"
+#include "utils.h"
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -782,7 +771,7 @@ void Battle::process_intro() {
 		fighter[i]->rot.z = glm::radians(90.0);
 		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
 			for (int i = 0; i < 2; i++) {
-				fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
+				fighter[i]->change_status(FIGHTER_STATUS_WAIT, false);
 			}
 			internal_state = BATTLE_STATE_ROUND_START;
 			return;
@@ -800,7 +789,7 @@ void Battle::process_intro() {
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
-			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false, false);
+			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false);
 		}
 		internal_state = BATTLE_STATE_ROUND_START;
 	}

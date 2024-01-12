@@ -22,36 +22,56 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
 	UNWRAP(collision_kind, CollisionKind);
+	UNWRAP(damage, float);
+	UNWRAP(chip_damage, float);
+	UNWRAP(damage_scale, int);
+	UNWRAP(meter_gain, float);
+	UNWRAP(hitlag, int);
+	UNWRAP(hitstun, int);
+	int blocklag = 0;
+	int blockstun = 0;
+	if (collision_kind & COLLISION_KIND_GROUND) {
+		UNWRAP_NO_DECL(blocklag);
+	}
+	if (collision_kind & COLLISION_KIND_GROUND) {
+		UNWRAP_NO_DECL(blockstun);
+	}
 	HitStatus hit_status = HIT_STATUS_CUSTOM;
 	int custom_hit_status = 0;
-	if (NEXT_TYPEID(typeid(int))) {
+	if (WRAPPED_TYPE(int)) {
 		UNWRAP_NO_DECL(custom_hit_status);
 	}
 	else {
 		UNWRAP_NO_DECL(hit_status, HitStatus);
 	}
+	UNWRAP(move_opponent, MoveOpponent);
 	UNWRAP(hit_flags, HitFlag);
 	UNWRAP(critical_condition, CriticalCondition);
-	HitStatus special_status = hit_status;
-	int custom_special_status = custom_hit_status;
-	HitFlag special_hit_flags = hit_flags;
+	HitStatus critical_status = hit_status;
+	int custom_critical_status = custom_hit_status;
+	MoveOpponent critical_move_opponent = move_opponent;
+	HitFlag critical_hit_flags = hit_flags;
 	if (critical_condition != CRITICAL_CONDITION_NONE) {
-		special_status = HIT_STATUS_CUSTOM;
-		custom_special_status = 0;
-		if (NEXT_TYPEID(typeid(int))) {
-			UNWRAP_NO_DECL(custom_special_status);
+		critical_status = HIT_STATUS_CUSTOM;
+		custom_critical_status = 0;
+		if (WRAPPED_TYPE(int)) {
+			UNWRAP_NO_DECL(custom_critical_status);
 		}
 		else {
-			UNWRAP_NO_DECL(special_status, HitStatus);
+			UNWRAP_NO_DECL(critical_status);
 		}
-		UNWRAP_NO_DECL(special_hit_flags);
+		UNWRAP_NO_DECL(critical_move_opponent);
+		UNWRAP_NO_DECL(critical_hit_flags);
+	}
+	else if (hit_status == HIT_STATUS_NORMAL) {
+		critical_move_opponent.ground(5.0, 0.0).frames(15);
 	}
 	int juggle_start = 0;
 	int juggle_increase = 0;
 	int juggle_max = 0;
 	if ((collision_kind & COLLISION_KIND_AIR) || hit_status == HIT_STATUS_LAUNCH
-		|| special_status == HIT_STATUS_LAUNCH || hit_flags & HIT_FLAG_FORCE_AERIAL 
-		|| special_hit_flags & HIT_FLAG_FORCE_AERIAL) {
+		|| critical_status == HIT_STATUS_LAUNCH || hit_flags & HIT_FLAG_FORCE_AERIAL 
+		|| critical_hit_flags & HIT_FLAG_FORCE_AERIAL) {
 		UNWRAP_NO_DECL(juggle_start);
 		if (collision_kind & COLLISION_KIND_AIR) {
 			UNWRAP_NO_DECL(juggle_increase);
@@ -59,77 +79,15 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 		}
 	}
 	UNWRAP(hit_height, HitHeight);
-	UNWRAP(damage, float);
-	float chip_damage = 0.0;
-	if (collision_kind & COLLISION_KIND_GROUND) {
-		UNWRAP_NO_DECL(chip_damage);
-	}
-	UNWRAP(damage_scale, int);
-	UNWRAP(meter_gain, float);
-	UNWRAP(hitlag, int);
-	int blocklag = 0;
-	int blockstun = 0;
-	if (collision_kind & COLLISION_KIND_GROUND) {
-		UNWRAP_NO_DECL(blocklag);
-	}
-	UNWRAP(hitstun, int);
-	if (collision_kind & COLLISION_KIND_GROUND) {
-		UNWRAP_NO_DECL(blockstun);
-	}
-	float pushback_ground_hit = 0.0;
-	float pushback_ground_block = 0.0;
-	float pushback_air_x = 0.0;
-	float pushback_air_y = 0.0;
-	int pushback_frames = 0;
-	if (hit_status == HIT_STATUS_NORMAL || special_status == HIT_STATUS_NORMAL
-	|| hit_status == HIT_STATUS_CRUMPLE || special_status == HIT_STATUS_CRUMPLE) {
-		if (collision_kind & COLLISION_KIND_GROUND) {
-			UNWRAP_NO_DECL(pushback_ground_hit);
-			UNWRAP_NO_DECL(pushback_ground_block);
-		}
-		if (collision_kind & COLLISION_KIND_AIR || hit_flags & HIT_FLAG_FORCE_AERIAL
-			|| special_hit_flags & HIT_FLAG_FORCE_AERIAL) {
-			UNWRAP_NO_DECL(pushback_air_x);
-			UNWRAP_NO_DECL(pushback_air_y);
-		}
-		UNWRAP_NO_DECL(pushback_frames);
-	}
-	else if (collision_kind & COLLISION_KIND_GROUND) {
-		UNWRAP_NO_DECL(pushback_ground_block);
-		UNWRAP_NO_DECL(pushback_frames);
-	}
-	bool has_launch_target_pos = false;
-	glm::vec3 launch_target_pos = glm::vec3(0.0);
-	float launch_init_y = 0.0;
-	float launch_gravity = 0.0;
-	float launch_max_fall_speed = 0.0;
-	float launch_speed_x = 0.0;
-	if (hit_status == HIT_STATUS_LAUNCH || special_status == HIT_STATUS_LAUNCH
-		|| hit_status == HIT_STATUS_FLOAT || special_status == HIT_STATUS_FLOAT
-		|| hit_flags & HIT_FLAG_CONTINUE_LAUNCH) { //We can't counterhit an already-launched opponent,
-		//so HIT_FLAG_CONTINUE_LAUNCH should never be in the special hitflags
-		if (NEXT_TYPEID(typeid(glm::vec3))) {
-			has_launch_target_pos = true;
-			UNWRAP_NO_DECL(launch_target_pos);
-		}
-		else {
-			UNWRAP_NO_DECL(launch_init_y);
-			UNWRAP_NO_DECL(launch_gravity);
-			UNWRAP_NO_DECL(launch_max_fall_speed);
-			UNWRAP_NO_DECL(launch_speed_x);
-		}
-	}
 	UNWRAP(damage_kind, DamageKind);
 	UNWRAP(hit_level, HitLevel);
 	UNWRAP(hit_effect, std::string);
 	UNWRAP(hit_sound, std::string);;
-	new_hitbox(id, multihit, anchor, offset, collision_kind, hit_status, custom_hit_status, hit_flags,
-		critical_condition, special_status, custom_special_status, special_hit_flags, 
-		juggle_start, juggle_increase, juggle_max, hit_height, damage, chip_damage, damage_scale, 
-		meter_gain, hitlag, blocklag, hitstun, blockstun, pushback_ground_hit, pushback_ground_block, 
-		pushback_air_x, pushback_air_y, pushback_frames, launch_init_y, launch_gravity, 
-		launch_max_fall_speed, launch_speed_x, launch_target_pos, has_launch_target_pos, damage_kind, 
-		hit_level, hit_effect, hit_sound
+	new_hitbox(id, multihit, anchor, offset, collision_kind, damage, chip_damage, damage_scale, 
+		meter_gain, hitlag, hitstun, blocklag, blockstun, hit_status, custom_hit_status,
+		move_opponent, hit_flags, critical_condition, critical_status, custom_critical_status,
+		critical_move_opponent, critical_hit_flags, juggle_start, juggle_increase, juggle_max, 
+		hit_height, damage_kind, hit_level, hit_effect, hit_sound
 	);
 }
 
@@ -140,6 +98,28 @@ void BattleObject::CLEAR_HITBOX(ScriptArg args) {
 
 void BattleObject::CLEAR_HITBOX_ALL(ScriptArg args) {
 	clear_hitbox_all();
+}
+
+void BattleObject::SET_DEFINITE_HITBOX(ScriptArg args) {
+	UNWRAP(target, Fighter*);
+	UNWRAP(hit_status, int);
+	UNWRAP(hit_flags, HitFlag);
+	UNWRAP(juggle_start, int);
+	UNWRAP(juggle_increase, int);
+	UNWRAP(damage, float);
+	UNWRAP(damage_scale, int);
+	UNWRAP(meter_gain, float);
+	UNWRAP(hitlag, int);
+	UNWRAP(hitstun, int);
+	UNWRAP(move_opponent, MoveOpponent);
+	UNWRAP(damage_kind, DamageKind);
+	UNWRAP(hit_level, HitLevel);
+	UNWRAP(hit_effect, std::string);
+	UNWRAP(hit_sound, std::string);
+	set_definite_hitbox(target, hit_status, hit_flags, juggle_start, juggle_increase, damage,
+		damage_scale, meter_gain, hitlag, hitstun, move_opponent, damage_kind, hit_level, hit_effect,
+		hit_sound
+	);
 }
 
 void BattleObject::NEW_GRABBOX(ScriptArg args) {
@@ -208,7 +188,7 @@ void BattleObject::CLEAR_PUSHBOX_ALL(ScriptArg args) {
 void BattleObject::PLAY_SOUND(ScriptArg args) {
 	UNWRAP(sound, std::string);
 	float volume_mod = 0.0;
-	if (NEXT_TYPEID(typeid(float))) {
+	if (WRAPPED_TYPE(float)) {
 		UNWRAP_NO_DECL(volume_mod);
 	}
 	play_sound(sound, volume_mod);
@@ -217,7 +197,7 @@ void BattleObject::PLAY_SOUND(ScriptArg args) {
 void BattleObject::PLAY_RESERVED_SOUND(ScriptArg args) {
 	UNWRAP(sound, std::string);
 	float volume_mod = 0.0;
-	if (NEXT_TYPEID(typeid(float))) {
+	if (WRAPPED_TYPE(float)) {
 		UNWRAP_NO_DECL(volume_mod);
 	}
 	play_reserved_sound(sound, volume_mod);

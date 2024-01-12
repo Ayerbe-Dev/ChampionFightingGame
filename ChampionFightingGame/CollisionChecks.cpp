@@ -58,7 +58,6 @@ void Battle::check_collisions() {
 		fighter[i]->update_pushbox_pos();
 		fighter[i]->update_blockbox_pos();
 	}
-
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->check_incoming_grabbox_collisions(grabboxes[!i]);
 		for (int i2 = 0; i2 < objects[i].size(); i2++) {
@@ -130,6 +129,16 @@ void Battle::check_collisions() {
 	}
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < objects[i].size(); i2++) {
+			if (objects[i][i2]->definite_hitbox.active) {
+				DefiniteHitbox& hitbox = objects[i][i2]->definite_hitbox;
+				Fighter* attacker = hitbox.attacker;
+				Fighter* defender = hitbox.defender;
+				defender->process_definite_hitbox_activated(&hitbox, attacker);
+			}
+		}
+	}
+	for (int i = 0; i < 2; i++) {
+		for (int i2 = 0; i2 < objects[i].size(); i2++) {
 			if (objects[i][i2]->post_collision_status != FIGHTER_STATUS_NONE) {
 				//Since change_status resets the punish flag, we have to put this code here. It's
 				//kinda gross because of the double fighter check, but ideally once the UIText 
@@ -140,12 +149,14 @@ void Battle::check_collisions() {
 					texts[!i].back().init(&message_font, "Punish", 40, fighter[!i], glm::vec2(275.0, 300.0));
 				}
 
-				objects[i][i2]->change_status(objects[i][i2]->post_collision_status, true, false);
+				objects[i][i2]->change_status(objects[i][i2]->post_collision_status, true);
 				objects[i][i2]->post_collision_status = FIGHTER_STATUS_NONE;
 
 				if (objects[i][i2]->object_type != BATTLE_OBJECT_TYPE_FIGHTER
 				|| (fighter[i]->connected_grabbox == nullptr 
-					&& fighter[i]->connected_hitbox == nullptr)) continue;
+					&& fighter[i]->connected_hitbox == nullptr
+					&& !fighter[i]->fighter_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX])) continue;
+				fighter[i]->fighter_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX] = false;
 				if (fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 					if (combo_counter[!i] != nullptr) {
 						combo_counter[!i]->update(std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);

@@ -2,6 +2,7 @@
 #include "ParamAccessor.h"
 #include "ControllerManager.h"
 #include "utils.h"
+#include "SDL/SDL_gamecontroller.h"
 
 GameController::GameController() {
 	id = -1;
@@ -24,6 +25,7 @@ int GameController::check_controllers() {
 		for (int i = 0; i < SDL_NumJoysticks(); i++) {
 			if (SDL_IsGameController(i) && controller_manager->registered_controllers[!id].id != i) {
 				new_controller = SDL_GameControllerOpen(i);
+				SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(new_controller));
 				if (is_any_controller_input(new_controller)) {
 					controller = new_controller;
 					controller_manager->registered_controllers[id].id = i;

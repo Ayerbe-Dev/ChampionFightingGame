@@ -29,16 +29,14 @@ public:
 
 	//Hitbox
 
-	void new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, CollisionKind collision_kind,
-		HitStatus hit_status, unsigned int custom_hit_status, HitFlag hit_flags, 
-		CriticalCondition special_status_condition, HitStatus special_status, 
-		unsigned int custom_special_status, HitFlag special_hit_flags, int juggle_start, 
-		int juggle_increase, int juggle_max, HitHeight hit_height, float damage, float chip_damage, 
-		int damage_scale, float meter_gain, int hitlag, int blocklag, int hitstun, int blockstun, 
-		float pushback_ground_hit, float pushback_ground_block, float pushback_air_x, 
-		float pushback_air_y, int pushback_frames, float launch_init_y, float launch_gravity, 
-		float launch_max_fall_speed, float launch_speed_x, glm::vec3 launch_target_pos, 
-		bool has_launch_target_pos, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, 
+	void new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
+		CollisionKind collision_kind, float damage, float chip_damage, int damage_scale,
+		float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun,
+		HitStatus hit_status, unsigned int custom_hit_status, MoveOpponent move_opponent,
+		HitFlag hit_flags, CriticalCondition critical_condition, HitStatus critical_status,
+		unsigned int custom_critical_status, MoveOpponent critical_move_opponent,
+		HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max,
+		HitHeight hit_height, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect,
 		std::string hit_sound
 	);
 	void update_hitbox_connect(int multihit_index);
@@ -46,6 +44,14 @@ public:
 	bool is_hitbox_active(int multihit = -1);
 	virtual void clear_hitbox(int id);
 	virtual void clear_hitbox_all();
+
+	//Definite Hitbox
+
+	void set_definite_hitbox(Fighter* target, unsigned int hit_status,
+		HitFlag hit_flags, int juggle_start, int juggle_increase, float damage, int damage_scale,
+		float meter_gain, int hitlag, int hitstun, MoveOpponent move_opponent, DamageKind damage_kind,
+		HitLevel hit_level, std::string hit_effect, std::string hit_sound
+	);
 
 	//Hurtbox
 
@@ -131,7 +137,7 @@ public:
 
 	//Status Functions
 
-	virtual bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true);
+	virtual void change_status(unsigned int new_status_kind, bool call_end_status = true);
 
 	//Collision Functions
 
@@ -269,6 +275,8 @@ public:
 	void CLEAR_HITBOX(ScriptArg args);
 	void CLEAR_HITBOX_ALL(ScriptArg args);
 
+	void SET_DEFINITE_HITBOX(ScriptArg args);
+
 	void NEW_HURTBOX(ScriptArg args);
 	void CLEAR_HURTBOX(ScriptArg args);
 	void CLEAR_HURTBOX_ALL(ScriptArg args);
@@ -307,6 +315,7 @@ public:
 	unsigned int status_kind;
 	unsigned int situation_kind;
 
+	DefiniteHitbox definite_hitbox;
 	Blockbox blockbox;
 	Hitbox hitboxes[10];
 	Hurtbox hurtboxes[10];

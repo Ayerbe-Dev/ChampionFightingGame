@@ -42,7 +42,5 @@ void Projectile::CHANGE_STATUS(ScriptArg args) {
 	UNWRAP(new_status_kind, int);
 	bool call_end_status = true;
 	UNWRAP_NO_DECL(call_end_status);
-	bool require_different_status = true;
-	UNWRAP_NO_DECL(require_different_status);
-	change_status(new_status_kind, call_end_status, require_different_status);
+	change_status(new_status_kind, call_end_status);
 }

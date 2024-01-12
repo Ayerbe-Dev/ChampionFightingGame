@@ -41,7 +41,7 @@ void Fighter::load_fighter() {
 	load_chara_effects();
 	set_default_vars();
 
-	change_status(FIGHTER_STATUS_NONE, false, false);
+	change_status(FIGHTER_STATUS_NONE, false);
 }
 
 void Fighter::load_sound_list() {

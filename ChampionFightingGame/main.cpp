@@ -1,20 +1,11 @@
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4244) //int to float
 #pragma warning(disable : 4267) //size_t to int
-#include <vector>
-#include <chrono>
-#include <thread>
-#include <mutex>
 #include <iostream>
 #include <Windows.h>
 #include <SDL/SDL.h>
 #include <glew/glew.h>
-#include "SDL Helpers.h"
-#include "utils.h"
 #include "GameStates.h"
-#include "Animation.h"
-#include "cotr_imgui_debugger.h"
-#include "Stage.h"
 #include "AIManager.h"
 #include "ObjectManager.h"
 #include "ControllerManager.h"
@@ -29,10 +20,7 @@
 #include "SoundManager.h"
 #include "TargetVarManager.h"
 #include "ThreadManager.h"
-#include "stb_image.h"
 #undef main
-
-std::mutex file_mutex;
 
 int main() {
 	//NOTE: Eventually we will want to hide the console window. When this happens, we need to go into

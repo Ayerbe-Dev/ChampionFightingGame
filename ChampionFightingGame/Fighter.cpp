@@ -71,9 +71,9 @@ void Fighter::fighter_main() {
 		   '-::::::::::::::-'
 			   '''::::'''
 	 */
-
+	fighter_flag[FIGHTER_FLAG_STATUS_CHANGED] = false;
 	process_animate();
-	process_pre_position();
+	process_position();
 	process_pre_status();
 	process_input();
 	chara_main();
@@ -166,7 +166,7 @@ void Fighter::process_post_animate() {
 	set_pos_anim();
 }
 
-void Fighter::process_pre_position() {
+void Fighter::process_position() {
 	rot = glm::vec3(0.0);
 	extra_rot = glm::vec3(0.0);
 	if (isnan(pos.x)) {
@@ -187,41 +187,20 @@ void Fighter::process_pre_position() {
 void Fighter::process_post_position() {
 	Fighter* that = object_manager->fighter[!id];
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
-		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0) {
-			if (situation_kind == FIGHTER_SITUATION_GROUND || fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL]) {
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
-					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-					if (!(that->fighter_flag[FIGHTER_FLAG_SHORT_HOP] && that->fighter_flag[FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK])) {
-						that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
-						//If an opponent does a fullhop air attack while we're cornered, we get pushed
-						//back. If they do a shorthop instead, we get pushed back and up.
-					}
-				}
-			}
-			else {
-				//This code was originally designed to push an aerial attacker up when they hit a
-				//jumping opponent in the corner, but was later bugged to also execute when we hit
-				//grounded opponents in the corner. Since aerial defenders no longer experience
-				//normal pushback, it should be completely impossible to meet the conditions for
-				//it to trigger at all, but I'm leaving it commented because it looked cool when we
-				//did it to grounded opponents and we might want to use it for certain air attacks.
-
-				float y_pushback = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-				if (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0) {
-					y_pushback = 0.0;
-				}
-				if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->internal_facing_dir, y_pushback, 0)) && !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
-					that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
-					that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-					that->fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = true;
-				}
+		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
+			&& fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0
+			&& situation_kind != FIGHTER_SITUATION_AIR) {
+			if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) 
+				&& !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
+				that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
+				that->fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
+				fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = 0;
+				fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0f;
 			}
 		}
 	}
 	else {
-		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0;
-		fighter_flag[FIGHTER_FLAG_PUSHBACK_FROM_OPPONENT_AT_WALL] = false;
+		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0f;
 	}
 	update_pushbox_pos();
 }

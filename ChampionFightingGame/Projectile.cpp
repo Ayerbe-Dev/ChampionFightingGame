@@ -1,5 +1,4 @@
 #include "Projectile.h"
-#include "Battle.h"
 
 Projectile::Projectile() {
 	owner = nullptr;

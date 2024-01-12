@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL/SDL.h>
+#include "GameController.h"
 
 struct ControllerInfo {
 	int id;

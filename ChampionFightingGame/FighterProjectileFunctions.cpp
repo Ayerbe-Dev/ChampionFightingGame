@@ -51,8 +51,8 @@ void Fighter::set_projectile_pos(int projectile, glm::vec3 pos) {
 	}
 }
 
-void Fighter::change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status, bool require_different_status) {
+void Fighter::change_projectile_status(int projectile, unsigned int new_status_kind, bool call_end_status) {
 	if (projectiles[projectile]->active) {
-		projectiles[projectile]->change_status(new_status_kind, call_end_status, require_different_status);
+		projectiles[projectile]->change_status(new_status_kind, call_end_status);
 	}
 }

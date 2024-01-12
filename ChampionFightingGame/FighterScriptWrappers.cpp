@@ -28,22 +28,6 @@ void Fighter::SET_STRING(ScriptArg args) {
 	set_string(target, val);
 }
 
-void Fighter::GRAB_OPPONENT(ScriptArg args) {
-	UNWRAP(attacker_bone_name, std::string);
-	UNWRAP(defender_bone_name, std::string);
-	UNWRAP(offset, glm::vec3);
-	grab_opponent(attacker_bone_name, defender_bone_name, offset);
-}
-
-void Fighter::THROW_OPPONENT(ScriptArg args) {
-	UNWRAP(damage, float);
-	UNWRAP(x_speed, float);
-	UNWRAP(y_speed, float);
-	UNWRAP(gravity, float);
-	UNWRAP(max_fall_speed, float);
-	throw_opponent(damage, x_speed, y_speed, gravity, max_fall_speed);
-}
-
 void Fighter::ADD_POS(ScriptArg args) {
 	UNWRAP(pos, glm::vec3);
 	add_pos(pos);
@@ -92,9 +76,7 @@ void Fighter::CHANGE_STATUS(ScriptArg args) {
 	UNWRAP(new_status_kind, int);
 	bool call_end_status = true;
 	UNWRAP_NO_DECL(call_end_status);
-	bool require_different_status = true;
-	UNWRAP_NO_DECL(require_different_status);
-	change_status(new_status_kind, call_end_status, require_different_status);
+	change_status(new_status_kind, call_end_status);
 }
 
 void Fighter::ACTIVATE_PROJECTILE(ScriptArg args) {
@@ -157,9 +139,7 @@ void Fighter::CHANGE_PROJECTILE_STATUS(ScriptArg args) {
 	UNWRAP(new_status_kind, int);
 	bool call_end_status = true;
 	UNWRAP_NO_DECL(call_end_status);
-	bool require_different_status = true;
-	UNWRAP_NO_DECL(require_different_status);
-	change_projectile_status(projectile, new_status_kind, call_end_status, require_different_status);
+	change_projectile_status(projectile, new_status_kind, call_end_status);
 }
 
 void Fighter::CHANGE_OPPONENT_STATUS(ScriptArg args) {
@@ -174,4 +154,11 @@ void Fighter::CHANGE_OPPONENT_ANIM(ScriptArg args) {
 	float frame = 0.0;
 	UNWRAP_NO_DECL(frame);
 	change_opponent_anim(anim_kind, rate, frame);
+}
+
+void Fighter::GRAB_OPPONENT(ScriptArg args) {
+	UNWRAP(attacker_bone_name, std::string);
+	UNWRAP(defender_bone_name, std::string);
+	UNWRAP(offset, glm::vec3);
+	grab_opponent(attacker_bone_name, defender_bone_name, offset);
 }

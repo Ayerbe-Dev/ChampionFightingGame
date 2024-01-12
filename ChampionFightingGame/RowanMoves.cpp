@@ -452,11 +452,20 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(4, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 4, glm::vec2(151, 164), glm::vec2(1, 132), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(5, 145), glm::vec2(200, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_MID, /*Damage*/ 40.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 2, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 12, /*Blockstun*/ 9, /*Hit Pushback Ground*/ 8.0, /*Block Pushback Ground*/ 8.0, /*X Pushback Air*/ 3.0, /*Y Pushback Air*/ 25.0, /*Pushback Frames*/ 7, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(5, 145), 
+				glm::vec2(200, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 40.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 2, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, 
+				/*Hitstun*/ 12, /*Blocklag*/ 8, /*Blockstun*/ 9, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(8.0, 8.0).air(3.0, 25.0).frames(7), HIT_FLAG_NONE,
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, 
+				HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", ""
+			);
 		});
-		execute_wait(3, [this]() {
-			push_function(&Fighter::ENABLE_CANCEL, "stand_lp", CANCEL_KIND_ANY);
+		execute_wait(1, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, "stand_mp", CANCEL_KIND_CONTACT);
+		});
+		execute_wait(2, [this]() {
+			push_function(&Fighter::ENABLE_CANCEL, "stand_lp", CANCEL_KIND_ANY);
 			push_function(&Fighter::ENABLE_CANCEL, "crouch_hp", CANCEL_KIND_CONTACT);
 		});
 		execute_wait(1, [this]() {
@@ -491,7 +500,13 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2{ 35, 110 }, glm::vec2{ 155, 150 }, HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(6, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(103, 165), glm::vec2(213, 113), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, 0, 1, 2, HIT_HEIGHT_MID, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 18, /*Blockstun*/ 11, /*Hit Pushback Ground*/ 10.0, /*Block Pushback Ground*/ 4.0, /*X Pushback Air*/ 3.0, /*Y Pushback Air*/ 28.0, /*Pushback Frames*/ 9, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(103, 165), 
+				glm::vec2(213, 113), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 40.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, 
+				/*Hitstun*/ 18, /*Blocklag*/ 12, /*Blockstun*/ 11, HIT_STATUS_NORMAL, MoveOpponent()
+				.ground(10.0, 4.0).air(3.0, 28.0).frames(9), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, 
+				0, 1, 2, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", ""
+			);
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
@@ -528,7 +543,14 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(7, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(85, 167), glm::vec2(0, 108), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(180, 168), glm::vec2(12, 128), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_MID, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 23, /*Blockstun*/ 23, /*Hit Pushback Ground*/ 14.0, /*Block Pushback Ground*/ 8.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 31.0, /*Pushback Frames*/ 11, /*Launch Init Y*/ 20.0, /*Launch Gravity*/ 1.3, /*Launch Max Fall Speed*/ 15.0, /*Launch Speed X*/ 25.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(180, 168), 
+				glm::vec2(12, 128), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 50.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, 
+				/*Hitstun*/ 23, /*Blocklag*/ 16, /*Blockstun*/ 23, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(14.0, 8.0).air(5.0, 31.0).frames(11).launch(20.0, 1.3, 15.0, 25.0),
+				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, 
+				/*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
+				HIT_LEVEL_HEAVY, "", "");
 		});
 		execute_wait(5, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
@@ -561,7 +583,13 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(-45, 40), glm::vec2(65, 155), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2(30, 45), glm::vec2(160, 95), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HURTBOX, 4, glm::vec2(20, 70), glm::vec2(130, 140), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(250, 57), glm::vec2(13, 4), COLLISION_KIND_GROUND, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 13, /*Blockstun*/ 8, /*Hit Pushback Ground*/ 10.0, /*Block Pushback Ground*/ 10.0, /*Pushback Frames*/ 7, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(250, 57), 
+				glm::vec2(13, 4), COLLISION_KIND_GROUND, /*Damage*/ 30.0, /*Chip Damage*/ 0.2f, 
+				/*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Hitstun*/ 13, /*Blocklag*/ 8, 
+				/*Blockstun*/ 8, HIT_STATUS_NORMAL, MoveOpponent().ground(10.0, 10.0).frames(7),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_LIGHT, "", ""
+			);
 		});
 		execute_wait(3, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
@@ -589,7 +617,14 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(7, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(25, 105), glm::vec2(260, 150), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(30, 105), glm::vec2(310, 155), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 2, HIT_HEIGHT_MID, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 19, /*Blockstun*/ 10, /*Hit Pushback Ground*/ 10.0, /*Block Pushback Ground*/ 4.0, /*X Pushback Air*/ 3.0, /*Y Pushback Air*/ 28.0, /*Pushback Frames*/ 10, /*Launch Init Y*/ 10.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch X Speed*/ 1.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(30, 105), 
+				glm::vec2(310, 155), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 40.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, 
+				/*Hitstun*/ 19, /*Blocklag*/ 12, /*Blockstun*/ 10, HIT_STATUS_NORMAL, MoveOpponent()
+				.ground(10.0, 4.0).air(3.0, 28.0).frames(10).launch(10.0, 1.3, 15.0, 1.0),
+				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, 
+				/*Juggle Increase*/ 1, /*Juggle Max*/ 2, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_MEDIUM, "", "");
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
@@ -605,7 +640,15 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-75, -3), glm::vec2(100, 149), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(7.0, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(52, 82), glm::vec2(163, 137), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_DISABLE_HITSTUN_PARRY | HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 4, /*Juggle Increase*/ 2, /*Juggle Max*/ 2, HIT_HEIGHT_MID, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 36.0, /*Hitlag*/ 6, /*Blocklag*/ 6, /*Hitstun*/ 20, /*Blockstun*/ 9, /*Hit Pushback Ground*/ 13.0, /*Block Pushback Ground*/ 6.0, /*X Pushback Air*/ 2.0, /*Y Pushback Air*/ 31.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 25.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 3.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(52, 82), 
+				glm::vec2(163, 137), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,/*Damage*/ 40.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 36.0, /*Hitlag*/ 6, 
+				/*Hitstun*/ 20, /*Blocklag*/ 6, /*Blockstun*/ 9, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(13.0, 6.0).air(2.0, 31.0).frames(5).launch(25.0, 1.3, 15.0, 3.0),
+				HIT_FLAG_DISABLE_HITSTUN_PARRY | HIT_FLAG_CONTINUE_LAUNCH, 
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 4, /*Juggle Increase*/ 2, /*Juggle Max*/ 2, 
+				HIT_HEIGHT_MID,  DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(44, 76), glm::vec2(173, 143), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(11.0, [this]() {
@@ -619,7 +662,15 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::DISABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::DISABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::DISABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 1, glm::vec2(60, 95), glm::vec2(290, 180), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, HIT_HEIGHT_MID, /*Damage*/ 20.0, /*Chip Damage*/ 4.0, /*Damage Scale*/ 1, /*Meter Gain*/ 16.0, /*Hitlag*/ 6, /*Blocklag*/ 6, /*Hitstun*/ 24, /*Blockstun*/ 5, /*Hit Pushback Ground*/ 20.0, /*Block Pushback Ground*/ 10.0, /*X Pushback Air*/ 3.0, /*Y Pushback Air*/ 31.0, /*Pushback Frames*/ 10, /*Launch Init Y*/ 50.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 1.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 1, glm::vec2(60, 95), 
+				glm::vec2(290, 180), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 20.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 16.0, /*Hitlag*/ 6, 
+				/*Hitstun*/ 24, /*Blocklag*/ 6, /*Blockstun*/ 5, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(20.0, 10.0).air(3.0, 31.0).frames(10).launch(50.0, 1.3, 15.0, 1.0),
+				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, 
+				/*Juggle Increase*/ 1, /*Juggle Max*/ 3, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_HEAVY, "", ""
+			);
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(45, 75), glm::vec2(305, 190), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::CLEAR_HITBOX, 0);
 		});
@@ -647,7 +698,13 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(2, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(43, 108), glm::vec2(136, 79), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(51, 112), glm::vec2(199, 82), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 0, HIT_HEIGHT_MID, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 6, /*Blocklag*/ 6, /*Hitstun*/ 13, /*Blockstun*/ 5, /*Hit Pushback Ground*/ 9.0, /*Block Pushback Ground*/ 11.0, /*X Pushback Air*/ 4.0, /*Y Pushback Air*/ 25.0, /*Pushback Frames*/ 8, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(51, 112), 
+				glm::vec2(199, 82), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 30.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 6, 
+				/*Hitstun*/ 13, /*Blocklag*/ 6, /*Blockstun*/ 5, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(9.0, 11.0).air(4.0, 25.0).frames(8), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 0, 
+				HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
 		});
 		execute_wait(3, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
@@ -685,8 +742,21 @@ void Rowan::load_move_scripts() {
 		});
 		execute_wait(2, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(175, 35), glm::vec2(270, 120), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(145, 40), glm::vec2(320, 120), COLLISION_KIND_GROUND, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 22, /*Blockstun*/ 17, /*Hit Pushback Ground*/ 8.0, /*Block Pushback Ground*/ 8.0, /*Pushback Frames*/ 11, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(255, 120), glm::vec2(355, 165), COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, HIT_HEIGHT_MID, /*Damage*/ 40.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Hitstun*/ 22, /*X Pushback Air*/ 10.0, /*Y Pushback Air*/ 18.0, /*Pushback Frames*/ 8, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(145, 40), 
+				glm::vec2(320, 120), COLLISION_KIND_GROUND, /*Damage*/ 40.0, /*Chip Damage*/ 0.2f, 
+				/*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Hitstun*/ 22, /*Blocklag*/ 12,
+				/*Blockstun*/ 17, HIT_STATUS_NORMAL, MoveOpponent().ground(8.0, 8.0).frames(11),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_MEDIUM, "", ""
+			);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(255, 120), 
+				glm::vec2(355, 165), COLLISION_KIND_AIR, /*Damage*/ 40.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Hitstun*/ 22, 
+				HIT_STATUS_NORMAL, MoveOpponent().air(10.0, 18.0).frames(8), 
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, 
+				/*Juggle Increase*/ 1, /*Juggle Max*/ 3, HIT_HEIGHT_MID, 
+				DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", ""
+			);
 		});
 		execute_wait(4, [this]() {
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
@@ -719,7 +789,15 @@ void Rowan::load_move_scripts() {
 		execute_wait(2, [this]() {
 			push_function(&Fighter::CLEAR_HURTBOX_ALL);
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-31, 0), glm::vec2(132, 113), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(51, 253), glm::vec2(149, 70), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_JUMP_COUNTERHIT, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_MID, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 23, /*Blockstun*/ 16, /*Hit Pushback Ground*/ 14.0, /*Block Pushback Ground*/ 8.0, /*X Pushback Air*/ 4.0, /*Y Pushback Air*/ 31.0, /*Pushback Frames*/ 11, /*Launch Init Y*/ 28.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 7.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(51, 253), 
+				glm::vec2(149, 70), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 50.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, 
+				/*Hitstun*/ 23, /*Blocklag*/ 16, /*Blockstun*/ 16, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(14.0, 8.0).air(4.0, 31.0).frames(11), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_JUMP_COUNTERHIT, HIT_STATUS_LAUNCH, MoveOpponent()
+				.launch(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, 
+				/*Juggle Max*/ 1, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(22, 158), glm::vec2(129, 64), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
@@ -748,7 +826,13 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(3, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-104, -7), glm::vec2(235, 36), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(230, 36), glm::vec2(129, -7), COLLISION_KIND_GROUND, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 11, /*Blockstun*/ 8, /*Hit Pushback Ground*/ 11.0, /*Block Pushback Ground*/ 13.0, /*Pushback Frames*/ 6, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(230, 36), 
+				glm::vec2(129, -7), COLLISION_KIND_GROUND, /*Damage*/ 30.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Hitstun*/ 11, /*Blocklag*/ 8, 
+				/*Blockstun*/ 8, HIT_STATUS_NORMAL, MoveOpponent().ground(11.0, 13.0).frames(6),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_LIGHT, "", ""
+			);
 		});
 		execute_wait(3, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
@@ -774,7 +858,13 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-73, 26), glm::vec2(75, 93), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(6, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(293, -10), glm::vec2(14, 42), COLLISION_KIND_GROUND, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 19, /*Blockstun*/ 13, /*Hit Pushback Ground*/ 14.0, /*Block Pushback Ground*/ 8.0, /*Pushback Frames*/ 10, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(293, -10), 
+				glm::vec2(14, 42), COLLISION_KIND_GROUND, /*Damage*/ 40.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Hitstun*/ 19, /*Blocklag*/ 12,
+				/*Blockstun*/ 13, HIT_STATUS_NORMAL, MoveOpponent().ground(14.0, 8.0).frames(10),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_MEDIUM, "", ""
+			);
 		});
 		execute_wait(5, [this]() {
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
@@ -790,7 +880,12 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-73, 26), glm::vec2(75, 93), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(8, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-15, 0), glm::vec2(250, 50), COLLISION_KIND_GROUND, HIT_STATUS_KNOCKDOWN, HIT_FLAG_KNOCKDOWN_FACE_DOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 0, /*Blockstun*/ 13, /*Block Pushback Ground*/ 8.0, /*Pushback Frames*/ 10, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-15, 0), 
+			glm::vec2(250, 50), COLLISION_KIND_GROUND, /*Damage*/ 50.0, /*Chip Damage*/ 0.2f, 
+			/*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Hitstun*/ 0, /*Blocklag*/ 16, 
+			/*Blockstun*/ 13, HIT_STATUS_KNOCKDOWN, MoveOpponent().ground(0.0, 8.0).frames(10),
+			HIT_FLAG_KNOCKDOWN_FACE_DOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, 
+			DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
 		});
 		execute_wait(2, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
@@ -800,7 +895,6 @@ void Rowan::load_move_scripts() {
 	});
 	script("jump_lp", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK, true);
 			push_function(&Fighter::ENABLE_CANCEL, "jump_mp", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-105, -30), glm::vec2(65, 40), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
@@ -811,7 +905,14 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-95, 15), glm::vec2(100, 80), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-55, 80), glm::vec2(85, 125), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::CLEAR_HURTBOX, 2);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(60, 15), glm::vec2(185, 65), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, HIT_HEIGHT_HIGH, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 16, /*Blockstun*/ 13, /*Hit Pushback Ground*/ 15.0, /*Block Pushback Ground*/ 15.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 25.0, /*Pushback Frames*/ 8, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(60, 15), 
+				glm::vec2(185, 65), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, 
+				/*Damage*/ 30.0, /*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, 
+				/*Hitlag*/ 8, /*Hitstun*/ 16, /*Blocklag*/ 8, /*Blockstun*/ 13, HIT_STATUS_NORMAL,
+				MoveOpponent().ground(15.0, 15.0).air(5.0, 18.0).frames(8), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 3, 
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", ""
+			);
 		});
 		execute_wait(8, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -822,7 +923,6 @@ void Rowan::load_move_scripts() {
 	});
 	script("jump_mp", [this]() {
 		execute_frame(0, [this]() {
-			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ALLOW_VERTICAL_PUSHBACK, true);
 			push_function(&Fighter::ENABLE_CANCEL, "jump_hp", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-86, 34), glm::vec2(86, 140), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
@@ -830,7 +930,14 @@ void Rowan::load_move_scripts() {
 		execute_frame(6, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-73, 34), glm::vec2(136, 103), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(110, 18), glm::vec2(175, 62), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(90, 5), glm::vec2(215, 50), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,  /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_HIGH, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 21, /*Blockstun*/ 26, /*Hit Pushback Ground*/ 22.0, /*Block Pushback Ground*/ 22.0, /*X Pushback Air*/ 8.0, /*Y Pushback Air*/ 28.0, /*Pushback Frames*/ 11, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(90, 5), 
+				glm::vec2(215, 50), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 40.0,
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, 
+				/*Hitstun*/ 21, /*Blocklag*/ 12, /*Blockstun*/ 26, HIT_STATUS_NORMAL,
+				MoveOpponent().ground(22.0, 22.0).air(8.0, 13.0).frames(11), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, 
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", ""
+			);
 		});
 		execute_wait(8, [this]() {
 			push_function(&Fighter::CLEAR_HURTBOX, 1);
@@ -852,8 +959,21 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(8, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-83, 74), glm::vec2(316, 120), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-5, 102), glm::vec2(277, 178), COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 5, HIT_HEIGHT_HIGH, /*Damage*/ 50.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Hitstun*/ 0, /*Launch Init Y*/ -20.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 5.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(105, 74), glm::vec2(298, 137), COLLISION_KIND_GROUND, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_LAUNCH, HIT_FLAG_HARD_KNOCKDOWN, /*Juggle Start*/ 1, HIT_HEIGHT_HIGH, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 25, /*Blockstun*/ 25, /*Hit Pushback Ground*/ 15.0, /*Block Pushback Ground*/ 15.0, /*Pushback Frames*/ 12, /*Launch Init Y*/ 20.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 5.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-5, 102),
+				glm::vec2(277, 178), COLLISION_KIND_AIR, /*Damage*/ 50.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Hitstun*/ 0,
+				HIT_STATUS_LAUNCH, MoveOpponent().launch(-20.0, 0.0, 15.0, 5.0), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 5, 
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(105, 74), 
+				glm::vec2(298, 137), COLLISION_KIND_GROUND, /*Damage*/ 50.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Hitstun*/ 25, /*Blocklag*/ 16,
+				/*Blockstun*/ 25, HIT_STATUS_NORMAL, MoveOpponent().ground(15.0, 15.0).frames(12),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_LAUNCH, 
+				MoveOpponent().launch(20.0, 1.3, 15.0, 5.0), HIT_FLAG_HARD_KNOCKDOWN, /*Juggle Start*/ 1,
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_wait(2, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -868,8 +988,21 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-48, 25), glm::vec2(66, 115), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(4, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(87, 129), glm::vec2(194, 225), COLLISION_KIND_GROUND, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 2, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Blocklag*/ 8, /*Hitstun*/ 13, /*Blockstun*/ 17, /*Hit Pushback Ground*/ 20.0, /*Block Pushback Ground*/ 20.0, /*Pushback Frames*/ 7, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(87, 129), glm::vec2(194, 225), COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, /*Juggle Start*/ 3, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_HIGH, /*Damage*/ 30.0, /*Damage Scale*/ 2, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Hitstun*/ 13, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 25.0, /*Pushback Frames*/ 7, /*Launch Init Y*/ 25.0, /*Launch Gravity*/ 1.0, /*Launch Max Fall Speed*/ 10.0, /*Launch Speed X*/ 5.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(87, 129), 
+				glm::vec2(194, 225), COLLISION_KIND_GROUND, /*Damage*/ 30.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 2, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Hitstun*/ 13, /*Blocklag*/ 8,
+				/*Blockstun*/ 17, HIT_STATUS_NORMAL, MoveOpponent().ground(20.0, 20.0).frames(7), 
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL,
+				HIT_LEVEL_LIGHT, "", ""
+			);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(87, 129),
+				glm::vec2(194, 225), COLLISION_KIND_AIR, /*Damage*/ 30.0, /*Chip Damage*/ 0.2f,
+				/*Damage Scale*/ 2, /*Meter Gain*/ 24.0, /*Hitlag*/ 8, /*Hitstun*/ 13,
+				HIT_STATUS_NORMAL, MoveOpponent().air(5.0, 13.0).frames(7), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, MoveOpponent().launch(25.0, 1.0, 10.0, 5.0),
+				HIT_FLAG_NONE, /*Juggle Start*/ 3, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, 
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_LIGHT, "", ""
+			);
 		});
 		execute_wait(3, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -884,9 +1017,22 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(6, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-71, 48), glm::vec2(185, 90), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-103, 59), glm::vec2(55, 10), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_HIGH, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 23, /*Blockstun*/ 18, /*Hit Pushback Ground*/ 15.0, /*Block Pushback Ground*/ 15.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 28.0, /*Pushback Frames*/ 12, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(-46, 90), glm::vec2(248, 43), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_HIGH, /*Damage*/ 40.0, /*Chip Damage*/ 8.0, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, /*Blocklag*/ 12, /*Hitstun*/ 23, /*Blockstun*/ 18, /*Hit Pushback Ground*/ 15.0, /*Block Pushback Ground*/ 15.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 28.0, /*Pushback Frames*/ 12, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", "");
-
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-103, 59), 
+				glm::vec2(55, 10), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 40.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, 
+				/*Hitstun*/ 23, /*Blocklag*/ 12, /*Blockstun*/ 18, HIT_STATUS_NORMAL,
+				MoveOpponent().ground(15.0, 15.0).air(5.0, 15.0).frames(5), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, 
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", ""
+			);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(-46, 90), 
+				glm::vec2(248, 43), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 40.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 32.0, /*Hitlag*/ 10, 
+				/*Hitstun*/ 23, /*Blocklag*/ 12, /*Blockstun*/ 18, HIT_STATUS_NORMAL,
+				MoveOpponent().ground(15.0, 15.0).air(5.0, 10.0).frames(5), HIT_FLAG_NONE,
+				CRITICAL_CONDITION_NONE, /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 1,
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_MEDIUM, "", ""
+			);
 		});
 		execute_wait(5, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -903,7 +1049,14 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-48, 25), glm::vec2(66, 115), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(9, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(250, 60), glm::vec2(-6, 114), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,  /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 2, HIT_HEIGHT_HIGH, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 15, /*Blockstun*/ 11, /*Hit Pushback Ground*/ 15.0, /*Block Pushback Ground*/ 15.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 28.0, /*Pushback Frames*/ 15, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(250, 60), 
+				glm::vec2(-6, 114), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				/*Damage*/ 50.0, /*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0,
+				/*Hitlag*/ 12, /*Hitstun*/ 15, /*Blocklag*/ 16, /*Blockstun*/ 11, HIT_STATUS_NORMAL,
+				MoveOpponent().ground(15.0, 15.0).air(5.0, 15.0).frames(15), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_NONE,  /*Juggle Start*/ 1, /*Juggle Increase*/ 1, /*Juggle Max*/ 2, 
+				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_wait(6, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -914,19 +1067,29 @@ void Rowan::load_move_scripts() {
 	script("forward_hp", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-55, 0), glm::vec2(55, 160), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::ENABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
 		});
 		execute_frame(17, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(180, 168), glm::vec2(12, 128), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_HIGH, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 27, /*Blockstun*/ 23, /*Hit Pushback Ground*/ 14.0, /*Block Pushback Ground*/ 8.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 31.0, /*Pushback Frames*/ 11, /*Launch Init Y*/ 20.0, /*Launch Gravity*/ 1.3, /*Launch Max Fall Speed*/ 15.0, /*Launch Speed X*/ 25.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(180, 168),
+				glm::vec2(12, 128), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 50.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, 
+				/*Hitstun*/ 27, /*Blocklag*/ 16, /*Blockstun*/ 23, HIT_STATUS_NORMAL, 
+				MoveOpponent().ground(14.0, 8.0).air(5.0, 30.0).frames(11).launch(20.0, 1.3, 15.0, 25.0),
+				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, 
+				/*Juggle Increase*/ 1, /*Juggle Max*/ 1, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_wait(4, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::DISABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::DISABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::DISABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
 	script("backdash_attack", [this]() {
@@ -935,13 +1098,20 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-215, 0), glm::vec2(-55, 160), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(7, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-91, 44), glm::vec2(180, -8), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(15, 25), glm::vec2(155, 160), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(25, 0), glm::vec2(188, 110), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HURTBOX, 3, glm::vec2(295, 170), glm::vec2(90, 100), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 150), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-30, 150), glm::vec2(70, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(120, 0), glm::vec2(295, 170), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(8, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(300, 190), glm::vec2(30, 130), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_NONE, CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, HIT_FLAG_HARD_KNOCKDOWN, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 50.0, /*Chip Damage*/ 10.0, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 27, /*Blockstun*/ 20, /*Hit Pushback Ground*/ 15.0, /*Block Pushback Ground*/ 10.0, /*X Pushback Air*/ 5.0, /*Y Pushback Air*/ 31.0, /*Pushback Frames*/ 8, /*Launch Init Y*/ 30.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 4.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(300, 190), 
+				glm::vec2(30, 130), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 50.0, 
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 40.0, /*Hitlag*/ 12, 
+				/*Hitstun*/ 27, /*Blocklag*/ 16, /*Blockstun*/ 20, HIT_STATUS_NORMAL,
+				MoveOpponent().ground(15.0, 10.0).air(5.0, 31.0).frames(8), HIT_FLAG_NONE, 
+				CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, MoveOpponent().launch(30.0, 1.3, 15.0, 4.0),
+				HIT_FLAG_HARD_KNOCKDOWN, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, 
+				HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_wait(2, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
@@ -950,7 +1120,6 @@ void Rowan::load_move_scripts() {
 		});
 		execute_wait(12, [this]() {
 			push_function(&Fighter::CLEAR_HURTBOX, 2);
-			push_function(&Fighter::CLEAR_HURTBOX, 3);
 		});
 	});
 	script("advance_high", [this]() {
@@ -958,7 +1127,15 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
 		});
 		execute_frame(19, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(226, 114), glm::vec2(65, -2), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_FLOAT, HIT_FLAG_KNOCKDOWN_FACE_DOWN, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_HIGH, /*Damage*/ 100.0, /*Chip Damage*/ 20.0, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14, /*Blocklag*/ 20, /*Hitstun*/ 180, /*Blockstun*/ 5, /*Block Pushback Ground*/ 5.0, /*Pushback Frames*/ 3, /*Launch Init Y*/ -10.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 0.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(226, 114), 
+				glm::vec2(65, -2), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 100.0,
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14,
+				/*Hitstun*/ 180, /*Blocklag*/ 20, /*Blockstun*/ 5, HIT_STATUS_FLOAT, 
+				MoveOpponent().ground(0.0, 5.0).frames(3).launch(-10.0, 0.0, 15.0, 0.0),
+				HIT_FLAG_KNOCKDOWN_FACE_DOWN, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, 
+				/*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, 
+				HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_frame(20, [this]() {
 			push_function(&Fighter::RESET_WORLD_RATE);
@@ -969,7 +1146,14 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
 		});
 		execute_frame(19, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(226, 114), glm::vec2(65, -2), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_FLOAT, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_LOW, /*Damage*/ 100.0, /*Chip Damage*/ 20.0, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14, /*Blocklag*/ 20, /*Hitstun*/ 180, /*Blockstun*/ 5, /*Block Pushback Ground*/ 5.0, /*Pushback Frames*/ 3, /*Launch Init Y*/ 20.0, /*Launch Gravity*/ 0.0, /*Launch Max Fall Speed*/ 0.0, /*Launch Speed X*/ 0.0, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(226, 114),
+				glm::vec2(65, -2), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 100.0,
+				/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14,
+				/*Hitstun*/ 180, /*Blocklag*/ 20, /*Blockstun*/ 5, HIT_STATUS_FLOAT,
+				MoveOpponent().ground(0.0, 5.0).frames(3).launch(-10.0, 0.0, 15.0, 0.0),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, 
+				/*Juggle Max*/ 4, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+			);
 		});
 		execute_frame(20, [this]() {
 			push_function(&Fighter::RESET_WORLD_RATE);
@@ -1006,8 +1190,12 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::GRAB_OPPONENT, "Throw", "Bust", glm::vec3(0.0));
 			push_function(&Fighter::CHANGE_OPPONENT_ANIM, "stand_hitstun_m", -1.0);
 		});
-		execute_frame(18, [this]() {
-			push_function(&Fighter::THROW_OPPONENT, 50.0, 15.0, 8.0, 1.3, 15.0);
+		execute_frame(17, [this]() {
+			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id], 
+				FIGHTER_STATUS_LAUNCH, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0, 
+				MoveOpponent().launch(15.0, 1.3, 8.0, 15.0), DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY,
+				"", ""
+			);
 		});
 	});
 	script("throw_b", [this]() {
@@ -1016,8 +1204,12 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::CHANGE_OPPONENT_ANIM, "stand_hitstun_m", -1.0);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_FLIP_FACING_ON_STATUS_END, true);
 		});
-		execute_frame(40, [this]() {
-			push_function(&Fighter::THROW_OPPONENT, 50.0, -35.0, 8.0, 1.3, 15.0);
+		execute_frame(39, [this]() {
+			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
+				FIGHTER_STATUS_LAUNCH, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0,
+				MoveOpponent().launch(15.0, 1.3, 8.0, -35.0), DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY,
+				"", ""
+			);
 		});
 	});
 	script("grab_air_start", [this]() {
@@ -1043,7 +1235,11 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_DISABLE_AIR_GENERAL, true);
 		});
 		execute_frame(17, [this]() {
-			push_function(&Fighter::THROW_OPPONENT, 50.0, 15.0, -15.0, 0.0, -15.0);
+			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
+				FIGHTER_STATUS_THROWN, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0,
+				MoveOpponent().launch(-15.0, 1.3, 15.0, 15.0), DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY,
+				"", ""
+			);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_DISABLE_AIR_GENERAL, false);
 		});
 	});
@@ -1055,7 +1251,11 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_FLIP_FACING_ON_STATUS_END, true);
 		});
 		execute_frame(17, [this]() {
-			push_function(&Fighter::THROW_OPPONENT, 50.0, -15.0, -15.0, 0.0, -15.0);
+			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
+				FIGHTER_STATUS_THROWN, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0,
+				MoveOpponent().launch(-15.0, 1.3, 15.0, -15.0), DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY,
+				"", ""
+			);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_DISABLE_AIR_GENERAL, false);
 		});
 	});
@@ -1133,10 +1333,23 @@ void Rowan::load_move_scripts() {
 			}
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(150, -8), glm::vec2(300, 30), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12), glm::vec2(250, 30), COLLISION_KIND_GROUND, HIT_STATUS_KNOCKDOWN, HIT_FLAG_HARD_KNOCKDOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, /*Damage*/ 70.0, /*Chip Damage*/ 14.0, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Blocklag*/ 12, /*Hitstun*/ 0, /*Blockstun*/ 19, /*Block Pushback Ground*/ 15.0, /*Pushback Frames*/ 20, DAMAGE_KIND_CHIP, HIT_LEVEL_MEDIUM, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12), 
+					glm::vec2(250, 30), COLLISION_KIND_GROUND, /*Damage*/ 70.0, /*Chip Damage*/ 0.2f, 
+					/*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Hitstun*/ 0, 
+					/*Blocklag*/ 12, /*Blockstun*/ 19, HIT_STATUS_KNOCKDOWN, 
+					MoveOpponent().ground(0.0, 15.0).frames(20),HIT_FLAG_HARD_KNOCKDOWN, 
+					CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP, HIT_LEVEL_MEDIUM, "", ""
+				);
 			}
 			else {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12), glm::vec2(250, 30), COLLISION_KIND_GROUND, HIT_STATUS_KNOCKDOWN, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, /*Damage*/ 70.0, /*Chip Damage*/ 14.0, /*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Blocklag*/ 12, /*Hitstun*/ 4, /*Blockstun*/ 16, /*Block Pushback Ground*/ 15.0, /*Pushback Frames*/ 20, DAMAGE_KIND_CHIP, HIT_LEVEL_MEDIUM, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
+					glm::vec2(250, 30), COLLISION_KIND_GROUND, /*Damage*/ 70.0, /*Chip Damage*/ 0.2f,
+					/*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Hitstun*/ 4,
+					/*Blocklag*/ 12, /*Blockstun*/ 16, HIT_STATUS_KNOCKDOWN, 
+					MoveOpponent().ground(0.0, 15.0).frames(20), HIT_FLAG_NONE,
+					CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP, HIT_LEVEL_MEDIUM, 
+					"", ""
+				);
 			}
 		});
 		execute_wait(3, [this]() {
@@ -1159,20 +1372,58 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(8.0, [this]() {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45), glm::vec2(231, 236), COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,  /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 70.0, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Hitstun*/ 0, /*Launch Init Y*/ 28.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 18.0, /*Launch Speed X*/ 0.5, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45), glm::vec2(231, 236), COLLISION_KIND_GROUND | COLLISION_KIND_DOWN, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, HIT_HEIGHT_MID, /*Damage*/ 70.0, /*Chip Damage*/ 14.0, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 0, /*Blockstun*/ 30, /*Block Pushback Ground*/ 15.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 35.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 18.0, /*Launch Speed X*/ 0.25, DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45), 
+					glm::vec2(231, 236), COLLISION_KIND_AIR, /*Damage*/ 70.0, /*Chip Damage*/ 0.2f, 
+					/*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Hitstun*/ 0, 
+					HIT_STATUS_LAUNCH, MoveOpponent().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE, 
+					CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4,
+					HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+				);
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45), 
+					glm::vec2(231, 236), COLLISION_KIND_GROUND | COLLISION_KIND_DOWN, /*Damage*/ 70.0, 
+					/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, 
+					/*Hitstun*/ 0, /*Blocklag*/ 16, /*Blockstun*/ 30, HIT_STATUS_LAUNCH,
+					MoveOpponent().ground(0.0, 15.0).frames(5).launch(35.0, 2.0, 18.0, 0.25),
+					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, HIT_HEIGHT_MID,
+					DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", ""
+				);
 			}
 			else {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45), glm::vec2(201, 236), COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 70.0, /*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Hitstun*/ 0, /*Launch Init Y*/ 28.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 18.0, /*Launch Speed X*/ 9.5, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45), glm::vec2(201, 236), COLLISION_KIND_GROUND, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, HIT_HEIGHT_MID, /*Damage*/ 70.0, /*Chip Damage*/ 14.0, /*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Blocklag*/ 16, /*Hitstun*/ 0, /*Blockstun*/ 30, /*Block Pushback Ground*/ 15.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 35.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 18.0, /*Launch Speed X*/ 0.25, DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45),
+					glm::vec2(201, 236), COLLISION_KIND_AIR, /*Damage*/ 70.0, /*Chip Damage*/ 0.2f,
+					/*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Hitstun*/ 0,
+					HIT_STATUS_LAUNCH, MoveOpponent().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
+					CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4,
+					HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+				);
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45),
+					glm::vec2(201, 236), COLLISION_KIND_GROUND, /*Damage*/ 70.0,
+					/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12,
+					/*Hitstun*/ 0, /*Blocklag*/ 16, /*Blockstun*/ 30, HIT_STATUS_LAUNCH,
+					MoveOpponent().ground(0.0, 15.0).frames(5).launch(35.0, 2.0, 18.0, 0.25),
+					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, HIT_HEIGHT_MID,
+					DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", ""
+				);
 			}
 		});
 		execute_frame(9.0, [this]() {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(202, 129), glm::vec2(-72, 256), COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 70.0, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Hitstun*/ 0, /*Launch Init Y*/ 35.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 18.0, /*Launch Speed X*/ 0.5, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
+					glm::vec2(200, 255), COLLISION_KIND_AIR, /*Damage*/ 70.0, /*Chip Damage*/ 0.2f,
+					/*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Hitstun*/ 0,
+					HIT_STATUS_LAUNCH, MoveOpponent().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
+					CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4,
+					HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+				);
 			}
 			else {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(202, 129), glm::vec2(-72, 256), COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 70.0, /*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Hitstun*/ 0, /*Launch Init Y*/ 35.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 18.0, /*Launch Speed X*/ 0.5, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
+					glm::vec2(200, 255), COLLISION_KIND_AIR, /*Damage*/ 70.0, /*Chip Damage*/ 0.2f,
+					/*Damage Scale*/ 1, /*Meter Gain*/ 56.0, /*Hitlag*/ 12, /*Hitstun*/ 0,
+					HIT_STATUS_LAUNCH, MoveOpponent().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
+					CRITICAL_CONDITION_NONE, /*Juggle Start*/ 0, /*Juggle Increase*/ 1, /*Juggle Max*/ 4,
+					HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, HIT_LEVEL_HEAVY, "", ""
+				);
 			}
 			push_function(&Fighter::CLEAR_HITBOX, 1);
 		});
@@ -1197,10 +1448,26 @@ void Rowan::load_move_scripts() {
 			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-114, -12), glm::vec2(187, 127), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 				push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(81, 88), glm::vec2(9, 125), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0), glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 5, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 12, /*Blocklag*/ 8, /*Hitstun*/ 38, /*Blockstun*/ 17, /*Hit Pushback Ground*/ -10.0, /*Block Pushback Ground*/ 10.0, /*X Pushback Air*/ -3.0, /*Y Pushback Air*/ -1.0, /*Pushback Frames*/ 5, DAMAGE_KIND_CHIP, HIT_LEVEL_LIGHT, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0), 
+					glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 30.0, 
+					/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 24.0, /*Hitlag*/ 12, 
+					/*Hitstun*/ 38, /*Blocklag*/ 8, /*Blockstun*/ 17, HIT_STATUS_NORMAL, 
+					MoveOpponent().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+					HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 5, 
+					/*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, 
+					HIT_LEVEL_LIGHT, "", ""
+				);
 			}
 			else {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0), glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_NORMAL, HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 5, /*Juggle Increase*/ 1, /*Juggle Max*/ 7, HIT_HEIGHT_MID, /*Damage*/ 30.0, /*Chip Damage*/ 6.0, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12, /*Blocklag*/ 8, /*Hitstun*/ 38, /*Blockstun*/ 17, /*Hit Pushback Ground*/ -10.0, /*Block Pushback Ground*/ 10.0, /*X Pushback Air*/ -3.0, /*Y Pushback Air*/ -1.0, /*Pushback Frames*/ 5, DAMAGE_KIND_CHIP, HIT_LEVEL_LIGHT, "", "");
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0),
+					glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 30.0,
+					/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 12,
+					/*Hitstun*/ 38, /*Blocklag*/ 8, /*Blockstun*/ 17, HIT_STATUS_NORMAL,
+					MoveOpponent().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+					HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 5,
+					/*Juggle Increase*/ 1, /*Juggle Max*/ 7, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
+					HIT_LEVEL_LIGHT, "", ""
+				);
 			}
 		});
 		execute_wait(4, [this]() {
@@ -1212,17 +1479,51 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
 		});
 		execute_frame(4, [this]() {
-			if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30), glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 6, /*Juggle Increase*/ 1, /*Juggle Max*/ 5, HIT_HEIGHT_MID, /*Damage*/ 60.0, /*Chip Damage*/ 12.0, /*Damage Scale*/ 1, /*Meter Gain*/ 48.0, /*Hitlag*/ 14, /*Blocklag*/ 20, /*Hitstun*/ 0, /*Blockstun*/ 20, /*Block Pushback Ground*/ 20.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 43.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 22.0, /*Launch Speed X*/ 10.0, DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", "");
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_M) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30), glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 6, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 100.0, /*Chip Damage*/ 20.0, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14, /*Blocklag*/ 20, /*Hitstun*/ 0, /*Blockstun*/ 20, /*Block Pushback Ground*/ 20.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 45.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 22.0, /*Launch Speed X*/ 10.0, DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", "");
-			}
-			else if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30), glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,  /*Juggle Start*/ 6, /*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, /*Damage*/ 110.0, /*Chip Damage*/ 22.0, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14, /*Blocklag*/ 20, /*Hitstun*/ 0, /*Blockstun*/ 20, /*Block Pushback Ground*/ 20.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 47.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 22.0, /*Launch Speed X*/ 10.0, DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", "");
-			}
-			else {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30), glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HIT_STATUS_LAUNCH, HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 6, /*Juggle Increase*/ 1, /*Juggle Max*/ 8, HIT_HEIGHT_MID, /*Damage*/ 90.0, /*Chip Damage*/ 18.0, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 14, /*Blocklag*/ 20, /*Hitstun*/ 0, /*Blockstun*/ 20, /*Block Pushback Ground*/ 20.0, /*Pushback Frames*/ 5, /*Launch Init Y*/ 49.0, /*Launch Gravity*/ 2.0, /*Launch Max Fall Speed*/ 22.0, /*Launch Speed X*/ 10.0, DAMAGE_KIND_CHIP, HIT_LEVEL_HEAVY, "", "");
+			switch (fighter_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+				case (SPECIAL_LEVEL_L): {
+					push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
+						glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 60.0,
+						/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 48.0, /*Hitlag*/ 14,
+						/*Hitstun*/ 0, /*Blocklag*/ 20, /*Blockstun*/ 20, HIT_STATUS_LAUNCH,
+						MoveOpponent().ground(0.0, 20.0).frames(5).launch(43.0, 2.0, 22.0, 10.0), 
+						HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 6, 
+						/*Juggle Increase*/ 1, /*Juggle Max*/ 5, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, 
+						HIT_LEVEL_HEAVY, "", ""
+					);
+				} break;
+				case (SPECIAL_LEVEL_M): {
+					push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30), 
+						glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 100.0,
+						/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14,
+						/*Hitstun*/ 0, /*Blocklag*/ 20, /*Blockstun*/ 20, HIT_STATUS_LAUNCH, 
+						MoveOpponent().ground(0.0, 20.0).frames(5).launch(45.0, 2.0, 22.0, 10.0), 
+						HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 6, 
+						/*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, 
+						HIT_LEVEL_HEAVY, "", ""
+					);
+				} break;
+				case (SPECIAL_LEVEL_H): {
+					push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30), 
+						glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 110.0,
+						/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 80.0, /*Hitlag*/ 14,
+						/*Hitstun*/ 0, /*Blocklag*/ 20, /*Blockstun*/ 20, HIT_STATUS_LAUNCH, 
+						MoveOpponent().ground(0.0, 20.0).frames(5).launch(47.0, 2.0, 22.0, 10.0),
+						HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,  /*Juggle Start*/ 6, 
+						/*Juggle Increase*/ 1, /*Juggle Max*/ 4, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, 
+						HIT_LEVEL_HEAVY, "", ""
+					);
+				} break;
+				case (SPECIAL_LEVEL_EX): {
+					push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
+						glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, /*Damage*/ 90.0,
+						/*Chip Damage*/ 0.2f, /*Damage Scale*/ 1, /*Meter Gain*/ 0.0, /*Hitlag*/ 14,
+						/*Hitstun*/ 0, /*Blocklag*/ 20, /*Blockstun*/ 20, HIT_STATUS_LAUNCH, 
+						MoveOpponent().ground(0.0, 20.0).frames(5).launch(49.0, 2.0, 22.0, 10.0),
+						HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, /*Juggle Start*/ 6, 
+						/*Juggle Increase*/ 1, /*Juggle Max*/ 8, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, 
+						HIT_LEVEL_HEAVY, "", ""
+					);
+				} break;
 			}
 		});
 		execute_frame(8, [this]() {
@@ -1281,6 +1582,13 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-30, 150), glm::vec2(70, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 	});
+	script("stand_hitstun_c", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 150), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-30, 150), glm::vec2(70, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+		});
+	});
 	script("crouch_hitstun_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
@@ -1296,6 +1604,13 @@ void Rowan::load_move_scripts() {
 		});
 	});
 	script("crouch_hitstun_h", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-50, 130), glm::vec2(55, 40), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+		});
+	});
+	script("crouch_hitstun_c", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(120, 60), glm::vec2(-120, 0), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);

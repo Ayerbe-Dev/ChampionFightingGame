@@ -106,7 +106,7 @@ float Fighter::calc_launch_frames() {
 	}
 	float airtime = 0.0;
 	float simp_y = pos.y; //haha simp
-	float sims_y = fighter_float[FIGHTER_FLOAT_LAUNCH_SPEED_Y];
+	float sims_y = fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED];
 	while (simp_y >= 0.0f) {
 		sims_y = clampf(fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1, 
 			sims_y - fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], sims_y);

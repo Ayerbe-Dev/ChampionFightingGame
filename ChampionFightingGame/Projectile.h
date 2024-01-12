@@ -55,7 +55,7 @@ public:
 
 	//Status
 
-	bool change_status(unsigned int new_status_kind, bool call_end_status = true, bool require_different_status = true) override;
+	void change_status(unsigned int new_status_kind, bool call_end_status = true) override;
 
 	//Data Functions
 

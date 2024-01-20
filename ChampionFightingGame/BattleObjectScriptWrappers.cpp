@@ -44,12 +44,13 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	else {
 		UNWRAP_NO_DECL(hit_status, HitStatus);
 	}
-	UNWRAP(move_opponent, MoveOpponent);
+	UNWRAP(hit_result, HitResult);
 	UNWRAP(hit_flags, HitFlag);
 	UNWRAP(critical_condition, CriticalCondition);
 	HitStatus critical_status = hit_status;
 	int custom_critical_status = custom_hit_status;
-	MoveOpponent critical_move_opponent = move_opponent;
+	HitResult critical_hit_result = hit_result;
+	critical_hit_result.hitstun("stand_hitstun_critical", "crouch_hitstun_critical");
 	HitFlag critical_hit_flags = hit_flags;
 	if (critical_condition != CRITICAL_CONDITION_NONE) {
 		critical_status = HIT_STATUS_CUSTOM;
@@ -60,11 +61,11 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 		else {
 			UNWRAP_NO_DECL(critical_status);
 		}
-		UNWRAP_NO_DECL(critical_move_opponent);
+		UNWRAP_NO_DECL(critical_hit_result);
 		UNWRAP_NO_DECL(critical_hit_flags);
 	}
 	else if (hit_status == HIT_STATUS_NORMAL) {
-		critical_move_opponent.ground(5.0, 0.0).frames(15);
+		critical_hit_result.ground(5.0, 0.0).frames(15);
 	}
 	int juggle_start = 0;
 	int juggle_increase = 0;
@@ -80,14 +81,13 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	}
 	UNWRAP(hit_height, HitHeight);
 	UNWRAP(damage_kind, DamageKind);
-	UNWRAP(hit_level, HitLevel);
 	UNWRAP(hit_effect, std::string);
 	UNWRAP(hit_sound, std::string);;
 	new_hitbox(id, multihit, anchor, offset, collision_kind, damage, chip_damage, damage_scale, 
 		meter_gain, hitlag, hitstun, blocklag, blockstun, hit_status, custom_hit_status,
-		move_opponent, hit_flags, critical_condition, critical_status, custom_critical_status,
-		critical_move_opponent, critical_hit_flags, juggle_start, juggle_increase, juggle_max, 
-		hit_height, damage_kind, hit_level, hit_effect, hit_sound
+		hit_result, hit_flags, critical_condition, critical_status, custom_critical_status,
+		critical_hit_result, critical_hit_flags, juggle_start, juggle_increase, juggle_max, 
+		hit_height, damage_kind, hit_effect, hit_sound
 	);
 }
 
@@ -111,13 +111,12 @@ void BattleObject::SET_DEFINITE_HITBOX(ScriptArg args) {
 	UNWRAP(meter_gain, float);
 	UNWRAP(hitlag, int);
 	UNWRAP(hitstun, int);
-	UNWRAP(move_opponent, MoveOpponent);
+	UNWRAP(hit_result, HitResult);
 	UNWRAP(damage_kind, DamageKind);
-	UNWRAP(hit_level, HitLevel);
 	UNWRAP(hit_effect, std::string);
 	UNWRAP(hit_sound, std::string);
 	set_definite_hitbox(target, hit_status, hit_flags, juggle_start, juggle_increase, damage,
-		damage_scale, meter_gain, hitlag, hitstun, move_opponent, damage_kind, hit_level, hit_effect,
+		damage_scale, meter_gain, hitlag, hitstun, hit_result, damage_kind, hit_effect,
 		hit_sound
 	);
 }

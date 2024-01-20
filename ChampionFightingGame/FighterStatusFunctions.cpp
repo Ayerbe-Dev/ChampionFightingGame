@@ -48,6 +48,7 @@ void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) 
 
 void Fighter::change_situation(unsigned int new_situation_kind) {
 	if (situation_kind != new_situation_kind) {
+		fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_NONE;
 		move_list[situation_kind].disable_all_cancels();
 		situation_kind = new_situation_kind;
 		check_movelist_inputs();

@@ -8,11 +8,6 @@ void controls_main() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	GameState* background_menu = game_manager->get_game_state();
 
-	Player *player[2];
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
-
-
 	OptionsMenu* options_menu = new OptionsMenu;
 
 	while (options_menu->looping) {
@@ -20,13 +15,7 @@ void controls_main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render_manager->handle_window_events();
-
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons();
-		}
-
-		game_manager->process_game_state_events();
+		options_menu->process_game_state();
 
 		background_menu->process_background();
 		options_menu->panel.render();
@@ -39,9 +28,6 @@ void controls_main() {
 
 OptionsMenu::OptionsMenu() {
 	GameManager* game_manager = GameManager::get_instance();
-
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
 
 	panel.init("resource/game_state/menu/options/overlay.png");
 	panel.set_width(500);

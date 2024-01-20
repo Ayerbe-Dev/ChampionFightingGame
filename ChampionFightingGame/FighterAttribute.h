@@ -25,10 +25,8 @@ const int JUMP_KIND_MAX = 3;
 
 const int HITSTUN_HEIGHT_NONE = 0;
 const int HITSTUN_HEIGHT_STAND = 1;
-const int HITSTUN_HEIGHT_FORCE_STAND = 2;
-const int HITSTUN_HEIGHT_CROUCH = 3;
-const int HITSTUN_HEIGHT_FORCE_CROUCH = 4;
-const int HITSTUN_HEIGHT_MAX = 5;
+const int HITSTUN_HEIGHT_CROUCH = 2;
+const int HITSTUN_HEIGHT_MAX = 3;
 
 const int PARRY_HEIGHT_HIGH = 0;
 const int PARRY_HEIGHT_MID = 1;

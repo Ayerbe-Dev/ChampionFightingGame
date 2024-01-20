@@ -16,23 +16,14 @@ public:
 	~StageAsset();
 
 	Stage* owner;
-	ObjectManager* object_manager;
-
-	AnimationTable anim_table;
-	Animation* anim_kind;
 
 	std::string asset_name;
-	std::string resource_dir;
 
 	std::vector<int> stage_int;
 	std::vector<float> stage_float;
 	std::vector<bool> stage_flag;
 
 	std::vector<Light> lights;
-
-	float frame;
-	float rate;
-	bool is_anim_end = false;
 
 	ParamTable params;
 

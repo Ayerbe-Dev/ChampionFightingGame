@@ -1,11 +1,37 @@
 #pragma once
-#include "BattleConstants.h"
-#include "Player.h"
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
 #include "GameManager.h"
 #include "GameTexture.h"
+
+enum TimerSetting {
+	TIMER_SETTING_NORMAL,
+	TIMER_SETTING_TRAINING,
+	TIMER_SETTING_NONE,
+
+	TIMER_SETTING_MAX
+};
+
+const int BATTLE_STATE_PRE_INTRO = 0;
+const int BATTLE_STATE_INTRO = 1;
+const int BATTLE_STATE_ROUND_START = 2;
+const int BATTLE_STATE_BATTLE = 3;
+const int BATTLE_STATE_KO = 4;
+const int BATTLE_STATE_OUTRO = 5;
+
+const int ROUND_WIN_DOUBLE_KO = 2;
+const int ROUND_WIN_P2 = 1;
+const int ROUND_WIN_P1 = 0;
+const int ROUND_WIN_TIMEOUT = -1;
+
+const int ROUND_ICON_NONE = 0;
+const int ROUND_ICON_KO = 1;
+const int ROUND_ICON_PERFECT = 2;
+const int ROUND_ICON_EX_SUPER = 3;
+const int ROUND_ICON_CHAMPION_SUPER = 4;
+const int ROUND_ICON_TIMEOUT = 5;
+const int ROUND_ICON_DOUBLE = 6;
 
 class ThreadManager;
 class Camera;
@@ -108,7 +134,6 @@ public:
 	float launch_max_fall_speed;
 	float launch_speed_x;
 	DamageKind damage_kind;
-	HitLevel hit_level;
 	std::string hit_effect;
 	std::string hit_sound;
 };
@@ -223,6 +248,7 @@ public:
 	void load_world();
 	void load_ui();
 
+	void pre_event_process_main();
 	void process_main();
 	void render_main();
 
@@ -237,13 +263,18 @@ public:
 	void process_ui();
 	void process_fighters();
 	void post_process_fighters();
-	void process_frame_pause();
 	void process_training();
-
-	void check_collisions();
+	void process_collisions();
 
 	void render_world();
 	void render_ui();
+
+	void event_start_press();
+	void event_frame_pause_press();
+	void event_frame_advance_press();
+	void event_record_input_press();
+	void event_replay_input_press();
+	void event_switch_input_press();
 
 	ObjectManager* object_manager;
 	ThreadManager* thread_manager;
@@ -252,7 +283,6 @@ public:
 	Font message_font;
 	Font info_font;
 
-	Player* player[2];
 	Fighter* fighter[2];
 	Stage stage;
 	Camera* camera;
@@ -267,8 +297,6 @@ public:
 
 	TrainingInfo training_info[2];
 
-	GameController debug_controller;
-
 	BattleObject* active_hitbox_object;
 	int active_hitbox_object_index;
 	std::map<std::string, HitboxSim> hitbox_sim;
@@ -277,6 +305,7 @@ public:
 	TimerSetting timer_setting;
 
 	bool frame_pause;
+	bool frame_advance;
 };
 
 void gamestate_battle_fighter_thread(void* fighter_arg);

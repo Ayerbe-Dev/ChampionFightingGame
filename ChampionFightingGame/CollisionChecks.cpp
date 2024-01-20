@@ -2,8 +2,9 @@
 #include "ParamAccessor.h"
 #include "utils.h"
 
-void Battle::check_collisions() {
-	if (frame_pause && !debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
+void Battle::process_collisions() {
+	if (frame_pause && !(fighter[0]->check_button_trigger(BUTTON_MENU_FRAME_ADVANCE) 
+		|| fighter[1]->check_button_trigger(BUTTON_MENU_FRAME_ADVANCE))) {
 		return;
 	}
 	std::vector<Hitbox*> hitboxes[2];

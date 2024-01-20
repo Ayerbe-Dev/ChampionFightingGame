@@ -1,11 +1,20 @@
 #include "ControllerManager.h"
 
 ControllerManager::ControllerManager() {
-	for (int i = 0; i < 2; i++) {
-		registered_controllers[i].controller = nullptr;
-		registered_controllers[i].id = -1;
-	}
+	controller_map[nullptr] = nullptr;
 	keyboard_state = SDL_GetKeyboardState(nullptr);
+}
+
+void ControllerManager::register_controller(SDL_GameController* sdl_controller, GameController* controller) {
+	controller_map[sdl_controller] = controller;
+}
+
+void ControllerManager::unregister_controller(SDL_GameController* sdl_controller) {
+	controller_map.erase(sdl_controller);
+}
+
+GameController* ControllerManager::get_owner(SDL_GameController* sdl_controller) {
+	return controller_map[sdl_controller];
 }
 
 ControllerManager* ControllerManager::instance = nullptr;
@@ -17,12 +26,10 @@ ControllerManager* ControllerManager::get_instance() {
 }
 
 void ControllerManager::destroy_instance() {
-	for (int i = 0; i < 2; i++) {
-		if (registered_controllers[i].controller != nullptr) {
-			SDL_GameControllerClose(registered_controllers[i].controller);
-			registered_controllers[i].controller = nullptr;
+	for (auto controller : controller_map) {
+		if (controller.first != nullptr && controller.second != nullptr) {
+			SDL_GameControllerClose(controller.first);
 		}
-		registered_controllers[i].id = -1;
 	}
 	if (instance != nullptr) {
 		delete instance;

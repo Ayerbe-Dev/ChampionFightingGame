@@ -15,17 +15,11 @@
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-	Player *player[2];
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
 
 	CSS *css = new CSS;
 	
 	while (css->looping) {
 		game_manager->frame_delay_check_fps();
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render_manager->handle_window_events();
@@ -42,9 +36,6 @@ void chara_select_main() {
 CSS::CSS() {
 	GameManager* game_manager = GameManager::get_instance();
 	RenderManager* render_manager = RenderManager::get_instance();
-
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
 
 	for (int i = 0; i < 2; i++) {
 		css_player[i].init(player[i]->player_info);
@@ -220,6 +211,135 @@ bool CSS::load_css() {
 	}
 
 	return true;
+}
+
+void CSS::process_main() {
+	GameManager* game_manager = GameManager::get_instance();
+	ThreadManager* thread_manager = ThreadManager::get_instance();
+	if (thread_manager->is_active(THREAD_KIND_LOAD)) {
+		if (thread_loaded_chars > loaded_chars) {
+			ResourceManager* resource_manager = ResourceManager::get_instance();
+			resource_manager->init_gl_model("resource/chara/" + chara_slots[loaded_chars].resource_dir + "/model/m0/model.dae");
+
+			for (int i = 0; i < 2; i++) {
+				if (loaded_chars == css_player[i].selected_index && !css_player[i].demo_model.model.is_loaded()) {
+					css_player[i].demo_model.load_model(
+						"resource/chara/" + chara_slots[css_player[i].selected_index].resource_dir +
+						"/model/m" + std::to_string(css_player[i].selected_costume) + "/model.dae",
+						"c" + std::to_string(css_player[i].selected_color)
+					);
+					css_player[i].demo_model.init_shader();
+					css_player[i].demo_model.anim_table = chara_slots[css_player[i].selected_index].anim_table;
+					if (css_player[i].state == CHARA_SELECTION_STATE_DESELECTED) {
+						css_player[i].demo_model.change_anim("deselected_wait", 1.0f, 0.0f);
+					}
+					else {
+						css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
+					}
+					css_player[i].demo_model.model.set_flip(i);
+				}
+			}
+
+			loaded_chars++;
+		}
+		else if (loaded_chars == chara_slots.size()) {
+			thread_manager->kill_thread(THREAD_KIND_LOAD);
+		}
+	}
+	if (gbuffer_window_counter != 0) {
+		gbuffer_mul += gbuffer_mul_offset;
+		gbuffer_window_counter--;
+	}
+	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
+		menu_objects[i].event_process();
+	}
+}
+
+/// <summary>
+/// Render all CSS-related textures and models
+/// </summary>
+void CSS::render_main() {
+	RenderManager* render_manager = RenderManager::get_instance();
+	render_manager->execute_buffered_events();
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+
+	render_manager->shadow_map.use();
+	glViewport(0, 0, 2000, 2000);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glCullFace(GL_FRONT);
+	stage_demo.render_shadow();
+	for (int i = 0; i < 2; i++) {
+		if (css_player[i].demo_model.anim_kind == nullptr) {
+			css_player[i].demo_model.rot = glm::vec3(glm::radians(-90.0), 0.0, glm::radians(90.0 * (i * -2 + 1)));
+		}
+		else {
+			css_player[i].demo_model.rot = glm::vec3(0.0, 0.0, glm::radians(90.0));
+		}
+		if (css_player[i].selected_index < loaded_chars) {
+			css_player[i].demo_model.animate();
+			if (css_player[i].demo_model.anim_end) {
+				//is_anim_end will always be false when anim_kind is nullptr, so we don't
+				//need to worry about this
+				if (css_player[i].demo_model.anim_kind->name == "selected") {
+					css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
+					css_player[i].demo_model.animate();
+				}
+				else if (css_player[i].demo_model.anim_kind->name == "deselected") {
+					css_player[i].demo_model.change_anim("deselected_wait", 1.0f, 0.0f);
+					css_player[i].demo_model.animate();
+				}
+			}
+			css_player[i].demo_model.render_shadow();
+		}
+	}
+	glCullFace(GL_BACK);
+
+	render_manager->g_buffer.use();
+	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	render_manager->shadow_map.bind_textures();
+	stage_demo.render();
+
+	glDisable(GL_CULL_FACE);
+
+	for (int i = 0; i < 2; i++) {
+		if (css_player[i].selected_index < loaded_chars) {
+			css_player[i].demo_model.render();
+		}
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	render_menu_object("background");
+	glViewport(render_manager->res_width * gbuffer_mul.x, render_manager->res_height * gbuffer_mul.y, render_manager->res_width * gbuffer_mul.z, render_manager->res_height * gbuffer_mul.w);
+	render_manager->g_buffer.render();
+	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
+
+	glDepthMask(GL_FALSE);
+
+	for (int i = 0, max = chara_slots.size(); i < max; i++) {
+		chara_slots[i].render();
+	}
+
+	for (int i = 0; i < 2; i++) {
+		big_chara_slots[i].render();
+
+		if (css_player[i].state != CHARA_SELECTION_STATE_DESELECTED) {
+			if (css_player[i].mobile_css_slot.pos != big_chara_slots[i].pos) {
+				css_player[i].mobile_css_slot.add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
+				css_player[i].mobile_css_slot.set_width_scale(css_player[i].mobile_css_slot.get_width_scale() + (0.7 / 16));
+				css_player[i].mobile_css_slot.set_height_scale(css_player[i].mobile_css_slot.get_height_scale() + (0.7 / 16));
+			}
+			else {
+				css_player[i].mobile_css_slot.set_rot(glm::vec3(0.0, 0.0, 0.0));
+				css_player[i].mobile_css_slot.set_scale(1.5);
+			}
+			css_player[i].mobile_css_slot.process();
+			css_player[i].mobile_css_slot.render();
+		}
+	}
+	render_menu_object("cursor");
 }
 
 void CSS::event_select_press() {
@@ -461,140 +581,6 @@ void CSS::event_up_press() {
 
 		} break;
 	}
-}
-
-void CSS::process_main() {
-	GameManager* game_manager = GameManager::get_instance();
-	for (int i = 0; i < 2; i++) {
-		player[i]->controller.poll_buttons();
-	}
-	game_manager->process_game_state_events();
-
-	ThreadManager* thread_manager = ThreadManager::get_instance();
-	if (thread_manager->is_active(THREAD_KIND_LOAD)) {
-		if (thread_loaded_chars > loaded_chars) {
-			ResourceManager* resource_manager = ResourceManager::get_instance();
-			resource_manager->init_gl_model("resource/chara/" + chara_slots[loaded_chars].resource_dir + "/model/m0/model.dae");
-
-			for (int i = 0; i < 2; i++) {
-				if (loaded_chars == css_player[i].selected_index && !css_player[i].demo_model.model.is_loaded()) {
-					css_player[i].demo_model.load_model(
-						"resource/chara/" + chara_slots[css_player[i].selected_index].resource_dir +
-						"/model/m" + std::to_string(css_player[i].selected_costume) + "/model.dae",
-						"c" + std::to_string(css_player[i].selected_color)
-					);
-					css_player[i].demo_model.init_shader();
-					css_player[i].demo_model.anim_table = chara_slots[css_player[i].selected_index].anim_table;
-					if (css_player[i].state == CHARA_SELECTION_STATE_DESELECTED) {
-						css_player[i].demo_model.change_anim("deselected_wait", 1.0f, 0.0f);
-					}
-					else {
-						css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
-					}
-					css_player[i].demo_model.model.set_flip(i);
-				}
-			}
-
-			loaded_chars++;
-		}
-		else if (loaded_chars == chara_slots.size()) {
-			thread_manager->kill_thread(THREAD_KIND_LOAD);
-		}
-	}
-	if (gbuffer_window_counter != 0) {
-		gbuffer_mul += gbuffer_mul_offset;
-		gbuffer_window_counter--;
-	}
-	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
-		menu_objects[i].event_process();
-	}
-}
-
-/// <summary>
-/// Render all CSS-related textures and models
-/// </summary>
-void CSS::render_main() {
-	RenderManager* render_manager = RenderManager::get_instance();
-	render_manager->execute_buffered_events();
-	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-
-	render_manager->shadow_map.use();
-	glViewport(0, 0, 2000, 2000);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
-	glCullFace(GL_FRONT);
-	stage_demo.render_shadow();
-	for (int i = 0; i < 2; i++) {
-		if (css_player[i].demo_model.anim_kind == nullptr) {
-			css_player[i].demo_model.rot = glm::vec3(glm::radians(-90.0), 0.0, glm::radians(90.0 * (i*-2 + 1)));
-		}
-		else {
-			css_player[i].demo_model.rot = glm::vec3(0.0, 0.0, glm::radians(90.0));
-		}
-		if (css_player[i].selected_index < loaded_chars) {
-			css_player[i].demo_model.animate();
-			if (css_player[i].demo_model.anim_end) {
-				//is_anim_end will always be false when anim_kind is nullptr, so we don't
-				//need to worry about this
-				if (css_player[i].demo_model.anim_kind->name == "selected") {
-					css_player[i].demo_model.change_anim("selected_wait", 1.0f, 0.0f);
-					css_player[i].demo_model.animate();
-				}
-				else if (css_player[i].demo_model.anim_kind->name == "deselected") {
-					css_player[i].demo_model.change_anim("deselected_wait", 1.0f, 0.0f);
-					css_player[i].demo_model.animate();
-				}
-			}
-			css_player[i].demo_model.render_shadow();
-		}
-	}
-	glCullFace(GL_BACK);
-
-	render_manager->g_buffer.use();
-	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	render_manager->shadow_map.bind_textures();
-	stage_demo.render();
-
-	glDisable(GL_CULL_FACE);
-
-	for (int i = 0; i < 2; i++) {
-		if (css_player[i].selected_index < loaded_chars) {
-			css_player[i].demo_model.render();
-		}
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	render_menu_object("background");
-	glViewport(render_manager->res_width * gbuffer_mul.x, render_manager->res_height * gbuffer_mul.y, render_manager->res_width * gbuffer_mul.z, render_manager->res_height * gbuffer_mul.w);
-	render_manager->g_buffer.render();
-	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
-
-	glDepthMask(GL_FALSE);
-
-	for (int i = 0, max = chara_slots.size(); i < max; i++) {
-		chara_slots[i].render();
-	}
-
-	for (int i = 0; i < 2; i++) {
-		big_chara_slots[i].render();
-
-		if (css_player[i].state != CHARA_SELECTION_STATE_DESELECTED) {
-			if (css_player[i].mobile_css_slot.pos != big_chara_slots[i].pos) {
-				css_player[i].mobile_css_slot.add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
-				css_player[i].mobile_css_slot.set_width_scale(css_player[i].mobile_css_slot.get_width_scale() + (0.7 / 16));
-				css_player[i].mobile_css_slot.set_height_scale(css_player[i].mobile_css_slot.get_height_scale() + (0.7 / 16));
-			}
-			else {
-				css_player[i].mobile_css_slot.set_rot(glm::vec3(0.0, 0.0, 0.0));
-				css_player[i].mobile_css_slot.set_scale(1.5);
-			}
-			css_player[i].mobile_css_slot.process();
-			css_player[i].mobile_css_slot.render();
-		}
-	}
-	render_menu_object("cursor");
 }
 
 /// <summary>

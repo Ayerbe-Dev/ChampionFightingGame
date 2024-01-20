@@ -9,6 +9,7 @@
 #include "GameTexture.h"
 #include "Mouse.h"
 #include "SoundPlayer.h"
+#include "Player.h"
 
 class GameState;
 class MenuObject;
@@ -181,6 +182,7 @@ public:
     ~GameState();
     
     void process_game_state();
+    virtual void pre_event_process_main();
     virtual void process_main();
 
     void render_game_state();
@@ -239,7 +241,11 @@ public:
     virtual void event_select_press();
     virtual void event_start_press();
     virtual void event_back_press();
-    virtual void event_pause_press();
+    virtual void event_frame_pause_press();
+    virtual void event_frame_advance_press();
+    virtual void event_record_input_press();
+    virtual void event_replay_input_press();
+    virtual void event_switch_input_press();
     virtual void event_any_press();
 
     virtual void process_background();
@@ -261,6 +267,7 @@ public:
 
     GameTexture* last_pushed_texture;
 
+    Player* player[2];
     Mouse mouse;
 
     int player_id;

@@ -296,7 +296,6 @@ SimHitbox::SimHitbox() {
 	launch_max_fall_speed = 0.0;
 	launch_speed_x = 0.0;
 	damage_kind = DAMAGE_KIND_NORMAL;
-	hit_level = HIT_LEVEL_LIGHT;
 	hit_effect = -1;
 	hit_sound = -1;
 	rect.set_rgba(glm::vec4(255.0, 0.0, 0.0, 127.0));
@@ -606,40 +605,22 @@ void SimHitbox::print_start(BattleObject* object) {
 	}
 	output += ", DAMAGE_KIND_";
 	switch (damage_kind) {
-	case (DAMAGE_KIND_NORMAL): {
-		output += "NORMAL";
-	} break;
-	case (DAMAGE_KIND_CHIP): {
-		output += "CHIP";
-	} break;
-	case (DAMAGE_KIND_CHIP_KO): {
-		output += "CHIP_KO";
-	} break;
-	case (DAMAGE_KIND_NO_KO): {
-		output += "NO_KO";
-	} break;
-	default: {
-		output += "MAX";
-	} break;
-	}
-
-	output += ", HIT_LEVEL_";
-
-	switch (hit_level) {
-		case (HIT_LEVEL_LIGHT): {
-			output += "LIGHT";
+		case (DAMAGE_KIND_NORMAL): {
+			output += "NORMAL";
 		} break;
-		case (HIT_LEVEL_MEDIUM): {
-			output += "MEDIUM";
+		case (DAMAGE_KIND_CHIP): {
+			output += "CHIP";
 		} break;
-		case (HIT_LEVEL_HEAVY): {
-			output += "HEAVY";
+		case (DAMAGE_KIND_CHIP_KO): {
+			output += "CHIP_KO";
+		} break;
+		case (DAMAGE_KIND_NO_KO): {
+			output += "NO_KO";
 		} break;
 		default: {
 			output += "MAX";
 		} break;
 	}
-
 	output += ", /*Hit Effect*/ \"" + hit_effect
 		+ "\", /*Hit Sound*/ \"" + hit_sound + "\");";
 

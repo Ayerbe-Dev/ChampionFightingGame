@@ -6,6 +6,7 @@
 #include "RenderManager.h"
 #include "WindowConstants.h"
 
+void GameState::pre_event_process_main() {}
 void GameState::process_main() {}
 void GameState::render_main() {}
 void GameState::event_up_press(){}
@@ -15,7 +16,11 @@ void GameState::event_right_press(){}
 void GameState::event_start_press(){}
 void GameState::event_select_press(){}
 void GameState::event_back_press(){}
-void GameState::event_pause_press() {}
+void GameState::event_frame_pause_press(){}
+void GameState::event_frame_advance_press(){}
+void GameState::event_record_input_press(){}
+void GameState::event_replay_input_press(){}
+void GameState::event_switch_input_press(){}
 void GameState::event_any_press() {}
 void GameState::process_background() {}
 
@@ -30,7 +35,11 @@ GameState::GameState() {
 	prev_executed_frame = 0;
 	player_id = 0;
 	menu_objects.reserve(2);
-	GameManager::get_instance()->set_game_state(this);
+	GameManager* game_manager = GameManager::get_instance();
+	for (int i = 0; i < 2; i++) {
+		player[i] = game_manager->player[i];
+	}
+	game_manager->set_game_state(this);
 }
 
 GameState::~GameState() {
@@ -46,6 +55,16 @@ void GameState::process_game_state() {
 	}
 	prev_internal_state = internal_state;
 	mouse.poll_buttons();
+	for (int i = 0; i < 2; i++) {
+		int controller_update = player[i]->controller.check_controllers();
+		if (controller_update == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
+			//check_controllers returns whether or not controls were changed, and if someone's controller
+			//gets unplugged midgame, we should probably do something about it
+		}
+		player[i]->controller.poll_menu_buttons();
+	}
+	pre_event_process_main();
+	GameManager::get_instance()->process_game_state_events();
 	process_main();
 	ObjectManager::get_instance()->process();
 	SoundManager::get_instance()->process_sounds();

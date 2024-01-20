@@ -18,17 +18,10 @@ void menu_main() {
 	
 	font_manager->load_face("Fiend-Oblique");
 
-	Player *player[2];
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
-
 	MainMenu *main_menu = new MainMenu;
 
 	while (main_menu->looping) {
 		game_manager->frame_delay_check_fps();
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render_manager->handle_window_events();
@@ -408,12 +401,6 @@ MainMenu::~MainMenu() {
 
 void MainMenu::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	for (int i = 0; i < 2; i++) {
-		game_manager->player[i]->controller.poll_buttons();
-	}
-
-	game_manager->process_game_state_events();
-
 	if (menu_level == MENU_LEVEL_TOP) {
 		if (menu_frame > 0) {
 			menu_frame--;

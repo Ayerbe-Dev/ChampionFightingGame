@@ -2,9 +2,10 @@
 #include "GameManager.h"
 #include "GameObject.h"
 #include "Camera.h"
-#include "StageSelectConstants.h"
 #include "Light.h"
 #include "Param.h"
+
+#define STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE 200
 
 class Font;
 

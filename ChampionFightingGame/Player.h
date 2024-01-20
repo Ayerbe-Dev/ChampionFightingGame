@@ -9,7 +9,6 @@ public:
 	Player();
 	Player(int id);
 
-	void set_default_button_mappings(int id);
 	void load_player(int index);
 	void set_alt_for_chara();
 

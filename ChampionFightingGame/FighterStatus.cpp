@@ -11,7 +11,6 @@
 
 bool Fighter::common_ground_status_act() {
 	unsigned int stick_dir = get_stick_dir();
-	unsigned int buffer_stick_dir = get_buffer_stick_dir();
 	if (stick_dir < 4) {
 		fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_CROUCH;
 	}
@@ -914,20 +913,16 @@ void Fighter::status_blockstun() {
 		}
 	}
 	else {
-		if (get_stick_dir() < 4) {
-			fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_CROUCH;
-		}
-		else {
-			fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_STAND;
-		}
 		if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] == 0) {
-			if (get_stick_dir() < 4) {
-				change_status(FIGHTER_STATUS_CROUCH);
-				return;
-			}
-			else {
-				change_status(FIGHTER_STATUS_WAIT);
-				return;
+			switch (fighter_int[FIGHTER_INT_HITSTUN_HEIGHT]) {
+				case (HITSTUN_HEIGHT_STAND): {
+					change_status(FIGHTER_STATUS_WAIT);
+					return;
+				} break;
+				case (HITSTUN_HEIGHT_CROUCH): {
+					change_status(FIGHTER_STATUS_CROUCH);
+					return;
+				} break;
 			}
 		}
 	}
@@ -936,15 +931,7 @@ void Fighter::status_blockstun() {
 
 
 void Fighter::enter_status_blockstun() {
-	if (get_stick_dir() < 4) {
-		change_anim("crouch_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-	}
-	else if (fighter_int[FIGHTER_INT_BLOCKSTUN_HEIGHT] == HIT_HEIGHT_HIGH) {
-		change_anim("high_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-	}
-	else {
-		change_anim("stand_blockstun", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-	}
+	change_anim(fighter_string[FIGHTER_STRING_HITSTUN_ANIM], fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 }
 
 void Fighter::exit_status_blockstun() {}
@@ -970,83 +957,7 @@ void Fighter::status_hitstun() {
 
 void Fighter::enter_status_hitstun() {
 	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	switch (fighter_int[FIGHTER_INT_HITSTUN_HEIGHT]) {
-		case (HITSTUN_HEIGHT_STAND): {
-			switch (fighter_int[FIGHTER_INT_HITSTUN_LEVEL]) {
-				case (HIT_LEVEL_LIGHT): {
-					change_anim("stand_hitstun_l", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-				case (HIT_LEVEL_MEDIUM): {
-					change_anim("stand_hitstun_m", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-				case (HIT_LEVEL_HEAVY): {
-					change_anim("stand_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-				case (HIT_LEVEL_CRITICAL): {
-					change_anim("stand_hitstun_c", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-			}
-		} break;
-		case (HITSTUN_HEIGHT_CROUCH): {
-			switch (fighter_int[FIGHTER_INT_HITSTUN_LEVEL]) {
-				case (HIT_LEVEL_LIGHT): {
-					change_anim("crouch_hitstun_l", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-				case (HIT_LEVEL_MEDIUM): {
-					change_anim("crouch_hitstun_m", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-				case (HIT_LEVEL_HEAVY): {
-					change_anim("crouch_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-				case (HIT_LEVEL_CRITICAL): {
-					change_anim("crouch_hitstun_c", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-				} break;
-			}
-		} break;
-		case (HITSTUN_HEIGHT_FORCE_STAND): {
-			fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_STAND;
-			//TODO: Make a force stand hitstun anim and play it here
-		} break;
-		case (HITSTUN_HEIGHT_FORCE_CROUCH): {
-			fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_CROUCH;
-			//TODO: The above, but for force crouch
-		} break;
-		case (HITSTUN_HEIGHT_NONE): 
-		default: {
-			if (get_stick_dir() < 4) {
-				switch (fighter_int[FIGHTER_INT_HITSTUN_LEVEL]) {
-					case (HIT_LEVEL_LIGHT): {
-						change_anim("crouch_hitstun_l", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-					case (HIT_LEVEL_MEDIUM): {
-						change_anim("crouch_hitstun_m", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-					case (HIT_LEVEL_HEAVY): {
-						change_anim("crouch_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-					case (HIT_LEVEL_CRITICAL): {
-						change_anim("crouch_hitstun_c", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-				}
-			}
-			else {
-				switch (fighter_int[FIGHTER_INT_HITSTUN_LEVEL]) {
-					case (HIT_LEVEL_LIGHT): {
-						change_anim("stand_hitstun_l", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-					case (HIT_LEVEL_MEDIUM): {
-						change_anim("stand_hitstun_m", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-					case (HIT_LEVEL_HEAVY): {
-						change_anim("stand_hitstun_h", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-					case (HIT_LEVEL_CRITICAL): {
-						change_anim("stand_hitstun_c", fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
-					} break;
-				}
-			}
-		} break;
-	}
+	change_anim(fighter_string[FIGHTER_STRING_HITSTUN_ANIM], fighter_int[FIGHTER_INT_HITSTUN_FRAMES], -1.0);
 }
 
 void Fighter::exit_status_hitstun() {
@@ -1509,17 +1420,16 @@ void Fighter::exit_status_parry() {
 void Fighter::status_landing() {
 	switch (fighter_int[FIGHTER_INT_LANDING_LAG]) {
 		case (0): {
+			check_movelist_inputs();
 			if (get_stick_dir() < 4) {
-				if (is_status_end(FIGHTER_STATUS_CROUCH)) {
-					return;
-				}
+				change_status(FIGHTER_STATUS_CROUCH);
+				return;
 			}
 			else {
 				if (is_status_end(FIGHTER_STATUS_WAIT)) {
 					return;
 				}
 			}
-			check_movelist_inputs();
 		} break;
 		case (1): {
 			if (internal_facing_right != facing_right) {
@@ -1556,17 +1466,16 @@ void Fighter::exit_status_landing() {}
 void Fighter::status_landing_attack() {
 	switch (fighter_int[FIGHTER_INT_LANDING_LAG]) {
 		case (0): {
+			check_movelist_inputs();
 			if (get_stick_dir() < 4) {
-				if (is_status_end(FIGHTER_STATUS_CROUCH)) {
-					return;
-				}
+				change_status(FIGHTER_STATUS_CROUCH);
+				return;
 			}
 			else {
 				if (is_status_end(FIGHTER_STATUS_WAIT)) {
 					return;
 				}
 			}
-			check_movelist_inputs();
 		} break;
 		case (1): {
 			if (internal_facing_right != facing_right) {
@@ -1606,10 +1515,16 @@ void Fighter::exit_status_landing_attack() {}
 void Fighter::status_landing_hitstun() {
 	switch (fighter_int[FIGHTER_INT_LANDING_LAG]) {
 		case (0): {
-			if (is_status_end(FIGHTER_STATUS_WAIT)) {
+			check_movelist_inputs();
+			if (get_stick_dir() < 4) {
+				change_status(FIGHTER_STATUS_CROUCH);
 				return;
 			}
-			check_movelist_inputs();
+			else {
+				if (is_status_end(FIGHTER_STATUS_WAIT)) {
+					return;
+				}
+			}
 		} break;
 		case (1): {
 			if (internal_facing_right != facing_right) {

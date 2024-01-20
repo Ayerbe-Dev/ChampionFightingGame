@@ -108,8 +108,20 @@ void GameManager::process_game_state_events() {
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
 			event_back_press();
 		}
-		if (player[i]->controller.check_button_trigger(BUTTON_MENU_PAUSE)) {
-			event_pause_press();
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
+			event_frame_pause_press();
+		}
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_FRAME_ADVANCE)) {
+			event_frame_advance_press();
+		}
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_RECORD_INPUT)) {
+			event_record_input_press();
+		}
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_REPLAY_INPUT)) {
+			event_replay_input_press();
+		}
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_SWITCH_INPUT)) {
+			event_switch_input_press();
 		}
 		if (is_any_menu_input(i)) {
 			event_any_press();
@@ -245,8 +257,24 @@ void GameManager::event_back_press() {
 	(get_game_state()->*(&GameState::event_back_press))();
 }
 
-void GameManager::event_pause_press() {
-	(get_game_state()->*(&GameState::event_pause_press))();
+void GameManager::event_frame_pause_press() {
+	(get_game_state()->*(&GameState::event_frame_pause_press))();
+}
+
+void GameManager::event_frame_advance_press() {
+	(get_game_state()->*(&GameState::event_frame_advance_press))();
+}
+
+void GameManager::event_record_input_press() {
+	(get_game_state()->*(&GameState::event_record_input_press))();
+}
+
+void GameManager::event_replay_input_press() {
+	(get_game_state()->*(&GameState::event_replay_input_press))();
+}
+
+void GameManager::event_switch_input_press() {
+	(get_game_state()->*(&GameState::event_switch_input_press))();
 }
 
 void GameManager::event_any_press() {

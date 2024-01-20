@@ -1,6 +1,6 @@
 #pragma once
-#include "CollisionBoxConstants.h"
 #include "GameRect.h"
+#include "CollisionBoxFields.h"
 
 class BattleObject;
 class Fighter;
@@ -33,11 +33,11 @@ public:
 	void activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, 
 		CollisionKind collision_kind, float damage, float chip_damage, int damage_scale, 
 		float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun, 
-	HitStatus hit_status, unsigned int custom_hit_status, MoveOpponent move_opponent, 
+		HitStatus hit_status, unsigned int custom_hit_status, HitResult hit_result, 
 		HitFlag hit_flags, CriticalCondition critical_condition, HitStatus critical_status, 
-		unsigned int custom_critical_status, MoveOpponent critical_move_opponent, 
+		unsigned int custom_critical_status, HitResult critical_hit_result, 
 		HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max, 
-		HitHeight hit_height, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, 
+		HitHeight hit_height, DamageKind damage_kind, std::string hit_effect, 
 		std::string hit_sound
 	);
 
@@ -46,12 +46,12 @@ public:
 	CollisionKind collision_kind;
 	HitStatus hit_status;
 	unsigned int custom_hit_status;
-	MoveOpponent move_opponent;
+	HitResult hit_result;
 	HitFlag hit_flags;
 	CriticalCondition critical_condition;
 	HitStatus critical_status;
 	unsigned int custom_critical_status;
-	MoveOpponent critical_move_opponent;
+	HitResult critical_hit_result;
 	HitFlag critical_hit_flags;
 	int juggle_start;
 	int juggle_increase;
@@ -66,7 +66,6 @@ public:
 	int hitstun;
 	int blockstun;
 	DamageKind damage_kind;
-	HitLevel hit_level;
 	std::string hit_effect;
 	std::string hit_sound;
 };
@@ -77,8 +76,8 @@ public:
 	void set_properties(BattleObject* object, Fighter* defender, Hitbox* hitbox);
 	void set_properties(BattleObject* object, Fighter* defender, unsigned int hit_status, HitFlag hit_flags, int juggle_start,
 		int juggle_increase, float damage, int damage_scale, float meter_gain,
-		int hitlag, int hitstun, MoveOpponent move_opponent, DamageKind damage_kind, 
-		HitLevel hit_level, std::string hit_effect, std::string hit_sound
+		int hitlag, int hitstun, HitResult hit_result, DamageKind damage_kind, 
+		std::string hit_effect, std::string hit_sound
 	);
 	void activate();
 	void clear();
@@ -94,9 +93,8 @@ public:
 	float meter_gain;
 	int hitlag;
 	int hitstun;
-	MoveOpponent move_opponent;
+	HitResult hit_result;
 	DamageKind damage_kind;
-	HitLevel hit_level;
 	std::string hit_effect;
 	std::string hit_sound;
 	bool active;

@@ -15,21 +15,5 @@ bool is_any_controller_input(SDL_GameController* controller) {
 }
 
 bool is_menu_button(unsigned int button_kind) {
-	switch (button_kind) {
-		case (BUTTON_MENU_UP):
-		case (BUTTON_MENU_DOWN):
-		case (BUTTON_MENU_LEFT):
-		case (BUTTON_MENU_RIGHT):
-		case (BUTTON_MENU_SELECT):
-		case (BUTTON_MENU_BACK):
-		case (BUTTON_MENU_START):
-		case (BUTTON_MENU_PAUSE):
-		case (BUTTON_MENU_FRAME_PAUSE):
-		case (BUTTON_MENU_ADVANCE): {
-			return true;
-		} break;
-		default: {
-			return false;
-		} break;
-	}
+	return button_kind >= BUTTON_MENU_UP;
 }

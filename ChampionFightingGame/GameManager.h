@@ -34,7 +34,11 @@ public:
 	void event_start_press();
 	void event_select_press();
 	void event_back_press();
-	void event_pause_press();
+	void event_frame_pause_press();
+	void event_frame_advance_press();
+	void event_record_input_press();
+	void event_replay_input_press();
+	void event_switch_input_press();
 	void event_any_press();
 
 	void add_crash_log(std::string crash_reason);

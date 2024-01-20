@@ -49,6 +49,12 @@ void debug_main() {
 		game_manager->frame_delay();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		for (int i = 0; i < 2; i++) {
+			int controller_update = game_manager->player[i]->controller.check_controllers();
+			if (controller_update == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
+			}
+		}
+
 		render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
 
 		go1.animate();

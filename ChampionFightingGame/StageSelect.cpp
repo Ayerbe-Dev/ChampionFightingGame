@@ -22,9 +22,6 @@ void stage_select_main() {
 	while (stage_select->looping) {
 		game_manager->frame_delay_check_fps();
 
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render_manager->handle_window_events();
@@ -291,11 +288,6 @@ void StageSelect::add_stage_slot(ParamTable param_table, Font* font) {
 
 void StageSelect::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	for (int i = 0; i < 2; i++) {
-		game_manager->player[i]->controller.poll_buttons();
-	}
-	game_manager->process_game_state_events();
-
 	RenderManager* render_manager = RenderManager::get_instance();
 	if (!selected) {
 		if (selection != prev_selection) {

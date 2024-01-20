@@ -40,22 +40,6 @@ void battle_main() {
 
 	font_manager->load_face("Fiend-Oblique");
 
-	Player* player[2];
-	for (int i = 0; i < 2; i++) {
-		player[i] = game_manager->player[i];
-	}
-
-	if (player[0]->chara_kind == player[1]->chara_kind 
-		&& player[0]->alt_costume == player[1]->alt_costume
-		&& player[0]->alt_color == player[1]->alt_color) {
-		if (player[0]->alt_color == 0) {
-			player[1]->alt_color++;
-		}
-		else {
-			player[1]->alt_color--;
-		}
-	}
-
 	Battle *battle = new Battle;
 
 #ifdef DEBUG
@@ -75,16 +59,7 @@ void battle_main() {
 			render_manager->handle_window_events();
 		#endif
 
-		for (int i = 0; i < 2; i++) {
-			int controller_update = player[i]->controller.check_controllers();
-			if (controller_update == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
-				//check_controllers returns whether or not controls were changed, and if someone's controller
-				//gets unplugged midgame, we should probably do something about it
-			}
-		}
-
 		battle->process_game_state();
-		battle->check_collisions();
 		battle->render_game_state();
 
 #ifdef DEBUG
@@ -111,6 +86,19 @@ Battle::Battle() {
 	round_count_setting = save_manager->get_game_setting("round_count");
 	ko_timer = 0;
 	curr_round = 0;
+	frame_pause = false;
+	frame_advance = false;
+
+	if (player[0]->chara_kind == player[1]->chara_kind
+		&& player[0]->alt_costume == player[1]->alt_costume
+		&& player[0]->alt_color == player[1]->alt_color) {
+		if (player[0]->alt_color == 0) {
+			player[1]->alt_color++;
+		}
+		else {
+			player[1]->alt_color--;
+		}
+	}
 
 	switch (game_context) {
 		case (GAME_CONTEXT_NORMAL): {
@@ -138,10 +126,6 @@ Battle::Battle() {
 			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
 	}
-	
-	debug_controller.add_button_mapping(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
-	debug_controller.add_button_mapping(BUTTON_MENU_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
-	debug_controller.add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
 
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -182,6 +166,7 @@ Battle::~Battle() {
 
 	effect_manager->clear_effect_all();
 	for (int i = 0; i < 2; i++) {
+		player[i]->controller.reset_player_controller();
 		thread_manager->kill_thread(i);
 		training_info[i].destroy();
 		camera->fighter[i] = nullptr;
@@ -733,6 +718,16 @@ void Battle::load_ui() {
 	} pop_menu_stack();
 }
 
+void Battle::pre_event_process_main() {
+	if (frame_advance) {
+		SoundManager* sound_manager = SoundManager::get_instance();
+		sound_manager->pause_all_sounds();
+		sound_manager->pause_all_reserved_sounds();
+		camera->update_view();
+		frame_advance = false;
+	}
+}
+
 void Battle::process_main() {
 	switch (internal_state) {
 		case(BATTLE_STATE_PRE_INTRO): {
@@ -755,28 +750,18 @@ void Battle::process_main() {
 			process_outro();
 		} break;
 	}
+	process_collisions();
 }
 
 void Battle::process_pre_intro() {
 	internal_state = BATTLE_STATE_INTRO;
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->change_anim("intro");
+		fighter[i]->rot.z = glm::radians(90.0f);
 	}
 }
 
 void Battle::process_intro() {
-	SoundManager* sound_manager = SoundManager::get_instance();
-	for (int i = 0; i < 2; i++) {
-		player[i]->controller.poll_buttons();
-		fighter[i]->rot.z = glm::radians(90.0);
-		if (player[i]->controller.check_button_trigger(BUTTON_START)) {
-			for (int i = 0; i < 2; i++) {
-				fighter[i]->change_status(FIGHTER_STATUS_WAIT, false);
-			}
-			internal_state = BATTLE_STATE_ROUND_START;
-			return;
-		}
-	}
 	if (!fighter[0]->anim_end) {
 		fighter[0]->process_animate();
 		fighter[0]->active_move_script.execute(fighter[0], fighter[0]->frame);
@@ -789,7 +774,7 @@ void Battle::process_intro() {
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
-			fighter[i]->change_status(FIGHTER_STATUS_WAIT, false);
+			fighter[i]->change_status(FIGHTER_STATUS_NONE, false);
 		}
 		internal_state = BATTLE_STATE_ROUND_START;
 	}
@@ -817,7 +802,7 @@ void Battle::process_round_start() {
 		round_start.get_active_child("Round Start AG").get_texture("Round").set_alpha(255);
 	}
 	for (int i = 0; i < 2; i++) {
-		player[i]->controller.poll_buttons();
+		player[i]->controller.poll_player_buttons();
 	}
 	process_fighters();
 	process_ui();
@@ -843,23 +828,9 @@ void Battle::process_battle() {
 	GameManager* game_manager = GameManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	process_debug_boxes();
-
-	debug_controller.poll_buttons();
-	if (debug_controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
-		if (frame_pause) {
-			sound_manager->resume_all_sounds();
-			sound_manager->resume_all_reserved_sounds();
-		}
-		bool& timer_pause = get_child("Timer").bool_var("pause");
-		timer_pause = !timer_pause;
-		frame_pause = !frame_pause;
-	}
-	if (frame_pause) {
-		process_frame_pause();
-	}
-	else {
+	if (frame_advance || !frame_pause) {
 		for (int i = 0; i < 2; i++) {
-			player[i]->controller.poll_buttons();
+			player[i]->controller.poll_player_buttons();
 		}
 		process_fighters();
 		process_ui();
@@ -873,15 +844,6 @@ void Battle::process_battle() {
 	}
 	if (get_child("Timer").bool_var("time_up")) {
 		internal_state = BATTLE_STATE_KO;
-	}
-
-	if (game_context != GAME_CONTEXT_ONLINE &&
-		(player[0]->controller.check_button_trigger(BUTTON_START)
-		|| player[1]->controller.check_button_trigger(BUTTON_START))) {
-		game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
-	}
-	if (game_manager->is_crash()) {
-		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
 }
 
@@ -995,14 +957,6 @@ void Battle::process_ko() {
 		get_activity_group("KO Text").set_active_child("None");
 	}
 
-	if (fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END || fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) {
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.poll_buttons();
-			if (player[i]->controller.check_button_trigger(BUTTON_START)) {
-				actionable_timer = 0;
-			}
-		}
-	}
 	process_fighters();
 	process_ui();
 	stage.process();
@@ -1405,7 +1359,7 @@ void Battle::process_training() {
 			training_info[i].mini_visualizers.front().init(fighter[i], &info_font, true);
 			training_info[i].mini_visualizers.front().input_code = new_input_code;
 		}
-		else if ((!frame_pause) || (frame_pause && debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE))) {
+		else if (frame_advance || !frame_pause) {
 			training_info[i].mini_visualizers.front().frame_timer = clamp(
 				training_info[i].mini_visualizers.front().frame_timer, 
 				training_info[i].mini_visualizers.front().frame_timer + 1, 99
@@ -1423,27 +1377,6 @@ void gamestate_battle_ui_thread(void* battle_arg) {
 	battle->main_object.event_process();
 	for (size_t i = 0, max = battle->menu_objects.size(); i < max; i++) {
 		battle->menu_objects[i].event_process();
-	}
-}
-
-void Battle::process_frame_pause() {
-	SoundManager* sound_manager = SoundManager::get_instance();
-	if (debug_controller.check_button_trigger(BUTTON_MENU_ADVANCE)) {
-		sound_manager->resume_all_sounds();
-		sound_manager->resume_all_reserved_sounds();
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.poll_buttons();
-		}
-		process_fighters();
-		process_ui();
-		post_process_fighters();
-		thread_manager->wait_thread(THREAD_KIND_UI);
-		camera->camera_main();
-	}
-	else {
-		sound_manager->pause_all_sounds();
-		sound_manager->pause_all_reserved_sounds();
-		camera->update_view();
 	}
 }
 
@@ -1669,5 +1602,77 @@ void Battle::render_ui() {
 			training_info[i].render();
 		}
 	}
+}
 
+void Battle::event_start_press() {
+	switch (internal_state) {
+		case(BATTLE_STATE_PRE_INTRO): {
+
+		} break;
+		case (BATTLE_STATE_INTRO): {
+			for (int i = 0; i < 2; i++) {
+				fighter[i]->change_status(FIGHTER_STATUS_NONE, false);
+			}
+			internal_state = BATTLE_STATE_ROUND_START;
+		} break;
+		case (BATTLE_STATE_ROUND_START): {
+
+		} break;
+		default:
+		case (BATTLE_STATE_BATTLE): {
+			if (game_context != GAME_CONTEXT_ONLINE) {
+				GameManager::get_instance()->game_main[GAME_STATE_PAUSE_BATTLE]();
+			}
+		} break;
+		case (BATTLE_STATE_KO): {
+			if (fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END 
+			|| fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) {
+				actionable_timer = 0;
+			}
+		} break;
+		case (BATTLE_STATE_OUTRO): {
+
+		} break;
+	}
+
+}
+
+void Battle::event_frame_pause_press() {
+	if (game_context == GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE) {
+		SoundManager* sound_manager = SoundManager::get_instance();
+		if (frame_pause) {
+			sound_manager->resume_all_sounds();
+			sound_manager->resume_all_reserved_sounds();
+		}
+		else {
+			sound_manager->pause_all_sounds();
+			sound_manager->pause_all_reserved_sounds();
+		}
+		bool& timer_pause = get_child("Timer").bool_var("pause");
+		timer_pause = !timer_pause;
+		frame_pause = !frame_pause;
+	}
+}
+
+void Battle::event_frame_advance_press() {
+	if (frame_pause) {
+		SoundManager* sound_manager = SoundManager::get_instance();
+		sound_manager->resume_all_sounds();
+		sound_manager->resume_all_reserved_sounds();
+		frame_advance = true;
+	}
+}
+
+void Battle::event_record_input_press() {
+
+}
+
+void Battle::event_replay_input_press() {
+
+}
+
+void Battle::event_switch_input_press() {
+	if (game_context == GAME_CONTEXT_TRAINING) {
+		player[0]->controller.swap_player_controller(&player[1]->controller);
+	}
 }

@@ -4,8 +4,7 @@
 
 bool Projectile::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox, Fighter* attacker) {
 	if (attacker->multihit_connected[hitbox->multihit]
-	|| !(hitbox->collision_kind & COLLISION_KIND_PROJECTILE)
-	|| hitbox->hit_level < projectile_int[PROJECTILE_INT_ATTACK_LEVEL]) {
+	|| !(hitbox->collision_kind & COLLISION_KIND_PROJECTILE)) {
 		return false;
 	}
 

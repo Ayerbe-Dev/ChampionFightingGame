@@ -1,3 +1,0 @@
-#pragma once
-
-#define STAGE_SLOT_UNITS_FROM_HORIZONTAL_EDGE 200

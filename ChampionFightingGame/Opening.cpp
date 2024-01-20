@@ -33,7 +33,7 @@ void opening_main() {
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons();
+			player[i]->controller.poll_menu_buttons();
 			if (player[i]->controller.is_any_inputs()) {
 				loop = false;
 			}

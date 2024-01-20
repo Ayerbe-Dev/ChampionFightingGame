@@ -14,5 +14,4 @@ public:
 	void event_back_press();
 
 	GameTexture panel;
-	Player* player[2];
 };

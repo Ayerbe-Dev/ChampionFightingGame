@@ -80,7 +80,6 @@ void Fighter::fighter_main() {
 	process_status();
 	process_post_animate();
 	process_projectiles();
-	
 	if (object_manager->is_allow_realtime_process(this)) {
 		decrease_common_variables();
 	}

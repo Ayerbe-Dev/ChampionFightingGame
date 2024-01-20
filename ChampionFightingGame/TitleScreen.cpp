@@ -22,21 +22,13 @@ void title_screen_main() {
 
 		render_manager->handle_window_events();
 
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-			player[i]->controller.poll_buttons();
-		}
-
-		game_manager->process_game_state_events();
-
-		title_screen->render();
+		title_screen->process_game_state();
+		title_screen->render_game_state();
 
 		render_manager->update_screen();
 	}
 
-
 	delete title_screen;
-	return game_manager->update_state(GAME_STATE_MENU);
 }
 
 TitleScreen::TitleScreen() {
@@ -57,7 +49,7 @@ TitleScreen::~TitleScreen() {
 	text.destroy();
 }
 
-void TitleScreen::render() {
+void TitleScreen::render_main() {
 	title_l4.render();
 	title_l3.render();
 	title_l2.render();
@@ -66,5 +58,5 @@ void TitleScreen::render() {
 }
 
 void TitleScreen::event_any_press() {
-	looping = false;
+	update_state(GAME_STATE_MENU);
 }

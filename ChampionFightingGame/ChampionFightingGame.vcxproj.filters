@@ -298,9 +298,6 @@
     <ClCompile Include="EffectManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
-    <ClCompile Include="Param.cpp">
-      <Filter>2. Code Files\Engine\GameData</Filter>
-    </ClCompile>
     <ClCompile Include="ParamAccessor.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
@@ -324,9 +321,6 @@
     </ClCompile>
     <ClCompile Include="GameState.cpp">
       <Filter>2. Code Files\GameState</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
     <ClCompile Include="SaveManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
@@ -391,9 +385,6 @@
     <ClCompile Include="HitboxSim.cpp">
       <Filter>2. Code Files\GameState\Battle</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>2. Code Files\Engine\GameData</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectAnimationFunctions.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
     </ClCompile>
@@ -414,9 +405,6 @@
     </ClCompile>
     <ClCompile Include="GameObjectLoadingFunctions.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptArg.cpp">
-      <Filter>2. Code Files\Engine\GameData</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectRenderFunctions.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
@@ -477,9 +465,6 @@
     </ClCompile>
     <ClCompile Include="Mouse.cpp">
       <Filter>2. Code Files\Engine\Polling</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveScript.cpp">
-      <Filter>2. Code Files\GameObject\ObjectComponent</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectStatusFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
@@ -542,7 +527,7 @@
       <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
     </ClCompile>
     <ClCompile Include="CollisionBox.cpp">
-      <Filter>2. Code Files\GameObject\ObjectComponent\CollisionBox</Filter>
+      <Filter>2. Code Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox</Filter>
     </ClCompile>
     <ClCompile Include="TargetVarManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
@@ -615,6 +600,21 @@
     </ClCompile>
     <ClCompile Include="VectorBoolPointer.cpp">
       <Filter>2. Code Files\Container</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>2. Code Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>2. Code Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Param.cpp">
+      <Filter>2. Code Files\GameObject\ObjectComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveScript.cpp">
+      <Filter>2. Code Files\GameObject\ObjectComponent\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptArg.cpp">
+      <Filter>2. Code Files\GameObject\ObjectComponent\Script</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1056,9 +1056,6 @@
     <ClInclude Include="LoopingVector.h">
       <Filter>1. Header Files\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="Param.h">
-      <Filter>1. Header Files\Engine\GameData</Filter>
-    </ClInclude>
     <ClInclude Include="ParamAccessor.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
@@ -1070,9 +1067,6 @@
     </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>1. Header Files\GameState</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="SaveManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1092,9 +1086,6 @@
     <ClInclude Include="BattleObject.h">
       <Filter>1. Header Files\GameObject\BattleObject</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>1. Header Files\Engine\GameData</Filter>
-    </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
@@ -1103,12 +1094,6 @@
     </ClInclude>
     <ClInclude Include="MenuConstants.h">
       <Filter>1. Header Files\GameState\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="StageSelect.h">
-      <Filter>1. Header Files\GameState\StageSelect</Filter>
-    </ClInclude>
-    <ClInclude Include="StageSelectConstants.h">
-      <Filter>1. Header Files\GameState\StageSelect</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1128,20 +1113,8 @@
     <ClInclude Include="ReadBytes.h">
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
-    <ClInclude Include="CharaSelect.h">
-      <Filter>1. Header Files\GameState\CharaSelect</Filter>
-    </ClInclude>
-    <ClInclude Include="CharaSelectConstants.h">
-      <Filter>1. Header Files\GameState\CharaSelect</Filter>
-    </ClInclude>
-    <ClInclude Include="Battle.h">
-      <Filter>1. Header Files\GameState\Battle</Filter>
-    </ClInclude>
     <ClInclude Include="PauseBattle.h">
       <Filter>1. Header Files\GameState\PauseBattle</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleConstants.h">
-      <Filter>1. Header Files\GameState\Battle</Filter>
     </ClInclude>
     <ClInclude Include="cotr_imgui_debugger.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
@@ -1155,12 +1128,6 @@
     <ClInclude Include="Sound.h">
       <Filter>1. Header Files\Engine\Sound</Filter>
     </ClInclude>
-    <ClInclude Include="MoveScript.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="StageScript.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
-    </ClInclude>
     <ClInclude Include="Mouse.h">
       <Filter>1. Header Files\Engine\Polling</Filter>
     </ClInclude>
@@ -1169,9 +1136,6 @@
     </ClInclude>
     <ClInclude Include="GameController.h">
       <Filter>1. Header Files\Engine\Polling</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptArg.h">
-      <Filter>1. Header Files\Engine\GameData</Filter>
     </ClInclude>
     <ClInclude Include="TextUI.h">
       <Filter>1. Header Files\Engine\GUI</Filter>
@@ -1233,19 +1197,7 @@
     <ClInclude Include="ScreenText.h">
       <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionBox.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent\CollisionBox</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionBoxConstants.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent\CollisionBox</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonConstants.h">
-      <Filter>1. Header Files\Engine\Polling</Filter>
-    </ClInclude>
     <ClInclude Include="FighterAttribute.h">
-      <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
-    </ClInclude>
-    <ClInclude Include="FighterConstants.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
     </ClInclude>
     <ClInclude Include="FighterFlag.h">
@@ -1322,9 +1274,6 @@
     </ClInclude>
     <ClInclude Include="Projectile.h">
       <Filter>1. Header Files\GameObject\BattleObject\Projectile</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleObjectConstants.h">
-      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileConstants.h">
       <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileComponent</Filter>
@@ -1424,6 +1373,39 @@
     </ClInclude>
     <ClInclude Include="VectorBoolPointer.h">
       <Filter>1. Header Files\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>1. Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>1. Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Param.h">
+      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptArg.h">
+      <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveScript.h">
+      <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="StageScript.h">
+      <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBox.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBoxFields.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle.h">
+      <Filter>1. Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaSelect.h">
+      <Filter>1. Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="StageSelect.h">
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2347,9 +2329,6 @@
     <Filter Include="2. Code Files\Engine">
       <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Engine\GameData">
-      <UniqueIdentifier>{baee19ae-883e-4273-8959-a74169bcc68c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Deps">
       <UniqueIdentifier>{ab0b6b8c-ccb9-4c4e-a064-f1e50d9609a3}</UniqueIdentifier>
     </Filter>
@@ -2684,9 +2663,6 @@
     <Filter Include="1. Header Files\Engine">
       <UniqueIdentifier>{9ec22d83-104b-464a-aa9f-afb8793a2aba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Engine\GameData">
-      <UniqueIdentifier>{645df0c0-01c2-4855-a588-ff5f38629ac9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Include">
       <UniqueIdentifier>{d2d27a10-df59-4cf7-bdb9-72a779b7dd31}</UniqueIdentifier>
     </Filter>
@@ -2840,9 +2816,6 @@
     <Filter Include="1. Header Files\GameObject\ObjectComponent">
       <UniqueIdentifier>{768c22dc-0776-4c77-90ee-cd6ee199d0ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\GameObject\ObjectComponent\CollisionBox">
-      <UniqueIdentifier>{e3c98c90-8f36-41b9-8dc4-8b8597e858f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\GameObject\BattleObject\Fighter">
       <UniqueIdentifier>{7f56f669-dc48-48b1-b785-785152c86340}</UniqueIdentifier>
     </Filter>
@@ -2932,9 +2905,6 @@
     </Filter>
     <Filter Include="2. Code Files\GameObject\ObjectComponent">
       <UniqueIdentifier>{04072e70-88d5-4c79-801e-dede0ed2e258}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\GameObject\ObjectComponent\CollisionBox">
-      <UniqueIdentifier>{325d1283-98d4-4ef8-9be0-a255a9df67d3}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\GameObject\BattleObject\Fighter">
       <UniqueIdentifier>{c368130f-c59e-48fe-8264-b00e9460586f}</UniqueIdentifier>
@@ -3026,15 +2996,6 @@
     <Filter Include="1. Header Files\GameState\Menu">
       <UniqueIdentifier>{fbd69fb1-4a33-4853-9a3e-e7d893825726}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\GameState\StageSelect">
-      <UniqueIdentifier>{e441b69e-97f9-4a7b-972c-10c0805a5266}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameState\CharaSelect">
-      <UniqueIdentifier>{44a453dd-e72f-4d25-ade7-f83ddfb6d5bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameState\Battle">
-      <UniqueIdentifier>{1cfd0bfe-24b0-4ce2-a4dc-05ba68c2e7f5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\GameState\PauseBattle">
       <UniqueIdentifier>{59d945f7-e9b4-4480-a490-1d41d967c21a}</UniqueIdentifier>
     </Filter>
@@ -3046,6 +3007,27 @@
     </Filter>
     <Filter Include="2. Code Files\Container">
       <UniqueIdentifier>{257c034c-04c5-467f-b9cb-c7a2822d538f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Player">
+      <UniqueIdentifier>{c2422741-a531-4919-a1e1-09398bbdf689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Player">
+      <UniqueIdentifier>{4b751973-1e32-4ade-8a55-cb725293b7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\ObjectComponent\Script">
+      <UniqueIdentifier>{1d3126ee-21d4-4c32-a766-fbefea46d8f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\GameObject\ObjectComponent\Script">
+      <UniqueIdentifier>{9a4ae8cd-ddf5-4992-b9f5-d30c83125d0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\GameObject\BattleObject\BattleObjectComponent">
+      <UniqueIdentifier>{ae43b494-c9cc-47a9-b2ca-618fac5f1cc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox">
+      <UniqueIdentifier>{325d1283-98d4-4ef8-9be0-a255a9df67d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox">
+      <UniqueIdentifier>{b80697aa-d938-4efe-9209-6d954bfccb8f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

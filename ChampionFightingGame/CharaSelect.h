@@ -2,12 +2,25 @@
 #include "GameManager.h"
 #include "GameObject.h"
 #include "Camera.h"
-#include "CharaSelectConstants.h"
 #include "Light.h"
 #include "Param.h"
 
 #include "CharaKind.h"
 #include "Player.h"
+
+#define CSS_SLOTS 32
+#define NUM_COLS 10
+#define NUM_ROWS 4
+#define CSS_WIDTH WINDOW_WIDTH * 0.8
+#define CSS_HEIGHT WINDOW_HEIGHT / 2.5
+
+enum CharaSelectionState {
+    CHARA_SELECTION_STATE_DESELECTED,
+    CHARA_SELECTION_STATE_SELECTED_CHARA,
+    CHARA_SELECTION_STATE_SELECTED_COLOR,
+
+    CHARA_SELECTION_STATE_MAX
+};
 
 class Font;
 
@@ -59,6 +72,9 @@ public:
     ~CSS();
 
     bool load_css();
+    
+    void process_main();
+    void render_main();
 
     void event_select_press();
     void event_back_press();
@@ -67,9 +83,6 @@ public:
     void event_down_press();
     void event_left_press();
     void event_right_press();
-    
-    void process_main();
-    void render_main();
 
     int get_chara_kind(int player_id);
 
@@ -77,7 +90,6 @@ public:
     int num_rows;
     int cols_offset;
 
-    Player *player[2];
     CssPlayer css_player[2];
 
     GameObject stage_demo;

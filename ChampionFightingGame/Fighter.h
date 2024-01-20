@@ -4,10 +4,17 @@
 #include "Button.h"
 #include "Animation.h"
 #include "Player.h"
-#include "FighterConstants.h"
 #include "ObjectManager.h"
 #include "ParamAccessor.h"
 #include "FighterMovelist.h"
+
+#include "CharaKind.h"
+#include "FighterAttribute.h"
+#include "FighterInt.h"
+#include "FighterFlag.h"
+#include "FighterFloat.h"
+#include "FighterString.h"
+#include "FighterStatus.h"
 
 #define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
 #define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))

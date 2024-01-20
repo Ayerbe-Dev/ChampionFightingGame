@@ -10,7 +10,7 @@ public:
     TitleScreen();
     ~TitleScreen();
 
-    void render();
+    void render_main();
     void event_any_press();
 private:
     GameTexture title_l1;

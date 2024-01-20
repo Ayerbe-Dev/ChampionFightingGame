@@ -162,7 +162,6 @@ void cotr_imgui_debug_battle(Battle* battle) {
 					std::string index_label = "Hitbox ID " + index;
 					std::string internal_label = "##hitbox" + index;
 					if (ImGui::TreeNode(index_label.c_str())) {
-						const char* current_hit_level = hit_levels[sim_hitbox.hit_level];
 						const char* current_hit_height = hit_heights[sim_hitbox.hit_height];
 						const char* current_hit_status = hit_statuses[sim_hitbox.hit_status];
 						const char* current_counterhit_status = hit_statuses[sim_hitbox.critical_status];
@@ -320,19 +319,6 @@ void cotr_imgui_debug_battle(Battle* battle) {
 								if (ImGui::Selectable(damage_kinds[i2], selected)) {
 									current_damage_kind = damage_kinds[i2];
 									sim_hitbox.damage_kind = (DamageKind)i2;
-								}
-								if (selected) {
-									ImGui::SetItemDefaultFocus();
-								}
-							}
-							ImGui::EndCombo();
-						}
-						if (ImGui::BeginCombo(("Hit Level" + internal_label).c_str(), current_hit_level)) {
-							for (size_t i2 = 0; i2 < 3; i2++) {
-								bool selected = current_hit_level == hit_levels[i2];
-								if (ImGui::Selectable(hit_levels[i2], selected)) {
-									current_hit_level = hit_levels[i2];
-									sim_hitbox.hit_level = (HitLevel)i2;
 								}
 								if (selected) {
 									ImGui::SetItemDefaultFocus();

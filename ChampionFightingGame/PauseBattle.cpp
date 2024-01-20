@@ -9,19 +9,11 @@ void pause_battle_main() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	GameState* background_menu = game_manager->get_game_state();
 
-	Player* player[2];
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
-
 	PauseBattle* pause = new PauseBattle;
 
 	while (pause->looping) {
 		game_manager->frame_delay_check_fps();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (int i = 0; i < 2; i++) {
-			player[i]->controller.check_controllers();
-		}
-
 		render_manager->handle_window_events();
 
 		pause->process_game_state();
@@ -67,10 +59,6 @@ PauseBattle::~PauseBattle() {
 
 void PauseBattle::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	for (int i = 0; i < 2; i++) {
-		game_manager->player[i]->controller.poll_buttons();
-	}
-	game_manager->process_game_state_events();
 	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
 		menu_objects[i].event_process();
 	}

@@ -97,7 +97,6 @@ Hitbox::Hitbox() {
 	hitstun = 0;
 	blockstun = 0;
 	damage_kind = DAMAGE_KIND_NORMAL;
-	hit_level = HIT_LEVEL_LIGHT;
 	hit_effect = "";
 	hit_sound = "";
 }
@@ -111,12 +110,11 @@ void Hitbox::init(BattleObject* object) {
 void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	CollisionKind collision_kind, float damage, float chip_damage, int damage_scale, 
 	float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun, HitStatus hit_status, 
-	unsigned int custom_hit_status, MoveOpponent move_opponent, HitFlag hit_flags, 
+	unsigned int custom_hit_status, HitResult hit_result, HitFlag hit_flags, 
 	CriticalCondition critical_condition, HitStatus critical_status, 
-	unsigned int custom_critical_status, MoveOpponent critical_move_opponent, 
+	unsigned int custom_critical_status, HitResult critical_hit_result, 
 	HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max, 
-	HitHeight hit_height, DamageKind damage_kind, HitLevel hit_level, std::string hit_effect, 
-	std::string hit_sound) {
+	HitHeight hit_height, DamageKind damage_kind, std::string hit_effect, std::string hit_sound) {
 	this->id = id;
 	this->multihit = multihit;
 	anchor.x *= object->facing_dir;
@@ -139,19 +137,18 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	this->blockstun = blockstun;
 	this->hit_status = hit_status;
 	this->custom_hit_status = custom_hit_status;
-	this->move_opponent = move_opponent;
+	this->hit_result = hit_result;
 	this->hit_flags = hit_flags;
 	this->critical_condition = critical_condition;
 	this->critical_status = critical_status;
 	this->custom_critical_status = custom_critical_status;
-	this->critical_move_opponent = critical_move_opponent;
+	this->critical_hit_result = critical_hit_result;
 	this->critical_hit_flags = critical_hit_flags;
 	this->juggle_start = juggle_start;
 	this->juggle_increase = juggle_increase;
 	this->juggle_max = juggle_max;
 	this->hit_height = hit_height;
 	this->damage_kind = damage_kind;
-	this->hit_level = hit_level;
 	this->hit_effect = hit_effect;
 	this->hit_sound = hit_sound;
 	this->active = true;
@@ -170,7 +167,6 @@ DefiniteHitbox::DefiniteHitbox() {
 	hitlag = 0;
 	hitstun = 0;
 	damage_kind = DAMAGE_KIND_NORMAL;
-	hit_level = HIT_LEVEL_LIGHT;
 	hit_effect = "";
 	hit_sound = "";
 	active = false;
@@ -192,8 +188,8 @@ void DefiniteHitbox::set_properties(BattleObject* object, Fighter* defender, Hit
 
 void DefiniteHitbox::set_properties(BattleObject* object, Fighter* target, unsigned int hit_status, 
 	HitFlag hit_flags, int juggle_start, int juggle_increase, float damage, int damage_scale, 
-	float meter_gain, int hitlag, int hitstun, MoveOpponent move_opponent, DamageKind damage_kind,
-	HitLevel hit_level, std::string hit_effect, std::string hit_sound) {
+	float meter_gain, int hitlag, int hitstun, HitResult hit_result, DamageKind damage_kind,
+	std::string hit_effect, std::string hit_sound) {
 	switch (object->object_type) {
 		case (BATTLE_OBJECT_TYPE_FIGHTER): {
 			this->attacker = (Fighter*)object;
@@ -212,9 +208,8 @@ void DefiniteHitbox::set_properties(BattleObject* object, Fighter* target, unsig
 	this->meter_gain = meter_gain;
 	this->hitlag = hitlag;
 	this->hitstun = hitstun;
-	this->move_opponent = move_opponent;
+	this->hit_result = hit_result;
 	this->damage_kind = damage_kind;
-	this->hit_level = hit_level;
 	this->hit_effect = hit_effect;
 	this->hit_sound = hit_sound;
 }
@@ -235,9 +230,8 @@ void DefiniteHitbox::clear() {
 	meter_gain = 0.0;
 	hitlag = 0;
 	hitstun = 0;
-	move_opponent = MoveOpponent();
+	hit_result = HitResult();
 	damage_kind = DAMAGE_KIND_NORMAL;
-	hit_level = HIT_LEVEL_LIGHT;
 	hit_effect = "";
 	hit_sound = "";
 	active = false;

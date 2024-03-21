@@ -26,8 +26,7 @@ Projectile::~Projectile() {
 	exit_status_script.clear();
 	anim_table.unload_animations();
 	move_script_table.wipe_scripts();
-	params.unload_params();
-	stats.unload_params();
+	param_table.unload_params();
 }
 
 void Projectile::projectile_main() {

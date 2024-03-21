@@ -4,17 +4,17 @@
 #include "Projectile.h"
 #include <fstream>
 #include "ObjectManager.h"
-#include "AIManager.h"
 #include "ParamAccessor.h"
 #include "ThreadManager.h"
 #include "utils.h"
 
 Fighter::Fighter() {
+	object_type = BATTLE_OBJECT_TYPE_FIGHTER;
 	has_model = true;
 	chara_kind = CHARA_KIND_ROWAN;
 	chara_name = "Rowan";
 	prev_stick_dir = 0;
-	object_type = BATTLE_OBJECT_TYPE_FIGHTER;
+	situation_kind = FIGHTER_SITUATION_GROUND;
 	for (int i = 1; i < 10; i++) {
 		if (i % 3 == 1) {
 			throw_map_ground[i] = "throw_b";
@@ -48,8 +48,7 @@ Fighter::~Fighter() {
 	model.unload_model_instance();
 	anim_table.unload_animations();
 	move_script_table.wipe_scripts();
-	params.unload_params();
-	stats.unload_params();
+	param_table.unload_params();
 }
 
 void Fighter::fighter_main() {
@@ -71,7 +70,11 @@ void Fighter::fighter_main() {
 		   '-::::::::::::::-'
 			   '''::::'''
 	 */
-	fighter_flag[FIGHTER_FLAG_STATUS_CHANGED] = false;
+	if (fighter_flag[FIGHTER_FLAG_STATUS_CHANGED]) {
+		prev_status_kind = status_kind;
+		fighter_int[FIGHTER_INT_PREV_STATUS_GROUP] = fighter_int[FIGHTER_INT_STATUS_GROUP];
+		fighter_flag[FIGHTER_FLAG_STATUS_CHANGED] = false;
+	}
 	process_animate();
 	process_position();
 	process_pre_status();
@@ -84,11 +87,10 @@ void Fighter::fighter_main() {
 		decrease_common_variables();
 	}
 	process_post_status();
-	process_ai();
 }
 
 void Fighter::fighter_post() {
-	if (is_status_delay()) {
+	if (fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_STATUS_AFTER_OPPONENT) {
 		(this->*status_script[status_kind])();
 	}
 	process_post_position();
@@ -99,7 +101,6 @@ void Fighter::fighter_post() {
 	else {
 		rot.z += glm::radians(90.0);
 	}
-	rot += extra_rot;
 	process_post_projectiles();
 }
 
@@ -167,7 +168,6 @@ void Fighter::process_post_animate() {
 
 void Fighter::process_position() {
 	rot = glm::vec3(0.0);
-	extra_rot = glm::vec3(0.0);
 	if (isnan(pos.x)) {
 		pos.x = 0;
 	}
@@ -187,8 +187,10 @@ void Fighter::process_post_position() {
 	Fighter* that = object_manager->fighter[!id];
 	if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
 		if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 
-			&& fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0
+			&& fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0f
 			&& situation_kind != FIGHTER_SITUATION_AIR) {
+			//TODO: Modify add_pos so that the returned failure code can distinguish between failures 
+			//due to positional differences and failures due to OoB movement
 			if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) 
 				&& !fighter_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 				that->fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] = fighter_int[FIGHTER_INT_PUSHBACK_FRAMES];
@@ -198,7 +200,13 @@ void Fighter::process_post_position() {
 			}
 		}
 	}
+	else if (fighter_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] != 0 && fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0f) {
+		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] -= fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] / fighter_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES];
+		fighter_int[FIGHTER_INT_POST_PUSHBACK_FRAMES]--;
+	}
 	else {
+		fighter_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] = 0;
+		fighter_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES] = 0;
 		fighter_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0f;
 	}
 	update_pushbox_pos();
@@ -206,7 +214,7 @@ void Fighter::process_post_position() {
 
 void Fighter::process_pre_status() {
 	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
-		fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI] = fighter_int[FIGHTER_INT_DAMAGE_SCALE];
+		fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI] = fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE];
 	}
 }
 
@@ -215,7 +223,7 @@ void Fighter::process_status() {
 	if (!execute_after_status) {
 		active_move_script.execute(this, frame);
 	}
-	if (!is_status_delay()) {
+	if (!(fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_STATUS_AFTER_OPPONENT)) {
 		(this->*status_script[status_kind])();
 	}
 	if (execute_after_status) {
@@ -225,21 +233,22 @@ void Fighter::process_status() {
 
 void Fighter::process_post_status() {
 	Fighter* that = object_manager->fighter[!id];
-	fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN] = false;
-	if (get_status_group() != STATUS_GROUP_HITSTUN && status_kind != FIGHTER_STATUS_GRABBED) {
-		if (that->fighter_int[FIGHTER_INT_COMBO_COUNT] != 0) {
-			fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN] = true;
-		}
+
+	fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN] = ((fighter_int[FIGHTER_INT_PREV_STATUS_GROUP] 
+		& STATUS_GROUP_HITSTUN) && !(fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_HITSTUN));
+
+	if (fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]) {
 		that->fighter_int[FIGHTER_INT_COMBO_COUNT] = 0;
-		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] = 0.0;
+		that->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING] = 0.0;
 		if (situation_kind == FIGHTER_SITUATION_GROUND) {
 			fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 		}
-		fighter_int[FIGHTER_INT_DAMAGE_SCALE] = 0;
-		fighter_int[FIGHTER_INT_PREV_DAMAGE_SCALE] = 0;
-		if (fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] != 0) {
-			fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]--;
-		}
+		fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] = 1.0f;
+		fighter_float[FIGHTER_FLOAT_PREV_DAMAGE_SCALE] = 1.0f;
+		fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
+	}
+	if (fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] < 0.1f) {
+		fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] = 0.1f;
 	}
 
 	for (int i = 0; i < 10; i++) {
@@ -256,8 +265,8 @@ void Fighter::process_post_status() {
 }
 
 void Fighter::process_input() {
-	int motion_special_timer = get_param_int(PARAM_FIGHTER, "motion_special_timer");
-	int flick_special_timer = get_param_int(PARAM_FIGHTER, "flick_special_timer");
+	int motion_special_timer = get_global_param_int(PARAM_FIGHTER, "motion_special_timer");
+	int flick_special_timer = get_global_param_int(PARAM_FIGHTER, "flick_special_timer");
 
 	//Motion Inputs
 
@@ -537,13 +546,6 @@ void Fighter::process_input() {
 	check_movelist_inputs();
 }
 
-void Fighter::process_ai() {
-	AIManager* ai_manager = AIManager::get_instance();
-	ai_manager->ai_mutex.lock();
-	ai_manager->ai_info[id].insert(AIInfo(pos.x, pos.y, get_anim(), frame, rate));
-	ai_manager->ai_mutex.unlock();
-}
-
 /*
 	 ..=====.. |==|
 	|| sus  || |= |
@@ -557,7 +559,7 @@ void Fighter::reset() {
 	pos.x = stage->start_pos[id];
 	pos.y = 0.0f;
 	pos.z = 0.0f;
-	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
+	fighter_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
 	change_status(FIGHTER_STATUS_WAIT);
 }
@@ -660,8 +662,8 @@ void Fighter::decrease_common_variables() {
 	else {
 		if (status_kind == FIGHTER_STATUS_HITSTUN || status_kind == FIGHTER_STATUS_HITSTUN_AIR
 			|| status_kind == FIGHTER_STATUS_BLOCKSTUN) {
-			if (fighter_int[FIGHTER_INT_HITSTUN_FRAMES] != 0) {
-				fighter_int[FIGHTER_INT_HITSTUN_FRAMES]--;
+			if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] != 0) {
+				fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
 			}
 		}
 		if (fighter_int[FIGHTER_INT_PUSHBACK_FRAMES] != 0) {
@@ -676,6 +678,9 @@ void Fighter::decrease_common_variables() {
 	}
 	else {
 		fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH], fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] + 1.0, fighter_float[FIGHTER_FLOAT_HEALTH]);
+	}
+	if (fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] > 0) {
+		fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]--;
 	}
 	if (fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] != 0) {
 		fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER]--;

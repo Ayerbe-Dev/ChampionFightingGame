@@ -13,7 +13,7 @@ void pause_battle_main() {
 
 	while (pause->looping) {
 		game_manager->frame_delay_check_fps();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->clear_screen();
 		render_manager->handle_window_events();
 
 		pause->process_game_state();

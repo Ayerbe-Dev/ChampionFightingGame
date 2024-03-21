@@ -434,9 +434,6 @@ void SimHitbox::print_start(BattleObject* object) {
 		case (CRITICAL_CONDITION_PUNISH): {
 			output += ", CRITICAL_CONDITION_PUNISH";
 		} break;
-		case (CRITICAL_CONDITION_JUMP_COUNTERHIT): {
-			output += ", CRITICAL_CONDITION_JUMP_COUNTERHIT";
-		} break;
 		case (CRITICAL_CONDITION_NONE): {
 			output += ", CRITICAL_CONDITION_NONE";
 		} break;

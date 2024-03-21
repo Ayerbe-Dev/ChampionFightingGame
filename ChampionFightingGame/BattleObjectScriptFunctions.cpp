@@ -22,6 +22,15 @@ void BattleObject::wipe_scripts() {
 /// </summary>
 /// <param name="anim_name">: The animation to find a move script for.</param>
 void BattleObject::set_current_move_script(std::string anim_name) {
+	//TODO: Add something to make sure the current move script isn't actively being executed while we
+	//want to change it. Probably shouldn't be a mutex either bc that would potentially allow for
+	//a move script to be changed either before or after the current one ran, so probably better to
+	//wait until the move script has been executed for the current frame?
+
+	//Note: This problem currently seems to only affect cases where one player changes the other player's
+	//move script as part of theirs, namely throws. It MIGHT be the case that the "grabbed" anim doesn't
+	//need a script at all, which would potentially fix the issue as well
+
 	active_move_script = move_script_table.get_script(anim_name);
 	active_move_script.activate();
 	active_move_script.execute(this, 0.0);

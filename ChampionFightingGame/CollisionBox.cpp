@@ -84,18 +84,7 @@ Hitbox::Hitbox() {
 	critical_status = HIT_STATUS_NONE;
 	custom_critical_status = 0;
 	critical_hit_flags = HIT_FLAG_NONE;
-	juggle_start = 0;
-	juggle_increase = 0;
-	juggle_max = 0;
 	hit_height = HIT_HEIGHT_MID;
-	damage = 0.0;
-	chip_damage = 0.0;
-	damage_scale = 0;
-	meter_gain = 0.0;
-	hitlag = 0;
-	blocklag = 0;
-	hitstun = 0;
-	blockstun = 0;
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_effect = "";
 	hit_sound = "";
@@ -108,13 +97,12 @@ void Hitbox::init(BattleObject* object) {
 }
 
 void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
-	CollisionKind collision_kind, float damage, float chip_damage, int damage_scale, 
-	float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun, HitStatus hit_status, 
-	unsigned int custom_hit_status, HitResult hit_result, HitFlag hit_flags, 
+	CollisionKind collision_kind, HitResult hit_result, HitStatus hit_status, 
+	unsigned int custom_hit_status, HitMove hit_move, HitFlag hit_flags, 
 	CriticalCondition critical_condition, HitStatus critical_status, 
-	unsigned int custom_critical_status, HitResult critical_hit_result, 
-	HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max, 
-	HitHeight hit_height, DamageKind damage_kind, std::string hit_effect, std::string hit_sound) {
+	unsigned int custom_critical_status, HitMove critical_hit_move, 
+	HitFlag critical_hit_flags, HitHeight hit_height, DamageKind damage_kind, 
+	std::string hit_effect, std::string hit_sound) {
 	this->id = id;
 	this->multihit = multihit;
 	anchor.x *= object->facing_dir;
@@ -127,26 +115,16 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	offset.y += object->pos.y;
 	this->rect.update_corners(anchor, offset);
 	this->collision_kind = collision_kind;
-	this->damage = damage;
-	this->chip_damage = chip_damage * damage;
-	this->damage_scale = damage_scale;
-	this->meter_gain = meter_gain;
-	this->hitlag = hitlag;
-	this->hitstun = hitstun;
-	this->blocklag = blocklag;
-	this->blockstun = blockstun;
+	this->hit_result = hit_result;
 	this->hit_status = hit_status;
 	this->custom_hit_status = custom_hit_status;
-	this->hit_result = hit_result;
+	this->hit_move = hit_move;
 	this->hit_flags = hit_flags;
 	this->critical_condition = critical_condition;
 	this->critical_status = critical_status;
 	this->custom_critical_status = custom_critical_status;
-	this->critical_hit_result = critical_hit_result;
+	this->critical_hit_move = critical_hit_move;
 	this->critical_hit_flags = critical_hit_flags;
-	this->juggle_start = juggle_start;
-	this->juggle_increase = juggle_increase;
-	this->juggle_max = juggle_max;
 	this->hit_height = hit_height;
 	this->damage_kind = damage_kind;
 	this->hit_effect = hit_effect;
@@ -188,8 +166,8 @@ void DefiniteHitbox::set_properties(BattleObject* object, Fighter* defender, Hit
 
 void DefiniteHitbox::set_properties(BattleObject* object, Fighter* target, unsigned int hit_status, 
 	HitFlag hit_flags, int juggle_start, int juggle_increase, float damage, int damage_scale, 
-	float meter_gain, int hitlag, int hitstun, HitResult hit_result, DamageKind damage_kind,
-	std::string hit_effect, std::string hit_sound) {
+	float meter_gain, int hitlag, int hitstun, std::string hit_anim, HitMove hit_move, 
+	DamageKind damage_kind, std::string hit_effect, std::string hit_sound) {
 	switch (object->object_type) {
 		case (BATTLE_OBJECT_TYPE_FIGHTER): {
 			this->attacker = (Fighter*)object;
@@ -208,7 +186,8 @@ void DefiniteHitbox::set_properties(BattleObject* object, Fighter* target, unsig
 	this->meter_gain = meter_gain;
 	this->hitlag = hitlag;
 	this->hitstun = hitstun;
-	this->hit_result = hit_result;
+	this->hit_anim = hit_anim;
+	this->hit_move = hit_move;
 	this->damage_kind = damage_kind;
 	this->hit_effect = hit_effect;
 	this->hit_sound = hit_sound;
@@ -230,7 +209,8 @@ void DefiniteHitbox::clear() {
 	meter_gain = 0.0;
 	hitlag = 0;
 	hitstun = 0;
-	hit_result = HitResult();
+	hit_anim = "";
+	hit_move = HitMove();
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_effect = "";
 	hit_sound = "";

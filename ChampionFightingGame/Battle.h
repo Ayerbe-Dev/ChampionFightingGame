@@ -86,6 +86,10 @@ public:
 	bool collision_kind_soft_intangible;
 	bool collision_kind_armor;
 
+	/*
+		TODO: Put the revamped HitResult fields here
+	*/
+
 	HitStatus hit_status;
 	std::string custom_hit_status;
 
@@ -96,6 +100,11 @@ public:
 	bool hard_knockdown;
 	bool continue_launch;
 	bool disable_hitstun_parry;
+	bool crumple_on_ko;
+
+	/*
+		TODO: Put the revamped HitMove fields here
+	*/
 
 	CriticalCondition critical_condition;
 	HitStatus critical_status;
@@ -108,6 +117,11 @@ public:
 	bool critical_hard_knockdown;
 	bool critical_continue_launch;
 	bool critical_disable_hitstun_parry;
+	bool critical_crumple_on_ko;
+
+	/*
+		TODO: Put the revamped HitMove fields here too (but like the ones used on crit)
+	*/
 
 	int juggle_start;
 	int juggle_increase;

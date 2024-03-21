@@ -23,7 +23,7 @@ enum RenderType {
 class MenuActivityGroup {
 public:
     MenuActivityGroup();
-    MenuActivityGroup(GameState* owner, MenuObject* parent, std::string name, int* active_index, bool only_render_active, int hint);
+    MenuActivityGroup(GameState* owner, MenuObject* parent, std::string name, int* active_index, bool ignore_inactive, int hint);
     MenuActivityGroup(MenuActivityGroup& other);
     MenuActivityGroup(const MenuActivityGroup& other);
     MenuActivityGroup(MenuActivityGroup&& other) noexcept;
@@ -47,7 +47,7 @@ public:
 
     int* active_index;
     int prev_active_index;
-    bool only_render_active;
+    bool ignore_inactive;
     friend class GameState;
     friend class MainMenu;
 private:
@@ -72,7 +72,8 @@ public:
     void set_hints(int texture_hint, int child_hint, int activity_hint);
     void render();
     void add_child(std::string name, int texture_hint, int child_hint, int activity_hint);
-    void add_activity_group(std::string name, int* active_index, bool only_render_active, int hint);
+    void add_activity_group(std::string name, int* active_index, bool ignore_inactive, int hint);
+    void add_texture(std::string name);
     void add_texture(std::string name, std::string path);
     void add_texture(std::string name, Font& font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void add_texture(std::string name, const GameTexture& that);
@@ -88,6 +89,7 @@ public:
     GameTexture& get_texture(std::string name);
     GameTexture& get_texture(int idx);
     std::string get_name();
+    MenuObject& get_parent();
 
     void set_active_sibling(std::string name);
     void set_active_sibling(int idx);
@@ -127,8 +129,6 @@ public:
     SoundPlayer sound_player;
 
     friend class GameState;
-    friend class MainMenu;
-    friend class StageSelect;
     friend class MenuActivityGroup;
 private:
     std::string name;
@@ -204,9 +204,9 @@ public:
     void push_menu_dimensions(int texture_id);
     void push_menu_dimensions(std::string texture);
 
-
     void push_menu_child(std::string name, int texture_hint = 2, int child_hint = 2, int activity_hint = 2);
-    void push_menu_activity_group(std::string name, int* active_index, bool only_render_active, int hint = 2);
+    void push_menu_activity_group(std::string name, int* active_index, bool ignore_inactive, int hint = 2);
+    void push_menu_texture(std::string name);
     void push_menu_texture(std::string name, std::string path);
     void push_menu_texture(std::string name, Font& font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void push_menu_texture(std::string name, const GameTexture& that);

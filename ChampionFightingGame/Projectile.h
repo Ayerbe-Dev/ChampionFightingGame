@@ -46,9 +46,6 @@ public:
 	void set_default_vars();
 	void load_collision_boxes();
 
-	void add_pos(glm::vec3 pos);
-	void set_pos(glm::vec3 pos);
-
 	//Animation
 
 	void change_anim(std::string animation_name, float rate = 1.0, float entry_frame = 0.0);

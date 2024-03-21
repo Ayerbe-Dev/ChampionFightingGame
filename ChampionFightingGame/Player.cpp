@@ -5,6 +5,8 @@
 #include "utils.h"
 #include "PlayerInfo.h"
 #include "SaveManager.h"
+#include "GameManager.h"
+#include "Battle.h"
 
 Player::Player() {
 	id = -1;
@@ -12,20 +14,21 @@ Player::Player() {
 	alt_costume = 0;
 	alt_color = 0;
 	control_type = CONTROL_TYPE_ADVANCE;
-
-	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
+	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
+	int timer = get_global_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.set_stick_hold_timer(timer, timer);
 	player_info = nullptr;
+	input_mode = INPUT_MODE_POLL;
 }
 
 Player::Player(int id) {
 	this->id = id;
-	int timer = get_param_int(PARAM_MENU, "stick_hold_timer");
-	controller.set_id(id);
+	int timer = get_global_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.set_stick_hold_timer(timer, timer);
 	chara_kind = CHARA_KIND_MAX;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
 	player_info = nullptr;
+	input_mode = INPUT_MODE_POLL;
 }
 
 void Player::load_player(int index) {
@@ -45,4 +48,35 @@ void Player::load_player(int index) {
 void Player::set_alt_for_chara() {
 	alt_costume = player_info->preferred_costume[chara_kind];
 	alt_color = player_info->preferred_color[chara_kind];
+}
+
+void Player::poll_controller_menu() {
+	controller.check_controllers();
+	controller.poll_menu();
+}
+
+void Player::poll_controller_fighter() {
+	switch (input_mode) {
+		default:
+		case (INPUT_MODE_POLL): { //Normal
+			controller.poll_fighter();
+			replay_seq.add_inputs(controller.get_input_code());			
+		} break;
+		case (INPUT_MODE_RECORD_SEQ): { //CPU Input Recording
+			controller.poll_fighter();
+			manual_seq.add_inputs(controller.get_input_code());
+			replay_seq.add_inputs(controller.get_input_code());
+		} break;
+		case (INPUT_MODE_PLAY_SEQ): { //CPU Input Replay
+			controller.poll_from_input_code(manual_seq.get_curr_input_code());
+			replay_seq.add_inputs(controller.get_input_code());
+		} break;
+		case (INPUT_MODE_REPLAY):
+		case (INPUT_MODE_ATLAS_REWIND): { //Standard Replay + Atlas
+			controller.poll_from_input_code(replay_seq.get_curr_input_code());
+		} break;
+		case (INPUT_MODE_ROLLBACK): { //Rollback
+			controller.poll_from_input_code(replay_seq.get_prev_input_code(rollback_frames--));
+		} break;
+	}
 }

@@ -24,6 +24,7 @@ ModelData::ModelData() {
 	global_transform = glm::mat4(0.0);
 	directory = "";
 	trans_id = -1;
+	file_loaded = false;
 	skeleton_loaded = false;
 	skipped_verts = 0;
 }
@@ -64,6 +65,7 @@ void ModelData::load_model(std::string path) {
 	if (skeleton_loaded) {
 		process_skeleton(scene->mRootNode);
 	}
+	file_loaded = true;
 }
 
 void ModelData::unload_model() {
@@ -95,6 +97,10 @@ std::string ModelData::get_directory() const {
 
 std::size_t ModelData::get_trans_id() const {
 	return trans_id;
+}
+
+bool ModelData::is_loaded() const {
+	return file_loaded;
 }
 
 bool ModelData::has_skeleton() const {
@@ -407,8 +413,6 @@ void ModelInstance::set_flip(bool flip) {
 		return;
 	}
 
-
-
 	this->flip = flip;
 }
 
@@ -570,7 +574,7 @@ bool ModelInstance::has_skeleton() {
 }
 
 bool ModelInstance::is_loaded() const {
-	return model != nullptr;
+	return model != nullptr && model->is_loaded();
 }
 
 void ModelInstance::render(Shader* shader) {

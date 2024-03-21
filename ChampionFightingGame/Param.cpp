@@ -35,15 +35,15 @@ void ParamTable::load_params(std::string resource_dir) {
         Param param;
         parse_param_entry(param_file, param.name, param.type, param.value);
         if (i != 0 || !param_file.eof()) {
-            add_param(param, i);
+            add_param(param);
         }
     }
     param_file.close();
 }
 
-void ParamTable::add_param(Param param, int index) {
+void ParamTable::add_param(Param param) {
+    param_map[param.name] = params.size();
     params.push_back(param);
-    param_map[param.name] = index;
 }
 
 void ParamTable::unload_params() {

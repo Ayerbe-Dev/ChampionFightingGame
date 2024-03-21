@@ -1,10 +1,10 @@
 #pragma once
 #include "Param.h"
 
-int get_param_int(int param_table, std::string param_name);
-float get_param_float(int param_table, std::string param_name);
-std::string get_param_string(int param_table, std::string param_name);
-bool get_param_bool(int param_table, std::string param_name);
+int get_global_param_int(int param_table, std::string param_name);
+float get_global_param_float(int param_table, std::string param_name);
+std::string get_global_param_string(int param_table, std::string param_name);
+bool get_global_param_bool(int param_table, std::string param_name);
 
 enum {
 	PARAM_FIGHTER,

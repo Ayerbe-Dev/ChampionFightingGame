@@ -56,12 +56,7 @@ void GameState::process_game_state() {
 	prev_internal_state = internal_state;
 	mouse.poll_buttons();
 	for (int i = 0; i < 2; i++) {
-		int controller_update = player[i]->controller.check_controllers();
-		if (controller_update == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
-			//check_controllers returns whether or not controls were changed, and if someone's controller
-			//gets unplugged midgame, we should probably do something about it
-		}
-		player[i]->controller.poll_menu_buttons();
+		player[i]->poll_controller_menu();
 	}
 	pre_event_process_main();
 	GameManager::get_instance()->process_game_state_events();
@@ -159,10 +154,15 @@ void GameState::push_menu_child(std::string name, int texture_hint, int child_hi
 	last_push_type_stack.push(true);
 }
 
-void GameState::push_menu_activity_group(std::string name, int* active_index, bool only_render_active, int hint) {
-	object_stack.top()->add_activity_group(name, active_index, only_render_active, hint);
+void GameState::push_menu_activity_group(std::string name, int* active_index, bool ignore_inactive, int hint) {
+	object_stack.top()->add_activity_group(name, active_index, ignore_inactive, hint);
 	activity_group_stack.push(&(object_stack.top()->activity_groups.back()));
 	last_push_type_stack.push(false);
+}
+
+void GameState::push_menu_texture(std::string name) {
+	object_stack.top()->add_texture(name);
+	last_pushed_texture = &object_stack.top()->textures.back();
 }
 
 void GameState::push_menu_texture(std::string name, std::string path) {
@@ -313,16 +313,16 @@ MenuActivityGroup::MenuActivityGroup() {
 	this->parent = nullptr;
 	this->active_index = nullptr;
 	this->prev_active_index = 0;
-	this->only_render_active = true;
+	this->ignore_inactive = true;
 }
 
-MenuActivityGroup::MenuActivityGroup(GameState* owner, MenuObject* parent, std::string name, int* active_index, bool only_render_active, int hint) {
+MenuActivityGroup::MenuActivityGroup(GameState* owner, MenuObject* parent, std::string name, int* active_index, bool ignore_inactive, int hint) {
 	this->owner = owner;
 	this->parent = parent;
 	this->name = name;
 	this->active_index = active_index;
 	this->prev_active_index = *active_index;
-	this->only_render_active = only_render_active;
+	this->ignore_inactive = ignore_inactive;
 	children.reserve(hint);
 }
 
@@ -332,7 +332,7 @@ MenuActivityGroup::MenuActivityGroup(MenuActivityGroup& other) {
 	this->name = other.name;
 	this->active_index = other.active_index;
 	this->prev_active_index = other.prev_active_index;
-	this->only_render_active = other.only_render_active;
+	this->ignore_inactive = other.ignore_inactive;
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 	}
@@ -345,7 +345,7 @@ MenuActivityGroup::MenuActivityGroup(const MenuActivityGroup& other) {
 	this->name = other.name;
 	this->active_index = other.active_index;
 	this->prev_active_index = other.prev_active_index;
-	this->only_render_active = other.only_render_active;
+	this->ignore_inactive = other.ignore_inactive;
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 	}
@@ -358,7 +358,7 @@ MenuActivityGroup::MenuActivityGroup(MenuActivityGroup&& other) noexcept {
 	this->name = other.name;
 	this->active_index = other.active_index;
 	this->prev_active_index = other.prev_active_index;
-	this->only_render_active = other.only_render_active;
+	this->ignore_inactive = other.ignore_inactive;
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 	}
@@ -371,7 +371,7 @@ MenuActivityGroup::MenuActivityGroup(const MenuActivityGroup&& other) noexcept {
 	this->name = other.name;
 	this->active_index = other.active_index;
 	this->prev_active_index = other.prev_active_index;
-	this->only_render_active = other.only_render_active;
+	this->ignore_inactive = other.ignore_inactive;
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 	}
@@ -384,24 +384,33 @@ MenuActivityGroup::~MenuActivityGroup() {
 
 void MenuActivityGroup::process() {
 	if (*active_index != prev_active_index) {
-		children[prev_active_index].event_on_deselected();
-		children[prev_active_index].bool_var("Active") = false;
-		children[*active_index].event_on_selected();
-		children[*active_index].bool_var("Active") = true;
+		if (prev_active_index >= 0 && prev_active_index < children.size()) {
+			children[prev_active_index].event_on_deselected();
+			children[prev_active_index].bool_var("Active") = false;
+		}
+		if (*active_index >= 0 && *active_index < children.size()) {
+			children[*active_index].event_on_selected();
+			children[*active_index].bool_var("Active") = true;
+		}
 	}
 	prev_active_index = *active_index;
-	for (size_t i = 0, max = children.size(); i < max; i++) {
-		children[i].event_process();
+	if (!ignore_inactive) {
+		for (size_t i = 0, max = children.size(); i < max; i++) {
+			children[i].event_process();
+		}
+	}
+	else if (*active_index >= 0 && *active_index < children.size()) {
+		children[*active_index].event_process();
 	}
 }
 
 void MenuActivityGroup::render() {
-	if (!only_render_active) {
+	if (!ignore_inactive) {
 		for (size_t i = 0, max = children.size(); i < max; i++) {
 			children[i].render();
 		}
 	}
-	else {
+	else if (*active_index >= 0 && *active_index < children.size()){
 		children[*active_index].render();
 	}
 }
@@ -790,14 +799,21 @@ void MenuObject::add_child(std::string name, int texture_hint, int child_hint, i
 	render_vec.push_back(std::pair(&children.back(), RENDER_TYPE_CHILD));
 }
 
-void MenuObject::add_activity_group(std::string name, int* active_index, bool only_render_active, int hint) {
+void MenuObject::add_activity_group(std::string name, int* active_index, bool ignore_inactive, int hint) {
 	activity_group_map[name] = activity_groups.size();
 	if (active_index == nullptr) {
 		active_indices.push_back(0);
 		active_index = &active_indices.back();
 	}
-	activity_groups.emplace_back(owner, this, name, active_index, only_render_active, hint);
+	activity_groups.emplace_back(owner, this, name, active_index, ignore_inactive, hint);
 	render_vec.push_back(std::pair(&activity_groups.back(), RENDER_TYPE_ACTIVITY));
+}
+
+void MenuObject::add_texture(std::string name) {
+	texture_map[name] = textures.size();
+	textures.emplace_back();
+	textures.back().attach_anchor_pos(&orientated_pos);
+	render_vec.push_back(std::pair(&textures.back(), RENDER_TYPE_TEXTURE));
 }
 
 void MenuObject::add_texture(std::string name, std::string path) {
@@ -880,6 +896,10 @@ GameTexture& MenuObject::get_texture(int idx) {
 
 std::string MenuObject::get_name() {
 	return name;
+}
+
+MenuObject& MenuObject::get_parent() {
+	return *parent;
 }
 
 void MenuObject::set_active_sibling(std::string name) {

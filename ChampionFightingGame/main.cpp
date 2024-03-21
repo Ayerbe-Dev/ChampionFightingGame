@@ -6,7 +6,6 @@
 #include <SDL/SDL.h>
 #include <glew/glew.h>
 #include "GameStates.h"
-#include "AIManager.h"
 #include "ObjectManager.h"
 #include "ControllerManager.h"
 #include "EffectManager.h"
@@ -41,7 +40,6 @@ int main() {
 	font_manager->load_face("FiraCode");
 	GameManager* game_manager = GameManager::get_instance();
 
-	AIManager* ai_manager = AIManager::get_instance();
 	ObjectManager* object_manager = ObjectManager::get_instance();
 	ControllerManager* controller_manager = ControllerManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
@@ -76,7 +74,6 @@ int main() {
 
 	//When we're done, kill all the things
 
-	ai_manager->destroy_instance();
 	object_manager->destroy_instance();
 	controller_manager->destroy_instance();
 	effect_manager->destroy_instance();

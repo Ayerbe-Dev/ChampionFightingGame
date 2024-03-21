@@ -15,7 +15,6 @@ void Projectile::load_projectile() {
 
 	stage = object_manager->stage;
 
-	load_stats();
 	load_params();
 	load_model_shader();
 	load_collision_boxes();
@@ -66,8 +65,8 @@ void Projectile::load_sound_list() {
 }
 
 void Projectile::load_model_shader() {
-	scale = glm::vec3(get_local_param_float("model_scale"));
-	has_model = get_local_param_bool("has_model");
+	scale = glm::vec3(get_param_float("model_scale"));
+	has_model = get_param_bool("has_model");
 	if (has_model) {
 		model.load_model_instance(resource_dir + "/model/model.dae");
 		model.load_textures();

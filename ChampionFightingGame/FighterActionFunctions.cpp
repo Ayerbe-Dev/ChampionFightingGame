@@ -8,21 +8,19 @@ bool Fighter::is_actionable() {
 	if (anim_kind == nullptr) {
 		return true;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]
-		&& status_kind != FIGHTER_STATUS_THROWN
-		&& (get_status_group() != STATUS_GROUP_HITSTUN || ((status_kind == FIGHTER_STATUS_HITSTUN 
-		|| status_kind == FIGHTER_STATUS_HITSTUN_AIR) && !fighter_int[FIGHTER_INT_HITSTUN_FRAMES]))
-		&& !fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]
-		&& status_kind != FIGHTER_STATUS_ROUND_END) {
-		if (anim_kind->faf == -1) {
-			return std::ceil(frame) >= anim_kind->length;
-		}
-		else {
-			return std::ceil(frame) >= anim_kind->faf;
-		}
+	if (fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]
+		|| fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]
+		|| status_kind == FIGHTER_STATUS_ROUND_END
+		|| fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_NON_END_WITH_ANIM
+		|| fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+		return false;
+	}
+
+	if (anim_kind->faf == -1) {
+		return std::ceil(frame) >= anim_kind->length;
 	}
 	else {
-		return false;
+		return std::ceil(frame) >= anim_kind->faf;
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "ControllerManager.h"
+#include <iostream>
 
 ControllerManager::ControllerManager() {
 	controller_map[nullptr] = nullptr;

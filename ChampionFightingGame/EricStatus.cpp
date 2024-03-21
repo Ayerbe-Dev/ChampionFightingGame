@@ -14,26 +14,22 @@ bool Eric::chara_status_attack_air() {
 
 void Eric::enter_status_dash_f() {
 	change_anim("dash_f");
-	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 }
 
 void Eric::exit_status_dash_f() {
 	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
-	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 }
 
 void Eric::enter_status_dash_b() {
 	change_anim("dash_b");
-	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 }
 
 void Eric::exit_status_dash_b() {
 	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
-	fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 }
 
 void Eric::eric_status_special_uppercut_start() {
-	if (frame >= get_local_param_int("special_uppercut_transition_frame", params) && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
+	if (frame >= get_param_int("special_uppercut_transition_frame") && !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) {
 		change_status(CHARA_ERIC_STATUS_SPECIAL_UPPERCUT);
 		return;
 	}

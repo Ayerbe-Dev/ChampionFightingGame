@@ -52,8 +52,6 @@ public:
 	void process_status(); //Checks for the hitstun parry input, then runs the status and move scripts
 	void process_post_status(); //Misc
 
-	void process_ai();
-
 	void decrease_common_variables();
 	void reset();
 
@@ -101,12 +99,6 @@ public:
 	bool set_pos_anim();
 	void landing_crossup();
 	void apply_gravity(float gravity, float fall_speed);
-
-	//Rotation
-
-	void set_rot(glm::vec3 rot);
-	void add_rot(glm::vec3 rot);
-	void reset_rot();
 
 	//Data
 
@@ -174,9 +166,7 @@ public:
 	virtual bool chara_status_attack_air() { return false; };
 	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_NONE, bool call_end_status = true, bool require_different_status = true);
 	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true);
-	unsigned int get_status_group();
 	bool check_hitstun_parry();
-	bool is_status_delay();
 	bool is_ko();
 
 	//Projectiles
@@ -195,9 +185,6 @@ public:
 
 	void change_opponent_status(unsigned int status_kind); //Wild guess.
 	void damage_opponent(float damage); //Damage the opponent.
-	void set_opponent_rot(glm::vec3 rot); //Sets the opponent's angle relative to their facing dir.
-	void add_opponent_rot(glm::vec3 rot);
-	void reset_opponent_rot();
 	void set_opponent_thrown_ticks(); //Sets how long the opponent should stay in an animation, might be obselete due to get_launch_ticks, not sure
 	void change_opponent_anim(std::string anim_kind, float frame_rate = 1.0, float entry_frame = 0.0); //Changes the opponent's animation
 	void grab_opponent(std::string attacker_bone_name, std::string defender_bone_name, glm::vec3 offset);
@@ -263,6 +250,8 @@ public:
 	virtual void unique_process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker){};
 	virtual void unique_process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender){};
 	virtual void unique_process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender){};
+
+	void check_incoming_blockbox_collisions(std::vector<Blockbox*> blockboxes);
 
 	void check_incoming_grabbox_collisions(std::vector<Grabbox*> grabboxes);
 	bool is_valid_incoming_grabbox_collision(Hurtbox* hurtbox, Grabbox* grabbox);
@@ -342,6 +331,7 @@ public:
 	void ADD_POS(ScriptArg args);
 	void SET_POS(ScriptArg args);
 
+	void CHANGE_ANIM(ScriptArg args);
 	void REENTER_LAST_ANIM(ScriptArg args);
 
 	void START_CINEMATIC_SEQUENCE(ScriptArg args);
@@ -523,10 +513,11 @@ public:
 
 	int chara_kind;
 	std::string chara_name;
-
 	std::vector<Projectile*> projectiles;
 
 	int prev_stick_dir;
+
+	unsigned int situation_kind;
 
 	std::vector<int> fighter_int;
 	std::vector<float> fighter_float;

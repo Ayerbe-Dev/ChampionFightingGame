@@ -125,9 +125,9 @@ unsigned int Fighter::get_buffer_stick_dir(bool internal_dir) {
 	if (!internal_dir) {
 		right = facing_right;
 	}
-	if ((buffer_code & BUFFER_STICK_U) && !(buffer_code & BUFFER_STICK_D)) {
-		if (((buffer_code & BUFFER_STICK_L) || (buffer_code & BUFFER_STICK_R)) && !((buffer_code & BUFFER_STICK_L) && (buffer_code & BUFFER_STICK_R))) {
-			if ((bool)(buffer_code & BUFFER_STICK_R) == right) {
+	if ((buffer_code & BUTTON_UP_BIT) && !(buffer_code & BUTTON_DOWN_BIT)) {
+		if (((buffer_code & BUTTON_LEFT_BIT) || (buffer_code & BUTTON_RIGHT_BIT)) && !((buffer_code & BUTTON_LEFT_BIT) && (buffer_code & BUTTON_RIGHT_BIT))) {
+			if ((bool)(buffer_code & BUTTON_RIGHT_BIT) == right) {
 				return 9;
 			}
 			else {
@@ -138,9 +138,9 @@ unsigned int Fighter::get_buffer_stick_dir(bool internal_dir) {
 			return 8;
 		}
 	}
-	else if (!(buffer_code & BUFFER_STICK_U) && (buffer_code & BUFFER_STICK_D)) {
-		if (((buffer_code & BUFFER_STICK_L) || (buffer_code & BUFFER_STICK_R)) && !((buffer_code & BUFFER_STICK_L) && (buffer_code & BUFFER_STICK_R))) {
-			if ((bool)(buffer_code & BUFFER_STICK_R) == right) {
+	else if (!(buffer_code & BUTTON_UP_BIT) && (buffer_code & BUTTON_DOWN_BIT)) {
+		if (((buffer_code & BUTTON_LEFT_BIT) || (buffer_code & BUTTON_RIGHT_BIT)) && !((buffer_code & BUTTON_LEFT_BIT) && (buffer_code & BUTTON_RIGHT_BIT))) {
+			if ((bool)(buffer_code & BUTTON_RIGHT_BIT) == right) {
 				return 3;
 			}
 			else {
@@ -152,8 +152,8 @@ unsigned int Fighter::get_buffer_stick_dir(bool internal_dir) {
 		}
 	}
 	else {
-		if (((buffer_code & BUFFER_STICK_L) || (buffer_code & BUFFER_STICK_R)) && !((buffer_code & BUFFER_STICK_L) && (buffer_code & BUFFER_STICK_R))) {
-			if ((bool)(buffer_code & BUFFER_STICK_R) == right) {
+		if (((buffer_code & BUTTON_LEFT_BIT) || (buffer_code & BUTTON_RIGHT_BIT)) && !((buffer_code & BUTTON_LEFT_BIT) && (buffer_code & BUTTON_RIGHT_BIT))) {
+			if ((bool)(buffer_code & BUTTON_RIGHT_BIT) == right) {
 				return 6;
 			}
 			else {

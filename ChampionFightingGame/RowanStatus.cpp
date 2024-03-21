@@ -15,7 +15,7 @@ bool Rowan::chara_status_attack_air() {
 
 void Rowan::rowan_status_special_fireball_start() {
 	if (projectiles[0]->active) {
-		if (frame >= get_local_param_int("special_fireball_transition_frame_punch", params)) {
+		if (frame >= get_param_int("special_fireball_transition_frame_punch")) {
 			if (check_button_input(BUTTON_LP)) {
 				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
 				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH);
@@ -32,7 +32,7 @@ void Rowan::rowan_status_special_fireball_start() {
 				return;
 			}
 		}
-		if (frame >= get_local_param_int("special_fireball_transition_frame_kick", params)) {
+		if (frame >= get_param_int("special_fireball_transition_frame_kick")) {
 			if (check_button_input(BUTTON_LK)) {
 				fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL] = SPECIAL_LEVEL_L;
 				change_status(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK);
@@ -109,11 +109,11 @@ void Rowan::rowan_status_special_slide() {
 		return;
 	}
 	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
-		if (frame >= get_local_param_int("special_slide_move_start_frame", params) && frame < get_local_param_int("special_slide_move_stop_frame", params)) {
+		if (frame >= get_param_int("special_slide_move_start_frame") && frame < get_param_int("special_slide_move_stop_frame")) {
 			add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0.0, 0.0));
 		}
 		if (fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			if (frame >= get_local_param_int("special_slide_transition_frame", params)) {
+			if (frame >= get_param_int("special_slide_transition_frame")) {
 				change_status(CHARA_ROWAN_STATUS_SPECIAL_SLIDE_FOLLOWUP);
 			}
 		}
@@ -146,7 +146,7 @@ void Rowan::rowan_exit_status_special_slide_followup() {
 
 void Rowan::rowan_status_special_uppercut_start() {
 	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES] && (fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || 
-		(frame >= get_local_param_int("special_uppercut_transition_frame", params) 
+		(frame >= get_param_int("special_uppercut_transition_frame") 
 			&& !fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]))
 		) {
 		change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
@@ -241,7 +241,7 @@ void Rowan::rowan_exit_status_special_uppercut_fall() {
 }
 
 void Rowan::rowan_status_special_uppercut_land() {
-	if (fighter_int[FIGHTER_INT_LANDING_LAG] == 0) {
+	if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
 		if (common_ground_status_act()) {
 			if (internal_facing_right != facing_right) {
 				facing_right = internal_facing_right;
@@ -261,7 +261,7 @@ void Rowan::rowan_status_special_uppercut_land() {
 	}
 	else {
 		if (object_manager->is_allow_realtime_process(this)) {
-			fighter_int[FIGHTER_INT_LANDING_LAG]--;
+			fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
 		}
 
 	}
@@ -269,8 +269,8 @@ void Rowan::rowan_status_special_uppercut_land() {
 
 void Rowan::rowan_enter_status_special_uppercut_land() {
 	landing_crossup();
-	fighter_int[FIGHTER_INT_LANDING_LAG] = get_param_int_special("special_uppercut_landing_lag");
-	change_anim("special_uppercut_land", fighter_int[FIGHTER_INT_LANDING_LAG], -1);
+	fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = get_param_int_special("special_uppercut_landing_lag");
+	change_anim("special_uppercut_land", fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1);
 	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
 	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
 	change_situation(FIGHTER_SITUATION_GROUND);

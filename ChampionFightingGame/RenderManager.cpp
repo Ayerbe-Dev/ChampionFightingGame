@@ -12,11 +12,12 @@ RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	res_width = save_manager->get_game_setting("res_x");
 	res_height = save_manager->get_game_setting("res_y");
-	if (save_manager->get_game_setting("fullscreen")) {
+	if (save_manager->get_game_setting("fullscreen") == 1) {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL);
+		SDL_SetWindowFullscreen(window, 0);
 	}
 	SDL_GetWindowSize(window, &window_width, &window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
@@ -313,6 +314,14 @@ void RenderManager::update_screen() {
 	}
 	fade_texture.alpha.process();
 	SDL_GL_SwapWindow(window);
+}
+
+void RenderManager::clear_screen() {
+	glDepthMask(GL_TRUE);
+	glStencilMask(0xFF);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glDepthMask(GL_FALSE);
+	glStencilMask(0x0);
 }
 
 void RenderManager::handle_window_events(std::function<void(SDL_Event*)> event_handler) {

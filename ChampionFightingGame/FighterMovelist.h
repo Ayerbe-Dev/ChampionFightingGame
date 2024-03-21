@@ -50,13 +50,13 @@ enum CancelKind {
 class FighterMoveListEntry {
 public:
 	FighterMoveListEntry();
-	FighterMoveListEntry(std::string name, unsigned int status_kind, unsigned char required_buttons,
+	FighterMoveListEntry(std::string name, unsigned int status_kind, unsigned short required_buttons,
 		unsigned char num_required_buttons, std::set<unsigned int> stick_dirs, bool recover_crouching, 
 		VBP disable_flag, float meter_cost_normal, float meter_cost_cancel, 
 		bool super_meter, std::set<std::string> allowed_states
 	);
 	FighterMoveListEntry(std::string name, unsigned int status_kind, InputKind input_kind,
-		unsigned char required_buttons, unsigned char num_required_buttons, int charge_req,
+		unsigned short required_buttons, unsigned char num_required_buttons, int charge_req,
 		SpecialLevelSetting special_level_setting, bool recover_crouching, 
 		VBP disable_flag, float meter_cost_normal, float meter_cost_cancel, 
 		bool super_meter, std::set<std::string> allowed_states
@@ -68,7 +68,7 @@ public:
 	std::string name;
 	unsigned int status_kind;
 	InputKind input_kind;
-	unsigned char required_buttons;
+	unsigned short required_buttons;
 	unsigned char num_required_buttons;
 	std::set<unsigned int> valid_stick_dirs;
 	int charge_req;
@@ -91,13 +91,13 @@ class FighterMoveList {
 public:
 	FighterMoveList();
 	
-	void add_movelist_entry(std::string name, unsigned int status_kind, unsigned char required_buttons, 
+	void add_movelist_entry(std::string name, unsigned int status_kind, unsigned short required_buttons, 
 		unsigned char num_required_buttons, std::set<unsigned int> stick_dirs, bool recover_crouching, 
 		VBP disable_flag = VBP(), float meter_cost_normal = 0.0f, float meter_cost_cancel = 0.0f, 
 		bool super_meter = false, std::set<std::string> allowed_states = {}
 	);
 	void add_movelist_entry(std::string name, unsigned int status_kind, InputKind input_kind,
-		unsigned char required_buttons, unsigned char num_required_buttons, int charge_req,
+		unsigned short required_buttons, unsigned char num_required_buttons, int charge_req,
 		SpecialLevelSetting special_level_setting, bool recover_crouching,
 		VBP disable_flag = VBP(), float meter_cost_normal = 0.0f, float meter_cost_cancel = 0.0f, 
 		bool super_meter = false, std::set<std::string> allowed_states = {}

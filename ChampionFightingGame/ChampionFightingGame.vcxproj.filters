@@ -241,9 +241,6 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
-    <ClCompile Include="FighterRotationFunctions.cpp">
-      <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterFunctions</Filter>
-    </ClCompile>
     <ClCompile Include="GLM Helpers.cpp">
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
@@ -283,18 +280,6 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>2. Code Files\Deps\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="AIDecision.cpp">
-      <Filter>2. Code Files\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AI.cpp">
-      <Filter>2. Code Files\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AIInput.cpp">
-      <Filter>2. Code Files\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AIManager.cpp">
-      <Filter>2. Code Files\Singleton</Filter>
-    </ClCompile>
     <ClCompile Include="EffectManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
@@ -327,9 +312,6 @@
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectilePositionFunctions.cpp">
-      <Filter>2. Code Files\GameObject\BattleObject\Projectile\ProjectileFunctions</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>2. Code Files\Engine\Camera</Filter>
@@ -615,6 +597,18 @@
     </ClCompile>
     <ClCompile Include="ScriptArg.cpp">
       <Filter>2. Code Files\GameObject\ObjectComponent\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSequence.cpp">
+      <Filter>2. Code Files\Engine\Polling</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleObjectPositionFunctions.cpp">
+      <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterAnalyzer.cpp">
+      <Filter>2. Code Files\FighterAnalyzer</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterHabits.cpp">
+      <Filter>2. Code Files\FighterAnalyzer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1038,22 +1032,10 @@
     <ClInclude Include="imstb_truetype.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="AI.h">
-      <Filter>1. Header Files\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIMoveList.h">
-      <Filter>1. Header Files\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIManager.h">
-      <Filter>1. Header Files\Singleton</Filter>
-    </ClInclude>
     <ClInclude Include="EffectManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="CircularBuffer.h">
-      <Filter>1. Header Files\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="LoopingVector.h">
       <Filter>1. Header Files\Containers</Filter>
     </ClInclude>
     <ClInclude Include="ParamAccessor.h">
@@ -1406,6 +1388,15 @@
     </ClInclude>
     <ClInclude Include="StageSelect.h">
       <Filter>1. Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSequence.h">
+      <Filter>1. Header Files\Engine\Polling</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterAnalyzer.h">
+      <Filter>1. Header Files\FighterAnalyzer</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterHabits.h">
+      <Filter>1. Header Files\FighterAnalyzer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3028,6 +3019,12 @@
     </Filter>
     <Filter Include="1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox">
       <UniqueIdentifier>{b80697aa-d938-4efe-9209-6d954bfccb8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\FighterAnalyzer">
+      <UniqueIdentifier>{9bede1e9-2e2f-42f2-ab7d-d95eada3464a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\FighterAnalyzer">
+      <UniqueIdentifier>{aa3aa7bd-8085-4a83-a85f-3660b75e7350}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -18,7 +18,7 @@ void RowanFireball::status_rowan_fireball_hover() {
 
 void RowanFireball::enter_status_rowan_fireball_hover() {
 	set_pos(owner->get_bone_position("HaveL", glm::vec3(35.0, 0.0, 0.0)));
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("hover_active_time", params);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time");
 	change_anim("hover");
 }
 
@@ -36,18 +36,18 @@ void RowanFireball::status_rowan_fireball_punched() {
 
 void RowanFireball::enter_status_rowan_fireball_punched() {
 	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("punch_active_time", params);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time");
 	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
 	switch (owner->fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
 		case SPECIAL_LEVEL_L: {
-			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("punch_move_x_speed_l", params) * facing_dir;
+			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("punch_move_x_speed_l") * facing_dir;
 		} break;
 		case SPECIAL_LEVEL_M: {
-			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("punch_move_x_speed_m", params) * facing_dir;
+			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("punch_move_x_speed_m") * facing_dir;
 		} break;
 		case SPECIAL_LEVEL_H:
 		case SPECIAL_LEVEL_EX: {
-			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("punch_move_x_speed_h", params) * facing_dir;
+			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("punch_move_x_speed_h") * facing_dir;
 		} break;
 	}
 	projectile_float[PROJECTILE_FLOAT_SPEED_Y] = 0.0;
@@ -68,22 +68,22 @@ void RowanFireball::status_rowan_fireball_kicked() {
 
 void RowanFireball::enter_status_rowan_fireball_kicked() {
 	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_local_param_int("kick_active_time", params);
+	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time");
 	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
 	set_pos(owner->get_bone_position("FootR", glm::vec3(20.0, -25.0, 0.0)));
 	switch (owner->fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
 	case SPECIAL_LEVEL_L: {
-		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("kick_move_x_speed_l", params) * facing_dir;
-		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_local_param_float("kick_move_y_speed_l", params);
+		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("kick_move_x_speed_l") * facing_dir;
+		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_param_float("kick_move_y_speed_l");
 	} break;
 	case SPECIAL_LEVEL_M: {
-		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("kick_move_x_speed_m", params) * facing_dir;
-		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_local_param_float("kick_move_y_speed_m", params);
+		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("kick_move_x_speed_m") * facing_dir;
+		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_param_float("kick_move_y_speed_m");
 	} break;
 	case SPECIAL_LEVEL_H:
 	case SPECIAL_LEVEL_EX: {
-		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_local_param_float("kick_move_x_speed_h", params) * facing_dir;
-		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_local_param_float("kick_move_y_speed_h", params);
+		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("kick_move_x_speed_h") * facing_dir;
+		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_param_float("kick_move_y_speed_h");
 	} break;
 	}
 	change_anim("kicked");

@@ -66,7 +66,7 @@ public:
 	T& oldest(int offset = 0) {
 		int index = curr_index;
 		for (int i = 0; i < offset; i++) {
-			index = next_index(curr_index);
+			index = next_index(index);
 		}
 		return data[index];
 	}
@@ -74,7 +74,7 @@ public:
 	T& newest(int offset = 0) {
 		int index = prev_index(curr_index);
 		for (int i = 0; i < offset; i++) {
-			index = prev_index(curr_index);
+			index = prev_index(index);
 		}
 		return data[index];
 	}

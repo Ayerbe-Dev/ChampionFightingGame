@@ -22,20 +22,7 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(anchor, glm::vec2);
 	UNWRAP(offset, glm::vec2);
 	UNWRAP(collision_kind, CollisionKind);
-	UNWRAP(damage, float);
-	UNWRAP(chip_damage, float);
-	UNWRAP(damage_scale, int);
-	UNWRAP(meter_gain, float);
-	UNWRAP(hitlag, int);
-	UNWRAP(hitstun, int);
-	int blocklag = 0;
-	int blockstun = 0;
-	if (collision_kind & COLLISION_KIND_GROUND) {
-		UNWRAP_NO_DECL(blocklag);
-	}
-	if (collision_kind & COLLISION_KIND_GROUND) {
-		UNWRAP_NO_DECL(blockstun);
-	}
+	UNWRAP(hit_result, HitResult);
 	HitStatus hit_status = HIT_STATUS_CUSTOM;
 	int custom_hit_status = 0;
 	if (WRAPPED_TYPE(int)) {
@@ -44,15 +31,14 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	else {
 		UNWRAP_NO_DECL(hit_status, HitStatus);
 	}
-	UNWRAP(hit_result, HitResult);
+	UNWRAP(hit_move, HitMove);
 	UNWRAP(hit_flags, HitFlag);
 	UNWRAP(critical_condition, CriticalCondition);
 	HitStatus critical_status = hit_status;
 	int custom_critical_status = custom_hit_status;
-	HitResult critical_hit_result = hit_result;
-	critical_hit_result.hitstun("stand_hitstun_critical", "crouch_hitstun_critical");
+	HitMove critical_hit_move = hit_move;
 	HitFlag critical_hit_flags = hit_flags;
-	if (critical_condition != CRITICAL_CONDITION_NONE) {
+	if (WRAPPED_TYPE(int) || WRAPPED_TYPE(HitStatus)) {
 		critical_status = HIT_STATUS_CUSTOM;
 		custom_critical_status = 0;
 		if (WRAPPED_TYPE(int)) {
@@ -61,33 +47,27 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 		else {
 			UNWRAP_NO_DECL(critical_status);
 		}
-		UNWRAP_NO_DECL(critical_hit_result);
+		UNWRAP_NO_DECL(critical_hit_move);
 		UNWRAP_NO_DECL(critical_hit_flags);
 	}
-	else if (hit_status == HIT_STATUS_NORMAL) {
-		critical_hit_result.ground(5.0, 0.0).frames(15);
+	if (hit_result.crit_hitlag == -1) {
+		hit_result.crit_hitlag = hit_result.hitlag * 1.5;
 	}
-	int juggle_start = 0;
-	int juggle_increase = 0;
-	int juggle_max = 0;
-	if ((collision_kind & COLLISION_KIND_AIR) || hit_status == HIT_STATUS_LAUNCH
-		|| critical_status == HIT_STATUS_LAUNCH || hit_flags & HIT_FLAG_FORCE_AERIAL 
-		|| critical_hit_flags & HIT_FLAG_FORCE_AERIAL) {
-		UNWRAP_NO_DECL(juggle_start);
-		if (collision_kind & COLLISION_KIND_AIR) {
-			UNWRAP_NO_DECL(juggle_increase);
-			UNWRAP_NO_DECL(juggle_max);
+	if (hit_result.crit_hitstun == -1) {
+		if (critical_status == HIT_STATUS_NORMAL) {
+			hit_result.crit_hitstun = hit_result.hitstun + 30;
+		}
+		else {
+			hit_result.crit_hitstun = hit_result.hitstun;
 		}
 	}
 	UNWRAP(hit_height, HitHeight);
 	UNWRAP(damage_kind, DamageKind);
 	UNWRAP(hit_effect, std::string);
 	UNWRAP(hit_sound, std::string);;
-	new_hitbox(id, multihit, anchor, offset, collision_kind, damage, chip_damage, damage_scale, 
-		meter_gain, hitlag, hitstun, blocklag, blockstun, hit_status, custom_hit_status,
-		hit_result, hit_flags, critical_condition, critical_status, custom_critical_status,
-		critical_hit_result, critical_hit_flags, juggle_start, juggle_increase, juggle_max, 
-		hit_height, damage_kind, hit_effect, hit_sound
+	new_hitbox(id, multihit, anchor, offset, collision_kind, hit_result, hit_status, custom_hit_status,
+		hit_move, hit_flags, critical_condition, critical_status, custom_critical_status,
+		critical_hit_move, critical_hit_flags, hit_height, damage_kind, hit_effect, hit_sound
 	);
 }
 
@@ -111,12 +91,13 @@ void BattleObject::SET_DEFINITE_HITBOX(ScriptArg args) {
 	UNWRAP(meter_gain, float);
 	UNWRAP(hitlag, int);
 	UNWRAP(hitstun, int);
-	UNWRAP(hit_result, HitResult);
+	UNWRAP(hit_anim, std::string);
+	UNWRAP(hit_move, HitMove);
 	UNWRAP(damage_kind, DamageKind);
 	UNWRAP(hit_effect, std::string);
 	UNWRAP(hit_sound, std::string);
 	set_definite_hitbox(target, hit_status, hit_flags, juggle_start, juggle_increase, damage,
-		damage_scale, meter_gain, hitlag, hitstun, hit_result, damage_kind, hit_effect,
+		damage_scale, meter_gain, hitlag, hitstun, hit_anim, hit_move, damage_kind, hit_effect,
 		hit_sound
 	);
 }

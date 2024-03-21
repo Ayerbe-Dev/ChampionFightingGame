@@ -42,13 +42,13 @@ void Fighter::spend_ex(float ex) {
 
 void Fighter::gain_ex(float ex) {
 	if (fighter_flag[FIGHTER_FLAG_LOCK_EX]) return;
-	float max_ex = get_param_float(PARAM_FIGHTER, "ex_meter_size");
+	float max_ex = get_global_param_float(PARAM_FIGHTER, "ex_meter_size");
 	float ex_diff = max_ex - fighter_float[FIGHTER_FLOAT_EX_METER];
 	if (ex > ex_diff) {
 		fighter_float[FIGHTER_FLOAT_SUPER_METER] = clampf(
 			fighter_float[FIGHTER_FLOAT_SUPER_METER], 
 			fighter_float[FIGHTER_FLOAT_SUPER_METER] + (ex - ex_diff), 
-			get_param_float(PARAM_FIGHTER, "super_meter_size")
+			get_global_param_float(PARAM_FIGHTER, "super_meter_size")
 		);
 		fighter_float[FIGHTER_FLOAT_EX_METER] = max_ex;
 		return;

@@ -24,7 +24,7 @@ FighterMoveListEntry::FighterMoveListEntry() {
 	buttons_pressed = 0;
 }
 
-FighterMoveListEntry::FighterMoveListEntry(std::string name, unsigned int status_kind, unsigned char required_buttons,
+FighterMoveListEntry::FighterMoveListEntry(std::string name, unsigned int status_kind, unsigned short required_buttons,
 	unsigned char num_required_buttons, std::set<unsigned int> stick_dirs, bool recover_crouching, 
 	VBP disable_flag, float meter_cost_normal, float meter_cost_cancel, 
 	bool super_meter, std::set<std::string> allowed_states) {
@@ -51,7 +51,7 @@ FighterMoveListEntry::FighterMoveListEntry(std::string name, unsigned int status
 }
 
 FighterMoveListEntry::FighterMoveListEntry(std::string name, unsigned int status_kind, 
-	InputKind input_kind, unsigned char required_buttons, unsigned char num_required_buttons, 
+	InputKind input_kind, unsigned short required_buttons, unsigned char num_required_buttons, 
 	int charge_req, SpecialLevelSetting special_level_setting, bool recover_crouching, 
 	VBP disable_flag, float meter_cost_normal, float meter_cost_cancel, 
 	bool super_meter, std::set<std::string> allowed_states) {
@@ -163,10 +163,10 @@ bool FighterMoveListEntry::check_input(Fighter* fighter) {
 					cost = 0.0f;
 					[[fallthrough]];
 					case (SPECIAL_LEVEL_SETTING_L_M_H): {
-						if (buttons_pressed & (BUFFER_HP | BUFFER_HK)) {
+						if (buttons_pressed & (BUTTON_HP_BIT | BUTTON_HK_BIT)) {
 							special_level = SPECIAL_LEVEL_H;
 						}
-						else if (buttons_pressed & (BUFFER_MP | BUFFER_MK)) {
+						else if (buttons_pressed & (BUTTON_MP_BIT | BUTTON_MK_BIT)) {
 							special_level = SPECIAL_LEVEL_M;
 						}
 						else {
@@ -189,6 +189,7 @@ bool FighterMoveListEntry::check_input(Fighter* fighter) {
 			} break;
 		}
 	}
+
 	return true;
 }
 
@@ -267,12 +268,12 @@ bool FighterMoveListEntry::try_change_status(Fighter* fighter) {
 }
 
 FighterMoveList::FighterMoveList() {
-	move_map["none"] = 0;
+	move_map[""] = 0;
 	move_list.push_back(FighterMoveListEntry());
 }
 
 void FighterMoveList::add_movelist_entry(std::string name, unsigned int status_kind, 
-	unsigned char required_buttons, unsigned char num_required_buttons, 
+	unsigned short required_buttons, unsigned char num_required_buttons, 
 	std::set<unsigned int> stick_dirs, bool recover_crouching, 
 	VBP disable_flag, float meter_cost_normal, float meter_cost_cancel, 
 	bool super_meter, std::set<std::string> allowed_states) {
@@ -284,7 +285,7 @@ void FighterMoveList::add_movelist_entry(std::string name, unsigned int status_k
 }
 
 void FighterMoveList::add_movelist_entry(std::string name, unsigned int status_kind, 
-	InputKind input_kind, unsigned char required_buttons, unsigned char num_required_buttons, 
+	InputKind input_kind, unsigned short required_buttons, unsigned char num_required_buttons, 
 	int charge_req, SpecialLevelSetting special_level_setting, bool recover_crouching, 
 	VBP disable_flag, float meter_cost_normal, float meter_cost_cancel, 
 	bool super_meter, std::set<std::string> allowed_states) {
@@ -304,14 +305,14 @@ void FighterMoveList::check_inputs(Fighter* fighter) {
 }
 
 void FighterMoveList::try_changing_to_buffered_status(Fighter* fighter) {
-	if (fighter->is_enable_free_cancel()) {
-		for (std::set<int>::iterator it = buffered_moves.begin(); it != buffered_moves.end();) {
-			if (!move_list[*it].check_input(fighter)) {
-				it = buffered_moves.erase(it);
-			}
-			else {
-				it++;
-			}
+	bool free_cancel = fighter->is_enable_free_cancel();
+	for (std::set<int>::iterator it = buffered_moves.begin(); it != buffered_moves.end();) {
+		if (((move_list[*it].cancel_enabled && move_list[*it].input_kind == INPUT_KIND_NORMAL)
+			|| free_cancel) && !move_list[*it].check_input(fighter)) {
+			it = buffered_moves.erase(it);
+		}
+		else {
+			it++;
 		}
 	}
 	for (std::set<int>::reverse_iterator it = buffered_moves.rbegin(), max = buffered_moves.rend(); it != max; it++) {

@@ -73,7 +73,9 @@ GameTexture::GameTexture(const GameTexture& that) {
 	colormod = that.colormod;
 	alpha = that.alpha;
 	orientation = that.orientation;
-	anchor_pos = that.anchor_pos;
+	if (anchor_pos == nullptr) {
+		anchor_pos = that.anchor_pos;
+	}
 
 	width = that.width;
 	height = that.height;

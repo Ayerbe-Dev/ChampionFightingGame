@@ -21,6 +21,7 @@ public:
 	TargetVar(T& other) {
 		if (val != other) {
 			val = other;
+			target_val = val;
 			frames = 0;
 		}
 	}
@@ -28,33 +29,27 @@ public:
 	TargetVar(const T& other) {
 		if (val != other) {
 			val = other;
+			target_val = val;
 			frames = 0;
 		}
 	}
 
-	template <typename U>
-	T operator+(const U& rhs) {
-		return val + rhs;
+	operator T() const {
+		return val;
 	}
 
-	template <typename U>
-	T operator-(const U& rhs) {
-		return val - rhs;
+	operator T& () {
+		return val;
 	}
 
-	template <typename U>
-	T operator*(const U& rhs) {
-		return val * rhs;
-	}
-
-	template <typename U>
-	T operator/(const U& rhs) {
-		return val / rhs;
+	operator T* () const {
+		return &val;
 	}
 
 	template <typename U>
 	TargetVar<T>& operator=(const U& rhs) {
 		val = (T)rhs;
+		target_val = val;
 		frames = 0;
 		return *this;
 	}
@@ -62,6 +57,7 @@ public:
 	template <typename U>
 	TargetVar<T>& operator+=(const U& rhs) {
 		val += rhs;
+		target_val = val;
 		frames = 0;
 		return *this;
 	}
@@ -69,6 +65,7 @@ public:
 	template <typename U>
 	TargetVar<T>& operator-=(const U& rhs) {
 		val -= rhs;
+		target_val = val;
 		frames = 0;
 		return *this;
 	}
@@ -76,6 +73,7 @@ public:
 	template <typename U>
 	TargetVar<T>& operator*=(const U& rhs) {
 		val *= rhs;
+		target_val = val;
 		frames = 0;
 		return *this;
 	}
@@ -83,18 +81,9 @@ public:
 	template <typename U>
 	TargetVar<T>& operator/=(const U& rhs) {
 		val /= rhs;
+		target_val = val;
 		frames = 0;
 		return *this;
-	}
-
-	template <typename U>
-	bool operator==(const U& rhs) {
-		return val == rhs;
-	}
-
-	template <typename U>
-	bool operator!=(const U& rhs) {
-		return val != rhs;
 	}
 
 	template <typename U>
@@ -121,6 +110,7 @@ public:
 	TargetVar<T>& operator=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val = rhs.get_val();
+			target_val = val;
 			frames = 0;
 		}
 		return *this;
@@ -130,6 +120,7 @@ public:
 	TargetVar<T>& operator+=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val += rhs.get_val();
+			target_val = val;
 			frames = 0;
 		}
 		return *this;
@@ -139,6 +130,7 @@ public:
 	TargetVar<T>& operator-=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val -= rhs.get_val();
+			target_val = val;
 			frames = 0;
 		}
 		return *this;
@@ -148,6 +140,7 @@ public:
 	TargetVar<T>& operator*=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val *= rhs.get_val();
+			target_val = val;
 			frames = 0;
 		}
 		return *this;
@@ -157,6 +150,7 @@ public:
 	TargetVar<T>& operator/=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val /= rhs.get_val();
+			target_val = val;
 			frames = 0;
 		}
 		return *this;
@@ -197,10 +191,15 @@ public:
 
 	void set_val(const T& val) {
 		this->val = val;
+		this->target_val = val;
 	}
 
 	T get_val() const {
 		return val;
+	}
+
+	T get_target_val() const {
+		return target_val;
 	}
 
 	T* get_val_addr() const {

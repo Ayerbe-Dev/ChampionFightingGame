@@ -31,40 +31,28 @@ public:
 	Hitbox();
 	void init(BattleObject* object);
 	void activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset, 
-		CollisionKind collision_kind, float damage, float chip_damage, int damage_scale, 
-		float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun, 
-		HitStatus hit_status, unsigned int custom_hit_status, HitResult hit_result, 
-		HitFlag hit_flags, CriticalCondition critical_condition, HitStatus critical_status, 
-		unsigned int custom_critical_status, HitResult critical_hit_result, 
-		HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max, 
-		HitHeight hit_height, DamageKind damage_kind, std::string hit_effect, 
-		std::string hit_sound
+		CollisionKind collision_kind, HitResult hit_result, HitStatus hit_status, 
+		unsigned int custom_hit_status, HitMove hit_move, HitFlag hit_flags, 
+		CriticalCondition critical_condition, HitStatus critical_status, 
+		unsigned int custom_critical_status, HitMove critical_hit_move, 
+		HitFlag critical_hit_flags, HitHeight hit_height, DamageKind damage_kind, 
+		std::string hit_effect, std::string hit_sound
 	);
 
 	int id;
 	int multihit;
 	CollisionKind collision_kind;
+	HitResult hit_result;
 	HitStatus hit_status;
 	unsigned int custom_hit_status;
-	HitResult hit_result;
+	HitMove hit_move;
 	HitFlag hit_flags;
 	CriticalCondition critical_condition;
 	HitStatus critical_status;
 	unsigned int custom_critical_status;
-	HitResult critical_hit_result;
+	HitMove critical_hit_move;
 	HitFlag critical_hit_flags;
-	int juggle_start;
-	int juggle_increase;
-	int juggle_max;
 	HitHeight hit_height;
-	float damage;
-	float chip_damage;
-	int damage_scale;
-	float meter_gain;
-	int hitlag;
-	int blocklag;
-	int hitstun;
-	int blockstun;
 	DamageKind damage_kind;
 	std::string hit_effect;
 	std::string hit_sound;
@@ -76,7 +64,7 @@ public:
 	void set_properties(BattleObject* object, Fighter* defender, Hitbox* hitbox);
 	void set_properties(BattleObject* object, Fighter* defender, unsigned int hit_status, HitFlag hit_flags, int juggle_start,
 		int juggle_increase, float damage, int damage_scale, float meter_gain,
-		int hitlag, int hitstun, HitResult hit_result, DamageKind damage_kind, 
+		int hitlag, int hitstun, std::string hit_anim, HitMove hit_move, DamageKind damage_kind, 
 		std::string hit_effect, std::string hit_sound
 	);
 	void activate();
@@ -93,7 +81,8 @@ public:
 	float meter_gain;
 	int hitlag;
 	int hitstun;
-	HitResult hit_result;
+	std::string hit_anim;
+	HitMove hit_move;
 	DamageKind damage_kind;
 	std::string hit_effect;
 	std::string hit_sound;

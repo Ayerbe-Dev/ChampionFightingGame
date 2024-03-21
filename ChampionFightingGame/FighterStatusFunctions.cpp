@@ -1,18 +1,9 @@
 #include "Fighter.h"
 
 void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) {
-	if (new_status_kind == status_kind) {
-		switch (status_kind) {
-			case (FIGHTER_STATUS_WAIT):
-			case (FIGHTER_STATUS_WALK_F):
-			case (FIGHTER_STATUS_WALK_B):
-			case (FIGHTER_STATUS_CROUCH_D):
-			case (FIGHTER_STATUS_CROUCH):
-			case (FIGHTER_STATUS_CROUCH_U):
-			case (FIGHTER_STATUS_TURN): {
-				return;
-			} break;
-		}
+	if (new_status_kind == status_kind
+		&& (fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_NON_ACTION)) {
+		return;	
 	}
 	clear_hitbox_all();
 	clear_hurtbox_all();
@@ -23,13 +14,13 @@ void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) 
 	fighter_flag[FIGHTER_FLAG_PROJECTILE_HIT_DURING_STATUS] = false;
 	fighter_flag[FIGHTER_FLAG_PROJECTILE_BLOCKED_DURING_STATUS] = false;
 	fighter_flag[FIGHTER_FLAG_ACTIVE_HITBOX_IN_STATUS] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
 	fighter_flag[FIGHTER_FLAG_THROW_TECH] = false;
 	fighter_flag[FIGHTER_FLAG_ALLOW_FREE_CANCEL] = false;
 	fighter_flag[FIGHTER_FLAG_HITSTUN_COUNTER_PARRY] = false;
 	fighter_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS] = status_kind == new_status_kind;
 	fighter_int[FIGHTER_INT_ARMOR_HITS] = 0;
-	fighter_int[FIGHTER_INT_SUCCESS_COUNTERHIT_VAL] = 0;
+	fighter_int[FIGHTER_INT_SUCCESS_COUNTERHIT_VAL] = COUNTERHIT_VAL_NONE;
+	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONE;
 	disable_all_cancels();
 	if (call_end_status) {
 		(this->*exit_status_script[status_kind])();
@@ -48,51 +39,10 @@ void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) 
 
 void Fighter::change_situation(unsigned int new_situation_kind) {
 	if (situation_kind != new_situation_kind) {
-		fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_NONE;
+		fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_STAND;
 		move_list[situation_kind].disable_all_cancels();
 		situation_kind = new_situation_kind;
 		check_movelist_inputs();
-	}
-}
-
-unsigned int Fighter::get_status_group() {
-	switch (status_kind) {
-		case (FIGHTER_STATUS_HITSTUN):
-		case (FIGHTER_STATUS_HITSTUN_AIR):
-		case (FIGHTER_STATUS_HITSTUN_FLOAT):
-		case (FIGHTER_STATUS_LANDING_HITSTUN):
-		case (FIGHTER_STATUS_KNOCKDOWN_START):
-		case (FIGHTER_STATUS_KNOCKDOWN):
-		case (FIGHTER_STATUS_LAUNCH_START):
-		case (FIGHTER_STATUS_LAUNCH):
-		case (FIGHTER_STATUS_CRUMPLE):
-		case (FIGHTER_STATUS_THROWN):
-		case (FIGHTER_STATUS_HITSTUN_PARRY_START):
-		case (FIGHTER_STATUS_LAUNCH_PARRY_START): {
-			return STATUS_GROUP_HITSTUN;
-		}
-		break;
-		case (FIGHTER_STATUS_CROUCH_D):
-		case (FIGHTER_STATUS_CROUCH):
-		case (FIGHTER_STATUS_CROUCH_U):
-		{
-			return STATUS_GROUP_CROUCH;
-		}
-		break;
-		case (FIGHTER_STATUS_ATTACK):
-		case (FIGHTER_STATUS_ATTACK_AIR):
-		{
-			return STATUS_GROUP_ATTACK;
-		} break;
-		case (FIGHTER_STATUS_LANDING):
-		case (FIGHTER_STATUS_LANDING_ATTACK): {
-			return STATUS_GROUP_LANDING;
-		} break;
-		default:
-		{
-			return STATUS_GROUP_NORMAL;
-		}
-		break;
 	}
 }
 
@@ -137,8 +87,8 @@ bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status)
 }
 
 bool Fighter::check_hitstun_parry() {
-	if (fighter_int[FIGHTER_INT_DAMAGE_SCALE] >= 3 //Damage scale has to be at least 3, so you can't
-		//hitstun parry the first 3 hits of a combo (4 on counterhit, 5 on special counterhits)
+	if (fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] <= 0.7f //Damage scale has to be 70% or lower, so you can't
+		//hitstun parry the first 3 hits of a combo (4 on counterhit/punish, 5 on crit)
 		&& fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0 //Can't start the hitstun parry during hitlag
 		&& !fighter_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]) {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
@@ -148,19 +98,6 @@ bool Fighter::check_hitstun_parry() {
 		}
 	}
 	return false;
-}
-
-bool Fighter::is_status_delay() {
-	switch (status_kind) {
-		case (FIGHTER_STATUS_GRABBED): {
-			return true;
-		}
-		break;
-		default: {
-			return false;
-		}
-		break;
-	}
 }
 
 bool Fighter::is_ko() {

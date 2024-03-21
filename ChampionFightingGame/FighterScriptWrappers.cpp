@@ -38,6 +38,15 @@ void Fighter::SET_POS(ScriptArg args) {
 	set_pos(pos);
 }
 
+void Fighter::CHANGE_ANIM(ScriptArg args) {
+	UNWRAP(anim_kind, std::string);
+	float rate = 1.0f;
+	UNWRAP_NO_DECL(rate);
+	float frame = 0.0f;
+	UNWRAP_NO_DECL(frame);
+	change_anim(anim_kind, rate, frame);
+}
+
 void Fighter::REENTER_LAST_ANIM(ScriptArg args) {
 	reenter_last_anim();
 }

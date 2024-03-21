@@ -7,6 +7,7 @@ void Battle::process_collisions() {
 		|| fighter[1]->check_button_trigger(BUTTON_MENU_FRAME_ADVANCE))) {
 		return;
 	}
+	std::vector<Blockbox*> blockboxes[2];
 	std::vector<Hitbox*> hitboxes[2];
 	std::vector<Grabbox*> grabboxes[2];
 	std::vector<Pushbox> fighter_pushboxes[2];
@@ -19,6 +20,9 @@ void Battle::process_collisions() {
 
 	for (int i = 0; i < 2; i++) {
 		objects[i].push_back(fighter[i]);
+		if (fighter[i]->blockbox.active) {
+			blockboxes[i].push_back(&fighter[i]->blockbox);
+		}
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (fighter[i]->hitboxes[i2].active) {
 				hitboxes[i].push_back(&fighter[i]->hitboxes[i2]);
@@ -33,6 +37,9 @@ void Battle::process_collisions() {
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (!fighter[i]->projectiles[i2]->active) continue;
 			objects[i].push_back(fighter[i]->projectiles[i2]);
+			if (fighter[i]->projectiles[i2]->blockbox.active) {
+				blockboxes[i].push_back(&fighter[i]->projectiles[i2]->blockbox);
+			}
 			for (int i3 = 0; i3 < 10; i3++) {
 				if (fighter[i]->projectiles[i2]->hitboxes[i3].active) {
 					hitboxes[i].push_back(&fighter[i]->projectiles[i2]->hitboxes[i3]);
@@ -61,6 +68,7 @@ void Battle::process_collisions() {
 	}
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->check_incoming_grabbox_collisions(grabboxes[!i]);
+		fighter[i]->check_incoming_blockbox_collisions(blockboxes[!i]);
 		for (int i2 = 0; i2 < objects[i].size(); i2++) {
 			objects[i][i2]->check_incoming_hitbox_collisions(hitboxes[!i]);
 		}
@@ -141,15 +149,6 @@ void Battle::process_collisions() {
 	for (int i = 0; i < 2; i++) {
 		for (int i2 = 0; i2 < objects[i].size(); i2++) {
 			if (objects[i][i2]->post_collision_status != FIGHTER_STATUS_NONE) {
-				//Since change_status resets the punish flag, we have to put this code here. It's
-				//kinda gross because of the double fighter check, but ideally once the UIText 
-				//system is implemented this will be handled directly from the fighter collision
-				//so I'll allow it for now.
-				if (objects[i][i2]->object_type == BATTLE_OBJECT_TYPE_FIGHTER && fighter[i]->fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
-					texts[!i].push_back(BattleText());
-					texts[!i].back().init(&message_font, "Punish", 40, fighter[!i], glm::vec2(275.0, 300.0));
-				}
-
 				objects[i][i2]->change_status(objects[i][i2]->post_collision_status, true);
 				objects[i][i2]->post_collision_status = FIGHTER_STATUS_NONE;
 
@@ -160,29 +159,29 @@ void Battle::process_collisions() {
 				fighter[i]->fighter_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX] = false;
 				if (fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 					if (combo_counter[!i] != nullptr) {
-						combo_counter[!i]->update(std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
-						combo_hit[!i]->update("hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES]);
+						combo_counter[!i]->update(std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
+						combo_hit[!i]->update("hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
 					}
 					else {
 						texts[!i].push_back(BattleText());
-						texts[!i].back().init(&combo_font, std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] + 30, fighter[!i], glm::vec2(275.0, 500.0));
+						texts[!i].back().init(&combo_font, std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] + 30, fighter[!i], glm::vec2(275.0, 500.0));
 						combo_counter[!i] = &texts[!i].back();
 						texts[!i].push_back(BattleText());
-						texts[!i].back().init(&message_font, "hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] + 30, fighter[!i], glm::vec2(275.0, 800.0));
+						texts[!i].back().init(&message_font, "hits", fighter[i]->fighter_int[FIGHTER_INT_HITLAG_FRAMES] + fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] + 30, fighter[!i], glm::vec2(275.0, 800.0));
 						combo_hit[!i] = &texts[!i].back();
 					}
 				}
 				if (game_context == GAME_CONTEXT_TRAINING) {
 					training_info[!i].hit_frame.update_text(info_font, "Hit Frame: " + std::to_string(fighter[!i]->fighter_int[FIGHTER_INT_EXTERNAL_FRAME] + 1), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					training_info[!i].damage.update_text(info_font,
-						"Damage: " + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_LAST_DAMAGE], 3) + "(" + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_LAST_DAMAGE_SCALE] * 100.0, 3) + "%)",
+						"Damage: " + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_DAMAGE_UI_TRAINING], 3) + "(" + float_to_string(fighter[i]->fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI_TRAINING], 3) + "%)",
 						glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0)
 					);
-					training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					training_info[!i].combo_damage.update_text(info_font, "Total: " + float_to_string(fighter[!i]->fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING], 3), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					int stun_frames = 0;
 					switch (fighter[i]->status_kind) {
 					default: {
-						stun_frames = fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES];
+						stun_frames = fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES];
 						training_info[!i].stun_frames.update_text(info_font, "Stun Frames: " + std::to_string(stun_frames), glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					} break;
 					case(FIGHTER_STATUS_PARRY): {

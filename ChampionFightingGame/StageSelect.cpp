@@ -22,7 +22,7 @@ void stage_select_main() {
 	while (stage_select->looping) {
 		game_manager->frame_delay_check_fps();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->clear_screen();
 
 		render_manager->handle_window_events();
 
@@ -281,7 +281,7 @@ void StageSelect::add_stage_slot(ParamTable param_table, Font* font) {
 		push_menu_texture("slot_texture", "resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
 		push_menu_texture("name_text", *font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		push_menu_on_selected_event_function([this](MenuObject* object) {
-			object->parent->get_child("Cursor").set_pos(object->get_pos(), 6);
+			object->get_parent().get_child("Cursor").set_pos(object->get_pos(), 6);
 		});
 	} pop_menu_stack();
 }
@@ -319,8 +319,8 @@ void StageSelect::process_main() {
 void StageSelect::render_main() {
 	RenderManager* render_manager = RenderManager::get_instance();
 
-	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
+	glDepthMask(GL_TRUE);
 
 	render_manager->shadow_map.use();
 	glViewport(0, 0, 2000, 2000);
@@ -341,7 +341,7 @@ void StageSelect::render_main() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_menu_object("Background");
-	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.28, render_manager->res_width * 0.6, render_manager->res_height * 0.6);
+	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.34, render_manager->res_width * 0.6, render_manager->res_height * 0.6);
 	render_manager->g_buffer.render();
 	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	

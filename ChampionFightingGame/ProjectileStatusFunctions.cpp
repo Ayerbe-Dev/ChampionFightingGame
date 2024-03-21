@@ -9,6 +9,7 @@ void Projectile::change_status(unsigned int new_status_kind, bool call_end_statu
 	if (call_end_status) {
 		(this->*exit_status_script[status_kind])();
 	}
+	prev_status_kind = status_kind;
 	status_kind = new_status_kind;
 	(this->*enter_status_script[status_kind])();
 }

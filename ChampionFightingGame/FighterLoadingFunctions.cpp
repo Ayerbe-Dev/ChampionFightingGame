@@ -27,7 +27,6 @@ void Fighter::load_fighter() {
 		facing_dir = -1.0;
 	}
 
-	load_stats();
 	load_params();
 	load_model_shader();
 	load_collision_boxes();
@@ -85,7 +84,7 @@ void Fighter::load_effect_list() {
 }
 
 void Fighter::load_model_shader() {
-	scale = glm::vec3(get_local_param_float("model_scale"));
+	scale = glm::vec3(get_param_float("model_scale"));
 	model.load_model_instance(resource_dir + "/model/m" + std::to_string(player->alt_costume) + "/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
 	unsigned int flags = 0;
@@ -131,9 +130,12 @@ void Fighter::load_anim_list() {
 }
 
 void Fighter::set_default_vars() {
-	fighter_float[FIGHTER_FLOAT_HEALTH] = get_local_param_float("health");
+	fighter_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
 	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "none";
+	fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] = 1.0f;
+	fighter_float[FIGHTER_FLOAT_PREV_DAMAGE_SCALE] = 1.0f;
+	fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI] = 1.0f;
+	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
 }
 
 void Fighter::load_collision_boxes() {

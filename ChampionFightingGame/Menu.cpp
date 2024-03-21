@@ -22,7 +22,7 @@ void menu_main() {
 
 	while (main_menu->looping) {
 		game_manager->frame_delay_check_fps();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->clear_screen();
 
 		render_manager->handle_window_events();
 
@@ -95,18 +95,18 @@ MainMenu::MainMenu() {
 		push_menu_child("Rotating Text", 5); {
 			push_menu_pre_render_function([this](MenuObject* object) {
 				for (int i = 0; i < 5; i++) {
-					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
-					object->textures[i].set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
-					object->textures[i].render();
-					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + i * offset)), 0.0));
-					object->textures[i].set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
+					object->get_texture(i).set_pos(glm::vec3(int(magnitude * cos(theta + (i - 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i - 5) * offset)), 0.0));
+					object->get_texture(i).set_rot(glm::vec3(0.0, 0.0, ((theta + (i - 5) * offset) * 180) / 3.14));
+					object->get_texture(i).render();
+					object->get_texture(i).set_pos(glm::vec3(int(magnitude * cos(theta + i * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + i * offset)), 0.0));
+					object->get_texture(i).set_rot(glm::vec3(0.0, 0.0, ((theta + i * offset) * 180) / 3.14));
 				}
 			});
 			push_menu_post_render_function([this](MenuObject* object) {
 				for (int i = 0; i < 5; i++) {
-					object->textures[i].set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
-					object->textures[i].set_rot(glm::vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
-					object->textures[i].render();
+					object->get_texture(i).set_pos(glm::vec3(int(magnitude * cos(theta + (i + 5) * offset)) - WINDOW_WIDTH / 1.367, int(magnitude * sin(theta + (i + 5) * offset)), 0.0));
+					object->get_texture(i).set_rot(glm::vec3(0.0, 0.0, ((theta + (i + 5) * offset) * 180) / 3.14));
+					object->get_texture(i).render();
 				}
 			});
 			push_menu_texture("Online Label", main_text_font, "Online", rgba, border_rgbs);
@@ -163,10 +163,8 @@ MainMenu::MainMenu() {
 					}
 				});
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						GameTexture& texture = object->parent->get_texture("cursor");
-						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
-					}
+					GameTexture& texture = object->get_parent().get_texture("cursor");
+					texture.set_pos(glm::vec3(texture.pos.get_val().x, object->get_texture(object->int_var("Sub Selection")).pos.get_val().y, 0));
 				});
 				push_menu_texture("Lobby Label", sub_text_font, "Lobby", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
@@ -211,10 +209,8 @@ MainMenu::MainMenu() {
 					}
 				});
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						GameTexture& texture = object->parent->get_texture("cursor");
-						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
-					}
+					GameTexture& texture = object->get_parent().get_texture("cursor");
+					texture.set_pos(glm::vec3(texture.pos.get_val().x, object->get_texture(object->int_var("Sub Selection")).pos.get_val().y, 0));
 				});
 				push_menu_texture("Story Label", sub_text_font, "Story", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
@@ -259,10 +255,8 @@ MainMenu::MainMenu() {
 					}
 				});
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						GameTexture& texture = object->parent->get_texture("cursor");
-						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
-					}
+					GameTexture& texture = object->get_parent().get_texture("cursor");
+					texture.set_pos(glm::vec3(texture.pos.get_val().x, object->get_texture(object->int_var("Sub Selection")).pos.get_val().y, 0));
 				});
 				push_menu_texture("Battle Label", sub_text_font, "Battle", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
@@ -313,10 +307,8 @@ MainMenu::MainMenu() {
 					}
 				});
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						GameTexture& texture = object->parent->get_texture("cursor");
-						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
-					}
+					GameTexture& texture = object->get_parent().get_texture("cursor");
+					texture.set_pos(glm::vec3(texture.pos.get_val().x, object->get_texture(object->int_var("Sub Selection")).pos.get_val().y, 0));
 				});
 				push_menu_texture("Controls Label", sub_text_font, "Controls", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
@@ -370,10 +362,8 @@ MainMenu::MainMenu() {
 					}
 				});
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						GameTexture& texture = object->parent->get_texture("cursor");
-						texture.set_pos(glm::vec3(texture.pos.get_val().x, object->textures[object->int_var("Sub Selection")].pos.get_val().y, 0));
-					}
+					GameTexture& texture = object->get_parent().get_texture("cursor");
+					texture.set_pos(glm::vec3(texture.pos.get_val().x, object->get_texture(object->int_var("Sub Selection")).pos.get_val().y, 0));
 				});
 				push_menu_texture("Gallery Label", sub_text_font, "Gallery", glm::vec4(255.0, 127.0, 0.0, 255.0), border_rgbs);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);

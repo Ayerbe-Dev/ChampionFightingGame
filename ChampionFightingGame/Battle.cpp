@@ -48,10 +48,7 @@ void battle_main() {
 
 	while (battle->looping) {
 		game_manager->frame_delay_check_fps();
-
-		glStencilMask(0xFF);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		glStencilMask(0x00);
+		render_manager->clear_screen();
 
 		#ifdef DEBUG
 			render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
@@ -242,7 +239,7 @@ void Battle::load_ui() {
 				object->get_texture("Partial Health").scale_left_percent(partial_health / max_health);
 			});
 
-			push_menu_float_var("max_health", fighter[0]->get_local_param_float("health"));
+			push_menu_float_var("max_health", fighter[0]->get_param_float("health"));
 			push_menu_ptr_var("health", &fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 			push_menu_ptr_var("partial_health", &fighter[0]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
@@ -275,7 +272,7 @@ void Battle::load_ui() {
 				object->get_texture("Health").scale_left_percent(health / max_health);
 				object->get_texture("Partial Health").scale_left_percent(partial_health / max_health);
 			});
-			push_menu_float_var("max_health", fighter[1]->get_local_param_float("health"));
+			push_menu_float_var("max_health", fighter[1]->get_param_float("health"));
 			push_menu_ptr_var("health", &fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]);
 			push_menu_ptr_var("partial_health", &fighter[1]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
@@ -291,69 +288,41 @@ void Battle::load_ui() {
 			push_menu_pos(glm::vec3(66.0, 114.0, 0.0));
 			push_menu_dimensions("Health");
 		} pop_menu_stack();
-		push_menu_child("P1 Scale"); {
+		push_menu_child("P1 Scale", 3); {
 			push_menu_process_function([this](MenuObject* object) {
-				int& texture_frame = object->int_var("texture_frame");
-				if (get_value_at_vector_bool_addr((unsigned*)object->ptr_var("ended_hitstun"), FIGHTER_FLAG_ENDED_HITSTUN)) {
-					texture_frame = object->get_texture("Damage Scale").sprite_index;
-				}
-				if (texture_frame != -1) {
-					if (texture_frame < 2) {
-						texture_frame++;
-					}
-					else if (texture_frame > 2) {
-						texture_frame--;
-					}
-					object->get_texture("Damage Scale").set_sprite(texture_frame);
-					
-					if (object->get_texture("Damage Scale").sprite_index != 2
-					&& *(int*)object->ptr_var("damage_scale") == 0) {
-						texture_frame = object->get_texture("Damage Scale").sprite_index;
-						return;
-					}
-					texture_frame = -1;
-				}
-				object->get_texture("Damage Scale").set_sprite(*(int*)object->ptr_var("damage_scale") + 2);
+				float scale = *(float*)object->ptr_var("damage_scale");
+				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
+				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
+				object->get_texture("Damage Scale").set_left_target(clampf(scale, scale, 1.0f), 3);
 			});
-			push_menu_ptr_var("damage_scale", &fighter[0]->fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI]);
-			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
-			push_menu_int_var("texture_frame", -1);
-			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.gif");
+			push_menu_ptr_var("damage_scale", &fighter[0]->fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
+			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
+			push_menu_texture("Damage Scale 110", "resource/game_state/battle/ui/meter/damage_scale_110.png");
+			last_pushed_texture->set_alpha(0);
+			push_menu_texture("Damage Scale 120", "resource/game_state/battle/ui/meter/damage_scale_120.png");
+			last_pushed_texture->set_alpha(0);
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-			push_menu_pos(glm::vec3(1002.0, 244.0, 0.0));
+			push_menu_pos(glm::vec3(1026.0, 244.0, 0.0));
 			push_menu_dimensions("Damage Scale");
 		} pop_menu_stack();
-		push_menu_child("P2 Scale"); {
+		push_menu_child("P2 Scale", 3); {
 			push_menu_process_function([this](MenuObject* object) {
-				int& texture_frame = object->int_var("texture_frame");
-				if (get_value_at_vector_bool_addr((unsigned*)object->ptr_var("ended_hitstun"), FIGHTER_FLAG_ENDED_HITSTUN)) {
-					texture_frame = object->get_texture("Damage Scale").sprite_index;
-				}
-				if (texture_frame != -1) {
-					if (texture_frame < 2) {
-						texture_frame++;
-					}
-					else if (texture_frame > 2) {
-						texture_frame--;
-					}
-					object->get_texture("Damage Scale").set_sprite(texture_frame);
-
-					if (object->get_texture("Damage Scale").sprite_index != 2
-						&& *(int*)object->ptr_var("damage_scale") == 0) {
-						texture_frame = object->get_texture("Damage Scale").sprite_index;
-						return;
-					}
-					texture_frame = -1;
-				}
-				object->get_texture("Damage Scale").set_sprite(*(int*)object->ptr_var("damage_scale") + 2);
+				float scale = *(float*)object->ptr_var("damage_scale");
+				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
+				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
+				object->get_texture("Damage Scale").set_left_target(clampf(scale, scale, 1.0f), 3);
 			});
-			push_menu_ptr_var("damage_scale", &fighter[1]->fighter_int[FIGHTER_INT_DAMAGE_SCALE_FOR_UI]);
-			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
-			push_menu_int_var("texture_frame", -1);
-			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.gif");
+			push_menu_ptr_var("damage_scale", &fighter[1]->fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
+			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
+			last_pushed_texture->flip_h();
+			push_menu_texture("Damage Scale 110", "resource/game_state/battle/ui/meter/damage_scale_110.png");
+			last_pushed_texture->set_alpha(0);
+			last_pushed_texture->flip_h();
+			push_menu_texture("Damage Scale 120", "resource/game_state/battle/ui/meter/damage_scale_120.png");
+			last_pushed_texture->set_alpha(0);
 			last_pushed_texture->flip_h();
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
-			push_menu_pos(glm::vec3(1002.0, 244.0, 0.0));
+			push_menu_pos(glm::vec3(1026.0, 244.0, 0.0));
 			push_menu_dimensions("Damage Scale");
 		} pop_menu_stack();
 		push_menu_child("P1 EX"); {
@@ -369,7 +338,7 @@ void Battle::load_ui() {
 				prev_segments = segments;
 			});
 
-			push_menu_float_var("max_ex", get_param_float(PARAM_FIGHTER, "ex_meter_size"));
+			push_menu_float_var("max_ex", get_global_param_float(PARAM_FIGHTER, "ex_meter_size"));
 			push_menu_ptr_var("ex", &fighter[0]->fighter_float[FIGHTER_FLOAT_EX_METER]);
 			push_menu_float_var("prev_segments", 0.0);
 			
@@ -394,7 +363,7 @@ void Battle::load_ui() {
 				prev_segments = segments;
 			});
 
-			push_menu_float_var("max_ex", get_param_float(PARAM_FIGHTER, "ex_meter_size"));
+			push_menu_float_var("max_ex", get_global_param_float(PARAM_FIGHTER, "ex_meter_size"));
 			push_menu_ptr_var("ex", &fighter[1]->fighter_float[FIGHTER_FLOAT_EX_METER]);
 			push_menu_float_var("prev_segments", 0.0);
 
@@ -411,37 +380,32 @@ void Battle::load_ui() {
 		push_menu_activity_group("P1 Super", nullptr, true); {
 			push_menu_child("SuperAG"); {
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						float super = *(float*)object->ptr_var("super");
-						float max_super = object->float_var("max_super");
-						if (super == max_super) {
-							object->set_active_sibling("Super FullAG");
-							return;
-						}
-						object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
+					float super = *(float*)object->ptr_var("super");
+					float max_super = object->float_var("max_super");
+					if (super == max_super) {
+						object->set_active_sibling("Super FullAG");
+						return;
 					}
-					
+					object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
 				});
 				push_menu_ptr_var("super", &fighter[0]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
-				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
 				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 				push_menu_dimensions("Super");
 			} pop_menu_stack();
 			push_menu_child("Super FullAG"); {
-				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						float super = *(float*)object->ptr_var("super");
-						if (super != object->float_var("max_super")) {
-							object->set_active_sibling("Super AG");
-							return;
-						}
-						object->get_texture("Super Full").next_sprite();
+				push_menu_process_function([this](MenuObject* object) {	
+					float super = *(float*)object->ptr_var("super");
+					if (super != object->float_var("max_super")) {
+						object->set_active_sibling("Super AG");
+						return;
 					}
+					object->get_texture("Super Full").next_sprite();					
 				});
 				push_menu_ptr_var("super", &fighter[0]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
-				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
 				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -450,20 +414,17 @@ void Battle::load_ui() {
 		} pop_menu_stack();
 		push_menu_activity_group("P2 Super", nullptr, true); {
 			push_menu_child("SuperAG"); {
-				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						float super = *(float*)object->ptr_var("super");
-						float max_super = object->float_var("max_super");
-						if (super == max_super) {
-							object->set_active_sibling("Super FullAG");
-							return;
-						}
-						object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
+				push_menu_process_function([this](MenuObject* object) {				
+					float super = *(float*)object->ptr_var("super");
+					float max_super = object->float_var("max_super");
+					if (super == max_super) {
+						object->set_active_sibling("Super FullAG");
+						return;
 					}
-
-					});
+					object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
+				});
 				push_menu_ptr_var("super", &fighter[1]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
-				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
 				last_pushed_texture->flip_h();
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
@@ -472,17 +433,15 @@ void Battle::load_ui() {
 			} pop_menu_stack();
 			push_menu_child("Super FullAG"); {
 				push_menu_process_function([this](MenuObject* object) {
-					if (object->bool_var("Active")) {
-						float super = *(float*)object->ptr_var("super");
-						if (super != object->float_var("max_super")) {
-							object->set_active_sibling("Super AG");
-							return;
-						}
-						object->get_texture("Super Full").next_sprite();
+					float super = *(float*)object->ptr_var("super");
+					if (super != object->float_var("max_super")) {
+						object->set_active_sibling("Super AG");
+						return;
 					}
+					object->get_texture("Super Full").next_sprite();
 				});
 				push_menu_ptr_var("super", &fighter[1]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
-				push_menu_float_var("max_super", get_param_float(PARAM_FIGHTER, "super_meter_size"));
+				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
 				last_pushed_texture->flip_h();
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
@@ -802,7 +761,7 @@ void Battle::process_round_start() {
 		round_start.get_active_child("Round Start AG").get_texture("Round").set_alpha(255);
 	}
 	for (int i = 0; i < 2; i++) {
-		player[i]->controller.poll_player_buttons();
+		player[i]->poll_controller_fighter();
 	}
 	process_fighters();
 	process_ui();
@@ -830,7 +789,7 @@ void Battle::process_battle() {
 	process_debug_boxes();
 	if (frame_advance || !frame_pause) {
 		for (int i = 0; i < 2; i++) {
-			player[i]->controller.poll_player_buttons();
+			player[i]->poll_controller_fighter();
 		}
 		process_fighters();
 		process_ui();
@@ -838,9 +797,9 @@ void Battle::process_battle() {
 		post_process_fighters();
 		thread_manager->wait_thread(THREAD_KIND_UI);
 		camera->camera_main();
-	}
-	if (game_context == GAME_CONTEXT_TRAINING) {
-		process_training();
+		if (game_context == GAME_CONTEXT_TRAINING) {
+			process_training();
+		}
 	}
 	if (get_child("Timer").bool_var("time_up")) {
 		internal_state = BATTLE_STATE_KO;
@@ -862,7 +821,7 @@ void Battle::process_ko() {
 		}
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.reset_all_buttons();
-			fighter[i]->fighter_int[FIGHTER_INT_HITSTUN_FRAMES] = 0;
+			fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
 		}
 		ko_timer = 120;
 		actionable_timer = 600;
@@ -885,7 +844,7 @@ void Battle::process_ko() {
 				).set_sprite(ROUND_ICON_DOUBLE);
 			}
 			else {
-				if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_local_param_float("health")) {
+				if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_param_float("health")) {
 					p1_round.get_texture("Round Win" + std::to_string(
 						p1_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_PERFECT);
@@ -908,7 +867,7 @@ void Battle::process_ko() {
 					).set_sprite(ROUND_ICON_KO);
 				}
 
-				if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_local_param_float("health")) {
+				if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_param_float("health")) {
 					p2_round.get_texture("Round Win" + std::to_string(
 						p2_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_PERFECT);
@@ -935,8 +894,8 @@ void Battle::process_ko() {
 		if (get_child("Timer").bool_var("time_up")) {
 			get_activity_group("KO Text").set_active_child("Time");
 		}
-		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_local_param_float("health")
-		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_local_param_float("health")) {
+		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_param_float("health")
+		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_param_float("health")) {
 			get_activity_group("KO Text").set_active_child("Perfect KO");
 		}
 		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
@@ -1238,17 +1197,13 @@ void Battle::process_fighters() {
 			texts[i].push_back(BattleText());
 			texts[i].back().init(&message_font, "Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
 		} break;
-		case UI_TEXT_TYPE_COUNTER_PUNISH: {
+		case UI_TEXT_TYPE_PUNISH: {
 			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Punish Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+			texts[i].back().init(&message_font, "Punish", 40, fighter[i], glm::vec2(275.0, 450.0));
 		} break;
-		case UI_TEXT_TYPE_COUNTER_HITSTUN_PARRY: {
+		case UI_TEXT_TYPE_CRITICAL: {
 			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Hitstun Parry Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
-		} break;
-		case UI_TEXT_TYPE_COUNTER_JUMP: {
-			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Jump Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
+			texts[i].back().init(&message_font, "Critical Hit", 40, fighter[i], glm::vec2(275.0, 450.0));
 		} break;
 		case UI_TEXT_TYPE_REVERSAL: {
 			texts[i].push_back(BattleText());
@@ -1271,8 +1226,6 @@ void Battle::process_fighters() {
 				}
 				else { //If both players are stuck inside each other, stop that !
 					if (fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
-						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
-						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = true;
 						if (fighter[i]->pos.x == fighter[!i]->pos.x
 							&& fighter[i]->internal_facing_dir == fighter[!i]->internal_facing_dir) {
 							fighter[i]->internal_facing_right = true;
@@ -1282,9 +1235,6 @@ void Battle::process_fighters() {
 						}
 						fighter[i]->add_pos(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
 						fighter[!i]->add_pos(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
-
-						fighter[i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
-						fighter[!i]->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] = false;
 					}
 				}
 			}
@@ -1329,7 +1279,7 @@ void Battle::process_training() {
 			training_info[i].frame_advantage.update_text(info_font, advantage, color, glm::vec4(0.0, 0.0, 0.0, 2.0));
 		}
 		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] == 0) {
-			fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH], fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] + 10.0, fighter[i]->get_local_param_float("health"));
+			fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH], fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] + 10.0, fighter[i]->get_param_float("health"));
 			fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
 		}
 		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] == 0) {
@@ -1359,7 +1309,7 @@ void Battle::process_training() {
 			training_info[i].mini_visualizers.front().init(fighter[i], &info_font, true);
 			training_info[i].mini_visualizers.front().input_code = new_input_code;
 		}
-		else if (frame_advance || !frame_pause) {
+		else {
 			training_info[i].mini_visualizers.front().frame_timer = clamp(
 				training_info[i].mini_visualizers.front().frame_timer, 
 				training_info[i].mini_visualizers.front().frame_timer + 1, 99
@@ -1390,14 +1340,13 @@ void Battle::render_main() {
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->execute_buffered_events();
-	glDepthMask(GL_TRUE);
 
 	//Uncomment the following line if the Rowan model ever becomes capable of rendering 
 	//his sleeves with culling enabled
 //	glEnable(GL_CULL_FACE);
 
+	glDepthMask(GL_TRUE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0x00);
 
 	//SHADOW PASS
 
@@ -1664,11 +1613,50 @@ void Battle::event_frame_advance_press() {
 }
 
 void Battle::event_record_input_press() {
-
+	if (game_context == GAME_CONTEXT_TRAINING) {
+		switch (player[1]->input_mode) {
+			case (INPUT_MODE_POLL):
+			case (INPUT_MODE_PLAY_SEQ): {
+				player[0]->controller.swap_player_controller(&player[1]->controller);
+				player[1]->manual_seq.reset_idx();
+				player[1]->input_mode = INPUT_MODE_RECORD_SEQ;
+			} break;
+			case (INPUT_MODE_RECORD_SEQ): {
+				player[0]->controller.reset_player_controller();
+				player[1]->controller.reset_player_controller();
+				player[1]->manual_seq.reset_idx();
+				player[1]->input_mode = INPUT_MODE_POLL;
+			} break;
+			case (INPUT_MODE_REPLAY):
+			case (INPUT_MODE_ATLAS_REWIND):
+			case (INPUT_MODE_ROLLBACK): {
+				return;
+			} break;
+		}
+	}
 }
 
 void Battle::event_replay_input_press() {
-
+	if (game_context == GAME_CONTEXT_TRAINING) {
+		switch (player[1]->input_mode) {
+			case (INPUT_MODE_PLAY_SEQ): {
+				player[1]->manual_seq.reset_idx();
+				player[1]->input_mode = INPUT_MODE_POLL;
+			} break;
+			case (INPUT_MODE_POLL):
+			case (INPUT_MODE_RECORD_SEQ): {
+				player[0]->controller.reset_player_controller();
+				player[1]->controller.reset_player_controller();
+				player[1]->manual_seq.reset_idx();
+				player[1]->input_mode = INPUT_MODE_PLAY_SEQ;
+			} break;
+			case (INPUT_MODE_REPLAY):
+			case (INPUT_MODE_ATLAS_REWIND):
+			case (INPUT_MODE_ROLLBACK): {
+				return;
+			} break;
+		}
+	}
 }
 
 void Battle::event_switch_input_press() {

@@ -12,7 +12,7 @@ void controls_main() {
 
 	while (options_menu->looping) {
 		wait_ms();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->clear_screen();
 
 		render_manager->handle_window_events();
 		options_menu->process_game_state();

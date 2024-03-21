@@ -47,12 +47,10 @@ void debug_main() {
 	cotr_imgui_init();
 	while (debug->looping) {
 		game_manager->frame_delay();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->clear_screen();
 
 		for (int i = 0; i < 2; i++) {
-			int controller_update = game_manager->player[i]->controller.check_controllers();
-			if (controller_update == GAME_CONTROLLER_UPDATE_UNREGISTERED) {
-			}
+			game_manager->player[i]->controller.check_controllers();
 		}
 
 		render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
@@ -87,7 +85,6 @@ void debug_main() {
 		glViewport(0, 0, render_manager->window_width, render_manager->window_height);
 		render_manager->g_buffer.render();
 		render_manager->gbuffer_texture.render();
-		glDepthMask(GL_FALSE);
 
 		cotr_imgui_debug_dbmenu(debug);
 		

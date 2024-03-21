@@ -1,21 +1,17 @@
 #include "BattleObject.h"
 
 void BattleObject::new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
-	CollisionKind collision_kind, float damage, float chip_damage, int damage_scale,
-	float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun,
-	HitStatus hit_status, unsigned int custom_hit_status, HitResult hit_result,
-	HitFlag hit_flags, CriticalCondition critical_condition, HitStatus critical_status,
-	unsigned int custom_critical_status, HitResult critical_hit_result,
-	HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max,
-	HitHeight hit_height, DamageKind damage_kind, std::string hit_effect,
-	std::string hit_sound) {
+	CollisionKind collision_kind, HitResult hit_result, HitStatus hit_status, 
+	unsigned int custom_hit_status, HitMove hit_move, HitFlag hit_flags,
+	CriticalCondition critical_condition, HitStatus critical_status,
+	unsigned int custom_critical_status, HitMove critical_hit_move,
+	HitFlag critical_hit_flags, HitHeight hit_height, DamageKind damage_kind, 
+	std::string hit_effect, std::string hit_sound) {
 	if (id < 10) {
 		hitboxes[id].activate(id, multihit, anchor, offset, collision_kind,
-			damage, chip_damage, damage_scale, meter_gain, hitlag, hitstun, blocklag, blockstun,
-			hit_status, custom_hit_status, hit_result, hit_flags, critical_condition,
-			critical_status, custom_critical_status, critical_hit_result, critical_hit_flags,
-			juggle_start, juggle_increase, juggle_max, hit_height, damage_kind, hit_effect, 
-			hit_sound
+			hit_result, hit_status, custom_hit_status, hit_move, hit_flags, critical_condition,
+			critical_status, custom_critical_status, critical_hit_move, critical_hit_flags,
+			hit_height, damage_kind, hit_effect, hit_sound
 		);
 	}
 }

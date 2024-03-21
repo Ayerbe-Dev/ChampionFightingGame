@@ -42,6 +42,7 @@ public:
 	void execute_buffered_events();
 
 	void update_screen();
+	void clear_screen();
 
 	void handle_window_events(std::function<void(SDL_Event*)> event_handler = nullptr);
 

@@ -218,14 +218,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AI.cpp" />
-    <ClCompile Include="AIInput.cpp" />
-    <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Anlst.cpp" />
     <ClCompile Include="Ayrbt.cpp" />
     <ClCompile Include="BattleObjectAnimationFunctions.cpp" />
     <ClCompile Include="BattleObjectCollisionFunctions.cpp" />
     <ClCompile Include="BattleObjectDefiniteHitboxFunctions.cpp" />
+    <ClCompile Include="BattleObjectPositionFunctions.cpp" />
     <ClCompile Include="BattleObjectStatusFunctions.cpp" />
     <ClCompile Include="Dingo.cpp" />
     <ClCompile Include="DingoMoves.cpp" />
@@ -261,7 +259,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ControllerManager.cpp" />
     <ClCompile Include="cotr_imgui_debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
-    <ClCompile Include="AIDecision.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="BattleObjectEffectFunctions.cpp" />
     <ClCompile Include="EffectManager.cpp" />
@@ -271,6 +268,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="EricStatus.cpp" />
     <ClCompile Include="FighterMovelist.cpp" />
     <ClCompile Include="GameObjectProcessFuncs.cpp" />
+    <ClCompile Include="InputSequence.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="FighterActionFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
@@ -278,7 +276,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterCinematicFunctions.cpp" />
     <ClCompile Include="FighterFrameDataFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
-    <ClCompile Include="FighterRotationFunctions.cpp" />
     <ClCompile Include="FighterScriptWrappers.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
@@ -347,6 +344,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="NightsabreMoves.cpp" />
     <ClCompile Include="NightsabreStatus.cpp" />
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
+    <ClCompile Include="FighterAnalyzer.cpp" />
+    <ClCompile Include="FighterHabits.cpp" />
     <ClCompile Include="ProjectileActivationFunctions.cpp" />
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
     <ClCompile Include="ScreenText.cpp" />
@@ -390,7 +389,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ProjectileDataFunctions.cpp" />
     <ClCompile Include="ProjectileInterface.cpp" />
     <ClCompile Include="ProjectileLoadingFunctions.cpp" />
-    <ClCompile Include="ProjectilePositionFunctions.cpp" />
     <ClCompile Include="ProjectileScriptFunctions.cpp" />
     <ClCompile Include="ProjectileScriptWrappers.cpp" />
     <ClCompile Include="ProjectileStatus.cpp" />
@@ -438,8 +436,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ZyairStatus.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AI.h" />
-    <ClInclude Include="AIManager.h" />
     <ClInclude Include="Anlst.h" />
     <ClInclude Include="AthenaString.h" />
     <ClInclude Include="AtlasString.h" />
@@ -491,6 +487,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="HxAMeta.h" />
     <ClInclude Include="HxANode.h" />
     <ClInclude Include="imgui_stdlib.h" />
+    <ClInclude Include="InputSequence.h" />
     <ClInclude Include="JuliusString.h" />
     <ClInclude Include="LeonString.h" />
     <ClInclude Include="Mouse.h" />
@@ -545,10 +542,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GameTexture.h" />
     <ClInclude Include="GLEW Helpers.h" />
     <ClInclude Include="GLM Helpers.h" />
-    <ClInclude Include="AIMoveList.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="FighterAnalyzer.h" />
+    <ClInclude Include="FighterHabits.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Prmlst.h" />
     <ClInclude Include="ProjectileString.h" />
@@ -586,7 +584,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="LeonInt.h" />
     <ClInclude Include="LeonStatus.h" />
     <ClInclude Include="Light.h" />
-    <ClInclude Include="LoopingVector.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuConstants.h" />
     <ClInclude Include="Model.h" />

@@ -87,6 +87,7 @@ public:
 	glm::mat4 get_global_transform() const;
 	std::string get_directory() const;
 	std::size_t get_trans_id() const;
+	bool is_loaded() const;
 	bool has_skeleton() const;
 
 	std::unordered_map<std::string, int> material_map;
@@ -111,6 +112,7 @@ private:
 	glm::mat4 global_transform;
 	std::string directory;
 	std::size_t trans_id;
+	bool file_loaded;
 	bool skeleton_loaded;
 	int skipped_verts;
 };

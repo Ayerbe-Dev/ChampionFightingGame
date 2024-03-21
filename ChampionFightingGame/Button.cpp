@@ -15,5 +15,5 @@ bool is_any_controller_input(SDL_GameController* controller) {
 }
 
 bool is_menu_button(unsigned int button_kind) {
-	return button_kind >= BUTTON_MENU_UP;
+	return button_kind >= BUTTON_MENU;
 }

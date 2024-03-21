@@ -3,33 +3,16 @@
 #include "utils.h"
 
 void Fighter::change_opponent_status(unsigned int status_kind) {
-	if ((this->status_kind == FIGHTER_STATUS_THROW || this->status_kind == FIGHTER_STATUS_THROW_AIR) && status_kind == FIGHTER_STATUS_THROWN) {
-		fighter_flag[FIGHTER_FLAG_THREW_OPPONENT] = true;
-	}
 	object_manager->fighter[!id]->change_status(status_kind);
 }
 
 void Fighter::damage_opponent(float damage) {
-	damage *= (clampf(1, 10 - fighter_int[FIGHTER_INT_DAMAGE_SCALE], 15)) / 10.0;
 	Fighter* that = object_manager->fighter[!id];
-	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE] += damage;
+	damage *= that->fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] / 100.0f;
+	fighter_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING] += damage;
 	fighter_int[FIGHTER_INT_COMBO_COUNT]++;
 	that->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 	that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - damage, that->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
-}
-
-void Fighter::set_opponent_rot(glm::vec3 rot) {
-	rot.x *= facing_dir;
-	object_manager->fighter[!id]->set_rot(rot);
-}
-
-void Fighter::add_opponent_rot(glm::vec3 rot) {
-	rot.x *= facing_dir;
-	object_manager->fighter[!id]->add_rot(rot);
-}
-
-void Fighter::reset_opponent_rot() {
-	object_manager->fighter[!id]->reset_rot();
 }
 
 void Fighter::set_opponent_thrown_ticks() {

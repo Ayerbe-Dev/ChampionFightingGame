@@ -45,7 +45,7 @@ public:
 
 	int get_param_type(std::string param_name);
 
-	void add_param(Param param, int index);
+	void add_param(Param param);
 	bool load_failed() const;
 	int get_num_params() const;
 private:

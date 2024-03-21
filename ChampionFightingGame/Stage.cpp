@@ -38,10 +38,10 @@ void Stage::load_stage(StageInfo stage_info, ObjectManager *object_manager) {
 
 	stream >> stage_bounds.x >> stage_bounds.y >> default_music_kind;
 	float center_point = (stage_bounds.x + stage_bounds.y) / 2.0;
-	float distance = get_param_float(PARAM_FIGHTER, "spawn_distance") / 2.0;
+	float distance = get_global_param_float(PARAM_FIGHTER, "spawn_distance") / 2.0;
 	start_pos.x = center_point - distance;
 	start_pos.y = center_point + distance;
-	float max_distance = get_param_float(PARAM_FIGHTER, "max_distance") / 2.2;
+	float max_distance = get_global_param_float(PARAM_FIGHTER, "max_distance") / 2.2;
 	camera_bounds.x = stage_bounds.x + max_distance;
 	camera_bounds.y = stage_bounds.y - max_distance;
 

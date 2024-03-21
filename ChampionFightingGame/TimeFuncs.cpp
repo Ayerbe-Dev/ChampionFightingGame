@@ -17,3 +17,8 @@ void wait_ms(double ms_duration, bool process_time) {
 		g_chron = std::chrono::steady_clock::now();
 	}
 };
+
+double get_ms_since_last_frame() {
+	std::chrono::duration<double, std::milli> ms = std::chrono::steady_clock::now() - g_chron;
+	return ms.count();
+}

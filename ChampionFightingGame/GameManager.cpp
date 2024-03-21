@@ -221,7 +221,7 @@ bool GameManager::is_left_press(int id) {
 }
 
 bool GameManager::is_any_menu_input(int id) {
-	for (int i = 0; i < BUTTON_MAX; i++) {
+	for (int i = BUTTON_MENU_UP; i < BUTTON_MENU_MAX; i++) {
 		if (player[id]->controller.check_button_trigger(i)) {
 			return true;
 		}

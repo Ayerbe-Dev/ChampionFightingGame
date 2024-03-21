@@ -6,11 +6,9 @@
 #include "utils.h"
 
 bool Fighter::add_pos(glm::vec3 pos, bool prev) {
-	Fighter* that = object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	Fighter* that = object_manager->fighter[!id];
 	glm::vec3 prev_pos = this->pos;
-	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a
-		//number, crash to debug and print both the statuses and our previous X/Y coords. This will 
-		//make debugging easier.
+	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) {
 		GameManager* game_manager = GameManager::get_instance();
 		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " + 
 			std::to_string(status_kind) + ". Pos X: " + std::to_string(prev_pos.x) + ", Pos Y: " + 
@@ -22,29 +20,17 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		return false;
 	}
 	pos *= object_manager->get_world_rate(this);
-
-	//Ok now to actually set some positions
-
 	bool ret = true;
-	bool opponent_right = this->pos.x > that->pos.x;
-
-	//Add positions, then do a whole bunch of checks to see if we'll need to change to a different position.
-
 	this->pos += pos;
 
-	update_pushbox_pos();
-
-	//Note: The prev arg determines what should happen should a position check fail. If it's true, the changes to position on that axis are canceled
-	//completely. If not, the position is moved to the closest valid position.
-
-	if (this->pos.x > stage->stage_bounds.y) { //If you went out of the horizontal bounds
+	if (this->pos.x > stage->stage_bounds.y) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
 			this->pos.x = stage->stage_bounds.y;
 		}
-		if (get_local_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
+		if (get_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
 		}
 		ret = false;
@@ -56,13 +42,13 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		else {
 			this->pos.x = stage->stage_bounds.x;
 		}
-		if (get_local_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
+		if (get_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
 			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
 		}
 		ret = false;
 	}
 	if (status_kind != FIGHTER_STATUS_GRABBED) {
-		if (this->pos.y < 0) { //If you're about to land in the floor
+		if (this->pos.y < 0) {
 			if (prev) {
 				this->pos.y = prev_pos.y;
 			}
@@ -81,46 +67,29 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 			ret = false;
 		}
 	}
-
-	//Check if a player is about to walk out of the camera range even if they would stay in bounds.
-
 	float x_distance = std::max(this->pos.x, that->pos.x) - std::min(this->pos.x, that->pos.x);
-	if (x_distance > get_param_float(PARAM_FIGHTER, "max_distance")) {
+	if (x_distance > get_global_param_float(PARAM_FIGHTER, "max_distance")) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
 			if (pos.x < that->pos.x) {
-				this->pos.x = that->pos.x - get_param_float(PARAM_FIGHTER, "max_distance");
+				this->pos.x = that->pos.x - get_global_param_float(PARAM_FIGHTER, "max_distance");
 			}
 			else {
-				this->pos.x = that->pos.x + get_param_float(PARAM_FIGHTER, "max_distance");
+				this->pos.x = that->pos.x + get_global_param_float(PARAM_FIGHTER, "max_distance");
 			}
 		}
-
 		ret = false;
 	}
-
-	//Check to see if you crossed up the opponent by changing positions
-
-	bool new_opponent_right = this->pos.x > that->pos.x;
-
-	if (opponent_right != new_opponent_right  //We crossed the front of the opponent's jostle box
-		&& !fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] //We aren't allowed to cross up
-		&& situation_kind == FIGHTER_SITUATION_GROUND //We're on the ground
-		&& (that->situation_kind == FIGHTER_SITUATION_GROUND || that->situation_kind == FIGHTER_SITUATION_DOWN)) { //And so are they
-		this->pos.x = prev_pos.x;
-		ret = false;
-	}
-
+	update_pushbox_pos();
 	return ret;
 }
 
 bool Fighter::set_pos(glm::vec3 pos, bool prev) {
-	Fighter* that = object_manager->fighter[!id]; //Get the opponent's Fighter, since we'll need to use them a lot
+	Fighter* that = object_manager->fighter[!id];
 	glm::vec3 prev_pos = this->pos;
-	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) { //If we're trying to add something that isn't a number, crash to debug and print both the statuses and our 
-		//previous X/Y coords. This will make debugging easier.
+	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) {
 		GameManager* game_manager = GameManager::get_instance();
 		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " +
 			std::to_string(status_kind) + ". Pos X: " + std::to_string(prev_pos.x) + ", Pos Y: " +
@@ -132,13 +101,9 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 		return false;
 	}
 
-	//Ok now to actually set some positions
-
 	bool ret = true;
-
-	bool opponent_right = this->pos.x > that->pos.x;
-
 	this->pos = pos;
+
 	if (this->pos.x > stage->stage_bounds.y) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
@@ -177,34 +142,22 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 			ret = false;
 		}
 	}
-
 	float x_distance = std::max(this->pos.x, that->pos.x) - std::min(this->pos.x, that->pos.x);
-	if (x_distance > get_param_float(PARAM_FIGHTER, "max_distance")) {
+	if (x_distance > get_global_param_float(PARAM_FIGHTER, "max_distance")) {
 		if (prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
 			if (this->pos.x < that->pos.x) {
-				this->pos.x = that->pos.x - get_param_float(PARAM_FIGHTER, "max_distance");
+				this->pos.x = that->pos.x - get_global_param_float(PARAM_FIGHTER, "max_distance");
 			}
 			else {
-				this->pos.x = that->pos.x + get_param_float(PARAM_FIGHTER, "max_distance");
+				this->pos.x = that->pos.x + get_global_param_float(PARAM_FIGHTER, "max_distance");
 			}
 		}
 		ret = false;
 	}
-
-	bool new_opponent_right = this->pos.x > that->pos.x;
-	if (opponent_right != new_opponent_right 
-		&& !fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP] 
-		&& !that->fighter_flag[FIGHTER_FLAG_ALLOW_CROSSUP]
-		&& (that->situation_kind == FIGHTER_SITUATION_GROUND 
-			|| that->situation_kind == FIGHTER_SITUATION_DOWN)
-		&& situation_kind == FIGHTER_SITUATION_GROUND) {
-		this->pos.x = prev_pos.x;
-		ret = false;
-	}
-
+	update_pushbox_pos();
 	return ret;
 }
 

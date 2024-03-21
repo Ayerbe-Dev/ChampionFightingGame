@@ -46,10 +46,10 @@ int Fighter::get_frames_until_actionable() {
 		if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * (ret - 1)) <= 0.0f) {
 			for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * (ret - 1)) <= 0.0f; ret--);
 			if (fighter_string[FIGHTER_STRING_MOVE_KIND] == "") {
-				ret += get_local_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "empty_landing_lag");
+				ret += get_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "empty_landing_lag");
 			}
 			else {
-				ret += get_local_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
+				ret += get_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
 			}
 		}
 

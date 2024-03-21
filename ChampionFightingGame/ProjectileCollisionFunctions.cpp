@@ -45,8 +45,8 @@ void Projectile::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, F
 
 void Projectile::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, Projectile* attacker) {
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
-	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
+	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	unique_process_incoming_projectile_hitbox_collision_hit(hitbox, attacker);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		deactivate();
@@ -57,8 +57,8 @@ void Projectile::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox
 void Projectile::process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
-	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
+	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	owner->fighter_int[FIGHTER_INT_COMBO_COUNT]++;
 	owner->fighter_flag[FIGHTER_FLAG_PROJECTILE_HIT_DURING_STATUS] = true;
 	unique_process_outgoing_fighter_hitbox_collision_hit(hitbox, defender);
@@ -77,9 +77,9 @@ void Projectile::process_outgoing_projectile_hitbox_collision_hit(Hitbox* hitbox
 void Projectile::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.blocklag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-	owner->gain_ex(hitbox->meter_gain * 0.5);
+	owner->gain_ex(hitbox->hit_result.meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_blocked(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		deactivate();
@@ -91,7 +91,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbo
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 16;
-	owner->gain_ex(hitbox->meter_gain * 0.5);
+	owner->gain_ex(hitbox->hit_result.meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_parried(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		deactivate();
@@ -103,7 +103,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbo
 	projectile_int[PROJECTILE_INT_HEALTH]--;
 	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = 16;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 16;
-	owner->gain_ex(hitbox->meter_gain * 0.5);
+	owner->gain_ex(hitbox->hit_result.meter_gain * 0.5);
 	unique_process_outgoing_fighter_hitbox_collision_hitstun_parried(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		deactivate();
@@ -113,9 +113,9 @@ void Projectile::process_outgoing_fighter_hitbox_collision_hitstun_parried(Hitbo
 void Projectile::process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.blocklag / 2;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
-	owner->gain_ex(hitbox->meter_gain * 0.3);
+	owner->gain_ex(hitbox->hit_result.meter_gain * 0.3);
 	unique_process_outgoing_fighter_hitbox_collision_armored(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
 		deactivate();
@@ -125,7 +125,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_armored(Hitbox* hitbo
 void Projectile::process_outgoing_fighter_hitbox_collision_right_of_way_armored(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	unique_process_outgoing_fighter_hitbox_collision_right_of_way_armored(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
@@ -136,7 +136,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_right_of_way_armored(
 void Projectile::process_outgoing_fighter_hitbox_collision_invincibility(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->blocklag / 2;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.blocklag / 2;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	unique_process_outgoing_fighter_hitbox_collision_invincibility(hitbox, defender);
 	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0) {
@@ -146,7 +146,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_invincibility(Hitbox*
 
 void Projectile::process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* attacker) {
 	attacker->update_hitbox_connect(hitbox->id);
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	post_collision_status = projectile_int[PROJECTILE_INT_COUNTER_DEFENDER_STATUS];
 	unique_process_incoming_fighter_hitbox_collision_counter(hitbox, attacker);
@@ -155,7 +155,7 @@ void Projectile::process_incoming_fighter_hitbox_collision_counter(Hitbox* hitbo
 
 void Projectile::process_incoming_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* attacker) {
 	attacker->update_hitbox_connect(hitbox->id);
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	post_collision_status = projectile_int[PROJECTILE_INT_COUNTER_DEFENDER_STATUS];
 	unique_process_incoming_projectile_hitbox_collision_counter(hitbox, attacker);
@@ -165,7 +165,7 @@ void Projectile::process_incoming_projectile_hitbox_collision_counter(Hitbox* hi
 void Projectile::process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbox, Fighter* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	if (owner->post_collision_status == FIGHTER_STATUS_NONE) {
 		owner->post_collision_status = defender->fighter_int[FIGHTER_INT_COUNTER_ATTACKER_STATUS];
@@ -179,7 +179,7 @@ void Projectile::process_outgoing_fighter_hitbox_collision_counter(Hitbox* hitbo
 void Projectile::process_outgoing_projectile_hitbox_collision_counter(Hitbox* hitbox, Projectile* defender) {
 	update_hitbox_connect(hitbox->id);
 	projectile_int[PROJECTILE_INT_HEALTH]--;
-	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hitlag;
+	projectile_int[PROJECTILE_INT_HITLAG_FRAMES] = hitbox->hit_result.hitlag;
 	projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = projectile_int[PROJECTILE_INT_HITLAG_FRAMES];
 	if (owner->post_collision_status == FIGHTER_STATUS_NONE) {
 		owner->post_collision_status = defender->projectile_int[PROJECTILE_INT_COUNTER_ATTACKER_STATUS];

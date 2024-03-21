@@ -12,6 +12,7 @@ enum BattleObjectType {
 	BATTLE_OBJECT_TYPE_MAX
 };
 
+
 class Player;
 class ObjectManager;
 class Stage;
@@ -24,8 +25,12 @@ public:
 
 	//Loading
 
-	void load_stats();
 	void load_params();
+
+	//Position
+
+	void add_pos(glm::vec3 pos);
+	void set_pos(glm::vec3 pos);
 
 	//Blockbox
 
@@ -36,14 +41,12 @@ public:
 	//Hitbox
 
 	void new_hitbox(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
-		CollisionKind collision_kind, float damage, float chip_damage, int damage_scale,
-		float meter_gain, int hitlag, int hitstun, int blocklag, int blockstun,
-		HitStatus hit_status, unsigned int custom_hit_status, HitResult hit_result,
-		HitFlag hit_flags, CriticalCondition critical_condition, HitStatus critical_status,
-		unsigned int custom_critical_status, HitResult critical_hit_result,
-		HitFlag critical_hit_flags, int juggle_start, int juggle_increase, int juggle_max,
-		HitHeight hit_height, DamageKind damage_kind, std::string hit_effect,
-		std::string hit_sound
+		CollisionKind collision_kind, HitResult hit_result, HitStatus hit_status, 
+		unsigned int custom_hit_status, HitMove hit_move, HitFlag hit_flags, 
+		CriticalCondition critical_condition, HitStatus critical_status,
+		unsigned int custom_critical_status, HitMove critical_hit_move,
+		HitFlag critical_hit_flags, HitHeight hit_height, DamageKind damage_kind, 
+		std::string hit_effect, std::string hit_sound
 	);
 	void update_hitbox_connect(int multihit_index);
 	void update_hitbox_pos();
@@ -55,8 +58,8 @@ public:
 
 	void set_definite_hitbox(Fighter* target, unsigned int hit_status,
 		HitFlag hit_flags, int juggle_start, int juggle_increase, float damage, int damage_scale,
-		float meter_gain, int hitlag, int hitstun, HitResult hit_result, DamageKind damage_kind,
-		std::string hit_effect, std::string hit_sound
+		float meter_gain, int hitlag, int hitstun, std::string hit_anim, HitMove hit_move, 
+		DamageKind damage_kind, std::string hit_effect, std::string hit_sound
 	);
 
 	//Hurtbox
@@ -94,14 +97,10 @@ public:
 
 	//Param Funcs
 
-	int get_local_param_int(std::string param);
-	int get_local_param_int(std::string param, ParamTable param_table);
-	float get_local_param_float(std::string param);
-	float get_local_param_float(std::string param, ParamTable param_table);
-	std::string get_local_param_string(std::string param);
-	std::string get_local_param_string(std::string param, ParamTable param_table);
-	bool get_local_param_bool(std::string param);
-	bool get_local_param_bool(std::string param, ParamTable param_table);
+	int get_param_int(std::string param);
+	float get_param_float(std::string param);
+	std::string get_param_string(std::string param);
+	bool get_param_bool(std::string param);
 
 	//Model Funcs
 
@@ -312,14 +311,13 @@ public:
 	bool has_model;
 
 	glm::vec3 prev_pos;
-	glm::vec3 extra_rot;
 	float facing_dir;
 	float internal_facing_dir;
 	bool facing_right;
 	bool internal_facing_right;
 
 	unsigned int status_kind;
-	unsigned int situation_kind;
+	unsigned int prev_status_kind;
 
 	DefiniteHitbox definite_hitbox;
 	Blockbox blockbox;
@@ -340,8 +338,7 @@ public:
 	ScriptCondition* active_script_condition;
 	float last_execute_frame;
 
-	ParamTable stats;
-	ParamTable params;
+	ParamTable param_table;
 
 	Player* player;
 	Stage* stage;

@@ -33,13 +33,13 @@ void opening_main() {
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
-			player[i]->controller.poll_menu_buttons();
+			player[i]->controller.poll_menu();
 			if (player[i]->controller.is_any_inputs()) {
 				loop = false;
 			}
 		}
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render_manager->clear_screen();
 
 		if (fade_state == 0) {
 			title_alpha += 10;

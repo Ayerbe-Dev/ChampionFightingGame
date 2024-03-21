@@ -4,6 +4,9 @@
 #include "Button.h"
 #include "CharaKind.h"
 
+const int CONTROL_TYPE_ADVANCE = 0;
+const int CONTROL_TYPE_BASIC = 1;
+
 class PlayerInfo {
 public:
 	PlayerInfo();

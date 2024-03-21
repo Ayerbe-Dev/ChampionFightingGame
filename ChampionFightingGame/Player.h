@@ -1,8 +1,16 @@
 #pragma once
 #include "Stage.h"
 #include "GameController.h"
+#include "InputSequence.h"
 
 class PlayerInfo;
+
+const int INPUT_MODE_POLL = 0;
+const int INPUT_MODE_RECORD_SEQ = 1;
+const int INPUT_MODE_PLAY_SEQ = 2;
+const int INPUT_MODE_REPLAY = 3;
+const int INPUT_MODE_ATLAS_REWIND = 4;
+const int INPUT_MODE_ROLLBACK = 5;
 
 class Player {
 public:
@@ -11,6 +19,9 @@ public:
 
 	void load_player(int index);
 	void set_alt_for_chara();
+
+	void poll_controller_menu();
+	void poll_controller_fighter();
 
 	GameController controller;
 	int id;
@@ -21,4 +32,10 @@ public:
 	StageInfo stage_info;
 	std::string name;
 	PlayerInfo* player_info;
+
+	InputSequence manual_seq;
+	InputSequence replay_seq;
+
+	int rollback_frames;
+	int input_mode;
 };

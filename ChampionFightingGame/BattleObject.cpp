@@ -6,13 +6,12 @@ BattleObject::BattleObject() {
 	object_type = BATTLE_OBJECT_TYPE_MAX;
 	has_model = false;
 	prev_pos = glm::vec3(0.0);
-	extra_rot = glm::vec3(0.0);
 	facing_dir = 1.0;
 	internal_facing_dir = 1.0;
 	facing_right = true;
 	internal_facing_right = true;
 	status_kind = 0;
-	situation_kind = 0;
+	prev_status_kind = 0;
 	for (int i = 0; i < 10; i++) {
 		multihit_connected[i] = false;
 	}

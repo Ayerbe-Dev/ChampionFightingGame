@@ -19,7 +19,6 @@ public:
 	std::list<GameObject*> game_objects;
 	GameObject* real_time_object;
 
-	std::vector<Button [BUTTON_MAX]> player_inputs[2];
 	Stage* stage;
 
 	void process();

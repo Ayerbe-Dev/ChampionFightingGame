@@ -47,7 +47,7 @@ Fighter::~Fighter() {
 	exit_status_script.clear();
 	model.unload_model_instance();
 	anim_table.unload_animations();
-	move_script_table.wipe_scripts();
+	move_script_table.clear_scripts();
 	param_table.unload_params();
 }
 
@@ -221,13 +221,13 @@ void Fighter::process_pre_status() {
 void Fighter::process_status() {
 	bool execute_after_status = anim_end;
 	if (!execute_after_status) {
-		active_move_script.execute(this, frame);
+		execute_active_script();
 	}
 	if (!(fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_STATUS_AFTER_OPPONENT)) {
 		(this->*status_script[status_kind])();
 	}
 	if (execute_after_status) {
-		active_move_script.execute(this, frame);
+		execute_active_script();
 	}
 }
 

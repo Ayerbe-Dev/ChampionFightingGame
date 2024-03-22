@@ -3,26 +3,6 @@
 #include "GameManager.h"
 #include "utils.h"
 
-void Fighter::reenter_last_anim() {
-	rate = prev_anim_rate;
-	frame = prev_anim_frame;
-	fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(frame);
-
-	if (prev_anim_kind != nullptr) {
-		set_current_move_script(prev_anim_kind->name);
-		model.set_move(prev_anim_kind->flag_move);
-		model.set_flip(!facing_right);
-	}
-
-	prev_anim_offset = glm::vec3(0.0);
-	anim_end = false;
-	Animation* saved_prev_anim_kind = prev_anim_kind;
-	if (anim_kind != prev_anim_kind) {
-		prev_anim_kind = anim_kind;
-	}
-	anim_kind = saved_prev_anim_kind;
-}
-
 bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	prev_anim_rate = this->rate;
 	prev_anim_frame = this->frame;
@@ -67,14 +47,14 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	anim_end = false;
 	anim_kind = new_anim;
 
-	set_current_move_script(animation_name);
+	set_active_script(animation_name);
 
 	return new_anim != nullptr;
 }
 
 bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool continue_script, bool verbose) {
 	if (!continue_script) {
-		set_current_move_script(animation_name);
+		set_active_script(animation_name);
 	}
 	Animation* new_anim = anim_table.get_anim(animation_name, verbose);
 

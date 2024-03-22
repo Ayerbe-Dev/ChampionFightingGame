@@ -281,15 +281,15 @@ struct HitMove {
 
 	HitMove ground(float hit, float block) {
 		HitMove ret = *this;
-		ret.pushback_ground_hit = hit * 10.0f;
-		ret.pushback_ground_block = block * 10.0f;
+		ret.pushback_ground_hit = hit;
+		ret.pushback_ground_block = block;
 		return ret;
 	}
 
 	HitMove air(float x, float y) {
 		HitMove ret = *this;
-		ret.pushback_air_x = x * 10.0f;
-		ret.pushback_air_y = y * 10.0f;
+		ret.pushback_air_x = x;
+		ret.pushback_air_y = y;
 		return ret;
 	}
 

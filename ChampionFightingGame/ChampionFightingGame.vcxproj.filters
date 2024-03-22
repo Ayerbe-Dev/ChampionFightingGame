@@ -1365,13 +1365,10 @@
     <ClInclude Include="Param.h">
       <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptArg.h">
+    <ClInclude Include="ScriptFunc.h">
       <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
     </ClInclude>
     <ClInclude Include="MoveScript.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="StageScript.h">
       <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
     </ClInclude>
     <ClInclude Include="CollisionBox.h">

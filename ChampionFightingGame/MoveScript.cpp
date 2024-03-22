@@ -12,24 +12,18 @@ void MoveScript::activate() {
 	while (!frames.empty()) {
 		frames.pop();
 	}
+	conditions.clear();
 	move_script();
 }
 
-void MoveScript::execute(BattleObject* object, float frame) {
-	while ((!frames.empty()) && frames.front().frame <= frame) {
-		frames.front().execute(object);
-		if (frames.empty()) {
-			//If a script has a call that changes the active script, such as the call to 
-			//REENTER_LAST_ANIM in hitstun parry scripts, then the script that requested the change
-			//will no longer be active. Since we don't store the previous move script anywhere, nor
-			//do we have a reason to, it's possible for the previous script to become completely
-			//deallocated by the time it finishes executing. This won't cause problems on its own, but
-			//trying to pop the frames queue will cause a crash since the program thinks it's already
-			//empty.
-			return;
-		}
-		frames.pop();
-	}
+bool MoveScript::has_next_frame(float frame) {
+	return (!frames.empty()) && frames.front().frame <= frame;
+}
+
+ScriptFrame MoveScript::get_next_frame() {
+	ScriptFrame ret = frames.front();
+	frames.pop();
+	return ret;
 }
 
 bool MoveScript::has_function(float frame, void(BattleObject::* func)(ScriptArg), ScriptArg* args_ret) {
@@ -39,34 +33,14 @@ bool MoveScript::has_function(float frame, void(BattleObject::* func)(ScriptArg)
 	}
 	if (!temp_frames.empty()) {
 		ScriptFrame temp_sf = temp_frames.front();
-		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != func)) {
-			temp_sf.function_calls.pop();
-			temp_sf.function_args.pop();
+		while (!temp_sf.script_funcs.empty() && temp_sf.script_funcs.front().function_call != func) {
+			temp_sf.script_funcs.pop();
 		}
-		if (!temp_sf.function_calls.empty()) {
+		if (!temp_sf.script_funcs.empty()) {
 			if (args_ret != nullptr) {
-				*args_ret = temp_sf.function_args.front();
+				*args_ret = temp_sf.script_funcs.front().function_args;
 			}
 			return true;
-		}
-		while (!temp_sf.conditions.empty()) {
-			std::queue<void(BattleObject::*)(ScriptArg)>* condition_set = &temp_sf.conditions.front().true_calls;
-			std::queue<ScriptArg>* arg_set = &temp_sf.conditions.front().true_args;
-			if (!temp_sf.conditions.front().condition()) {
-				condition_set = &temp_sf.conditions.front().false_calls;
-				arg_set = &temp_sf.conditions.front().false_args;
-			}
-			while ((!condition_set->empty()) && (condition_set->front() != func)) {
-				condition_set->pop();
-				arg_set->pop();
-			}
-			if (!condition_set->empty()) {
-				if (args_ret != nullptr) {
-					*args_ret = arg_set->front();
-				}
-				return true;
-			}
-			temp_sf.conditions.pop();
 		}
 	}
 	return false;
@@ -76,34 +50,14 @@ bool MoveScript::has_function(void(BattleObject::* func)(ScriptArg), ScriptArg* 
 	std::queue<ScriptFrame> temp_frames = frames;
 	while (!temp_frames.empty()) {
 		ScriptFrame temp_sf = temp_frames.front();
-		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != func)) {
-			temp_sf.function_calls.pop();
-			temp_sf.function_args.pop();
+		while (!temp_sf.script_funcs.empty() && temp_sf.script_funcs.front().function_call != func) {
+			temp_sf.script_funcs.pop();
 		}
-		if (!temp_sf.function_calls.empty()) {
+		if (!temp_sf.script_funcs.empty()) {
 			if (args_ret != nullptr) {
-				*args_ret = temp_sf.function_args.front();
+				*args_ret = temp_sf.script_funcs.front().function_args;
 			}
 			return true;
-		}
-		while (!temp_sf.conditions.empty()) {
-			std::queue<void(BattleObject::*)(ScriptArg)>* condition_set = &temp_sf.conditions.front().true_calls;
-			std::queue<ScriptArg>* arg_set = &temp_sf.conditions.front().true_args;
-			if (!temp_sf.conditions.front().condition()) {
-				condition_set = &temp_sf.conditions.front().false_calls;
-				arg_set = &temp_sf.conditions.front().false_args;
-			}
-			while ((!condition_set->empty()) && (condition_set->front() != func)) {
-				condition_set->pop();
-				arg_set->pop();
-			}
-			if (!condition_set->empty()) {
-				if (args_ret != nullptr) {
-					*args_ret = arg_set->front();
-				}
-				return true;
-			}
-			temp_sf.conditions.pop();
 		}
 		temp_frames.pop();
 
@@ -118,36 +72,15 @@ bool MoveScript::has_function(float frame, void(Fighter::* func)(ScriptArg), Scr
 	}
 	if (!temp_frames.empty()) {
 		ScriptFrame temp_sf = temp_frames.front();
-		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != 
-			(void (BattleObject::*)(ScriptArg))func)) {
-			temp_sf.function_calls.pop();
-			temp_sf.function_args.pop();
+		while (!temp_sf.script_funcs.empty() && temp_sf.script_funcs.front().function_call != 
+			(void (BattleObject::*)(ScriptArg))func) {
+			temp_sf.script_funcs.pop();
 		}
-		if (!temp_sf.function_calls.empty()) {
+		if (!temp_sf.script_funcs.empty()) {
 			if (args_ret != nullptr) {
-				*args_ret = temp_sf.function_args.front();
+				*args_ret = temp_sf.script_funcs.front().function_args;
 			}
 			return true;
-		}
-		while (!temp_sf.conditions.empty()) {
-			std::queue<void(BattleObject::*)(ScriptArg)>* condition_set = &temp_sf.conditions.front().true_calls;
-			std::queue<ScriptArg>* arg_set = &temp_sf.conditions.front().true_args;
-			if (!temp_sf.conditions.front().condition()) {
-				condition_set = &temp_sf.conditions.front().false_calls;
-				arg_set = &temp_sf.conditions.front().false_args;
-			}
-			while ((!condition_set->empty()) && (condition_set->front() != 
-				(void (BattleObject::*)(ScriptArg))func)) {
-				condition_set->pop();
-				arg_set->pop();
-			}
-			if (!condition_set->empty()) {
-				if (args_ret != nullptr) {
-					*args_ret = arg_set->front();
-				}
-				return true;
-			}
-			temp_sf.conditions.pop();
 		}
 	}
 	return false;
@@ -157,39 +90,17 @@ bool MoveScript::has_function(void(Fighter::* func)(ScriptArg), ScriptArg* args_
 	std::queue<ScriptFrame> temp_frames = frames;
 	while (!temp_frames.empty()) {
 		ScriptFrame temp_sf = temp_frames.front();
-		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != 
-			(void (BattleObject::*)(ScriptArg))func)) {
-			temp_sf.function_calls.pop();
-			temp_sf.function_args.pop();
+		while (!temp_sf.script_funcs.empty() && temp_sf.script_funcs.front().function_call !=
+			(void (BattleObject::*)(ScriptArg))func) {
+			temp_sf.script_funcs.pop();
 		}
-		if (!temp_sf.function_calls.empty()) {
+		if (!temp_sf.script_funcs.empty()) {
 			if (args_ret != nullptr) {
-				*args_ret = temp_sf.function_args.front();
+				*args_ret = temp_sf.script_funcs.front().function_args;
 			}
 			return true;
 		}
-		while (!temp_sf.conditions.empty()) {
-			std::queue<void(BattleObject::*)(ScriptArg)>* condition_set = &temp_sf.conditions.front().true_calls;
-			std::queue<ScriptArg>* arg_set = &temp_sf.conditions.front().true_args;
-			if (!temp_sf.conditions.front().condition()) {
-				condition_set = &temp_sf.conditions.front().false_calls;
-				arg_set = &temp_sf.conditions.front().false_args;
-			}
-			while ((!condition_set->empty()) && (condition_set->front() != 
-				(void (BattleObject::*)(ScriptArg))func)) {
-				condition_set->pop();
-				arg_set->pop();
-			}
-			if (!condition_set->empty()) {
-				if (args_ret != nullptr) {
-					*args_ret = arg_set->front();
-				}
-				return true;
-			}
-			temp_sf.conditions.pop();
-		}
 		temp_frames.pop();
-
 	}
 	return false;
 }
@@ -201,36 +112,15 @@ bool MoveScript::has_function(float frame, void(Projectile::* func)(ScriptArg), 
 	}
 	if (!temp_frames.empty()) {
 		ScriptFrame temp_sf = temp_frames.front();
-		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != 
-			(void (BattleObject::*)(ScriptArg))func)) {
-			temp_sf.function_calls.pop();
-			temp_sf.function_args.pop();
+		while (!temp_sf.script_funcs.empty() && temp_sf.script_funcs.front().function_call !=
+			(void (BattleObject::*)(ScriptArg))func) {
+			temp_sf.script_funcs.pop();
 		}
-		if (!temp_sf.function_calls.empty()) {
+		if (!temp_sf.script_funcs.empty()) {
 			if (args_ret != nullptr) {
-				*args_ret = temp_sf.function_args.front();
+				*args_ret = temp_sf.script_funcs.front().function_args;
 			}
 			return true;
-		}
-		while (!temp_sf.conditions.empty()) {
-			std::queue<void(BattleObject::*)(ScriptArg)>* condition_set = &temp_sf.conditions.front().true_calls;
-			std::queue<ScriptArg>* arg_set = &temp_sf.conditions.front().true_args;
-			if (!temp_sf.conditions.front().condition()) {
-				condition_set = &temp_sf.conditions.front().false_calls;
-				arg_set = &temp_sf.conditions.front().false_args;
-			}
-			while ((!condition_set->empty()) && (condition_set->front() != 
-				(void (BattleObject::*)(ScriptArg))func)) {
-				condition_set->pop();
-				arg_set->pop();
-			}
-			if (!condition_set->empty()) {
-				if (args_ret != nullptr) {
-					*args_ret = arg_set->front();
-				}
-				return true;
-			}
-			temp_sf.conditions.pop();
 		}
 	}
 	return false;
@@ -240,36 +130,15 @@ bool MoveScript::has_function(void(Projectile::* func)(ScriptArg), ScriptArg* ar
 	std::queue<ScriptFrame> temp_frames = frames;
 	while (!temp_frames.empty()) {
 		ScriptFrame temp_sf = temp_frames.front();
-		while ((!temp_sf.function_calls.empty()) && (temp_sf.function_calls.front() != 
-			(void (BattleObject::*)(ScriptArg))func)) {
-			temp_sf.function_calls.pop();
-			temp_sf.function_args.pop();
+		while (!temp_sf.script_funcs.empty() && temp_sf.script_funcs.front().function_call !=
+			(void (BattleObject::*)(ScriptArg))func) {
+			temp_sf.script_funcs.pop();
 		}
-		if (!temp_sf.function_calls.empty()) {
+		if (!temp_sf.script_funcs.empty()) {
 			if (args_ret != nullptr) {
-				*args_ret = temp_sf.function_args.front();
+				*args_ret = temp_sf.script_funcs.front().function_args;
 			}
 			return true;
-		}
-		while (!temp_sf.conditions.empty()) {
-			std::queue<void(BattleObject::*)(ScriptArg)>* condition_set = &temp_sf.conditions.front().true_calls;
-			std::queue<ScriptArg>* arg_set = &temp_sf.conditions.front().true_args;
-			if (!temp_sf.conditions.front().condition()) {
-				condition_set = &temp_sf.conditions.front().false_calls;
-				arg_set = &temp_sf.conditions.front().false_args;
-			}
-			while ((!condition_set->empty()) && (condition_set->front() != 
-				(void (BattleObject::*)(ScriptArg))func)) {
-				condition_set->pop();
-				arg_set->pop();
-			}
-			if (!condition_set->empty()) {
-				if (args_ret != nullptr) {
-					*args_ret = arg_set->front();
-				}
-				return true;
-			}
-			temp_sf.conditions.pop();
 		}
 		temp_frames.pop();
 
@@ -285,56 +154,18 @@ ScriptFrame::ScriptFrame(float frame) {
 	this->frame = frame;
 }
 
-void ScriptFrame::execute(BattleObject* object) {
-	while (!function_calls.empty()) {
-		std::mem_fn(function_calls.front())(object, function_args.front());
-		if (function_calls.empty() || function_args.empty()) {
-			//Same rationale as MoveScript::execute() having a check like this: It's possible for this
-			//object to silently de-allocate itself, and while it can still safely return, we need to
-			//make sure it doesn't pop something that the program already destroyed.
-			break;
-		}
-		function_calls.pop();
-		function_args.pop();
-	}
-	while (!conditions.empty()) {
-		conditions.front().execute(object);
-		if (conditions.empty()) {
-			break;
-		}
-		conditions.pop();
-	}
+void ScriptFrame::push_function(void(BattleObject::* func)(ScriptArg), ScriptArg args) {
+	script_funcs.push(ScriptFunc<BattleObject>(func, args));
 }
 
-ScriptCondition::ScriptCondition() {
-	this->condition = []() {return true; };
+void ScriptFrame::push_true(std::string condition_name, void(BattleObject::* func)(ScriptArg), 
+	ScriptArg args) {
+	script_funcs.push(ScriptFunc<BattleObject>(condition_name, SCRIPT_CONDITION_KIND_TRUE, func, args));
 }
 
-ScriptCondition::ScriptCondition(std::function<bool()> condition) {
-	this->condition = condition;
-}
-
-void ScriptCondition::execute(BattleObject* object) {
-	if (condition()) {
-		while (!true_calls.empty()) {
-			std::mem_fn(true_calls.front())(object, true_args.front());
-			if (true_calls.empty() || true_args.empty()) {
-				return;
-			}
-			true_calls.pop();
-			true_args.pop();
-		}
-	}
-	else {
-		while (!false_calls.empty()) {
-			std::mem_fn(false_calls.front())(object, false_args.front());
-			if (false_calls.empty() || false_args.empty()) {
-				return;
-			}
-			false_calls.pop();
-			false_args.pop();
-		}
-	}
+void ScriptFrame::push_false(std::string condition_name, void(BattleObject::* func)(ScriptArg), 
+	ScriptArg args) {
+	script_funcs.push(ScriptFunc<BattleObject>(condition_name, SCRIPT_CONDITION_KIND_FALSE, func, args));
 }
 
 MoveScriptTable::MoveScriptTable() {
@@ -349,7 +180,7 @@ void MoveScriptTable::add_script(std::string name, std::function<void()> move_sc
 	scripts.push_back(script);
 }
 
-MoveScript MoveScriptTable::get_script(std::string script_name) {
+MoveScript& MoveScriptTable::get_script(std::string script_name) {
 	std::unordered_map<std::string, int>::const_iterator iterator = script_map.find(script_name);
 	if (iterator == script_map.end()) {
 		std::cout << "Invalid Script: " << script_name << "\n";
@@ -358,7 +189,7 @@ MoveScript MoveScriptTable::get_script(std::string script_name) {
 	return scripts[script_map[script_name]];
 }
 
-void MoveScriptTable::wipe_scripts() {
+void MoveScriptTable::clear_scripts() {
 	scripts.clear();
 	script_map.clear();
 }

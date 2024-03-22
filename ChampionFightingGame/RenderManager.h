@@ -12,7 +12,7 @@
 #include <set>
 #include <mutex>
 #include "GameTexture.h"
-#include "ScriptArg.h"
+#include "ScriptFunc.h"
 
 #define MAX_LIGHT_SOURCES 10
 

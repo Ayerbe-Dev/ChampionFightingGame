@@ -439,50 +439,53 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::PLAY_RESERVED_SOUND, "rowan_attack_01");
 			push_function(&Fighter::NEW_EFFECT, "flame", glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.4), glm::vec4(0.0), "HaveL", glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec3(0.0), glm::vec4(0.0), &fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]);
-			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 5,145 }, glm::vec2{ 240, 165 });
+			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2(0, 131), glm::vec2(200, 170));
 		});
 		execute_frame(4, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(0, 130), glm::vec2(210, 170), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 145),
-				glm::vec2(200, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(0, 120), glm::vec2(210, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 131),
+				glm::vec2(200, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(30).meter(18).scale(0.2f).hit(8, 12).block(8, 9).j_min(1)
-				.anims("light_high", "", "high", ""), HIT_STATUS_NORMAL, 
-				HitMove(), HIT_FLAG_NONE,
+				.anims("light_high", "light_high", "high", "high"), HIT_STATUS_NORMAL, 
+				HitMove().ground(30.0f, 30.0f).air(8.0, 8.0).frames(7), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", ""
 			);
 		});
+		push_condition("whiff_anim_check", [this]() { 
+			return fighter_flag[FIGHTER_FLAG_ATTACK_HIT] || fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED];
+		});
 		execute_wait(2, [this]() {
-			push_condition([this]() { return fighter_flag[FIGHTER_FLAG_ATTACK_HIT] 
-				|| fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED]; 
-			});
 			//We use ANY instead of CONTACT for the following line because the stand_lp -> stand_mp link
 			//should be manually timed even though it's on contact only; Cancels on contact have an
 			//infinite buffer window and in this case we don't want that.
-			push_true(&Fighter::ENABLE_CANCEL, "stand_mp", CANCEL_KIND_ANY);
-			push_false(&Fighter::ENABLE_CANCEL, "stand_lp", CANCEL_KIND_ANY);
+			push_true("whiff_anim_check", &Fighter::ENABLE_CANCEL, "stand_mp", CANCEL_KIND_ANY);
+			push_false("whiff_anim_check", &Fighter::ENABLE_CANCEL, "stand_lp", CANCEL_KIND_ANY);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
-			push_false(&Fighter::CHANGE_ANIM, "stand_lp_whiff");
+			push_false("whiff_anim_check", &Fighter::CHANGE_ANIM, "stand_lp_whiff");
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "stand_mp", CANCEL_KIND_ANY);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 145),
-			glm::vec2(200, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 120),
+			glm::vec2(240, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(10).meter(6).scale(0.2f).hit(8, 12).block(8, 9).j_min(1)
-			.anims("light_high", "", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(8.0, 8.0).air(3.0, 25.0).frames(7), HIT_FLAG_NONE,
+			.anims("light_high", "light_high", "high", "high"), HIT_STATUS_NORMAL,
+				HitMove().ground(80.0, 80.0).air(3.0, 25.0).frames(7), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", ""
 			);
 		});
 		execute_wait(2, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
 			push_function(&Fighter::CLEAR_HURTBOX, 1);
 			push_function(&Fighter::ENABLE_CANCEL, "stand_hp", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "stand_hk", CANCEL_KIND_CONTACT);
 		});
 	});
 	script("stand_lp_whiff", [this]() {
-
+		execute_frame(2, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+		});
 	});
 	script("stand_mp", [this]() {
 		execute_frame(0, [this]() {
@@ -493,17 +496,17 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
-			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2{ 35,115 }, glm::vec2{ 240, 135 });
+			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2(0, 110), glm::vec2(200, 165));
 		});
 		execute_frame(3, [this]() {
-			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2{ 35, 110 }, glm::vec2{ 210, 150 }, HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 35, 110 }, glm::vec2{ 210, 150 }, HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(6, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(100, 110), 
 				glm::vec2(210, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(60).meter(36).hit(10, 12).block(12, 11).j_min(2).j_max(1)
 				.anims("medium_high", "medium_high", "mid", "mid"), HIT_STATUS_NORMAL, 
-				HitMove().ground(8.0, 4.0).air(3.0, 28.0).frames(9), HIT_FLAG_NONE, 
+				HitMove().ground(80.0, 40.0).air(3.0, 28.0).frames(9), HIT_FLAG_NONE, 
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", ""
 			);
 		});
@@ -519,26 +522,27 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 		execute_wait(5, [this]() {
-			push_function(&Fighter::CLEAR_HURTBOX, 2);
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
 		});
 	});
 	script("stand_hp", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 35, 125 }, glm::vec2{ 150, 175 }, HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 
 			push_function(&Fighter::ENABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
-			push_function(&Fighter::ENABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
+			push_function(&Fighter::ENABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
-			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2(217, 168), glm::vec2(12, 128));
+			push_function(&Fighter::NEW_BLOCKBOX, glm::vec2(0, 130), glm::vec2(210, 170));
 		});
 		execute_frame(9, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(180, 168), 
-				glm::vec2(12, 128), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-				HitResult().damage(80).meter(48).hit(12, 23).block(16, 23).j_start(1)
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130), 
+				glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(1)
 				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL, 
-				HitMove().ground(14.0, 8.0).air(5.0, 31.0).frames(11).launch(20.0, 1.3, 15.0, 25.0),
+				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 20.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
 				"", "");
 		});
@@ -546,7 +550,11 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2{ 35, 125 }, glm::vec2{ 200, 175 }, HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
+		});
+		execute_wait(7, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
 		});
 	});
 	script("stand_lk", [this]() {
@@ -587,6 +595,7 @@ void Rowan::load_move_scripts() {
 	});
 	script("stand_mk", [this]() {
 		execute_frame(0, [this]() {
+			push_function(&Fighter::ENABLE_CANCEL, "dash_b", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
@@ -600,7 +609,7 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 2, glm::vec2(25, 105), glm::vec2(290, 150), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(30, 105), 
 				glm::vec2(330, 155), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, 
-				HitResult().damage(60).meter(36).hit(10, 19).block(12, 10)
+				HitResult().damage(60).meter(36).hit(10, 18).block(12, 12)
 				.anims("medium_mid", "medium_mid", "mid", "mid"), HIT_STATUS_NORMAL, 
 				HitMove().ground(10.0, 4.0).air(3.0, 28.0).frames(10).launch(10.0, 1.3, 15.0, 1.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, 
@@ -1466,6 +1475,7 @@ void Rowan::load_move_scripts() {
 		});
 	});
 	script("special_uppercut", [this]() {
+		push_condition("pushbox_check", [this]() { return fighter_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT]; });
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 		});
@@ -1513,18 +1523,17 @@ void Rowan::load_move_scripts() {
 			}
 		});
 		execute_frame(8, [this]() {
-			push_condition([this]() { return fighter_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT]; });
-			push_true(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
+			push_true("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
 		});
 		execute_frame(12, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
 	script("special_uppercut_fall", [this]() {
+		push_condition("pushbox_check", [this]() { return fighter_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT]; });
 		execute_frame(0, [this]() {
-			push_condition([this]() { return fighter_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT]; });
-			push_true(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
-			push_false(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
+			push_true("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
+			push_false("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-76, 115), glm::vec2(123, 182), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-48, 25), glm::vec2(66, 115), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});

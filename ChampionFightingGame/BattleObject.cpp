@@ -15,7 +15,6 @@ BattleObject::BattleObject() {
 	for (int i = 0; i < 10; i++) {
 		multihit_connected[i] = false;
 	}
-	active_script_condition = nullptr;
 	connected_hitbox = nullptr;
 	connected_grabbox = nullptr;
 	incoming_collision_kind = INCOMING_COLLISION_KIND_NONE;

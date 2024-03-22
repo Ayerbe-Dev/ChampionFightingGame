@@ -47,10 +47,6 @@ void Fighter::CHANGE_ANIM(ScriptArg args) {
 	change_anim(anim_kind, rate, frame);
 }
 
-void Fighter::REENTER_LAST_ANIM(ScriptArg args) {
-	reenter_last_anim();
-}
-
 void Fighter::START_CINEMATIC_SEQUENCE(ScriptArg args) {
 	UNWRAP(anim_kind, std::string);
 	UNWRAP(anim_rate, float);

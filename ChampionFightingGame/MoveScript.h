@@ -1,43 +1,28 @@
 #pragma once
-#include "ScriptArg.h"
+#include "ScriptFunc.h"
 #include <iostream>
 #include <functional>
 #include <vector>
 #include <unordered_map>
 #include <cstdarg>
 #include <stdarg.h>
+#include <map>
 
 class BattleObject;
 class Fighter;
 class Projectile;
-
-class ScriptCondition {
-public:
-	ScriptCondition();
-	ScriptCondition(std::function<bool()> condition);
-
-	void execute(BattleObject* object);
-
-	std::function<bool()> condition;
-
-	std::queue<void(BattleObject::*)(ScriptArg)> true_calls;
-	std::queue<ScriptArg> true_args;
-
-	std::queue<void(BattleObject::*)(ScriptArg)> false_calls;
-	std::queue<ScriptArg> false_args;
-};
 
 class ScriptFrame {
 public:
 	ScriptFrame();
 	ScriptFrame(float frame);
 
-	void execute(BattleObject* object);
+	void push_function(void(BattleObject::* func)(ScriptArg), ScriptArg args);
+	void push_true(std::string condition_name, void(BattleObject::* func)(ScriptArg), ScriptArg args);
+	void push_false(std::string condition_name, void(BattleObject::* func)(ScriptArg), ScriptArg args);
 
 	float frame;
-	std::queue<void(BattleObject::*)(ScriptArg)> function_calls;
-	std::queue<ScriptArg> function_args;
-	std::queue<ScriptCondition> conditions;
+	std::queue<ScriptFunc<BattleObject>> script_funcs;
 };
 
 class MoveScript {
@@ -45,8 +30,10 @@ public:
 	MoveScript();
 	MoveScript(std::string name, std::function<void()> move_script);
 
-	void activate(); //Clear the ScriptFrame queue, then call the move_script() function to repopulate it
-	void execute(BattleObject* object, float frame); //Checks if the front ScriptFrame is set to this frame. If it is, then call its execute function and remove it from the queue
+	void activate();
+	bool has_next_frame(float frame);
+	ScriptFrame get_next_frame();
+	
 	bool has_function(float frame, void(BattleObject::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
 	bool has_function(void(BattleObject::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
 	bool has_function(float frame, void(Fighter::* func)(ScriptArg), ScriptArg* args_ret = nullptr);
@@ -56,6 +43,7 @@ public:
 
 	std::string name;
 	std::queue<ScriptFrame> frames;
+	std::map<std::string, std::function<bool()>> conditions;
 private:
 	std::function<void()> move_script{ []() {} };
 };
@@ -64,8 +52,8 @@ class MoveScriptTable {
 public:
 	MoveScriptTable();
 	void add_script(std::string name, std::function<void()> move_script);
-	MoveScript get_script(std::string name);
-	void wipe_scripts();
+	MoveScript& get_script(std::string name);
+	void clear_scripts();
 private:
 	std::vector<MoveScript> scripts;
 	std::unordered_map<std::string, int> script_map;

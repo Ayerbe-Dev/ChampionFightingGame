@@ -559,7 +559,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="SaveManager.h" />
     <ClInclude Include="ScreenText.h" />
     <ClInclude Include="ScreenTexture.h" />
-    <ClInclude Include="ScriptArg.h" />
+    <ClInclude Include="ScriptFunc.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
@@ -662,7 +662,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="StageAsset.h" />
     <ClInclude Include="StageSelect.h" />
     <ClInclude Include="StageKind.h" />
-    <ClInclude Include="StageScript.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Athena.h" />
     <ClInclude Include="AthenaConstants.h" />

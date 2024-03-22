@@ -25,7 +25,7 @@ Projectile::~Projectile() {
 	enter_status_script.clear();
 	exit_status_script.clear();
 	anim_table.unload_animations();
-	move_script_table.wipe_scripts();
+	move_script_table.clear_scripts();
 	param_table.unload_params();
 }
 
@@ -48,7 +48,7 @@ void Projectile::projectile_post() {
 
 void Projectile::process_status() {
 	(this->*status_script[status_kind])();
-	active_move_script.execute(this, frame);
+	execute_active_script();
 }
 
 void Projectile::process_animate() {

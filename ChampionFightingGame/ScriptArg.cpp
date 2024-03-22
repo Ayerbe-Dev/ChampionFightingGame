@@ -1,4 +1,4 @@
-#include "ScriptArg.h"
+#include "ScriptFunc.h"
 
 ScriptArg::ScriptArg() {
 	this->num_args = 0;

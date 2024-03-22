@@ -723,12 +723,12 @@ void Battle::process_pre_intro() {
 void Battle::process_intro() {
 	if (!fighter[0]->anim_end) {
 		fighter[0]->process_animate();
-		fighter[0]->active_move_script.execute(fighter[0], fighter[0]->frame);
+		fighter[0]->execute_active_script();
 		fighter[0]->process_post_animate();
 	}
 	else if (!fighter[1]->anim_end) {
 		fighter[1]->process_animate();
-		fighter[1]->active_move_script.execute(fighter[1], fighter[1]->frame);
+		fighter[1]->execute_active_script();
 		fighter[1]->process_post_animate();
 	}
 	else {

@@ -5,7 +5,7 @@
 #include "RenderManager.h"
 #include "Animation.h"
 #include "Param.h"
-#include "StageScript.h"
+#include "ScriptFunc.h"
 
 class ObjectManager;
 

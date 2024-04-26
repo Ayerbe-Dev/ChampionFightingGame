@@ -3,12 +3,46 @@
 
 void RowanFireball::unique_process_outgoing_fighter_hitbox_collision_hit(Hitbox* hitbox, Fighter* defender) {
 	if (status_kind == PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER) {
-		projectile_int[PROJECTILE_INT_HEALTH]++;
+		object_int[PROJECTILE_INT_HEALTH]++;
 	}
 }
 
+void RowanFireball::status_move() {
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
+		add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
+		object_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
+		if (object_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
+			deactivate();
+		}
+	}
+}
+
+void RowanFireball::enter_status_move() {
+	object_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
+	object_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time");
+	object_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
+	switch (owner->object_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
+		case SPECIAL_LEVEL_L: {
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("punch_move_x_speed_l") * facing_dir;
+		} break;
+		case SPECIAL_LEVEL_M: {
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("punch_move_x_speed_m") * facing_dir;
+		} break;
+		case SPECIAL_LEVEL_H:
+		case SPECIAL_LEVEL_EX: {
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("punch_move_x_speed_h") * facing_dir;
+		} break;
+	}
+	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0.0;
+	change_anim("punched");
+}
+
+void RowanFireball::exit_status_move() {
+	clear_effect("flame");
+}
+
 void RowanFireball::status_rowan_fireball_hover() {
-	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
+	if (object_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		if (owner->status_kind != CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_PUNCH
 			&& owner->status_kind != CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_KICK) {
 			deactivate();
@@ -18,7 +52,7 @@ void RowanFireball::status_rowan_fireball_hover() {
 
 void RowanFireball::enter_status_rowan_fireball_hover() {
 	set_pos(owner->get_bone_position("HaveL", glm::vec3(35.0, 0.0, 0.0)));
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time");
+	object_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("hover_active_time");
 	change_anim("hover");
 }
 
@@ -26,87 +60,8 @@ void RowanFireball::exit_status_rowan_fireball_hover() {
 	clear_effect_all();
 }
 
-void RowanFireball::status_rowan_fireball_punched() {
-	add_pos(glm::vec3(projectile_float[PROJECTILE_FLOAT_SPEED_X], projectile_float[PROJECTILE_FLOAT_SPEED_Y], 0));
-	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
-	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
-		deactivate();
-	}
-}
-
-void RowanFireball::enter_status_rowan_fireball_punched() {
-	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("punch_active_time");
-	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
-	switch (owner->fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
-		case SPECIAL_LEVEL_L: {
-			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("punch_move_x_speed_l") * facing_dir;
-		} break;
-		case SPECIAL_LEVEL_M: {
-			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("punch_move_x_speed_m") * facing_dir;
-		} break;
-		case SPECIAL_LEVEL_H:
-		case SPECIAL_LEVEL_EX: {
-			projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("punch_move_x_speed_h") * facing_dir;
-		} break;
-	}
-	projectile_float[PROJECTILE_FLOAT_SPEED_Y] = 0.0;
-	change_anim("punched");
-}
-
-void RowanFireball::exit_status_rowan_fireball_punched() {
-	clear_effect("flame");
-}
-
-void RowanFireball::status_rowan_fireball_kicked() {
-	add_pos(glm::vec3(projectile_float[PROJECTILE_FLOAT_SPEED_X], projectile_float[PROJECTILE_FLOAT_SPEED_Y], 0));
-	projectile_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
-	if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
-		deactivate();
-	}
-}
-
-void RowanFireball::enter_status_rowan_fireball_kicked() {
-	projectile_int[PROJECTILE_INT_OWNER_ENDLAG] = owner->get_frames_until_actionable();
-	projectile_int[PROJECTILE_INT_ACTIVE_TIME] = get_param_int("kick_active_time");
-	projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB] = true;
-	set_pos(owner->get_bone_position("FootR", glm::vec3(20.0, -25.0, 0.0)));
-	switch (owner->fighter_int[CHARA_ROWAN_INT_FIREBALL_LEVEL]) {
-	case SPECIAL_LEVEL_L: {
-		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("kick_move_x_speed_l") * facing_dir;
-		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_param_float("kick_move_y_speed_l");
-	} break;
-	case SPECIAL_LEVEL_M: {
-		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("kick_move_x_speed_m") * facing_dir;
-		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_param_float("kick_move_y_speed_m");
-	} break;
-	case SPECIAL_LEVEL_H:
-	case SPECIAL_LEVEL_EX: {
-		projectile_float[PROJECTILE_FLOAT_SPEED_X] = get_param_float("kick_move_x_speed_h") * facing_dir;
-		projectile_float[PROJECTILE_FLOAT_SPEED_Y] = -get_param_float("kick_move_y_speed_h");
-	} break;
-	}
-	change_anim("kicked");
-}
-
-void RowanFireball::exit_status_rowan_fireball_kicked() {
-	clear_effect("flame");
-}
-
 void RowanFireball::load_projectile_unique_status_scripts() {
-	status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
-	enter_status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
-	exit_status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
-
-	ADD_PROJECTILE_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER, &RowanFireball::status_rowan_fireball_hover);
-	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER, &RowanFireball::enter_status_rowan_fireball_hover);
-	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER, &RowanFireball::exit_status_rowan_fireball_hover);
-
-	ADD_PROJECTILE_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_PUNCHED, &RowanFireball::status_rowan_fireball_punched);
-	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_PUNCHED, &RowanFireball::enter_status_rowan_fireball_punched);
-	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_PUNCHED, &RowanFireball::exit_status_rowan_fireball_punched);
-
-	ADD_PROJECTILE_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_KICKED, &RowanFireball::status_rowan_fireball_kicked);
-	ADD_PROJECTILE_ENTRY_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_KICKED, &RowanFireball::enter_status_rowan_fireball_kicked);
-	ADD_PROJECTILE_EXIT_STATUS(PROJECTILE_ROWAN_FIREBALL_STATUS_KICKED, &RowanFireball::exit_status_rowan_fireball_kicked);
+	SET_STATUS_FUNC(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER, &RowanFireball::status_rowan_fireball_hover);
+	SET_ENTRY_STATUS_FUNC(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER, &RowanFireball::enter_status_rowan_fireball_hover);
+	SET_EXIT_STATUS_FUNC(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER, &RowanFireball::exit_status_rowan_fireball_hover);
 }

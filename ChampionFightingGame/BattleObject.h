@@ -5,6 +5,12 @@
 #include "Param.h"
 #include "VariadicHelpers.h"
 
+#include "BattleObjectInt.h"
+#include "BattleObjectFlag.h"
+#include "BattleObjectFloat.h"
+#include "BattleObjectString.h"
+#include "BattleObjectStatus.h"
+
 enum BattleObjectType {
 	BATTLE_OBJECT_TYPE_FIGHTER,
 	BATTLE_OBJECT_TYPE_PROJECTILE,
@@ -12,12 +18,15 @@ enum BattleObjectType {
 	BATTLE_OBJECT_TYPE_MAX
 };
 
-
 class Player;
 class ObjectManager;
 class Stage;
 class Fighter;
 class Projectile;
+
+#define SET_STATUS_FUNC(index, status_func) (status_script[index] = (void (BattleObject::*)(void))status_func)
+#define SET_ENTRY_STATUS_FUNC(index, status_func) (enter_status_script[index] = (void (BattleObject::*)(void))(status_func))
+#define SET_EXIT_STATUS_FUNC(index, status_func) (exit_status_script[index] = (void (BattleObject::*)(void))(status_func))
 
 class BattleObject : public GameObject {
 public:
@@ -26,6 +35,7 @@ public:
 	//Loading
 
 	void load_params();
+	void load_battle_object_status_scripts();
 
 	//Position
 
@@ -264,6 +274,7 @@ public:
 	void SET_FRAME(ScriptArg args);
 
 	void NEW_BLOCKBOX(ScriptArg args);
+	void CLEAR_BLOCKBOX(ScriptArg args);
 
 	void NEW_HITBOX(ScriptArg args);
 	void CLEAR_HITBOX(ScriptArg args);
@@ -295,6 +306,12 @@ public:
 
 	void PRINT_MSG_FROM_SCRIPT(ScriptArg args);
 
+	//Status Scripts
+
+	virtual void status_none();
+	virtual void enter_status_none();
+	virtual void exit_status_none();
+
 	int id;
 	BattleObjectType object_type;
 	bool has_model;
@@ -307,6 +324,11 @@ public:
 
 	unsigned int status_kind;
 	unsigned int prev_status_kind;
+
+	std::vector<int> object_int;
+	std::vector<float> object_float;
+	std::vector<bool> object_flag;
+	std::vector<std::string> object_string;
 
 	DefiniteHitbox definite_hitbox;
 	Blockbox blockbox;
@@ -330,4 +352,8 @@ public:
 
 	Player* player;
 	Stage* stage;
+
+	std::vector<void (BattleObject::*)(void)> status_script;
+	std::vector<void (BattleObject::*)(void)> enter_status_script;
+	std::vector<void (BattleObject::*)(void)> exit_status_script;
 };

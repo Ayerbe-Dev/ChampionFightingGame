@@ -15,7 +15,7 @@ void BattleObject::check_incoming_hitbox_collisions(std::vector<Hitbox*> hitboxe
 }
 
 bool BattleObject::is_valid_incoming_hitbox_collision(Hurtbox* hurtbox, Hitbox* hitbox) {
-	if (!is_collide(hurtbox->rect, hitbox->rect)) return false;
+	if (!is_rect_collide(hurtbox->rect, hitbox->rect)) return false;
 	switch (hitbox->object->object_type) {
 		case BATTLE_OBJECT_TYPE_FIGHTER: {
 			return is_valid_incoming_fighter_hitbox_collision(hurtbox, hitbox, (Fighter*)hitbox->object);

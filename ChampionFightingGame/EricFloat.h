@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterFloat.h"
+MAKE_COUNTER(eric_float, FIGHTER_FLOAT_MAX);
 
-enum {
-	_CHARA_ERIC_FLOAT_START = FIGHTER_FLOAT_MAX,
-	_CHARA_ERIC_FLOAT_MAX,
-};
-
-const int CHARA_ERIC_FLOAT_START = _CHARA_ERIC_FLOAT_START;
-const int CHARA_ERIC_FLOAT_MAX = _CHARA_ERIC_FLOAT_MAX;
+const int CHARA_ERIC_FLOAT_MAX = eric_float.count();

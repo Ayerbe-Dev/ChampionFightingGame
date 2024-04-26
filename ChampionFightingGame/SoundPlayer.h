@@ -24,6 +24,7 @@ public:
 	void resume_reserved_sound();
 	void stop_reserved_sound();
 
+	void load_sound_list(std::string list, std::string dir);
 	void load_sound(std::string name, std::string dir);
 	void unload_sound(std::string name);
 	void unload_all_sounds();

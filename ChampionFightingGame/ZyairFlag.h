@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterFlag.h"
+MAKE_COUNTER(zyair_flag, FIGHTER_FLAG_MAX);
 
-enum {
-	_CHARA_ZYAIR_FLAG_START = FIGHTER_FLAG_MAX,
-	_CHARA_ZYAIR_FLAG_MAX,
-};
-
-const int CHARA_ZYAIR_FLAG_START = _CHARA_ZYAIR_FLAG_START;
-const int CHARA_ZYAIR_FLAG_MAX = _CHARA_ZYAIR_FLAG_MAX;
+const int CHARA_ZYAIR_FLAG_MAX = zyair_flag.count();

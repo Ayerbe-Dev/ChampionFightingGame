@@ -13,7 +13,5 @@ bool Bruno::chara_status_attack_air() {
 }
 
 void Bruno::load_chara_status_scripts() {
-	status_script.resize(CHARA_BRUNO_STATUS_MAX, nullptr);
-	enter_status_script.resize(CHARA_BRUNO_STATUS_MAX, nullptr);
-	exit_status_script.resize(CHARA_BRUNO_STATUS_MAX, nullptr);
+
 }

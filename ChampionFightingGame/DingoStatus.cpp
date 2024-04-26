@@ -13,7 +13,5 @@ bool Dingo::chara_status_attack_air() {
 }
 
 void Dingo::load_chara_status_scripts() {
-	status_script.resize(CHARA_DINGO_STATUS_MAX, nullptr);
-	enter_status_script.resize(CHARA_DINGO_STATUS_MAX, nullptr);
-	exit_status_script.resize(CHARA_DINGO_STATUS_MAX, nullptr);
+
 }

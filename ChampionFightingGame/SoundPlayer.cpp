@@ -1,5 +1,7 @@
 #include "SoundPlayer.h"
+#include "GameManager.h"
 #include "SaveManager.h"
+#include "Sndlst.h"
 
 SoundPlayer::SoundPlayer() {
 	sound_manager = SoundManager::get_instance();
@@ -140,6 +142,29 @@ void SoundPlayer::stop_reserved_sound() {
 		alSourceStop(reserved_sound.al_source);
 		alDeleteSources(1, &reserved_sound.al_source);
 		reserved_sound = SoundInstance();
+	}
+}
+
+void SoundPlayer::load_sound_list(std::string list, std::string dir) {
+	std::ifstream sound_stream;
+	std::string name;
+	std::string file;
+	sound_stream.open(dir + "/" + list + "/" + list + "_list.sndlst");
+	if (sound_stream.fail()) {
+		sound_stream.close();
+		GameManager::get_instance()->add_crash_log(
+			"Couldn't find file " + dir + "/" + list + "/" + list + "_list.sndlst"
+		);
+	}
+	else {
+		while (!sound_stream.eof()) {
+			parse_sndlst_entry(sound_stream, name, file);
+			if (name == "") {
+				break;
+			}
+			load_sound(name, dir + "/" + list + "/" + file);
+		}
+		sound_stream.close();
 	}
 }
 

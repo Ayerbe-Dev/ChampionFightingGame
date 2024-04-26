@@ -18,13 +18,11 @@ public:
 	void unique_activate() override;
 	void unique_deactivate() override;
 	
+	void status_move() override;
+	void enter_status_move() override;
+	void exit_status_move() override;
+
 	void status_rowan_fireball_hover();
 	void enter_status_rowan_fireball_hover();
 	void exit_status_rowan_fireball_hover();
-	void status_rowan_fireball_punched();
-	void enter_status_rowan_fireball_punched();
-	void exit_status_rowan_fireball_punched();
-	void status_rowan_fireball_kicked();
-	void enter_status_rowan_fireball_kicked();
-	void exit_status_rowan_fireball_kicked();
 };

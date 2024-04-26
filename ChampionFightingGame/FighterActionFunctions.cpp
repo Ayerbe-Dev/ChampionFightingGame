@@ -8,11 +8,11 @@ bool Fighter::is_actionable() {
 	if (anim_kind == nullptr) {
 		return true;
 	}
-	if (fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]
-		|| fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]
+	if (object_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW]
+		|| object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]
 		|| status_kind == FIGHTER_STATUS_ROUND_END
-		|| fighter_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_NON_END_WITH_ANIM
-		|| fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+		|| object_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_NON_END_WITH_ANIM
+		|| object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		return false;
 	}
 
@@ -25,40 +25,40 @@ bool Fighter::is_actionable() {
 }
 
 bool Fighter::is_enable_free_cancel() {
-	return fighter_flag[FIGHTER_FLAG_ALLOW_FREE_CANCEL] || is_actionable();
+	return object_flag[FIGHTER_FLAG_ALLOW_FREE_CANCEL] || is_actionable();
 }
 
 void Fighter::enable_free_cancel() {
-	fighter_flag[FIGHTER_FLAG_ALLOW_FREE_CANCEL] = true;
+	object_flag[FIGHTER_FLAG_ALLOW_FREE_CANCEL] = true;
 }
 
 void Fighter::enable_cancel(std::string move_kind, CancelKind cancel_kind) {
-	move_list[situation_kind].enable_cancel(move_kind, cancel_kind);
+	move_list[fighter_context].enable_cancel(move_kind, cancel_kind);
 }
 
 void Fighter::disable_all_cancels() {
-	for (int i = 0; i < FIGHTER_SITUATION_MAX; i++) {
+	for (int i = 0; i < FIGHTER_CONTEXT_MAX; i++) {
 		move_list[i].disable_all_cancels();
 	}
 }
 
 void Fighter::disable_cancel(std::string move_kind, CancelKind cancel_kind) {
-	move_list[situation_kind].disable_cancel(move_kind, cancel_kind);
+	move_list[fighter_context].disable_cancel(move_kind, cancel_kind);
 }
 
 bool Fighter::is_enable_cancel(std::string move_kind) {
-	return move_list[situation_kind].is_enable_cancel(this, move_kind);
+	return move_list[fighter_context].is_enable_cancel(this, move_kind);
 }
 
 FighterMoveListEntry Fighter::get_curr_move() {
-	return move_list[situation_kind].get_move(fighter_string[FIGHTER_STRING_MOVE_KIND]);
+	return move_list[fighter_context].get_move(object_string[FIGHTER_STRING_MOVE_KIND]);
 }
 
 void Fighter::check_movelist_inputs() {
-	if (!fighter_flag[FIGHTER_FLAG_ROUND_START]) {
-		move_list[situation_kind].check_inputs(this);
+	if (!object_flag[FIGHTER_FLAG_ROUND_START]) {
+		move_list[fighter_context].check_inputs(this);
 	}
-	if (!fighter_int[FIGHTER_INT_HITLAG_FRAMES]) {
-		move_list[situation_kind].try_changing_to_buffered_status(this);
+	if (!object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
+		move_list[fighter_context].try_changing_to_buffered_status(this);
 	}
 }

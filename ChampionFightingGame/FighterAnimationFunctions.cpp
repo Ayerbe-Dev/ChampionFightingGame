@@ -1,9 +1,9 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
 #include "GameManager.h"
-#include "utils.h"
 
 bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
+	object_float[BATTLE_OBJECT_FLOAT_PRE_HITLAG_FRAME] = frame;
 	prev_anim_rate = this->rate;
 	prev_anim_frame = this->frame;
 
@@ -14,7 +14,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			//[rate] frames
 			this->rate = rate;
 			this->frame = frame;
-			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(frame);
+			object_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(frame);
 		}
 		else {
 			//If the animation has an faf, that's the target frame. If the faf is either 0 or -1, the target
@@ -36,7 +36,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 				this->rate = (target_frame - 1) / rate;
 			}
 			this->frame = 0.0;
-			fighter_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
+			object_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
 		}
 		model.set_move(new_anim->flag_move);
 		model.set_flip(!facing_right);
@@ -72,26 +72,9 @@ bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool co
 }
 
 bool Fighter::beginning_hitlag(int frames) {
-	return fighter_int[FIGHTER_INT_HITLAG_FRAMES] + frames >= fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] && fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0;
+	return object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] + frames >= object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] && object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] != 0;
 }
 
 bool Fighter::ending_hitlag(int frames) {
-	return fighter_int[FIGHTER_INT_HITLAG_FRAMES] - frames <= 0 && fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0;
-}
-
-float Fighter::calc_launch_frames() {
-	float sim_gravity = fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY];
-	if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] == 0 || fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
-		return 1.0;
-	}
-	float airtime = 0.0;
-	float simp_y = pos.y; //haha simp
-	float sims_y = fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED];
-	while (simp_y >= 0.0f) {
-		sims_y = clampf(fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] * -1, 
-			sims_y - fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], sims_y);
-		simp_y += sims_y;
-		airtime++;
-	}
-	return airtime;
+	return object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] - frames <= 0 && object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] != 0;
 }

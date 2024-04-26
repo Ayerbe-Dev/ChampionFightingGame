@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterFloat.h"
+MAKE_COUNTER(dingo_float, FIGHTER_FLOAT_MAX);
 
-enum {
-	_CHARA_DINGO_FLOAT_START = FIGHTER_FLOAT_MAX,
-	_CHARA_DINGO_FLOAT_MAX,
-};
-
-const int CHARA_DINGO_FLOAT_START = _CHARA_DINGO_FLOAT_START;
-const int CHARA_DINGO_FLOAT_MAX = _CHARA_DINGO_FLOAT_MAX;
+const int CHARA_DINGO_FLOAT_MAX = dingo_float.count();

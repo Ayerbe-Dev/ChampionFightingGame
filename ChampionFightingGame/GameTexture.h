@@ -30,6 +30,10 @@ public:
 
     glm::vec3 get_pos_vacuum(GameTexture *that);
 
+    void scale_top_left_percent(float percent, bool crop = true);
+    void scale_bottom_left_percent(float percent, bool crop = true);
+    void scale_top_right_percent(float percent, bool crop = true);
+    void scale_bottom_right_percent(float percent, bool crop = true);
     void scale_left_percent(float percent, bool crop = true);
     void scale_right_percent(float percent, bool crop = true);
     void scale_top_percent(float percent, bool crop = true);
@@ -49,6 +53,10 @@ public:
     float get_height();
     std::string get_text();
 
+    void set_top_left_target(float percent, float frames);
+    void set_bottom_left_target(float percent, float frames);
+    void set_top_right_target(float percent, float frames);
+    void set_bottom_right_target(float percent, float frames);
     void set_left_target(float percent, float frames);
     void set_right_target(float percent, float frames);
     void set_top_target(float percent, float frames);
@@ -78,12 +86,20 @@ public:
 
     void update_text(Font &font, const std::string& text, glm::vec4 rgba, glm::vec4 border_rgbs);
     void update_buffer_data();
-    
+
+    float target_top_left_crop = -2.0;
+    float target_bottom_left_crop = -2.0;
+    float target_top_right_crop = -2.0;
+    float target_bottom_right_crop = -2.0;
     float target_left_crop = -2.0;
     float target_right_crop = -2.0;
     float target_top_crop = -2.0;
     float target_bottom_crop = -2.0;
 
+    float target_top_left_frames = 0.0;
+    float target_bottom_left_frames = 0.0;
+    float target_top_right_frames = 0.0;
+    float target_bottom_right_frames = 0.0;
     float target_left_frames = 0.0;
     float target_right_frames = 0.0;
     float target_top_frames = 0.0;

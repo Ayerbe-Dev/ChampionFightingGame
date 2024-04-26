@@ -13,8 +13,8 @@ public:
 	void push_game_state_target_set();
 	void pop_game_state_target_set();
 
-	void register_target_var(BaseTargetVar* var);
-	void unregister_target_var(BaseTargetVar* var);
+	void register_target_var(BaseTargetVar* var, bool persistent);
+	void unregister_target_var(BaseTargetVar* var, bool persistent);
 
 	static TargetVarManager* get_instance();
 	void destroy_instance();
@@ -24,4 +24,5 @@ private:
 
 	std::vector<std::list<BaseTargetVar*>> game_state_targets;
 	std::list<BaseTargetVar*> unset_targets;
+	std::list<BaseTargetVar*> persistent_targets;
 };

@@ -233,6 +233,15 @@ public:
 	int frame_timer;
 };
 
+const int TRAINING_FIELD_STARTUP = 0;
+const int TRAINING_FIELD_DAMAGE = 1;
+const int TRAINING_FIELD_COMBO_DAMAGE = 2;
+const int TRAINING_FIELD_STUN_FRAMES = 3;
+const int TRAINING_FIELD_AIRTIME = 4;
+const int TRAINING_FIELD_FRAME_GAP = 5;
+const int TRAINING_FIELD_JUGGLE_VALUE = 6;
+const int TRAINING_FIELD_MAX = 7;
+
 class TrainingInfo {
 public:
 	TrainingInfo();
@@ -241,12 +250,23 @@ public:
 	void destroy();
 	void render();
 
-	GameTexture hit_frame;
 	GameTexture background_texture;
-	GameTexture damage;
-	GameTexture combo_damage;
-	GameTexture stun_frames;
-	GameTexture frame_advantage;
+
+	const std::string field_names[TRAINING_FIELD_MAX] = {
+		"Startup: ", "Damage: ", "Combo Damage: ", "Stun Frames: ", "Airtime: ", 
+		"Frame Gap: ", "Juggle Value: "
+	};
+	GameTexture fields[TRAINING_FIELD_MAX];
+
+	/* TODO: Replace current fields with the following:
+	* Startup (Hit Frame)
+	* Damage (Scale)
+	* Combo Damage (Max Combo Damage)
+	* Hitstun/Blockstun (Frame Advantage)
+	* Airtime (Frame Advantage pre-landing)
+	* Frame Gap (Frame Margin, I.E. how many frames until opponent becomes actionable)
+	* Juggle Value (juggle_max)
+	*/
 
 	Fighter* fighter;
 

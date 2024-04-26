@@ -117,6 +117,7 @@ RenderManager::RenderManager() {
 
 	fade_texture.init("resource/misc/fade.png");
 	fade_texture.alpha = 0;
+	fade_texture.alpha.set_persistence(true);
 	fade_frames = 0;
 	fading = false;
 	mid_fade_func = nullptr;
@@ -312,7 +313,6 @@ void RenderManager::update_screen() {
 
 		fade_texture.render();
 	}
-	fade_texture.alpha.process();
 	SDL_GL_SwapWindow(window);
 }
 

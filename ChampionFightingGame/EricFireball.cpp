@@ -9,16 +9,19 @@ EricFireball::EricFireball(int id, Player* player) {
 	projectile_kind = PROJECTILE_KIND_ERIC_FIREBALL;
 	projectile_name = "eric_fireball";
 	resource_dir = "resource/projectile/eric_fireball";
-	projectile_int.resize(PROJECTILE_ERIC_FIREBALL_INT_MAX, 0);
-	projectile_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
-	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
-	projectile_flag.resize(PROJECTILE_ERIC_FIREBALL_STRING_MAX, "");
+	object_int.resize(PROJECTILE_ERIC_FIREBALL_INT_MAX, 0);
+	object_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
+	object_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
+	object_flag.resize(PROJECTILE_ERIC_FIREBALL_STRING_MAX, "");
+	status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
+	enter_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
+	exit_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
 
 	load_projectile();
 }
 
 void EricFireball::projectile_unique_main() {
-	if (projectile_int[PROJECTILE_INT_HEALTH] == 0) {
+	if (object_int[PROJECTILE_INT_HEALTH] == 0) {
 
 	}
 }

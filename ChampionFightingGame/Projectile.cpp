@@ -18,9 +18,9 @@ Projectile::~Projectile() {
 	stop_sound_all();
 	stop_reserved_sound();
 	model.unload_model_instance();
-	projectile_int.clear();
-	projectile_float.clear();
-	projectile_flag.clear();
+	object_int.clear();
+	object_float.clear();
+	object_flag.clear();
 	status_script.clear();
 	enter_status_script.clear();
 	exit_status_script.clear();
@@ -32,14 +32,11 @@ Projectile::~Projectile() {
 void Projectile::projectile_main() {
 	process_animate();
 	process_position();
-	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0) {
-		projectile_unique_main();
-		process_status();
-	}
+	process_pre_common_projectile_vars();
+	projectile_unique_main();
+	process_status();
 	process_post_animate();
-	if (object_manager->is_allow_realtime_process(this)) {
-		decrease_common_variables();
-	}
+	process_post_common_projectile_vars();
 }
 
 void Projectile::projectile_post() {
@@ -52,9 +49,9 @@ void Projectile::process_status() {
 }
 
 void Projectile::process_animate() {
-	if (projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] != 0) {
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] != 0) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
-			frame += (0.2 / (float)(projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
+			frame += (0.2 / (float)(object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
 		}
 	}
 	else {
@@ -95,23 +92,28 @@ void Projectile::process_post_position() {
 	update_grabbox_pos();
 	update_pushbox_pos();
 	update_blockbox_pos();
-	if (!is_in_camera_range() && projectile_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB]) {
+	if (!is_in_camera_range() && object_flag[PROJECTILE_FLAG_DESPAWN_ON_OOB]) {
 		deactivate();
 	}
 }
 
-void Projectile::decrease_common_variables() {
-	if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] != 0) {
-		projectile_int[PROJECTILE_INT_HITLAG_FRAMES] --;
-		if (projectile_int[PROJECTILE_INT_HITLAG_FRAMES] == 0 && anim_kind != nullptr
+void Projectile::process_pre_common_projectile_vars() {
+	if (!object_manager->is_allow_realtime_process(this)) return;
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] != 0) {
+		object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]--;
+		if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0 && anim_kind != nullptr
 			&& !anim_kind->flag_no_hitlag_interp) {
-			projectile_int[PROJECTILE_INT_INIT_HITLAG_FRAMES] = 0;
-			frame -= 0.2;
+			object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 0;
+			frame = object_float[BATTLE_OBJECT_FLOAT_PRE_HITLAG_FRAME];
 		}
 	}
 	else {
-		if (projectile_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {
-			projectile_int[PROJECTILE_INT_ACTIVE_TIME] --;
+		if (object_int[PROJECTILE_INT_ACTIVE_TIME] > 0) {
+			object_int[PROJECTILE_INT_ACTIVE_TIME]--;
 		}
 	}
+}
+
+void Projectile::process_post_common_projectile_vars() {
+	if (!object_manager->is_allow_realtime_process(this)) return;
 }

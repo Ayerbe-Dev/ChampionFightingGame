@@ -4,19 +4,22 @@
 class BaseTargetVar {
 public:
 	BaseTargetVar() {
-		TargetVarManager::get_instance()->register_target_var(this);
+		persistent = false;
+		pause = false;
+		TargetVarManager::get_instance()->register_target_var(this, persistent);
 	}
 	virtual	~BaseTargetVar() {
-		TargetVarManager::get_instance()->unregister_target_var(this);
+		TargetVarManager::get_instance()->unregister_target_var(this, persistent);
 	}
 
 	virtual void process() {}
+	bool persistent;
+	bool pause;
 };
 
 template <class T> class TargetVar : public BaseTargetVar {
 public:
 	TargetVar() = default;
-
 
 	TargetVar(T& other) {
 		if (val != other) {
@@ -176,7 +179,7 @@ public:
 		}
 	}
 	
-	void set_target_val(T target_val, unsigned int frames) {
+	void set_target_val(const T& target_val, unsigned int frames) {
 		if (target_val == this->target_val) return;
 		this->target_val = target_val;
 		target_change_per_frame = target_val - val;
@@ -212,6 +215,16 @@ public:
 
 	unsigned int get_frames() const {
 		return frames;
+	}
+
+	void set_persistence(bool persistent) {
+		TargetVarManager::get_instance()->unregister_target_var(this, this->persistent);
+		this->persistent = persistent;
+		TargetVarManager::get_instance()->register_target_var(this, this->persistent);
+	}
+
+	void set_pause(bool pause) {
+		this->pause = pause;
 	}
 private:
 	T val{};

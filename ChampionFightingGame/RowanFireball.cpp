@@ -9,31 +9,34 @@ RowanFireball::RowanFireball(int id, Player* player) {
 	projectile_kind = PROJECTILE_KIND_ROWAN_FIREBALL;
 	projectile_name = "rowan_fireball";
 	resource_dir = "resource/projectile/rowan_fireball";
-	projectile_int.resize(PROJECTILE_ROWAN_FIREBALL_INT_MAX, 0);
-	projectile_float.resize(PROJECTILE_ROWAN_FIREBALL_FLOAT_MAX, 0.0);
-	projectile_flag.resize(PROJECTILE_ROWAN_FIREBALL_FLAG_MAX, false);
-	projectile_flag.resize(PROJECTILE_ROWAN_FIREBALL_STRING_MAX, "");
+	object_int.resize(PROJECTILE_ROWAN_FIREBALL_INT_MAX, 0);
+	object_float.resize(PROJECTILE_ROWAN_FIREBALL_FLOAT_MAX, 0.0);
+	object_flag.resize(PROJECTILE_ROWAN_FIREBALL_FLAG_MAX, false);
+	object_flag.resize(PROJECTILE_ROWAN_FIREBALL_STRING_MAX, "");
+	status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
+	enter_status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
+	exit_status_script.resize(PROJECTILE_ROWAN_FIREBALL_STATUS_MAX, nullptr);
 
 	load_projectile();
 }
 
 void RowanFireball::projectile_unique_main() {
-	if (projectile_int[PROJECTILE_INT_HEALTH] <= 0 && active) {
+	if (object_int[PROJECTILE_INT_HEALTH] <= 0 && active) {
 		deactivate();
 	}
 }
 
 void RowanFireball::unique_activate() {
-	owner->fighter_flag[CHARA_ROWAN_FLAG_FIREBALL_ACTIVE] = true;
-	if (owner->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-		projectile_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
-		projectile_int[PROJECTILE_INT_HEALTH] = 2;
+	owner->object_flag[CHARA_ROWAN_FLAG_FIREBALL_ACTIVE] = true;
+	if (owner->object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+		object_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
+		object_int[PROJECTILE_INT_HEALTH] = 2;
 	}
 	change_status(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER);
 }
 
 void RowanFireball::unique_deactivate() {
-	owner->fighter_flag[CHARA_ROWAN_FLAG_FIREBALL_ACTIVE] = false;
+	owner->object_flag[CHARA_ROWAN_FLAG_FIREBALL_ACTIVE] = false;
 }
 
 /*

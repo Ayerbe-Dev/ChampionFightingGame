@@ -21,47 +21,18 @@ void Projectile::load_projectile() {
 	load_anim_list();
 	load_projectile_unique_status_scripts();
 	load_projectile_status_scripts();
+	load_battle_object_status_scripts();
 	load_move_scripts();
 	load_sound_list();
 
-	change_status(PROJECTILE_STATUS_NONE, false);
+	change_status(BATTLE_OBJECT_STATUS_NONE, false);
 }
 
 void Projectile::load_sound_list() {
-	std::ifstream sound_stream;
-	std::string name;
-	std::string file;
-	sound_stream.open(resource_dir + "/vc/vc_list.sndlst");
-	if (sound_stream.fail()) {
-		sound_stream.close();
-		GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s vc directory was incorrectly set!");
-	}
-	else {
-		while (!sound_stream.eof()) {
-			parse_sndlst_entry(sound_stream, name, file);
-			if (name == "") {
-				break;
-			}
-			sound_player.load_sound(name, resource_dir + "/vc/" + file);
-		}
-		sound_stream.close();
-	}
-	sound_stream.open(resource_dir + "/se/se_list.sndlst");
-	if (sound_stream.fail()) {
-		sound_stream.close();
-		GameManager::get_instance()->add_crash_log("Projectile " + std::to_string(projectile_kind) + "\'s se directory was incorrectly set!");
-	}
-	else {
-		while (!sound_stream.eof()) {
-			parse_sndlst_entry(sound_stream, name, file);
-			if (name == "") {
-				break;
-			}
-			sound_player.load_sound(name, resource_dir + "/se/" + file);
-
-		}
-		sound_stream.close();
-	}
+	sound_player.load_sound_list("vc", resource_dir);
+	sound_player.load_sound_list("vc", "resource/projectile/common");
+	sound_player.load_sound_list("se", resource_dir);
+	sound_player.load_sound_list("se", "resource/projectile/common");
 }
 
 void Projectile::load_model_shader() {

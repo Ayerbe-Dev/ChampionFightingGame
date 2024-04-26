@@ -12,10 +12,10 @@
 bool Fighter::common_ground_status_act() {
 	unsigned int stick_dir = get_stick_dir();
 	if (stick_dir < 4) {
-		fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_CROUCH;
+		object_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_CROUCH;
 	}
 	else {
-		fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_STAND;
+		object_int[FIGHTER_INT_HITSTUN_HEIGHT] = HITSTUN_HEIGHT_STAND;
 	}
 	switch (stick_dir) {
 		case (1):
@@ -23,7 +23,7 @@ bool Fighter::common_ground_status_act() {
 		case (3): {
 			if (status_kind != FIGHTER_STATUS_TURN
 			&& status_kind != FIGHTER_STATUS_CROUCH) {
-				if (move_list[FIGHTER_SITUATION_GROUND].is_curr_move_recover_crouching(this)) {
+				if (move_list[FIGHTER_CONTEXT_GROUND].is_curr_move_recover_crouching(this)) {
 					//We don't verify that we aren't already crouching here because if we have
 					//a curr_move at all, that automatically rules out crouch (along with all
 					//other fully actionable statuses)
@@ -46,13 +46,13 @@ bool Fighter::common_ground_status_act() {
 		} break;
 	}
 	check_movelist_inputs();
-	return fighter_flag[FIGHTER_FLAG_STATUS_CHANGED];
+	return object_flag[FIGHTER_FLAG_STATUS_CHANGED];
 }
 
 void Fighter::common_air_status_general() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		apply_gravity(get_param_float("gravity"), get_param_float("max_fall_speed"));
-		add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
+		apply_gravity(object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX]);
+		add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
 	}
 }
 
@@ -69,23 +69,23 @@ void Fighter::exit_status_none() {
 }
 
 void Fighter::status_wait() {
-	if (!fighter_flag[FIGHTER_FLAG_ROUND_START]) {
+	if (!object_flag[FIGHTER_FLAG_ROUND_START]) {
 		common_ground_status_act();
 	}
 }
 
 
 void Fighter::enter_status_wait() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 	pos.y = 0.0f;
 	pos.z = 0.0f;
 	change_anim("wait");
 
-	change_situation(FIGHTER_SITUATION_GROUND);
-	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
-	if (!fighter_flag[FIGHTER_FLAG_ROUND_START]) {
+	change_context(FIGHTER_CONTEXT_GROUND);
+	object_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
+	if (!object_flag[FIGHTER_FLAG_ROUND_START]) {
 		common_ground_status_act();
 	}
 }
@@ -101,19 +101,20 @@ void Fighter::status_walk_f() {
 		change_status(FIGHTER_STATUS_WAIT);
 		return;
 	}
-	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
+	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 
 }
 
 void Fighter::enter_status_walk_f() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("walk_f_speed") * facing_dir;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("walk_f_speed") * facing_dir;
+	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 	change_anim("walk_f");
 }
 
 void Fighter::exit_status_walk_f() {
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
 }
 
 void Fighter::status_walk_b() {
@@ -124,7 +125,7 @@ void Fighter::status_walk_b() {
 		change_status(FIGHTER_STATUS_WAIT);
 		return;
 	}
-	if (fighter_flag[FIGHTER_FLAG_PROX_GUARD]) {
+	if (object_flag[FIGHTER_FLAG_PROX_GUARD]) {
 		if (get_anim() != "stand_block") {
 			if (get_anim() == "stand_block_start") {
 				if (anim_end) {
@@ -140,19 +141,20 @@ void Fighter::status_walk_b() {
 		if (get_anim() != "walk_b") {
 			change_anim("walk_b");
 		}
-		add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
+		add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 	}
 }
 
 void Fighter::enter_status_walk_b() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("walk_b_speed") * -facing_dir;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("walk_b_speed") * -facing_dir;
+	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 	change_anim("walk_b");
 }
 
 void Fighter::exit_status_walk_b() {
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
 }
 
 void Fighter::status_dash_f() {
@@ -163,27 +165,27 @@ void Fighter::status_dash_f() {
 	int max_frame = min_frame + get_param_int("dash_f_maintain_speed_frame");
 
 	if (frame >= min_frame && frame < max_frame) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("dash_f_speed") * facing_dir;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("dash_f_speed") * facing_dir;
 	}
 	else if (frame < max_frame) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = (get_param_float("walk_f_speed") + get_param_float("dash_f_speed")) * facing_dir / 2;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = (get_param_float("walk_f_speed") + get_param_float("dash_f_speed")) * facing_dir / 2;
 	}
 	else {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("walk_f_speed") * facing_dir;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("walk_f_speed") * facing_dir;
 	}
-	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
+	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 
 	if (frame >= get_param_int("dash_f_cancel_frame") && get_stick_dir(false) == 4) {
 		switch (get_param_int("dash_cancel_kind")) {
 			case (DASH_CANCEL_KIND_INFINITE): {
-				fighter_string[FIGHTER_STRING_MOVE_KIND] = "dash_b";
+				object_string[FIGHTER_STRING_MOVE_KIND] = "dash_b";
 				change_status(FIGHTER_STATUS_DASH_B, false);
 				return;
 			} break;
 			case (DASH_CANCEL_KIND_WHIFF_PUNISH_OFFENSIVE): {
-				if (!fighter_flag[FIGHTER_FLAG_DASH_CANCEL]) {
-					fighter_string[FIGHTER_STRING_MOVE_KIND] = "dash_b";
-					fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
+				if (!object_flag[FIGHTER_FLAG_DASH_CANCEL]) {
+					object_string[FIGHTER_STRING_MOVE_KIND] = "dash_b";
+					object_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
 					change_status(FIGHTER_STATUS_DASH_B, false);
 					return;
 				}
@@ -202,8 +204,8 @@ void Fighter::enter_status_dash_f() {
 }
 
 void Fighter::exit_status_dash_f() {
-	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
+	object_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
 }
 
 void Fighter::status_dash_b() {
@@ -214,15 +216,15 @@ void Fighter::status_dash_b() {
 	int max_frame = min_frame + get_param_int("dash_b_maintain_speed_frame");
 
 	if (frame >= min_frame && frame < max_frame) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("dash_b_speed") * facing_dir * -1;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("dash_b_speed") * facing_dir * -1;
 	}
 	else if (frame < max_frame) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = (get_param_float("walk_b_speed") + get_param_float("dash_b_speed")) * facing_dir / -2;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = (get_param_float("walk_b_speed") + get_param_float("dash_b_speed")) * facing_dir / -2;
 	}
 	else {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("walk_b_speed") * -facing_dir;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("walk_b_speed") * -facing_dir;
 	}
-	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
+	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 
 	if (frame >= get_param_int("dash_b_cancel_frame")) {
 		switch (get_param_int("dash_cancel_kind")) {
@@ -246,14 +248,14 @@ void Fighter::status_dash_b() {
 }
 
 void Fighter::enter_status_dash_b() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = true;
+	object_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = true;
 	change_anim("dash_b");
 }
 
 void Fighter::exit_status_dash_b() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = false;
-	fighter_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
+	object_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = false;
+	object_flag[FIGHTER_FLAG_DASH_CANCEL] = false;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
 }
 
 void Fighter::status_dash_air() {
@@ -267,28 +269,28 @@ void Fighter::status_dash_air() {
 	int max_frame = min_frame + get_param_int("dash_f_maintain_speed_frame");
 
 	if (frame < max_frame) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0.0;
+		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0.0;
 	}
 	else {
-		if (fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] > get_param_float("jump_x_speed")) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = clampf(get_param_float("jump_x_speed"), fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * 0.95, fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED]);
+		if (object_float[BATTLE_OBJECT_FLOAT_X_SPEED] > get_param_float("jump_x_speed")) {
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = clampf(get_param_float("jump_x_speed"), object_float[BATTLE_OBJECT_FLOAT_X_SPEED] * 0.95, object_float[BATTLE_OBJECT_FLOAT_X_SPEED]);
 		}
 	}
 	common_air_status_general();
 }
 
 void Fighter::enter_status_dash_air() {
-	if (fighter_int[FIGHTER_INT_DASH_AIR_DIR] == 1) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("dash_f_speed") * facing_dir;
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
+	if (object_int[FIGHTER_INT_DASH_AIR_DIR] == 1) {
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("dash_f_speed") * facing_dir;
+		object_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
 		change_anim("dash_air_f");
 	}
-	if (fighter_int[FIGHTER_INT_DASH_AIR_DIR] == 2) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("dash_b_speed") * -facing_dir;
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
+	if (object_int[FIGHTER_INT_DASH_AIR_DIR] == 2) {
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("dash_b_speed") * -facing_dir;
+		object_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
 		change_anim("dash_air_b");
 	}
-	fighter_flag[FIGHTER_FLAG_USED_AIRDASH] = true;
+	object_flag[FIGHTER_FLAG_USED_AIRDASH] = true;
 }
 
 void Fighter::exit_status_dash_air() {
@@ -311,8 +313,8 @@ void Fighter::status_crouchd() {
 }
 
 void Fighter::enter_status_crouchd() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 	change_anim("crouch_d");
 }
 
@@ -329,8 +331,8 @@ void Fighter::status_crouch() {
 }
 
 void Fighter::enter_status_crouch() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 	change_anim("crouch");
 	common_ground_status_act();
 }
@@ -347,7 +349,7 @@ void Fighter::status_crouchu() {
 }
 
 void Fighter::enter_status_crouchu() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
 	change_anim("crouch_u");
 }
 
@@ -360,34 +362,34 @@ void Fighter::status_jumpsquat() {
 	if (frame < 3.0) {
 		unsigned int parry_buttons[2] = { BUTTON_MP, BUTTON_MK };
 		if (check_button_input(parry_buttons, 2)) {
-			fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
+			object_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
 			change_status(FIGHTER_STATUS_PARRY_START, false);
 			change_anim("parry_start_high");
-			fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+			object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
 			return;
 		}
 		check_movelist_inputs();
-		if (fighter_flag[FIGHTER_FLAG_STATUS_CHANGED] || chara_ground_status_act()) {
+		if (object_flag[FIGHTER_FLAG_STATUS_CHANGED] || chara_ground_status_act()) {
 			return;
 		}
 	}
 	unsigned int stick_dir = get_stick_dir() % 3;
 	if (stick_dir == 1) {
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
+		object_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_B;
 	}
 	else if (stick_dir == 0) {
-		fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
+		object_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_F;
 	}
 }
 
 void Fighter::enter_status_jumpsquat() {
-	fighter_int[FIGHTER_INT_JUMP_KIND] = get_stick_dir() % 3;
-	fighter_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = true;
+	object_int[FIGHTER_INT_JUMP_KIND] = get_stick_dir() % 3;
+	object_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = true;
 	change_anim("jump_squat");
 }
 
 void Fighter::exit_status_jumpsquat() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER] = false;
 }
 
 void Fighter::status_jump() {
@@ -401,27 +403,29 @@ void Fighter::status_jump() {
 }
 
 void Fighter::enter_status_jump() {
-	fighter_flag[FIGHTER_FLAG_SHORT_HOP] = get_stick_dir() < 7;
-	fighter_flag[FIGHTER_FLAG_USED_AIRDASH] = false;
-	change_situation(FIGHTER_SITUATION_AIR);
-	if (fighter_flag[FIGHTER_FLAG_SHORT_HOP]) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = get_param_float("jump_y_init_speed_s");
+	object_flag[FIGHTER_FLAG_SHORT_HOP] = get_stick_dir() < 7;
+	object_flag[FIGHTER_FLAG_USED_AIRDASH] = false;
+	change_context(FIGHTER_CONTEXT_AIR);
+	if (object_flag[FIGHTER_FLAG_SHORT_HOP]) {
+		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_param_float("jump_y_init_speed_s");
 	}
 	else {
-		fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = get_param_float("jump_y_init_speed");
+		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_param_float("jump_y_init_speed");
 	}
-	switch (fighter_int[FIGHTER_INT_JUMP_KIND]) {
+	switch (object_int[FIGHTER_INT_JUMP_KIND]) {
 		case (JUMP_KIND_F): {
-			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("jump_x_speed") * facing_dir;
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("jump_x_speed") * facing_dir;
 		} break;
 		case (JUMP_KIND_B): {
-			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = get_param_float("jump_x_speed") * -facing_dir;
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("jump_x_speed") * -facing_dir;
 		} break;
 		case (JUMP_KIND_N): {
-			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0.0;
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
 		} break;
 	}
-	switch (fighter_int[FIGHTER_INT_JUMP_KIND]) {
+	object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = get_param_float("gravity");
+	object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
+	switch (object_int[FIGHTER_INT_JUMP_KIND]) {
 		case (JUMP_KIND_F): {
 			change_anim("jump_f", 1.0, 0.0);
 		} break;
@@ -448,13 +452,13 @@ void Fighter::status_fall() {
 }
 
 void Fighter::enter_status_fall() {
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 	change_anim("fall");
 }
 
 
 void Fighter::exit_status_fall() {
-	fighter_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
+	object_int[FIGHTER_INT_JUMP_KIND] = JUMP_KIND_N;
 }
 
 void Fighter::status_turn() {
@@ -482,8 +486,8 @@ void Fighter::status_turn() {
 }
 
 void Fighter::enter_status_turn() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NON_ACTION;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 	//First we want to make sure you don't accidentally dash because you inputted
 	//one direction, turned around, then inputted the other direction
 	facing_right = internal_facing_right;
@@ -493,16 +497,16 @@ void Fighter::enter_status_turn() {
 	else {
 		facing_dir = -1.0;
 	}
-	move_list[FIGHTER_SITUATION_GROUND].swap_buffers("dash_f", "dash_b");
-	int dash_f = fighter_int[FIGHTER_INT_66_STEP];
-	int dash_b = fighter_int[FIGHTER_INT_44_STEP];
-	fighter_int[FIGHTER_INT_66_STEP] = 0;
-	fighter_int[FIGHTER_INT_44_STEP] = 0;
+	move_list[FIGHTER_CONTEXT_GROUND].swap_buffers("dash_f", "dash_b");
+	int dash_f = object_int[FIGHTER_INT_66_STEP];
+	int dash_b = object_int[FIGHTER_INT_44_STEP];
+	object_int[FIGHTER_INT_66_STEP] = 0;
+	object_int[FIGHTER_INT_44_STEP] = 0;
 	if (common_ground_status_act()) { //Rare footage of recursive change_status calls
 		return;
 	}
-	fighter_int[FIGHTER_INT_66_STEP] = dash_b;
-	fighter_int[FIGHTER_INT_44_STEP] = dash_f;
+	object_int[FIGHTER_INT_66_STEP] = dash_b;
+	object_int[FIGHTER_INT_44_STEP] = dash_f;
 	if (get_stick_dir() < 4) {
 		change_anim("turn_crouch", 1.0, 0.0);
 	}
@@ -517,8 +521,8 @@ void Fighter::exit_status_turn() {
 }
 
 void Fighter::status_attack() {
-	if (fighter_int[FIGHTER_INT_EXTERNAL_FRAME] == 2 
-	&& !fighter_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
+	if (object_int[FIGHTER_INT_EXTERNAL_FRAME] == 2 
+	&& !object_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
 			switch (get_curr_move().required_buttons) {
 			case (BUTTON_LP_BIT):
 			case (BUTTON_LK_BIT): {
@@ -545,8 +549,8 @@ void Fighter::status_attack() {
 }
 
 void Fighter::enter_status_attack() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
-	if (!fighter_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+	if (!object_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
 		switch (get_curr_move().required_buttons) {
 			case (BUTTON_LP_BIT):
 			case (BUTTON_LK_BIT): {
@@ -564,21 +568,21 @@ void Fighter::enter_status_attack() {
 			} break;
 		}
 	}
-	fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[situation_kind].is_curr_move_recover_crouching(this);
-	change_anim(fighter_string[FIGHTER_STRING_MOVE_KIND]);
+	object_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[fighter_context].is_curr_move_recover_crouching(this);
+	change_anim(object_string[FIGHTER_STRING_MOVE_KIND]);
 }
 
 void Fighter::exit_status_attack() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 	stop_reserved_sound();
 	clear_effect_all();
 }
 
 void Fighter::status_attack_air() {
-	if (fighter_int[FIGHTER_INT_EXTERNAL_FRAME] == 2
-	&& !fighter_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
+	if (object_int[FIGHTER_INT_EXTERNAL_FRAME] == 2
+	&& !object_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
 		switch (get_curr_move().required_buttons) {
 			case (BUTTON_LP_BIT):
 			case (BUTTON_LK_BIT): {
@@ -603,8 +607,8 @@ void Fighter::status_attack_air() {
 }
 
 void Fighter::enter_status_attack_air() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
-	if (!fighter_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+	if (!object_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
 		switch (get_curr_move().required_buttons) {
 			case (BUTTON_LP_BIT):
 			case (BUTTON_LK_BIT): {
@@ -618,13 +622,13 @@ void Fighter::enter_status_attack_air() {
 			} break;
 		}
 	}
-	change_anim(fighter_string[FIGHTER_STRING_MOVE_KIND]);
+	change_anim(object_string[FIGHTER_STRING_MOVE_KIND]);
 }
 
 void Fighter::exit_status_attack_air() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 	stop_reserved_sound();
 	clear_effect_all();
 }
@@ -636,14 +640,14 @@ void Fighter::status_backdash_attack() {
 }
 
 void Fighter::enter_status_backdash_attack() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
-	change_anim(fighter_string[FIGHTER_STRING_MOVE_KIND]);
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = true;
+	change_anim(object_string[FIGHTER_STRING_MOVE_KIND]);
 }
 
 void Fighter::exit_status_backdash_attack() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 	stop_reserved_sound();
 	clear_effect_all();
 }
@@ -658,22 +662,16 @@ void Fighter::status_advance() {
 }
 
 void Fighter::enter_status_advance() {
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
-	fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;
-	if (fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE]) {
-		spend_ex(300.0);
-	}
-	else {
-		spend_ex(100.0);
-	}
+	object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] = 0;
+	object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 0;
 	change_anim("advance_high");
 }
 
 void Fighter::exit_status_advance() {
-	fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 }
 
 void Fighter::status_advance_forward() {
@@ -683,20 +681,14 @@ void Fighter::status_advance_forward() {
 }
 
 void Fighter::enter_status_advance_forward() {
-	if (fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE]) {
-		spend_ex(300.0);
-	}
-	else {
-		spend_ex(100.0);
-	}
 	change_anim("advance_forward");
 }
 
 void Fighter::exit_status_advance_forward() {
-	fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 }
 
 void Fighter::status_advance_back() {
@@ -706,20 +698,14 @@ void Fighter::status_advance_back() {
 }
 
 void Fighter::enter_status_advance_back() {
-	if (fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE]) {
-		spend_ex(300.0);
-	}
-	else {
-		spend_ex(100.0);
-	}
 	change_anim("advance_back");
 }
 
 void Fighter::exit_status_advance_back() {
-	fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 }
 
 void Fighter::status_grab_start() {
@@ -729,14 +715,14 @@ void Fighter::status_grab_start() {
 }
 
 void Fighter::enter_status_grab_start() {
-	fighter_flag[FIGHTER_FLAG_THROW_TECH] = true;
+	object_flag[FIGHTER_FLAG_THROW_TECH] = true;
 	change_anim("grab_start");
 }
 
 void Fighter::exit_status_grab_start() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 }
 
 void Fighter::status_grab() {
@@ -746,7 +732,7 @@ void Fighter::status_grab() {
 }
 
 void Fighter::enter_status_grab() {
-	fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[situation_kind].is_curr_move_recover_crouching(this);
+	object_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[fighter_context].is_curr_move_recover_crouching(this);
 	change_anim("grab");
 }
 
@@ -779,14 +765,14 @@ void Fighter::status_grab_air_start() {
 }
 
 void Fighter::enter_status_grab_air_start() {
-	fighter_flag[FIGHTER_FLAG_THROW_TECH] = true;
+	object_flag[FIGHTER_FLAG_THROW_TECH] = true;
 	change_anim("grab_air_start");
 }
 
 void Fighter::exit_status_grab_air_start() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
 }
 
 void Fighter::status_grab_air() {
@@ -806,12 +792,12 @@ void Fighter::exit_status_grab_air() {
 void Fighter::status_throw_air() {
 	if (pos.y <= 0.0f) {
 		pos.y = 0.0f;
-		change_situation(FIGHTER_SITUATION_GROUND);
+		change_context(FIGHTER_CONTEXT_GROUND);
 	}
 	if (is_status_end()) {
 		return;
 	}
-	if (!fighter_flag[FIGHTER_FLAG_DISABLE_AIR_GENERAL]) {
+	if (!object_flag[FIGHTER_FLAG_DISABLE_AIR_GENERAL]) {
 		common_air_status_general();
 	}
 }
@@ -821,15 +807,15 @@ void Fighter::enter_status_throw_air() {
 }
 
 void Fighter::exit_status_throw_air() {
-	fighter_flag[FIGHTER_FLAG_DISABLE_AIR_GENERAL] = false;
-	if (fighter_flag[FIGHTER_FLAG_FLIP_FACING_ON_STATUS_END] && fighter_int[FIGHTER_INT_JUMP_KIND] != JUMP_KIND_N) {
-		fighter_int[FIGHTER_INT_JUMP_KIND] ^= 1; //Flips between JUMP_KIND_F and B
+	object_flag[FIGHTER_FLAG_DISABLE_AIR_GENERAL] = false;
+	if (object_flag[FIGHTER_FLAG_FLIP_FACING_ON_STATUS_END] && object_int[FIGHTER_INT_JUMP_KIND] != JUMP_KIND_N) {
+		object_int[FIGHTER_INT_JUMP_KIND] ^= 1; //Flips between JUMP_KIND_F and B
 	}
 }
 
 void Fighter::status_grabbed() {
 	Fighter* that = object_manager->fighter[!id];
-	if (fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW] && fighter_flag[FIGHTER_FLAG_ALLOW_THROW_TECH]) {
+	if (object_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW] && object_flag[FIGHTER_FLAG_ALLOW_THROW_TECH]) {
 		unsigned int grab_buttons[2] = { BUTTON_LP, BUTTON_LK };
 		if (check_button_input(grab_buttons, 2)) {
 			change_status(FIGHTER_STATUS_THROW_TECH);
@@ -838,25 +824,25 @@ void Fighter::status_grabbed() {
 		}
 	}
 	glm::vec3 offset = glm::vec3(
-		fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_X], 
-		fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Y], 
-		fighter_float[FIGHTER_FLOAT_GRAB_OFFSET_Z]
+		object_float[FIGHTER_FLOAT_GRAB_OFFSET_X], 
+		object_float[FIGHTER_FLOAT_GRAB_OFFSET_Y], 
+		object_float[FIGHTER_FLOAT_GRAB_OFFSET_Z]
 	);
-	glm::vec3 offset_bone_pos = get_relative_bone_position(fighter_int[FIGHTER_INT_GRABBED_BONE_ID]);
-	glm::vec3 target_pos_per_frame = that->get_bone_position(fighter_int[FIGHTER_INT_GRAB_BONE_ID], offset);
+	glm::vec3 offset_bone_pos = get_relative_bone_position(object_int[FIGHTER_INT_GRABBED_BONE_ID]);
+	glm::vec3 target_pos_per_frame = that->get_bone_position(object_int[FIGHTER_INT_GRAB_BONE_ID], offset);
 	set_pos(target_pos_per_frame - offset_bone_pos);
 }
 
 void Fighter::enter_status_grabbed() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_GRABBED;
-	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
-	fighter_flag[FIGHTER_FLAG_ALLOW_THROW_TECH] = !fighter_flag[FIGHTER_FLAG_DISABLE_THROW_TECH] 
-		&& (is_actionable() || fighter_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED]);
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_GRABBED;
+	object_flag[FIGHTER_FLAG_LOCK_DIRECTION] = true;
+	object_flag[FIGHTER_FLAG_ALLOW_THROW_TECH] = !object_flag[FIGHTER_FLAG_DISABLE_THROW_TECH] 
+		&& (is_actionable() || object_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED]);
 	change_anim("grabbed");
 }
 
 void Fighter::exit_status_grabbed() {
-	fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
+	object_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
 	Fighter* that = object_manager->fighter[!id];
 	if (that->pos.x != pos.x) {
 		facing_right = that->pos.x > pos.x;
@@ -869,22 +855,22 @@ void Fighter::status_thrown() {
 	if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
 		return;
 	}
-	apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
-	if (!add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0)) && pos.y != 0.0) {
+	apply_gravity(object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX]);
+	if (!add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0)) && pos.y != 0.0) {
 		Fighter* that = object_manager->fighter[!id];
 		//If you get thrown into the corner, the attacker should be pushed away from you.
-		that->add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] * -1.0, 0.0, 0.0));
+		that->add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED] * -1.0, 0.0, 0.0));
 	}
 }
 
 void Fighter::enter_status_thrown() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_GRABBED;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_GRABBED;
 	Fighter* that = object_manager->fighter[!id];
 	if (that->pos.x != pos.x) {
 		facing_right = that->pos.x > pos.x;
 		facing_dir = facing_right ? 1.0 : -1.0;
 	}
-	change_situation(FIGHTER_SITUATION_AIR);
+	change_context(FIGHTER_CONTEXT_AIR);
 	change_anim("thrown", calc_launch_frames(), -1.0);
 }
 
@@ -896,49 +882,49 @@ void Fighter::status_throw_tech() {
 	if (is_status_end()) {
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 15 || fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 16) {
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 15 || object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 16) {
 		frame++;
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0;
 	}
-	else if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] < 15) {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = facing_dir * -16;
+	else if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] < 15) {
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = facing_dir * -16;
 	}
 	else {
-		fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = facing_dir * -4;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = facing_dir * -4;
 	}
-	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], 0, 0));
+	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 }
 
 void Fighter::enter_status_throw_tech() {
-	if (situation_kind == FIGHTER_SITUATION_GROUND) {
+	if (fighter_context == FIGHTER_CONTEXT_GROUND) {
 		change_anim("throw_tech");
 	}
 	else {
 		change_anim("throw_tech_air");
 	}
-	fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 20;
-	fighter_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW] = false;
+	object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] = 20;
+	object_flag[FIGHTER_FLAG_IN_THROW_TECH_WINDOW] = false;
 }
 
 void Fighter::exit_status_throw_tech() {}
 
 void Fighter::status_blockstun() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] != 0) {
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] != 0) {
 		unsigned int advance_buttons[2] = { BUTTON_HP, BUTTON_HK };
 		if (check_button_input(advance_buttons, 2) && player->control_type == CONTROL_TYPE_ADVANCE) {
 			if ((get_stick_dir() == 4 || get_stick_dir() == 1) && can_spend_ex(300.0)) {
-				fighter_int[FIGHTER_INT_HITLAG_FRAMES] = 0;
-				fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES] = 0;
-				fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
-				fighter_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = true;
+				object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] = 0;
+				object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 0;
+				object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+				object_flag[FIGHTER_FLAG_CANCEL_INTO_ADVANCE] = true;
 				change_status(FIGHTER_STATUS_ADVANCE_BACK);
 				return;
 			}
 		}
 	}
 	else {
-		if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
-			switch (fighter_int[FIGHTER_INT_HITSTUN_HEIGHT]) {
+		if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
+			switch (object_int[FIGHTER_INT_HITSTUN_HEIGHT]) {
 				case (HITSTUN_HEIGHT_STAND): {
 					change_status(FIGHTER_STATUS_WAIT);
 					return;
@@ -953,14 +939,14 @@ void Fighter::status_blockstun() {
 }
 
 void Fighter::enter_status_blockstun() {
-	change_anim(fighter_string[FIGHTER_STRING_HITSTUN_ANIM], fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
+	change_anim(object_string[FIGHTER_STRING_HITSTUN_ANIM], object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
 }
 
 void Fighter::exit_status_blockstun() {}
 
 void Fighter::status_hitstun() {
-	if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
-		switch (fighter_int[FIGHTER_INT_HITSTUN_HEIGHT]) {
+	if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
+		switch (object_int[FIGHTER_INT_HITSTUN_HEIGHT]) {
 			case (HITSTUN_HEIGHT_STAND): {
 				change_status(FIGHTER_STATUS_WAIT);
 				return;
@@ -978,8 +964,8 @@ void Fighter::status_hitstun() {
 }
 
 void Fighter::enter_status_hitstun() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
-	change_anim(fighter_string[FIGHTER_STRING_HITSTUN_ANIM], fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
+	change_anim(object_string[FIGHTER_STRING_HITSTUN_ANIM], object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
 }
 
 void Fighter::exit_status_hitstun() {
@@ -991,7 +977,9 @@ void Fighter::status_hitstun_air() {
 	if (check_landing(FIGHTER_STATUS_LANDING_HITSTUN)) {
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
+	if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
+		object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = get_param_float("gravity");
+		object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
 		change_status(FIGHTER_STATUS_FALL);
 		return;
 	}
@@ -999,22 +987,19 @@ void Fighter::status_hitstun_air() {
 		change_status(FIGHTER_STATUS_HITSTUN_PARRY_START);
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		if (!fighter_int[FIGHTER_INT_PUSHBACK_FRAMES]) {
-			if (fighter_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] && fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] > 0.0f) {
-				apply_gravity(get_param_float("gravity") * 2.0f, get_param_float("max_fall_speed"));
-			}
-			else {
-				apply_gravity(get_param_float("gravity"), get_param_float("max_fall_speed"));
-			}
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
+		if (!object_int[FIGHTER_INT_PUSHBACK_FRAMES]) {
+			apply_gravity(object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX]);
 		}
-		add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
+		add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
 	}
 }
 
 void Fighter::enter_status_hitstun_air() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
-	change_anim("jump_hitstun", fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
+	object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
+	object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = 0.0f;
+	change_anim("jump_hitstun", object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
 }
 
 
@@ -1024,19 +1009,19 @@ void Fighter::exit_status_hitstun_air() {
 
 void Fighter::status_hitstun_float() {
 	if (anim_end) {
-		fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
-		fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+		object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
+		object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
 		change_status(FIGHTER_STATUS_KNOCKDOWN);
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+	if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		std::string param_text_add = "_up";
-		if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+		if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 			param_text_add = "_down";
 		}
 		int end_rate_frame = get_param_int("float_hitstun_end_frame" + param_text_add);
 		if (frame == get_param_int("float_hitstun_start_frame" + param_text_add) && rate == 1.0f) {
-			set_rate((end_rate_frame - frame) / (float)fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
+			set_rate((end_rate_frame - frame) / (float)object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
 		}
 		else if (frame > end_rate_frame) {
 			set_rate(1.0);
@@ -1045,9 +1030,9 @@ void Fighter::status_hitstun_float() {
 }
 
 void Fighter::enter_status_hitstun_float() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
-	change_situation(FIGHTER_SITUATION_AIR);
-	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	change_context(FIGHTER_CONTEXT_AIR);
+	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 		change_anim("hitstun_float_down");
 	}
 	else {
@@ -1067,51 +1052,50 @@ void Fighter::status_launch_start() {
 }
 
 void Fighter::enter_status_launch_start() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
 	change_anim("launch_start");
 }
 
 void Fighter::exit_status_launch_start() {
-	change_situation(FIGHTER_SITUATION_AIR);
+	change_context(FIGHTER_CONTEXT_AIR);
 }
 
 void Fighter::status_launch() {
-	if (fighter_int[FIGHTER_INT_HITLAG_FRAMES] == 0) {
-		apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
-		add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
-		if (fighter_flag[FIGHTER_FLAG_LAUNCH_FLOAT]) {
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
+		common_air_status_general();
+		if (object_flag[FIGHTER_FLAG_LAUNCH_FLOAT]) {
 			if (check_landing(FIGHTER_STATUS_HITSTUN_FLOAT)) {
-				fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = 0;
-				fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = 0;
+				object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = 0.0f;
+				object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = 0.0f;
 				return;
 			}
 		}
 		else {
 			if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
-				fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = 0;
-				fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = 0;
+				object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = 0.0f;
+				object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = 0.0f;
 				return;
 			}
 		}
-	}
-	if (check_hitstun_parry()) {
-		change_status(FIGHTER_STATUS_LAUNCH_PARRY_START);
+		if (check_hitstun_parry()) {
+			change_status(FIGHTER_STATUS_LAUNCH_PARRY_START);
+		}
 	}
 }
 
 void Fighter::enter_status_launch() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
-	fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN] = false;
-	if (!fighter_flag[FIGHTER_FLAG_LAUNCH_FLOAT]) {
-		fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN] = false;
+	if (!object_flag[FIGHTER_FLAG_LAUNCH_FLOAT]) {
+		object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
 	}
-	if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] == 0) {
-		fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = get_param_float("gravity");
+	if (object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] == 0.0f) {
+		object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = get_param_float("gravity");
 	}
-	if (fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] == 0) {
-		fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
+	if (object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] == 0.0f) {
+		object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
 	}
-	if (fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN]) {
+	if (object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN]) {
 		change_anim("launch_hkd", calc_launch_frames(), -1.0);
 	}
 	else {
@@ -1120,13 +1104,13 @@ void Fighter::enter_status_launch() {
 }
 
 void Fighter::exit_status_launch() {
-	fighter_flag[FIGHTER_FLAG_LAUNCH_FLOAT] = false;
+	object_flag[FIGHTER_FLAG_LAUNCH_FLOAT] = false;
 }
 
 void Fighter::status_crumple() {
 	if (anim_end) {
-		fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
-		fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+		object_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_SLOW;
+		object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
 		if (is_ko()) {
 			change_status(FIGHTER_STATUS_KO);
 		}
@@ -1135,14 +1119,14 @@ void Fighter::status_crumple() {
 		}
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+	if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		std::string param_text_add = "_up";
-		if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+		if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 			param_text_add = "_down";
 		}
 		int end_rate_frame = get_param_int("crumple_hitstun_end_frame" + param_text_add);
 		if (frame == get_param_int("crumple_hitstun_start_frame" + param_text_add) && rate == 1.0f) {
-			set_rate((end_rate_frame - frame) / (float)fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
+			set_rate((end_rate_frame - frame) / (float)object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
 		}
 		else if (frame > end_rate_frame) {
 			set_rate(1.0);
@@ -1151,8 +1135,8 @@ void Fighter::status_crumple() {
 }
 
 void Fighter::enter_status_crumple() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
-	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 		change_anim("crumple_down");
 	}
 	else {
@@ -1165,8 +1149,9 @@ void Fighter::exit_status_crumple() {
 }
 
 void Fighter::status_knockdown_start() {
-	if (situation_kind == FIGHTER_SITUATION_AIR && !fighter_int[FIGHTER_INT_INIT_HITLAG_FRAMES]) {
-		pos.y = clampf(0.0f, pos.y - fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], pos.y);
+	std::cout << "P2 frame: " << frame << "\n";
+	if (fighter_context == FIGHTER_CONTEXT_AIR && !object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]) {
+		pos.y = clampf(0.0f, pos.y - object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], pos.y);
 	}
 	if (anim_end) {
 		change_status(FIGHTER_STATUS_KNOCKDOWN);
@@ -1174,12 +1159,12 @@ void Fighter::status_knockdown_start() {
 }
 
 void Fighter::enter_status_knockdown_start() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
-	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 		change_anim("knockdown_start_down");
-		if (situation_kind == FIGHTER_SITUATION_AIR) {
+		if (fighter_context == FIGHTER_CONTEXT_AIR) {
 			int skip_frame = get_param_int("knockdown_start_air_skip_frame_down");
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = pos.y / (get_anim_length(get_anim()) -
+			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = pos.y / (get_anim_length(get_anim()) -
 				skip_frame
 			);
 			frame = skip_frame;
@@ -1187,9 +1172,9 @@ void Fighter::enter_status_knockdown_start() {
 	}
 	else {
 		change_anim("knockdown_start_up");
-		if (situation_kind == FIGHTER_SITUATION_AIR) {
+		if (fighter_context == FIGHTER_CONTEXT_AIR) {
 			int skip_frame = get_param_int("knockdown_start_air_skip_frame_up");
-			fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = pos.y / (get_anim_length(get_anim()) -
+			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = pos.y / (get_anim_length(get_anim()) -
 				skip_frame
 			);
 			frame = skip_frame;
@@ -1202,24 +1187,27 @@ void Fighter::exit_status_knockdown_start() {
 }
 
 void Fighter::status_knockdown() {
-	if (!(fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] || fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW])) {
+	if (!(object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] || object_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW])) {
 		switch (get_flick_dir()) {
-			case 4: {
-				fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_BACK;
-				fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = get_global_param_int(PARAM_FIGHTER, "tech_window");
-			} break;
 			case 1:
-			case 2: {
-				fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_FAST;
-				fighter_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = get_global_param_int(PARAM_FIGHTER, "tech_window");
+			case 4:
+			case 7: {
+				object_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_BACK;
+				object_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = get_global_param_int(PARAM_FIGHTER, "tech_window");
+			} break;
+			case 3:
+			case 6:
+			case 9: {
+				object_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_FORWARD;
+				object_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW] = get_global_param_int(PARAM_FIGHTER, "tech_window");
 			} break;
 			default: {
-				fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
+				object_int[FIGHTER_INT_WAKEUP_TYPE] = object_int[FIGHTER_INT_AUTO_WAKEUP_TYPE];
 			} break;
 		}
 	}
 	if (anim_end) {
-		fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+		object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
 		if (is_ko()) {
 			change_status(FIGHTER_STATUS_KO);
 		}
@@ -1228,36 +1216,40 @@ void Fighter::status_knockdown() {
 		}
 		return;
 	}
-	if (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+	if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		std::string param_text_add = "_up";
-		if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+		if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 			param_text_add = "_down";
 		}
 		int end_rate_frame = get_param_int("knockdown_hitstun_end_frame" + param_text_add);
 		if (frame == get_param_int("knockdown_hitstun_start_frame" + param_text_add) && rate == 1.0f) {
-			set_rate((end_rate_frame - frame) / (float)fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
+			set_rate((end_rate_frame - frame) / (float)object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
 		}
 		else if (frame > end_rate_frame) {
-			set_rate(1.0);
+			set_rate(1.0f);
 		}
 	}
 }
 
 void Fighter::enter_status_knockdown() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
-	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+	std::cout << "Entered knockdown\n";
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0;
+	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0;
+	if (object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN]) {
+		object_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_SLOW;
+	}
+	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 		change_anim("knockdown_down");
 	}
 	else {
 		change_anim("knockdown_up");
 	}
-	change_situation(FIGHTER_SITUATION_DOWN);
+	change_context(FIGHTER_CONTEXT_DOWN);
 }
 
 void Fighter::exit_status_knockdown() {
-	fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = false;
+	object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = false;
 }
 
 void Fighter::status_wakeup() {
@@ -1267,35 +1259,44 @@ void Fighter::status_wakeup() {
 }
 
 void Fighter::enter_status_wakeup() {
-	change_situation(FIGHTER_SITUATION_GROUND);
-	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
-		switch (fighter_int[FIGHTER_INT_WAKEUP_TYPE]) {
-		case WAKEUP_TYPE_FAST: {
-			change_anim("wakeup_fast_down");
-		} break;
-		case WAKEUP_TYPE_BACK: {
-			change_anim("wakeup_back_down");
-		} break;
-		default: {
-			change_anim("wakeup_down");
-		} break;
+	std::cout << "Entered wakeup\n";
+	change_context(FIGHTER_CONTEXT_GROUND);
+	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+		switch (object_int[FIGHTER_INT_WAKEUP_TYPE]) {
+			default:
+			case WAKEUP_TYPE_DEFAULT: {
+				change_anim("wakeup_down");
+			} break;
+			case WAKEUP_TYPE_FORWARD: {
+				change_anim("wakeup_forward_down");
+			} break;
+			case WAKEUP_TYPE_BACK: {
+				change_anim("wakeup_back_down");
+			} break;
+			case WAKEUP_TYPE_SLOW: {
+				change_anim("wakeup_slow_down");
+			} break;
 		}
 	}
 	else {
-		switch (fighter_int[FIGHTER_INT_WAKEUP_TYPE]) {
-		case WAKEUP_TYPE_FAST: {
-			change_anim("wakeup_fast_up");
-		} break;
-		case WAKEUP_TYPE_BACK: {
-			change_anim("wakeup_back_up");
-		} break;
-		default: {
-			change_anim("wakeup_up");
-		} break;
+		switch (object_int[FIGHTER_INT_WAKEUP_TYPE]) {
+			default:
+			case WAKEUP_TYPE_DEFAULT: {
+				change_anim("wakeup_up");
+			} break;
+			case WAKEUP_TYPE_FORWARD: {
+				change_anim("wakeup_forward_up");
+			} break;
+			case WAKEUP_TYPE_BACK: {
+				change_anim("wakeup_back_up");
+			} break;
+			case WAKEUP_TYPE_SLOW: {
+				change_anim("wakeup_slow_up");
+			} break;
 		}
 	}
-	fighter_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
-	fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN] = false;
+	object_int[FIGHTER_INT_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
+	object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN] = false;
 }
 
 void Fighter::exit_status_wakeup() {
@@ -1306,63 +1307,57 @@ void Fighter::status_parry_start() {
 	if (is_status_end()) {
 		return;
 	}
-	if (situation_kind == FIGHTER_SITUATION_AIR) {
+	if (fighter_context == FIGHTER_CONTEXT_AIR) {
 		if (check_landing(FIGHTER_STATUS_LANDING)) {
 			return;
 		}
 		common_air_status_general();
 	}
 	else {
-		if (frame < 2.0 && fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID) {
+		if (frame < 2.0 && object_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_MID) {
 			if (get_stick_dir() < 4) {
 				change_anim_inherit_attributes("parry_start_low", false);
-				fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
+				object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
 			}
 			else if (get_stick_dir() >= 7) {
 				change_anim_inherit_attributes("parry_start_high", false);
-				fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+				object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
 			}
 		}
 	}
 }
 
 void Fighter::enter_status_parry_start() {
-	if (situation_kind == FIGHTER_SITUATION_AIR) {
+	if (fighter_context == FIGHTER_CONTEXT_AIR) {
 		change_anim("parry_air_start");
-		fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
+		object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_ALL;
 	}
 	else if (get_stick_dir() < 4) {
 		change_anim("parry_start_low");
-		fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
+		object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_LOW;
 	}
 	else if (get_stick_dir() < 7) {
 		change_anim("parry_start_mid");
-		fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MID;
+		object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MID;
 	}
 	else {
 		change_anim("parry_start_high");
-		fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
+		object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_HIGH;
 	}
-	if (fighter_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED]) {
-		fighter_flag[FIGHTER_FLAG_HITSTUN_COUNTER_PARRY] = true;
+	if (object_flag[FIGHTER_FLAG_ATTACK_HITSTUN_PARRIED]) {
+		object_flag[FIGHTER_FLAG_HITSTUN_COUNTER_PARRY] = true;
 	}
-	fighter_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[situation_kind].is_curr_move_recover_crouching(this);
+	object_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[fighter_context].is_curr_move_recover_crouching(this);
 }
 
 void Fighter::exit_status_parry_start() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
-	fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
 }
 
 void Fighter::status_hitstun_parry_start() {
-	if (situation_kind == FIGHTER_SITUATION_AIR) {
-		if (fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] && fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]) {
-			apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
-			add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
-		}
-		else {
-			common_air_status_general();
-		}
+	if (fighter_context == FIGHTER_CONTEXT_AIR) {
+		common_air_status_general();
 		if (check_landing(FIGHTER_STATUS_LANDING)) {
 			return;
 		}
@@ -1373,10 +1368,10 @@ void Fighter::status_hitstun_parry_start() {
 }
 
 void Fighter::enter_status_hitstun_parry_start() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
-	fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
-	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
-	if (situation_kind == FIGHTER_SITUATION_AIR) {
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
+	object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+	object_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+	if (fighter_context == FIGHTER_CONTEXT_AIR) {
 		change_anim("hitstun_parry_air_start");
 	}
 	else {
@@ -1385,30 +1380,29 @@ void Fighter::enter_status_hitstun_parry_start() {
 }
 
 void Fighter::exit_status_hitstun_parry_start() {
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
-	fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
 }
 
 void Fighter::status_launch_parry_start() {
-	apply_gravity(fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY], fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX]);
-	add_pos(glm::vec3(fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED], fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED], 0));
+	common_air_status_general();
 	if (check_landing(FIGHTER_STATUS_KNOCKDOWN)) {
-		fighter_float[FIGHTER_FLOAT_LAUNCH_GRAVITY] = 0;
-		fighter_float[FIGHTER_FLOAT_LAUNCH_FALL_SPEED_MAX] = 0;
+		object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = 0.0f;
+		object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = 0.0f;
 		return;
 	}
 }
 
 void Fighter::enter_status_launch_parry_start() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
-	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
+	object_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 	change_anim("launch_parry_start");
 }
 
 void Fighter::exit_status_launch_parry_start() {
-	fighter_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
-	fighter_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
-	fighter_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
+	object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] = true;
+	object_flag[FIGHTER_FLAG_FORCE_CRITICAL] = false;
+	object_flag[FIGHTER_FLAG_PARRY_ACTIVE] = false;
 }
 
 void Fighter::status_parry() {
@@ -1416,7 +1410,7 @@ void Fighter::status_parry() {
 	if (beginning_hitlag(1) || ending_hitlag(2)) {
 		frame++;
 	}
-	if (situation_kind == FIGHTER_SITUATION_GROUND && fighter_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
+	if (fighter_context == FIGHTER_CONTEXT_GROUND && object_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {
 		if (is_status_end(FIGHTER_STATUS_CROUCH)) {
 			return;
 		}
@@ -1429,11 +1423,11 @@ void Fighter::status_parry() {
 }
 
 void Fighter::enter_status_parry() {
-	if (situation_kind == FIGHTER_SITUATION_AIR) {
+	if (fighter_context == FIGHTER_CONTEXT_AIR) {
 		change_anim("parry_air");
 	}
 	else {
-		switch (fighter_int[FIGHTER_INT_PARRY_HEIGHT]) {
+		switch (object_int[FIGHTER_INT_PARRY_HEIGHT]) {
 			case (PARRY_HEIGHT_LOW): {
 				change_anim("parry_low");
 			} break;
@@ -1450,12 +1444,12 @@ void Fighter::enter_status_parry() {
 }
 
 void Fighter::exit_status_parry() {
-	fighter_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MAX;
+	object_int[FIGHTER_INT_PARRY_HEIGHT] = PARRY_HEIGHT_MAX;
 	player->controller.set_hold_buffer(false);
 }
 
 void Fighter::status_landing() {
-	switch (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+	switch (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		case (0): {
 			check_movelist_inputs();
 			if (get_stick_dir() < 4) {
@@ -1481,27 +1475,27 @@ void Fighter::status_landing() {
 		} [[fallthrough]];
 		default: {
 			if (object_manager->is_allow_realtime_process(this)) {
-				fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
+				object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
 			}
 		} break;
 	}
 } 
 
 void Fighter::enter_status_landing() {
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 	landing_crossup();
-	fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = get_param_int("empty_landing_lag");
-	change_anim("landing", fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
-	change_situation(FIGHTER_SITUATION_GROUND);
+	object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = get_param_int("empty_landing_lag");
+	change_anim("landing", object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0f;
+	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0.0f;
+	change_context(FIGHTER_CONTEXT_GROUND);
 	pos.y = 0.0f;
 }
 
 void Fighter::exit_status_landing() {}
 
 void Fighter::status_landing_attack() {
-	switch (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+	switch (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		case (0): {
 			check_movelist_inputs();
 			if (get_stick_dir() < 4) {
@@ -1527,7 +1521,7 @@ void Fighter::status_landing_attack() {
 		} [[fallthrough]];
 		default: {
 			if (object_manager->is_allow_realtime_process(this)) {
-				fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
+				object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
 			}
 		} break;
 	}
@@ -1535,24 +1529,24 @@ void Fighter::status_landing_attack() {
 
 void Fighter::enter_status_landing_attack() {
 	landing_crossup();
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = true;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = true;
 
-	fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = get_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
-	change_anim(fighter_string[FIGHTER_STRING_MOVE_KIND] + "_landing", fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = get_param_int(object_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
+	change_anim(object_string[FIGHTER_STRING_MOVE_KIND] + "_landing", object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
-	change_situation(FIGHTER_SITUATION_GROUND);
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0f;
+	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0.0f;
+	change_context(FIGHTER_CONTEXT_GROUND);
 	pos.y = 0.0f;
 }
 
 void Fighter::exit_status_landing_attack() {
-	fighter_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
 }
 
 void Fighter::status_landing_hitstun() {
-	switch (fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+	switch (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		case (0): {
 			check_movelist_inputs();
 			if (get_stick_dir() < 4) {
@@ -1578,7 +1572,7 @@ void Fighter::status_landing_hitstun() {
 		} [[fallthrough]];
 		default: {
 			if (object_manager->is_allow_realtime_process(this)) {
-				fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
+				object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]--;
 			}
 		} break;
 	}
@@ -1586,12 +1580,12 @@ void Fighter::status_landing_hitstun() {
 
 
 void Fighter::enter_status_landing_hitstun() {
-	fighter_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
-	fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] = 0;
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = 0;
-	change_anim("landing_hitstun", fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
-	fighter_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
-	change_situation(FIGHTER_SITUATION_GROUND);
+	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
+	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0f;
+	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0.0f;
+	change_anim("landing_hitstun", object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
+	object_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
+	change_context(FIGHTER_CONTEXT_GROUND);
 	pos.y = 0.0f;
 }
 
@@ -1618,7 +1612,7 @@ void Fighter::status_ko() {
 }
 
 void Fighter::enter_status_ko() {
-	if (fighter_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
+	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 		change_anim("knockdown_lose_down");
 	}
 	else {
@@ -1635,7 +1629,7 @@ void Fighter::status_round_end() {
 }
 
 void Fighter::enter_status_round_end() {
-	if (fighter_float[FIGHTER_FLOAT_HEALTH] == get_param_float("health")) {
+	if (object_float[FIGHTER_FLOAT_HEALTH] == get_param_float("health")) {
 		change_anim("round_win_perfect");
 	}
 	else {
@@ -1644,203 +1638,199 @@ void Fighter::enter_status_round_end() {
 }
 
 void Fighter::exit_status_round_end() {
-
+	
 }
 
 void Fighter::load_fighter_status_scripts() {
-	status_script[FIGHTER_STATUS_NONE] = &Fighter::status_none;
-	enter_status_script[FIGHTER_STATUS_NONE] = &Fighter::enter_status_none;
-	exit_status_script[FIGHTER_STATUS_NONE] = &Fighter::exit_status_none;
+	SET_STATUS_FUNC(FIGHTER_STATUS_WAIT, &Fighter::status_wait);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_WAIT, &Fighter::enter_status_wait);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_WAIT, &Fighter::exit_status_wait);
 
-	status_script[FIGHTER_STATUS_WAIT] = &Fighter::status_wait;
-	enter_status_script[FIGHTER_STATUS_WAIT] = &Fighter::enter_status_wait;
-	exit_status_script[FIGHTER_STATUS_WAIT] = &Fighter::exit_status_wait;
+	SET_STATUS_FUNC(FIGHTER_STATUS_WALK_F, &Fighter::status_walk_f);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_WALK_F, &Fighter::enter_status_walk_f);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_WALK_F, &Fighter::exit_status_walk_f);
 
-	status_script[FIGHTER_STATUS_WALK_F] = &Fighter::status_walk_f;
-	enter_status_script[FIGHTER_STATUS_WALK_F] = &Fighter::enter_status_walk_f;
-	exit_status_script[FIGHTER_STATUS_WALK_F] = &Fighter::exit_status_walk_f;
+	SET_STATUS_FUNC(FIGHTER_STATUS_WALK_B, &Fighter::status_walk_b);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_WALK_B, &Fighter::enter_status_walk_b);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_WALK_B, &Fighter::exit_status_walk_b);
 
-	status_script[FIGHTER_STATUS_WALK_B] = &Fighter::status_walk_b;
-	enter_status_script[FIGHTER_STATUS_WALK_B] = &Fighter::enter_status_walk_b;
-	exit_status_script[FIGHTER_STATUS_WALK_B] = &Fighter::exit_status_walk_b;
+	SET_STATUS_FUNC(FIGHTER_STATUS_DASH_F, &Fighter::status_dash_f);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_DASH_F, &Fighter::enter_status_dash_f);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_DASH_F, &Fighter::exit_status_dash_f);
 
-	status_script[FIGHTER_STATUS_DASH_F] = &Fighter::status_dash_f;
-	enter_status_script[FIGHTER_STATUS_DASH_F] = &Fighter::enter_status_dash_f;
-	exit_status_script[FIGHTER_STATUS_DASH_F] = &Fighter::exit_status_dash_f;
+	SET_STATUS_FUNC(FIGHTER_STATUS_DASH_B, &Fighter::status_dash_b);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_DASH_B, &Fighter::enter_status_dash_b);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_DASH_B, &Fighter::exit_status_dash_b);
 
-	status_script[FIGHTER_STATUS_DASH_B] = &Fighter::status_dash_b;
-	enter_status_script[FIGHTER_STATUS_DASH_B] = &Fighter::enter_status_dash_b;
-	exit_status_script[FIGHTER_STATUS_DASH_B] = &Fighter::exit_status_dash_b;
+	SET_STATUS_FUNC(FIGHTER_STATUS_DASH_AIR, &Fighter::status_dash_air);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_DASH_AIR, &Fighter::enter_status_dash_air);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_DASH_AIR, &Fighter::exit_status_dash_air);
 
-	status_script[FIGHTER_STATUS_DASH_AIR] = &Fighter::status_dash_air;
-	enter_status_script[FIGHTER_STATUS_DASH_AIR] = &Fighter::enter_status_dash_air;
-	exit_status_script[FIGHTER_STATUS_DASH_AIR] = &Fighter::exit_status_dash_air;
+	SET_STATUS_FUNC(FIGHTER_STATUS_CROUCH_D, &Fighter::status_crouchd);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_CROUCH_D, &Fighter::enter_status_crouchd);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_CROUCH_D, &Fighter::exit_status_crouchd);
 
-	status_script[FIGHTER_STATUS_CROUCH_D] = &Fighter::status_crouchd;
-	enter_status_script[FIGHTER_STATUS_CROUCH_D] = &Fighter::enter_status_crouchd;
-	exit_status_script[FIGHTER_STATUS_CROUCH_D] = &Fighter::exit_status_crouchd;
+	SET_STATUS_FUNC(FIGHTER_STATUS_CROUCH, &Fighter::status_crouch);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_CROUCH, &Fighter::enter_status_crouch);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_CROUCH, &Fighter::exit_status_crouch);
 
-	status_script[FIGHTER_STATUS_CROUCH] = &Fighter::status_crouch;
-	enter_status_script[FIGHTER_STATUS_CROUCH] = &Fighter::enter_status_crouch;
-	exit_status_script[FIGHTER_STATUS_CROUCH] = &Fighter::exit_status_crouch;
+	SET_STATUS_FUNC(FIGHTER_STATUS_CROUCH_U, &Fighter::status_crouchu);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_CROUCH_U, &Fighter::enter_status_crouchu);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_CROUCH_U, &Fighter::exit_status_crouchu);
 
-	status_script[FIGHTER_STATUS_CROUCH_U] = &Fighter::status_crouchu;
-	enter_status_script[FIGHTER_STATUS_CROUCH_U] = &Fighter::enter_status_crouchu;
-	exit_status_script[FIGHTER_STATUS_CROUCH_U] = &Fighter::exit_status_crouchu;
+	SET_STATUS_FUNC(FIGHTER_STATUS_JUMPSQUAT, &Fighter::status_jumpsquat);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_JUMPSQUAT, &Fighter::enter_status_jumpsquat);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_JUMPSQUAT, &Fighter::exit_status_jumpsquat);
 
-	status_script[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::status_jumpsquat;
-	enter_status_script[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::enter_status_jumpsquat;
-	exit_status_script[FIGHTER_STATUS_JUMPSQUAT] = &Fighter::exit_status_jumpsquat;
+	SET_STATUS_FUNC(FIGHTER_STATUS_JUMP, &Fighter::status_jump);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_JUMP, &Fighter::enter_status_jump);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_JUMP, &Fighter::exit_status_jump);
 
-	status_script[FIGHTER_STATUS_JUMP] = &Fighter::status_jump;
-	enter_status_script[FIGHTER_STATUS_JUMP] = &Fighter::enter_status_jump;
-	exit_status_script[FIGHTER_STATUS_JUMP] = &Fighter::exit_status_jump;
+	SET_STATUS_FUNC(FIGHTER_STATUS_FALL, &Fighter::status_fall);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_FALL, &Fighter::enter_status_fall);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_FALL, &Fighter::exit_status_fall);
 
-	status_script[FIGHTER_STATUS_FALL] = &Fighter::status_fall;
-	enter_status_script[FIGHTER_STATUS_FALL] = &Fighter::enter_status_fall;
-	exit_status_script[FIGHTER_STATUS_FALL] = &Fighter::exit_status_fall;
+	SET_STATUS_FUNC(FIGHTER_STATUS_TURN, &Fighter::status_turn);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_TURN, &Fighter::enter_status_turn);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_TURN, &Fighter::exit_status_turn);
 
-	status_script[FIGHTER_STATUS_TURN] = &Fighter::status_turn;
-	enter_status_script[FIGHTER_STATUS_TURN] = &Fighter::enter_status_turn;
-	exit_status_script[FIGHTER_STATUS_TURN] = &Fighter::exit_status_turn;
+	SET_STATUS_FUNC(FIGHTER_STATUS_ATTACK, &Fighter::status_attack);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_ATTACK, &Fighter::enter_status_attack);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_ATTACK, &Fighter::exit_status_attack);
 
-	status_script[FIGHTER_STATUS_ATTACK] = &Fighter::status_attack;
-	enter_status_script[FIGHTER_STATUS_ATTACK] = &Fighter::enter_status_attack;
-	exit_status_script[FIGHTER_STATUS_ATTACK] = &Fighter::exit_status_attack;
+	SET_STATUS_FUNC(FIGHTER_STATUS_ATTACK_AIR, &Fighter::status_attack_air);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_ATTACK_AIR, &Fighter::enter_status_attack_air);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_ATTACK_AIR, &Fighter::exit_status_attack_air);
 
-	status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::status_attack_air;
-	enter_status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::enter_status_attack_air;
-	exit_status_script[FIGHTER_STATUS_ATTACK_AIR] = &Fighter::exit_status_attack_air;
+	SET_STATUS_FUNC(FIGHTER_STATUS_BACKDASH_ATTACK, &Fighter::status_backdash_attack);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_BACKDASH_ATTACK, &Fighter::enter_status_backdash_attack);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_BACKDASH_ATTACK, &Fighter::exit_status_backdash_attack);
 
-	status_script[FIGHTER_STATUS_BACKDASH_ATTACK] = &Fighter::status_backdash_attack;
-	enter_status_script[FIGHTER_STATUS_BACKDASH_ATTACK] = &Fighter::enter_status_backdash_attack;
-	exit_status_script[FIGHTER_STATUS_BACKDASH_ATTACK] = &Fighter::exit_status_backdash_attack;
+	SET_STATUS_FUNC(FIGHTER_STATUS_ADVANCE_FORWARD, &Fighter::status_advance_forward);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_ADVANCE_FORWARD, &Fighter::enter_status_advance_forward);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_ADVANCE_FORWARD, &Fighter::exit_status_advance_forward);
 
-	status_script[FIGHTER_STATUS_ADVANCE_FORWARD] = &Fighter::status_advance_forward;
-	enter_status_script[FIGHTER_STATUS_ADVANCE_FORWARD] = &Fighter::enter_status_advance_forward;
-	exit_status_script[FIGHTER_STATUS_ADVANCE_FORWARD] = &Fighter::exit_status_advance_forward;
+	SET_STATUS_FUNC(FIGHTER_STATUS_ADVANCE_BACK, &Fighter::status_advance_back);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_ADVANCE_BACK, &Fighter::enter_status_advance_back);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_ADVANCE_BACK, &Fighter::exit_status_advance_back);
 
-	status_script[FIGHTER_STATUS_ADVANCE_BACK] = &Fighter::status_advance_back;
-	enter_status_script[FIGHTER_STATUS_ADVANCE_BACK] = &Fighter::enter_status_advance_back;
-	exit_status_script[FIGHTER_STATUS_ADVANCE_BACK] = &Fighter::exit_status_advance_back;
+	SET_STATUS_FUNC(FIGHTER_STATUS_ADVANCE, &Fighter::status_advance);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_ADVANCE, &Fighter::enter_status_advance);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_ADVANCE, &Fighter::exit_status_advance);
 
-	status_script[FIGHTER_STATUS_ADVANCE] = &Fighter::status_advance;
-	enter_status_script[FIGHTER_STATUS_ADVANCE] = &Fighter::enter_status_advance;
-	exit_status_script[FIGHTER_STATUS_ADVANCE] = &Fighter::exit_status_advance;
+	SET_STATUS_FUNC(FIGHTER_STATUS_GRAB_START, &Fighter::status_grab_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_GRAB_START, &Fighter::enter_status_grab_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_GRAB_START, &Fighter::exit_status_grab_start);
 
-	status_script[FIGHTER_STATUS_GRAB_START] = &Fighter::status_grab_start;
-	enter_status_script[FIGHTER_STATUS_GRAB_START] = &Fighter::enter_status_grab_start;
-	exit_status_script[FIGHTER_STATUS_GRAB_START] = &Fighter::exit_status_grab_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_GRAB, &Fighter::status_grab);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_GRAB, &Fighter::enter_status_grab);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_GRAB, &Fighter::exit_status_grab);
 
-	status_script[FIGHTER_STATUS_GRAB] = &Fighter::status_grab;
-	enter_status_script[FIGHTER_STATUS_GRAB] = &Fighter::enter_status_grab;
-	exit_status_script[FIGHTER_STATUS_GRAB] = &Fighter::exit_status_grab;
+	SET_STATUS_FUNC(FIGHTER_STATUS_THROW, &Fighter::status_throw);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_THROW, &Fighter::enter_status_throw);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_THROW, &Fighter::exit_status_throw);
 
-	status_script[FIGHTER_STATUS_THROW] = &Fighter::status_throw;
-	enter_status_script[FIGHTER_STATUS_THROW] = &Fighter::enter_status_throw;
-	exit_status_script[FIGHTER_STATUS_THROW] = &Fighter::exit_status_throw;
+	SET_STATUS_FUNC(FIGHTER_STATUS_GRAB_AIR_START, &Fighter::status_grab_air_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_GRAB_AIR_START, &Fighter::enter_status_grab_air_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_GRAB_AIR_START, &Fighter::exit_status_grab_air_start);
 
-	status_script[FIGHTER_STATUS_GRAB_AIR_START] = &Fighter::status_grab_air_start;
-	enter_status_script[FIGHTER_STATUS_GRAB_AIR_START] = &Fighter::enter_status_grab_air_start;
-	exit_status_script[FIGHTER_STATUS_GRAB_AIR_START] = &Fighter::exit_status_grab_air_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_GRAB_AIR, &Fighter::status_grab_air);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_GRAB_AIR, &Fighter::enter_status_grab_air);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_GRAB_AIR, &Fighter::exit_status_grab_air);
 
-	status_script[FIGHTER_STATUS_GRAB_AIR] = &Fighter::status_grab_air;
-	enter_status_script[FIGHTER_STATUS_GRAB_AIR] = &Fighter::enter_status_grab_air;
-	exit_status_script[FIGHTER_STATUS_GRAB_AIR] = &Fighter::exit_status_grab_air;
+	SET_STATUS_FUNC(FIGHTER_STATUS_THROW_AIR, &Fighter::status_throw_air);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_THROW_AIR, &Fighter::enter_status_throw_air);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_THROW_AIR, &Fighter::exit_status_throw_air);
 
-	status_script[FIGHTER_STATUS_THROW_AIR] = &Fighter::status_throw_air;
-	enter_status_script[FIGHTER_STATUS_THROW_AIR] = &Fighter::enter_status_throw_air;
-	exit_status_script[FIGHTER_STATUS_THROW_AIR] = &Fighter::exit_status_throw_air;
+	SET_STATUS_FUNC(FIGHTER_STATUS_GRABBED, &Fighter::status_grabbed);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_GRABBED, &Fighter::enter_status_grabbed);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_GRABBED, &Fighter::exit_status_grabbed);
 
-	status_script[FIGHTER_STATUS_GRABBED] = &Fighter::status_grabbed;
-	enter_status_script[FIGHTER_STATUS_GRABBED] = &Fighter::enter_status_grabbed;
-	exit_status_script[FIGHTER_STATUS_GRABBED] = &Fighter::exit_status_grabbed;
+	SET_STATUS_FUNC(FIGHTER_STATUS_THROWN, &Fighter::status_thrown);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_THROWN, &Fighter::enter_status_thrown);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_THROWN, &Fighter::exit_status_thrown);
 
-	status_script[FIGHTER_STATUS_THROWN] = &Fighter::status_thrown;
-	enter_status_script[FIGHTER_STATUS_THROWN] = &Fighter::enter_status_thrown;
-	exit_status_script[FIGHTER_STATUS_THROWN] = &Fighter::exit_status_thrown;
+	SET_STATUS_FUNC(FIGHTER_STATUS_THROW_TECH, &Fighter::status_throw_tech);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_THROW_TECH, &Fighter::enter_status_throw_tech);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_THROW_TECH, &Fighter::exit_status_throw_tech);
 
-	status_script[FIGHTER_STATUS_THROW_TECH] = &Fighter::status_throw_tech;
-	enter_status_script[FIGHTER_STATUS_THROW_TECH] = &Fighter::enter_status_throw_tech;
-	exit_status_script[FIGHTER_STATUS_THROW_TECH] = &Fighter::exit_status_throw_tech;
+	SET_STATUS_FUNC(FIGHTER_STATUS_BLOCKSTUN, &Fighter::status_blockstun);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_BLOCKSTUN, &Fighter::enter_status_blockstun);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_BLOCKSTUN, &Fighter::exit_status_blockstun);
 
-	status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::status_blockstun;
-	enter_status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::enter_status_blockstun;
-	exit_status_script[FIGHTER_STATUS_BLOCKSTUN] = &Fighter::exit_status_blockstun;
+	SET_STATUS_FUNC(FIGHTER_STATUS_HITSTUN, &Fighter::status_hitstun);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_HITSTUN, &Fighter::enter_status_hitstun);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_HITSTUN, &Fighter::exit_status_hitstun);
 
-	status_script[FIGHTER_STATUS_HITSTUN] = &Fighter::status_hitstun;
-	enter_status_script[FIGHTER_STATUS_HITSTUN] = &Fighter::enter_status_hitstun;
-	exit_status_script[FIGHTER_STATUS_HITSTUN] = &Fighter::exit_status_hitstun;
+	SET_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_AIR, &Fighter::status_hitstun_air);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_AIR, &Fighter::enter_status_hitstun_air);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_AIR, &Fighter::exit_status_hitstun_air);
 
-	status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::status_hitstun_air;
-	enter_status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::enter_status_hitstun_air;
-	exit_status_script[FIGHTER_STATUS_HITSTUN_AIR] = &Fighter::exit_status_hitstun_air;
+	SET_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_FLOAT, &Fighter::status_hitstun_float);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_FLOAT, &Fighter::enter_status_hitstun_float);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_FLOAT, &Fighter::exit_status_hitstun_float);
 
-	status_script[FIGHTER_STATUS_HITSTUN_FLOAT] = &Fighter::status_hitstun_float;
-	enter_status_script[FIGHTER_STATUS_HITSTUN_FLOAT] = &Fighter::enter_status_hitstun_float;
-	exit_status_script[FIGHTER_STATUS_HITSTUN_FLOAT] = &Fighter::exit_status_hitstun_float;
+	SET_STATUS_FUNC(FIGHTER_STATUS_LAUNCH_START, &Fighter::status_launch_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_LAUNCH_START, &Fighter::enter_status_launch_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_LAUNCH_START, &Fighter::exit_status_launch_start);
 
-	status_script[FIGHTER_STATUS_LAUNCH_START] = &Fighter::status_launch_start;
-	enter_status_script[FIGHTER_STATUS_LAUNCH_START] = &Fighter::enter_status_launch_start;
-	exit_status_script[FIGHTER_STATUS_LAUNCH_START] = &Fighter::exit_status_launch_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_LAUNCH, &Fighter::status_launch);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_LAUNCH, &Fighter::enter_status_launch);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_LAUNCH, &Fighter::exit_status_launch);
 
-	status_script[FIGHTER_STATUS_LAUNCH] = &Fighter::status_launch;
-	enter_status_script[FIGHTER_STATUS_LAUNCH] = &Fighter::enter_status_launch;
-	exit_status_script[FIGHTER_STATUS_LAUNCH] = &Fighter::exit_status_launch;
+	SET_STATUS_FUNC(FIGHTER_STATUS_CRUMPLE, &Fighter::status_crumple);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_CRUMPLE, &Fighter::enter_status_crumple);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_CRUMPLE, &Fighter::exit_status_crumple);
 
-	status_script[FIGHTER_STATUS_CRUMPLE] = &Fighter::status_crumple;
-	enter_status_script[FIGHTER_STATUS_CRUMPLE] = &Fighter::enter_status_crumple;
-	exit_status_script[FIGHTER_STATUS_CRUMPLE] = &Fighter::exit_status_crumple;
+	SET_STATUS_FUNC(FIGHTER_STATUS_KNOCKDOWN_START, &Fighter::status_knockdown_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_KNOCKDOWN_START, &Fighter::enter_status_knockdown_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_KNOCKDOWN_START, &Fighter::exit_status_knockdown_start);
 
-	status_script[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::status_knockdown_start;
-	enter_status_script[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::enter_status_knockdown_start;
-	exit_status_script[FIGHTER_STATUS_KNOCKDOWN_START] = &Fighter::exit_status_knockdown_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_KNOCKDOWN, &Fighter::status_knockdown);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_KNOCKDOWN, &Fighter::enter_status_knockdown);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_KNOCKDOWN, &Fighter::exit_status_knockdown);
 
-	status_script[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::status_knockdown;
-	enter_status_script[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::enter_status_knockdown;
-	exit_status_script[FIGHTER_STATUS_KNOCKDOWN] = &Fighter::exit_status_knockdown;
+	SET_STATUS_FUNC(FIGHTER_STATUS_WAKEUP, &Fighter::status_wakeup);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_WAKEUP, &Fighter::enter_status_wakeup);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_WAKEUP, &Fighter::exit_status_wakeup);
 
-	status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::status_wakeup;
-	enter_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::enter_status_wakeup;
-	exit_status_script[FIGHTER_STATUS_WAKEUP] = &Fighter::exit_status_wakeup;
+	SET_STATUS_FUNC(FIGHTER_STATUS_PARRY_START, &Fighter::status_parry_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_PARRY_START, &Fighter::enter_status_parry_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_PARRY_START, &Fighter::exit_status_parry_start);
 
-	status_script[FIGHTER_STATUS_PARRY_START] = &Fighter::status_parry_start;
-	enter_status_script[FIGHTER_STATUS_PARRY_START] = &Fighter::enter_status_parry_start;
-	exit_status_script[FIGHTER_STATUS_PARRY_START] = &Fighter::exit_status_parry_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_PARRY_START, &Fighter::status_hitstun_parry_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_PARRY_START, &Fighter::enter_status_hitstun_parry_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_HITSTUN_PARRY_START, &Fighter::exit_status_hitstun_parry_start);
 
-	status_script[FIGHTER_STATUS_HITSTUN_PARRY_START] = &Fighter::status_hitstun_parry_start;
-	enter_status_script[FIGHTER_STATUS_HITSTUN_PARRY_START] = &Fighter::enter_status_hitstun_parry_start;
-	exit_status_script[FIGHTER_STATUS_HITSTUN_PARRY_START] = &Fighter::exit_status_hitstun_parry_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_LAUNCH_PARRY_START, &Fighter::status_launch_parry_start);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_LAUNCH_PARRY_START, &Fighter::enter_status_launch_parry_start);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_LAUNCH_PARRY_START, &Fighter::exit_status_launch_parry_start);
 
-	status_script[FIGHTER_STATUS_LAUNCH_PARRY_START] = &Fighter::status_launch_parry_start;
-	enter_status_script[FIGHTER_STATUS_LAUNCH_PARRY_START] = &Fighter::enter_status_launch_parry_start;
-	exit_status_script[FIGHTER_STATUS_LAUNCH_PARRY_START] = &Fighter::exit_status_launch_parry_start;
+	SET_STATUS_FUNC(FIGHTER_STATUS_PARRY, &Fighter::status_parry);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_PARRY, &Fighter::enter_status_parry);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_PARRY, &Fighter::exit_status_parry);
 
-	status_script[FIGHTER_STATUS_PARRY] = &Fighter::status_parry;
-	enter_status_script[FIGHTER_STATUS_PARRY] = &Fighter::enter_status_parry;
-	exit_status_script[FIGHTER_STATUS_PARRY] = &Fighter::exit_status_parry;
+	SET_STATUS_FUNC(FIGHTER_STATUS_LANDING, &Fighter::status_landing);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_LANDING, &Fighter::enter_status_landing);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_LANDING, &Fighter::exit_status_landing);
 
-	status_script[FIGHTER_STATUS_LANDING] = &Fighter::status_landing;
-	enter_status_script[FIGHTER_STATUS_LANDING] = &Fighter::enter_status_landing;
-	exit_status_script[FIGHTER_STATUS_LANDING] = &Fighter::exit_status_landing;
+	SET_STATUS_FUNC(FIGHTER_STATUS_LANDING_ATTACK, &Fighter::status_landing_attack);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_LANDING_ATTACK, &Fighter::enter_status_landing_attack);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_LANDING_ATTACK, &Fighter::exit_status_landing_attack);
 
-	status_script[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::status_landing_attack;
-	enter_status_script[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::enter_status_landing_attack;
-	exit_status_script[FIGHTER_STATUS_LANDING_ATTACK] = &Fighter::exit_status_landing_attack;
+	SET_STATUS_FUNC(FIGHTER_STATUS_LANDING_HITSTUN, &Fighter::status_landing_hitstun);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_LANDING_HITSTUN, &Fighter::enter_status_landing_hitstun);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_LANDING_HITSTUN, &Fighter::exit_status_landing_hitstun);
 
-	status_script[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::status_landing_hitstun;
-	enter_status_script[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::enter_status_landing_hitstun;
-	exit_status_script[FIGHTER_STATUS_LANDING_HITSTUN] = &Fighter::exit_status_landing_hitstun;
+	SET_STATUS_FUNC(FIGHTER_STATUS_TAUNT, &Fighter::status_taunt);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_TAUNT, &Fighter::enter_status_taunt);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_TAUNT, &Fighter::exit_status_taunt);
 
-	status_script[FIGHTER_STATUS_TAUNT] = &Fighter::status_taunt;
-	enter_status_script[FIGHTER_STATUS_TAUNT] = &Fighter::enter_status_taunt;
-	exit_status_script[FIGHTER_STATUS_TAUNT] = &Fighter::exit_status_taunt;
+	SET_STATUS_FUNC(FIGHTER_STATUS_KO, &Fighter::status_ko);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_KO, &Fighter::enter_status_ko);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_KO, &Fighter::exit_status_ko);
 
-	status_script[FIGHTER_STATUS_KO] = &Fighter::status_ko;
-	enter_status_script[FIGHTER_STATUS_KO] = &Fighter::enter_status_ko;
-	exit_status_script[FIGHTER_STATUS_KO] = &Fighter::exit_status_ko;
-
-	status_script[FIGHTER_STATUS_ROUND_END] = &Fighter::status_round_end;
-	enter_status_script[FIGHTER_STATUS_ROUND_END] = &Fighter::enter_status_round_end;
-	exit_status_script[FIGHTER_STATUS_ROUND_END] = &Fighter::exit_status_round_end;
+	SET_STATUS_FUNC(FIGHTER_STATUS_ROUND_END, &Fighter::status_round_end);
+	SET_ENTRY_STATUS_FUNC(FIGHTER_STATUS_ROUND_END, &Fighter::enter_status_round_end);
+	SET_EXIT_STATUS_FUNC(FIGHTER_STATUS_ROUND_END, &Fighter::exit_status_round_end);
 }

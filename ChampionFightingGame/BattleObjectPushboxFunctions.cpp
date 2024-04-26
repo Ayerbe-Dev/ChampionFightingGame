@@ -39,7 +39,7 @@ bool BattleObject::pushboxes_touching(BattleObject* object) {
 		if (!pushboxes[i].active) continue;
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (!object->pushboxes[i2].active) continue;
-			if (is_collide(pushboxes[i].rect, object->pushboxes[i2].rect)) {
+			if (is_rect_collide(pushboxes[i].rect, object->pushboxes[i2].rect)) {
 				return true;
 			}
 		}

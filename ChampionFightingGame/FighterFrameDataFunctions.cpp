@@ -1,5 +1,6 @@
 #include "Fighter.h"
 #include "ParamAccessor.h"
+#include "utils.h"
 
 int Fighter::get_frames_until_actionable() {
 	if (anim_kind == nullptr) {
@@ -43,16 +44,33 @@ int Fighter::get_frames_until_actionable() {
 		//TODO: This block assumes that your air speed is completely constant, which is rarely going 
 		//to be the case, so we'll have to figure out a proper way to handle that
 
-		if (situation_kind == FIGHTER_SITUATION_AIR && pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * (ret - 1)) <= 0.0f) {
-			for (; pos.y + (fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] * (ret - 1)) <= 0.0f; ret--);
-			if (fighter_string[FIGHTER_STRING_MOVE_KIND] == "") {
-				ret += get_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "empty_landing_lag");
+		if (fighter_context == FIGHTER_CONTEXT_AIR && pos.y + (object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] * (ret - 1)) <= 0.0f) {
+			for (; pos.y + (object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] * (ret - 1)) <= 0.0f; ret--);
+			if (object_string[FIGHTER_STRING_MOVE_KIND] == "") {
+				ret += get_param_int(object_string[FIGHTER_STRING_MOVE_KIND] + "empty_landing_lag");
 			}
 			else {
-				ret += get_param_int(fighter_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
+				ret += get_param_int(object_string[FIGHTER_STRING_MOVE_KIND] + "_landing_lag");
 			}
 		}
 
 		return ret;
 	}
+}
+
+int Fighter::calc_launch_frames() {
+	float sim_gravity = object_float[FIGHTER_FLOAT_CURRENT_GRAVITY];
+	if (object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] == 0 || object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] == 0) {
+		return 1;
+	}
+	int airtime = 0;
+	float simp_y = pos.y;
+	float sims_y = object_float[BATTLE_OBJECT_FLOAT_Y_SPEED];
+	while (simp_y >= 0.0f) {
+		sims_y = clampf(object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] * -1,
+			sims_y - object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], sims_y);
+		simp_y += sims_y;
+		airtime++;
+	}
+	return airtime;
 }

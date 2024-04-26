@@ -16,6 +16,10 @@ void BattleObject::NEW_BLOCKBOX(ScriptArg args) {
 	new_blockbox(anchor, offset);
 }
 
+void BattleObject::CLEAR_BLOCKBOX(ScriptArg args) {
+	clear_blockbox();
+}
+
 void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(id, int);
 	UNWRAP(multihit, int);

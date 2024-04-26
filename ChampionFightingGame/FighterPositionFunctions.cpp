@@ -31,7 +31,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 			this->pos.x = stage->stage_bounds.y;
 		}
 		if (get_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
-			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] *= -1;
 		}
 		ret = false;
 	}
@@ -43,7 +43,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 			this->pos.x = stage->stage_bounds.x;
 		}
 		if (get_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
-			fighter_float[FIGHTER_FLOAT_CURRENT_X_SPEED] *= -1;
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] *= -1;
 		}
 		ret = false;
 	}
@@ -181,9 +181,9 @@ void Fighter::landing_crossup() {
 	if (pos.x == that->pos.x) return;
 	internal_facing_right = pos.x < that->pos.x;
 	if (internal_facing_right != facing_right) {
-		std::swap(fighter_int[FIGHTER_INT_66_STEP], fighter_int[FIGHTER_INT_44_STEP]);
-		std::swap(fighter_int[FIGHTER_INT_66_TIMER], fighter_int[FIGHTER_INT_44_TIMER]);
-		move_list[FIGHTER_SITUATION_GROUND].swap_buffers("dash_f", "dash_b");
+		std::swap(object_int[FIGHTER_INT_66_STEP], object_int[FIGHTER_INT_44_STEP]);
+		std::swap(object_int[FIGHTER_INT_66_TIMER], object_int[FIGHTER_INT_44_TIMER]);
+		move_list[FIGHTER_CONTEXT_GROUND].swap_buffers("dash_f", "dash_b");
 		facing_right = internal_facing_right;
 		if (facing_right) {
 			facing_dir = 1.0;
@@ -195,5 +195,5 @@ void Fighter::landing_crossup() {
 }
 
 void Fighter::apply_gravity(float gravity, float max_fall_speed) {
-	fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] = clampf(max_fall_speed * -1.0, fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED] - gravity * object_manager->get_world_rate(this), fighter_float[FIGHTER_FLOAT_CURRENT_Y_SPEED]);
+	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = clampf(max_fall_speed * -1.0, object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] - gravity * object_manager->get_world_rate(this), object_float[BATTLE_OBJECT_FLOAT_Y_SPEED]);
 }

@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterInt.h"
+MAKE_COUNTER(desirae_int, FIGHTER_INT_MAX);
 
-enum {
-	_CHARA_DESIRAE_INT_START = FIGHTER_INT_MAX,
-	_CHARA_DESIRAE_INT_MAX,
-};
-
-const int CHARA_DESIRAE_INT_START = _CHARA_DESIRAE_INT_START;
-const int CHARA_DESIRAE_INT_MAX = _CHARA_DESIRAE_INT_MAX;
+const int CHARA_DESIRAE_INT_MAX = desirae_int.count();

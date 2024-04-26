@@ -10,10 +10,14 @@ Bruno::Bruno(Player* player) {
 	chara_kind = CHARA_KIND_BRUNO;
 	chara_name = "bruno";
 	resource_dir = "resource/chara/bruno";
-	fighter_int.resize(CHARA_BRUNO_INT_MAX, 0);
-	fighter_float.resize(CHARA_BRUNO_FLOAT_MAX, 0.0);
-	fighter_flag.resize(CHARA_BRUNO_FLAG_MAX, false);
-	fighter_string.resize(CHARA_BRUNO_STRING_MAX, "");
+	object_int.resize(CHARA_BRUNO_INT_MAX, 0);
+	object_float.resize(CHARA_BRUNO_FLOAT_MAX, 0.0);
+	object_flag.resize(CHARA_BRUNO_FLAG_MAX, false);
+	object_string.resize(CHARA_BRUNO_STRING_MAX, "");
+	status_script.resize(CHARA_BRUNO_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_BRUNO_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_BRUNO_STATUS_MAX, nullptr);
+
 	load_fighter();
 }
 

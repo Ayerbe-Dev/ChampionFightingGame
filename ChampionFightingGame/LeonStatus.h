@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterStatus.h"
+MAKE_COUNTER(leon_status, FIGHTER_STATUS_MAX);
 
-enum {
-	_CHARA_LEON_STATUS_START = FIGHTER_STATUS_START_CHARA_STATUS,
-	_CHARA_LEON_STATUS_MAX,
-};
-
-const int CHARA_LEON_STATUS_START = _CHARA_LEON_STATUS_START;
-const int CHARA_LEON_STATUS_MAX = _CHARA_LEON_STATUS_MAX;
+const int CHARA_LEON_STATUS_MAX = leon_status.count();

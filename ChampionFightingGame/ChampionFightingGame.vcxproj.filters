@@ -610,6 +610,9 @@
     <ClCompile Include="FighterHabits.cpp">
       <Filter>2. Code Files\FighterAnalyzer</Filter>
     </ClCompile>
+    <ClCompile Include="BattleObjectStatus.cpp">
+      <Filter>2. Code Files\GameObject\BattleObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -903,7 +906,7 @@
     <ClInclude Include="RamonaInt.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Chara\Ramona</Filter>
     </ClInclude>
-    <ClInclude Include="RamonaStatus.h">
+    <ClInclude Include="RamonaString.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Chara\Ramona</Filter>
     </ClInclude>
     <ClInclude Include="DingoConstants.h">
@@ -1314,7 +1317,7 @@
     <ClInclude Include="NightsabreString.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Chara\Nightsabre</Filter>
     </ClInclude>
-    <ClInclude Include="RamonaString.h">
+    <ClInclude Include="RamonaStatus.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Chara\Ramona</Filter>
     </ClInclude>
     <ClInclude Include="RookString.h">
@@ -1394,6 +1397,24 @@
     </ClInclude>
     <ClInclude Include="FighterHabits.h">
       <Filter>1. Header Files\FighterAnalyzer</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectInt.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectFloat.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectFlag.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectString.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleObjectStatus.h">
+      <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="CompileTimeCounter.h">
+      <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2834,9 +2855,6 @@
     <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Vesuvius">
       <UniqueIdentifier>{d85384a9-35c0-4632-9bfb-08bb8a330702}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Zyair">
-      <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Rook">
       <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
     </Filter>
@@ -3022,6 +3040,9 @@
     </Filter>
     <Filter Include="2. Code Files\FighterAnalyzer">
       <UniqueIdentifier>{aa3aa7bd-8085-4a83-a85f-3660b75e7350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Zyair">
+      <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

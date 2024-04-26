@@ -13,7 +13,5 @@ bool Zyair::chara_status_attack_air() {
 }
 
 void Zyair::load_chara_status_scripts() {
-	status_script.resize(CHARA_ZYAIR_STATUS_MAX, nullptr);
-	enter_status_script.resize(CHARA_ZYAIR_STATUS_MAX, nullptr);
-	exit_status_script.resize(CHARA_ZYAIR_STATUS_MAX, nullptr);
+
 }

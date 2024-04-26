@@ -1,11 +1,7 @@
 #pragma once
+#include "BattleObjectString.h"
+MAKE_COUNTER(fighter_string, BATTLE_OBJECT_STRING_MAX);
 
-enum {
-	_FIGHTER_STRING_MOVE_KIND,
-	_FIGHTER_STRING_HITSTUN_ANIM,
-	_FIGHTER_STRING_MAX
-};
-
-const int FIGHTER_STRING_MOVE_KIND = _FIGHTER_STRING_MOVE_KIND;
-const int FIGHTER_STRING_HITSTUN_ANIM = _FIGHTER_STRING_HITSTUN_ANIM;
-const int FIGHTER_STRING_MAX = _FIGHTER_STRING_MAX;
+const int FIGHTER_STRING_MOVE_KIND = fighter_string.count();
+const int FIGHTER_STRING_HITSTUN_ANIM = fighter_string.count();
+const int FIGHTER_STRING_MAX = fighter_string.count();

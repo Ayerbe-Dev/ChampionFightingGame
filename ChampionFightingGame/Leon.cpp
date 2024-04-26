@@ -17,10 +17,14 @@ Leon::Leon(Player* player) {
 		chara_name = "chameleon";
 		resource_dir = "resource/chara/chameleon";
 	}
-	fighter_int.resize(CHARA_LEON_INT_MAX, 0);
-	fighter_float.resize(CHARA_LEON_FLOAT_MAX, 0.0);
-	fighter_flag.resize(CHARA_LEON_FLAG_MAX, false);
-	fighter_string.resize(CHARA_LEON_STRING_MAX, "");
+	object_int.resize(CHARA_LEON_INT_MAX, 0);
+	object_float.resize(CHARA_LEON_FLOAT_MAX, 0.0);
+	object_flag.resize(CHARA_LEON_FLAG_MAX, false);
+	object_string.resize(CHARA_LEON_STRING_MAX, "");
+	status_script.resize(CHARA_LEON_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_LEON_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_LEON_STATUS_MAX, nullptr);
+
 	load_fighter();
 }
 

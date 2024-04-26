@@ -5,7 +5,7 @@ void Projectile::change_status(unsigned int new_status_kind, bool call_end_statu
 	clear_grabbox_all();
 	clear_hurtbox_all();
 	clear_pushbox_all();
-	projectile_flag[PROJECTILE_FLAG_ATTACK_HIT] = false;
+	object_flag[PROJECTILE_FLAG_ATTACK_HIT] = false;
 	if (call_end_status) {
 		(this->*exit_status_script[status_kind])();
 	}

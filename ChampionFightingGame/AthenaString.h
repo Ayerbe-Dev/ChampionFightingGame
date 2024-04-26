@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterString.h"
+MAKE_COUNTER(athena_string, FIGHTER_STRING_MAX);
 
-enum {
-	_CHARA_ATHENA_STRING_START = FIGHTER_STRING_MAX,
-	_CHARA_ATHENA_STRING_MAX,
-};
-
-const int CHARA_ATHENA_STRING_START = _CHARA_ATHENA_STRING_START;
-const int CHARA_ATHENA_STRING_MAX = _CHARA_ATHENA_STRING_MAX;
+const int CHARA_ATHENA_STRING_MAX = athena_string.count();

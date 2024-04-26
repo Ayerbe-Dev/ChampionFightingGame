@@ -13,7 +13,5 @@ bool Dante::chara_status_attack_air() {
 }
 
 void Dante::load_chara_status_scripts() {
-	status_script.resize(CHARA_DANTE_STATUS_MAX, nullptr);
-	enter_status_script.resize(CHARA_DANTE_STATUS_MAX, nullptr);
-	exit_status_script.resize(CHARA_DANTE_STATUS_MAX, nullptr);
+
 }

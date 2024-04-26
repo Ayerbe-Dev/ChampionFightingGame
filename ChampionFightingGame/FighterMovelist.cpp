@@ -5,7 +5,7 @@
 
 FighterMoveListEntry::FighterMoveListEntry() {
 	name = "";
-	status_kind = FIGHTER_STATUS_NONE;
+	status_kind = BATTLE_OBJECT_STATUS_NONE;
 	input_kind = INPUT_KIND_NORMAL;
 	required_buttons = 0;
 	num_required_buttons = 0;
@@ -89,7 +89,7 @@ FighterMoveListEntry::FighterMoveListEntry(std::string name, unsigned int status
 }
 
 bool FighterMoveListEntry::check_input(Fighter* fighter) {
-	float meter = super_meter ? fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER] : fighter->fighter_float[FIGHTER_FLOAT_EX_METER];
+	float meter = super_meter ? fighter->object_float[FIGHTER_FLOAT_SUPER_METER] : fighter->object_float[FIGHTER_FLOAT_EX_METER];
 	float cost = (fighter->is_enable_free_cancel()) ? meter_cost_normal : meter_cost_cancel;
 	short buffer_code = fighter->player->controller.get_buffer_code();
 	if (special_level_setting == SPECIAL_LEVEL_SETTING_N && meter < cost) return false;
@@ -98,7 +98,7 @@ bool FighterMoveListEntry::check_input(Fighter* fighter) {
 		buttons_pressed = buffer_code & required_buttons;
 		if ((fighter->player->controller.get_buffer_lockout_code() & buttons_pressed) == buttons_pressed) return false;
 	}
-	if (!allowed_states.empty() && !allowed_states.contains(fighter->fighter_string[FIGHTER_STRING_MOVE_KIND])) return false;
+	if (!allowed_states.empty() && !allowed_states.contains(fighter->object_string[FIGHTER_STRING_MOVE_KIND])) return false;
 	if (input_kind == INPUT_KIND_NORMAL) {
 		if (!valid_stick_dirs.contains(fighter->get_stick_dir())) return false;	
 	}
@@ -110,47 +110,47 @@ bool FighterMoveListEntry::check_input(Fighter* fighter) {
 				return false;
 			} break;
 			case (INPUT_KIND_236): {
-				if (fighter->fighter_int[FIGHTER_INT_236_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_236_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_214): {
-				if (fighter->fighter_int[FIGHTER_INT_214_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_214_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_623): {
-				if (fighter->fighter_int[FIGHTER_INT_623_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_623_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_41236): {
-				if (fighter->fighter_int[FIGHTER_INT_41236_STEP] != 5) return false;
+				if (fighter->object_int[FIGHTER_INT_41236_STEP] != 5) return false;
 			} break;
 			case (INPUT_KIND_63214): {
-				if (fighter->fighter_int[FIGHTER_INT_63214_STEP] != 5) return false;
+				if (fighter->object_int[FIGHTER_INT_63214_STEP] != 5) return false;
 			} break;
 			case (INPUT_KIND_632): {
-				if (fighter->fighter_int[FIGHTER_INT_632_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_632_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_46): {
-				if (fighter->fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] < charge_req) return false;
+				if (fighter->object_int[FIGHTER_INT_BACK_CHARGE_FRAMES] < charge_req) return false;
 			} break;
 			case (INPUT_KIND_28): {
-				if (fighter->fighter_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] < charge_req) return false;
+				if (fighter->object_int[FIGHTER_INT_DOWN_CHARGE_FRAMES] < charge_req) return false;
 			} break;
 			case (INPUT_KIND_66): {
-				if (fighter->fighter_int[FIGHTER_INT_66_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_66_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_44): {
-				if (fighter->fighter_int[FIGHTER_INT_44_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_44_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_22): {
-				if (fighter->fighter_int[FIGHTER_INT_22_STEP] != 3) return false;
+				if (fighter->object_int[FIGHTER_INT_22_STEP] != 3) return false;
 			} break;
 			case (INPUT_KIND_236236): {
-				if (fighter->fighter_int[FIGHTER_INT_236236_STEP] != 6) return false;
+				if (fighter->object_int[FIGHTER_INT_236236_STEP] != 6) return false;
 			} break;
 			case (INPUT_KIND_214214): {
-				if (fighter->fighter_int[FIGHTER_INT_214214_STEP] != 6) return false;
+				if (fighter->object_int[FIGHTER_INT_214214_STEP] != 6) return false;
 			} break;
 			case (INPUT_KIND_4646): {
-				if (fighter->fighter_int[FIGHTER_INT_BACK_CHARGE_FRAMES] < charge_req
-					|| fighter->fighter_int[FIGHTER_INT_4646_STEP] != 4) return false;
+				if (fighter->object_int[FIGHTER_INT_BACK_CHARGE_FRAMES] < charge_req
+					|| fighter->object_int[FIGHTER_INT_4646_STEP] != 4) return false;
 			} break;
 		}
 		switch (special_level_setting) {
@@ -196,12 +196,12 @@ bool FighterMoveListEntry::check_input(Fighter* fighter) {
 bool FighterMoveListEntry::try_change_status(Fighter* fighter) {
 	if (disable_flag
 	|| !((fighter->is_enable_free_cancel())
-	|| (hit_cancel_enabled && fighter->fighter_flag[FIGHTER_FLAG_ATTACK_HIT])
-	|| (block_cancel_enabled && fighter->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED])
+	|| (hit_cancel_enabled && fighter->object_flag[FIGHTER_FLAG_ATTACK_HIT])
+	|| (block_cancel_enabled && fighter->object_flag[FIGHTER_FLAG_ATTACK_BLOCKED])
 	|| cancel_enabled)) {
 		return false;
 	}
-	fighter->fighter_string[FIGHTER_STRING_MOVE_KIND] = name;
+	fighter->object_string[FIGHTER_STRING_MOVE_KIND] = name;
 	//Make sure that we can't re-buffer any actions as we transtion into them
 	switch (input_kind) {
 		default:
@@ -212,56 +212,56 @@ bool FighterMoveListEntry::try_change_status(Fighter* fighter) {
 			//resets on status change
 		} break;
 		case (INPUT_KIND_236): {
-			fighter->fighter_int[FIGHTER_INT_236_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_236_STEP] = 0;
 		} break;
 		case (INPUT_KIND_214): {
-			fighter->fighter_int[FIGHTER_INT_214_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_214_STEP] = 0;
 		} break;
 		case (INPUT_KIND_623): {
-			fighter->fighter_int[FIGHTER_INT_623_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_623_STEP] = 0;
 		} break;
 		case (INPUT_KIND_41236): {
-			fighter->fighter_int[FIGHTER_INT_41236_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_41236_STEP] = 0;
 		} break;
 		case (INPUT_KIND_63214): {
-			fighter->fighter_int[FIGHTER_INT_63214_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_63214_STEP] = 0;
 		} break;
 		case (INPUT_KIND_632): {
-			fighter->fighter_int[FIGHTER_INT_632_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_632_STEP] = 0;
 		} break;
 		case (INPUT_KIND_66): {
-			fighter->fighter_int[FIGHTER_INT_66_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_66_STEP] = 0;
 		} break;
 		case (INPUT_KIND_44): {
-			fighter->fighter_int[FIGHTER_INT_44_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_44_STEP] = 0;
 		} break;
 		case (INPUT_KIND_22): {
-			fighter->fighter_int[FIGHTER_INT_22_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_22_STEP] = 0;
 		} break;
 		case (INPUT_KIND_236236): {
-			fighter->fighter_int[FIGHTER_INT_236236_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_236236_STEP] = 0;
 		} break;
 		case (INPUT_KIND_214214): {
-			fighter->fighter_int[FIGHTER_INT_214214_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_214214_STEP] = 0;
 		} break;
 		case (INPUT_KIND_4646): {
-			fighter->fighter_int[FIGHTER_INT_4646_STEP] = 0;
+			fighter->object_int[FIGHTER_INT_4646_STEP] = 0;
 		} break;
 	}
 	if (super_meter) {
-		fighter->fighter_float[FIGHTER_FLOAT_SUPER_METER] = 0.0f;
+		fighter->object_float[FIGHTER_FLOAT_SUPER_METER] = 0.0f;
 	}
 	else if (special_level == SPECIAL_LEVEL_EX
 		|| special_level_setting == SPECIAL_LEVEL_SETTING_L_M_H
 		|| special_level_setting == SPECIAL_LEVEL_SETTING_N) {
-		if (fighter->is_enable_free_cancel()) {
+		if (fighter->is_enable_free_cancel() || cancel_enabled) {
 			fighter->spend_ex(meter_cost_normal);
 		}
 		else {
 			fighter->spend_ex(meter_cost_cancel);
 		}
 	}
-	fighter->fighter_int[FIGHTER_INT_SPECIAL_LEVEL] = special_level;
+	fighter->object_int[FIGHTER_INT_SPECIAL_LEVEL] = special_level;
 	fighter->change_status(status_kind);
 	fighter->player->controller.set_buffer_lockout_code(buttons_pressed);
 	return true;
@@ -321,15 +321,15 @@ void FighterMoveList::try_changing_to_buffered_status(Fighter* fighter) {
 }
 
 bool FighterMoveList::is_curr_move_recover_crouching(Fighter* fighter) {
-	return (get_move(fighter->fighter_string[FIGHTER_STRING_MOVE_KIND]).recover_crouching);
+	return (get_move(fighter->object_string[FIGHTER_STRING_MOVE_KIND]).recover_crouching);
 }
 
 bool FighterMoveList::is_enable_cancel(Fighter* fighter, std::string name) {
 	FighterMoveListEntry move = get_move(name);
 	return move.cancel_enabled
-		|| (fighter->is_enable_free_cancel() && move.allowed_states.contains(fighter->fighter_string[FIGHTER_STRING_MOVE_KIND]))
-		|| (fighter->fighter_flag[FIGHTER_FLAG_ATTACK_HIT] && move.hit_cancel_enabled)
-		|| (fighter->fighter_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && move.block_cancel_enabled);
+		|| (fighter->is_enable_free_cancel() && move.allowed_states.contains(fighter->object_string[FIGHTER_STRING_MOVE_KIND]))
+		|| (fighter->object_flag[FIGHTER_FLAG_ATTACK_HIT] && move.hit_cancel_enabled)
+		|| (fighter->object_flag[FIGHTER_FLAG_ATTACK_BLOCKED] && move.block_cancel_enabled);
 }
 
 void FighterMoveList::enable_cancel(std::string name, CancelKind cancel_kind) {

@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterString.h"
+MAKE_COUNTER(rowan_string, FIGHTER_STRING_MAX);
 
-enum {
-	_CHARA_ROWAN_STRING_START = FIGHTER_STRING_MAX,
-	_CHARA_ROWAN_STRING_MAX,
-};
-
-const int CHARA_ROWAN_STRING_START = _CHARA_ROWAN_STRING_START;
-const int CHARA_ROWAN_STRING_MAX = _CHARA_ROWAN_STRING_MAX;
+const int CHARA_ROWAN_STRING_MAX = rowan_string.count();

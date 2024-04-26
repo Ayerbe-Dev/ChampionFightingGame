@@ -5,10 +5,6 @@
 #include <iostream>
 #include "ObjectManager.h"
 
-#define ADD_PROJECTILE_STATUS(index, status_func) (status_script[index] = (void (Projectile::*)(void))status_func)
-#define ADD_PROJECTILE_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Projectile::*)(void))(status_func))
-#define ADD_PROJECTILE_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Projectile::*)(void))(status_func))
-
 class Fighter;
 
 class Projectile: public BattleObject {
@@ -32,7 +28,8 @@ public:
 	void projectile_post();
 	void process_post_position();
 
-	void decrease_common_variables();
+	void process_pre_common_projectile_vars();
+	void process_post_common_projectile_vars();
 
 	//Setup
 	
@@ -159,9 +156,13 @@ public:
 
 	//Status Scripts
 
-	virtual void status_none();
-	virtual void enter_status_none();
-	virtual void exit_status_none();
+	void status_none() override;
+	void enter_status_none() override;
+	void exit_status_none() override;
+
+	virtual void status_move();
+	virtual void enter_status_move();
+	virtual void exit_status_move();
 
 	int projectile_kind;
 	std::string projectile_name;
@@ -170,15 +171,6 @@ public:
 	Fighter* owner;
 
 	bool active = false;
-
-	std::vector<int> projectile_int;
-	std::vector<float> projectile_float;
-	std::vector<bool> projectile_flag;
-	std::vector<std::string> projectile_string;
-
-	std::vector<void (Projectile::*)(void)> status_script;
-	std::vector<void (Projectile::*)(void)> enter_status_script;
-	std::vector<void (Projectile::*)(void)> exit_status_script;
 };
 
 /*

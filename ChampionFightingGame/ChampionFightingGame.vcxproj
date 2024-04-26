@@ -224,6 +224,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleObjectCollisionFunctions.cpp" />
     <ClCompile Include="BattleObjectDefiniteHitboxFunctions.cpp" />
     <ClCompile Include="BattleObjectPositionFunctions.cpp" />
+    <ClCompile Include="BattleObjectStatus.cpp" />
     <ClCompile Include="BattleObjectStatusFunctions.cpp" />
     <ClCompile Include="Dingo.cpp" />
     <ClCompile Include="DingoMoves.cpp" />
@@ -440,6 +441,11 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="AthenaString.h" />
     <ClInclude Include="AtlasString.h" />
     <ClInclude Include="Ayrbt.h" />
+    <ClInclude Include="BattleObjectFlag.h" />
+    <ClInclude Include="BattleObjectFloat.h" />
+    <ClInclude Include="BattleObjectInt.h" />
+    <ClInclude Include="BattleObjectStatus.h" />
+    <ClInclude Include="BattleObjectString.h" />
     <ClInclude Include="BrunoString.h" />
     <ClInclude Include="CollisionBoxFields.h" />
     <ClInclude Include="DanteString.h" />
@@ -450,6 +456,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Eftlst.h" />
     <ClInclude Include="EricFireballString.h" />
     <ClInclude Include="EricString.h" />
+    <ClInclude Include="CompileTimeCounter.h" />
     <ClInclude Include="FighterString.h" />
     <ClInclude Include="HxA.h" />
     <ClInclude Include="debug.h" />
@@ -550,7 +557,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Prmlst.h" />
     <ClInclude Include="ProjectileString.h" />
-    <ClInclude Include="RamonaString.h" />
+    <ClInclude Include="RamonaStatus.h" />
     <ClInclude Include="ReadBytes.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RookString.h" />
@@ -637,7 +644,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RamonaFlag.h" />
     <ClInclude Include="RamonaFloat.h" />
     <ClInclude Include="RamonaInt.h" />
-    <ClInclude Include="RamonaStatus.h" />
+    <ClInclude Include="RamonaString.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Rowan.h" />

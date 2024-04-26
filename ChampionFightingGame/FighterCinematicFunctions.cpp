@@ -6,7 +6,7 @@ void Fighter::start_cinematic_sequence(std::string anim_kind, float anim_rate, f
 	play_camera_anim(anim_kind, anim_rate, anim_frame);
 	dim_world(world_brightness, dim_self);
 	slow_world(world_rate);
-	fighter_flag[FIGHTER_FLAG_RESET_CINEMATIC_ON_CAMERA_END] = true;
+	object_flag[FIGHTER_FLAG_RESET_CINEMATIC_ON_CAMERA_END] = true;
 }
 
 void Fighter::stop_cinematic_sequence() {
@@ -26,13 +26,13 @@ void Fighter::stop_cinematic_sequence() {
 }
 
 void Fighter::play_camera_anim(std::string anim_kind, float rate, float frame) {
-	fighter_flag[FIGHTER_FLAG_RESET_CINEMATIC_ON_CAMERA_END] = false;
+	object_flag[FIGHTER_FLAG_RESET_CINEMATIC_ON_CAMERA_END] = false;
 	Camera* camera = &render_manager->camera;
 	camera->play_camera_anim(id, anim_kind, rate, frame);
 }
 
 void Fighter::stop_camera_anim() {
-	if (fighter_flag[FIGHTER_FLAG_RESET_CINEMATIC_ON_CAMERA_END]) {
+	if (object_flag[FIGHTER_FLAG_RESET_CINEMATIC_ON_CAMERA_END]) {
 		stop_cinematic_sequence();
 	}
 	else {

@@ -129,13 +129,101 @@ void GameRect::update_buffer_data() {
 }
 
 /// <summary>
+/// Calculates the intersection between two Rects.
+/// </summary>
+/// <param name="RectA">The first Rect</param>
+/// <param name="RectB">The second Rect</param>
+/// <returns>A float representing the intersection between RectA and RectB, or -1 if the rectangles
+/// do not intersect on both axes.</returns>
+float get_rect_intersection(GameRect& RectA, GameRect& RectB) {
+	float AB = RectA.corners[0].y;
+	float AT = RectA.corners[2].y;
+	float BB = RectB.corners[0].y;
+	float BT = RectB.corners[2].y;
+	if (AB < AT) {
+		if (BB < BT) {
+			if (AT < BB || BT < AB) return -1.0f;
+			
+		}
+		else {
+			if (AT < BT || BB < AB) return -1.0f;
+		}
+	}
+	else {
+		if (BB < BT) {
+			if (AB < BB || BT < AT) return -1.0f;
+		}
+		else {
+			if (AB < BT || BB < AT) return -1.0f;
+		}
+	}
+	float AL = RectA.corners[0].x;
+	float AR = RectA.corners[2].x;
+	float BL = RectB.corners[0].x;
+	float BR = RectB.corners[2].x;
+
+	if (AL < AR) {
+		if (BL < BR) {
+			if (AL < BL) {
+				if (AR < BL) return -1.0f;
+				if (AR < BR) return AR - BL;
+				return std::min(AR - BL, BR - AL);
+			}
+			else {
+				if (BR < AL) return -1.0f;
+				if (BR < AR) return BR - AL;	
+				return std::min(BR - AL, AR - BL);
+			}
+		}
+		else {
+			if (AL < BR) {
+				if (AR < BR) return -1.0f;
+				if (AR < BL) return AR - BR;
+				return std::min(AR - BR, BL - AL);
+			}
+			else {
+				if (BL < AL) return -1.0f;
+				if (BL < AR) return BL - AL;
+				return std::min(BL - AL, AR - BR);				
+			}
+		}
+	}
+	else {
+		if (BL < BR) {
+			if (AR < BL) {
+				if (AL < BL) return -1.0f;
+				if (AL < BR) return AL - BL;
+				return std::min(AL - BL, BR - AR);
+			}
+			else {
+				if (BR < AR) return -1.0f;
+				if (BR < AL) return BR - AR;				
+				return std::min(BR - AR, AL - BL);
+			}
+		}
+		else {
+			if (AR < BR) {
+				if (AL < BR) return -1.0f;
+				if (AL < BL) return AL - BR;				
+				return std::min(AL - BR, BL - AR);
+			}
+			else {
+				if (BL < AR) return -1.0f;
+				if (BL < AL) return BL - AR;				
+				return std::min(BL - AR, AL - BR);
+			}
+		}
+	}
+}
+
+/// <summary>
 /// SDL's rectangles suck so I made better ones.
 /// </summary>
 /// <param name="RectA">: The first rectangle</param>
 /// <param name="RectB">: The second rectangle</param>
 /// <returns>Whether or not any part of the two rectangles are touching</returns>
 /// <notes>The reason it's so long is because we run this check a lot so the less we put on the stack, the better
-bool is_collide(GameRect &RectA, GameRect &RectB) {
+bool is_rect_collide(GameRect &RectA, GameRect &RectB) {
 	return 
 		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) 
 		|| (RectA.corners[2].x >= RectB.corners[0].x && RectA.corners[2].x <= RectB.corners[2].x) 

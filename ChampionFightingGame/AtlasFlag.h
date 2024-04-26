@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterFlag.h"
+MAKE_COUNTER(atlas_flag, FIGHTER_FLAG_MAX);
 
-enum {
-	_CHARA_ATLAS_FLAG_START = FIGHTER_FLAG_MAX,
-	_CHARA_ATLAS_FLAG_MAX,
-};
-
-const int CHARA_ATLAS_FLAG_START = _CHARA_ATLAS_FLAG_START;
-const int CHARA_ATLAS_FLAG_MAX = _CHARA_ATLAS_FLAG_MAX;
+const int CHARA_ATLAS_FLAG_MAX = atlas_flag.count();

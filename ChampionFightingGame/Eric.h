@@ -2,6 +2,8 @@
 #include "Fighter.h"
 #include "EricConstants.h"
 
+const int ERIC_PROJECTILE_ID_FIREBALL = 0;
+
 class Eric : public Fighter {
 public:
 	Eric();

@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterInt.h"
+MAKE_COUNTER(zyair_int, FIGHTER_INT_MAX);
 
-enum {
-	_CHARA_ZYAIR_INT_START = FIGHTER_INT_MAX,
-	_CHARA_ZYAIR_INT_MAX,
-};
-
-const int CHARA_ZYAIR_INT_START = _CHARA_ZYAIR_INT_START;
-const int CHARA_ZYAIR_INT_MAX = _CHARA_ZYAIR_INT_MAX;
+const int CHARA_ZYAIR_INT_MAX = zyair_int.count();

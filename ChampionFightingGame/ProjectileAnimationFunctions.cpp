@@ -1,6 +1,7 @@
 #include "Projectile.h"
 
 void Projectile::change_anim(std::string animation_name, float frame_rate, float entry_frame) {
+	object_float[BATTLE_OBJECT_FLOAT_PRE_HITLAG_FRAME] = entry_frame;
 	prev_anim_rate = rate;
 	prev_anim_frame = frame;
 

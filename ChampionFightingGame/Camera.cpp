@@ -10,6 +10,7 @@
 
 Camera::Camera() {
 	base_pos = glm::vec3(0.0, 8.0, 55.0);
+	pos_target.set_persistence(true);
 	pos = base_pos;
 	prev_pos = glm::vec3(0.0);
 	flip_matrix = glm::mat4(
@@ -115,6 +116,7 @@ void Camera::set_fov(float fov) {
 }
 
 void Camera::reset_camera() {
+	pos_target = base_pos.x;
 	pos = base_pos;
 	prev_pos = base_pos;
 	set_fov(45.0);
@@ -160,9 +162,11 @@ void Camera::follow_players() {
 	float x_scaler = WINDOW_WIDTH / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 	float y_scaler = WINDOW_HEIGHT / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 
-	pos.x = clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0f, stage->camera_bounds.y) / x_scaler;
+	pos_target.set_target_val(clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0f, stage->camera_bounds.y) / x_scaler, 10);
+	pos.x = pos_target;
 	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / y_scaler, 100.0f);
 	pos.z = base_pos.z;
+
 	yaw = 0.0;
 	pitch = 3.0;
 	roll = 0.0;

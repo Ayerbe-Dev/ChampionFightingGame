@@ -113,63 +113,44 @@ TrainingInfo::TrainingInfo() {
 void TrainingInfo::init(Fighter* fighter, Font* font) {
 	this->fighter = fighter;
 	background_texture.init("resource/game_state/battle/ui/training/training_info.png");
+	background_texture.set_pos(glm::vec3(350.0, 150.0, 0.0));
+	background_texture.set_scale(0.7);
 
 	input_visualizer.init(fighter, font, false);
 
-	hit_frame.init(*font, "Hit Frame: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-	damage.init(*font, "Damage: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-	combo_damage.init(*font, "Total: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-	stun_frames.init(*font, "Stun Frames: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-	frame_advantage.init(*font, "Frame Advantage: ", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+	for (int i = 0; i < TRAINING_FIELD_MAX; i++) {
+		fields[i].init(*font, field_names[i], glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+		fields[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+		fields[i].set_scale(0.8);
+	}
 
-	hit_frame.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	damage.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	combo_damage.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	stun_frames.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	frame_advantage.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-
-	background_texture.set_pos(glm::vec3(350.0, 150.0, 0.0));
-	background_texture.set_scale(0.7);
-	hit_frame.set_scale(0.8);
-	damage.set_scale(0.8);
-	combo_damage.set_scale(0.8);
-	stun_frames.set_scale(0.8);
-	frame_advantage.set_scale(0.8);
 	if (fighter->id) {
 		background_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
-		hit_frame.set_pos(glm::vec3(2680.0, 280.0, 0.0));
-		damage.set_pos(glm::vec3(2680.0, 350.0, 0.0));
-		combo_damage.set_pos(glm::vec3(2680.0, 420.0, 0.0));
-		stun_frames.set_pos(glm::vec3(2680.0, 490.0, 0.0));
-		frame_advantage.set_pos(glm::vec3(2680.0, 560.0, 0.0));
+		for (int i = 0; i < TRAINING_FIELD_MAX; i++) {
+			fields[i].set_pos(glm::vec3(2560.0, 210 + 70 * i, 0.0));
+		}
 	}
 	else {
 		background_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-		hit_frame.set_pos(glm::vec3(440.0, 280.0, 0.0));
-		damage.set_pos(glm::vec3(440.0, 350.0, 0.0));
-		combo_damage.set_pos(glm::vec3(440.0, 420.0, 0.0));
-		stun_frames.set_pos(glm::vec3(440.0, 490.0, 0.0));
-		frame_advantage.set_pos(glm::vec3(440.0, 560.0, 0.0));
+		for (int i = 0; i < TRAINING_FIELD_MAX; i++) {
+			fields[i].set_pos(glm::vec3(460.0, 210 + 70 * i, 0.0));
+		}
 	}
 	mini_visualizers.resize(20);
 }
 
 void TrainingInfo::destroy() {
 	background_texture.destroy();
-	hit_frame.destroy();
-	damage.destroy();
-	combo_damage.destroy();
-	stun_frames.destroy();
-	frame_advantage.destroy();
+	for (int i = 0; i < TRAINING_FIELD_MAX; i++) {
+		fields[i].destroy();
+	}
 }
 
 void TrainingInfo::render() {
 	background_texture.render();
-	hit_frame.render();
-	damage.render();
-	combo_damage.render();
-	stun_frames.render();
-	frame_advantage.render();
+	for (int i = 0; i < TRAINING_FIELD_MAX; i++) {
+		fields[i].render();
+	}
 	input_visualizer.render();
 	for (std::list<InputVisualizer>::iterator it = mini_visualizers.begin(),
 		max = mini_visualizers.end(); it != max; it++) {

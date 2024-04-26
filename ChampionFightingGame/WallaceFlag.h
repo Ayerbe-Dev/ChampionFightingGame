@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterFlag.h"
+MAKE_COUNTER(wallace_flag, FIGHTER_FLAG_MAX);
 
-enum {
-	_CHARA_WALLACE_FLAG_START = FIGHTER_FLAG_MAX,
-	_CHARA_WALLACE_FLAG_MAX,
-};
-
-const int CHARA_WALLACE_FLAG_START = _CHARA_WALLACE_FLAG_START;
-const int CHARA_WALLACE_FLAG_MAX = _CHARA_WALLACE_FLAG_MAX;
+const int CHARA_WALLACE_FLAG_MAX = wallace_flag.count();

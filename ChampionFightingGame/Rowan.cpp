@@ -13,10 +13,14 @@ Rowan::Rowan(Player* player) {
 	chara_kind = CHARA_KIND_ROWAN;
 	chara_name = "rowan";
 	resource_dir = "resource/chara/rowan";
-	fighter_int.resize(CHARA_ROWAN_INT_MAX, 0);
-	fighter_float.resize(CHARA_ROWAN_FLOAT_MAX, 0.0);
-	fighter_flag.resize(CHARA_ROWAN_FLAG_MAX, false);
-	fighter_string.resize(CHARA_ROWAN_STRING_MAX, "");
+	object_int.resize(CHARA_ROWAN_INT_MAX, 0);
+	object_float.resize(CHARA_ROWAN_FLOAT_MAX, 0.0);
+	object_flag.resize(CHARA_ROWAN_FLAG_MAX, false);
+	object_string.resize(CHARA_ROWAN_STRING_MAX, "");
+	status_script.resize(CHARA_ROWAN_STATUS_MAX, nullptr);
+	enter_status_script.resize(CHARA_ROWAN_STATUS_MAX, nullptr);
+	exit_status_script.resize(CHARA_ROWAN_STATUS_MAX, nullptr);
+
 	projectiles.push_back(create_projectile(PROJECTILE_KIND_ROWAN_FIREBALL, player, this));
 
 	load_fighter();

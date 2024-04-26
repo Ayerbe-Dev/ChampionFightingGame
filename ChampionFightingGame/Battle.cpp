@@ -199,6 +199,7 @@ void Battle::load_world() {
 	for (int i = 0; i < 2; i++) {
 		fighter[i] = create_fighter(player[i]);
 	}
+	fighter[1]->object_int[FIGHTER_INT_AUTO_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
 
 	camera = &render_manager->camera;
 	camera->reset_camera();
@@ -240,10 +241,10 @@ void Battle::load_ui() {
 			});
 
 			push_menu_float_var("max_health", fighter[0]->get_param_float("health"));
-			push_menu_ptr_var("health", &fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH]);
-			push_menu_ptr_var("partial_health", &fighter[0]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
-			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
-			push_menu_ptr_var("health_recovery_timer", &fighter[0]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);
+			push_menu_ptr_var("health", &fighter[0]->object_float[FIGHTER_FLOAT_HEALTH]);
+			push_menu_ptr_var("partial_health", &fighter[0]->object_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
+			push_menu_ptr_var("health_recovery_timer", &fighter[0]->object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);
 
 			push_menu_texture("Combo Health", "resource/game_state/battle/ui/meter/combo_health.png");
 			push_menu_texture("Health", "resource/game_state/battle/ui/meter/health.png");
@@ -273,10 +274,10 @@ void Battle::load_ui() {
 				object->get_texture("Partial Health").scale_left_percent(partial_health / max_health);
 			});
 			push_menu_float_var("max_health", fighter[1]->get_param_float("health"));
-			push_menu_ptr_var("health", &fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]);
-			push_menu_ptr_var("partial_health", &fighter[1]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
-			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->fighter_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
-			push_menu_ptr_var("health_recovery_timer", &fighter[1]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);			
+			push_menu_ptr_var("health", &fighter[1]->object_float[FIGHTER_FLOAT_HEALTH]);
+			push_menu_ptr_var("partial_health", &fighter[1]->object_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
+			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
+			push_menu_ptr_var("health_recovery_timer", &fighter[1]->object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);			
 			push_menu_texture("Combo Health", "resource/game_state/battle/ui/meter/combo_health.png");
 			last_pushed_texture->flip_h();
 			push_menu_texture("Health", "resource/game_state/battle/ui/meter/health.png");
@@ -293,9 +294,10 @@ void Battle::load_ui() {
 				float scale = *(float*)object->ptr_var("damage_scale");
 				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-				object->get_texture("Damage Scale").set_left_target(clampf(scale, scale, 1.0f), 3);
+				object->get_texture("Damage Scale").set_top_left_target(std::min(scale, 1.0f), 3);
+				object->get_texture("Damage Scale").set_bottom_left_target(std::min(scale - 0.046f, 1.0f), 3);
 			});
-			push_menu_ptr_var("damage_scale", &fighter[0]->fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
+			push_menu_ptr_var("damage_scale", &fighter[0]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
 			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
 			push_menu_texture("Damage Scale 110", "resource/game_state/battle/ui/meter/damage_scale_110.png");
 			last_pushed_texture->set_alpha(0);
@@ -310,9 +312,10 @@ void Battle::load_ui() {
 				float scale = *(float*)object->ptr_var("damage_scale");
 				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-				object->get_texture("Damage Scale").set_left_target(clampf(scale, scale, 1.0f), 3);
+				object->get_texture("Damage Scale").set_top_left_target(std::min(scale, 1.0f), 3);
+				object->get_texture("Damage Scale").set_bottom_left_target(std::min(scale - 0.046f, 1.0f), 3);
 			});
-			push_menu_ptr_var("damage_scale", &fighter[1]->fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
+			push_menu_ptr_var("damage_scale", &fighter[1]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
 			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
 			last_pushed_texture->flip_h();
 			push_menu_texture("Damage Scale 110", "resource/game_state/battle/ui/meter/damage_scale_110.png");
@@ -339,7 +342,7 @@ void Battle::load_ui() {
 			});
 
 			push_menu_float_var("max_ex", get_global_param_float(PARAM_FIGHTER, "ex_meter_size"));
-			push_menu_ptr_var("ex", &fighter[0]->fighter_float[FIGHTER_FLOAT_EX_METER]);
+			push_menu_ptr_var("ex", &fighter[0]->object_float[FIGHTER_FLOAT_EX_METER]);
 			push_menu_float_var("prev_segments", 0.0);
 			
 			push_menu_texture("EX", "resource/game_state/battle/ui/meter/ex.png");
@@ -364,7 +367,7 @@ void Battle::load_ui() {
 			});
 
 			push_menu_float_var("max_ex", get_global_param_float(PARAM_FIGHTER, "ex_meter_size"));
-			push_menu_ptr_var("ex", &fighter[1]->fighter_float[FIGHTER_FLOAT_EX_METER]);
+			push_menu_ptr_var("ex", &fighter[1]->object_float[FIGHTER_FLOAT_EX_METER]);
 			push_menu_float_var("prev_segments", 0.0);
 
 			push_menu_texture("EX", "resource/game_state/battle/ui/meter/ex.png");
@@ -388,7 +391,7 @@ void Battle::load_ui() {
 					}
 					object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
 				});
-				push_menu_ptr_var("super", &fighter[0]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_ptr_var("super", &fighter[0]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
@@ -404,7 +407,7 @@ void Battle::load_ui() {
 					}
 					object->get_texture("Super Full").next_sprite();					
 				});
-				push_menu_ptr_var("super", &fighter[0]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_ptr_var("super", &fighter[0]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
@@ -423,7 +426,7 @@ void Battle::load_ui() {
 					}
 					object->get_texture("Super").set_sprite((int)((super / max_super) * 100.0));
 				});
-				push_menu_ptr_var("super", &fighter[1]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_ptr_var("super", &fighter[1]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
 				last_pushed_texture->flip_h();
@@ -440,7 +443,7 @@ void Battle::load_ui() {
 					}
 					object->get_texture("Super Full").next_sprite();
 				});
-				push_menu_ptr_var("super", &fighter[1]->fighter_float[FIGHTER_FLOAT_SUPER_METER]);
+				push_menu_ptr_var("super", &fighter[1]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
 				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
 				last_pushed_texture->flip_h();
@@ -682,6 +685,7 @@ void Battle::pre_event_process_main() {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		sound_manager->pause_all_sounds();
 		sound_manager->pause_all_reserved_sounds();
+		camera->pos_target.process();
 		camera->update_view();
 		frame_advance = false;
 	}
@@ -733,7 +737,7 @@ void Battle::process_intro() {
 	}
 	else {
 		for (int i = 0; i < 2; i++) {
-			fighter[i]->change_status(FIGHTER_STATUS_NONE, false);
+			fighter[i]->change_status(BATTLE_OBJECT_STATUS_NONE, false);
 		}
 		internal_state = BATTLE_STATE_ROUND_START;
 	}
@@ -744,7 +748,7 @@ void Battle::process_round_start() {
 	MenuObject& round_start = get_child("Round Start Text");
 	if (execute_if("Init", 1, true)) {
 		for (int i = 0; i < 2; i++) {
-			fighter[i]->fighter_flag[FIGHTER_FLAG_ROUND_START] = true;
+			fighter[i]->object_flag[FIGHTER_FLAG_ROUND_START] = true;
 			fighter[i]->reset();
 		}
 		MenuObject& timer = get_child("Timer");
@@ -778,7 +782,7 @@ void Battle::process_round_start() {
 		internal_state = BATTLE_STATE_BATTLE;
 		get_child("Timer").bool_var("pause") = false;
 		for (int i = 0; i < 2; i++) {
-			fighter[i]->fighter_flag[FIGHTER_FLAG_ROUND_START] = false;
+			fighter[i]->object_flag[FIGHTER_FLAG_ROUND_START] = false;
 		}
 	}
 }
@@ -821,7 +825,7 @@ void Battle::process_ko() {
 		}
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.reset_all_buttons();
-			fighter[i]->fighter_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
+			fighter[i]->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = 0;
 		}
 		ko_timer = 120;
 		actionable_timer = 600;
@@ -835,7 +839,7 @@ void Battle::process_ko() {
 					p2_round.int_var("Wins") + 1)
 				).set_sprite(ROUND_ICON_TIMEOUT);
 			}
-			else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0 && fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == 0.0) {
+			else if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == 0.0 && fighter[1]->object_float[FIGHTER_FLOAT_HEALTH] == 0.0) {
 				p1_round.get_texture("Round Win" + std::to_string(
 					p1_round.int_var("Wins") + 1)
 				).set_sprite(ROUND_ICON_DOUBLE);
@@ -844,7 +848,7 @@ void Battle::process_ko() {
 				).set_sprite(ROUND_ICON_DOUBLE);
 			}
 			else {
-				if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_param_float("health")) {
+				if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_param_float("health")) {
 					p1_round.get_texture("Round Win" + std::to_string(
 						p1_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_PERFECT);
@@ -867,7 +871,7 @@ void Battle::process_ko() {
 					).set_sprite(ROUND_ICON_KO);
 				}
 
-				if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_param_float("health")) {
+				if (fighter[1]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_param_float("health")) {
 					p2_round.get_texture("Round Win" + std::to_string(
 						p2_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_PERFECT);
@@ -894,11 +898,11 @@ void Battle::process_ko() {
 		if (get_child("Timer").bool_var("time_up")) {
 			get_activity_group("KO Text").set_active_child("Time");
 		}
-		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_param_float("health")
-		|| fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_param_float("health")) {
+		else if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[0]->get_param_float("health")
+		|| fighter[1]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->get_param_float("health")) {
 			get_activity_group("KO Text").set_active_child("Perfect KO");
 		}
-		else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+		else if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->object_float[FIGHTER_FLOAT_HEALTH]) {
 			get_activity_group("KO Text").set_active_child("Double KO");
 		}
 		else {
@@ -921,7 +925,7 @@ void Battle::process_ko() {
 	stage.process();
 	post_process_fighters();
 	for (int i = 0; i < 2; i++) {
-		if (fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] > 0.0) {
+		if (fighter[i]->object_float[FIGHTER_FLOAT_HEALTH] > 0.0) {
 			fighter[i]->clear_hurtbox_all();
 		}
 	}
@@ -929,17 +933,17 @@ void Battle::process_ko() {
 	camera->camera_main();
 
 	int winner = ROUND_WIN_DOUBLE_KO;
-	if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
+	if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
 		winner = ROUND_WIN_P1;
 	}
-	if (fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
+	if (fighter[1]->object_float[FIGHTER_FLOAT_HEALTH] != 0.0) {
 		winner--; //If player 1's health is at 0, this will drop our winner from 2 to 1, indicating
 		//player 2 winning. If not, it will drop our winner from 0 to -1, indicating a timeout
 	}
 
 	switch (winner) {
 		case (ROUND_WIN_TIMEOUT): {
-			if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+			if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->object_float[FIGHTER_FLOAT_HEALTH]) {
 				if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !actionable_timer) {
 					if (curr_round == 5) {
 						render_manager->start_fade_sequence(40, [&]() {
@@ -978,8 +982,8 @@ void Battle::process_ko() {
 				}
 				else {
 					if (fighter[0]->is_actionable() && fighter[1]->is_actionable()
-						&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
-						&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						&& fighter[0]->fighter_context == FIGHTER_CONTEXT_GROUND
+						&& fighter[1]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 						if (ko_timer) {
 							ko_timer--;
 						}
@@ -994,7 +998,7 @@ void Battle::process_ko() {
 					actionable_timer--;
 				}
 			}
-			else if (fighter[0]->fighter_float[FIGHTER_FLOAT_HEALTH] > fighter[1]->fighter_float[FIGHTER_FLOAT_HEALTH]) {
+			else if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] > fighter[1]->object_float[FIGHTER_FLOAT_HEALTH]) {
 				if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !actionable_timer) {
 					if (p1_wins + 1 == round_count_setting) {
 						p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
@@ -1011,8 +1015,8 @@ void Battle::process_ko() {
 				}
 				else {
 					if (fighter[0]->is_actionable() && fighter[1]->is_actionable()
-						&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
-						&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						&& fighter[0]->fighter_context == FIGHTER_CONTEXT_GROUND
+						&& fighter[1]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 						if (ko_timer) {
 							ko_timer--;
 						}
@@ -1044,8 +1048,8 @@ void Battle::process_ko() {
 				}
 				else {
 					if (fighter[0]->is_actionable() && fighter[1]->is_actionable()
-						&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND
-						&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+						&& fighter[0]->fighter_context == FIGHTER_CONTEXT_GROUND
+						&& fighter[1]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 						if (ko_timer) {
 							ko_timer--;
 						}
@@ -1122,7 +1126,7 @@ void Battle::process_ko() {
 			}
 			else {
 				if (fighter[0]->is_actionable()
-					&& fighter[0]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					&& fighter[0]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 					if (ko_timer) {
 						ko_timer--;
 					}
@@ -1152,7 +1156,7 @@ void Battle::process_ko() {
 			}
 			else {
 				if (fighter[1]->is_actionable()
-					&& fighter[1]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					&& fighter[1]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 					if (ko_timer) {
 						ko_timer--;
 					}
@@ -1184,7 +1188,7 @@ void Battle::process_debug_boxes() {
 
 void Battle::process_fighters() {	
 	for (int i = 0; i < 2; i++) {
-		switch (fighter[i]->fighter_int[FIGHTER_INT_UI_TEXT_TYPE]) {
+		switch (fighter[i]->object_int[FIGHTER_INT_UI_TEXT_TYPE]) {
 		case UI_TEXT_TYPE_NONE:
 		default: {
 
@@ -1210,12 +1214,12 @@ void Battle::process_fighters() {
 			texts[i].back().init(&message_font, "Reversal", 40, fighter[i], glm::vec2(275.0, 450.0));
 		} break;
 		}
-		fighter[i]->fighter_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_NONE;
+		fighter[i]->object_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_NONE;
 	}
-	if (!(fighter[0]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION]
-		|| fighter[1]->fighter_flag[FIGHTER_FLAG_LOCK_DIRECTION])) {
+	if (!(fighter[0]->object_flag[FIGHTER_FLAG_LOCK_DIRECTION]
+		|| fighter[1]->object_flag[FIGHTER_FLAG_LOCK_DIRECTION])) {
 		for (int i = 0; i < 2; i++) {
-			if (fighter[i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+			if (fighter[i]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 				if (fighter[i]->pos.x > fighter[!i]->pos.x) {
 					fighter[i]->internal_facing_right = false;
 					fighter[i]->internal_facing_dir = -1.0;
@@ -1225,7 +1229,7 @@ void Battle::process_fighters() {
 					fighter[i]->internal_facing_dir = 1.0;
 				}
 				else { //If both players are stuck inside each other, stop that !
-					if (fighter[!i]->situation_kind == FIGHTER_SITUATION_GROUND) {
+					if (fighter[!i]->fighter_context == FIGHTER_CONTEXT_GROUND) {
 						if (fighter[i]->pos.x == fighter[!i]->pos.x
 							&& fighter[i]->internal_facing_dir == fighter[!i]->internal_facing_dir) {
 							fighter[i]->internal_facing_right = true;
@@ -1265,24 +1269,11 @@ void Battle::process_ui() {
 
 void Battle::process_training() {
 	for (int i = 0; i < 2; i++) {
-		glm::vec4 color;
-		std::string advantage = std::to_string(fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE]);
-		if (fighter[i]->fighter_int[FIGHTER_INT_FRAME_ADVANTAGE] >= 0) {
-			advantage = "Frame Advantage: +" + advantage;
-			color = glm::vec4(0.0, 0.0, 255.0, 255.0);
+		if (fighter[i]->object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] == 0) {
+			fighter[i]->object_float[FIGHTER_FLOAT_HEALTH] = clampf(fighter[i]->object_float[FIGHTER_FLOAT_HEALTH], fighter[i]->object_float[FIGHTER_FLOAT_HEALTH] + 10.0, fighter[i]->get_param_float("health"));
+			fighter[i]->object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->object_float[FIGHTER_FLOAT_HEALTH];
 		}
-		else {
-			advantage = "Frame Advantage: " + advantage;
-			color = glm::vec4(255.0, 0.0, 0.0, 255.0);
-		}
-		if (training_info[i].frame_advantage.get_text() != advantage) {
-			training_info[i].frame_advantage.update_text(info_font, advantage, color, glm::vec4(0.0, 0.0, 0.0, 2.0));
-		}
-		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] == 0) {
-			fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] = clampf(fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH], fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH] + 10.0, fighter[i]->get_param_float("health"));
-			fighter[i]->fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter[i]->fighter_float[FIGHTER_FLOAT_HEALTH];
-		}
-		if (fighter[i]->fighter_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] == 0) {
+		if (fighter[i]->object_int[FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER] == 0) {
 			fighter[i]->gain_ex(1.0);
 		}
 
@@ -1560,7 +1551,7 @@ void Battle::event_start_press() {
 		} break;
 		case (BATTLE_STATE_INTRO): {
 			for (int i = 0; i < 2; i++) {
-				fighter[i]->change_status(FIGHTER_STATUS_NONE, false);
+				fighter[i]->change_status(BATTLE_OBJECT_STATUS_NONE, false);
 			}
 			internal_state = BATTLE_STATE_ROUND_START;
 		} break;
@@ -1590,10 +1581,12 @@ void Battle::event_frame_pause_press() {
 	if (game_context == GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE) {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		if (frame_pause) {
+			camera->pos_target.set_pause(false);
 			sound_manager->resume_all_sounds();
 			sound_manager->resume_all_reserved_sounds();
 		}
 		else {
+			camera->pos_target.set_pause(true);
 			sound_manager->pause_all_sounds();
 			sound_manager->pause_all_reserved_sounds();
 		}

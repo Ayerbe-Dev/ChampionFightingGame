@@ -6,7 +6,6 @@
 #include "GameManager.h"
 #include "ShaderManager.h"
 #include "Anlst.h"
-#include "Sndlst.h"
 
 void Fighter::load_fighter() {
 	player->controller.reset_buffer();
@@ -33,6 +32,7 @@ void Fighter::load_fighter() {
 	load_anim_list();
 	load_chara_status_scripts();
 	load_fighter_status_scripts();
+	load_battle_object_status_scripts();
 	load_move_list();
 	load_move_scripts();
 	load_sound_list();
@@ -40,43 +40,14 @@ void Fighter::load_fighter() {
 	load_chara_effects();
 	set_default_vars();
 
-	change_status(FIGHTER_STATUS_NONE, false);
+	change_status(BATTLE_OBJECT_STATUS_NONE, false);
 }
 
 void Fighter::load_sound_list() {
-	std::ifstream sound_stream;
-	std::string name;
-	std::string file;
-	sound_stream.open(resource_dir + "/vc/vc_list.sndlst");
-	if (sound_stream.fail()) {
-		sound_stream.close();
-		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s vc directory was incorrectly set!");
-	}
-	else {
-		while (!sound_stream.eof()) {
-			parse_sndlst_entry(sound_stream, name, file);
-			if (name == "") {
-				break;
-			}
-			sound_player.load_sound(name, resource_dir + "/vc/" + file);
-		}
-		sound_stream.close();
-	}
-	sound_stream.open(resource_dir + "/se/se_list.sndlst");
-	if (sound_stream.fail()) {
-		sound_stream.close();
-		GameManager::get_instance()->add_crash_log("Chara " + std::to_string(chara_kind) + "\'s se directory was incorrectly set!");
-	}
-	else {
-		while (!sound_stream.eof()) {
-			parse_sndlst_entry(sound_stream, name, file);
-			if (name == "") {
-				break;
-			}
-			sound_player.load_sound(name, resource_dir + "/se/" + file);
-		}
-		sound_stream.close();
-	}
+	sound_player.load_sound_list("vc", resource_dir);
+	sound_player.load_sound_list("vc", "resource/chara/common");
+	sound_player.load_sound_list("se", resource_dir);
+	sound_player.load_sound_list("se", "resource/chara/common");
 }
 
 void Fighter::load_effect_list() {
@@ -130,12 +101,12 @@ void Fighter::load_anim_list() {
 }
 
 void Fighter::set_default_vars() {
-	fighter_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
-	fighter_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = fighter_float[FIGHTER_FLOAT_HEALTH];
-	fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE] = 1.0f;
-	fighter_float[FIGHTER_FLOAT_PREV_DAMAGE_SCALE] = 1.0f;
-	fighter_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI] = 1.0f;
-	fighter_string[FIGHTER_STRING_MOVE_KIND] = "";
+	object_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
+	object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = object_float[FIGHTER_FLOAT_HEALTH];
+	object_float[FIGHTER_FLOAT_DAMAGE_SCALE] = 1.0f;
+	object_float[FIGHTER_FLOAT_PREV_DAMAGE_SCALE] = 1.0f;
+	object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI] = 1.0f;
+	object_string[FIGHTER_STRING_MOVE_KIND] = "";
 }
 
 void Fighter::load_collision_boxes() {

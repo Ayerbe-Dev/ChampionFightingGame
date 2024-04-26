@@ -1,10 +1,5 @@
 #pragma once
 #include "FighterFlag.h"
+MAKE_COUNTER(tessa_flag, FIGHTER_FLAG_MAX);
 
-enum {
-	_CHARA_TESSA_FLAG_START = FIGHTER_FLAG_MAX,
-	_CHARA_TESSA_FLAG_MAX,
-};
-
-const int CHARA_TESSA_FLAG_START = _CHARA_TESSA_FLAG_START;
-const int CHARA_TESSA_FLAG_MAX = _CHARA_TESSA_FLAG_MAX;
+const int CHARA_TESSA_FLAG_MAX = tessa_flag.count();

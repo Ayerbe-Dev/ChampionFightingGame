@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include "CameraAnim.h"
+#include "TargetVar.h"
 
 #define DEFAULT_CAM_SPEED 0.5
 #define DEFAULT_CAM_SENS 2.5
@@ -36,6 +37,7 @@ public:
 
 	std::string get_anim_name();
 
+	TargetVar<float> pos_target = 0.0f;
 	glm::vec3 pos = glm::vec3(0.0);
 	glm::vec3 front = glm::vec3(0.0, 0.0, 1.0);
 	glm::vec3 world_up = glm::vec3(0.0, 1.0, 0.0);

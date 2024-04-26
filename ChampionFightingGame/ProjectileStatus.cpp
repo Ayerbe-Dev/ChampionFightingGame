@@ -13,8 +13,20 @@ void Projectile::exit_status_none() {
 
 }
 
+void Projectile::status_move() {
+
+}
+
+void Projectile::enter_status_move() {
+
+}
+
+void Projectile::exit_status_move() {
+
+}
+
 void Projectile::load_projectile_status_scripts() {
-	status_script[PROJECTILE_STATUS_NONE] = &Projectile::status_none;
-	enter_status_script[PROJECTILE_STATUS_NONE] = &Projectile::enter_status_none;
-	exit_status_script[PROJECTILE_STATUS_NONE] = &Projectile::exit_status_none;
+	SET_STATUS_FUNC(PROJECTILE_STATUS_MOVE, &Projectile::status_move);
+	SET_ENTRY_STATUS_FUNC(PROJECTILE_STATUS_MOVE, &Projectile::enter_status_move);
+	SET_EXIT_STATUS_FUNC(PROJECTILE_STATUS_MOVE, &Projectile::exit_status_move);
 }

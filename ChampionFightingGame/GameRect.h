@@ -35,5 +35,6 @@ private:
 	unsigned int VBO;
 };
 
-bool is_collide(GameRect &RectA, GameRect &RectB);
+float get_rect_intersection(GameRect& RectA, GameRect& RectB);
+bool is_rect_collide(GameRect &RectA, GameRect &RectB);
 glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_coords);

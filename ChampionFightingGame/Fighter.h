@@ -16,10 +16,6 @@
 #include "FighterString.h"
 #include "FighterStatus.h"
 
-#define ADD_FIGHTER_STATUS(index, status_func) (status_script[index] = (void (Fighter::*)(void))status_func)
-#define ADD_FIGHTER_ENTRY_STATUS(index, status_func) (enter_status_script[index] = (void (Fighter::*)(void))(status_func))
-#define ADD_FIGHTER_EXIT_STATUS(index, status_func) (exit_status_script[index] = (void (Fighter::*)(void))(status_func))
-
 class Fighter: public BattleObject {
 public:
 	Fighter();
@@ -52,7 +48,8 @@ public:
 	void process_status(); //Checks for the hitstun parry input, then runs the status and move scripts
 	void process_post_status(); //Misc
 
-	void decrease_common_variables();
+	void process_pre_common_fighter_vars(); //Basically just hitlag
+	void process_post_common_fighter_vars(); //Subtracting from timers and such
 	void reset();
 
 	//Loading
@@ -119,7 +116,6 @@ public:
 	bool change_anim_inherit_attributes(std::string animation_name,  bool continue_script = true, bool verbose = true);
 	bool beginning_hitlag(int frames);
 	bool ending_hitlag(int frames);
-	float calc_launch_frames();
 
 	//Actions
 
@@ -136,6 +132,7 @@ public:
 	//Frame Data
 
 	int get_frames_until_actionable();
+	int calc_launch_frames();
 
 	//Cinematic
 
@@ -154,7 +151,7 @@ public:
 	//Status
 
 	void change_status(unsigned int new_status_kind, bool call_end_status = true) override;
-	void change_situation(unsigned int new_situation_kind);
+	void change_context(unsigned int new_fighter_context);
 	virtual void chara_status() {};
 	virtual void chara_enter_status() {};
 	virtual void chara_exit_status() {};
@@ -163,7 +160,7 @@ public:
 	virtual bool chara_ground_status_act() { return false; };
 	virtual bool chara_status_attack() { return false; };
 	virtual bool chara_status_attack_air() { return false; };
-	bool is_status_end(unsigned int post_status_kind = FIGHTER_STATUS_NONE, bool call_end_status = true, bool require_different_status = true);
+	bool is_status_end(unsigned int post_status_kind = BATTLE_OBJECT_STATUS_NONE, bool call_end_status = true, bool require_different_status = true);
 	bool check_landing(unsigned int post_status_kind = FIGHTER_STATUS_LANDING, bool call_end_status = true);
 	bool check_hitstun_parry();
 	bool is_ko();
@@ -502,19 +499,9 @@ public:
 
 	int prev_stick_dir;
 
-	unsigned int situation_kind;
+	unsigned int fighter_context;
 
-	std::vector<int> fighter_int;
-	std::vector<float> fighter_float;
-	std::vector<bool> fighter_flag;
-	std::vector<std::string> fighter_string;
-
-	//Array of pointers to the corressponding function for each status
-	std::vector<void (Fighter::*)(void)> status_script;
-	std::vector<void (Fighter::*)(void)> enter_status_script;
-	std::vector<void (Fighter::*)(void)> exit_status_script;
-
-	FighterMoveList move_list[FIGHTER_SITUATION_MAX];
+	FighterMoveList move_list[FIGHTER_CONTEXT_MAX];
 
 	std::map<unsigned int, std::string> throw_map_ground;
 	std::map<unsigned int, std::string> throw_map_air;

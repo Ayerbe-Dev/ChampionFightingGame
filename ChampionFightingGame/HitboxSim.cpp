@@ -559,8 +559,8 @@ void SimHitbox::print_start(BattleObject* object) {
 		} break;
 		case (BATTLE_OBJECT_TYPE_PROJECTILE): {
 			Projectile* projectile = (Projectile*)object;
-			hitstun_frames = hit_advantage - hitlag + projectile->projectile_int[PROJECTILE_INT_OWNER_ENDLAG] - 1;
-			blockstun_frames = block_advantage - blocklag + projectile->projectile_int[PROJECTILE_INT_OWNER_ENDLAG] - 1;
+			hitstun_frames = hit_advantage - hitlag + projectile->object_int[PROJECTILE_INT_OWNER_ENDLAG] - 1;
+			blockstun_frames = block_advantage - blocklag + projectile->object_int[PROJECTILE_INT_OWNER_ENDLAG] - 1;
 		} break;
 		default: {
 			hitstun_frames = 0;

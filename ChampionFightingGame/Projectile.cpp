@@ -49,14 +49,16 @@ void Projectile::process_status() {
 }
 
 void Projectile::process_animate() {
+	frame_delta = 0.0f;
 	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] != 0) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
-			frame += (0.2 / (float)(object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
+			frame_delta = (0.2 / (float)(object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
 		}
 	}
 	else {
-		frame += rate * object_manager->get_world_rate(this);
+		frame_delta = rate * object_manager->get_world_rate(this);
 	}
+	frame += frame_delta;
 
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length && anim_kind->length != -1) {

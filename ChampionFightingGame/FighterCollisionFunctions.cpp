@@ -725,6 +725,8 @@ void Fighter::process_incoming_fighter_hitbox_collision_hit(Hitbox* hitbox, Figh
 	attacker->object_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING] += damage;
 	set_post_collision_status(hitbox, counterhit_val);
 
+	object_flag[FIGHTER_FLAG_HIT_BY_EX_SUPER] = attacker->object_flag[BATTLE_OBJECT_FLAG_ACTIVE_EX_SUPER];
+	object_flag[FIGHTER_FLAG_HIT_BY_CHAMPION_SUPER] = attacker->object_flag[BATTLE_OBJECT_FLAG_ACTIVE_CHAMPION_SUPER];
 	object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = -1;
 
 	unique_process_incoming_fighter_hitbox_collision_hit(hitbox, attacker);
@@ -818,7 +820,10 @@ void Fighter::process_incoming_projectile_hitbox_collision_hit(Hitbox* hitbox, P
 	attacker->owner->object_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING] += damage;
 	set_post_collision_status(hitbox, counterhit_val);
 
+	object_flag[FIGHTER_FLAG_HIT_BY_EX_SUPER] = attacker->object_flag[BATTLE_OBJECT_FLAG_ACTIVE_EX_SUPER];
+	object_flag[FIGHTER_FLAG_HIT_BY_CHAMPION_SUPER] = attacker->object_flag[BATTLE_OBJECT_FLAG_ACTIVE_CHAMPION_SUPER];
 	object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = -1;
+
 	unique_process_incoming_projectile_hitbox_collision_hit(hitbox, attacker);
 	attacker->process_outgoing_fighter_hitbox_collision_hit(hitbox, this);
 }
@@ -917,7 +922,7 @@ void Fighter::process_outgoing_fighter_hitbox_collision_blocked(Hitbox* hitbox, 
 void Fighter::process_incoming_fighter_hitbox_collision_parried(Hitbox* hitbox, Fighter* attacker) {
 	gain_ex(get_param_float("meter_gain_on_parry"));
 	if (object_flag[FIGHTER_FLAG_HITSTUN_COUNTER_PARRY]) {
-		start_cinematic_sequence("hitstun_parry", 1.0, 1.0, 0.6, false, 0.02);
+		start_cinematic_sequence("hitstun_parry", 1.0, 0.0, 0.6, false, 0.0067);
 		object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] = 58;
 		object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 58;
 //		play_reserved_sound("hitstun_counter_parry", 0.0f);
@@ -962,10 +967,11 @@ void Fighter::process_outgoing_fighter_hitbox_collision_parried(Hitbox* hitbox, 
 
 void Fighter::process_incoming_fighter_hitbox_collision_hitstun_parried(Hitbox* hitbox, Fighter* attacker) {
 	gain_ex(get_param_float("meter_gain_on_parry"));
-	start_cinematic_sequence("hitstun_parry", 1.0, 1.0, 0.6, false, 0.02);
+	start_cinematic_sequence("hitstun_parry", 1.0, 0.0, 0.6, false, 0.0067);
 	object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] = 58;
 	object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 58;
 	object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = object_float[FIGHTER_FLOAT_HEALTH];
+	object_flag[FIGHTER_FLAG_HITSTUN_PARRY] = true;
 	post_collision_status = FIGHTER_STATUS_PARRY;
 	unique_process_incoming_fighter_hitbox_collision_hitstun_parried(hitbox, attacker);
 //	play_reserved_sound("hitstun_parry", 0.0f);
@@ -979,6 +985,7 @@ void Fighter::process_incoming_projectile_hitbox_collision_hitstun_parried(Hitbo
 	object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 16;
 	object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = object_float[FIGHTER_FLOAT_HEALTH];
 //	play_sound("common_attack_parried", 0.0f);
+	object_flag[FIGHTER_FLAG_HITSTUN_PARRY] = true;
 	post_collision_status = FIGHTER_STATUS_PARRY;
 	
 	unique_process_incoming_projectile_hitbox_collision_hitstun_parried(hitbox, attacker);

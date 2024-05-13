@@ -77,17 +77,25 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 				//mark that as the next baked keyframe.
 
 				//This approach means that we won't look for the next keyframe until we've found the current one, avoiding unnecessary recalculations
-
+				last_keyframed = i2;
+				next_keyframed = i2;
 				for (int i3 = i2 + 1; i3 <= length; i3++) {
 					if (keyframes[i3][index].keyframed) {
 						next_keyframed = i3;
 						break;
 					}
 				}
-				last_keyframed = i2;
+			}
+			else if (last_keyframed == next_keyframed) {
+				for (int i3 = i2; i3 < length; i3++) {
+					keyframes[i3][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix;
+				}
+				break;
 			}
 			else {
-				keyframes[i2][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix * ((i2 - last_keyframed) / (float)(next_keyframed - last_keyframed)) + keyframes[next_keyframed][index].anim_matrix * ((next_keyframed - i2) / (float)(next_keyframed - last_keyframed));
+				float old_delta = (i2 - last_keyframed) / (float)(next_keyframed - last_keyframed);
+				float new_delta = (next_keyframed - i2) / (float)(next_keyframed - last_keyframed);
+				keyframes[i2][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix * old_delta + keyframes[next_keyframed][index].anim_matrix * new_delta;
 			}
 		}
 	}

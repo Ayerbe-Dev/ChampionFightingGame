@@ -98,7 +98,7 @@ void RowanFireball::load_move_scripts() {
 					);
 				} break;
 				case (SPECIAL_LEVEL_L): {
-					push_function(&Projectile::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, 
+					push_function(&Projectile::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0,
 						glm::vec2(-50, -35), glm::vec2(50, 25), 
 						COLLISION_KIND_GROUND | COLLISION_KIND_AIR | COLLISION_KIND_PROJECTILE,
 						HitResult().damage(30).meter(18).hit(10, 22).block(10, 10).j_start(1).j_inc(1)

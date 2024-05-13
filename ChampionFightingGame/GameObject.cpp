@@ -7,28 +7,31 @@
 #include "utils.h"
 
 GameObject::GameObject() {
-	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
-	sound_manager = SoundManager::get_instance();
 	object_manager = ObjectManager::get_instance();
+	//effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
+
 	pos = glm::vec3(0.0);
+	prev_pos = glm::vec3(0.0);
 	render_pos = glm::vec3(0.0);
+	sound_pos = &render_pos;
 	rot = glm::vec3(0.0);
 	scale = glm::vec3(1.0);
-	scale_vec = glm::vec3(19.2, 10.8, 20.0);
+	scale_vec = glm::vec3(19.2, 10.8, 19.2);
 	extra_mat = glm::mat4(1.0);
 	resource_dir = "";
 	anim_kind = nullptr;
 	prev_anim_kind = nullptr;
 	frame = 0.0;
+	frame_delta = 0.0;
 	prev_anim_frame = 0.0;
 	rate = 1.0;
 	prev_anim_rate = 0.0;
 	prev_anim_offset = glm::vec3(0.0);
 	anim_end = false;
-	sound_player.init(&render_pos);
 	id_effect = -1;
 	shader = nullptr;
 	shadow_shader = nullptr;
@@ -36,15 +39,19 @@ GameObject::GameObject() {
 }
 
 GameObject::GameObject(GameObject& other) {
-	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
-	sound_manager = SoundManager::get_instance();
 	object_manager = ObjectManager::get_instance();
+	//effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
+
 	this->id_effect = other.id_effect;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
+	this->prev_pos = other.prev_pos;
+	this->render_pos = other.render_pos;
+	this->sound_pos = &render_pos;
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->scale_vec = other.scale_vec;
@@ -64,11 +71,11 @@ GameObject::GameObject(GameObject& other) {
 	}
 	this->prev_anim_offset = other.prev_anim_offset;
 	this->frame = other.frame;
+	this->frame_delta = other.frame_delta;
 	this->rate = other.rate;
 	this->prev_anim_frame = other.prev_anim_frame;
 	this->prev_anim_rate = other.prev_anim_rate;
 	this->anim_end = other.anim_end;
-	this->sound_player.init(&render_pos);
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
@@ -77,15 +84,19 @@ GameObject::GameObject(GameObject& other) {
 }
 
 GameObject::GameObject(const GameObject& other) {
-	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
-	sound_manager = SoundManager::get_instance();
 	object_manager = ObjectManager::get_instance();
+	//effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
+
 	this->id_effect = other.id_effect;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
+	this->prev_pos = other.prev_pos;
+	this->render_pos = other.render_pos;
+	this->sound_pos = &render_pos;
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->scale_vec = other.scale_vec;
@@ -105,11 +116,11 @@ GameObject::GameObject(const GameObject& other) {
 	}
 	this->prev_anim_offset = other.prev_anim_offset;
 	this->frame = other.frame;
+	this->frame_delta = other.frame_delta;
 	this->rate = other.rate;
 	this->prev_anim_frame = other.prev_anim_frame;
 	this->prev_anim_rate = other.prev_anim_rate;
 	this->anim_end = other.anim_end;
-	this->sound_player.init(&render_pos);
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
@@ -121,16 +132,19 @@ GameObject& GameObject::operator=(GameObject& other) {
 	if (this == &other) {
 		return *this;
 	}
-	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
-	sound_manager = SoundManager::get_instance();
 	object_manager = ObjectManager::get_instance();
+	//effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	this->id_effect = other.id_effect;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
+	this->prev_pos = other.prev_pos;
+	this->render_pos = other.render_pos;
+	this->sound_pos = &render_pos;
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->scale_vec = other.scale_vec;
@@ -150,11 +164,11 @@ GameObject& GameObject::operator=(GameObject& other) {
 	}
 	this->prev_anim_offset = other.prev_anim_offset;
 	this->frame = other.frame;
+	this->frame_delta = other.frame_delta;
 	this->rate = other.rate;
 	this->prev_anim_frame = other.prev_anim_frame;
 	this->prev_anim_rate = other.prev_anim_rate;
 	this->anim_end = other.anim_end;
-	this->sound_player.init(&render_pos);
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
@@ -168,16 +182,19 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	if (this == &other) {
 		return *this;
 	}
-	render_manager = RenderManager::get_instance();
 	effect_manager = EffectManager::get_instance();
+	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
-	sound_manager = SoundManager::get_instance();
 	object_manager = ObjectManager::get_instance();
+	//effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	this->id_effect = other.id_effect;
 	this->resource_dir = other.resource_dir;
 	this->pos = other.pos;
+	this->prev_pos = other.prev_pos;
+	this->render_pos = other.render_pos;
+	this->sound_pos = &render_pos;
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->scale_vec = other.scale_vec;
@@ -197,11 +214,11 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	}
 	this->prev_anim_offset = other.prev_anim_offset;
 	this->frame = other.frame;
+	this->frame_delta = other.frame_delta;
 	this->rate = other.rate;
 	this->prev_anim_frame = other.prev_anim_frame;
 	this->prev_anim_rate = other.prev_anim_rate;
 	this->anim_end = other.anim_end;
-	this->sound_player.init(&render_pos);
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
 	this->outline_shader = other.outline_shader;
@@ -212,5 +229,6 @@ GameObject& GameObject::operator=(const GameObject& other) {
 }
 
 GameObject::~GameObject() {
+	//effect_manager->unregister_game_object(this);
 	object_manager->unregister_game_object(this);
 }

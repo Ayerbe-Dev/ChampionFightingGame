@@ -603,17 +603,17 @@ void CSS::render_main() {
 		}
 		int selection = get_menu_object("Player Cursors").get_child(i).int_var("selected_slot");
 		if (selection >= 0 && selection < loaded_chars) {
-			demo_models[i].animate();
+			demo_models[i].process_animate();
 			if (demo_models[i].anim_end) {
 				//is_anim_end will always be false when anim_kind is nullptr, so we don't
 				//need to worry about this
 				if (demo_models[i].anim_kind->name == "selected") {
 					demo_models[i].change_anim("selected_wait", 1.0f, 0.0f);
-					demo_models[i].animate();
+					demo_models[i].process_animate();
 				}
 				else if (demo_models[i].anim_kind->name == "deselected") {
 					demo_models[i].change_anim("deselected_wait", 1.0f, 0.0f);
-					demo_models[i].animate();
+					demo_models[i].process_animate();
 				}
 			}
 			demo_models[i].render_shadow();
@@ -626,16 +626,17 @@ void CSS::render_main() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
-	stage_demo.render();
 
 	glDisable(GL_CULL_FACE);
-
 	for (int i = 0; i < 2; i++) {
 		int selection = get_menu_object("Player Cursors").get_child(i).int_var("selected_slot");
 		if (selection >= 0 && selection < loaded_chars) {
 			demo_models[i].render();
 		}
 	}
+	glEnable(GL_CULL_FACE);
+	stage_demo.render();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_menu_object("Background");
 	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.34, render_manager->res_width * 0.6, render_manager->res_height * 0.6);

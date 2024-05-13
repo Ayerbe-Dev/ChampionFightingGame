@@ -47,6 +47,17 @@ void Fighter::CHANGE_ANIM(ScriptArg args) {
 	change_anim(anim_kind, rate, frame);
 }
 
+void Fighter::PLAY_CAMERA_ANIM(ScriptArg args) {
+	UNWRAP(anim_kind, std::string);
+	UNWRAP(anim_rate, float);
+	UNWRAP(anim_frame, float);
+	play_camera_anim(anim_kind, anim_rate, anim_frame);
+}
+
+void Fighter::STOP_CAMERA_ANIM(ScriptArg args) {
+	stop_camera_anim();
+}
+
 void Fighter::START_CINEMATIC_SEQUENCE(ScriptArg args) {
 	UNWRAP(anim_kind, std::string);
 	UNWRAP(anim_rate, float);
@@ -55,6 +66,10 @@ void Fighter::START_CINEMATIC_SEQUENCE(ScriptArg args) {
 	UNWRAP(dim_self, bool);
 	UNWRAP(world_rate, float);
 	start_cinematic_sequence(anim_kind, anim_rate, anim_frame, world_brightness, dim_self, world_rate);
+}
+
+void Fighter::STOP_CINEMATIC_SEQUENCE(ScriptArg args) {
+	stop_cinematic_sequence();
 }
 
 void Fighter::RESET_WORLD_RATE(ScriptArg args) {

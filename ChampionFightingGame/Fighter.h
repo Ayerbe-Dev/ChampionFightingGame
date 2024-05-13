@@ -61,7 +61,7 @@ public:
 	virtual void load_chara_status_scripts() {};
 	virtual void load_move_scripts() {};
 	virtual void load_move_list() {};
-	void load_sound_list();
+	void load_sounds();
 	void load_effect_list();
 	virtual void load_chara_effects() {};
 	void set_default_vars();
@@ -133,20 +133,6 @@ public:
 
 	int get_frames_until_actionable();
 	int calc_launch_frames();
-
-	//Cinematic
-
-	void start_cinematic_sequence(std::string anim_kind, float anim_rate, float anim_frame, float world_brightness, bool dim_self, float world_rate);
-	void stop_cinematic_sequence();
-
-	void play_camera_anim(std::string anim_kind, float rate, float frame);
-	void stop_camera_anim();
-
-	void slow_world(float world_rate);
-	void reset_world_rate();
-
-	void dim_world(float world_brightness, bool dim_self);
-	void reset_world_brightness();
 
 	//Status
 
@@ -316,7 +302,10 @@ public:
 
 	void CHANGE_ANIM(ScriptArg args);
 
+	void PLAY_CAMERA_ANIM(ScriptArg args);
+	void STOP_CAMERA_ANIM(ScriptArg args);
 	void START_CINEMATIC_SEQUENCE(ScriptArg args);
+	void STOP_CINEMATIC_SEQUENCE(ScriptArg args);
 	void RESET_WORLD_RATE(ScriptArg args);
 
 	void ENABLE_CANCEL(ScriptArg args);
@@ -498,7 +487,6 @@ public:
 	std::vector<Projectile*> projectiles;
 
 	int prev_stick_dir;
-
 	unsigned int fighter_context;
 
 	FighterMoveList move_list[FIGHTER_CONTEXT_MAX];

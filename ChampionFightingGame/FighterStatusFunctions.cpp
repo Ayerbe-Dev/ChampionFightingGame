@@ -9,6 +9,8 @@ void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) 
 	clear_hurtbox_all();
 	clear_grabbox_all();
 	clear_pushbox_all();
+	object_flag[BATTLE_OBJECT_FLAG_ACTIVE_EX_SUPER] = false;
+	object_flag[BATTLE_OBJECT_FLAG_ACTIVE_CHAMPION_SUPER] = false;
 	object_flag[FIGHTER_FLAG_ATTACK_HIT] = false;
 	object_flag[FIGHTER_FLAG_ATTACK_BLOCKED] = false;
 	object_flag[FIGHTER_FLAG_PROJECTILE_HIT_DURING_STATUS] = false;

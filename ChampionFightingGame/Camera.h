@@ -8,9 +8,8 @@
 #include "CameraAnim.h"
 #include "TargetVar.h"
 
-#define DEFAULT_CAM_SPEED 0.5
-#define DEFAULT_CAM_SENS 2.5
-
+class GameObject;
+class BattleObject;
 class Fighter;
 class Stage;
 
@@ -21,58 +20,76 @@ public:
 	void camera_main();
 
 	void load_camera_anim(std::string anim_kind, std::string anim_dir);
-	void play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame);
-	void play_camera_anim(int follow_id, CameraAnim* anim_kind, float rate, float frame);
+	void play_camera_anim(std::string anim_kind, float rate, float frame);
+	void play_camera_anim(CameraAnim* anim_kind, float rate, float frame);
+	void play_camera_anim(GameObject* target, std::string anim_kind, float rate, float frame, bool end_cinematic_on_anim_end);
+	void play_camera_anim(GameObject* target, CameraAnim* anim_kind, float rate, float frame, bool end_cinematic_on_anim_end);
+	void play_camera_anim(BattleObject* target, std::string anim_kind, float rate, float frame, bool end_cinematic_on_anim_end);
+	void play_camera_anim(BattleObject* target, CameraAnim* anim_kind, float rate, float frame, bool end_cinematic_on_anim_end);
+	void stop_camera_anim();
 	void unload_camera_anims();
 
-	void add_pos(float x, float y, float z, float speed = 0.0);
-	void adjust_view(float x, float y, float z, float speed = 0.0);
+	void set_pos(float x, float y, float z);
+	void set_rot(float x, float y, float z);
+	void add_pos(float x, float y, float z);
+	void add_rot(float x, float y, float z);
 
 	void set_fov(float fov);
 	
 	void reset_camera();
+	void calc_aim_from_ypr();
+	void calc_ypr_from_aim();
+
 	void update_view();
+
 	void follow_players();
 	void follow_anim();
 
 	std::string get_anim_name();
 
-	TargetVar<float> pos_target = 0.0f;
-	glm::vec3 pos = glm::vec3(0.0);
-	glm::vec3 front = glm::vec3(0.0, 0.0, 1.0);
-	glm::vec3 world_up = glm::vec3(0.0, 1.0, 0.0);
+	const glm::vec3 base_pos = glm::vec3(0.0, 8.0, 55.0);
+	const glm::vec3 world_up = glm::vec3(0.0, 1.0, 0.0);
+	const glm::mat4 flip_matrix = glm::mat4(
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, -1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+	const glm::vec3 scale_vec = glm::vec3(19.2, 10.8, 19.2);
+
+	glm::vec3 pos;
+	glm::vec3 prev_pos;
+	TargetVar<float> pos_x_interpolator;
+
+	float yaw;
+	float pitch;
+	float roll;
+	float fov;
+
+	glm::vec3 front;
 	glm::vec3 up;
 	glm::vec3 right;
+	glm::vec3 aim;
 
-	glm::vec3 prev_pos;
-
-	float yaw = -90.0;
-	float pitch = 0.0;
-	float roll = 0.0;
-	const float cam_speed = 0.5;
-	const float cam_sens = 2.5;
-	float fov;
-	float max_fov = 45.0;
-	glm::vec3 base_pos;
-	glm::mat4 flip_matrix;
+	glm::mat4 projection_matrix;
+	glm::mat4 view_matrix;
+	glm::mat4 camera_matrix;
 
 	Fighter* fighter[2];
-
 	Stage* stage;
-	int follow_id;
-
-	bool following_players;
-	bool anim_end;
-	bool camera_locked;
 
 	CameraAnim* anim_kind;
 	float frame;
 	float rate;
 
+	GameObject* target;
+	glm::vec3 target_base_pos;
+	float target_facing_dir;
+	bool target_end_cinematic_on_anim_end;
+
+	bool camera_locked;
+	bool anim_end;
+
 	std::vector<CameraAnim> camera_anims;
 	std::map<std::string, int> camera_anim_map;
-
-	glm::mat4 projection_matrix;
-	glm::mat4 view_matrix;
-	glm::mat4 camera_matrix;
 };

@@ -194,7 +194,6 @@ bool EffectInstance::process() {
 }
 
 void EffectInstance::render() {
-	glDepthMask(GL_TRUE);
 	shader->use();
 	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);

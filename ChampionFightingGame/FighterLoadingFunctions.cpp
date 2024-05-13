@@ -35,7 +35,7 @@ void Fighter::load_fighter() {
 	load_battle_object_status_scripts();
 	load_move_list();
 	load_move_scripts();
-	load_sound_list();
+	load_sounds();
 	load_effect_list();
 	load_chara_effects();
 	set_default_vars();
@@ -43,11 +43,11 @@ void Fighter::load_fighter() {
 	change_status(BATTLE_OBJECT_STATUS_NONE, false);
 }
 
-void Fighter::load_sound_list() {
-	sound_player.load_sound_list("vc", resource_dir);
-	sound_player.load_sound_list("vc", "resource/chara/common");
-	sound_player.load_sound_list("se", resource_dir);
-	sound_player.load_sound_list("se", "resource/chara/common");
+void Fighter::load_sounds() {
+	load_sound_list("vc", resource_dir);
+	load_sound_list("vc", "resource/chara/common");
+	load_sound_list("se", resource_dir);
+	load_sound_list("se", "resource/chara/common");
 }
 
 void Fighter::load_effect_list() {

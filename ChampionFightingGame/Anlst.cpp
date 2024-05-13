@@ -13,6 +13,7 @@ void parse_anlst_entry(std::ifstream& stream, std::string& name, std::string& fi
 	if (stream.eof()) {
 		return;
 	}
+	stream.tellg();
 	for (int i = 0, max = (int)input_char - 3; i < max; i += 4) {
 		char chars[3];
 		stream.read(chars, 3);

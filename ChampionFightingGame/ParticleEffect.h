@@ -2,13 +2,13 @@
 #include "WorldTexture.h"
 #include "Model.h"
 
+class GameObject;
 class ParticleEffectInstance;
 
 class Particle {
 public:
 	Particle();
-	void render(ParticleEffectInstance* effect);
-	virtual void render_unique(ParticleEffectInstance* effect, float frame);
+	virtual void render(ParticleEffectInstance* effect);
 protected:
 	glm::vec3 pos_base;
 	glm::vec3 rot_base;
@@ -25,7 +25,7 @@ protected:
 class ParticleModel : public Particle {
 public:
 	ParticleModel();
-	void render_unique(ParticleEffectInstance* effect, float frame);
+	void render(ParticleEffectInstance* effect);
 private:
 	ModelInstance model;
 	Animation* anim;
@@ -34,7 +34,7 @@ private:
 class ParticleBillboard : public Particle {
 public:
 	ParticleBillboard();
-	void render_unique(ParticleEffectInstance* effect, float frame);
+	void render(ParticleEffectInstance* effect);
 private:
 	WorldTexture texture;
 };
@@ -42,7 +42,7 @@ private:
 class ParticleTexture : public Particle {
 public:
 	ParticleTexture();
-	void render_unique(ParticleEffectInstance* effect, float frame);
+	void render(ParticleEffectInstance* effect);
 private:
 	WorldTexture texture;
 };
@@ -50,27 +50,40 @@ private:
 class ParticleTrail : public Particle {
 public:
 	ParticleTrail();
-	void render_unique(ParticleEffectInstance* effect, float frame);
+	void render(ParticleEffectInstance* effect);
 private:
 	WorldTexture texture[2];
 };
 
 
-class ParticleEffectBase {
+class ParticleEffect {
 public:
-	ParticleEffectBase();
-	friend class ParticleEffectInstance;
-protected:
+	ParticleEffect();
+
+	void load_particle_effect(std::string dir);
+	ParticleEffectInstance& instantiate(GameObject* owner);
+	unsigned short get_duration() const;
+	bool is_loop() const;
+private:
 	std::vector<Particle> particles;
+	unsigned short duration;
+	bool loop;
 };
 
 class ParticleEffectInstance {
 public:
 	ParticleEffectInstance();
-	void render();
-	friend class Particle;
-protected:
-	ParticleEffectBase* base;
+	ParticleEffectInstance(ParticleEffect* base, GameObject* owner);
+
+	void process();
+
+	void deactivate();
+
+	float get_frame() const;
+	bool is_flipped() const;
+private:
+	ParticleEffect* base;
+	GameObject* owner;
 	float frame;
-	bool flip;
+	bool flip;	
 };

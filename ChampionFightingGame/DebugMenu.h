@@ -23,6 +23,12 @@ public:
     DebugMenu();
     ~DebugMenu();
 
+    void process_main();
+    void render_main();
+
+    GameTexture tex;
+    GameObject go1, go2;
+
     std::vector<std::string> debug_messages;
 };
 

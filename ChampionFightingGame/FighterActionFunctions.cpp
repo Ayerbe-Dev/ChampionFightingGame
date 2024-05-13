@@ -2,7 +2,7 @@
 #include "ParamAccessor.h"
 
 bool Fighter::is_actionable() {
-	if (object_manager->world_rate == 0.0f && object_manager->real_time_id != id) {
+	if (object_manager->world_rate == 0.0f && object_manager->real_time_object != this) {
 		return false; //Disable all actions in super freeze no matter what
 	}
 	if (anim_kind == nullptr) {

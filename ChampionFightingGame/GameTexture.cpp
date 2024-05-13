@@ -1013,7 +1013,6 @@ void GameTexture::render_prepared() {
 			shader->set_vec3("f_colormod", colormod);
 		}
 		shader->set_float("f_alphamod", 1.0 - ((float)alpha.get_val() / 255.0));
-		glDepthMask(depth);
 		glDrawArrays(GL_QUADS, 0, 4);
 		glDepthMask(GL_TRUE);
 		glBindVertexArray(0);

@@ -23,16 +23,16 @@ void Projectile::load_projectile() {
 	load_projectile_status_scripts();
 	load_battle_object_status_scripts();
 	load_move_scripts();
-	load_sound_list();
+	load_sounds();
 
 	change_status(BATTLE_OBJECT_STATUS_NONE, false);
 }
 
-void Projectile::load_sound_list() {
-	sound_player.load_sound_list("vc", resource_dir);
-	sound_player.load_sound_list("vc", "resource/projectile/common");
-	sound_player.load_sound_list("se", resource_dir);
-	sound_player.load_sound_list("se", "resource/projectile/common");
+void Projectile::load_sounds() {
+	load_sound_list("vc", resource_dir);
+	load_sound_list("vc", "resource/projectile/common");
+	load_sound_list("se", resource_dir);
+	load_sound_list("se", "resource/projectile/common");
 }
 
 void Projectile::load_model_shader() {

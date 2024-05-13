@@ -232,10 +232,6 @@ void Battle::process_collisions() {
 							else {
 								stun_frames += fighter[i]->get_anim_length("wakeup_up");
 							}
-							std::cout << fighter[i]->get_anim_length("knockdown_start_up") << ", " //19 - Should be 20
-								<< fighter[i]->get_anim_length("knockdown_up") << ", " //26 - Should be 27
-								<< fighter[i]->get_anim_length("wakeup_up") << "\n"; //28 - Should be 29
-							std::cout << fighter[!i]->get_frames_until_actionable() << "\n";
 						} break;
 					}
 					stun_frame_string += std::to_string(stun_frames);

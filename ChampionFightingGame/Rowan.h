@@ -68,4 +68,12 @@ public:
 	void rowan_status_special_install();
 	void rowan_enter_status_special_install();
 	void rowan_exit_status_special_install();
+
+	void rowan_status_champion_super_start();
+	void rowan_enter_status_champion_super_start();
+	void rowan_exit_status_champion_super_start();
+
+	void rowan_status_champion_super();
+	void rowan_enter_status_champion_super();
+	void rowan_exit_status_champion_super();
 };

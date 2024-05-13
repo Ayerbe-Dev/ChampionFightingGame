@@ -73,7 +73,7 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 			this->pos.x = prev_pos.x;
 		}
 		else {
-			if (pos.x < that->pos.x) {
+			if (this->pos.x < that->pos.x) {
 				this->pos.x = that->pos.x - get_global_param_float(PARAM_FIGHTER, "max_distance");
 			}
 			else {

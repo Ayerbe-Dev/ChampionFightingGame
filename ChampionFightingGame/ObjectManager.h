@@ -34,7 +34,6 @@ public:
 
 	float world_frame;
 	float world_rate;
-	int real_time_id;
 
 	static ObjectManager* get_instance();
 	void destroy_instance();

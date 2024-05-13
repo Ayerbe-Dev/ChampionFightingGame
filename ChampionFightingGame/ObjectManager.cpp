@@ -4,7 +4,6 @@
 ObjectManager::ObjectManager() {
 	world_rate = 1.0;
 	world_frame = 0.0;
-	real_time_id = -1;
 	real_time_object = nullptr;
 	fighter[0] = nullptr;
 	fighter[1] = nullptr;

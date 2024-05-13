@@ -221,6 +221,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Anlst.cpp" />
     <ClCompile Include="Ayrbt.cpp" />
     <ClCompile Include="BattleObjectAnimationFunctions.cpp" />
+    <ClCompile Include="BattleObjectCameraFunctions.cpp" />
     <ClCompile Include="BattleObjectCollisionFunctions.cpp" />
     <ClCompile Include="BattleObjectDefiniteHitboxFunctions.cpp" />
     <ClCompile Include="BattleObjectPositionFunctions.cpp" />
@@ -268,13 +269,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="EricMoves.cpp" />
     <ClCompile Include="EricStatus.cpp" />
     <ClCompile Include="FighterMovelist.cpp" />
+    <ClCompile Include="GameObjectCameraFunctions.cpp" />
     <ClCompile Include="GameObjectProcessFuncs.cpp" />
     <ClCompile Include="InputSequence.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="FighterActionFunctions.cpp" />
     <ClCompile Include="FighterAnimationFunctions.cpp" />
     <ClCompile Include="Battle.cpp" />
-    <ClCompile Include="FighterCinematicFunctions.cpp" />
     <ClCompile Include="FighterFrameDataFunctions.cpp" />
     <ClCompile Include="FighterInterface.cpp" />
     <ClCompile Include="FighterScriptWrappers.cpp" />

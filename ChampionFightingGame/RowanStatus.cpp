@@ -111,7 +111,9 @@ void Rowan::rowan_status_special_slide() {
 			add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0.0, 0.0));
 		}
 		if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			if (frame >= get_param_int("special_slide_transition_frame")) {
+			int trans_frame = (object_flag[FIGHTER_FLAG_ATTACK_HIT] || object_flag[FIGHTER_FLAG_ATTACK_BLOCKED]) 
+				? get_param_int("special_slide_transition_frame_contact") : get_param_int("special_slide_transition_frame");
+			if (frame >= trans_frame) {
 				change_status(CHARA_ROWAN_STATUS_SPECIAL_SLIDE_FOLLOWUP);
 			}
 		}
@@ -335,6 +337,38 @@ void Rowan::rowan_exit_status_special_install() {
 
 }
 
+void Rowan::rowan_status_champion_super_start() {
+	if (object_flag[FIGHTER_FLAG_ATTACK_HIT] && !object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
+		change_status(CHARA_ROWAN_STATUS_CHAMPION_SUPER);
+	}
+	if (is_status_end()) {
+		return;
+	}
+}
+
+void Rowan::rowan_enter_status_champion_super_start() {
+	object_float[FIGHTER_FLOAT_SUPER_METER] = 0.0f;
+	change_anim("champion_super_start");
+}
+
+void Rowan::rowan_exit_status_champion_super_start() {
+
+}
+
+void Rowan::rowan_status_champion_super() {
+	if (is_status_end()) {
+		return;
+	}
+}
+
+void Rowan::rowan_enter_status_champion_super() {
+	change_anim("champion_super");
+}
+
+void Rowan::rowan_exit_status_champion_super() {
+
+}
+
 void Rowan::load_chara_status_scripts() {
 	SET_STATUS_FUNC(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, &Rowan::rowan_status_special_fireball_start);
 	SET_ENTRY_STATUS_FUNC(CHARA_ROWAN_STATUS_SPECIAL_FIREBALL_START, &Rowan::rowan_enter_status_special_fireball_start);
@@ -383,4 +417,12 @@ void Rowan::load_chara_status_scripts() {
 	SET_STATUS_FUNC(CHARA_ROWAN_STATUS_SPECIAL_INSTALL, &Rowan::rowan_status_special_install);
 	SET_ENTRY_STATUS_FUNC(CHARA_ROWAN_STATUS_SPECIAL_INSTALL, &Rowan::rowan_enter_status_special_install);
 	SET_EXIT_STATUS_FUNC(CHARA_ROWAN_STATUS_SPECIAL_INSTALL, &Rowan::rowan_exit_status_special_install);
+
+	SET_STATUS_FUNC(CHARA_ROWAN_STATUS_CHAMPION_SUPER_START, &Rowan::rowan_status_champion_super_start);
+	SET_ENTRY_STATUS_FUNC(CHARA_ROWAN_STATUS_CHAMPION_SUPER_START, &Rowan::rowan_enter_status_champion_super_start);
+	SET_EXIT_STATUS_FUNC(CHARA_ROWAN_STATUS_CHAMPION_SUPER_START, &Rowan::rowan_exit_status_champion_super_start);
+
+	SET_STATUS_FUNC(CHARA_ROWAN_STATUS_CHAMPION_SUPER, &Rowan::rowan_status_champion_super);
+	SET_ENTRY_STATUS_FUNC(CHARA_ROWAN_STATUS_CHAMPION_SUPER, &Rowan::rowan_enter_status_champion_super);
+	SET_EXIT_STATUS_FUNC(CHARA_ROWAN_STATUS_CHAMPION_SUPER, &Rowan::rowan_exit_status_champion_super);
 }

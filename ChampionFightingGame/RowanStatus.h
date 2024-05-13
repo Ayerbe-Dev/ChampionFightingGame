@@ -14,4 +14,6 @@ const int CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT = rowan_status.count();
 const int CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_FALL = rowan_status.count();
 const int CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT_LAND = rowan_status.count();
 const int CHARA_ROWAN_STATUS_SPECIAL_INSTALL = rowan_status.count();
+const int CHARA_ROWAN_STATUS_CHAMPION_SUPER_START = rowan_status.count();
+const int CHARA_ROWAN_STATUS_CHAMPION_SUPER = rowan_status.count();
 const int CHARA_ROWAN_STATUS_MAX = rowan_status.count();

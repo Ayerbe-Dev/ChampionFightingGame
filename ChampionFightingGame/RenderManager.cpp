@@ -31,6 +31,7 @@ RenderManager::RenderManager() {
 
 	glViewport(0, 0, window_width, window_height);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
@@ -259,17 +260,21 @@ void RenderManager::set_resolution(int width, int height) {
 }
 
 void RenderManager::reset_gl_environment() {
-	glDepthMask(GL_TRUE);
+	glDepthMask(GL_FALSE);
+	glDepthFunc(GL_LEQUAL);
+
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0x0);
+
 	glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0x00);
 
 	buffered_events.clear();
 	buffered_args.clear();
 	event_names.clear();
 
 	camera.set_fov(45.0);
+	camera.update_view();
 }
 
 void RenderManager::refresh_sdl_renderer() {

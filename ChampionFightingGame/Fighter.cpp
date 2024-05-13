@@ -115,19 +115,20 @@ void Fighter::process_post_projectiles() {
 }
 
 void Fighter::process_animate() {
+	frame_delta = 0.0f;
 	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
 		if (anim_kind != nullptr && !anim_kind->flag_no_hitlag_interp) {
-			frame += (0.2 / (float)(object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
+			frame_delta = (0.2 / (float)(object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES])) * object_manager->get_world_rate(this);
 		}
 	}
 	else if (!(object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]
 		&& object_int[FIGHTER_INT_STATUS_GROUP] == STATUS_GROUP_NONSTANDARD_HITSTUN)) {
-		float add_frame = rate * object_manager->get_world_rate(this);
-		frame += add_frame;
-		if (add_frame != 0.0) {
+		frame_delta = rate * object_manager->get_world_rate(this);
+		if (frame_delta != 0.0) {
 			object_int[FIGHTER_INT_EXTERNAL_FRAME]++;
 		}
 	}
+	frame += frame_delta;
 
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length) {
@@ -143,14 +144,6 @@ void Fighter::process_animate() {
 		else {
 			anim_end = false;
 		}
-	}
-
-	if (internal_facing_right != facing_right
-		&& is_actionable()
-		&& status_kind != FIGHTER_STATUS_JUMPSQUAT
-		&& status_kind != FIGHTER_STATUS_TURN
-		&& fighter_context == FIGHTER_CONTEXT_GROUND) {
-		change_status(FIGHTER_STATUS_TURN);
 	}
 }
 
@@ -214,6 +207,13 @@ void Fighter::process_pre_status() {
 	if (!object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
 		object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI] = object_float[FIGHTER_FLOAT_DAMAGE_SCALE];
 	}
+	if (internal_facing_right != facing_right
+		&& is_actionable()
+		&& status_kind != FIGHTER_STATUS_JUMPSQUAT
+		&& status_kind != FIGHTER_STATUS_TURN
+		&& fighter_context == FIGHTER_CONTEXT_GROUND) {
+		change_status(FIGHTER_STATUS_TURN);
+	}
 }
 
 void Fighter::process_status() {
@@ -232,10 +232,14 @@ void Fighter::process_status() {
 void Fighter::process_post_status() {
 	Fighter* that = object_manager->fighter[!id];
 
-	object_flag[FIGHTER_FLAG_ENDED_HITSTUN] = ((object_int[FIGHTER_INT_PREV_STATUS_GROUP] 
-		& STATUS_GROUP_HITSTUN) && !(object_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_HITSTUN));
+	object_flag[FIGHTER_FLAG_ENDED_HITSTUN] = object_flag[FIGHTER_FLAG_HITSTUN_PARRY] 
+		|| ((object_int[FIGHTER_INT_PREV_STATUS_GROUP] & STATUS_GROUP_HITSTUN) 
+			&& !(object_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_HITSTUN));
+	object_flag[FIGHTER_FLAG_HITSTUN_PARRY] = false;
 
 	if (object_flag[FIGHTER_FLAG_ENDED_HITSTUN]) {
+		object_flag[FIGHTER_FLAG_HIT_BY_EX_SUPER] = false;
+		object_flag[FIGHTER_FLAG_HIT_BY_CHAMPION_SUPER] = false;
 		that->object_int[FIGHTER_INT_COMBO_COUNT] = 0;
 		that->object_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING] = 0.0;
 		object_int[FIGHTER_INT_JUGGLE_VALUE] = 0;

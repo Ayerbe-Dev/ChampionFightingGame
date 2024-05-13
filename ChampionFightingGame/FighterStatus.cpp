@@ -502,7 +502,7 @@ void Fighter::enter_status_turn() {
 	int dash_b = object_int[FIGHTER_INT_44_STEP];
 	object_int[FIGHTER_INT_66_STEP] = 0;
 	object_int[FIGHTER_INT_44_STEP] = 0;
-	if (common_ground_status_act()) { //Rare footage of recursive change_status calls
+	if (common_ground_status_act()) {
 		return;
 	}
 	object_int[FIGHTER_INT_66_STEP] = dash_b;
@@ -1149,7 +1149,6 @@ void Fighter::exit_status_crumple() {
 }
 
 void Fighter::status_knockdown_start() {
-	std::cout << "P2 frame: " << frame << "\n";
 	if (fighter_context == FIGHTER_CONTEXT_AIR && !object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]) {
 		pos.y = clampf(0.0f, pos.y - object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], pos.y);
 	}
@@ -1232,7 +1231,6 @@ void Fighter::status_knockdown() {
 }
 
 void Fighter::enter_status_knockdown() {
-	std::cout << "Entered knockdown\n";
 	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_NONSTANDARD_HITSTUN;
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0;
 	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0;
@@ -1259,7 +1257,6 @@ void Fighter::status_wakeup() {
 }
 
 void Fighter::enter_status_wakeup() {
-	std::cout << "Entered wakeup\n";
 	change_context(FIGHTER_CONTEXT_GROUND);
 	if (object_flag[FIGHTER_FLAG_DOWN_FACE_DOWN]) {
 		switch (object_int[FIGHTER_INT_WAKEUP_TYPE]) {
@@ -1407,7 +1404,7 @@ void Fighter::exit_status_launch_parry_start() {
 
 void Fighter::status_parry() {
 	player->controller.set_hold_buffer(true);
-	if (beginning_hitlag(1) || ending_hitlag(2)) {
+	if (beginning_hitlag(2) || ending_hitlag(2)) {
 		frame++;
 	}
 	if (fighter_context == FIGHTER_CONTEXT_GROUND && object_int[FIGHTER_INT_PARRY_HEIGHT] == PARRY_HEIGHT_LOW) {

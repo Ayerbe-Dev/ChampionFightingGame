@@ -319,9 +319,6 @@
     <ClCompile Include="CameraAnim.cpp">
       <Filter>2. Code Files\Engine\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="FighterCinematicFunctions.cpp">
-      <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterFunctions</Filter>
-    </ClCompile>
     <ClCompile Include="ProjectileScriptFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Projectile\ProjectileFunctions</Filter>
     </ClCompile>
@@ -544,9 +541,6 @@
     <ClCompile Include="TimeFuncs.cpp">
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
-      <Filter>2. Code Files\Engine\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectProcessFuncs.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
     </ClCompile>
@@ -612,6 +606,15 @@
     </ClCompile>
     <ClCompile Include="BattleObjectStatus.cpp">
       <Filter>2. Code Files\GameObject\BattleObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundPlayer.cpp">
+      <Filter>2. Code Files\GameObject\ObjectComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectCameraFunctions.cpp">
+      <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleObjectCameraFunctions.cpp">
+      <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1248,9 +1251,6 @@
     <ClInclude Include="TimeFuncs.h">
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="SoundPlayer.h">
-      <Filter>1. Header Files\Engine\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>1. Header Files\GameObject</Filter>
     </ClInclude>
@@ -1415,6 +1415,9 @@
     </ClInclude>
     <ClInclude Include="CompileTimeCounter.h">
       <Filter>1. Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPlayer.h">
+      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

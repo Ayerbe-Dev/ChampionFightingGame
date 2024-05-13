@@ -1,7 +1,7 @@
 #include "GameObject.h"
 #include "SaveManager.h"
 #include "WindowConstants.h"
-
+/*
 void GameObject::play_sound(std::string sound, float volume_mod) {
 	sound_player.play_sound(sound, volume_mod);
 }
@@ -57,4 +57,4 @@ void GameObject::unload_sound(std::string name) {
 
 void GameObject::unload_all_sounds() {
 	sound_player.unload_all_sounds();
-}
+}*/

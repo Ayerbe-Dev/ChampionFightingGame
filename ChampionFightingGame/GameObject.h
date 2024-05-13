@@ -13,7 +13,7 @@ class EffectManager;
 class ShaderManager;
 class ObjectManager;
 
-class GameObject {
+class GameObject : public SoundPlayer {
 public:
 	GameObject();
 	GameObject(GameObject& other);
@@ -23,6 +23,8 @@ public:
 	~GameObject();
 
 	//Process Funcs
+
+	void process_animate();
 	void process_render_pos();
 
 	//Loading Funcs
@@ -60,24 +62,20 @@ public:
 	void set_rate(float rate);
 	void set_frame(float frame);
 	bool change_anim(std::string animation_name, float rate, float frame);
-	void animate();
 
-	//Sound Functions
+	//Camera Funcs
 
-	void play_sound(std::string sound, float volume_mod);
-	void pause_sound(std::string sound);
-	void pause_sound_all();
-	void resume_sound(std::string sound);
-	void resume_sound_all();
-	void stop_sound(std::string sound);
-	void stop_sound_all();
-	void play_reserved_sound(std::string sound, float volume_mod);
-	void pause_reserved_sound();
-	void resume_reserved_sound();
-	void stop_reserved_sound();
-	void load_sound(std::string name, std::string dir);
-	void unload_sound(std::string name);
-	void unload_all_sounds();
+	void start_cinematic_sequence(std::string anim_kind, float anim_rate, float anim_frame, float world_brightness, bool dim_self, float world_rate);
+	void stop_cinematic_sequence();
+
+	void play_camera_anim(std::string anim_kind, float rate, float frame);
+	void stop_camera_anim();
+
+	void slow_world(float world_rate);
+	void reset_world_rate();
+
+	void dim_world(float world_brightness, bool dim_self);
+	void reset_world_brightness();
 
 	//Effect Functions
 
@@ -105,15 +103,15 @@ public:
 	void unload_effect(std::string name);
 	void unload_all_effects();
 
-	RenderManager* render_manager;
-	SoundManager* sound_manager;
 	EffectManager* effect_manager;
+	RenderManager* render_manager;
 	ShaderManager* shader_manager;
 	ObjectManager* object_manager;
 
 	std::string resource_dir;
 
 	glm::vec3 pos;
+	glm::vec3 prev_pos;
 	glm::vec3 render_pos;
 	glm::vec3 rot;
 	glm::vec3 scale;
@@ -125,12 +123,12 @@ public:
 	Animation* prev_anim_kind;
 	glm::vec3 prev_anim_offset;
 	float frame;
+	float frame_delta;
 	float rate;
 	float prev_anim_rate;
 	float prev_anim_frame;
 	bool anim_end;
 
-	SoundPlayer sound_player;
 	int id_effect;
 
 	Shader* shader;

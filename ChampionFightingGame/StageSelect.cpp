@@ -157,7 +157,7 @@ StageSelect::StageSelect() {
 	}
 	prev_selection = selection;
 
-	render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+	render_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 	stages[selection].demo_model.model.load_textures();
 	for (size_t i = 0, max = stages[selection].lights.size(); i < max; i++) {
 		render_manager->add_light(&stages[selection].lights[i]);
@@ -301,7 +301,7 @@ void StageSelect::process_main() {
 		}
 		prev_selection = selection;
 		if (render_manager->camera.get_anim_name() == "selected" && render_manager->camera.anim_end) {
-			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+			render_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 		}
 		render_manager->camera.follow_anim();
 	}
@@ -355,7 +355,7 @@ void StageSelect::event_up_press() {
 	if (!selected) {
 		if (selection >= num_slots_per_row) {
 			selection -= num_slots_per_row;
-			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+			render_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -368,7 +368,7 @@ void StageSelect::event_down_press() {
 	if (!selected) {
 		if (selection + num_slots_per_row < stages.size()) {
 			selection += num_slots_per_row;
-			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+			render_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -381,7 +381,7 @@ void StageSelect::event_left_press() {
 	if (!selected) {
 		if (selection != 0 && selection != num_slots_per_row) {
 			selection--;
-			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+			render_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -394,7 +394,7 @@ void StageSelect::event_right_press() {
 	if (!selected) {
 		if (selection != num_slots_per_row - 1 && selection != get_menu_object("Stage Select").get_activity_group("Stage Slots").num_children() - 1) {
 			selection++;
-			render_manager->camera.play_camera_anim(-1, &stages[selection].demo_anim, 1.0, 0.0);
+			render_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 		}
 	}
 	else {
@@ -407,7 +407,7 @@ void StageSelect::event_select_press() {
 	if (!selected) {
 		RenderManager* render_manager = RenderManager::get_instance();
 		render_manager->camera.frame = 0.0;
-		render_manager->camera.play_camera_anim(-1, &stages[selection].selected_anim, 1.0, 0.0);
+		render_manager->camera.play_camera_anim(&stages[selection].selected_anim, 1.0, 0.0);
 		selected = true;
 	}
 	else {
@@ -421,7 +421,7 @@ void StageSelect::event_back_press() {
 		update_state(GAME_STATE_MENU);
 	}
 	else {
-		render_manager->camera.play_camera_anim(-1, &stages[selection].selected_anim, -1.0, 0.0);
+		render_manager->camera.play_camera_anim(&stages[selection].selected_anim, -1.0, 0.0);
 		selected = false;
 	}
 }

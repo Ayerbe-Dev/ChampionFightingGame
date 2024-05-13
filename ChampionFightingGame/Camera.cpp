@@ -9,36 +9,46 @@
 #include "utils.h"
 
 Camera::Camera() {
-	base_pos = glm::vec3(0.0, 8.0, 55.0);
-	pos_target.set_persistence(true);
 	pos = base_pos;
 	prev_pos = glm::vec3(0.0);
-	flip_matrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, -1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	);
-	fov = 45.0;
+	pos_x_interpolator = base_pos.x;
+	pos_x_interpolator.set_persistence(true);
+
 	yaw = 0.0;
 	pitch = 3.0;
 	roll = 0.0;
-	following_players = true;
-	anim_end = false;
-	camera_locked = false;
+	fov = 45.0;
+
+	front = normalize(glm::vec3(
+		sin(glm::radians(yaw)) * cos(glm::radians(pitch)),
+		sin(glm::radians(pitch)),
+		-cos(glm::radians(yaw)) * cos(glm::radians(pitch))
+	));
+
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
-	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_FACTOR, 0.1f, 1000.0f);
+	aim = pos + front;
+
+	projection_matrix = glm::perspective(glm::radians(fov), WINDOW_FACTOR, 0.1f, 1000.0f);
 	view_matrix = glm::mat4(1.0);
 	camera_matrix = glm::mat4(1.0);
-	anim_kind = nullptr;
+
 	for (int i = 0; i < 2; i++) {
 		fighter[i] = nullptr;
 	}
 	stage = nullptr;
-	follow_id = -1;
-	frame = 0.0;
-	rate = 1.0;
+
+	anim_kind = nullptr;
+	frame = 0.0f;
+	rate = 1.0f;
+
+	target = nullptr;
+	target_base_pos = glm::vec3(0.0f);
+	target_facing_dir = 1.0f;
+	target_end_cinematic_on_anim_end = false;
+
+	camera_locked = false;
+	anim_end = false;
 }
 
 void Camera::camera_main() {
@@ -46,7 +56,7 @@ void Camera::camera_main() {
 	if (anim_kind != nullptr) {
 		follow_anim();
 	}
-	else if (following_players) {
+	else {
 		follow_players();
 	}
 }
@@ -59,26 +69,98 @@ void Camera::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 	camera_anims.push_back(CameraAnim(anim_kind, anim_dir));
 }
 
-void Camera::play_camera_anim(int follow_id, std::string anim_kind, float rate, float frame) {
+void Camera::play_camera_anim(std::string anim_kind, float rate, float frame) {
 	if (!camera_anim_map.contains(anim_kind)) {
 		return;
 	}
 
-	this->follow_id = follow_id;
-	following_players = false;
-	anim_end = false;
+	this->anim_end = false;
 	this->frame = frame;
 	this->rate = rate;
 	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
+
+	this->target = nullptr;
+	this->target_base_pos = glm::vec3(0.0f);
+	this->target_facing_dir = 1.0f;
+	this->target_end_cinematic_on_anim_end = false;
 }
 
-void Camera::play_camera_anim(int follow_id, CameraAnim* anim_kind, float rate, float frame) {
-	this->follow_id = follow_id;
-	following_players = false;
-	anim_end = false;
+void Camera::play_camera_anim(CameraAnim* anim_kind, float rate, float frame) {
+	this->anim_end = false;
 	this->frame = frame;
 	this->rate = rate;
 	this->anim_kind = anim_kind;
+
+	this->target = nullptr;
+	this->target_base_pos = glm::vec3(0.0f);
+	this->target_facing_dir = 1.0f;
+	this->target_end_cinematic_on_anim_end = false;
+}
+
+void Camera::play_camera_anim(GameObject* target, std::string anim_kind, float rate, float frame, bool end_cinematic_on_anim_end) {
+	if (!camera_anim_map.contains(anim_kind)) {
+		return;
+	}
+
+	this->anim_end = false;
+	this->frame = frame;
+	this->rate = rate;
+	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
+
+	this->target = target;
+	this->target_base_pos = target->pos / scale_vec;
+	this->target_facing_dir = 1.0f;
+	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
+}
+
+void Camera::play_camera_anim(GameObject* target, CameraAnim* anim_kind, float rate, float frame, bool end_cinematic_on_anim_end) {
+	this->anim_end = false;
+	this->frame = frame;
+	this->rate = rate;
+	this->anim_kind = anim_kind;
+
+	this->target = target;
+	this->target_base_pos = target->pos / scale_vec;
+	this->target_facing_dir = 1.0f;
+	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
+}
+
+void Camera::play_camera_anim(BattleObject* target, std::string anim_kind, float rate, float frame, bool end_cinematic_on_anim_end) {
+	if (!camera_anim_map.contains(anim_kind)) {
+		return;
+	}
+
+	this->anim_end = false;
+	this->frame = frame;
+	this->rate = rate;
+	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
+
+	this->target = target;
+	this->target_base_pos = target->pos / scale_vec;
+	this->target_facing_dir = target->facing_dir;
+	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
+}
+
+void Camera::play_camera_anim(BattleObject* target, CameraAnim* anim_kind, float rate, float frame, bool end_cinematic_on_anim_end) {
+	this->anim_end = false;
+	this->frame = frame;
+	this->rate = rate;
+	this->anim_kind = anim_kind;
+
+	this->target = target;
+	this->target_base_pos = target->pos / scale_vec;
+	this->target_facing_dir = target->facing_dir;
+	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
+}
+
+void Camera::stop_camera_anim() {
+	target = nullptr;
+	target_base_pos = glm::vec3(0.0f);
+	target_facing_dir = 1.0f;
+	target_end_cinematic_on_anim_end = false;
+	anim_kind = nullptr;
+	rate = 1.0f;
+	frame = 0.0f;
 }
 
 void Camera::unload_camera_anims() {
@@ -86,69 +168,96 @@ void Camera::unload_camera_anims() {
 	camera_anim_map.clear();
 }
 
-void Camera::add_pos(float x, float y, float z, float speed) {
-	if (speed == 0.0) {
-		speed = cam_speed;
-	}
-	pos += front * z * speed;
-	pos += glm::normalize(glm::cross(front, up)) * x * speed;
-
-	pos.y += y * speed;
+void Camera::set_pos(float x, float y, float z) {
+	pos.x = x;
+	pos.y = y;
+	pos.z = z;
+	calc_aim_from_ypr();
 	update_view();
 }
 
-void Camera::adjust_view(float x, float y, float z, float speed) {
-	if (speed == 0.0) {
-		speed = cam_sens;
-	}
+void Camera::set_rot(float x, float y, float z) {
+	yaw = x;
+	pitch = y;
+	roll = z;
+	calc_aim_from_ypr();
+	update_view();
+}
 
-	yaw += x * speed;
-	pitch += y * speed;
-	roll += z * speed;
+void Camera::add_pos(float x, float y, float z) {
+	pos += front * z;
+	pos += glm::normalize(glm::cross(front, up)) * x;
+
+	pos.y += y;
+	calc_aim_from_ypr();
+	update_view();
+}
+
+void Camera::add_rot(float x, float y, float z) {
+	yaw += x;
+	pitch += y;
+	roll += z;
+	calc_aim_from_ypr();
 	update_view();
 }
 
 void Camera::set_fov(float fov) {
-	RenderManager* render_manager = RenderManager::get_instance();
 	this->fov = fov;
-	projection_matrix = glm::perspective(glm::radians(fov), (float)WINDOW_FACTOR, 0.1f, 1000.0f);
+	projection_matrix = glm::perspective(glm::radians(fov), WINDOW_FACTOR, 0.1f, 1000.0f);
 	update_view();
 }
 
 void Camera::reset_camera() {
-	pos_target = base_pos.x;
 	pos = base_pos;
 	prev_pos = base_pos;
-	set_fov(45.0);
+	pos_x_interpolator = base_pos.x;
+
 	yaw = 0.0;
 	pitch = 3.0;
 	roll = 0.0;
-	following_players = true;
-	anim_kind = nullptr;
-	anim_end = false;
-	camera_locked = false;
-	follow_id = -1;
-	frame = 0.0;
-	rate = 1.0;
+	fov = 45.0;
+
+	projection_matrix = glm::perspective(glm::radians(fov), WINDOW_FACTOR, 0.1f, 1000.0f);
 	view_matrix = glm::mat4(1.0);
 	camera_matrix = glm::mat4(1.0);
+
+	anim_kind = nullptr;
+	frame = 0.0;
+	rate = 1.0;
+
+	camera_locked = false;
+	anim_end = false;
+	calc_aim_from_ypr();
 	update_view();
 }
 
-void Camera::update_view() {
-	glm::vec3 new_front;
-	new_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	new_front.y = sin(glm::radians(pitch));
-	new_front.z = -cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front = normalize(new_front);
+void Camera::calc_aim_from_ypr() {
+	front = normalize(glm::vec3(
+		sin(glm::radians(yaw)) * cos(glm::radians(pitch)),
+		sin(glm::radians(pitch)), 
+		-cos(glm::radians(yaw)) * cos(glm::radians(pitch))
+	));
 
 	right = normalize(cross(front, world_up));
 	up = normalize(cross(right, front));
 
-	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(roll), front);
-	up = glm::mat3(roll_mat) * up;
+	if (pitch < -90.0f || pitch > 90.0f) {
+		up = glm::mat3(glm::rotate(glm::mat4(1.0f), glm::radians(roll + 180.0f), front)) * up;
+	}
+	else {
+		up = glm::mat3(glm::rotate(glm::mat4(1.0f), glm::radians(roll), front)) * up;
+	}
+	aim = pos + front;
+}
 
-	view_matrix = lookAt(pos, pos + front, up);
+void Camera::calc_ypr_from_aim() {
+	front = normalize(aim - pos);
+	pitch = glm::degrees(glm::asin(front.y));
+	yaw = glm::degrees(glm::asin(front.x / glm::cos(glm::asin(front.y))));
+}
+
+void Camera::update_view() {
+	view_matrix = lookAt(pos, aim, up);
 	camera_matrix = projection_matrix * view_matrix;
 	RenderManager::get_instance()->update_shader_cams();
 	alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
@@ -162,8 +271,8 @@ void Camera::follow_players() {
 	float x_scaler = WINDOW_WIDTH / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 	float y_scaler = WINDOW_HEIGHT / (100 * std::max(fighter[0]->scale.x, fighter[1]->scale.x));
 
-	pos_target.set_target_val(clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0f, stage->camera_bounds.y) / x_scaler, 10);
-	pos.x = pos_target;
+	pos_x_interpolator.set_target_val(clampf(stage->camera_bounds.x, (fighter[0]->pos.x + fighter[1]->pos.x) / 2.0f, stage->camera_bounds.y) / x_scaler, 10);
+	pos.x = pos_x_interpolator;
 	pos.y = clampf(base_pos.y, std::max(fighter[0]->pos.y, fighter[1]->pos.y) / y_scaler, 100.0f);
 	pos.z = base_pos.z;
 
@@ -173,6 +282,7 @@ void Camera::follow_players() {
 	fov = 45.0;
 
 	if (prev_pos != pos) {
+		calc_aim_from_ypr();
 		update_view();
 	}
 	prev_pos = pos;
@@ -185,31 +295,44 @@ void Camera::follow_anim() {
 	keyframe.pos_key += (frame - (int)frame) * (next_keyframe.pos_key - keyframe.pos_key);
 	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
 
-	pos = keyframe.pos_key;
-	yaw = keyframe.rot_key.x;
-	pitch = keyframe.rot_key.y;
-	roll = keyframe.rot_key.z;
+	switch (anim_kind->anim_mode) {
+		case (CAMERA_ANIM_MODE_STAGE): {
+			pos = keyframe.pos_key;
+			yaw = keyframe.rot_key.x;
+			pitch = keyframe.rot_key.y;
+			roll = keyframe.rot_key.z;
 
-	if (follow_id != -1) {
-		pos.x *= fighter[follow_id]->facing_dir;
-		yaw *= fighter[follow_id]->facing_dir;
+			pos.x *= target_facing_dir;
+			yaw *= target_facing_dir;
+			pos += target_base_pos;
 
-		RenderManager* render_manager = RenderManager::get_instance();
+			calc_aim_from_ypr();
+		} break;
+		case (CAMERA_ANIM_MODE_FIGHTER): {
+			pos = keyframe.pos_key;
+			aim = keyframe.rot_key;
 
-		pos += fighter[follow_id]->pos / glm::vec3(
-			WINDOW_WIDTH / (100.0f * fighter[follow_id]->scale.x),
-			WINDOW_HEIGHT / (100.0f * fighter[follow_id]->scale.y),
-			WINDOW_DEPTH / (100.0f * fighter[follow_id]->scale.z)
-		);
+			pos.x *= target_facing_dir;
+			aim.x *= target_facing_dir;
+			pos += target_base_pos;
+			aim += target_base_pos;
+
+			calc_ypr_from_aim();
+		} break;
+		default: {
+
+		} break;
 	}
+	update_view();
 
 	prev_pos = pos;
-
-	update_view();
 	frame += rate;
 	if (frame >= anim_kind->length) {
-		if (follow_id != -1) {
-			fighter[follow_id]->stop_camera_anim();
+		if (target != nullptr) {
+			if (target_end_cinematic_on_anim_end) {
+				target->stop_cinematic_sequence();
+			}
+			stop_camera_anim();
 		}
 		else {
 			frame = 0.0;
@@ -217,8 +340,11 @@ void Camera::follow_anim() {
 		anim_end = true;
 	}
 	else if (frame < 0.0) {
-		if (follow_id != -1) {
-			fighter[follow_id]->stop_camera_anim();
+		if (target != nullptr) {
+			if (target_end_cinematic_on_anim_end) {
+				target->stop_cinematic_sequence();
+			}
+			stop_camera_anim();
 		}
 		else {
 			frame = anim_kind->length - 1;

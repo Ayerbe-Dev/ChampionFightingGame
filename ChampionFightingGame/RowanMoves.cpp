@@ -82,7 +82,10 @@ void Rowan::load_move_list() {
 		CHARA_ROWAN_STATUS_SPECIAL_INSTALL, INPUT_KIND_22, BUTTON_3P_BIT, 1, 0,
 		SPECIAL_LEVEL_SETTING_N, false
 	);
-
+	move_list[FIGHTER_CONTEXT_GROUND].add_movelist_entry("champion_super",
+		CHARA_ROWAN_STATUS_CHAMPION_SUPER_START, INPUT_KIND_236236, BUTTON_3P_BIT, 1, 0,
+		SPECIAL_LEVEL_SETTING_N, false, VBP(), 600.0f, 600.0f, true
+	);
 
 
 	move_list[FIGHTER_CONTEXT_GROUND].add_movelist_entry("grab_start", FIGHTER_STATUS_GRAB_START,
@@ -1422,6 +1425,34 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(24, [this]() {
 			push_function(&Fighter::SET_FLAG, CHARA_ROWAN_FLAG_INSTALL_ACTIVE, true);
+		});
+	});
+	script("champion_super_start", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::START_CINEMATIC_SEQUENCE, "champion_super_start", 1.0f, 0.0f, 0.8f, false, 0.0f);
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+		});
+		execute_frame(75, [this]() {
+			push_function(&Fighter::STOP_CINEMATIC_SEQUENCE);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0),
+			glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+			HitResult().damage(30).scale(0).hit(1, 179).block(8, 17).j_min(5).j_max(4)
+			.anims("heavy_mid", "heavy_mid", "mid", "mid"), HIT_STATUS_NORMAL,
+				HitMove().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+				HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
+				DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
+			);
+		});
+		execute_wait(2, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+		});
+	});
+	script("champion_super", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::PLAY_CAMERA_ANIM, "champion_super", 1.0f, 0.0f);
+		});
+		execute_frame(179, [this]() {
+			push_function(&Fighter::STOP_CAMERA_ANIM);
 		});
 	});
 	script("throw_tech", [this]() {

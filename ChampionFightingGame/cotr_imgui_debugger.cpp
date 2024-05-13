@@ -580,35 +580,58 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (ImGui::TreeNode("Camera")) {
-			bool update = false;
+			bool update_view = false;
+			bool update_aim = false;
+			bool update_ypr = false;
 			if (ImGui::DragFloat("Pos X", &render_manager->camera.pos[0], 0.01)) {
-				update = true;
+				update_aim = true;
+				update_view = true;
 			}
 			if (ImGui::DragFloat("Pos Y", &render_manager->camera.pos[1], 0.01)) {
-				update = true;
+				update_aim = true;
+				update_view = true;
 			}
 			if (ImGui::DragFloat("Pos Z", &render_manager->camera.pos[2], 0.01)) {
-				update = true;
+				update_aim = true;
+				update_view = true;
 			}
 			if (ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f)) {
-				update = true;
+				update_aim = true;
+				update_view = true;
 			}
 			if (ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f)) {
-				update = true;
+				update_aim = true;
+				update_view = true;
 			}
 			if (ImGui::SliderFloat("Roll", &render_manager->camera.roll, -180.0f, 180.0f)) {
-				update = true;
+				update_aim = true;
+				update_view = true;
 			}
-			if (ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, render_manager->camera.max_fov)) {
-				update = true;
+			if (ImGui::DragFloat("Aim X", &render_manager->camera.aim[0], 0.01)) {
+				update_ypr = true;
+				update_view = true;
 			}
-			if (ImGui::Checkbox("Auto Camera", &render_manager->camera.following_players)) {
-				update = true;
+			if (ImGui::DragFloat("Aim Y", &render_manager->camera.aim[1], 0.01)) {
+				update_ypr = true;
+				update_view = true;
+			}
+			if (ImGui::DragFloat("Aim Z", &render_manager->camera.aim[2], 0.01)) {
+				update_ypr = true;
+				update_view = true;
+			}
+			if (ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, 45.0f)) {
+				update_view = true;
 			}
 			if (ImGui::Checkbox("Camera Locked", &render_manager->camera.camera_locked)) {
-				update = true;
+				update_view = true;
 			}
-			if (update) {
+			if (update_aim) {
+				render_manager->camera.calc_aim_from_ypr();
+			}
+			if (update_ypr) {
+				render_manager->camera.calc_ypr_from_aim();
+			}
+			if (update_view) {
 				render_manager->camera.update_view();
 			}
 			ImGui::TreePop();

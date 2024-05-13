@@ -7,7 +7,7 @@ public:
 	SoundPlayer();
 	~SoundPlayer();
 
-	void init(glm::vec3 *object_pos);
+	void init(glm::vec3 *sound_pos);
 	bool is_sound_end();
 
 	void process_sound();
@@ -29,11 +29,11 @@ public:
 	void unload_sound(std::string name);
 	void unload_all_sounds();
 private:
-	SoundManager* sound_manager;
 	std::map<std::string, Sound> sound_data;
 	std::list<SoundInstance> sound_instances;
 	SoundInstance reserved_sound;
 	bool sound_end;
-
-	glm::vec3 *object_pos;
+protected:
+	SoundManager* sound_manager;
+	glm::vec3 *sound_pos;
 };

@@ -105,6 +105,11 @@ public:
 	std::string get_anim_broad();
 	int get_anim_length(std::string anim_name);
 
+	//Camera Funcs
+
+	void play_camera_anim(std::string anim_kind, float rate, float frame);
+	void start_cinematic_sequence(std::string anim_kind, float anim_rate, float anim_frame, float world_brightness, bool dim_self, float world_rate);
+
 	//Param Funcs
 
 	int get_param_int(std::string param);
@@ -316,7 +321,6 @@ public:
 	BattleObjectType object_type;
 	bool has_model;
 
-	glm::vec3 prev_pos;
 	float facing_dir;
 	float internal_facing_dir;
 	bool facing_right;

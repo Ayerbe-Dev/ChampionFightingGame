@@ -402,7 +402,7 @@ void Battle::load_ui() {
 				push_menu_process_function([this](MenuObject* object) {	
 					float super = *(float*)object->ptr_var("super");
 					if (super != object->float_var("max_super")) {
-						object->set_active_sibling("Super AG");
+						object->set_active_sibling("SuperAG");
 						return;
 					}
 					object->get_texture("Super Full").next_sprite();					
@@ -438,7 +438,7 @@ void Battle::load_ui() {
 				push_menu_process_function([this](MenuObject* object) {
 					float super = *(float*)object->ptr_var("super");
 					if (super != object->float_var("max_super")) {
-						object->set_active_sibling("Super AG");
+						object->set_active_sibling("SuperAG");
 						return;
 					}
 					object->get_texture("Super Full").next_sprite();
@@ -685,7 +685,10 @@ void Battle::pre_event_process_main() {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		sound_manager->pause_all_sounds();
 		sound_manager->pause_all_reserved_sounds();
-		camera->pos_target.process();
+		if (camera->anim_kind == nullptr || camera->anim_kind->anim_mode == CAMERA_ANIM_MODE_STAGE) {
+			camera->pos_x_interpolator.process();
+			camera->calc_aim_from_ypr();
+		}
 		camera->update_view();
 		frame_advance = false;
 	}
@@ -820,7 +823,7 @@ void Battle::process_ko() {
 	int& p2_wins = p2_round.int_var("Wins");
 
 	if (execute_if("Init", 1, true)) {
-		if (object_manager->real_time_id == -1) {
+		if (object_manager->real_time_object == nullptr) {
 			object_manager->set_world_rate(nullptr, 0.0067);
 		}
 		for (int i = 0; i < 2; i++) {
@@ -853,18 +856,16 @@ void Battle::process_ko() {
 						p1_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_PERFECT);
 				}
-				/*
-				else if (p1 did ex super) {
+				else if (fighter[1]->object_flag[FIGHTER_FLAG_HIT_BY_EX_SUPER]) {
 					p1_round.get_texture("Round Win" + std::to_string(
 						p1_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_EX_SUPER);
 				}
-				else if (p1 did champion super) {
+				else if (fighter[1]->object_flag[FIGHTER_FLAG_HIT_BY_CHAMPION_SUPER]) {
 					p1_round.get_texture("Round Win" + std::to_string(
 						p1_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_CHAMPION_SUPER);
 				}
-				*/
 				else {
 					p1_round.get_texture("Round Win" + std::to_string(
 						p1_round.int_var("Wins") + 1)
@@ -876,18 +877,16 @@ void Battle::process_ko() {
 						p2_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_PERFECT);
 				}
-				/*
-				else if (p2 did ex super) {
+				else if (fighter[0]->object_flag[FIGHTER_FLAG_HIT_BY_EX_SUPER]) {
 					p2_round.get_texture("Round Win" + std::to_string(
 						p2_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_EX_SUPER);
 				}
-				else if (p2 did champion super) {
+				else if (fighter[0]->object_flag[FIGHTER_FLAG_HIT_BY_CHAMPION_SUPER]) {
 					p2_round.get_texture("Round Win" + std::to_string(
 						p2_round.int_var("Wins") + 1)
 					).set_sprite(ROUND_ICON_CHAMPION_SUPER);
 				}
-				*/
 				else {
 					p2_round.get_texture("Round Win" + std::to_string(
 						p2_round.int_var("Wins") + 1)
@@ -1332,10 +1331,7 @@ void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
 	render_manager->execute_buffered_events();
 
-	//Uncomment the following line if the Rowan model ever becomes capable of rendering 
-	//his sleeves with culling enabled
-//	glEnable(GL_CULL_FACE);
-
+	glEnable(GL_CULL_FACE);
 	glDepthMask(GL_TRUE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
@@ -1346,6 +1342,7 @@ void Battle::render_world() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glCullFace(GL_FRONT);
+	stage.render_shadow(); 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
@@ -1359,12 +1356,15 @@ void Battle::render_world() {
 	//COLOR PASS
 
 	render_manager->g_buffer.use();
-	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 
+	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	render_manager->shadow_map.bind_textures();
 
+	glDisable(GL_CULL_FACE); //Fighter models are currently simple enough that it's not
+	//uncommon to see both sides of a vertex, such as looking at Rowan's sleeves. In the future
+	//we will leave culling on for fighters
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
@@ -1373,12 +1373,20 @@ void Battle::render_world() {
 			}
 		}
 	}
+	glEnable(GL_CULL_FACE); //For now though we just re-enable culling for the stage
 	stage.render();
 
 	//EFFECT RENDERING
 
-	glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE); //Currently we disable culling on all particle effects since they 
+	//are single textures that can be rotated. In the future particle effects will also be able
+	//to be models, so we'll start by rendering the model particle effects before turning off
+	//culling and rendering the texture particle effects.
+
+	glDepthMask(GL_FALSE); //Particles don't write to the depth buffer so as not to have the
+	//invisible part of one particle overwrite the visible part of another.
 	EffectManager::get_instance()->render();
+	glDepthMask(GL_TRUE);
 
 	//OUTLINE PASS
 
@@ -1397,8 +1405,8 @@ void Battle::render_world() {
 	glStencilMask(0x00);
 	stage.render();
 	glClear(GL_COLOR_BUFFER_BIT);
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glDepthMask(GL_FALSE);
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_outline();
@@ -1408,7 +1416,6 @@ void Battle::render_world() {
 			}
 		}
 	}
-
 	glDepthMask(GL_TRUE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	
@@ -1581,12 +1588,12 @@ void Battle::event_frame_pause_press() {
 	if (game_context == GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE) {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		if (frame_pause) {
-			camera->pos_target.set_pause(false);
+			camera->pos_x_interpolator.set_pause(false);
 			sound_manager->resume_all_sounds();
 			sound_manager->resume_all_reserved_sounds();
 		}
 		else {
-			camera->pos_target.set_pause(true);
+			camera->pos_x_interpolator.set_pause(true);
 			sound_manager->pause_all_sounds();
 			sound_manager->pause_all_reserved_sounds();
 		}

@@ -6,7 +6,7 @@
 SoundPlayer::SoundPlayer() {
 	sound_manager = SoundManager::get_instance();
 	sound_manager->register_sound_player(this);
-	object_pos = nullptr;
+	sound_pos = nullptr;
 	sound_end = false;
 }
 
@@ -14,8 +14,8 @@ SoundPlayer::~SoundPlayer() {
 	sound_manager->unregister_sound_player(this);
 }
 
-void SoundPlayer::init(glm::vec3* object_pos) {
-	this->object_pos = object_pos;
+void SoundPlayer::init(glm::vec3* sound_pos) {
+	this->sound_pos = sound_pos;
 }
 
 bool SoundPlayer::is_sound_end() {
@@ -29,7 +29,7 @@ void SoundPlayer::process_sound() {
 		//(We push new sounds to the front of our list so whenever we see a source has already been
 		//played, we can be sure that we don't have any more un-played sounds to worry about)
 		if (source->buffered) break;
-		source->start(object_pos);
+		source->start(sound_pos);
 		source++;
 	}
 	while (source != sound_instances.end()) { //This pass handles all sounds which are already playing, I.E.
@@ -55,7 +55,7 @@ void SoundPlayer::process_sound() {
 			}
 		}
 		else {
-			reserved_sound.start(object_pos);
+			reserved_sound.start(sound_pos);
 			reserved_sound.buffered = true;
 		}
 	}

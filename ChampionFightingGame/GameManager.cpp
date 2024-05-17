@@ -7,6 +7,7 @@
 GameManager::GameManager() {
 	for (int i = 0; i < 2; i++) {
 		player[i] = new Player(i);
+		player[i]->load_player(-1);
 		u_hold_frames[i] = 0;
 		d_hold_frames[i] = 0;
 		l_hold_frames[i] = 0;

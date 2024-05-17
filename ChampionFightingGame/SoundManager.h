@@ -25,12 +25,12 @@ public:
 	SoundManager(SoundManager& other) = delete;
 	void operator=(const SoundManager& other) = delete;
 
+	void process_sounds();
+
 	void register_sound_player(SoundPlayer* sound_player);
 	void unregister_sound_player(SoundPlayer* sound_player);
 
 	void clear_sound_players();
-
-	void process_sounds();
 
 	MusicInstance* play_music(std::string dir, float volume_mod);
 	void pause_music(std::string dir);

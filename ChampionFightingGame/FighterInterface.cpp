@@ -1,4 +1,4 @@
-#include "Fighters.h"
+#include "Fighters.h"_
 
 Fighter* create_fighter(Player* player) {
 	Fighter* fighter;

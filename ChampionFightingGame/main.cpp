@@ -51,15 +51,9 @@ int main() {
 	TargetVarManager* target_var_manager = TargetVarManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
-	//A player should always point to a player info. If none are found, it'll point to this blank 
-	//one. This could probably be a member of GameManager but imo that'd be unnecessary.
-
-	PlayerInfo default_player_info;
-	for (int i = 0; i < 2; i++) {
-		game_manager->player[i]->player_info = &default_player_info;
-	}
-
 	opening_main();
+
+//	game_manager->player[0]->chara_kind = CHARA_KIND_ERIC;
 
 	while (game_manager->next_game_state != GAME_STATE_CLOSE) {
 		shader_manager->reset_common_ubos();

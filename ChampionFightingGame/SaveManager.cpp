@@ -92,6 +92,7 @@ int SaveManager::add_player_info(std::string name) {
 }
 
 PlayerInfo* SaveManager::get_player_info(int index) {
+	if (index == -1) return &default_player_info;
 	if (player_info.size() <= (size_t)index) {
 		return nullptr;
 	}

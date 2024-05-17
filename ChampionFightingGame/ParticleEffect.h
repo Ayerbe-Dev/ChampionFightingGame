@@ -55,12 +55,12 @@ private:
 	WorldTexture texture[2];
 };
 
-
 class ParticleEffect {
 public:
 	ParticleEffect();
 
 	void load_particle_effect(std::string dir);
+	void unload_particle_effect();
 	ParticleEffectInstance& instantiate(GameObject* owner);
 	unsigned short get_duration() const;
 	bool is_loop() const;

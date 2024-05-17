@@ -83,13 +83,16 @@ void ParticleEffect::load_particle_effect(std::string dir) {
 
 }
 
+void ParticleEffect::unload_particle_effect() {
+
+}
+
 ParticleEffectInstance& ParticleEffect::instantiate(GameObject* owner) {
 	ParticleEffectInstance ret(this, owner);
 
 	EffectManager* effect_manager = EffectManager::get_instance();
 	for (size_t i = 0, max = particles.size(); i < max; i++) {
-		//TODO: Revamp the effect manager and add register_particle()
-		//effect_manager->register_particle(&ret, &particles[i]);
+		effect_manager->register_particle_effect_instance(&ret, &particles[i]);
 	}
 
 	return ret;
@@ -125,7 +128,7 @@ void ParticleEffectInstance::process() {
 }
 
 void ParticleEffectInstance::deactivate() {
-	//EffectManager::get_instance()->unregister_particle_effect_instance(this);
+	EffectManager::get_instance()->unregister_particle_effect_instance(this);
 }
 
 float ParticleEffectInstance::get_frame() const {

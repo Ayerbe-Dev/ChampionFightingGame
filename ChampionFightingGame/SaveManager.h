@@ -17,6 +17,7 @@ public:
 	SaveManager(SaveManager& other) = delete;
 	void operator=(const SaveManager& other) = delete;
 	
+	PlayerInfo default_player_info;
 	std::list<PlayerInfo*> player_info_ordered;
 
 	void load_game_settings();

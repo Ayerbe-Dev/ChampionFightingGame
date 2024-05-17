@@ -5,30 +5,48 @@
 #include <unordered_map>
 #include <utility>
 #include <glm/glm.hpp>
+#include "ParticleEffect.h"
 
-#ifdef PARTICLE_EFFECTS
-class Particle;
-class ParticleEffect;
-class ParticleEffectInstance;
-class GameObject;
-#else
+//OLD
+
 struct EffectInfo;
 class Effect;
 class EffectInstance;
-class GameObject;
 class BattleObject;
-#endif
+
+struct ParticleEffectResource {
+	ParticleEffectResource();
+	ParticleEffect particle_effect;
+	int user_count;
+};
 
 class EffectManager {
 public:
 	EffectManager(EffectManager& other) = delete;
 	void operator=(const EffectManager& other) = delete;
 
-	static EffectManager* get_instance();
 
-#ifdef PARTICLE_EFFECTS
+	//NEW
 
-#else
+	void process_effects();
+
+	void register_game_object(GameObject* object);
+	void unregister_game_object(GameObject* object);
+
+	void clear_game_objects();
+
+	void register_particle_effect_instance(ParticleEffectInstance* instance, Particle* particle);
+	void unregister_particle_effect_instance(ParticleEffectInstance* instance);
+
+	ParticleEffect& get_particle_effect(std::string dir);
+	void load_particle_effect(std::string dir);
+	void unuse_particle_effect(std::string dir);
+	void unload_particle_effect(std::string dir, bool strict = true);
+	void unload_all_particle_effects();
+	void unload_unused();
+
+	//OLD
+
 	void process();
 	void render();
 
@@ -49,15 +67,20 @@ public:
 	void add_effect_caster(int object_id);
 	void remove_effect_caster(int id);
 	void remove_effect_casters();
-#endif
 
+	static EffectManager* get_instance();
 	void destroy_instance();
 private:
 	EffectManager();
 
-#ifdef PARTICLE_EFFECTS
-	std::list<std::pair<ParticleEffectInstance*, Particle*>> particle_instances;
-#else
+	//NEW
+
+	std::list<std::pair<ParticleEffectInstance*, Particle*>> particle_effect_instances;
+	std::list<GameObject*> game_objects;
+	std::map<std::string, ParticleEffectResource> particle_effect_map;
+
+	//OLD
+
 	void populate_effects();
 	void add_effect_info(std::string name, std::string dir);
 
@@ -69,7 +92,6 @@ private:
 
 	std::vector<std::list<EffectInstance>> active_effects;
 	std::unordered_map<int, int> id2index;
-#endif
 
 	static EffectManager* instance;
 };

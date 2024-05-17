@@ -3,11 +3,84 @@
 #include "ThreadManager.h"
 #include "Effect.h"
 #include "Particle.h"
+#include "ParticleEffect.h"
 #include "BattleObject.h"
 #include "utils.h"
 
+ParticleEffectResource::ParticleEffectResource() {
+	user_count = 0;
+}
+
 EffectManager::EffectManager() {
 	populate_effects();
+}
+
+void EffectManager::process_effects() {
+
+}
+
+void EffectManager::register_game_object(GameObject* object) {
+	game_objects.push_back(object);
+}
+
+void EffectManager::unregister_game_object(GameObject* object) {
+	game_objects.remove(object);
+}
+
+void EffectManager::clear_game_objects() {
+	game_objects.clear();
+}
+
+void EffectManager::register_particle_effect_instance(ParticleEffectInstance* instance, Particle* particle) {
+
+}
+
+void EffectManager::unregister_particle_effect_instance(ParticleEffectInstance* instance) {
+
+}
+
+ParticleEffect& EffectManager::get_particle_effect(std::string dir) {
+	if (!particle_effect_map.contains(dir)) {
+		load_particle_effect(dir);
+	}
+	particle_effect_map[dir].user_count++;
+	return particle_effect_map[dir].particle_effect;
+}
+
+void EffectManager::load_particle_effect(std::string dir) {
+	particle_effect_map[dir].particle_effect.load_particle_effect(dir);
+	particle_effect_map[dir].user_count = 0;
+}
+
+void EffectManager::unuse_particle_effect(std::string dir) {
+	if (particle_effect_map.contains(dir)) {
+		particle_effect_map[dir].user_count--;
+	}
+}
+
+void EffectManager::unload_particle_effect(std::string dir, bool strict) {
+	if (particle_effect_map.contains(dir)) {
+		if (particle_effect_map[dir].user_count == 0 || !strict) {
+			particle_effect_map[dir].particle_effect.unload_particle_effect();
+			particle_effect_map.erase(dir);
+		}
+	}
+}
+
+void EffectManager::unload_all_particle_effects() {
+	for (auto& particle_effect : particle_effect_map) {
+		particle_effect.second.particle_effect.unload_particle_effect();
+	}
+	particle_effect_map.clear();
+}
+
+void EffectManager::unload_unused() {
+	for (auto& particle_effect : particle_effect_map) {
+		if (particle_effect.second.user_count == 0) {
+			particle_effect.second.particle_effect.unload_particle_effect();
+			particle_effect_map.erase(particle_effect.first);
+		}
+	}
 }
 
 void EffectManager::populate_effects() {

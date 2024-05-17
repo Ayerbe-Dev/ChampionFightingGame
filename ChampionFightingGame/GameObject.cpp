@@ -11,7 +11,7 @@ GameObject::GameObject() {
 	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
-	//effect_manager->register_game_object(this);
+	effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	pos = glm::vec3(0.0);
@@ -43,7 +43,7 @@ GameObject::GameObject(GameObject& other) {
 	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
-	//effect_manager->register_game_object(this);
+	effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	this->id_effect = other.id_effect;
@@ -88,7 +88,7 @@ GameObject::GameObject(const GameObject& other) {
 	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
-	//effect_manager->register_game_object(this);
+	effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	this->id_effect = other.id_effect;
@@ -136,7 +136,7 @@ GameObject& GameObject::operator=(GameObject& other) {
 	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
-	//effect_manager->register_game_object(this);
+	effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	this->id_effect = other.id_effect;
@@ -186,7 +186,7 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	render_manager = RenderManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
-	//effect_manager->register_game_object(this);
+	effect_manager->register_game_object(this);
 	object_manager->register_game_object(this);
 
 	this->id_effect = other.id_effect;
@@ -229,6 +229,6 @@ GameObject& GameObject::operator=(const GameObject& other) {
 }
 
 GameObject::~GameObject() {
-	//effect_manager->unregister_game_object(this);
+	effect_manager->unregister_game_object(this);
 	object_manager->unregister_game_object(this);
 }

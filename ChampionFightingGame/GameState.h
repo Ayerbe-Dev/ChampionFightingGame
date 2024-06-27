@@ -7,10 +7,12 @@
 #include <any>
 #include <stack>
 #include "GameTexture.h"
+#include "UIMessage.h"
 #include "Mouse.h"
 #include "SoundPlayer.h"
 #include "Player.h"
 
+class GameManager;
 class GameState;
 class MenuObject;
 
@@ -250,12 +252,20 @@ public:
 
     virtual void process_background();
 
+    void load_font(std::string name, std::string font_name, int font_size);
+    Font& get_font(std::string name);
+
+    void add_message(std::string font_name, std::string text, int active_duration, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs);
+    void add_message(std::string font_name, std::string text, bool* active_condition, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs);
+    void add_message(std::string font_name, std::string text, VBP active_condition, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs);
+
     bool execute_if(std::string name, int num_allowed_executions, bool condition);
     bool execute_wait(std::string name, int num_allowed_executions, unsigned int frames);
 
     bool looping;
     int game_context;
 
+    GameManager* game_manager;
     MenuObject main_object;
 
     std::vector<MenuObject> menu_objects;
@@ -264,6 +274,9 @@ public:
     std::stack<MenuObject*> object_stack;
     std::stack<MenuActivityGroup*> activity_group_stack;
     std::stack<bool> last_push_type_stack;
+
+    std::list<UIMessage> messages_active;
+    std::list<UIMessage> messages_fading;
 
     GameTexture* last_pushed_texture;
 
@@ -278,4 +291,5 @@ public:
     int internal_state;
     int prev_internal_state;
     std::unordered_map<std::string, StateCondition> conditions;
+    std::map<std::string, Font> font_map;
 };

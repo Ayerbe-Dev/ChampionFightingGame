@@ -24,10 +24,9 @@ bool Fighter::common_ground_status_act() {
 			if (status_kind != FIGHTER_STATUS_TURN
 			&& status_kind != FIGHTER_STATUS_CROUCH) {
 				if (move_list[FIGHTER_CONTEXT_GROUND].is_curr_move_recover_crouching(this)) {
-					//We don't verify that we aren't already crouching here because if we have
-					//a curr_move at all, that automatically rules out crouch (along with all
-					//other fully actionable statuses)
-					change_status(FIGHTER_STATUS_CROUCH);
+					if (status_kind != FIGHTER_STATUS_ATTACK) {
+						change_status(FIGHTER_STATUS_CROUCH);
+					}
 				}
 				else {
 					change_status(FIGHTER_STATUS_CROUCH_D);
@@ -186,6 +185,8 @@ void Fighter::status_dash_f() {
 				if (!object_flag[FIGHTER_FLAG_DASH_CANCEL]) {
 					object_string[FIGHTER_STRING_MOVE_KIND] = "dash_b";
 					object_flag[FIGHTER_FLAG_DASH_CANCEL] = true;
+					object_int[FIGHTER_INT_44_STEP] = 0;
+					object_int[FIGHTER_INT_44_TIMER] = 0;
 					change_status(FIGHTER_STATUS_DASH_B, false);
 					return;
 				}
@@ -433,7 +434,7 @@ void Fighter::enter_status_jump() {
 			change_anim("jump_b", 1.0, 0.0);
 		} break;
 		case (JUMP_KIND_N): {
-			change_anim("jump", 1.0, 0.0);
+			change_anim("jump_n", 1.0, 0.0);
 		} break;
 	}
 
@@ -523,7 +524,7 @@ void Fighter::exit_status_turn() {
 void Fighter::status_attack() {
 	if (object_int[FIGHTER_INT_EXTERNAL_FRAME] == 2 
 	&& !object_flag[FIGHTER_FLAG_CHANGE_INTO_SAME_STATUS]) {
-			switch (get_curr_move().required_buttons) {
+		switch (get_curr_move().required_buttons) {
 			case (BUTTON_LP_BIT):
 			case (BUTTON_LK_BIT): {
 				disable_cancel("grab_start", CANCEL_KIND_ANY);
@@ -1186,6 +1187,7 @@ void Fighter::exit_status_knockdown_start() {
 }
 
 void Fighter::status_knockdown() {
+	std::cout << frame << "\n";
 	if (!(object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN] || object_int[FIGHTER_INT_KNOCKDOWN_TECH_WINDOW])) {
 		switch (get_flick_dir()) {
 			case 1:
@@ -1449,14 +1451,12 @@ void Fighter::status_landing() {
 	switch (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
 		case (0): {
 			check_movelist_inputs();
-			if (get_stick_dir() < 4) {
+			if (anim_end) {
 				change_status(FIGHTER_STATUS_CROUCH);
 				return;
 			}
-			else {
-				if (is_status_end(FIGHTER_STATUS_WAIT)) {
-					return;
-				}
+			else if (get_stick_dir() >= 4 && common_ground_status_act()) {
+				return;
 			}
 		} break;
 		case (1): {

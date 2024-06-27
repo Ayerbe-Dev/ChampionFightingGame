@@ -159,28 +159,37 @@ void Battle::process_collisions() {
 				fighter[i]->object_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX] = false;
 				if (fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 					if (combo_counter[!i] != nullptr) {
-						combo_counter[!i]->update(std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] + fighter[i]->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
-						combo_hit[!i]->update("hits", fighter[i]->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] + fighter[i]->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]);
+						combo_counter[!i]->update_text(std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]));
+						combo_counter[!i]->texture.scale_all_percent(1.1f);
+						combo_hits[!i]->texture.scale_all_percent(1.1f);
 					}
 					else {
-						texts[!i].push_back(BattleText());
-						texts[!i].back().init(&combo_font, std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]), fighter[i]->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] + fighter[i]->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] + 30, fighter[!i], glm::vec2(275.0, 500.0));
-						combo_counter[!i] = &texts[!i].back();
-						texts[!i].push_back(BattleText());
-						texts[!i].back().init(&message_font, "hits", fighter[i]->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] + fighter[i]->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] + 30, fighter[!i], glm::vec2(275.0, 800.0));
-						combo_hit[!i] = &texts[!i].back();
+						add_message("combo", std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]), VBP(fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]), 5, glm::vec2(275.0, 500.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+						messages_active.back().texture.scale_all_percent(1.1f);
+						combo_counter[!i] = &messages_active.back();
+						add_message("message", "hits", VBP(fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]), 5, glm::vec2(275.0, 800.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+						messages_active.back().texture.scale_all_percent(1.1f);
+						combo_hits[!i] = &messages_active.back();
+						if (i) {
+							combo_counter[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+							combo_hits[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+						}
+						else {
+							combo_counter[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+							combo_hits[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+						}
 					}
 				}
 				if (game_context == GAME_CONTEXT_TRAINING) {
 					training_info[!i].fields[TRAINING_FIELD_STARTUP].update_text(
-						info_font, 
+						get_font("info"),
 						"Startup: " + std::to_string(
 							fighter[!i]->object_int[FIGHTER_INT_EXTERNAL_FRAME] + 1
 						), glm::vec4(255.0), 
 						glm::vec4(0.0, 0.0, 0.0, 2.0)
 					);
 					training_info[!i].fields[TRAINING_FIELD_DAMAGE].update_text(
-						info_font,
+						get_font("info"),
 						"Damage: " 
 						+ float_to_string(fighter[i]->object_float[FIGHTER_FLOAT_DAMAGE_UI_TRAINING], 3) 
 						+ "(" + float_to_string(fighter[i]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI_TRAINING], 3) 
@@ -188,7 +197,7 @@ void Battle::process_collisions() {
 						glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0)
 					);
 					training_info[!i].fields[TRAINING_FIELD_COMBO_DAMAGE].update_text(
-						info_font, 
+						get_font("info"),
 						"Total: " + float_to_string(
 							fighter[!i]->object_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING], 3
 						), 
@@ -255,13 +264,13 @@ void Battle::process_collisions() {
 						airtime_string += " (" + air_advantage + ")";
 					}
 					training_info[!i].fields[TRAINING_FIELD_STUN_FRAMES].update_text(
-						info_font,
+						get_font("info"),
 						stun_frame_string,
 						glm::vec4(255.0),
 						glm::vec4(0.0, 0.0, 0.0, 2.0)
 					);
 					training_info[!i].fields[TRAINING_FIELD_AIRTIME].update_text(
-						info_font,
+						get_font("info"),
 						airtime_string,
 						glm::vec4(255.0),
 						glm::vec4(0.0, 0.0, 0.0, 2.0)

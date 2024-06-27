@@ -30,12 +30,22 @@ RenderManager::RenderManager() {
 	SDL_GL_SetSwapInterval(1);
 
 	glViewport(0, 0, window_width, window_height);
+
+	glEnable(GL_MULTISAMPLE);
+
 	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
 	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_STENCIL_TEST);
+
 	glEnable(GL_BLEND);
+	glEnable(GL_STENCIL_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0x0);
+
+	glDisable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	stbi_set_flip_vertically_on_load(true);
@@ -115,7 +125,7 @@ RenderManager::RenderManager() {
 	gbuffer_texture.init(g_buffer.textures[2]);
 	gbuffer_texture.set_scale(0.4);
 	gbuffer_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
-
+	
 	fade_texture.init("resource/misc/fade.png");
 	fade_texture.alpha = 0;
 	fade_texture.alpha.set_persistence(true);

@@ -136,6 +136,16 @@ void GameManager::process_game_state_events() {
 void GameManager::render_game_states() {
 	for (size_t i = 0, max = game_state.size(); i < max; i++) {
 		game_state[i]->render_main();
+		for (std::list<UIMessage>::iterator it = game_state[i]->messages_active.begin(),
+			max = game_state[i]->messages_active.end();
+			it != max; it++) {
+			it->render();
+		}
+		for (std::list<UIMessage>::iterator it = game_state[i]->messages_fading.begin(),
+			max = game_state[i]->messages_fading.end();
+			it != max; it++) {
+			it->render();
+		}
 	}
 	fps_texture.render();
 	fps_counter.render();

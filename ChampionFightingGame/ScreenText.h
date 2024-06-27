@@ -1,10 +1,11 @@
 #pragma once
 #include <iostream>
-#include "Font.h""
+#include "Font.h"
 
 class ScreenText {
 public:
 	ScreenText();
+
 private:
 	std::string text;
 	Font* font;

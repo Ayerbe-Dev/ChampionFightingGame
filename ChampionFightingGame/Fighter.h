@@ -7,6 +7,7 @@
 #include "ObjectManager.h"
 #include "ParamAccessor.h"
 #include "FighterMovelist.h"
+#include "FighterCPU.h"
 
 #include "CharaKind.h"
 #include "FighterAttribute.h"
@@ -50,6 +51,9 @@ public:
 
 	void process_pre_common_fighter_vars(); //Basically just hitlag
 	void process_post_common_fighter_vars(); //Subtracting from timers and such
+
+	void process_cpu();
+
 	void reset();
 
 	//Loading
@@ -59,8 +63,9 @@ public:
 	void load_anim_list();
 	void load_fighter_status_scripts();
 	virtual void load_chara_status_scripts() {};
-	virtual void load_move_scripts() {};
 	virtual void load_move_list() {};
+	virtual void load_move_scripts() {};
+	virtual void load_cpu_move_info() {};
 	void load_sounds();
 	void load_effect_list();
 	virtual void load_chara_effects() {};
@@ -489,6 +494,7 @@ public:
 	int prev_stick_dir;
 	unsigned int fighter_context;
 
+	FighterCPU cpu;
 	FighterMoveList move_list[FIGHTER_CONTEXT_MAX];
 
 	std::map<unsigned int, std::string> throw_map_ground;

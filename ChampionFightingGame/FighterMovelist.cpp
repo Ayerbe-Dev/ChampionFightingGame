@@ -410,7 +410,7 @@ bool FighterMoveList::is_buffered(std::string name) {
 FighterMoveListEntry& FighterMoveList::get_move(std::string name) {
 #ifdef DEBUG
 	if (!move_map.contains(name)) {
-		GameManager::get_instance()->add_crash_log("ERROR: Move " + name + " was not in the movelist");
+//		GameManager::get_instance()->add_crash_log("ERROR: Move " + name + " was not in the movelist");
 		return move_list[0];
 	}
 #endif

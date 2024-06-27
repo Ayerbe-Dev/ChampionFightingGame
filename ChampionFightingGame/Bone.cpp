@@ -67,7 +67,6 @@ int Skeleton::get_bone_id(std::string bone_name) {
 		}
 	}
 	if (!bone_map.contains(bone_name)) {
-		std::cout << "ERROR: Couldn't find " << bone_name << "\n";
 		return -1;
 	}
 	return bone_map[bone_name];

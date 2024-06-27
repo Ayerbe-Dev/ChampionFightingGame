@@ -865,8 +865,6 @@ void GameTexture::reorient() {
 }
 
 void GameTexture::process() {
-	float width_scale = (float)width / (float)WINDOW_WIDTH;
-	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (target_bottom_frames != 0.0) {
 		if (v_flipped) {
 			scale_bottom_percent(clampf(0.0, 1.0 - (tex_accessor[TEX_COORD_TOP_LEFT]->tex_coord.y + target_bottom_crop), 1.0));

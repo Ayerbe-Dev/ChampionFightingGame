@@ -33,8 +33,8 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 	}
 
 	const aiAnimation* anim = scene->mAnimations[0];
-	length = anim->mDuration;
-	keyframes.resize(length + 1);
+	length = anim->mDuration + 1;
+	keyframes.resize(length);
 
 	if (scene->HasCameras()) {
 		load_as_camera(anim);
@@ -47,7 +47,7 @@ void CameraAnim::load_camera_anim(std::string anim_kind, std::string anim_dir) {
 void CameraAnim::load_as_camera(const aiAnimation* anim) {
 	anim_mode = CAMERA_ANIM_MODE_STAGE;
 	std::vector<char> pos_keyframed;
-	pos_keyframed.resize(length + 1, false);
+	pos_keyframed.resize(length, false);
 	aiNodeAnim* node = anim->mChannels[0];
 
 	for (int i = 0; i < node->mNumPositionKeys; i++) {
@@ -65,7 +65,7 @@ void CameraAnim::load_as_camera(const aiAnimation* anim) {
 		if (pos_keyframed[i]) {
 			last_keyframed = i;
 			next_keyframed = i;
-			for (int i2 = i + 1; i2 <= length; i2++) {
+			for (int i2 = i + 1; i2 < length; i2++) {
 				if (pos_keyframed[i2]) {
 					next_keyframed = i2;
 					break;
@@ -105,8 +105,8 @@ void CameraAnim::load_as_armature(const aiAnimation* anim) {
 	}
 	std::vector<char> pos_keyframed;
 	std::vector<char> aim_keyframed;
-	pos_keyframed.resize(length + 1, false);
-	aim_keyframed.resize(length + 1, false);
+	pos_keyframed.resize(length, false);
+	aim_keyframed.resize(length, false);
 	aiNodeAnim* aim_node = anim->mChannels[aim_idx];
 	aiNodeAnim* cam_node = anim->mChannels[cam_idx];
 	for (int i = 0; i < aim_node->mNumPositionKeys; i++) {
@@ -157,7 +157,7 @@ void CameraAnim::load_as_armature(const aiAnimation* anim) {
 	for (int i = 0; i < length; i++) {
 		if (pos_keyframed[i]) {
 			next_keyframed = i;
-			for (int i2 = i + 1; i2 <= length; i2++) {
+			for (int i2 = i + 1; i2 < length; i2++) {
 				if (pos_keyframed[i2]) {
 					next_keyframed = i2;
 					break;

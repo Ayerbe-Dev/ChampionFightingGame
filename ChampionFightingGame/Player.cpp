@@ -14,11 +14,13 @@ Player::Player() {
 	alt_costume = 0;
 	alt_color = 0;
 	control_type = CONTROL_TYPE_ADVANCE;
-	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
+	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room");
 	int timer = get_global_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.set_stick_hold_timer(timer, timer);
 	player_info = nullptr;
 	input_mode = INPUT_MODE_POLL;
+	rollback_frames = 0;
+	player_kind = PLAYER_KIND_PLAYER;
 }
 
 Player::Player(int id) {
@@ -26,9 +28,11 @@ Player::Player(int id) {
 	int timer = get_global_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.set_stick_hold_timer(timer, timer);
 	chara_kind = CHARA_KIND_MAX;
-	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room"); //Todo: Overwrite this value while on the stage select
+	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room");
 	player_info = nullptr;
 	input_mode = INPUT_MODE_POLL;
+	rollback_frames = 0;
+	player_kind = PLAYER_KIND_PLAYER;
 }
 
 void Player::load_player(int index) {
@@ -56,6 +60,7 @@ void Player::poll_controller_menu() {
 }
 
 void Player::poll_controller_fighter() {
+	if (player_kind == PLAYER_KIND_CPU) input_mode = INPUT_MODE_PLAY_SEQ;
 	switch (input_mode) {
 		default:
 		case (INPUT_MODE_POLL): { //Normal

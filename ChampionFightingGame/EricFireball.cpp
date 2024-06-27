@@ -21,15 +21,20 @@ EricFireball::EricFireball(int id, Player* player) {
 }
 
 void EricFireball::projectile_unique_main() {
-	if (object_int[PROJECTILE_INT_HEALTH] == 0) {
-
+	if (object_int[PROJECTILE_INT_HEALTH] <= 0 && active) {
+		deactivate();
 	}
 }
 
 void EricFireball::unique_activate() {
-
+	owner->object_flag[CHARA_ERIC_FLAG_FIREBALL_ACTIVE] = true;
+	if (owner->object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
+		object_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
+		object_int[PROJECTILE_INT_HEALTH] = 2;
+	}
+	change_status(PROJECTILE_ERIC_FIREBALL_STATUS_HOVER);
 }
 
 void EricFireball::unique_deactivate() {
-
+	owner->object_flag[CHARA_ERIC_FLAG_FIREBALL_ACTIVE] = false;
 }

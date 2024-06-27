@@ -33,7 +33,7 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 				this->rate = 1.0;
 			}
 			else {
-				this->rate = (target_frame - 1) / rate;
+				this->rate = target_frame / rate;
 			}
 			this->frame = 0.0;
 			object_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;

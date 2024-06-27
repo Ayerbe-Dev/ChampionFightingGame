@@ -28,3 +28,7 @@ Eric::Eric(Player* player) {
 void Eric::chara_main() {
 
 }
+
+void Eric::load_chara_effects() {
+	load_effect("flame");
+}

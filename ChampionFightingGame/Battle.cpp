@@ -105,27 +105,28 @@ Battle::Battle() {
 		case (GAME_CONTEXT_TRAINING): {
 			internal_state = BATTLE_STATE_BATTLE;
 			timer_setting = TIMER_SETTING_TRAINING;
+			player[1]->player_kind = PLAYER_KIND_DUMMY;
 		} break;
 		case (GAME_CONTEXT_ARCADE): {
 			internal_state = BATTLE_STATE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
+			player[1]->player_kind = PLAYER_KIND_CPU;
 		} break;
 		case (GAME_CONTEXT_STORY): {
 			internal_state = BATTLE_STATE_BATTLE;
 			timer_setting = TIMER_SETTING_NONE;
+			player[1]->player_kind = PLAYER_KIND_CPU;
 		} break;
 		case (GAME_CONTEXT_ONLINE): {
 			internal_state = BATTLE_STATE_PRE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
+			player[1]->player_kind = PLAYER_KIND_PLAYER;
 		} break;
 		case (GAME_CONTEXT_SPECIAL): {
 			internal_state = BATTLE_STATE_PRE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
 	}
-
-	player[0] = game_manager->player[0];
-	player[1] = game_manager->player[1];
 
 	load_world();
 	load_ui();
@@ -135,6 +136,8 @@ Battle::Battle() {
 
 	for (int i = 0; i < 2; i++) {
 		thread_manager->add_thread(i, gamestate_battle_fighter_thread, (void*)fighter[i]);
+		combo_counter[i] = nullptr;
+		combo_hits[i] = nullptr;
 	}
 	thread_manager->add_thread(THREAD_KIND_UI, gamestate_battle_ui_thread, (void*)this);
 
@@ -185,9 +188,6 @@ Battle::~Battle() {
 	camera->unload_camera_anims();
 
 	stage.unload_stage();
-	combo_font.unload_font();
-	message_font.unload_font();
-	info_font.unload_font();
 }
 
 void Battle::load_world() {
@@ -215,9 +215,9 @@ void Battle::load_world() {
 
 void Battle::load_ui() {
 	FontManager* font_manager = FontManager::get_instance();
-	combo_font = font_manager->load_font("Fiend-Oblique", 64);
-	message_font = font_manager->load_font("Fiend-Oblique", 24);
-	info_font = font_manager->load_font("FiraCode", 16);
+	load_font("combo", "Fiend-Oblique", 64);
+	load_font("message", "Fiend-Oblique", 24);
+	load_font("info", "FiraCode", 16);
 
 	set_hints(1, 10, 3); {
 		push_menu_child("P1 Health", 3); {
@@ -294,8 +294,8 @@ void Battle::load_ui() {
 				float scale = *(float*)object->ptr_var("damage_scale");
 				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-				object->get_texture("Damage Scale").set_top_left_target(std::min(scale, 1.0f), 3);
-				object->get_texture("Damage Scale").set_bottom_left_target(std::min(scale - 0.046f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_top_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f - 0.048f, 1.0f), 3);
 			});
 			push_menu_ptr_var("damage_scale", &fighter[0]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
 			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
@@ -312,8 +312,8 @@ void Battle::load_ui() {
 				float scale = *(float*)object->ptr_var("damage_scale");
 				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-				object->get_texture("Damage Scale").set_top_left_target(std::min(scale, 1.0f), 3);
-				object->get_texture("Damage Scale").set_bottom_left_target(std::min(scale - 0.046f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_top_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f - 0.048f, 1.0f), 3);
 			});
 			push_menu_ptr_var("damage_scale", &fighter[1]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
 			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
@@ -454,26 +454,26 @@ void Battle::load_ui() {
 		} pop_menu_stack();
 		push_menu_activity_group("KO Text", nullptr, true, 5); {
 			push_menu_child("None"); {
-				push_menu_texture("Message", combo_font, "", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				push_menu_texture("Message", get_font("combo"), "", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 				last_pushed_texture->set_alpha(0);
 			} pop_menu_stack();
 			push_menu_child("KO"); {
-				push_menu_texture("Message", combo_font, "K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				push_menu_texture("Message", get_font("combo"), "K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
 				last_pushed_texture->set_alpha(0);
 			} pop_menu_stack();
 			push_menu_child("Perfect KO"); {
-				push_menu_texture("Message", combo_font, "Perfect K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				push_menu_texture("Message", get_font("combo"), "Perfect K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
 				last_pushed_texture->set_alpha(0);
 			} pop_menu_stack();
 			push_menu_child("Time"); {
-				push_menu_texture("Message", combo_font, "Time", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				push_menu_texture("Message", get_font("combo"), "Time", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
 				last_pushed_texture->set_alpha(0);
 			} pop_menu_stack();
 			push_menu_child("Double KO"); {
-				push_menu_texture("Message", combo_font, "Double K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+				push_menu_texture("Message", get_font("combo"), "Double K.O.", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 				object_stack.top()->sound_player.load_sound("KO", "resource/sound/ui/ko.wav");
 				last_pushed_texture->set_alpha(0);
 			} pop_menu_stack();
@@ -482,40 +482,40 @@ void Battle::load_ui() {
 			push_menu_activity_group("Round Start AG", &curr_round, true, 6); {
 				push_menu_child("Round1"); {
 					if (round_count_setting == 1) {
-						push_menu_texture("Round", combo_font, "Ready...", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+						push_menu_texture("Round", get_font("combo"), "Ready...", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					}
 					else {
-						push_menu_texture("Round", combo_font, "Round 1", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+						push_menu_texture("Round", get_font("combo"), "Round 1", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					}
 					last_pushed_texture->set_alpha(0);
 				} pop_menu_stack();
 				push_menu_child("Round2"); {
-					push_menu_texture("Round", combo_font, "Round 2", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					push_menu_texture("Round", get_font("combo"), "Round 2", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					last_pushed_texture->set_alpha(0);
 				} pop_menu_stack();
 				push_menu_child("Round3"); {
 					if (round_count_setting == 2) {
-						push_menu_texture("Round", combo_font, "Final Round", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+						push_menu_texture("Round", get_font("combo"), "Final Round", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					}
 					else {
-						push_menu_texture("Round", combo_font, "Round 3", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+						push_menu_texture("Round", get_font("combo"), "Round 3", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					}
 					last_pushed_texture->set_alpha(0);
 				} pop_menu_stack();
 				push_menu_child("Round4"); {
-					push_menu_texture("Round", combo_font, "Round 4", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					push_menu_texture("Round", get_font("combo"), "Round 4", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					last_pushed_texture->set_alpha(0);
 				} pop_menu_stack();
 				push_menu_child("Round5"); {
-					push_menu_texture("Round", combo_font, "Final Round", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					push_menu_texture("Round", get_font("combo"), "Final Round", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					last_pushed_texture->set_alpha(0);
 				} pop_menu_stack();
 				push_menu_child("Round6"); {
-					push_menu_texture("Round", combo_font, "Sudden Death", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+					push_menu_texture("Round", get_font("combo"), "Sudden Death", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 					last_pushed_texture->set_alpha(0);
 				} pop_menu_stack();
 			} pop_menu_stack();
-			push_menu_texture("Fight", combo_font, "Fight!", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
+			push_menu_texture("Fight", get_font("combo"), "Fight!", glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			last_pushed_texture->set_alpha(0);
 		} pop_menu_stack();
 
@@ -602,7 +602,7 @@ void Battle::load_ui() {
 		}
 		else {
 			for (int i = 0; i < 2; i++) {
-				training_info[i].init(fighter[i], &info_font);
+				training_info[i].init(fighter[i], &get_font("info"));
 			}
 		}
 
@@ -715,6 +715,16 @@ void Battle::process_main() {
 		case (BATTLE_STATE_OUTRO): {
 			process_outro();
 		} break;
+	}
+	for (int i = 0; i < 2; i++) {
+		if (fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]) {
+			combo_counter[!i] = nullptr;
+			combo_hits[!i] = nullptr;
+		}
+		else if (combo_counter[!i]) {
+			combo_counter[!i]->texture.scale_all_percent(1.0f);
+			combo_hits[!i]->texture.scale_all_percent(1.0f);
+		}
 	}
 	process_collisions();
 }
@@ -1185,36 +1195,7 @@ void Battle::process_debug_boxes() {
 	}
 }
 
-void Battle::process_fighters() {	
-	for (int i = 0; i < 2; i++) {
-		switch (fighter[i]->object_int[FIGHTER_INT_UI_TEXT_TYPE]) {
-		case UI_TEXT_TYPE_NONE:
-		default: {
-
-		} break;
-		case UI_TEXT_TYPE_ARMOR_BREAK: {
-			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Armor Break", 40, fighter[i], glm::vec2(275.0, 450.0));
-		} break;
-		case UI_TEXT_TYPE_COUNTER: {
-			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Counter", 40, fighter[i], glm::vec2(275.0, 450.0));
-		} break;
-		case UI_TEXT_TYPE_PUNISH: {
-			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Punish", 40, fighter[i], glm::vec2(275.0, 450.0));
-		} break;
-		case UI_TEXT_TYPE_CRITICAL: {
-			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Critical Hit", 40, fighter[i], glm::vec2(275.0, 450.0));
-		} break;
-		case UI_TEXT_TYPE_REVERSAL: {
-			texts[i].push_back(BattleText());
-			texts[i].back().init(&message_font, "Reversal", 40, fighter[i], glm::vec2(275.0, 450.0));
-		} break;
-		}
-		fighter[i]->object_int[FIGHTER_INT_UI_TEXT_TYPE] = UI_TEXT_TYPE_NONE;
-	}
+void Battle::process_fighters() {
 	if (!(fighter[0]->object_flag[FIGHTER_FLAG_LOCK_DIRECTION]
 		|| fighter[1]->object_flag[FIGHTER_FLAG_LOCK_DIRECTION])) {
 		for (int i = 0; i < 2; i++) {
@@ -1296,7 +1277,7 @@ void Battle::process_training() {
 				it->background.add_pos(glm::vec3(0.0, 90.0, 0.0));
 			}
 			training_info[i].mini_visualizers.push_front(InputVisualizer());
-			training_info[i].mini_visualizers.front().init(fighter[i], &info_font, true);
+			training_info[i].mini_visualizers.front().init(fighter[i], &get_font("info"), true);
 			training_info[i].mini_visualizers.front().input_code = new_input_code;
 		}
 		else {
@@ -1304,7 +1285,7 @@ void Battle::process_training() {
 				training_info[i].mini_visualizers.front().frame_timer, 
 				training_info[i].mini_visualizers.front().frame_timer + 1, 99
 			);
-			training_info[i].mini_visualizers.front().num_frames.update_text(info_font, 
+			training_info[i].mini_visualizers.front().num_frames.update_text(get_font("info"),
 				std::to_string(training_info[i].mini_visualizers.front().frame_timer), 
 				glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 1.0)
 			);
@@ -1510,38 +1491,6 @@ void Battle::render_world() {
 
 void Battle::render_ui() {
 	main_object.render();
-	for (int i = 0; i < 2; i++) {
-		std::list<BattleText>::iterator it = texts[i].begin();
-		while (it != texts[i].end()) {
-			if (it->duration == 0) {
-				if (&*it == combo_counter[i]) {
-					combo_counter[i] = nullptr;
-					combo_hit[i] = nullptr;
-				}
-				if (it->alpha == 0) {
-					it->destroy();
-					if (texts[i].size() != 1) {
-						it = texts[i].erase(it);
-						continue;
-					}
-					else {
-						texts[i].erase(it);
-					}
-				}
-				else {
-					it->add_alpha(-51);
-				}
-			}
-			else if (it->duration != -1) {
-				it->duration--;
-			}
-			it++;
-		}
-		for (BattleText &text : texts[i]) {
-			text.render();
-			text.scale_all_percent(1.0, false);
-		}
-	}
 	//TRAINING PASS
 
 	if (game_context == GAME_CONTEXT_TRAINING) {
@@ -1613,7 +1562,7 @@ void Battle::event_frame_advance_press() {
 }
 
 void Battle::event_record_input_press() {
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == GAME_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
 		switch (player[1]->input_mode) {
 			case (INPUT_MODE_POLL):
 			case (INPUT_MODE_PLAY_SEQ): {
@@ -1637,7 +1586,7 @@ void Battle::event_record_input_press() {
 }
 
 void Battle::event_replay_input_press() {
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == GAME_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
 		switch (player[1]->input_mode) {
 			case (INPUT_MODE_PLAY_SEQ): {
 				player[1]->manual_seq.reset_idx();
@@ -1660,7 +1609,7 @@ void Battle::event_replay_input_press() {
 }
 
 void Battle::event_switch_input_press() {
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == GAME_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
 		player[0]->controller.swap_player_controller(&player[1]->controller);
 	}
 }

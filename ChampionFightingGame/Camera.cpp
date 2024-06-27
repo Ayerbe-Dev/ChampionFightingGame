@@ -211,6 +211,7 @@ void Camera::reset_camera() {
 	pos = base_pos;
 	prev_pos = base_pos;
 	pos_x_interpolator = base_pos.x;
+	pos_x_interpolator.set_pause(false);
 
 	yaw = 0.0;
 	pitch = 3.0;

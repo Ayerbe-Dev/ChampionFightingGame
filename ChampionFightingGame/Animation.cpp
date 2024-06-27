@@ -36,7 +36,7 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 		return;
 	}
 
-	length = (int)scene->mAnimations[0]->mDuration;
+	length = (int)scene->mAnimations[0]->mDuration + 1;
 	std::vector<AnimBone> base_bones;
 
 	for (int i = 0, max = skeleton.bone_data.size(); i < max; i++) {
@@ -48,24 +48,28 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 		base_bones.push_back(new_bone);
 	}
 
-	for (int i = 0; i <= length; i++) {
-		keyframes.push_back(base_bones);
-	}
-		
+	keyframes.resize(length, base_bones);
+	trans_matrices.resize(length);
+	
+	int trans_index = skeleton.get_bone_id("Trans");
+
 	for (int i = 0; i < scene->mAnimations[0]->mNumChannels; i++) {
 		aiNodeAnim* node = scene->mAnimations[0]->mChannels[i];
 		int index = skeleton.get_bone_id(node->mNodeName.C_Str());
 		if (index == -1) {
-			std::cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton!" << "\n";
+			std::cout << "Bone " << node->mNodeName.C_Str() << " not found in the model skeleton, skipping" << "\n";
 			continue;
 		}
-		for (unsigned i2 = 0, frame = (unsigned)node->mPositionKeys[i2].mTime; i2 < node->mNumPositionKeys; frame = (unsigned)node->mPositionKeys[++i2].mTime) { //Load the keyframes that are actually baked
+		for (unsigned i2 = 0, frame = (unsigned)node->mRotationKeys[i2].mTime; i2 < node->mNumRotationKeys; frame = (unsigned)node->mRotationKeys[++i2].mTime) { //Load the keyframes that are actually baked
 			glm::mat4 pos_mat = translate(glm::mat4(1.0), ass_converter(node->mPositionKeys[i2].mValue));
 			glm::mat4 rot_mat = toMat4(ass_converter(node->mRotationKeys[i2].mValue));
 			glm::mat4 scale_mat = scale(glm::mat4(1.0), ass_converter(node->mScalingKeys[i2].mValue));
 
 			keyframes[frame][index].anim_matrix = pos_mat * rot_mat * scale_mat;
 			keyframes[frame][index].keyframed = true;
+			if (index == trans_index) {
+				trans_matrices[frame] = rot_mat * scale_mat;
+			}
 		}
 
 		int last_keyframed = 0;
@@ -79,7 +83,7 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 				//This approach means that we won't look for the next keyframe until we've found the current one, avoiding unnecessary recalculations
 				last_keyframed = i2;
 				next_keyframed = i2;
-				for (int i3 = i2 + 1; i3 <= length; i3++) {
+				for (int i3 = i2 + 1; i3 < length; i3++) {
 					if (keyframes[i3][index].keyframed) {
 						next_keyframed = i3;
 						break;
@@ -89,6 +93,9 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 			else if (last_keyframed == next_keyframed) {
 				for (int i3 = i2; i3 < length; i3++) {
 					keyframes[i3][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix;
+					if (index == trans_index) {
+						trans_matrices[i3] = trans_matrices[last_keyframed];
+					}
 				}
 				break;
 			}
@@ -96,6 +103,9 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 				float old_delta = (i2 - last_keyframed) / (float)(next_keyframed - last_keyframed);
 				float new_delta = (next_keyframed - i2) / (float)(next_keyframed - last_keyframed);
 				keyframes[i2][index].anim_matrix = keyframes[last_keyframed][index].anim_matrix * old_delta + keyframes[next_keyframed][index].anim_matrix * new_delta;
+				if (index == trans_index) {
+					trans_matrices[i2] = trans_matrices[last_keyframed] * old_delta + trans_matrices[next_keyframed] * new_delta;
+				}
 			}
 		}
 	}

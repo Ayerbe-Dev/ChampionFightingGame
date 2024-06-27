@@ -240,13 +240,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="DanteMoves.cpp" />
     <ClCompile Include="DanteStatus.cpp" />
     <ClCompile Include="CollisionChecks.cpp" />
-    <ClCompile Include="BattleText.cpp" />
     <ClCompile Include="EasyGifReader.cpp" />
     <ClCompile Include="Efct.cpp" />
     <ClCompile Include="Eftlst.cpp" />
     <ClCompile Include="EricFireballMoves.cpp" />
     <ClCompile Include="EricFireballStatus.cpp" />
     <ClCompile Include="FighterCollisionFunctions.cpp" />
+    <ClCompile Include="FighterCPU.cpp" />
     <ClCompile Include="FighterDataFunctions.cpp" />
     <ClCompile Include="BattleObjectBlockboxFunctions.cpp" />
     <ClCompile Include="Bone.cpp" />
@@ -346,8 +346,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="NightsabreMoves.cpp" />
     <ClCompile Include="NightsabreStatus.cpp" />
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
-    <ClCompile Include="FighterAnalyzer.cpp" />
-    <ClCompile Include="FighterHabits.cpp" />
     <ClCompile Include="ProjectileActivationFunctions.cpp" />
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
     <ClCompile Include="ScreenText.cpp" />
@@ -355,9 +353,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Sndlst.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="TargetVarManager.cpp" />
-    <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="TimeFuncs.cpp" />
-    <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="UIMessage.cpp" />
     <ClCompile Include="VectorBoolPointer.cpp" />
     <ClCompile Include="Wallace.cpp" />
     <ClCompile Include="WallaceMoves.cpp" />
@@ -458,6 +455,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="EricFireballString.h" />
     <ClInclude Include="EricString.h" />
     <ClInclude Include="CompileTimeCounter.h" />
+    <ClInclude Include="FighterCPU.h" />
     <ClInclude Include="FighterString.h" />
     <ClInclude Include="HxA.h" />
     <ClInclude Include="debug.h" />
@@ -553,8 +551,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="ParamAccessor.h" />
     <ClInclude Include="Particle.h" />
-    <ClInclude Include="FighterAnalyzer.h" />
-    <ClInclude Include="FighterHabits.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Prmlst.h" />
     <ClInclude Include="ProjectileString.h" />
@@ -607,9 +603,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TargetVar.h" />
     <ClInclude Include="TargetVarManager.h" />
     <ClInclude Include="TessaString.h" />
-    <ClInclude Include="TextUI.h" />
     <ClInclude Include="TimeFuncs.h" />
-    <ClInclude Include="UIManager.h" />
+    <ClInclude Include="UIMessage.h" />
     <ClInclude Include="VectorBoolPointer.h" />
     <ClInclude Include="VesuviusString.h" />
     <ClInclude Include="Wallace.h" />

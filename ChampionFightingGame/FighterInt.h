@@ -58,7 +58,6 @@ const int FIGHTER_INT_FRAME_ADVANTAGE = fighter_int.count();
 const int FIGHTER_INT_PARTIAL_HEALTH_FRAMES = fighter_int.count();
 const int FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER = fighter_int.count();
 const int FIGHTER_INT_TRAINING_EX_RECOVERY_TIMER = fighter_int.count();
-const int FIGHTER_INT_UI_TEXT_TYPE = fighter_int.count();
 const int FIGHTER_INT_SUCCESS_COUNTERHIT_VAL = fighter_int.count();
 const int FIGHTER_INT_FRAME_GAP = fighter_int.count();
 const int FIGHTER_INT_ACTIONABLE_FRAME_GAP = fighter_int.count();

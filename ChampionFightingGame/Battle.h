@@ -38,18 +38,6 @@ class Camera;
 
 void battle_main();
 
-class BattleText : public GameTexture {
-public:
-	BattleText();
-
-	void init (Font* font, std::string text, int duration, Fighter* fighter, glm::vec2 pos);
-	void update(std::string text, int duration);
-
-	Font* font;
-
-	int duration;
-};
-
 class Simbox {
 public:
 	Simbox();
@@ -313,17 +301,13 @@ public:
 	ObjectManager* object_manager;
 	ThreadManager* thread_manager;
 
-	Font combo_font;
-	Font message_font;
-	Font info_font;
-
 	Fighter* fighter[2];
 	Stage stage;
 	Camera* camera;
 
-	BattleText* combo_counter[2] = { nullptr };
-	BattleText* combo_hit[2] = { nullptr };
-	std::list<BattleText> texts[2];
+	UIMessage* combo_counter[2];
+	UIMessage* combo_hits[2];
+
 	int ko_timer;
 	int actionable_timer;
 

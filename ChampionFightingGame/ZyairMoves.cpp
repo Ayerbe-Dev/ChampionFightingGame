@@ -9,7 +9,11 @@ void Zyair::load_move_scripts() {
 		return;
 	});
 	script("wait", [this]() {
-
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 150), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-30, 150), glm::vec2(70, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+		});
 	});
 	script("walk_f", [this]() {
 

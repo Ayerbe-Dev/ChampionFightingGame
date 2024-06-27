@@ -31,5 +31,5 @@ void Rowan::chara_main() {
 }
 
 void Rowan::load_chara_effects() {
-	load_effect("flame");
+
 }

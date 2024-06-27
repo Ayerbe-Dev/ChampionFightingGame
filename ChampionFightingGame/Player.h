@@ -12,6 +12,10 @@ const int INPUT_MODE_REPLAY = 3;
 const int INPUT_MODE_ATLAS_REWIND = 4;
 const int INPUT_MODE_ROLLBACK = 5;
 
+const int PLAYER_KIND_PLAYER = 0;
+const int PLAYER_KIND_CPU = 1;
+const int PLAYER_KIND_DUMMY = 2;
+
 class Player {
 public:
 	Player();
@@ -38,4 +42,6 @@ public:
 
 	int rollback_frames;
 	int input_mode;
+
+	int player_kind;
 };

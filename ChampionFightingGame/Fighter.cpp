@@ -81,6 +81,9 @@ void Fighter::fighter_main() {
 	process_projectiles();
 	process_post_common_fighter_vars();
 	process_post_status();
+	if (player->player_kind == PLAYER_KIND_CPU) {
+		process_cpu();
+	}
 }
 
 void Fighter::fighter_post() {
@@ -571,8 +574,7 @@ void Fighter::reset() {
 	pos.x = stage->start_pos[id];
 	pos.y = 0.0f;
 	pos.z = 0.0f;
-	object_float[FIGHTER_FLOAT_HEALTH] = get_param_float("health");
-	object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = object_float[FIGHTER_FLOAT_HEALTH];
+	set_default_vars();
 	change_status(FIGHTER_STATUS_WAIT);
 }
 
@@ -708,4 +710,8 @@ void Fighter::process_post_common_fighter_vars() {
 		}
 		object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES] = 0;
 	}
+}
+
+void Fighter::process_cpu() {
+	cpu.process();
 }

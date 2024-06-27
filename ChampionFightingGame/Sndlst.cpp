@@ -233,7 +233,7 @@ char get_sndlst_char(char key) {
 		return key + 70;
 	}
 	else if (key >= 53 && key < 63) { //0-9
-		return key - 7;
+		return key - 5;
 	}
 	else if (key == 63) { //_
 		return 95;

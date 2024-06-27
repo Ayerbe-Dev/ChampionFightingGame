@@ -39,7 +39,7 @@ void ModelData::load_model(std::string path) {
 	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
 
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals);
+	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
@@ -121,10 +121,10 @@ void ModelData::process_scene(const aiScene* scene) {
 		std::vector<ModelTexture> specularMaps = load_texture_names(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-		std::vector<ModelTexture> normalMaps = load_texture_names(material, aiTextureType_HEIGHT, "texture_normal");
+		std::vector<ModelTexture> normalMaps = load_texture_names(material, aiTextureType_NORMALS, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-		std::vector<ModelTexture> heightMaps = load_texture_names(material, aiTextureType_AMBIENT, "texture_height");
+		std::vector<ModelTexture> heightMaps = load_texture_names(material, aiTextureType_HEIGHT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 		material_data.emplace_back(textures, material->GetName().C_Str());
@@ -315,6 +315,7 @@ void ModelData::process_skeleton(aiNode* root) {
 ModelInstance::ModelInstance() {
 	texture_dir = "";
 	model = nullptr;
+	trans_matrix = glm::mat4(1.0);
 	move = false;
 	flip = false;
 }
@@ -328,6 +329,7 @@ ModelInstance::~ModelInstance() {
 }
 
 void ModelInstance::load_model_instance(std::string path) {
+	trans_matrix = glm::mat4(1.0);
 	move = false;
 	texture_dir = "";
 	
@@ -398,7 +400,7 @@ void ModelInstance::set_move(bool move) {
 
 	for (int i = 0, max = trans_children.size(); i < max; i++) {
 		if (move) {
-			trans_children[i]->parent_matrix = model->dummy_matrix;
+			trans_children[i]->parent_matrix = &trans_matrix;
 		}
 		else {
 			trans_children[i]->parent_matrix = &bone_data[model->get_trans_id()].anim_matrix;
@@ -421,20 +423,25 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 		return reset_bones();
 	}
 
+	glm::mat4 global_transform = model->get_global_transform();
 	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
 	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 	float interp_mul = (frame - (int)frame);
-
-	glm::mat4 global_transform = model->get_global_transform();
-	glm::mat4 flip_matrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, -1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	);
-	glm::vec3 flip_vec = glm::vec3(-1.0, 1.0, 1.0);
+	if (move) {
+		glm::mat4 trans_keyframe = anim_kind->trans_matrices[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
+		glm::mat4 next_trans_keyframe = anim_kind->trans_matrices[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
+		trans_matrix = trans_keyframe + (interp_mul * (next_trans_keyframe - trans_keyframe));
+	}
 
 	if (flip) {
+		glm::mat4 flip_matrix = glm::mat4(
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, -1.0, 0.0,
+			0.0, 0.0, 0.0, 1.0
+		);
+		glm::vec3 flip_vec = glm::vec3(-1.0, 1.0, 1.0);
+
 		for (size_t i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += interp_mul * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
 			keyframes[i].pos += interp_mul * (next_keyframes[i].pos - keyframes[i].pos);

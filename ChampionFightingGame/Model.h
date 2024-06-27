@@ -161,6 +161,7 @@ private:
 	void process_skeleton_instance();
 
 	ModelData* model;
+	glm::mat4 trans_matrix;
 	bool move;
 	bool flip;
 };

@@ -127,6 +127,7 @@ CSS::CSS() {
 							}
 							else {
 								mobile_css_slot.set_alpha(0);
+								mobile_css_slot.set_rot(glm::vec3(0.0, 0.0, 0.0));
 								large_css_slot.set_alpha(255);
 							}
 						});
@@ -566,7 +567,10 @@ bool CSS::load_css() {
 void CSS::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
-	if (thread_manager->is_active(THREAD_KIND_LOAD)) {
+	if (thread_manager->is_active(THREAD_KIND_LOAD) && internal_frame >= 60) {
+		//The internal_frame check is designed to hide the more obvious stutters with gl 
+		//loading, and can be removed for the vulkan impl
+
 		if (thread_loaded_chars > loaded_chars) {
 			load_chara_model_into_main_thread();
 		}
@@ -680,6 +684,14 @@ void CSS::event_start_press() {
 				.get_child(cursor.int_var("selected_slot")).int_var("chara_kind");
 			player[i]->alt_costume = cursor.int_var("selected_costume");
 			player[i]->alt_color = cursor.int_var("selected_color");
+		}
+		if (game_context == GAME_CONTEXT_NORMAL || game_context == GAME_CONTEXT_SPECIAL) {
+			if (player[1]->controller.has_any_controller()) {
+				player[1]->player_kind = PLAYER_KIND_PLAYER;
+			}
+			else {
+				player[1]->player_kind = PLAYER_KIND_CPU;
+			}
 		}
 		update_state(GAME_STATE_BATTLE);
 		return;

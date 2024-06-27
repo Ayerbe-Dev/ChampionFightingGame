@@ -32,11 +32,15 @@ void EffectManager::clear_game_objects() {
 }
 
 void EffectManager::register_particle_effect_instance(ParticleEffectInstance* instance, Particle* particle) {
-
+	particle_effect_instances.push_back(std::pair(instance, particle));
 }
 
 void EffectManager::unregister_particle_effect_instance(ParticleEffectInstance* instance) {
-
+	for (auto &pair : particle_effect_instances) {
+		if (pair.first == instance) {
+			particle_effect_instances.remove(pair);
+		}
+	}
 }
 
 ParticleEffect& EffectManager::get_particle_effect(std::string dir) {
@@ -84,7 +88,7 @@ void EffectManager::unload_unused() {
 }
 
 void EffectManager::populate_effects() {
-	add_effect_info("flame", "resource/chara/rowan/effects/flame/");
+	add_effect_info("flame", "resource/chara/eric/effects/flame/");
 }
 
 void EffectManager::process() {

@@ -89,7 +89,7 @@ bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status)
 }
 
 bool Fighter::check_hitstun_parry() {
-	if (object_float[FIGHTER_FLOAT_DAMAGE_SCALE] <= 0.7f //Damage scale has to be 70% or lower, so you can't
+	if (object_float[FIGHTER_FLOAT_DAMAGE_SCALE] < 0.8f //Damage scale has to be lower than 80%, so you can't
 		//hitstun parry the first 3 hits of a combo (4 on counterhit/punish, 5 on crit)
 		&& object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0 //Can't start the hitstun parry during hitlag
 		&& !object_flag[FIGHTER_FLAG_DISABLE_HITSTUN_PARRY]) {

@@ -42,8 +42,7 @@ void main() {
 #endif
 
     g_diffuse.a = 1.0;
-    g_specular.rgb = texture(material.specular, fs_in.TexCoords).rgb;
-    g_specular.a = 0.0; //We don't actually have specular textures lmao this will be used later
+    g_specular.rgba = texture(material.specular, fs_in.TexCoords).rgba;
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

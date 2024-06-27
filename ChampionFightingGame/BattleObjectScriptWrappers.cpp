@@ -33,7 +33,7 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 		UNWRAP_NO_DECL(custom_hit_status);
 	}
 	else {
-		UNWRAP_NO_DECL(hit_status, HitStatus);
+		UNWRAP_NO_DECL(hit_status);
 	}
 	UNWRAP(hit_move, HitMove);
 	UNWRAP(hit_flags, HitFlag);

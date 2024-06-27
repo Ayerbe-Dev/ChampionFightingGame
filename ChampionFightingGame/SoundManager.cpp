@@ -4,7 +4,6 @@
 #include "OpenAL/alc.h"
 #include "OpenAL/al.h"
 #include "utils.h"
-#include "GameObject.h"
 #include "SoundPlayer.h"
 
 SoundResource::SoundResource() {
@@ -26,19 +25,14 @@ void SoundManager::process_sounds() {
 		sound_player->process_sound();
 	}
 	ALint state;
-	for (std::list<MusicInstance>::iterator music = active_music.begin(), max = active_music.end(); music != max; music++) {
+	for (std::list<MusicInstance>::iterator music = active_music.begin(); music != active_music.end(); music++) {
 		alGetSourcei(music->source, AL_SOURCE_STATE, &state);
 		if (state == AL_PLAYING) {
 			update_stream(*music);
 		}
 		else if (state == AL_STOPPED) {
 			alDeleteSources(1, &(music->source));
-			if (active_music.size() != 1) {
-				music = active_music.erase(music);
-			}
-			else {
-				active_music.erase(music);
-			}
+			active_music.erase(music);
 		}
 	}
 }

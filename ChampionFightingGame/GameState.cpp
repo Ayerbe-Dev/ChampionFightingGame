@@ -35,7 +35,7 @@ GameState::GameState() {
 	prev_executed_frame = 0;
 	player_id = 0;
 	menu_objects.reserve(2);
-	GameManager* game_manager = GameManager::get_instance();
+	game_manager = GameManager::get_instance();
 	for (int i = 0; i < 2; i++) {
 		player[i] = game_manager->player[i];
 	}
@@ -45,7 +45,10 @@ GameState::GameState() {
 GameState::~GameState() {
 	menu_objects.clear();
 	menu_object_map.clear();
-	GameManager::get_instance()->delete_game_state();
+	for (auto &f : font_map) {
+		f.second.unload_font();
+	}
+	game_manager->delete_game_state();
 }
 
 void GameState::process_game_state() {
@@ -59,19 +62,35 @@ void GameState::process_game_state() {
 		player[i]->poll_controller_menu();
 	}
 	pre_event_process_main();
-	GameManager::get_instance()->process_game_state_events();
+	game_manager->process_game_state_events();
 	process_main();
+	if (game_manager->get_game_state() == this) {
+		for (std::list<UIMessage>::iterator it = messages_active.begin();
+			it != messages_active.end(); it++) {
+			if (!it->check_active()) {
+				messages_fading.push_back(std::move(*it)); 
+				messages_active.erase(it);
+			
+			}
+		}
+		for (std::list<UIMessage>::iterator it = messages_fading.begin();
+			it != messages_fading.end(); it++) {
+			if (!it->texture.alpha) {
+				messages_fading.erase(it);				
+			}
+		}
+	}
 	ObjectManager::get_instance()->process();
 	SoundManager::get_instance()->process_sounds();
 	internal_frame++;
 }
 
 void GameState::render_game_state() {
-	GameManager::get_instance()->render_game_states();
+	game_manager->render_game_states();
 }
 
 void GameState::update_state(int game_state, int game_context) {
-	GameManager::get_instance()->update_state(game_state, game_context);
+	game_manager->update_state(game_state, game_context);
 }
 
 void GameState::push_menu_object(std::string name, int texture_hint, int child_hint, int activity_hint) {
@@ -83,14 +102,14 @@ void GameState::push_menu_object(std::string name, int texture_hint, int child_h
 
 MenuObject& GameState::get_menu_object(std::string name) {
 	if (!menu_object_map.contains(name)) {
-		GameManager::get_instance()->add_crash_log("Failed to find Menu Object: " + name);
+		game_manager->add_crash_log("Failed to find Menu Object: " + name);
 	}
 	return menu_objects[menu_object_map[name]];
 }
 
 void GameState::render_menu_object(std::string name) {
 	if (!menu_object_map.contains(name)) {
-		GameManager::get_instance()->add_crash_log("Failed to find Menu Object: " + name);
+		game_manager->add_crash_log("Failed to find Menu Object: " + name);
 		return;
 	}
 	menu_objects[menu_object_map[name]].render();
@@ -266,6 +285,36 @@ void GameState::pop_menu_stack() {
 	}
 	last_push_type_stack.pop();
 	last_pushed_texture = nullptr;
+}
+
+void GameState::load_font(std::string name, std::string font_name, int font_size) {
+	if (font_map.contains(name)) {
+		game_manager->add_crash_log("Font " + name + " already loaded");
+		return;
+	}
+	font_map[name] = FontManager::get_instance()->load_font(font_name, font_size);
+}
+
+Font& GameState::get_font(std::string name) {
+	if (!font_map.contains(name)) {
+		game_manager->add_crash_log("Font " + name + " not loaded");
+	}
+	return font_map[name];
+}
+
+void GameState::add_message(std::string font_name, std::string text, int active_duration, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs) {
+	messages_active.push_back(UIMessage());
+	messages_active.back().init(&get_font(font_name), text, active_duration, fade_frames, pos, rgba, border_rgbs);
+}
+
+void GameState::add_message(std::string font_name, std::string text, bool* active_condition, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs) {
+	messages_active.push_back(UIMessage());
+	messages_active.back().init(&get_font(font_name), text, active_condition, fade_frames, pos, rgba, border_rgbs);
+}
+
+void GameState::add_message(std::string font_name, std::string text, VBP active_condition, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs) {
+	messages_active.push_back(UIMessage());
+	messages_active.back().init(&get_font(font_name), text, active_condition, fade_frames, pos, rgba, border_rgbs);
 }
 
 bool GameState::execute_if(std::string name, int num_allowed_executions, bool condition) {

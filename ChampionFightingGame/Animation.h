@@ -12,6 +12,7 @@ public:
 	void init(std::string name, std::string filename, Skeleton skeleton);
 
 	std::string name;
+	std::vector<glm::mat4> trans_matrices;
 	std::vector<std::vector<AnimBone>> keyframes;
 	int length;
 	int faf;

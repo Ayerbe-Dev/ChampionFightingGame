@@ -68,13 +68,6 @@ const int WAKEUP_TYPE_BACK = 2;
 const int WAKEUP_TYPE_SLOW = 3;
 const int WAKEUP_TYPE_MAX = 4;
 
-const int UI_TEXT_TYPE_NONE = 0;
-const int UI_TEXT_TYPE_COUNTER = 1;
-const int UI_TEXT_TYPE_PUNISH = 2;
-const int UI_TEXT_TYPE_CRITICAL = 3;
-const int UI_TEXT_TYPE_ARMOR_BREAK = 4;
-const int UI_TEXT_TYPE_REVERSAL = 5;
-
 const int COUNTERHIT_VAL_NONE = 0;
 const int COUNTERHIT_VAL_COUNTER = 1;
 const int COUNTERHIT_VAL_PUNISH = 2;

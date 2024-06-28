@@ -58,8 +58,9 @@ DebugMenu::DebugMenu() {
 	go1.model.load_textures("c0");
 	go1.init_shader();
 
-	go1.pos = glm::vec3(-200.0, 0.0, 0.0);
-	go1.rot.z = glm::radians(90.0);
+	go1.set_pos(glm::vec3(-200.0, 0.0, 0.0));
+	go1.set_rot(glm::vec3(0.0, 0.0, 90.0));
+
 	//	go1.load_anim_table("resource/chara/atlas/anims/battle");
 	//	go1.change_anim("wait", 0.5, 0.0);
 
@@ -68,8 +69,8 @@ DebugMenu::DebugMenu() {
 	go2.model.load_textures("c1");
 	go2.init_shader();
 
-	go2.pos = glm::vec3(200.0, 0.0, 0.0);
-	go2.rot.z = glm::radians(90.0);
+	go2.set_pos(glm::vec3(200.0, 0.0, 0.0));
+	go2.set_rot(glm::vec3(0.0, 0.0, 90.0));
 	//	go2.load_anim_table("resource/chara/atlas/anims/battle");
 	//	go2.change_anim("wait", 0.5, 0.0);
 	go2.model.set_flip(true);

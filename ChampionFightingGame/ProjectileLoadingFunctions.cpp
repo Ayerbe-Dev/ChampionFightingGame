@@ -36,7 +36,7 @@ void Projectile::load_sounds() {
 }
 
 void Projectile::load_model_shader() {
-	scale = glm::vec3(get_param_float("model_scale"));
+	set_scale(glm::vec3(get_param_float("model_scale")));
 	has_model = get_param_bool("has_model");
 	if (has_model) {
 		model.load_model_instance(resource_dir + "/model/model.dae");

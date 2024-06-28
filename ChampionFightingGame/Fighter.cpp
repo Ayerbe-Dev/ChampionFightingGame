@@ -92,11 +92,10 @@ void Fighter::fighter_post() {
 	}
 	process_post_position();
 	if (anim_kind == nullptr) {
-		rot.x -= glm::radians(90.0);
-		rot.z += glm::radians(90.0 * facing_dir);
+		add_rot(glm::vec3(90, 0.0, 90.0 * facing_dir));
 	}
 	else {
-		rot.z += glm::radians(90.0);
+		add_rot(glm::vec3(0.0, 0.0, 90.0));
 	}
 	process_post_projectiles();
 }
@@ -152,24 +151,15 @@ void Fighter::process_animate() {
 
 void Fighter::process_post_animate() {
 	model.set_bones(frame, anim_kind);
-	set_pos_anim();
+	apply_trans_to_pos();
 }
 
 void Fighter::process_position() {
-	rot = glm::vec3(0.0);
-	if (isnan(pos.x)) {
-		pos.x = 0;
-	}
-	if (isnan(pos.y)) {
-		pos.y = 0;
-	}
-	if (isnan(pos.z)) {
-		pos.z = 0;
-	}
+	set_rot(glm::vec3(0.0));
 
 	update_pushbox_pos();
 
-	prev_pos = pos;
+	prev_pos = get_pos();
 }
 
 void Fighter::process_post_position() {
@@ -180,7 +170,7 @@ void Fighter::process_post_position() {
 			&& fighter_context != FIGHTER_CONTEXT_AIR) {
 			//TODO: Modify add_pos so that the returned failure code can distinguish between failures 
 			//due to positional differences and failures due to OoB movement
-			if (!add_pos(glm::vec3(object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) 
+			if (!add_pos_validate(glm::vec3(object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) 
 				&& !object_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 				that->object_int[FIGHTER_INT_PUSHBACK_FRAMES] = object_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				that->object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
@@ -571,9 +561,7 @@ void Fighter::process_input() {
 */
 
 void Fighter::reset() {
-	pos.x = stage->start_pos[id];
-	pos.y = 0.0f;
-	pos.z = 0.0f;
+	set_pos(glm::vec3(stage->start_pos[id], 0.0, 0.0));
 	set_default_vars();
 	change_status(FIGHTER_STATUS_WAIT);
 }

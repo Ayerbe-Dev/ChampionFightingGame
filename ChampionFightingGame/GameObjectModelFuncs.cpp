@@ -5,7 +5,6 @@
 #include <glm/gtx/vector_angle.hpp>
 #include "GLM Helpers.h"
 #include "RenderManager.h"
-#include "WindowConstants.h"
 
 glm::vec3 GameObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
@@ -70,13 +69,4 @@ glm::vec3 GameObject::get_bone_angle(int base_id, int angle_id) {
 	glm::vec3 angle_bone = normalize(get_relative_bone_position(angle_id));
 
 	return calc_rotation(base_bone, angle_bone) * glm::vec3(180 / 3.14);
-}
-
-void GameObject::set_scale(glm::vec3 scale) {
-	this->scale = scale;
-	scale_vec = glm::vec3(
-		WINDOW_WIDTH / (100 * scale.x),
-		WINDOW_HEIGHT / (100 * scale.y),
-		WINDOW_DEPTH / (100 * scale.z)
-	);
 }

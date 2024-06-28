@@ -55,7 +55,6 @@ public:
 		0.0, 0.0, -1.0, 0.0,
 		0.0, 0.0, 0.0, 1.0
 	);
-	const glm::vec3 scale_vec = glm::vec3(19.2, 10.8, 19.2);
 
 	glm::vec3 pos;
 	glm::vec3 prev_pos;

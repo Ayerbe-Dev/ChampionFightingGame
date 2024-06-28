@@ -11,9 +11,6 @@ ObjectManager::ObjectManager() {
 }
 
 void ObjectManager::process() {
-	for (GameObject* object : game_objects) {
-		object->process_render_pos();
-	}
 	if (is_frame_elapsed()) {
 		world_frame = 0.0f;
 	}

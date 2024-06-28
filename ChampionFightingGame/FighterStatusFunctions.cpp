@@ -80,7 +80,7 @@ bool Fighter::is_status_end(unsigned int post_status_kind, bool call_end_status,
 }
 
 bool Fighter::check_landing(unsigned int post_status_kind, bool call_end_status) {
-	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0 && pos.y <= 0.0f && object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] < 0.0) {
+	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0 && get_pos().y <= 0.0f && object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] < 0.0) {
 		change_status(post_status_kind, call_end_status);
 		(this->*status_script[status_kind])();
 		return true;

@@ -85,7 +85,7 @@ void Projectile::process_post_animate() {
 }
 
 void Projectile::process_position() {
-	prev_pos = pos;
+	prev_pos = get_pos();
 }
 
 void Projectile::process_post_position() {

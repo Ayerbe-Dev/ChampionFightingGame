@@ -96,9 +96,9 @@ public:
 		//position on each coordinate, so an invalid x but valid y will only modify your x. If prev is false, you'll go to the closest valid position
 		//to where you want to go to, so if your x would be higher than the window bounds, your x position would be set to the window bounds.
 
-	bool add_pos(glm::vec3 pos, bool prev = false);
-	bool set_pos(glm::vec3 pos, bool prev = false);
-	bool set_pos_anim();
+	bool add_pos_validate(glm::vec3 pos, bool prev = false);
+	bool set_pos_validate(glm::vec3 pos, bool prev = false);
+	bool apply_trans_to_pos();
 	void landing_crossup();
 	void apply_gravity(float gravity, float fall_speed);
 

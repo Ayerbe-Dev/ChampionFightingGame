@@ -100,7 +100,6 @@ EffectInstance::EffectInstance() {
 	final_rot = glm::vec3(0.0);
 	final_scale = glm::vec3(1.0);
 	final_rgba = glm::vec4(1.0);
-	scale_vec = glm::vec3(1.0);
 	flip = false;
 	interp_var = nullptr;
 	frame = 0.0;
@@ -133,18 +132,10 @@ EffectInstance::EffectInstance(Effect* effect, glm::vec3 pos, glm::vec3 rot, glm
 	this->rate = rate;
 	this->frame = frame;
 	if (game_object != nullptr) {
-		scale_vec = glm::vec3(
-			WINDOW_WIDTH / (100 * game_object->scale.x),
-			WINDOW_HEIGHT / (100 * game_object->scale.y),
-			WINDOW_DEPTH / (100 * game_object->scale.z)
-		);
 		BattleObject* battle_object = static_cast<BattleObject*>(game_object);
 		if (battle_object != nullptr && !battle_object->facing_right) {
 			flip = true;
 		}
-	}
-	else {
-		scale_vec = glm::vec3(1.0);
 	}
 	interpolating = false;
 }
@@ -172,6 +163,7 @@ bool EffectInstance::process() {
 	final_rot = rot + (rot_frame * frame);
 	final_scale = scale + (scale_frame * frame);
 	final_rgba = rgba + (rgba_frame * frame);
+	final_pos /= glm::vec3(19.2, 10.8, 19.2);
 	if (game_object != nullptr) {
 		if (bone_id != -1) {
 			BattleObject* battle_object = static_cast<BattleObject*>(game_object);
@@ -185,8 +177,8 @@ bool EffectInstance::process() {
 			}
 		}
 		else {
-			final_pos += game_object->pos;
-			final_rot += game_object->rot;
+			final_pos += game_object->get_pos();
+			final_rot += game_object->get_rot();
 		}
 	}
 
@@ -198,7 +190,7 @@ void EffectInstance::render() {
 	shader->set_int("f_texture", 0);
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0, max = effect->particles.size(); i < max; i++) {
-		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, scale_vec, flip, frame);
+		effect->particles[i].render(shader, final_pos, final_rot, final_scale, final_rgba, flip, frame);
 	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

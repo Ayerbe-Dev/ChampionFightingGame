@@ -379,12 +379,12 @@ CSS::CSS() {
 		if (player[i]->chara_kind != CHARA_KIND_MAX) {
 			select_default_chara_kind(player[i]->chara_kind);
 		}
-		demo_models[i].rot.z = glm::radians(90.0f);
+		demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
 		if (!i) {
-			demo_models[i].pos = glm::vec3(-350.0, 0.0, 0.0);
+			demo_models[i].set_pos(glm::vec3(-350.0, 0.0, 0.0));
 		}
 		else {
-			demo_models[i].pos = glm::vec3(350.0, 0.0, 0.0);
+			demo_models[i].set_pos(glm::vec3(350.0, 0.0, 0.0));
 		}
 	}
 }
@@ -600,10 +600,10 @@ void CSS::render_main() {
 	stage_demo.render_shadow();
 	for (int i = 0; i < 2; i++) {
 		if (demo_models[i].anim_kind == nullptr) {
-			demo_models[i].rot = glm::vec3(glm::radians(-90.0), 0.0, glm::radians(90.0 * (i * -2 + 1)));
+			demo_models[i].set_rot(glm::vec3(-90.0, 0.0, 90.0 * (i * -2 + 1)));
 		}
 		else {
-			demo_models[i].rot = glm::vec3(0.0, 0.0, glm::radians(90.0));
+			demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
 		}
 		int selection = get_menu_object("Player Cursors").get_child(i).int_var("selected_slot");
 		if (selection >= 0 && selection < loaded_chars) {

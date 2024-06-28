@@ -30,12 +30,12 @@ void Fighter::SET_STRING(ScriptArg args) {
 
 void Fighter::ADD_POS(ScriptArg args) {
 	UNWRAP(pos, glm::vec3);
-	add_pos(pos);
+	add_pos_validate(pos);
 }
 
 void Fighter::SET_POS(ScriptArg args) {
 	UNWRAP(pos, glm::vec3);
-	set_pos(pos);
+	set_pos_validate(pos);
 }
 
 void Fighter::CHANGE_ANIM(ScriptArg args) {

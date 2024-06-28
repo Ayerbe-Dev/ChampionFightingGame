@@ -25,7 +25,6 @@ public:
 	//Process Funcs
 
 	void process_animate();
-	void process_render_pos();
 
 	//Loading Funcs
 
@@ -55,7 +54,27 @@ public:
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
+
+	//Transformation Funcs
+
+	void add_pos(glm::vec3 pos);
+	void set_pos(glm::vec3 pos);
+	void set_pos_x(float pos);
+	void set_pos_y(float pos);
+	void set_pos_z(float pos);
+	glm::vec3 get_pos() const;
+	void add_rot(glm::vec3 rot);
+	void set_rot(glm::vec3 rot);
+	void set_rot_x(float rot);
+	void set_rot_y(float rot);
+	void set_rot_z(float rot);
+	glm::vec3 get_rot() const;	
+	void add_scale(glm::vec3 scale);
 	void set_scale(glm::vec3 scale);
+	glm::vec3 get_scale() const;
+	glm::vec3 get_front() const;
+	glm::vec3 get_right() const;
+	glm::vec3 get_up() const;
 
 	//Animation Funcs
 
@@ -110,12 +129,7 @@ public:
 
 	std::string resource_dir;
 
-	glm::vec3 pos;
 	glm::vec3 prev_pos;
-	glm::vec3 render_pos;
-	glm::vec3 rot;
-	glm::vec3 scale;
-	glm::vec3 scale_vec;
 	glm::mat4 extra_mat;
 
 	AnimationTable anim_table;
@@ -135,4 +149,12 @@ public:
 	Shader* shadow_shader;
 	Shader* outline_shader;
 	ModelInstance model;
+private:
+	glm::vec3 pos;
+	glm::vec3 rot;
+	glm::vec3 scale;
+	glm::vec3 scale_vec;
+	glm::vec3 front;
+	glm::vec3 right;
+	glm::vec3 up;
 };

@@ -733,7 +733,7 @@ void Battle::process_pre_intro() {
 	internal_state = BATTLE_STATE_INTRO;
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->change_anim("intro");
-		fighter[i]->rot.z = glm::radians(90.0f);
+		fighter[i]->set_rot(glm::vec3(0.0, 0.0, 90.0));
 	}
 }
 
@@ -1200,25 +1200,25 @@ void Battle::process_fighters() {
 		|| fighter[1]->object_flag[FIGHTER_FLAG_LOCK_DIRECTION])) {
 		for (int i = 0; i < 2; i++) {
 			if (fighter[i]->fighter_context == FIGHTER_CONTEXT_GROUND) {
-				if (fighter[i]->pos.x > fighter[!i]->pos.x) {
+				if (fighter[i]->get_pos().x > fighter[!i]->get_pos().x) {
 					fighter[i]->internal_facing_right = false;
 					fighter[i]->internal_facing_dir = -1.0;
 				}
-				else if (fighter[i]->pos.x < fighter[!i]->pos.x) {
+				else if (fighter[i]->get_pos().x < fighter[!i]->get_pos().x) {
 					fighter[i]->internal_facing_right = true;
 					fighter[i]->internal_facing_dir = 1.0;
 				}
 				else { //If both players are stuck inside each other, stop that !
 					if (fighter[!i]->fighter_context == FIGHTER_CONTEXT_GROUND) {
-						if (fighter[i]->pos.x == fighter[!i]->pos.x
+						if (fighter[i]->get_pos().x == fighter[!i]->get_pos().x
 							&& fighter[i]->internal_facing_dir == fighter[!i]->internal_facing_dir) {
 							fighter[i]->internal_facing_right = true;
 							fighter[i]->internal_facing_dir = 1.0;
 							fighter[!i]->internal_facing_right = false;
 							fighter[!i]->internal_facing_dir = -1.0;
 						}
-						fighter[i]->add_pos(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
-						fighter[!i]->add_pos(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
+						fighter[i]->add_pos_validate(glm::vec3(-10.0 * fighter[i]->internal_facing_dir, 0, 0));
+						fighter[!i]->add_pos_validate(glm::vec3(-10.0 * fighter[!i]->internal_facing_dir, 0, 0));
 					}
 				}
 			}

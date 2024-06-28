@@ -642,21 +642,21 @@ void cotr_imgui_debug_battle(Battle* battle) {
 
 		if (ImGui::TreeNode("Players")) {
 			if (ImGui::TreeNode("P1")) {
-				ImGui::SliderFloat("Pos X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
-				ImGui::SliderFloat("Pos Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
-				ImGui::SliderFloat("Pos Z", &battle->fighter[0]->pos[2], -3000.0f, 3000.0f);
-				ImGui::SliderFloat("Rot X", &battle->fighter[0]->rot[0], -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Y", &battle->fighter[0]->rot[1], -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Z", &battle->fighter[0]->rot[2], -3.14f, 3.14f);
+//				ImGui::SliderFloat("Pos X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
+//				ImGui::SliderFloat("Pos Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
+//				ImGui::SliderFloat("Pos Z", &battle->fighter[0]->pos[2], -3000.0f, 3000.0f);
+//				ImGui::SliderFloat("Rot X", &battle->fighter[0]->rot[0], -3.14f, 3.14f);
+//				ImGui::SliderFloat("Rot Y", &battle->fighter[0]->rot[1], -3.14f, 3.14f);
+//				ImGui::SliderFloat("Rot Z", &battle->fighter[0]->rot[2], -3.14f, 3.14f);
 				ImGui::TreePop();
 			}
 			if (ImGui::TreeNode("P2")) {
-				ImGui::SliderFloat("Pos X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
-				ImGui::SliderFloat("Pos Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
-				ImGui::SliderFloat("Pos Z", &battle->fighter[1]->pos[2], -3000.0f, 3000.0f);
-				ImGui::SliderFloat("Rot X", &battle->fighter[1]->rot[0], -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Y", &battle->fighter[1]->rot[1], -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Z", &battle->fighter[1]->rot[2], -3.14f, 3.14f);
+//				ImGui::SliderFloat("Pos X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
+//				ImGui::SliderFloat("Pos Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
+//				ImGui::SliderFloat("Pos Z", &battle->fighter[1]->pos[2], -3000.0f, 3000.0f);
+//				ImGui::SliderFloat("Rot X", &battle->fighter[1]->rot[0], -3.14f, 3.14f);
+//				ImGui::SliderFloat("Rot Y", &battle->fighter[1]->rot[1], -3.14f, 3.14f);
+//				ImGui::SliderFloat("Rot Z", &battle->fighter[1]->rot[2], -3.14f, 3.14f);
 				ImGui::TreePop();
 			}
 			ImGui::TreePop();

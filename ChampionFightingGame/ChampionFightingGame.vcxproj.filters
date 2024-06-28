@@ -586,9 +586,6 @@
     <ClCompile Include="InputSequence.cpp">
       <Filter>2. Code Files\Engine\Polling</Filter>
     </ClCompile>
-    <ClCompile Include="BattleObjectPositionFunctions.cpp">
-      <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
-    </ClCompile>
     <ClCompile Include="BattleObjectStatus.cpp">
       <Filter>2. Code Files\GameObject\BattleObject</Filter>
     </ClCompile>
@@ -606,6 +603,9 @@
     </ClCompile>
     <ClCompile Include="FighterCPU.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectTransformationFunctions.cpp">
+      <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

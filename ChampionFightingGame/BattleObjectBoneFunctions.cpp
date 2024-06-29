@@ -13,7 +13,7 @@ glm::vec3 BattleObject::get_relative_bone_position(std::string bone_name, glm::v
 		}
 	}
 	offset.x *= facing_dir;
-	return offset;
+	return offset * get_scale_vec();
 }
 
 glm::vec3 BattleObject::get_relative_bone_position(int bone_id, glm::vec3 offset) {
@@ -21,14 +21,14 @@ glm::vec3 BattleObject::get_relative_bone_position(int bone_id, glm::vec3 offset
 		offset += model.bone_data[bone_id].pos;
 	}
 	offset.x *= facing_dir;
-	return offset;
+	return offset * get_scale_vec();
 }
 
 glm::vec3 BattleObject::get_bone_position(std::string bone_name, glm::vec3 offset) {
 	if (has_model) {
 		int bone_id = model.get_bone_id(bone_name);
 		if (bone_id != -1) {
-			offset += model.bone_data[bone_id].pos;
+			offset += model.bone_data[bone_id].pos * get_scale_vec();
 			if (anim_kind != nullptr && anim_kind->flag_move) {
 				offset -= GameObject::get_relative_bone_position("Trans"); //GameObject's version of
 				//this function doesn't include an object's facing direction so we use that one here
@@ -36,18 +36,18 @@ glm::vec3 BattleObject::get_bone_position(std::string bone_name, glm::vec3 offse
 		}
 	}
 	offset.x *= facing_dir;
-	return offset + get_pos();
+	return offset + get_pos_unscaled();
 }
 
 glm::vec3 BattleObject::get_bone_position(int bone_id, glm::vec3 offset) {
 	if (has_model && bone_id != -1) {
-		offset += model.bone_data[bone_id].pos;
+		offset += model.bone_data[bone_id].pos * get_scale_vec();
 		if (anim_kind != nullptr && anim_kind->flag_move) {
 			offset -= GameObject::get_relative_bone_position("Trans");
 		}
 	}
 	offset.x *= facing_dir;
-	return offset + get_pos();
+	return offset + get_pos_unscaled();
 }
 
 glm::quat BattleObject::get_bone_rotation_quat(std::string bone_name) {

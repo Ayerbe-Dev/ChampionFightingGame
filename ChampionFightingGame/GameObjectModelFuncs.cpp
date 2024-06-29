@@ -9,37 +9,37 @@
 glm::vec3 GameObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 	}
-	return offset;
+	return offset * scale_vec;
 }
 
 glm::vec3 GameObject::get_relative_bone_position(int bone_id, glm::vec3 offset) {
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 	}
-	return offset;
+	return offset * scale_vec;
 }
 
 glm::vec3 GameObject::get_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 		if (anim_kind != nullptr && anim_kind->flag_move) {
 			offset -= get_relative_bone_position("Trans");
 		}
 	}
-	return offset + pos * scale_vec;
+	return offset * scale_vec + pos * scale_vec;
 }
 
 glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 		if (anim_kind != nullptr && anim_kind->flag_move) {
 			offset -= get_relative_bone_position("Trans");
 		}
 	}
-	return offset + pos * scale_vec;
+	return offset * scale_vec + pos * scale_vec;
 }
 
 glm::quat GameObject::get_bone_rotation_quat(std::string bone_name) {

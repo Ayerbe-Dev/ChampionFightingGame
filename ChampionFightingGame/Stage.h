@@ -22,8 +22,8 @@ public:
 	int stage_kind;
 
 	glm::vec2 start_pos;
-	glm::vec2 stage_bounds;
-	glm::vec2 camera_bounds;
+	float stage_bound;
+	float camera_bound;
 
 	std::string default_music_kind;
 	std::string resource_dir;

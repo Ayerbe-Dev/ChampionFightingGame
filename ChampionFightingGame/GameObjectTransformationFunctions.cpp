@@ -29,6 +29,10 @@ void GameObject::set_pos_z(float pos) {
 }
 
 glm::vec3 GameObject::get_pos() const {
+	return pos;
+}
+
+glm::vec3 GameObject::get_pos_unscaled() const {
 	return pos * scale_vec;
 }
 
@@ -121,6 +125,10 @@ void GameObject::set_scale(glm::vec3 scale) {
 
 glm::vec3 GameObject::get_scale() const {
 	return scale;
+}
+
+glm::vec3 GameObject::get_scale_vec() const {
+	return scale_vec;
 }
 
 glm::vec3 GameObject::get_front() const {

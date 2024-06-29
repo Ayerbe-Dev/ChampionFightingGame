@@ -9,8 +9,9 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 	bool allow_corner_crossup = object_flag[FIGHTER_FLAG_ALLOW_CORNER_CROSSUP] 
 		|| that->object_flag[FIGHTER_FLAG_ALLOW_CORNER_CROSSUP];
 	bool strict_wall_pushboxes = true;
+	float inter_mul = (get_scale_vec().x + that->get_scale_vec().x) / 2.0f;
 	if (get_pos().x == that->get_pos().x && prev_pos.x != that->prev_pos.x) {
-		if (get_pos().x <= stage->stage_bounds.x) {
+		if (get_pos_unscaled().x <= -stage->stage_bound) {
 			if ((prev_pos.x == get_pos().x) == allow_corner_crossup) {
 				add_pos(glm::vec3(1, 0, 0));
 			}
@@ -18,7 +19,7 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 				that->add_pos(glm::vec3(1, 0, 0));
 			}
 		}
-		if (get_pos().x >= stage->stage_bounds.y) {
+		if (get_pos_unscaled().x >= stage->stage_bound) {
 			if ((prev_pos.x == get_pos().x) == allow_corner_crossup) {
 				add_pos(glm::vec3(-1, 0, 0));
 			}
@@ -33,41 +34,38 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 		for (size_t i2 = 0, max2 = that_pushboxes.size(); i2 < max2; i2++) {
 			float intersection = get_rect_intersection(pushboxes[i].rect, that->pushboxes[i2].rect);
 			if (intersection == -1.0f || get_pos().x == that->get_pos().x) continue;
-			//TODO: When positions are equal, compare speeds to make sure that we can't do frame perfect
-			//collision shenanigans (We don't handle equal positions because they should resolve a frame
-			//later, but if you can match the opponent's speed and KEEP the positions identical, shit
-			//gets weird)
+			
 			float dir = get_pos().x > that->get_pos().x ? 1.0f : -1.0f;
-			bool p1_pos_change = add_pos_validate(glm::vec3(intersection / 2.0f * dir, 0.0f, 0.0f));
-			bool p2_pos_change = that->add_pos_validate(glm::vec3(intersection / -2.0f * dir, 0.0f, 0.0f));
+			bool p1_pos_change = add_pos_validate(glm::vec3(intersection * inter_mul / 2.0f * dir, 0.0f, 0.0f));
+			bool p2_pos_change = that->add_pos_validate(glm::vec3(intersection * inter_mul / -2.0f * dir, 0.0f, 0.0f));
 			
 			if ((!p1_pos_change || !p2_pos_change) && strict_wall_pushboxes) {
 				update_pushbox_pos();
 				that->update_pushbox_pos();
 				bool facing_wall = facing_dir * get_pos().x > 0.0f;
 				bool that_facing_wall = that->facing_dir * that->get_pos().x > 0.0f;
-				float pushbox_front = get_pos().x + (facing_wall
+				float pushbox_front = get_pos_unscaled().x + (facing_wall
 					? get_pushbox_back(i) : get_pushbox_front(i));
-				float that_pushbox_front = that->get_pos().x + (that_facing_wall
+				float that_pushbox_front = that->get_pos_unscaled().x + (that_facing_wall
 					? that->get_pushbox_back(i2) : that->get_pushbox_front(i2));
 				if (!p1_pos_change) {
 					if (that_facing_wall) {
-						that->set_pos_validate(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->get_pos().y, that->get_pos().z), true);
+						that->set_pos_validate(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->get_pos_unscaled().y, that->get_pos_unscaled().z), true);
 					}
 					else {
-						that->set_pos_validate(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->get_pos().y, that->get_pos().z), true);
+						that->set_pos_validate(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->get_pos_unscaled().y, that->get_pos_unscaled().z), true);
 					}
 				}
 				if (!p2_pos_change) {
 					if (facing_wall) {
-						set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_front(i), get_pos().y, get_pos().z), true);
+						set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_front(i), get_pos_unscaled().y, get_pos_unscaled().z), true);
 					}
 					else {
-						set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_back(i), get_pos().y, get_pos().z), true);
+						set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_back(i), get_pos_unscaled().y, get_pos_unscaled().z), true);
 					}
 				}
 				if (!p1_pos_change && !p2_pos_change) std::cout 
-					<< "Both players pushed into invalid get_pos()...?\n";
+					<< "Both players pushed into invalid pos...?\n";
 			}
 		}
 	}

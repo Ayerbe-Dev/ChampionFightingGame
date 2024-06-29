@@ -48,9 +48,9 @@ bool BattleObject::pushboxes_touching(BattleObject* object) {
 }
 
 float BattleObject::get_pushbox_front(size_t id) {
-	return pushboxes[id].rect.corners[2].x - get_pos().x;
+	return (pushboxes[id].rect.corners[2].x - get_pos().x) * get_scale_vec().x;
 }
 
 float BattleObject::get_pushbox_back(size_t id) {
-	return pushboxes[id].rect.corners[0].x - get_pos().x;
+	return (pushboxes[id].rect.corners[0].x - get_pos().x) * get_scale_vec().x;
 }

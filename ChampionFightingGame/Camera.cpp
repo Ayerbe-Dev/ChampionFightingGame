@@ -235,7 +235,7 @@ void Camera::reset_camera() {
 void Camera::calc_aim_from_ypr() {
 	front = normalize(glm::vec3(
 		sin(glm::radians(yaw)) * cos(glm::radians(pitch)),
-		sin(glm::radians(pitch)), 
+		sin(glm::radians(pitch)),
 		-cos(glm::radians(yaw)) * cos(glm::radians(pitch))
 	));
 
@@ -265,9 +265,9 @@ void Camera::update_view() {
 }
 
 void Camera::follow_players() {
-	pos_x_interpolator.set_target_val(clampf(stage->camera_bounds.x, (fighter[0]->get_pos().x + fighter[1]->get_pos().x) / 2.0f / 200.0f, stage->camera_bounds.y), 10);
+	pos_x_interpolator.set_target_val(clampf(-stage->camera_bound, (fighter[0]->get_pos().x + fighter[1]->get_pos().x) / 2.0f, stage->camera_bound), 10);
 	pos.x = pos_x_interpolator;
-	pos.y = clampf(base_pos.y, std::max(fighter[0]->get_pos().y, fighter[1]->get_pos().y) / 200.0f, 100.0f);
+	pos.y = clampf(base_pos.y, std::max(fighter[0]->get_pos().y, fighter[1]->get_pos().y), 100.0f);
 	pos.z = base_pos.z;
 
 	yaw = 0.0;
@@ -290,32 +290,32 @@ void Camera::follow_anim() {
 	keyframe.rot_key += (frame - (int)frame) * (next_keyframe.rot_key - keyframe.rot_key);
 
 	switch (anim_kind->anim_mode) {
-		case (CAMERA_ANIM_MODE_STAGE): {
-			pos = keyframe.pos_key;
-			yaw = keyframe.rot_key.x;
-			pitch = keyframe.rot_key.y;
-			roll = keyframe.rot_key.z;
+	case (CAMERA_ANIM_MODE_STAGE): {
+		pos = keyframe.pos_key;
+		yaw = keyframe.rot_key.x;
+		pitch = keyframe.rot_key.y;
+		roll = keyframe.rot_key.z;
 
-			pos.x *= target_facing_dir;
-			yaw *= target_facing_dir;
-			pos += target_base_pos;
+		pos.x *= target_facing_dir;
+		yaw *= target_facing_dir;
+		pos += target_base_pos;
 
-			calc_aim_from_ypr();
-		} break;
-		case (CAMERA_ANIM_MODE_FIGHTER): {
-			pos = keyframe.pos_key;
-			aim = keyframe.rot_key;
+		calc_aim_from_ypr();
+	} break;
+	case (CAMERA_ANIM_MODE_FIGHTER): {
+		pos = keyframe.pos_key;
+		aim = keyframe.rot_key;
 
-			pos.x *= target_facing_dir;
-			aim.x *= target_facing_dir;
-			pos += target_base_pos;
-			aim += target_base_pos;
+		pos.x *= target_facing_dir;
+		aim.x *= target_facing_dir;
+		pos += target_base_pos;
+		aim += target_base_pos;
 
-			calc_ypr_from_aim();
-		} break;
-		default: {
+		calc_ypr_from_aim();
+	} break;
+	default: {
 
-		} break;
+	} break;
 	}
 	update_view();
 

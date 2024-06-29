@@ -16,8 +16,8 @@ StageInfo::StageInfo(int stage_kind, std::string stage_name) {
 }
 
 Stage::Stage() {
-	camera_bounds = glm::vec2(0.0, 0.0);
-	stage_bounds = glm::vec2(0.0, 0.0);
+	camera_bound = 0.0f;
+	stage_bound = 0.0f;
 	stage_kind = 0;
 	start_pos = glm::vec2(0.0);
 }
@@ -36,14 +36,12 @@ void Stage::load_stage(StageInfo stage_info, ObjectManager *object_manager) {
 		return;
 	}
 
-	stream >> stage_bounds.x >> stage_bounds.y >> default_music_kind;
-	float center_point = (stage_bounds.x + stage_bounds.y) / 2.0;
+	stream >> stage_bound >> default_music_kind;
 	float distance = get_global_param_float(PARAM_FIGHTER, "spawn_distance") / 2.0;
-	start_pos.x = center_point - distance;
-	start_pos.y = center_point + distance;
+	start_pos.x = -distance;
+	start_pos.y = distance;
 	float max_distance = get_global_param_float(PARAM_FIGHTER, "max_distance") / 2.2;
-	camera_bounds.x = stage_bounds.x + max_distance;
-	camera_bounds.y = stage_bounds.y - max_distance;
+	camera_bound = stage_bound + max_distance;
 
 	default_music_kind = "resource/sound/bgm/stage/" + default_music_kind;
 

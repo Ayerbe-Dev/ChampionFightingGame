@@ -29,7 +29,7 @@ glm::vec3 GameObject::get_bone_position(std::string bone_name, glm::vec3 offset)
 			offset -= get_relative_bone_position("Trans");
 		}
 	}
-	return offset + pos;
+	return offset + pos * scale_vec;
 }
 
 glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
@@ -39,7 +39,7 @@ glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
 			offset -= get_relative_bone_position("Trans");
 		}
 	}
-	return offset + pos;
+	return offset + pos * scale_vec;
 }
 
 glm::quat GameObject::get_bone_rotation_quat(std::string bone_name) {

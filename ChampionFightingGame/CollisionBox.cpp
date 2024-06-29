@@ -12,10 +12,8 @@ CollisionBox::CollisionBox() {
 void CollisionBox::update_pos() {
 	glm::vec2 anchor = init_anchor;
 	glm::vec2 offset = init_offset;
-	anchor.x += object->get_pos().x;
-	anchor.y += object->get_pos().y;
-	offset.x += object->get_pos().x;
-	offset.y += object->get_pos().y;
+	anchor += glm::vec2(object->get_pos());
+	offset += glm::vec2(object->get_pos());
 	this->rect.update_corners(anchor, offset);
 }
 
@@ -37,12 +35,12 @@ void Pushbox::activate(int id, glm::vec2 anchor, glm::vec2 offset) {
 	this->id = id;
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
+	anchor /= glm::vec2(object->get_scale_vec());
+	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x += object->get_pos().x;
-	anchor.y += object->get_pos().y;
-	offset.x += object->get_pos().x;
-	offset.y += object->get_pos().y;
+	anchor += glm::vec2(object->get_pos());
+	offset += glm::vec2(object->get_pos());
 	this->rect.update_corners(anchor, offset);
 	active = true;
 }
@@ -63,12 +61,12 @@ void Blockbox::init(BattleObject* object) {
 void Blockbox::activate(glm::vec2 anchor, glm::vec2 offset) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
+	anchor /= glm::vec2(object->get_scale_vec());
+	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x += object->get_pos().x;
-	anchor.y += object->get_pos().y;
-	offset.x += object->get_pos().x;
-	offset.y += object->get_pos().y;
+	anchor += glm::vec2(object->get_pos());
+	offset += glm::vec2(object->get_pos());
 	this->rect.update_corners(anchor, offset);
 	active = true;
 }
@@ -107,12 +105,12 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	this->multihit = multihit;
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
+	anchor /= glm::vec2(object->get_scale_vec());
+	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x += object->get_pos().x;
-	anchor.y += object->get_pos().y;
-	offset.x += object->get_pos().x;
-	offset.y += object->get_pos().y;
+	anchor += glm::vec2(object->get_pos());
+	offset += glm::vec2(object->get_pos());
 	this->rect.update_corners(anchor, offset);
 	this->collision_kind = collision_kind;
 	this->hit_result = hit_result;
@@ -236,12 +234,12 @@ void Grabbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	unsigned int defender_status_if_hit) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
+	anchor /= glm::vec2(object->get_scale_vec());
+	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x += object->get_pos().x;
-	anchor.y += object->get_pos().y;
-	offset.x += object->get_pos().x;
-	offset.y += object->get_pos().y;
+	anchor += glm::vec2(object->get_pos());
+	offset += glm::vec2(object->get_pos());
 	this->rect.update_corners(anchor, offset);
 	this->id = id;
 	this->grabbox_kind = grabbox_kind;
@@ -274,12 +272,12 @@ void Hurtbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	HurtboxKind hurtbox_kind, int armor_hits, IntangibleKind intangible_kind) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
+	anchor /= glm::vec2(object->get_scale_vec());
+	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor.x += object->get_pos().x;
-	anchor.y += object->get_pos().y;
-	offset.x += object->get_pos().x;
-	offset.y += object->get_pos().y;
+	anchor += glm::vec2(object->get_pos());
+	offset += glm::vec2(object->get_pos());
 	this->rect.update_corners(anchor, offset);
 	this->id = id;
 	this->hurtbox_kind = hurtbox_kind;

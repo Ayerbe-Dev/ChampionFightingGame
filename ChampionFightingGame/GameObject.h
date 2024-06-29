@@ -63,6 +63,7 @@ public:
 	void set_pos_y(float pos);
 	void set_pos_z(float pos);
 	glm::vec3 get_pos() const;
+	glm::vec3 get_pos_unscaled() const;
 	void add_rot(glm::vec3 rot);
 	void set_rot(glm::vec3 rot);
 	void set_rot_x(float rot);
@@ -72,6 +73,7 @@ public:
 	void add_scale(glm::vec3 scale);
 	void set_scale(glm::vec3 scale);
 	glm::vec3 get_scale() const;
+	glm::vec3 get_scale_vec() const;
 	glm::vec3 get_front() const;
 	glm::vec3 get_right() const;
 	glm::vec3 get_up() const;

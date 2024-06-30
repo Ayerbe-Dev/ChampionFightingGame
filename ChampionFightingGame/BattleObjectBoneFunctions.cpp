@@ -36,7 +36,7 @@ glm::vec3 BattleObject::get_bone_position(std::string bone_name, glm::vec3 offse
 		}
 	}
 	offset.x *= facing_dir;
-	return offset + get_pos_unscaled();
+	return offset + get_pos();
 }
 
 glm::vec3 BattleObject::get_bone_position(int bone_id, glm::vec3 offset) {
@@ -47,7 +47,7 @@ glm::vec3 BattleObject::get_bone_position(int bone_id, glm::vec3 offset) {
 		}
 	}
 	offset.x *= facing_dir;
-	return offset + get_pos_unscaled();
+	return offset + get_pos();
 }
 
 glm::quat BattleObject::get_bone_rotation_quat(std::string bone_name) {

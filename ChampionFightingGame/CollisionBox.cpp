@@ -12,8 +12,8 @@ CollisionBox::CollisionBox() {
 void CollisionBox::update_pos() {
 	glm::vec2 anchor = init_anchor;
 	glm::vec2 offset = init_offset;
-	anchor += glm::vec2(object->get_pos());
-	offset += glm::vec2(object->get_pos());
+	anchor += glm::vec2(object->get_scaled_pos());
+	offset += glm::vec2(object->get_scaled_pos());
 	this->rect.update_corners(anchor, offset);
 }
 
@@ -39,8 +39,8 @@ void Pushbox::activate(int id, glm::vec2 anchor, glm::vec2 offset) {
 	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor += glm::vec2(object->get_pos());
-	offset += glm::vec2(object->get_pos());
+	anchor += glm::vec2(object->get_scaled_pos());
+	offset += glm::vec2(object->get_scaled_pos());
 	this->rect.update_corners(anchor, offset);
 	active = true;
 }
@@ -65,8 +65,8 @@ void Blockbox::activate(glm::vec2 anchor, glm::vec2 offset) {
 	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor += glm::vec2(object->get_pos());
-	offset += glm::vec2(object->get_pos());
+	anchor += glm::vec2(object->get_scaled_pos());
+	offset += glm::vec2(object->get_scaled_pos());
 	this->rect.update_corners(anchor, offset);
 	active = true;
 }
@@ -109,8 +109,8 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor += glm::vec2(object->get_pos());
-	offset += glm::vec2(object->get_pos());
+	anchor += glm::vec2(object->get_scaled_pos());
+	offset += glm::vec2(object->get_scaled_pos());
 	this->rect.update_corners(anchor, offset);
 	this->collision_kind = collision_kind;
 	this->hit_result = hit_result;
@@ -238,8 +238,8 @@ void Grabbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor += glm::vec2(object->get_pos());
-	offset += glm::vec2(object->get_pos());
+	anchor += glm::vec2(object->get_scaled_pos());
+	offset += glm::vec2(object->get_scaled_pos());
 	this->rect.update_corners(anchor, offset);
 	this->id = id;
 	this->grabbox_kind = grabbox_kind;
@@ -276,8 +276,8 @@ void Hurtbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	offset /= glm::vec2(object->get_scale_vec());
 	this->init_anchor = anchor;
 	this->init_offset = offset;
-	anchor += glm::vec2(object->get_pos());
-	offset += glm::vec2(object->get_pos());
+	anchor += glm::vec2(object->get_scaled_pos());
+	offset += glm::vec2(object->get_scaled_pos());
 	this->rect.update_corners(anchor, offset);
 	this->id = id;
 	this->hurtbox_kind = hurtbox_kind;

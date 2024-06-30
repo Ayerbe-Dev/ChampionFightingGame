@@ -3,7 +3,7 @@
 
 void Fighter::activate_projectile(int id, glm::vec3 init_pos) {
 	init_pos.x *= facing_dir;
-	projectiles[id]->set_pos(init_pos + get_pos_unscaled());
+	projectiles[id]->set_pos(init_pos + get_pos());
 
 	projectiles[id]->facing_right = facing_right;
 	projectiles[id]->facing_dir = facing_dir;

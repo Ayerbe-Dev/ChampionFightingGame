@@ -32,7 +32,7 @@ void BattleObject::new_effect_no_follow(std::string name, glm::vec3 pos, glm::ve
 	pos.x *= facing_dir;
 	pos_frame.x *= facing_dir;
 	scale.x *= facing_dir;
-	pos += this->get_pos();
+	pos += this->get_scaled_pos();
 	effect_manager->activate_effect(id, name, pos, rot, scale, rgba, nullptr, -1, glm::vec3(0.0), pos_frame, rot_frame, scale_frame, rgba_frame, interp_var, rate, frame);
 }
 

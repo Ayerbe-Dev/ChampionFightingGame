@@ -316,7 +316,7 @@ void Eric::eric_enter_status_special_uppercut_land() {
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0;
 	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0;
 	change_context(FIGHTER_CONTEXT_GROUND);
-	set_pos(glm::vec3(get_pos().x, 0.0f, get_pos().z));
+	set_pos_y(0.0f);
 }
 
 void Eric::eric_exit_status_special_uppercut_land() {

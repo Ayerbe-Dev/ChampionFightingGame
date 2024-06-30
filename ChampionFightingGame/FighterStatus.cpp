@@ -791,7 +791,7 @@ void Fighter::exit_status_grab_air() {
 }
 
 void Fighter::status_throw_air() {
-	if (get_pos().y <= 0.0f) {
+	if (get_scaled_pos().y <= 0.0f) {
 		set_pos_y(0.0f);
 		change_context(FIGHTER_CONTEXT_GROUND);
 	}
@@ -845,8 +845,8 @@ void Fighter::enter_status_grabbed() {
 void Fighter::exit_status_grabbed() {
 	object_flag[FIGHTER_FLAG_LOCK_DIRECTION] = false;
 	Fighter* that = object_manager->fighter[!id];
-	if (that->get_pos().x != get_pos().x) {
-		facing_right = that->get_pos().x > get_pos().x;
+	if (that->get_scaled_pos().x != get_scaled_pos().x) {
+		facing_right = that->get_scaled_pos().x > get_scaled_pos().x;
 		facing_dir = facing_right ? 1.0 : -1.0;
 	}
 	set_pos_z(0.0f);
@@ -857,7 +857,7 @@ void Fighter::status_thrown() {
 		return;
 	}
 	apply_gravity(object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX]);
-	if (!add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0)) && get_pos().y != 0.0) {
+	if (!add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0)) && get_scaled_pos().y != 0.0) {
 		Fighter* that = object_manager->fighter[!id];
 		//If you get thrown into the corner, the attacker should be pushed away from you.
 		that->add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED] * -1.0, 0.0, 0.0));
@@ -867,8 +867,8 @@ void Fighter::status_thrown() {
 void Fighter::enter_status_thrown() {
 	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_GRABBED;
 	Fighter* that = object_manager->fighter[!id];
-	if (that->get_pos().x != get_pos().x) {
-		facing_right = that->get_pos().x > get_pos().x;
+	if (that->get_scaled_pos().x != get_scaled_pos().x) {
+		facing_right = that->get_scaled_pos().x > get_scaled_pos().x;
 		facing_dir = facing_right ? 1.0 : -1.0;
 	}
 	change_context(FIGHTER_CONTEXT_AIR);
@@ -1151,7 +1151,7 @@ void Fighter::exit_status_crumple() {
 
 void Fighter::status_knockdown_start() {
 	if (fighter_context == FIGHTER_CONTEXT_AIR && !object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]) {
-		set_pos_y(clampf(0.0f, get_pos().y - object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], get_pos().y));
+		set_pos_y(clampf(0.0f, get_scaled_pos().y - object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], get_scaled_pos().y));
 	}
 	if (anim_end) {
 		change_status(FIGHTER_STATUS_KNOCKDOWN);
@@ -1164,7 +1164,7 @@ void Fighter::enter_status_knockdown_start() {
 		change_anim("knockdown_start_down");
 		if (fighter_context == FIGHTER_CONTEXT_AIR) {
 			int skip_frame = get_param_int("knockdown_start_air_skip_frame_down");
-			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_pos().y / (get_anim_length(get_anim()) -
+			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_scaled_pos().y / (get_anim_length(get_anim()) -
 				skip_frame
 			);
 			frame = skip_frame;
@@ -1174,7 +1174,7 @@ void Fighter::enter_status_knockdown_start() {
 		change_anim("knockdown_start_up");
 		if (fighter_context == FIGHTER_CONTEXT_AIR) {
 			int skip_frame = get_param_int("knockdown_start_air_skip_frame_up");
-			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_pos().y / (get_anim_length(get_anim()) -
+			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_scaled_pos().y / (get_anim_length(get_anim()) -
 				skip_frame
 			);
 			frame = skip_frame;

@@ -177,7 +177,7 @@ bool EffectInstance::process() {
 			}
 		}
 		else {
-			final_pos += game_object->get_pos();
+			final_pos += game_object->get_scaled_pos();
 			final_rot += game_object->get_rot();
 		}
 	}

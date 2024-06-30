@@ -61,8 +61,8 @@ void FighterCPU::execute_action(CPUAction action) {
 void FighterCPU::determine_opponent_state() {
 	CPUFighterState new_state;
 	new_state.facing_dir = opponent->facing_dir;
-	new_state.pos = glm::vec2(opponent->get_pos());
-	new_state.speed = glm::vec2(opponent->get_pos()) - opponent_state.newest().pos;
+	new_state.pos = glm::vec2(opponent->get_scaled_pos());
+	new_state.speed = glm::vec2(opponent->get_scaled_pos()) - opponent_state.newest().pos;
 	opponent_state.insert(new_state);
 }
 

@@ -108,7 +108,7 @@ void Camera::play_camera_anim(GameObject* target, std::string anim_kind, float r
 	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
 
 	this->target = target;
-	this->target_base_pos = target->get_pos();
+	this->target_base_pos = target->get_scaled_pos();
 	this->target_facing_dir = 1.0f;
 	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
 }
@@ -120,7 +120,7 @@ void Camera::play_camera_anim(GameObject* target, CameraAnim* anim_kind, float r
 	this->anim_kind = anim_kind;
 
 	this->target = target;
-	this->target_base_pos = target->get_pos();
+	this->target_base_pos = target->get_scaled_pos();
 	this->target_facing_dir = 1.0f;
 	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
 }
@@ -136,7 +136,7 @@ void Camera::play_camera_anim(BattleObject* target, std::string anim_kind, float
 	this->anim_kind = &camera_anims[camera_anim_map[anim_kind]];
 
 	this->target = target;
-	this->target_base_pos = target->get_pos();
+	this->target_base_pos = target->get_scaled_pos();
 	this->target_facing_dir = target->facing_dir;
 	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
 }
@@ -148,7 +148,7 @@ void Camera::play_camera_anim(BattleObject* target, CameraAnim* anim_kind, float
 	this->anim_kind = anim_kind;
 
 	this->target = target;
-	this->target_base_pos = target->get_pos();
+	this->target_base_pos = target->get_scaled_pos();
 	this->target_facing_dir = target->facing_dir;
 	this->target_end_cinematic_on_anim_end = end_cinematic_on_anim_end;
 }
@@ -265,9 +265,9 @@ void Camera::update_view() {
 }
 
 void Camera::follow_players() {
-	pos_x_interpolator.set_target_val(clampf(-stage->camera_bound, (fighter[0]->get_pos().x + fighter[1]->get_pos().x) / 2.0f, stage->camera_bound), 10);
+	pos_x_interpolator.set_target_val(clampf(-stage->camera_bound, (fighter[0]->get_scaled_pos().x + fighter[1]->get_scaled_pos().x) / 2.0f, stage->camera_bound), 10);
 	pos.x = pos_x_interpolator;
-	pos.y = clampf(base_pos.y, std::max(fighter[0]->get_pos().y, fighter[1]->get_pos().y), 100.0f);
+	pos.y = clampf(base_pos.y, std::max(fighter[0]->get_scaled_pos().y, fighter[1]->get_scaled_pos().y), 100.0f);
 	pos.z = base_pos.z;
 
 	yaw = 0.0;

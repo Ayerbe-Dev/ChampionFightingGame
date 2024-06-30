@@ -78,7 +78,6 @@ private:
 	glm::vec3 final_rot;
 	glm::vec3 final_scale;
 	glm::vec4 final_rgba;
-	glm::vec3 scale_vec;
 
 	int* interp_var; //This is basically just the pointer to the owner's hitlag
 	bool interpolating;

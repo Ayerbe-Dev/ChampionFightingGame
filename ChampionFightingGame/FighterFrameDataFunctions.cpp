@@ -44,8 +44,8 @@ int Fighter::get_frames_until_actionable() {
 		//TODO: This block assumes that your air speed is completely constant, which is rarely going 
 		//to be the case, so we'll have to figure out a proper way to handle that
 
-		if (fighter_context == FIGHTER_CONTEXT_AIR && pos.y + (object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] * (ret - 1)) <= 0.0f) {
-			for (; pos.y + (object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] * (ret - 1)) <= 0.0f; ret--);
+		if (fighter_context == FIGHTER_CONTEXT_AIR && get_pos().y + (object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] * (ret - 1)) <= 0.0f) {
+			for (; get_pos().y + (object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] * (ret - 1)) <= 0.0f; ret--);
 			if (object_string[FIGHTER_STRING_MOVE_KIND] == "") {
 				ret += get_param_int(object_string[FIGHTER_STRING_MOVE_KIND] + "empty_landing_lag");
 			}
@@ -64,7 +64,7 @@ int Fighter::calc_launch_frames() {
 		return 1;
 	}
 	int airtime = 0;
-	float simp_y = pos.y;
+	float simp_y = get_pos().y;
 	float sims_y = object_float[BATTLE_OBJECT_FLOAT_Y_SPEED];
 	while (simp_y >= 0.0f) {
 		sims_y = clampf(object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] * -1,

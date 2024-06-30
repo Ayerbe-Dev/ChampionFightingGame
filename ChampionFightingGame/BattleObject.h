@@ -37,11 +37,6 @@ public:
 	void load_params();
 	void load_battle_object_status_scripts();
 
-	//Position
-
-	void add_pos(glm::vec3 pos);
-	void set_pos(glm::vec3 pos);
-
 	//Blockbox
 
 	void new_blockbox(glm::vec2 anchor, glm::vec2 offset);

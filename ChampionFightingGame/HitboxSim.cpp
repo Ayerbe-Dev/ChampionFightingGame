@@ -215,7 +215,7 @@ Simbox::Simbox() {
 void Simbox::update_rect(BattleObject* object) {
 	if (prev_anchor != anchor) {
 		prev_anchor = anchor;
-		relative_anchor = anchor - glm::vec2(object->pos);
+		relative_anchor = anchor - glm::vec2(object->get_scaled_pos());
 		relative_anchor.x *= object->facing_dir;
 		if (object->anim_kind != nullptr && !object->anim_kind->flag_move) {
 			relative_anchor.x += object->get_trans_offset().x;
@@ -224,7 +224,7 @@ void Simbox::update_rect(BattleObject* object) {
 	}
 	if (prev_offset != offset) {
 		prev_offset = offset;
-		relative_offset = offset - glm::vec2(object->pos);
+		relative_offset = offset - glm::vec2(object->get_scaled_pos());
 		relative_offset.x *= object->facing_dir;
 		if (object->anim_kind != nullptr && !object->anim_kind->flag_move) {
 			relative_offset.x += object->get_trans_offset().x;
@@ -233,18 +233,18 @@ void Simbox::update_rect(BattleObject* object) {
 	}
 	if (prev_relative_anchor != relative_anchor) {
 		prev_relative_anchor = relative_anchor;
-		anchor = relative_anchor + glm::vec2(object->pos);
+		anchor = relative_anchor + glm::vec2(object->get_scaled_pos());
 		prev_anchor = anchor;
 	}
 	if (prev_relative_offset != relative_offset) {
 		prev_relative_offset = relative_offset;
-		offset = relative_offset + glm::vec2(object->pos);
+		offset = relative_offset + glm::vec2(object->get_scaled_pos());
 		prev_offset = offset;
 	}
-	if (object->prev_pos != object->pos) {
-		anchor = relative_anchor + glm::vec2(object->pos);
+	if (object->prev_pos != object->get_scaled_pos()) {
+		anchor = relative_anchor + glm::vec2(object->get_scaled_pos());
 		prev_anchor = anchor;
-		offset = relative_offset + glm::vec2(object->pos);
+		offset = relative_offset + glm::vec2(object->get_scaled_pos());
 		prev_offset = offset;
 	}
 	rect.update_corners(anchor, offset);

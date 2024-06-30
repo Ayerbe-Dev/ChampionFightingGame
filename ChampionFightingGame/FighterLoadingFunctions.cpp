@@ -14,13 +14,13 @@ void Fighter::load_fighter() {
 	stage = object_manager->stage;
 
 	if (id == 0) {
-		pos = glm::vec3(stage->start_pos.x, 0.0f, 0.0f);
+		set_pos(glm::vec3(stage->start_pos.x, 0.0f, 0.0f));
 		facing_right = true;
 		internal_facing_right = true;
 		facing_dir = 1.0;
 	}
 	else {
-		pos = glm::vec3(stage->start_pos.y, 0.0f, 0.0f);
+		set_pos(glm::vec3(stage->start_pos.y, 0.0f, 0.0f));
 		facing_right = false;
 		internal_facing_right = false;
 		facing_dir = -1.0;
@@ -57,7 +57,7 @@ void Fighter::load_effect_list() {
 }
 
 void Fighter::load_model_shader() {
-	scale = glm::vec3(get_param_float("model_scale"));
+	set_scale(glm::vec3(get_param_float("model_scale")));
 	model.load_model_instance(resource_dir + "/model/m" + std::to_string(player->alt_costume) + "/model.dae");
 	model.load_textures("c" + std::to_string(player->alt_color));
 	unsigned int flags = 0;

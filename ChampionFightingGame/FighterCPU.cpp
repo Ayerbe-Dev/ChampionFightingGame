@@ -29,8 +29,8 @@ void FighterCPU::process() {
 	for (const auto &a : actions) {
 		CPUAction action = a.second;
 		glm::vec2 range_x = glm::vec2(
-			owner->pos.x + action.range_x[0] * owner->facing_dir,
-			owner->pos.x + action.range_x[1] * owner->facing_dir
+			owner->get_pos().x + action.range_x[0] * owner->facing_dir,
+			owner->get_pos().x + action.range_x[1] * owner->facing_dir
 		);
 		glm::vec2 hypothetical_pos = (reaction_state.pos + reaction_state.speed) 
 			* glm::vec2(action.startup);
@@ -61,8 +61,8 @@ void FighterCPU::execute_action(CPUAction action) {
 void FighterCPU::determine_opponent_state() {
 	CPUFighterState new_state;
 	new_state.facing_dir = opponent->facing_dir;
-	new_state.pos = glm::vec2(opponent->pos);
-	new_state.speed = glm::vec2(opponent->pos) - opponent_state.newest().pos;
+	new_state.pos = glm::vec2(opponent->get_scaled_pos());
+	new_state.speed = glm::vec2(opponent->get_scaled_pos()) - opponent_state.newest().pos;
 	opponent_state.insert(new_state);
 }
 

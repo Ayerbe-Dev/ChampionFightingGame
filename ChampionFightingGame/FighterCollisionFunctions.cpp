@@ -9,21 +9,22 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 	bool allow_corner_crossup = object_flag[FIGHTER_FLAG_ALLOW_CORNER_CROSSUP] 
 		|| that->object_flag[FIGHTER_FLAG_ALLOW_CORNER_CROSSUP];
 	bool strict_wall_pushboxes = true;
-	if (pos.x == that->pos.x && prev_pos.x != that->prev_pos.x) {
-		if (pos.x <= stage->stage_bounds.x) {
-			if ((prev_pos.x == pos.x) == allow_corner_crossup) {
-				pos.x++;
+	float inter_mul = (get_scale_vec().x + that->get_scale_vec().x) / 2.0f;
+	if (get_pos().x == that->get_pos().x && prev_pos.x != that->prev_pos.x) {
+		if (get_pos().x <= -stage->stage_bound) {
+			if ((prev_pos.x == get_pos().x) == allow_corner_crossup) {
+				add_pos(glm::vec3(1, 0, 0));
 			}
-			else if ((that->prev_pos.x == that->pos.x) == allow_corner_crossup) {
-				that->pos.x++;
+			else if ((that->prev_pos.x == that->get_pos().x) == allow_corner_crossup) {
+				that->add_pos(glm::vec3(1, 0, 0));
 			}
 		}
-		if (pos.x >= stage->stage_bounds.y) {
-			if ((prev_pos.x == pos.x) == allow_corner_crossup) {
-				pos.x--;
+		if (get_pos().x >= stage->stage_bound) {
+			if ((prev_pos.x == get_pos().x) == allow_corner_crossup) {
+				add_pos(glm::vec3(-1, 0, 0));
 			}
-			else if ((that->prev_pos.x == that->pos.x) == allow_corner_crossup) {
-				that->pos.x--;
+			else if ((that->prev_pos.x == that->get_pos().x) == allow_corner_crossup) {
+				that->add_pos(glm::vec3(-1, 0, 0));
 			}
 		}
 		update_pushbox_pos();
@@ -32,38 +33,35 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
 		for (size_t i2 = 0, max2 = that_pushboxes.size(); i2 < max2; i2++) {
 			float intersection = get_rect_intersection(pushboxes[i].rect, that->pushboxes[i2].rect);
-			if (intersection == -1.0f || pos.x == that->pos.x) continue;
-			//TODO: When positions are equal, compare speeds to make sure that we can't do frame perfect
-			//collision shenanigans (We don't handle equal positions because they should resolve a frame
-			//later, but if you can match the opponent's speed and KEEP the positions identical, shit
-			//gets weird)
-			float dir = pos.x > that->pos.x ? 1.0f : -1.0f;
-			bool p1_pos_change = add_pos(glm::vec3(intersection / 2.0f * dir, 0.0f, 0.0f));
-			bool p2_pos_change = that->add_pos(glm::vec3(intersection / -2.0f * dir, 0.0f, 0.0f));
+			if (intersection == -1.0f || get_scaled_pos().x == that->get_scaled_pos().x) continue;
+			
+			float dir = get_scaled_pos().x > that->get_scaled_pos().x ? 1.0f : -1.0f;
+			bool p1_pos_change = add_pos_validate(glm::vec3(intersection * inter_mul / 2.0f * dir, 0.0f, 0.0f));
+			bool p2_pos_change = that->add_pos_validate(glm::vec3(intersection * inter_mul / -2.0f * dir, 0.0f, 0.0f));
 			
 			if ((!p1_pos_change || !p2_pos_change) && strict_wall_pushboxes) {
 				update_pushbox_pos();
 				that->update_pushbox_pos();
-				bool facing_wall = facing_dir * pos.x > 0.0f;
-				bool that_facing_wall = that->facing_dir * that->pos.x > 0.0f;
-				float pushbox_front = pos.x + (facing_wall 
+				bool facing_wall = facing_dir * get_scaled_pos().x > 0.0f;
+				bool that_facing_wall = that->facing_dir * that->get_scaled_pos().x > 0.0f;
+				float pushbox_front = get_pos().x + (facing_wall
 					? get_pushbox_back(i) : get_pushbox_front(i));
-				float that_pushbox_front = that->pos.x + (that_facing_wall
+				float that_pushbox_front = that->get_pos().x + (that_facing_wall
 					? that->get_pushbox_back(i2) : that->get_pushbox_front(i2));
 				if (!p1_pos_change) {
 					if (that_facing_wall) {
-						that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->pos.y, that->pos.z), true);
+						that->set_pos_validate(glm::vec3(pushbox_front - that->get_pushbox_front(i2), that->get_pos().y, that->get_pos().z), true);
 					}
 					else {
-						that->set_pos(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->pos.y, that->pos.z), true);
+						that->set_pos_validate(glm::vec3(pushbox_front - that->get_pushbox_back(i2), that->get_pos().y, that->get_pos().z), true);
 					}
 				}
 				if (!p2_pos_change) {
 					if (facing_wall) {
-						set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
+						set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_front(i), get_pos().y, get_pos().z), true);
 					}
 					else {
-						set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
+						set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_back(i), get_pos().y, get_pos().z), true);
 					}
 				}
 				if (!p1_pos_change && !p2_pos_change) std::cout 
@@ -80,28 +78,28 @@ void Fighter::process_projectile_pushbox_collisions(std::vector<Pushbox> pushbox
 				Projectile* that = (Projectile*)that_pushboxes[i2].object;
 				//Only they are moving.
 				float that_x_diff = that->object_float[BATTLE_OBJECT_FLOAT_X_SPEED];
-				float pushbox_front = pos.x + get_pushbox_front(i);
-				float pushbox_back = pos.x + get_pushbox_back(i);
-				float that_pushbox_front = that->pos.x + that->get_pushbox_front(i2);
-				float that_pushbox_back = that->pos.x + that->get_pushbox_back(i2);
+				float pushbox_front = get_scaled_pos().x + get_pushbox_front(i);
+				float pushbox_back = get_scaled_pos().x + get_pushbox_back(i);
+				float that_pushbox_front = that->get_scaled_pos().x + that->get_pushbox_front(i2);
+				float that_pushbox_back = that->get_scaled_pos().x + that->get_pushbox_back(i2);
 
-				if (that_x_diff > 0.0 == that->pos.x < pos.x) {
+				if (that_x_diff > 0.0 == that->get_scaled_pos().x < get_scaled_pos().x) {
 					bool facing_that = that_x_diff > 0.0 == that->facing_dir > 0.0;
 					bool facing_same = facing_dir == that->facing_dir;
 					if (facing_that) {
 						if (facing_same) {
-							set_pos(glm::vec3(that_pushbox_front - get_pushbox_back(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_back(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 						else {
-							set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_front(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 					}
 					else {
 						if (facing_same) {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_back - get_pushbox_front(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 						else {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_back - get_pushbox_back(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 					}
 				}
@@ -110,18 +108,18 @@ void Fighter::process_projectile_pushbox_collisions(std::vector<Pushbox> pushbox
 					bool facing_same = facing_dir == that->facing_dir;
 					if (facing_that) {
 						if (facing_same) {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_back - get_pushbox_front(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 						else {
-							set_pos(glm::vec3(that_pushbox_front - get_pushbox_front(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_front - get_pushbox_front(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 					}
 					else {
 						if (facing_same) {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_front(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_back - get_pushbox_front(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 						else {
-							set_pos(glm::vec3(that_pushbox_back - get_pushbox_back(i), pos.y, pos.z), true);
+							set_pos_validate(glm::vec3(that_pushbox_back - get_pushbox_back(i), get_scaled_pos().y, get_scaled_pos().z), true);
 						}
 					}
 				}
@@ -239,8 +237,8 @@ bool Fighter::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbo
 
 	object_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
 	if (fighter_context == FIGHTER_CONTEXT_GROUND && hitbox->hit_result.chip_percent != -1.0) {
-		bool reverse_block = ((hitbox->rect.corners[0].x > pos.x && hitbox->rect.corners[3].x > pos.x)
-			!= internal_facing_right) && ((attacker->pos.x > pos.x) != internal_facing_right);
+		bool reverse_block = ((hitbox->rect.corners[0].x > get_scaled_pos().x && hitbox->rect.corners[3].x > get_scaled_pos().x)
+			!= internal_facing_right) && ((attacker->get_scaled_pos().x > get_scaled_pos().x) != internal_facing_right);
 		if (object_flag[FIGHTER_FLAG_AUTO_GUARD]) {
 			switch (hitbox->hit_height) {
 				case (HIT_HEIGHT_HIGH): {
@@ -501,8 +499,8 @@ bool Fighter::is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hi
 	object_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
 
 	if (fighter_context == FIGHTER_CONTEXT_GROUND && hitbox->hit_result.chip_percent != -1.0) {
-		bool reverse_block = ((hitbox->rect.corners[0].x > pos.x && hitbox->rect.corners[3].x > pos.x)
-			!= internal_facing_right) && ((attacker->pos.x > pos.x) != internal_facing_right);
+		bool reverse_block = ((hitbox->rect.corners[0].x > get_scaled_pos().x && hitbox->rect.corners[3].x > get_scaled_pos().x)
+			!= internal_facing_right) && ((attacker->get_scaled_pos().x > get_scaled_pos().x) != internal_facing_right);
 		if (object_flag[FIGHTER_FLAG_AUTO_GUARD]) {
 			switch (hitbox->hit_height) {
 			case (HIT_HEIGHT_HIGH): {
@@ -1304,8 +1302,8 @@ void Fighter::process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter*
 		} break;
 	}
 	if (hit_move.target_frames) {
-		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = (hit_move.target_x - pos.x) / hit_move.target_frames;
-		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = (hit_move.target_y - pos.y) / hit_move.target_frames;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = (hit_move.target_x - get_scaled_pos().x) / hit_move.target_frames;
+		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = (hit_move.target_y - get_scaled_pos().y) / hit_move.target_frames;
 	}
 
 	object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
@@ -1623,7 +1621,7 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 		} break;
 	}
 	if (hit_move.target_frames) {
-		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = (hit_move.target_x - pos.x) / hit_move.target_frames;
-		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = (hit_move.target_y - pos.y) / hit_move.target_frames;
+		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = (hit_move.target_x - get_scaled_pos().x) / hit_move.target_frames;
+		object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = (hit_move.target_y - get_scaled_pos().y) / hit_move.target_frames;
 	}
 }

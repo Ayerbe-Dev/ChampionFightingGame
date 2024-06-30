@@ -56,15 +56,7 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	for (int i = 0; i < 4; i++) {
-		corners[i].x /= WINDOW_WIDTH / 100;
-		corners[i].y /= WINDOW_HEIGHT / 100;
-	}
 	glBufferData(GL_ARRAY_BUFFER, sizeof(corners), corners, GL_STATIC_DRAW);
-	for (int i = 0; i < 4; i++) {
-		corners[i].x *= WINDOW_WIDTH / 100;
-		corners[i].y *= WINDOW_HEIGHT / 100;
-	}
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -82,15 +74,7 @@ void GameRect::update_corners(glm::vec2 c1, glm::vec2 c2) {
 	corners[3] = glm::vec2(c2.x, c1.y);
 
 	if (thread_manager->is_main_thread()) {
-		for (int i = 0; i < 4; i++) {
-			corners[i].x /= WINDOW_WIDTH / 100;
-			corners[i].y /= WINDOW_HEIGHT / 100;
-		}
 		update_buffer_data();
-		for (int i = 0; i < 4; i++) {
-			corners[i].x *= WINDOW_WIDTH / 100;
-			corners[i].y *= WINDOW_HEIGHT / 100;
-		}
 	}
 }
 

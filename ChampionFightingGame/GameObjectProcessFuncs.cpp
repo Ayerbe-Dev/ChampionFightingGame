@@ -22,12 +22,8 @@ void GameObject::process_animate() {
 		trans_offset -= prev_anim_offset;
 		trans_offset /= scale;
 
-		pos += trans_offset;
+		add_pos(trans_offset);
 
 		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z, trans_bone.anim_matrix[3].y, trans_bone.anim_matrix[3].x);
 	}
-}
-
-void GameObject::process_render_pos() {
-	render_pos = pos / scale_vec;
 }

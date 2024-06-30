@@ -5,42 +5,41 @@
 #include <glm/gtx/vector_angle.hpp>
 #include "GLM Helpers.h"
 #include "RenderManager.h"
-#include "WindowConstants.h"
 
 glm::vec3 GameObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 	}
-	return offset;
+	return offset * scale_vec;
 }
 
 glm::vec3 GameObject::get_relative_bone_position(int bone_id, glm::vec3 offset) {
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 	}
-	return offset;
+	return offset * scale_vec;
 }
 
 glm::vec3 GameObject::get_bone_position(std::string bone_name, glm::vec3 offset) {
 	int bone_id = model.get_bone_id(bone_name);
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 		if (anim_kind != nullptr && anim_kind->flag_move) {
 			offset -= get_relative_bone_position("Trans");
 		}
 	}
-	return offset + pos;
+	return offset * scale_vec + pos;
 }
 
 glm::vec3 GameObject::get_bone_position(int bone_id, glm::vec3 offset) {
 	if (bone_id != -1) {
-		offset += model.bone_data[bone_id].pos * scale_vec;
+		offset += model.bone_data[bone_id].pos;
 		if (anim_kind != nullptr && anim_kind->flag_move) {
 			offset -= get_relative_bone_position("Trans");
 		}
 	}
-	return offset + pos;
+	return offset * scale_vec + pos;
 }
 
 glm::quat GameObject::get_bone_rotation_quat(std::string bone_name) {
@@ -70,13 +69,4 @@ glm::vec3 GameObject::get_bone_angle(int base_id, int angle_id) {
 	glm::vec3 angle_bone = normalize(get_relative_bone_position(angle_id));
 
 	return calc_rotation(base_bone, angle_bone) * glm::vec3(180 / 3.14);
-}
-
-void GameObject::set_scale(glm::vec3 scale) {
-	this->scale = scale;
-	scale_vec = glm::vec3(
-		WINDOW_WIDTH / (100 * scale.x),
-		WINDOW_HEIGHT / (100 * scale.y),
-		WINDOW_DEPTH / (100 * scale.z)
-	);
 }

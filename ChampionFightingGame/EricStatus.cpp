@@ -108,7 +108,7 @@ void Eric::eric_status_special_slide() {
 	}
 	if (!object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
 		if (frame >= get_param_int("special_slide_move_start_frame") && frame < get_param_int("special_slide_move_stop_frame")) {
-			add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0.0, 0.0));
+			add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0.0, 0.0));
 		}
 		if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
 			int trans_frame = (object_flag[FIGHTER_FLAG_ATTACK_HIT] || object_flag[FIGHTER_FLAG_ATTACK_BLOCKED])
@@ -228,7 +228,7 @@ void Eric::eric_status_special_uppercut() {
 		if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
 			apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
 			change_context(FIGHTER_CONTEXT_AIR);
-			add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
+			add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
 			if (check_landing()) {
 				return;
 			}
@@ -236,7 +236,7 @@ void Eric::eric_status_special_uppercut() {
 	}
 	else {
 		if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
-			add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
+			add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 			if (frame == 4.0) {
 				object_float[BATTLE_OBJECT_FLOAT_X_SPEED] /= 2.3;
 			}
@@ -271,7 +271,7 @@ void Eric::eric_status_special_uppercut_fall() {
 		return;
 	}
 	apply_gravity(get_param_float_special("special_uppercut_gravity"), get_param_float_special("special_uppercut_fall_speed"));
-	add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
+	add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
 }
 
 void Eric::eric_enter_status_special_uppercut_fall() {
@@ -316,7 +316,7 @@ void Eric::eric_enter_status_special_uppercut_land() {
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0;
 	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0;
 	change_context(FIGHTER_CONTEXT_GROUND);
-	pos.y = 0.0f;
+	set_pos_y(0.0f);
 }
 
 void Eric::eric_exit_status_special_uppercut_land() {

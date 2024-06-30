@@ -12,6 +12,7 @@ RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	res_width = save_manager->get_game_setting("res_x");
 	res_height = save_manager->get_game_setting("res_y");
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 	if (save_manager->get_game_setting("fullscreen") == 1) {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
@@ -30,6 +31,7 @@ RenderManager::RenderManager() {
 	SDL_GL_SetSwapInterval(1);
 
 	glViewport(0, 0, window_width, window_height);
+
 
 	glEnable(GL_MULTISAMPLE);
 
@@ -328,7 +330,9 @@ void RenderManager::update_screen() {
 
 		fade_texture.render();
 	}
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	SDL_GL_SwapWindow(window);
+	glDisable(GL_FRAMEBUFFER_SRGB);
 }
 
 void RenderManager::clear_screen() {

@@ -42,7 +42,7 @@ void main() {
             vec3 diffuse = max(dot(Normal, light_dir), 0.0) * Diffuse * light[i].color;
 
             vec3 halfway_dir = normalize(light_dir + view_dir);
-            float spec = pow(max(dot(Normal, halfway_dir), 0.0), 16.0);
+            float spec = pow(max(dot(Normal, halfway_dir), 0.0), 32.0);
             vec3 specular = light[i].color * spec * Specular;
 
             float attenuation = 1.0 / (1.0 + light[i].linear * distance + light[i].quadratic * distance * distance);

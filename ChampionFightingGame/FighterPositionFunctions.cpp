@@ -5,9 +5,9 @@
 #include "WindowConstants.h"
 #include "utils.h"
 
-bool Fighter::add_pos(glm::vec3 pos, bool prev) {
+bool Fighter::add_pos_validate(glm::vec3 pos, bool prev) {
 	Fighter* that = object_manager->fighter[!id];
-	glm::vec3 prev_pos = this->pos;
+	glm::vec3 prev_pos = this->get_pos();
 	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) {
 		GameManager* game_manager = GameManager::get_instance();
 		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " + 
@@ -19,28 +19,27 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 
 		return false;
 	}
-	pos *= object_manager->get_world_rate(this);
 	bool ret = true;
-	this->pos += pos;
+	add_pos(pos);
 
-	if (this->pos.x > stage->stage_bounds.y) {
+	if (this->get_pos().x > stage->stage_bound) {
 		if (prev) {
-			this->pos.x = prev_pos.x;
+			set_pos_x(prev_pos.x);
 		}
 		else {
-			this->pos.x = stage->stage_bounds.y;
+			set_pos_x(stage->stage_bound);
 		}
 		if (get_param_bool("has_wallbounce") && facing_right && status_kind == FIGHTER_STATUS_JUMP) { //Dunno if I'll keep this but it's sick af
 			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] *= -1;
 		}
 		ret = false;
 	}
-	if (this->pos.x < stage->stage_bounds.x) {
+	if (this->get_pos().x < -stage->stage_bound) {
 		if (prev) {
-			this->pos.x = prev_pos.x;
+			set_pos_x(prev_pos.x);
 		}
 		else {
-			this->pos.x = stage->stage_bounds.x;
+			set_pos_x(-stage->stage_bound);
 		}
 		if (get_param_bool("has_wallbounce") && !facing_right && status_kind == FIGHTER_STATUS_JUMP) {
 			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] *= -1;
@@ -48,36 +47,36 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 		ret = false;
 	}
 	if (status_kind != FIGHTER_STATUS_GRABBED) {
-		if (this->pos.y < 0) {
+		if (this->get_pos().y < 0) {
 			if (prev) {
-				this->pos.y = prev_pos.y;
+				set_pos_y(prev_pos.y);
 			}
 			else {
-				this->pos.y = 0;
+				set_pos_y(0);
 			}
 			ret = false;
 		}
-		if (this->pos.y > WINDOW_HEIGHT) {
+		if (this->get_pos().y > WINDOW_HEIGHT) {
 			if (prev) {
-				this->pos.y = prev_pos.y;
+				set_pos_y(prev_pos.y);
 			}
 			else {
-				this->pos.y = WINDOW_HEIGHT;
+				set_pos_y(WINDOW_HEIGHT);
 			}
 			ret = false;
 		}
 	}
-	float x_distance = std::max(this->pos.x, that->pos.x) - std::min(this->pos.x, that->pos.x);
+	float x_distance = std::max(this->get_pos().x, that->get_pos().x) - std::min(this->get_pos().x, that->get_pos().x);
 	if (x_distance > get_global_param_float(PARAM_FIGHTER, "max_distance")) {
 		if (prev) {
-			this->pos.x = prev_pos.x;
+			set_pos_x(prev_pos.x);
 		}
 		else {
-			if (this->pos.x < that->pos.x) {
-				this->pos.x = that->pos.x - get_global_param_float(PARAM_FIGHTER, "max_distance");
+			if (this->get_pos().x < that->get_pos().x) {
+				set_pos_x(that->get_pos().x - get_global_param_float(PARAM_FIGHTER, "max_distance"));
 			}
 			else {
-				this->pos.x = that->pos.x + get_global_param_float(PARAM_FIGHTER, "max_distance");
+				set_pos_x(that->get_pos().x + get_global_param_float(PARAM_FIGHTER, "max_distance"));
 			}
 		}
 		ret = false;
@@ -86,9 +85,9 @@ bool Fighter::add_pos(glm::vec3 pos, bool prev) {
 	return ret;
 }
 
-bool Fighter::set_pos(glm::vec3 pos, bool prev) {
+bool Fighter::set_pos_validate(glm::vec3 pos, bool prev) {
 	Fighter* that = object_manager->fighter[!id];
-	glm::vec3 prev_pos = this->pos;
+	glm::vec3 prev_pos = this->get_pos();
 	if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) {
 		GameManager* game_manager = GameManager::get_instance();
 		game_manager->add_crash_log("Player: " + std::to_string(id + 1) + " Status: " +
@@ -102,57 +101,57 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	}
 
 	bool ret = true;
-	this->pos = pos;
+	set_pos(pos);
 
-	if (this->pos.x > stage->stage_bounds.y) {
+	if (this->get_pos().x > stage->stage_bound) {
 		if (prev) {
-			this->pos.x = prev_pos.x;
+			set_pos_x(prev_pos.x);
 		}
 		else {
-			this->pos.x = stage->stage_bounds.y;
+			set_pos_x(stage->stage_bound);
 		}
 		ret = false;
 	}
-	if (this->pos.x < stage->stage_bounds.x) {
+	if (this->get_pos().x < -stage->stage_bound) {
 		if (prev) {
-			this->pos.x = prev_pos.x;
+			set_pos_x(prev_pos.x);
 		}
 		else {
-			this->pos.x = stage->stage_bounds.x;
+			set_pos_x(-stage->stage_bound);
 		}
 		ret = false;
 	}
 	if (status_kind != FIGHTER_STATUS_GRABBED) {
-		if (this->pos.y < 0) {
+		if (this->get_pos().y < 0) {
 			if (prev) {
-				this->pos.y = prev_pos.y;
+				set_pos_y(prev_pos.y);
 			}
 			else {
-				this->pos.y = 0;
+				set_pos_y(0);
 			}
 			ret = false;
 		}
-		if (this->pos.y > WINDOW_HEIGHT) {
+		if (this->get_pos().y > WINDOW_HEIGHT) {
 			if (prev) {
-				this->pos.y = prev_pos.y;
+				set_pos_y(prev_pos.y);
 			}
 			else {
-				this->pos.y = WINDOW_HEIGHT;
+				set_pos_y(WINDOW_HEIGHT);
 			}
 			ret = false;
 		}
 	}
-	float x_distance = std::max(this->pos.x, that->pos.x) - std::min(this->pos.x, that->pos.x);
+	float x_distance = std::max(this->get_pos().x, that->get_pos().x) - std::min(this->get_pos().x, that->get_pos().x);
 	if (x_distance > get_global_param_float(PARAM_FIGHTER, "max_distance")) {
 		if (prev) {
-			this->pos.x = prev_pos.x;
+			set_pos_x(prev_pos.x);
 		}
 		else {
-			if (this->pos.x < that->pos.x) {
-				this->pos.x = that->pos.x - get_global_param_float(PARAM_FIGHTER, "max_distance");
+			if (this->get_pos().x < that->get_pos().x) {
+				set_pos_x(that->get_pos().x - get_global_param_float(PARAM_FIGHTER, "max_distance"));
 			}
 			else {
-				this->pos.x = that->pos.x + get_global_param_float(PARAM_FIGHTER, "max_distance");
+				set_pos_x(that->get_pos().x + get_global_param_float(PARAM_FIGHTER, "max_distance"));
 			}
 		}
 		ret = false;
@@ -161,13 +160,13 @@ bool Fighter::set_pos(glm::vec3 pos, bool prev) {
 	return ret;
 }
 
-bool Fighter::set_pos_anim() {
+bool Fighter::apply_trans_to_pos() {
 	if (anim_kind == nullptr) {
 		return false;
 	}
 	if (anim_kind->flag_move) {
 		Bone& trans_bone = model.bone_data[model.get_bone_id("Trans")];
-		bool ret = add_pos(get_trans_offset());
+		bool ret = add_pos_validate(get_trans_offset());
 		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, trans_bone.anim_matrix[3].x);
 		return ret;
 	}
@@ -178,8 +177,8 @@ bool Fighter::set_pos_anim() {
 
 void Fighter::landing_crossup() {
 	Fighter* that = object_manager->fighter[!id];
-	if (pos.x == that->pos.x) return;
-	internal_facing_right = pos.x < that->pos.x;
+	if (get_scaled_pos().x == that->get_scaled_pos().x) return;
+	internal_facing_right = get_scaled_pos().x < that->get_scaled_pos().x;
 	if (internal_facing_right != facing_right) {
 		std::swap(object_int[FIGHTER_INT_66_STEP], object_int[FIGHTER_INT_44_STEP]);
 		std::swap(object_int[FIGHTER_INT_66_TIMER], object_int[FIGHTER_INT_44_TIMER]);

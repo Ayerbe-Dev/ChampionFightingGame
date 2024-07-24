@@ -47,6 +47,11 @@ void Fighter::CHANGE_ANIM(ScriptArg args) {
 	change_anim(anim_kind, rate, frame);
 }
 
+void Fighter::CHANGE_SCRIPT(ScriptArg args) {
+	UNWRAP(script_name, std::string);
+	change_script(script_name);
+}
+
 void Fighter::PLAY_CAMERA_ANIM(ScriptArg args) {
 	UNWRAP(anim_kind, std::string);
 	UNWRAP(anim_rate, float);

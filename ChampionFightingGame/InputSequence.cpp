@@ -39,6 +39,16 @@ unsigned short InputSequence::get_curr_input_code() {
 	return input_seq[idx++];
 }
 
+unsigned short InputSequence::get_curr_input_code_cpu() {
+	if (idx == 8192 || input_seq[idx] == USHRT_MAX) {
+		while (idx --> 0) {
+			input_seq[idx] = USHRT_MAX;
+		}
+		input_seq[++idx] = 0;
+	}
+	return input_seq[idx++];
+}
+
 unsigned short InputSequence::get_prev_input_code(int offset) {
 	if (offset > idx) {
 		return input_seq[0];

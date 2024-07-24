@@ -27,11 +27,11 @@ int Fighter::get_frames_until_actionable() {
 
 		for (float sim_frame = frame + sim_rate; sim_frame < target_frame; sim_frame += sim_rate) {
 			ScriptArg args;
-			if (active_move_script.has_function(sim_frame, &BattleObject::SET_RATE, &args)) {
+			if (move_script.has_function(sim_frame, &BattleObject::SET_RATE, &args)) {
 				UNWRAP_NO_DECL(sim_rate);
 				sim_rate *= object_manager->get_world_rate(this);
 			}
-			if (active_move_script.has_function(sim_frame, (void (BattleObject::*)(ScriptArg)) &Fighter::SET_FLAG, &args)) {
+			if (move_script.has_function(sim_frame, (void (BattleObject::*)(ScriptArg)) &Fighter::SET_FLAG, &args)) {
 				UNWRAP(flag, int);
 				UNWRAP(val, bool);
 				if ((flag == FIGHTER_FLAG_ALLOW_FREE_CANCEL) && val) {

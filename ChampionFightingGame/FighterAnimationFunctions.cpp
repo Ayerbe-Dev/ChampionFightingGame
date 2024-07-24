@@ -14,7 +14,6 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 			//[rate] frames
 			this->rate = rate;
 			this->frame = frame;
-			object_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(frame);
 		}
 		else {
 			//If the animation has an faf, that's the target frame. If the faf is either 0 or -1, the target
@@ -36,8 +35,8 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 				this->rate = target_frame / rate;
 			}
 			this->frame = 0.0;
-			object_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
 		}
+		object_int[FIGHTER_INT_EXTERNAL_FRAME] = std::floor(this->frame);
 		model.set_move(new_anim->flag_move);
 		model.set_flip(!facing_right);
 		prev_anim_kind = anim_kind;
@@ -47,15 +46,10 @@ bool Fighter::change_anim(std::string animation_name, float rate, float frame) {
 	anim_end = false;
 	anim_kind = new_anim;
 
-	set_active_script(animation_name);
-
 	return new_anim != nullptr;
 }
 
-bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool continue_script, bool verbose) {
-	if (!continue_script) {
-		set_active_script(animation_name);
-	}
+bool Fighter::change_anim_inherit_attributes(std::string animation_name, bool verbose) {
 	Animation* new_anim = anim_table.get_anim(animation_name, verbose);
 
 	if (new_anim != nullptr) {

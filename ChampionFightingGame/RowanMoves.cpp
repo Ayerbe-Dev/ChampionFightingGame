@@ -324,6 +324,7 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 			push_false("whiff_anim_check", &Fighter::CHANGE_ANIM, "5lp_whiff");
+			push_false("whiff_anim_check", &Fighter::CHANGE_SCRIPT, "5lp_whiff");
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "5mp", CANCEL_KIND_ANY);
@@ -406,7 +407,7 @@ void Rowan::load_move_scripts() {
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01");
 		});
-		execute_wait(5, [this]() {
+		execute_wait(11, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);

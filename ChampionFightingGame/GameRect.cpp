@@ -112,13 +112,6 @@ void GameRect::update_buffer_data() {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(corners), corners);
 }
 
-/// <summary>
-/// Calculates the intersection between two Rects.
-/// </summary>
-/// <param name="RectA">The first Rect</param>
-/// <param name="RectB">The second Rect</param>
-/// <returns>A float representing the intersection between RectA and RectB, or -1 if the rectangles
-/// do not intersect on both axes.</returns>
 float get_rect_intersection(GameRect& RectA, GameRect& RectB) {
 	float AB = RectA.corners[0].y;
 	float AT = RectA.corners[2].y;
@@ -200,13 +193,6 @@ float get_rect_intersection(GameRect& RectA, GameRect& RectB) {
 	}
 }
 
-/// <summary>
-/// SDL's rectangles suck so I made better ones.
-/// </summary>
-/// <param name="RectA">: The first rectangle</param>
-/// <param name="RectB">: The second rectangle</param>
-/// <returns>Whether or not any part of the two rectangles are touching</returns>
-/// <notes>The reason it's so long is because we run this check a lot so the less we put on the stack, the better
 bool is_rect_collide(GameRect &RectA, GameRect &RectB) {
 	return 
 		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) 
@@ -226,6 +212,27 @@ bool is_rect_collide(GameRect &RectA, GameRect &RectB) {
 		|| (RectA.corners[2].y >= RectB.corners[0].y && RectA.corners[2].y <= RectB.corners[2].y) 
 		|| (RectB.corners[0].y >= RectA.corners[0].y && RectB.corners[0].y <= RectA.corners[2].y) 
 		|| (RectB.corners[2].y >= RectA.corners[0].y && RectB.corners[2].y <= RectA.corners[2].y));
+}
+
+bool is_rect_collide(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b) {
+	return
+		((c1a.x >= c1b.x && c1a.x <= c2b.x)
+			|| (c2a.x >= c1b.x && c2a.x <= c2b.x)
+			|| (c1b.x >= c1a.x && c1b.x <= c2a.x)
+			|| (c2b.x >= c1a.x && c2b.x <= c2a.x)
+			|| (c1a.x <= c1b.x && c1a.x >= c2b.x)
+			|| (c2a.x <= c1b.x && c2a.x >= c2b.x)
+			|| (c1b.x <= c1a.x && c1b.x >= c2a.x)
+			|| (c2b.x <= c1a.x && c2b.x >= c2a.x))
+		&&
+		((c1a.y <= c1b.y && c1a.y >= c2b.y)
+			|| (c2a.y <= c1b.y && c2a.y >= c2b.y)
+			|| (c1b.y <= c1a.y && c1b.y >= c2a.y)
+			|| (c2b.y <= c1a.y && c2b.y >= c2a.y)
+			|| (c1a.y >= c1b.y && c1a.y <= c2b.y)
+			|| (c2a.y >= c1b.y && c2a.y <= c2b.y)
+			|| (c1b.y >= c1a.y && c1b.y <= c2a.y)
+			|| (c2b.y >= c1a.y && c2b.y <= c2a.y));
 }
 
 

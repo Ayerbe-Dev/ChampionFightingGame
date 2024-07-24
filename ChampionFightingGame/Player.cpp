@@ -60,12 +60,17 @@ void Player::poll_controller_menu() {
 }
 
 void Player::poll_controller_fighter() {
-	if (player_kind == PLAYER_KIND_CPU) input_mode = INPUT_MODE_PLAY_SEQ;
 	switch (input_mode) {
 		default:
 		case (INPUT_MODE_POLL): { //Normal
-			controller.poll_fighter();
-			replay_seq.add_inputs(controller.get_input_code());			
+			if (player_kind == PLAYER_KIND_CPU) {
+				controller.poll_from_input_code(manual_seq.get_curr_input_code_cpu());
+				replay_seq.add_inputs(controller.get_input_code());
+			}
+			else {
+				controller.poll_fighter();
+				replay_seq.add_inputs(controller.get_input_code());
+			}
 		} break;
 		case (INPUT_MODE_RECORD_SEQ): { //CPU Input Recording
 			controller.poll_fighter();

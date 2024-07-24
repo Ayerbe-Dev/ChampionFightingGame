@@ -878,7 +878,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_rect.glsl" />
     <None Include="resource\shaders\fragment_shadow.glsl" />
     <None Include="resource\shaders\fragment_ssao.glsl" />
-    <None Include="resource\shaders\fragment_ssao_blur.glsl" />
+    <None Include="resource\shaders\fragment_blur.glsl" />
     <None Include="resource\shaders\fragment_text.glsl" />
     <None Include="resource\shaders\geometry_effect.glsl" />
     <None Include="resource\shaders\geometry_model.glsl" />
@@ -893,7 +893,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\vertex_rect.glsl" />
     <None Include="resource\shaders\vertex_shadow.glsl" />
     <None Include="resource\shaders\vertex_ssao.glsl" />
-    <None Include="resource\shaders\vertex_ssao_blur.glsl" />
     <None Include="resource\shaders\vertex_text.glsl" />
     <None Include="resource\stage\training_room\assets\background\anims\anim_list.yml" />
     <None Include="resource\stage\training_room\assets\background\model\model.dae" />

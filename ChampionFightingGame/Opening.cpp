@@ -61,7 +61,7 @@ void opening_main() {
 			title_alpha -= 10;
 			text_alpha -= 10;
 			fade_count++;
-			if (fade_count == 24) {
+			if (fade_count == 23) {
 				loop = false;
 			}
 		}

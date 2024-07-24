@@ -287,6 +287,7 @@ public:
 	void post_process_fighters();
 	void process_training();
 	void process_collisions();
+	void process_cpus();
 
 	void render_world();
 	void render_ui();

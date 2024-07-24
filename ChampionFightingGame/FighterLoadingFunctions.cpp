@@ -25,7 +25,6 @@ void Fighter::load_fighter() {
 		internal_facing_right = false;
 		facing_dir = -1.0;
 	}
-	cpu.init(this, object_manager->fighter[!id]);
 
 	load_params();
 	load_model_shader();
@@ -36,6 +35,7 @@ void Fighter::load_fighter() {
 	load_battle_object_status_scripts();
 	load_move_list();
 	load_move_scripts();
+	cpu.init(this, object_manager->fighter[!id]);
 	load_cpu_move_info();
 	load_sounds();
 	load_effect_list();

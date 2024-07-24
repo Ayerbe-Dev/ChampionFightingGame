@@ -81,9 +81,6 @@ void Fighter::fighter_main() {
 	process_projectiles();
 	process_post_common_fighter_vars();
 	process_post_status();
-	if (player->player_kind == PLAYER_KIND_CPU) {
-		process_cpu();
-	}
 }
 
 void Fighter::fighter_post() {
@@ -136,7 +133,7 @@ void Fighter::process_animate() {
 		if (frame >= anim_kind->length) {
 			frame = 0.0;
 			object_int[FIGHTER_INT_EXTERNAL_FRAME] = 0;
-			active_move_script.activate();
+			move_script.activate();
 			clear_grabbox_all();
 			clear_hurtbox_all();
 			clear_hitbox_all();

@@ -19,7 +19,6 @@ BattleObject::BattleObject() {
 	connected_grabbox = nullptr;
 	incoming_collision_kind = INCOMING_COLLISION_KIND_NONE;
 	post_collision_status = 0;
-	last_execute_frame = 0.0;
 	player = nullptr;
 	stage = nullptr;
 }

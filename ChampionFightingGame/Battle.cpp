@@ -64,6 +64,7 @@ void battle_main() {
 #endif
 
 		render_manager->update_screen();
+		battle->process_cpus();
 	}
 #ifdef DEBUG
 	cotr_imgui_terminate();
@@ -1229,11 +1230,6 @@ void Battle::process_fighters() {
 	}
 }
 
-void gamestate_battle_fighter_thread(void* fighter_arg) {
-	Fighter* fighter = (Fighter*)fighter_arg;
-	fighter->fighter_main();
-}
-
 void Battle::post_process_fighters() {
 	thread_manager->wait_thread(THREAD_KIND_PLAYER_1);
 	thread_manager->wait_thread(THREAD_KIND_PLAYER_2);
@@ -1291,6 +1287,21 @@ void Battle::process_training() {
 			);
 		}
 	}
+}
+
+void Battle::process_cpus() {
+	if (frame_advance || !frame_pause) {
+		for (int i = 0; i < 2; i++) {
+			if (player[i]->player_kind == PLAYER_KIND_CPU) {
+				fighter[i]->process_cpu();
+			}
+		}
+	}
+}
+
+void gamestate_battle_fighter_thread(void* fighter_arg) {
+	Fighter* fighter = (Fighter*)fighter_arg;
+	fighter->fighter_main();
 }
 
 void gamestate_battle_ui_thread(void* battle_arg) {
@@ -1501,6 +1512,7 @@ void Battle::render_ui() {
 }
 
 void Battle::event_start_press() {
+	if (internal_frame == 0) return;
 	switch (internal_state) {
 		case(BATTLE_STATE_PRE_INTRO): {
 

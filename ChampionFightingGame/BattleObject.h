@@ -223,7 +223,7 @@ public:
 
 	//Scripting Functions
 
-	void set_active_script(std::string anim_name);
+	void change_script(std::string script_name);
 	void execute_active_script();
 	void clear_scripts();
 
@@ -234,38 +234,23 @@ public:
 
 	template<typename ...T>
 	void push_function(void (BattleObject::* function)(ScriptArg), T... args) {
-		std::vector<int> error_vec;
-		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		std::queue<std::any> queue = extract_variadic_to_queue(args...);
 		ScriptArg sa(sizeof...(args), queue);
-		active_script_frame.push_function(function, sa);
-		for (int i = 0, max = error_vec.size(); i < max; i++) {
-			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
-				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
-		}
+		move_script_table.push_function(function, sa);
 	}
 
 	template<typename ...T>
 	void push_true(std::string condition_name, void (BattleObject::* function)(ScriptArg), T... args) {
-		std::vector<int> error_vec;
-		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		std::queue<std::any> queue = extract_variadic_to_queue(args...);
 		ScriptArg sa(sizeof...(args), queue);
-		active_script_frame.push_true(condition_name, function, sa);
-		for (int i = 0, max = error_vec.size(); i < max; i++) {
-			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
-				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
-		}
+		move_script_table.push_true(condition_name, function, sa);
 	}
 
 	template<typename ...T>
 	void push_false(std::string condition_name, void (BattleObject::* function)(ScriptArg), T... args) {
-		std::vector<int> error_vec;
-		std::queue<std::any> queue = extract_variadic_to_queue(&error_vec, args...);
+		std::queue<std::any> queue = extract_variadic_to_queue(args...);
 		ScriptArg sa(sizeof...(args), queue);
-		active_script_frame.push_false(condition_name, function, sa);
-		for (int i = 0, max = error_vec.size(); i < max; i++) {
-			GameManager::get_instance()->add_crash_log("ERROR: Arg " + std::to_string(error_vec[i] + 1) +
-				" of a function called in script " + active_move_script.name + " is of type unnamed-enum.");
-		}
+		move_script_table.push_false(condition_name, function, sa);
 	}
 
 	//Script Wrappers
@@ -343,9 +328,7 @@ public:
 	unsigned int post_collision_status;
 
 	MoveScriptTable move_script_table;
-	MoveScript active_move_script;
-	ScriptFrame active_script_frame;
-	float last_execute_frame;
+	MoveScript move_script;
 
 	ParamTable param_table;
 

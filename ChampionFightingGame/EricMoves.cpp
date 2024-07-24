@@ -298,7 +298,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::PLAY_RESERVED_SOUND, "rowan_attack_01");
-	});
+		});
 		execute_frame(4, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(0, 120), glm::vec2(210, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 131),
@@ -322,6 +322,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 			push_false("whiff_anim_check", &Fighter::CHANGE_ANIM, "stand_lp_whiff");
+			push_false("whiff_anim_check", &Fighter::CHANGE_SCRIPT, "stand_lp_whiff");
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "stand_mp", CANCEL_KIND_ANY);
@@ -397,14 +398,25 @@ void Eric::load_move_scripts() {
 		});
 		execute_frame(9, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130),
-			glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
-			.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
+				glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
+				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
 				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
-				"", "common_attack_hit_01");
+				"", "common_attack_hit_01"
+			);
 		});
-		execute_wait(5, [this]() {
+		execute_wait(17, [this]() {
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130),
+				glm::vec2(500, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
+				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
+				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
+				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
+				"", "common_attack_hit_01"
+			);
+		});
+		execute_wait(11, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -499,7 +511,7 @@ void Eric::load_move_scripts() {
 				HIT_FLAG_DISABLE_HITSTUN_PARRY | HIT_FLAG_CONTINUE_LAUNCH,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
-		push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(44, 76), glm::vec2(173, 143), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(44, 76), glm::vec2(173, 143), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(11.0, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
@@ -924,9 +936,9 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_uppercut", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
 		});
-		execute_frame(14, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(180, 168),
-			glm::vec2(12, 128), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+		execute_frame(15, [this]() {
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(12, 128),
+			glm::vec2(180, 168), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(80).meter(48).hit(12, 27).block(16, 23).j_start(0).j_inc(1).j_max(1)
 			.anims("overhead", "overhead", "high", ""), HIT_STATUS_NORMAL,
 				HitMove().ground(14.0, 8.0).air(5.0, 30.0).frames(11).launch(20.0, 1.3, 15.0, 25.0),
@@ -1160,15 +1172,12 @@ void Eric::load_move_scripts() {
 	script("grabbed", [this]() {
 
 	});
-	script("special_fireball_start", [this]() {
+	script("special_fireball_start_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-127, -10), glm::vec2(82, 153), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
-		execute_frame(6, [this]() {
-			push_function(&Fighter::SET_RATE, 1.0f);
-		});
-		execute_wait(4, [this]() {
+		execute_frame(10, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-122, 175), glm::vec2(202, 98), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_AERIAL);
 		});
 		execute_wait(1, [this]() {
@@ -1178,7 +1187,58 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::CLEAR_HURTBOX, 1);
 		});
 	});
-	script("special_fireball_punch", [this]() {
+	script("special_fireball_start_m", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-127, -10), glm::vec2(82, 153), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			});
+		execute_frame(6, [this]() {
+			push_function(&Fighter::SET_RATE, 1.0f);
+			});
+		execute_frame(10, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-122, 175), glm::vec2(202, 98), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_AERIAL);
+		});
+		execute_wait(1, [this]() {
+			push_function(&Fighter::ACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL, glm::vec3(0.0));
+			});
+		execute_frame(41.0, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+		});
+	script("special_fireball_start_h", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-127, -10), glm::vec2(82, 153), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			});
+		execute_frame(6, [this]() {
+			push_function(&Fighter::SET_RATE, 1.0f);
+			});
+		execute_frame(10, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-122, 175), glm::vec2(202, 98), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_AERIAL);
+		});
+		execute_wait(1, [this]() {
+			push_function(&Fighter::ACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL, glm::vec3(0.0));
+			});
+		execute_frame(41.0, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+		});
+	script("special_fireball_start_ex", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-127, -10), glm::vec2(82, 153), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			});
+		execute_frame(10, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-122, 175), glm::vec2(202, 98), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_AERIAL);
+			});
+		execute_wait(1, [this]() {
+			push_function(&Fighter::ACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL, glm::vec3(0.0));
+			});
+		execute_frame(41.0, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+		});
+	script("special_fireball_punch_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 		});
@@ -1186,7 +1246,31 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, ERIC_PROJECTILE_ID_FIREBALL, PROJECTILE_STATUS_MOVE);
 		});
 	});
-	script("special_fireball_kick", [this]() {
+	script("special_fireball_punch_m", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, ERIC_PROJECTILE_ID_FIREBALL, PROJECTILE_STATUS_MOVE);
+			});
+		});
+	script("special_fireball_punch_h", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, ERIC_PROJECTILE_ID_FIREBALL, PROJECTILE_STATUS_MOVE);
+			});
+		});
+	script("special_fireball_punch_ex", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::CHANGE_PROJECTILE_STATUS, ERIC_PROJECTILE_ID_FIREBALL, PROJECTILE_STATUS_MOVE);
+			});
+		});
+	script("special_fireball_kick_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
 		});
@@ -1194,28 +1278,87 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::DEACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL);
 		});
 	});
-	script("special_slide", [this]() {
+	script("special_fireball_kick_m", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
+			});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::DEACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL);
+			});
+		});
+	script("special_fireball_kick_h", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
+			});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::DEACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL);
+			});
+		});
+	script("special_fireball_kick_ex", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 60.0), glm::vec2(70.0, 160.0));
+			});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::DEACTIVATE_PROJECTILE, ERIC_PROJECTILE_ID_FIREBALL);
+			});
+		});
+	script("special_slide_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-136, -10), glm::vec2(159, 72), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_PUSHBOX, 1, glm::vec2(-135, 0), glm::vec2(20, 25));
 		});
 		execute_frame(12, [this]() {
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				push_function(&Fighter::CLEAR_PUSHBOX_ALL);
-				push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ALLOW_CORNER_CROSSUP, true);
-			}
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(150, -8), glm::vec2(300, 30), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
-					glm::vec2(250, 30), COLLISION_KIND_GROUND,
-					HitResult().damage(70).hit(12, 0).block(12, 19).anims("", "", "low", "low"),
-					HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20),
-					HIT_FLAG_HARD_KNOCKDOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
-					"", "common_attack_hit_01"
-				);
-			}
-			else {
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
+				glm::vec2(250, 30), COLLISION_KIND_GROUND,
+				HitResult().damage(70).meter(42).hit(12, 4).block(12, 16).anims("", "", "low", "low"),
+				HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20), HIT_FLAG_NONE,
+				CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
+				"", "common_attack_hit_01"
+			);
+		});
+		execute_wait(3, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX, 0);
+			});
+		execute_wait(2, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+		});
+	script("special_slide_m", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-136, -10), glm::vec2(159, 72), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_PUSHBOX, 1, glm::vec2(-135, 0), glm::vec2(20, 25));
+			});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(150, -8), glm::vec2(300, 30), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
+				glm::vec2(250, 30), COLLISION_KIND_GROUND,
+				HitResult().damage(70).meter(42).hit(12, 4).block(12, 16).anims("", "", "low", "low"),
+				HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20), HIT_FLAG_NONE,
+				CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
+				"", "common_attack_hit_01"
+			);
+		});
+		execute_wait(3, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX, 0);
+			});
+		execute_wait(2, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+		});
+	script("special_slide_h", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-136, -10), glm::vec2(159, 72), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_PUSHBOX, 1, glm::vec2(-135, 0), glm::vec2(20, 25));
+			});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::CLEAR_PUSHBOX_ALL);
+			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ALLOW_CORNER_CROSSUP, true);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(150, -8), glm::vec2(300, 30), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
 					glm::vec2(250, 30), COLLISION_KIND_GROUND,
 					HitResult().damage(70).meter(42).hit(12, 4).block(12, 16).anims("", "", "low", "low"),
@@ -1223,16 +1366,38 @@ void Eric::load_move_scripts() {
 					CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
 					"", "common_attack_hit_01"
 				);
-			}
+			});
+		execute_wait(3, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX, 0);
+			});
+		execute_wait(2, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+		});
+	script("special_slide_ex", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-136, -10), glm::vec2(159, 72), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_PUSHBOX, 1, glm::vec2(-135, 0), glm::vec2(20, 25));
+			});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(150, -8), glm::vec2(300, 30), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
+				glm::vec2(250, 30), COLLISION_KIND_GROUND,
+				HitResult().damage(70).hit(12, 0).block(12, 19).anims("", "", "low", "low"),
+				HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20),
+				HIT_FLAG_HARD_KNOCKDOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
+				"", "common_attack_hit_01"
+			);
 		});
 		execute_wait(3, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX, 0);
-		});
+			});
 		execute_wait(2, [this]() {
 			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
 		});
-	});
-	script("special_slide_followup", [this]() {
+	script("special_slide_followup_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-139, -2), glm::vec2(175, 79), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
@@ -1241,21 +1406,6 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-73, -2), glm::vec2(152, 125), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_HIGH);
 		});
 		execute_frame(8.0, [this]() {
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45),
-					glm::vec2(231, 236), COLLISION_KIND_AIR, HitResult().damage(70).hit(12, 0)
-					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
-					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
-				);
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45),
-					glm::vec2(231, 236), COLLISION_KIND_GROUND | COLLISION_KIND_DOWN,
-					HitResult().damage(70).hit(12, 0).block(16, 30).anims("", "", "mid", "mid"),
-					HIT_STATUS_LAUNCH, HitMove().ground(0.0, 15.0).frames(5)
-					.launch(35.0, 2.0, 18.0, 0.25), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
-					HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
-				);
-			}
-			else {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45),
 					glm::vec2(231, 236), COLLISION_KIND_AIR, HitResult().damage(70).meter(56).hit(12, 0)
 					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
@@ -1267,24 +1417,14 @@ void Eric::load_move_scripts() {
 					HitMove().ground(0.0, 15.0).frames(5).launch(35.0, 2.0, 18.0, 0.25),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 				);
-			}
 		});
 		execute_frame(9.0, [this]() {
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
-					glm::vec2(200, 255), COLLISION_KIND_AIR, HitResult().damage(70).hit(12, 0).j_inc(1)
-					.j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
-					CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
-				);
-			}
-			else {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
 					glm::vec2(200, 255), COLLISION_KIND_AIR, HitResult().damage(70).meter(56).hit(12, 0)
 					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 				);
 				push_function(&Fighter::CLEAR_HITBOX, 1);
-			}
 		});
 		execute_frame(10.0, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX, 1);
@@ -1298,6 +1438,47 @@ void Eric::load_move_scripts() {
 		});
 
 	});
+	script("special_slide_followup_ex", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-139, -2), glm::vec2(175, 79), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			});
+		execute_frame(3.0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-73, -2), glm::vec2(152, 125), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_HIGH);
+			});
+		execute_frame(8.0, [this]() {
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45),
+					glm::vec2(231, 236), COLLISION_KIND_AIR, HitResult().damage(70).hit(12, 0)
+					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
+					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
+				);
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45),
+					glm::vec2(231, 236), COLLISION_KIND_GROUND | COLLISION_KIND_DOWN,
+					HitResult().damage(70).hit(12, 0).block(16, 30).anims("", "", "mid", "mid"),
+					HIT_STATUS_LAUNCH, HitMove().ground(0.0, 15.0).frames(5)
+					.launch(35.0, 2.0, 18.0, 0.25), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
+					HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
+				);
+			});
+		execute_frame(9.0, [this]() {
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
+					glm::vec2(200, 255), COLLISION_KIND_AIR, HitResult().damage(70).hit(12, 0).j_inc(1)
+					.j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
+					CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
+				);
+			});
+		execute_frame(10.0, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX, 1);
+			});
+		execute_frame(14.0, [this]() {
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-73, -2), glm::vec2(152, 200), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+			});
+		execute_frame(30.0, [this]() {
+			push_function(&Fighter::CLEAR_HURTBOX, 1);
+			});
+
+		});
 	script("special_slide_enhanced_start", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
@@ -1308,16 +1489,13 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 		});
 	});
-	script("special_uppercut_start", [this]() {
+	script("special_uppercut_start_l", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
-				push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-118, -4), glm::vec2(65, 138), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-				push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-98, -4), glm::vec2(171, 65), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
-			}
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-118, -4), glm::vec2(65, 138), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(-98, -4), glm::vec2(171, 65), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(4, [this]() {
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L) {
 				push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-114, -12), glm::vec2(187, 127), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 				push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(81, 88), glm::vec2(9, 125), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0),
@@ -1328,73 +1506,42 @@ void Eric::load_move_scripts() {
 					HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
 					DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 				);
-			}
-			else {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0),
-					glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-					HitResult().damage(30).scale(0).hit(12, 38).block(8, 17).j_min(7).j_max(6)
-					.anims("light_mid", "light_mid", "mid", "mid"), HIT_STATUS_NORMAL,
-					HitMove().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
-					HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
-					DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
-				);
-			}
 		});
 		execute_wait(4, [this]() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
-	script("special_uppercut", [this]() {
+	script("special_uppercut_start_ex", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+		});
+		execute_frame(4, [this]() {
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(220, 0),
+				glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(30).scale(0).hit(12, 38).block(8, 17).j_min(7).j_max(6)
+				.anims("light_mid", "light_mid", "mid", "mid"), HIT_STATUS_NORMAL,
+				HitMove().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+				HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
+				DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
+			);
+		});
+		execute_wait(4, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+		});
+	});
+	script("special_uppercut_l", [this]() {
 		push_condition("pushbox_check", [this]() { return object_flag[CHARA_ERIC_FLAG_BLAZING_UPPER_HIT]; });
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
-			if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_H) {
-				push_function(&Fighter::SET_RATE, 0.86f);
-			}
 		});
 		execute_frame(5, [this]() {
-			push_function(&Fighter::SET_RATE, 1.0f);
-			switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
-			case (SPECIAL_LEVEL_L): {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
-					glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-					HitResult().damage(60).meter(36).hit(14, 0).block(20, 20).j_start(6).j_inc(1)
-					.j_max(5).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-					HitMove().ground(0.0, 20.0).frames(5).launch(43.0, 2.0, 22.0, 10.0),
-					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
-				);
-			} break;
-			case (SPECIAL_LEVEL_M): {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
-					glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-					HitResult().damage(100).meter(60).hit(14, 0).block(20, 20).j_min(7).j_max(5)
-					.anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-					HitMove().ground(0.0, 20.0).frames(5).launch(45.0, 2.0, 22.0, 10.0),
-					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
-					"", "common_attack_hit_01"
-				);
-			} break;
-			case (SPECIAL_LEVEL_H): {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
-					glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-					HitResult().damage(110).meter(66).hit(14, 0).block(20, 20).j_min(7).j_max(5)
-					.anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-					HitMove().ground(0.0, 20.0).frames(5).launch(47.0, 2.0, 22.0, 10.0),
-					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
-					"", "common_attack_hit_01"
-				);
-			} break;
-			case (SPECIAL_LEVEL_EX): {
-				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
-					glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-					HitResult().damage(90).meter(54).hit(14, 0).block(20, 20).j_start(8)
-					.j_inc(1).j_max(7).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-					HitMove().ground(0.0, 20.0).frames(5).launch(49.0, 2.0, 22.0, 10.0),
-					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
-					"", "common_attack_hit_01"
-				);
-			} break;
-			}
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
+				glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(60).meter(36).hit(14, 0).block(20, 20).j_start(6).j_inc(1)
+				.j_max(5).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
+				HitMove().ground(0.0, 20.0).frames(5).launch(43.0, 2.0, 22.0, 10.0),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
+			);
 		});
 		execute_frame(8, [this]() {
 			push_true("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
@@ -1403,6 +1550,74 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
 		});
 	});
+	script("special_uppercut_m", [this]() {
+		push_condition("pushbox_check", [this]() { return object_flag[CHARA_ERIC_FLAG_BLAZING_UPPER_HIT]; });
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			});
+		execute_frame(5, [this]() {
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
+				glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(100).meter(60).hit(14, 0).block(20, 20).j_min(7).j_max(5)
+				.anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
+				HitMove().ground(0.0, 20.0).frames(5).launch(45.0, 2.0, 22.0, 10.0),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
+				"", "common_attack_hit_01"
+			);
+		});
+		execute_frame(8, [this]() {
+			push_true("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
+			});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+			});
+		});
+	script("special_uppercut_h", [this]() {
+		push_condition("pushbox_check", [this]() { return object_flag[CHARA_ERIC_FLAG_BLAZING_UPPER_HIT]; });
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			push_function(&Fighter::SET_RATE, 0.86f);
+		});
+		execute_frame(5, [this]() {
+			push_function(&Fighter::SET_RATE, 1.0f);
+			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
+				glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+				HitResult().damage(110).meter(66).hit(14, 0).block(20, 20).j_min(7).j_max(5)
+				.anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
+				HitMove().ground(0.0, 20.0).frames(5).launch(47.0, 2.0, 22.0, 10.0),
+				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
+				"", "common_attack_hit_01"
+			);
+		});
+		execute_frame(8, [this]() {
+			push_true("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
+			});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+			});
+		});
+	script("special_uppercut_ex", [this]() {
+		push_condition("pushbox_check", [this]() { return object_flag[CHARA_ERIC_FLAG_BLAZING_UPPER_HIT]; });
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
+			});
+		execute_frame(5, [this]() {
+				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(47, 30),
+					glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
+					HitResult().damage(90).meter(54).hit(14, 0).block(20, 20).j_start(8)
+					.j_inc(1).j_max(7).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
+					HitMove().ground(0.0, 20.0).frames(5).launch(49.0, 2.0, 22.0, 10.0),
+					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
+					"", "common_attack_hit_01"
+				);
+		});
+		execute_frame(8, [this]() {
+			push_true("pushbox_check", &Fighter::NEW_PUSHBOX, 0, glm::vec2(-30.0, 0.0), glm::vec2(70.0, 500.0));
+			});
+		execute_frame(12, [this]() {
+			push_function(&Fighter::CLEAR_HITBOX_ALL);
+			});
+		});
 	script("special_uppercut_fall", [this]() {
 		push_condition("pushbox_check", [this]() { return object_flag[CHARA_ERIC_FLAG_BLAZING_UPPER_HIT]; });
 		execute_frame(0, [this]() {
@@ -1935,5 +2150,19 @@ void Eric::load_move_scripts() {
 }
 
 void Eric::load_cpu_move_info() {
-	cpu.add_action("2hk", INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, 9, glm::vec2(0, 250));
+	cpu.add_action("stand_lp", "stand_lp", INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_mp", "stand_mp", INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_hp", "stand_hp", INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_lk", "stand_lk", INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_mk", "stand_mk", INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_hk", "stand_hk", INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+
+	cpu.add_action("forward_hp", "forward_hp", INPUT_KIND_NORMAL, BUTTON_HP_BIT, 6, { 3, 6, 9 }, {}, {}, 0.0f, false);
+
+	cpu.add_action("crouch_lp", "crouch_lp", INPUT_KIND_NORMAL, BUTTON_LP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_mp", "crouch_mp", INPUT_KIND_NORMAL, BUTTON_MP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_hp", "crouch_hp", INPUT_KIND_NORMAL, BUTTON_HP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_lk", "crouch_lk", INPUT_KIND_NORMAL, BUTTON_LK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_mk", "crouch_mk", INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_hk", "crouch_hk", INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
 }

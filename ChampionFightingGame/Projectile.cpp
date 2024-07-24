@@ -63,7 +63,7 @@ void Projectile::process_animate() {
 	if (anim_kind != nullptr) {
 		if (frame >= anim_kind->length && anim_kind->length != -1) {
 			frame = 0.0;
-			active_move_script.activate();
+			move_script.activate();
 			clear_hitbox_all();
 			anim_end = true;
 		}

@@ -1,11 +1,16 @@
 #include "MoveScript.h"
 #include "BattleObject.h"
 
-MoveScript::MoveScript() {}
+MoveScript::MoveScript() {
+	name = "";
+	move_script = []() {};
+	table = nullptr;
+}
 
-MoveScript::MoveScript(std::string name, std::function<void()> move_script) {
+MoveScript::MoveScript(std::string name, std::function<void()> move_script, MoveScriptTable* table) {
 	this->name = name;
 	this->move_script = move_script;
+	this->table = table;
 }
 
 void MoveScript::activate() {
@@ -13,6 +18,7 @@ void MoveScript::activate() {
 		frames.pop();
 	}
 	conditions.clear();
+	table->set_activating_move_script(this);
 	move_script();
 }
 
@@ -169,6 +175,7 @@ void ScriptFrame::push_false(std::string condition_name, void(BattleObject::* fu
 }
 
 MoveScriptTable::MoveScriptTable() {
+	activating_move_script = nullptr;
 	add_script("default", []() {
 		return;
 	});
@@ -176,11 +183,11 @@ MoveScriptTable::MoveScriptTable() {
 
 void MoveScriptTable::add_script(std::string name, std::function<void()> move_script) {
 	script_map[name] = scripts.size();
-	MoveScript script(name, move_script);
+	MoveScript script(name, move_script, this);
 	scripts.push_back(script);
 }
 
-MoveScript& MoveScriptTable::get_script(std::string script_name) {
+MoveScript MoveScriptTable::get_script(std::string script_name) {
 	std::unordered_map<std::string, int>::const_iterator iterator = script_map.find(script_name);
 	if (iterator == script_map.end()) {
 		std::cout << "Invalid Script: " << script_name << "\n";
@@ -192,4 +199,39 @@ MoveScript& MoveScriptTable::get_script(std::string script_name) {
 void MoveScriptTable::clear_scripts() {
 	scripts.clear();
 	script_map.clear();
+	activating_move_script = nullptr;
+}
+
+void MoveScriptTable::set_activating_move_script(MoveScript* script) {
+	this->activating_move_script = script;
+}
+
+void MoveScriptTable::execute_frame(float frame, std::function<void()> execute) {
+	activating_script_frame = ScriptFrame(frame);
+	execute();
+	activating_move_script->frames.push(activating_script_frame);
+	last_execute_frame = frame;
+}
+
+void MoveScriptTable::execute_wait(float frames, std::function<void()> execute) {
+	activating_script_frame = ScriptFrame(frames + last_execute_frame);
+	execute();
+	activating_move_script->frames.push(activating_script_frame);
+	last_execute_frame += frames;
+}
+
+void MoveScriptTable::push_condition(std::string condition_name, std::function<bool()> condition) {
+	activating_move_script->conditions[condition_name] = condition;
+}
+
+void MoveScriptTable::push_function(void(BattleObject::* func)(ScriptArg), ScriptArg args) {
+	activating_script_frame.push_function(func, args);
+}
+
+void MoveScriptTable::push_true(std::string condition_name, void(BattleObject::* func)(ScriptArg), ScriptArg args) {
+	activating_script_frame.push_true(condition_name, func, args);
+}
+
+void MoveScriptTable::push_false(std::string condition_name, void(BattleObject::* func)(ScriptArg), ScriptArg args) {
+	activating_script_frame.push_false(condition_name, func, args);
 }

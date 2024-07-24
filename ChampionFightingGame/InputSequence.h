@@ -19,9 +19,9 @@ public:
 	void set_inputs(InputCode input_code);
 	void set_input_seq(std::vector<InputCode> input_seq);
 	unsigned short get_curr_input_code();
+	unsigned short get_curr_input_code_cpu();
 	unsigned short get_prev_input_code(int offset);
 	void reset_idx();
-
 private:
 	std::size_t idx;
 	unsigned short input_seq[8192];

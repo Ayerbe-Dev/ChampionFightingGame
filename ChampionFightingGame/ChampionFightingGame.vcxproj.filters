@@ -2000,10 +2000,7 @@
     <None Include="resource\chara\roy\anims\throw_b.fbx">
       <Filter>3. resource\chara\rowan\anims</Filter>
     </None>
-    <None Include="resource\shaders\vertex_ssao_blur.glsl">
-      <Filter>3. resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\fragment_ssao_blur.glsl">
+    <None Include="resource\shaders\fragment_blur.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\chara\atlas\cam_anims\anim_list.yml">

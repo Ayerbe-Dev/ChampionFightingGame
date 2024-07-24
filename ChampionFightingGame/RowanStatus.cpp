@@ -56,15 +56,21 @@ void Rowan::rowan_status_special_fireball_start() {
 
 void Rowan::rowan_enter_status_special_fireball_start() {
 	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
-		case (SPECIAL_LEVEL_L):
-		case (SPECIAL_LEVEL_EX): {
+		case (SPECIAL_LEVEL_L): {
 			change_anim("special_fireball_start");
+			change_script("special_fireball_start_l");
 		} break;
 		case (SPECIAL_LEVEL_M): {
 			change_anim("special_fireball_start", 0.8);
+			change_script("special_fireball_start_m");
 		} break;
 		case (SPECIAL_LEVEL_H): {
 			change_anim("special_fireball_start", 0.3);
+			change_script("special_fireball_start_h");
+		} break;
+		case (SPECIAL_LEVEL_EX): {
+			change_anim("special_fireball_start");
+			change_script("special_fireball_start_ex");
 		} break;
 	}
 }
@@ -80,7 +86,19 @@ void Rowan::rowan_status_special_fireball_punch() {
 }
 
 void Rowan::rowan_enter_status_special_fireball_punch() {
-	change_anim("special_fireball_punch", 1.0);
+	change_anim("special_fireball_punch");
+	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+		case (SPECIAL_LEVEL_L): {
+			change_script("special_fireball_punch_l");
+		} break;
+		case (SPECIAL_LEVEL_M): {
+			change_script("special_fireball_punch_m");
+		} break;
+		case (SPECIAL_LEVEL_H):
+		case (SPECIAL_LEVEL_EX): {
+			change_script("special_fireball_punch_h");
+		} break;
+	}
 }
 
 void Rowan::rowan_exit_status_special_fireball_punch() {
@@ -94,7 +112,19 @@ void Rowan::rowan_status_special_fireball_kick() {
 }
 
 void Rowan::rowan_enter_status_special_fireball_kick() {
-	change_anim("special_fireball_kick", 1.0);
+	change_anim("special_fireball_kick");
+	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+		case (SPECIAL_LEVEL_L): {
+			change_script("special_fireball_kick_l");
+		} break;
+		case (SPECIAL_LEVEL_M): {
+			change_script("special_fireball_kick_m");
+		} break;
+		case (SPECIAL_LEVEL_H):
+		case (SPECIAL_LEVEL_EX): {
+			change_script("special_fireball_kick_h");
+		} break;
+	}
 }
 
 void Rowan::rowan_exit_status_special_fireball_kick() {
@@ -122,6 +152,20 @@ void Rowan::rowan_status_special_slide() {
 
 void Rowan::rowan_enter_status_special_slide() {
 	change_anim("special_slide");
+	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+		case (SPECIAL_LEVEL_L): {
+			change_script("special_slide_l");
+		} break;
+		case (SPECIAL_LEVEL_M): {
+			change_script("special_slide_m");
+		} break;
+		case (SPECIAL_LEVEL_H): {
+			change_script("special_slide_h");
+		} break;
+		case (SPECIAL_LEVEL_EX): {
+			change_script("special_slide_ex");
+		} break;
+	}
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float_special("special_slide_move_x") * facing_dir;
 }
 
@@ -144,6 +188,16 @@ void Rowan::rowan_status_special_slide_followup() {
 
 void Rowan::rowan_enter_status_special_slide_followup() {
 	change_anim("special_slide_followup");
+	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+		case (SPECIAL_LEVEL_L):
+		case (SPECIAL_LEVEL_M):
+		case (SPECIAL_LEVEL_H): {
+			change_script("special_slide_followup_l");
+		} break;
+		case (SPECIAL_LEVEL_EX): {
+			change_script("special_slide_followup_ex");
+		} break;
+	}
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0.0;
 }
 
@@ -159,6 +213,7 @@ void Rowan::rowan_status_special_slide_enhanced_start() {
 
 void Rowan::rowan_enter_status_special_slide_enhanced_start() {
 	change_anim("special_slide_enhanced_start");
+	change_script("special_slide_enhanced_start");
 }
 
 void Rowan::rowan_exit_status_special_slide_enhanced_start() {
@@ -175,6 +230,7 @@ void Rowan::rowan_status_special_slide_enhanced() {
 
 void Rowan::rowan_enter_status_special_slide_enhanced() {
 	change_anim("special_slide_enhanced");
+	change_script("special_slide_enhanced");
 	change_context(FIGHTER_CONTEXT_AIR);
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("special_slide_enhanced_x") * facing_dir;
 	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = get_param_float("special_slide_enhanced_y");
@@ -201,13 +257,15 @@ void Rowan::rowan_status_special_uppercut_start() {
 
 void Rowan::rowan_enter_status_special_uppercut_start() {
 	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
-		case (SPECIAL_LEVEL_L):
-		case (SPECIAL_LEVEL_EX): {
-			change_anim("special_uppercut_start");
+		case (SPECIAL_LEVEL_L): {
+			change_anim("special_uppercut_start_l");
 		} break;
 		case (SPECIAL_LEVEL_M):
 		case (SPECIAL_LEVEL_H): {
 			change_status(CHARA_ROWAN_STATUS_SPECIAL_UPPERCUT);
+		} break;
+		case (SPECIAL_LEVEL_EX): {
+			change_anim("special_uppercut_start_ex");
 		} break;
 		default: {
 		} break;
@@ -246,16 +304,20 @@ void Rowan::rowan_status_special_uppercut() {
 
 void Rowan::rowan_enter_status_special_uppercut() {
 	object_flag[CHARA_ROWAN_FLAG_BLAZING_UPPER_HIT] = false;
-	if (fighter_context == FIGHTER_CONTEXT_GROUND) { //Not sure if we want air dp to be a thing but if we do, this is designed to account for it
-		if (object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_L || object_int[FIGHTER_INT_SPECIAL_LEVEL] == SPECIAL_LEVEL_EX) {
-			change_anim("special_uppercut", 1.0, 1.0);
-		}
-		else {
-			change_anim("special_uppercut", 1.0, 1.0);
-		}
-	}
-	else {
-		change_anim("special_uppercut", 1.0, 4.0);
+	change_anim("special_uppercut", 1.0, 1.0);
+	switch (object_int[FIGHTER_INT_SPECIAL_LEVEL]) {
+	case (SPECIAL_LEVEL_L): {
+		change_script("special_uppercut_l");
+	} break;
+	case (SPECIAL_LEVEL_M): {
+		change_script("special_uppercut_m");
+	} break;
+	case (SPECIAL_LEVEL_H): {
+		change_script("special_uppercut_h");
+	} break;
+	case (SPECIAL_LEVEL_EX): {
+		change_script("special_uppercut_ex");
+	} break;
 	}
 
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float_special("special_uppercut_x") * facing_dir * 2.3;
@@ -276,6 +338,7 @@ void Rowan::rowan_status_special_uppercut_fall() {
 
 void Rowan::rowan_enter_status_special_uppercut_fall() {
 	change_anim("special_uppercut_fall");
+	change_script("special_uppercut_fall");
 }
 
 void Rowan::rowan_exit_status_special_uppercut_fall() {
@@ -313,6 +376,7 @@ void Rowan::rowan_enter_status_special_uppercut_land() {
 	landing_crossup();
 	object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = get_param_int_special("special_uppercut_landing_lag");
 	change_anim("special_uppercut_land", object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1);
+	change_script("special_uppercut_land");
 	object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 0;
 	object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 0;
 	change_context(FIGHTER_CONTEXT_GROUND);
@@ -331,6 +395,7 @@ void Rowan::rowan_status_special_install() {
 
 void Rowan::rowan_enter_status_special_install() {
 	change_anim("special_install");
+	change_script("special_install");
 }
 
 void Rowan::rowan_exit_status_special_install() {
@@ -349,6 +414,7 @@ void Rowan::rowan_status_champion_super_start() {
 void Rowan::rowan_enter_status_champion_super_start() {
 	object_float[FIGHTER_FLOAT_SUPER_METER] = 0.0f;
 	change_anim("champion_super_start");
+	change_script("champion_super_start");
 }
 
 void Rowan::rowan_exit_status_champion_super_start() {
@@ -363,6 +429,7 @@ void Rowan::rowan_status_champion_super() {
 
 void Rowan::rowan_enter_status_champion_super() {
 	change_anim("champion_super");
+	change_script("champion_super");
 }
 
 void Rowan::rowan_exit_status_champion_super() {

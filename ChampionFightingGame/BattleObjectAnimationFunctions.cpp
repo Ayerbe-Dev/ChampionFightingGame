@@ -9,8 +9,6 @@ glm::vec3 BattleObject::get_trans_offset() {
 			trans_bone.anim_matrix[3].y,
 			trans_bone.anim_matrix[3].x
 		);
-		trans_offset -= prev_anim_offset;
-		trans_offset *= glm::vec3(16.5, 11.5, 11.5);
 		return trans_offset;
 	}
 	return glm::vec3(0.0);

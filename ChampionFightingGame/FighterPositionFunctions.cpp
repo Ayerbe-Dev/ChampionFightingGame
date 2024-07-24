@@ -165,14 +165,12 @@ bool Fighter::apply_trans_to_pos() {
 		return false;
 	}
 	if (anim_kind->flag_move) {
-		Bone& trans_bone = model.bone_data[model.get_bone_id("Trans")];
-		bool ret = add_pos_validate(get_trans_offset());
-		prev_anim_offset = glm::vec3(trans_bone.anim_matrix[3].z * facing_dir, trans_bone.anim_matrix[3].y, trans_bone.anim_matrix[3].x);
+		glm::vec3 trans_offset = get_trans_offset();
+		bool ret = add_pos_validate((trans_offset - prev_anim_offset) * get_scale_vec());
+		prev_anim_offset = trans_offset;
 		return ret;
 	}
-	else {
-		return false;
-	}
+	return false;
 }
 
 void Fighter::landing_crossup() {

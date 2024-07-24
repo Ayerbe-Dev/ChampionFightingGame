@@ -665,7 +665,9 @@ void CSS::event_select_press() {
 void CSS::event_back_press() {
 	if (get_menu_object("Player Cursors").get_child(player_id).int_var("chara_selection_state")
 		== CHARA_SELECTION_STATE_READY && !player[!player_id]->controller.has_any_controller() && 
-		get_menu_object("Player Cursors").get_child((bool)!player_id).int_var("chara_selection_state") % 2) {
+		(get_menu_object("Player Cursors").get_child((bool)!player_id).int_var("chara_selection_state")
+			== CHARA_SELECTION_STATE_READY
+		|| get_menu_object("Player Cursors").get_child((bool)!player_id).int_var("chara_selection_state") % 2)) {
 		//All of the hovering states happen to be even, and those are the ones for which we don't want
 		//to use p2's events, so we can get away with this lol
 		get_menu_object("Player Cursors").get_child((bool)!player_id).event_back_press();
@@ -753,7 +755,7 @@ void CSS::select_slot(int player_idx) {
 	MenuObject& cursor = get_menu_object("Player Cursors").get_child(player_idx);
 	MenuObject& chara_slot = get_menu_object("Chara Slots").get_child(cursor.int_var("selected_slot"));
 
-	cursor.get_texture("Cursor").set_target_pos(chara_slot.get_texture("Chara Render").pos, 8);
+	cursor.get_texture("Cursor").set_target_pos(chara_slot.get_texture("Chara Render").pos.get_target_val(), 8);
 
 	cursor.int_var("selected_costume") = player[player_idx]->player_info->preferred_costume[chara_slot.int_var("chara_kind")];
 	cursor.int_var("selected_color") = player[player_idx]->player_info->preferred_color[chara_slot.int_var("chara_kind")];

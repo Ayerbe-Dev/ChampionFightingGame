@@ -97,7 +97,7 @@ RenderManager::RenderManager() {
 	SSAO.add_read_texture(g_buffer.textures[0], 2); //Position, shared w/ GBuffer
 	SSAO.add_read_texture(g_buffer.textures[1], 3); //Ditto for Normals
 
-	SSAO_blur.init("ssao_blur", "ssao_blur", "", 0, res_width, res_height);
+	SSAO_blur.init("ssao", "blur", "", 0, res_width, res_height);
 	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
 	g_buffer.add_read_texture(SSAO.textures[0], 4);
 
@@ -122,7 +122,7 @@ RenderManager::RenderManager() {
 	SSAO.shader->set_int("g_normal", 3);
 
 	SSAO_blur.shader->use();
-	SSAO_blur.shader->set_int("ssao", 0);
+	SSAO_blur.shader->set_int("f_texture", 0);
 
 	gbuffer_texture.init(g_buffer.textures[2]);
 	gbuffer_texture.set_scale(0.4);

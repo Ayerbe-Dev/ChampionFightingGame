@@ -68,7 +68,7 @@ void BattleObject::NEW_HITBOX(ScriptArg args) {
 	UNWRAP(hit_height, HitHeight);
 	UNWRAP(damage_kind, DamageKind);
 	UNWRAP(hit_effect, std::string);
-	UNWRAP(hit_sound, std::string);;
+	UNWRAP(hit_sound, std::string);
 	new_hitbox(id, multihit, anchor, offset, collision_kind, hit_result, hit_status, custom_hit_status,
 		hit_move, hit_flags, critical_condition, critical_status, custom_critical_status,
 		critical_hit_move, critical_hit_flags, hit_height, damage_kind, hit_effect, hit_sound
@@ -236,7 +236,7 @@ void BattleObject::NEW_EFFECT(ScriptArg args) {
 		} break;
 		default: {
 			GameManager::get_instance()->add_crash_log("ERROR: Arg 6 of NEW_EFFECT in script " 
-				+ active_move_script.name + " was neither int, string, nor glm::vec3. How you managed "
+				+ move_script.name + " was neither int, string, nor glm::vec3. How you managed "
 				+ "to get here without crashing is beyond me.");
 		} break;
 	}

@@ -39,6 +39,7 @@ public:
 	//Render Funcs
 
 	bool is_in_camera_range();
+	void set_alpha(unsigned char alpha);
 	void render();
 	void render_shadow();
 	void render_outline();

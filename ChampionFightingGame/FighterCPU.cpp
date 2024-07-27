@@ -6,18 +6,19 @@
 FighterCPU::FighterCPU() {
 	owner = nullptr;
 	opponent = nullptr;
-	execution_error_margin = 2;
+	execution_error_margin = 0;
 
 	reaction_time = 15;
 	correct_prediction_time = 12;
 	incorrect_prediction_time = 26;
 	prediction_mode = false;
 	hit_confirm_skill = 9;
-	move_recognition_skill = 2;
+	block_recognition_skill = 2;
 
 	movement_error_margin = 0;
 	move_range_error_margin = 0.0f;
 	mental_stack_update_interval = 5;
+	decision_update_interval = 10;
 
 	cautiousness = 3;
 	impulse = 0;
@@ -37,139 +38,136 @@ void FighterCPU::init(Fighter* owner, Fighter* opponent) {
 	this->opponent = opponent;
 	states.resize(60);
 	opponent_states.resize(60);
-	add_action("wait", "wait", INPUT_KIND_NORMAL, 0, 5, { 5 }, {}, {}, 0.0f, true);
-	add_action("crouch", "crouch", INPUT_KIND_NORMAL, 0, 1, { 1, 2, 3 }, { CP_TAG_EVADE_ATK }, {}, 0.0f, true);
+	add_action("wait", "wait", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 0, 5, { 5 }, {}, {}, 0.0f, true);
+	add_action("crouch", "crouch", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 0, 1, { 1, 2, 3 }, { CPU_TAG_EVADE_ATK }, {}, 0.0f, true);
 	add_action("crouch_d", "crouch_d", {}, { "crouch" }, true);
 	add_action("crouch_u", "crouch_u", {}, { "wait" }, true);
-	add_action("walk_f", "walk_f", INPUT_KIND_NORMAL, 0, 6, { 6 }, {}, {}, 0.0f, true)
+	add_action("walk_f", "walk_f", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 0, 6, { 6 }, {}, {}, 0.0f, true)
 		.add_movement_info(owner->get_param_float("walk_f_speed"), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	add_action("walk_b", "walk_b", INPUT_KIND_NORMAL, 0, 4, { 4 }, { CP_TAG_EVADE_ATK }, {}, 0.0f, true)
+	add_action("walk_b", "walk_b", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 0, 4, { 4 }, { CPU_TAG_EVADE_ATK }, {}, 0.0f, true)
 		.add_movement_info(-owner->get_param_float("walk_b_speed"), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	add_action("dash_f", "dash_f", INPUT_KIND_66, 0, 6, { 6 }, {}, {}, 0.0f, false);
-	add_action("dash_b", "dash_b", INPUT_KIND_44, 0, 4, { 4 }, { CP_TAG_EVADE_ATK }, {}, 0.0f, false);
-//	add_action("jump_squat", "jump_squat", INPUT_KIND_NORMAL, 0, 8, { 7, 8, 9 }, { CP_TAG_EVADE_ATK }, { "jump_n", "jump_f", "jump_b" }, 0.0f, false);
+	add_action("dash_f", "dash_f", FIGHTER_CONTEXT_GROUND, INPUT_KIND_66, 0, 6, { 6 }, {}, {}, 0.0f, false);
+	add_action("dash_b", "dash_b", FIGHTER_CONTEXT_GROUND, INPUT_KIND_44, 0, 4, { 4 }, { CPU_TAG_EVADE_ATK }, {}, 0.0f, false);
+	add_action("parry_start_high", "parry_start_high", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT | BUTTON_MK_BIT,
+		8, { 7, 8, 9 }, {}, {}, 0.0f, false);
+	add_action("parry_start_mid", "parry_start_mid", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT | BUTTON_MK_BIT,
+		5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	add_action("parry_start_low", "parry_start_low", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT | BUTTON_MK_BIT,
+		2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	add_action("jump_squat", "jump_squat", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 0, 8, { 7, 8, 9 }, { CPU_TAG_EVADE_ATK }, { "jump_n", "jump_f", "jump_b" }, 0.0f, false);
+	add_action("jump_n", "jump_n", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 8, { 8 }, { }, { "fall" }, 0.0f, false);
+	add_action("jump_f", "jump_f", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 9, { 9 }, { }, { "fall" }, 0.0f, false);
+	add_action("jump_b", "jump_b", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 7, { 7 }, { }, { "fall" }, 0.0f, false);
+	add_action("fall", "fall", {}, {}, true);
+	add_action("landing", "landing", {}, {}, false);
 }
 
-CPUAction& FighterCPU::add_action(std::string script_name, std::string anim_name, InputKind input_kind, 
-	unsigned short required_buttons, unsigned int pref_stick_dir, std::set<unsigned int> stick_dirs,
-	std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost, 
-	bool allow_interrupt) {
-	actions[script_name].init(owner, script_name, anim_name, input_kind, required_buttons,
+CPUAction& FighterCPU::add_action(std::string script_name, std::string anim_name, int context, 
+	InputKind input_kind, unsigned short required_buttons, unsigned int pref_stick_dir, 
+	std::set<unsigned int> stick_dirs, std::vector<CPUTag> tags, std::vector<std::string> auto_followups, 
+	float resource_cost, bool allow_interrupt) {
+	actions[script_name].init(owner, script_name, anim_name, context, input_kind, required_buttons,
 		pref_stick_dir, stick_dirs, tags, auto_followups, resource_cost, allow_interrupt, true);
 	return actions[script_name];
 }
 
 CPUAction& FighterCPU::add_action(std::string script_name, std::string anim_name, std::vector<CPUTag> tags,
 	std::vector<std::string> auto_followups, bool allow_interrupt) {
-	actions[script_name].init(owner, script_name, anim_name, INPUT_KIND_NORMAL, 0, 0, {}, tags, 
-		auto_followups, 0.0f, allow_interrupt, false
+	actions[script_name].init(owner, script_name, anim_name, FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 
+		0, 0, {}, tags, auto_followups, 0.0f, allow_interrupt, false
 	);
 	return actions[script_name];
 }
 
 void FighterCPU::process() {
 	determine_states();
-	if (input_frames) {
-		input_frames--;
-	}
-	if (!input_frames) {
-		switch (cpu_mode) {
-			default:
-			case (CPU_MODE_NEUTRAL): {
-				process_neutral();
-			} break;
-			case (CPU_MODE_ATTACK_SUCCESS): {
-				process_attack_success();
-			} break;
-			case (CPU_MODE_HITSTUN): {
-				process_hitstun();
-			} break;
-			case (CPU_MODE_WAKEUP_BLOCKSTUN): {
-				process_wakeup_blockstun();
-			} break;
-		}
+	if (input_frames) input_frames--;
+	if (curr_decision.frames) curr_decision.frames--;
+	switch (cpu_mode) {
+		default:
+		case (CPU_MODE_NEUTRAL): {
+			process_neutral();
+		} break;
+		case (CPU_MODE_ATTACK): {
+			process_attack();
+		} break;
+		case (CPU_MODE_HITSTUN): {
+			process_hitstun();
+		} break;
+		case (CPU_MODE_WAKEUP_BLOCKSTUN): {
+			process_wakeup_blockstun();
+		} break;
 	}
 }
 
 void FighterCPU::process_neutral() {
-	int reaction_frames = reaction_time-1;
+	int curr_reaction_time = reaction_time-1;
 	if (prediction_mode) {
-		reaction_frames = correct_prediction_time - 1; //TODO: Add the mental stack here
+		curr_reaction_time = correct_prediction_time - 1; //TODO: Add the mental stack here
 	}
-	CPUFighterState state = states.newest(reaction_frames);
-	CPUFighterState opp_state = opponent_states.newest(reaction_frames);
-
+	CPUFighterState state = states.newest(curr_reaction_time);
+	CPUFighterState opp_state = opponent_states.newest(curr_reaction_time);
 	if (!opp_state.action) return;
-
-	if (state.action_kind != CPU_ACTION_KIND_NORMAL || opp_state.action_kind != CPU_ACTION_KIND_NORMAL) {
-		switch (state.action_kind) {
-			default:
-			case (CPU_ACTION_KIND_NORMAL): {
-				cpu_mode = CPU_MODE_ATTACK_SUCCESS;
-			} break;
-			case (CPU_ACTION_KIND_HITSTUN): {
-				cpu_mode = CPU_MODE_HITSTUN;
-			} break;
-			case (CPU_ACTION_KIND_BLOCKSTUN):
-			case (CPU_ACTION_KIND_WAKEUP): {
-				cpu_mode = CPU_MODE_WAKEUP_BLOCKSTUN;
-			} break;
-		}
-		return;
-	}
-	if (opp_state.action->active && !opp_state.attack_finished) {
+	CPUFighterState present_state = states.newest();
+	if (opp_state.action->active && !opp_state.actionable) {
+		curr_decision = CPUDecision(CPU_DECISION_MODE_NONE, this);
 		std::vector<CPUAction> responses;
-		CPUFighterState present_state = states.newest();
-		CPUFighterState opp_present_state = opponent_states.newest();
-		int remaining_start_frames = (opp_state.action->startup - opp_state.frame) - reaction_frames - 1;
-		int remaining_hit_frames = remaining_start_frames - 1;
+		int remaining_start_frames = (opp_state.action->startup - opp_state.frame) - curr_reaction_time - 1;
+		int opp_remaining_hit_frames = remaining_start_frames - 1;
 		if (remaining_start_frames <= 0) {
-			for (int i = reaction_frames; i--> 0;) {
+			for (int i = curr_reaction_time; i--> 0;) {
 				if (check_contact(states.newest(i), opponent_states.newest(i))) {
 					cpu_mode = CPU_MODE_HITSTUN;
 					return;
 				}
 			}
 		}
-		int hit_frame = get_hit_frame(*opp_present_state.action, opp_present_state.frame,
+		CPUFighterState opp_present_state = opponent_states.newest();
+		int opp_hit_frame = get_hit_frame(*opp_state.action, opp_present_state.frame,
 			opp_present_state.facing_dir, opp_present_state.base_pos, *present_state.action,
 			present_state.frame, present_state.facing_dir, present_state.base_pos, false);
-		if (hit_frame != -1) {
-			remaining_hit_frames = (hit_frame - opp_state.frame) - reaction_frames;
+		if (opp_hit_frame != -1) {
+			opp_remaining_hit_frames = (opp_hit_frame - opp_state.frame) - curr_reaction_time;
 			for (auto& a : actions) {
 				CPUAction action = a.second;
-				if (action.active && action.startup <= remaining_hit_frames) {
+				if (action.active && action.startup <= opp_remaining_hit_frames) {
 					int sim_hit_frame = get_hit_frame(action, 0, present_state.facing_dir, 
 						present_state.pos, *opp_present_state.action,
 						opp_present_state.frame, opp_present_state.facing_dir, 
 						opp_present_state.base_pos, true
 					) + 1;
-					if (sim_hit_frame && (sim_hit_frame + get_frames_to_input(action) <= remaining_hit_frames)) {
-						//TODO: Rather than just making sure our sim hit frame is fast enough to trade, we also
-						//want to make sure that we won't be negative after a trade
+					int sim_opp_hit_frame = get_hit_frame(*opp_present_state.action,
+						opp_present_state.frame, opp_present_state.facing_dir,
+						opp_present_state.base_pos, action, 0, present_state.facing_dir,
+						present_state.pos, false
+					);
+					int sim_opp_remaining_hit_frames = (sim_opp_hit_frame - opp_state.frame) - curr_reaction_time;
+					if (sim_hit_frame && (sim_hit_frame + get_frames_to_input(action) <= sim_opp_remaining_hit_frames
+						|| sim_opp_hit_frame == -1)) {
+						//TODO: Add code to limit how - we're allowed to be on trade
 						responses.push_back(action);
 						continue;
 					}
 				}
 				for (size_t i = 0, max = action.tags.size(); i < max; i++) {
 					switch (action.tags[i]) {
-						case (CP_TAG_EVADE_ATK): {
-							int sim_hit_frame = get_hit_frame(*opp_present_state.action,
+						case (CPU_TAG_EVADE_ATK): {
+							int sim_opp_hit_frame = get_hit_frame(*opp_present_state.action,
 								opp_present_state.frame, opp_present_state.facing_dir, 
 								opp_present_state.base_pos, action, 0, 
 								present_state.facing_dir, present_state.pos, false
 							);
-							if (sim_hit_frame == -1 || sim_hit_frame > hit_frame) {
+							if (sim_opp_hit_frame == -1 || sim_opp_hit_frame > opp_hit_frame) {
 								responses.push_back(action);
 								continue;
 							}
 						} break;
-						case (CP_TAG_IGNORE_STRIKE): {
+						case (CPU_TAG_IGNORE_STRIKE): {
 							if (opp_present_state.action->is_strike) {
 
 							}
 						} break;
-						case (CP_TAG_IGNORE_THROW): {
+						case (CPU_TAG_IGNORE_THROW): {
 							if (opp_present_state.action->is_throw) {
 								responses.push_back(action);
 								continue;
@@ -179,18 +177,117 @@ void FighterCPU::process_neutral() {
 				}
 			}
 			if (!responses.empty()) {
-				execute_action(responses[rng(0, responses.size() - 1)]);
+				CPUAction future_action = responses[rng(0, responses.size() - 1)];
+				if (future_action.active) {
+					cpu_mode = CPU_MODE_ATTACK;
+				}
+				execute_action(future_action);
 			}
 			else {
-				//We're going to get hit, and we haven't found a response that gets us out of this 
-				//situation. Therefore, we're going to try blocking.
+				int parry_odds = opp_remaining_hit_frames * 2;
+				//TODO: If the move is safe on block, multiply parry_odds by 2
+				//TODO: Test if this actually beats crossups, low key might end up being too good at it 
+				//if it does
+				bool try_parry = rng(1, 20) <= parry_odds && !opp_present_state.action->is_throw;
+				bool success_block = false;
+				switch (owner->get_stick_dir()) {
+					case 4: {
+						if (opp_present_state.action->frame_data[opp_hit_frame].hitboxes[0].hit_height
+							!= HIT_HEIGHT_LOW) {
+							success_block = rng(0, 9);
+						}
+						else {
+							success_block = rng(0, block_recognition_skill) >= opp_state.frame;
+						}
+					} break;
+					case 1: {
+						if (opp_present_state.action->frame_data[opp_hit_frame].hitboxes[0].hit_height
+							!= HIT_HEIGHT_HIGH) {
+							success_block = rng(0, 9);
+						}
+						else {
+							success_block = rng(0, block_recognition_skill) >= opp_state.frame;
+						}
+					} break;
+					default: {
+						if (!try_parry) {
+							success_block = rng(0, block_recognition_skill) >= opp_state.frame;
+						}
+					} break;
+				}
+				int block_frames = opp_remaining_hit_frames + rng(0, execution_error_margin * 2) + 1;
+				if (success_block) {
+					switch (opp_present_state.action->frame_data[opp_hit_frame].hitboxes[0].hit_height) {
+						case (HIT_HEIGHT_HIGH): {
+							if (try_parry) {
+								execute_action(actions["parry_start_high"]);
+							}
+							else {
+								for (int i = 0; i < block_frames; i++) {
+									add_input(4, 0);
+								}
+							}
+						} break;
+						default:
+						case (HIT_HEIGHT_MID): {
+							if (try_parry) {
+								execute_action(actions["parry_start_mid"]);
+							}
+							else {
+								for (int i = 0; i < block_frames; i++) {
+									if (owner->get_stick_dir() > 3) {
+										add_input(4, 0);
+									}
+									else {
+										add_input(1, 0);
+									}
+								}
+							}
+						} break;
+						case (HIT_HEIGHT_LOW): {
+							if (try_parry) {
+								execute_action(actions["parry_start_low"]);
+							}
+							else {
+								for (int i = 0; i < block_frames; i++) {
+									add_input(1, 0);
+								}
+							}
+						} break;
+					}
+				}
+				else {
+					if (try_parry) {
+						switch (rng(0, 2)) {
+							case 0: {
+								execute_action(actions["parry_start_high"]);
+							} break;
+							case 1: {
+								execute_action(actions["parry_start_mid"]);
+							} break;
+							case 2: {
+								execute_action(actions["parry_start_low"]);
+							} break;
+						}
+					}
+					else {
+						int height = rng(0, 1) * 3 + 1;
+						for (int i = 0; i < block_frames; i++) {
+							add_input(height, 0);
+						}
+					}
+				}
+				owner->player->manual_seq.reset_idx();
 			}
 			return;
 		}
 		else {
+			//If we see a move and conclude that walking backwards lets us dodge it, next frame we will 
+			//conclude that "at our current action, we'll dodge it, so no need to do anything." It's 
+			//important that we make sure to keep walking backwards if stopping will make us get hit
 			if (present_state.action->allow_interrupt) {
 				for (size_t i = 0, max = present_state.action->tags.size(); i < max; i++) {
-					if (present_state.action->tags[i] == CP_TAG_EVADE_ATK) {
+					if (present_state.action->tags[i] == CPU_TAG_EVADE_ATK) {
 						int test_hit_frame = get_hit_frame(*opp_present_state.action, 
 							opp_present_state.frame, opp_present_state.facing_dir, 
 							opp_present_state.base_pos, actions["wait"], 0, present_state.facing_dir, 
@@ -204,20 +301,272 @@ void FighterCPU::process_neutral() {
 					}
 				}
 			}
+			int recovery_frames = opp_state.action->total - opp_state.frame - curr_reaction_time - 1;
+			for (auto& a : actions) {
+				CPUAction action = a.second;
+				if (action.active && action.startup <= recovery_frames) {
+					int sim_hit_frame = get_hit_frame(action, 0, present_state.facing_dir,
+						present_state.pos, *opp_present_state.action,
+						opp_present_state.frame, opp_present_state.facing_dir,
+						opp_present_state.base_pos, true
+					) + 1;
+					int sim_opp_hit_frame = get_hit_frame(*opp_present_state.action,
+						opp_present_state.frame, opp_present_state.facing_dir,
+						opp_present_state.base_pos, action, 0, present_state.facing_dir,
+						present_state.pos, false
+					);
+					int sim_opp_remaining_hit_frames = (sim_opp_hit_frame - opp_state.frame) - curr_reaction_time;
+					if (sim_hit_frame && sim_opp_hit_frame == -1 
+						&& (sim_hit_frame + get_frames_to_input(action) <= recovery_frames)) {
+						responses.push_back(action);
+						continue;
+					}
+				}
+			}
 			if (!responses.empty()) {
-				execute_action(responses[rng(0, responses.size() - 1)]);
+				CPUAction future_action = responses[rng(0, responses.size() - 1)];
+				if (future_action.active) {
+					cpu_mode = CPU_MODE_ATTACK;
+				}
+				execute_action(future_action);
 				return;
 			}
 		}
 	}
-	//If we make it to here, then either the opponent isn't attacking, or we can't immediately respond
-	//to them. This is the part where we start making reads and/or approaching.
+	if (input_frames) return;
+	switch (curr_decision.mode) {
+		default:
+		case CPU_DECISION_MODE_NONE: {
+			if (!curr_decision.frames) {
+//				int next_decision_mode = rng(CPU_DECISION_MODE_NONE, CPU_DECISION_MODE_JUMP_BUTTON);
+				int next_decision_mode = CPU_DECISION_MODE_JUMP_BUTTON;
+				curr_decision = CPUDecision((CPUDecisionMode)next_decision_mode, this);
+			}
+		} break;
+		case CPU_DECISION_MODE_WALK_BUTTON: {
+			float move_range_error = rng_f(-move_range_error_margin, move_range_error_margin);
+			int movement_error = rng(-movement_error_margin, movement_error_margin);
+			glm::vec2 sim_pos = glm::vec2(curr_reaction_time - 1 + movement_error) * state.speed 
+				+ state.base_pos;
+			glm::vec2 c1 = glm::vec2(curr_decision.action.attack_range_x[0] * state.facing_dir, curr_decision.action.attack_range_y[0])
+				+ move_range_error + sim_pos;
+			glm::vec2 c2 = glm::vec2(curr_decision.action.attack_range_x[1] * state.facing_dir, curr_decision.action.attack_range_y[1])
+				+ move_range_error + sim_pos;
+			glm::vec2 opp_sim_pos = glm::vec2(curr_reaction_time - 1 + movement_error) * opp_state.speed
+				+ opp_state.base_pos;
+			glm::vec2 opp_c1 = glm::vec2(opp_state.action->defense_range_x[0] * opp_state.facing_dir, opp_state.action->defense_range_y[0])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			glm::vec2 opp_c2 = glm::vec2(opp_state.action->defense_range_x[1] * opp_state.facing_dir, opp_state.action->defense_range_y[1])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			if (is_rect_collide(c1, c2, opp_c1, opp_c2)) {
+				execute_action(curr_decision.action);
+				cpu_mode = CPU_MODE_ATTACK;
+				curr_decision = CPUDecision(CPU_DECISION_MODE_NONE, this);
+				return;
+			}
+			if (!curr_decision.frames) {
+				if (rng(1, 5) == 1) {
+					owner->player->manual_seq.reset_idx();
+					for (int i = 0, max = rng(1, 20); i < max; i++) {
+						buffer_action(actions["crouch"]);
+					}
+					owner->player->manual_seq.reset_idx();
+				}
+				else {
+					execute_action(actions["walk_f"]);
+				}
+				curr_decision.frames = rng(1, 20);
+			}
+			else {
+				execute_action(actions["walk_f"]);
+			}
+		} break;
+		case CPU_DECISION_MODE_WALK_COUNTERPOKE: {
+			float move_range_error = rng_f(-move_range_error_margin, move_range_error_margin);
+			int movement_error = rng(-movement_error_margin, movement_error_margin);
+			glm::vec2 sim_pos = glm::vec2(curr_reaction_time -1 + movement_error) * state.speed
+				+ state.base_pos;
+			glm::vec2 c1 = glm::vec2(curr_decision.action.attack_range_x[0] * state.facing_dir, curr_decision.action.attack_range_y[0])
+				+ move_range_error + sim_pos;
+			glm::vec2 c2 = glm::vec2(curr_decision.action.attack_range_x[1] * state.facing_dir, curr_decision.action.attack_range_y[1])
+				+ move_range_error + sim_pos;
+			float steps = owner->get_param_float("walk_f_speed")
+				* rng(2, 7) * state.facing_dir;
+			glm::vec2 sim_c1 = c1 + glm::vec2(steps, 0);
+			glm::vec2 sim_c2 = c2 + glm::vec2(steps, 0);
+
+			glm::vec2 opp_sim_pos = glm::vec2(curr_reaction_time -1 + movement_error) * opp_state.speed
+				+ opp_state.base_pos;
+			glm::vec2 opp_c1 = glm::vec2(opp_state.action->defense_range_x[0] * opp_state.facing_dir, opp_state.action->defense_range_y[0])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			glm::vec2 opp_c2 = glm::vec2(opp_state.action->defense_range_x[1] * opp_state.facing_dir, opp_state.action->defense_range_y[1])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+
+			float opp_steps = opponent->get_param_float("walk_f_speed")
+				* rng(2, 7) * opp_state.facing_dir;
+			glm::vec2 sim_opp_c1 = opp_c1 + glm::vec2(opp_steps, 0);
+			glm::vec2 sim_opp_c2 = opp_c2 + glm::vec2(opp_steps, 0);
+
+			if (is_rect_collide(c1, c2, opp_c1, opp_c2)) {
+				execute_action(actions["walk_b"]);
+			}
+			else if (is_rect_collide(sim_c1, sim_c2, sim_opp_c1, sim_opp_c2)) {
+				std::vector<std::string> buffer_options;
+				for (auto& a : actions) {
+					if (curr_decision.action.hit_cancel_options.contains(a.first)) {
+						buffer_options.push_back(a.first);
+					}
+				}
+				owner->player->manual_seq.reset_idx();
+				buffer_action(curr_decision.action);
+					
+				if (!buffer_options.empty()) {
+					for (int i = 0; i < curr_decision.action.startup - 1; i++) {
+						add_input(owner->get_stick_dir(), 0);
+					}
+					buffer_action(actions[buffer_options[rng(0, buffer_options.size() - 1)]]);
+				}
+				owner->player->manual_seq.reset_idx();
+				cpu_mode = CPU_MODE_ATTACK;
+				curr_decision = CPUDecision(CPU_DECISION_MODE_NONE, this);
+			}
+			else {
+				execute_action(actions["walk_f"]);
+			}
+		} break;
+		case CPU_DECISION_MODE_WALK_SHIMMY: {
+			float move_range_error = rng_f(-move_range_error_margin, move_range_error_margin);
+			int movement_error = rng(-movement_error_margin, movement_error_margin);
+			glm::vec2 sim_pos = glm::vec2(curr_reaction_time - 1 + movement_error) * state.speed
+				+ state.base_pos;
+			glm::vec2 c1 = glm::vec2(state.action->defense_range_x[0] * state.facing_dir, curr_decision.action.attack_range_y[0])
+				+ move_range_error + sim_pos;
+			glm::vec2 c2 = glm::vec2(state.action->defense_range_x[1] * state.facing_dir, curr_decision.action.attack_range_y[1])
+				+ move_range_error + sim_pos;
+			glm::vec2 opp_sim_pos = glm::vec2(curr_reaction_time - 1 + movement_error) * opp_state.speed
+				+ opp_state.base_pos;
+			glm::vec2 opp_c1 = glm::vec2(curr_decision.action.attack_range_x[0] * opp_state.facing_dir, opp_state.action->defense_range_y[0])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			glm::vec2 opp_c2 = glm::vec2(curr_decision.action.attack_range_x[1] * opp_state.facing_dir, opp_state.action->defense_range_y[1])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			if (is_rect_collide(c1, c2, opp_c1, opp_c2)) {
+				curr_decision.frames = rng(1, 10);
+			}
+			else if (!curr_decision.frames) {
+				if (rng(0, 3)) {
+					execute_action(actions["walk_f"]);
+				}
+				else {
+					int next_decision_mode = rng(CPU_DECISION_MODE_NONE, CPU_DECISION_MODE_DASH_BUTTON);
+					while (next_decision_mode == CPU_DECISION_MODE_WALK_SHIMMY) {
+						next_decision_mode = rng(CPU_DECISION_MODE_NONE, CPU_DECISION_MODE_DASH_BUTTON);
+					}
+					curr_decision = CPUDecision((CPUDecisionMode)next_decision_mode, this);
+				}
+			}
+			if (curr_decision.frames) {
+				execute_action(actions["walk_b"]);
+			}
+		} break;
+		case CPU_DECISION_MODE_DASH_BUTTON: {
+			float move_range_error = rng_f(-move_range_error_margin, move_range_error_margin);
+			int movement_error = rng(-movement_error_margin, movement_error_margin);
+			glm::vec2 sim_pos = present_state.pos;
+			glm::vec2 c1 = glm::vec2(curr_decision.action.attack_range_x[0] * state.facing_dir, curr_decision.action.attack_range_y[0])
+				+ move_range_error + sim_pos;
+			glm::vec2 c2 = glm::vec2(curr_decision.action.attack_range_x[1] * state.facing_dir, curr_decision.action.attack_range_y[1])
+				+ move_range_error + sim_pos;
+			glm::vec2 opp_sim_pos = glm::vec2(curr_reaction_time - 1 + movement_error) * opp_state.speed
+				+ opp_state.base_pos;
+			glm::vec2 opp_c1 = glm::vec2(opp_state.action->defense_range_x[0] * opp_state.facing_dir, opp_state.action->defense_range_y[0])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			glm::vec2 opp_c2 = glm::vec2(opp_state.action->defense_range_x[1] * opp_state.facing_dir, opp_state.action->defense_range_y[1])
+				+ glm::vec2(move_range_error) + opp_sim_pos;
+			if (is_rect_collide(c1, c2, opp_c1, opp_c2)) {
+				execute_action(curr_decision.action);
+				cpu_mode = CPU_MODE_ATTACK;
+				curr_decision = CPUDecision(CPU_DECISION_MODE_NONE, this);
+			}
+			else if (present_state.frames_until_bufferable < get_frames_to_input(actions["dash_f"])) {
+				execute_action(actions["dash_f"]);
+			}
+		} break;
+		case CPU_DECISION_MODE_JUMP_BUTTON: {
+			if (present_state.context == FIGHTER_CONTEXT_GROUND) {
+				if (input_frames) return;
+				int fh_time = owner->calc_airtime(owner->get_param_float("jump_y_init_speed"));
+				int sh_time = owner->calc_airtime(owner->get_param_float("jump_y_init_speed_s"));
+				float f_speed = owner->get_param_float("jump_x_speed");
+				float fh_range_f = f_speed * fh_time * present_state.facing_dir;
+				float sh_range_f = f_speed * sh_time * present_state.facing_dir;
+				int movement_error = rng(-movement_error_margin, movement_error_margin);
+				glm::vec2 opp_sim_pos_fh = glm::vec2(curr_reaction_time + 3 + fh_time + movement_error) * opp_state.speed
+					+ opp_state.base_pos;
+				glm::vec2 opp_sim_pos_sh = glm::vec2(curr_reaction_time + 3 + sh_time + movement_error) * opp_state.speed
+					+ opp_state.base_pos;
+				float fh_jump_dist_n = abs(opp_sim_pos_fh.x - present_state.pos.x);
+				float fh_jump_dist_f = abs(opp_sim_pos_fh.x - (present_state.pos.x + fh_range_f));
+				float sh_jump_dist_n = abs(opp_sim_pos_sh.x - present_state.pos.x);
+				float sh_jump_dist_f = abs(opp_sim_pos_sh.x - (present_state.pos.x + sh_range_f));
+				owner->player->manual_seq.reset_idx();
+				if (sh_jump_dist_n <= 250.0f) {
+					if (sh_jump_dist_n <= fh_jump_dist_n) {
+						for (int i = 0; i < 2; i++) {
+							add_input(8, 0);
+						}
+						for (int i = 0; i < 4; i++) {
+							add_input(5, 0);
+						}
+					}
+					else {
+						for (int i = 0; i < 5; i++) {
+							add_input(8, 0);
+						}
+					}
+				}
+				else if (fh_jump_dist_f < sh_jump_dist_f) {
+					for (int i = 0; i < 5; i++) {
+						add_input(9, 0);
+					}
+				}
+				else {
+					for (int i = 0; i < 2; i++) {
+						add_input(9, 0);
+					}
+					for (int i = 0; i < 4; i++) {
+						add_input(6, 0);
+					}
+				}
+				owner->player->manual_seq.reset_idx();
+			}
+			else {
+				CPUFighterState opp_present_state = opponent_states.newest();
+				int sim_hit_frame = get_hit_frame(curr_decision.action, 0, present_state.facing_dir,
+					present_state.pos, *opp_present_state.action, opp_present_state.frame, 
+					opp_present_state.facing_dir, opp_present_state.base_pos, true
+				);
+				if (sim_hit_frame != -1) {
+					execute_action(curr_decision.action);
+					cpu_mode = CPU_MODE_ATTACK;
+					curr_decision = CPUDecision(CPU_DECISION_MODE_NONE, this);
+					return;
+				}
+			}
+		} break;
+		case CPU_DECISION_MODE_ADVANCE: {
+
+		} break;
+		case CPU_DECISION_MODE_SPECIAL: {
+
+		} break;
+	}
 }
 
-void FighterCPU::process_attack_success() {
-	CPUFighterState opponent_state = opponent_states.newest(reaction_time);
-	if (opponent_state.action_kind == CPU_ACTION_KIND_NORMAL) {
+void FighterCPU::process_attack() {
+	CPUFighterState state = states.newest();
+	if (state.actionable) {
 		cpu_mode = CPU_MODE_NEUTRAL;
+		process_neutral();
 		return;
 	}
 }
@@ -239,9 +588,12 @@ void FighterCPU::process_wakeup_blockstun() {
 }
 
 void FighterCPU::execute_action(CPUAction action) {
-	CPUAction prev_action = curr_action;
-	curr_action = action;
 	owner->player->manual_seq.reset_idx();
+	buffer_action(action);
+	owner->player->manual_seq.reset_idx();
+}
+
+void FighterCPU::buffer_action(CPUAction action) {
 	switch (action.input_kind) {
 		case (INPUT_KIND_NORMAL): {
 			if (action.required_buttons) { //If we require both a stick input and a button input, 
@@ -254,9 +606,8 @@ void FighterCPU::execute_action(CPUAction action) {
 					}
 				}
 				else {
-					//We have a 1 in execution_error_margin * 5 chance to attempt to nail the input. If
-					//we succeed on this chance, we have an execution_error_margin in 10 chance to
-					//press the button too early
+					//Our odds of attempting to justframe the input are 1 / (execution_error * 5 + 1)
+					//If we choose to attempt it, we have an execution_error / 10 chance to mess up
 					int jf = rng(0, execution_error_margin * 5);
 					if (jf) {
 						for (int i = 0, max = jf / 5; i < max; i++) {
@@ -276,7 +627,9 @@ void FighterCPU::execute_action(CPUAction action) {
 					add_input(action.pref_stick_dir, 0);
 				}
 			}
-			else { //Inputs that lack a button press are pretty hard to mess up
+			else {
+				//If we only have to worry about stick inputs, they should be pretty free.
+				//TODO: Add travel time into the stick movement
 				add_input(action.pref_stick_dir, 0);
 			}
 		} break;
@@ -359,167 +712,47 @@ void FighterCPU::execute_action(CPUAction action) {
 
 		} break;
 	}
-	owner->player->manual_seq.reset_idx();
-}
-
-void FighterCPU::add_input(unsigned int input_stick, unsigned int input_buttons) {
-	input_frames++;
-	owner->player->manual_seq.add_inputs(numpad_to_bits(input_stick) | input_buttons);
-}
-
-int FighterCPU::get_frames_to_input(CPUAction action) {
-	int ret = -1;
-	switch (action.input_kind) {
-		case (INPUT_KIND_NORMAL): {
-			if (action.required_buttons) {
-				if (action.stick_dirs.contains(owner->get_stick_dir())) {
-					for (int i = 0, max = rng(1, execution_error_margin + 1); i < max; i++) {
-						ret++;
-					}
-				}
-				else {
-					int jf = rng(0, execution_error_margin * 5);
-					if (jf) {
-						for (int i = 0, max = jf / 5; i < max; i++) {
-							ret++;
-						}
-					}
-					ret++;
-				}
-			}
-			else {
-				ret++;
-			}
-		} break;
-		case (INPUT_KIND_236): {
-
-		} break;
-		case (INPUT_KIND_214): {
-
-		} break;
-		case (INPUT_KIND_623): {
-
-		} break;
-		case (INPUT_KIND_41236): {
-
-		} break;
-		case (INPUT_KIND_63214): {
-
-		} break;
-		case (INPUT_KIND_632): {
-
-		} break;
-		case (INPUT_KIND_46): {
-
-		} break;
-		case (INPUT_KIND_28): {
-
-		} break;
-		case (INPUT_KIND_66): {
-			for (int i = 0, max = (rng(0, execution_error_margin) / 2) + 1; i < max; i++) {
-				ret++;
-			}
-			for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
-				ret++;
-			}
-			for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
-				ret++;
-			}
-			ret++;
-		} break;
-		case (INPUT_KIND_44): {
-			for (int i = 0, max = (rng(0, execution_error_margin) / 2) + 1; i < max; i++) {
-				ret++;
-			}
-			for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
-				ret++;
-			}
-			for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
-				ret++;
-			}
-			ret++;
-		} break;
-		case (INPUT_KIND_22): {
-			for (int i = 0, max = (rng(0, execution_error_margin) / 2) + 1; i < max; i++) {
-				ret++;
-			}
-			for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
-				ret++;
-			}
-			for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
-				ret++;
-			}
-			ret++;
-		} break;
-		case (INPUT_KIND_236236): {
-
-		} break;
-		case (INPUT_KIND_214214): {
-
-		} break;
-		case (INPUT_KIND_4646): {
-
-		} break;
-		default: {
-
-		} break;
-	}
-	return ret;
 }
 
 void FighterCPU::determine_states() {
-	CPUFighterState new_state;
-	CPUFighterState new_opp_state;
-	std::string script_name = opponent->move_script.name;
-	new_opp_state.frame = opponent->object_int[FIGHTER_INT_EXTERNAL_FRAME];
-	new_opp_state.anim_frame = opponent->frame;
-	new_opp_state.facing_dir = opponent->facing_dir;
-	new_opp_state.pos = glm::vec2(opponent->get_pos());
-	new_opp_state.base_pos = new_opp_state.pos;
-	new_opp_state.speed = glm::vec2(
-		opponent->object_float[BATTLE_OBJECT_FLOAT_X_SPEED],
-		opponent->object_float[BATTLE_OBJECT_FLOAT_Y_SPEED]
-	);
-	if (opponent->cpu.actions.contains(script_name)) {
-		new_opp_state.action = &opponent->cpu.actions[script_name];
-		new_opp_state.base_pos -= new_opp_state.action->frame_data[new_opp_state.anim_frame].pos_offset * glm::vec2(opponent->get_scale_vec());
+	Fighter* fighter[2] = { owner, opponent };
+	CPUFighterState new_state[2];
+	for (int i = 0; i < 2; i++) {
+		std::string script_name = fighter[i]->move_script.name;
+		new_state[i].context = fighter[i]->fighter_context;
+		new_state[i].frame = fighter[i]->object_int[FIGHTER_INT_EXTERNAL_FRAME];
+		new_state[i].anim_frame = fighter[i]->frame;
+		new_state[i].facing_dir = fighter[i]->facing_dir;
+		new_state[i].pos = glm::vec2(fighter[i]->get_pos());
+		new_state[i].base_pos = new_state[i].pos;
+		new_state[i].speed = glm::vec2(
+			fighter[i]->object_float[BATTLE_OBJECT_FLOAT_X_SPEED],
+			fighter[i]->object_float[BATTLE_OBJECT_FLOAT_Y_SPEED]
+		);
+		if (fighter[i]->cpu.actions.contains(script_name)) {
+			new_state[i].action = &opponent->cpu.actions[script_name];
+			new_state[i].base_pos.x -= new_state[i].action->frame_data[new_state[i].frame].pos_offset * opponent->get_scale_vec().x * new_state[i].facing_dir;
+		}
+		else {
+			new_state[i].action = &opponent->cpu.actions["wait"];
+		}
+		if (fighter[i]->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
+			if (fighter[i]->status_kind == FIGHTER_STATUS_BLOCKSTUN) {
+				new_state[i].action_kind = CPU_ACTION_KIND_BLOCKSTUN;
+			}
+			else {
+				new_state[i].action_kind = CPU_ACTION_KIND_HITSTUN;
+			}
+		}
+		else {
+			new_state[i].action_kind = CPU_ACTION_KIND_NORMAL;
+		}
+		new_state[i].actionable = new_state[i].frame >= new_state[i].action->total;
+		new_state[i].frames_until_bufferable = std::max(new_state[i].action->total - new_state[i].frame 
+			- get_global_param_int(PARAM_FIGHTER, "buffer_window"), 0);
 	}
-	else {
-		new_opp_state.action = &opponent->cpu.actions["wait"];
-	}
-	if (opponent->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
-		new_opp_state.action_kind = CPU_ACTION_KIND_HITSTUN;
-	}
-	else {
-		new_opp_state.action_kind = CPU_ACTION_KIND_NORMAL;
-	}
-	new_opp_state.attack_finished = opponent->object_flag[FIGHTER_FLAG_ATTACK_HIT] || opponent->object_flag[FIGHTER_FLAG_ATTACK_BLOCKED];
-	opponent_states.insert(new_opp_state);
-	script_name = owner->move_script.name;
-	new_state.frame = owner->object_int[FIGHTER_INT_EXTERNAL_FRAME];
-	new_state.anim_frame = owner->frame;
-	new_state.facing_dir = owner->facing_dir;
-	new_state.pos = glm::vec2(owner->get_pos());
-	new_state.base_pos = new_state.pos;
-	new_state.speed = glm::vec2(
-		owner->object_float[BATTLE_OBJECT_FLOAT_X_SPEED],
-		owner->object_float[BATTLE_OBJECT_FLOAT_Y_SPEED]
-	);
-	if (actions.contains(script_name)) {
-		new_state.action = &actions[script_name];
-		new_state.base_pos -= new_state.action->frame_data[new_state.frame].pos_offset * glm::vec2(owner->get_scale_vec());
-	}
-	else {
-		new_state.action = &actions["wait"];
-	}
-	if (owner->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES]) {
-		new_state.action_kind = CPU_ACTION_KIND_HITSTUN;
-	}
-	else {
-		new_state.action_kind = CPU_ACTION_KIND_NORMAL;
-	}
-	new_state.attack_finished = owner->object_flag[FIGHTER_FLAG_ATTACK_HIT] || owner->object_flag[FIGHTER_FLAG_ATTACK_BLOCKED];
-	states.insert(new_state);
+	states.insert(new_state[0]);
+	opponent_states.insert(new_state[1]);
 }
 
 int FighterCPU::get_hit_frame(CPUAction atk_action, int atk_frame, float atk_facing_dir, 
@@ -609,6 +842,173 @@ bool FighterCPU::check_contact(CPUFrameData& frame_data, glm::vec2 pos, float fa
 	return false;
 }
 
+void FighterCPU::add_input(unsigned int input_stick, unsigned int input_buttons) {
+	input_stick = numpad_to_bits(input_stick);
+	switch (input_buttons) {
+		case BUTTON_2L_BIT: {
+			if (rng(0, 10) < execution_error_margin) {
+				unsigned int early_button = rng(0, 1) ? BUTTON_LP_BIT : BUTTON_LK_BIT;
+				input_frames++;
+				owner->player->manual_seq.add_inputs(input_stick | early_button);
+				if (rng(3, 10) < execution_error_margin) {
+					input_frames++;
+					owner->player->manual_seq.add_inputs(input_stick | early_button);
+				}
+			}
+		} break;
+		case BUTTON_2M_BIT: {
+			if (rng(0, 10) < execution_error_margin) {
+				unsigned int early_button = rng(0, 1) ? BUTTON_MP_BIT : BUTTON_MK_BIT;
+				input_frames++;
+				owner->player->manual_seq.add_inputs(input_stick | early_button);
+				if (rng(3, 10) < execution_error_margin) {
+					input_frames++;
+					owner->player->manual_seq.add_inputs(input_stick | early_button);
+				}
+			}
+		} break;
+		case BUTTON_2H_BIT: {
+			if (rng(0, 10) < execution_error_margin) {
+				unsigned int early_button = rng(0, 1) ? BUTTON_HP_BIT : BUTTON_HK_BIT;
+				input_frames++;
+				owner->player->manual_seq.add_inputs(input_stick | early_button);
+				if (rng(3, 10) < execution_error_margin) {
+					input_frames++;
+					owner->player->manual_seq.add_inputs(input_stick | early_button);
+				}
+			}
+		} break;
+		case BUTTON_3P_BIT: {
+			if (rng(0, 10) < execution_error_margin) {
+				unsigned int early_button = (rng(0, 1) ? BUTTON_LP_BIT : BUTTON_HP_BIT);
+				input_frames++;
+				owner->player->manual_seq.add_inputs(input_stick | early_button);
+				if (rng(3, 10) < execution_error_margin) {
+					input_frames++;
+					owner->player->manual_seq.add_inputs(input_stick | early_button);
+				}
+			}
+		} break;
+		case BUTTON_3K_BIT: {
+			if (rng(0, 10) < execution_error_margin) {
+				unsigned int early_button = (rng(0, 1) ? BUTTON_LK_BIT : BUTTON_HK_BIT);
+				input_frames++;
+				owner->player->manual_seq.add_inputs(input_stick | early_button);
+				if (rng(3, 10) < execution_error_margin) {
+					input_frames++;
+					owner->player->manual_seq.add_inputs(input_stick | early_button);
+				}
+			}
+		} break;
+		case BUTTON_6B_BIT:
+		default: {
+			//CPUs are allowed to always nail taunt inputs, that's fine
+		} break;
+	}
+	input_frames++;
+	owner->player->manual_seq.add_inputs(input_stick | input_buttons);
+}
+
+int FighterCPU::get_frames_to_input(CPUAction action) {
+	int ret = -1;
+	switch (action.input_kind) {
+	case (INPUT_KIND_NORMAL): {
+		if (action.required_buttons) {
+			if (action.stick_dirs.contains(owner->get_stick_dir())) {
+				for (int i = 0, max = rng(1, execution_error_margin + 1); i < max; i++) {
+					ret++;
+				}
+			}
+			else {
+				int jf = rng(0, execution_error_margin * 5);
+				if (jf) {
+					for (int i = 0, max = jf / 5; i < max; i++) {
+						ret++;
+					}
+				}
+				ret++;
+			}
+		}
+		else {
+			ret++;
+		}
+	} break;
+	case (INPUT_KIND_236): {
+
+	} break;
+	case (INPUT_KIND_214): {
+
+	} break;
+	case (INPUT_KIND_623): {
+
+	} break;
+	case (INPUT_KIND_41236): {
+
+	} break;
+	case (INPUT_KIND_63214): {
+
+	} break;
+	case (INPUT_KIND_632): {
+
+	} break;
+	case (INPUT_KIND_46): {
+
+	} break;
+	case (INPUT_KIND_28): {
+
+	} break;
+	case (INPUT_KIND_66): {
+		for (int i = 0, max = (rng(0, execution_error_margin) / 2) + 1; i < max; i++) {
+			ret++;
+		}
+		for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
+			ret++;
+		}
+		for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
+			ret++;
+		}
+		ret++;
+	} break;
+	case (INPUT_KIND_44): {
+		for (int i = 0, max = (rng(0, execution_error_margin) / 2) + 1; i < max; i++) {
+			ret++;
+		}
+		for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
+			ret++;
+		}
+		for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
+			ret++;
+		}
+		ret++;
+	} break;
+	case (INPUT_KIND_22): {
+		for (int i = 0, max = (rng(0, execution_error_margin) / 2) + 1; i < max; i++) {
+			ret++;
+		}
+		for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
+			ret++;
+		}
+		for (int i = 0, max = rng(0, execution_error_margin) + 1; i < max; i++) {
+			ret++;
+		}
+		ret++;
+	} break;
+	case (INPUT_KIND_236236): {
+
+	} break;
+	case (INPUT_KIND_214214): {
+
+	} break;
+	case (INPUT_KIND_4646): {
+
+	} break;
+	default: {
+
+	} break;
+	}
+	return ret;
+}
+
 unsigned int FighterCPU::numpad_to_bits(unsigned int numpad_dir) {
 	if (owner->facing_right) {
 		switch (numpad_dir) {
@@ -676,7 +1076,7 @@ unsigned int FighterCPU::numpad_to_bits(unsigned int numpad_dir) {
 
 CPUAction::CPUAction() {
 	name = "";
-
+	fighter_context = FIGHTER_CONTEXT_GROUND;
 	input_kind = INPUT_KIND_NORMAL;
 	required_buttons = 0;
 	pref_stick_dir = 5;
@@ -708,11 +1108,12 @@ CPUAction::CPUAction() {
 	manual_input = true;
 }
 
-void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_name, InputKind input_kind,
-	unsigned short required_buttons, unsigned int pref_stick_dir, std::set<unsigned int> stick_dirs,
-	std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost,
-	bool allow_interrupt, bool manual_input) {
+void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_name, int fighter_context,
+	InputKind input_kind, unsigned short required_buttons, unsigned int pref_stick_dir, 
+	std::set<unsigned int> stick_dirs, std::vector<CPUTag> tags, std::vector<std::string> auto_followups, 
+	float resource_cost, bool allow_interrupt, bool manual_input) {
 	this->name = script_name;
+	this->fighter_context = fighter_context;
 	this->input_kind = input_kind;
 	this->required_buttons = required_buttons;
 	this->stick_dirs = stick_dirs;
@@ -723,15 +1124,16 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 	this->allow_interrupt = allow_interrupt;
 	this->manual_input = manual_input;
 	Animation* anim = owner->anim_table.get_anim(anim_name, false);
+	if (!anim) return;
 	MoveScript script = owner->move_script_table.get_script(script_name);
 	script.activate();
 	ScriptArg args;
 	std::map<int, CPUHitbox> hitboxes;
 	std::map<int, CPUHurtbox> hurtboxes;
 	std::map<int, CPUGrabbox> grabboxes;
-	std::vector<std::string> hit_cancel_options;
-	std::vector<std::string> block_cancel_options;
-	std::vector<std::string> whiff_cancel_options;
+	std::deque<std::string> hit_cancel_options;
+	std::deque<std::string> block_cancel_options;
+	std::deque<std::string> cancel_options;
 
 	bool found_startup = false;
 	bool found_active = false;
@@ -749,6 +1151,7 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 			while (!sf.script_funcs.empty()) {
 				void (BattleObject:: * func)(ScriptArg) = sf.script_funcs.front().function_call;
 				ScriptArg args = sf.script_funcs.front().function_args;
+				unsigned int condition_kind = sf.script_funcs.front().condition_kind;
 				sf.script_funcs.pop();
 				if (func == &BattleObject::SET_RATE) {
 					UNWRAP_NO_DECL(rate);
@@ -788,11 +1191,12 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 					}
 					UNWRAP_NO_DECL(hitbox.hit_height);
 
-					attack_range_x[0] = std::min(attack_range_x[0], hitbox.anchor.x);
-					attack_range_x[1] = std::max(attack_range_x[1], hitbox.offset.x);
-					attack_range_y[0] = std::min(attack_range_y[0], hitbox.anchor.y);
-					attack_range_y[1] = std::max(attack_range_y[1], hitbox.offset.y);
-
+					if (condition_kind == SCRIPT_CONDITION_KIND_NONE) {
+						attack_range_x[0] = std::min(attack_range_x[0], hitbox.anchor.x);
+						attack_range_x[1] = std::max(attack_range_x[1], hitbox.offset.x);
+						attack_range_y[0] = std::min(attack_range_y[0], hitbox.anchor.y);
+						attack_range_y[1] = std::max(attack_range_y[1], hitbox.offset.y);
+					}
 					hitboxes[id] = hitbox;
 
 					continue;
@@ -812,10 +1216,12 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 					UNWRAP_NO_DECL(grabbox.attacker_status_if_hit);
 					UNWRAP_NO_DECL(grabbox.defender_status_if_hit);
 
-					attack_range_x[0] = std::min(attack_range_x[0], grabbox.anchor.x);
-					attack_range_x[1] = std::max(attack_range_x[1], grabbox.offset.x);
-					attack_range_y[0] = std::min(attack_range_y[0], grabbox.anchor.y);
-					attack_range_y[1] = std::max(attack_range_y[1], grabbox.offset.y);
+					if (condition_kind == SCRIPT_CONDITION_KIND_NONE) {
+						attack_range_x[0] = std::min(attack_range_x[0], grabbox.anchor.x);
+						attack_range_x[1] = std::max(attack_range_x[1], grabbox.offset.x);
+						attack_range_y[0] = std::min(attack_range_y[0], grabbox.anchor.y);
+						attack_range_y[1] = std::max(attack_range_y[1], grabbox.offset.y);
+					}
 
 					grabboxes[id] = grabbox;
 
@@ -830,10 +1236,12 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 					UNWRAP_NO_DECL(hurtbox.armor_hits);
 					UNWRAP_NO_DECL(hurtbox.intangible_kind);
 
-					defense_range_x[0] = std::min(defense_range_x[0], hurtbox.anchor.x);
-					defense_range_x[1] = std::max(defense_range_x[1], hurtbox.offset.x);
-					defense_range_y[0] = std::min(defense_range_y[0], hurtbox.anchor.y);
-					defense_range_y[1] = std::max(defense_range_y[1], hurtbox.offset.y);
+					if (condition_kind == SCRIPT_CONDITION_KIND_NONE) {
+						defense_range_x[0] = std::min(defense_range_x[0], hurtbox.anchor.x);
+						defense_range_x[1] = std::max(defense_range_x[1], hurtbox.offset.x);
+						defense_range_y[0] = std::min(defense_range_y[0], hurtbox.anchor.y);
+						defense_range_y[1] = std::max(defense_range_y[1], hurtbox.offset.y);
+					}
 
 					hurtboxes[id] = hurtbox;
 
@@ -866,6 +1274,85 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 					grabboxes.clear();
 					continue;
 				}
+				if (func == &Fighter::ENABLE_CANCEL) {
+					UNWRAP(option, std::string);
+					UNWRAP(kind, CancelKind);
+					switch (kind) {
+						case CANCEL_KIND_HIT: {
+							this->hit_cancel_options.insert(option);
+							hit_cancel_options.push_back(option);
+						} break;
+						case CANCEL_KIND_BLOCK: {
+							this->block_cancel_options.insert(option);
+							block_cancel_options.push_back(option);
+						} break;
+						case CANCEL_KIND_CONTACT: {
+							this->hit_cancel_options.insert(option);
+							this->block_cancel_options.insert(option);
+							hit_cancel_options.push_back(option);
+							block_cancel_options.push_back(option);
+
+						} break;
+						case CANCEL_KIND_ANY: {
+							this->cancel_options.insert(option);
+							cancel_options.push_back(option);
+						} break;
+					}
+				}
+				if (func == &Fighter::DISABLE_CANCEL) {
+					UNWRAP(option, std::string);
+					UNWRAP(kind, CancelKind);
+					switch (kind) {
+					case CANCEL_KIND_HIT: {
+						for (std::deque<std::string>::iterator it = hit_cancel_options.begin(); 
+							it != hit_cancel_options.end(); 
+							it++) {
+							if (*it == option) {
+								hit_cancel_options.erase(it);
+								break;
+							}
+						}
+					} break;
+					case CANCEL_KIND_BLOCK: {
+						for (std::deque<std::string>::iterator it = block_cancel_options.begin();
+							it != block_cancel_options.end();
+							it++) {
+							if (*it == option) {
+								block_cancel_options.erase(it);
+								break;
+							}
+						}
+					} break;
+					case CANCEL_KIND_CONTACT: {
+						for (std::deque<std::string>::iterator it = hit_cancel_options.begin();
+							it != hit_cancel_options.end();
+							it++) {
+							if (*it == option) {
+								hit_cancel_options.erase(it);
+								break;
+							}
+						}
+						for (std::deque<std::string>::iterator it = block_cancel_options.begin();
+							it != block_cancel_options.end();
+							it++) {
+							if (*it == option) {
+								block_cancel_options.erase(it);
+								break;
+							}
+						}
+					} break;
+					case CANCEL_KIND_ANY: {
+						for (std::deque<std::string>::iterator it = cancel_options.begin();
+							it != cancel_options.end();
+							it++) {
+							if (*it == option) {
+								cancel_options.erase(it);
+								break;
+							}
+						}
+					} break;
+					}
+				}
 			}
 		}
 		if (hitboxes.empty() && grabboxes.empty()) {
@@ -886,11 +1373,12 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 
 		frame_data.push_back(CPUFrameData(
 			trans_offset, hitboxes, hurtboxes, grabboxes, hit_cancel_options,
-			block_cancel_options, whiff_cancel_options
+			block_cancel_options, cancel_options
 		));
 	}
-	attack_range_x += glm::vec2(min_trans_offset, max_trans_offset);
-	defense_range_x += glm::vec2(min_trans_offset, max_trans_offset);
+	if (!active) std::swap(startup, recovery);
+	attack_range_x += glm::vec2(min_trans_offset, max_trans_offset) * glm::vec2(owner->get_scale_vec().x);
+	defense_range_x += glm::vec2(min_trans_offset, max_trans_offset) * glm::vec2(owner->get_scale_vec().x);
 }
 
 void CPUAction::add_movement_info(float x_speed, float x_accel, float x_max, float y_speed, 
@@ -910,6 +1398,7 @@ void CPUAction::add_movement_info(float x_speed, float x_accel, float x_max, flo
 
 CPUFighterState::CPUFighterState() {
 	action = nullptr;
+	context = FIGHTER_CONTEXT_GROUND;
 	action_kind = CPU_ACTION_KIND_NORMAL;
 	frame = 0;
 	anim_frame = 0.0f;
@@ -917,19 +1406,91 @@ CPUFighterState::CPUFighterState() {
 	pos = glm::vec2(0.0f);
 	base_pos = glm::vec2(0.0f);
 	speed = glm::vec2(0.0f);
-	attack_finished = false;
+	actionable = false;
+	frames_until_bufferable = 0;
 }
 
 CPUFrameData::CPUFrameData(float pos_offset, std::map<int, CPUHitbox> hitboxes,
 	std::map<int, CPUHurtbox> hurtboxes, std::map<int, CPUGrabbox> grabboxes,
-	std::vector<std::string> hit_cancel_options,
-	std::vector<std::string> block_cancel_options,
-	std::vector<std::string> whiff_cancel_options) {
+	std::deque<std::string> hit_cancel_options,
+	std::deque<std::string> block_cancel_options,
+	std::deque<std::string> cancel_options) {
 	this->pos_offset = pos_offset;
 	this->hitboxes = hitboxes;
 	this->hurtboxes = hurtboxes;
 	this->grabboxes = grabboxes;
 	this->hit_cancel_options = hit_cancel_options;
 	this->block_cancel_options = block_cancel_options;
-	this->whiff_cancel_options = whiff_cancel_options;
+	this->cancel_options = cancel_options;
+}
+
+CPUDecision::CPUDecision() {
+	mode = CPU_DECISION_MODE_NONE;
+	frames = 0;
+}
+
+CPUDecision::CPUDecision(CPUDecisionMode mode, FighterCPU* owner) {
+	this->mode = mode;
+	frames = 0;
+	std::vector<CPUAction> actions;
+	switch (mode) {
+		case CPU_DECISION_MODE_NONE: {
+			frames = owner->decision_update_interval;
+		} break;
+		case CPU_DECISION_MODE_WALK_BUTTON:
+		case CPU_DECISION_MODE_DASH_BUTTON: {
+			for (const auto& a : owner->actions) {
+				CPUAction action = a.second;
+				if (action.active && action.fighter_context == FIGHTER_CONTEXT_GROUND 
+					&& action.input_kind == INPUT_KIND_NORMAL) {
+					actions.push_back(action);
+				}
+			}
+		} break;
+		case CPU_DECISION_MODE_WALK_COUNTERPOKE: {
+			for (const auto& a : owner->actions) {
+				CPUAction action = a.second;
+				if (action.active 
+					&& action.fighter_context == FIGHTER_CONTEXT_GROUND
+					&& action.input_kind == INPUT_KIND_NORMAL
+					&& action.attack_range_x[1] >= 250.0f) {
+					actions.push_back(action);
+				}
+			}
+		} break;
+		case CPU_DECISION_MODE_WALK_SHIMMY: {
+			for (const auto& a : owner->opponent->cpu.actions) {
+				CPUAction action = a.second;
+				if (action.active && action.fighter_context == FIGHTER_CONTEXT_GROUND
+					&& action.input_kind == INPUT_KIND_NORMAL
+					&& action.attack_range_x[1] >= 250.0f) {
+					actions.push_back(action);
+				}
+			}
+		} break;
+		case CPU_DECISION_MODE_JUMP_BUTTON: {
+			for (const auto& a : owner->actions) {
+				CPUAction action = a.second;
+				if (action.active && action.fighter_context == FIGHTER_CONTEXT_AIR
+					&& action.input_kind == INPUT_KIND_NORMAL) {
+					actions.push_back(action);
+				}
+			}
+		} break;
+		case CPU_DECISION_MODE_ADVANCE: {
+
+		} break;
+		case CPU_DECISION_MODE_SPECIAL: {
+
+		} break;
+		default: {
+
+		} break;
+	}
+	if (!actions.empty()) {
+		this->action = actions[rng(0, actions.size() - 1)];
+	}
+	else {
+		this->action = CPUAction();
+	}
 }

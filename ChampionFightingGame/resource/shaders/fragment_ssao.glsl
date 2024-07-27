@@ -1,13 +1,17 @@
 #version 330 core
 out float FragColor;
-  
+
 in vec2 TexCoords;
+
+const int kernelSize = 16;
+const float radius = 0.1;
+const float bias = 0.01;
 
 uniform sampler2D g_position;
 uniform sampler2D g_normal;
 uniform sampler2D tex_noise;
 
-uniform vec3 samples[16];
+uniform vec3 samples[kernelSize];
 
 layout(std140) uniform WindowWidth {
     int window_width;
@@ -20,10 +24,6 @@ layout(std140) uniform WindowHeight {
 layout(std140) uniform ProjectionMatrix {
     mat4 projection_matrix;
 };
-
-int kernelSize = 16;
-float radius = 0.1;
-float bias = 0.01;
 
 void main() {    
 	vec2 noise_scale = vec2(window_width / 2, window_height / 2);

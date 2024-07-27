@@ -13,6 +13,10 @@ bool GameObject::is_in_camera_range() {
 	return camera_x < 1.0 && camera_x > -1.0;
 }
 
+void GameObject::set_alpha(unsigned char alpha) {
+	model.set_alpha(alpha);
+}
+
 void GameObject::render() {
 	shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);

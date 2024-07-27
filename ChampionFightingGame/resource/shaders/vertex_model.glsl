@@ -28,9 +28,10 @@ layout(std140) uniform ViewMatrix {
 layout(std140) uniform ShadowMatrix {
     mat4 shadow_matrix;
 };
-
+layout(std140) uniform InvertNormals {
+    bool inverted_normals;
+};
 uniform mat4 bone_matrix[MAX_BONES];
-
 void main() {
 #ifdef SHADER_FEAT_HAS_BONES
     mat4 bone_transform = mat4(0.0);
@@ -44,7 +45,7 @@ void main() {
     vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
     
     vs_out.FragPos = vec3(view_matrix * model_matrix * total_pos);
-    vs_out.Normal = mat3(transpose(inverse(view_matrix * model_matrix * bone_transform))) * v_nor;  
+    vs_out.Normal = mat3(transpose(inverse(view_matrix * model_matrix * bone_transform))) * (inverted_normals ? v_nor : -v_nor);  
     vs_out.TexCoords = v_texcoords;
     vs_out.FragPosLightSpace = shadow_matrix * vec4(vec3(model_matrix * total_pos), 1.0);
     gl_Position = camera_matrix * (model_matrix * total_pos);

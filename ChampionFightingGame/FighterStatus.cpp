@@ -910,7 +910,7 @@ void Fighter::enter_status_thrown() {
 		facing_dir = facing_right ? 1.0 : -1.0;
 	}
 	change_context(FIGHTER_CONTEXT_AIR);
-	change_anim("thrown", calc_launch_frames(), -1.0);
+	change_anim("thrown", calc_airtime(), -1.0);
 	change_script("thrown");
 }
 
@@ -1144,11 +1144,11 @@ void Fighter::enter_status_launch() {
 		object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
 	}
 	if (object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN]) {
-		change_anim("launch_hkd", calc_launch_frames(), -1.0);
+		change_anim("launch_hkd", calc_airtime(), -1.0);
 		change_script("launch_hkd");
 	}
 	else {
-		change_anim("launch", calc_launch_frames(), -1.0);
+		change_anim("launch", calc_airtime(), -1.0);
 		change_script("launch");
 	}
 }
@@ -1537,7 +1537,7 @@ void Fighter::status_landing() {
 		case (0): {
 			check_movelist_inputs();
 			if (anim_end) {
-				change_status(FIGHTER_STATUS_CROUCH);
+				change_status(FIGHTER_STATUS_WAIT);
 				return;
 			}
 			else if (get_stick_dir() >= 4 && common_ground_status_act()) {

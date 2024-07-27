@@ -139,6 +139,7 @@ public:
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
 	void set_mesh_mat(std::string mesh_name, std::string mat_name);
+	void set_alpha(unsigned char alpha);
 
 	int get_mesh_id(std::string mesh_name);
 	int get_material_id(std::string material_name);
@@ -164,4 +165,5 @@ private:
 	glm::mat4 trans_matrix;
 	bool move;
 	bool flip;
+	unsigned char alpha;
 };

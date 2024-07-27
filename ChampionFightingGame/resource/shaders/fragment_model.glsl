@@ -12,8 +12,8 @@ struct Material {
 }; 
 
 in GS_OUT {
-    vec3 FragPos;  
-    vec3 Normal;  
+    vec3 FragPos;
+    vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLightSpace;
 } fs_in;
@@ -23,6 +23,7 @@ layout(std140) uniform DimMul {
     float dim_mul;
 };
 #endif
+uniform float alpha;
 uniform sampler2D shadow_map;
 
 uniform Material material;
@@ -40,9 +41,9 @@ void main() {
 #else
     g_diffuse.rgb = (1.0 - shadow) * texture(material.diffuse, fs_in.TexCoords).rgb;
 #endif
-
-    g_diffuse.a = 1.0;
-    g_specular.rgba = texture(material.specular, fs_in.TexCoords).rgba;
+    g_specular.rgb = texture(material.specular, fs_in.TexCoords).rgb;
+    g_diffuse.a = alpha;
+    g_specular.a = 0.0;
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

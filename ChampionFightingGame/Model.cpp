@@ -318,6 +318,7 @@ ModelInstance::ModelInstance() {
 	trans_matrix = glm::mat4(1.0);
 	move = false;
 	flip = false;
+	alpha = 255;
 }
 
 ModelInstance::ModelInstance(std::string path) {
@@ -332,6 +333,7 @@ void ModelInstance::load_model_instance(std::string path) {
 	trans_matrix = glm::mat4(1.0);
 	move = false;
 	texture_dir = "";
+	alpha = 255;
 	
 	model = ResourceManager::get_instance()->get_model(path);
 
@@ -554,6 +556,10 @@ void ModelInstance::set_mesh_mat(std::string mesh_name, std::string mat_name) {
 	}
 }
 
+void ModelInstance::set_alpha(unsigned char alpha) {
+	this->alpha = alpha;
+}
+
 int ModelInstance::get_mesh_id(std::string mesh_name) {
 	if (model->mesh_map.contains(mesh_name)) {
 		return model->mesh_map[mesh_name];
@@ -585,6 +591,7 @@ bool ModelInstance::is_loaded() const {
 }
 
 void ModelInstance::render(Shader* shader) {
+	shader->set_float("alpha", (float)alpha / 255.0f);
 	shader->set_active_uniform_location("bone_matrix[0]");
 	glCullFace(GL_BACK);
 	for (size_t i = 0, max = bone_data.size(); i < max; i++) {

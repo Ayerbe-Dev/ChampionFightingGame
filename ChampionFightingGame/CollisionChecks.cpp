@@ -210,7 +210,7 @@ void Battle::process_collisions() {
 					std::string airtime_string = "Airtime: ";
 					switch (fighter[i]->status_kind) {
 						case (FIGHTER_STATUS_HITSTUN_AIR): {
-							airtime = fighter[i]->calc_launch_frames();
+							airtime = fighter[i]->calc_airtime();
 							[[fallthrough]];
 						} break;
 						default: {
@@ -224,7 +224,7 @@ void Battle::process_collisions() {
 							[[fallthrough]];
 						}
 						case (FIGHTER_STATUS_LAUNCH): {
-							airtime = fighter[i]->calc_launch_frames();
+							airtime = fighter[i]->calc_airtime();
 							stun_frames += airtime + fighter[i]->get_anim_length("knockdown_up");
 							if (fighter[i]->object_flag[FIGHTER_FLAG_HARD_KNOCKDOWN]) {
 								stun_frames += fighter[i]->get_anim_length("wakeup_slow_up");

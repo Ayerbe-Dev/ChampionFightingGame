@@ -32,7 +32,6 @@ RenderManager::RenderManager() {
 
 	glViewport(0, 0, window_width, window_height);
 
-
 	glEnable(GL_MULTISAMPLE);
 
 	glEnable(GL_DEPTH_TEST);
@@ -91,13 +90,13 @@ RenderManager::RenderManager() {
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Specular
 	
-	SSAO.init("ssao", "ssao", "", 0, res_width, res_height);
+	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
-	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
+	SSAO.add_read_texture(GL_RGBA32F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
 	SSAO.add_read_texture(g_buffer.textures[0], 2); //Position, shared w/ GBuffer
 	SSAO.add_read_texture(g_buffer.textures[1], 3); //Ditto for Normals
 
-	SSAO_blur.init("ssao", "blur", "", 0, res_width, res_height);
+	SSAO_blur.init("passthrough", "blur", "", 0, res_width, res_height);
 	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
 	g_buffer.add_read_texture(SSAO.textures[0], 4);
 

@@ -137,7 +137,8 @@ public:
 	//Frame Data
 
 	int get_frames_until_actionable();
-	int calc_launch_frames();
+	int calc_airtime();
+	int calc_airtime(float init_y_speed);
 
 	//Status
 

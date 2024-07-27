@@ -41,7 +41,7 @@ void Stage::load_stage(StageInfo stage_info, ObjectManager *object_manager) {
 	start_pos.x = -distance;
 	start_pos.y = distance;
 	float max_distance = get_global_param_float(PARAM_FIGHTER, "max_distance") / 2.2;
-	camera_bound = stage_bound + max_distance;
+	camera_bound = stage_bound / 20;
 
 	default_music_kind = "resource/sound/bgm/stage/" + default_music_kind;
 

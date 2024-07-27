@@ -16,6 +16,8 @@
 
 #define MAX_LIGHT_SOURCES 10
 
+
+
 class RenderManager {
 public:
 	RenderManager(RenderManager& other) = delete;

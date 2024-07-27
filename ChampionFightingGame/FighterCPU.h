@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include <list>
 #include <set>
+#include <deque>
 
 struct CPUHitbox {
 	glm::vec2 anchor;
@@ -43,29 +44,29 @@ struct CPUGrabbox {
 struct CPUFrameData {
 	CPUFrameData(float pos_offset, std::map<int, CPUHitbox> hitboxes,
 		std::map<int, CPUHurtbox> hurtboxes, std::map<int, CPUGrabbox> grabboxes,
-		std::vector<std::string> hit_cancel_options, 
-		std::vector<std::string> block_cancel_options,
-		std::vector<std::string> whiff_cancel_options);
+		std::deque<std::string> hit_cancel_options, 
+		std::deque<std::string> block_cancel_options,
+		std::deque<std::string> cancel_options);
 	float pos_offset;
 	std::map<int, CPUHitbox> hitboxes;
 	std::map<int, CPUHurtbox> hurtboxes;
 	std::map<int, CPUGrabbox> grabboxes;
-	std::vector<std::string> hit_cancel_options;
-	std::vector<std::string> block_cancel_options;
-	std::vector<std::string> whiff_cancel_options;
+	std::deque<std::string> hit_cancel_options;
+	std::deque<std::string> block_cancel_options;
+	std::deque<std::string> cancel_options;
 };
 
 enum CPUTag {
-	CP_TAG_EVADE_ATK,
-	CP_TAG_IGNORE_STRIKE,
-	CP_TAG_IGNORE_THROW,
+	CPU_TAG_EVADE_ATK,
+	CPU_TAG_IGNORE_STRIKE,
+	CPU_TAG_IGNORE_THROW,
 
-	ACTION_TAG_MAX,
+	CPU_TAG_MAX,
 };
 
 struct CPUAction {
 	CPUAction();
-	void init(Fighter* owner, std::string script_name, std::string anim_name, InputKind input_kind,
+	void init(Fighter* owner, std::string script_name, std::string anim_name, int fighter_context, InputKind input_kind,
 		unsigned short required_buttons, unsigned int pref_stick_dir, std::set<unsigned int> stick_dirs,
 		std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost, 
 		bool allow_interrupt, bool manual_input
@@ -75,7 +76,7 @@ struct CPUAction {
 
 
 	std::string name;
-
+	int fighter_context;
 	InputKind input_kind;
 	unsigned short required_buttons;
 	unsigned int pref_stick_dir;
@@ -106,6 +107,9 @@ struct CPUAction {
 	
 	std::vector<CPUTag> tags;
 	std::vector<std::string> auto_followups;
+	std::set<std::string> hit_cancel_options;
+	std::set<std::string> block_cancel_options;
+	std::set<std::string> cancel_options;
 	float resource_cost;
 	bool allow_interrupt;
 	bool manual_input;
@@ -122,13 +126,15 @@ struct CPUFighterState {
 	CPUFighterState();
 	CPUAction *action;
 	CPUActionKind action_kind;
+	int context;
 	int frame;
 	float anim_frame;
 	float facing_dir;
 	glm::vec2 pos;
 	glm::vec2 base_pos;
 	glm::vec2 speed;
-	bool attack_finished;
+	bool actionable;
+	int frames_until_bufferable;
 };
 
 struct FighterMoveContext {
@@ -158,11 +164,31 @@ struct OpponentResponseContext {
 
 enum CPUMode {
 	CPU_MODE_NEUTRAL,
-	CPU_MODE_ATTACK_SUCCESS,
+	CPU_MODE_ATTACK,
 	CPU_MODE_HITSTUN,
 	CPU_MODE_WAKEUP_BLOCKSTUN,
 
 	CPU_MODE_MAX
+};
+
+enum CPUDecisionMode {
+	CPU_DECISION_MODE_NONE,
+	CPU_DECISION_MODE_WALK_BUTTON,
+	CPU_DECISION_MODE_WALK_COUNTERPOKE,
+	CPU_DECISION_MODE_WALK_SHIMMY,
+	CPU_DECISION_MODE_DASH_BUTTON,
+	CPU_DECISION_MODE_JUMP_BUTTON,
+	CPU_DECISION_MODE_ADVANCE,
+	CPU_DECISION_MODE_SPECIAL,
+};
+
+class FighterCPU;
+struct CPUDecision {
+	CPUDecision();
+	CPUDecision(CPUDecisionMode mode, FighterCPU* owner);
+	CPUDecisionMode mode;
+	CPUAction action;
+	int frames;
 };
 
 class FighterCPU {
@@ -170,7 +196,7 @@ public:
 	FighterCPU();
 
 	void init(Fighter* owner, Fighter* opponent);
-	CPUAction& add_action(std::string script_name, std::string anim_name, InputKind input_kind, 
+	CPUAction& add_action(std::string script_name, std::string anim_name, int fighter_context, InputKind input_kind, 
 		unsigned short required_buttons, unsigned int pref_stick_dir, std::set<unsigned int> stick_dirs,
 		std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost, 
 		bool allow_interrupt
@@ -181,7 +207,7 @@ public:
 	);
 	void process();
 	void process_neutral();
-	void process_attack_success();
+	void process_attack();
 	void process_hitstun();
 	void process_wakeup_blockstun();
 
@@ -209,7 +235,7 @@ public:
 	//based on what it predicts the opponent's state will be.
 	int hit_confirm_skill; //This variable affects how good the CPU is at hit 
 	//confirming.
-	int move_recognition_skill; //This variable affects how well the CPU can tell whether or not
+	int block_recognition_skill; //This variable affects how well the CPU can tell whether or not
 	//it needs to block high/low.
 
 
@@ -225,6 +251,9 @@ public:
 	int mental_stack_update_interval; //When the CPU is in prediction mode, it reacts
 	//extra fast to options in its mental stack, but extra slow to other options. This
 	//variable determines how often the mental stack is updated.
+	int decision_update_interval; //When the CPU is trying to decide what to do outside
+	//of reactions, this determines how often it's allowed to change outside of a neutral 
+	//state
 
 	//Decision Variables
 
@@ -241,17 +270,15 @@ public:
 	bool locked_in;
 	int stamina;
 
-	CPUAction curr_action;
 	std::map<std::string, CPUAction> actions;
 	CircularBuffer<CPUFighterState> states;
 	CircularBuffer<CPUFighterState> opponent_states;
 
 	CPUMode cpu_mode;
-
+	CPUDecision curr_decision;
 private:
 	void execute_action(CPUAction action);
-	void add_input(unsigned int input_stick, unsigned int input_buttons);
-	int get_frames_to_input(CPUAction action); 
+	void buffer_action(CPUAction action);
 	void determine_states();
 	int get_hit_frame(CPUAction atk_action, int atk_frame, float atk_facing_dir, glm::vec2 atk_base_pos,
 		CPUAction def_action, int def_frame, float def_facing_dir, glm::vec2 def_base_pos, bool this_atk
@@ -259,6 +286,8 @@ private:
 	bool check_contact(CPUFighterState& state, CPUFighterState& opp_state);
 	bool check_contact(CPUFrameData& frame_data, glm::vec2 pos, float facing_dir, 
 		CPUFrameData& opp_frame_data, glm::vec2 opp_pos, float opp_facing_dir);
+	void add_input(unsigned int input_stick, unsigned int input_buttons);
+	int get_frames_to_input(CPUAction action);
 	unsigned int numpad_to_bits(unsigned int numpad_dir);
 
 	int input_frames;

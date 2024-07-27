@@ -326,7 +326,7 @@ void Eric::load_move_scripts() {
 		});
 		execute_wait(1, [this]() {
 			push_function(&Fighter::DISABLE_CANCEL, "stand_mp", CANCEL_KIND_ANY);
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 120),
+			push_true("whiff_anim_check", &Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 120),
 				glm::vec2(240, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(10).meter(6).scale(0.2f).hit(8, 12).block(8, 9).j_min(1)
 				.anims("light_high", "light_high", "high", "high"), HIT_STATUS_NORMAL,
@@ -399,16 +399,6 @@ void Eric::load_move_scripts() {
 		execute_frame(9, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130),
 				glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-				HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
-				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
-				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
-				"", "common_attack_hit_01"
-			);
-		});
-		execute_wait(17, [this]() {
-			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130),
-				glm::vec2(500, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
 				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
 				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
@@ -1954,7 +1944,7 @@ void Eric::load_move_scripts() {
 		execute_wait(2, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_PARRY_ACTIVE, false);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_FORCE_CRITICAL, true);
-			push_function(&Fighter::SET_RATE, (anim_kind->length - 2.0) / calc_launch_frames());
+			push_function(&Fighter::SET_RATE, (anim_kind->length - 2.0) / calc_airtime());
 		});
 	});
 	script("thrown", [this]() {
@@ -2150,19 +2140,26 @@ void Eric::load_move_scripts() {
 }
 
 void Eric::load_cpu_move_info() {
-	cpu.add_action("stand_lp", "stand_lp", INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 5 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_mp", "stand_mp", INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 5 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_hp", "stand_hp", INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 5 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_lk", "stand_lk", INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 5 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_mk", "stand_mk", INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 5 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_hk", "stand_hk", INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, { 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_lp", "stand_lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_mp", "stand_mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_hp", "stand_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 4, 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_lk", "stand_lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_mk", "stand_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_hk", "stand_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
 
-	cpu.add_action("forward_hp", "forward_hp", INPUT_KIND_NORMAL, BUTTON_HP_BIT, 6, { 3, 6, 9 }, {}, {}, 0.0f, false);
+	cpu.add_action("forward_hp", "forward_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 6, { 6 }, {}, {}, 0.0f, false);
 
-	cpu.add_action("crouch_lp", "crouch_lp", INPUT_KIND_NORMAL, BUTTON_LP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_mp", "crouch_mp", INPUT_KIND_NORMAL, BUTTON_MP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_hp", "crouch_hp", INPUT_KIND_NORMAL, BUTTON_HP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_lk", "crouch_lk", INPUT_KIND_NORMAL, BUTTON_LK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_mk", "crouch_mk", INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_hk", "crouch_hk", INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_lp", "crouch_lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_mp", "crouch_mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_hp", "crouch_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_lk", "crouch_lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_mk", "crouch_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_hk", "crouch_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+
+	cpu.add_action("jump_lp", "jump_lp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_mp", "jump_mp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_hp", "jump_hp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_lk", "jump_lk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_mk", "jump_mk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_hk", "jump_hk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
 }

@@ -1991,9 +1991,6 @@
     <None Include="resource\shaders\fragment_ssao.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
-    <None Include="resource\shaders\vertex_ssao.glsl">
-      <Filter>3. resource\shaders</Filter>
-    </None>
     <None Include="resource\chara\roy\anims\jump_hitstun.fbx">
       <Filter>3. resource\chara\rowan\anims</Filter>
     </None>

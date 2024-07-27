@@ -58,7 +58,7 @@ int Fighter::get_frames_until_actionable() {
 	}
 }
 
-int Fighter::calc_launch_frames() {
+int Fighter::calc_airtime() {
 	float sim_gravity = object_float[FIGHTER_FLOAT_CURRENT_GRAVITY];
 	if (object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] == 0 || object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] == 0) {
 		return 1;
@@ -74,3 +74,17 @@ int Fighter::calc_launch_frames() {
 	}
 	return airtime;
 }
+
+int Fighter::calc_airtime(float y_speed) {
+	float sim_gravity = get_param_float("gravity");
+	float fall_speed = -get_param_float("max_fall_speed");
+	int airtime = 0;
+	float simp_y = get_pos().y;
+	while (simp_y >= 0.0f) {
+		y_speed = std::max(fall_speed, y_speed - sim_gravity);
+		simp_y += y_speed;
+		airtime++;
+	}
+	return airtime;
+}
+

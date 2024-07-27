@@ -148,10 +148,7 @@ void Framebuffer::render() {
 void Framebuffer::render_passthrough() {
 	glDepthMask(GL_FALSE);
 	ShaderManager::get_instance()->get_shader("passthrough", "passthrough", "", 0)->use();
-	for (int i = 0, max = textures.size(); i < max; i++) {
-		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
-		glBindTexture(GL_TEXTURE_2D, textures[i]);
-	}
+	bind_textures();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

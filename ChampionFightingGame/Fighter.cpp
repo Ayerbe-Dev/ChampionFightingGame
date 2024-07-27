@@ -87,6 +87,9 @@ void Fighter::fighter_post() {
 	if (object_int[FIGHTER_INT_STATUS_GROUP] & STATUS_GROUP_POST_PROCESS) {
 		(this->*status_script[status_kind])();
 	}
+	if (is_enable_free_cancel()) {
+		object_flag[FIGHTER_FLAG_ENABLE_PUNISH] = false;
+	}
 	process_post_position();
 	if (anim_kind == nullptr) {
 		add_rot(glm::vec3(90, 0.0, 90.0 * facing_dir));

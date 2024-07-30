@@ -8,7 +8,9 @@
 #include "ShaderManager.h"
 
 StageAsset::StageAsset() {
-
+	has_lights = false;
+	has_model = false;
+	owner = nullptr;
 }
 
 StageAsset::StageAsset(std::string asset_name, std::string resource_dir, ObjectManager* object_manager) {
@@ -47,7 +49,7 @@ void StageAsset::load_model_shader() {
 		model.load_textures();
 		unsigned int flags = 0;
 		if (model.has_skeleton()) {
-			flags |= SHADER_FEAT_HAS_BONES;
+			flags |= SHADER_FEAT_BONES;
 		}
 		shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
 		shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);

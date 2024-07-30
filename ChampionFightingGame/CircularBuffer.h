@@ -40,9 +40,13 @@ public:
 		return num_elements;
 	}
 
+	void cycle() {
+		curr_index = next_index(curr_index);
+	}
+
 	void insert(T elem) {
 		data[curr_index] = elem;
-		curr_index = next_index(curr_index);
+		cycle();
 	}
 
 	int next_index(int index) {

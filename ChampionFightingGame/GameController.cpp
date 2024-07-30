@@ -1,6 +1,6 @@
 #include "GameController.h"
 #include "ParamAccessor.h"
-#include "ControllerManager.h"
+#include "InputManager.h"
 #include "utils.h"
 #include "SDL/SDL_gamecontroller.h"
 
@@ -42,6 +42,8 @@ void GameController::reset_button_mappings() {
 	add_button_mapping(BUTTON_MENU_SELECT, SDL_SCANCODE_Y, SDL_CONTROLLER_BUTTON_A);
 	add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_ESCAPE, SDL_CONTROLLER_BUTTON_START);
 	add_button_mapping(BUTTON_MENU_BACK, SDL_SCANCODE_U, SDL_CONTROLLER_BUTTON_B);
+	add_button_mapping(BUTTON_MENU_PAGE_LEFT, SDL_SCANCODE_H, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+	add_button_mapping(BUTTON_MENU_PAGE_RIGHT, SDL_SCANCODE_L, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 	add_button_mapping(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
 	add_button_mapping(BUTTON_MENU_FRAME_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
 	add_button_mapping(BUTTON_MENU_RECORD_INPUT, SDL_SCANCODE_1, SDL_CONTROLLER_BUTTON_INVALID);
@@ -50,14 +52,14 @@ void GameController::reset_button_mappings() {
 }
 
 void GameController::check_controllers() {
-	ControllerManager* controller_manager = ControllerManager::get_instance();
+	InputManager* input_manager = InputManager::get_instance();
 	if (owns_keyboard) return;
 	if (controller == nullptr) {
-		if (controller_manager->get_owner(nullptr) == nullptr) {
+		if (input_manager->get_owner(nullptr) == nullptr) {
 			for (size_t i = 0, max = button_info.size(); i < max; i++) {
-				if (controller_manager->keyboard_state[button_info[i].k_mapping]) {
+				if (input_manager->keyboard_state[button_info[i].k_mapping]) {
 					owns_keyboard = true;
-					controller_manager->register_controller(nullptr, this);
+					input_manager->register_controller(nullptr, this);
 					return;
 				}
 			}
@@ -67,10 +69,10 @@ void GameController::check_controllers() {
 		for (int i = 0, max = SDL_NumJoysticks(); i < max; i++) {
 			if (SDL_IsGameController(i)) {
 				new_controller = SDL_GameControllerOpen(i);
-				if (controller_manager->get_owner(new_controller) == nullptr) {
+				if (input_manager->get_owner(new_controller) == nullptr) {
 					if (is_any_controller_input(new_controller)) {
 						controller = new_controller;
-						controller_manager->register_controller(new_controller, this);
+						input_manager->register_controller(new_controller, this);
 						return;
 					}
 					SDL_GameControllerClose(new_controller);
@@ -81,7 +83,7 @@ void GameController::check_controllers() {
 	}
 	else {
 		if (!SDL_GameControllerGetAttached(controller)) {
-			controller_manager->unregister_controller(controller);
+			input_manager->unregister_controller(controller);
 			controller = nullptr;
 		}
 	}
@@ -92,7 +94,7 @@ void GameController::set_owns_keyboard(bool owns_keyboard) {
 }
 
 void GameController::poll_menu() {
-	const Uint8* keyboard_state = ControllerManager::get_instance()->keyboard_state;
+	const Uint8* keyboard_state = InputManager::get_instance()->keyboard_state;
 	for (unsigned int i = BUTTON_MENU; i < BUTTON_MENU_MAX; i++) {
 		bool old_button = button_info[i].button_on;
 		if (controller != nullptr) {
@@ -123,7 +125,7 @@ void GameController::poll_menu() {
 }
 
 void GameController::poll_fighter() {
-	const Uint8* keyboard_state = ControllerManager::get_instance()->keyboard_state;
+	const Uint8* keyboard_state = InputManager::get_instance()->keyboard_state;
 	int buffer_window = get_global_param_int(PARAM_FIGHTER, "buffer_window");
 	input_code = 0;
 	std::vector<bool> old_button;

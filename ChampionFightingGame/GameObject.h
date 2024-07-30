@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Animation.h"
 #include "SoundPlayer.h"
+#include "CircularBuffer.h"
 
 class RenderManager;
 class SoundManager;
@@ -55,6 +56,7 @@ public:
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
+	void set_bone_ex_render(std::string bone_name, bool enabled);
 
 	//Transformation Funcs
 
@@ -151,6 +153,7 @@ public:
 	Shader* shader;
 	Shader* shadow_shader;
 	Shader* outline_shader;
+	CircularBuffer<GLuint> trail_buffer;
 	ModelInstance model;
 private:
 	glm::vec3 pos;

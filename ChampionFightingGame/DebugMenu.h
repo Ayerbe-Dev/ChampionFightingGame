@@ -27,6 +27,8 @@ public:
     void render_main();
 
     GameTexture tex;
+    GameTexture text_field;
+    GameTexture text;
     GameObject go1, go2;
 
     std::vector<std::string> debug_messages;

@@ -43,7 +43,7 @@ void Projectile::load_model_shader() {
 		model.load_textures();
 		unsigned int flags = 0;
 		if (model.has_skeleton()) {
-			flags |= SHADER_FEAT_HAS_BONES;
+			flags |= SHADER_FEAT_BONES;
 		}
 		shader = shader_manager->get_shader("model", "model", "model", flags);
 		shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);

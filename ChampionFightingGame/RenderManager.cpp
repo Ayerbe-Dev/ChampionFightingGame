@@ -1,12 +1,15 @@
 #include "RenderManager.h"
 #include "FontManager.h"
 #include "GameManager.h"
+#include "InputManager.h"
 #include "SaveManager.h"
 #include "ShaderManager.h"
 #include "utils.h"
 #include "stb_image.h"
 #include <iostream>
+#include <random>
 #include <string>
+#include "debug.h"
 
 RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
@@ -53,16 +56,19 @@ RenderManager::RenderManager() {
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 	glClearStencil(0);
 
-	for (int i = 0; i < 16; i++) {
-		glm::vec3 sample(rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0) * 2.0 - 1.0, rng_f(0.0, 1.0));
-
+	int num_ssao_samples = 16;
+	for (int i = 0; i < num_ssao_samples; i++) {
+		glm::vec3 sample(
+			rng_f(0.0, 1.0) * 2.0 - 1.0, 
+			rng_f(0.0, 1.0) * 2.0 - 1.0, 
+			rng_f(0.0, 1.0)
+		);
 		sample = glm::normalize(sample);
 		sample *= rng_f(0.0, 1.0);
 
-		float scale = (float)i / 16.0;
+		float scale = (float)i / (float)num_ssao_samples;
 		scale = lerp(0.1, 1.0, scale * scale);
 		sample *= scale;
-
 		ssao_kernel.push_back(sample);
 	}
 
@@ -84,48 +90,60 @@ RenderManager::RenderManager() {
 	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
 
-	g_buffer.init("gbuffer", "gbuffer", "", 0, res_width, res_height);
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Position
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Normal
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Specular
-	
+	g_buffer.init("passthrough", "gbuffer", "", 
+		SHADER_FEAT_DIFFUSE 
+		| SHADER_FEAT_POSITION
+		| SHADER_FEAT_NORMAL 
+		| SHADER_FEAT_SSAO, res_width, res_height
+	);
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
+	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT4, 4); //Diffuse EX (Used for effect trails)
+
 	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
-	SSAO.add_read_texture(GL_RGBA32F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
-	SSAO.add_read_texture(g_buffer.textures[0], 2); //Position, shared w/ GBuffer
-	SSAO.add_read_texture(g_buffer.textures[1], 3); //Ditto for Normals
+	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
+	SSAO.add_read_texture(g_buffer.textures[2], 2); //Position, shared w/ GBuffer
+	SSAO.add_read_texture(g_buffer.textures[3], 3); //Ditto for Normals
 
-	SSAO_blur.init("passthrough", "blur", "", 0, res_width, res_height);
-	SSAO_blur.add_read_texture(SSAO.textures[0], 0);
-	g_buffer.add_read_texture(SSAO.textures[0], 4);
+	blur.init("passthrough", "blur", "", 0, res_width, res_height);
+	blur.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	box_layer.add_uniform("f_texture", 0);
 
-	box_layer.shader->use();
-	box_layer.shader->set_int("f_texture", 0);
-
-	g_buffer.shader->use();
-	g_buffer.shader->set_int("g_position", 0);
-	g_buffer.shader->set_int("g_normal", 1);
-	g_buffer.shader->set_int("g_diffuse", 2);
-	g_buffer.shader->set_int("g_specular", 3);
-	g_buffer.shader->set_int("ssao", 4);
+	g_buffer.add_uniform("g_diffuse", 0);
+	g_buffer.add_uniform("g_specular", 1);
+	g_buffer.add_uniform("g_position", 2);
+	g_buffer.add_uniform("g_normal", 3);
 
 	SSAO.shader->use();
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < num_ssao_samples; i++) {
 		SSAO.shader->set_vec3("samples[]", ssao_kernel[i], i);
 	}
-	SSAO.shader->set_int("tex_noise", 1);
-	SSAO.shader->set_int("g_position", 2);
-	SSAO.shader->set_int("g_normal", 3);
+	SSAO.add_uniform("tex_noise", 1);
+	SSAO.add_uniform("g_position", 2);
+	SSAO.add_uniform("g_normal", 3);
 
-	SSAO_blur.shader->use();
-	SSAO_blur.shader->set_int("f_texture", 0);
+	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
+	debug_textures.push_back(GameTexture(blur.textures[0]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[4]));
+	for (int i = 0, max = debug_textures.size(); i < max; i++) {
+		debug_textures[i].set_scale(0.2);
+		debug_textures[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+		debug_textures[i].set_pos(glm::vec3(0.0, 432 * i, 0.0));
+	}
 
-	gbuffer_texture.init(g_buffer.textures[2]);
-	gbuffer_texture.set_scale(0.4);
-	gbuffer_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+	shadow_map.bind_uniforms();
+	outline.bind_uniforms();
+	box_layer.bind_uniforms();
+	g_buffer.bind_uniforms();
+	SSAO.bind_uniforms();
+	blur.bind_uniforms();
 	
 	fade_texture.init("resource/misc/fade.png");
 	fade_texture.alpha = 0;
@@ -133,10 +151,13 @@ RenderManager::RenderManager() {
 	fade_frames = 0;
 	fading = false;
 	mid_fade_func = nullptr;
+	ssao_enabled = true;
 
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
 	shader_manager->set_global_int("WindowHeight", window_height);
+
+	ambient_col = glm::vec3(1.0);
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -205,9 +226,11 @@ void RenderManager::update_shader_lights() {
 	glm::vec3 shadow_total = glm::vec3(0.0);
 	float shadow_factor = 0.0;
 	g_buffer.shader->use();
+	g_buffer.shader->set_vec3("ambient", ambient_col);
+
 	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
 		if (i < lights.size()) {
-			g_buffer.shader->set_vec3("light[0].position", lights[i]->position, i);
+			g_buffer.shader->set_vec3("light[0].position", glm::vec4(lights[i]->position, 1.0f) * camera.view_matrix, i);
 			g_buffer.shader->set_vec3("light[0].color", lights[i]->color, i);
 			g_buffer.shader->set_float("light[0].linear", lights[i]->linear, i);
 			g_buffer.shader->set_float("light[0].quadratic", lights[i]->quadratic, i);
@@ -258,7 +281,7 @@ void RenderManager::update_framebuffer_dimensions() {
 	box_layer.update_dimensions();
 	g_buffer.update_dimensions();
 	SSAO.update_dimensions();
-	SSAO_blur.update_dimensions();
+	blur.update_dimensions();
 }
 
 void RenderManager::set_resolution(int width, int height) {
@@ -315,6 +338,29 @@ void RenderManager::execute_buffered_events() {
 	event_names.clear();
 }
 
+void RenderManager::render_ssao() {
+	g_buffer.shader->use();
+	g_buffer.shader->set_bool("ssao_enabled", ssao_enabled);
+	SSAO.use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	SSAO.render();
+
+	blur.use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	blur.bind_ex_uniforms({{"f_texture", SSAO.textures[0]}});
+	blur.render();
+}
+
+void RenderManager::render_debug_textures() {
+	for (int i = 0, max = debug_textures.size(); i < max; i++) {
+		debug_textures[i].render();
+	}
+}
+
+void RenderManager::copy_texture(GLuint source, GLuint dest) {
+	glCopyImageSubData(source, GL_TEXTURE_2D, 0, 0, 0, 0, dest, GL_TEXTURE_2D, 0, 0, 0, 0, res_width, res_height, 1);
+}
+
 void RenderManager::update_screen() {
 	if (fading) {
 		if (fade_texture.alpha == 0 && fade_frames == 0) {
@@ -329,6 +375,9 @@ void RenderManager::update_screen() {
 
 		fade_texture.render();
 	}
+#ifdef DEBUG
+	render_debug_textures();
+#endif
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	SDL_GL_SwapWindow(window);
 	glDisable(GL_FRAMEBUFFER_SRGB);
@@ -343,6 +392,8 @@ void RenderManager::clear_screen() {
 }
 
 void RenderManager::handle_window_events(std::function<void(SDL_Event*)> event_handler) {
+	InputManager* input_manager = InputManager::get_instance();
+	input_manager->input_char = 0;
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		if (event_handler != nullptr) {
@@ -352,8 +403,10 @@ void RenderManager::handle_window_events(std::function<void(SDL_Event*)> event_h
 		case SDL_QUIT: {
 			GameManager::get_instance()->update_state(GAME_STATE_CLOSE);
 		} break;
-		case SDL_WINDOWEVENT:
-		{
+		case SDL_TEXTINPUT: {
+			input_manager->input_char = *event.text.text;
+		} break;
+		case SDL_WINDOWEVENT: {
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_MAXIMIZED: {
 				SDL_GetWindowSize(window, &window_width, &window_height);
@@ -379,9 +432,12 @@ void RenderManager::destroy_instance() {
 	box_layer.destroy();
 	g_buffer.destroy();
 	SSAO.destroy();
-	SSAO_blur.destroy();
+	blur.destroy();
 
-	gbuffer_texture.destroy();
+	for (int i = 0, max = debug_textures.size(); i < max; i++) {
+		debug_textures[i].destroy();
+	}
+	debug_textures.clear();
 	fade_texture.destroy();
 
 	SDL_DestroyWindow(window);

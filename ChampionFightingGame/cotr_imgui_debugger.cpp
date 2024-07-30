@@ -2,6 +2,7 @@
 #include "Fighter.h"
 #include "GameRect.h"
 #include "RenderManager.h"
+#include "ShaderManager.h"
 #include "utils.h"
 
 #include "DebugMenu.h"
@@ -642,21 +643,29 @@ void cotr_imgui_debug_battle(Battle* battle) {
 
 		if (ImGui::TreeNode("Players")) {
 			if (ImGui::TreeNode("P1")) {
-//				ImGui::SliderFloat("Pos X", &battle->fighter[0]->pos[0], -3000.0f, 3000.0f);
-//				ImGui::SliderFloat("Pos Y", &battle->fighter[0]->pos[1], -3000.0f, 3000.0f);
-//				ImGui::SliderFloat("Pos Z", &battle->fighter[0]->pos[2], -3000.0f, 3000.0f);
-//				ImGui::SliderFloat("Rot X", &battle->fighter[0]->rot[0], -3.14f, 3.14f);
-//				ImGui::SliderFloat("Rot Y", &battle->fighter[0]->rot[1], -3.14f, 3.14f);
-//				ImGui::SliderFloat("Rot Z", &battle->fighter[0]->rot[2], -3.14f, 3.14f);
+				glm::vec3 pos = battle->fighter[0]->get_pos();
+				ImGui::SliderFloat("Pos X", &pos.x, -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Y", &pos.y, -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Z", &pos.z, -3000.0f, 3000.0f);
+				battle->fighter[0]->set_pos(pos);
+				glm::vec3 rot = battle->fighter[0]->get_rot();
+				ImGui::SliderFloat("Rot X", &rot.x, -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Y", &rot.y, -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Z", &rot.z, -3.14f, 3.14f);
+				battle->fighter[0]->set_rot(rot);
 				ImGui::TreePop();
 			}
 			if (ImGui::TreeNode("P2")) {
-//				ImGui::SliderFloat("Pos X", &battle->fighter[1]->pos[0], -3000.0f, 3000.0f);
-//				ImGui::SliderFloat("Pos Y", &battle->fighter[1]->pos[1], -3000.0f, 3000.0f);
-//				ImGui::SliderFloat("Pos Z", &battle->fighter[1]->pos[2], -3000.0f, 3000.0f);
-//				ImGui::SliderFloat("Rot X", &battle->fighter[1]->rot[0], -3.14f, 3.14f);
-//				ImGui::SliderFloat("Rot Y", &battle->fighter[1]->rot[1], -3.14f, 3.14f);
-//				ImGui::SliderFloat("Rot Z", &battle->fighter[1]->rot[2], -3.14f, 3.14f);
+				glm::vec3 pos = battle->fighter[1]->get_pos();
+				ImGui::SliderFloat("Pos X", &pos.x, -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Y", &pos.y, -3000.0f, 3000.0f);
+				ImGui::SliderFloat("Pos Z", &pos.z, -3000.0f, 3000.0f);
+				battle->fighter[1]->set_pos(pos);
+				glm::vec3 rot = battle->fighter[1]->get_rot();
+				ImGui::SliderFloat("Rot X", &rot.x, -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Y", &rot.y, -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot Z", &rot.z, -3.14f, 3.14f);
+				battle->fighter[1]->set_rot(rot);
 				ImGui::TreePop();
 			}
 			ImGui::TreePop();
@@ -676,6 +685,59 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			}
 			ImGui::TreePop();
 			render_manager->update_shader_lights();
+		}
+
+		if (ImGui::TreeNode("G Buffer")) {
+			bool diffuse_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE;
+			bool specular_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR;
+			bool position_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_POSITION;
+			bool normal_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL;
+			bool ssao_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_SSAO;
+			ImGui::Checkbox("Diffuse Enabled", &diffuse_enabled);
+			ImGui::Checkbox("Specular Enabled", &specular_enabled);
+			ImGui::Checkbox("Position Enabled", &position_enabled);
+			ImGui::Checkbox("Normal Enabled", &normal_enabled);
+			ImGui::Checkbox("SSAO Enabled", &ssao_enabled);
+			if (diffuse_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
+			|| specular_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
+			|| position_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
+			|| normal_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
+			|| ssao_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
+				unsigned int add = 0;
+				unsigned int remove = 0;
+				if (diffuse_enabled) {
+					add |= SHADER_FEAT_DIFFUSE;
+				}
+				else {
+					remove |= SHADER_FEAT_DIFFUSE;
+				}
+				if (specular_enabled) {
+					add |= SHADER_FEAT_SPECULAR;
+				}
+				else {
+					remove |= SHADER_FEAT_SPECULAR;
+				}
+				if (position_enabled) {
+					add |= SHADER_FEAT_POSITION;
+				}
+				else {
+					remove |= SHADER_FEAT_POSITION;
+				}
+				if (normal_enabled) {
+					add |= SHADER_FEAT_NORMAL;
+				}
+				else {
+					remove |= SHADER_FEAT_NORMAL;
+				}
+				if (ssao_enabled) {
+					add |= SHADER_FEAT_SSAO;
+				}
+				else {
+					remove |= SHADER_FEAT_SSAO;
+				}
+				render_manager->g_buffer.set_feats(remove, add);
+			}
+			ImGui::TreePop();
 		}
 	}
 

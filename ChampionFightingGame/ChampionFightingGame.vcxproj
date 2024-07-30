@@ -257,7 +257,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraAnim.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
-    <ClCompile Include="ControllerManager.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="cotr_imgui_debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
     <ClCompile Include="Effect.cpp" />
@@ -511,7 +511,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CharaSelect.h" />
     <ClInclude Include="CircularBuffer.h" />
-    <ClInclude Include="ControllerManager.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="cotr_imgui_debugger.h" />
     <ClInclude Include="DebugMenu.h" />
     <ClInclude Include="Effect.h" />
@@ -886,7 +886,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\vertex_2d_outline.glsl" />
     <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_effect.glsl" />
-    <None Include="resource\shaders\vertex_gbuffer.glsl" />
     <None Include="resource\shaders\vertex_3d_outline.glsl" />
     <None Include="resource\shaders\vertex_passthrough.glsl" />
     <None Include="resource\shaders\vertex_model.glsl" />

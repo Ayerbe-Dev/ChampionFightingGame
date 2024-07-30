@@ -49,10 +49,13 @@ int SaveManager::get_game_setting(std::string setting) {
 }
 
 void SaveManager::set_game_setting(std::string setting, int val) {
-	if (settings_map.find(setting) == settings_map.end()) {
+	if (settings_map.contains(setting)) {
+		settings[settings_map[setting]].val = val;
 		return;
 	}
-	settings[settings_map[setting]].val = val;
+	if (unsaved_settings_map.contains(setting)) {
+		unsaved_settings[unsaved_settings_map[setting]].val = val;
+	}
 }
 
 void SaveManager::save_game_settings() {

@@ -18,34 +18,39 @@ void GameObject::set_alpha(unsigned char alpha) {
 }
 
 void GameObject::render() {
-	shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);
 	model_mat = glm::translate(model_mat, pos / scale_vec);
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
+	shader->use();
 	shader->set_mat4("model_matrix", model_mat);
-	model.render(shader);
+	if (model.is_enable_ex_render()) {
+		model.render_ex(shader);
+	}
+	else {
+		model.render(shader);
+	}
 }
 
 void GameObject::render_shadow() {
-	shadow_shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);
 	model_mat = glm::translate(model_mat, pos / scale_vec);
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
+	shadow_shader->use();
 	shadow_shader->set_mat4("model_matrix", model_mat);
 	model.render_no_texture(shadow_shader);
 }
 
 void GameObject::render_outline() {
-	outline_shader->use();
 	glm::mat4 model_mat = glm::mat4(1.0);
 	model_mat = glm::translate(model_mat, pos / scale_vec);
 	model_mat *= glm::orientate4(rot);
 	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
+	outline_shader->use();
 	outline_shader->set_mat4("model_matrix", model_mat);
 	model.render_no_texture(outline_shader);
 }

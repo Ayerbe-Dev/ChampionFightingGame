@@ -16,6 +16,8 @@ void GameState::event_right_press(){}
 void GameState::event_start_press(){}
 void GameState::event_select_press(){}
 void GameState::event_back_press(){}
+void GameState::event_page_left_press(){}
+void GameState::event_page_right_press(){}
 void GameState::event_frame_pause_press(){}
 void GameState::event_frame_advance_press(){}
 void GameState::event_record_input_press(){}
@@ -250,6 +252,14 @@ void GameState::push_menu_start_event_function(std::function<void(MenuObject* me
 
 void GameState::push_menu_back_event_function(std::function<void(MenuObject* menu_object)> function) {
 	object_stack.top()->back_event_function = function;
+}
+
+void GameState::push_menu_page_left_event_function(std::function<void(MenuObject* menu_object)> function) {
+	object_stack.top()->page_left_event_function = function;
+}
+
+void GameState::push_menu_page_right_event_function(std::function<void(MenuObject* menu_object)> function) {
+	object_stack.top()->page_right_event_function = function;
 }
 
 void GameState::push_menu_any_event_function(std::function<void(MenuObject* menu_object)> function) {
@@ -514,7 +524,10 @@ void MenuActivityGroup::set_active_child(int idx) {
 }
 
 void MenuActivityGroup::inc_active_child(int idx) {
-	*active_index = std::max(0, *active_index + idx) % children.size();
+	if (*active_index + idx < 0) {
+		idx += children.size();
+	}
+	*active_index = (*active_index + idx) % children.size();
 }
 
 MenuObject::MenuObject() {
@@ -951,6 +964,14 @@ MenuObject& MenuObject::get_parent() {
 	return *parent;
 }
 
+bool MenuObject::has_child(std::string name) {
+	return child_map.contains(name);
+}
+
+bool MenuObject::has_texture(std::string name) {
+	return texture_map.contains(name);
+}
+
 void MenuObject::set_active_sibling(std::string name) {
 	if (ptr_var("Activity Group") == nullptr) return;
 	((MenuActivityGroup*)ptr_var("Activity Group"))->set_active_child(name);
@@ -1077,6 +1098,14 @@ void MenuObject::event_start_press() {
 
 void MenuObject::event_back_press() {
 	back_event_function(this);
+}
+
+void MenuObject::event_page_left_press() {
+	page_left_event_function(this);
+}
+
+void MenuObject::event_page_right_press() {
+	page_right_event_function(this);
 }
 
 void MenuObject::event_any_press() {

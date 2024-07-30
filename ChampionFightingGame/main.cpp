@@ -7,7 +7,7 @@
 #include <glew/glew.h>
 #include "GameStates.h"
 #include "ObjectManager.h"
-#include "ControllerManager.h"
+#include "InputManager.h"
 #include "EffectManager.h"
 #include "FontManager.h"
 #include "GameManager.h"
@@ -32,6 +32,7 @@ int main() {
 		printf("Error initializing SDL: %s\n", SDL_GetError());
 	}
 	SDL_GameControllerEventState(SDL_ENABLE);
+	SDL_StartTextInput();
 
 	//Initialize all of the singletons
 
@@ -40,9 +41,9 @@ int main() {
 	font_manager->load_face("FiraCode");
 	GameManager* game_manager = GameManager::get_instance();
 
-	ObjectManager* object_manager = ObjectManager::get_instance();
-	ControllerManager* controller_manager = ControllerManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
+	InputManager* input_manager = InputManager::get_instance();
+	ObjectManager* object_manager = ObjectManager::get_instance();
 	ParamAccessor* param_accessor = ParamAccessor::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
@@ -69,11 +70,11 @@ int main() {
 
 	//When we're done, kill all the things
 
-	object_manager->destroy_instance();
-	controller_manager->destroy_instance();
 	effect_manager->destroy_instance();
 	font_manager->destroy_instance();
 	game_manager->destroy_instance();
+	input_manager->destroy_instance();
+	object_manager->destroy_instance();
 	param_accessor->destroy_instance();
 	render_manager->destroy_instance();
 	resource_manager->destroy_instance();
@@ -83,6 +84,7 @@ int main() {
 	target_var_manager->destroy_instance();
 	thread_manager->destroy_instance();
 
+	SDL_StopTextInput();
 	SDL_Quit();
 
 	return 0;

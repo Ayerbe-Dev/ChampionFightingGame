@@ -515,12 +515,27 @@ std::string get_includes(unsigned int features) {
 	if (features & SHADER_FEAT_DIM_MUL) {
 		ret += "#define SHADER_FEAT_DIM_MUL\n";
 	}
-	if (features & SHADER_FEAT_HAS_BONES) {
-		ret += "#define SHADER_FEAT_HAS_BONES\n";
+	if (features & SHADER_FEAT_BONES) {
+		ret += "#define SHADER_FEAT_BONES\n";
 	}
 	if (features & SHADER_FEAT_COLORMOD) {
 		ret += "#define SHADER_FEAT_COLORMOD\n";
 	}
-	
+	if (features & SHADER_FEAT_DIFFUSE) {
+		ret += "#define SHADER_FEAT_DIFFUSE\n";
+	}
+	if (features & SHADER_FEAT_SPECULAR) {
+		ret += "#define SHADER_FEAT_SPECULAR\n";
+	}
+	if (features & SHADER_FEAT_POSITION) {
+		ret += "#define SHADER_FEAT_POSITION\n";
+	}
+	if (features & SHADER_FEAT_NORMAL) {
+		ret += "#define SHADER_FEAT_NORMAL\n";
+	}
+	if (features & SHADER_FEAT_SSAO) {
+		ret += "#define SHADER_FEAT_SSAO\n";
+	}
+
 	return ret;
 }

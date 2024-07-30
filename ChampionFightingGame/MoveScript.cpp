@@ -18,6 +18,7 @@ void MoveScript::activate() {
 		frames.pop();
 	}
 	conditions.clear();
+	if (table == nullptr) return;
 	table->set_activating_move_script(this);
 	move_script();
 }

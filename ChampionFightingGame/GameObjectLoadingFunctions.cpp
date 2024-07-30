@@ -23,7 +23,7 @@ void GameObject::load_used_model(std::string resource_dir, std::string texture_d
 void GameObject::init_shader() {
 	unsigned int flags = 0;
 	if (model.has_skeleton()) {
-		flags |= SHADER_FEAT_HAS_BONES;
+		flags |= SHADER_FEAT_BONES;
 	}
 	shader = shader_manager->get_shader("model", "model", "model", flags);
 	shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);

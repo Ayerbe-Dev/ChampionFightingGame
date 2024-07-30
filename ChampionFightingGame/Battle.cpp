@@ -41,12 +41,12 @@ void battle_main() {
 	font_manager->load_face("Fiend-Oblique");
 
 	Battle *battle = new Battle;
-
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
 
 	while (battle->looping) {
+		battle->fighter[0]->set_bone_ex_render("ShoulderR", true);
 		game_manager->frame_delay_check_fps();
 		render_manager->clear_screen();
 
@@ -1321,6 +1321,7 @@ void Battle::render_main() {
 
 void Battle::render_world() {
 	RenderManager* render_manager = RenderManager::get_instance();
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 	render_manager->execute_buffered_events();
 
 	glEnable(GL_CULL_FACE);
@@ -1334,7 +1335,6 @@ void Battle::render_world() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glCullFace(GL_FRONT);
-	stage.render_shadow(); 
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
@@ -1343,6 +1343,7 @@ void Battle::render_world() {
 			}
 		}
 	}
+	stage.render_shadow();
 	glCullFace(GL_BACK);
 
 	//COLOR PASS
@@ -1365,7 +1366,6 @@ void Battle::render_world() {
 			}
 		}
 	}
-	glEnable(GL_CULL_FACE); //For now though we just re-enable culling for the stage
 	stage.render();
 
 	//EFFECT RENDERING
@@ -1379,6 +1379,10 @@ void Battle::render_world() {
 	//invisible part of one particle overwrite the visible part of another.
 	EffectManager::get_instance()->render();
 	glDepthMask(GL_TRUE);
+
+	//SSAO PASS
+
+	render_manager->render_ssao();
 
 	//OUTLINE PASS
 
@@ -1411,28 +1415,17 @@ void Battle::render_world() {
 	glDepthMask(GL_TRUE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	
-	//SSAO PASS
-
-	render_manager->SSAO.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	render_manager->SSAO.render();
-	render_manager->SSAO_blur.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	render_manager->SSAO_blur.render();
-
 	//LIGHTING PASS
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
+	render_manager->g_buffer.bind_ex_uniforms({{"ssao", render_manager->blur.textures[0]}});
 	render_manager->g_buffer.render();
-#ifdef DEBUG
-	render_manager->gbuffer_texture.render();
-#endif
 	render_manager->outline.render_passthrough();
 
 	//HITBOX PASS
 
-	if (SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
+	if (game_context == GAME_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
 		render_manager->box_layer.use();
 		glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -1530,6 +1523,10 @@ void Battle::event_start_press() {
 		case (BATTLE_STATE_BATTLE): {
 			if (game_context != GAME_CONTEXT_ONLINE) {
 				GameManager::get_instance()->game_main[GAME_STATE_PAUSE_BATTLE]();
+				for (int i = 0; i < 2; i++) {
+					player[i]->poll_controller_fighter();
+					player[i]->controller.reset_buffer();
+				}
 			}
 		} break;
 		case (BATTLE_STATE_KO): {
@@ -1546,6 +1543,7 @@ void Battle::event_start_press() {
 }
 
 void Battle::event_frame_pause_press() {
+	if (internal_frame == 0) return;
 	if (game_context == GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE) {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		if (frame_pause) {

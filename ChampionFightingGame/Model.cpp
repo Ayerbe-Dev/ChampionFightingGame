@@ -39,7 +39,7 @@ void ModelData::load_model(std::string path) {
 	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
 
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
@@ -480,6 +480,19 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 	}
 }
 
+void ModelInstance::set_bone_ex_render(std::string bone_name, bool enabled) {
+	int id = get_bone_id(bone_name);
+	if (id == -1) return;
+	set_bone_ex_render_rec(id, enabled);
+	for (Bone& bone : bone_data) {
+		if (bone.enable_ex_render) {
+			enable_ex_render = true;
+			return;
+		}
+	}
+	enable_ex_render = false;
+}
+
 void ModelInstance::reset_bones() {
 	for (Bone& bone : bone_data) {
 		bone.anim_matrix = model->get_global_transform();
@@ -590,12 +603,40 @@ bool ModelInstance::is_loaded() const {
 	return model != nullptr && model->is_loaded();
 }
 
+bool ModelInstance::is_enable_ex_render() const {
+	return enable_ex_render || !model->has_skeleton();
+}
+
 void ModelInstance::render(Shader* shader) {
 	shader->set_float("alpha", (float)alpha / 255.0f);
 	shader->set_active_uniform_location("bone_matrix[0]");
 	glCullFace(GL_BACK);
 	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
 		shader->set_active_mat4(bone_data[i].final_matrix, i);
+	}
+	shader->set_active_uniform_location("ex_render_enabled[0]");
+	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
+		shader->set_active_bool(bone_data[i].enable_ex_render, i);
+	}
+
+	for (const auto& mesh : meshes) {
+		if (mesh.visible) {
+			mesh.bind_materials();
+			mesh.render();
+		}
+	}
+}
+
+void ModelInstance::render_ex(Shader* shader) {
+	shader->set_float("alpha", (float)alpha / 255.0f);
+	shader->set_active_uniform_location("bone_matrix[0]");
+	glCullFace(GL_BACK);
+	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
+		shader->set_active_mat4(bone_data[i].final_matrix, i);
+	}
+	shader->set_active_uniform_location("ex_render_enabled[0]");
+	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
+		shader->set_active_bool(bone_data[i].enable_ex_render, i);
 	}
 
 	for (const auto& mesh : meshes) {
@@ -632,6 +673,16 @@ void ModelInstance::process_skeleton_instance() {
 			}
 		}
 	}
+}
+
+void ModelInstance::set_bone_ex_render_rec(int bone_id, bool enabled) {
+	bone_data[bone_id].enable_ex_render = enabled;
+	for (int i = bone_id, max = bone_data.size(); i < max; i++) {
+		if (bone_data[i].parent_id == bone_id) {
+			set_bone_ex_render_rec(i, enabled);
+		}
+	}
+
 }
 
 Mesh::Mesh() {

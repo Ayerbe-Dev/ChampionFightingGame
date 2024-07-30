@@ -641,6 +641,8 @@ void CSS::render_main() {
 	glEnable(GL_CULL_FACE);
 	stage_demo.render();
 
+	render_manager->render_ssao();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_menu_object("Background");
 	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.34, render_manager->res_width * 0.6, render_manager->res_height * 0.6);

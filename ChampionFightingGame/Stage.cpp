@@ -36,7 +36,9 @@ void Stage::load_stage(StageInfo stage_info, ObjectManager *object_manager) {
 		return;
 	}
 
-	stream >> stage_bound >> default_music_kind;
+	RenderManager* render_manager = RenderManager::get_instance();
+	stream >> stage_bound >> default_music_kind >> render_manager->ambient_col.r 
+		>> render_manager->ambient_col.g >> render_manager->ambient_col.b;
 	float distance = get_global_param_float(PARAM_FIGHTER, "spawn_distance") / 2.0;
 	start_pos.x = -distance;
 	start_pos.y = distance;

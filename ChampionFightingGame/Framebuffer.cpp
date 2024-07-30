@@ -100,8 +100,8 @@ void Framebuffer::add_read_texture(GLenum internal_format, GLenum format, GLenum
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, source);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 	textures.push_back(texture);
@@ -111,6 +111,10 @@ void Framebuffer::add_read_texture(GLenum internal_format, GLenum format, GLenum
 void Framebuffer::add_read_texture(GLuint texture, int active_index) {
 	textures.push_back(texture);
 	active_indices.push_back(active_index);
+}
+
+void Framebuffer::add_uniform(std::string name, GLuint texture) {
+	uniforms[name] = texture;
 }
 
 void Framebuffer::destroy() {
@@ -124,10 +128,32 @@ void Framebuffer::use() {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 }
 
+void Framebuffer::set_feats(unsigned int remove_feats, unsigned int add_feats) {
+	shader = ShaderManager::get_instance()->get_shader_switch_features(shader, remove_feats, add_feats);
+	RenderManager::get_instance()->update_shader_lights();
+	bind_uniforms();
+}
+
 void Framebuffer::bind_textures() {
 	for (int i = 0, max = textures.size(); i < max; i++) {
 		glActiveTexture(GL_TEXTURE0 + active_indices[i]);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
+	}
+}
+
+void Framebuffer::bind_uniforms() {
+	shader->use();
+	for (const auto& u : uniforms) {
+		shader->set_int(u.first, u.second);
+	}
+}
+
+void Framebuffer::bind_ex_uniforms(std::vector<std::pair<std::string, GLuint>> ex_textures) {
+	shader->use();
+	for (size_t i = 0, max = ex_textures.size(); i < max; i++) {
+		shader->set_int(ex_textures[i].first, i + textures.size());
+		glActiveTexture(GL_TEXTURE0 + textures.size());
+		glBindTexture(GL_TEXTURE_2D, ex_textures[i].second);
 	}
 }
 

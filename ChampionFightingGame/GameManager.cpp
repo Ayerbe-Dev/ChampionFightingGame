@@ -109,6 +109,12 @@ void GameManager::process_game_state_events() {
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
 			event_back_press();
 		}
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_PAGE_LEFT)) {
+			event_page_left_press();
+		}
+		if (player[i]->controller.check_button_trigger(BUTTON_MENU_PAGE_RIGHT)) {
+			event_page_right_press();
+		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
 			event_frame_pause_press();
 		}
@@ -266,6 +272,14 @@ void GameManager::event_select_press() {
 
 void GameManager::event_back_press() {
 	(get_game_state()->*(&GameState::event_back_press))();
+}
+
+void GameManager::event_page_left_press() {
+	(get_game_state()->*(&GameState::event_page_left_press))();
+}
+
+void GameManager::event_page_right_press() {
+	(get_game_state()->*(&GameState::event_page_right_press))();
 }
 
 void GameManager::event_frame_pause_press() {

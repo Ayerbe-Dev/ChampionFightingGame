@@ -21,4 +21,6 @@ public:
 	void event_down_press();
 	void event_left_press();
 	void event_right_press();
+	void event_page_left_press();
+	void event_page_right_press();
 };

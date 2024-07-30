@@ -13,6 +13,7 @@ class GameTexture {
 public:
     GameTexture();
     GameTexture(std::string path);
+    GameTexture(GLuint texture, int width = -1, int height = -1);
     GameTexture(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs);
     GameTexture(const GameTexture& that);
 

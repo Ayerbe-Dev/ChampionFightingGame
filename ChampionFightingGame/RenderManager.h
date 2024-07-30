@@ -16,8 +16,6 @@
 
 #define MAX_LIGHT_SOURCES 10
 
-
-
 class RenderManager {
 public:
 	RenderManager(RenderManager& other) = delete;
@@ -43,6 +41,10 @@ public:
 	void buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffer_arg = ScriptArg());
 	void execute_buffered_events();
 
+	void render_ssao();
+	void render_debug_textures();
+	void copy_texture(GLuint source, GLuint dest);
+
 	void update_screen();
 	void clear_screen();
 
@@ -53,6 +55,7 @@ public:
 	SDL_GLContext sdl_context;
 
 	Camera camera;
+	glm::vec3 ambient_col;
 	std::vector<Light*>lights;
 
 	std::vector<std::function<void(ScriptArg)>> buffered_events;
@@ -65,9 +68,9 @@ public:
 	Framebuffer box_layer;
 	Framebuffer g_buffer;
 	Framebuffer SSAO;
-	Framebuffer SSAO_blur;
-
-	GameTexture gbuffer_texture;
+	Framebuffer blur;
+	
+	std::vector<GameTexture> debug_textures;
 	GameTexture fade_texture;
 
 	std::vector<glm::vec3> ssao_kernel;
@@ -78,6 +81,7 @@ public:
 
 	int window_width;
 	int window_height;
+	bool ssao_enabled;
 
 	static RenderManager* get_instance();
 	void destroy_instance();

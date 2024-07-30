@@ -44,6 +44,10 @@ GameTexture::GameTexture(std::string path) {
 	init(path);
 }
 
+GameTexture::GameTexture(GLuint texture, int width, int height) {
+	init(texture, width, height);
+}
+
 GameTexture::GameTexture(Font &font, std::string text, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	init(font, text, rgba, border_rgbs);
 }

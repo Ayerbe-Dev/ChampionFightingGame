@@ -23,7 +23,7 @@ void GameObject::stop_cinematic_sequence() {
 		render_manager->dim_lights(1.0, nullptr);
 		unsigned int flags = SHADER_FEAT_DIM_MUL;
 		if (model.has_skeleton()) {
-			flags |= SHADER_FEAT_HAS_BONES;
+			flags |= SHADER_FEAT_BONES;
 		}
 		shader = shader_manager->get_shader("model", "model", "model", flags);
 	}

@@ -6,8 +6,13 @@
 #include <vector>
 
 const int SHADER_FEAT_DIM_MUL = 1;
-const int SHADER_FEAT_HAS_BONES = 2;
+const int SHADER_FEAT_BONES = 2;
 const int SHADER_FEAT_COLORMOD = 4;
+const int SHADER_FEAT_DIFFUSE = 8;
+const int SHADER_FEAT_SPECULAR = 16;
+const int SHADER_FEAT_POSITION = 32;
+const int SHADER_FEAT_NORMAL = 64;
+const int SHADER_FEAT_SSAO = 128;
 
 class Shader {
 public:

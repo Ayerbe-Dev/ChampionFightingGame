@@ -8,9 +8,6 @@ layout (location = 4) in vec3 v_bitangent;
 layout (location = 5) in vec4 v_weights;
 layout (location = 6) in ivec4 v_boneids;
 
-const int MAX_BONES = 200;
-const int MAX_BONE_INFLUENCE = 4;
-
 out VS_OUT {
     vec3 Normal;
 } vs_out;
@@ -22,10 +19,14 @@ layout(std140) uniform CameraMatrix {
 layout(std140) uniform ViewMatrix {
     mat4 view_matrix;
 };
+#ifdef SHADER_FEAT_BONES
+const int MAX_BONES = 200;
+const int MAX_BONE_INFLUENCE = 4;
 uniform mat4 bone_matrix[MAX_BONES];
+#endif
 
 void main() {
-#ifdef SHADER_FEAT_HAS_BONES
+#ifdef SHADER_FEAT_BONES
     mat4 bone_transform = mat4(0.0);
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         bone_transform += bone_matrix[v_boneids[i]] * v_weights[i];

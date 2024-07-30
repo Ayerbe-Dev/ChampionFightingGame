@@ -93,6 +93,9 @@ public:
     std::string get_name();
     MenuObject& get_parent();
 
+    bool has_child(std::string name);
+    bool has_texture(std::string name);
+
     void set_active_sibling(std::string name);
     void set_active_sibling(int idx);
 
@@ -123,6 +126,8 @@ public:
     void event_select_press();
     void event_start_press();
     void event_back_press();
+    void event_page_left_press();
+    void event_page_right_press();
     void event_any_press();
     void event_process();
     void event_on_selected();
@@ -164,6 +169,8 @@ protected:
     std::function<void(MenuObject* menu_object)> select_event_function;
     std::function<void(MenuObject* menu_object)> start_event_function;
     std::function<void(MenuObject* menu_object)> back_event_function;
+    std::function<void(MenuObject* menu_object)> page_left_event_function;
+    std::function<void(MenuObject* menu_object)> page_right_event_function;
     std::function<void(MenuObject* menu_object)> any_event_function;
 
     std::function<void(MenuObject* menu_object)> process_function;
@@ -227,6 +234,8 @@ public:
     void push_menu_select_event_function(std::function<void(MenuObject* menu_object)> function);
     void push_menu_start_event_function(std::function<void(MenuObject* menu_object)> function);
     void push_menu_back_event_function(std::function<void(MenuObject* menu_object)> function);
+    void push_menu_page_left_event_function(std::function<void(MenuObject* menu_object)> function);
+    void push_menu_page_right_event_function(std::function<void(MenuObject* menu_object)> function);
     void push_menu_any_event_function(std::function<void(MenuObject* menu_object)> function);
     void push_menu_process_function(std::function<void(MenuObject* menu_object)> function);
     void push_menu_pre_render_function(std::function<void(MenuObject* menu_object)> function);
@@ -243,6 +252,8 @@ public:
     virtual void event_select_press();
     virtual void event_start_press();
     virtual void event_back_press();
+    virtual void event_page_left_press();
+    virtual void event_page_right_press();
     virtual void event_frame_pause_press();
     virtual void event_frame_advance_press();
     virtual void event_record_input_press();

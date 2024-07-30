@@ -295,7 +295,7 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
-    <ClCompile Include="ControllerManager.cpp">
+    <ClCompile Include="InputManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="PauseBattle.cpp">
@@ -1041,7 +1041,7 @@
     <ClInclude Include="ThreadManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
-    <ClInclude Include="ControllerManager.h">
+    <ClInclude Include="InputManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
@@ -1980,9 +1980,6 @@
       <Filter>3. resource\chara\eric\cam_anims</Filter>
     </None>
     <None Include="resource\shaders\fragment_gbuffer.glsl">
-      <Filter>3. resource\shaders</Filter>
-    </None>
-    <None Include="resource\shaders\vertex_gbuffer.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\geometry_effect.glsl">

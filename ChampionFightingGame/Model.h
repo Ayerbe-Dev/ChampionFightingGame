@@ -153,7 +153,6 @@ public:
 	bool is_enable_ex_render() const;
 
 	void render(Shader* shader);
-	void render_ex(Shader* shader);
 	void render_no_texture(Shader* shader);
 
 	std::vector<Material> materials;

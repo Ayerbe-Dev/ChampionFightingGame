@@ -13,6 +13,7 @@
 #include <mutex>
 #include "GameTexture.h"
 #include "ScriptFunc.h"
+#include "CircularBuffer.h"
 
 #define MAX_LIGHT_SOURCES 10
 
@@ -42,8 +43,8 @@ public:
 	void execute_buffered_events();
 
 	void render_ssao();
+	void render_trail();
 	void render_debug_textures();
-	void copy_texture(GLuint source, GLuint dest);
 
 	void update_screen();
 	void clear_screen();
@@ -69,9 +70,11 @@ public:
 	Framebuffer g_buffer;
 	Framebuffer SSAO;
 	Framebuffer blur;
+	Framebuffer blend;
 	
 	std::vector<GameTexture> debug_textures;
 	GameTexture fade_texture;
+	CircularBuffer<GLint> ex_trails;
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;

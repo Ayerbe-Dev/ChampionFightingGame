@@ -65,6 +65,19 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+/// <summary>
+/// Creates a new texture whose ID will be written to when a shader pipeline runs while this framebuffer
+/// is active. 
+/// </summary>
+/// <param name="internal_format"></param>
+/// <param name="format"></param>
+/// <param name="type"></param>
+/// <param name="clamp"></param>
+/// <param name="width"></param>
+/// <param name="height"></param>
+/// <param name="attachment_point"></param>
+/// <param name="active_index"></param>
+/// <param name="resize"></param>
 void Framebuffer::add_write_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, GLenum attachment_point, int active_index, bool resize) {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	GLuint texture;
@@ -76,12 +89,12 @@ void Framebuffer::add_write_texture(GLenum internal_format, GLenum format, GLenu
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point, GL_TEXTURE_2D, texture, 0);
-	textures.push_back(texture);
-	attachment_points.push_back(attachment_point);
 	if (resize) {
 		resize_textures.push_back(TextureInfo(texture, internal_format, format, type));
 	}
+	textures.push_back(texture);
 	active_indices.push_back(active_index);
+	attachment_points.push_back(attachment_point);
 	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
@@ -91,6 +104,13 @@ void Framebuffer::add_write_texture(GLuint texture, GLenum attachment_point, int
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point, GL_TEXTURE_2D, texture, 0);
 	textures.push_back(texture);
 	active_indices.push_back(active_index);
+	attachment_points.push_back(attachment_point);
+	glDrawBuffers(attachment_points.size(), attachment_points.data());
+}
+
+void Framebuffer::add_write_texture(GLenum attachment_point) {
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	attachment_points.push_back(attachment_point);
 	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
@@ -148,11 +168,17 @@ void Framebuffer::bind_uniforms() {
 	}
 }
 
+void Framebuffer::bind_ex_write_texture(GLuint texture, GLenum attachment_point, int active_index) {
+	glActiveTexture(active_index);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_point, GL_TEXTURE_2D, texture, 0);
+}
+
 void Framebuffer::bind_ex_uniforms(std::vector<std::pair<std::string, GLuint>> ex_textures) {
 	shader->use();
 	for (size_t i = 0, max = ex_textures.size(); i < max; i++) {
 		shader->set_int(ex_textures[i].first, i + textures.size());
-		glActiveTexture(GL_TEXTURE0 + textures.size());
+		glActiveTexture(GL_TEXTURE0 + i + textures.size());
 		glBindTexture(GL_TEXTURE_2D, ex_textures[i].second);
 	}
 }

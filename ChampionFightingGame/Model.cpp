@@ -627,26 +627,6 @@ void ModelInstance::render(Shader* shader) {
 	}
 }
 
-void ModelInstance::render_ex(Shader* shader) {
-	shader->set_float("alpha", (float)alpha / 255.0f);
-	shader->set_active_uniform_location("bone_matrix[0]");
-	glCullFace(GL_BACK);
-	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-		shader->set_active_mat4(bone_data[i].final_matrix, i);
-	}
-	shader->set_active_uniform_location("ex_render_enabled[0]");
-	for (size_t i = 0, max = bone_data.size(); i < max; i++) {
-		shader->set_active_bool(bone_data[i].enable_ex_render, i);
-	}
-
-	for (const auto& mesh : meshes) {
-		if (mesh.visible) {
-			mesh.bind_materials();
-			mesh.render();
-		}
-	}
-}
-
 void ModelInstance::render_no_texture(Shader* shader) {
 	shader->set_active_uniform_location("bone_matrix[0]");
 	glCullFace(GL_BACK);

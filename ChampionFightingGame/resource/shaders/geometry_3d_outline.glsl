@@ -10,7 +10,7 @@ vec4 expand(vec4 position, vec3 normal) {
     float magnitude = 0.2;
     vec3 direction = normal * magnitude; 
     return position + vec4(direction, 0.0);
-} 
+}
 
 void main() {
     for (int i = 0, max = gl_in.length(); i < max; i++) {

@@ -45,8 +45,8 @@ void battle_main() {
 	cotr_imgui_init();
 #endif
 
+	battle->fighter[0]->set_bone_ex_render("ClavicleR", true);
 	while (battle->looping) {
-		battle->fighter[0]->set_bone_ex_render("ShoulderR", true);
 		game_manager->frame_delay_check_fps();
 		render_manager->clear_screen();
 
@@ -1349,6 +1349,10 @@ void Battle::render_world() {
 	//COLOR PASS
 
 	render_manager->g_buffer.use();
+	if (!frame_pause || frame_advance) {
+		render_manager->ex_trails.cycle();
+	}
+	render_manager->g_buffer.bind_ex_write_texture(render_manager->ex_trails.newest(), GL_COLOR_ATTACHMENT4, 4);
 
 	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1383,6 +1387,12 @@ void Battle::render_world() {
 	//SSAO PASS
 
 	render_manager->render_ssao();
+
+	//TRAIL PASS
+
+	if (!frame_pause || frame_advance) {
+		render_manager->render_trail();
+	}
 
 	//OUTLINE PASS
 
@@ -1422,6 +1432,7 @@ void Battle::render_world() {
 	render_manager->g_buffer.bind_ex_uniforms({{"ssao", render_manager->blur.textures[0]}});
 	render_manager->g_buffer.render();
 	render_manager->outline.render_passthrough();
+	render_manager->blend.render_passthrough();
 
 	//HITBOX PASS
 

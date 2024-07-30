@@ -2021,6 +2021,9 @@
     <None Include="resource\shaders\fragment_2d_outline.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\fragment_blend.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="resource\fonts\Fiend-Oblique.ttf">

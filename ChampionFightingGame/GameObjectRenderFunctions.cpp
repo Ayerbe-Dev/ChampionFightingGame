@@ -25,12 +25,7 @@ void GameObject::render() {
 	model_mat *= extra_mat;
 	shader->use();
 	shader->set_mat4("model_matrix", model_mat);
-	if (model.is_enable_ex_render()) {
-		model.render_ex(shader);
-	}
-	else {
-		model.render(shader);
-	}
+	model.render(shader);
 }
 
 void GameObject::render_shadow() {

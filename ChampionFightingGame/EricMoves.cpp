@@ -2156,10 +2156,10 @@ void Eric::load_cpu_move_info() {
 	cpu.add_action("crouch_mk", "crouch_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
 	cpu.add_action("crouch_hk", "crouch_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
 
-	cpu.add_action("jump_lp", "jump_lp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_lp", "jump_lp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_RISING }, {}, 0.0f, false);
 	cpu.add_action("jump_mp", "jump_mp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
 	cpu.add_action("jump_hp", "jump_hp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
 	cpu.add_action("jump_lk", "jump_lk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
-	cpu.add_action("jump_mk", "jump_mk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_mk", "jump_mk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_CROSSUP }, {}, 0.0f, false);
 	cpu.add_action("jump_hk", "jump_hk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
 }

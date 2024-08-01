@@ -101,6 +101,7 @@ RenderManager::RenderManager() {
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
+	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT5); //Position EX
 
 	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
@@ -111,10 +112,12 @@ RenderManager::RenderManager() {
 	blur.init("passthrough", "blur", "", 0, res_width, res_height);
 	blur.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 
-	blend.init("passthrough", "blend", "", 0, res_width, res_height);
+	blend.init("blend", "blend", "blend", 0, res_width, res_height);
 	blend.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
-	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 1, nullptr); //New
-	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 2, nullptr); //Old
+	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 1, nullptr); //New Color
+	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 2, nullptr); //Old Color
+	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 3, nullptr); //New Position
+	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 4, nullptr); //Old Position
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	box_layer.add_uniform("f_texture", 0);
@@ -132,12 +135,11 @@ RenderManager::RenderManager() {
 	SSAO.add_uniform("g_position", 2);
 	SSAO.add_uniform("g_normal", 3);
 
-//	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
-//	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
-//	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
-//	debug_textures.push_back(GameTexture(blur.textures[0]));
-	debug_textures.push_back(GameTexture(blend.textures[1]));
-	debug_textures.push_back(GameTexture(blend.textures[2]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
+	debug_textures.push_back(GameTexture(blur.textures[0]));
+	debug_textures.push_back(GameTexture(blend.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
 		debug_textures[i].set_scale(0.2);
 		debug_textures[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
@@ -166,9 +168,8 @@ RenderManager::RenderManager() {
 	ambient_col = glm::vec3(1.0);
 
 	ex_trails.resize(2);
-	for (int i = 0; i < 2; i++) {
-		ex_trails.insert(blend.textures[i + 1]);
-	}
+	ex_trails.insert({ blend.textures[1], blend.textures[3] });
+	ex_trails.insert({ blend.textures[2], blend.textures[4] });
 }
 
 void RenderManager::add_light(Light *light, int target) {
@@ -366,8 +367,10 @@ void RenderManager::render_trail() {
 	blend.use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	blend.bind_ex_uniforms({
-		{"newest", ex_trails.newest()},
-		{"oldest", ex_trails.oldest()}
+		{"new_col", ex_trails.newest().first},
+		{"old_col", ex_trails.oldest().first},
+		{"new_pos", ex_trails.newest().second},
+		{"old_pos", ex_trails.oldest().second}
 	});
 	blend.render();
 }

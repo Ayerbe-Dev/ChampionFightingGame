@@ -193,6 +193,87 @@ float get_rect_intersection(GameRect& RectA, GameRect& RectB) {
 	}
 }
 
+float get_rect_intersection(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b) {
+	float AB = c1a.y;
+	float AT = c2a.y;
+	float BB = c1b.y;
+	float BT = c2b.y;
+	if (AB < AT) {
+		if (BB < BT) {
+			if (AT < BB || BT < AB) return -1.0f;
+
+		}
+		else {
+			if (AT < BT || BB < AB) return -1.0f;
+		}
+	}
+	else {
+		if (BB < BT) {
+			if (AB < BB || BT < AT) return -1.0f;
+		}
+		else {
+			if (AB < BT || BB < AT) return -1.0f;
+		}
+	}
+	float AL = c1a.x;
+	float AR = c2a.x;
+	float BL = c1b.x;
+	float BR = c2b.x;
+
+	if (AL < AR) {
+		if (BL < BR) {
+			if (AL < BL) {
+				if (AR < BL) return -1.0f;
+				if (AR < BR) return AR - BL;
+				return std::min(AR - BL, BR - AL);
+			}
+			else {
+				if (BR < AL) return -1.0f;
+				if (BR < AR) return BR - AL;
+				return std::min(BR - AL, AR - BL);
+			}
+		}
+		else {
+			if (AL < BR) {
+				if (AR < BR) return -1.0f;
+				if (AR < BL) return AR - BR;
+				return std::min(AR - BR, BL - AL);
+			}
+			else {
+				if (BL < AL) return -1.0f;
+				if (BL < AR) return BL - AL;
+				return std::min(BL - AL, AR - BR);
+			}
+		}
+	}
+	else {
+		if (BL < BR) {
+			if (AR < BL) {
+				if (AL < BL) return -1.0f;
+				if (AL < BR) return AL - BL;
+				return std::min(AL - BL, BR - AR);
+			}
+			else {
+				if (BR < AR) return -1.0f;
+				if (BR < AL) return BR - AR;
+				return std::min(BR - AR, AL - BL);
+			}
+		}
+		else {
+			if (AR < BR) {
+				if (AL < BR) return -1.0f;
+				if (AL < BL) return AL - BR;
+				return std::min(AL - BR, BL - AR);
+			}
+			else {
+				if (BL < AR) return -1.0f;
+				if (BL < AL) return BL - AR;
+				return std::min(BL - AR, AL - BR);
+			}
+		}
+	}
+}
+
 bool is_rect_collide(GameRect &RectA, GameRect &RectB) {
 	return 
 		((RectA.corners[0].x >= RectB.corners[0].x && RectA.corners[0].x <= RectB.corners[2].x) 

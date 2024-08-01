@@ -55,10 +55,14 @@ void FighterCPU::init(Fighter* owner, Fighter* opponent) {
 	add_action("parry_start_low", "parry_start_low", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT | BUTTON_MK_BIT,
 		2, { 1, 2, 3 }, {}, {}, 0.0f, false);
 	add_action("jump_squat", "jump_squat", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, 0, 8, { 7, 8, 9 }, { CPU_TAG_EVADE_ATK }, { "jump_n", "jump_f", "jump_b" }, 0.0f, false);
-	add_action("jump_n", "jump_n", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 8, { 8 }, { }, { "fall" }, 0.0f, false);
-	add_action("jump_f", "jump_f", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 9, { 9 }, { }, { "fall" }, 0.0f, false);
-	add_action("jump_b", "jump_b", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 7, { 7 }, { }, { "fall" }, 0.0f, false);
-	add_action("fall", "fall", {}, {}, true);
+	add_action("jump_n", "jump_n", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 8, { 8 }, { }, { "fall" }, 0.0f, false)
+		.add_movement_info(0.0f, 0.0f, 0.0f, owner->get_param_float("jump_y_init_speed"), owner->get_param_float("gravity"), owner->get_param_float("max_fall_speed"));
+	add_action("jump_f", "jump_f", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 9, { 9 }, { }, { "fall" }, 0.0f, false)
+		.add_movement_info(owner->get_param_float("jump_x_speed"), 0.0f, 0.0f, owner->get_param_float("jump_y_init_speed"), owner->get_param_float("gravity"), owner->get_param_float("max_fall_speed"));
+	add_action("jump_b", "jump_b", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, 0, 7, { 7 }, { }, { "fall" }, 0.0f, false)
+		.add_movement_info(-owner->get_param_float("jump_x_speed"), 0.0f, 0.0f, owner->get_param_float("jump_y_init_speed"), owner->get_param_float("gravity"), owner->get_param_float("max_fall_speed"));
+	add_action("fall", "fall", {}, {}, true)
+		.add_movement_info(0.0f, 0.0f, 0.0f, 0.0f, owner->get_param_float("gravity"), owner->get_param_float("max_fall_speed"));
 	add_action("landing", "landing", {}, {}, false);
 }
 
@@ -338,8 +342,7 @@ void FighterCPU::process_neutral() {
 		default:
 		case CPU_DECISION_MODE_NONE: {
 			if (!curr_decision.frames) {
-//				int next_decision_mode = rng(CPU_DECISION_MODE_NONE, CPU_DECISION_MODE_JUMP_BUTTON);
-				int next_decision_mode = CPU_DECISION_MODE_JUMP_BUTTON;
+				int next_decision_mode = rng(CPU_DECISION_MODE_NONE, CPU_DECISION_MODE_JUMP_BUTTON);
 				curr_decision = CPUDecision((CPUDecisionMode)next_decision_mode, this);
 			}
 		} break;
@@ -492,50 +495,71 @@ void FighterCPU::process_neutral() {
 			}
 		} break;
 		case CPU_DECISION_MODE_JUMP_BUTTON: {
-			if (present_state.context == FIGHTER_CONTEXT_GROUND) {
-				if (input_frames) return;
+			if (present_state.context == FIGHTER_CONTEXT_GROUND 
+				&& owner->status_kind != FIGHTER_STATUS_JUMPSQUAT) {
+
 				int fh_time = owner->calc_airtime(owner->get_param_float("jump_y_init_speed"));
 				int sh_time = owner->calc_airtime(owner->get_param_float("jump_y_init_speed_s"));
 				float f_speed = owner->get_param_float("jump_x_speed");
-				float fh_range_f = f_speed * fh_time * present_state.facing_dir;
-				float sh_range_f = f_speed * sh_time * present_state.facing_dir;
-				int movement_error = rng(-movement_error_margin, movement_error_margin);
-				glm::vec2 opp_sim_pos_fh = glm::vec2(curr_reaction_time + 3 + fh_time + movement_error) * opp_state.speed
-					+ opp_state.base_pos;
-				glm::vec2 opp_sim_pos_sh = glm::vec2(curr_reaction_time + 3 + sh_time + movement_error) * opp_state.speed
-					+ opp_state.base_pos;
-				float fh_jump_dist_n = abs(opp_sim_pos_fh.x - present_state.pos.x);
-				float fh_jump_dist_f = abs(opp_sim_pos_fh.x - (present_state.pos.x + fh_range_f));
-				float sh_jump_dist_n = abs(opp_sim_pos_sh.x - present_state.pos.x);
-				float sh_jump_dist_f = abs(opp_sim_pos_sh.x - (present_state.pos.x + sh_range_f));
-				owner->player->manual_seq.reset_idx();
-				if (sh_jump_dist_n <= 250.0f) {
-					if (sh_jump_dist_n <= fh_jump_dist_n) {
-						for (int i = 0; i < 2; i++) {
-							add_input(8, 0);
+
+				float sim_pos_x_fh = (fh_time * f_speed * present_state.facing_dir) + present_state.pos.x;
+				float sim_pos_x_sh = (sh_time * f_speed * present_state.facing_dir) + present_state.pos.x;
+
+				glm::vec2 target_dist_x = curr_decision.target_dist_x + glm::vec2(present_state.pos.x);
+				switch (curr_decision.misc) {
+					case CPU_JUMP_KIND_SHORTHOP_FORWARD: {
+						target_dist_x = curr_decision.target_dist_x + glm::vec2(sim_pos_x_sh);
+						if (is_between(target_dist_x[0], opp_state.pos.x, target_dist_x[1])) {
+							owner->player->manual_seq.reset_idx();
+							for (int i = 0; i < 2; i++) {
+								add_input(9, 0);
+							}
+							for (int i = 0; i < 3; i++) {
+								add_input(6, 0);
+							}
+							owner->player->manual_seq.reset_idx();
+							return;
 						}
-						for (int i = 0; i < 4; i++) {
-							add_input(5, 0);
+					} break;
+					case CPU_JUMP_KIND_FULLHOP_FORWARD: {
+						target_dist_x = curr_decision.target_dist_x + glm::vec2(sim_pos_x_fh);
+						if (is_between(target_dist_x[0], opp_state.pos.x, target_dist_x[1])) {
+							owner->player->manual_seq.reset_idx();
+							for (int i = 0; i < 5; i++) {
+								add_input(9, 0);
+							}
+							owner->player->manual_seq.reset_idx();
+							return;
 						}
-					}
-					else {
-						for (int i = 0; i < 5; i++) {
-							add_input(8, 0);
+					} break;
+					case CPU_JUMP_KIND_NEUTRAL: {
+						if (is_between(target_dist_x[0], opp_state.pos.x, target_dist_x[1])) {
+							owner->player->manual_seq.reset_idx();
+							for (int i = 0; i < 5; i++) {
+								add_input(8, 0);
+							}
+							owner->player->manual_seq.reset_idx();
+							return;
 						}
-					}
+//						if (is_between(target_dist_x[0], opp_state.pos.x, target_dist_x[1])) {
+//							owner->player->manual_seq.reset_idx();
+//							for (int i = 0; i < 2; i++) {
+//								add_input(8, 0);
+//							}
+//							for (int i = 0; i < 3; i++) {
+//								add_input(5, 0);
+//							}
+//							owner->player->manual_seq.reset_idx();
+//							return;
+//						}
+					} break;
 				}
-				else if (fh_jump_dist_f < sh_jump_dist_f) {
-					for (int i = 0; i < 5; i++) {
-						add_input(9, 0);
-					}
+				owner->player->manual_seq.reset_idx();
+				if (opp_state.pos.x < std::min(target_dist_x[0], target_dist_x[1]) == (opp_state.facing_dir == 1.0f)) {
+					add_input(6, 0);
 				}
 				else {
-					for (int i = 0; i < 2; i++) {
-						add_input(9, 0);
-					}
-					for (int i = 0; i < 4; i++) {
-						add_input(6, 0);
-					}
+					add_input(4, 0);
 				}
 				owner->player->manual_seq.reset_idx();
 			}
@@ -543,7 +567,7 @@ void FighterCPU::process_neutral() {
 				CPUFighterState opp_present_state = opponent_states.newest();
 				int sim_hit_frame = get_hit_frame(curr_decision.action, 0, present_state.facing_dir,
 					present_state.pos, *opp_present_state.action, opp_present_state.frame, 
-					opp_present_state.facing_dir, opp_present_state.base_pos, true
+					opp_present_state.facing_dir, opp_present_state.pos, true
 				);
 				if (sim_hit_frame != -1) {
 					execute_action(curr_decision.action);
@@ -761,6 +785,34 @@ int FighterCPU::get_hit_frame(CPUAction atk_action, int atk_frame, float atk_fac
 	FighterCPU *attacker = this;
 	FighterCPU *defender = &opponent->cpu;
 	if (!this_atk) std::swap(attacker, defender);
+	if (atk_action.fighter_context == FIGHTER_CONTEXT_AIR) {
+		if (atk_action.x_speed == 0.0f) {
+			atk_action.x_speed = attacker->owner->object_float[BATTLE_OBJECT_FLOAT_X_SPEED] * attacker->owner->facing_dir;
+		}
+		if (atk_action.y_speed == 0.0f) {
+			atk_action.y_speed = attacker->owner->object_float[BATTLE_OBJECT_FLOAT_Y_SPEED];
+		}
+		if (atk_action.y_accel == 0.0f) {
+			atk_action.y_accel = attacker->owner->object_float[FIGHTER_FLOAT_CURRENT_GRAVITY];
+		}
+		if (atk_action.y_max == 0.0f) {
+			atk_action.y_max = attacker->owner->object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX];
+		}
+	}
+	if (def_action.fighter_context == FIGHTER_CONTEXT_AIR) {
+		if (def_action.x_speed == 0.0f) {
+			def_action.x_speed = defender->owner->object_float[BATTLE_OBJECT_FLOAT_X_SPEED] * defender->owner->facing_dir;
+		}
+		if (def_action.y_speed == 0.0f) {
+			def_action.y_speed = defender->owner->object_float[BATTLE_OBJECT_FLOAT_Y_SPEED];
+		}
+		if (def_action.y_accel == 0.0f) {
+			def_action.y_accel = defender->owner->object_float[FIGHTER_FLOAT_CURRENT_GRAVITY];
+		}
+		if (def_action.y_max == 0.0f) {
+			def_action.y_max = defender->owner->object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX];
+		}
+	}
 	glm::vec2 atk_speed_accel = glm::vec2(atk_action.x_speed * atk_facing_dir, atk_action.y_speed);
 	glm::vec2 atk_speed_total = atk_speed_accel;
 	glm::vec2 def_speed_accel = glm::vec2(def_action.x_speed * def_facing_dir, def_action.y_speed);
@@ -1427,11 +1479,15 @@ CPUFrameData::CPUFrameData(float pos_offset, std::map<int, CPUHitbox> hitboxes,
 CPUDecision::CPUDecision() {
 	mode = CPU_DECISION_MODE_NONE;
 	frames = 0;
+	target_dist_x = glm::vec3(0.0);
+	misc = -1;
 }
 
 CPUDecision::CPUDecision(CPUDecisionMode mode, FighterCPU* owner) {
 	this->mode = mode;
 	frames = 0;
+	target_dist_x = glm::vec3(0.0);
+	misc = -1;
 	std::vector<CPUAction> actions;
 	switch (mode) {
 		case CPU_DECISION_MODE_NONE: {
@@ -1476,6 +1532,72 @@ CPUDecision::CPUDecision(CPUDecisionMode mode, FighterCPU* owner) {
 					actions.push_back(action);
 				}
 			}
+
+			//The JUMP decision is special in that we also need to determine a range threshold we're
+			//supposed to try to reach before jumping. In order to figure this out, we need to already
+			//know what action to pick, so we're going to decide it now instead of breaking out of the
+			//switch statement.
+
+			this->action = actions[rng(0, actions.size() - 1)];
+
+			Fighter* fighter = owner->owner;
+			CPUFighterState present_state = owner->states.newest();
+			int fh_time = fighter->calc_airtime(fighter->get_param_float("jump_y_init_speed"));
+			int sh_time = fighter->calc_airtime(fighter->get_param_float("jump_y_init_speed_s"));
+			float f_speed = fighter->get_param_float("jump_x_speed");
+			float fh_range_f = f_speed * fh_time * present_state.facing_dir;
+			float sh_range_f = f_speed * sh_time * present_state.facing_dir;
+
+			int movement_error = rng(-owner->movement_error_margin, owner->movement_error_margin);
+			glm::vec2 f_atk_immediate_range = (action.attack_range_x
+				+ glm::vec2(f_speed * action.startup)) * glm::vec2(present_state.facing_dir);
+
+			glm::vec2 sf_atk_range(
+				action.attack_range_x[0] * present_state.facing_dir,
+				action.attack_range_x[1] * present_state.facing_dir + sh_range_f
+			);
+
+			glm::vec2 ff_atk_range(
+				action.attack_range_x[0] * present_state.facing_dir,
+				action.attack_range_x[1] * present_state.facing_dir + fh_range_f
+			);
+
+			glm::vec2 n_atk_range = (action.attack_range_x * glm::vec2(present_state.facing_dir));
+
+			bool crossup_check = false;
+			bool rising_check = false;
+			bool spacing_check = false;
+			std::vector<int> jump_types;
+			std::vector<glm::vec2> jump_distances;
+			for (size_t i = 0, max = action.tags.size(); i < max; i++) {
+				switch (action.tags[i]) {
+				case CPU_TAG_AIR_ATK_CROSSUP: {
+					jump_distances.push_back(action.attack_range_x * glm::vec2(present_state.facing_dir));
+					jump_types.push_back(CPU_JUMP_KIND_SHORTHOP_FORWARD);
+				} break;
+				case CPU_TAG_AIR_ATK_RISING: {
+					jump_distances.push_back(action.attack_range_x * glm::vec2(present_state.facing_dir));
+					jump_distances.push_back(f_atk_immediate_range);
+					jump_types.push_back(CPU_JUMP_KIND_NEUTRAL);
+					jump_types.push_back(CPU_JUMP_KIND_SHORTHOP_FORWARD);
+				} break;
+				default: {
+
+				} break;
+				}
+			}
+
+			jump_distances.push_back(sf_atk_range);
+			jump_distances.push_back(ff_atk_range);
+			jump_types.push_back(CPU_JUMP_KIND_SHORTHOP_FORWARD);
+			jump_types.push_back(CPU_JUMP_KIND_FULLHOP_FORWARD);
+
+			int selection = rng(0, jump_distances.size() - 1);
+			target_dist_x = jump_distances[selection];
+			misc = jump_types[selection]; 
+
+			return;
+
 		} break;
 		case CPU_DECISION_MODE_ADVANCE: {
 

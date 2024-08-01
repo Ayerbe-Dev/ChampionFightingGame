@@ -1059,19 +1059,40 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 	});
-	script("crouch_hitstun_l", [this]() {
+	script("crouch_hitstun_light_high", [this]() {
 		execute_frame(0, [this]() {
-
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 120.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 130), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 	});
-	script("crouch_hitstun_m", [this]() {
+	script("crouch_hitstun_light_mid", [this]() {
 		execute_frame(0, [this]() {
-
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 120.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 130), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 	});
-	script("crouch_hitstun_h", [this]() {
+	script("crouch_hitstun_light_low", [this]() {
 		execute_frame(0, [this]() {
-
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 120.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 130), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+		});
+	});
+	script("crouch_hitstun_medium_high", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 120.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 130), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+		});
+	});
+	script("crouch_hitstun_medium_mid", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 120.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 130), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+		});
+	});
+	script("crouch_hitstun_medium_low", [this]() {
+		execute_frame(0, [this]() {
+			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 120.0));
+			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 130), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 	});
 	script("jump_hitstun", [this]() {
@@ -1148,4 +1169,29 @@ void Rowan::load_move_scripts() {
 
 		});
 	});
+}
+
+void Rowan::load_cpu_move_info() {
+	cpu.add_action("5lp", "5lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("5mp", "5mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("5hp", "5hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 4, 5 }, {}, {}, 0.0f, false);
+	cpu.add_action("5lk", "5lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("5mk", "5mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("5hk", "5hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+
+//	cpu.add_action("6hp", "6hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 6, { 6 }, {}, {}, 0.0f, false);
+
+	cpu.add_action("2lp", "2lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("2mp", "2mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("2hp", "2hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("2lk", "2lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("2mk", "2mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("2hk", "2hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+
+	cpu.add_action("8lp", "8lp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_RISING }, {}, 0.0f, false);
+	cpu.add_action("8mp", "8mp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("8hp", "8hp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("8lk", "8lk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("8mk", "8mk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_CROSSUP }, {}, 0.0f, false);
+	cpu.add_action("8hk", "8hk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
 }

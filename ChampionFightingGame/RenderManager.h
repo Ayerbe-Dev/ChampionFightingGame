@@ -74,7 +74,7 @@ public:
 	
 	std::vector<GameTexture> debug_textures;
 	GameTexture fade_texture;
-	CircularBuffer<GLint> ex_trails;
+	CircularBuffer<std::pair<GLint, GLint>> ex_trails;
 
 	std::vector<glm::vec3> ssao_kernel;
 	std::vector<glm::vec3> ssao_noise;

@@ -12,6 +12,7 @@ public:
 	void load_chara_effects() override;
 	void load_move_scripts() override;
 	void load_move_list() override;
+	void load_cpu_move_info() override;
 
 	void chara_main() override;
 

@@ -45,7 +45,6 @@ void battle_main() {
 	cotr_imgui_init();
 #endif
 
-	battle->fighter[0]->set_bone_ex_render("ClavicleR", true);
 	while (battle->looping) {
 		game_manager->frame_delay_check_fps();
 		render_manager->clear_screen();
@@ -1352,7 +1351,8 @@ void Battle::render_world() {
 	if (!frame_pause || frame_advance) {
 		render_manager->ex_trails.cycle();
 	}
-	render_manager->g_buffer.bind_ex_write_texture(render_manager->ex_trails.newest(), GL_COLOR_ATTACHMENT4, 4);
+	render_manager->g_buffer.bind_ex_write_texture(render_manager->ex_trails.newest().first, GL_COLOR_ATTACHMENT4, 4);
+	render_manager->g_buffer.bind_ex_write_texture(render_manager->ex_trails.newest().second, GL_COLOR_ATTACHMENT5, 5);
 
 	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

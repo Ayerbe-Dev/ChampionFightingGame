@@ -4,6 +4,7 @@ layout (location = 1) out vec4 g_specular;
 layout (location = 2) out vec4 g_position;
 layout (location = 3) out vec4 g_normal;
 layout (location = 4) out vec4 g_diffuse_ex;
+layout (location = 5) out vec4 g_vert_ex;
 
 struct Material {
     sampler2D diffuse;
@@ -13,6 +14,7 @@ struct Material {
 }; 
 
 in GS_OUT {
+    vec4 VertPos;
     vec4 FragPos;
     vec4 FragPosLightSpace;
     vec3 Normal;
@@ -48,6 +50,7 @@ void main() {
     g_specular.a *= alpha;
     g_diffuse_ex = g_diffuse;
     g_diffuse_ex.a *= fs_in.Ex;
+    g_vert_ex = fs_in.VertPos * vec4(fs_in.Ex);
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

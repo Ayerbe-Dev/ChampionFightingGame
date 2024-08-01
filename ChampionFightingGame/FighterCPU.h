@@ -60,6 +60,8 @@ enum CPUTag {
 	CPU_TAG_EVADE_ATK,
 	CPU_TAG_IGNORE_STRIKE,
 	CPU_TAG_IGNORE_THROW,
+	CPU_TAG_AIR_ATK_CROSSUP,
+	CPU_TAG_AIR_ATK_RISING,
 
 	CPU_TAG_MAX,
 };
@@ -182,13 +184,19 @@ enum CPUDecisionMode {
 	CPU_DECISION_MODE_SPECIAL,
 };
 
+const int CPU_JUMP_KIND_SHORTHOP_FORWARD = 0;
+const int CPU_JUMP_KIND_FULLHOP_FORWARD = 1;
+const int CPU_JUMP_KIND_NEUTRAL = 2;
+
 class FighterCPU;
 struct CPUDecision {
 	CPUDecision();
 	CPUDecision(CPUDecisionMode mode, FighterCPU* owner);
 	CPUDecisionMode mode;
 	CPUAction action;
+	glm::vec2 target_dist_x;
 	int frames;
+	int misc;
 };
 
 class FighterCPU {

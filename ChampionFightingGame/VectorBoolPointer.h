@@ -11,7 +11,16 @@ public:
 
 	VBP(std::vector<bool>::reference ref) {
 		ptr = (unsigned*)ref._Getptr();
-		mask = static_cast<std::_Vbase>(1) << ref._Myoff;
+
+		//std::_Vbase uses an offset variable for faster vector access. The class member is called
+		//std::_Vbase._Myoff.
+
+		//There is a function called std::_Vbase._Mask(), which returns this->_Myoff. 
+		//Between _Mask() and _Myoff, one member is public and the other is protected.
+
+		mask = static_cast<std::_Vbase>(1) << ref._Myoff; //<-- Guess which is which
+
+		//Get the STL devs the hell out of the kitchen, they cannot cook
 	}
 
 	VBP& operator=(const VBP& other) {

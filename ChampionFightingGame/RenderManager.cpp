@@ -15,13 +15,14 @@ RenderManager::RenderManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	res_width = save_manager->get_game_setting("res_x");
 	res_height = save_manager->get_game_setting("res_y");
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
+	msaa_samples = save_manager->get_game_setting("msaa");
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, msaa_samples);
 	if (save_manager->get_game_setting("fullscreen") == 1) {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
 		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL);
-		SDL_SetWindowFullscreen(window, 0);
 	}
 	SDL_GetWindowSize(window, &window_width, &window_height);
 	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
@@ -98,14 +99,14 @@ RenderManager::RenderManager() {
 	);
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
 	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
+	g_buffer.add_write_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT5); //Position EX
 
 	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
-	SSAO.add_read_texture(GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
+	SSAO.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
 	SSAO.add_read_texture(g_buffer.textures[2], 2); //Position, shared w/ GBuffer
 	SSAO.add_read_texture(g_buffer.textures[3], 3); //Ditto for Normals
 

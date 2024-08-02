@@ -698,6 +698,20 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::Checkbox("Position Enabled", &position_enabled);
 			ImGui::Checkbox("Normal Enabled", &normal_enabled);
 			ImGui::Checkbox("SSAO Enabled", &ssao_enabled);
+			if (ImGui::Button("Print SSAO Vals")) {
+				std::cout << "SSAO Samples:\n";
+				for (size_t i = 0, max = render_manager->ssao_kernel.size(); i < max; i++) {
+					std::cout << render_manager->ssao_kernel[i].x << ", "
+						<< render_manager->ssao_kernel[i].y << ", "
+						<< render_manager->ssao_kernel[i].z << "\n";
+				}
+				std::cout << "SSAO Noise:\n";
+				for (size_t i = 0, max = render_manager->ssao_noise.size(); i < max; i++) {
+					std::cout << render_manager->ssao_noise[i].x << ", "
+						<< render_manager->ssao_noise[i].y << ", "
+						<< render_manager->ssao_noise[i].z << "\n";
+				}
+			}
 			if (diffuse_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
 			|| specular_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
 			|| position_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)

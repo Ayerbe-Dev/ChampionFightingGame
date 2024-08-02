@@ -86,6 +86,8 @@ public:
 	int window_height;
 	bool ssao_enabled;
 
+	int msaa_samples;
+
 	static RenderManager* get_instance();
 	void destroy_instance();
 private:

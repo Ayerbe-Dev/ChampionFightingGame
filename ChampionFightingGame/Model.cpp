@@ -11,7 +11,7 @@
 
 #include "GLM Helpers.h"
 #include "GLEW Helpers.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ResourceManager.h"
 #include "ThreadManager.h"
 

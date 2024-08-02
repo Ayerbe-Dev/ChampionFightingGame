@@ -3,7 +3,7 @@
 #include "Stage.h"
 #include "WindowConstants.h"
 #include <glm/gtx/vector_angle.hpp>
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "OpenAL/al.h"
 #include "GLM Helpers.h"
 #include "utils.h"
@@ -260,7 +260,7 @@ void Camera::calc_ypr_from_aim() {
 void Camera::update_view() {
 	view_matrix = lookAt(pos, aim, up);
 	camera_matrix = projection_matrix * view_matrix;
-	RenderManager::get_instance()->update_shader_cams();
+	WindowManager::get_instance()->update_shader_cams();
 	alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
 }
 

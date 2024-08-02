@@ -1,34 +1,31 @@
 #pragma once
-#include <SDL/SDL.h>
 #include <map>
+#include <set>
 #include "GameController.h"
-
-struct ControllerInfo {
-	int id;
-	SDL_GameController* controller;
-};
+#include "GameTexture.h"
 
 class InputManager {
 public:
 	InputManager(InputManager& other) = delete;
 	void operator=(const InputManager& other) = delete;
 
-	void register_controller(SDL_GameController* sdl_controller, GameController* controller);
-	void unregister_controller(SDL_GameController* sdl_controller);
-	GameController* get_owner(SDL_GameController* sdl_controller);
+	void register_controller(int controller_id, GameController* controller);
+	void unregister_controller(int controller_id);
+	GameController* get_owner(int controller_id);
 
-	bool check_backspace();
+	std::map<int, bool> keyboard_state;
+	std::set<int> available_controllers;
 
-	const Uint8* keyboard_state;
-	char input_char;
-	unsigned char backspace_time;
+	bool is_using_text_input() const;
+	void modify_text_input(unsigned int key, unsigned int mods);
 
 	static InputManager* get_instance();
 	void destroy_instance();
 private:
 	InputManager();
-
-	std::map<SDL_GameController*, GameController*> controller_map;
+	std::map<int, GameController*> controller_map;
+	GameTexture* text_input_texture;
+	std::string clipboard_string;
 
 	static InputManager* instance;
 };

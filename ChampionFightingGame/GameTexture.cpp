@@ -1,11 +1,10 @@
 #include "GameTexture.h"
 
 #include <fstream>
-#include <glew/glew.h>
 #include "stb_image.h"
 
 #include "Shader.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ThreadManager.h"
 #include "ResourceManager.h"
 #include "ShaderManager.h"
@@ -31,11 +30,14 @@ GameTexture::GameTexture() {
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
 	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	text_font = nullptr;
+	text_rgba = glm::vec4(0.0);
+	border_rgbs = glm::vec4(0.0);
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
 	shader = nullptr;
-	if (SDL_GL_GetCurrentContext() != nullptr) {
+	if (glfwGetCurrentContext() != nullptr) {
 		attach_shader(ShaderManager::get_instance()->get_shader("2d_texture", "2d_texture", "", 0));
 	}
 }
@@ -96,6 +98,9 @@ GameTexture::GameTexture(const GameTexture& that) {
 	v_flipped = that.v_flipped;
 	loaded = that.loaded;
 	using_resource = that.using_resource;
+	text_font = that.text_font;
+	text_rgba = that.text_rgba;
+	border_rgbs = that.border_rgbs;
 }
 
 void GameTexture::init(std::string path) {
@@ -106,6 +111,9 @@ void GameTexture::init(std::string path) {
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
 	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	text_font = nullptr;
+	text_rgba = glm::vec4(0.0);
+	border_rgbs = glm::vec4(0.0);
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
@@ -173,6 +181,9 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
 	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	text_font = nullptr;
+	text_rgba = glm::vec4(0.0);
+	border_rgbs = glm::vec4(0.0);
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
@@ -1068,6 +1079,44 @@ void GameTexture::update_text(Font &font, const std::string &text, glm::vec4 rgb
 	}
 
 	texture[0] = font.create_text(text, rgba, border_rgbs, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+
+	width_scale = (float)width / (float)WINDOW_WIDTH;
+	height_scale = (float)height / (float)WINDOW_HEIGHT;
+	for (int i = 0; i < 4; i++) {
+		tex_data[i].pos.x *= width_scale;
+		tex_data[i].pos.y *= height_scale;
+	}
+	update_buffer_data();
+	width_orientation = width * (tex_data[TEX_COORD_BOTTOM_LEFT].tex_coord.x + tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.x);
+	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
+	this->text_font = &font;
+	this->text_rgba = rgba;
+	this->border_rgbs = border_rgbs;
+}
+
+void GameTexture::update_text(const std::string& text) {
+	this->text = text;
+	float width_scale = (float)width / (float)WINDOW_WIDTH;
+	float height_scale = (float)height / (float)WINDOW_HEIGHT;
+
+	if (width_scale == 0.0 || height_scale == 0.0) {
+		tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+		tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+		tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+		tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			tex_data[i].pos.x /= width_scale;
+			tex_data[i].pos.y /= height_scale;
+		}
+	}
+
+	texture[0] = text_font->create_text(text, text_rgba, border_rgbs, &texture[0]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
 	glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);

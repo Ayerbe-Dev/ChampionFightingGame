@@ -1,6 +1,6 @@
 #include "Framebuffer.h"
 #include "ShaderManager.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "SaveManager.h"
 #include "utils.h"
 
@@ -150,7 +150,7 @@ void Framebuffer::use() {
 
 void Framebuffer::set_feats(unsigned int remove_feats, unsigned int add_feats) {
 	shader = ShaderManager::get_instance()->get_shader_switch_features(shader, remove_feats, add_feats);
-	RenderManager::get_instance()->update_shader_lights();
+	WindowManager::get_instance()->update_shader_lights();
 	bind_uniforms();
 }
 
@@ -212,13 +212,13 @@ void Framebuffer::render_passthrough() {
 }
 
 void Framebuffer::update_dimensions(float x_scale, float y_scale) {
-	RenderManager* render_manager = RenderManager::get_instance();
-	float width = render_manager->res_width * x_scale;
-	float height = render_manager->res_height * y_scale;
+	WindowManager* window_manager = WindowManager::get_instance();
+	float width = window_manager->res_width * x_scale;
+	float height = window_manager->res_height * y_scale;
 	for (int i = 0, max = resize_textures.size(); i < max; i++) {
 		glBindTexture(GL_TEXTURE_2D, resize_textures[i].texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, resize_textures[i].internal_format, width, height, 0, resize_textures[i].format, resize_textures[i].type, nullptr);
 	}
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, render_manager->window_width, render_manager->window_height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, window_manager->window_width, window_manager->window_height);
 }

@@ -95,11 +95,11 @@ void StageAsset::load_lights() {
 
 	lights.reserve(MAX_LIGHT_SOURCES);
 
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
-	//RenderManager now gets pointers to the lights, so we'll store them
+	//WindowManager now gets pointers to the lights, so we'll store them
 	//in the StageAssets. This is also better because it means we can move the lights around within the
-	//stage scripts and have it affect the RenderManager.
+	//stage scripts and have it affect the WindowManager.
 
 	glm::vec3 light_pos; 
 	glm::vec3 light_col;
@@ -107,7 +107,7 @@ void StageAsset::load_lights() {
 	while (light_stream >> light_pos.x) {
 		light_stream >> light_pos.y >> light_pos.z >> light_col.x >> light_col.y >> light_col.z >> brightness;
 		lights.emplace_back(light_pos, light_col, brightness);
-		render_manager->add_light(&lights.back());
+		window_manager->add_light(&lights.back());
 	}
 	
 	light_stream.close();

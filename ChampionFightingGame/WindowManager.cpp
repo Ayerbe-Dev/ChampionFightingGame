@@ -1,4 +1,4 @@
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "FontManager.h"
 #include "GameManager.h"
 #include "InputManager.h"
@@ -10,29 +10,37 @@
 #include <random>
 #include <string>
 #include "debug.h"
+#ifdef DEBUG
+#include "cotr_imgui_debugger.h"
+#endif
 
-RenderManager::RenderManager() {
+WindowManager::WindowManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	res_width = save_manager->get_game_setting("res_x");
 	res_height = save_manager->get_game_setting("res_y");
 	msaa_samples = save_manager->get_game_setting("msaa");
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, msaa_samples);
 	if (save_manager->get_game_setting("fullscreen") == 1) {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		window = glfwCreateWindow(res_width, res_height, "Champions of the Ring", glfwGetPrimaryMonitor(), nullptr);
 	}
 	else {
-		window = SDL_CreateWindow("Champions of the Ring", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res_width, res_height, SDL_WINDOW_OPENGL);
+		window = glfwCreateWindow(res_width, res_height, "Champions of the Ring", nullptr, nullptr);
 	}
-	SDL_GetWindowSize(window, &window_width, &window_height);
-	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
-	sdl_context = SDL_GL_CreateContext(window);
+	glfwMakeContextCurrent(window);
+	glfwGetWindowSize(window, &window_width, &window_height);
+
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
-		std::cout << "Failed to initialize GLEW!" << std::endl;
+		std::cout << "Failed to initialize GLEW!\n";
 	}
-	SDL_GL_MakeCurrent(window, sdl_context);
-	SDL_GL_SetSwapInterval(1);
+
+#ifdef DEBUG
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+#endif
+
+	glfwSetFramebufferSizeCallback(window, window_resize_callback);
+	glfwSetWindowCloseCallback(window, window_close_callback);
+	glfwSetKeyCallback(window, window_key_callback);
+
 
 	glViewport(0, 0, window_width, window_height);
 
@@ -173,7 +181,7 @@ RenderManager::RenderManager() {
 	ex_trails.insert({ blend.textures[2], blend.textures[4] });
 }
 
-void RenderManager::add_light(Light *light, int target) {
+void WindowManager::add_light(Light *light, int target) {
 	if (target == -1) {
 		if (lights.size() == MAX_LIGHT_SOURCES) {
 			GameManager::get_instance()->add_crash_log("Congrats you stupid idiot, you ran out of lights\n");
@@ -197,7 +205,7 @@ void RenderManager::add_light(Light *light, int target) {
 	});
 }
 
-void RenderManager::remove_light(int target) {
+void WindowManager::remove_light(int target) {
 	if (target == -1) {
 		lights.clear();
 	}
@@ -212,7 +220,7 @@ void RenderManager::remove_light(int target) {
 	});
 }
 
-void RenderManager::dim_lights(float dim_mul, Shader** shader) {
+void WindowManager::dim_lights(float dim_mul, Shader** shader) {
 	ScriptArg args;
 	args.push_arg(dim_mul);
 	args.push_arg(shader);
@@ -227,7 +235,7 @@ void RenderManager::dim_lights(float dim_mul, Shader** shader) {
 	}, args);
 }
 
-void RenderManager::start_fade_sequence(unsigned char fade_frames, std::function<void()> mid_fade_func) {
+void WindowManager::start_fade_sequence(unsigned char fade_frames, std::function<void()> mid_fade_func) {
 	if (fading) return;
 	fade_texture.alpha.set_target_val(255, fade_frames);
 	this->fade_frames = fade_frames;
@@ -235,7 +243,7 @@ void RenderManager::start_fade_sequence(unsigned char fade_frames, std::function
 	fading = true;
 }
 
-void RenderManager::update_shader_lights() {
+void WindowManager::update_shader_lights() {
 	glm::vec3 shadow_total = glm::vec3(0.0);
 	float shadow_factor = 0.0;
 	g_buffer.shader->use();
@@ -267,7 +275,7 @@ void RenderManager::update_shader_lights() {
 	shadow_map.update_light_pos();
 }
 
-void RenderManager::update_shader_cams() {
+void WindowManager::update_shader_cams() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	glm::mat4& camera_matrix = camera.camera_matrix;
 	glm::mat4& projection_matrix = camera.projection_matrix;
@@ -279,14 +287,14 @@ void RenderManager::update_shader_cams() {
 	shader_manager->set_global_mat4("ViewMatrix", view_matrix);
 }
 
-void RenderManager::update_shader_shadows() {
+void WindowManager::update_shader_shadows() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	glm::mat4 shadow_matrix = (shadow_map.projection_matrix * shadow_map.view_matrix);
 	
 	shader_manager->set_global_mat4("ShadowMatrix", shadow_matrix);
 }
 
-void RenderManager::update_framebuffer_dimensions() {
+void WindowManager::update_framebuffer_dimensions() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
 	shader_manager->set_global_int("WindowHeight", window_height);
@@ -297,16 +305,13 @@ void RenderManager::update_framebuffer_dimensions() {
 	blur.update_dimensions();
 }
 
-void RenderManager::set_resolution(int width, int height) {
+void WindowManager::set_resolution(int width, int height) {
 	this->res_width = width;
 	this->res_height = height;
-	SDL_SetWindowSize(window, width, height);
-	SDL_GetWindowSize(window, &window_width, &window_height);
-	glViewport(0, 0, window_width, window_height);
-	update_framebuffer_dimensions();
+	glfwSetWindowSize(window, width, height);
 }
 
-void RenderManager::reset_gl_environment() {
+void WindowManager::reset_gl_environment() {
 	glDepthMask(GL_FALSE);
 	glDepthFunc(GL_LEQUAL);
 
@@ -324,13 +329,7 @@ void RenderManager::reset_gl_environment() {
 	camera.update_view();
 }
 
-void RenderManager::refresh_sdl_renderer() {
-	SDL_RenderClear(sdl_renderer);
-	SDL_DestroyRenderer(sdl_renderer);
-	sdl_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_ACCELERATED);
-}
-
-void RenderManager::buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffered_arg) {
+void WindowManager::buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffered_arg) {
 	event_mutex.lock();
 	if (name == "" || !event_names.contains(name)) {
 		buffered_events.push_back(function);
@@ -342,7 +341,7 @@ void RenderManager::buffer_event(std::string name, std::function<void(ScriptArg)
 	event_mutex.unlock();
 }
 
-void RenderManager::execute_buffered_events() {
+void WindowManager::execute_buffered_events() {
 	for (int i = 0, max = buffered_events.size(); i < max; i++) {
 		buffered_events[i](buffered_args[i]);
 	}
@@ -351,7 +350,7 @@ void RenderManager::execute_buffered_events() {
 	event_names.clear();
 }
 
-void RenderManager::render_ssao() {
+void WindowManager::render_ssao() {
 	g_buffer.shader->use();
 	g_buffer.shader->set_bool("ssao_enabled", ssao_enabled);
 	SSAO.use();
@@ -364,7 +363,7 @@ void RenderManager::render_ssao() {
 	blur.render();
 }
 
-void RenderManager::render_trail() {
+void WindowManager::render_trail() {
 	blend.use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	blend.bind_ex_uniforms({
@@ -376,13 +375,13 @@ void RenderManager::render_trail() {
 	blend.render();
 }
 
-void RenderManager::render_debug_textures() {
+void WindowManager::render_debug_textures() {
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
 		debug_textures[i].render();
 	}
 }
 
-void RenderManager::update_screen() {
+void WindowManager::update_screen() {
 	if (fading) {
 		if (fade_texture.alpha == 0 && fade_frames == 0) {
 			fading = false;
@@ -400,11 +399,12 @@ void RenderManager::update_screen() {
 	render_debug_textures();
 #endif
 	glEnable(GL_FRAMEBUFFER_SRGB);
-	SDL_GL_SwapWindow(window);
+	glfwSwapBuffers(window);
 	glDisable(GL_FRAMEBUFFER_SRGB);
+	glfwPollEvents();
 }
 
-void RenderManager::clear_screen() {
+void WindowManager::clear_screen() {
 	glDepthMask(GL_TRUE);
 	glStencilMask(0xFF);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -412,44 +412,15 @@ void RenderManager::clear_screen() {
 	glStencilMask(0x0);
 }
 
-void RenderManager::handle_window_events(std::function<void(SDL_Event*)> event_handler) {
-	InputManager* input_manager = InputManager::get_instance();
-	input_manager->input_char = 0;
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		if (event_handler != nullptr) {
-			event_handler(&event);
-		}
-		switch (event.type) {
-		case SDL_QUIT: {
-			GameManager::get_instance()->update_state(GAME_STATE_CLOSE);
-		} break;
-		case SDL_TEXTINPUT: {
-			input_manager->input_char = *event.text.text;
-		} break;
-		case SDL_WINDOWEVENT: {
-			switch (event.window.event) {
-			case SDL_WINDOWEVENT_MAXIMIZED: {
-				SDL_GetWindowSize(window, &window_width, &window_height);
-				glViewport(0, 0, window_width, window_height);
-				update_framebuffer_dimensions();
-			} break;
-			}
-		} break;
-		}
-	}
-	SDL_PumpEvents();
-}
-
-RenderManager* RenderManager::instance = nullptr;
-RenderManager* RenderManager::get_instance() {
+WindowManager* WindowManager::instance = nullptr;
+WindowManager* WindowManager::get_instance() {
 	if (instance == nullptr) {
-		instance = new RenderManager;
+		instance = new WindowManager;
 	}
 	return instance;
 }
 
-void RenderManager::destroy_instance() {
+void WindowManager::destroy_instance() {
 	box_layer.destroy();
 	g_buffer.destroy();
 	SSAO.destroy();
@@ -461,11 +432,31 @@ void RenderManager::destroy_instance() {
 	debug_textures.clear();
 	fade_texture.destroy();
 
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(sdl_renderer);
-	SDL_GL_DeleteContext(sdl_context);
-
 	if (instance != nullptr) {
 		delete instance;
 	}
+}
+
+void window_resize_callback(GLFWwindow* window, int width, int height) {
+	WindowManager* window_manager = WindowManager::get_instance();
+	window_manager->res_width = width;
+	window_manager->res_height = height;
+	glfwGetWindowSize(window, &window_manager->window_width, &window_manager->window_height);
+	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+	window_manager->update_framebuffer_dimensions();
+}
+
+void window_close_callback(GLFWwindow* window) {
+	GameManager::get_instance()->update_state(GAME_STATE_CLOSE);
+}
+
+void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	InputManager* input_manager = InputManager::get_instance();
+	if (input_manager->is_using_text_input()) {
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			input_manager->modify_text_input(key, mods);
+		}
+		return;
+	}
+	input_manager->keyboard_state[key] = (bool)action;
 }

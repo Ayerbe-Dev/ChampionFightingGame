@@ -1,5 +1,5 @@
 #include "GameObject.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 #include "ResourceManager.h"
 #include "GameManager.h"

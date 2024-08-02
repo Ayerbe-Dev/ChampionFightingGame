@@ -1,7 +1,7 @@
 #include "Effect.h"
 #include "Particle.h"
 #include <fstream>
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 #include "BattleObject.h"
 #include "Fighter.h"

@@ -2,7 +2,7 @@
 #include <queue>
 #include <vector>
 #include "GameObject.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "Animation.h"
 #include "Param.h"
 #include "ScriptFunc.h"

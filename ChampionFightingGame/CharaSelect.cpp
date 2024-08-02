@@ -1,6 +1,6 @@
 #include "CharaSelect.h"
 #include "FontManager.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ResourceManager.h"
 #include "ThreadManager.h"
 #include "GLM Helpers.h"
@@ -14,20 +14,18 @@
 /// </summary>
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	CSS *css = new CSS;
 	
 	while (css->looping) {
 		game_manager->frame_delay_check_fps();
-		render_manager->clear_screen();
-
-		render_manager->handle_window_events();
-
+		window_manager->clear_screen();
+		
 		css->process_game_state();
 		css->render_game_state();
 
-		render_manager->update_screen();
+		window_manager->update_screen();
 	}
 
 	delete css;
@@ -35,7 +33,7 @@ void chara_select_main() {
 
 CSS::CSS() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 
 	loaded_chars = 0;
@@ -370,7 +368,7 @@ CSS::CSS() {
 	while (light_stream >> light_pos.x) {
 		light_stream >> light_pos.y >> light_pos.z >> light_col.x >> light_col.y >> light_col.z >> brightness;
 		lights.emplace_back(light_pos, light_col, brightness);
-		render_manager->add_light(&lights.back());
+		window_manager->add_light(&lights.back());
 	}
 	light_stream.close();
 
@@ -405,10 +403,10 @@ void gamestate_charaselect_loading_thread(void* charaselect_arg) {
 }
 
 CSS::~CSS() {
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 
-	render_manager->remove_light();
+	window_manager->remove_light();
 	resource_manager->unload_unused();
 }
 
@@ -587,12 +585,12 @@ void CSS::process_main() {
 /// Render all CSS-related textures and models
 /// </summary>
 void CSS::render_main() {
-	RenderManager* render_manager = RenderManager::get_instance();
-	render_manager->execute_buffered_events();
+	WindowManager* window_manager = WindowManager::get_instance();
+	window_manager->execute_buffered_events();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 
-	render_manager->shadow_map.use();
+	window_manager->shadow_map.use();
 	glViewport(0, 0, 2000, 2000);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -625,11 +623,11 @@ void CSS::render_main() {
 	}
 	glCullFace(GL_BACK);
 
-	render_manager->g_buffer.use();
-	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
+	window_manager->g_buffer.use();
+	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	render_manager->shadow_map.bind_textures();
+	window_manager->shadow_map.bind_textures();
 
 	glDisable(GL_CULL_FACE);
 	for (int i = 0; i < 2; i++) {
@@ -641,13 +639,13 @@ void CSS::render_main() {
 	glEnable(GL_CULL_FACE);
 	stage_demo.render();
 
-	render_manager->render_ssao();
+	window_manager->render_ssao();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_menu_object("Background");
-	glViewport(render_manager->res_width * 0.2, render_manager->res_height * 0.34, render_manager->res_width * 0.6, render_manager->res_height * 0.6);
-	render_manager->g_buffer.render();
-	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
+	glViewport(window_manager->res_width * 0.2, window_manager->res_height * 0.34, window_manager->res_width * 0.6, window_manager->res_height * 0.6);
+	window_manager->g_buffer.render();
+	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 
 	glDepthMask(GL_FALSE);
 	render_menu_object("Foreground");
@@ -773,7 +771,7 @@ void CSS::select_slot(int player_idx) {
 		large_css_slot.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 	}
 	large_css_slot.set_pos(glm::vec3(130.5, 338, 0));
-	large_css_slot.set_alpha((Uint8)127);
+	large_css_slot.set_alpha((unsigned char)127);
 
 	if (demo_models[player_idx].model.is_loaded()) {
 		demo_models[player_idx].model.unload_model_instance();

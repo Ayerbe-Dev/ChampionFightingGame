@@ -1,6 +1,7 @@
 #pragma once
+#include <glew/glew.h>
+#include <glfw/glfw3.h>
 #include <glm/glm.hpp>
-#include <SDL/SDL.h>
 #include "Shader.h"
 #include "Model.h"
 #include "GameRect.h"
@@ -17,10 +18,10 @@
 
 #define MAX_LIGHT_SOURCES 10
 
-class RenderManager {
+class WindowManager {
 public:
-	RenderManager(RenderManager& other) = delete;
-	void operator=(const RenderManager& other) = delete;
+	WindowManager(WindowManager& other) = delete;
+	void operator=(const WindowManager& other) = delete;
 
 	void add_light(Light* light, int target = -1);
 	void remove_light(int target = -1);
@@ -37,7 +38,6 @@ public:
 	void set_resolution(int width, int height);
 
 	void reset_gl_environment();
-	void refresh_sdl_renderer();
 
 	void buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffer_arg = ScriptArg());
 	void execute_buffered_events();
@@ -49,11 +49,7 @@ public:
 	void update_screen();
 	void clear_screen();
 
-	void handle_window_events(std::function<void(SDL_Event*)> event_handler = nullptr);
-
-	SDL_Window* window;
-	SDL_Renderer* sdl_renderer;
-	SDL_GLContext sdl_context;
+	GLFWwindow* window;
 
 	Camera camera;
 	glm::vec3 ambient_col;
@@ -88,13 +84,17 @@ public:
 
 	int msaa_samples;
 
-	static RenderManager* get_instance();
+	static WindowManager* get_instance();
 	void destroy_instance();
 private:
-	RenderManager();
-	static RenderManager* instance;
+	WindowManager();
+	static WindowManager* instance;
 
 	unsigned char fade_frames;
 	std::function<void()> mid_fade_func;
 	bool fading;
 };
+
+void window_resize_callback(GLFWwindow* window, int width, int height);
+void window_close_callback(GLFWwindow* window);
+void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

@@ -3,8 +3,8 @@
 #pragma warning(disable : 4267) //size_t to int
 #include <iostream>
 #include <Windows.h>
-#include <SDL/SDL.h>
 #include <glew/glew.h>
+#include <glfw/glfw3.h>
 #include "GameStates.h"
 #include "ObjectManager.h"
 #include "InputManager.h"
@@ -12,14 +12,13 @@
 #include "FontManager.h"
 #include "GameManager.h"
 #include "ParamAccessor.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ResourceManager.h"
 #include "SaveManager.h"
 #include "ShaderManager.h"
 #include "SoundManager.h"
 #include "TargetVarManager.h"
 #include "ThreadManager.h"
-#undef main
 
 int main() {
 	//NOTE: Eventually we will want to hide the console window. When this happens, we need to go into
@@ -28,15 +27,14 @@ int main() {
 	std::cout << std::fixed; //Set up some debug info
 	std::cin.setf(std::ios::fixed, std::ios::floatfield);
 
-	if (SDL_Init(SDL_INIT_EVERYTHING)) { //Make the game actually boot
-		printf("Error initializing SDL: %s\n", SDL_GetError());
-	}
-	SDL_GameControllerEventState(SDL_ENABLE);
-	SDL_StartTextInput();
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//Initialize all of the singletons
 
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 	font_manager->load_face("FiraCode");
 	GameManager* game_manager = GameManager::get_instance();
@@ -76,7 +74,7 @@ int main() {
 	input_manager->destroy_instance();
 	object_manager->destroy_instance();
 	param_accessor->destroy_instance();
-	render_manager->destroy_instance();
+	window_manager->destroy_instance();
 	resource_manager->destroy_instance();
 	save_manager->destroy_instance();
 	shader_manager->destroy_instance();
@@ -84,8 +82,6 @@ int main() {
 	target_var_manager->destroy_instance();
 	thread_manager->destroy_instance();
 
-	SDL_StopTextInput();
-	SDL_Quit();
-
+	glfwTerminate();
 	return 0;
 }

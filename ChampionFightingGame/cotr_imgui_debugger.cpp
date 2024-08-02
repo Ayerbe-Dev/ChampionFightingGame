@@ -1,7 +1,7 @@
 #include "cotr_imgui_debugger.h"
 #include "Fighter.h"
 #include "GameRect.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 #include "utils.h"
 
@@ -14,7 +14,6 @@ void cotr_imgui_init() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	ImGui::StyleColorsDark();
-	ImGui_ImplSDL2_InitForOpenGL(RenderManager::get_instance()->window, RenderManager::get_instance()->sdl_context);
 	ImGui_ImplOpenGL3_Init();
 
 	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
@@ -22,13 +21,11 @@ void cotr_imgui_init() {
 
 void cotr_imgui_terminate() {
 	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 }
 
 void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(RenderManager::get_instance()->window);
 	ImGui::NewFrame();
 
 	GameManager* game_manager = GameManager::get_instance();
@@ -72,10 +69,9 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 }
 
 void cotr_imgui_debug_battle(Battle* battle) {
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(render_manager->window);
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug Menu");
@@ -587,56 +583,56 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			bool update_view = false;
 			bool update_aim = false;
 			bool update_ypr = false;
-			if (ImGui::DragFloat("Pos X", &render_manager->camera.pos[0], 0.01)) {
+			if (ImGui::DragFloat("Pos X", &window_manager->camera.pos[0], 0.01)) {
 				update_aim = true;
 				update_view = true;
 			}
-			if (ImGui::DragFloat("Pos Y", &render_manager->camera.pos[1], 0.01)) {
+			if (ImGui::DragFloat("Pos Y", &window_manager->camera.pos[1], 0.01)) {
 				update_aim = true;
 				update_view = true;
 			}
-			if (ImGui::DragFloat("Pos Z", &render_manager->camera.pos[2], 0.01)) {
+			if (ImGui::DragFloat("Pos Z", &window_manager->camera.pos[2], 0.01)) {
 				update_aim = true;
 				update_view = true;
 			}
-			if (ImGui::SliderFloat("Yaw", &render_manager->camera.yaw, -180.0f, 180.0f)) {
+			if (ImGui::SliderFloat("Yaw", &window_manager->camera.yaw, -180.0f, 180.0f)) {
 				update_aim = true;
 				update_view = true;
 			}
-			if (ImGui::SliderFloat("Pitch", &render_manager->camera.pitch, -180.0f, 180.0f)) {
+			if (ImGui::SliderFloat("Pitch", &window_manager->camera.pitch, -180.0f, 180.0f)) {
 				update_aim = true;
 				update_view = true;
 			}
-			if (ImGui::SliderFloat("Roll", &render_manager->camera.roll, -180.0f, 180.0f)) {
+			if (ImGui::SliderFloat("Roll", &window_manager->camera.roll, -180.0f, 180.0f)) {
 				update_aim = true;
 				update_view = true;
 			}
-			if (ImGui::DragFloat("Aim X", &render_manager->camera.aim[0], 0.01)) {
+			if (ImGui::DragFloat("Aim X", &window_manager->camera.aim[0], 0.01)) {
 				update_ypr = true;
 				update_view = true;
 			}
-			if (ImGui::DragFloat("Aim Y", &render_manager->camera.aim[1], 0.01)) {
+			if (ImGui::DragFloat("Aim Y", &window_manager->camera.aim[1], 0.01)) {
 				update_ypr = true;
 				update_view = true;
 			}
-			if (ImGui::DragFloat("Aim Z", &render_manager->camera.aim[2], 0.01)) {
+			if (ImGui::DragFloat("Aim Z", &window_manager->camera.aim[2], 0.01)) {
 				update_ypr = true;
 				update_view = true;
 			}
-			if (ImGui::SliderFloat("FOV", &render_manager->camera.fov, 0.0f, 45.0f)) {
+			if (ImGui::SliderFloat("FOV", &window_manager->camera.fov, 0.0f, 45.0f)) {
 				update_view = true;
 			}
-			if (ImGui::Checkbox("Camera Locked", &render_manager->camera.camera_locked)) {
+			if (ImGui::Checkbox("Camera Locked", &window_manager->camera.camera_locked)) {
 				update_view = true;
 			}
 			if (update_aim) {
-				render_manager->camera.calc_aim_from_ypr();
+				window_manager->camera.calc_aim_from_ypr();
 			}
 			if (update_ypr) {
-				render_manager->camera.calc_ypr_from_aim();
+				window_manager->camera.calc_ypr_from_aim();
 			}
 			if (update_view) {
-				render_manager->camera.update_view();
+				window_manager->camera.update_view();
 			}
 			ImGui::TreePop();
 		}
@@ -672,27 +668,27 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (ImGui::TreeNode("Lights")) {
-			for (int i2 = 0; i2 < render_manager->lights.size(); i2++) {
+			for (int i2 = 0; i2 < window_manager->lights.size(); i2++) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 
 				if (ImGui::TreeNode(light_name.c_str())) {
-					ImGui::SliderFloat((light_name + ".X").c_str(), &render_manager->lights[i2]->position[0], -150.0f, 150.0f);
-					ImGui::SliderFloat((light_name + ".Y").c_str(), &render_manager->lights[i2]->position[1], -150.0f, 150.0f);
-					ImGui::SliderFloat((light_name + ".Z").c_str(), &render_manager->lights[i2]->position[2], -150.0f, 150.0f);
-					ImGui::Checkbox((light_name).c_str(), &render_manager->lights[i2]->enabled);
+					ImGui::SliderFloat((light_name + ".X").c_str(), &window_manager->lights[i2]->position[0], -150.0f, 150.0f);
+					ImGui::SliderFloat((light_name + ".Y").c_str(), &window_manager->lights[i2]->position[1], -150.0f, 150.0f);
+					ImGui::SliderFloat((light_name + ".Z").c_str(), &window_manager->lights[i2]->position[2], -150.0f, 150.0f);
+					ImGui::Checkbox((light_name).c_str(), &window_manager->lights[i2]->enabled);
 					ImGui::TreePop();
 				}
 			}
 			ImGui::TreePop();
-			render_manager->update_shader_lights();
+			window_manager->update_shader_lights();
 		}
 
 		if (ImGui::TreeNode("G Buffer")) {
-			bool diffuse_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE;
-			bool specular_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR;
-			bool position_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_POSITION;
-			bool normal_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL;
-			bool ssao_enabled = render_manager->g_buffer.shader->features & SHADER_FEAT_SSAO;
+			bool diffuse_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE;
+			bool specular_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR;
+			bool position_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION;
+			bool normal_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL;
+			bool ssao_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO;
 			ImGui::Checkbox("Diffuse Enabled", &diffuse_enabled);
 			ImGui::Checkbox("Specular Enabled", &specular_enabled);
 			ImGui::Checkbox("Position Enabled", &position_enabled);
@@ -700,23 +696,23 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::Checkbox("SSAO Enabled", &ssao_enabled);
 			if (ImGui::Button("Print SSAO Vals")) {
 				std::cout << "SSAO Samples:\n";
-				for (size_t i = 0, max = render_manager->ssao_kernel.size(); i < max; i++) {
-					std::cout << render_manager->ssao_kernel[i].x << ", "
-						<< render_manager->ssao_kernel[i].y << ", "
-						<< render_manager->ssao_kernel[i].z << "\n";
+				for (size_t i = 0, max = window_manager->ssao_kernel.size(); i < max; i++) {
+					std::cout << window_manager->ssao_kernel[i].x << ", "
+						<< window_manager->ssao_kernel[i].y << ", "
+						<< window_manager->ssao_kernel[i].z << "\n";
 				}
 				std::cout << "SSAO Noise:\n";
-				for (size_t i = 0, max = render_manager->ssao_noise.size(); i < max; i++) {
-					std::cout << render_manager->ssao_noise[i].x << ", "
-						<< render_manager->ssao_noise[i].y << ", "
-						<< render_manager->ssao_noise[i].z << "\n";
+				for (size_t i = 0, max = window_manager->ssao_noise.size(); i < max; i++) {
+					std::cout << window_manager->ssao_noise[i].x << ", "
+						<< window_manager->ssao_noise[i].y << ", "
+						<< window_manager->ssao_noise[i].z << "\n";
 				}
 			}
-			if (diffuse_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
-			|| specular_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
-			|| position_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
-			|| normal_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
-			|| ssao_enabled != (render_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
+			if (diffuse_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
+			|| specular_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
+			|| position_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
+			|| normal_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
+			|| ssao_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
 				unsigned int add = 0;
 				unsigned int remove = 0;
 				if (diffuse_enabled) {
@@ -749,7 +745,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				else {
 					remove |= SHADER_FEAT_SSAO;
 				}
-				render_manager->g_buffer.set_feats(remove, add);
+				window_manager->g_buffer.set_feats(remove, add);
 			}
 			ImGui::TreePop();
 		}

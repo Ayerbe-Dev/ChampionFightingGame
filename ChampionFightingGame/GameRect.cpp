@@ -3,7 +3,7 @@
 #include <glm/ext/matrix_projection.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "ObjectManager.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 #include "ThreadManager.h"
 #include "Fighter.h"
@@ -11,7 +11,7 @@
 
 GameRect::GameRect() {
 	thread_manager = ThreadManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 }
 
@@ -318,14 +318,14 @@ bool is_rect_collide(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b)
 
 
 glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_pos) {
-	RenderManager* render_manager = RenderManager::get_instance();
-	Camera& camera = render_manager->camera;
+	WindowManager* window_manager = WindowManager::get_instance();
+	Camera& camera = window_manager->camera;
 
-	mouse_pos.y = render_manager->res_height - mouse_pos.y;
+	mouse_pos.y = window_manager->res_height - mouse_pos.y;
 	glm::vec3 screen_pos = glm::vec3(mouse_pos.x, mouse_pos.y, 0.0f);
 	glReadPixels(mouse_pos.x, mouse_pos.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &screen_pos.z);
 
-	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, render_manager->res_width, render_manager->res_height);
+	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, window_manager->res_width, window_manager->res_height);
 	glm::mat4 modelview = camera.view_matrix;
 	glm::mat4 projection = camera.projection_matrix;
 

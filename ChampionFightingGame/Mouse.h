@@ -1,21 +1,13 @@
 #pragma once
-#include <SDL/SDL.h>
 #include <glm/glm.hpp>
+#include <glew/glew.h>
+#include <glfw/glfw3.h>
 
-enum {
-	MOUSE_BUTTON_M1,
-	MOUSE_BUTTON_M2,
-	MOUSE_BUTTON_M3,
-	MOUSE_BUTTON_M4,
-	MOUSE_BUTTON_M5,
-
-	MOUSE_BUTTON_MAX
-};
+#define GLFW_MOUSE_BUTTON_MAX GLFW_MOUSE_BUTTON_LAST + 1
 
 struct MouseButton {
 	MouseButton();
 
-	unsigned int mapping;
 	bool button_on;
 	bool button_changed;
 };
@@ -29,11 +21,10 @@ public:
 	bool check_button_on(unsigned int button);
 	bool check_button_trigger(unsigned int button);
 	bool check_button_release(unsigned int button);
-
-	glm::ivec2 get_pos();
-	glm::ivec2 get_pos_flip_y();
+	glm::vec2 get_pos();
+	glm::vec2 get_pos_flip_y();
 
 private:
-	glm::ivec2 pos;
-	MouseButton buttons[MOUSE_BUTTON_MAX]; //if society ever adds a 6th mouse button, we'll be ready fr
+	glm::vec2 pos;
+	MouseButton buttons[GLFW_MOUSE_BUTTON_MAX]; //if society ever adds a 6th mouse button, we'll be ready fr
 };

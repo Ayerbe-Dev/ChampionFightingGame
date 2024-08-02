@@ -4,7 +4,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include "GLM Helpers.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 
 glm::vec3 GameObject::get_relative_bone_position(std::string bone_name, glm::vec3 offset) {

@@ -1,7 +1,6 @@
 #include "FontManager.h"
 #include "GameManager.h"
-#include "RenderManager.h"
-#include <glew/glew.h>
+#include "WindowManager.h"
 #include "WindowConstants.h"
 
 FontManager::FontManager() {

@@ -1,5 +1,5 @@
 #include "PauseBattle.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "SaveManager.h"
 #include "ObjectManager.h"
 #include "Fighter.h"
@@ -7,20 +7,19 @@
 
 void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	GameState* background_menu = game_manager->get_game_state();
 
 	PauseBattle* pause = new PauseBattle;
 
 	while (pause->looping) {
 		game_manager->frame_delay_check_fps();
-		render_manager->clear_screen();
-		render_manager->handle_window_events();
+		window_manager->clear_screen();
 
 		pause->process_game_state();
 		pause->render_game_state();
 		
-		render_manager->update_screen();
+		window_manager->update_screen();
 	}
 
 	delete pause;

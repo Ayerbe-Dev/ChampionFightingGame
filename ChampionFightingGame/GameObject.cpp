@@ -1,5 +1,5 @@
 #include "GameObject.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "EffectManager.h"
 #include "ShaderManager.h"
 #include "SoundManager.h"
@@ -8,7 +8,7 @@
 
 GameObject::GameObject() {
 	effect_manager = EffectManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
 	effect_manager->register_game_object(this);
@@ -42,7 +42,7 @@ GameObject::GameObject() {
 
 GameObject::GameObject(GameObject& other) {
 	effect_manager = EffectManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
 	effect_manager->register_game_object(this);
@@ -89,7 +89,7 @@ GameObject::GameObject(GameObject& other) {
 
 GameObject::GameObject(const GameObject& other) {
 	effect_manager = EffectManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
 	effect_manager->register_game_object(this);
@@ -139,7 +139,7 @@ GameObject& GameObject::operator=(GameObject& other) {
 		return *this;
 	}
 	effect_manager = EffectManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
 	effect_manager->register_game_object(this);
@@ -191,7 +191,7 @@ GameObject& GameObject::operator=(const GameObject& other) {
 		return *this;
 	}
 	effect_manager = EffectManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 	object_manager = ObjectManager::get_instance();
 	effect_manager->register_game_object(this);

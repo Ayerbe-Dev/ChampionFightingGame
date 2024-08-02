@@ -3,7 +3,7 @@
 #include "Shader.h"
 
 class ThreadManager;
-class RenderManager;
+class WindowManager;
 class ShaderManager;
 
 class GameRect {
@@ -27,7 +27,7 @@ public:
 	glm::vec4 rgba = glm::vec4(0.0);
 private:
 	void update_buffer_data();
-	RenderManager* render_manager;
+	WindowManager* window_manager;
 	ThreadManager* thread_manager;
 	ShaderManager* shader_manager;
 

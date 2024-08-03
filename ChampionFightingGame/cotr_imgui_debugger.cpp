@@ -672,10 +672,10 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 
 				if (ImGui::TreeNode(light_name.c_str())) {
-					ImGui::SliderFloat((light_name + ".X").c_str(), &window_manager->lights[i2]->position[0], -150.0f, 150.0f);
-					ImGui::SliderFloat((light_name + ".Y").c_str(), &window_manager->lights[i2]->position[1], -150.0f, 150.0f);
-					ImGui::SliderFloat((light_name + ".Z").c_str(), &window_manager->lights[i2]->position[2], -150.0f, 150.0f);
-					ImGui::Checkbox((light_name).c_str(), &window_manager->lights[i2]->enabled);
+					ImGui::SliderFloat((light_name + ".X").c_str(), &window_manager->lights[i2].position[0], -150.0f, 150.0f);
+					ImGui::SliderFloat((light_name + ".Y").c_str(), &window_manager->lights[i2].position[1], -150.0f, 150.0f);
+					ImGui::SliderFloat((light_name + ".Z").c_str(), &window_manager->lights[i2].position[2], -150.0f, 150.0f);
+					ImGui::Checkbox((light_name).c_str(), &window_manager->lights[i2].enabled);
 					ImGui::TreePop();
 				}
 			}

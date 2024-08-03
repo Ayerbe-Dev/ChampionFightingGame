@@ -23,7 +23,7 @@ public:
 	std::vector<float> stage_float;
 	std::vector<bool> stage_flag;
 
-	std::vector<Light> lights;
+	std::vector<Light*> lights;
 
 	ParamTable params;
 

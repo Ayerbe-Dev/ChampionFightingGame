@@ -33,6 +33,8 @@ WindowManager::WindowManager() {
 		std::cout << "Failed to initialize GLEW!\n";
 	}
 
+	glfwSwapInterval(1);
+
 #ifdef DEBUG
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 #endif
@@ -40,7 +42,6 @@ WindowManager::WindowManager() {
 	glfwSetFramebufferSizeCallback(window, window_resize_callback);
 	glfwSetWindowCloseCallback(window, window_close_callback);
 	glfwSetKeyCallback(window, window_key_callback);
-
 
 	glViewport(0, 0, window_width, window_height);
 
@@ -181,40 +182,26 @@ WindowManager::WindowManager() {
 	ex_trails.insert({ blend.textures[2], blend.textures[4] });
 }
 
-void WindowManager::add_light(Light *light, int target) {
-	if (target == -1) {
-		if (lights.size() == MAX_LIGHT_SOURCES) {
-			GameManager::get_instance()->add_crash_log("Congrats you stupid idiot, you ran out of lights\n");
-			return;
-		}
-		else {
-			lights.push_back(light);
-		}
+Light* WindowManager::add_light(Light light) {
+	if (lights.size() == MAX_LIGHT_SOURCES) {
+		GameManager::get_instance()->add_crash_log("Congrats you stupid idiot, you ran out of lights\n");
+		return nullptr;
 	}
 	else {
-		if (lights.size() <= target) {
-			lights.resize(target);
-			lights.push_back(light);
-		}
-		else {
-			lights[target] = light;
-		}
+		lights.push_back(light);
 	}
 	buffer_event("Shader Light", [this](ScriptArg args) {
 		update_shader_lights();
 	});
+	return &lights.back();
 }
 
-void WindowManager::remove_light(int target) {
-	if (target == -1) {
-		lights.clear();
-	}
-	else {
-		for (int i = target, max = lights.size() - 1; i < max; i++) {
-			lights[i] = lights[i + 1];
-		}
-		lights.pop_back();
-	}
+Light* WindowManager::add_light(glm::vec3 pos, glm::vec3 col, float brightness) {
+	return add_light(Light(pos, col, brightness));
+}
+
+void WindowManager::remove_lights() {
+	lights.clear();
 	buffer_event("Shader Light", [this](ScriptArg args) {
 		update_shader_lights();
 	});
@@ -251,14 +238,14 @@ void WindowManager::update_shader_lights() {
 
 	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
 		if (i < lights.size()) {
-			g_buffer.shader->set_vec3("light[0].position", glm::vec4(lights[i]->position, 1.0f) * camera.view_matrix, i);
-			g_buffer.shader->set_vec3("light[0].color", lights[i]->color, i);
-			g_buffer.shader->set_float("light[0].linear", lights[i]->linear, i);
-			g_buffer.shader->set_float("light[0].quadratic", lights[i]->quadratic, i);
+			g_buffer.shader->set_vec3("light[0].position", glm::vec4(lights[i].position, 1.0f) * camera.view_matrix, i);
+			g_buffer.shader->set_vec3("light[0].color", lights[i].color, i);
+			g_buffer.shader->set_float("light[0].linear", lights[i].linear, i);
+			g_buffer.shader->set_float("light[0].quadratic", lights[i].quadratic, i);
 
-			g_buffer.shader->set_bool("light[0].enabled", lights[i]->enabled, i);
-			if (lights[i]->enabled) {
-				shadow_total += lights[i]->position;
+			g_buffer.shader->set_bool("light[0].enabled", lights[i].enabled, i);
+			if (lights[i].enabled) {
+				shadow_total += lights[i].position;
 				shadow_factor++;
 			}
 		}
@@ -395,13 +382,13 @@ void WindowManager::update_screen() {
 
 		fade_texture.render();
 	}
-#ifdef DEBUG
+//#ifdef DEBUG
 	render_debug_textures();
-#endif
+//#endif
+	glfwPollEvents();
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSwapBuffers(window);
 	glDisable(GL_FRAMEBUFFER_SRGB);
-	glfwPollEvents();
 }
 
 void WindowManager::clear_screen() {

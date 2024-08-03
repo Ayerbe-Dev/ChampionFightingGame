@@ -175,7 +175,7 @@ Battle::~Battle() {
 	sound_manager->clear_sound_players();
 	effect_manager->unload_all_effects();
 	effect_manager->remove_effect_casters();
-	window_manager->remove_light();
+	window_manager->remove_lights();
 
 	thread_manager->kill_thread(THREAD_KIND_UI);
 	camera->stage = nullptr;

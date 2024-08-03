@@ -28,7 +28,6 @@ void stage_select_main() {
 		stage_select->render_game_state();
 
 		window_manager->update_screen();
-		
 	}
 
 	StageDemo demo = stage_select->stages[stage_select->selection];
@@ -58,20 +57,19 @@ StageDemo::StageDemo(int id, std::string name, std::string resource_name) {
 	this->id = id;
 	this->name = name;
 	this->resource_name = resource_name;
-	demo_model.load_model("resource/stage/" + resource_name + "/assets/demo/model/model.dae");
+	demo_model.load_model("resource/stage/" + resource_name + "/assets/main/model/model.dae");
 	demo_model.init_shader();
 	demo_anim.load_camera_anim("demo", "resource/stage/" + resource_name + "/cam_anims/demo.fbx");
 	selected_anim.load_camera_anim("selected", "resource/stage/" + resource_name + "/cam_anims/selected.fbx");
 
 	std::ifstream light_stream;
-	light_stream.open("resource/stage/" + resource_name + "/assets/demo/param/lights.yml");
+	light_stream.open("resource/stage/" + resource_name + "/assets/main/param/lights.yml");
 	if (light_stream.fail()) {
 		std::cout << "Failed to load lights!\n";
 		light_stream.close();
 		return;
 	}
 
-	lights.reserve(MAX_LIGHT_SOURCES);
 	glm::vec3 light_pos;
 	glm::vec3 light_col;
 	float brightness;
@@ -158,7 +156,7 @@ StageSelect::StageSelect() {
 	window_manager->camera.play_camera_anim(&stages[selection].demo_anim, 1.0, 0.0);
 	stages[selection].demo_model.model.load_textures();
 	for (size_t i = 0, max = stages[selection].lights.size(); i < max; i++) {
-		window_manager->add_light(&stages[selection].lights[i]);
+		window_manager->add_light(stages[selection].lights[i]);
 	}
 }
 
@@ -170,7 +168,7 @@ StageSelect::~StageSelect() {
 		}
 	}
 	WindowManager* window_manager = WindowManager::get_instance();
-	window_manager->remove_light();
+	window_manager->remove_lights();
 	window_manager->camera.reset_camera();
 }
 
@@ -276,7 +274,7 @@ void StageSelect::add_stage_slot(ParamTable param_table, Font* font) {
 	std::string resource_name = param_table.get_param_string("resource_name");
 	stages.emplace_back(stage_kind, stage_name, resource_name);
 	push_menu_child(stage_name); {
-		push_menu_texture("slot_texture", "resource/stage/" + resource_name + "/assets/demo/slot_texture.png");
+		push_menu_texture("slot_texture", "resource/stage/" + resource_name + "/slot_texture.png");
 		push_menu_texture("name_text", *font, stage_name, glm::vec4(255.0, 255.0, 255.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		push_menu_on_selected_event_function([this](MenuObject* object) {
 			object->get_parent().get_child("Cursor").set_pos(object->get_pos(), 6);
@@ -292,9 +290,9 @@ void StageSelect::process_main() {
 			stages[prev_selection].demo_model.model.unload_textures();
 			stages[selection].demo_model.model.load_textures();
 			window_manager->camera.frame = 0.0;
-			window_manager->remove_light();
+			window_manager->remove_lights();
 			for (size_t i = 0, max = stages[selection].lights.size(); i < max; i++) {
-				window_manager->add_light(&stages[selection].lights[i]);
+				window_manager->add_light(stages[selection].lights[i]);
 			}
 		}
 		prev_selection = selection;
@@ -308,7 +306,6 @@ void StageSelect::process_main() {
 			window_manager->camera.follow_anim();
 		}
 	}
-	window_manager->execute_buffered_events();
 	for (size_t i = 0, max = menu_objects.size(); i < max; i++) {
 		menu_objects[i].event_process();
 	}
@@ -316,9 +313,9 @@ void StageSelect::process_main() {
 
 void StageSelect::render_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
-
-	glEnable(GL_CULL_FACE);
+	window_manager->execute_buffered_events();
 	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
 
 	window_manager->shadow_map.use();
 	glViewport(0, 0, 2000, 2000);
@@ -333,9 +330,9 @@ void StageSelect::render_main() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	window_manager->shadow_map.bind_textures();
-	stages[selection].demo_model.render();
 
-	glDisable(GL_CULL_FACE);
+	stages[selection].demo_model.render();
+	window_manager->render_ssao();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_menu_object("Background");
@@ -344,7 +341,6 @@ void StageSelect::render_main() {
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	
 	glDepthMask(GL_FALSE);
-
 	render_menu_object("Stage Select");
 }
 

@@ -23,8 +23,9 @@ public:
 	WindowManager(WindowManager& other) = delete;
 	void operator=(const WindowManager& other) = delete;
 
-	void add_light(Light* light, int target = -1);
-	void remove_light(int target = -1);
+	Light* add_light(Light light);
+	Light* add_light(glm::vec3 pos, glm::vec3 col, float brightness);
+	void remove_lights();
 
 	void dim_lights(float dim_mul, Shader** shader);
 
@@ -53,7 +54,7 @@ public:
 
 	Camera camera;
 	glm::vec3 ambient_col;
-	std::vector<Light*>lights;
+	std::vector<Light>lights;
 
 	std::vector<std::function<void(ScriptArg)>> buffered_events;
 	std::vector<ScriptArg> buffered_args;

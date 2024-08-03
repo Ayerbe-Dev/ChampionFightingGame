@@ -112,8 +112,8 @@ public:
 
     Shader *shader;
     std::vector<unsigned int> texture;
-    TextureCoord tex_data[4];
-    TextureCoord* tex_accessor[4];
+    TextureCoord tex_data[6];
+    TextureCoord* tex_accessor[6];
     TargetVar<glm::vec3> pos = glm::vec3(0.0);
     glm::vec3* anchor_pos = nullptr;
     glm::vec3 rot = glm::vec3(0.0);

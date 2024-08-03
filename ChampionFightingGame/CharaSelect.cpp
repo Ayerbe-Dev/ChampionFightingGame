@@ -17,7 +17,7 @@ void chara_select_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
 
 	CSS *css = new CSS;
-	
+
 	while (css->looping) {
 		game_manager->frame_delay_check_fps();
 		window_manager->clear_screen();
@@ -39,9 +39,27 @@ CSS::CSS() {
 	loaded_chars = 0;
 	thread_loaded_chars = 0;
 
-	stage_demo.load_model(player[0]->stage_info.resource_dir + "assets/demo/model/model.dae");
+	stage_demo.load_model(player[0]->stage_info.resource_dir + "assets/main/model/model.dae");
 	stage_demo.init_shader();
 	stage_demo.model.load_textures();
+
+	lights.reserve(MAX_LIGHT_SOURCES);
+	std::ifstream light_stream;
+	light_stream.open(player[0]->stage_info.resource_dir + "/assets/main/param/lights.yml");
+	if (light_stream.fail()) {
+		std::cout << "Failed to load lights!\n";
+		light_stream.close();
+		return;
+	}
+
+	glm::vec3 light_pos;
+	glm::vec3 light_col;
+	float brightness;
+	while (light_stream >> light_pos.x) {
+		light_stream >> light_pos.y >> light_pos.z >> light_col.x >> light_col.y >> light_col.z >> brightness;
+		lights.push_back(window_manager->add_light(light_pos, light_col, brightness));
+	}
+	light_stream.close();
 
 	menu_objects.reserve(4);
 
@@ -353,25 +371,6 @@ CSS::CSS() {
 		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
 	} pop_menu_stack();
 
-	lights.reserve(MAX_LIGHT_SOURCES);
-	std::ifstream light_stream;
-	light_stream.open(player[0]->stage_info.resource_dir + "/assets/demo/param/lights.yml");
-	if (light_stream.fail()) {
-		std::cout << "Failed to load lights!\n";
-		light_stream.close();
-		return;
-	}
-
-	glm::vec3 light_pos;
-	glm::vec3 light_col;
-	float brightness;
-	while (light_stream >> light_pos.x) {
-		light_stream >> light_pos.y >> light_pos.z >> light_col.x >> light_col.y >> light_col.z >> brightness;
-		lights.emplace_back(light_pos, light_col, brightness);
-		window_manager->add_light(&lights.back());
-	}
-	light_stream.close();
-
 	for (int i = 0; i < 2; i++) {
 		player_id = i;
 		if (player[i]->chara_kind != CHARA_KIND_MAX) {
@@ -406,7 +405,7 @@ CSS::~CSS() {
 	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 
-	window_manager->remove_light();
+	window_manager->remove_lights();
 	resource_manager->unload_unused();
 }
 

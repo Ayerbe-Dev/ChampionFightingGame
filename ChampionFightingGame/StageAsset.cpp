@@ -106,8 +106,7 @@ void StageAsset::load_lights() {
 	float brightness;
 	while (light_stream >> light_pos.x) {
 		light_stream >> light_pos.y >> light_pos.z >> light_col.x >> light_col.y >> light_col.z >> brightness;
-		lights.emplace_back(light_pos, light_col, brightness);
-		window_manager->add_light(&lights.back());
+		lights.push_back(window_manager->add_light(light_pos, light_col, brightness));
 	}
 	
 	light_stream.close();

@@ -25,8 +25,8 @@ GameManager::GameManager() {
 	game_main[GAME_STATE_CONTROLS] = &controls_main;
 	game_main[GAME_STATE_PAUSE_BATTLE] = &pause_battle_main;
 
-	next_game_state = GAME_STATE_DEBUG_MENU;
-	next_game_context = GAME_CONTEXT_NORMAL;
+	next_game_state = GAME_STATE_CHARA_SELECT;
+	next_game_context = GAME_CONTEXT_TRAINING;
 
 	FontManager* font_manager = font_manager->get_instance();
 	average_ticks.reserve(10000);
@@ -36,10 +36,10 @@ GameManager::GameManager() {
 	fps_font = font_manager->load_font("FiraCode", 12);
 	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	fps_counter.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_counter.set_pos(glm::vec3(0.0, -10.0, 0.0));
+	fps_counter.set_pos(glm::vec3(0.0, 0.0, 0.0));
 	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	fps_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_texture.set_pos(glm::vec3(80.0, -10.0, 0.0));
+	fps_texture.set_pos(glm::vec3(80.0, 0.0, 0.0));
 }
 
 void GameManager::update_state(int next_game_state, int next_game_context) {
@@ -327,7 +327,7 @@ bool GameManager::is_crash() {
 
 void GameManager::frame_delay() {
 	TargetVarManager::get_instance()->process_targets();
-	wait_ms();
+//	wait_ms();
 }
 
 void GameManager::frame_delay_check_fps() {

@@ -35,10 +35,6 @@ WindowManager::WindowManager() {
 
 	glfwSwapInterval(1);
 
-#ifdef DEBUG
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-#endif
-
 	glfwSetFramebufferSizeCallback(window, window_resize_callback);
 	glfwSetWindowCloseCallback(window, window_close_callback);
 	glfwSetKeyCallback(window, window_key_callback);

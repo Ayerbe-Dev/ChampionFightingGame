@@ -13,19 +13,23 @@ void cotr_imgui_init() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	ImGui::StyleColorsDark();
-	ImGui_ImplOpenGL3_Init();
+	ImGui_ImplGlfw_InitForOpenGL(WindowManager::get_instance()->window, true);
+	ImGui_ImplOpenGL3_Init("#version 130");
 
-	io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 }
 
 void cotr_imgui_terminate() {
 	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
 void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
 	GameManager* game_manager = GameManager::get_instance();
@@ -72,6 +76,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 	WindowManager* window_manager = WindowManager::get_instance();
 
 	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
 	ImGui::Begin("Debug Menu");

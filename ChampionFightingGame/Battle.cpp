@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include <SDL/SDL.h>
 #include <glew/glew.h>
 
 #include "BattleObject.h"

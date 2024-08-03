@@ -43,6 +43,8 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	corners[1] = glm::vec2(c1.x, c2.y);
 	corners[2] = c2;
 	corners[3] = glm::vec2(c2.x, c1.y);
+	corners[4] = corners[0];
+	corners[5] = corners[2];
 
 	attach_shader(shader_manager->get_shader("rect", "rect", "", 0));
 	shader->use();
@@ -102,11 +104,13 @@ void GameRect::render() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
 	glDepthMask(GL_FALSE);
-	glDrawArrays(GL_QUADS, 0, 4);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDepthMask(GL_TRUE);
 }
 
 void GameRect::update_buffer_data() {
+	corners[4] = corners[0];
+	corners[5] = corners[2];
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(corners), corners);

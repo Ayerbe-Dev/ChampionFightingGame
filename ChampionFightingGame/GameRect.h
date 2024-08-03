@@ -23,7 +23,7 @@ public:
 
 	Shader* shader;
 
-	glm::vec2 corners[4] = { glm::vec2(0.0) };
+	glm::vec2 corners[6] = { glm::vec2(0.0) };
 	glm::vec4 rgba = glm::vec4(0.0);
 private:
 	void update_buffer_data();

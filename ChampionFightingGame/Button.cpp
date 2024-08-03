@@ -1,13 +1,17 @@
 #include "Button.h"
+#include <iostream>
 
-bool is_any_controller_input(SDL_GameController* controller) {
-	for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++) {
-		if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)i)) {
+bool is_any_controller_input(int controller_id) {
+	GLFWgamepadstate state;
+
+	glfwGetGamepadState(controller_id, &state);
+	for (int i = 0; i < GLFW_GAMEPAD_BUTTON_MAX; i++) {
+		if (state.buttons[i]) {
 			return true;
 		}
 	}
-	for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++) {
-		if (abs(SDL_GameControllerGetAxis(controller, (SDL_GameControllerAxis)i)) >= 13106) {
+	for (int i = 0; i < GLFW_GAMEPAD_AXIS_MAX; i++) {
+		if (abs(state.axes[i]) >= 13106) {
 			return true;
 		}
 	}

@@ -3,7 +3,7 @@
 #include "FontManager.h"
 #include "GameManager.h"
 #include "ObjectManager.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "WindowConstants.h"
 
 void GameState::pre_event_process_main() {}

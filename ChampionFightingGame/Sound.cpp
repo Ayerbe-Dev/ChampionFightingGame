@@ -1,7 +1,7 @@
 #include "Sound.h"
 #include <fstream>
 #include <vector>
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "SoundManager.h"
 #include "SaveManager.h"
 #include "utils.h"
@@ -81,7 +81,7 @@ void SoundInstance::start(glm::vec3* pos) {
 	alGenSources(1, &al_source);
 	alSourcef(al_source, AL_PITCH, 1);
 	if (pos != nullptr) {
-		alSourcef(al_source, AL_GAIN, (1.0 + abs(RenderManager::get_instance()->camera.pos.z / 10.0) 
+		alSourcef(al_source, AL_GAIN, (1.0 + abs(WindowManager::get_instance()->camera.pos.z / 10.0) 
 			+ volume_mod) * volume_mul);
 		alSource3f(al_source, AL_POSITION, pos->x, pos->y, pos->z);
 		alSourcei(al_source, AL_SOURCE_RELATIVE, AL_FALSE);

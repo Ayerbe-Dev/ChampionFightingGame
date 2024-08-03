@@ -1,5 +1,6 @@
 #pragma once
-#include <SDL/SDL.h>
+#include <glew/glew.h>
+#include <glfw/glfw3.h>
 
 const unsigned int BUTTON_UP = 0;
 const unsigned int BUTTON_DOWN = 1;
@@ -55,14 +56,17 @@ const int BUTTON_3K_BIT = BUTTON_LK_BIT | BUTTON_MK_BIT | BUTTON_HK_BIT;
 const int BUTTON_6B_BIT = BUTTON_3P_BIT | BUTTON_3K_BIT;
 const int BUTTON_ALL_BIT = BUTTON_STICK_BIT | BUTTON_6B_BIT;
 
-bool is_any_controller_input(SDL_GameController* controller);
+bool is_any_controller_input(int controller_id);
 bool is_menu_button(unsigned int button_kind);
+
+#define GLFW_GAMEPAD_BUTTON_MAX GLFW_GAMEPAD_BUTTON_LAST + 1
+#define GLFW_GAMEPAD_AXIS_MAX GLFW_GAMEPAD_AXIS_LAST + 1
 
 struct Button {
 	unsigned int button_kind = 0;
 	unsigned int k_mapping = 0;
-	SDL_GameControllerButton c_mapping = SDL_CONTROLLER_BUTTON_INVALID;
-	SDL_GameControllerAxis c_axis = SDL_CONTROLLER_AXIS_INVALID;
+	unsigned int c_mapping = GLFW_GAMEPAD_BUTTON_MAX;
+	unsigned int c_axis = GLFW_GAMEPAD_AXIS_MAX;
 	bool button_on = false;
 	bool changed = false;
 	int buffer = 0;

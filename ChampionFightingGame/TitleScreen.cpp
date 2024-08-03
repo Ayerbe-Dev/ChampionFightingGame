@@ -2,12 +2,12 @@
 #include "GameTexture.h"
 #include "cotr_imgui_debugger.h"
 #include <glew/glew.h>
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "TimeFuncs.h"
 
 void title_screen_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	Player *player[2];
 	player[0] = game_manager->player[0];
@@ -18,14 +18,12 @@ void title_screen_main() {
     while (title_screen->looping) {
 		wait_ms();
 
-		render_manager->clear_screen();
-
-		render_manager->handle_window_events();
+		window_manager->clear_screen();
 
 		title_screen->process_game_state();
 		title_screen->render_game_state();
 
-		render_manager->update_screen();
+		window_manager->update_screen();
 	}
 
 	delete title_screen;

@@ -203,8 +203,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\glfw;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\SDL;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;$(SolutionDir)\dependencies\x64\lib\OpenAL;$(SolutionDir)\dependencies\x64\lib\giflib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mt.lib;freetype.lib;libgif.a;glfw3dll.lib;glfw3.lib;glfw3_mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\dependencies\x64\lib\glfw;$(SolutionDir)\dependencies\x64\lib\glew;$(SolutionDir)\dependencies\x64\lib\assimp;$(SolutionDir)\dependencies\x64\lib\freetype;$(SolutionDir)\dependencies\x64\lib\OpenAL;$(SolutionDir)\dependencies\x64\lib\giflib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;glew32s.lib;opengl32.lib;OpenAL32.lib;EFX-Util.lib;assimp-vc143-mt.lib;freetype.lib;libgif.a;glfw3dll.lib;glfw3.lib;glfw3_mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
@@ -257,6 +257,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraAnim.cpp" />
     <ClCompile Include="CharaSelect.cpp" />
+    <ClCompile Include="imgui_impl_glfw.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="cotr_imgui_debugger.cpp" />
     <ClCompile Include="DebugMenu.cpp" />
@@ -290,7 +291,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="GameObjectRenderFunctions.cpp" />
     <ClCompile Include="GameObjectSoundFunctions.cpp" />
     <ClCompile Include="GameRect.cpp" />
-    <ClCompile Include="GameTextureSDL.cpp" />
     <ClCompile Include="GLEW Helpers.cpp" />
     <ClCompile Include="GLM Helpers.cpp" />
     <ClCompile Include="BattleObjectGrabboxFunctions.cpp" />
@@ -309,7 +309,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui_impl_sdl.cpp" />
     <ClCompile Include="imgui_stdlib.cpp" />
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
@@ -395,7 +394,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Ramona.cpp" />
     <ClCompile Include="RamonaMoves.cpp" />
     <ClCompile Include="RamonaStatus.cpp" />
-    <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Rowan.cpp" />
     <ClCompile Include="RowanFireball.cpp" />
@@ -407,7 +406,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleObjectScriptFunctions.cpp" />
     <ClCompile Include="BattleObjectScriptWrappers.cpp" />
     <ClCompile Include="ScriptArg.cpp" />
-    <ClCompile Include="SDL Helpers.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -485,13 +483,13 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="CameraAnim.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontManager.h" />
-    <ClInclude Include="GameTextureSDL.h" />
     <ClInclude Include="HxAConventions.h" />
     <ClInclude Include="HxAEnums.h" />
     <ClInclude Include="HxAFile.h" />
     <ClInclude Include="HxALayer.h" />
     <ClInclude Include="HxAMeta.h" />
     <ClInclude Include="HxANode.h" />
+    <ClInclude Include="imgui_impl_glfw.h" />
     <ClInclude Include="imgui_stdlib.h" />
     <ClInclude Include="InputSequence.h" />
     <ClInclude Include="JuliusString.h" />
@@ -570,7 +568,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_opengl3.h" />
     <ClInclude Include="imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="imgui_impl_sdl.h" />
     <ClInclude Include="imgui_internal.h" />
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
@@ -641,7 +638,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RamonaFloat.h" />
     <ClInclude Include="RamonaInt.h" />
     <ClInclude Include="RamonaString.h" />
-    <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="WindowManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Rowan.h" />
     <ClInclude Include="RowanConstants.h" />
@@ -655,7 +652,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RowanFloat.h" />
     <ClInclude Include="RowanInt.h" />
     <ClInclude Include="RowanStatus.h" />
-    <ClInclude Include="SDL Helpers.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundConstants.h" />

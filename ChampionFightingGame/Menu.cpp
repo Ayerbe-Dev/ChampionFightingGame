@@ -7,13 +7,13 @@
 #include "cotr_imgui_debugger.h"
 #include "DebugMenu.h"
 #include "Options.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "FontManager.h"
 #include "SoundManager.h"
 
 void menu_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 	
 	font_manager->load_face("Fiend-Oblique");
@@ -22,14 +22,14 @@ void menu_main() {
 
 	while (main_menu->looping) {
 		game_manager->frame_delay_check_fps();
-		render_manager->clear_screen();
+		window_manager->clear_screen();
 
-		render_manager->handle_window_events();
+
 
 		main_menu->process_game_state();
 		main_menu->render_game_state();
 
-		render_manager->update_screen();
+		window_manager->update_screen();
 
 		if (main_menu->sub_state != GAME_STATE_NONE) {
 			if (game_manager->game_main[main_menu->sub_state] != nullptr) {
@@ -55,7 +55,7 @@ MainMenu::MainMenu() {
 	menu_frame = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	FontManager* font_manager = FontManager::get_instance();
 	Font main_text_font = font_manager->load_font("Fiend-Oblique", 36);

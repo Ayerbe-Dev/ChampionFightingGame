@@ -15,13 +15,13 @@ public:
 	void poll_fighter();
 	void poll_from_input_code(unsigned short input_code);
 
-	void add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerButton c_mapping);
-	void add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerAxis c_axis);
-	void add_button_mapping(unsigned int button_kind);
+	void add_button(unsigned int button_kind);
+	void add_button_mapping(unsigned int button_kind, unsigned int k_mapping, unsigned int c_mapping);
+	void add_button_axis(unsigned int button_kind, unsigned int k_mapping, unsigned int c_axis);
 
-	void set_button_mapping(unsigned int button_kind, unsigned int k_mapping);
-	void set_button_mapping(unsigned int button_kind, SDL_GameControllerButton c_mapping);
-	void set_button_mapping(unsigned int button_kind, SDL_GameControllerAxis c_axis);
+	void set_button_k_mapping(unsigned int button_kind, unsigned int k_mapping);
+	void set_button_c_mapping(unsigned int button_kind, unsigned int c_mapping);
+	void set_button_c_axis(unsigned int button_kind, unsigned int c_axis);
 
 	bool check_button_on(unsigned int button_kind);
 	bool check_button_input(unsigned int button_kind);
@@ -46,21 +46,25 @@ public:
 
 	void swap_player_controller(GameController* other);
 	void reset_player_controller();
+
+	void remove_controller();
 private:
 	int stick_hold_h_timer;
 	int stick_hold_v_timer;
 
 	std::unordered_map<unsigned int, unsigned int> key_map[2];
-	std::unordered_map<SDL_GameControllerButton, unsigned int> controller_map[2];
-	std::unordered_map<SDL_GameControllerAxis, unsigned int> axis_map[2];
+	std::unordered_map<unsigned int, unsigned int> button_map[2];
+	std::unordered_map<unsigned int, unsigned int> axis_map[2];
 
 	bool hold_buffer;
 	std::vector<Button> button_info;
 	unsigned short buffer_code = 0;
 	unsigned short buffer_lockout_code = 0;
 	unsigned short input_code = 0;
-	SDL_GameController* controller;
-	SDL_GameController** player_controller;
+	
+	int controller_id;
+	int* player_controller_id;
+
 	bool owns_keyboard;
 	bool* player_owns_keyboard;
 };

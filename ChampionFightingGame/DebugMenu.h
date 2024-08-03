@@ -1,5 +1,4 @@
 #pragma once
-#include <SDL/SDL.h>
 #include <string>
 #include "Player.h"
 #include "GameState.h"

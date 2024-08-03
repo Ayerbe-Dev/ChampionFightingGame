@@ -1,12 +1,11 @@
 #include "Opening.h"
-#include <glew/glew.h>
 #include "GameTexture.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "TimeFuncs.h"
 
 void opening_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	Player* player[2];
 	player[0] = game_manager->player[0];
@@ -28,9 +27,6 @@ void opening_main() {
 	while (loop && game_manager->next_game_state != GAME_STATE_CLOSE) {
 		wait_ms(66.667);
 
-		render_manager->handle_window_events();
-
-
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
 			player[i]->controller.poll_menu();
@@ -39,7 +35,7 @@ void opening_main() {
 			}
 		}
 
-		render_manager->clear_screen();
+		window_manager->clear_screen();
 
 		if (fade_state == 0) {
 			title_alpha += 10;
@@ -71,7 +67,7 @@ void opening_main() {
 		titleSplash.render();
 		textSplash.render();
 
-		render_manager->update_screen();
+		window_manager->update_screen();
 	}
 
 	titleSplash.destroy();

@@ -1,6 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Fighter.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "GameManager.h"
@@ -97,7 +97,7 @@ void Fighter::load_anim_list() {
 		if (name == "") {
 			break;
 		}
-		render_manager->camera.load_camera_anim(name, resource_dir + "/cam_anims/" + filename);
+		window_manager->camera.load_camera_anim(name, resource_dir + "/cam_anims/" + filename);
 	}
 	camera_stream.close();
 }

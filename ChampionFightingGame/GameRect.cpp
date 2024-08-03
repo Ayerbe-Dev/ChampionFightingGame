@@ -3,7 +3,7 @@
 #include <glm/ext/matrix_projection.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "ObjectManager.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 #include "ThreadManager.h"
 #include "Fighter.h"
@@ -11,7 +11,7 @@
 
 GameRect::GameRect() {
 	thread_manager = ThreadManager::get_instance();
-	render_manager = RenderManager::get_instance();
+	window_manager = WindowManager::get_instance();
 	shader_manager = ShaderManager::get_instance();
 }
 
@@ -43,6 +43,8 @@ void GameRect::init(glm::vec2 c1, glm::vec2 c2) {
 	corners[1] = glm::vec2(c1.x, c2.y);
 	corners[2] = c2;
 	corners[3] = glm::vec2(c2.x, c1.y);
+	corners[4] = corners[0];
+	corners[5] = corners[2];
 
 	attach_shader(shader_manager->get_shader("rect", "rect", "", 0));
 	shader->use();
@@ -102,11 +104,13 @@ void GameRect::render() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	shader->set_vec4("f_rgba", rgba / glm::vec4(255.0));
 	glDepthMask(GL_FALSE);
-	glDrawArrays(GL_QUADS, 0, 4);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDepthMask(GL_TRUE);
 }
 
 void GameRect::update_buffer_data() {
+	corners[4] = corners[0];
+	corners[5] = corners[2];
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(corners), corners);
@@ -318,14 +322,14 @@ bool is_rect_collide(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b)
 
 
 glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_pos) {
-	RenderManager* render_manager = RenderManager::get_instance();
-	Camera& camera = render_manager->camera;
+	WindowManager* window_manager = WindowManager::get_instance();
+	Camera& camera = window_manager->camera;
 
-	mouse_pos.y = render_manager->res_height - mouse_pos.y;
+	mouse_pos.y = window_manager->res_height - mouse_pos.y;
 	glm::vec3 screen_pos = glm::vec3(mouse_pos.x, mouse_pos.y, 0.0f);
 	glReadPixels(mouse_pos.x, mouse_pos.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &screen_pos.z);
 
-	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, render_manager->res_width, render_manager->res_height);
+	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, window_manager->res_width, window_manager->res_height);
 	glm::mat4 modelview = camera.view_matrix;
 	glm::mat4 projection = camera.projection_matrix;
 

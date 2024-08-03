@@ -2,7 +2,7 @@
 #include <queue>
 #include <vector>
 #include "GameObject.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "Animation.h"
 #include "Param.h"
 #include "ScriptFunc.h"
@@ -23,7 +23,7 @@ public:
 	std::vector<float> stage_float;
 	std::vector<bool> stage_flag;
 
-	std::vector<Light> lights;
+	std::vector<Light*> lights;
 
 	ParamTable params;
 

@@ -238,16 +238,13 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
-    <ClCompile Include="RenderManager.cpp">
+    <ClCompile Include="WindowManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="GLM Helpers.cpp">
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="GLEW Helpers.cpp">
-      <Filter>2. Code Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="SDL Helpers.cpp">
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Stage.cpp">
@@ -269,9 +266,6 @@
       <Filter>2. Code Files\Deps\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="imgui_impl_opengl3.cpp">
-      <Filter>2. Code Files\Deps\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui_impl_sdl.cpp">
       <Filter>2. Code Files\Deps\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="imgui_tables.cpp">
@@ -478,9 +472,6 @@
     <ClCompile Include="GameTexture.cpp">
       <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
     </ClCompile>
-    <ClCompile Include="GameTextureSDL.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
     </ClCompile>
@@ -607,6 +598,9 @@
     <ClCompile Include="GameObjectTransformationFunctions.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="imgui_impl_glfw.cpp">
+      <Filter>2. Code Files\Deps\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -627,7 +621,7 @@
     <ClInclude Include="GameManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
-    <ClInclude Include="RenderManager.h">
+    <ClInclude Include="WindowManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
@@ -643,9 +637,6 @@
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="GLEW Helpers.h">
-      <Filter>1. Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="SDL Helpers.h">
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Dingo.h">
@@ -1014,9 +1005,6 @@
     <ClInclude Include="imgui_impl_opengl3_loader.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_impl_sdl.h">
-      <Filter>1. Header Files\Deps\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="imgui_internal.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
@@ -1150,9 +1138,6 @@
       <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="GameTexture.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTextureSDL.h">
       <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">
@@ -1403,6 +1388,9 @@
     </ClInclude>
     <ClInclude Include="FighterCPU.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_glfw.h">
+      <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

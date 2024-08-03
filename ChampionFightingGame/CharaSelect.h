@@ -48,7 +48,7 @@ public:
 
     std::vector<AnimationTable> demo_anim_tables;
 
-    std::vector<Light> lights;
+    std::vector<Light*> lights;
 
     int loaded_chars;
     int thread_loaded_chars;

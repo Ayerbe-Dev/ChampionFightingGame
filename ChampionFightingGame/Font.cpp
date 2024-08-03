@@ -1,7 +1,7 @@
 #include "Font.h"
 #include <vector>
 #include <glew/glew.h>
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ShaderManager.h"
 #include "utils.h"
 #include "debug.h"
@@ -65,7 +65,7 @@ void Font::unload_font() {
 
 
 unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 border_rgbs, unsigned int* existing_texture) {
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	//Calculate the size the texture will need to be
 
 	float width = 0.0f;
@@ -166,7 +166,7 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	prev_width = width;
 	prev_height = height;
 
-	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
+	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
 
 	return texture;
 }

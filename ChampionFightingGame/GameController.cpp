@@ -2,14 +2,13 @@
 #include "ParamAccessor.h"
 #include "InputManager.h"
 #include "utils.h"
-#include "SDL/SDL_gamecontroller.h"
 
 GameController::GameController() {
 	stick_hold_h_timer = 0;
 	stick_hold_v_timer = 0;
 	hold_buffer = false;
-	controller = nullptr;
-	player_controller = &controller;
+	controller_id = -1;
+	player_controller_id = &controller_id;
 	owns_keyboard = false;
 	player_owns_keyboard = &owns_keyboard;
 
@@ -18,73 +17,61 @@ GameController::GameController() {
 
 void GameController::reset_button_mappings() {
 	button_info.clear();
-	add_button_mapping(BUTTON_UP, SDL_SCANCODE_W, SDL_CONTROLLER_BUTTON_DPAD_UP);
-	add_button_mapping(BUTTON_DOWN, SDL_SCANCODE_S, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-	add_button_mapping(BUTTON_LEFT, SDL_SCANCODE_A, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-	add_button_mapping(BUTTON_RIGHT, SDL_SCANCODE_D, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-	add_button_mapping(BUTTON_LP, SDL_SCANCODE_Y, SDL_CONTROLLER_BUTTON_A);
-	add_button_mapping(BUTTON_MP, SDL_SCANCODE_U, SDL_CONTROLLER_BUTTON_Y);
-	add_button_mapping(BUTTON_HP, SDL_SCANCODE_I, SDL_CONTROLLER_BUTTON_B);
-	add_button_mapping(BUTTON_LK, SDL_SCANCODE_H, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-	add_button_mapping(BUTTON_MK, SDL_SCANCODE_J, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-	add_button_mapping(BUTTON_HK, SDL_SCANCODE_K, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-	add_button_mapping(BUTTON_2L);
-	add_button_mapping(BUTTON_2M);
-	add_button_mapping(BUTTON_2H);
-	add_button_mapping(BUTTON_3P, SDL_SCANCODE_O, SDL_CONTROLLER_BUTTON_X);
-	add_button_mapping(BUTTON_3K, SDL_SCANCODE_L, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-	add_button_mapping(BUTTON_6B);
-	add_button_mapping(BUTTON_START, SDL_SCANCODE_ESCAPE, SDL_CONTROLLER_BUTTON_START);
-	add_button_mapping(BUTTON_MENU_UP, SDL_SCANCODE_W, SDL_CONTROLLER_BUTTON_DPAD_UP);
-	add_button_mapping(BUTTON_MENU_DOWN, SDL_SCANCODE_S, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-	add_button_mapping(BUTTON_MENU_LEFT, SDL_SCANCODE_A, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-	add_button_mapping(BUTTON_MENU_RIGHT, SDL_SCANCODE_D, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-	add_button_mapping(BUTTON_MENU_SELECT, SDL_SCANCODE_Y, SDL_CONTROLLER_BUTTON_A);
-	add_button_mapping(BUTTON_MENU_START, SDL_SCANCODE_ESCAPE, SDL_CONTROLLER_BUTTON_START);
-	add_button_mapping(BUTTON_MENU_BACK, SDL_SCANCODE_U, SDL_CONTROLLER_BUTTON_B);
-	add_button_mapping(BUTTON_MENU_PAGE_LEFT, SDL_SCANCODE_H, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-	add_button_mapping(BUTTON_MENU_PAGE_RIGHT, SDL_SCANCODE_L, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-	add_button_mapping(BUTTON_MENU_FRAME_PAUSE, SDL_SCANCODE_LSHIFT, SDL_CONTROLLER_BUTTON_INVALID);
-	add_button_mapping(BUTTON_MENU_FRAME_ADVANCE, SDL_SCANCODE_LCTRL, SDL_CONTROLLER_BUTTON_INVALID);
-	add_button_mapping(BUTTON_MENU_RECORD_INPUT, SDL_SCANCODE_1, SDL_CONTROLLER_BUTTON_INVALID);
-	add_button_mapping(BUTTON_MENU_REPLAY_INPUT, SDL_SCANCODE_2, SDL_CONTROLLER_BUTTON_INVALID);
-	add_button_mapping(BUTTON_MENU_SWITCH_INPUT, SDL_SCANCODE_SPACE, SDL_CONTROLLER_BUTTON_INVALID);
+	add_button_mapping(BUTTON_UP, GLFW_KEY_W, GLFW_GAMEPAD_BUTTON_DPAD_UP);
+	add_button_mapping(BUTTON_DOWN, GLFW_KEY_S, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
+	add_button_mapping(BUTTON_LEFT, GLFW_KEY_A, GLFW_GAMEPAD_BUTTON_DPAD_LEFT);
+	add_button_mapping(BUTTON_RIGHT, GLFW_KEY_D, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT);
+	add_button_mapping(BUTTON_LP, GLFW_KEY_Y, GLFW_GAMEPAD_BUTTON_A);
+	add_button_mapping(BUTTON_MP, GLFW_KEY_U, GLFW_GAMEPAD_BUTTON_Y);
+	add_button_mapping(BUTTON_HP, GLFW_KEY_I, GLFW_GAMEPAD_BUTTON_B);
+	add_button_mapping(BUTTON_LK, GLFW_KEY_H, GLFW_GAMEPAD_BUTTON_LEFT_BUMPER);
+	add_button_axis(BUTTON_MK, GLFW_KEY_J, GLFW_GAMEPAD_AXIS_LEFT_TRIGGER);
+	add_button_axis(BUTTON_HK, GLFW_KEY_K, GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER);
+	add_button(BUTTON_2L);
+	add_button(BUTTON_2M);
+	add_button(BUTTON_2H);
+	add_button_mapping(BUTTON_3P, GLFW_KEY_O, GLFW_GAMEPAD_BUTTON_X);
+	add_button_mapping(BUTTON_3K, GLFW_KEY_L, GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER);
+	add_button(BUTTON_6B);
+	add_button_mapping(BUTTON_START, GLFW_KEY_ESCAPE, GLFW_GAMEPAD_BUTTON_START);
+	add_button_mapping(BUTTON_MENU_UP, GLFW_KEY_W, GLFW_GAMEPAD_BUTTON_DPAD_UP);
+	add_button_mapping(BUTTON_MENU_DOWN, GLFW_KEY_S, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
+	add_button_mapping(BUTTON_MENU_LEFT, GLFW_KEY_A, GLFW_GAMEPAD_BUTTON_DPAD_LEFT);
+	add_button_mapping(BUTTON_MENU_RIGHT, GLFW_KEY_D, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT);
+	add_button_mapping(BUTTON_MENU_SELECT, GLFW_KEY_Y, GLFW_GAMEPAD_BUTTON_A);
+	add_button_mapping(BUTTON_MENU_START, GLFW_KEY_ESCAPE, GLFW_GAMEPAD_BUTTON_START);
+	add_button_mapping(BUTTON_MENU_BACK, GLFW_KEY_U, GLFW_GAMEPAD_BUTTON_B);
+	add_button_axis(BUTTON_MENU_PAGE_LEFT, GLFW_KEY_H, GLFW_GAMEPAD_AXIS_LEFT_TRIGGER);
+	add_button_axis(BUTTON_MENU_PAGE_RIGHT, GLFW_KEY_L, GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER);
+	add_button_mapping(BUTTON_MENU_FRAME_PAUSE, GLFW_KEY_LEFT_SHIFT, GLFW_GAMEPAD_BUTTON_MAX);
+	add_button_mapping(BUTTON_MENU_FRAME_ADVANCE, GLFW_KEY_LEFT_CONTROL, GLFW_GAMEPAD_BUTTON_MAX);
+	add_button_mapping(BUTTON_MENU_RECORD_INPUT, GLFW_KEY_1, GLFW_GAMEPAD_BUTTON_MAX);
+	add_button_mapping(BUTTON_MENU_REPLAY_INPUT, GLFW_KEY_2, GLFW_GAMEPAD_BUTTON_MAX);
+	add_button_mapping(BUTTON_MENU_SWITCH_INPUT, GLFW_KEY_SPACE, GLFW_GAMEPAD_BUTTON_MAX);
 }
 
 void GameController::check_controllers() {
 	InputManager* input_manager = InputManager::get_instance();
 	if (owns_keyboard) return;
-	if (controller == nullptr) {
-		if (input_manager->get_owner(nullptr) == nullptr) {
+	if (controller_id == -1) {
+		if (input_manager->get_owner(-1) == nullptr) {
 			for (size_t i = 0, max = button_info.size(); i < max; i++) {
 				if (input_manager->keyboard_state[button_info[i].k_mapping]) {
 					owns_keyboard = true;
-					input_manager->register_controller(nullptr, this);
+					input_manager->register_controller(-1, this);
 					return;
 				}
 			}
 		}
-		SDL_GameController* new_controller;
-
-		for (int i = 0, max = SDL_NumJoysticks(); i < max; i++) {
-			if (SDL_IsGameController(i)) {
-				new_controller = SDL_GameControllerOpen(i);
-				if (input_manager->get_owner(new_controller) == nullptr) {
-					if (is_any_controller_input(new_controller)) {
-						controller = new_controller;
-						input_manager->register_controller(new_controller, this);
-						return;
-					}
-					SDL_GameControllerClose(new_controller);
+		for (int c : input_manager->available_controllers) {
+			GLFWgamepadstate state;
+			if (glfwGetGamepadState(c, &state)) {
+				if (is_any_controller_input(c)) {
+					controller_id = c;
+					input_manager->register_controller(c, this);
+					return;
 				}
-
 			}
-		}
-	}
-	else {
-		if (!SDL_GameControllerGetAttached(controller)) {
-			input_manager->unregister_controller(controller);
-			controller = nullptr;
 		}
 	}
 }
@@ -94,26 +81,27 @@ void GameController::set_owns_keyboard(bool owns_keyboard) {
 }
 
 void GameController::poll_menu() {
-	const Uint8* keyboard_state = InputManager::get_instance()->keyboard_state;
+	std::map<int, bool> keyboard_state = InputManager::get_instance()->keyboard_state;
 	for (unsigned int i = BUTTON_MENU; i < BUTTON_MENU_MAX; i++) {
 		bool old_button = button_info[i].button_on;
-		if (controller != nullptr) {
+		if (controller_id != -1) {
+			GLFWgamepadstate state;
+			glfwGetGamepadState(controller_id, &state);
 			switch (i) {
 				case (BUTTON_MENU_UP): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= 0.4);
 				} break;
 				case (BUTTON_MENU_DOWN): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) >= 13106);
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -0.4);
 				} break;
 				case (BUTTON_MENU_LEFT): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) <= -13106);
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -0.4);
 				} break;
 				case (BUTTON_MENU_RIGHT): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) >= 13106);
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= 0.4);
 				} break;
 				default: {
-					button_info[i].button_on = (SDL_GameControllerGetButton(controller, button_info[i].c_mapping)
-						|| SDL_GameControllerGetAxis(controller, button_info[i].c_axis) >= 13106);
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[state.buttons[button_info[i].c_axis]] >= 0.4);
 				} break;
 			}
 		}
@@ -125,29 +113,30 @@ void GameController::poll_menu() {
 }
 
 void GameController::poll_fighter() {
-	const Uint8* keyboard_state = InputManager::get_instance()->keyboard_state;
+	std::map<int, bool> keyboard_state = InputManager::get_instance()->keyboard_state;
 	int buffer_window = get_global_param_int(PARAM_FIGHTER, "buffer_window");
 	input_code = 0;
 	std::vector<bool> old_button;
 	for (unsigned int i = 0; i < BUTTON_MENU; i++) {
 		old_button.push_back(button_info[i].button_on);
-		if (*player_controller != nullptr) {
+		if (*player_controller_id != -1) {
+			GLFWgamepadstate state;
+			glfwGetGamepadState(*player_controller_id, &state);
 			switch (i) {
-				case (BUTTON_UP): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(*player_controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) <= -13106);
+				case (BUTTON_MENU_UP): {
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= 0.4);
 				} break;
-				case (BUTTON_DOWN): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(*player_controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) >= 13106);
+				case (BUTTON_MENU_DOWN): {
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -0.4);
 				} break;
-				case (BUTTON_LEFT): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(*player_controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) <= -13106);
+				case (BUTTON_MENU_LEFT): {
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -0.4);
 				} break;
-				case (BUTTON_RIGHT): {
-					button_info[i].button_on = (SDL_GameControllerGetButton(*player_controller, button_info[i].c_mapping) || SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) >= 13106);
+				case (BUTTON_MENU_RIGHT): {
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= 0.4);
 				} break;
 				default: {
-					button_info[i].button_on = (SDL_GameControllerGetButton(*player_controller, button_info[i].c_mapping)
-						|| SDL_GameControllerGetAxis(*player_controller, button_info[i].c_axis) >= 13106);
+					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[state.buttons[button_info[i].c_axis]] >= 0.4);
 				} break;
 			}
 		}
@@ -300,18 +289,24 @@ void GameController::poll_from_input_code(unsigned short input_code) {
 	buffer_lockout_code &= buffer_code;
 }
 
-void GameController::add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerButton c_mapping) {
+void GameController::add_button(unsigned int button_kind) {
+	Button new_button;
+	new_button.button_kind = button_kind;
+	button_info.push_back(new_button);
+}
+
+void GameController::add_button_mapping(unsigned int button_kind, unsigned int k_mapping, unsigned int c_mapping) {
 	bool menu = is_menu_button(button_kind);
 	Button new_button;
 	new_button.button_kind = button_kind;
 	new_button.k_mapping = k_mapping;
 	new_button.c_mapping = c_mapping;
 	key_map[menu][k_mapping] = button_info.size();
-	controller_map[menu][c_mapping] = button_info.size();
+	button_map[menu][c_mapping] = button_info.size();
 	button_info.push_back(new_button);
 }
 
-void GameController::add_button_mapping(unsigned int button_kind, unsigned int k_mapping, SDL_GameControllerAxis c_axis) {
+void GameController::add_button_axis(unsigned int button_kind, unsigned int k_mapping, unsigned int c_axis) {
 	bool menu = is_menu_button(button_kind);
 	Button new_button;
 	new_button.button_kind = button_kind;
@@ -322,13 +317,7 @@ void GameController::add_button_mapping(unsigned int button_kind, unsigned int k
 	button_info.push_back(new_button);
 }
 
-void GameController::add_button_mapping(unsigned int button_kind) {
-	Button new_button;
-	new_button.button_kind = button_kind;
-	button_info.push_back(new_button);
-}
-
-void GameController::set_button_mapping(unsigned int button_kind, unsigned int k_mapping) {
+void GameController::set_button_k_mapping(unsigned int button_kind, unsigned int k_mapping) {
 	bool menu = is_menu_button(button_kind);
 	Button& button = button_info[button_kind];
 	if (key_map[menu].contains(k_mapping)) {
@@ -339,16 +328,16 @@ void GameController::set_button_mapping(unsigned int button_kind, unsigned int k
 	button.k_mapping = k_mapping;
 }
 
-void GameController::set_button_mapping(unsigned int button_kind, SDL_GameControllerButton c_mapping) {
+void GameController::set_button_c_mapping(unsigned int button_kind, unsigned int c_mapping) {
 	bool menu = is_menu_button(button_kind);
 	Button& button = button_info[button_kind];
-	if (controller_map[menu].contains(c_mapping)) {
+	if (button_map[menu].contains(c_mapping)) {
 		button_info[key_map[menu][c_mapping]].c_mapping = button.c_mapping;
 	}
 	button.c_mapping = c_mapping;
 }
 
-void GameController::set_button_mapping(unsigned int button_kind, SDL_GameControllerAxis c_axis) {
+void GameController::set_button_c_axis(unsigned int button_kind, unsigned int c_axis) {
 	bool menu = is_menu_button(button_kind);
 	Button& button = button_info[button_kind];
 	if (axis_map[menu].find(c_axis) != axis_map[menu].end()) {
@@ -463,8 +452,8 @@ bool GameController::vertical_input(bool down) {
 }
 
 bool GameController::is_any_inputs() {
-	if (controller != nullptr) {
-		return is_any_controller_input(controller);
+	if (controller_id != -1) {
+		return is_any_controller_input(controller_id);
 	}
 	else {
 		for (int i = 0; i < BUTTON_MENU_MAX; i++) {
@@ -477,7 +466,7 @@ bool GameController::is_any_inputs() {
 }
 
 bool GameController::has_any_controller() {
-	return owns_keyboard || controller;
+	return owns_keyboard || controller_id != -1;
 }
 
 void GameController::reset_all_buttons() {
@@ -522,11 +511,19 @@ void GameController::set_hold_buffer(bool hold_buffer) {
 }
 
 void GameController::swap_player_controller(GameController* other) {
-	std::swap(player_controller, other->player_controller);
+	std::swap(player_controller_id, other->player_controller_id);
 	std::swap(player_owns_keyboard, other->player_owns_keyboard);
 }
 
 void GameController::reset_player_controller() {
-	player_controller = &controller;
+	player_controller_id = &controller_id;
 	player_owns_keyboard = &owns_keyboard;
+}
+
+void GameController::remove_controller() {
+	GameController* other = InputManager::get_instance()->get_owner(*player_controller_id);
+	if (this != other) {
+		swap_player_controller(other);
+	}
+	controller_id = -1;
 }

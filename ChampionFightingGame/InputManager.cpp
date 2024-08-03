@@ -1,45 +1,39 @@
 #include "InputManager.h"
+#include "WindowManager.h"
 #include <iostream>
+#include <glew/glew.h>
+#include <glfw/glfw3.h>
 
 InputManager::InputManager() {
-	controller_map[nullptr] = nullptr;
-	keyboard_state = SDL_GetKeyboardState(nullptr);
-	input_char = 0;
-	backspace_time = 0;
+	controller_map[-1] = nullptr;
+	text_input_texture = nullptr;
 }
 
-void InputManager::register_controller(SDL_GameController* sdl_controller, GameController* controller) {
-	controller_map[sdl_controller] = controller;
+void InputManager::register_controller(int controller_id, GameController* controller) {
+	controller_map[controller_id] = controller;
 }
 
-void InputManager::unregister_controller(SDL_GameController* sdl_controller) {
-	controller_map.erase(sdl_controller);
-}
-
-GameController* InputManager::get_owner(SDL_GameController* sdl_controller) {
-	return controller_map[sdl_controller];
-}
-
-bool InputManager::check_backspace() {
-	if (keyboard_state[SDL_SCANCODE_BACKSPACE]) {
-		switch (backspace_time) {
-			case 0: {
-				backspace_time = 30;
-				return true;
-			} break;
-			case 1: {
-				backspace_time = 2;
-				return true;
-			} break;
-			default: {
-				backspace_time--;
-			} break;
-		}
+void InputManager::unregister_controller(int controller_id) {
+	if (controller_map[controller_id]) {
+		controller_map[controller_id]->remove_controller();
 	}
-	else {
-		backspace_time = 0;
-	}
-	return false;
+	controller_map.erase(controller_id);
+}
+
+GameController* InputManager::get_owner(int controller_id) {
+	return controller_map[controller_id];
+}
+
+bool InputManager::is_using_text_input() const {
+	return text_input_texture;
+}
+
+void InputManager::modify_text_input(unsigned int key, unsigned int mods) {
+	std::string s = text_input_texture->get_text();
+
+	//TODO: Implement Text Entry Here
+
+	text_input_texture->update_text(s);
 }
 
 InputManager* InputManager::instance = nullptr;
@@ -51,11 +45,7 @@ InputManager* InputManager::get_instance() {
 }
 
 void InputManager::destroy_instance() {
-	for (auto controller : controller_map) {
-		if (controller.first != nullptr && controller.second != nullptr) {
-			SDL_GameControllerClose(controller.first);
-		}
-	}
+	text_input_texture = nullptr;
 	if (instance != nullptr) {
 		delete instance;
 	}

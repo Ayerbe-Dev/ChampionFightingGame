@@ -1,6 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Projectile.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "Fighter.h"
 #include "ObjectManager.h"
 #include "SoundManager.h"

@@ -41,9 +41,9 @@ void Player::load_player(int index) {
 	this->control_type = player_info->control_type;
 	controller.reset_button_mappings();
 	for (size_t i = 0, max = player_info->custom_mappings.size(); i < max; i++) {
-		controller.set_button_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].k_mapping);
-		controller.set_button_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_mapping);
-		controller.set_button_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_axis);
+		controller.set_button_k_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].k_mapping);
+		controller.set_button_c_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_mapping);
+		controller.set_button_c_axis(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_axis);
 	}
 	this->chara_kind = player_info->preferred_chara;
 	set_alt_for_chara();

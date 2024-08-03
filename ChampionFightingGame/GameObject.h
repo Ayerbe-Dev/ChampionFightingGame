@@ -8,7 +8,7 @@
 #include "SoundPlayer.h"
 #include "CircularBuffer.h"
 
-class RenderManager;
+class WindowManager;
 class SoundManager;
 class EffectManager;
 class ShaderManager;
@@ -128,7 +128,7 @@ public:
 	void unload_all_effects();
 
 	EffectManager* effect_manager;
-	RenderManager* render_manager;
+	WindowManager* window_manager;
 	ShaderManager* shader_manager;
 	ObjectManager* object_manager;
 

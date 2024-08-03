@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include <SDL/SDL.h>
 #include <glew/glew.h>
 
 #include "BattleObject.h"
@@ -19,7 +18,7 @@
 #include "FontManager.h"
 #include "ObjectManager.h"
 #include "ParamAccessor.h"
-#include "RenderManager.h"
+#include "WindowManager.h"
 #include "ResourceManager.h"
 #include "SaveManager.h"
 #include "ShaderManager.h"
@@ -33,7 +32,7 @@
 
 void battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
@@ -47,13 +46,7 @@ void battle_main() {
 
 	while (battle->looping) {
 		game_manager->frame_delay_check_fps();
-		render_manager->clear_screen();
-
-		#ifdef DEBUG
-			render_manager->handle_window_events(ImGui_ImplSDL2_ProcessEvent);
-		#else
-			render_manager->handle_window_events();
-		#endif
+		window_manager->clear_screen();
 
 		battle->process_game_state();
 		battle->render_game_state();
@@ -62,7 +55,7 @@ void battle_main() {
 		cotr_imgui_debug_battle(battle);
 #endif
 
-		render_manager->update_screen();
+		window_manager->update_screen();
 		battle->process_cpus();
 	}
 #ifdef DEBUG
@@ -157,7 +150,7 @@ Battle::Battle() {
 }
 
 Battle::~Battle() {
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
 	EffectManager* effect_manager = EffectManager::get_instance();
 	camera->reset_camera();
@@ -181,7 +174,7 @@ Battle::~Battle() {
 	sound_manager->clear_sound_players();
 	effect_manager->unload_all_effects();
 	effect_manager->remove_effect_casters();
-	render_manager->remove_light();
+	window_manager->remove_lights();
 
 	thread_manager->kill_thread(THREAD_KIND_UI);
 	camera->stage = nullptr;
@@ -191,7 +184,7 @@ Battle::~Battle() {
 }
 
 void Battle::load_world() {
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	int rng = rand() % 2;
 	stage.load_stage(player[rng]->stage_info, object_manager);
@@ -201,16 +194,16 @@ void Battle::load_world() {
 	}
 	fighter[1]->object_int[FIGHTER_INT_AUTO_WAKEUP_TYPE] = WAKEUP_TYPE_DEFAULT;
 
-	camera = &render_manager->camera;
+	camera = &window_manager->camera;
 	camera->reset_camera();
 	for (int i = 0; i < 2; i++) {
 		camera->fighter[i] = fighter[i];
 	}
 	camera->stage = &stage;
 
-	render_manager->update_shader_cams();
-	render_manager->update_shader_lights();
-	render_manager->update_shader_shadows();
+	window_manager->update_shader_cams();
+	window_manager->update_shader_lights();
+	window_manager->update_shader_shadows();
 }
 
 void Battle::load_ui() {
@@ -825,7 +818,7 @@ void Battle::process_battle() {
 
 void Battle::process_ko() {
 	SoundManager* sound_manager = SoundManager::get_instance();
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 
 	MenuObject& p1_round = get_child("Round Counter P1");
 	MenuObject& p2_round = get_child("Round Counter P2");
@@ -955,7 +948,7 @@ void Battle::process_ko() {
 			if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->object_float[FIGHTER_FLOAT_HEALTH]) {
 				if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !actionable_timer) {
 					if (curr_round == 5) {
-						render_manager->start_fade_sequence(40, [&]() {
+						window_manager->start_fade_sequence(40, [&]() {
 							internal_state = BATTLE_STATE_ROUND_START;
 						});
 					}
@@ -965,7 +958,7 @@ void Battle::process_ko() {
 						&& p2_wins + 1 == round_count_setting) {
 							p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
 							p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
-							render_manager->start_fade_sequence(40, [&]() {
+							window_manager->start_fade_sequence(40, [&]() {
 								p1_round.int_var("Wins")++;
 								p2_round.int_var("Wins")++;
 								curr_round = 5;
@@ -981,7 +974,7 @@ void Battle::process_ko() {
 					else if (fighter[0]->anim_end || fighter[1]->anim_end || !actionable_timer) {
 						p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
 						p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
-						render_manager->start_fade_sequence(40, [&]() {
+						window_manager->start_fade_sequence(40, [&]() {
 							p1_wins++;
 							p2_wins++;
 							curr_round += 2;
@@ -1015,7 +1008,7 @@ void Battle::process_ko() {
 					}
 					else if (fighter[0]->anim_end || !actionable_timer) {
 						p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
-						render_manager->start_fade_sequence(40, [&]() {
+						window_manager->start_fade_sequence(40, [&]() {
 							p1_wins++;
 							curr_round++;
 							internal_state = BATTLE_STATE_ROUND_START;
@@ -1048,7 +1041,7 @@ void Battle::process_ko() {
 					}
 					else if (fighter[1]->anim_end || !actionable_timer) {
 						p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
-						render_manager->start_fade_sequence(40, [&]() {
+						window_manager->start_fade_sequence(40, [&]() {
 							p2_wins++;
 							curr_round++;
 							internal_state = BATTLE_STATE_ROUND_START;
@@ -1081,7 +1074,7 @@ void Battle::process_ko() {
 				}
 				else {
 					if (curr_round == 5) {
-						render_manager->start_fade_sequence(40, [&]() {
+						window_manager->start_fade_sequence(40, [&]() {
 							internal_state = BATTLE_STATE_ROUND_START;
 						});
 					}
@@ -1091,7 +1084,7 @@ void Battle::process_ko() {
 						&& p2_wins + 1 == round_count_setting) {
 							p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
 							p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
-							render_manager->start_fade_sequence(40, [&]() {
+							window_manager->start_fade_sequence(40, [&]() {
 								p1_wins++;
 								p2_wins++;
 								curr_round = 5;
@@ -1109,7 +1102,7 @@ void Battle::process_ko() {
 						p1_round.get_texture("Round Win" + std::to_string(++p1_wins)).alpha.set_target_val(255, 20);
 						p2_round.get_texture("Round Win" + std::to_string(++p2_wins)).alpha.set_target_val(255, 20);
 
-						render_manager->start_fade_sequence(40, [&]() {
+						window_manager->start_fade_sequence(40, [&]() {
 							curr_round += 2;
 							internal_state = BATTLE_STATE_ROUND_START;
 						});
@@ -1126,7 +1119,7 @@ void Battle::process_ko() {
 				}
 				else if (fighter[0]->anim_end || !actionable_timer) {
 					p1_round.get_texture("Round Win" + std::to_string(p1_wins + 1)).alpha.set_target_val(255, 20);
-					render_manager->start_fade_sequence(40, [&]() {
+					window_manager->start_fade_sequence(40, [&]() {
 						p1_wins++;
 						curr_round++;
 						internal_state = BATTLE_STATE_ROUND_START;
@@ -1156,7 +1149,7 @@ void Battle::process_ko() {
 				}
 				else if (fighter[1]->anim_end || !actionable_timer) {
 					p2_round.get_texture("Round Win" + std::to_string(p2_wins + 1)).alpha.set_target_val(255, 20);
-					render_manager->start_fade_sequence(40, [&]() {
+					window_manager->start_fade_sequence(40, [&]() {
 						p2_wins++;
 						curr_round++;
 						internal_state = BATTLE_STATE_ROUND_START;
@@ -1185,11 +1178,11 @@ void Battle::process_outro() {
 }
 
 void Battle::process_debug_boxes() {
-	if (mouse.check_button_on(MOUSE_BUTTON_M2) && active_hitbox_object != nullptr &&
+	if (mouse.check_button_on(GLFW_MOUSE_BUTTON_2) && active_hitbox_object != nullptr &&
 		hitbox_sim[active_hitbox_object->get_anim()].active_box != nullptr) {
 		glm::vec2 game_rect_coords = mouse_pos_to_rect_coord(mouse.get_pos());
 		hitbox_sim[active_hitbox_object->get_anim()].active_box->offset = game_rect_coords;
-		if (mouse.check_button_trigger(MOUSE_BUTTON_M2)) {
+		if (mouse.check_button_trigger(GLFW_MOUSE_BUTTON_2)) {
 			hitbox_sim[active_hitbox_object->get_anim()].active_box->anchor = game_rect_coords;
 		}
 	}
@@ -1319,9 +1312,9 @@ void Battle::render_main() {
 }
 
 void Battle::render_world() {
-	RenderManager* render_manager = RenderManager::get_instance();
+	WindowManager* window_manager = WindowManager::get_instance();
 	ShaderManager* shader_manager = ShaderManager::get_instance();
-	render_manager->execute_buffered_events();
+	window_manager->execute_buffered_events();
 
 	glEnable(GL_CULL_FACE);
 	glDepthMask(GL_TRUE);
@@ -1329,7 +1322,7 @@ void Battle::render_world() {
 
 	//SHADOW PASS
 
-	render_manager->shadow_map.use();
+	window_manager->shadow_map.use();
 	glViewport(0, 0, 2000, 2000);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -1347,17 +1340,17 @@ void Battle::render_world() {
 
 	//COLOR PASS
 
-	render_manager->g_buffer.use();
+	window_manager->g_buffer.use();
 	if (!frame_pause || frame_advance) {
-		render_manager->ex_trails.cycle();
+		window_manager->ex_trails.cycle();
 	}
-	render_manager->g_buffer.bind_ex_write_texture(render_manager->ex_trails.newest().first, GL_COLOR_ATTACHMENT4, 4);
-	render_manager->g_buffer.bind_ex_write_texture(render_manager->ex_trails.newest().second, GL_COLOR_ATTACHMENT5, 5);
+	window_manager->g_buffer.bind_ex_write_texture(window_manager->ex_trails.newest().first, GL_COLOR_ATTACHMENT4, 4);
+	window_manager->g_buffer.bind_ex_write_texture(window_manager->ex_trails.newest().second, GL_COLOR_ATTACHMENT5, 5);
 
-	glViewport(0, 0, render_manager->res_width, render_manager->res_height);
+	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	render_manager->shadow_map.bind_textures();
+	window_manager->shadow_map.bind_textures();
 
 	glDisable(GL_CULL_FACE); //Fighter models are currently simple enough that it's not
 	//uncommon to see both sides of a vertex, such as looking at Rowan's sleeves. In the future
@@ -1386,17 +1379,17 @@ void Battle::render_world() {
 
 	//SSAO PASS
 
-	render_manager->render_ssao();
+	window_manager->render_ssao();
 
 	//TRAIL PASS
 
 	if (!frame_pause || frame_advance) {
-		render_manager->render_trail();
+		window_manager->render_trail();
 	}
 
 	//OUTLINE PASS
 
-	render_manager->outline.use();
+	window_manager->outline.use();
 
 	glStencilMask(0xFF);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -1428,17 +1421,17 @@ void Battle::render_world() {
 	//LIGHTING PASS
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, render_manager->window_width, render_manager->window_height);
-	render_manager->g_buffer.bind_ex_uniforms({{"ssao", render_manager->blur.textures[0]}});
-	render_manager->g_buffer.render();
-	render_manager->outline.render_passthrough();
-	render_manager->blend.render_passthrough();
+	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+	window_manager->g_buffer.bind_ex_uniforms({{"ssao", window_manager->blur.textures[0]}});
+	window_manager->g_buffer.render();
+	window_manager->outline.render_passthrough();
+	window_manager->blend.render_passthrough();
 
 	//HITBOX PASS
 
 	if (game_context == GAME_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
-		render_manager->box_layer.use();
-		glViewport(0, 0, render_manager->res_width, render_manager->res_height);
+		window_manager->box_layer.use();
+		glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
@@ -1499,8 +1492,8 @@ void Battle::render_world() {
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, render_manager->window_width, render_manager->window_height);
-		render_manager->box_layer.render();
+		glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+		window_manager->box_layer.render();
 	}
 }
 

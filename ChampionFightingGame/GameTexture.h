@@ -86,6 +86,7 @@ public:
     void prev_sprite();
 
     void update_text(Font &font, const std::string& text, glm::vec4 rgba, glm::vec4 border_rgbs);
+    void update_text(const std::string& text);
     void update_buffer_data();
 
     float target_top_left_crop = -2.0;
@@ -111,8 +112,8 @@ public:
 
     Shader *shader;
     std::vector<unsigned int> texture;
-    TextureCoord tex_data[4];
-    TextureCoord* tex_accessor[4];
+    TextureCoord tex_data[6];
+    TextureCoord* tex_accessor[6];
     TargetVar<glm::vec3> pos = glm::vec3(0.0);
     glm::vec3* anchor_pos = nullptr;
     glm::vec3 rot = glm::vec3(0.0);
@@ -137,6 +138,9 @@ private:
 
 
     std::string text;
+    Font* text_font;
+    glm::vec4 text_rgba;
+    glm::vec4 border_rgbs;
     glm::mat4 matrix;
     bool depth;
 };

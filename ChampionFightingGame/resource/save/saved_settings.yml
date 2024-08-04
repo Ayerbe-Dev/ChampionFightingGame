@@ -1,9 +1,9 @@
-res_x 1280
-res_y 720
+res_x 1920
+res_y 1080
 music_setting 0
 se_vol 70
 vc_vol 70
 music_vol 0
-fullscreen 0
+fullscreen 1
 visualize_boxes 0
 msaa 4

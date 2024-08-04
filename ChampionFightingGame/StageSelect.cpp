@@ -19,6 +19,9 @@ void stage_select_main() {
 
 	StageSelect* stage_select = new StageSelect;
 
+	window_manager->update_shader_cams();
+	window_manager->update_shader_lights();
+
 	while (stage_select->looping) {
 		game_manager->frame_delay_check_fps();
 

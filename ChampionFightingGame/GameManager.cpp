@@ -327,7 +327,7 @@ bool GameManager::is_crash() {
 
 void GameManager::frame_delay() {
 	TargetVarManager::get_instance()->process_targets();
-	wait_ms();
+//	wait_ms();
 }
 
 void GameManager::frame_delay_check_fps() {
@@ -343,6 +343,11 @@ void GameManager::frame_delay_check_fps() {
 	}
 	if (prev_fps != fps) {
 		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255), glm::vec4(0.0));
+		int text_x = 0;
+		for (int i = 1; i < fps; i *= 10) {
+			text_x += 40;
+		}
+		fps_texture.set_pos(glm::vec3(text_x, 0.0, 0.0));
 		prev_fps = fps;
 	}
 }

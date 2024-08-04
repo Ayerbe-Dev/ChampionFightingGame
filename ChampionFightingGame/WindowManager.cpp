@@ -102,8 +102,10 @@ WindowManager::WindowManager() {
 		| SHADER_FEAT_NORMAL 
 		| SHADER_FEAT_SSAO, res_width, res_height
 	);
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
+	//TODO: Instead of using RGBA32F, experiment with how the SSAO samples are generated and don't 
+	//allow samples at too shallow of an angle
 	g_buffer.add_write_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
@@ -142,8 +144,9 @@ WindowManager::WindowManager() {
 	SSAO.add_uniform("g_normal", 3);
 
 	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
-	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
-	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
+	debug_textures.push_back(GameTexture(outline.textures[0]));
+//	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
+//	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
 	debug_textures.push_back(GameTexture(blur.textures[0]));
 	debug_textures.push_back(GameTexture(blend.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
@@ -165,7 +168,8 @@ WindowManager::WindowManager() {
 	fade_frames = 0;
 	fading = false;
 	mid_fade_func = nullptr;
-	ssao_enabled = true;
+
+	outlines_enabled = true;
 
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
@@ -310,6 +314,7 @@ void WindowManager::reset_gl_environment() {
 
 	camera.set_fov(45.0);
 	camera.update_view();
+	ambient_col = glm::vec3(1.0);
 }
 
 void WindowManager::buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffered_arg) {
@@ -334,16 +339,17 @@ void WindowManager::execute_buffered_events() {
 }
 
 void WindowManager::render_ssao() {
-	g_buffer.shader->use();
-	g_buffer.shader->set_bool("ssao_enabled", ssao_enabled);
-	SSAO.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	SSAO.render();
+	if (g_buffer.shader->features & SHADER_FEAT_SSAO) {
+		g_buffer.shader->use();
+		SSAO.use();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		SSAO.render();
 
-	blur.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	blur.bind_ex_uniforms({{"f_texture", SSAO.textures[0]}});
-	blur.render();
+		blur.use();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		blur.bind_ex_uniforms({ {"f_texture", SSAO.textures[0]} });
+		blur.render();
+	}
 }
 
 void WindowManager::render_trail() {
@@ -378,9 +384,9 @@ void WindowManager::update_screen() {
 
 		fade_texture.render();
 	}
-//#ifdef DEBUG
+#ifdef DEBUG
 	render_debug_textures();
-//#endif
+#endif
 	glfwPollEvents();
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSwapBuffers(window);

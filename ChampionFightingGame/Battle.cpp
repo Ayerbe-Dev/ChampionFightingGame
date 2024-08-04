@@ -40,6 +40,10 @@ void battle_main() {
 	font_manager->load_face("Fiend-Oblique");
 
 	Battle *battle = new Battle;
+	
+	window_manager->update_shader_cams();
+	window_manager->update_shader_lights();
+
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
@@ -1363,7 +1367,42 @@ void Battle::render_world() {
 			}
 		}
 	}
+	glStencilMask(0x00);
 	stage.render();
+
+	//OUTLINE PASS
+
+	if (window_manager->outlines_enabled) {
+		window_manager->outline.use();
+
+		glStencilMask(0xFF);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glDepthMask(GL_FALSE);
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->render();
+			for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
+				if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+					fighter[i]->projectiles[i2]->render();
+				}
+			}
+		}
+		glStencilMask(0x00);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		for (int i = 0; i < 2; i++) {
+			fighter[i]->render_outline();
+			for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
+				if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+					fighter[i]->projectiles[i2]->render_outline();
+				}
+			}
+		}
+		glDepthMask(GL_TRUE);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
+		window_manager->g_buffer.use();
+	}
 
 	//EFFECT RENDERING
 
@@ -1386,37 +1425,6 @@ void Battle::render_world() {
 	if (!frame_pause || frame_advance) {
 		window_manager->render_trail();
 	}
-
-	//OUTLINE PASS
-
-	window_manager->outline.use();
-
-	glStencilMask(0xFF);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->render();
-		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render();
-			}
-		}
-	}
-	glStencilMask(0x00);
-	stage.render();
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glDepthMask(GL_FALSE);
-	for (int i = 0; i < 2; i++) {
-		fighter[i]->render_outline();
-		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-				fighter[i]->projectiles[i2]->render_outline();
-			}
-		}
-	}
-	glDepthMask(GL_TRUE);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	
 	//LIGHTING PASS
 
@@ -1424,8 +1432,10 @@ void Battle::render_world() {
 	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
 	window_manager->g_buffer.bind_ex_uniforms({{"ssao", window_manager->blur.textures[0]}});
 	window_manager->g_buffer.render();
-	window_manager->outline.render_passthrough();
 	window_manager->blend.render_passthrough();
+	if (window_manager->outlines_enabled) {
+		window_manager->outline.render_passthrough();
+	}
 
 	//HITBOX PASS
 

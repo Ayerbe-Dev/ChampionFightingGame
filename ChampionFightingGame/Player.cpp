@@ -28,6 +28,9 @@ Player::Player(int id) {
 	int timer = get_global_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.set_stick_hold_timer(timer, timer);
 	chara_kind = CHARA_KIND_MAX;
+	alt_costume = 0;
+	alt_color = 0;
+	control_type = CONTROL_TYPE_ADVANCE;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room");
 	player_info = nullptr;
 	input_mode = INPUT_MODE_POLL;

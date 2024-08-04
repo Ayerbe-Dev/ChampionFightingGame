@@ -81,7 +81,8 @@ public:
 
 	int window_width;
 	int window_height;
-	bool ssao_enabled;
+
+	bool outlines_enabled;
 
 	int msaa_samples;
 

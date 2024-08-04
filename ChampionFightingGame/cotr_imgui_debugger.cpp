@@ -688,7 +688,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			window_manager->update_shader_lights();
 		}
 
-		if (ImGui::TreeNode("G Buffer")) {
+		if (ImGui::TreeNode("Rendering")) {
 			bool diffuse_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE;
 			bool specular_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR;
 			bool position_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION;
@@ -699,6 +699,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::Checkbox("Position Enabled", &position_enabled);
 			ImGui::Checkbox("Normal Enabled", &normal_enabled);
 			ImGui::Checkbox("SSAO Enabled", &ssao_enabled);
+			ImGui::Checkbox("Outlines Enabled", &window_manager->outlines_enabled);
 			if (ImGui::Button("Print SSAO Vals")) {
 				std::cout << "SSAO Samples:\n";
 				for (size_t i = 0, max = window_manager->ssao_kernel.size(); i < max; i++) {

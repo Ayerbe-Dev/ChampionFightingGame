@@ -15,14 +15,10 @@ void debug_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	
-	window_manager->reset_gl_environment();
-	window_manager->ambient_col = glm::vec3(1.0);
-
 	DebugMenu *debug = new DebugMenu;
 
 	window_manager->update_shader_cams();
 	window_manager->update_shader_lights();
-	window_manager->update_shader_shadows();
 
 	cotr_imgui_init();
 

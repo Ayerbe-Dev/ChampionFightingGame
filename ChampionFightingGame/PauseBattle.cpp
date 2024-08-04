@@ -606,9 +606,13 @@ void PauseBattle::event_right_press() {
 }
 
 void PauseBattle::event_page_left_press() {
-	get_menu_object("Pause").event_page_left_press();
+	if (game_context == GAME_CONTEXT_TRAINING) {
+		get_menu_object("Pause").event_page_left_press();
+	}
 }
 
 void PauseBattle::event_page_right_press() {
-	get_menu_object("Pause").event_page_right_press();
+	if (game_context == GAME_CONTEXT_TRAINING) {
+		get_menu_object("Pause").event_page_right_press();
+	}
 }

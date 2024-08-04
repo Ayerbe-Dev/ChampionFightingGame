@@ -16,7 +16,12 @@ void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 
+	window_manager->reset_gl_environment();
+
 	CSS *css = new CSS;
+
+	window_manager->update_shader_cams();
+	window_manager->update_shader_lights();
 
 	while (css->looping) {
 		game_manager->frame_delay_check_fps();

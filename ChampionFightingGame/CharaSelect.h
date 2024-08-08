@@ -56,7 +56,7 @@ private:
     void select_slot(int player_idx);
     void select_costume(int player_idx);
     void select_color(int player_idx);
-    void select_default_chara_kind(int chara_kind);
+    void select_preferred_chara_kind(PlayerInfo* player_info);
     void load_chara_model_into_main_thread();
 };
 

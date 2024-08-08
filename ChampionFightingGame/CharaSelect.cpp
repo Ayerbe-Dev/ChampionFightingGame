@@ -8,6 +8,7 @@
 #include "debug.h"
 #include <fstream>
 #include "WindowConstants.h"
+#include "SaveManager.h"
 
 /// <summary>
 /// The main function while on the character select screen.
@@ -15,6 +16,7 @@
 void chara_select_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
+	SaveManager* save_manager = SaveManager::get_instance();
 
 	window_manager->reset_gl_environment();
 
@@ -66,6 +68,8 @@ CSS::CSS() {
 	}
 	light_stream.close();
 
+	load_font("Name Entry Font", "FiraCode", 46);
+
 	menu_objects.reserve(4);
 
 	push_menu_object("Background");
@@ -108,9 +112,18 @@ CSS::CSS() {
 	thread_manager->add_thread(THREAD_KIND_LOAD, gamestate_charaselect_loading_thread, this);
 	thread_manager->notify_thread(THREAD_KIND_LOAD);
 
+	SaveManager* save_manager = SaveManager::get_instance();
+
 	push_menu_object("Player Cursors"); {
 		for (int i = 0; i < 2; i++) {
-			push_menu_child("P" + std::to_string(i+1) + " Cursor"); {
+			push_menu_child("P" + std::to_string(i + 1) + " Cursor", 16); {
+				if (player[i]->player_info != save_manager->get_player_info(-1)) {
+					push_menu_int_var("name_entry_idx", save_manager->add_player_info(player[i]->player_info->name));
+				}
+				else {
+					push_menu_int_var("name_entry_idx", -1);
+				}
+				push_menu_int_var("prev_name_entry_idx", -1);
 				push_menu_int_var("selected_slot", 0);
 				push_menu_int_var("selected_costume", 0);
 				push_menu_int_var("selected_color", 0);
@@ -120,10 +133,88 @@ CSS::CSS() {
 
 				push_menu_activity_group("Selection State AG", &object_stack.top()->int_var("chara_selection_state"), true, 7); {
 					push_menu_child("Selection State Name Entry Hover"); {
+						push_menu_on_selected_event_function([this, i](MenuObject* object) {
+							MenuObject& cursor = object->get_parent();
+							if (!i) {
+								cursor.get_texture("Cursor").set_target_pos(glm::vec3(130, -45, 0), 12);
+							}
+							else {
+								cursor.get_texture("Cursor").set_target_pos(glm::vec3(3710, -45, 0), 12);
+							}
+							cursor.get_texture("Name Entry Cursor").set_alpha(255);
+						});
+						push_menu_process_function([this](MenuObject* object) {
+							MenuObject& cursor = object->get_parent();
+							cursor.get_texture("Name Entry Cursor").next_sprite();
+						});
 						//Put the css cursor over the name entry button
 					} pop_menu_stack();
 					push_menu_child("Selection State Name Entry"); {
 						//Actually handle the name entry drop down
+						push_menu_on_deselected_event_function([this, i](MenuObject* object) {
+							MenuObject& cursor = object->get_parent();
+							SaveManager* save_manager = SaveManager::get_instance();
+							int num_entries = save_manager->get_num_player_info();
+							for (int i2 = 0, max2 = std::min(5, num_entries + 1); 
+								i2 < max2; i2++) {
+								cursor.get_texture("Name Entry " + std::to_string(i2)).set_target_pos(glm::vec3(128, 338.5, 0.0f), 5);
+								cursor.get_texture("Name Entry Text " + std::to_string(i2)).set_target_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 5);
+							}
+							if (cursor.int_var("name_entry_idx") == -1) {
+								cursor.get_texture("Name Entry Text").update_text("Player " + std::to_string(i+1));
+							}
+							else {
+								cursor.get_texture("Name Entry Text").update_text(save_manager->get_player_info(cursor.int_var("name_entry_idx"))->name);
+							}
+							cursor.get_texture("Name Entry Cursor").set_target_pos(glm::vec3(128, 338.5, 0.0f), 5);
+						});
+						push_menu_on_selected_event_function([this, i](MenuObject* object) {
+							MenuObject& cursor = object->get_parent();
+							SaveManager* save_manager = SaveManager::get_instance();
+							int num_entries = save_manager->get_num_player_info();
+							for (int i2 = 0, max2 = std::min(5, num_entries + 1);
+								i2 < max2; i2++) {
+								cursor.get_texture("Name Entry " + std::to_string(i2)).set_target_pos(glm::vec3(128, 338.5 - 64 * (i2+1), 0.0f), 5);
+								cursor.get_texture("Name Entry Text " + std::to_string(i2)).set_target_pos(glm::vec3(1580 * (i * 2 - 1), 340 - 64 * (i2+ 1), 0.0f), 5);
+							}
+							cursor.get_texture("Name Entry Text").update_text("Player " + std::to_string(i + 1));
+							int idx = cursor.int_var("name_entry_idx"); 
+							if (num_entries >= 5 && idx > 2) {
+								idx = std::max(4 - (num_entries - idx), 2);
+							}
+							cursor.get_texture("Name Entry Cursor").set_target_pos(glm::vec3(128, 338.5 - 64 * (idx+1), 0.0f), 5);							
+						});
+						push_menu_process_function([this, i](MenuObject* object) {
+							MenuObject& cursor = object->get_parent();
+							SaveManager* save_manager = SaveManager::get_instance();
+							int num_entries = save_manager->get_num_player_info();
+							if (num_entries < 5) {
+								int i2;
+								for (i2 = 0; i2 < num_entries; i2++) {
+									cursor.get_texture("Name Entry Text " + std::to_string(i2)).update_text(save_manager->get_player_info(i2)->name);
+								}
+								cursor.get_texture("Name Entry Text " + std::to_string(i2)).update_text("New Name");
+							}
+							else if (cursor.int_var("name_entry_idx") < 3) {
+								for (int i2 = 0; i2 < 5; i2++) {
+									cursor.get_texture("Name Entry Text " + std::to_string(i2)).update_text(save_manager->get_player_info(i2)->name);
+								}
+							}
+							else if (num_entries - cursor.int_var("name_entry_idx") < 3) {
+								int idx = 0;
+								for (int i2 = num_entries - 4; i2 < num_entries; i2++, idx++) {
+									cursor.get_texture("Name Entry Text " + std::to_string(idx)).update_text(save_manager->get_player_info(i2)->name);
+								}
+								cursor.get_texture("Name Entry Text 4").update_text("New Name");
+							}
+							else {
+								int idx = 0;
+								for (int i2 = cursor.int_var("name_entry_idx") - 2; i2 < cursor.int_var("name_entry_idx") + 3; i2++, idx++) {
+									cursor.get_texture("Name Entry Text " + std::to_string(idx)).update_text(save_manager->get_player_info(i2)->name);
+								}
+							}
+							cursor.get_texture("Name Entry Cursor").next_sprite();
+						});
 					} pop_menu_stack();
 					push_menu_child("Selection State Controls Hover"); {
 						//Put the css cursor over the controls button
@@ -132,14 +223,16 @@ CSS::CSS() {
 						//Controls dropdown
 					} pop_menu_stack();
 					push_menu_child("Selection State Chara Hover"); {
-						push_menu_on_selected_event_function([this](MenuObject* object) {
-							object->get_parent().get_texture("Chara Slot Large").set_alpha(127);
+						push_menu_on_selected_event_function([this, i](MenuObject* object) {
+							MenuObject& cursor = object->get_parent();
+							cursor.get_texture("Chara Slot Large").set_alpha(127);
+							cursor.get_texture("Name Entry Cursor").set_alpha(0);
+							select_slot(i);
 						});
 					} pop_menu_stack();
 					push_menu_child("Selection State Chara"); {
-						push_menu_texture("Chara Slot Mobile");
 						push_menu_process_function([this](MenuObject* object) {
-							GameTexture& mobile_css_slot = object->get_texture("Chara Slot Mobile");
+							GameTexture& mobile_css_slot = object->get_parent().get_texture("Chara Slot Mobile");
 							GameTexture& large_css_slot = object->get_parent().get_texture("Chara Slot Large");
 							if (mobile_css_slot.pos != large_css_slot.pos) {
 								mobile_css_slot.add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
@@ -155,7 +248,7 @@ CSS::CSS() {
 						push_menu_on_selected_event_function([this, i](MenuObject* object) {
 							if (object->get_parent().get_activity_group("Selection State AG").prev_active_index
 								== CHARA_SELECTION_STATE_READY) return;
-							GameTexture& mobile_css_slot = object->get_texture("Chara Slot Mobile");
+							GameTexture& mobile_css_slot = object->get_parent().get_texture("Chara Slot Mobile");
 							GameTexture& chara_render = get_menu_object("Chara Slots").get_child(
 								object->get_parent().int_var("selected_slot")
 							).get_texture("Chara Render");
@@ -170,13 +263,75 @@ CSS::CSS() {
 							mobile_css_slot.set_target_pos(object->get_parent().get_texture("Chara Slot Large").pos, 16);
 						});
 						push_menu_on_deselected_event_function([&](MenuObject* object) {
-							object->get_texture("Chara Slot Mobile").set_alpha(0);
+							if (*object->get_parent().get_activity_group("Selection State AG")
+								.active_index == CHARA_SELECTION_STATE_READY) return;
+							object->get_parent().get_texture("Chara Slot Mobile").set_alpha(0);
 						});
 					} pop_menu_stack();
 					push_menu_child("Selection State Ready"); {
+						push_menu_process_function([this](MenuObject* object) {
+							GameTexture& mobile_css_slot = object->get_parent().get_texture("Chara Slot Mobile");
+							GameTexture& large_css_slot = object->get_parent().get_texture("Chara Slot Large");
+							if (mobile_css_slot.pos != large_css_slot.pos) {
+								mobile_css_slot.add_rot(glm::vec3(0.0, 360.0 / 16.0, 0.0));
+								mobile_css_slot.set_width_scale(mobile_css_slot.get_width_scale() + (0.7 / 16));
+								mobile_css_slot.set_height_scale(mobile_css_slot.get_height_scale() + (0.7 / 16));
+							}
+							else {
+								mobile_css_slot.set_alpha(0);
+								mobile_css_slot.set_rot(glm::vec3(0.0, 0.0, 0.0));
+								large_css_slot.set_alpha(255);
+							}
+						});
 						//"Press Start" texture
 					} pop_menu_stack();
 				} pop_menu_stack();
+
+				for (int i2 = 0; i2 < 5; i2++) {
+					push_menu_texture("Name Entry " + std::to_string(i2), "resource/game_state/chara_select/name_entry.png");
+					last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
+					last_pushed_texture->set_target_pos(glm::vec3(128, 338.5, 0.0f), 16);
+					if (i) {
+						last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+					}
+					else {
+						last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+					}
+					push_menu_texture("Name Entry Text " + std::to_string(i2), get_font("Name Entry Font"), "Name Entry", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
+					last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
+					last_pushed_texture->set_target_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16);
+					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
+				}
+				push_menu_texture("Name Entry", "resource/game_state/chara_select/name_entry.png");
+				last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
+				last_pushed_texture->set_target_pos(glm::vec3(128, 338.5, 0.0f), 16);
+				if (i) {
+					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+				}
+				else {
+					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				}
+				if (player[i]->player_info == save_manager->get_player_info(-1)) {
+					push_menu_texture("Name Entry Text", get_font("Name Entry Font"), "Player " + std::to_string(i + 1), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
+				}
+				else {
+					push_menu_texture("Name Entry Text", get_font("Name Entry Font"), player[i]->player_info->name, glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
+				}
+				last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
+				last_pushed_texture->set_target_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16);
+				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
+				push_menu_texture("Name Entry Cursor", "resource/game_state/chara_select/name_entry_cursor.gif");
+				last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
+				last_pushed_texture->set_target_pos(glm::vec3(128, 338.5, 0.0f), 16);
+				last_pushed_texture->set_alpha(0);
+				if (i) {
+					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
+				}
+				else {
+					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
+				}
+
+				push_menu_texture("Chara Slot Mobile");
 
 				GameTexture& default_chara = get_menu_object("Chara Slots").get_child(0).get_texture("Chara Render");
 
@@ -189,8 +344,9 @@ CSS::CSS() {
 				else {
 					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 				}
-				last_pushed_texture->set_pos(glm::vec3(130.5, 338, 0));
+				last_pushed_texture->set_pos(glm::vec3(130.5, 418, 0));
 				last_pushed_texture->set_alpha(127);
+
 				push_menu_texture("Cursor", "resource/game_state/chara_select/p" 
 					+ std::to_string(i+1) + "_cursor.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -203,13 +359,11 @@ CSS::CSS() {
 							if (object->bool_var("last_input_right")) {
 								neighbor_val = "up_right_neighbor";
 							}
-							object->int_var("prev_selected_slot") = object->int_var("selected_slot");
-							object->int_var("selected_slot") = get_menu_object("Chara Slots")
+							int new_selection = get_menu_object("Chara Slots")
 								.get_child(object->int_var("selected_slot")).int_var(neighbor_val);
-							if (object->int_var("selected_slot") == -1) {
-								object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CONTROLS_HOVER;
-								return;
-							}
+							if (new_selection == -1) return;
+							object->int_var("prev_selected_slot") = object->int_var("selected_slot");
+							object->int_var("selected_slot") = new_selection;
 							object->bool_var("last_input_right") = !object->bool_var("last_input_right");
 							select_slot(i);
 						} break;
@@ -227,50 +381,76 @@ CSS::CSS() {
 							
 						} break;
 						case (CHARA_SELECTION_STATE_NAME_ENTRY_HOVER): {
-							object->int_var("selected_slot") = object->int_var("prev_selected_slot");
-							object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CHARA_HOVER;
+							object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CONTROLS_HOVER;
 						} break;
 						case (CHARA_SELECTION_STATE_NAME_ENTRY): {
-
+							SaveManager* save_manager = SaveManager::get_instance();
+							int num_entries = save_manager->get_num_player_info();
+							if (object->int_var("name_entry_idx") == -1) return;
+							if (object->int_var("name_entry_idx") < 3
+							|| num_entries - object->int_var("name_entry_idx") < 2
+							|| num_entries <= 5) {
+								if (object->get_texture("Name Entry Cursor").pos.get_frames()) {
+									glm::vec3 target_pos = object->get_texture("Name Entry Cursor").pos.get_target_val();
+									float target_frames = object->get_texture("Name Entry Cursor").pos.get_frames();
+									object->get_texture("Name Entry Cursor").set_target_pos(target_pos + glm::vec3(0.0, 64.0, 0.0), target_frames);
+								}
+								else {
+									object->get_texture("Name Entry Cursor").add_pos(glm::vec3(0.0, 64.0, 0.0));
+								}
+							}
+							object->int_var("name_entry_idx")--;
 						} break;
 					}
 				});
 				push_menu_down_event_function([this, i](MenuObject* object) {
 					switch (object->int_var("chara_selection_state")) {
-						case (CHARA_SELECTION_STATE_CHARA_HOVER): {
-							std::string neighbor_val = "down_left_neighbor";
-							if (object->bool_var("last_input_right")) {
-								neighbor_val = "down_right_neighbor";
-							}
-							object->int_var("prev_selected_slot") = object->int_var("selected_slot");
-							object->int_var("selected_slot") = get_menu_object("Chara Slots")
-								.get_child(object->int_var("selected_slot")).int_var(neighbor_val);
-							if (object->int_var("selected_slot") == -1) {
-								object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_NAME_ENTRY_HOVER;
-								return;
-							}
-							object->bool_var("last_input_right") = !object->bool_var("last_input_right");
-							select_slot(i);
-						} break;
-						case (CHARA_SELECTION_STATE_CHARA): {
-							if (object->int_var("selected_costume") + 1 == get_menu_object("Chara Slots")
-								.get_child(object->int_var("selected_slot")).int_var("num_costumes")) {
-								object->int_var("selected_costume") = 0;
-							}
-							else {
-								object->int_var("selected_costume")++;
-							}
-							select_costume(i);
-						} break;
-						case (CHARA_SELECTION_STATE_CONTROLS_HOVER): {
-							object->int_var("selected_slot") = object->int_var("prev_selected_slot");
-							object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CHARA_HOVER;
-						} break;
-						case (CHARA_SELECTION_STATE_CONTROLS): {
+					case (CHARA_SELECTION_STATE_CHARA_HOVER): {
+						std::string neighbor_val = "down_left_neighbor";
+						if (object->bool_var("last_input_right")) {
+							neighbor_val = "down_right_neighbor";
+						}
+						int new_selection = get_menu_object("Chara Slots")
+							.get_child(object->int_var("selected_slot")).int_var(neighbor_val);
+						if (new_selection == -1) return;
+						object->int_var("prev_selected_slot") = object->int_var("selected_slot");
+						object->int_var("selected_slot") = new_selection;
+						object->bool_var("last_input_right") = !object->bool_var("last_input_right");
+						select_slot(i);
+					} break;
+					case (CHARA_SELECTION_STATE_CHARA): {
+						if (object->int_var("selected_costume") + 1 == get_menu_object("Chara Slots")
+							.get_child(object->int_var("selected_slot")).int_var("num_costumes")) {
+							object->int_var("selected_costume") = 0;
+						}
+						else {
+							object->int_var("selected_costume")++;
+						}
+						select_costume(i);
+					} break;
+					case (CHARA_SELECTION_STATE_CONTROLS_HOVER): {
+						object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_NAME_ENTRY_HOVER;
+					} break;
+					case (CHARA_SELECTION_STATE_CONTROLS): {
 
-						} break;
-						case (CHARA_SELECTION_STATE_NAME_ENTRY): {
-
+					} break;
+					case (CHARA_SELECTION_STATE_NAME_ENTRY): {
+						SaveManager* save_manager = SaveManager::get_instance();
+						int num_entries = save_manager->get_num_player_info();
+						if (object->int_var("name_entry_idx") == num_entries) return;
+							if (object->int_var("name_entry_idx") < 2
+							|| num_entries - object->int_var("name_entry_idx") < 3
+							|| num_entries <= 5) {
+								if (object->get_texture("Name Entry Cursor").pos.get_frames()) {
+									glm::vec3 target_pos = object->get_texture("Name Entry Cursor").pos.get_target_val();
+									float target_frames = object->get_texture("Name Entry Cursor").pos.get_frames();
+									object->get_texture("Name Entry Cursor").set_target_pos(target_pos - glm::vec3(0.0, 64.0, 0.0), target_frames);
+								}
+								else {
+									object->get_texture("Name Entry Cursor").add_pos(glm::vec3(0.0, -64.0, 0.0));
+								}
+							}
+							object->int_var("name_entry_idx")++;
 						} break;
 					}
 				});
@@ -279,7 +459,15 @@ CSS::CSS() {
 						case (CHARA_SELECTION_STATE_CHARA_HOVER): {
 							int new_selection = get_menu_object("Chara Slots")
 								.get_child(object->int_var("selected_slot")).int_var("left_neighbor");
-							if (new_selection == -1) return;
+							if (new_selection == -1) {
+								if (!i) {
+									object->int_var("prev_selected_slot") = object->int_var("selected_slot");
+									object->int_var("selected_slot") = new_selection;
+									object->bool_var("last_input_right") = false;
+									object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_NAME_ENTRY_HOVER;
+								}
+								return;
+							}
 							object->int_var("prev_selected_slot") = object->int_var("selected_slot");
 							object->int_var("selected_slot") = new_selection;
 							object->bool_var("last_input_right") = false;
@@ -296,6 +484,12 @@ CSS::CSS() {
 							}
 							select_color(i);
 						} break;
+						case (CHARA_SELECTION_STATE_NAME_ENTRY_HOVER): {
+							if (i) {
+								object->int_var("selected_slot") = object->int_var("prev_selected_slot");
+								object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CHARA_HOVER;
+							}
+						} break;
 						case (CHARA_SELECTION_STATE_NAME_ENTRY): {
 
 						} break;
@@ -306,7 +500,15 @@ CSS::CSS() {
 						case (CHARA_SELECTION_STATE_CHARA_HOVER): {
 							int new_selection = get_menu_object("Chara Slots")
 								.get_child(object->int_var("selected_slot")).int_var("right_neighbor");
-							if (new_selection == -1) return;
+							if (new_selection == -1) {
+								if (i) {
+									object->int_var("prev_selected_slot") = object->int_var("selected_slot");
+									object->int_var("selected_slot") = new_selection;
+									object->bool_var("last_input_right") = true;
+									object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_NAME_ENTRY_HOVER;
+								}
+								return;
+							}
 							object->int_var("prev_selected_slot") = object->int_var("selected_slot");
 							object->int_var("selected_slot") = new_selection;
 							object->bool_var("last_input_right") = true;
@@ -324,6 +526,12 @@ CSS::CSS() {
 							}
 							select_color(i);
 						} break;
+						case (CHARA_SELECTION_STATE_NAME_ENTRY_HOVER): {
+							if (!i) {
+								object->int_var("selected_slot") = object->int_var("prev_selected_slot");
+								object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CHARA_HOVER;
+							}
+						} break;
 						case (CHARA_SELECTION_STATE_NAME_ENTRY): {
 
 						} break;
@@ -333,11 +541,25 @@ CSS::CSS() {
 					switch (object->int_var("chara_selection_state")) {
 						case (CHARA_SELECTION_STATE_CHARA_HOVER): {
 							demo_models[i].change_anim("selected", 1.0f, 0.0f);
-						} [[fallthrough]];
+							object->int_var("chara_selection_state")++;
+						} break;
 						case (CHARA_SELECTION_STATE_NAME_ENTRY_HOVER):
 						case (CHARA_SELECTION_STATE_CONTROLS_HOVER):
 						case (CHARA_SELECTION_STATE_CHARA): {
 							object->int_var("chara_selection_state")++;
+						} break;
+						case (CHARA_SELECTION_STATE_NAME_ENTRY): {
+							SaveManager* save_manager = SaveManager::get_instance();
+							if (object->int_var("name_entry_idx") == save_manager->get_num_player_info()) {
+								//We hit the "New Player Info" button, time to do some shenanigans
+								return;
+							}
+							object->int_var("prev_name_entry_idx") = object->int_var("name_entry_idx");
+							player_id = i;
+							player[i]->load_player_info(object->int_var("name_entry_idx"));
+							select_preferred_chara_kind(player[i]->player_info);
+							player[i]->controller.poll_menu();
+							object->int_var("chara_selection_state") = CHARA_SELECTION_STATE_CHARA_HOVER;
 						} break;
 					}
 				});
@@ -360,7 +582,10 @@ CSS::CSS() {
 						case (CHARA_SELECTION_STATE_CHARA): {
 							demo_models[i].change_anim("deselected", 1.0f, 0.0f);
 						} [[fallthrough]];
-						case (CHARA_SELECTION_STATE_NAME_ENTRY):
+						case (CHARA_SELECTION_STATE_NAME_ENTRY): {
+							object->int_var("chara_selection_state")--;
+							object->int_var("name_entry_idx") = object->int_var("prev_name_entry_idx");
+						} break;
 						case (CHARA_SELECTION_STATE_READY): {
 							object->int_var("chara_selection_state")--;
 						} break;
@@ -378,9 +603,8 @@ CSS::CSS() {
 
 	for (int i = 0; i < 2; i++) {
 		player_id = i;
-		if (player[i]->chara_kind != CHARA_KIND_MAX) {
-			select_default_chara_kind(player[i]->chara_kind);
-		}
+		select_preferred_chara_kind(player[i]->player_info);
+		select_slot(i);
 		demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
 		if (!i) {
 			demo_models[i].set_pos(glm::vec3(-350.0, 0.0, 0.0));
@@ -569,7 +793,7 @@ bool CSS::load_css() {
 void CSS::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
-	if (thread_manager->is_active(THREAD_KIND_LOAD) && internal_frame >= 60) {
+	if (thread_manager->is_active(THREAD_KIND_LOAD)) {
 		//The internal_frame check is designed to hide the more obvious stutters with gl 
 		//loading, and can be removed for the vulkan impl
 
@@ -601,14 +825,14 @@ void CSS::render_main() {
 	glCullFace(GL_FRONT);
 	stage_demo.render_shadow();
 	for (int i = 0; i < 2; i++) {
-		if (demo_models[i].anim_kind == nullptr) {
-			demo_models[i].set_rot(glm::vec3(-90.0, 0.0, 90.0 * (i * -2 + 1)));
-		}
-		else {
-			demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
-		}
 		int selection = get_menu_object("Player Cursors").get_child(i).int_var("selected_slot");
 		if (selection >= 0 && selection < loaded_chars) {
+			if (demo_models[i].anim_kind == nullptr) {
+				demo_models[i].set_rot(glm::vec3(-90.0, 0.0, 90.0 * (i * -2 + 1)));
+			}
+			else {
+				demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
+			}
 			demo_models[i].process_animate();
 			if (demo_models[i].anim_end) {
 				//is_anim_end will always be false when anim_kind is nullptr, so we don't
@@ -690,6 +914,7 @@ void CSS::event_start_press() {
 				.get_child(cursor.int_var("selected_slot")).int_var("chara_kind");
 			player[i]->alt_costume = cursor.int_var("selected_costume");
 			player[i]->alt_color = cursor.int_var("selected_color");
+			player[i]->update_player_info();
 		}
 		if (game_context == GAME_CONTEXT_NORMAL || game_context == GAME_CONTEXT_SPECIAL) {
 			if (player[1]->controller.has_any_controller()) {
@@ -774,18 +999,19 @@ void CSS::select_slot(int player_idx) {
 	else {
 		large_css_slot.set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 	}
-	large_css_slot.set_pos(glm::vec3(130.5, 338, 0));
+	large_css_slot.set_pos(glm::vec3(130.5, 418, 0));
 	large_css_slot.set_alpha((unsigned char)127);
 
 	if (demo_models[player_idx].model.is_loaded()) {
 		demo_models[player_idx].model.unload_model_instance();
 	}
-	if (cursor.int_var("selected_slot") < loaded_chars) {
+	if (cursor.int_var("selected_slot") < loaded_chars && cursor.int_var("selected_slot") != -1) {
 		demo_models[player_idx].load_model(
 			"resource/chara/" + chara_slot.string_var("resource_name") +
 			"/model/m" + std::to_string(cursor.int_var("selected_costume")) + "/model.dae",
 			"c" + std::to_string(cursor.int_var("selected_color"))
 		);
+		demo_models[player_idx].init_shader();
 		demo_models[player_idx].anim_table = demo_anim_tables[cursor.int_var("selected_slot")];
 		if (cursor.int_var("chara_selection_state") == CHARA_SELECTION_STATE_CHARA_HOVER) {
 			demo_models[player_idx].change_anim("deselected_wait", 1.0f, 0.0f);
@@ -823,15 +1049,24 @@ void CSS::select_color(int player_idx) {
 /// character. Note: This function is used for when you re-enter the CSS after having already selected a character, such as after a match.
 /// </summary>
 /// <param name="chara_kind">: The character whose CSS slot to select.</param>
-void CSS::select_default_chara_kind(int chara_kind) {
+void CSS::select_preferred_chara_kind(PlayerInfo* player_info) {
+	int preferred_chara = player_info->preferred_chara;
+	int preferred_costume = player_info->preferred_costume[preferred_chara];
+	int preferred_color = player_info->preferred_color[preferred_chara];
+	if (player_info == SaveManager::get_instance()->get_player_info(-1)) {
+		preferred_chara = player[player_id]->chara_kind;
+		preferred_costume = player[player_id]->alt_costume;
+		preferred_color = player[player_id]->alt_color;
+	}
 	MenuObject& player_cursor = get_menu_object("Player Cursors").get_child(player_id);
 	for (int i = 0, max = get_menu_object("Chara Slots").int_var("num_slots"); i < max; i++) {
-		if (get_menu_object("Chara Slots").get_child(i).int_var("chara_kind") == chara_kind) {
+		if (get_menu_object("Chara Slots").get_child(i).int_var("chara_kind") == preferred_chara) {
 			player_cursor.int_var("selected_slot") = i;
-			select_slot(player_id);
-			return;
+			break;
 		}
 	}
+	player_cursor.int_var("selected_costume") = preferred_costume;
+	player_cursor.int_var("selected_color") = preferred_color;
 }
 
 void CSS::load_chara_model_into_main_thread() {
@@ -844,7 +1079,10 @@ void CSS::load_chara_model_into_main_thread() {
 	for (int i = 0; i < 2; i++) {
 		MenuObject& cursor = get_menu_object("Player Cursors").get_child(i);
 		int selection = cursor.int_var("selected_slot");
-		if (loaded_chars == selection && !demo_models[i].model.is_loaded()) {
+		if (loaded_chars == selection) {
+			if (demo_models[i].model.is_loaded()) {
+				demo_models[i].model.unload_model_instance();
+			}
 			demo_models[i].load_model(
 				"resource/chara/"
 				+ get_menu_object("Chara Slots").get_child(selection).string_var("resource_name")

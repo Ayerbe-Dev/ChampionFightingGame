@@ -29,8 +29,8 @@ PauseBattle::PauseBattle() {
 	GameManager* game_manager = GameManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
 	int text_height_diff = -120;
-	load_font("header", "FiraCode", 24);
-	load_font("button", "FiraCode", 16);
+	load_font("header", "FiraCode", 96);
+	load_font("button", "FiraCode", 64);
 
 	push_menu_object("Pause"); {	
 		push_menu_bool_var("Confirm", false);

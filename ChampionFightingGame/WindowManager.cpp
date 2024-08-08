@@ -64,13 +64,13 @@ WindowManager::WindowManager() {
 
 	int num_ssao_samples = 16;
 	for (int i = 0; i < num_ssao_samples; i++) {
-		glm::vec3 sample(
-			rng_f(0.0, 1.0) * 2.0 - 1.0, 
-			rng_f(0.0, 1.0) * 2.0 - 1.0, 
-			rng_f(0.0, 1.0)
-		);
-		sample = glm::normalize(sample);
-		sample *= rng_f(0.0, 1.0);
+		glm::vec3 sample = glm::normalize(
+			glm::vec3(
+				rng_f(0.0, 1.0) * 2.0 - 1.0, 
+				rng_f(0.0, 1.0) * 2.0 - 1.0, 
+				rng_f(0.0, 1.0)
+			)
+		) * rng_f(0.0, 1.0);
 
 		float scale = (float)i / (float)num_ssao_samples;
 		scale = lerp(0.1, 1.0, scale * scale);
@@ -104,9 +104,7 @@ WindowManager::WindowManager() {
 	);
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
-	//TODO: Instead of using RGBA32F, experiment with how the SSAO samples are generated and don't 
-	//allow samples at too shallow of an angle
-	g_buffer.add_write_texture(GL_RGBA32F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT5); //Position EX
@@ -145,8 +143,8 @@ WindowManager::WindowManager() {
 
 	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
 	debug_textures.push_back(GameTexture(outline.textures[0]));
-//	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
-//	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
 	debug_textures.push_back(GameTexture(blur.textures[0]));
 	debug_textures.push_back(GameTexture(blend.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {

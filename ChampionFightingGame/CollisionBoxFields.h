@@ -55,10 +55,10 @@ struct HitResult {
 		juggle_increase = 0;
 		juggle_max = 0;
 
-		stand_hit_anim = "stand_hitstun_light_mid";
-		crouch_hit_anim = "crouch_hitstun_light_mid";
-		stand_block_anim = "stand_blockstun_mid";
-		crouch_block_anim = "crouch_blockstun_mid";
+		stand_hit_anim = "hitstun_stand_light_mid";
+		crouch_hit_anim = "hitstun_crouch_light_mid";
+		stand_block_anim = "blockstun_stand_mid";
+		crouch_block_anim = "blockstun_crouch_mid";
 	}
 
 	/*
@@ -228,10 +228,10 @@ struct HitResult {
 	*/
 	HitResult anims(std::string stand_hit, std::string crouch_hit, std::string stand_block, std::string crouch_block) {
 		HitResult ret = *this;
-		ret.stand_hit_anim = "stand_hitstun_" + stand_hit;
-		ret.crouch_hit_anim = "crouch_hitstun_" + crouch_hit;
-		ret.stand_block_anim = "stand_blockstun_" + stand_block;
-		ret.crouch_block_anim = "crouch_blockstun_" + crouch_block;
+		ret.stand_hit_anim = "hitstun_stand_" + stand_hit;
+		ret.crouch_hit_anim = "hitstun_crouch_" + crouch_hit;
+		ret.stand_block_anim = "blockstun_stand_" + stand_block;
+		ret.crouch_block_anim = "blockstun_crouch_" + crouch_block;
 		return ret;
 	}
 

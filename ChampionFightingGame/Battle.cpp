@@ -47,7 +47,6 @@ void battle_main() {
 #ifdef DEBUG
 	cotr_imgui_init();
 #endif
-
 	while (battle->looping) {
 		game_manager->frame_delay_check_fps();
 		window_manager->clear_screen();
@@ -212,9 +211,9 @@ void Battle::load_world() {
 
 void Battle::load_ui() {
 	FontManager* font_manager = FontManager::get_instance();
-	load_font("combo", "Fiend-Oblique", 64);
-	load_font("message", "Fiend-Oblique", 24);
-	load_font("info", "FiraCode", 16);
+	load_font("combo", "Fiend-Oblique", 256);
+	load_font("message", "Fiend-Oblique", 96);
+	load_font("info", "FiraCode", 64);
 
 	set_hints(1, 10, 3); {
 		push_menu_child("P1 Health", 3); {
@@ -1339,7 +1338,7 @@ void Battle::render_world() {
 			}
 		}
 	}
-	stage.render_shadow();
+//	stage.render_shadow();
 	glCullFace(GL_BACK);
 
 	//COLOR PASS

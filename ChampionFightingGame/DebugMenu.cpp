@@ -80,7 +80,7 @@ DebugMenu::DebugMenu() {
 	));
 	text_field.set_colormod(glm::vec3(255.0, 255.0, 255.0));
 
-	load_font("text_input", "FiraCode", 24);
+	load_font("text_input", "FiraCode", 96);
 	text.init(get_font("text_input"), "", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	text.set_pos(glm::vec3(0.0, -400.0, 0.0));
 }

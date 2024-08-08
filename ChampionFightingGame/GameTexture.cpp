@@ -302,6 +302,9 @@ void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 b
 	height_orientation = height * (tex_data[TEX_COORD_BOTTOM_RIGHT].tex_coord.y + tex_data[TEX_COORD_TOP_RIGHT].tex_coord.y);
 	loaded = true;
 	using_resource = false;
+	this->text_font = &font;
+	this->text_rgba = rgba;
+	this->border_rgbs = border_rgbs;
 }
 
 void GameTexture::destroy() {

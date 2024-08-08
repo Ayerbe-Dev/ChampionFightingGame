@@ -546,6 +546,8 @@ MenuObject::MenuObject() {
 	select_event_function = [](MenuObject* object) {};
 	start_event_function = [](MenuObject* object) {};
 	back_event_function = [](MenuObject* object) {};
+	page_left_event_function = [](MenuObject* object) {};
+	page_right_event_function = [](MenuObject* object) {};
 	any_event_function = [](MenuObject* object) {};
 
 	process_function = [](MenuObject* object) {};
@@ -571,6 +573,8 @@ MenuObject::MenuObject(GameState* owner, MenuObject* parent, std::string name, i
 	select_event_function = [](MenuObject* object) {};
 	start_event_function = [](MenuObject* object) {};
 	back_event_function = [](MenuObject* object) {};
+	page_left_event_function = [](MenuObject* object) {};
+	page_right_event_function = [](MenuObject* object) {};
 	any_event_function = [](MenuObject* object) {};
 
 	process_function = [](MenuObject* object) {};
@@ -622,6 +626,8 @@ MenuObject::MenuObject(MenuObject& other) {
 	this->select_event_function = other.select_event_function;
 	this->start_event_function = other.start_event_function;
 	this->back_event_function = other.back_event_function;
+	this->page_left_event_function = other.page_left_event_function;
+	this->page_right_event_function = other.page_right_event_function;
 	this->process_function = other.process_function;
 	this->pre_render_function = other.pre_render_function;
 	this->post_render_function = other.post_render_function;
@@ -668,6 +674,8 @@ MenuObject::MenuObject(const MenuObject& other) {
 	this->select_event_function = other.select_event_function;
 	this->start_event_function = other.start_event_function;
 	this->back_event_function = other.back_event_function;
+	this->page_left_event_function = other.page_left_event_function;
+	this->page_right_event_function = other.page_right_event_function;
 	this->process_function = other.process_function;
 	this->pre_render_function = other.pre_render_function;
 	this->post_render_function = other.post_render_function;
@@ -714,6 +722,8 @@ MenuObject::MenuObject(MenuObject&& other) noexcept {
 	this->select_event_function = other.select_event_function;
 	this->start_event_function = other.start_event_function;
 	this->back_event_function = other.back_event_function;
+	this->page_left_event_function = other.page_left_event_function;
+	this->page_right_event_function = other.page_right_event_function;
 	this->process_function = other.process_function;
 	this->pre_render_function = other.pre_render_function;
 	this->post_render_function = other.post_render_function;
@@ -760,6 +770,8 @@ MenuObject::MenuObject(const MenuObject&& other) noexcept {
 	this->select_event_function = other.select_event_function;
 	this->start_event_function = other.start_event_function;
 	this->back_event_function = other.back_event_function;
+	this->page_left_event_function = other.page_left_event_function;
+	this->page_right_event_function = other.page_right_event_function;
 	this->process_function = other.process_function;
 	this->pre_render_function = other.pre_render_function;
 	this->post_render_function = other.post_render_function;

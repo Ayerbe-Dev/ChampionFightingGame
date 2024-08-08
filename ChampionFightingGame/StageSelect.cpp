@@ -182,7 +182,7 @@ bool StageSelect::load_stage_select() {
 	}
 	size_t list_start_offset = 1;
 	FontManager* font_manager = FontManager::get_instance();
-	Font main_text_font = font_manager->load_font("FiraCode", 12);
+	Font main_text_font = font_manager->load_font("FiraCode", 48);
 	stages.reserve(stage_params.get_param_int("num_slots"));
 	push_menu_object("Stage Select"); {
 		object_stack.top()->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);

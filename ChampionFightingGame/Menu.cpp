@@ -58,8 +58,8 @@ MainMenu::MainMenu() {
 	WindowManager* window_manager = WindowManager::get_instance();
 
 	FontManager* font_manager = FontManager::get_instance();
-	Font main_text_font = font_manager->load_font("Fiend-Oblique", 36);
-	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 20);
+	Font main_text_font = font_manager->load_font("Fiend-Oblique", 144);
+	Font sub_text_font = font_manager->load_font("Fiend-Oblique", 80);
 	glm::vec4 rgba = { 255.0, 127.0, 0.0, 255.0 };
 	glm::vec4 border_rgbs = { 1.0, 1.0, 1.0, 2.0 };
 

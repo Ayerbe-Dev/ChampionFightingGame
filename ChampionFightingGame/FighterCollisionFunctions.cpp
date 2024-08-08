@@ -1454,8 +1454,8 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 		hit_status = hitbox->critical_status;
 		hit_move = hitbox->critical_hit_move;
 		hit_flags = hitbox->critical_hit_flags;
-		stand_anim = "stand_hitstun_critical";
-		crouch_anim = "crouch_hitstun_critical";
+		stand_anim = "hitstun_stand_critical";
+		crouch_anim = "hitstun_crouch_critical";
 	}
 	if (object_float[FIGHTER_FLOAT_HEALTH] == 0.0f &&
 		GameManager::get_instance()->get_game_state()->game_context != GAME_CONTEXT_TRAINING) {

@@ -319,6 +319,7 @@ ModelInstance::ModelInstance() {
 	move = false;
 	flip = false;
 	alpha = 255;
+	enable_ex_render = false;
 }
 
 ModelInstance::ModelInstance(std::string path) {

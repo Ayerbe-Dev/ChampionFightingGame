@@ -73,19 +73,41 @@ void SaveManager::save_game_settings() {
 }
 
 void SaveManager::load_player_info() {
-
+	std::ifstream player_info_file;
+	player_info_file.open("resource/save/player_info.yml");
+	if (player_info_file.fail()) {
+		std::cout << "Failed to open Player Info file!\n";
+		player_info_file.close();
+		return;
+	}
+	std::string name;
+	while (player_info_file >> name && name != "") {
+		int num_custom_mappings;
+		PlayerInfo new_player_info(name);
+		player_info_file >> new_player_info.control_type >> num_custom_mappings;
+		for (int i = 0; i < num_custom_mappings; i++) {
+			Button b;
+			player_info_file >> b.button_kind >> b.k_mapping >> b.c_mapping >> b.c_axis;
+			new_player_info.custom_mappings.push_back(b);
+		}
+		player_info_file >> new_player_info.preferred_chara;
+		for (int i = 0; i < CHARA_KIND_MAX; i++) {
+			player_info_file >> new_player_info.preferred_costume[i] >> new_player_info.preferred_color[i];
+		}
+		player_info[name] = new_player_info;
+		player_info_ordered.push_back(&player_info[name]);
+	}
+	
+	player_info_file.close();
 }
 
 int SaveManager::add_player_info(std::string name) {
 	if (player_info.contains(name)) {
-		int ret = 0;
 		PlayerInfo* target = &player_info[name];
-		for (std::list<PlayerInfo*>::iterator it = player_info_ordered.begin(), 
-			max = player_info_ordered.end(); it != max; it++) {
-			if (*it == target) {
-				return ret;
+		for (int i = 0, max = player_info_ordered.size(); i < max; i++) {
+			if (player_info_ordered[i] == target) {
+				return i;
 			}
-			ret++;
 		}
 	}
 	PlayerInfo new_player_info(name);
@@ -96,25 +118,60 @@ int SaveManager::add_player_info(std::string name) {
 
 PlayerInfo* SaveManager::get_player_info(int index) {
 	if (index == -1) return &default_player_info;
-	if (player_info.size() <= (size_t)index) {
-		return nullptr;
+	if (player_info.size() <= (size_t)index) return nullptr;
+	return player_info_ordered[index];
+}
+
+int SaveManager::get_num_player_info() {
+	return player_info_ordered.size();
+}
+
+void SaveManager::sort_player_info(PlayerInfo* player_info) {
+	if (player_info == &default_player_info) return;
+	for (int i = 0, max = player_info_ordered.size(); i < max; i++) {
+		if (player_info_ordered[i] == player_info) {
+			std::deque<PlayerInfo*>::iterator it = std::next(player_info_ordered.begin(), i);
+			player_info_ordered.erase(it);
+			break;
+		}
 	}
-	std::list<PlayerInfo*>::iterator it = std::next(player_info_ordered.begin(), index);
-	PlayerInfo* ret = *it;
-	player_info_ordered.erase(it);
-	player_info_ordered.push_front(ret);
-	return ret;
+	player_info_ordered.push_front(player_info);
 }
 
 void SaveManager::remove_player_info(int index) {
-	std::list<PlayerInfo*>::iterator it = std::next(player_info_ordered.begin(), index);
+	std::deque<PlayerInfo*>::iterator it = std::next(player_info_ordered.begin(), index);
 	std::string name = (*it)->name;
 	player_info_ordered.erase(it);
 	player_info.erase(name);
 }
 
 void SaveManager::update_player_info() {
-
+	std::ofstream player_info_file;
+	player_info_file.open("resource/save/player_info.yml", std::ofstream::trunc);
+	if (player_info_file.fail()) {
+		std::cout << "Failed to open Player Info file!\n";
+		player_info_file.close();
+		return;
+	}
+	for (int i = 0, max = player_info_ordered.size(); i < max; i++) {
+		player_info_file << player_info_ordered[i]->name << " " 
+			<< player_info_ordered[i]->control_type << " "
+			<< player_info_ordered[i]->custom_mappings.size() << " ";
+		for (int i2 = 0, max2 = player_info_ordered[i]->custom_mappings.size(); 
+			i2 < max2; i2++) {
+			player_info_file << player_info_ordered[i]->custom_mappings[i2].button_kind << " "
+				<< player_info_ordered[i]->custom_mappings[i2].k_mapping << " "
+				<< player_info_ordered[i]->custom_mappings[i2].c_mapping << " "
+				<< player_info_ordered[i]->custom_mappings[i2].c_axis << " ";
+		}
+		player_info_file << player_info_ordered[i]->preferred_chara << " ";
+		for (int i2 = 0; i2 < CHARA_KIND_MAX; i2++) {
+			player_info_file << player_info_ordered[i]->preferred_costume[i2] << " "
+				<< player_info_ordered[i]->preferred_color[i2] << " ";
+		}
+		player_info_file << "\n";
+	}
+	player_info_file.close();
 }
 
 GameSetting::GameSetting() {

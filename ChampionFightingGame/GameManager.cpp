@@ -7,7 +7,7 @@
 GameManager::GameManager() {
 	for (int i = 0; i < 2; i++) {
 		player[i] = new Player(i);
-		player[i]->load_player(-1);
+		player[i]->load_player_info(-1);
 		u_hold_frames[i] = 0;
 		d_hold_frames[i] = 0;
 		l_hold_frames[i] = 0;
@@ -33,7 +33,7 @@ GameManager::GameManager() {
 	frame = 0;
 	fps = 60;
 	prev_fps = 0;
-	fps_font = font_manager->load_font("FiraCode", 12);
+	fps_font = font_manager->load_font("FiraCode", 48);
 	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	fps_counter.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 	fps_counter.set_pos(glm::vec3(0.0, 0.0, 0.0));
@@ -327,7 +327,7 @@ bool GameManager::is_crash() {
 
 void GameManager::frame_delay() {
 	TargetVarManager::get_instance()->process_targets();
-//	wait_ms();
+	wait_ms();
 }
 
 void GameManager::frame_delay_check_fps() {

@@ -17,7 +17,7 @@ Player::Player() {
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room");
 	int timer = get_global_param_int(PARAM_MENU, "stick_hold_timer");
 	controller.set_stick_hold_timer(timer, timer);
-	player_info = nullptr;
+	player_info = SaveManager::get_instance()->get_player_info(-1);
 	input_mode = INPUT_MODE_POLL;
 	rollback_frames = 0;
 	player_kind = PLAYER_KIND_PLAYER;
@@ -32,29 +32,33 @@ Player::Player(int id) {
 	alt_color = 0;
 	control_type = CONTROL_TYPE_ADVANCE;
 	stage_info = StageInfo(STAGE_KIND_TRAINING, "training_room");
-	player_info = nullptr;
+	player_info = SaveManager::get_instance()->get_player_info(-1);
 	input_mode = INPUT_MODE_POLL;
 	rollback_frames = 0;
 	player_kind = PLAYER_KIND_PLAYER;
 }
 
-void Player::load_player(int index) {
+void Player::load_player_info(int index) {
 	player_info = SaveManager::get_instance()->get_player_info(index);
 	this->name = player_info->name;
 	this->control_type = player_info->control_type;
+	chara_kind = player_info->preferred_chara;
+	alt_costume = player_info->preferred_costume[chara_kind];
+	alt_color = player_info->preferred_color[chara_kind];
 	controller.reset_button_mappings();
 	for (size_t i = 0, max = player_info->custom_mappings.size(); i < max; i++) {
 		controller.set_button_k_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].k_mapping);
 		controller.set_button_c_mapping(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_mapping);
 		controller.set_button_c_axis(player_info->custom_mappings[i].button_kind, player_info->custom_mappings[i].c_axis);
 	}
-	this->chara_kind = player_info->preferred_chara;
-	set_alt_for_chara();
 }
 
-void Player::set_alt_for_chara() {
-	alt_costume = player_info->preferred_costume[chara_kind];
-	alt_color = player_info->preferred_color[chara_kind];
+void Player::update_player_info() {
+	player_info->preferred_chara = chara_kind;
+	player_info->preferred_costume[chara_kind] = alt_costume;
+	player_info->preferred_color[chara_kind] = alt_color;
+	//TODO: Add playerinfo mappings here
+	SaveManager::get_instance()->sort_player_info(player_info);
 }
 
 void Player::poll_controller_menu() {

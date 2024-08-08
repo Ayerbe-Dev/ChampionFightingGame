@@ -21,8 +21,8 @@ public:
 	Player();
 	Player(int id);
 
-	void load_player(int index);
-	void set_alt_for_chara();
+	void load_player_info(int index);
+	void update_player_info();
 
 	void poll_controller_menu();
 	void poll_controller_fighter();

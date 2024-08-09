@@ -164,16 +164,26 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 180), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
+		execute_frame(4, [this]() {
+			push_function(&Fighter::ENABLE_CANCEL, "dash_b", CANCEL_KIND_ANY);
+		});
+		execute_wait(5, [this]() {
+			push_function(&Fighter::DISABLE_CANCEL, "dash_b", CANCEL_KIND_ANY);
+		});
 	});
 	script("dash_b", [this]() {
 		execute_frame(0, [this]() {
 			push_function(&Fighter::NEW_PUSHBOX, 0, glm::vec2(-70.0, 0.0), glm::vec2(110.0, 160.0));
 			push_function(&Fighter::NEW_HURTBOX, 0, glm::vec2(-80, 0), glm::vec2(120, 50), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_THROW);
 		});
+		execute_frame(9, [this]() {
+			push_function(&Fighter::ENABLE_CANCEL, "backdash_attack", CANCEL_KIND_ANY);
+		});
 		execute_frame(14, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_DODGE_COUNTER, false);
 			push_function(&Fighter::SET_HURTBOX_INTANGIBLE_KIND, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::SET_HURTBOX_INTANGIBLE_KIND, 1, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::DISABLE_CANCEL, "backdash_attack", CANCEL_KIND_ANY);
 		});
 	});
 	script("crouch_d", [this]() {
@@ -406,7 +416,7 @@ void Eric::load_move_scripts() {
 				"", "common_attack_hit_01"
 			);
 		});
-		execute_wait(11, [this]() {
+		execute_wait(4, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_PUNISH, true);
 			push_function(&Fighter::CLEAR_HITBOX_ALL);
@@ -590,7 +600,7 @@ void Eric::load_move_scripts() {
 		execute_wait(2, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(120, 50),
 			glm::vec2(280, 90), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(50).meter(36).hit(10, 21).block(12, 17)
+			HitResult().damage(50).meter(36).hit(12, 21).block(12, 17)
 			.anims("medium_mid", "medium_mid", "mid", "mid").j_start(1).j_inc(1).j_max(3),
 				HIT_STATUS_NORMAL, HitMove().ground(80.0, 80.0).air(10.0, 18.0).frames(11),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
@@ -2140,26 +2150,26 @@ void Eric::load_move_scripts() {
 }
 
 void Eric::load_cpu_move_info() {
-	cpu.add_action("stand_lp", "stand_lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_mp", "stand_mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_hp", "stand_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 4, 5 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_lk", "stand_lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_mk", "stand_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
-	cpu.add_action("stand_hk", "stand_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("stand_lp", "stand_lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 4, 5, 6 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("stand_mp", "stand_mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 4, 5, 6 }, {}, {}, 0.0f, false, true);
+	cpu.add_action("stand_hp", "stand_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 4, 5 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("stand_lk", "stand_lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 4, 5, 6 }, { CPU_TAG_MULTIHIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("stand_mk", "stand_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 4, 5, 6 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("stand_hk", "stand_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, { 4, 5, 6 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
 
-	cpu.add_action("forward_hp", "forward_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 6, { 6 }, {}, {}, 0.0f, false);
+	cpu.add_action("forward_hp", "forward_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 6, { 6 }, {}, {}, 0.0f, false, true);
 
-	cpu.add_action("crouch_lp", "crouch_lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_mp", "crouch_mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_hp", "crouch_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_lk", "crouch_lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_mk", "crouch_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
-	cpu.add_action("crouch_hk", "crouch_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false);
+	cpu.add_action("crouch_lp", "crouch_lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 2, { 1, 2, 3 }, { CPU_TAG_MULTIHIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("crouch_mp", "crouch_mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 2, { 1, 2, 3 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("crouch_hp", "crouch_hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false, true);
+	cpu.add_action("crouch_lk", "crouch_lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 2, { 1, 2, 3 }, { CPU_TAG_MULTIHIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("crouch_mk", "crouch_mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false, true);
+	cpu.add_action("crouch_hk", "crouch_hk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 2, { 1, 2, 3 }, {}, {}, 0.0f, false, true);
 
-	cpu.add_action("jump_lp", "jump_lp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_RISING }, {}, 0.0f, false);
-	cpu.add_action("jump_mp", "jump_mp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
-	cpu.add_action("jump_hp", "jump_hp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
-	cpu.add_action("jump_lk", "jump_lk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
-	cpu.add_action("jump_mk", "jump_mk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_CROSSUP }, {}, 0.0f, false);
-	cpu.add_action("jump_hk", "jump_hk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false);
+	cpu.add_action("jump_lp", "jump_lp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_RISING }, {}, 0.0f, false, true);
+	cpu.add_action("jump_mp", "jump_mp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false, true);
+	cpu.add_action("jump_hp", "jump_hp", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false, true);
+	cpu.add_action("jump_lk", "jump_lk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false, true);
+	cpu.add_action("jump_mk", "jump_mk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, MOVESET_DIR_NEUTRAL, { CPU_TAG_AIR_ATK_CROSSUP }, {}, 0.0f, false, true);
+	cpu.add_action("jump_hk", "jump_hk", FIGHTER_CONTEXT_AIR, INPUT_KIND_NORMAL, BUTTON_HK_BIT, 5, MOVESET_DIR_NEUTRAL, {}, {}, 0.0f, false, true);
 }

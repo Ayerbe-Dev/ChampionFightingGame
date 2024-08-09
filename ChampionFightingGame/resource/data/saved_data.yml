@@ -5,5 +5,5 @@ se_vol 70
 vc_vol 70
 music_vol 0
 fullscreen 0
-visualize_boxes 0
+visualize_boxes 1
 msaa 4

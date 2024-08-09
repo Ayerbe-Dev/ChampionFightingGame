@@ -180,7 +180,7 @@ void Fighter::status_dash_f() {
 	}
 	add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
 
-	if (frame >= get_param_int("dash_f_cancel_frame") && get_stick_dir(false) == 4) {
+	if (is_enable_cancel("dash_b") && get_stick_dir(false) == 4) {
 		switch (get_param_int("dash_cancel_kind")) {
 			case (DASH_CANCEL_KIND_INFINITE): {
 				object_string[FIGHTER_STRING_MOVE_KIND] = "dash_b";
@@ -233,26 +233,6 @@ void Fighter::status_dash_b() {
 		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("walk_b_speed") * -facing_dir;
 	}
 	add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], 0, 0));
-
-	if (frame >= get_param_int("dash_b_cancel_frame")) {
-		switch (get_param_int("dash_cancel_kind")) {
-			case (DASH_CANCEL_KIND_INFINITE): {
-				enable_cancel("dash_f", CANCEL_KIND_ANY);
-			} break;
-			case (DASH_CANCEL_KIND_WHIFF_PUNISH_OFFENSIVE): {
-				enable_cancel("backdash_attack", CANCEL_KIND_ANY);
-			} break;
-			case (DASH_CANCEL_KIND_WHIFF_PUNISH_DEFENSIVE): {
-				enable_cancel("backdash_attack_l", CANCEL_KIND_ANY);
-				enable_cancel("backdash_attack_m", CANCEL_KIND_ANY);
-				enable_cancel("backdash_attack_h", CANCEL_KIND_ANY);
-			} break;
-			case (DASH_CANCEL_KIND_NONE):
-			default: {
-
-			} break;
-		}
-	}
 }
 
 void Fighter::enter_status_dash_b() {
@@ -594,7 +574,13 @@ void Fighter::enter_status_attack() {
 		}
 	}
 	object_int[FIGHTER_INT_HITSTUN_HEIGHT] = move_list[fighter_context].is_curr_move_recover_crouching(this);
-	change_anim(object_string[FIGHTER_STRING_MOVE_KIND]);
+	if (object_string[FIGHTER_STRING_MOVE_KIND] == move_script.name
+	&& anim_table.has_anim(object_string[FIGHTER_STRING_MOVE_KIND] + "_chain")) {
+		change_anim(object_string[FIGHTER_STRING_MOVE_KIND] + "_chain");
+	}
+	else {
+		change_anim(object_string[FIGHTER_STRING_MOVE_KIND]);
+	}
 	change_script(object_string[FIGHTER_STRING_MOVE_KIND]);
 }
 

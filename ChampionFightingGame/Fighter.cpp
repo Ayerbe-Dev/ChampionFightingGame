@@ -323,7 +323,7 @@ void Fighter::process_input() {
 				object_int[FIGHTER_INT_632_STEP]++;
 				object_int[FIGHTER_INT_632_TIMER] = motion_special_timer;
 			}
-			if (object_int[FIGHTER_INT_22_STEP] == 0 || object_int[FIGHTER_INT_22_STEP] == 2) {
+			if (get_flick_dir() == 2 && (object_int[FIGHTER_INT_22_STEP] == 0 || object_int[FIGHTER_INT_22_STEP] == 2)) {
 				object_int[FIGHTER_INT_22_STEP]++;
 				object_int[FIGHTER_INT_22_TIMER] = flick_special_timer;
 			}
@@ -546,6 +546,11 @@ void Fighter::process_input() {
 			object_int[FIGHTER_INT_22_STEP] = 0;
 			object_int[FIGHTER_INT_22_TIMER] = 0;
 		} break;
+	}
+	if (player->controller.get_buffer_code() & BUTTON_6B_BIT
+	&& object_int[FIGHTER_INT_22_STEP] != 3) {
+		object_int[FIGHTER_INT_22_STEP] = 0;
+		object_int[FIGHTER_INT_22_TIMER] = 0;
 	}
 
 	check_movelist_inputs();

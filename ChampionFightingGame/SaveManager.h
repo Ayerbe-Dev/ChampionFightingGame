@@ -17,10 +17,10 @@ public:
 	SaveManager(SaveManager& other) = delete;
 	void operator=(const SaveManager& other) = delete;
 
-	void load_game_settings();
+	void load_save_data();
 	int get_game_setting(std::string setting);
 	void set_game_setting(std::string setting, int val);
-	void save_game_settings();
+	void update_save_data();
 
 	void load_player_info();
 	int add_player_info(std::string name);

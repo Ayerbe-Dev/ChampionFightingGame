@@ -62,6 +62,8 @@ enum CPUTag {
 	CPU_TAG_IGNORE_THROW,
 	CPU_TAG_AIR_ATK_CROSSUP,
 	CPU_TAG_AIR_ATK_RISING,
+	CPU_TAG_HIT_CONFIRM,
+	CPU_TAG_MULTIHIT_CONFIRM,
 
 	CPU_TAG_MAX,
 };
@@ -71,7 +73,7 @@ struct CPUAction {
 	void init(Fighter* owner, std::string script_name, std::string anim_name, int fighter_context, InputKind input_kind,
 		unsigned short required_buttons, unsigned int pref_stick_dir, std::set<unsigned int> stick_dirs,
 		std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost, 
-		bool allow_interrupt, bool manual_input
+		bool allow_interrupt, bool allow_from_idle
 	);
 	void add_movement_info(float x_speed, float x_accel, float x_max, 
 		float y_speed, float y_accel, float y_max);
@@ -88,6 +90,12 @@ struct CPUAction {
 	int active;
 	int recovery;
 	int total;
+
+	int hitstun;
+	int blockstun;
+
+	int hit_advantage;
+	int block_advantage;
 
 	float x_speed;
 	float x_accel;
@@ -114,7 +122,7 @@ struct CPUAction {
 	std::set<std::string> cancel_options;
 	float resource_cost;
 	bool allow_interrupt;
-	bool manual_input;
+	bool allow_from_idle;
 };
 
 enum CPUActionKind {
@@ -173,15 +181,24 @@ enum CPUMode {
 	CPU_MODE_MAX
 };
 
-enum CPUDecisionMode {
-	CPU_DECISION_MODE_NONE,
-	CPU_DECISION_MODE_WALK_BUTTON,
-	CPU_DECISION_MODE_WALK_COUNTERPOKE,
-	CPU_DECISION_MODE_WALK_SHIMMY,
-	CPU_DECISION_MODE_DASH_BUTTON,
-	CPU_DECISION_MODE_JUMP_BUTTON,
-	CPU_DECISION_MODE_ADVANCE,
-	CPU_DECISION_MODE_SPECIAL,
+enum CPUNeutralMode {
+	CPU_NEUTRAL_MODE_NONE,
+	CPU_NEUTRAL_MODE_WALK_BUTTON,
+	CPU_NEUTRAL_MODE_WALK_COUNTERPOKE,
+	CPU_NEUTRAL_MODE_WALK_SHIMMY,
+	CPU_NEUTRAL_MODE_DASH_BUTTON,
+	CPU_NEUTRAL_MODE_JUMP_BUTTON,
+	CPU_NEUTRAL_MODE_ADVANCE,
+	CPU_NEUTRAL_MODE_SPECIAL,
+};
+
+enum CPUAttackMode {
+	CPU_ATTACK_MODE_NONE,
+	CPU_ATTACK_MODE_DAMAGE,
+	CPU_ATTACK_MODE_DAMAGE_NOW,
+	CPU_ATTACK_MODE_METER,
+	CPU_ATTACK_MODE_MIXUP,
+	CPU_ATTACK_MODE_CORNER,
 };
 
 const int CPU_JUMP_KIND_SHORTHOP_FORWARD = 0;
@@ -189,14 +206,24 @@ const int CPU_JUMP_KIND_FULLHOP_FORWARD = 1;
 const int CPU_JUMP_KIND_NEUTRAL = 2;
 
 class FighterCPU;
-struct CPUDecision {
-	CPUDecision();
-	CPUDecision(CPUDecisionMode mode, FighterCPU* owner);
-	CPUDecisionMode mode;
+struct CPUNeutral {
+	CPUNeutral();
+	CPUNeutral(CPUNeutralMode mode, FighterCPU* owner);
+	CPUNeutralMode mode;
 	CPUAction action;
 	glm::vec2 target_dist_x;
 	int frames;
 	int misc;
+};
+struct CPUAttack {
+	CPUAttack();
+	CPUAttack(CPUAttackMode mode, FighterCPU* owner);
+	std::vector<CPUAction> find_actions(FighterCPU* owner, CPUAction curr_action, int frame_adv);
+	CPUAttackMode mode;
+	CPUAction action;
+	CPUAction preceding_action;
+	bool confirmed;
+	bool auto_confirmed;
 };
 
 class FighterCPU {
@@ -207,7 +234,7 @@ public:
 	CPUAction& add_action(std::string script_name, std::string anim_name, int fighter_context, InputKind input_kind, 
 		unsigned short required_buttons, unsigned int pref_stick_dir, std::set<unsigned int> stick_dirs,
 		std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost, 
-		bool allow_interrupt
+		bool allow_interrupt, bool allow_from_idle
 	);
 	CPUAction& add_action(std::string script_name, std::string anim_name, std::vector<CPUTag> tags,
 		std::vector<std::string> auto_followups, 
@@ -283,7 +310,9 @@ public:
 	CircularBuffer<CPUFighterState> opponent_states;
 
 	CPUMode cpu_mode;
-	CPUDecision curr_decision;
+	CPUNeutral curr_neutral;
+	CPUAttack curr_attack;
+	CPUAction last_executed_action;
 private:
 	void execute_action(CPUAction action);
 	void buffer_action(CPUAction action);

@@ -496,8 +496,8 @@ void ModelInstance::set_bone_ex_render(std::string bone_name, bool enabled) {
 
 void ModelInstance::reset_bones() {
 	for (Bone& bone : bone_data) {
-		bone.anim_matrix = model->get_global_transform();
-		bone.final_matrix = model->get_global_transform();
+		bone.anim_matrix = glm::inverse(model->get_global_transform());
+		bone.final_matrix = glm::inverse(model->get_global_transform());
 	}
 }
 

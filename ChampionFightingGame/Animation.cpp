@@ -275,6 +275,10 @@ Animation* AnimationTable::get_anim(std::string anim_name, bool verbose) {
 	return &animations[anim_map[anim_name]];
 }
 
+bool AnimationTable::has_anim(std::string anim_name) {
+	return anim_map.contains(anim_name);
+}
+
 	/* 
 
 	⢀⡴⠑⡄⠀⠀⠀⠀⠀⣀⣀⣤⣤⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 

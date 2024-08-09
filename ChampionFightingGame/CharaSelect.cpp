@@ -136,10 +136,10 @@ CSS::CSS() {
 						push_menu_on_selected_event_function([this, i](MenuObject* object) {
 							MenuObject& cursor = object->get_parent();
 							if (!i) {
-								cursor.get_texture("Cursor").set_target_pos(glm::vec3(130, -45, 0), 12);
+								cursor.get_texture("Cursor").set_target_pos(glm::vec3(125, 168.5, 0), 12);
 							}
 							else {
-								cursor.get_texture("Cursor").set_target_pos(glm::vec3(3710, -45, 0), 12);
+								cursor.get_texture("Cursor").set_target_pos(glm::vec3(3555, 168.5, 0), 12);
 							}
 							cursor.get_texture("Name Entry Cursor").set_alpha(255);
 						});

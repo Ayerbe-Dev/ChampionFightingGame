@@ -33,6 +33,7 @@ public:
 	void load_anim_single(std::string name, std::string anim_filename, int end_frame, bool flag_move, bool flag_no_hitlag_interp, Skeleton skeleton);
 	void unload_animations();
 	Animation* get_anim(std::string anim_name, bool verbose);
+	bool has_anim(std::string anim_name);
 private:
 	std::vector<Animation> animations;
 	std::unordered_map<std::string, int> anim_map;

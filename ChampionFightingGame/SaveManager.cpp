@@ -2,15 +2,15 @@
 #include <fstream>
 
 SaveManager::SaveManager() {
-	load_game_settings();
+	load_save_data();
 	load_player_info();
 }
 
-void SaveManager::load_game_settings() {
+void SaveManager::load_save_data() {
 	std::ifstream settings_file;
-	settings_file.open("resource/save/saved_settings.yml");
+	settings_file.open("resource/data/saved_data.yml");
 	if (settings_file.fail()) {
-		std::cout << "Failed to open saved settings file!\n";
+		std::cout << "Failed to open saved data file!\n";
 		settings_file.close();
 		return;
 	}
@@ -23,9 +23,9 @@ void SaveManager::load_game_settings() {
 		settings_map[name] = i; 
 	}
 	settings_file.close();
-	settings_file.open("resource/save/unsaved_settings.yml");
+	settings_file.open("resource/data/unsaved_data.yml");
 	if (settings_file.fail()) {
-		std::cout << "Failed to open unsaved settings file!\n";
+		std::cout << "Failed to open unsaved data file!\n";
 		settings_file.close();
 		return;
 	}
@@ -58,11 +58,11 @@ void SaveManager::set_game_setting(std::string setting, int val) {
 	}
 }
 
-void SaveManager::save_game_settings() {
+void SaveManager::update_save_data() {
 	std::ofstream settings_file;
-	settings_file.open("resource/save/saved_settings.yml", std::ofstream::trunc);
+	settings_file.open("resource/data/saved_data.yml", std::ofstream::trunc);
 	if (settings_file.fail()) {
-		std::cout << "Failed to open saved settings file!\n";
+		std::cout << "Failed to open saved data file!\n";
 		settings_file.close();
 		return;
 	}
@@ -74,7 +74,7 @@ void SaveManager::save_game_settings() {
 
 void SaveManager::load_player_info() {
 	std::ifstream player_info_file;
-	player_info_file.open("resource/save/player_info.yml");
+	player_info_file.open("resource/data/player_info.yml");
 	if (player_info_file.fail()) {
 		std::cout << "Failed to open Player Info file!\n";
 		player_info_file.close();
@@ -147,7 +147,7 @@ void SaveManager::remove_player_info(int index) {
 
 void SaveManager::update_player_info() {
 	std::ofstream player_info_file;
-	player_info_file.open("resource/save/player_info.yml", std::ofstream::trunc);
+	player_info_file.open("resource/data/player_info.yml", std::ofstream::trunc);
 	if (player_info_file.fail()) {
 		std::cout << "Failed to open Player Info file!\n";
 		player_info_file.close();

@@ -59,9 +59,10 @@ WindowManager::WindowManager() {
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	stbi_set_flip_vertically_on_load(true);
-	glClearColor(0.1, 0.1, 0.1, 0.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClearStencil(0);
 
+	hdr_exposure = 1.0;
 	int num_ssao_samples = 16;
 	for (int i = 0; i < num_ssao_samples; i++) {
 		glm::vec3 sample = glm::normalize(
@@ -75,9 +76,8 @@ WindowManager::WindowManager() {
 		float scale = (float)i / (float)num_ssao_samples;
 		scale = lerp(0.1, 1.0, scale * scale);
 		sample *= scale;
-		ssao_kernel.push_back(sample);
+		ssao_samples.push_back(sample);
 	}
-
 	for (int i = 0; i < 4; i++) {
 		glm::vec3 noise(
 			rng_f(0.0, 1.0) * 2.0 - 1.0,
@@ -86,15 +86,8 @@ WindowManager::WindowManager() {
 		);
 		ssao_noise.push_back(noise);
 	}
-
-	shadow_map.init("shadow", "shadow", "", 0, res_width, res_height);
-	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
-
-	outline.init("passthrough", "passthrough", "", 0, res_width, res_height);
-	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
-
-	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
-	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
+	shadow_fov = 100.0f;
+	shadow_depth = 256.0f;
 
 	g_buffer.init("passthrough", "gbuffer", "", 
 		SHADER_FEAT_DIFFUSE 
@@ -102,12 +95,15 @@ WindowManager::WindowManager() {
 		| SHADER_FEAT_NORMAL 
 		| SHADER_FEAT_SSAO, res_width, res_height
 	);
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT5); //Position EX
+
+	hdr_buffer.init("passthrough", "hdr", "", 0, res_width, res_height);
+	hdr_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
 
 	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
@@ -116,30 +112,51 @@ WindowManager::WindowManager() {
 	SSAO.add_read_texture(g_buffer.textures[3], 3); //Ditto for Normals
 
 	blur.init("passthrough", "blur", "", 0, res_width, res_height);
-	blur.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
+	blur.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 
 	blend.init("blend", "blend", "blend", 0, res_width, res_height);
-	blend.add_write_texture(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
+	blend.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 1, nullptr); //New Color
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 2, nullptr); //Old Color
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 3, nullptr); //New Position
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 4, nullptr); //Old Position
 
+	outline.init("passthrough", "passthrough", "", 0, res_width, res_height);
+	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
+
+	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
+	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
+
+	shadow_map.init("shadow", "shadow", "", 0, res_width, res_height);
+	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
+
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	box_layer.add_uniform("f_texture", 0);
 
 	g_buffer.add_uniform("g_diffuse", 0);
 	g_buffer.add_uniform("g_specular", 1);
 	g_buffer.add_uniform("g_position", 2);
 	g_buffer.add_uniform("g_normal", 3);
 
+	hdr_buffer.add_uniform("f_texture", 0);
+
+	hdr_buffer.shader->use();
+	hdr_buffer.shader->set_float("exposure", hdr_exposure);
+
 	SSAO.shader->use();
 	for (int i = 0; i < num_ssao_samples; i++) {
-		SSAO.shader->set_vec3("samples[]", ssao_kernel[i], i);
+		SSAO.shader->set_vec3("samples[]", ssao_samples[i], i);
 	}
 	SSAO.add_uniform("tex_noise", 1);
 	SSAO.add_uniform("g_position", 2);
 	SSAO.add_uniform("g_normal", 3);
+
+	box_layer.add_uniform("f_texture", 0);
+
+	g_buffer.bind_uniforms();
+	hdr_buffer.bind_uniforms();
+	SSAO.bind_uniforms();
+	box_layer.bind_uniforms();
 
 	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
 	debug_textures.push_back(GameTexture(outline.textures[0]));
@@ -153,13 +170,6 @@ WindowManager::WindowManager() {
 		debug_textures[i].set_pos(glm::vec3(0.0, 432 * i, 0.0));
 	}
 
-	shadow_map.bind_uniforms();
-	outline.bind_uniforms();
-	box_layer.bind_uniforms();
-	g_buffer.bind_uniforms();
-	SSAO.bind_uniforms();
-	blur.bind_uniforms();
-	
 	fade_texture.init("resource/misc/fade.png");
 	fade_texture.alpha = 0;
 	fade_texture.alpha.set_persistence(true);
@@ -172,6 +182,15 @@ WindowManager::WindowManager() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
 	shader_manager->set_global_int("WindowHeight", window_height);
+	shader_manager->set_global_mat4("ShadowMatrix",
+		glm::ortho(-shadow_fov, shadow_fov, -shadow_fov, shadow_fov, 0.1f, shadow_depth) *
+		glm::mat4(
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 0.707107, 0.707107, 0.0,
+			0.0, -0.707107, 0.707107, 0.0,
+			0.0, 0.0, -1.414214, 1.0
+		)
+	);
 
 	ambient_col = glm::vec3(1.0);
 
@@ -229,6 +248,7 @@ void WindowManager::start_fade_sequence(unsigned char fade_frames, std::function
 }
 
 void WindowManager::update_shader_lights() {
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 	glm::vec3 shadow_total = glm::vec3(0.0);
 	float shadow_factor = 0.0;
 	g_buffer.shader->use();
@@ -237,9 +257,7 @@ void WindowManager::update_shader_lights() {
 	for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
 		if (i < lights.size()) {
 			g_buffer.shader->set_vec3("light[0].position", glm::vec4(lights[i].position, 1.0f) * camera.view_matrix, i);
-			g_buffer.shader->set_vec3("light[0].color", lights[i].color, i);
-			g_buffer.shader->set_float("light[0].linear", lights[i].linear, i);
-			g_buffer.shader->set_float("light[0].quadratic", lights[i].quadratic, i);
+			g_buffer.shader->set_vec3("light[0].color", lights[i].color * glm::vec3(lights[i].brightness), i);
 
 			g_buffer.shader->set_bool("light[0].enabled", lights[i].enabled, i);
 			if (lights[i].enabled) {
@@ -252,12 +270,25 @@ void WindowManager::update_shader_lights() {
 		}
 	}
 	if (lights.empty()) {
-		shadow_map.light_pos = glm::vec3(0.0, 1.0, 1.0);
+		shader_manager->set_global_mat4("ShadowMatrix", 
+			glm::ortho(-shadow_fov, shadow_fov, -shadow_fov, shadow_fov, 0.1f, shadow_depth) *
+			glm::mat4(
+				1.0, 0.0, 0.0, 0.0, 
+				0.0, 0.707107, 0.707107, 0.0, 
+				0.0, -0.707107, 0.707107, 0.0, 
+				0.0, 0.0, -1.414214, 1.0
+			)
+		);
+		shader_manager->set_global_vec3("ShadowLight", glm::vec3(0.0, 1.0, 1.0));
 	}
 	else {
-		shadow_map.light_pos = shadow_total / glm::vec3(shadow_factor);
+		shadow_total /= glm::vec3(shadow_factor);
+		shader_manager->set_global_mat4("ShadowMatrix", 
+			glm::ortho(-shadow_fov, shadow_fov, -shadow_fov, shadow_fov, 0.1f, shadow_depth) *
+			glm::lookAt(shadow_total, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0))
+		);
+		shader_manager->set_global_vec3("ShadowLight", shadow_total);
 	}
-	shadow_map.update_light_pos();
 }
 
 void WindowManager::update_shader_cams() {
@@ -270,13 +301,6 @@ void WindowManager::update_shader_cams() {
 	shader_manager->set_global_mat4("CameraMatrix", camera_matrix);
 	shader_manager->set_global_mat4("ProjectionMatrix", projection_matrix);
 	shader_manager->set_global_mat4("ViewMatrix", view_matrix);
-}
-
-void WindowManager::update_shader_shadows() {
-	ShaderManager* shader_manager = ShaderManager::get_instance();
-	glm::mat4 shadow_matrix = (shadow_map.projection_matrix * shadow_map.view_matrix);
-	
-	shader_manager->set_global_mat4("ShadowMatrix", shadow_matrix);
 }
 
 void WindowManager::update_framebuffer_dimensions() {
@@ -386,9 +410,7 @@ void WindowManager::update_screen() {
 	render_debug_textures();
 #endif
 	glfwPollEvents();
-	glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSwapBuffers(window);
-	glDisable(GL_FRAMEBUFFER_SRGB);
 }
 
 void WindowManager::clear_screen() {

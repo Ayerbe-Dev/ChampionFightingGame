@@ -138,8 +138,9 @@ void DebugMenu::render_main() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->g_buffer.render();
-
+	glDisable(GL_FRAMEBUFFER_SRGB);
 	tex.render();
 	text_field.render();
 	text.render();

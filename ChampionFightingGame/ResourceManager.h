@@ -19,6 +19,9 @@ public:
 	ResourceManager(ResourceManager& other) = delete;
 	void operator=(const ResourceManager& other) = delete;
 
+	void set_srgb(bool srgb);
+	bool is_srgb();
+
 	void load_model(std::string dir);
 	void init_gl_model(std::string dir);
 	ModelData* get_model(std::string dir);
@@ -42,6 +45,7 @@ public:
 private:
 	std::map<std::string, ModelResource> model_map;
 	std::map<std::string, TextureResource> texture_map;
+	bool srgb;
 
 	ResourceManager();
 	static ResourceManager* instance;

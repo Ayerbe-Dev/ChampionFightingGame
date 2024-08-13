@@ -4,8 +4,10 @@
 #include <functional>
 #include <string>
 
-//Declares a variable of the given type and extracts its value from the queue
+//Declares a variable or function of the given type and extracts its value from the queue
 #define UNWRAP(var_name, type) type var_name = std::any_cast<type>(args.get_arg())
+#define UNWRAP_FUN(var_name, obj_type, fun_type) fun_type(obj_type::*var_name)() = std::any_cast<fun_type(obj_type::*)()>(args.get_arg())
+#define UNWRAP_FUN_CONST(var_name, obj_type, fun_type) fun_type(obj_type::*var_name)() const = std::any_cast<fun_type(obj_type::*)() const>(args.get_arg())
 //Same as the above, but for variables that were already declared
 #define UNWRAP_NO_DECL(var_name) if (!args.args.empty()) { var_name = std::any_cast<decltype(var_name)>(args.get_arg()); }
 //Get the typeid for the next arg

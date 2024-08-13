@@ -166,8 +166,8 @@ void Fighter::status_dash_f() {
 	if (is_status_end()) {
 		return;
 	}
-	int min_frame = get_param_int("dash_f_accel_frame");
-	int max_frame = min_frame + get_param_int("dash_f_maintain_speed_frame");
+	int min_frame = get_param_int("dash_f_start_frame");
+	int max_frame = get_param_int("dash_f_stop_frame");
 
 	if (frame >= min_frame && frame < max_frame) {
 		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("dash_f_speed") * facing_dir;
@@ -220,8 +220,8 @@ void Fighter::status_dash_b() {
 	if (is_status_end()) {
 		return;
 	}
-	int min_frame = get_param_int("dash_b_accel_frame");
-	int max_frame = min_frame + get_param_int("dash_b_maintain_speed_frame");
+	int min_frame = get_param_int("dash_b_start_frame");
+	int max_frame = get_param_int("dash_b_stop_frame");
 
 	if (frame >= min_frame && frame < max_frame) {
 		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = get_param_float("dash_b_speed") * facing_dir * -1;

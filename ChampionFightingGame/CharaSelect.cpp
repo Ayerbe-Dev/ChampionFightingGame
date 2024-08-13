@@ -872,7 +872,9 @@ void CSS::render_main() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_menu_object("Background");
 	glViewport(window_manager->res_width * 0.2, window_manager->res_height * 0.34, window_manager->res_width * 0.6, window_manager->res_height * 0.6);
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->g_buffer.render();
+	glDisable(GL_FRAMEBUFFER_SRGB);
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 
 	glDepthMask(GL_FALSE);

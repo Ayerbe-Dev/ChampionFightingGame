@@ -408,7 +408,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="ScriptArg.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Stage.cpp" />
@@ -554,6 +553,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ProjectileString.h" />
     <ClInclude Include="RamonaStatus.h" />
     <ClInclude Include="ReadBytes.h" />
+    <ClInclude Include="resource3.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RookString.h" />
     <ClInclude Include="RowanFireballString.h" />
@@ -563,7 +563,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ScreenTexture.h" />
     <ClInclude Include="ScriptFunc.h" />
     <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_opengl3.h" />
@@ -868,6 +867,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_effect.glsl" />
     <None Include="resource\shaders\fragment_fullbright.glsl" />
     <None Include="resource\shaders\fragment_gbuffer.glsl" />
+    <None Include="resource\shaders\fragment_hdr.glsl" />
     <None Include="resource\shaders\fragment_passthrough.glsl" />
     <None Include="resource\shaders\fragment_model.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
@@ -1007,6 +1007,9 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <Media Include="resource\sound\bgm\stage\Vesuvius_Theme.wav" />
     <Media Include="resource\sound\bgm\stage\Vesuvius_Theme_loop.wav" />
     <Media Include="resource\sound\vc\roy\roy_attack_01.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ChampionFightingGame2.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

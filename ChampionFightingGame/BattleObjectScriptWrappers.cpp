@@ -273,6 +273,41 @@ void BattleObject::CLEAR_EFFECT_ALL(ScriptArg args) {
 }
 
 void BattleObject::PRINT_MSG_FROM_SCRIPT(ScriptArg args) {
-	UNWRAP(message, std::string);
-	std::cout << message;
+	if (WRAPPED_TYPE(std::string)) {
+		UNWRAP(message, std::string);
+		std::cout << message << "\n";
+		return;
+	}
+	if (WRAPPED_TYPE(int)) {
+		UNWRAP(message, int);
+		std::cout << message << "\n";
+		return;
+	}
+	if (WRAPPED_TYPE(float)) {
+		UNWRAP(message, float);
+		std::cout << message << "\n";
+		return;
+	}
+	if (WRAPPED_TYPE(bool)) {
+		UNWRAP(message, bool);
+		std::cout << (message ? "true" : "false") << "\n";
+		return;
+	}
+	if (WRAPPED_TYPE(glm::vec3)) {
+		UNWRAP(message, glm::vec3);
+		std::cout << message.x << ", " << message.y << ", " << message.z << "\n";
+		return;
+	}
+	if (WRAPPED_TYPE(glm::vec3(GameObject::*)())) {
+		UNWRAP_FUN(msg_fun, GameObject, glm::vec3);
+		glm::vec3 message = std::mem_fn(msg_fun)(this);
+		std::cout << message.x << ", " << message.y << ", " << message.z << "\n";
+		return;
+	}
+	if (WRAPPED_TYPE(glm::vec3(GameObject::*)() const)) {
+		UNWRAP_FUN_CONST(msg_fun, GameObject, glm::vec3);
+		glm::vec3 message = std::mem_fn(msg_fun)(this);
+		std::cout << message.x << ", " << message.y << ", " << message.z << "\n";
+		return;
+	}
 }

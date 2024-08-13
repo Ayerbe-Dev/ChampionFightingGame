@@ -258,6 +258,7 @@ std::vector<ModelTexture> ModelData::load_texture_names(aiMaterial* mat, aiTextu
 		}
 		ModelTexture texture;
 		texture.filename = filename;
+		texture.type = type;
 		texture.type_string = type_name + std::to_string(i + 1);
 		textures.push_back(texture);
 	}
@@ -428,7 +429,7 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 
 	glm::mat4 global_transform = model->get_global_transform();
 	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
-	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
+	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame) + 1, anim_kind->keyframes.size() - 1)];
 	float interp_mul = (frame - (int)frame);
 	if (move) {
 		glm::mat4 trans_keyframe = anim_kind->trans_matrices[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
@@ -507,11 +508,16 @@ void ModelInstance::load_textures() {
 	std::unordered_map<std::string, std::vector<std::pair<int, int>>>& texture_map = model->texture_map;
 
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->get_texture(model->get_directory() + texture_names[i]);
+		std::string texture_file = model->get_directory() + texture_names[i];
+		const auto& [mat_index, tex_index] = texture_map[texture_names[i]][0];
+		if (materials[mat_index].textures[tex_index].type == aiTextureType_DIFFUSE) {
+			resource_manager->set_srgb(true);
+		}
 		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
 			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
-			materials[mat_index].textures[tex_index].id = loaded_texture;
+			materials[mat_index].textures[tex_index].id = resource_manager->get_texture(texture_file);
 		}
+		resource_manager->set_srgb(false);
 	}
 }
 
@@ -522,11 +528,16 @@ void ModelInstance::load_textures(std::string path) {
 
 	texture_dir = model->get_directory() + path + "/";
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		unsigned int loaded_texture = resource_manager->get_texture(texture_dir + texture_names[i]);
-		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
-			materials[mat_index].textures[tex_index].id = loaded_texture;
+		std::string texture_file = texture_dir + texture_names[i];
+		const auto& [mat_index, tex_index] = texture_map[texture_names[i]][0];
+		if (materials[mat_index].textures[tex_index].type == aiTextureType_DIFFUSE) {
+			resource_manager->set_srgb(true);
 		}
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
+			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];			
+			materials[mat_index].textures[tex_index].id = resource_manager->get_texture(texture_file);
+		}
+		resource_manager->set_srgb(false);
 	}
 }
 

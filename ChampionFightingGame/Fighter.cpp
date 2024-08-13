@@ -170,7 +170,7 @@ void Fighter::process_post_position() {
 			&& fighter_context != FIGHTER_CONTEXT_AIR) {
 			//TODO: Modify add_pos so that the returned failure code can distinguish between failures 
 			//due to positional differences and failures due to OoB movement
-			if (!add_pos_validate(glm::vec3(object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * that->facing_dir, 0, 0)) 
+			if (!add_pos_validate(glm::vec3(object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -facing_dir, 0, 0)) 
 				&& !object_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE]) {
 				that->object_int[FIGHTER_INT_PUSHBACK_FRAMES] = object_int[FIGHTER_INT_PUSHBACK_FRAMES];
 				that->object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];

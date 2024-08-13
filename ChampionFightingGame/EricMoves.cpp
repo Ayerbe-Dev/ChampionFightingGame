@@ -406,15 +406,19 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_slide", CANCEL_KIND_CONTACT);
 			push_function(&Fighter::ENABLE_CANCEL, "special_install", CANCEL_KIND_CONTACT);
 		});
+		execute_frame(8, [this]() {
+			push_function(&Fighter::SET_RATE, 0.5);
+		});
 		execute_frame(9, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130),
 				glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-				HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
+				HitResult().damage(100).meter(48).hit(16, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
 				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
 				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01"
 			);
+		push_function(&Fighter::SET_RATE, 1.0);
 		});
 		execute_wait(4, [this]() {
 			push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_ENABLE_COUNTERHIT, false);

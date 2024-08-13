@@ -68,6 +68,15 @@ enum CPUTag {
 	CPU_TAG_MAX,
 };
 
+struct CPUMovement {
+	float x_speed = 0.0f;
+	float y_speed = 0.0f;
+	float y_accel = 0.0f;
+	float y_max = 0.0f;
+	std::map<int, float> x_speed_changes;
+	std::map<int, float> y_speed_changes;
+};
+
 struct CPUAction {
 	CPUAction();
 	void init(Fighter* owner, std::string script_name, std::string anim_name, int fighter_context, InputKind input_kind,
@@ -75,8 +84,8 @@ struct CPUAction {
 		std::vector<CPUTag> tags, std::vector<std::string> auto_followups, float resource_cost, 
 		bool allow_interrupt, bool allow_from_idle
 	);
-	void add_movement_info(float x_speed, float x_accel, float x_max, 
-		float y_speed, float y_accel, float y_max);
+	void add_movement_info(float x_speed, float y_speed, float y_accel, float y_max,
+		std::map<int, float> x_speed_changes, std::map<int, float> y_speed_changes);
 
 
 	std::string name;
@@ -97,13 +106,7 @@ struct CPUAction {
 	int hit_advantage;
 	int block_advantage;
 
-	float x_speed;
-	float x_accel;
-	float x_max;
-
-	float y_speed;
-	float y_accel;
-	float y_max;
+	CPUMovement movement_info;
 
 	bool is_strike;
 	bool is_throw;
@@ -215,15 +218,25 @@ struct CPUNeutral {
 	int frames;
 	int misc;
 };
+
 struct CPUAttack {
 	CPUAttack();
 	CPUAttack(CPUAttackMode mode, FighterCPU* owner);
-	std::vector<CPUAction> find_actions(FighterCPU* owner, CPUAction curr_action, int frame_adv);
+	void update_action(std::vector<CPUAction> actions);
 	CPUAttackMode mode;
 	CPUAction action;
-	CPUAction preceding_action;
+	bool non_active_start;
 	bool confirmed;
 	bool auto_confirmed;
+};
+
+struct CPUHitData {
+	int frame = -1;
+	int hitstun = 0;
+	int pushback_frames = 0;
+	glm::vec2 pushback_total = glm::vec2(0.0f);
+	glm::vec2 pos = glm::vec2(0.0f);
+	glm::vec2 opp_pos = glm::vec2(0.0f);
 };
 
 class FighterCPU {
@@ -317,14 +330,18 @@ private:
 	void execute_action(CPUAction action);
 	void buffer_action(CPUAction action);
 	void determine_states();
-	int get_hit_frame(CPUAction atk_action, int atk_frame, float atk_facing_dir, glm::vec2 atk_base_pos,
+	CPUHitData get_hit_data(CPUAction atk_action, int atk_frame, float atk_facing_dir, glm::vec2 atk_base_pos,
 		CPUAction def_action, int def_frame, float def_facing_dir, glm::vec2 def_base_pos, bool this_atk
 	);
+	glm::vec2 get_end_pos(CPUAction action, glm::vec2 base_pos);
+	void init_action_speed_vars(CPUAction action, Fighter* owner, float* x_speed, float* y_speed, float* y_accel, float* y_max, glm::vec2* speed_accel, glm::vec2* speed_total);
 	bool check_contact(CPUFighterState& state, CPUFighterState& opp_state);
 	bool check_contact(CPUFrameData& frame_data, glm::vec2 pos, float facing_dir, 
-		CPUFrameData& opp_frame_data, glm::vec2 opp_pos, float opp_facing_dir);
+		CPUFrameData& opp_frame_data, glm::vec2 opp_pos, float opp_facing_dir, int* hitbox_id);
 	void add_input(unsigned int input_stick, unsigned int input_buttons);
 	int get_frames_to_input(CPUAction action);
+	std::vector<CPUAction> find_followup_actions();
+	std::vector<CPUAction> find_followup_actions_rec(CPUAction curr_action, int hit_frame, int frame_adv, glm::vec2 pos, glm::vec2 opp_pos, glm::vec2 pushback, int pushback_frames);
 	unsigned int numpad_to_bits(unsigned int numpad_dir);
 
 	int input_frames;

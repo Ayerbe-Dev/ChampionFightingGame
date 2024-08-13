@@ -29,6 +29,9 @@ layout(std140) uniform DimMul {
 #endif
 uniform float alpha;
 uniform sampler2D shadow_map;
+layout(std140) uniform ShadowLight {
+    vec3 shadow_light;
+};
 
 uniform Material material;
 
@@ -54,13 +57,18 @@ void main() {
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {
-    float bias = 0.005;
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
-
-    float closestDepth = texture(shadow_map, projCoords.xy).r; 
     float currentDepth = projCoords.z;
 
+    if (currentDepth > 1.0) {
+        return 0.0;
+    }
+
+    float closestDepth = texture(shadow_map, projCoords.xy).r; 
+    vec3 normal = normalize(fs_in.Normal);
+    vec3 lightDir = normalize(shadow_light - vec3(fs_in.FragPos));
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadow_map, 0);
     for(int x = -1; x < 1; ++x) {
@@ -69,7 +77,7 @@ float calc_shadow(vec4 fragPosLightSpace) {
             shadow += float(currentDepth - bias > pcfDepth);
         }    
     }
-    shadow /= 12.5;
+    shadow /= 9.0;
 
     return shadow;
 }

@@ -34,15 +34,20 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 
 	GameManager* game_manager = GameManager::get_instance();
 	
-	ImGui::Begin("Debug Menu\n");		
+	ImGui::Begin("Debug Menu", nullptr, 
+		ImGuiWindowFlags_AlwaysAutoResize 
+		| ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoResize
+	);
 	
 	if (ImGui::MenuItem("Debug Menu")) {
 		game_manager->update_state(GAME_STATE_DEBUG_MENU);
 	}
-	if (ImGui::MenuItem("Training Mode (Battle)")) {
+	if (ImGui::MenuItem("Battle (Training)")) {
 		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_TRAINING);
 	}
-	if (ImGui::MenuItem("1v1 Game")) {
+	if (ImGui::MenuItem("Battle (VS)")) {
 		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_NORMAL);
 	}
 	if (ImGui::MenuItem("Character Select Screen")) {
@@ -68,6 +73,65 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	}
 
 	ImGui::End();
+	
+	const char* charas[18]{
+		"Rowan",
+		"Eric",
+		"Leon",
+		"Desirae",
+		"Nightsabre",
+		"Athena",
+		"Dante",
+		"Zyair",
+		"Tessa",
+		"Rook",
+		"Bruno",
+		"Atlas",
+		"Julius",
+		"Ramona",
+		"Dingo",
+		"Wallace",
+		"Vesuvius",
+		"CHAMELEON"
+	};
+	const char* current_chara_p1 = charas[game_manager->player[0]->chara_kind];
+	const char* current_chara_p2 = charas[game_manager->player[1]->chara_kind];
+
+	ImGui::Begin("P1 Chara Kind", nullptr, 
+		ImGuiWindowFlags_AlwaysAutoResize
+		| ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoResize);
+	for (size_t i = 0; i < 18; i++) {
+		bool selected = current_chara_p1 == charas[i];
+		if (ImGui::Selectable(charas[i], selected)) {
+			current_chara_p1 = charas[i];
+			game_manager->player[0]->chara_kind = i;
+		}
+		if (selected) {
+			ImGui::SetItemDefaultFocus();
+		}
+	}
+	
+	ImGui::End();
+
+	ImGui::Begin("P2 Chara Kind", nullptr,
+		ImGuiWindowFlags_AlwaysAutoResize
+		| ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoResize);
+	for (size_t i = 0; i < 18; i++) {
+		bool selected = current_chara_p2 == charas[i];
+		if (ImGui::Selectable(charas[i], selected)) {
+			current_chara_p2 = charas[i];
+			game_manager->player[1]->chara_kind = i;
+		}
+		if (selected) {
+			ImGui::SetItemDefaultFocus();
+		}
+	}
+	ImGui::End();
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -680,10 +744,19 @@ void cotr_imgui_debug_battle(Battle* battle) {
 					ImGui::SliderFloat((light_name + ".X").c_str(), &window_manager->lights[i2].position[0], -150.0f, 150.0f);
 					ImGui::SliderFloat((light_name + ".Y").c_str(), &window_manager->lights[i2].position[1], -150.0f, 150.0f);
 					ImGui::SliderFloat((light_name + ".Z").c_str(), &window_manager->lights[i2].position[2], -150.0f, 150.0f);
+					ImGui::SliderFloat((light_name + ".R").c_str(), &window_manager->lights[i2].color[0], 0.0f, 1.0f);
+					ImGui::SliderFloat((light_name + ".G").c_str(), &window_manager->lights[i2].color[1], 0.0f, 1.0f);
+					ImGui::SliderFloat((light_name + ".B").c_str(), &window_manager->lights[i2].color[2], 0.0f, 1.0f);
+					ImGui::SliderFloat((light_name + " Brightness").c_str(), &window_manager->lights[i2].brightness, 0.0f, 20.0f);
 					ImGui::Checkbox((light_name).c_str(), &window_manager->lights[i2].enabled);
 					ImGui::TreePop();
 				}
 			}
+			if (ImGui::SliderFloat("HDR Exposure", &window_manager->hdr_exposure, 0.0f, 10.0f)) {
+				window_manager->hdr_buffer.shader->use();
+				window_manager->hdr_buffer.shader->set_float("exposure", window_manager->hdr_exposure);
+			}
+			ImGui::SliderFloat("Shadow Depth", &window_manager->shadow_depth, 0.0f, 256.0f);
 			ImGui::TreePop();
 			window_manager->update_shader_lights();
 		}
@@ -702,10 +775,10 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::Checkbox("Outlines Enabled", &window_manager->outlines_enabled);
 			if (ImGui::Button("Print SSAO Vals")) {
 				std::cout << "SSAO Samples:\n";
-				for (size_t i = 0, max = window_manager->ssao_kernel.size(); i < max; i++) {
-					std::cout << window_manager->ssao_kernel[i].x << ", "
-						<< window_manager->ssao_kernel[i].y << ", "
-						<< window_manager->ssao_kernel[i].z << "\n";
+				for (size_t i = 0, max = window_manager->ssao_samples.size(); i < max; i++) {
+					std::cout << window_manager->ssao_samples[i].x << ", "
+						<< window_manager->ssao_samples[i].y << ", "
+						<< window_manager->ssao_samples[i].z << "\n";
 				}
 				std::cout << "SSAO Noise:\n";
 				for (size_t i = 0, max = window_manager->ssao_noise.size(); i < max; i++) {

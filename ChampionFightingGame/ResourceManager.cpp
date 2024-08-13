@@ -3,7 +3,7 @@
 #include "GLEW Helpers.h"
 
 ResourceManager::ResourceManager() {
-
+	srgb = false;
 }
 
 ResourceManager* ResourceManager::instance = nullptr;
@@ -13,6 +13,14 @@ ResourceManager* ResourceManager::get_instance() {
 		instance = new ResourceManager;
 	}
 	return instance;
+}
+
+void ResourceManager::set_srgb(bool srgb) {
+	this->srgb = srgb;
+}
+
+bool ResourceManager::is_srgb() {
+	return srgb;
 }
 
 void ResourceManager::load_model(std::string dir) {

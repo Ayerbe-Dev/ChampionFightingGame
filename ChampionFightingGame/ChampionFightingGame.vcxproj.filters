@@ -475,9 +475,6 @@
     <ClCompile Include="Particle.cpp">
       <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowMap.cpp">
-      <Filter>2. Code Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClCompile>
     <ClCompile Include="ScreenTexture.cpp">
       <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
     </ClCompile>
@@ -1125,9 +1122,6 @@
     <ClInclude Include="Shader.h">
       <Filter>1. Header Files\Engine\Rendering\RenderingComponent</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowMap.h">
-      <Filter>1. Header Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
     </ClInclude>
@@ -1391,6 +1385,9 @@
     </ClInclude>
     <ClInclude Include="imgui_impl_glfw.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="resource3.h">
+      <Filter>1. Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2016,6 +2013,9 @@
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\geometry_blend.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_hdr.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
   </ItemGroup>
@@ -3008,5 +3008,8 @@
     <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Zyair">
       <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ChampionFightingGame2.rc" />
   </ItemGroup>
 </Project>

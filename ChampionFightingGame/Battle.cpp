@@ -40,6 +40,8 @@ void battle_main() {
 	font_manager->load_face("Fiend-Oblique");
 
 	Battle *battle = new Battle;
+
+	battle->fighter[0]->model.set_bone_ex_render("ClavicleR", true);
 	
 	window_manager->update_shader_cams();
 	window_manager->update_shader_lights();
@@ -206,7 +208,6 @@ void Battle::load_world() {
 
 	window_manager->update_shader_cams();
 	window_manager->update_shader_lights();
-	window_manager->update_shader_shadows();
 }
 
 void Battle::load_ui() {
@@ -1338,7 +1339,7 @@ void Battle::render_world() {
 			}
 		}
 	}
-//	stage.render_shadow();
+	stage.render_shadow();
 	glCullFace(GL_BACK);
 
 	//COLOR PASS
@@ -1427,11 +1428,17 @@ void Battle::render_world() {
 	
 	//LIGHTING PASS
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	window_manager->hdr_buffer.use();
 	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	window_manager->g_buffer.bind_ex_uniforms({{"ssao", window_manager->blur.textures[0]}});
 	window_manager->g_buffer.render();
 	window_manager->blend.render_passthrough();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	window_manager->hdr_buffer.render();
+	glDisable(GL_FRAMEBUFFER_SRGB);
 	if (window_manager->outlines_enabled) {
 		window_manager->outline.render_passthrough();
 	}

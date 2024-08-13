@@ -8,8 +8,6 @@ public:
 
 	glm::vec3 position;
 	glm::vec3 color;
-
-	float linear;
-	float quadratic;
+	float brightness;
 	bool enabled;
 };

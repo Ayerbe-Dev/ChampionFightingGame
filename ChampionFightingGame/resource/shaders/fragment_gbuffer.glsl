@@ -9,8 +9,6 @@ struct Light {
     vec3 position;
     vec3 color;
 	
-    float linear;
-    float quadratic;
     bool enabled;
 };
 
@@ -41,6 +39,8 @@ uniform sampler2D ssao;
 #endif
 
 void main() {
+    const float linear = 0.007;
+	const float quadratic = 0.0002;
 #ifdef SHADER_FEAT_DIFFUSE
     vec3 Diffuse = texture(g_diffuse, TexCoords).rgb * texture(g_diffuse, TexCoords).a;
 #else
@@ -77,14 +77,14 @@ void main() {
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
         if (light[i].enabled) {
             vec3 light_dir = normalize(light[i].position - FragPos);
-            vec3 diffuse = max(dot(Normal, light_dir), 0.0) * Diffuse * light[i].color;
+            vec3 diffuse = max(dot(light_dir, Normal), 0.0) * Diffuse * light[i].color;
 
             vec3 halfway_dir = normalize(light_dir + view_dir);
-            float spec = pow(max(dot(Normal, halfway_dir), 0.0), 8.0);
+            float spec = pow(max(dot(Normal, halfway_dir), 0.0), 16.0);
             vec3 specular = light[i].color * spec * Specular;
 
             float distance = length(light[i].position - FragPos);
-            float attenuation = 1.0 / (1.0 + light[i].linear * distance + light[i].quadratic * distance * distance);
+            float attenuation = 1.0 / (1.0 + linear * distance + quadratic * distance * distance);
 
             diffuse *= attenuation;
             specular *= attenuation;

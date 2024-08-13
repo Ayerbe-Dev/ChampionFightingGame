@@ -7,7 +7,6 @@
 #include "GameRect.h"
 #include "Camera.h"
 #include "Light.h"
-#include "ShadowMap.h"
 #include "Framebuffer.h"
 #include <functional>
 #include <set>
@@ -33,7 +32,6 @@ public:
 
 	void update_shader_lights();
 	void update_shader_cams();
-	void update_shader_shadows();
 	void update_framebuffer_dimensions();
 
 	void set_resolution(int width, int height);
@@ -61,20 +59,24 @@ public:
 	std::set<std::string> event_names;
 	std::mutex event_mutex;
 
-	ShadowMap shadow_map;
-	Framebuffer outline;
-	Framebuffer box_layer;
 	Framebuffer g_buffer;
+	Framebuffer hdr_buffer;
 	Framebuffer SSAO;
 	Framebuffer blur;
 	Framebuffer blend;
-	
+	Framebuffer outline;
+	Framebuffer box_layer;
+	Framebuffer shadow_map;
+
 	std::vector<GameTexture> debug_textures;
 	GameTexture fade_texture;
 	CircularBuffer<std::pair<GLint, GLint>> ex_trails;
 
-	std::vector<glm::vec3> ssao_kernel;
+	float hdr_exposure;
+	std::vector<glm::vec3> ssao_samples;
 	std::vector<glm::vec3> ssao_noise;
+	float shadow_fov;
+	float shadow_depth;
 
 	int res_width;
 	int res_height;

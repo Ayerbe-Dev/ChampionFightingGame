@@ -2,6 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "EasyGifReader.h"
+#include "ResourceManager.h"
 
 unsigned int loadGLTexture(std::string file_path) {
 	unsigned int texture_id;
@@ -12,19 +13,35 @@ unsigned int loadGLTexture(std::string file_path) {
 	int num_components;
 	unsigned char* data = stbi_load(file_path.c_str(), &width, &height, &num_components, 0);
 	if (data) {
+		GLenum internal_format;
 		GLenum format;
-		if (num_components == 3) {
-			format = GL_RGB;
-		}
-		else if (num_components == 4) {
-			format = GL_RGBA;
-		}
-		else {
-			format = GL_RED;
+		switch (num_components) {
+			case 3: {
+				if (ResourceManager::get_instance()->is_srgb()) {
+					internal_format = GL_SRGB;
+				}
+				else {
+					internal_format = GL_RGB;
+				}
+				format = GL_RGB;
+			} break;
+			case 4: {
+				if (ResourceManager::get_instance()->is_srgb()) {
+					internal_format = GL_SRGB_ALPHA;
+				}
+				else {
+					internal_format = GL_RGBA;
+				}
+				format = GL_RGBA;
+			} break;
+			default: {
+				internal_format = GL_RED;
+				format = GL_RED;
+			} break;
 		}
 
 		glBindTexture(GL_TEXTURE_2D, texture_id);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -50,19 +67,35 @@ unsigned int loadGLTexture(std::string file_path, int* width, int* height) {
 
 	unsigned char* data = stbi_load(file_path.c_str(), width, height, &num_components, 0);
 	if (data) {
+		GLenum internal_format;
 		GLenum format;
-		if (num_components == 3) {
-			format = GL_RGB;
-		}
-		else if (num_components == 4) {
-			format = GL_RGBA;
-		}
-		else {
-			format = GL_RED;
+		switch (num_components) {
+			case 3: {
+				if (ResourceManager::get_instance()->is_srgb()) {
+					internal_format = GL_SRGB;
+				}
+				else {
+					internal_format = GL_RGB;
+				}
+				format = GL_RGB;
+			} break;
+			case 4: {
+				if (ResourceManager::get_instance()->is_srgb()) {
+					internal_format = GL_SRGB_ALPHA;
+				}
+				else {
+					internal_format = GL_RGBA;
+				}
+				format = GL_RGBA;
+			} break;
+			default: {
+				internal_format = GL_RED;
+				format = GL_RED;
+			} break;
 		}
 
 		glBindTexture(GL_TEXTURE_2D, texture_id);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, *width, *height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, *width, *height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);

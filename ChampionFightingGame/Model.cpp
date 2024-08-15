@@ -448,14 +448,13 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 
 		for (size_t i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += interp_mul * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
-			keyframes[i].pos += interp_mul * (next_keyframes[i].pos - keyframes[i].pos);
-			keyframes[i].rot += interp_mul * (next_keyframes[i].rot - keyframes[i].rot);
-			
+
 			bone_data[i].anim_matrix = *bone_data[i].parent_matrix * keyframes[i].anim_matrix;
 			bone_data[bone_data[i].counterpart_id].final_matrix = flip_matrix * (glm::scale(bone_data[i].anim_matrix * bone_data[i].model_matrix, flip_vec) * global_transform);
 
 			bone_data[i].pos = keyframes[i].pos;
 			bone_data[i].rot = keyframes[i].rot;
+			bone_data[i].scale = keyframes[i].scale;
 
 			bone_data[i].rot.x *= -1.0;
 			bone_data[i].rot.w *= -1.0;
@@ -467,14 +466,13 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 	else {
 		for (size_t i = 0, max = keyframes.size(); i < max; i++) {
 			keyframes[i].anim_matrix += interp_mul * (next_keyframes[i].anim_matrix - keyframes[i].anim_matrix);
-			keyframes[i].pos += interp_mul * (next_keyframes[i].pos - keyframes[i].pos);
-			keyframes[i].rot += interp_mul * (next_keyframes[i].rot - keyframes[i].rot);
 
 			bone_data[i].anim_matrix = *bone_data[i].parent_matrix * keyframes[i].anim_matrix;
 			bone_data[i].final_matrix = bone_data[i].anim_matrix * bone_data[i].model_matrix * global_transform;
 
 			bone_data[i].pos = keyframes[i].pos;
 			bone_data[i].rot = keyframes[i].rot;
+			bone_data[i].scale = keyframes[i].scale;
 
 			std::swap(bone_data[i].pos.x, bone_data[i].pos.z);
 			bone_data[i].pos.z *= -1.0;

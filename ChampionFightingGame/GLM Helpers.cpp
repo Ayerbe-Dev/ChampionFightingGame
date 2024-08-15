@@ -71,6 +71,17 @@ glm::vec3 calc_rotation(glm::vec3 base, glm::vec3 angle) {
 	return glm::vec3(x, y, z);
 }
 
+void decompose_mat(const glm::mat4& m, glm::vec3& pos, glm::quat& rot, glm::vec3& scale) {
+	pos = m[3];
+	for (int i = 0; i < 3; i++)
+		scale[i] = glm::length(glm::vec3(m[i]));
+	const glm::mat3 rot_mat(
+		glm::vec3(m[0]) / scale[0],
+		glm::vec3(m[1]) / scale[1],
+		glm::vec3(m[2]) / scale[2]);
+	rot = glm::quat_cast(rot_mat);
+}
+
 void print_vec(std::ostream& stream, glm::vec4 vec, std::string extra_chars) {
 	stream << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << extra_chars << "\n";
 }

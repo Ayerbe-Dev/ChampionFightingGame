@@ -24,7 +24,7 @@ void main() {
     mat4 bone_transform = mat4(1.0);
 #endif
 
-    vec4 total_pos = bone_transform * vec4(v_pos, 1.0);
+     vec4 transform = model_matrix * bone_transform * vec4(v_pos, 1.0);
 
-    gl_Position = shadow_matrix * (model_matrix * total_pos);
+    gl_Position = shadow_matrix * transform;
 }  

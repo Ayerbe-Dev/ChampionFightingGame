@@ -128,7 +128,7 @@ WindowManager::WindowManager() {
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
 
 	shadow_map.init("shadow", "shadow", "", 0, res_width, res_height);
-	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2000, 2000, GL_DEPTH_ATTACHMENT, 0, false);
+	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2048, 2048, GL_DEPTH_ATTACHMENT, 0, false);
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -307,11 +307,13 @@ void WindowManager::update_framebuffer_dimensions() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
 	shader_manager->set_global_int("WindowHeight", window_height);
-	outline.update_dimensions();
-	box_layer.update_dimensions();
 	g_buffer.update_dimensions();
+	hdr_buffer.update_dimensions();
 	SSAO.update_dimensions();
 	blur.update_dimensions();
+	blend.update_dimensions();
+	outline.update_dimensions();
+	box_layer.update_dimensions();
 }
 
 void WindowManager::set_resolution(int width, int height) {

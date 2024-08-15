@@ -1386,9 +1386,6 @@
     <ClInclude Include="imgui_impl_glfw.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="resource3.h">
-      <Filter>1. Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource\shaders\fragment_2d_texture.glsl">

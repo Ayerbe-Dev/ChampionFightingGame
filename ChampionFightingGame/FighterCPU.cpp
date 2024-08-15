@@ -141,7 +141,7 @@ void FighterCPU::process_neutral() {
 		CPUFighterState opp_present_state = opponent_states.newest();
 		int opp_hit_frame = get_hit_data(*opp_state.action, opp_present_state.frame,
 			opp_present_state.facing_dir, opp_present_state.base_pos, *present_state.action,
-			present_state.frame, present_state.facing_dir, present_state.base_pos, false).frame;
+			present_state.frame, present_state.facing_dir, present_state.base_pos, false, false).frame;
 		if (opp_hit_frame != -1) {
 			opp_remaining_hit_frames = (opp_hit_frame - opp_state.frame) - curr_reaction_time;
 			for (auto& a : actions) {
@@ -150,12 +150,12 @@ void FighterCPU::process_neutral() {
 					int sim_hit_frame = get_hit_data(action, 0, present_state.facing_dir, 
 						present_state.pos, *opp_present_state.action,
 						opp_present_state.frame, opp_present_state.facing_dir, 
-						opp_present_state.base_pos, true
+						opp_present_state.base_pos, true, false
 					).frame + 1;
 					int sim_opp_hit_frame = get_hit_data(*opp_present_state.action,
 						opp_present_state.frame, opp_present_state.facing_dir,
 						opp_present_state.base_pos, action, 0, present_state.facing_dir,
-						present_state.pos, false
+						present_state.pos, false, false
 					).frame;
 					int sim_opp_remaining_hit_frames = (sim_opp_hit_frame - opp_state.frame) - curr_reaction_time;
 					if (sim_hit_frame && (sim_hit_frame + get_frames_to_input(action) <= sim_opp_remaining_hit_frames
@@ -171,7 +171,7 @@ void FighterCPU::process_neutral() {
 							int sim_opp_hit_frame = get_hit_data(*opp_present_state.action,
 								opp_present_state.frame, opp_present_state.facing_dir, 
 								opp_present_state.base_pos, action, 0, 
-								present_state.facing_dir, present_state.pos, false
+								present_state.facing_dir, present_state.pos, false, false
 							).frame;
 							if (sim_opp_hit_frame == -1 || sim_opp_hit_frame > opp_hit_frame) {
 								responses.push_back(action);
@@ -307,7 +307,7 @@ void FighterCPU::process_neutral() {
 						int test_hit_frame = get_hit_data(*opp_present_state.action, 
 							opp_present_state.frame, opp_present_state.facing_dir, 
 							opp_present_state.base_pos, actions["wait"], 0, present_state.facing_dir, 
-							present_state.base_pos, false
+							present_state.base_pos, false, false
 						).frame;
 						if (test_hit_frame != -1) {
 							execute_action(*present_state.action);
@@ -324,12 +324,12 @@ void FighterCPU::process_neutral() {
 					int sim_hit_frame = get_hit_data(action, 0, present_state.facing_dir,
 						present_state.pos, *opp_present_state.action,
 						opp_present_state.frame, opp_present_state.facing_dir,
-						opp_present_state.base_pos, true
+						opp_present_state.base_pos, true, false
 					).frame + 1;
 					int sim_opp_hit_frame = get_hit_data(*opp_present_state.action,
 						opp_present_state.frame, opp_present_state.facing_dir,
 						opp_present_state.base_pos, action, 0, present_state.facing_dir,
-						present_state.pos, false
+						present_state.pos, false, false
 					).frame;
 					int sim_opp_remaining_hit_frames = (sim_opp_hit_frame - opp_state.frame) - curr_reaction_time;
 					if (sim_hit_frame && sim_opp_hit_frame == -1 
@@ -422,10 +422,7 @@ void FighterCPU::process_neutral() {
 			glm::vec2 sim_opp_c1 = opp_c1 + glm::vec2(opp_steps, 0);
 			glm::vec2 sim_opp_c2 = opp_c2 + glm::vec2(opp_steps, 0);
 
-			if (is_rect_collide(c1, c2, opp_c1, opp_c2)) {
-				execute_action(actions["walk_b"]);
-			}
-			else if (is_rect_collide(sim_c1, sim_c2, sim_opp_c1, sim_opp_c2)) {
+			if (is_rect_collide(c1, c2, opp_c1, opp_c2) || is_rect_collide(sim_c1, sim_c2, sim_opp_c1, sim_opp_c2)) {
 				std::vector<std::string> buffer_options;
 				for (auto& a : actions) {
 					if (curr_neutral.action.hit_cancel_options.contains(a.first)) {
@@ -439,7 +436,8 @@ void FighterCPU::process_neutral() {
 					for (int i = 0; i < curr_neutral.action.startup - 1; i++) {
 						add_input(owner->get_stick_dir(), 0);
 					}
-					buffer_action(actions[buffer_options[rng(0, buffer_options.size() - 1)]]);
+					CPUAction action = actions[buffer_options[rng(0, buffer_options.size() - 1)]];
+					buffer_action(action);
 				}
 				owner->player->manual_seq.reset_idx();
 				cpu_mode = CPU_MODE_ATTACK;
@@ -581,7 +579,7 @@ void FighterCPU::process_neutral() {
 				CPUFighterState opp_present_state = opponent_states.newest();
 				int sim_hit_frame = get_hit_data(curr_neutral.action, 0, present_state.facing_dir,
 					present_state.pos, *opp_present_state.action, opp_present_state.frame, 
-					opp_present_state.facing_dir, opp_present_state.pos, true
+					opp_present_state.facing_dir, opp_present_state.pos, true, false
 				).frame;
 				if (sim_hit_frame != -1) {
 					execute_action(curr_neutral.action);
@@ -603,135 +601,160 @@ void FighterCPU::process_neutral() {
 void FighterCPU::process_attack() {
 	CPUFighterState present_state = states.newest();
 	CPUFighterState opp_present_state = opponent_states.newest();
+	if (present_state.frame == 0) {
+		curr_attack.allow_confirm = false;
+	}
 	if (curr_attack.mode == CPU_ATTACK_MODE_NONE) {
 		curr_attack = CPUAttack((CPUAttackMode)rng(CPU_ATTACK_MODE_NONE + 1, CPU_ATTACK_MODE_CORNER), this);
 	}
 	if (input_frames) return;
-	if (present_state.action->active && owner->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
-		if (present_state.frame < present_state.action->startup + present_state.action->active) {
-			if (!curr_attack.non_active_start) return;
-			curr_attack.update_action(find_followup_actions());
-			curr_attack.non_active_start = false;
+	if (present_state.action->is_strike) {
+		//We're allowed to pick followup options for strikes every time we land a hit
+		int opp_hitlag = opponent->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES];
+		if (opp_hitlag) {
+			if (opp_hitlag == opponent->object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]) {
+				curr_attack.update_action(find_followup_actions());
+			}
 		}
 	}
-	else if (present_state.action->frame_data[present_state.frame].hitboxes.empty()) {
-		curr_attack.non_active_start = true;
+	else if (present_state.action->is_throw) {
+		//TODO: Figure out when to pick followup options for throws
 	}
-	int curr_reaction_time = reaction_time - 1;
-	if (prediction_mode) {
-		curr_reaction_time = correct_prediction_time - 1;
-	}
+	else {
+		//We're allowed to pick followup options for non-attacks exactly once, usually their first
+		//active frame but projectiles might also end up using this check.
 
-	
-	int confirmability = 0;
-	CPUAction* action = present_state.action;
-	for (int i = 0, max = action->tags.size(); i < max; i++) {
-		if (action->tags[i] == CPU_TAG_HIT_CONFIRM) {
-			confirmability = 1;
-			break;
-		}
-		if (action->tags[i] == CPU_TAG_MULTIHIT_CONFIRM) {
-//			confirmability = 2;
-			confirmability = 1;
-			break;
+		//If we're in the attack state using something that isn't an attack, our action must
+		//inherently be part of a sequence which will lead back into an attack anyway
+		if (!curr_attack.allow_confirm) {
+			std::vector<CPUAction> followups = find_followup_actions();
+			if (!followups.empty()) {
+				curr_attack.update_action(followups);
+				curr_attack.auto_confirmed = true;
+				curr_attack.allow_confirm = true;
+			}
 		}
 	}
-		
-	if (!curr_attack.confirmed && !curr_attack.auto_confirmed) {
-		switch (confirmability) {
-			case 0: {
-				if (rng(0, 11 - impulse) == 0) {
-					curr_attack.auto_confirmed = true;
-				}
-			} break;
-			case 1: {
-				if (rng(0, std::max(curr_reaction_time - (hit_confirm_skill - 5), 0)) == 0) {
-					curr_attack.confirmed = true;
-				}
-				else if (present_state.action->hit_cancel_options.contains(curr_attack.action.name)
-					&& (owner->object_flag[FIGHTER_FLAG_ATTACK_HIT] || owner->object_flag[FIGHTER_FLAG_ATTACK_BLOCKED])
-					&& !owner->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
-					if (rng(0, hit_confirm_skill * 2) == 0) {
-						curr_attack.auto_confirmed = true;
-					}
-				}
-			} break;
-			case 2: {
-				if (rng(0, curr_reaction_time - (hit_confirm_skill - 5)) == 0) {
-					curr_attack.confirmed = true;
-				}
-				else {
-					/*
-					std::vector<CPUAction> confirm_options;
-					for (CPUAction& action : find_followup_actions()) {
-						if ((action.startup < present_state.action->hit_advantage &&
-							action.startup < present_state.action->block_advantage + 3
-							+ (10 - rng(0, cautiousness)))
-						|| present_state.action->cancel_options.contains(action.name)
-						|| (present_state.action->hit_cancel_options.contains(action.name) &&
-							present_state.action->block_cancel_options.contains(action.name))) {
-							int startup = curr_attack.action.startup;
-							if (!startup) {
-								startup = curr_attack.action.total;
-								for (int i = 0, max = curr_attack.action.frame_data.size(); i < max; i++) {
-									//TODO: Account for auto followups and moves with multiple whiff cancel options
-									if (!curr_attack.action.frame_data[i].cancel_options.empty()) {
-										startup = this->actions[curr_attack.action.frame_data[i].cancel_options[0]].startup;
-									}
-								}
-							}
-							if (action.cancel_options.contains(curr_attack.action.name)
-							|| action.hit_cancel_options.contains(curr_attack.action.name)
-							|| startup < action.hit_advantage) {
-								std::cout << action.name << " is a confirm option for " << present_state.action->name << "\n";
-								confirm_options.push_back(action);
-							}
+	if (curr_attack.allow_confirm) {
+		bool confirm = (curr_attack.confirmed && owner->object_flag[FIGHTER_FLAG_ATTACK_HIT]) || curr_attack.auto_confirmed;
+		if (confirm) {
+			int frames = get_frames_to_input(curr_attack.action) + 1;
+			bool can_execute = present_state.frames_until_bufferable <= frames;
+			if (!can_execute) {
+				if (present_state.action->frame_data.size() > present_state.frame + frames) {
+					CPUFrameData fd = present_state.action->frame_data[present_state.frame + frames];
+					for (size_t i = 0, max = fd.cancel_options.size(); i < max && !can_execute; i++) {
+						if (fd.cancel_options[i] == curr_attack.action.name) {
+							can_execute = true;
 						}
 					}
-					if (!confirm_options.empty()) {
-						execute_action(confirm_options[rng(0, confirm_options.size() - 1)]);
+					for (size_t i = 0, max = fd.hit_cancel_options.size(); i < max && !can_execute; i++) {
+						if (fd.hit_cancel_options[i] == curr_attack.action.name) {
+							can_execute = true;
+						}
 					}
-					*/
 				}
-			} break;
-		}			
-	}
-	bool confirm = curr_attack.confirmed ? owner->object_flag[FIGHTER_FLAG_ATTACK_HIT] : curr_attack.auto_confirmed;
-	if (confirm) {
-		int frames = get_frames_to_input(curr_attack.action); 
-		bool can_execute = present_state.frames_until_bufferable <= frames;
-
-		if (present_state.action->frame_data.size() > present_state.frame + frames) {
-			CPUFrameData fd = present_state.action->frame_data[present_state.frame + frames];
-			for (size_t i = 0, max = fd.cancel_options.size(); i < max && !can_execute; i++) {
-				if (fd.cancel_options[i] == curr_attack.action.name) {
+				else {
 					can_execute = true;
 				}
 			}
-			for (size_t i = 0, max = fd.hit_cancel_options.size(); i < max && !can_execute; i++) {
-				if (fd.hit_cancel_options[i] == curr_attack.action.name) {
-					can_execute = true;
-				}
-			}
-		}
-		if (can_execute) {
-			std::cout << "Executing attack " << curr_attack.action.name << "\n";
-			execute_action(curr_attack.action);
-			curr_attack.non_active_start = true;
-			return;
-		}
-	}
-
-	if (present_state.actionable) {
-		if (opp_present_state.action_kind != CPU_ACTION_KIND_NORMAL) {
-			std::cout << "Time to link into something\n";
-			std::vector<CPUAction> links = find_followup_actions();
-			if (!links.empty()) {
-				execute_action(links[rng(0, links.size()-1)]);
-				curr_attack.non_active_start = true;
+			if (can_execute) {
+				std::cout << "Executing attack " << curr_attack.action.name << "\n";
+				execute_action(curr_attack.action);
 				return;
 			}
 		}
+		else if (present_state.frame >= curr_attack.action.startup - 1) {
+			int curr_reaction_time = reaction_time - 1;
+			if (prediction_mode) {
+				curr_reaction_time = correct_prediction_time - 1;
+			}
+
+
+			int confirmability = 0;
+			CPUAction* action = present_state.action;
+			for (int i = 0, max = action->tags.size(); i < max; i++) {
+				if (action->tags[i] == CPU_TAG_HIT_CONFIRM) {
+					confirmability = 1;
+					break;
+				}
+				if (action->tags[i] == CPU_TAG_MULTIHIT_CONFIRM) {
+					confirmability = 2;
+					break;
+				}
+			}
+
+			switch (confirmability) {
+				case 0: {
+					if (rng(0, 11 - impulse) == 0) {
+						curr_attack.auto_confirmed = true;
+					}
+				} break;
+				case 1: {
+					if (rng(0, std::max(curr_reaction_time - (hit_confirm_skill - 5), 0)) == 0) {
+						curr_attack.confirmed = true;
+					}
+					else if (present_state.action->hit_cancel_options.contains(curr_attack.action.name)
+						&& (owner->object_flag[FIGHTER_FLAG_ATTACK_HIT] || owner->object_flag[FIGHTER_FLAG_ATTACK_BLOCKED])
+						&& !owner->object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES]) {
+						if (rng(0, hit_confirm_skill * 2) == 0) {
+							curr_attack.auto_confirmed = true;
+						}
+					}
+				} break;
+				case 2: {
+					if (rng(0, curr_reaction_time - (hit_confirm_skill - 5)) == 0) {
+						curr_attack.confirmed = true;
+					}
+					else {
+						
+						std::vector<CPUAction> confirm_options;
+						for (CPUAction& action : find_followup_actions()) {
+							if ((action.startup < present_state.action->hit_advantage &&
+								action.startup < present_state.action->block_advantage + 3
+								+ (10 - rng(0, cautiousness)))
+							|| present_state.action->cancel_options.contains(action.name)
+							|| (present_state.action->hit_cancel_options.contains(action.name) &&
+								present_state.action->block_cancel_options.contains(action.name))) {
+								int startup = curr_attack.action.startup;
+								if (!startup) {
+									startup = curr_attack.action.total;
+									for (int i = 0, max = curr_attack.action.frame_data.size(); i < max; i++) {
+										//TODO: Account for auto followups and moves with multiple whiff cancel options
+										if (!curr_attack.action.frame_data[i].cancel_options.empty()) {
+											startup = this->actions[curr_attack.action.frame_data[i].cancel_options[0]].startup;
+										}
+									}
+								}
+								if (action.cancel_options.contains(curr_attack.action.name)
+								|| action.hit_cancel_options.contains(curr_attack.action.name)
+								|| startup < action.hit_advantage) {
+									std::cout << action.name << " is a confirm option for " << present_state.action->name << "\n";
+									confirm_options.push_back(action);
+								}
+							}
+						}
+						if (!confirm_options.empty()) {
+							execute_action(confirm_options[rng(0, confirm_options.size() - 1)]);
+						}
+					}
+				} break;
+			}
+		}
+	}
+	if (present_state.actionable) {
+		if (curr_attack.allow_confirm) {
+			if (curr_attack.confirmed || curr_attack.auto_confirmed) {
+				std::cout << "???\n";
+			}
+			else {
+				std::cout << "We became fully actionable without ever confirming our hit\n";
+			}
+		}
+		else {
+			std::cout << "We became fully actionable but never found a valid confirm option\n";
+		}
+
 		curr_attack = CPUAttack(CPU_ATTACK_MODE_NONE, this);
 		cpu_mode = CPU_MODE_NEUTRAL;
 		process_neutral();
@@ -757,7 +780,6 @@ void FighterCPU::process_wakeup_blockstun() {
 void FighterCPU::execute_action(CPUAction action) {
 	owner->player->manual_seq.reset_idx();
 	buffer_action(action);
-	last_executed_action = action;
 	owner->player->manual_seq.reset_idx();
 }
 
@@ -794,6 +816,7 @@ void FighterCPU::buffer_action(CPUAction action) {
 				for (int i = 0, max = rng(0, execution_error_margin); i < max; i++) {
 					add_input(action.pref_stick_dir, 0);
 				}
+				add_input(action.pref_stick_dir, 0);
 			}
 			else {
 				//If we only have to worry about stick inputs, they should be pretty free.
@@ -927,11 +950,11 @@ void FighterCPU::determine_states() {
 
 CPUHitData FighterCPU::get_hit_data(CPUAction atk_action, int atk_frame, float atk_facing_dir, 
 	glm::vec2 atk_base_pos, CPUAction def_action, int def_frame, float def_facing_dir, 
-	glm::vec2 def_base_pos, bool this_atk) {
+	glm::vec2 def_base_pos, bool caller_is_attacker, bool defender_in_hitstun) {
 	CPUHitData ret;
 	FighterCPU *attacker = this;
 	FighterCPU *defender = &opponent->cpu;
-	if (!this_atk) std::swap(attacker, defender);
+	if (!caller_is_attacker) std::swap(attacker, defender);
 	float atk_x_speed, atk_y_speed, atk_y_accel, atk_y_max;
 	glm::vec2 atk_speed_accel, atk_speed_total;
 	init_action_speed_vars(atk_action, attacker->owner, &atk_x_speed, &atk_y_speed, &atk_y_accel, 
@@ -953,7 +976,7 @@ CPUHitData FighterCPU::get_hit_data(CPUAction atk_action, int atk_frame, float a
 				return ret;
 			}
 		}
-		if (def_frame >= def_action.frame_data.size()) {
+		if (def_frame >= def_action.frame_data.size() && !defender_in_hitstun) {
 			def_frame = 0;
 			if (!def_action.auto_followups.empty()) {
 				def_action = defender->actions[def_action.auto_followups[0]];
@@ -962,7 +985,13 @@ CPUHitData FighterCPU::get_hit_data(CPUAction atk_action, int atk_frame, float a
 			}
 		}
 		CPUFrameData atk_frame_data = atk_action.frame_data[atk_frame];
-		CPUFrameData def_frame_data = def_action.frame_data[def_frame];
+		CPUFrameData def_frame_data;
+		if (defender_in_hitstun) {
+			def_frame_data = def_action.frame_data[0];
+		}
+		else {
+			def_frame_data = def_action.frame_data[def_frame];
+		}
 		atk_speed_accel.y += atk_y_accel;
 		def_speed_accel.y += def_y_accel;
 		if (atk_y_max != 0.0f) atk_speed_accel.y = std::max(-atk_y_max, atk_speed_accel.y);
@@ -1004,6 +1033,7 @@ glm::vec2 FighterCPU::get_end_pos(CPUAction action, glm::vec2 base_pos) {
 	glm::vec2 speed_accel, speed_total, pos;
 	init_action_speed_vars(action, owner, &x_speed, &y_speed, &y_accel,
 		&y_max, &speed_accel, &speed_total);
+	pos = base_pos;
 	for (int i = 0, max = action.frame_data.size(); i < max; i++) {
 		CPUFrameData fd = action.frame_data[i];
 		speed_accel.y += y_accel;
@@ -1015,7 +1045,7 @@ glm::vec2 FighterCPU::get_end_pos(CPUAction action, glm::vec2 base_pos) {
 			speed_accel.y = action.movement_info.y_speed_changes[i];
 		}
 		speed_total += speed_accel;
-		glm::vec2 pos = base_pos + glm::vec2(fd.pos_offset * owner->get_scale_vec().x * states.newest().facing_dir, 0.0f)
+		pos = base_pos + glm::vec2(fd.pos_offset * owner->get_scale_vec().x * states.newest().facing_dir, 0.0f)
 			+ speed_total;
 	}
 	return pos;
@@ -1256,120 +1286,144 @@ int FighterCPU::get_frames_to_input(CPUAction action) {
 std::vector<CPUAction> FighterCPU::find_followup_actions() {
 	CPUFighterState present_state = states.newest();
 	CPUFighterState opp_present_state = opponent_states.newest();
-	CPUAction opp_sim_action = *opp_present_state.action;
-	opp_sim_action.movement_info.x_speed = opponent->object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] * -1;
-	opp_sim_action.movement_info.x_speed_changes = { {opponent->object_int[FIGHTER_INT_PUSHBACK_FRAMES], 0.0f} };
 
-	CPUHitData hit_data = get_hit_data(last_executed_action, present_state.frame, present_state.facing_dir,
-		present_state.base_pos, opp_sim_action, opp_present_state.frame, opp_present_state.facing_dir,
-		opp_present_state.base_pos, true);
-	int remaining_hitstun = hit_data.hitstun;
-	glm::vec2 pos = hit_data.pos;
-	glm::vec2 opp_pos = hit_data.opp_pos;
-	glm::vec2 pushback = hit_data.pushback_total / glm::vec2(hit_data.pushback_frames);
-	int pushback_frames = hit_data.pushback_frames;
-	if (hit_data.frame == -1) {
-		remaining_hitstun = opponent->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES];
-		opp_pos = opp_present_state.base_pos;
-		pos = present_state.base_pos;
-		pushback.x = opponent->object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-		pushback_frames = opponent->object_int[FIGHTER_INT_PUSHBACK_FRAMES];
-		if (remaining_hitstun) {
-			std::cout << "Current action, " << last_executed_action.name
-				<< ", whiffs or isn't an attack, still have " << remaining_hitstun
-				<< "f hitstun\n";
-		}
-		else {
-			std::cout << "Current action, " << last_executed_action.name
-				<< ", whiffs or isn't an attack, opponent isn't in hitstun\n";
-			return {};
-		}
-	}
-	else {
-		std::cout << "Current action, " << last_executed_action.name << ", connects for "
-			<< remaining_hitstun << "f hitstun\n";
-	}
-	return find_followup_actions_rec(last_executed_action, hit_data.frame + 1, remaining_hitstun, pos, opp_pos, pushback, pushback_frames);
-
+	int remaining_hitstun = opponent->object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES];
+	glm::vec2 opp_pos = opp_present_state.base_pos;
+	glm::vec2 pushback = glm::vec2(opponent->object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME], 0.0);
+	int pushback_frames = opponent->object_int[FIGHTER_INT_PUSHBACK_FRAMES];
+	std::vector<CPUAction> ret = find_followup_actions_rec(*present_state.action, present_state.frame,
+		remaining_hitstun, present_state.action->total - present_state.frame - 1,
+		get_end_pos(*present_state.action, present_state.base_pos), present_state.pos,
+		opp_present_state.base_pos, pushback, pushback_frames
+	);
+	std::cout << "Found " << ret.size() << " possible followups for " << present_state.action->name << "\n";
+	return ret;
 }
 
-std::vector<CPUAction> FighterCPU::find_followup_actions_rec(CPUAction curr_action, int hit_frame, int frame_adv, glm::vec2 pos, glm::vec2 opp_pos, glm::vec2 pushback, int pushback_frames) {
+std::vector<CPUAction> FighterCPU::find_followup_actions_rec(CPUAction curr_action, int frame,
+	int remaining_hitstun, int recovery, glm::vec2 pos_link, glm::vec2 pos_cancel, glm::vec2 opp_pos,
+	glm::vec2 pushback, int pushback_frames) {
 	CPUFighterState present_state = states.newest();
 	CPUFighterState opp_present_state = opponent_states.newest();
 	CPUAction opp_sim_action = *opp_present_state.action;
-	opp_sim_action.movement_info.x_speed = pushback.x * -1;
-	opp_sim_action.movement_info.x_speed_changes = { {pushback_frames, 0.0f} };
-	int recovery = curr_action.total - std::max(hit_frame, 0);
+	if (pushback_frames > 0) {
+		opp_sim_action.movement_info.x_speed = pushback.x * -1;
+		opp_sim_action.movement_info.x_speed_changes = { {pushback_frames, 0.0f} };
+	}
 
-	std::cout << "Looking for followups to " << curr_action.name << ": " << frame_adv << "f hitstun, "
+	std::cout << "Looking for followups to " << curr_action.name << ": " << remaining_hitstun << "f hitstun, "
 		<< recovery << "f recovery, ";
-	if (frame_adv - recovery >= 0) {
+	if (remaining_hitstun - recovery >= 0) {
 		std::cout << "+";
 	}
-	std::cout << (frame_adv - recovery) << "\n";
-	std::vector<CPUAction> possible_followups;
+	std::cout << (remaining_hitstun - recovery) << "\n";
+	std::vector<CPUAction> ret;
 	for (auto& a : actions) {
 		std::string name = a.first;
 		CPUAction& action = a.second;
-		if (action.active) {
-			if ((action.allow_from_idle && ((frame_adv - recovery) > action.startup))
-				|| curr_action.hit_cancel_options.contains(name)
-				|| curr_action.cancel_options.contains(name)) {
-				std::cout << curr_action.name << " -> " << name << ", Startup: " << action.startup;
-				if (curr_action.hit_cancel_options.contains(name)
-					|| curr_action.cancel_options.contains(name)) {
-					std::cout << " (cancel followup)";
-				}
-				std::cout << ":";
-				CPUHitData hit_data = get_hit_data(action, 0, present_state.facing_dir, pos,
+
+		if (curr_action.name == "jump_squat") {
+			if (action.fighter_context != FIGHTER_CONTEXT_AIR) continue;
+		}
+		else if (curr_action.fighter_context != action.fighter_context) continue;
+
+		if (action.is_strike) {
+			if (action.allow_from_idle && (remaining_hitstun - recovery) >= action.startup) {
+				std::cout << curr_action.name << " -> " << name << ", Startup: " << action.startup
+					<< " (link):";
+				CPUHitData hit_data = get_hit_data(action, 0, present_state.facing_dir, pos_link,
 					opp_sim_action, opp_present_state.frame, opp_present_state.facing_dir,
-					opp_pos, true
+					opp_pos, true, true
 				);
 				if (hit_data.frame != -1) {
 					std::cout << " Hits\n";
-					possible_followups.push_back(action);
+					ret.push_back(action);
+					continue;
 				}
 				else {
 					std::cout << " Whiffs\n";
 				}
 			}
+			if (curr_action.hit_cancel_options.contains(name)
+			|| curr_action.cancel_options.contains(name)) {
+				std::cout << curr_action.name << " -> " << name << ", Startup: " << action.startup
+					<< " (cancel):";
+				CPUHitData hit_data = get_hit_data(action, 0, present_state.facing_dir, pos_cancel,
+					opp_sim_action, opp_present_state.frame, opp_present_state.facing_dir,
+					opp_pos, true, true
+				);
+				if (hit_data.frame != -1) {
+					std::cout << " Hits\n";
+					ret.push_back(action);
+				}
+				else {
+					std::cout << " Whiffs\n";
+				}
+			}	
+		}
+		else if (action.is_throw) {
+
 		}
 		else {
-			bool auto_followup = false;
-			if (action.total > 0) {
+			if (action.total <= 0) continue;
+			if (curr_action.cancel_options.contains(name)
+			|| curr_action.hit_cancel_options.contains(name)) {
+				int cancel_frame = 0;
+				for (int i = 0; i < curr_action.total && cancel_frame == 0; i++) {
+					for (int i2 = 0, max2 = curr_action.frame_data[i].hit_cancel_options.size(); i2 < max2; i2++) {
+						if (curr_action.frame_data[i].hit_cancel_options[i2] == name) {
+							cancel_frame = i;
+							break;
+						}
+					}
+					for (int i2 = 0, max2 = curr_action.frame_data[i].cancel_options.size(); i2 < max2; i2++) {
+						if (curr_action.frame_data[i].cancel_options[i2] == name) {
+							cancel_frame = i;
+							break;
+						}
+					}
+				}
+				std::vector<CPUAction> followups = find_followup_actions_rec(
+					action, 0, remaining_hitstun - cancel_frame, action.total, pos_cancel,
+					pos_cancel, opp_pos, pushback, pushback_frames - cancel_frame
+				);
+				if (!followups.empty()) {
+					std::cout << curr_action.name << " -> " << name << " is a legal cancel. It has "
+					<< followups.size() << " valid followup options\n";
+					ret.push_back(action);
+				}
+				else {
+					std::cout << curr_action.name << " -> " << name << " is a legal cancel, but has no "
+						<< "valid followup options\n";
+				}
+			}
+			else if (action.total < remaining_hitstun - recovery) {
+				bool auto_followup = false;
 				for (int i = 0; i < curr_action.auto_followups.size(); i++) {
 					if (curr_action.auto_followups[i] == name) {
 						auto_followup = true;
 						break;
 					}
 				}
-				if (auto_followup) {
-					std::cout << curr_action.name << " -> " << name << " is an auto followup, "
-						<< frame_adv - recovery - action.total << " frames to spare\n";
-					if (frame_adv - recovery - action.total >= 0 
-					&& !find_followup_actions_rec(action, -1, frame_adv - recovery - action.total, get_end_pos(action, pos), opp_pos, pushback, pushback_frames - action.total).empty()) {
-						possible_followups.push_back(action);
+				if (action.allow_from_idle || auto_followup) {
+					std::vector<CPUAction> followups = find_followup_actions_rec(
+						action, 0, remaining_hitstun - recovery, action.total, get_end_pos(action, pos_link),
+						get_end_pos(action, pos_link), opp_pos, pushback, pushback_frames - recovery
+					);
+					if (!followups.empty()) {
+						std::cout << curr_action.name << " -> " << name << " is a legal link. It has "
+							<< followups.size() << " valid followup options\n";
+						ret.push_back(action);
 					}
-				}
-				else if (curr_action.cancel_options.contains(name)) {
-					std::cout << curr_action.name << " -> " << name << " is a cancel followup, "
-						<< frame_adv - action.total << " frames to spare\n";
-					if (frame_adv - action.total >= 0 
-					&& !find_followup_actions_rec(action, -1, frame_adv - action.total, get_end_pos(action, pos), opp_pos, pushback, pushback_frames - action.total).empty()) {
-						possible_followups.push_back(action);
-					}
-				}
-				else if (action.allow_from_idle && action.total < frame_adv - recovery) {
-					std::cout << name << " can be used with " << frame_adv - recovery - action.total << " frames to spare\n";
-					if (frame_adv - recovery - action.total >= 0 
-					&& !find_followup_actions_rec(action, -1, frame_adv - recovery - action.total, get_end_pos(action, pos), opp_pos, pushback, pushback_frames - action.total).empty()) {
-						possible_followups.push_back(action);
+					else {
+						std::cout << curr_action.name << " -> " << name << " is a legal link, but has no "
+							<< "valid followup options\n";
 					}
 				}
 			}
 		}
 	}
-	return possible_followups;
+	return ret;
 }
 
 unsigned int FighterCPU::numpad_to_bits(unsigned int numpad_dir) {
@@ -1771,6 +1825,10 @@ CPUFighterState::CPUFighterState() {
 	frames_until_bufferable = 0;
 }
 
+CPUFrameData::CPUFrameData() {
+	this->pos_offset = 0.0f;
+}
+
 CPUFrameData::CPUFrameData(float pos_offset, std::map<int, CPUHitbox> hitboxes,
 	std::map<int, CPUHurtbox> hurtboxes, std::map<int, CPUGrabbox> grabboxes,
 	std::deque<std::string> hit_cancel_options,
@@ -1932,14 +1990,14 @@ CPUNeutral::CPUNeutral(CPUNeutralMode mode, FighterCPU* owner) {
 
 CPUAttack::CPUAttack() {
 	mode = CPU_ATTACK_MODE_NONE;
-	non_active_start = true;
+	allow_confirm = false;
 	confirmed = false;
 	auto_confirmed = false;
 }
 
 CPUAttack::CPUAttack(CPUAttackMode mode, FighterCPU* owner) {
 	this->mode = mode;
-	non_active_start = true;
+	allow_confirm = false;
 	confirmed = false;
 	auto_confirmed = false;
 }
@@ -1949,5 +2007,10 @@ void CPUAttack::update_action(std::vector<CPUAction> actions) {
 		std::cout << "Updating action: ";
 		this->action = actions[rng(0, actions.size() - 1)];
 		std::cout << action.name << "\n";
+		allow_confirm = true;
+		return;
 	}
+	confirmed = false;
+	auto_confirmed = false;
+	allow_confirm = false;
 }

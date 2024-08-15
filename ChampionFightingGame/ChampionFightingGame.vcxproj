@@ -553,7 +553,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="ProjectileString.h" />
     <ClInclude Include="RamonaStatus.h" />
     <ClInclude Include="ReadBytes.h" />
-    <ClInclude Include="resource3.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RookString.h" />
     <ClInclude Include="RowanFireballString.h" />

@@ -42,6 +42,7 @@ struct CPUGrabbox {
 };
 
 struct CPUFrameData {
+	CPUFrameData();
 	CPUFrameData(float pos_offset, std::map<int, CPUHitbox> hitboxes,
 		std::map<int, CPUHurtbox> hurtboxes, std::map<int, CPUGrabbox> grabboxes,
 		std::deque<std::string> hit_cancel_options, 
@@ -225,7 +226,7 @@ struct CPUAttack {
 	void update_action(std::vector<CPUAction> actions);
 	CPUAttackMode mode;
 	CPUAction action;
-	bool non_active_start;
+	bool allow_confirm;
 	bool confirmed;
 	bool auto_confirmed;
 };
@@ -325,13 +326,13 @@ public:
 	CPUMode cpu_mode;
 	CPUNeutral curr_neutral;
 	CPUAttack curr_attack;
-	CPUAction last_executed_action;
 private:
 	void execute_action(CPUAction action);
 	void buffer_action(CPUAction action);
 	void determine_states();
 	CPUHitData get_hit_data(CPUAction atk_action, int atk_frame, float atk_facing_dir, glm::vec2 atk_base_pos,
-		CPUAction def_action, int def_frame, float def_facing_dir, glm::vec2 def_base_pos, bool this_atk
+		CPUAction def_action, int def_frame, float def_facing_dir, glm::vec2 def_base_pos, bool caller_is_attacker,
+		bool defender_in_hitstun
 	);
 	glm::vec2 get_end_pos(CPUAction action, glm::vec2 base_pos);
 	void init_action_speed_vars(CPUAction action, Fighter* owner, float* x_speed, float* y_speed, float* y_accel, float* y_max, glm::vec2* speed_accel, glm::vec2* speed_total);
@@ -341,7 +342,9 @@ private:
 	void add_input(unsigned int input_stick, unsigned int input_buttons);
 	int get_frames_to_input(CPUAction action);
 	std::vector<CPUAction> find_followup_actions();
-	std::vector<CPUAction> find_followup_actions_rec(CPUAction curr_action, int hit_frame, int frame_adv, glm::vec2 pos, glm::vec2 opp_pos, glm::vec2 pushback, int pushback_frames);
+	std::vector<CPUAction> find_followup_actions_rec(CPUAction curr_action, int frame, 
+		int remaining_hitstun, int recovery, glm::vec2 pos, glm::vec2 base_pos, glm::vec2 opp_pos,
+		glm::vec2 pushback, int pushback_frames);
 	unsigned int numpad_to_bits(unsigned int numpad_dir);
 
 	int input_frames;

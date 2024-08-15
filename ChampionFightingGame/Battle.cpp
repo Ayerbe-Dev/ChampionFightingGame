@@ -40,8 +40,6 @@ void battle_main() {
 	font_manager->load_face("Fiend-Oblique");
 
 	Battle *battle = new Battle;
-
-	battle->fighter[0]->model.set_bone_ex_render("ClavicleR", true);
 	
 	window_manager->update_shader_cams();
 	window_manager->update_shader_lights();
@@ -291,8 +289,8 @@ void Battle::load_ui() {
 				float scale = *(float*)object->ptr_var("damage_scale");
 				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-				object->get_texture("Damage Scale").set_top_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f, 1.0f), 3);
-				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f - 0.048f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_top_left_target(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.002f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
 			});
 			push_menu_ptr_var("damage_scale", &fighter[0]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
 			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
@@ -301,7 +299,7 @@ void Battle::load_ui() {
 			push_menu_texture("Damage Scale 120", "resource/game_state/battle/ui/meter/damage_scale_120.png");
 			last_pushed_texture->set_alpha(0);
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-			push_menu_pos(glm::vec3(1026.0, 244.0, 0.0));
+			push_menu_pos(glm::vec3(1026.0, 244.5, 0.0));
 			push_menu_dimensions("Damage Scale");
 		} pop_menu_stack();
 		push_menu_child("P2 Scale", 3); {
@@ -309,8 +307,8 @@ void Battle::load_ui() {
 				float scale = *(float*)object->ptr_var("damage_scale");
 				object->get_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 				object->get_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-				object->get_texture("Damage Scale").set_top_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f, 1.0f), 3);
-				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0 - scale) / 10.0f - 0.048f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_top_left_target(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.002f, 1.0f), 3);
+				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
 			});
 			push_menu_ptr_var("damage_scale", &fighter[1]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
 			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
@@ -322,7 +320,7 @@ void Battle::load_ui() {
 			last_pushed_texture->set_alpha(0);
 			last_pushed_texture->flip_h();
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
-			push_menu_pos(glm::vec3(1026.0, 244.0, 0.0));
+			push_menu_pos(glm::vec3(1026.0, 244.5, 0.0));
 			push_menu_dimensions("Damage Scale");
 		} pop_menu_stack();
 		push_menu_child("P1 EX"); {
@@ -1327,7 +1325,7 @@ void Battle::render_world() {
 	//SHADOW PASS
 
 	window_manager->shadow_map.use();
-	glViewport(0, 0, 2000, 2000);
+	glViewport(0, 0, 2048, 2048);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glCullFace(GL_FRONT);

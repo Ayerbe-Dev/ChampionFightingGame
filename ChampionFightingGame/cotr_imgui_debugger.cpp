@@ -33,47 +33,7 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	ImGui::NewFrame();
 
 	GameManager* game_manager = GameManager::get_instance();
-	
-	ImGui::Begin("Debug Menu", nullptr, 
-		ImGuiWindowFlags_AlwaysAutoResize 
-		| ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoResize
-	);
-	
-	if (ImGui::MenuItem("Debug Menu")) {
-		game_manager->update_state(GAME_STATE_DEBUG_MENU);
-	}
-	if (ImGui::MenuItem("Battle (Training)")) {
-		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_TRAINING);
-	}
-	if (ImGui::MenuItem("Battle (VS)")) {
-		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_NORMAL);
-	}
-	if (ImGui::MenuItem("Character Select Screen")) {
-		game_manager->update_state(GAME_STATE_CHARA_SELECT);
-	}
-	if (ImGui::MenuItem("Stage Select Screen")) {
-		game_manager->update_state(GAME_STATE_STAGE_SELECT);
-	}
-	if (ImGui::MenuItem("Main Menu")) {
-		game_manager->update_state(GAME_STATE_MENU);
-	}
-	if (ImGui::MenuItem("Title Screen")) {
-		game_manager->update_state(GAME_STATE_TITLE_SCREEN);
-	}
-	if (ImGui::MenuItem("Pause Menu")) {
-		game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
-	}
-	if (ImGui::Button("exit")) {
-		game_manager->update_state(GAME_STATE_CLOSE);
-	}
-	for (int i = 0, max = debug_menu->debug_messages.size(); i < max; i++) {
-		ImGui::Text("%s", debug_menu->debug_messages[i].c_str());
-	}
 
-	ImGui::End();
-	
 	const char* charas[18]{
 		"Rowan",
 		"Eric",
@@ -130,6 +90,46 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 			ImGui::SetItemDefaultFocus();
 		}
 	}
+	ImGui::End();
+
+	ImGui::Begin("Debug Menu", nullptr,
+		ImGuiWindowFlags_AlwaysAutoResize
+		| ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoResize
+	);
+
+	if (ImGui::MenuItem("Debug Menu")) {
+		game_manager->update_state(GAME_STATE_DEBUG_MENU);
+	}
+	if (ImGui::MenuItem("Battle (Training)")) {
+		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_TRAINING);
+	}
+	if (ImGui::MenuItem("Battle (VS)")) {
+		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_NORMAL);
+	}
+	if (ImGui::MenuItem("Character Select Screen")) {
+		game_manager->update_state(GAME_STATE_CHARA_SELECT);
+	}
+	if (ImGui::MenuItem("Stage Select Screen")) {
+		game_manager->update_state(GAME_STATE_STAGE_SELECT);
+	}
+	if (ImGui::MenuItem("Main Menu")) {
+		game_manager->update_state(GAME_STATE_MENU);
+	}
+	if (ImGui::MenuItem("Title Screen")) {
+		game_manager->update_state(GAME_STATE_TITLE_SCREEN);
+	}
+	if (ImGui::MenuItem("Pause Menu")) {
+		game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
+	}
+	if (ImGui::Button("exit")) {
+		game_manager->update_state(GAME_STATE_CLOSE);
+	}
+	for (int i = 0, max = debug_menu->debug_messages.size(); i < max; i++) {
+		ImGui::Text("%s", debug_menu->debug_messages[i].c_str());
+	}
+
 	ImGui::End();
 
 	ImGui::Render();
@@ -787,11 +787,12 @@ void cotr_imgui_debug_battle(Battle* battle) {
 						<< window_manager->ssao_noise[i].z << "\n";
 				}
 			}
-			if (diffuse_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
-			|| specular_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
-			|| position_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
-			|| normal_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
-			|| ssao_enabled != (window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
+			if (diffuse_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
+			|| specular_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
+			|| position_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
+			|| normal_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
+			|| ssao_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
+				std::cout << "Toggled... something\n";
 				unsigned int add = 0;
 				unsigned int remove = 0;
 				if (diffuse_enabled) {

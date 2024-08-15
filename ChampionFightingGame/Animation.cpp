@@ -5,7 +5,6 @@
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 #include "Anlst.h"
@@ -109,12 +108,9 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 			}
 		}
 	}
-	glm::vec3 decomp_other_v3;
-	glm::vec4 decomp_other_v4;
-	glm::vec3 scale_vec;
 	for (int i = 0, max = keyframes.size(); i < max; i++) {
 		for (int i2 = 0, max2 = keyframes[i].size(); i2 < max2; i2++) {
-			glm::decompose(keyframes[i][i2].anim_matrix, scale_vec, keyframes[i][i2].rot, keyframes[i][i2].pos, decomp_other_v3, decomp_other_v4);
+			decompose_mat(keyframes[i][i2].anim_matrix, keyframes[i][i2].pos, keyframes[i][i2].rot, keyframes[i][i2].scale);
 			int parent_id = skeleton.bone_data[i2].parent_id;
 			if (parent_id != -1) {
 				keyframes[i][i2].pos = rotate(keyframes[i][i2].pos, keyframes[i][parent_id].rot);

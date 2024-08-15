@@ -150,8 +150,8 @@ void Framebuffer::use() {
 
 void Framebuffer::set_feats(unsigned int remove_feats, unsigned int add_feats) {
 	shader = ShaderManager::get_instance()->get_shader_switch_features(shader, remove_feats, add_feats);
-	WindowManager::get_instance()->update_shader_lights();
 	bind_uniforms();
+	WindowManager::get_instance()->update_shader_lights();
 }
 
 void Framebuffer::bind_textures() {

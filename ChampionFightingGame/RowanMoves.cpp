@@ -345,7 +345,7 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::DISABLE_CANCEL, "5mp", CANCEL_KIND_ANY);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 120),
 				glm::vec2(240, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-				HitResult().damage(60).meter(36).hit(8, 22).block(8, 15).j_min(1)
+				HitResult().damage(60).meter(36).hit(12, 22).block(12, 15).j_min(1)
 				.anims("light_high", "light_high", "high", "high"), HIT_STATUS_NORMAL,
 				HitMove().ground(80.0, 80.0).air(3.0, 25.0).frames(7), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
@@ -373,7 +373,7 @@ void Rowan::load_move_scripts() {
 		execute_frame(9, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 130),
 			glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(100).meter(48).hit(11, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
+			HitResult().damage(100).meter(48).hit(16, 23).block(16, 20).j_start(2).j_inc(2).j_max(1)
 			.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
 				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
@@ -476,7 +476,7 @@ void Rowan::load_move_scripts() {
 				HIT_FLAG_DISABLE_HITSTUN_PARRY | HIT_FLAG_CONTINUE_LAUNCH,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
-		push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(44, 76), glm::vec2(173, 143), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
+			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(44, 76), glm::vec2(173, 143), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 		});
 		execute_frame(11.0, [this]() {
 			push_function(&Fighter::ENABLE_CANCEL, "special_fireball", CANCEL_KIND_CONTACT);
@@ -530,7 +530,7 @@ void Rowan::load_move_scripts() {
 		execute_frame(11, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(100, 110),
 			glm::vec2(210, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(60).meter(36).hit(10, 12).block(12, 11).j_min(2)
+			HitResult().damage(60).meter(36).hit(12, 12).block(12, 11).j_min(2)
 			.anims("medium_high", "medium_high", "mid", "mid"), HIT_STATUS_NORMAL,
 				HitMove().ground(80.0, 40.0).air(3.0, 28.0).frames(9), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
@@ -603,7 +603,7 @@ void Rowan::load_move_scripts() {
 		execute_wait(2, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(120, 50),
 			glm::vec2(240, 90), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(50).meter(36).hit(10, 21).block(12, 17)
+			HitResult().damage(50).meter(36).hit(12, 21).block(12, 17)
 			.anims("medium_mid", "medium_mid", "mid", "mid").j_start(1).j_inc(1).j_max(3),
 				HIT_STATUS_NORMAL, HitMove().ground(60.0, 80.0).air(10.0, 18.0).frames(11),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
@@ -634,7 +634,7 @@ void Rowan::load_move_scripts() {
 		execute_frame(6, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(50, 40),
 			glm::vec2(180, 89), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
+			HitResult().damage(90).meter(54).hit(16, 23).block(16, 16).crit(32, 0).j_start(1)
 			.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
 				HIT_STATUS_NORMAL, HitMove().ground(140.0, 80.0).air(130.0, 200.0).frames(10),
 				HIT_FLAG_FORCE_STAND | HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE,
@@ -645,7 +645,7 @@ void Rowan::load_move_scripts() {
 		execute_frame(8, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(50, 70),
 			glm::vec2(180, 160), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-			HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
+			HitResult().damage(90).meter(54).hit(16, 23).block(16, 16).crit(32, 0).j_start(1)
 			.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
 				HIT_STATUS_NORMAL, HitMove().ground(140.0, 80.0).air(130.0, 200.0).frames(10),
 				HIT_FLAG_FORCE_STAND | HIT_FLAG_DISABLE_HITSTUN_PARRY, 
@@ -658,7 +658,7 @@ void Rowan::load_move_scripts() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(20, 50), glm::vec2(130, 170), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(50, 70),
 				glm::vec2(180, 220), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
-				HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
+				HitResult().damage(90).meter(54).hit(16, 23).block(16, 16).crit(32, 0).j_start(1)
 				.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
 				HIT_STATUS_NORMAL, HitMove().ground(140.0, 80.0).air(130.0, 200.0).frames(10),
 				HIT_FLAG_FORCE_STAND | HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, 
@@ -721,7 +721,7 @@ void Rowan::load_move_scripts() {
 		execute_frame(6, [this]() {
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(120, 0), glm::vec2(250, 50), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(15, 0),
-				glm::vec2(295, 40), COLLISION_KIND_GROUND, HitResult().damage(60).meter(36).hit(10, 19)
+				glm::vec2(295, 40), COLLISION_KIND_GROUND, HitResult().damage(60).meter(36).hit(12, 19)
 				.block(12, 13).anims("medium_low", "medium_low", "", "low"), HIT_STATUS_NORMAL,
 				HitMove().ground(14.0, 8.0).frames(10), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
 				HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
@@ -746,7 +746,7 @@ void Rowan::load_move_scripts() {
 		});
 		execute_frame(8, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 0),
-			glm::vec2(250, 50), COLLISION_KIND_GROUND, HitResult().damage(80).meter(48).hit(12, 0)
+			glm::vec2(250, 50), COLLISION_KIND_GROUND, HitResult().damage(80).meter(48).hit(16, 0)
 			.block(16, 13).anims("", "", "", "low"), HIT_STATUS_KNOCKDOWN,
 				HitMove().ground(0.0, 8.0).frames(10), HIT_FLAG_KNOCKDOWN_FACE_DOWN,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01");
@@ -1245,7 +1245,7 @@ void Rowan::load_move_scripts() {
 
 void Rowan::load_cpu_move_info() {
 	cpu.add_action("5lp", "5lp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LP_BIT, 5, { 4, 5, 6 }, { CPU_TAG_MULTIHIT_CONFIRM }, {}, 0.0f, false, true);
-	cpu.add_action("5mp", "5mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 4, 5, 6 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
+	cpu.add_action("5mp", "5mp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MP_BIT, 5, { 4, 5 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
 	cpu.add_action("5hp", "5hp", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_HP_BIT, 5, { 4, 5 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);
 	cpu.add_action("5lk", "5lk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_LK_BIT, 5, { 4, 5, 6 }, { CPU_TAG_MULTIHIT_CONFIRM }, {}, 0.0f, false, true);
 	cpu.add_action("5mk", "5mk", FIGHTER_CONTEXT_GROUND, INPUT_KIND_NORMAL, BUTTON_MK_BIT, 5, { 4, 5, 6 }, { CPU_TAG_HIT_CONFIRM }, {}, 0.0f, false, true);

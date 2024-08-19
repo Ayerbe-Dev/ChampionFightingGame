@@ -43,7 +43,6 @@ public:
 	void set_alpha(unsigned char alpha);
 	void render();
 	void render_shadow();
-	void render_outline();
 
 	//Model Funcs
 
@@ -152,7 +151,6 @@ public:
 
 	Shader* shader;
 	Shader* shadow_shader;
-	Shader* outline_shader;
 	CircularBuffer<GLuint> trail_buffer;
 	ModelInstance model;
 private:

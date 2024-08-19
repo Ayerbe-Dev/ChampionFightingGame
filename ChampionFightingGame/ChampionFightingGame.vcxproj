@@ -867,10 +867,10 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_fullbright.glsl" />
     <None Include="resource\shaders\fragment_gbuffer.glsl" />
     <None Include="resource\shaders\fragment_hdr.glsl" />
+    <None Include="resource\shaders\fragment_outline.glsl" />
     <None Include="resource\shaders\fragment_passthrough.glsl" />
     <None Include="resource\shaders\fragment_model.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
-    <None Include="resource\shaders\fragment_3d_outline.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
     <None Include="resource\shaders\fragment_shadow.glsl" />
     <None Include="resource\shaders\fragment_ssao.glsl" />
@@ -879,12 +879,10 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\geometry_blend.glsl" />
     <None Include="resource\shaders\geometry_effect.glsl" />
     <None Include="resource\shaders\geometry_model.glsl" />
-    <None Include="resource\shaders\geometry_3d_outline.glsl" />
     <None Include="resource\shaders\vertex_2d_outline.glsl" />
     <None Include="resource\shaders\vertex_2d_texture.glsl" />
     <None Include="resource\shaders\vertex_blend.glsl" />
     <None Include="resource\shaders\vertex_effect.glsl" />
-    <None Include="resource\shaders\vertex_3d_outline.glsl" />
     <None Include="resource\shaders\vertex_passthrough.glsl" />
     <None Include="resource\shaders\vertex_model.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />

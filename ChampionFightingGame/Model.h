@@ -86,6 +86,7 @@ public:
 
 	glm::mat4 get_global_transform() const;
 	std::string get_directory() const;
+	std::string get_path() const;
 	std::size_t get_trans_id() const;
 	bool is_loaded() const;
 	bool has_skeleton() const;
@@ -110,10 +111,13 @@ private:
 	void process_skeleton(aiNode* root);
 
 	glm::mat4 global_transform;
+	std::string prefix;
 	std::string directory;
+	std::string path;
 	std::size_t trans_id;
 	bool file_loaded;
 	bool skeleton_loaded;
+	bool found_prefix;
 	int skipped_verts;
 };
 

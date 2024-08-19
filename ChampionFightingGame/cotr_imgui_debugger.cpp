@@ -143,7 +143,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Debug Menu");
+	ImGui::Begin("Debug Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoResize);
 	{
 		if (ImGui::TreeNode("Hitbox Creator")) {
 			const char* hit_levels[3]{
@@ -736,7 +738,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			ImGui::TreePop();
 		}
 
-		if (ImGui::TreeNode("Lights")) {
+		if (ImGui::TreeNode("Rendering")) {
+			ImGui::Checkbox("Framecap", &GameManager::get_instance()->frame_capped);
+
 			for (int i2 = 0; i2 < window_manager->lights.size(); i2++) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 
@@ -757,11 +761,8 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				window_manager->hdr_buffer.shader->set_float("exposure", window_manager->hdr_exposure);
 			}
 			ImGui::SliderFloat("Shadow Depth", &window_manager->shadow_depth, 0.0f, 256.0f);
-			ImGui::TreePop();
 			window_manager->update_shader_lights();
-		}
 
-		if (ImGui::TreeNode("Rendering")) {
 			bool diffuse_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE;
 			bool specular_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR;
 			bool position_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION;
@@ -792,7 +793,6 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			|| position_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
 			|| normal_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
 			|| ssao_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
-				std::cout << "Toggled... something\n";
 				unsigned int add = 0;
 				unsigned int remove = 0;
 				if (diffuse_enabled) {

@@ -28,6 +28,10 @@ GameManager::GameManager() {
 	next_game_state = GAME_STATE_DEBUG_MENU;
 	next_game_context = GAME_CONTEXT_NORMAL;
 
+#ifdef DEBUG
+	frame_capped = true;
+#endif
+
 	FontManager* font_manager = font_manager->get_instance();
 	average_ticks.reserve(10000);
 	frame = 0;
@@ -327,7 +331,13 @@ bool GameManager::is_crash() {
 
 void GameManager::frame_delay() {
 	TargetVarManager::get_instance()->process_targets();
+#ifdef DEBUG
+	if (frame_capped) {
+#endif
 	wait_ms();
+#ifdef DEBUG
+	}
+#endif
 }
 
 void GameManager::frame_delay_check_fps() {

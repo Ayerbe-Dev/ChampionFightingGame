@@ -53,11 +53,10 @@ void StageAsset::load_model_shader() {
 		}
 		shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
 		shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);
-		outline_shader = shader_manager->get_shader("3d_outline", "3d_outline", "3d_outline", flags);
 		shader->use();
 		shader->set_int("shadow_map", 0);
 		shader->set_int("material.diffuse", 1);
-		shader->set_int("material.specular", 2);
+		shader->set_int("material.normal", 2);
 	}
 }
 

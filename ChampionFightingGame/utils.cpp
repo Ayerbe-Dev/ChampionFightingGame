@@ -36,6 +36,7 @@ float clampf(float min, float value, float max) {
 /// <param name="remove">: Part of the string to remove</param>
 /// <returns>Filtered string</returns>
 std::string filter_string(const std::string& to, const std::string& remove) {
+	if (remove == "") return to;
 	std::string ret = "";
 	std::string ret2 = "";
 	int removal_index = to.find(remove);

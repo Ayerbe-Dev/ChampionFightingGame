@@ -22,10 +22,13 @@ ModelData::ModelData() {
 	dummy_vec = nullptr;
 	dummy_quat = nullptr;
 	global_transform = glm::mat4(0.0);
+	prefix = "";
 	directory = "";
+	path = "";
 	trans_id = -1;
 	file_loaded = false;
 	skeleton_loaded = false;
+	found_prefix = false;
 	skipped_verts = 0;
 }
 
@@ -49,12 +52,8 @@ void ModelData::load_model(std::string path) {
 	aiNode* root = scene->mRootNode;
 	global_transform = ass_converter(root->mTransformation.Inverse());
 
-	aiNode *model = root->FindNode("Model");
-	if (model) {
-		global_transform = ass_converter(model->mTransformation.Inverse());
-	}
-
 	directory = path.substr(0, path.find_last_of('/')) + "/";
+	this->path = path;
 	std::string skeleton_path = directory.substr(0, directory.find_last_of('m')) + "skeleton.smd";
 	skeleton_loaded = skeleton.load_skeleton(skeleton_path);
 
@@ -93,6 +92,10 @@ glm::mat4 ModelData::get_global_transform() const {
 
 std::string ModelData::get_directory() const {
 	return directory;
+}
+
+std::string ModelData::get_path() const {
+	return path;
 }
 
 std::size_t ModelData::get_trans_id() const {
@@ -214,8 +217,22 @@ Mesh ModelData::process_mesh(aiMesh* mesh) {
 
 		for (int i = 0; i < mesh->mNumBones; i++) {
 			aiBone* ai_bone = mesh->mBones[i];
+			
+			if (!found_prefix) {
+				prefix = ai_bone->mName.C_Str();
+				for (int i = 1, max = skeleton.bone_data.size(); i < max; i++) {
+					if (prefix.ends_with(skeleton.bone_data[i].name)) {
+						for (size_t i2 = 0, max2 = skeleton.bone_data[i].name.size(); i2 < max2; i2++) {
+							prefix.pop_back();
+						}
+						break;
+					}
+				}
+				found_prefix = true;
+			}
+
 			int bone_id = -1;
-			std::string bone_name = filter_string(ai_bone->mName.C_Str(), "Model_");
+			std::string bone_name = filter_string(ai_bone->mName.C_Str(), prefix);
 			if (skeleton.bone_map.contains(bone_name)) {
 				bone_id = skeleton.bone_map[bone_name];
 			}
@@ -269,11 +286,11 @@ void ModelData::process_skeleton(aiNode* root) {
 	std::vector<Bone>& bone_data = skeleton.bone_data;
 	for (int i = 0, max = bone_data.size(); i < max; i++) {
 		aiNode* node;
-		if (root->mName.C_Str() == "Model_" + bone_data[i].name) {
+		if (root->mName.C_Str() == prefix + bone_data[i].name) {
 			node = root;
 		}
 		else {
-			node = root->FindNode(("Model_" + bone_data[i].name).c_str());
+			node = root->FindNode((prefix + bone_data[i].name).c_str());
 		}
 		if (node == nullptr) {
 			continue;
@@ -295,12 +312,10 @@ void ModelData::process_skeleton(aiNode* root) {
 	if (skeleton.bone_map.contains("Trans")) {
 		trans_id = skeleton.bone_map["Trans"];
 	}
-	glm::vec3 decomp_other_v3;
-	glm::vec4 decomp_other_v4;
 	glm::vec3 scale_vec;
 
 	for (int i = 0, max = bone_data.size(); i < max; i++) {
-		glm::decompose(bone_data[i].bind_matrix, scale_vec, bone_data[i].base_rot, bone_data[i].base_pos, decomp_other_v3, decomp_other_v4);
+		decompose_mat(bone_data[i].bind_matrix, bone_data[i].base_pos, bone_data[i].base_rot, scale_vec);
 
 		if (bone_data[i].parent_id != -1) {
 			bone_data[i].counterpart_model_matrix = bone_data[bone_data[i].counterpart_id].model_matrix;
@@ -373,7 +388,7 @@ void ModelInstance::load_used_model_instance(std::string path) {
 
 void ModelInstance::unload_model_instance() {
 	if (model != nullptr) {
-		std::string dir = model->get_directory() + "model.dae";
+		std::string dir = model->get_path();
 		ResourceManager::get_instance()->unuse_model(dir);
 		unload_textures();
 		materials.clear();
@@ -495,8 +510,8 @@ void ModelInstance::set_bone_ex_render(std::string bone_name, bool enabled) {
 
 void ModelInstance::reset_bones() {
 	for (Bone& bone : bone_data) {
-		bone.anim_matrix = glm::inverse(model->get_global_transform());
-		bone.final_matrix = glm::inverse(model->get_global_transform());
+		bone.anim_matrix = glm::mat4(1.0);
+		bone.final_matrix = glm::mat4(1.0);
 	}
 }
 

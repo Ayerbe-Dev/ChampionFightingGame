@@ -70,7 +70,7 @@ public:
 
 	std::vector<GameTexture> debug_textures;
 	GameTexture fade_texture;
-	CircularBuffer<std::pair<GLint, GLint>> ex_trails;
+	CircularBuffer<GLint> ex_trails;
 
 	float hdr_exposure;
 	std::vector<glm::vec3> ssao_samples;
@@ -85,8 +85,6 @@ public:
 	int window_height;
 
 	bool outlines_enabled;
-
-	int msaa_samples;
 
 	static WindowManager* get_instance();
 	void destroy_instance();

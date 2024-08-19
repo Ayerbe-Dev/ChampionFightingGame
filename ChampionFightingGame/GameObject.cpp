@@ -37,7 +37,6 @@ GameObject::GameObject() {
 	id_effect = -1;
 	shader = nullptr;
 	shadow_shader = nullptr;
-	outline_shader = nullptr;
 }
 
 GameObject::GameObject(GameObject& other) {
@@ -82,7 +81,6 @@ GameObject::GameObject(GameObject& other) {
 	this->anim_end = other.anim_end;
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
-	this->outline_shader = other.outline_shader;
 	this->model = other.model;
 	this->anim_end = other.anim_end;
 }
@@ -129,7 +127,6 @@ GameObject::GameObject(const GameObject& other) {
 	this->anim_end = other.anim_end;
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
-	this->outline_shader = other.outline_shader;
 	this->model = other.model;
 	this->anim_end = other.anim_end;
 }
@@ -179,7 +176,6 @@ GameObject& GameObject::operator=(GameObject& other) {
 	this->anim_end = other.anim_end;
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
-	this->outline_shader = other.outline_shader;
 	this->model = other.model;
 	this->anim_end = other.anim_end;
 	
@@ -231,7 +227,6 @@ GameObject& GameObject::operator=(const GameObject& other) {
 	this->anim_end = other.anim_end;
 	this->shader = other.shader;
 	this->shadow_shader = other.shadow_shader;
-	this->outline_shader = other.outline_shader;
 	this->model = other.model;
 	this->anim_end = other.anim_end;
 

@@ -1320,7 +1320,6 @@ void Battle::render_world() {
 
 	glEnable(GL_CULL_FACE);
 	glDepthMask(GL_TRUE);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
 	//SHADOW PASS
 
@@ -1346,13 +1345,19 @@ void Battle::render_world() {
 	if (!frame_pause || frame_advance) {
 		window_manager->ex_trails.cycle();
 	}
-	window_manager->g_buffer.bind_ex_write_texture(window_manager->ex_trails.newest().first, GL_COLOR_ATTACHMENT4, 4);
-	window_manager->g_buffer.bind_ex_write_texture(window_manager->ex_trails.newest().second, GL_COLOR_ATTACHMENT5, 5);
+	window_manager->g_buffer.bind_ex_write_texture(window_manager->ex_trails.newest(), GL_COLOR_ATTACHMENT4, 4);
 
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	window_manager->shadow_map.bind_textures();
+
+	shader_manager->set_global_float("Outline", 0.5f);
+
+	glEnable(GL_CULL_FACE);
+	stage.render();
+
+	shader_manager->set_global_float("Outline", 1.0f);
 
 	glDisable(GL_CULL_FACE); //Fighter models are currently simple enough that it's not
 	//uncommon to see both sides of a vertex, such as looking at Rowan's sleeves. In the future
@@ -1364,42 +1369,6 @@ void Battle::render_world() {
 				fighter[i]->projectiles[i2]->render();
 			}
 		}
-	}
-	glStencilMask(0x00);
-	stage.render();
-
-	//OUTLINE PASS
-
-	if (window_manager->outlines_enabled) {
-		window_manager->outline.use();
-
-		glStencilMask(0xFF);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		glDepthMask(GL_FALSE);
-		for (int i = 0; i < 2; i++) {
-			fighter[i]->render();
-			for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-				if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-					fighter[i]->projectiles[i2]->render();
-				}
-			}
-		}
-		glStencilMask(0x00);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		for (int i = 0; i < 2; i++) {
-			fighter[i]->render_outline();
-			for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-				if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
-					fighter[i]->projectiles[i2]->render_outline();
-				}
-			}
-		}
-		glDepthMask(GL_TRUE);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-
-		window_manager->g_buffer.use();
 	}
 
 	//EFFECT RENDERING
@@ -1438,7 +1407,7 @@ void Battle::render_world() {
 	window_manager->hdr_buffer.render();
 	glDisable(GL_FRAMEBUFFER_SRGB);
 	if (window_manager->outlines_enabled) {
-		window_manager->outline.render_passthrough();
+		window_manager->outline.render();
 	}
 
 	//HITBOX PASS
@@ -1446,7 +1415,7 @@ void Battle::render_world() {
 	if (game_context == GAME_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
 		window_manager->box_layer.use();
 		glViewport(0, 0, window_manager->res_width, window_manager->res_height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {

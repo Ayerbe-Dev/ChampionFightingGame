@@ -64,12 +64,14 @@ void GameController::check_controllers() {
 			}
 		}
 		for (int c : input_manager->available_controllers) {
-			GLFWgamepadstate state;
-			if (glfwGetGamepadState(c, &state)) {
-				if (is_any_controller_input(c)) {
-					controller_id = c;
-					input_manager->register_controller(c, this);
-					return;
+			if (input_manager->get_owner(c) == nullptr) {
+				GLFWgamepadstate state;
+				if (glfwGetGamepadState(c, &state)) {
+					if (is_any_controller_input(c)) {
+						controller_id = c;
+						input_manager->register_controller(c, this);
+						return;
+					}
 				}
 			}
 		}

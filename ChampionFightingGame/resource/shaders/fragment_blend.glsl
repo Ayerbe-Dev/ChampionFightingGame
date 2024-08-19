@@ -7,8 +7,6 @@ in GS_OUT {
 
 uniform sampler2D new_col;
 uniform sampler2D old_col;
-uniform sampler2D new_vert;
-uniform sampler2D old_vert;
 
 void main() {
     vec4 tex_col_new = texture(new_col, fs_in.TexCoords) * 0.5; 

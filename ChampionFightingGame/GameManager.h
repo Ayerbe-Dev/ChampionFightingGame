@@ -7,6 +7,7 @@
 #include <stack>
 #include <list>
 #include <any>
+#include "debug.h"
 
 class GameManager {
 public:
@@ -50,6 +51,10 @@ public:
 	void frame_delay();
 	void frame_delay_check_fps();
 	void frame_delay_check_performance();
+
+#ifdef DEBUG
+	bool frame_capped;
+#endif
 
 	static GameManager* get_instance();
 	void destroy_instance();

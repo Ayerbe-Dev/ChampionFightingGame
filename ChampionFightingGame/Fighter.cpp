@@ -92,7 +92,7 @@ void Fighter::fighter_post() {
 	}
 	process_post_position();
 	if (anim_kind == nullptr) {
-		add_rot(glm::vec3(90, 0.0, 90.0 * facing_dir));
+		add_rot(glm::vec3(0.0, 0.0, 90.0 * facing_dir));
 	}
 	else {
 		add_rot(glm::vec3(0.0, 0.0, 90.0));

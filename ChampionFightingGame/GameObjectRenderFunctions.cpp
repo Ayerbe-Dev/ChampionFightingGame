@@ -38,14 +38,3 @@ void GameObject::render_shadow() {
 	shadow_shader->set_mat4("model_matrix", model_mat);
 	model.render_no_texture(shadow_shader);
 }
-
-void GameObject::render_outline() {
-	glm::mat4 model_mat = glm::mat4(1.0);
-	model_mat = glm::translate(model_mat, pos / scale_vec);
-	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale);
-	model_mat *= extra_mat;
-	outline_shader->use();
-	outline_shader->set_mat4("model_matrix", model_mat);
-	model.render_no_texture(outline_shader);
-}

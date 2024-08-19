@@ -11,7 +11,6 @@ in VS_OUT {
 } gs_in[];
 
 out GS_OUT {
-    vec4 VertPos;
     vec4 FragPos;
     vec4 FragPosLightSpace;
     vec3 Normal;
@@ -21,7 +20,6 @@ out GS_OUT {
 
 void main() {
     for (int i = 0, max = gl_in.length(); i < max; i++) {
-        gs_out.VertPos = gl_in[i].gl_Position;
         gs_out.FragPos = gs_in[i].FragPos;
         gs_out.FragPosLightSpace = gs_in[i].FragPosLightSpace;
         gs_out.Normal = gs_in[i].Normal;

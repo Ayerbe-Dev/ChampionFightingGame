@@ -40,7 +40,8 @@ void debug_main() {
 	cotr_imgui_terminate();
 
 	delete debug;
-	resource_manager->unload_model("resource/chara/eric/model/m0/model.dae");
+	resource_manager->unload_model("resource/chara/rowan/model/m0/model.fbx");
+	resource_manager->unload_model("resource/chara/eric/model/m0/model.fbx");
 }
 
 DebugMenu::DebugMenu() {
@@ -51,25 +52,25 @@ DebugMenu::DebugMenu() {
 		debug_messages.push_back(crash_reason);
 	}
 
-	go1.model.load_model_instance("resource/chara/eric/model/m0/model.dae");
+	go1.model.load_model_instance("resource/chara/rowan/model/m0/model.fbx");
 	go1.model.load_textures("c0");
 	go1.init_shader();
 
 	go1.set_pos(glm::vec3(-200.0, 0.0, 0.0));
 	go1.set_rot(glm::vec3(0.0, 0.0, 90.0));
 
-	//	go1.load_anim_table("resource/chara/atlas/anims/battle");
-	//	go1.change_anim("wait", 0.5, 0.0);
+//	go1.load_anim_table("resource/chara/eric/anims/battle");
+//	go1.change_anim("wait", 0.5, 0.0);
 
 
-	go2.model.load_model_instance("resource/chara/eric/model/m0/model.dae");
+	go2.model.load_model_instance("resource/chara/eric/model/m0/model.fbx");
 	go2.model.load_textures("c1");
 	go2.init_shader();
 
 	go2.set_pos(glm::vec3(200.0, 0.0, 0.0));
 	go2.set_rot(glm::vec3(0.0, 0.0, 90.0));
-	//	go2.load_anim_table("resource/chara/atlas/anims/battle");
-	//	go2.change_anim("wait", 0.5, 0.0);
+//	go2.load_anim_table("resource/chara/eric/anims/battle");
+//	go2.change_anim("wait", 0.5, 0.0);
 	go2.model.set_flip(true);
 
 	tex.init("resource/game_state/chara_select/chara/rowan/render.png");
@@ -111,6 +112,7 @@ void DebugMenu::process_main() {
 
 void DebugMenu::render_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
+	ShaderManager::get_instance()->set_global_float("Outline", 1.0f);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 

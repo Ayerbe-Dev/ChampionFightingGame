@@ -9,6 +9,7 @@
 #include <fstream>
 #include "WindowConstants.h"
 #include "SaveManager.h"
+#include "ShaderManager.h"
 
 /// <summary>
 /// The main function while on the character select screen.
@@ -621,7 +622,7 @@ void gamestate_charaselect_loading_thread(void* charaselect_arg) {
 	for (int i = 0, max = css->get_menu_object("Chara Slots").num_children(); i < max; i++) {
 		MenuObject& chara_slot = css->get_menu_object("Chara Slots").get_child(i);
 		std::string resource_dir = "resource/chara/" + chara_slot.string_var("resource_name");
-		ModelData* model_data = ResourceManager::get_instance()->get_model_keep_user_count(resource_dir + "/model/m0/model.dae");
+		ModelData* model_data = ResourceManager::get_instance()->get_model_keep_user_count(resource_dir + "/model/m0/model.fbx");
 		css->demo_anim_tables.push_back(AnimationTable());
 		if (model_data->is_loaded()) {
 			css->demo_anim_tables.back().load_anlst(resource_dir + "/anims/demo", model_data->skeleton);
@@ -814,6 +815,7 @@ void CSS::process_main() {
 /// </summary>
 void CSS::render_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
+	ShaderManager* shader_manager = ShaderManager::get_instance();
 	window_manager->execute_buffered_events();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
@@ -828,7 +830,7 @@ void CSS::render_main() {
 		int selection = get_menu_object("Player Cursors").get_child(i).int_var("selected_slot");
 		if (selection >= 0 && selection < loaded_chars) {
 			if (demo_models[i].anim_kind == nullptr) {
-				demo_models[i].set_rot(glm::vec3(-90.0, 0.0, 90.0 * (i * -2 + 1)));
+				demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0 * (i * -2 + 1)));
 			}
 			else {
 				demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
@@ -856,7 +858,9 @@ void CSS::render_main() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	window_manager->shadow_map.bind_textures();
-
+	shader_manager->set_global_float("Outline", 0.5f);
+	stage_demo.render();
+	shader_manager->set_global_float("Outline", 1.0f);
 	glDisable(GL_CULL_FACE);
 	for (int i = 0; i < 2; i++) {
 		int selection = get_menu_object("Player Cursors").get_child(i).int_var("selected_slot");
@@ -865,7 +869,6 @@ void CSS::render_main() {
 		}
 	}
 	glEnable(GL_CULL_FACE);
-	stage_demo.render();
 
 	window_manager->render_ssao();
 
@@ -875,6 +878,9 @@ void CSS::render_main() {
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->g_buffer.render();
 	glDisable(GL_FRAMEBUFFER_SRGB);
+	if (window_manager->outlines_enabled) {
+		window_manager->outline.render();
+	}
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 
 	glDepthMask(GL_FALSE);
@@ -1010,7 +1016,7 @@ void CSS::select_slot(int player_idx) {
 	if (cursor.int_var("selected_slot") < loaded_chars && cursor.int_var("selected_slot") != -1) {
 		demo_models[player_idx].load_model(
 			"resource/chara/" + chara_slot.string_var("resource_name") +
-			"/model/m" + std::to_string(cursor.int_var("selected_costume")) + "/model.dae",
+			"/model/m" + std::to_string(cursor.int_var("selected_costume")) + "/model.fbx",
 			"c" + std::to_string(cursor.int_var("selected_color"))
 		);
 		demo_models[player_idx].init_shader();
@@ -1032,7 +1038,7 @@ void CSS::select_costume(int player_idx) {
 	MenuObject& selected_slot = get_menu_object("Chara Slots").get_child(player_cursor.int_var("selected_slot"));
 	demo_models[player_idx].load_model(
 		"resource/chara/" + selected_slot.string_var("resource_name") +
-		"/model/m" + std::to_string(player_cursor.int_var("selected_costume")) + "/model.dae",
+		"/model/m" + std::to_string(player_cursor.int_var("selected_costume")) + "/model.fbx",
 		"c0"
 	);
 }
@@ -1075,7 +1081,7 @@ void CSS::load_chara_model_into_main_thread() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	resource_manager->init_gl_model("resource/chara/"
 		+ get_menu_object("Chara Slots").get_child(loaded_chars).string_var("resource_name")
-		+ "/model/m0/model.dae"
+		+ "/model/m0/model.fbx"
 	);
 
 	for (int i = 0; i < 2; i++) {
@@ -1088,7 +1094,7 @@ void CSS::load_chara_model_into_main_thread() {
 			demo_models[i].load_model(
 				"resource/chara/"
 				+ get_menu_object("Chara Slots").get_child(selection).string_var("resource_name")
-				+ "/model/m" + std::to_string(cursor.int_var("selected_costume")) + "/model.dae",
+				+ "/model/m" + std::to_string(cursor.int_var("selected_costume")) + "/model.fbx",
 				"c" + std::to_string(cursor.int_var("selected_color"))
 			);
 			demo_models[i].init_shader();

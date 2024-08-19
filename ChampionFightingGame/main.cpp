@@ -53,7 +53,7 @@ int main() {
 	opening_main();
 
 	game_manager->player[0]->chara_kind = CHARA_KIND_ERIC;
-	game_manager->player[1]->chara_kind = CHARA_KIND_ROWAN;
+	game_manager->player[1]->chara_kind = CHARA_KIND_ERIC;
 
 	while (game_manager->next_game_state != GAME_STATE_CLOSE) {
 		window_manager->reset_gl_environment();

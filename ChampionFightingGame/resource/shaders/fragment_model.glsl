@@ -1,10 +1,9 @@
 #version 330 core
 layout (location = 0) out vec4 g_diffuse;
-layout (location = 1) out vec4 g_specular;
-layout (location = 2) out vec4 g_position;
-layout (location = 3) out vec4 g_normal;
+layout (location = 1) out vec4 g_position;
+layout (location = 2) out vec4 g_normal;
+layout (location = 3) out vec4 g_specular;
 layout (location = 4) out vec4 g_diffuse_ex;
-layout (location = 5) out vec4 g_vert_ex;
 
 struct Material {
     sampler2D diffuse;
@@ -14,7 +13,6 @@ struct Material {
 }; 
 
 in GS_OUT {
-    vec4 VertPos;
     vec4 FragPos;
     vec4 FragPosLightSpace;
     vec3 Normal;
@@ -33,6 +31,10 @@ layout(std140) uniform ShadowLight {
     vec3 shadow_light;
 };
 
+layout(std140) uniform Outline {
+    float outline;
+};
+
 uniform Material material;
 
 float calc_shadow(vec4 fragPosLightSpace);
@@ -40,20 +42,23 @@ float calc_shadow(vec4 fragPosLightSpace);
 void main() {
     float shadow = calc_shadow(fs_in.FragPosLightSpace);
 
-    g_position = vec4(fs_in.FragPos);
+    g_position.rgb = vec3(fs_in.FragPos);
+    g_position.a = outline;
+    
     g_normal = vec4(normalize(fs_in.Normal), 1.0);
 
+    vec4 diffuse = texture(material.diffuse, fs_in.TexCoords).rgba;
+
 #ifdef SHADER_FEAT_DIM_MUL
-    g_diffuse.rgb = (1.0 - shadow) * dim_mul * texture(material.diffuse, fs_in.TexCoords).rgb;
+    g_diffuse.rgb = (1.0 - shadow) * dim_mul * diffuse.rgb;
 #else
-    g_diffuse.rgb = (1.0 - shadow) * texture(material.diffuse, fs_in.TexCoords).rgb;
+    g_diffuse.rgb = (1.0 - shadow) * diffuse.rgb;
 #endif
+    g_diffuse.a = diffuse.a * alpha;
     g_specular.rgba = texture(material.specular, fs_in.TexCoords).rgba;
-    g_diffuse.a = alpha;
     g_specular.a *= alpha;
     g_diffuse_ex = g_diffuse;
     g_diffuse_ex.a *= fs_in.Ex;
-    g_vert_ex = fs_in.VertPos * vec4(fs_in.Ex);
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

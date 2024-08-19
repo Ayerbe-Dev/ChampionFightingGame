@@ -18,7 +18,6 @@ WindowManager::WindowManager() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	res_width = save_manager->get_game_setting("res_x");
 	res_height = save_manager->get_game_setting("res_y");
-	msaa_samples = save_manager->get_game_setting("msaa");
 	if (save_manager->get_game_setting("fullscreen") == 1) {
 		window = glfwCreateWindow(res_width, res_height, "Champions of the Ring", glfwGetPrimaryMonitor(), nullptr);
 	}
@@ -40,8 +39,6 @@ WindowManager::WindowManager() {
 	glfwSetKeyCallback(window, window_key_callback);
 
 	glViewport(0, 0, window_width, window_height);
-
-	glEnable(GL_MULTISAMPLE);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
@@ -96,11 +93,10 @@ WindowManager::WindowManager() {
 		| SHADER_FEAT_SSAO, res_width, res_height
 	);
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Specular
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Position
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Normal
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 1); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 2); //Normal
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 3); //Specular
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
-	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT5); //Position EX
 
 	hdr_buffer.init("passthrough", "hdr", "", 0, res_width, res_height);
 	hdr_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
@@ -108,8 +104,8 @@ WindowManager::WindowManager() {
 	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
 	SSAO.add_write_texture(GL_RED, GL_RED, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 	SSAO.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_REPEAT, 2, 2, 1, (void*)&ssao_noise[0]); //Noise
-	SSAO.add_read_texture(g_buffer.textures[2], 2); //Position, shared w/ GBuffer
-	SSAO.add_read_texture(g_buffer.textures[3], 3); //Ditto for Normals
+	SSAO.add_read_texture(g_buffer.textures[1], 2); //Position, shared w/ GBuffer
+	SSAO.add_read_texture(g_buffer.textures[2], 3); //Ditto for Normals
 
 	blur.init("passthrough", "blur", "", 0, res_width, res_height);
 	blur.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
@@ -118,11 +114,9 @@ WindowManager::WindowManager() {
 	blend.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 1, nullptr); //New Color
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 2, nullptr); //Old Color
-	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 3, nullptr); //New Position
-	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 4, nullptr); //Old Position
 
-	outline.init("passthrough", "passthrough", "", 0, res_width, res_height);
-	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
+	outline.init("passthrough", "outline", "", 0, res_width, res_height);
+	outline.add_read_texture(g_buffer.textures[1], 0);
 
 	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
@@ -130,13 +124,12 @@ WindowManager::WindowManager() {
 	shadow_map.init("shadow", "shadow", "", 0, res_width, res_height);
 	shadow_map.add_write_texture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, GL_CLAMP_TO_EDGE, 2048, 2048, GL_DEPTH_ATTACHMENT, 0, false);
 
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	g_buffer.add_uniform("g_diffuse", 0);
-	g_buffer.add_uniform("g_specular", 1);
-	g_buffer.add_uniform("g_position", 2);
-	g_buffer.add_uniform("g_normal", 3);
+	g_buffer.add_uniform("g_position", 1);
+	g_buffer.add_uniform("g_normal", 2);
+	g_buffer.add_uniform("g_specular", 3);
 
 	hdr_buffer.add_uniform("f_texture", 0);
 
@@ -151,17 +144,19 @@ WindowManager::WindowManager() {
 	SSAO.add_uniform("g_position", 2);
 	SSAO.add_uniform("g_normal", 3);
 
+	outline.add_uniform("g_position", 0);
+
 	box_layer.add_uniform("f_texture", 0);
 
 	g_buffer.bind_uniforms();
 	hdr_buffer.bind_uniforms();
 	SSAO.bind_uniforms();
+	outline.bind_uniforms();
 	box_layer.bind_uniforms();
 
 	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
-	debug_textures.push_back(GameTexture(outline.textures[0]));
+	debug_textures.push_back(GameTexture(g_buffer.textures[1]));
 	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
-	debug_textures.push_back(GameTexture(g_buffer.textures[3]));
 	debug_textures.push_back(GameTexture(blur.textures[0]));
 	debug_textures.push_back(GameTexture(blend.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
@@ -195,8 +190,8 @@ WindowManager::WindowManager() {
 	ambient_col = glm::vec3(1.0);
 
 	ex_trails.resize(2);
-	ex_trails.insert({ blend.textures[1], blend.textures[3] });
-	ex_trails.insert({ blend.textures[2], blend.textures[4] });
+	ex_trails.insert(blend.textures[1]);
+	ex_trails.insert(blend.textures[2]);
 }
 
 Light* WindowManager::add_light(Light light) {
@@ -380,10 +375,8 @@ void WindowManager::render_trail() {
 	blend.use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	blend.bind_ex_uniforms({
-		{"new_col", ex_trails.newest().first},
-		{"old_col", ex_trails.oldest().first},
-		{"new_pos", ex_trails.newest().second},
-		{"old_pos", ex_trails.oldest().second}
+		{"new_col", ex_trails.newest()},
+		{"old_col", ex_trails.oldest()},
 	});
 	blend.render();
 }

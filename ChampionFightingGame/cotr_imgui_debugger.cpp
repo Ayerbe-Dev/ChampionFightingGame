@@ -143,8 +143,8 @@ void cotr_imgui_debug_battle(Battle* battle) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Debug Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoMove
+	ImGui::Begin("Debug Menu", nullptr, 
+		ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoResize);
 	{
 		if (ImGui::TreeNode("Hitbox Creator")) {

@@ -1352,11 +1352,6 @@ void Battle::render_world() {
 
 	window_manager->shadow_map.bind_textures();
 
-	shader_manager->set_global_float("Outline", 0.5f);
-
-	glEnable(GL_CULL_FACE);
-	stage.render();
-
 	shader_manager->set_global_float("Outline", 1.0f);
 
 	glDisable(GL_CULL_FACE); //Fighter models are currently simple enough that it's not
@@ -1370,6 +1365,13 @@ void Battle::render_world() {
 			}
 		}
 	}
+
+	shader_manager->set_global_float("Outline", 0.5f);
+
+	glEnable(GL_CULL_FACE);
+	stage.render();
+
+	shader_manager->set_global_float("Outline", 1.0f);
 
 	//EFFECT RENDERING
 
@@ -1396,7 +1398,7 @@ void Battle::render_world() {
 	//LIGHTING PASS
 
 	window_manager->hdr_buffer.use();
-	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	window_manager->g_buffer.bind_ex_uniforms({{"ssao", window_manager->blur.textures[0]}});
 	window_manager->g_buffer.render();

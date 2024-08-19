@@ -42,7 +42,9 @@ void ModelData::load_model(std::string path) {
 	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
 
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate
+		| aiProcess_GenSmoothNormals
+		| aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";

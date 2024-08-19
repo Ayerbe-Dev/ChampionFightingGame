@@ -93,9 +93,9 @@ WindowManager::WindowManager() {
 		| SHADER_FEAT_SSAO, res_width, res_height
 	);
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 1); //Position
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 2); //Normal
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 3); //Specular
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Position
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Normal
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Specular
 	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
 
 	hdr_buffer.init("passthrough", "hdr", "", 0, res_width, res_height);
@@ -116,7 +116,8 @@ WindowManager::WindowManager() {
 	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 2, nullptr); //Old Color
 
 	outline.init("passthrough", "outline", "", 0, res_width, res_height);
-	outline.add_read_texture(g_buffer.textures[1], 0);
+	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
+	outline.add_read_texture(g_buffer.textures[1], 1);
 
 	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
@@ -144,7 +145,7 @@ WindowManager::WindowManager() {
 	SSAO.add_uniform("g_position", 2);
 	SSAO.add_uniform("g_normal", 3);
 
-	outline.add_uniform("g_position", 0);
+	outline.add_uniform("g_position", 1);
 
 	box_layer.add_uniform("f_texture", 0);
 

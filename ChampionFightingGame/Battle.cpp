@@ -1318,10 +1318,11 @@ void Battle::render_world() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	window_manager->execute_buffered_events();
 
+
+	//SHADOW PASS - We render our Fighters, Projectiles and the Stage to our Shadow Map.
+	
 	glEnable(GL_CULL_FACE);
 	glDepthMask(GL_TRUE);
-
-	//SHADOW PASS
 
 	window_manager->shadow_map.use();
 	glViewport(0, 0, 2048, 2048);
@@ -1339,7 +1340,8 @@ void Battle::render_world() {
 	stage.render_shadow();
 	glCullFace(GL_BACK);
 
-	//COLOR PASS
+	//COLOR PASS - Now we actually render to the Geometry Buffer, getting a ton of output that we're
+	//going to use in the Lighting pass.
 
 	window_manager->g_buffer.use();
 	if (!frame_pause || frame_advance) {
@@ -1354,9 +1356,8 @@ void Battle::render_world() {
 
 	shader_manager->set_global_float("Outline", 1.0f);
 
-	glDisable(GL_CULL_FACE); //Fighter models are currently simple enough that it's not
-	//uncommon to see both sides of a vertex, such as looking at Rowan's sleeves. In the future
-	//we will leave culling on for fighters
+	glDisable(GL_CULL_FACE); //This line will be removed, but current models have some vertices such
+	//that we can see both sides. Until then, fighters don't get culled.
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
@@ -1366,7 +1367,10 @@ void Battle::render_world() {
 		}
 	}
 
-	shader_manager->set_global_float("Outline", 0.5f);
+	shader_manager->set_global_float("Outline", 0.5f); //This uniform sets the location buffer's alpha
+	//component, which we later use to determine where we should and should not draw an outline. Any
+	//number is allowed here except for 0.0 (causes the location to straight up not be calculated,
+	//resulting in SSAO breaking) or 1.0 (causes the game not to draw outlines).
 
 	glEnable(GL_CULL_FACE);
 	stage.render();
@@ -1385,17 +1389,18 @@ void Battle::render_world() {
 	EffectManager::get_instance()->render();
 	glDepthMask(GL_TRUE);
 
-	//SSAO PASS
+	//SSAO PASS - Draws and blurs the SSAO buffer.
 
 	window_manager->render_ssao();
 
-	//TRAIL PASS
+	//TRAIL PASS - Draws trails
 
 	if (!frame_pause || frame_advance) {
 		window_manager->render_trail();
 	}
 	
-	//LIGHTING PASS
+	//LIGHTING PASS - Handles all of the light calculations and renders all of our geometry to the
+	//HDR buffer with lighting, then renders the HDR buffer to the screen.
 
 	window_manager->hdr_buffer.use();
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
@@ -1412,7 +1417,7 @@ void Battle::render_world() {
 		window_manager->outline.render();
 	}
 
-	//HITBOX PASS
+	//HITBOX PASS - Draws all collision boxes to their own framebuffer, then draws it to the screen.
 
 	if (game_context == GAME_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
 		window_manager->box_layer.use();

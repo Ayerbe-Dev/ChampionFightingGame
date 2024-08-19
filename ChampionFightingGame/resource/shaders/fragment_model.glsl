@@ -40,32 +40,20 @@ uniform Material material;
 float calc_shadow(vec4 fragPosLightSpace);
 
 void main() {
-    vec4 diffuse = texture(material.diffuse, fs_in.TexCoords).rgba;
-    gl_FragDepth = gl_FragCoord.z;
-    if (diffuse.a < 0.5) {
-        gl_FragDepth = 1000.0;
-        g_position.a = 0.5;
-        if (diffuse.a < 0.1) {
-            discard;
-        }
-    }
-    else {
-        g_position.a = outline;
-    }
-
     float shadow = calc_shadow(fs_in.FragPosLightSpace);
 
     g_position.rgb = vec3(fs_in.FragPos);
-    
+    g_position.a = outline;    
     
     g_normal = vec4(normalize(fs_in.Normal), 1.0);
 
+    vec4 diffuse = texture(material.diffuse, fs_in.TexCoords).rgba;
 #ifdef SHADER_FEAT_DIM_MUL
     g_diffuse.rgb = (1.0 - shadow) * dim_mul * diffuse.rgb;
 #else
     g_diffuse.rgb = (1.0 - shadow) * diffuse.rgb;
 #endif
-    g_diffuse.a = diffuse.a * alpha;
+    g_diffuse.a = alpha;
     g_specular.rgba = texture(material.specular, fs_in.TexCoords).rgba;
     g_specular.a *= alpha;
     g_diffuse_ex = g_diffuse;

@@ -57,7 +57,7 @@ void main() {
 #else
     g_diffuse.rgb = (1.0 - shadow) * diffuse.rgb;
 #endif
-    g_diffuse.a = alpha;
+    g_diffuse.a = diffuse.a * alpha;
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

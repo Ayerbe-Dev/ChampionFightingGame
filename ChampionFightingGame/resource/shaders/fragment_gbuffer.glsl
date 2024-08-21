@@ -41,7 +41,7 @@ void main() {
     vec3 Normal = normal_spec.rgb / normal_spec.a;
 
 #ifdef SHADER_FEAT_SPECULAR
-    float Specular = normal_spec.a - 0.5;
+    float Specular = max(0.0, normal_spec.a - 0.5);
 #else
     float Specular = 0.0;
 #endif

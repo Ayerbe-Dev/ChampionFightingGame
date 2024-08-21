@@ -18,57 +18,42 @@ layout(std140) uniform ViewPos {
 uniform vec3 ambient;
 uniform Light light[MAX_LIGHT_SOURCES];
 
-#ifdef SHADER_FEAT_DIFFUSE
 uniform sampler2D g_diffuse;
-#endif
-
-#ifdef SHADER_FEAT_SPECULAR
-uniform sampler2D g_specular;
-#endif
-
-#ifdef SHADER_FEAT_POSITION
-uniform sampler2D g_position;
-#endif
-
-#ifdef SHADER_FEAT_NORMAL
-uniform sampler2D g_normal;
-#endif
-
-#ifdef SHADER_FEAT_SSAO
+uniform sampler2D g_pos_outline;
+uniform sampler2D g_normal_spec;
+uniform sampler2D g_tangent_ex;
 uniform sampler2D ssao;
-#endif
 
 void main() {
     const float linear = 0.007;
 	const float quadratic = 0.0002;
+
+    vec3 FragPos = texture(g_pos_outline, TexCoords).rgb;
+
 #ifdef SHADER_FEAT_DIFFUSE
     vec3 Diffuse = texture(g_diffuse, TexCoords).rgb * texture(g_diffuse, TexCoords).a;
 #else
     vec3 Diffuse = vec3(1.0);
 #endif
 
+    vec4 normal_spec = texture(g_normal_spec, TexCoords);
+
+    vec3 Normal = normal_spec.rgb / normal_spec.a;
+
 #ifdef SHADER_FEAT_SPECULAR
-    vec3 Specular = texture(g_specular, TexCoords).rgb * texture(g_specular, TexCoords).a;
+    float Specular = normal_spec.a - 0.5;
 #else
-    vec3 Specular = vec3(0.0);
-#endif
-
-#ifdef SHADER_FEAT_POSITION
-    vec3 FragPos = texture(g_position, TexCoords).rgb;
-#else
-    vec3 FragPos = vec3(0.0);
-#endif
-
-#ifdef SHADER_FEAT_NORMAL
-    vec3 Normal = texture(g_normal, TexCoords).rgb;
-#else
-    vec3 Normal = vec3(0.0);
+    float Specular = 0.0;
 #endif
 
 #ifdef SHADER_FEAT_SSAO
     float AmbientOcclusion = texture(ssao, TexCoords).r;
 #else
     float AmbientOcclusion = 1.0;
+#endif
+
+#ifdef SHADER_FEAT_NORMAL
+    vec3 Tangent = texture(g_tangent_ex, TexCoords).xyz;
 #endif
 
     vec3 result = vec3(ambient * Diffuse * AmbientOcclusion);

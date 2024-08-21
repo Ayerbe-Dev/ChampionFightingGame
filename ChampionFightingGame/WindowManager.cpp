@@ -45,19 +45,13 @@ WindowManager::WindowManager() {
 	glDepthFunc(GL_LEQUAL);
 
 	glEnable(GL_BLEND);
-	glEnable(GL_STENCIL_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0x0);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	stbi_set_flip_vertically_on_load(true);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClearStencil(0);
 
 	hdr_exposure = 1.0;
 	int num_ssao_samples = 16;
@@ -93,10 +87,9 @@ WindowManager::WindowManager() {
 		| SHADER_FEAT_SSAO, res_width, res_height
 	);
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Position
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Normal
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Specular
-	g_buffer.add_write_texture(GL_COLOR_ATTACHMENT4); //Diffuse EX (Used for effect trails)
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Position + Outline
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Normal + Specular
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Tangent + Trail Map
 
 	hdr_buffer.init("passthrough", "hdr", "", 0, res_width, res_height);
 	hdr_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
@@ -109,6 +102,8 @@ WindowManager::WindowManager() {
 
 	blur.init("passthrough", "blur", "", 0, res_width, res_height);
 	blur.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
+
+
 
 	blend.init("blend", "blend", "blend", 0, res_width, res_height);
 	blend.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
@@ -128,9 +123,9 @@ WindowManager::WindowManager() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	g_buffer.add_uniform("g_diffuse", 0);
-	g_buffer.add_uniform("g_position", 1);
-	g_buffer.add_uniform("g_normal", 2);
-	g_buffer.add_uniform("g_specular", 3);
+	g_buffer.add_uniform("g_pos_outline", 1);
+	g_buffer.add_uniform("g_normal_spec", 2);
+	g_buffer.add_uniform("g_tangent_ex", 3);
 
 	hdr_buffer.add_uniform("f_texture", 0);
 
@@ -322,9 +317,6 @@ void WindowManager::reset_gl_environment() {
 	glDepthMask(GL_FALSE);
 	glDepthFunc(GL_LEQUAL);
 
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0x0);
-
 	glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
@@ -362,11 +354,11 @@ void WindowManager::render_ssao() {
 	if (g_buffer.shader->features & SHADER_FEAT_SSAO) {
 		g_buffer.shader->use();
 		SSAO.use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		SSAO.render();
 
 		blur.use();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		blur.bind_ex_uniforms({ {"f_texture", SSAO.textures[0]} });
 		blur.render();
 	}
@@ -374,7 +366,7 @@ void WindowManager::render_ssao() {
 
 void WindowManager::render_trail() {
 	blend.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	blend.bind_ex_uniforms({
 		{"new_col", ex_trails.newest()},
 		{"old_col", ex_trails.oldest()},
@@ -410,11 +402,7 @@ void WindowManager::update_screen() {
 }
 
 void WindowManager::clear_screen() {
-	glDepthMask(GL_TRUE);
-	glStencilMask(0xFF);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glDepthMask(GL_FALSE);
-	glStencilMask(0x0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 WindowManager* WindowManager::instance = nullptr;

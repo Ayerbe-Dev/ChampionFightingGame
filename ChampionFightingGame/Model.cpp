@@ -42,7 +42,8 @@ void ModelData::load_model(std::string path) {
 	dummy_quat = new glm::quat(1.0, 0.0, 0.0, 0.0);
 
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate
+	const aiScene* scene = import.ReadFile(path,
+		aiProcess_Triangulate
 		| aiProcess_GenSmoothNormals
 		| aiProcess_CalcTangentSpace);
 
@@ -117,28 +118,22 @@ void ModelData::process_scene(const aiScene* scene) {
 	//load_texture_data handles updates to texture_names
 	for (unsigned int mat_index = 0; mat_index < scene->mNumMaterials; mat_index++) {
 		aiMaterial* material = scene->mMaterials[mat_index];
+		ModelTexture diffuse = preload_material_texture(material, aiTextureType_DIFFUSE);
+		ModelTexture specular = preload_material_texture(material, aiTextureType_SPECULAR);
+		ModelTexture normal = preload_material_texture(material, aiTextureType_NORMALS);
+		ModelTexture emission = preload_material_texture(material, aiTextureType_EMISSIVE);
 
-		std::vector<ModelTexture> textures;
-
-		std::vector<ModelTexture> diffuseMaps = load_texture_names(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-		std::vector<ModelTexture> specularMaps = load_texture_names(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
-		std::vector<ModelTexture> normalMaps = load_texture_names(material, aiTextureType_NORMALS, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
-		std::vector<ModelTexture> heightMaps = load_texture_names(material, aiTextureType_HEIGHT, "texture_height");
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
-		material_data.emplace_back(textures, material->GetName().C_Str());
+		material_data.emplace_back(material->GetName().C_Str(), diffuse, specular, normal, emission);
 		material_map[material_data[mat_index].name] = mat_index;
 
-		//for each texture in the current material, add ordered pair to that texture to texture_map
-		for (int tex = 0, max = material_data[mat_index].textures.size(); tex < max; tex++) {
-			texture_map[material_data[mat_index].textures[tex].filename].push_back({ mat_index, tex });
-		}
+		texture_map[diffuse.filename].first = MODEL_TEXTURE_DIFFUSE;
+		texture_map[diffuse.filename].second.push_back(mat_index);
+		texture_map[specular.filename].first = MODEL_TEXTURE_SPECULAR;
+		texture_map[specular.filename].second.push_back(mat_index);
+		texture_map[normal.filename].first = MODEL_TEXTURE_NORMAL;
+		texture_map[normal.filename].second.push_back(mat_index);
+		texture_map[emission.filename].first = MODEL_TEXTURE_EMISSION;
+		texture_map[emission.filename].second.push_back(mat_index);
 	}
 	process_node(scene->mRootNode, scene);
 }
@@ -260,28 +255,58 @@ Mesh ModelData::process_mesh(aiMesh* mesh) {
 	return Mesh(vertices, indices, &material_data[mesh->mMaterialIndex], name);
 }
 
-std::vector<ModelTexture> ModelData::load_texture_names(aiMaterial* mat, aiTextureType type, std::string type_name) {
-	std::vector<ModelTexture> textures;
-	for (unsigned int i = 0, max = mat->GetTextureCount(type); i < max; i++) {
-		aiString ai_filename;
-		mat->GetTexture(type, i, &ai_filename);
-		std::string filename = ai_filename.C_Str();
-		bool new_texture = true;
-		for (int i2 = 0, max2 = texture_names.size(); i2 < max2; i2++) {
-			if (texture_names[i2] == filename) {
-				new_texture = false;
+ModelTexture ModelData::preload_material_texture(aiMaterial* mat, aiTextureType type) {
+	ModelTexture texture;
+	switch (mat->GetTextureCount(type)) {
+		case 0: {
+			std::string none_tex = "default_";
+			switch (type) {
+				case aiTextureType_DIFFUSE: {
+					none_tex += "diffuse.png";
+				} break;
+				case aiTextureType_SPECULAR: {
+					none_tex += "specular.png";
+				} break;
+				case aiTextureType_NORMALS: {
+					none_tex += "normal.png";
+				} break;
+				case aiTextureType_EMISSIVE: {
+					none_tex += "emission.png";
+				} break;
 			}
-		}
-		if (new_texture) {
-			texture_names.push_back(filename);
-		}
-		ModelTexture texture;
-		texture.filename = filename;
-		texture.type = type;
-		texture.type_string = type_name + std::to_string(i + 1);
-		textures.push_back(texture);
+			bool new_texture = true;
+			for (int i = 0, max = texture_names.size(); i < max; i++) {
+				if (texture_names[i] == none_tex) {
+					new_texture = false;
+				}
+			}
+			if (new_texture) {
+				texture_names.push_back(none_tex);
+			}
+			texture.filename = none_tex;
+			texture.type = type;
+		} break;
+		case 1: {
+			aiString ai_filename;
+			mat->GetTexture(type, 0, &ai_filename);
+			std::string filename = ai_filename.C_Str();
+			bool new_texture = true;
+			for (int i2 = 0, max2 = texture_names.size(); i2 < max2; i2++) {
+				if (texture_names[i2] == filename) {
+					new_texture = false;
+				}
+			}
+			if (new_texture) {
+				texture_names.push_back(filename);
+			}
+			texture.filename = filename;
+			texture.type = type;
+		} break;
+		default: {
+			std::cout << "ERROR: Material has more than one texture of type " << type << "\n";
+		} break;
 	}
-	return textures;
+	return texture;
 }
 
 void ModelData::process_skeleton(aiNode* root) {
@@ -520,51 +545,103 @@ void ModelInstance::reset_bones() {
 void ModelInstance::load_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	std::vector<std::string> &texture_names = model->texture_names;
-	std::unordered_map<std::string, std::vector<std::pair<int, int>>>& texture_map = model->texture_map;
+	std::unordered_map<std::string, std::pair<int, std::vector<int>>>& texture_map = model->texture_map;
 
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		std::string texture_file = model->get_directory() + texture_names[i];
-		const auto& [mat_index, tex_index] = texture_map[texture_names[i]][0];
-		if (materials[mat_index].textures[tex_index].type == aiTextureType_DIFFUSE) {
-			resource_manager->set_srgb(true);
+		std::string texture_file = texture_names[i];
+		if (texture_file.starts_with("default_")) {
+			texture_file = "resource/misc/" + texture_file;
 		}
-		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
-			materials[mat_index].textures[tex_index].id = resource_manager->get_texture(texture_file);
+		else {
+			texture_file = model->get_directory() + texture_file;
 		}
-		resource_manager->set_srgb(false);
+		switch (texture_map[texture_names[i]].first) {
+			case MODEL_TEXTURE_DIFFUSE: {
+				resource_manager->set_srgb(true);
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].diffuse.id = resource_manager->get_texture(texture_file);
+				}
+				resource_manager->set_srgb(false);
+			} break;
+			case MODEL_TEXTURE_SPECULAR: {
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].specular.id = resource_manager->get_texture(texture_file);
+				}
+			} break;
+			case MODEL_TEXTURE_NORMAL: {
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].normal.id = resource_manager->get_texture(texture_file);
+				}
+			} break;
+			case MODEL_TEXTURE_EMISSION: {
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].emission.id = resource_manager->get_texture(texture_file);
+				}
+			} break;
+		}
 	}
 }
 
 void ModelInstance::load_textures(std::string path) {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	std::vector<std::string>& texture_names = model->texture_names;
-	std::unordered_map<std::string, std::vector<std::pair<int, int>>>& texture_map = model->texture_map;
-
+	std::unordered_map<std::string, std::pair<int, std::vector<int>>>& texture_map = model->texture_map;
 	texture_dir = model->get_directory() + path + "/";
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
-		std::string texture_file = texture_dir + texture_names[i];
-		const auto& [mat_index, tex_index] = texture_map[texture_names[i]][0];
-		if (materials[mat_index].textures[tex_index].type == aiTextureType_DIFFUSE) {
-			resource_manager->set_srgb(true);
+		std::string texture_file = texture_names[i];
+		if (texture_file.starts_with("default_")) {
+			texture_file = "resource/misc/" + texture_file;
 		}
-		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];			
-			materials[mat_index].textures[tex_index].id = resource_manager->get_texture(texture_file);
+		else {
+			texture_file = texture_dir + texture_file;
 		}
-		resource_manager->set_srgb(false);
+		switch (texture_map[texture_names[i]].first) {
+			case MODEL_TEXTURE_DIFFUSE: {
+				resource_manager->set_srgb(true);
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].diffuse.id = resource_manager->get_texture(texture_file);
+				}
+				resource_manager->set_srgb(false);
+			} break;
+			case MODEL_TEXTURE_SPECULAR: {
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].specular.id = resource_manager->get_texture(texture_file);
+				}
+			} break;
+			case MODEL_TEXTURE_NORMAL: {
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].normal.id = resource_manager->get_texture(texture_file);
+				}
+			} break;
+			case MODEL_TEXTURE_EMISSION: {
+				for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+					unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+					materials[mat_index].emission.id = resource_manager->get_texture(texture_file);
+				}
+			} break;
+		}
 	}
 }
 
 void ModelInstance::unload_textures() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	std::vector<std::string>& texture_names = model->texture_names;
-	std::unordered_map<std::string, std::vector<std::pair<int, int>>>& texture_map = model->texture_map;
+	std::unordered_map<std::string, std::pair<int, std::vector<int>>>& texture_map = model->texture_map;
 	for (int i = 0, max = texture_names.size(); i < max; i++) {
 		resource_manager->unuse_texture(texture_dir + texture_names[i]);
-		for (int i2 = 0, max2 = texture_map[texture_names[i]].size(); i2 < max2; i2++) {
-			const auto& [mat_index, tex_index] = texture_map[texture_names[i]][i2];
-			materials[mat_index].textures[tex_index].id = 0;
+		for (int i2 = 0, max2 = texture_map[texture_names[i]].second.size(); i2 < max2; i2++) {
+			unsigned int mat_index = texture_map[texture_names[i]].second[i2];
+			materials[mat_index].diffuse.id = 0;
+			materials[mat_index].specular.id = 0;
+			materials[mat_index].normal.id = 0;
+			materials[mat_index].emission.id = 0;
 		}
 	}
 	texture_dir = "";
@@ -822,21 +899,27 @@ Mesh Mesh::operator=(const Mesh& other) {
 }
 
 void Mesh::bind_materials() const {
-	if (this == nullptr) return;
-	for (unsigned int i = 0, max = mat->textures.size(); i < max; i++) {
-		glActiveTexture(GL_TEXTURE0 + i + 1);
-		glBindTexture(GL_TEXTURE_2D, mat->textures[i].id);
-	}
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mat->diffuse.id);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, mat->specular.id);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, mat->normal.id);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, mat->emission.id);
 }
 
 void Mesh::render() const {
-	if (this == nullptr) return;
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
-Material::Material(std::vector<ModelTexture> textures, std::string name) {
-	this->textures = textures;
+Material::Material(std::string name, ModelTexture diffuse, ModelTexture specular, ModelTexture normal,
+	ModelTexture emission) {
 	this->name = name;
+	this->diffuse = diffuse;
+	this->specular = specular;
+	this->normal = normal;
+	this->emission = emission;
 }

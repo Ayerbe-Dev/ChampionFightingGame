@@ -5,19 +5,11 @@
 #include <map>
 #include <vector>
 
-const int SHADER_FEAT_DIM_MUL = 1;
-const int SHADER_FEAT_BONES = 2;
-const int SHADER_FEAT_COLORMOD = 4;
-const int SHADER_FEAT_DIFFUSE = 8;
-const int SHADER_FEAT_SPECULAR = 16;
-const int SHADER_FEAT_POSITION = 32;
-const int SHADER_FEAT_NORMAL = 64;
-const int SHADER_FEAT_SSAO = 128;
+class ShaderManager;
 
 class Shader {
 public:
 	Shader();
-	Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features);
 	Shader(Shader& other);
 	Shader(const Shader& other);
 	Shader& operator=(Shader& other);
@@ -29,7 +21,6 @@ public:
 	std::string geometry;
 	unsigned int features;
 
-	void init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features);
 	void destroy();
 
 	void use();
@@ -59,10 +50,10 @@ public:
 	void set_active_mat3(const glm::mat3& mat, int index = 0) const;
 	void set_mat4(const std::string& name, const glm::mat4& mat, int index = 0) const;
 	void set_active_mat4(const glm::mat4& mat, int index = 0) const;
+	friend class ShaderManager;
 private:
 	unsigned int active_uniform_location;
+	void init(ShaderManager* shader_manager, std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features);
 
 	bool loaded;
 };
-
-std::string get_includes(unsigned int features);

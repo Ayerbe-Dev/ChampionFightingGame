@@ -26,10 +26,12 @@ OldParticle::OldParticle(std::string path, glm::vec3 pos, glm::vec3 rot, glm::ve
 
 void OldParticle::init(std::string path) {
 	tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	tex_data[TEX_COORD_BOTTOM_LEFT2] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
 	tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
 	tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	tex_data[TEX_COORD_TOP_RIGHT2] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
 	tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 6; i++) {
 		tex_accessor[i] = &tex_data[i];
 	}
 	glGenVertexArrays(1, &VAO);
@@ -98,6 +100,8 @@ void OldParticle::set_sprite(int index) {
 	for (int i = 0; i < 4; i++) {
 		tex_accessor[i]->tex_coord = spritesheet[i][index];
 	}
+	tex_accessor[TEX_COORD_BOTTOM_LEFT2]->tex_coord = tex_accessor[TEX_COORD_BOTTOM_LEFT]->tex_coord;
+	tex_accessor[TEX_COORD_TOP_RIGHT2]->tex_coord = tex_accessor[TEX_COORD_TOP_RIGHT2]->tex_coord;
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_data), tex_data);
 }
 
@@ -133,5 +137,5 @@ void OldParticle::render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3
 	matrix = glm::scale(matrix, scale);
 	shader->set_mat4("matrix", matrix);
 	shader->set_vec4("f_colormod", rgba);
-	glDrawArrays(GL_QUADS, 0, 4);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

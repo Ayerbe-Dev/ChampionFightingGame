@@ -93,7 +93,7 @@ void GameObject::set_rot_z(float z) {
 
 
 glm::vec3 GameObject::get_rot() const {
-	return rot;
+	return glm::degrees(rot);
 }
 
 void GameObject::add_scale(glm::vec3 scale) {

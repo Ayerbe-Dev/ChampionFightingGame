@@ -75,7 +75,7 @@ void Projectile::process_animate() {
 
 void Projectile::process_post_animate() {
 	if (has_model) {
-		if (anim_kind != nullptr) {
+		if (anim_kind != nullptr && !anim_kind->keyframes.empty()) {
 			model.set_bones(frame, anim_kind);
 		}
 		else {

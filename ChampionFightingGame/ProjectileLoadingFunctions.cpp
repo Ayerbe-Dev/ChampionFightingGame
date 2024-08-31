@@ -39,18 +39,9 @@ void Projectile::load_model_shader() {
 	set_scale(glm::vec3(get_param_float("model_scale")));
 	has_model = get_param_bool("has_model");
 	if (has_model) {
-		model.load_model_instance(resource_dir + "/model/model.dae");
+		model.load_model_instance(resource_dir + "/model/model.fbx");
 		model.load_textures();
-		unsigned int flags = 0;
-		if (model.has_skeleton()) {
-			flags |= SHADER_FEAT_BONES;
-		}
-		shader = shader_manager->get_shader("model", "model", "model", flags);
-		shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);
-		shader->use();
-		shader->set_int("shadow_map", 0);
-		shader->set_int("material.diffuse", 1);
-		shader->set_int("material.normal", 2);
+		init_shader();
 	}
 }
 

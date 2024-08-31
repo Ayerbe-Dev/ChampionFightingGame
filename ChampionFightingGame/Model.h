@@ -15,14 +15,10 @@
 class Animation;
 class Shader;
 
-enum {
-	TEXTURE_KIND_DIFFUSE,
-	TEXTURE_KIND_SPECULAR,
-	TEXTURE_KIND_NORMAL,
-	TEXTURE_KIND_HEIGHT,
-
-	TEXTURE_KIND_MAX
-};
+const int MODEL_TEXTURE_DIFFUSE = 0;
+const int MODEL_TEXTURE_SPECULAR = 1;
+const int MODEL_TEXTURE_NORMAL = 2;
+const int MODEL_TEXTURE_EMISSION = 3;
 
 struct ModelVertex {
 	glm::vec3 position;
@@ -38,13 +34,16 @@ struct ModelVertex {
 struct ModelTexture {
 	unsigned int id = 0;
 	int type;
-	std::string type_string;
 	std::string filename;
 };
 
 struct Material {
-	Material(std::vector<ModelTexture> textures, std::string name);
-	std::vector<ModelTexture> textures;
+	Material(std::string name, ModelTexture diffuse, ModelTexture specular, ModelTexture normal, ModelTexture emission);
+
+	ModelTexture diffuse;
+	ModelTexture specular;
+	ModelTexture normal;
+	ModelTexture emission;
 	std::string name;
 };
 
@@ -93,7 +92,7 @@ public:
 
 	std::unordered_map<std::string, int> material_map;
 	std::unordered_map<std::string, int> mesh_map;
-	std::unordered_map<std::string, std::vector<std::pair<int, int>>> texture_map;
+	std::unordered_map<std::string, std::pair<int, std::vector<int>>> texture_map;
 
 	std::vector<Material> material_data;
 	std::vector<Mesh> mesh_data;
@@ -107,7 +106,7 @@ private:
 	void process_scene(const aiScene* scene);
 	void process_node(aiNode* node, const aiScene* scene);
 	Mesh process_mesh(aiMesh* mesh);
-	std::vector<ModelTexture> load_texture_names(aiMaterial* mat, aiTextureType type, std::string type_name);
+	ModelTexture preload_material_texture(aiMaterial* mat, aiTextureType type);
 	void process_skeleton(aiNode* root);
 
 	glm::mat4 global_transform;

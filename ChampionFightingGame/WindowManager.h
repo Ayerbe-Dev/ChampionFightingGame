@@ -42,7 +42,7 @@ public:
 	void execute_buffered_events();
 
 	void render_ssao();
-	void render_trail();
+	void render_bloom();
 	void render_debug_textures();
 
 	void update_screen();
@@ -63,14 +63,11 @@ public:
 	Framebuffer hdr_buffer;
 	Framebuffer SSAO;
 	Framebuffer blur;
-	Framebuffer blend;
-	Framebuffer outline;
 	Framebuffer box_layer;
 	Framebuffer shadow_map;
 
 	std::vector<GameTexture> debug_textures;
 	GameTexture fade_texture;
-	CircularBuffer<GLint> ex_trails;
 
 	float hdr_exposure;
 	std::vector<glm::vec3> ssao_samples;
@@ -84,7 +81,7 @@ public:
 	int window_width;
 	int window_height;
 
-	bool outlines_enabled;
+	bool normals_enabled;
 
 	static WindowManager* get_instance();
 	void destroy_instance();

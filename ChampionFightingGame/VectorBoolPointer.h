@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-//Vector Bool Pointer - Helper class used for getting/setting bools put into vectors using pointers
+//A container class used for getting/setting bools put into vectors using pointers
 class VBP {
 public:
 	VBP() {
@@ -9,6 +9,10 @@ public:
 		mask = 0;
 	}
 
+	/// <summary>
+	/// Constructs a VBP using an element of a bool vector.
+	/// </summary>
+	/// <param name="ref">The element of a bool vector we want to access by pointer</param>
 	VBP(std::vector<bool>::reference ref) {
 		ptr = (unsigned*)ref._Getptr();
 

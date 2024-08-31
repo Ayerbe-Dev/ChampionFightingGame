@@ -20,8 +20,8 @@ public:
 
 	void render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, bool flip, float frame = 0);
 
-	TextureCoord tex_data[4];
-	TextureCoord* tex_accessor[4];
+	TextureCoord tex_data[6];
+	TextureCoord* tex_accessor[6];
 
 	glm::vec3 pos;
 	glm::vec3 rot;

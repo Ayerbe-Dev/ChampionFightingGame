@@ -1,4 +1,5 @@
 #include "ShaderManager.h"
+#include <functional>
 
 ShaderManager::ShaderManager() {
 	add_type_size("bool", 4);
@@ -12,7 +13,18 @@ ShaderManager::ShaderManager() {
 	add_type_size("mat2", 32);
 	add_type_size("mat3", 48);
 	add_type_size("mat4", 64);
-	reset_common_ubos();
+
+	for (unsigned int feature : get_feature_permutations(
+		{ SHADER_FEAT_DIM_MUL, SHADER_FEAT_BONES, SHADER_FEAT_NORMAL, SHADER_FEAT_ALPHA_PASS }
+	)) {
+		Shader* shader = get_shader("model", "model", "model", feature);
+		shader->use();
+		shader->set_int("shadow_map", 0);
+		shader->set_int("material.diffuse", 1);
+		shader->set_int("material.specular", 2);
+		shader->set_int("material.normal", 3);
+		shader->set_int("material.emission", 4);
+	}
 }
 
 Shader* ShaderManager::get_shader(std::string vertex, std::string fragment, std::string geometry, unsigned int features) {
@@ -20,12 +32,13 @@ Shader* ShaderManager::get_shader(std::string vertex, std::string fragment, std:
 	|| !shader_map[vertex].contains(fragment)
 	|| !shader_map[vertex][fragment].contains(geometry)
 	|| !shader_map[vertex][fragment][geometry].contains(features)) {
-		shader_map[vertex][fragment][geometry][features].init(vertex, fragment, geometry, features);
+		shader_map[vertex][fragment][geometry][features].init(this, vertex, fragment, geometry, features);
 	}
 	return &shader_map[vertex][fragment][geometry][features];
 }
 
 Shader* ShaderManager::get_shader_switch_features(Shader* base, unsigned int remove_features, unsigned int add_features) {
+	unsigned int feats = (base->features | add_features) & ~remove_features;
 	return get_shader(base->vertex, base->fragment, base->geometry, (base->features | add_features) & ~remove_features);
 }
 
@@ -208,7 +221,24 @@ void ShaderManager::add_ubo(std::string name, int shader_id, unsigned int size) 
 	glUniformBlockBinding(shader_id, block_index, binding_point);
 	glBindBufferBase(GL_UNIFORM_BUFFER, binding_point, buffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
 
+std::vector<unsigned int> ShaderManager::get_feature_permutations(std::vector<unsigned int> feat_vec) {
+	std::vector<unsigned int> ret;
+	std::function<void(std::vector<unsigned int>, unsigned int)> combo_rec = 
+	[&ret, &combo_rec](std::vector<unsigned int> feats, unsigned int combo) {
+		if (feats.empty()) {
+			ret.push_back(combo);
+			return;
+		}
+		unsigned int curr_feat = feats.back();
+		feats.pop_back();
+		combo_rec(feats, combo);
+		combo |= curr_feat;
+		combo_rec(feats, combo);
+	};
+	combo_rec(feat_vec, 0);
+	return ret;
 }
 
 void ShaderManager::add_type_size(std::string name, unsigned int size) {
@@ -229,10 +259,6 @@ unsigned int ShaderManager::get_type_size(std::string name) {
 	}
 }
 
-void ShaderManager::reset_common_ubos() {
-	set_global_float("DimMul", 1.0);
-}
-
 ShaderManager* ShaderManager::instance = nullptr;
 ShaderManager* ShaderManager::get_instance() {
 	if (instance == nullptr) {
@@ -245,4 +271,41 @@ void ShaderManager::destroy_instance() {
 	if (instance != nullptr) {
 		delete instance;
 	}
+}
+
+std::string get_includes(unsigned int features) {
+	std::string ret = "\n";
+
+	if (features & SHADER_FEAT_DIM_MUL) {
+		ret += "#define SHADER_FEAT_DIM_MUL\n";
+	}
+	if (features & SHADER_FEAT_BONES) {
+		ret += "#define SHADER_FEAT_BONES\n";
+	}
+	if (features & SHADER_FEAT_COLORMOD) {
+		ret += "#define SHADER_FEAT_COLORMOD\n";
+	}
+	if (features & SHADER_FEAT_DIFFUSE) {
+		ret += "#define SHADER_FEAT_DIFFUSE\n";
+	}
+	if (features & SHADER_FEAT_SPECULAR) {
+		ret += "#define SHADER_FEAT_SPECULAR\n";
+	}
+	if (features & SHADER_FEAT_NORMAL) {
+		ret += "#define SHADER_FEAT_NORMAL\n";
+	}
+	if (features & SHADER_FEAT_SSAO) {
+		ret += "#define SHADER_FEAT_SSAO\n";
+	}
+	if (features & SHADER_FEAT_ALPHA_PASS) {
+		ret += "#define SHADER_FEAT_ALPHA_PASS\n";
+	}
+	if (features & SHADER_FEAT_OUTLINE) {
+		ret += "#define SHADER_FEAT_OUTLINE\n";
+	}
+	if (features & SHADER_FEAT_BLOOM) {
+		ret += "#define SHADER_FEAT_BLOOM\n";
+	}
+
+	return ret;
 }

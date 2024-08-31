@@ -28,7 +28,8 @@ layout(std140) uniform ProjectionMatrix {
 void main() {
 	vec2 noise_scale = vec2(window_width / 2, window_height / 2);
 
-	vec3 fragPos = texture(g_position, TexCoords).xyz;
+    vec4 pos_outline = texture(g_position, TexCoords);
+	vec3 fragPos = pos_outline.xyz / pos_outline.w;
 	vec3 normal = normalize(texture(g_normal, TexCoords).rgb);
 	vec3 randomVec = normalize(texture(tex_noise, TexCoords * noise_scale).xyz);
 
@@ -51,7 +52,7 @@ void main() {
         offset.xyz /= offset.w;
         offset.xyz = offset.xyz * 0.5 + 0.5;
         
-        float sampleDepth = texture(g_position, offset.xy).z;
+        float sampleDepth = texture(g_position, offset.xy).z / texture(g_position, offset.xy).w;
         
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;

@@ -15,12 +15,6 @@ Shader::Shader() {
 	active_uniform_location = 0;
 }
 
-Shader::Shader(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
-	loaded = false;
-	active_uniform_location = 0;
-	init(vertex_dir, fragment_dir, geometry_dir, features);
-}
-
 Shader::Shader(Shader& other) {
 	this->features = other.features;
 	this->vertex = other.vertex;
@@ -81,9 +75,118 @@ Shader::~Shader() {
 	}
 }
 
+void Shader::destroy() {
+	if (loaded) {
+		glDeleteProgram(id);
+		loaded = false;
+	}
+}
 
-void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
-	ShaderManager* shader_manager = ShaderManager::get_instance();
+void Shader::use() {
+	glUseProgram(id);
+}
+
+void Shader::set_active_uniform_location(const std::string& name) {
+	this->active_uniform_location = glGetUniformLocation(id, name.c_str());
+}
+
+void Shader::set_bool(const std::string& name, bool value, int index) const {
+	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, value);
+}
+
+void Shader::set_active_bool(bool value, int index) const {
+	glUniform1i(active_uniform_location + index, (int)value);
+}
+
+void Shader::set_int(const std::string& name, int value, int index) const {
+	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, value);
+}
+
+void Shader::set_active_int(int value, int index) const {
+	glUniform1i(active_uniform_location + index, value);
+}
+
+void Shader::set_float(const std::string& name, float value, int index) const {
+	glUniform1f(glGetUniformLocation(id, name.c_str()) + index, value);
+}
+
+void Shader::set_active_float(float value, int index) const {
+	glUniform1f(active_uniform_location + index, value);
+}
+
+void Shader::set_vec2(const std::string& name, const glm::vec2& value, int index) const {
+	glUniform2fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
+}
+
+void Shader::set_active_vec2(const glm::vec2& value, int index) const {
+	glUniform2fv(active_uniform_location + index, 1, &value[0]);
+}
+
+void Shader::set_vec2(const std::string& name, float x, float y, int index) const {
+	glUniform2f(glGetUniformLocation(id, name.c_str()) + index, x, y);
+}
+
+void Shader::set_active_vec2(float x, float y, int index) const {
+	glUniform2f(active_uniform_location + index, x, y);
+}
+
+void Shader::set_vec3(const std::string& name, const glm::vec3& value, int index) const {
+	glUniform3fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
+}
+
+void Shader::set_active_vec3(const glm::vec3& value, int index) const {
+	glUniform3fv(active_uniform_location + index, 1, &value[0]);
+}
+
+void Shader::set_vec3(const std::string& name, float x, float y, float z, int index) const {
+	glUniform3f(glGetUniformLocation(id, name.c_str()) + index, x, y, z);
+}
+
+void Shader::set_active_vec3(float x, float y, float z, int index) const {
+	glUniform3f(active_uniform_location + index, x, y, z);
+}
+
+void Shader::set_vec4(const std::string& name, const glm::vec4& value, int index) const {
+	glUniform4fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
+}
+
+void Shader::set_active_vec4(const glm::vec4& value, int index) const {
+	glUniform4fv(active_uniform_location + index, 1, &value[0]);
+}
+
+void Shader::set_vec4(const std::string& name, float x, float y, float z, float w, int index) const {
+	glUniform4f(glGetUniformLocation(id, name.c_str()) + index, x, y, z, w);
+}
+
+void Shader::set_active_vec4(float x, float y, float z, float w, int index) const {
+	glUniform4f(active_uniform_location + index, x, y, z, w);
+}
+
+void Shader::set_mat2(const std::string& name, const glm::mat2& mat, int index) const {
+	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_active_mat2(const glm::mat2& mat, int index) const {
+	glUniformMatrix2fv(active_uniform_location + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_mat3(const std::string& name, const glm::mat3& mat, int index) const {
+	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_active_mat3(const glm::mat3& mat, int index) const {
+	glUniformMatrix3fv(active_uniform_location + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_mat4(const std::string& name, const glm::mat4& mat, int index) const {
+	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::set_active_mat4(const glm::mat4& mat, int index) const {
+	glUniformMatrix4fv(active_uniform_location + index, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::init(ShaderManager* shader_manager, std::string vertex_dir, std::string fragment_dir, std::string geometry_dir, unsigned int features) {
 	id = glCreateProgram();
 	this->vertex = vertex_dir;
 	this->fragment = fragment_dir;
@@ -297,8 +400,8 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 					a geometry shader and there is no geometry shader, we don't have to make another
 					copy of the frag shader, we can just tell it to read directly from the vertex
 					shader instead.
-					
-					That being said, because whether or not a projection matrix is used will usually 
+
+					That being said, because whether or not a projection matrix is used will usually
 					depend on the presence of a geometry shader, this probably won't matter in the
 					long run
 				*/
@@ -396,146 +499,4 @@ void Shader::init(std::string vertex_dir, std::string fragment_dir, std::string 
 	glDeleteShader(fragment);
 	glDeleteShader(geometry);
 	loaded = true;
-}
-
-void Shader::destroy() {
-	if (loaded) {
-		glDeleteProgram(id);
-		loaded = false;
-	}
-}
-
-void Shader::use() {
-	glUseProgram(id);
-}
-
-void Shader::set_active_uniform_location(const std::string& name) {
-	this->active_uniform_location = glGetUniformLocation(id, name.c_str());
-}
-
-void Shader::set_bool(const std::string& name, bool value, int index) const {
-	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, value);
-}
-
-void Shader::set_active_bool(bool value, int index) const {
-	glUniform1i(active_uniform_location + index, (int)value);
-}
-
-void Shader::set_int(const std::string& name, int value, int index) const {
-	glUniform1i(glGetUniformLocation(id, name.c_str()) + index, value);
-}
-
-void Shader::set_active_int(int value, int index) const {
-	glUniform1i(active_uniform_location + index, value);
-}
-
-void Shader::set_float(const std::string& name, float value, int index) const {
-	glUniform1f(glGetUniformLocation(id, name.c_str()) + index, value);
-}
-
-void Shader::set_active_float(float value, int index) const {
-	glUniform1f(active_uniform_location + index, value);
-}
-
-void Shader::set_vec2(const std::string& name, const glm::vec2& value, int index) const {
-	glUniform2fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
-}
-
-void Shader::set_active_vec2(const glm::vec2& value, int index) const {
-	glUniform2fv(active_uniform_location + index, 1, &value[0]);
-}
-
-void Shader::set_vec2(const std::string& name, float x, float y, int index) const {
-	glUniform2f(glGetUniformLocation(id, name.c_str()) + index, x, y);
-}
-
-void Shader::set_active_vec2(float x, float y, int index) const {
-	glUniform2f(active_uniform_location + index, x, y);
-}
-
-void Shader::set_vec3(const std::string& name, const glm::vec3& value, int index) const {
-	glUniform3fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
-}
-
-void Shader::set_active_vec3(const glm::vec3& value, int index) const {
-	glUniform3fv(active_uniform_location + index, 1, &value[0]);
-}
-
-void Shader::set_vec3(const std::string& name, float x, float y, float z, int index) const {
-	glUniform3f(glGetUniformLocation(id, name.c_str()) + index, x, y, z);
-}
-
-void Shader::set_active_vec3(float x, float y, float z, int index) const {
-	glUniform3f(active_uniform_location + index, x, y, z);
-}
-
-void Shader::set_vec4(const std::string& name, const glm::vec4& value, int index) const {
-	glUniform4fv(glGetUniformLocation(id, name.c_str()) + index, 1, &value[0]);
-}
-
-void Shader::set_active_vec4(const glm::vec4& value, int index) const {
-	glUniform4fv(active_uniform_location + index, 1, &value[0]);
-}
-
-void Shader::set_vec4(const std::string& name, float x, float y, float z, float w, int index) const {
-	glUniform4f(glGetUniformLocation(id, name.c_str()) + index, x, y, z, w);
-}
-
-void Shader::set_active_vec4(float x, float y, float z, float w, int index) const {
-	glUniform4f(active_uniform_location + index, x, y, z, w);
-}
-
-void Shader::set_mat2(const std::string& name, const glm::mat2& mat, int index) const {
-	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
-}
-
-void Shader::set_active_mat2(const glm::mat2& mat, int index) const {
-	glUniformMatrix2fv(active_uniform_location + index, 1, GL_FALSE, &mat[0][0]);
-}
-
-void Shader::set_mat3(const std::string& name, const glm::mat3& mat, int index) const {
-	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
-}
-
-void Shader::set_active_mat3(const glm::mat3& mat, int index) const {
-	glUniformMatrix3fv(active_uniform_location + index, 1, GL_FALSE, &mat[0][0]);
-}
-
-void Shader::set_mat4(const std::string& name, const glm::mat4& mat, int index) const {
-	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()) + index, 1, GL_FALSE, &mat[0][0]);
-}
-
-void Shader::set_active_mat4(const glm::mat4& mat, int index) const {
-	glUniformMatrix4fv(active_uniform_location + index, 1, GL_FALSE, &mat[0][0]);
-}
-
-std::string get_includes(unsigned int features) {
-	std::string ret = "\n";
-
-	if (features & SHADER_FEAT_DIM_MUL) {
-		ret += "#define SHADER_FEAT_DIM_MUL\n";
-	}
-	if (features & SHADER_FEAT_BONES) {
-		ret += "#define SHADER_FEAT_BONES\n";
-	}
-	if (features & SHADER_FEAT_COLORMOD) {
-		ret += "#define SHADER_FEAT_COLORMOD\n";
-	}
-	if (features & SHADER_FEAT_DIFFUSE) {
-		ret += "#define SHADER_FEAT_DIFFUSE\n";
-	}
-	if (features & SHADER_FEAT_SPECULAR) {
-		ret += "#define SHADER_FEAT_SPECULAR\n";
-	}
-	if (features & SHADER_FEAT_POSITION) {
-		ret += "#define SHADER_FEAT_POSITION\n";
-	}
-	if (features & SHADER_FEAT_NORMAL) {
-		ret += "#define SHADER_FEAT_NORMAL\n";
-	}
-	if (features & SHADER_FEAT_SSAO) {
-		ret += "#define SHADER_FEAT_SSAO\n";
-	}
-
-	return ret;
 }

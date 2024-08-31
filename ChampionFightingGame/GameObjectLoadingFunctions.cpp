@@ -21,7 +21,7 @@ void GameObject::load_used_model(std::string resource_dir, std::string texture_d
 }
 
 void GameObject::init_shader() {
-	unsigned int flags = 0;
+	unsigned int flags = SHADER_FEAT_NORMAL;
 	if (model.has_skeleton()) {
 		flags |= SHADER_FEAT_BONES;
 	}
@@ -30,7 +30,8 @@ void GameObject::init_shader() {
 	shader->use();
 	shader->set_int("shadow_map", 0);
 	shader->set_int("material.diffuse", 1);
-	shader->set_int("material.normal", 2);
+	shader->set_int("material.specular", 2);
+	shader->set_int("material.normal", 3);
 }
 
 void GameObject::load_anim_table(std::string anim_dir) {

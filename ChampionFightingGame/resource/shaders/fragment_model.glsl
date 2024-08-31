@@ -2,20 +2,20 @@
 layout (location = 0) out vec4 g_diffuse;
 layout (location = 1) out vec4 g_pos_outline;
 layout (location = 2) out vec4 g_normal_spec;
-layout (location = 3) out vec4 g_tangent_ex;
+layout (location = 3) out vec4 g_emission;
 
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
     sampler2D normal;
-    sampler2D height;
+    sampler2D emission;
 }; 
 
 in GS_OUT {
     vec4 FragPos;
     vec4 FragPosLightSpace;
-    vec3 Tangent;
     vec3 Normal;
+    mat3 TBN;
     vec2 TexCoords;
     float Ex;
 } fs_in;
@@ -40,24 +40,44 @@ uniform Material material;
 float calc_shadow(vec4 fragPosLightSpace);
 
 void main() {
-    float shadow = calc_shadow(fs_in.FragPosLightSpace);
-
-    g_pos_outline.xyz = vec3(fs_in.FragPos);
-    g_pos_outline.a = outline;    
-    
-    g_normal_spec.xyz = normalize(fs_in.Normal);
-    g_normal_spec.a = 0.5;
-
-    g_tangent_ex.xyz = fs_in.Tangent;
-    g_tangent_ex.a = fs_in.Ex;
-
     vec4 diffuse = texture(material.diffuse, fs_in.TexCoords).rgba;
+#ifdef SHADER_FEAT_ALPHA_PASS
+    if (diffuse.a >= 0.7) {
+        discard;
+    }
+#else
+    if (diffuse.a < 0.7) {
+        discard;
+    }
+#endif
+
+    g_emission = texture(material.emission, fs_in.TexCoords);
+    
+    float shadow = calc_shadow(fs_in.FragPosLightSpace);
 #ifdef SHADER_FEAT_DIM_MUL
     g_diffuse.rgb = (1.0 - shadow) * dim_mul * diffuse.rgb;
 #else
     g_diffuse.rgb = (1.0 - shadow) * diffuse.rgb;
 #endif
     g_diffuse.a = diffuse.a * alpha;
+
+
+#ifdef SHADER_FEAT_ALPHA_PASS
+    return;
+#endif
+
+    g_pos_outline.xyz = vec3(fs_in.FragPos);
+    g_pos_outline.a = outline;
+   
+#ifdef SHADER_FEAT_NORMAL
+    vec3 normal_map = texture(material.normal, fs_in.TexCoords).rgb;
+#else
+    vec3 normal_map = vec3(0.5, 0.5, 1.0);
+#endif
+    normal_map = normal_map * 2.0 - 1.0;
+
+    g_normal_spec.xyz = normalize(fs_in.TBN * normal_map);
+    g_normal_spec.a = 1.0;
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

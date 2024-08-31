@@ -27,10 +27,10 @@ unsigned int loadGLTexture(std::string file_path) {
 			} break;
 			case 4: {
 				if (ResourceManager::get_instance()->is_srgb()) {
-					internal_format = GL_SRGB_ALPHA;
+					internal_format = GL_SRGB8_ALPHA8;
 				}
 				else {
-					internal_format = GL_RGBA;
+					internal_format = GL_RGBA16F;
 				}
 				format = GL_RGBA;
 			} break;
@@ -44,8 +44,6 @@ unsigned int loadGLTexture(std::string file_path) {
 		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -81,10 +79,10 @@ unsigned int loadGLTexture(std::string file_path, int* width, int* height) {
 			} break;
 			case 4: {
 				if (ResourceManager::get_instance()->is_srgb()) {
-					internal_format = GL_SRGB_ALPHA;
+					internal_format = GL_SRGB8_ALPHA8;
 				}
 				else {
-					internal_format = GL_RGBA;
+					internal_format = GL_RGBA16F;
 				}
 				format = GL_RGBA;
 			} break;
@@ -98,8 +96,6 @@ unsigned int loadGLTexture(std::string file_path, int* width, int* height) {
 		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, *width, *height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -128,8 +124,6 @@ std::vector<unsigned int> loadGLTextures(std::string file_path) {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}
@@ -157,8 +151,6 @@ std::vector<unsigned int> loadGLTextures(std::string file_path, int* width, int*
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, *width, *height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}

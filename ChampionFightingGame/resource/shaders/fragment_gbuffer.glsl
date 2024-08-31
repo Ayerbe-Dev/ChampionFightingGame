@@ -21,14 +21,29 @@ uniform Light light[MAX_LIGHT_SOURCES];
 uniform sampler2D g_diffuse;
 uniform sampler2D g_pos_outline;
 uniform sampler2D g_normal_spec;
-uniform sampler2D g_tangent_ex;
+#ifdef SHADER_FEAT_SSAO
 uniform sampler2D ssao;
-
+#endif
 void main() {
     const float linear = 0.007;
 	const float quadratic = 0.0002;
 
-    vec3 FragPos = texture(g_pos_outline, TexCoords).rgb;
+    vec4 pos_outline = texture(g_pos_outline, TexCoords);
+#ifdef SHADER_FEAT_OUTLINE
+	if (pos_outline.a != 1.0) {
+	    vec2 texelSize = 1.0 / vec2(textureSize(g_pos_outline, 0));
+		for (int x = -2; x <= 2; x++) {
+			for (int y = -2; y <= 2; y++) {
+				vec2 offset = vec2(float(x), float(y)) * texelSize;
+				if (texture(g_pos_outline, TexCoords + offset).a == 1.0) {
+					FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+					return;
+				}
+			}
+		}
+	}
+#endif
+    vec3 FragPos = pos_outline.rgb / pos_outline.a;
 
 #ifdef SHADER_FEAT_DIFFUSE
     vec3 Diffuse = texture(g_diffuse, TexCoords).rgb * texture(g_diffuse, TexCoords).a;
@@ -36,27 +51,17 @@ void main() {
     vec3 Diffuse = vec3(1.0);
 #endif
 
-    vec4 normal_spec = texture(g_normal_spec, TexCoords);
-
-    vec3 Normal = normal_spec.rgb / normal_spec.a;
+vec4 normal_spec = texture(g_normal_spec, TexCoords);
+vec3 Normal = normal_spec.rgb / normal_spec.a;
 
 #ifdef SHADER_FEAT_SPECULAR
-    float Specular = max(0.0, normal_spec.a - 0.5);
+    float Specular = max(0.0, normal_spec.a - 1.0);
 #else
     float Specular = 0.0;
 #endif
 
-#ifdef SHADER_FEAT_SSAO
-    float AmbientOcclusion = texture(ssao, TexCoords).r;
-#else
-    float AmbientOcclusion = 1.0;
-#endif
+    vec3 result = vec3(ambient * Diffuse);
 
-#ifdef SHADER_FEAT_NORMAL
-    vec3 Tangent = texture(g_tangent_ex, TexCoords).xyz;
-#endif
-
-    vec3 result = vec3(ambient * Diffuse * AmbientOcclusion);
     vec3 view_dir = normalize(view_pos - FragPos);
 
     for (int i = 0; i < MAX_LIGHT_SOURCES; i++) {
@@ -78,5 +83,9 @@ void main() {
         }
     }
 
+#ifdef SHADER_FEAT_SSAO
+    FragColor = vec4(result * texture(ssao, TexCoords).r, 1.0);
+#else
     FragColor = vec4(result, 1.0);
+#endif
 }

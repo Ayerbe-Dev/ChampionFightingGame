@@ -32,7 +32,7 @@ PauseBattle::PauseBattle() {
 	load_font("header", "FiraCode", 96);
 	load_font("button", "FiraCode", 64);
 
-	push_menu_object("Pause"); {	
+	push_menu_object("Pause"); {
 		push_menu_bool_var("Confirm", false);
 		push_menu_texture("BG Dimmer", "resource/misc/fade.png");
 		last_pushed_texture->set_alpha(127);
@@ -434,8 +434,10 @@ PauseBattle::PauseBattle() {
 						});
 						push_menu_select_event_function([this](MenuObject* object) {
 							ObjectManager* object_manager = ObjectManager::get_instance();
+							WindowManager* window_manager = WindowManager::get_instance();
 							object_manager->fighter[0]->reset();
 							object_manager->fighter[1]->reset();
+							window_manager->camera.reset_camera();
 							this->looping = false;
 						});
 					} pop_menu_stack();

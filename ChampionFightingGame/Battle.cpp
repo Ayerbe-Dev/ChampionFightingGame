@@ -1318,7 +1318,6 @@ void Battle::render_world() {
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	window_manager->execute_buffered_events();
 
-
 	//SHADOW PASS - We render our Fighters, Projectiles and the Stage to our Shadow Map.
 	
 	glEnable(GL_CULL_FACE);
@@ -1344,22 +1343,18 @@ void Battle::render_world() {
 	//going to use in the Lighting pass.
 
 	window_manager->g_buffer.use();
-	if (!frame_pause || frame_advance) {
-		window_manager->ex_trails.cycle();
-	}
-	window_manager->g_buffer.bind_ex_write_texture(window_manager->ex_trails.newest(), GL_COLOR_ATTACHMENT4, 4);
 
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	window_manager->shadow_map.bind_textures();
 
-	shader_manager->set_global_float("Outline", 1.0f);
-
 	glDisable(GL_CULL_FACE); //This line will be removed, but current models have some vertices such
 	//that we can see both sides. Until then, fighters don't get culled.
 	for (int i = 0; i < 2; i++) {
+		shader_manager->set_global_float("Outline", 1.0f);
 		fighter[i]->render();
+		shader_manager->set_global_float("Outline", 0.5f);
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render();
@@ -1367,15 +1362,36 @@ void Battle::render_world() {
 		}
 	}
 
-	shader_manager->set_global_float("Outline", 0.5f); //This uniform sets the location buffer's alpha
-	//component, which we later use to determine where we should and should not draw an outline. Any
-	//number is allowed here except for 0.0 (causes the location to straight up not be calculated,
-	//resulting in SSAO breaking) or 1.0 (causes the game not to draw outlines).
+	glEnable(GL_CULL_FACE);
+	stage.render();
+
+	//ALPHA PASS
+
+	for (GameObject* object : object_manager->game_objects) {
+		if (!object->shader) continue;
+		object->shader = shader_manager->get_shader_switch_features(object->shader, 0, SHADER_FEAT_ALPHA_PASS);
+	}
+
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < 2; i++) {
+		shader_manager->set_global_float("Outline", 1.0f);
+		fighter[i]->render();
+		shader_manager->set_global_float("Outline", 0.5f);
+		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
+			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+				fighter[i]->projectiles[i2]->render();
+			}
+		}
+	}
+
 
 	glEnable(GL_CULL_FACE);
 	stage.render();
 
-	shader_manager->set_global_float("Outline", 1.0f);
+	for (GameObject* object : object_manager->game_objects) {
+		if (!object->shader) continue;
+		object->shader = shader_manager->get_shader_switch_features(object->shader, SHADER_FEAT_ALPHA_PASS, 0);
+	}
 
 	//EFFECT RENDERING
 
@@ -1392,30 +1408,25 @@ void Battle::render_world() {
 	//SSAO PASS - Draws and blurs the SSAO buffer.
 
 	window_manager->render_ssao();
-
-	//TRAIL PASS - Draws trails
-
-	if (!frame_pause || frame_advance) {
-		window_manager->render_trail();
-	}
 	
 	//LIGHTING PASS - Handles all of the light calculations and renders all of our geometry to the
-	//HDR buffer with lighting, then renders the HDR buffer to the screen.
+	//HDR buffer with lighting.
 
 	window_manager->hdr_buffer.use();
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	window_manager->g_buffer.bind_ex_uniforms({{"ssao", window_manager->blur.textures[0]}});
 	window_manager->g_buffer.render();
-	window_manager->blend.render_passthrough();
+
+	//BLOOM PASS - Draws and blurs the Emission buffer.
+
+	window_manager->render_bloom();
+
+	//SCREEN PASS - Draws the HDR buffer to the screen with bloom.
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glEnable(GL_FRAMEBUFFER_SRGB);
+//	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->hdr_buffer.render();
-	glDisable(GL_FRAMEBUFFER_SRGB);
-	if (window_manager->outlines_enabled) {
-		window_manager->outline.render();
-	}
+//	glDisable(GL_FRAMEBUFFER_SRGB);
 
 	//HITBOX PASS - Draws all collision boxes to their own framebuffer, then draws it to the screen.
 

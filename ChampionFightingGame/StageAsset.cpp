@@ -47,16 +47,7 @@ void StageAsset::load_model_shader() {
 	if (has_model) {
 		model.load_model_instance(resource_dir + "/model/model.dae");
 		model.load_textures();
-		unsigned int flags = 0;
-		if (model.has_skeleton()) {
-			flags |= SHADER_FEAT_BONES;
-		}
-		shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
-		shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);
-		shader->use();
-		shader->set_int("shadow_map", 0);
-		shader->set_int("material.diffuse", 1);
-		shader->set_int("material.normal", 2);
+		init_shader();
 	}
 }
 

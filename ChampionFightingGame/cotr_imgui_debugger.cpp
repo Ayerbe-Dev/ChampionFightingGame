@@ -716,9 +716,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				ImGui::SliderFloat("Pos Z", &pos.z, -3000.0f, 3000.0f);
 				battle->fighter[0]->set_pos(pos);
 				glm::vec3 rot = battle->fighter[0]->get_rot();
-				ImGui::SliderFloat("Rot X", &rot.x, -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Y", &rot.y, -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Z", &rot.z, -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot X", &rot.x, -180.0f, 180.0f);
+				ImGui::SliderFloat("Rot Y", &rot.y, -180.0f, 180.0f);
+				ImGui::SliderFloat("Rot Z", &rot.z, -180.0f, 180.0f);
 				battle->fighter[0]->set_rot(rot);
 				ImGui::TreePop();
 			}
@@ -729,9 +729,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				ImGui::SliderFloat("Pos Z", &pos.z, -3000.0f, 3000.0f);
 				battle->fighter[1]->set_pos(pos);
 				glm::vec3 rot = battle->fighter[1]->get_rot();
-				ImGui::SliderFloat("Rot X", &rot.x, -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Y", &rot.y, -3.14f, 3.14f);
-				ImGui::SliderFloat("Rot Z", &rot.z, -3.14f, 3.14f);
+				ImGui::SliderFloat("Rot X", &rot.x, -180.0f, 180.0f);
+				ImGui::SliderFloat("Rot Y", &rot.y, -180.0f, 180.0f);
+				ImGui::SliderFloat("Rot Z", &rot.z, -180.0f, 180.0f);
 				battle->fighter[1]->set_rot(rot);
 				ImGui::TreePop();
 			}
@@ -765,15 +765,16 @@ void cotr_imgui_debug_battle(Battle* battle) {
 
 			bool diffuse_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE;
 			bool specular_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR;
-			bool position_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION;
-			bool normal_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL;
+			bool normals_enabled = window_manager->normals_enabled;
 			bool ssao_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO;
+			bool outlines_enabled = window_manager->g_buffer.shader->features & SHADER_FEAT_OUTLINE;
+			bool bloom_enabled = window_manager->hdr_buffer.shader->features & SHADER_FEAT_BLOOM;
 			ImGui::Checkbox("Diffuse Enabled", &diffuse_enabled);
 			ImGui::Checkbox("Specular Enabled", &specular_enabled);
-			ImGui::Checkbox("Position Enabled", &position_enabled);
-			ImGui::Checkbox("Normal Enabled", &normal_enabled);
+			ImGui::Checkbox("Normal Enabled", &normals_enabled);
 			ImGui::Checkbox("SSAO Enabled", &ssao_enabled);
-			ImGui::Checkbox("Outlines Enabled", &window_manager->outlines_enabled);
+			ImGui::Checkbox("Outlines Enabled", &outlines_enabled);
+			ImGui::Checkbox("Bloom Enabled", &bloom_enabled);
 			if (ImGui::Button("Print SSAO Vals")) {
 				std::cout << "SSAO Samples:\n";
 				for (size_t i = 0, max = window_manager->ssao_samples.size(); i < max; i++) {
@@ -790,8 +791,7 @@ void cotr_imgui_debug_battle(Battle* battle) {
 			}
 			if (diffuse_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_DIFFUSE)
 			|| specular_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_SPECULAR)
-			|| position_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_POSITION)
-			|| normal_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_NORMAL)
+			|| outlines_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_OUTLINE)
 			|| ssao_enabled != (bool)(window_manager->g_buffer.shader->features & SHADER_FEAT_SSAO)) {
 				unsigned int add = 0;
 				unsigned int remove = 0;
@@ -807,17 +807,11 @@ void cotr_imgui_debug_battle(Battle* battle) {
 				else {
 					remove |= SHADER_FEAT_SPECULAR;
 				}
-				if (position_enabled) {
-					add |= SHADER_FEAT_POSITION;
+				if (outlines_enabled) {
+					add |= SHADER_FEAT_OUTLINE;
 				}
 				else {
-					remove |= SHADER_FEAT_POSITION;
-				}
-				if (normal_enabled) {
-					add |= SHADER_FEAT_NORMAL;
-				}
-				else {
-					remove |= SHADER_FEAT_NORMAL;
+					remove |= SHADER_FEAT_OUTLINE;
 				}
 				if (ssao_enabled) {
 					add |= SHADER_FEAT_SSAO;
@@ -826,6 +820,36 @@ void cotr_imgui_debug_battle(Battle* battle) {
 					remove |= SHADER_FEAT_SSAO;
 				}
 				window_manager->g_buffer.set_feats(remove, add);
+			}
+			if (bloom_enabled != (bool)(window_manager->hdr_buffer.shader->features & SHADER_FEAT_BLOOM)) {
+				unsigned int add = 0;
+				unsigned int remove = 0;
+				if (bloom_enabled) {
+					add |= SHADER_FEAT_BLOOM;
+				}
+				else {
+					remove |= SHADER_FEAT_BLOOM;
+				}
+				window_manager->hdr_buffer.set_feats(remove, add);
+				window_manager->hdr_buffer.shader->use();
+				window_manager->hdr_buffer.shader->set_float("exposure", window_manager->hdr_exposure);
+			}
+			if (normals_enabled != window_manager->normals_enabled) {
+				ObjectManager* object_manager = ObjectManager::get_instance();
+				ShaderManager* shader_manager = ShaderManager::get_instance();
+				unsigned int add = 0;
+				unsigned int remove = 0;
+				if (normals_enabled) {
+					add |= SHADER_FEAT_NORMAL;
+				}
+				else {
+					remove |= SHADER_FEAT_NORMAL;
+				}
+				for (GameObject* object : object_manager->game_objects) {
+					if (!object->shader) continue;
+					object->shader = shader_manager->get_shader_switch_features(object->shader, remove, add);
+				}
+				window_manager->normals_enabled = normals_enabled;
 			}
 			ImGui::TreePop();
 		}

@@ -53,7 +53,7 @@ WindowManager::WindowManager() {
 	stbi_set_flip_vertically_on_load(true);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	hdr_exposure = 1.0;
+	hdr_exposure = 1.5;
 	int num_ssao_samples = 16;
 	for (int i = 0; i < num_ssao_samples; i++) {
 		glm::vec3 sample = glm::normalize(
@@ -82,16 +82,16 @@ WindowManager::WindowManager() {
 
 	g_buffer.init("passthrough", "gbuffer", "", 
 		SHADER_FEAT_DIFFUSE 
-		| SHADER_FEAT_POSITION
-		| SHADER_FEAT_NORMAL 
-		| SHADER_FEAT_SSAO, res_width, res_height
+		| SHADER_FEAT_NORMAL
+		| SHADER_FEAT_SSAO
+		| SHADER_FEAT_OUTLINE, res_width, res_height
 	);
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Diffuse
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT1, 1); //Position + Outline
 	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT2, 2); //Normal + Specular
-	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Tangent + Trail Map
+	g_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT3, 3); //Emission
 
-	hdr_buffer.init("passthrough", "hdr", "", 0, res_width, res_height);
+	hdr_buffer.init("passthrough", "hdr", "", SHADER_FEAT_BLOOM, res_width, res_height);
 	hdr_buffer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
 
 	SSAO.init("passthrough", "ssao", "", 0, res_width, res_height);
@@ -102,17 +102,6 @@ WindowManager::WindowManager() {
 
 	blur.init("passthrough", "blur", "", 0, res_width, res_height);
 	blur.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
-
-
-
-	blend.init("blend", "blend", "blend", 0, res_width, res_height);
-	blend.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0); //Output
-	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 1, nullptr); //New Color
-	blend.add_read_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, 2, nullptr); //Old Color
-
-	outline.init("passthrough", "outline", "", 0, res_width, res_height);
-	outline.add_write_texture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
-	outline.add_read_texture(g_buffer.textures[1], 1);
 
 	box_layer.init("passthrough", "passthrough", "", 0, res_width, res_height);
 	box_layer.add_write_texture(GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, res_width, res_height, GL_COLOR_ATTACHMENT0, 0);
@@ -125,9 +114,8 @@ WindowManager::WindowManager() {
 	g_buffer.add_uniform("g_diffuse", 0);
 	g_buffer.add_uniform("g_pos_outline", 1);
 	g_buffer.add_uniform("g_normal_spec", 2);
-	g_buffer.add_uniform("g_tangent_ex", 3);
 
-	hdr_buffer.add_uniform("f_texture", 0);
+	hdr_buffer.add_uniform("g_buffer_out", 0);
 
 	hdr_buffer.shader->use();
 	hdr_buffer.shader->set_float("exposure", hdr_exposure);
@@ -140,21 +128,17 @@ WindowManager::WindowManager() {
 	SSAO.add_uniform("g_position", 2);
 	SSAO.add_uniform("g_normal", 3);
 
-	outline.add_uniform("g_position", 1);
-
 	box_layer.add_uniform("f_texture", 0);
 
 	g_buffer.bind_uniforms();
 	hdr_buffer.bind_uniforms();
 	SSAO.bind_uniforms();
-	outline.bind_uniforms();
 	box_layer.bind_uniforms();
 
 	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
 	debug_textures.push_back(GameTexture(g_buffer.textures[1]));
 	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
 	debug_textures.push_back(GameTexture(blur.textures[0]));
-	debug_textures.push_back(GameTexture(blend.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
 		debug_textures[i].set_scale(0.2);
 		debug_textures[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
@@ -168,7 +152,7 @@ WindowManager::WindowManager() {
 	fading = false;
 	mid_fade_func = nullptr;
 
-	outlines_enabled = true;
+	normals_enabled = true;
 
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	shader_manager->set_global_int("WindowWidth", window_width);
@@ -184,10 +168,6 @@ WindowManager::WindowManager() {
 	);
 
 	ambient_col = glm::vec3(1.0);
-
-	ex_trails.resize(2);
-	ex_trails.insert(blend.textures[1]);
-	ex_trails.insert(blend.textures[2]);
 }
 
 Light* WindowManager::add_light(Light light) {
@@ -302,8 +282,6 @@ void WindowManager::update_framebuffer_dimensions() {
 	hdr_buffer.update_dimensions();
 	SSAO.update_dimensions();
 	blur.update_dimensions();
-	blend.update_dimensions();
-	outline.update_dimensions();
 	box_layer.update_dimensions();
 }
 
@@ -327,6 +305,8 @@ void WindowManager::reset_gl_environment() {
 	camera.set_fov(45.0);
 	camera.update_view();
 	ambient_col = glm::vec3(1.0);
+	remove_lights();
+	execute_buffered_events();
 }
 
 void WindowManager::buffer_event(std::string name, std::function<void(ScriptArg)> function, ScriptArg buffered_arg) {
@@ -352,26 +332,31 @@ void WindowManager::execute_buffered_events() {
 
 void WindowManager::render_ssao() {
 	if (g_buffer.shader->features & SHADER_FEAT_SSAO) {
-		g_buffer.shader->use();
 		SSAO.use();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		SSAO.render();
 
 		blur.use();
+		blur.shader->use();
+		blur.shader->set_int("blur_amount", 2);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		blur.bind_ex_uniforms({ {"f_texture", SSAO.textures[0]} });
 		blur.render();
+		g_buffer.bind_ex_uniforms({ {"ssao", blur.textures[0]} });
 	}
 }
 
-void WindowManager::render_trail() {
-	blend.use();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	blend.bind_ex_uniforms({
-		{"new_col", ex_trails.newest()},
-		{"old_col", ex_trails.oldest()},
-	});
-	blend.render();
+void WindowManager::render_bloom() {
+	if (hdr_buffer.shader->features & SHADER_FEAT_BLOOM) {
+		blur.use();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		blur.bind_ex_uniforms({ {"f_texture", g_buffer.textures[3]} });
+		blur.shader->use();
+		blur.shader->set_int("blur_amount", 5);
+		blur.render();
+		hdr_buffer.bind_ex_uniforms({ {"bloom", blur.textures[0]} });
+	}
+
 }
 
 void WindowManager::render_debug_textures() {

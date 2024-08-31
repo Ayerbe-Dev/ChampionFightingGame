@@ -878,9 +878,6 @@ void CSS::render_main() {
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->g_buffer.render();
 	glDisable(GL_FRAMEBUFFER_SRGB);
-	if (window_manager->outlines_enabled) {
-		window_manager->outline.render();
-	}
 	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 
 	glDepthMask(GL_FALSE);

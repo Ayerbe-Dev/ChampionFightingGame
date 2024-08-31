@@ -60,16 +60,7 @@ void Fighter::load_model_shader() {
 	set_scale(glm::vec3(get_param_float("model_scale")));
 	model.load_model_instance(resource_dir + "/model/m" + std::to_string(player->alt_costume) + "/model.fbx");
 	model.load_textures("c" + std::to_string(player->alt_color));
-	unsigned int flags = 0;
-	if (model.has_skeleton()) {
-		flags |= SHADER_FEAT_BONES;
-	}
-	shader = shader_manager->get_shader("model", "model", "model", SHADER_FEAT_DIM_MUL | flags);
-	shadow_shader = shader_manager->get_shader("shadow", "shadow", "", flags);
-	shader->use();
-	shader->set_int("shadow_map", 0);
-	shader->set_int("material.diffuse", 1);
-	shader->set_int("material.normal", 2);
+	init_shader();
 }
 
 void Fighter::load_anim_list() {

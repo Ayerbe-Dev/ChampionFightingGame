@@ -3,6 +3,17 @@
 #include <map>
 #include "Shader.h"
 
+const int SHADER_FEAT_DIM_MUL = 1;
+const int SHADER_FEAT_BONES = 2;
+const int SHADER_FEAT_COLORMOD = 4;
+const int SHADER_FEAT_DIFFUSE = 8;
+const int SHADER_FEAT_SPECULAR = 16;
+const int SHADER_FEAT_NORMAL = 32;
+const int SHADER_FEAT_SSAO = 64;
+const int SHADER_FEAT_ALPHA_PASS = 128;
+const int SHADER_FEAT_OUTLINE = 256;
+const int SHADER_FEAT_BLOOM = 512;
+
 class ShaderManager {
 public:
 	ShaderManager(ShaderManager& other) = delete;
@@ -23,11 +34,11 @@ public:
 	void set_global_mat2(const std::string& name, const glm::mat2& mat, int index = -1) const;
 	void set_global_mat3(const std::string& name, const glm::mat3& mat, int index = -1) const;
 	void set_global_mat4(const std::string& name, const glm::mat4& mat, int index = -1) const;
+	std::vector<unsigned int> get_feature_permutations(std::vector<unsigned int> feat_vec);
 
 	void add_ubo(std::string name, int shader_id, unsigned int size);
 	void add_type_size(std::string name, unsigned int size = 0);
 	unsigned int get_type_size(std::string name);
-	void reset_common_ubos();
 
 	static ShaderManager* get_instance();
 	void destroy_instance();
@@ -40,3 +51,5 @@ private:
 
 	static ShaderManager* instance;
 };
+
+std::string get_includes(unsigned int features);

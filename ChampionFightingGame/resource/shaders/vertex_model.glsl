@@ -11,8 +11,8 @@ layout (location = 6) in ivec4 v_boneids;
 out VS_OUT {
     vec4 FragPos;
     vec4 FragPosLightSpace;
-    vec3 Tangent;
     vec3 Normal;
+    mat3 TBN;
     vec2 TexCoords;
     float Ex;
 } vs_out;
@@ -52,10 +52,12 @@ void main() {
     vec4 transform = model_matrix * bone_transform * vec4(v_pos, 1.0);
 
     mat3 normal_matrix = transpose(inverse(mat3(view_matrix * model_matrix * bone_transform)));
-
+    vec3 T = normalize(normal_matrix * v_tangent);
+    vec3 B = normalize(normal_matrix * v_bitangent);
+    vec3 N = normalize(normal_matrix * v_nor);
     vs_out.FragPos = vec4(view_matrix * transform);    
     vs_out.FragPosLightSpace = vec4(shadow_matrix * transform);
-    vs_out.Tangent = normal_matrix * v_tangent;
+    vs_out.TBN = mat3(T, B, N);
     vs_out.Normal = normal_matrix * v_nor;
     vs_out.TexCoords = v_texcoords;
     vs_out.Ex = ex;

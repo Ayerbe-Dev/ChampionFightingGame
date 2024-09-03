@@ -6,11 +6,24 @@
 #include "TextureCoord.h"
 #include "TargetVar.h"
 
+class Shader;
+
+#ifdef TEX_IMPL_VULKAN
+
+#define TEX_DATA_MEMBER_TYPE std::vector<std::vector<char>>
+
+#else
+
+#define TEX_DATA_MEMBER_TYPE std::vector<unsigned int>
+
+#endif
+
 class ScreenTexture {
 public:
 	ScreenTexture();
 	ScreenTexture(std::string path);
-	ScreenTexture(std::vector<std::vector<char>> texture, int width = -1, int height = -1);
+	ScreenTexture(TEX_DATA_MEMBER_TYPE texture, int width = -1, int height = -1);
+
 	ScreenTexture(ScreenTexture& that);
 	ScreenTexture(ScreenTexture&& that) noexcept;
 	ScreenTexture& operator=(ScreenTexture& that);
@@ -19,7 +32,7 @@ public:
 
 
 	void init(std::string path);
-	void init(std::vector<std::vector<char>> texture, int width = -1, int height = -1);
+	void init(TEX_DATA_MEMBER_TYPE texture, int width = -1, int height = -1);
 	void destroy();
 	ScreenTexture init_copy();
 
@@ -96,7 +109,18 @@ public:
 
 	void render();
 private:
-	std::vector<std::vector<char>> texture;
+#ifdef TEX_IMPL_VULKAN
+
+#else
+	unsigned int VAO;
+	unsigned int VBO;
+	TextureCoord tex_data[6];
+	TextureCoord* tex_accessor[6];
+#endif
+
+	TEX_DATA_MEMBER_TYPE texture;
+	Shader* shader;
+
 	std::string path;
 
 	int screen_orientation;

@@ -9,7 +9,7 @@
 #include "ResourceManager.h"
 #include "ShaderManager.h"
 
-#include "GLEW Helpers.h"
+#include "LoadTextures.h"
 #include "WindowConstants.h"
 
 GameTexture::GameTexture() {

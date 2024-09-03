@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "FontManager.h"
+#include "InputManager.h"
 #include "GameStates.h"
 #include "TimeFuncs.h"
 #include "TargetVar.h"
@@ -331,6 +332,7 @@ bool GameManager::is_crash() {
 
 void GameManager::frame_delay() {
 	TargetVarManager::get_instance()->process_targets();
+	InputManager::get_instance()->check_controllers();
 #ifdef DEBUG
 	if (frame_capped) {
 #endif

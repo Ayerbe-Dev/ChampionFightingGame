@@ -9,6 +9,22 @@ InputManager::InputManager() {
 	text_input_texture = nullptr;
 }
 
+void InputManager::check_controllers() {
+	for (int i = 0; i <= GLFW_JOYSTICK_LAST; i++) {
+		bool present = glfwJoystickIsGamepad(i);
+		if (present != available_controllers.contains(i)) {
+			if (present) {
+				controller_map[i] = nullptr;
+				available_controllers.insert(i);
+			}
+			else {
+				unregister_controller(i);
+				available_controllers.erase(i);
+			}
+		}
+	}
+}
+
 void InputManager::register_controller(int controller_id, GameController* controller) {
 	controller_map[controller_id] = controller;
 }

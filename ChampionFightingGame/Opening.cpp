@@ -25,7 +25,7 @@ void opening_main() {
 	bool loop = true;
 
 	while (loop && game_manager->next_game_state != GAME_STATE_CLOSE) {
-		wait_ms(66.667);
+		game_manager->frame_delay();
 
 		for (int i = 0; i < 2; i++) {
 			player[i]->controller.check_controllers();
@@ -38,26 +38,26 @@ void opening_main() {
 		window_manager->clear_screen();
 
 		if (fade_state == 0) {
-			title_alpha += 10;
+			title_alpha += 2;
 			fade_count++;
-			if (fade_count == 24) {
+			if (fade_count == 96) {
 				fade_state++;
 				fade_count = 0;
 			}
 		}
 		else if (fade_state == 1) {
-			text_alpha += 5;
+			text_alpha += 1;
 			fade_count++;
-			if (fade_count == 50) {
+			if (fade_count == 200) {
 				fade_state++;
 				fade_count = 0;
 			}
 		}
 		else {
-			title_alpha -= 10;
-			text_alpha -= 10;
+			title_alpha -= 2;
+			text_alpha -= 2;
 			fade_count++;
-			if (fade_count == 23) {
+			if (fade_count == 92) {
 				loop = false;
 			}
 		}

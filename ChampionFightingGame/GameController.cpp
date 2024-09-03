@@ -66,12 +66,10 @@ void GameController::check_controllers() {
 		for (int c : input_manager->available_controllers) {
 			if (input_manager->get_owner(c) == nullptr) {
 				GLFWgamepadstate state;
-				if (glfwGetGamepadState(c, &state)) {
-					if (is_any_controller_input(c)) {
-						controller_id = c;
-						input_manager->register_controller(c, this);
-						return;
-					}
+				if (is_any_controller_input(c)) {
+					controller_id = c;
+					input_manager->register_controller(c, this);
+					return;
 				}
 			}
 		}
@@ -84,33 +82,46 @@ void GameController::set_owns_keyboard(bool owns_keyboard) {
 
 void GameController::poll_menu() {
 	std::map<int, bool> keyboard_state = InputManager::get_instance()->keyboard_state;
-	for (unsigned int i = BUTTON_MENU; i < BUTTON_MENU_MAX; i++) {
-		bool old_button = button_info[i].button_on;
-		if (controller_id != -1) {
-			GLFWgamepadstate state;
-			glfwGetGamepadState(controller_id, &state);
+	if (controller_id != -1) {
+		GLFWgamepadstate state;
+		glfwGetGamepadState(controller_id, &state);
+		for (unsigned int i = BUTTON_MENU; i < BUTTON_MENU_MAX; i++) {
+			bool old_button = button_info[i].button_on;
 			switch (i) {
 				case (BUTTON_MENU_UP): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= 0.4);
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= 0.4);
 				} break;
 				case (BUTTON_MENU_DOWN): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -0.4);
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -0.4);
 				} break;
 				case (BUTTON_MENU_LEFT): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -0.4);
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -0.4);
 				} break;
 				case (BUTTON_MENU_RIGHT): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= 0.4);
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= 0.4);
 				} break;
 				default: {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[state.buttons[button_info[i].c_axis]] >= 0.4);
+					button_info[i].button_on = (button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX && state.buttons[button_info[i].c_mapping])
+						|| (button_info[i].c_axis != GLFW_GAMEPAD_AXIS_MAX && state.axes[button_info[i].c_axis] >= 0.4);
 				} break;
 			}
+			button_info[i].changed = button_info[i].button_on != old_button;
 		}
-		else if (owns_keyboard) {
+	}
+	else if (owns_keyboard) {
+		for (unsigned int i = BUTTON_MENU; i < BUTTON_MENU_MAX; i++) {
+			bool old_button = button_info[i].button_on;
 			button_info[i].button_on = keyboard_state[button_info[i].k_mapping];
+			button_info[i].changed = button_info[i].button_on != old_button;
 		}
-		button_info[i].changed = button_info[i].button_on != old_button;
 	}
 }
 
@@ -121,30 +132,45 @@ void GameController::poll_fighter() {
 	std::vector<bool> old_button;
 	for (unsigned int i = 0; i < BUTTON_MENU; i++) {
 		old_button.push_back(button_info[i].button_on);
-		if (*player_controller_id != -1) {
-			GLFWgamepadstate state;
-			glfwGetGamepadState(*player_controller_id, &state);
+	}
+	if (*player_controller_id != -1) {
+		GLFWgamepadstate state;
+		glfwGetGamepadState(*player_controller_id, &state);
+		for (unsigned int i = 0; i < BUTTON_MENU; i++) {
 			switch (i) {
-				case (BUTTON_MENU_UP): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= 0.4);
+				case (BUTTON_UP): {
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] >= 0.4);
 				} break;
-				case (BUTTON_MENU_DOWN): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -0.4);
+				case (BUTTON_DOWN): {
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] <= -0.4);
 				} break;
-				case (BUTTON_MENU_LEFT): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -0.4);
+				case (BUTTON_LEFT): {
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] <= -0.4);
 				} break;
-				case (BUTTON_MENU_RIGHT): {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= 0.4);
+				case (BUTTON_RIGHT): {
+					button_info[i].button_on = ((button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX
+						&& state.buttons[button_info[i].c_mapping])
+						|| state.axes[GLFW_GAMEPAD_AXIS_LEFT_X] >= 0.4);
 				} break;
 				default: {
-					button_info[i].button_on = (state.buttons[button_info[i].c_mapping] || state.axes[state.buttons[button_info[i].c_axis]] >= 0.4);
+					button_info[i].button_on = (button_info[i].c_mapping != GLFW_GAMEPAD_BUTTON_MAX && state.buttons[button_info[i].c_mapping])
+						|| (button_info[i].c_axis != GLFW_GAMEPAD_AXIS_MAX && state.axes[button_info[i].c_axis] >= 0.4);
 				} break;
 			}
 		}
-		else if (*player_owns_keyboard) {
+	}
+	else if (*player_owns_keyboard) {
+		for (unsigned int i = 0; i < BUTTON_MENU; i++) {
 			button_info[i].button_on = keyboard_state[button_info[i].k_mapping];
 		}
+	}
+	for (unsigned int i = 0; i < BUTTON_MENU; i++) {
 		if (button_info[i].button_on) {
 			switch (i) {
 				default: {

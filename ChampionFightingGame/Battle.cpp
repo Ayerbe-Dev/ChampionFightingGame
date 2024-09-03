@@ -1424,9 +1424,7 @@ void Battle::render_world() {
 	//SCREEN PASS - Draws the HDR buffer to the screen with bloom.
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->hdr_buffer.render();
-//	glDisable(GL_FRAMEBUFFER_SRGB);
 
 	//HITBOX PASS - Draws all collision boxes to their own framebuffer, then draws it to the screen.
 

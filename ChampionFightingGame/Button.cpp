@@ -10,8 +10,13 @@ bool is_any_controller_input(int controller_id) {
 			return true;
 		}
 	}
-	for (int i = 0; i < GLFW_GAMEPAD_AXIS_MAX; i++) {
-		if (abs(state.axes[i]) >= 13106) {
+	for (int i = 0; i < GLFW_GAMEPAD_AXIS_LEFT_TRIGGER; i++) {
+		if (abs(state.axes[i]) >= 0.4) {
+			return true;
+		}
+	}
+	for (int i = GLFW_GAMEPAD_AXIS_LEFT_TRIGGER; i < GLFW_GAMEPAD_AXIS_MAX; i++) {
+		if (state.axes[i] >= 0.4) {
 			return true;
 		}
 	}

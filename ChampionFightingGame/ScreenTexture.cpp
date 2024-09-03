@@ -1,7 +1,22 @@
 #include "ScreenTexture.h"
 #include "WindowConstants.h"
+#include "ShaderManager.h"
 
 ScreenTexture::ScreenTexture() {
+#ifndef TEX_IMPL_VULKAN
+	this->VAO = 0;
+	this->VBO = 0;
+	this->tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	this->tex_data[TEX_COORD_BOTTOM_LEFT2] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	this->tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	this->tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	this->tex_data[TEX_COORD_TOP_RIGHT2] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	this->tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	for (int i = 0; i < 6; i++) {
+		this->tex_accessor[i] = &this->tex_data[i];
+	}
+#endif
+	this->shader = nullptr;
 	this->path = "";
 	this->screen_orientation = TEXTURE_MID;
 	this->texture_orientation = TEXTURE_MID;
@@ -28,6 +43,20 @@ ScreenTexture::ScreenTexture() {
 }
 
 ScreenTexture::ScreenTexture(std::string path) {
+#ifndef TEX_IMPL_VULKAN
+	this->VAO = 0;
+	this->VBO = 0;
+	this->tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	this->tex_data[TEX_COORD_BOTTOM_LEFT2] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	this->tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	this->tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	this->tex_data[TEX_COORD_TOP_RIGHT2] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	this->tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	for (int i = 0; i < 6; i++) {
+		this->tex_accessor[i] = &this->tex_data[i];
+	}
+#endif
+	this->shader = nullptr;
 	this->path = "";
 	this->screen_orientation = TEXTURE_MID;
 	this->texture_orientation = TEXTURE_MID;
@@ -54,7 +83,21 @@ ScreenTexture::ScreenTexture(std::string path) {
 	init(path);
 }
 
-ScreenTexture::ScreenTexture(std::vector<std::vector<char>> texture, int width, int height) {
+ScreenTexture::ScreenTexture(TEX_DATA_MEMBER_TYPE texture, int width, int height) {
+#ifndef TEX_IMPL_VULKAN
+	this->VAO = 0;
+	this->VBO = 0;
+	this->tex_data[TEX_COORD_BOTTOM_LEFT] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	this->tex_data[TEX_COORD_BOTTOM_LEFT2] = { glm::vec3(-1.0, -1.0, 0.0), glm::vec2(0.0, 0.0) };
+	this->tex_data[TEX_COORD_BOTTOM_RIGHT] = { glm::vec3(1.0, -1.0, 0.0), glm::vec2(1.0, 0.0) };
+	this->tex_data[TEX_COORD_TOP_RIGHT] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	this->tex_data[TEX_COORD_TOP_RIGHT2] = { glm::vec3(1.0, 1.0, 0.0), glm::vec2(1.0, 1.0) };
+	this->tex_data[TEX_COORD_TOP_LEFT] = { glm::vec3(-1.0, 1.0, 0.0), glm::vec2(0.0, 1.0) };
+	for (int i = 0; i < 6; i++) {
+		this->tex_accessor[i] = &this->tex_data[i];
+	}
+#endif
+	this->shader = nullptr;
 	this->path = "";
 	this->screen_orientation = TEXTURE_MID;
 	this->texture_orientation = TEXTURE_MID;
@@ -82,116 +125,152 @@ ScreenTexture::ScreenTexture(std::vector<std::vector<char>> texture, int width, 
 }
 
 ScreenTexture::ScreenTexture(ScreenTexture& other) {
-	path = other.path;
-	texture = other.texture;
-	screen_orientation = other.screen_orientation;
-	texture_orientation = other.texture_orientation;
-	pos = other.pos;
-	rot = other.rot;
-	right_edge_scale = other.right_edge_scale;
-	right_edge_crop = other.right_edge_crop;
-	left_edge_scale = other.left_edge_scale;
-	left_edge_crop = other.left_edge_crop;
-	top_edge_scale = other.top_edge_scale;
-	top_edge_crop = other.top_edge_crop;
-	bottom_edge_scale = other.bottom_edge_scale;
-	bottom_edge_crop = other.bottom_edge_crop;
-	width = other.width;
-	width_scale = other.width_scale;
-	height = other.height;
-	height_scale = other.height_scale;
-	alpha = other.alpha;
-	colormod = other.colormod;
-	h_flipped = other.h_flipped;
-	v_flipped = other.v_flipped;
-	sprite = other.sprite;
-	loaded = false;
+#ifndef TEX_IMPL_VULKAN
+	this->VAO = other.VAO;
+	this->VBO = other.VBO;
+	for (int i = 0; i < 6; i++) {
+		this->tex_data[i] = other.tex_data[i];
+		this->tex_accessor[i] = &this->tex_data[i];
+	}
+#endif
+	this->shader = other.shader;
+	this->path = other.path;
+	this->texture = other.texture;
+	this->screen_orientation = other.screen_orientation;
+	this->texture_orientation = other.texture_orientation;
+	this->pos = other.pos;
+	this->rot = other.rot;
+	this->right_edge_scale = other.right_edge_scale;
+	this->right_edge_crop = other.right_edge_crop;
+	this->left_edge_scale = other.left_edge_scale;
+	this->left_edge_crop = other.left_edge_crop;
+	this->top_edge_scale = other.top_edge_scale;
+	this->top_edge_crop = other.top_edge_crop;
+	this->bottom_edge_scale = other.bottom_edge_scale;
+	this->bottom_edge_crop = other.bottom_edge_crop;
+	this->width = other.width;
+	this->width_scale = other.width_scale;
+	this->height = other.height;
+	this->height_scale = other.height_scale;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
+	this->h_flipped = other.h_flipped;
+	this->v_flipped = other.v_flipped;
+	this->sprite = other.sprite;
+	this->loaded = false;
 }
 
 ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
-	path = other.path;
-	texture = other.texture;
-	screen_orientation = other.screen_orientation;
-	texture_orientation = other.texture_orientation;
-	pos = other.pos;
-	rot = other.rot;
-	right_edge_scale = other.right_edge_scale;
-	right_edge_crop = other.right_edge_crop;
-	left_edge_scale = other.left_edge_scale;
-	left_edge_crop = other.left_edge_crop;
-	top_edge_scale = other.top_edge_scale;
-	top_edge_crop = other.top_edge_crop;
-	bottom_edge_scale = other.bottom_edge_scale;
-	bottom_edge_crop = other.bottom_edge_crop;
-	width = other.width;
-	width_scale = other.width_scale;
-	height = other.height;
-	height_scale = other.height_scale;
-	alpha = other.alpha;
-	colormod = other.colormod;
-	h_flipped = other.h_flipped;
-	v_flipped = other.v_flipped;
-	sprite = other.sprite;
-	loaded = other.loaded;
+#ifndef TEX_IMPL_VULKAN
+	this->VAO = other.VAO;
+	this->VBO = other.VBO;
+	for (int i = 0; i < 6; i++) {
+		this->tex_data[i] = other.tex_data[i];
+		this->tex_accessor[i] = &this->tex_data[i];
+	}
+#endif
+	this->shader = other.shader;
+	this->path = other.path;
+	this->texture = other.texture;
+	this->screen_orientation = other.screen_orientation;
+	this->texture_orientation = other.texture_orientation;
+	this->pos = other.pos;
+	this->rot = other.rot;
+	this->right_edge_scale = other.right_edge_scale;
+	this->right_edge_crop = other.right_edge_crop;
+	this->left_edge_scale = other.left_edge_scale;
+	this->left_edge_crop = other.left_edge_crop;
+	this->top_edge_scale = other.top_edge_scale;
+	this->top_edge_crop = other.top_edge_crop;
+	this->bottom_edge_scale = other.bottom_edge_scale;
+	this->bottom_edge_crop = other.bottom_edge_crop;
+	this->width = other.width;
+	this->width_scale = other.width_scale;
+	this->height = other.height;
+	this->height_scale = other.height_scale;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
+	this->h_flipped = other.h_flipped;
+	this->v_flipped = other.v_flipped;
+	this->sprite = other.sprite;
+	this->loaded = other.loaded;
 	other.loaded = false;
 }
 
 ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
 	if (this != &other) {
-		path = other.path;
-		texture = other.texture;
-		screen_orientation = other.screen_orientation;
-		texture_orientation = other.texture_orientation;
-		pos = other.pos;
-		rot = other.rot;
-		right_edge_scale = other.right_edge_scale;
-		right_edge_crop = other.right_edge_crop;
-		left_edge_scale = other.left_edge_scale;
-		left_edge_crop = other.left_edge_crop;
-		top_edge_scale = other.top_edge_scale;
-		top_edge_crop = other.top_edge_crop;
-		bottom_edge_scale = other.bottom_edge_scale;
-		bottom_edge_crop = other.bottom_edge_crop;
-		width = other.width;
-		width_scale = other.width_scale;
-		height = other.height;
-		height_scale = other.height_scale;
-		alpha = other.alpha;
-		colormod = other.colormod;
-		h_flipped = other.h_flipped;
-		v_flipped = other.v_flipped;
-		sprite = other.sprite;
-		loaded = false;
+#ifndef TEX_IMPL_VULKAN
+		this->VAO = other.VAO;
+		this->VBO = other.VBO;
+		for (int i = 0; i < 6; i++) {
+			this->tex_data[i] = other.tex_data[i];
+			this->tex_accessor[i] = &this->tex_data[i];
+		}
+#endif
+		this->shader = other.shader;
+		this->path = other.path;
+		this->texture = other.texture;
+		this->screen_orientation = other.screen_orientation;
+		this->texture_orientation = other.texture_orientation;
+		this->pos = other.pos;
+		this->rot = other.rot;
+		this->right_edge_scale = other.right_edge_scale;
+		this->right_edge_crop = other.right_edge_crop;
+		this->left_edge_scale = other.left_edge_scale;
+		this->left_edge_crop = other.left_edge_crop;
+		this->top_edge_scale = other.top_edge_scale;
+		this->top_edge_crop = other.top_edge_crop;
+		this->bottom_edge_scale = other.bottom_edge_scale;
+		this->bottom_edge_crop = other.bottom_edge_crop;
+		this->width = other.width;
+		this->width_scale = other.width_scale;
+		this->height = other.height;
+		this->height_scale = other.height_scale;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
+		this->h_flipped = other.h_flipped;
+		this->v_flipped = other.v_flipped;
+		this->sprite = other.sprite;
+		this->loaded = false;
 	}
 	return *this;
 }
 
 ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
 	if (this != &other) {
-		path = other.path;
-		texture = other.texture;
-		screen_orientation = other.screen_orientation;
-		texture_orientation = other.texture_orientation;
-		pos = other.pos;
-		rot = other.rot;
-		right_edge_scale = other.right_edge_scale;
-		right_edge_crop = other.right_edge_crop;
-		left_edge_scale = other.left_edge_scale;
-		left_edge_crop = other.left_edge_crop;
-		top_edge_scale = other.top_edge_scale;
-		top_edge_crop = other.top_edge_crop;
-		bottom_edge_scale = other.bottom_edge_scale;
-		bottom_edge_crop = other.bottom_edge_crop;
-		width = other.width;
-		width_scale = other.width_scale;
-		height = other.height;
-		height_scale = other.height_scale;
-		alpha = other.alpha;
-		colormod = other.colormod;
-		h_flipped = other.h_flipped;
-		v_flipped = other.v_flipped;
-		sprite = other.sprite;
-		loaded = other.loaded;
+#ifndef TEX_IMPL_VULKAN
+		this->VAO = other.VAO;
+		this->VBO = other.VBO;
+		for (int i = 0; i < 6; i++) {
+			this->tex_data[i] = other.tex_data[i];
+			this->tex_accessor[i] = &this->tex_data[i];
+		}
+#endif
+		this->shader = other.shader;
+		this->path = other.path;
+		this->texture = other.texture;
+		this->screen_orientation = other.screen_orientation;
+		this->texture_orientation = other.texture_orientation;
+		this->pos = other.pos;
+		this->rot = other.rot;
+		this->right_edge_scale = other.right_edge_scale;
+		this->right_edge_crop = other.right_edge_crop;
+		this->left_edge_scale = other.left_edge_scale;
+		this->left_edge_crop = other.left_edge_crop;
+		this->top_edge_scale = other.top_edge_scale;
+		this->top_edge_crop = other.top_edge_crop;
+		this->bottom_edge_scale = other.bottom_edge_scale;
+		this->bottom_edge_crop = other.bottom_edge_crop;
+		this->width = other.width;
+		this->width_scale = other.width_scale;
+		this->height = other.height;
+		this->height_scale = other.height_scale;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
+		this->h_flipped = other.h_flipped;
+		this->v_flipped = other.v_flipped;
+		this->sprite = other.sprite;
+		this->loaded = other.loaded;
 		other.loaded = false;
 	}
 	return *this;
@@ -207,7 +286,7 @@ void ScreenTexture::init(std::string path) {
 	//Load Image, call some vulkan stuff probably
 }
 
-void ScreenTexture::init(std::vector<std::vector<char>> texture, int width, int height) {
+void ScreenTexture::init(TEX_DATA_MEMBER_TYPE texture, int width, int height) {
 
 }
 

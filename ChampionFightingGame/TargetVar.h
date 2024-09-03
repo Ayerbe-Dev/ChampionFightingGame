@@ -49,6 +49,13 @@ public:
 		return &val;
 	}
 
+	TargetVar<T>& operator=(const T& rhs) {
+		val = rhs;
+		target_val = val;
+		frames = 0;
+		return *this;
+	}
+
 	template <typename U>
 	TargetVar<T>& operator=(const U& rhs) {
 		val = (T)rhs;
@@ -205,7 +212,11 @@ public:
 		return target_val;
 	}
 
-	T* get_val_addr() const {
+	T& get_val_ref() const {
+		return val;
+	}
+
+	T* get_val_ptr() const {
 		return &val;
 	}
 

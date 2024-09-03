@@ -244,9 +244,6 @@
     <ClCompile Include="GLM Helpers.cpp">
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="GLEW Helpers.cpp">
-      <Filter>2. Code Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Stage.cpp">
       <Filter>2. Code Files\GameObject\Stage</Filter>
     </ClCompile>
@@ -598,6 +595,9 @@
     <ClCompile Include="imgui_impl_glfw.cpp">
       <Filter>2. Code Files\Deps\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="LoadTextures.cpp">
+      <Filter>2. Code Files\I/O</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -631,9 +631,6 @@
       <Filter>1. Header Files\Include</Filter>
     </ClInclude>
     <ClInclude Include="GLM Helpers.h">
-      <Filter>1. Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="GLEW Helpers.h">
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Dingo.h">
@@ -1385,6 +1382,9 @@
     </ClInclude>
     <ClInclude Include="imgui_impl_glfw.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadTextures.h">
+      <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

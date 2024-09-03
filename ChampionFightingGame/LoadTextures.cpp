@@ -1,7 +1,8 @@
-#include "GLEW Helpers.h"
+#include "LoadTextures.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "EasyGifReader.h"
+#include <glew/glew.h>
 #include "ResourceManager.h"
 
 unsigned int loadGLTexture(std::string file_path) {

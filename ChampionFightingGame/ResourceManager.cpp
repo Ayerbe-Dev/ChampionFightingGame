@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include "ThreadManager.h"
-#include "GLEW Helpers.h"
+#include "LoadTextures.h"
+#include <glew/glew.h>
 
 ResourceManager::ResourceManager() {
 	srgb = false;

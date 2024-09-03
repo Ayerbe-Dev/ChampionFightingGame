@@ -9,6 +9,7 @@ public:
 	InputManager(InputManager& other) = delete;
 	void operator=(const InputManager& other) = delete;
 
+	void check_controllers();
 	void register_controller(int controller_id, GameController* controller);
 	void unregister_controller(int controller_id);
 	GameController* get_owner(int controller_id);

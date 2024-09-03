@@ -5,7 +5,7 @@
 #include <glm/gtx/euler_angles.hpp>
 #include "utils.h"
 #include <fstream>
-#include "GLEW Helpers.h"
+#include "LoadTextures.h"
 
 OldParticle::OldParticle() {
 

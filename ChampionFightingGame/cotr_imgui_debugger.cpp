@@ -739,8 +739,9 @@ void cotr_imgui_debug_battle(Battle* battle) {
 		}
 
 		if (ImGui::TreeNode("Rendering")) {
+#ifdef DEBUG
 			ImGui::Checkbox("Framecap", &GameManager::get_instance()->frame_capped);
-
+#endif
 			for (int i2 = 0; i2 < window_manager->lights.size(); i2++) {
 				std::string light_name = "Light [" + std::to_string(i2) + "]";
 

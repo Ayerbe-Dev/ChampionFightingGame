@@ -10,7 +10,7 @@
 #include "Shader.h"
 
 #include "GLM Helpers.h"
-#include "GLEW Helpers.h"
+#include "LoadTextures.h"
 #include "WindowManager.h"
 #include "ResourceManager.h"
 #include "ThreadManager.h"

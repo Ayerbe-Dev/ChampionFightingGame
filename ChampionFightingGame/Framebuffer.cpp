@@ -67,7 +67,7 @@ void Framebuffer::init(std::string vertex_dir, std::string fragment_dir, std::st
 
 /// <summary>
 /// Creates a new texture whose ID will be written to when a shader pipeline runs while this framebuffer
-/// is active. 
+/// is active. This texture will also be referenced when this framebuffer renders itself.
 /// </summary>
 /// <param name="internal_format"></param>
 /// <param name="format"></param>
@@ -98,6 +98,13 @@ void Framebuffer::add_write_texture(GLenum internal_format, GLenum format, GLenu
 	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
+/// <summary>
+/// Sets an existing texture with a known ID to be written to when a shader pipeline runs while this framebuffer
+/// is active. This texture will also be referenced when this framebuffer renders itself.
+/// </summary>
+/// <param name="texture"></param>
+/// <param name="attachment_point"></param>
+/// <param name="active_index"></param>
 void Framebuffer::add_write_texture(GLuint texture, GLenum attachment_point, int active_index) {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -108,12 +115,28 @@ void Framebuffer::add_write_texture(GLuint texture, GLenum attachment_point, int
 	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
+/// <summary>
+/// Sets an existing texture with an unknown ID to be written to when a shader pipeline runs while this framebuffer
+/// is active. This texture will also be referenced when this framebuffer renders itself.
+/// </summary>
+/// <param name="attachment_point"></param>
 void Framebuffer::add_write_texture(GLenum attachment_point) {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	attachment_points.push_back(attachment_point);
 	glDrawBuffers(attachment_points.size(), attachment_points.data());
 }
 
+/// <summary>
+/// Creates a texture which will then be referenced when this framebuffer renders itself.
+/// </summary>
+/// <param name="internal_format"></param>
+/// <param name="format"></param>
+/// <param name="type"></param>
+/// <param name="clamp"></param>
+/// <param name="width"></param>
+/// <param name="height"></param>
+/// <param name="active_index"></param>
+/// <param name="source"></param>
 void Framebuffer::add_read_texture(GLenum internal_format, GLenum format, GLenum type, GLenum clamp, float width, float height, int active_index, void* source) {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	GLuint texture;
@@ -128,6 +151,11 @@ void Framebuffer::add_read_texture(GLenum internal_format, GLenum format, GLenum
 	active_indices.push_back(active_index);
 }
 
+/// <summary>
+/// Sets an existing texture to be referenced when this framebuffer renders itself.
+/// </summary>
+/// <param name="texture"></param>
+/// <param name="active_index"></param>
 void Framebuffer::add_read_texture(GLuint texture, int active_index) {
 	textures.push_back(texture);
 	active_indices.push_back(active_index);

@@ -1,6 +1,9 @@
 #pragma once
 #include "TargetVarManager.h"
 
+/// <summary>
+/// Dummy class that allows for TargetVars of different types to all be stored in the TargetVarManager.
+/// </summary>
 class BaseTargetVar {
 public:
 	BaseTargetVar() {
@@ -17,6 +20,10 @@ public:
 	bool pause;
 };
 
+/// <summary>
+/// A container class used to interpolate the value of a variable across multiple frames.
+/// </summary>
+/// <typeparam name="T">The type which will be interpolated</typeparam>
 template <class T> class TargetVar : public BaseTargetVar {
 public:
 	TargetVar() = default;
@@ -128,41 +135,34 @@ public:
 
 	template <typename U>
 	TargetVar<T>& operator+=(const TargetVar<U>& rhs) {
-		if (this != &rhs) {
-			val += rhs.get_val();
-			target_val = val;
-			frames = 0;
-		}
+		val += rhs.get_val();
+		target_val = val;
+		frames = 0;
 		return *this;
 	}
 
 	template <typename U>
 	TargetVar<T>& operator-=(const TargetVar<U>& rhs) {
-		if (this != &rhs) {
-			val -= rhs.get_val();
-			target_val = val;
-			frames = 0;
-		}
+		val -= rhs.get_val();
+		target_val = val;
+		frames = 0;
 		return *this;
 	}
 
 	template <typename U>
 	TargetVar<T>& operator*=(const TargetVar<U>& rhs) {
-		if (this != &rhs) {
-			val *= rhs.get_val();
-			target_val = val;
-			frames = 0;
-		}
+		val *= rhs.get_val();
+		target_val = val;
+		frames = 0;
+		
 		return *this;
 	}
 
 	template <typename U>
 	TargetVar<T>& operator/=(const TargetVar<U>& rhs) {
-		if (this != &rhs) {
-			val /= rhs.get_val();
-			target_val = val;
-			frames = 0;
-		}
+		val /= rhs.get_val();
+		target_val = val;
+		frames = 0;
 		return *this;
 	}
 
@@ -212,11 +212,11 @@ public:
 		return target_val;
 	}
 
-	T& get_val_ref() const {
+	T& get_val_ref() {
 		return val;
 	}
 
-	T* get_val_ptr() const {
+	T* get_val_ptr() {
 		return &val;
 	}
 

@@ -17,7 +17,6 @@ in GS_OUT {
     vec3 Normal;
     mat3 TBN;
     vec2 TexCoords;
-    float Ex;
 } fs_in;
 
 #ifdef SHADER_FEAT_DIM_MUL
@@ -51,7 +50,7 @@ void main() {
     }
 #endif
 
-    g_emission = texture(material.emission, fs_in.TexCoords);
+    g_emission = diffuse * texture(material.emission, fs_in.TexCoords).a * alpha;
     
     float shadow = calc_shadow(fs_in.FragPosLightSpace);
 #ifdef SHADER_FEAT_DIM_MUL
@@ -67,7 +66,7 @@ void main() {
 #endif
 
     g_pos_outline.xyz = vec3(fs_in.FragPos);
-    g_pos_outline.a = outline;
+    g_pos_outline.a = outline * alpha;
    
 #ifdef SHADER_FEAT_NORMAL
     vec3 normal_map = texture(material.normal, fs_in.TexCoords).rgb;
@@ -77,7 +76,7 @@ void main() {
     normal_map = normal_map * 2.0 - 1.0;
 
     g_normal_spec.xyz = normalize(fs_in.TBN * normal_map);
-    g_normal_spec.a = 1.0;
+    g_normal_spec.a = alpha;
 }
 
 float calc_shadow(vec4 fragPosLightSpace) {

@@ -34,7 +34,6 @@ GameManager::GameManager() {
 #endif
 
 	FontManager* font_manager = font_manager->get_instance();
-	average_ticks.reserve(10000);
 	frame = 0;
 	fps = 60;
 	prev_fps = 0;
@@ -356,56 +355,12 @@ void GameManager::frame_delay_check_fps() {
 	if (prev_fps != fps) {
 		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255), glm::vec4(0.0));
 		int text_x = 0;
-		for (int i = 1; i < fps; i *= 10) {
-			text_x += 40;
+		for (int i = 1; i <= fps; i *= 10) {
+			text_x += 38;
 		}
 		fps_texture.set_pos(glm::vec3(text_x, 0.0, 0.0));
 		prev_fps = fps;
 	}
-}
-
-void GameManager::frame_delay_check_performance() {
-	int trials = 10000;
-
-	if (average_ticks.size() < trials) {
-		average_ticks.push_back((float)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - ms).count()) / 1000.0);
-	}
-	else {
-		float highest = average_ticks[0];
-		while (highest >= tick_frequency.size()) {
-			tick_frequency.push_back(0);
-		}
-		int freq = 0;
-		int frame_freq = 0;
-		float total = 0;
-		for (int i = 0; i < trials; i++) {
-			total += average_ticks[i];
-			if (average_ticks[i] >= 16.667) {
-				frame_freq++;
-			}
-			if (average_ticks[i] > highest) {
-				highest = average_ticks[i];
-				while (highest >= tick_frequency.size()) {
-					tick_frequency.push_back(0);
-				}
-				freq = 1;
-			}
-			else if (average_ticks[i] == highest) {
-				freq++;
-			}
-			tick_frequency[(int)average_ticks[i]]++;
-		}
-		total /= (float)trials;
-		std::cout << "Lengths of all iterations across " << trials << " tests: " << "\n";
-		for (int i = 0; i < tick_frequency.size(); i++) {
-			std::cout << "MS: " << i << ", Frequency: " << tick_frequency[i] << "\n";
-		}
-		std::cout << "On average, it took " << total << " ms to run the loop, and there were " << frame_freq << " instances of an iteration taking more than a frame." << "\n";
-		average_ticks.clear();
-		tick_frequency.clear();
-	}
-	frame_delay();
-	ms = std::chrono::high_resolution_clock::now();
 }
 
 GameManager* GameManager::instance = nullptr;

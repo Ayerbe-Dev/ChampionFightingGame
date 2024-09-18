@@ -22,7 +22,12 @@ RowanFireball::RowanFireball(int id, Player* player) {
 
 void RowanFireball::projectile_unique_main() {
 	if (object_int[PROJECTILE_INT_HEALTH] <= 0 && active) {
-		deactivate();
+		if (get_alpha() == 0) {
+			deactivate();
+		}
+		else {
+			add_alpha(-25);
+		}
 	}
 }
 
@@ -32,6 +37,7 @@ void RowanFireball::unique_activate() {
 		object_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
 		object_int[PROJECTILE_INT_HEALTH] = 2;
 	}
+	set_alpha(255);
 	change_status(PROJECTILE_ROWAN_FIREBALL_STATUS_HOVER);
 }
 

@@ -3,9 +3,23 @@
 #include <iostream>
 #include <glew/glew.h>
 #include <glm/glm.hpp>
-#include "TextureCoord.h"
+#include "TextureCommon.h"
 #include "Font.h"
 #include "TargetVar.h"
+
+enum {
+    SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT,
+    SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE,
+    SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT,
+    SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT,
+    SCREEN_TEXTURE_ORIENTATION_MIDDLE,
+    SCREEN_TEXTURE_ORIENTATION_MIDDLE_RIGHT,
+    SCREEN_TEXTURE_ORIENTATION_TOP_LEFT,
+    SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE,
+    SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT,
+
+    SCREEN_TEXTURE_ORIENTATION_MAX,
+};
 
 class Shader;
 
@@ -112,8 +126,8 @@ public:
 
     Shader *shader;
     std::vector<unsigned int> texture;
-    TextureCoord tex_data[6];
-    TextureCoord* tex_accessor[6];
+    GameTextureCoord tex_data[6];
+    GameTextureCoord* tex_accessor[6];
     TargetVar<glm::vec3> pos = glm::vec3(0.0);
     glm::vec3* anchor_pos = nullptr;
     glm::vec3 rot = glm::vec3(0.0);

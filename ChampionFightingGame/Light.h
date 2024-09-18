@@ -10,4 +10,6 @@ public:
 	glm::vec3 color;
 	float brightness;
 	bool enabled;
+	bool shadow_casting;
+	bool changed;
 };

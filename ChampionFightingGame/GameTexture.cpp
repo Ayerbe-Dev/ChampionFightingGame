@@ -132,9 +132,9 @@ void GameTexture::init(std::string path) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)offsetof(GameTextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
 	ResourceManager* resource_manager = ResourceManager::get_instance();
@@ -204,9 +204,9 @@ void GameTexture::init(GLuint texture, int width, int height) {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)offsetof(GameTextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -275,9 +275,9 @@ void GameTexture::init(Font &font, std::string text, glm::vec4 rgba, glm::vec4 b
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameTextureCoord), (void*)offsetof(GameTextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
@@ -841,7 +841,7 @@ void GameTexture::set_alpha(unsigned char alpha) {
 }
 
 void GameTexture::flip_h() {
-	TextureCoord* temp_tex_accessor[6] = { 
+	GameTextureCoord* temp_tex_accessor[6] = { 
 		tex_accessor[0], tex_accessor[1], tex_accessor[2],
 		tex_accessor[3], tex_accessor[4], tex_accessor[5]
 	};
@@ -860,7 +860,7 @@ void GameTexture::flip_h() {
 }
 
 void GameTexture::flip_v() {
-	TextureCoord* temp_tex_accessor[6] = {
+	GameTextureCoord* temp_tex_accessor[6] = {
 			tex_accessor[0], tex_accessor[1], tex_accessor[2],
 			tex_accessor[3], tex_accessor[4], tex_accessor[5]
 	};

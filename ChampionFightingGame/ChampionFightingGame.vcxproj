@@ -672,7 +672,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TessaFloat.h" />
     <ClInclude Include="TessaInt.h" />
     <ClInclude Include="TessaStatus.h" />
-    <ClInclude Include="TextureCoord.h" />
+    <ClInclude Include="TextureCommon.h" />
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="VariadicHelpers.h" />
@@ -870,6 +870,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\fragment_model.glsl" />
     <None Include="resource\shaders\fragment_no_light.glsl" />
     <None Include="resource\shaders\fragment_rect.glsl" />
+    <None Include="resource\shaders\fragment_screen_tex_default.glsl" />
     <None Include="resource\shaders\fragment_shadow.glsl" />
     <None Include="resource\shaders\fragment_ssao.glsl" />
     <None Include="resource\shaders\fragment_blur.glsl" />
@@ -882,6 +883,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <None Include="resource\shaders\vertex_passthrough.glsl" />
     <None Include="resource\shaders\vertex_model.glsl" />
     <None Include="resource\shaders\vertex_rect.glsl" />
+    <None Include="resource\shaders\vertex_screen_tex.glsl" />
     <None Include="resource\shaders\vertex_shadow.glsl" />
     <None Include="resource\shaders\vertex_text.glsl" />
     <None Include="resource\stage\training_room\assets\background\anims\anim_list.yml" />

@@ -25,7 +25,6 @@ struct Bone {
 	glm::quat rot = glm::quat();
 	glm::vec3 scale = glm::vec3(1.0);
 
-	bool enable_ex_render = false;
 	bool keyframed = false;
 };
 

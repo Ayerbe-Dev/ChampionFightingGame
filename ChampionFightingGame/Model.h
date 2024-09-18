@@ -134,7 +134,6 @@ public:
 	void set_move(bool move);
 	void set_flip(bool flip);
 	void set_bones(float frame, Animation* anim_kind);
-	void set_bone_ex_render(std::string bone_name, bool enabled);
 
 	void reset_bones();
 
@@ -144,7 +143,10 @@ public:
 
 	void set_mesh_visibility(std::string mesh_name, bool visibility);
 	void set_mesh_mat(std::string mesh_name, std::string mat_name);
+
 	void set_alpha(unsigned char alpha);
+	void add_alpha(short alpha);
+	unsigned char get_alpha() const;
 
 	int get_mesh_id(std::string mesh_name);
 	int get_material_id(std::string material_name);
@@ -153,7 +155,6 @@ public:
 
 	bool has_skeleton();
 	bool is_loaded() const;
-	bool is_enable_ex_render() const;
 
 	void render(Shader* shader);
 	void render_no_texture(Shader* shader);
@@ -166,7 +167,6 @@ public:
 	std::string texture_dir;
 private:
 	void process_skeleton_instance();
-	void set_bone_ex_render_rec(int bone_id, bool enabled);
 
 	ModelData* model;
 	glm::mat4 trans_matrix;

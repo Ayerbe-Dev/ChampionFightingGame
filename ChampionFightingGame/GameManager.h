@@ -50,7 +50,6 @@ public:
 
 	void frame_delay();
 	void frame_delay_check_fps();
-	void frame_delay_check_performance();
 
 #ifdef DEBUG
 	bool frame_capped;
@@ -92,7 +91,4 @@ private:
 	int fps;
 	int prev_fps;
 	std::chrono::steady_clock::time_point last_second;
-	std::chrono::steady_clock::time_point ms;
-	std::vector<float> average_ticks;
-	std::vector<int> tick_frequency;
 };

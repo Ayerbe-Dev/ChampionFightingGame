@@ -1134,7 +1134,7 @@
     <ClInclude Include="Particle.h">
       <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
     </ClInclude>
-    <ClInclude Include="TextureCoord.h">
+    <ClInclude Include="TextureCommon.h">
       <Filter>1. Header Files\Engine\Rendering\2DRendering\TextureComponent</Filter>
     </ClInclude>
     <ClInclude Include="ScreenTexture.h">
@@ -1995,6 +1995,12 @@
       <Filter>3. resource\shaders</Filter>
     </None>
     <None Include="resource\shaders\fragment_hdr.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_screen_tex_default.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\vertex_screen_tex.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
   </ItemGroup>

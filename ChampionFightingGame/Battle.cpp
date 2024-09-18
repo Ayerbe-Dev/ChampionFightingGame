@@ -1349,6 +1349,11 @@ void Battle::render_world() {
 
 	window_manager->shadow_map.bind_textures();
 
+	shader_manager->set_global_float("Outline", 0.5f);
+
+	glEnable(GL_CULL_FACE);
+	stage.render();
+
 	glDisable(GL_CULL_FACE); //This line will be removed, but current models have some vertices such
 	//that we can see both sides. Until then, fighters don't get culled.
 	for (int i = 0; i < 2; i++) {
@@ -1362,15 +1367,15 @@ void Battle::render_world() {
 		}
 	}
 
-	glEnable(GL_CULL_FACE);
-	stage.render();
-
 	//ALPHA PASS
 
 	for (GameObject* object : object_manager->game_objects) {
 		if (!object->shader) continue;
 		object->shader = shader_manager->get_shader_switch_features(object->shader, 0, SHADER_FEAT_ALPHA_PASS);
 	}
+
+	glEnable(GL_CULL_FACE);
+	stage.render();
 
 	glDisable(GL_CULL_FACE);
 	for (int i = 0; i < 2; i++) {
@@ -1383,10 +1388,6 @@ void Battle::render_world() {
 			}
 		}
 	}
-
-
-	glEnable(GL_CULL_FACE);
-	stage.render();
 
 	for (GameObject* object : object_manager->game_objects) {
 		if (!object->shader) continue;

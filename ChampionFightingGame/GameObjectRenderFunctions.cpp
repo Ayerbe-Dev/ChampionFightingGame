@@ -17,6 +17,14 @@ void GameObject::set_alpha(unsigned char alpha) {
 	model.set_alpha(alpha);
 }
 
+void GameObject::add_alpha(short alpha) {
+	model.add_alpha(alpha);
+}
+
+unsigned char GameObject::get_alpha() const {
+	return model.get_alpha();
+}
+
 void GameObject::render() {
 	glm::mat4 model_mat = glm::mat4(1.0);
 	model_mat = glm::translate(model_mat, pos / scale_vec);

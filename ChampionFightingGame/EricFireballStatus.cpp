@@ -11,9 +11,6 @@ void EricFireball::status_move() {
 	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
 		add_pos(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
 		object_int[PROJECTILE_INT_ELAPSED_FRAMES]++;
-		if (object_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
-			deactivate();
-		}
 	}
 }
 
@@ -60,7 +57,12 @@ void EricFireball::status_eric_fireball_hover() {
 	if (object_int[PROJECTILE_INT_ACTIVE_TIME] == 0) {
 		if (owner->status_kind != CHARA_ERIC_STATUS_SPECIAL_FIREBALL_PUNCH
 			&& owner->status_kind != CHARA_ERIC_STATUS_SPECIAL_FIREBALL_KICK) {
-			deactivate();
+			if (get_alpha() == 0) {
+				deactivate();
+			}
+			else {
+				add_alpha(-25);
+			}
 		}
 	}
 }

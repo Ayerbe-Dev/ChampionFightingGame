@@ -8,7 +8,6 @@ in VS_OUT {
     vec3 Normal;
     mat3 TBN;
     vec2 TexCoords;
-    float Ex;
 } gs_in[];
 
 out GS_OUT {
@@ -17,7 +16,6 @@ out GS_OUT {
     vec3 Normal;
     mat3 TBN;
     vec2 TexCoords;
-    float Ex;
 } gs_out;
 
 void main() {
@@ -27,7 +25,6 @@ void main() {
         gs_out.Normal = gs_in[i].Normal;
         gs_out.TBN = gs_in[i].TBN;
         gs_out.TexCoords = gs_in[i].TexCoords;
-        gs_out.Ex = gs_in[i].Ex;
         
         gl_Position = gl_in[i].gl_Position;
         EmitVertex();

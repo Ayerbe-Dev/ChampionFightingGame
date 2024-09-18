@@ -41,6 +41,8 @@ public:
 
 	bool is_in_camera_range();
 	void set_alpha(unsigned char alpha);
+	void add_alpha(short alpha);
+	unsigned char get_alpha() const;
 	void render();
 	void render_shadow();
 
@@ -55,7 +57,6 @@ public:
 	glm::vec3 get_bone_rotation(std::string bone_name);
 	glm::vec3 get_bone_rotation(int bone_id);
 	glm::vec3 get_bone_angle(int base_id, int angle_id);
-	void set_bone_ex_render(std::string bone_name, bool enabled);
 
 	//Transformation Funcs
 

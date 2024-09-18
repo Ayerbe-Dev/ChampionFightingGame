@@ -22,7 +22,12 @@ EricFireball::EricFireball(int id, Player* player) {
 
 void EricFireball::projectile_unique_main() {
 	if (object_int[PROJECTILE_INT_HEALTH] <= 0 && active) {
-		deactivate();
+		if (get_alpha() == 0) {
+			deactivate();
+		}
+		else {
+			add_alpha(-50);
+		}
 	}
 }
 
@@ -32,6 +37,7 @@ void EricFireball::unique_activate() {
 		object_int[PROJECTILE_INT_ATTACK_LEVEL] = 1;
 		object_int[PROJECTILE_INT_HEALTH] = 2;
 	}
+	set_alpha(255);
 	change_status(PROJECTILE_ERIC_FIREBALL_STATUS_HOVER);
 }
 

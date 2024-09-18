@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
-#include "TextureCoord.h"
+#include "TextureCommon.h"
 
 class Shader;
 
@@ -20,8 +20,8 @@ public:
 
 	void render(Shader* shader, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec4 rgba, bool flip, float frame = 0);
 
-	TextureCoord tex_data[6];
-	TextureCoord* tex_accessor[6];
+	GameTextureCoord tex_data[6];
+	GameTextureCoord* tex_accessor[6];
 
 	glm::vec3 pos;
 	glm::vec3 rot;

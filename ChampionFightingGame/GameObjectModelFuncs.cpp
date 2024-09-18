@@ -71,7 +71,3 @@ glm::vec3 GameObject::get_bone_angle(int base_id, int angle_id) {
 
 	return calc_rotation(base_bone, angle_bone) * glm::vec3(180 / 3.14);
 }
-
-void GameObject::set_bone_ex_render(std::string bone_name, bool enabled) {
-	model.set_bone_ex_render(bone_name, enabled);
-}

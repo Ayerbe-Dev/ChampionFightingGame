@@ -16,7 +16,7 @@ void debug_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	
-	ScreenTexture test_screentexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_CORNER_CROP);
+	ScreenTexture test_screentexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
 	
 	DebugMenu *debug = new DebugMenu;
 
@@ -61,6 +61,8 @@ void debug_main() {
 		if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
 			percent_y[target] = std::max(percent_y[target] - 0.05, 0.0);
 		}
+
+
 
 		test_screentexture.crop_top_right_corner(percent_x[0], percent_y[0]).crop_top_left_corner(1.0 - percent_x[1], percent_y[1])
 			.crop_bottom_right_corner(percent_x[2], 1.0 - percent_y[2]).crop_bottom_left_corner(1.0 - percent_x[3], 1.0 - percent_y[3]);

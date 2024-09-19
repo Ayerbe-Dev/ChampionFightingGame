@@ -8,7 +8,7 @@ const int TEX_COORD_BOTTOM_RIGHT = 3;
 const int TEX_COORD_TOP_RIGHT2 = 4;
 const int TEX_COORD_BOTTOM_LEFT2 = 5;
 
-const int TEX_FEAT_CORNER_CROP = 1;
+const int TEX_FEAT_4T5V = 1;
 
 //"2 triangles, 4 vertices" -- This set of constants gives us the vertex
 //indices for ScreenTextures which are composed of 2 triangles and 4 unique

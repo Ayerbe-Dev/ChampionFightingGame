@@ -262,7 +262,7 @@ ScreenTexture::~ScreenTexture() {
 void ScreenTexture::init(std::string path, unsigned char features) {
 	//Setting up shaders is the same between OpenGL and Vulkan
 	this->features = features;
-	v_spec = (features & TEX_FEAT_CORNER_CROP) ? v_spec_4t5v : v_spec_2t4v;
+	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
 	set_default_vertex_data();
 	set_shader("default");
 	shader->use();
@@ -321,7 +321,7 @@ void ScreenTexture::init(std::string path, unsigned char features) {
 
 void ScreenTexture::init(std::vector<unsigned int> texture, unsigned char features, int width, int height) {
 	this->features = features;
-	v_spec = (features & TEX_FEAT_CORNER_CROP) ? v_spec_4t5v : v_spec_2t4v;
+	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
 	set_default_vertex_data();
 	set_shader("default");
 	shader->use();
@@ -1841,6 +1841,41 @@ void ScreenTexture::update_buffer_data() {
 	}
 
 	if (update) {
+		if (v_spec.num_vertices == 5) {
+			if (v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x > 0.0
+			|| v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x > 0.0) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.x = std::max(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x);
+			}
+			else if (v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x < 0.0
+			|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x < 0.0) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.x = std::min(v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x);
+			}
+			if (v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y > 0.0
+				|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y > 0.0) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.y = std::max(v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y);
+			}
+			else if (v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y < 0.0
+				|| v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y < 0.0) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.y = std::min(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y, v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y);
+			}
+
+			if (v_data_for_gpu[ST_4T5V_TOP_LEFT].tex_coord.x > 0.5
+				|| v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].tex_coord.x > 0.5) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].tex_coord.x = std::max(v_data_for_gpu[ST_4T5V_TOP_LEFT].tex_coord.x, v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].tex_coord.x);
+			}
+			else if (v_data_for_gpu[ST_4T5V_TOP_RIGHT].tex_coord.x < 0.5
+				|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].tex_coord.x < 0.5) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].tex_coord.x = std::min(v_data_for_gpu[ST_4T5V_TOP_RIGHT].tex_coord.x, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].tex_coord.x);
+			}
+			if (v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].tex_coord.y > 0.5
+				|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].tex_coord.y > 0.5) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].tex_coord.y = std::max(v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].tex_coord.y, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].tex_coord.y);
+			}
+			else if (v_data_for_gpu[ST_4T5V_TOP_LEFT].tex_coord.y < 0.5
+				|| v_data_for_gpu[ST_4T5V_TOP_RIGHT].tex_coord.y < 0.5) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].tex_coord.y = std::min(v_data_for_gpu[ST_4T5V_TOP_LEFT].tex_coord.y, v_data_for_gpu[ST_4T5V_TOP_RIGHT].tex_coord.y);
+			}
+		}
 		for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 			v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
 		}

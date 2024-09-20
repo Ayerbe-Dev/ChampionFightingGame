@@ -1331,7 +1331,7 @@ void Battle::render_world() {
 	for (int i = 0; i < 2; i++) {
 		fighter[i]->render_shadow();
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+			if (fighter[i]->projectiles[i2]->get_alpha() != 0 && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render_shadow();
 			}
 		}
@@ -1361,7 +1361,7 @@ void Battle::render_world() {
 		fighter[i]->render();
 		shader_manager->set_global_float("Outline", 0.5f);
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+			if (fighter[i]->projectiles[i2]->get_alpha() != 0 && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render();
 			}
 		}
@@ -1383,7 +1383,7 @@ void Battle::render_world() {
 		fighter[i]->render();
 		shader_manager->set_global_float("Outline", 0.5f);
 		for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
-			if (fighter[i]->projectiles[i2]->active && fighter[i]->projectiles[i2]->has_model) {
+			if (fighter[i]->projectiles[i2]->get_alpha() != 0 && fighter[i]->projectiles[i2]->has_model) {
 				fighter[i]->projectiles[i2]->render();
 			}
 		}

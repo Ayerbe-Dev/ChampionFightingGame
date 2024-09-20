@@ -24,8 +24,9 @@ void Projectile::load_projectile() {
 	load_battle_object_status_scripts();
 	load_move_scripts();
 	load_sounds();
-
+	active = false;
 	change_status(BATTLE_OBJECT_STATUS_NONE, false);
+	set_alpha(0);
 }
 
 void Projectile::load_sounds() {

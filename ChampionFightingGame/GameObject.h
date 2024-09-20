@@ -41,6 +41,7 @@ public:
 
 	bool is_in_camera_range();
 	void set_alpha(unsigned char alpha);
+	void set_alpha(unsigned char alpha, int frames);
 	void add_alpha(short alpha);
 	unsigned char get_alpha() const;
 	void render();

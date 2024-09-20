@@ -7,6 +7,7 @@
 #include <assimp/postprocess.h>
 #include <glm/gtx/euler_angles.hpp>
 #include <unordered_map>
+#include "TargetVar.h"
 
 #include "Bone.h"
 
@@ -145,6 +146,7 @@ public:
 	void set_mesh_mat(std::string mesh_name, std::string mat_name);
 
 	void set_alpha(unsigned char alpha);
+	void set_alpha(unsigned char alpha, int frames);
 	void add_alpha(short alpha);
 	unsigned char get_alpha() const;
 
@@ -173,5 +175,5 @@ private:
 	bool move;
 	bool flip;
 	bool enable_ex_render;
-	unsigned char alpha;
+	TargetVar<unsigned char> alpha;
 };

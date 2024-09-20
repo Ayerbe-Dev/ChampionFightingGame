@@ -664,6 +664,10 @@ void ModelInstance::set_alpha(unsigned char alpha) {
 	this->alpha = alpha;
 }
 
+void ModelInstance::set_alpha(unsigned char alpha, int frames) {
+	this->alpha.set_target_val(alpha, frames);
+}
+
 void ModelInstance::add_alpha(short alpha) {
 	this->alpha = clamp(0, (short)this->alpha + alpha, 255);
 }

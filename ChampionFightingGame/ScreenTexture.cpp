@@ -1669,6 +1669,12 @@ glm::vec3 ScreenTexture::get_colormod() const {
 }
 
 ScreenTexture& ScreenTexture::flip_h() {
+	std::swap(v_pos[v_spec.bottom_left_idx].x.get_val_ref(), v_pos[v_spec.bottom_right_idx].x.get_val_ref());
+	std::swap(v_pos[v_spec.top_left_idx].x.get_val_ref(), v_pos[v_spec.top_right_idx].x.get_val_ref());
+	std::swap(v_pos_accessor[v_spec.bottom_left_idx], v_pos_accessor[v_spec.bottom_right_idx]);
+	std::swap(v_texcoord_accessor[v_spec.bottom_left_idx], v_texcoord_accessor[v_spec.bottom_right_idx]);
+	std::swap(v_pos_accessor[v_spec.top_left_idx], v_pos_accessor[v_spec.top_right_idx]);
+	std::swap(v_texcoord_accessor[v_spec.top_left_idx], v_texcoord_accessor[v_spec.top_right_idx]);
 	h_flipped = !h_flipped;
 	return *this;
 }
@@ -1842,21 +1848,29 @@ void ScreenTexture::update_buffer_data() {
 
 	if (update) {
 		if (v_spec.num_vertices == 5) {
-			if (v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x > 0.0
-			|| v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x > 0.0) {
-				v_data_for_gpu[ST_4T5V_MIDDLE].pos.x = std::max(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x);
+			if ((v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x > 0.0
+			|| v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x > 0.0) != h_flipped) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.x = (h_flipped ? 
+					std::min(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x) 
+					: std::max(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.x));
 			}
-			else if (v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x < 0.0
-			|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x < 0.0) {
-				v_data_for_gpu[ST_4T5V_MIDDLE].pos.x = std::min(v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x);
+			else if ((v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x < 0.0
+			|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x < 0.0) != h_flipped) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.x = (h_flipped ?
+					std::max(v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x)
+					: std::min(v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.x, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.x));
 			}
-			if (v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y > 0.0
-				|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y > 0.0) {
-				v_data_for_gpu[ST_4T5V_MIDDLE].pos.y = std::max(v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y);
+			if ((v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y > 0.0
+				|| v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y > 0.0) != v_flipped) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.y = (v_flipped ? 
+					std::min(v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y)
+					: std::max(v_data_for_gpu[ST_4T5V_BOTTOM_LEFT].pos.y, v_data_for_gpu[ST_4T5V_BOTTOM_RIGHT].pos.y));
 			}
-			else if (v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y < 0.0
-				|| v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y < 0.0) {
-				v_data_for_gpu[ST_4T5V_MIDDLE].pos.y = std::min(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y, v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y);
+			else if ((v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y < 0.0
+				|| v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y < 0.0) != v_flipped) {
+				v_data_for_gpu[ST_4T5V_MIDDLE].pos.y = (v_flipped ?
+					std::max(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y, v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y)
+					: std::min(v_data_for_gpu[ST_4T5V_TOP_LEFT].pos.y, v_data_for_gpu[ST_4T5V_TOP_RIGHT].pos.y));
 			}
 
 			if (v_data_for_gpu[ST_4T5V_TOP_LEFT].tex_coord.x > 0.5

@@ -17,7 +17,8 @@ void debug_main() {
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	
 	ScreenTexture test_screentexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
-	
+	test_screentexture.flip_h().flip_v();
+
 	DebugMenu *debug = new DebugMenu;
 
 	window_manager->update_shader_cams();

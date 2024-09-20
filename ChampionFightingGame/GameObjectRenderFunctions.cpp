@@ -17,6 +17,10 @@ void GameObject::set_alpha(unsigned char alpha) {
 	model.set_alpha(alpha);
 }
 
+void GameObject::set_alpha(unsigned char alpha, int frames) {
+	model.set_alpha(alpha, frames);
+}
+
 void GameObject::add_alpha(short alpha) {
 	model.add_alpha(alpha);
 }

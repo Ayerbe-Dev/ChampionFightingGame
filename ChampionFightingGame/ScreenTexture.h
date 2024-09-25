@@ -29,8 +29,8 @@ public:
 	ScreenTexture& operator=(ScreenTexture&& that) noexcept;
 	~ScreenTexture();
 
-	void init(std::string path, unsigned char features);
-	void init(std::vector<unsigned int> texture, unsigned char features, int width = -1, int height = -1);
+	ScreenTexture& init(std::string path, unsigned char features);
+	ScreenTexture& init(std::vector<unsigned int> texture, unsigned char features, int width = -1, int height = -1);
 	void destroy();
 	ScreenTexture init_copy() const;
 	ScreenTexture& set_shader(std::string frag_shader);

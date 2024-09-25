@@ -259,7 +259,7 @@ ScreenTexture::~ScreenTexture() {
 	}
 }
 
-void ScreenTexture::init(std::string path, unsigned char features) {
+ScreenTexture& ScreenTexture::init(std::string path, unsigned char features) {
 	//Setting up shaders is the same between OpenGL and Vulkan
 	this->features = features;
 	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
@@ -317,9 +317,10 @@ void ScreenTexture::init(std::string path, unsigned char features) {
 #endif
 	loaded = true;
 	this->path = path;
+	return *this;
 }
 
-void ScreenTexture::init(std::vector<unsigned int> texture, unsigned char features, int width, int height) {
+ScreenTexture& ScreenTexture::init(std::vector<unsigned int> texture, unsigned char features, int width, int height) {
 	this->features = features;
 	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
 	set_default_vertex_data();
@@ -366,6 +367,7 @@ void ScreenTexture::init(std::vector<unsigned int> texture, unsigned char featur
 #endif
 	loaded = true;
 	this->texture = texture;
+	return *this;
 }
 
 void ScreenTexture::destroy() {
@@ -1747,39 +1749,34 @@ unsigned int ScreenTexture::get_sprite() const {
 void ScreenTexture::render() {
 	glm::vec3 render_pos = pos.get_val();
 
-	if (!(screen_orientation & TEXTURE_H_MID)) {
-		if (screen_orientation & TEXTURE_LEFT) {
-			render_pos.x -= WINDOW_WIDTH;
-		}
-		else {
-			render_pos *= -1.0;
-			render_pos.x += WINDOW_WIDTH;
-		}
+	
+	if (screen_orientation & TEXTURE_LEFT) {
+		render_pos.x -= WINDOW_WIDTH;
 	}
-	if (!(screen_orientation & TEXTURE_V_MID)) {
-		if (screen_orientation & TEXTURE_TOP) {
-			render_pos *= -1.0;
-			render_pos.y += WINDOW_HEIGHT;
-		}
-		else {
-			render_pos.y -= WINDOW_HEIGHT;
-		}
+	else if (screen_orientation & TEXTURE_RIGHT) {
+		render_pos *= -1.0;
+		render_pos.x += WINDOW_WIDTH;
 	}
-	if (!(texture_orientation & TEXTURE_H_MID)) {
-		if (texture_orientation & TEXTURE_LEFT) {
-			render_pos.x += get_width() / 2;
-		}
-		else {
-			render_pos.x -= get_width() / 2;
-		}
+	
+	if (screen_orientation & TEXTURE_TOP) {
+		render_pos *= -1.0;
+		render_pos.y += WINDOW_HEIGHT;
 	}
-	if (!(texture_orientation & TEXTURE_V_MID)) {
-		if (texture_orientation & TEXTURE_TOP) {
-			render_pos.y -= get_height() / 2;
-		}
-		else {
-			render_pos.y += get_height() / 2;
-		}
+	else if (screen_orientation & TEXTURE_BOTTOM) {
+		render_pos.y -= WINDOW_HEIGHT;
+	}
+	
+	if (texture_orientation & TEXTURE_LEFT) {
+		render_pos.x += get_width();
+	}
+	else if (texture_orientation & TEXTURE_RIGHT) {
+		render_pos.x -= get_width();
+	}
+	if (texture_orientation & TEXTURE_TOP) {
+		render_pos.y -= get_height();
+	}
+	else if (texture_orientation & TEXTURE_BOTTOM) {
+		render_pos.y += get_height();
 	}
 	render_pos.x /= (float)WINDOW_WIDTH;
 	render_pos.y /= (float)WINDOW_HEIGHT;

@@ -23,10 +23,6 @@ void debug_main() {
 	window_manager->update_shader_cams();
 	window_manager->update_shader_lights();
 
-	float percent_x[4] = { 1.0, 0.0, 1.0, 0.0 };
-	float percent_y[4] = { 1.0, 1.0, 0.0, 0.0 };
-	int target = 0;
-
 	cotr_imgui_init();
 
 	while (debug->looping) {
@@ -37,52 +33,6 @@ void debug_main() {
 			game_manager->player[i]->controller.check_controllers();
 		}
 
-		if (glfwGetKey(window_manager->window, GLFW_KEY_1)) {
-			target = 0;
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_2)) {
-			target = 1;
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_3)) {
-			target = 2;
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_4)) {
-			target = 3;
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_6) || glfwGetKey(window_manager->window, GLFW_KEY_KP_9) || glfwGetKey(window_manager->window, GLFW_KEY_KP_3)) {
-			percent_x[target] = std::min(percent_x[target] + 0.05, 1.0);
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_4) || glfwGetKey(window_manager->window, GLFW_KEY_KP_7) || glfwGetKey(window_manager->window, GLFW_KEY_KP_1)) {
-			percent_x[target] = std::max(percent_x[target] - 0.05, 0.0);
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_8) || glfwGetKey(window_manager->window, GLFW_KEY_KP_7) || glfwGetKey(window_manager->window, GLFW_KEY_KP_9)) {
-			percent_y[target] = std::min(percent_y[target] + 0.05, 1.0);
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_2) || glfwGetKey(window_manager->window, GLFW_KEY_KP_1) || glfwGetKey(window_manager->window, GLFW_KEY_KP_3)) {
-			percent_y[target] = std::max(percent_y[target] - 0.05, 0.0);
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_5)) {
-			percent_x[0] = 1.0;
-			percent_x[1] = 0.0; 
-			percent_x[2] = 1.0; 
-			percent_x[3] = 0.0;
-
-			percent_y[0] = 1.0;
-			percent_y[1] = 1.0;
-			percent_y[2] = 0.0;
-			percent_y[3] = 0.0;
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_MULTIPLY)) {
-			test_screentexture.flip_h();
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_KP_DIVIDE)) {
-			test_screentexture.flip_v();
-		}
-
-
-
-		test_screentexture.crop_top_right_corner(percent_x[0], percent_y[0]).crop_top_left_corner(1.0 - percent_x[1], percent_y[1])
-			.crop_bottom_right_corner(percent_x[2], 1.0 - percent_y[2]).crop_bottom_left_corner(1.0 - percent_x[3], 1.0 - percent_y[3]);
 
 		debug->process_game_state();
 		debug->render_game_state();

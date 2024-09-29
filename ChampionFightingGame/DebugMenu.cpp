@@ -33,7 +33,6 @@ void debug_main() {
 			game_manager->player[i]->controller.check_controllers();
 		}
 
-
 		debug->process_game_state();
 		debug->render_game_state();
 		test_screentexture.render();

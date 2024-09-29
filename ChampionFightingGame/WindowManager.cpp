@@ -41,7 +41,7 @@ WindowManager::WindowManager() {
 	glViewport(0, 0, window_width, window_height);
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
+	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 
 	glEnable(GL_BLEND);
@@ -292,7 +292,8 @@ void WindowManager::set_resolution(int width, int height) {
 }
 
 void WindowManager::reset_gl_environment() {
-	glDepthMask(GL_FALSE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 
 	glDisable(GL_CULL_FACE);

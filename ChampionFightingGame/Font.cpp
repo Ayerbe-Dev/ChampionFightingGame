@@ -75,10 +75,10 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 		width += (tex_char.advance >> 6);
 	}
 
-	float x_offset = border_rgbs.a * 2.0f;
-	float y_offset = base_y_offset + border_rgbs.a * 2.0f;
-	width = (width / 2.0f) + border_rgbs.a;
-	float height = (base_height / 2.0f) + border_rgbs.a;
+	float x_offset = border_rgbs.a;
+	float y_offset = base_y_offset + border_rgbs.a;
+	width = width / 2.0f + border_rgbs.a;
+	float height = base_height / 2.0f + border_rgbs.a;
 
 	//Create a texture using our calculated size
 
@@ -99,8 +99,8 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
@@ -122,6 +122,8 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glActiveTexture(GL_TEXTURE1);
+	GLboolean depth = false;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &depth);
 	glDepthMask(GL_FALSE);
 
 	shader->use();
@@ -156,7 +158,104 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
-	glDepthMask(GL_TRUE);
+	glDepthMask(depth);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	prev_width = width;
+	prev_height = height;
+
+	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+
+	return texture;
+}
+
+unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned int* existing_texture) {
+	WindowManager* window_manager = WindowManager::get_instance();
+	//Calculate the width of our texture by determining the width of each line, adding a new one
+	//every time either:
+	//- The width of the current line exceeds a user-specified limit
+	//- We encounter a '\n' character
+	std::vector<float> width_lines = { 0.0f };
+	int longest_line = 0;
+	for (char c = 0, max = text.size(); c < max; c++) {
+		TexChar tex_char;
+		if (char_map.contains(text[c])) {
+			tex_char = char_map[text[c]];
+		}
+		unsigned int char_width = (tex_char.advance >> 6);
+		if (width_lines.back() + char_width > spec.max_line_length || text[c] == '\n') {
+			if (width_lines.back() > width_lines[longest_line]) {
+				longest_line = width_lines.size() - 1;
+			}
+			width_lines.push_back(0.0f);
+		}
+		width_lines.back() += char_width;
+	}
+
+	float width = width_lines[longest_line] / 2.0f + spec.border_rgbs.a;
+	float height = base_height / 2.0f * (width_lines.size() + 1) + spec.border_rgbs.a;
+	std::vector<float> x_offsets;
+	for (size_t i = 0, max = width_lines.size(); i < max; i++) {
+		if (spec.enable_center) {
+			x_offsets.push_back((width - width_lines[i]) / 2.0f + spec.border_rgbs.a * 2.0f);
+		}
+		else {
+			x_offsets.push_back(spec.border_rgbs.a * 2.0f);
+		}
+	}
+	float y_offset = base_height * (width_lines.size() - 1) + base_y_offset + spec.border_rgbs.a * 2.0;
+
+	//Texture setup
+
+	unsigned int texture;
+	if (existing_texture == nullptr) {
+		glGenTextures(1, &texture);
+	}
+	else {
+		texture = *existing_texture;
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//Renderbuffer setup
+
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Render Time
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glActiveTexture(GL_TEXTURE1);
+	GLboolean depth = false;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &depth);
+	glDepthMask(GL_FALSE);
+
+	glViewport(0, 0, prev_width, prev_height);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, width, height);
+	
+	shader->use();
+	shader->set_active_vec4(spec.rgba / 255.0f);
+
+
+
+	//Post Render
+
+	glDepthMask(depth);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
@@ -196,4 +295,8 @@ void Font::write_to_fbo(std::string text, float x_offset, float y_offset, float 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		x_offset += (tex_char.advance >> 6);
 	}
+}
+
+void Font::write_to_fbo(std::string text, std::vector<float> x_offset, float y_offset, float width, float height) {
+
 }

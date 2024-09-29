@@ -4,6 +4,9 @@
 #include "ShaderManager.h"
 #include "utils.h"
 
+/// <summary>
+/// Default constructor for ScreenTexture
+/// </summary>
 ScreenTexture::ScreenTexture() {
 #ifdef TEX_IMPL_MODE_VULKAN
 	this->top_right_corner_scale = 100.0f;
@@ -1057,48 +1060,6 @@ ScreenTexture& ScreenTexture::crop_bottom_edge(float percent, int frames) {
 	return *this;
 }
 
-/*
-  _______ ____  _____   ____  
- |__   __/ __ \|  __ \ / __ \ 
-    | | | |  | | |  | | |  | |
-    | | | |  | | |  | | |  | |
-    | | | |__| | |__| | |__| |
-    |_|  \____/|_____/ \____/ 
-                              
-Most 3D Rendering Implementations don't support quads, including modern OpenGL and
-(probably) Fez's Vulkan impl as well. As a result, a "rectangle" is actually two right
-triangles stacked on top of each other, likeso:
-
-				  C1								 C2, C5
-					************************************
-					*:::::::::::::::::::::::::::::****:*
-					*:::::::::::::::::::::::::****:::::*
-					*:::::::::::::::::::::****:::::::::*
-					*:::::::::::::::::****:::::::::::::*
-					*:::::::::::::****:::::::::::::::::*
-					*:::::::::****:::::::::::::::::::::*
-					*:::::****:::::::::::::::::::::::::*
-					*:****:::::::::::::::::::::::::::::*
-					************************************
-				  C3, C6								C4
-
-The first triangle is (C1, C2, C3), and the second is (C4, C5, C6). In practice, we can effectively 
-treat this as a quad and just copy the values of C2 and C3 to C5 and C6 respectively whenever they
-change. However, since the GPU still sees two separate triangles, moving the corner (such as in a crop)
-of one triangle doesn't necessarily mean the other one will be affected. 
-
-For edge cropping, this problem because we always move a corner which is part of both triangles, but
-for corner crops that involve C1 or C4 specifically, there won't be any visual difference between
-cropping 50% and cropping 100%. Getting around this issue likely involves compensating by moving C2 and
-C3 in someway, but we need to figure out what that math looks like.
-
-Alternative Idea: 4 triangles, 12 vertices. 2 for each corner, 4 for the middle:
-- If two adjacent corners cross the middle on the axis that they share (E.G. Top Left and Bottom Left
-  both have an x pos > 0.0 or an x texcoord > 0.5), move the middle's position for that axis to the 
-  lower of the corners' positions
-- If one corner crosses the middle on both axes, move the middle to wherever that corner is
-
-*/
 ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 	top_right_corner_scale = percent_x;

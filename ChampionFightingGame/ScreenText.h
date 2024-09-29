@@ -1,23 +1,58 @@
 #pragma once
 #include <iostream>
+#include <glew/glew.h>
 #include "Font.h"
 #include "TextureCommon.h"
 #include "TargetStructs.h"
-
-//Needed:
-//	- Pos/Rot
-//	- Text, obviously
-//	- Alpha
-//	- Color
-//	- Size? Might be covered under font...
-//	- shit man is WorldText gonna be a thing later
-//		- prob not, either way ST should still not just use ScreenTexture as a base the way old GT worked
 
 class ScreenText {
 public:
 	ScreenText();
 
-	ScreenText& init();
+	ScreenText& init(Font* font, std::string text, TextSpecifier spec);
+	void destroy();
+
+	ScreenText& set_screen_orientation(int orientation);
+	ScreenText& set_texture_orientation(int orientation);
+	ScreenText& set_orientation(int screen_orientation, int texture_orientation);
+	int get_screen_orientation() const;
+	int get_texture_orientation() const;
+
+	ScreenText& set_pos(glm::vec3 pos);
+	ScreenText& set_pos(glm::vec3 pos, int frames);
+	ScreenText& add_pos(glm::vec3 pos);
+	glm::vec3 get_pos() const;
+
+	ScreenText& set_rot(glm::vec3 rot);
+	ScreenText& set_rot(glm::vec3 rot, int frames);
+	ScreenText& add_rot(glm::vec3 rot);
+	glm::vec3 get_rot() const;
+
+	ScreenText& set_base_width(int new_width);
+	ScreenText& set_base_width(int new_width, int frames);
+	ScreenText& add_base_width(int width);
+	int get_base_width() const;
+
+	ScreenText& set_base_height(int new_height);
+	ScreenText& set_base_height(int new_height, int frames);
+	ScreenText& add_base_height(int height);
+	int get_base_height() const;
+
+	float get_width() const;
+	float get_height() const;
+
+	ScreenText& set_width_scale(float scale);
+	ScreenText& set_width_scale(float scale, int frames);
+	ScreenText& add_width_scale(float scale);
+	float get_width_scale() const;
+
+	ScreenText& set_height_scale(float scale);
+	ScreenText& set_height_scale(float scale, int frames);
+	ScreenText& add_height_scale(float scale);
+	float get_height_scale() const;
+
+	ScreenText& set_scale(float scale);
+	ScreenText& set_scale(float scale, int frames);
 
 	ScreenText& update_text(std::string new_text);
 
@@ -30,21 +65,25 @@ private:
 	unsigned int VAO;
 	unsigned int VBO;
 #endif
+	std::vector<TargetVec2> v_pos;
+	std::vector<TargetVec2> v_texcoord;
+	std::vector<TextureCoord> v_data_for_gpu;
+
+	unsigned int texture;
+	Shader* shader;
+	std::string text;
+	Font* font;
+
+	int screen_orientation;
+	int texture_orientation;
+
 	TargetVar<glm::vec3> pos;
 	TargetVar<glm::vec3> rot;
 
-	TargetVar<unsigned char> alpha;
-	TargetVar<glm::vec3> colormod;
-
-	std::vector<TextureCoord> v_data_for_gpu; //We can modify this directly since textures won't support
-	//flipping
-
-	//That being said, text scrolling is going to require 2 tris per line (:
-	
-	int lines;
-
-	Shader* shader;
-	std::string text;
-	unsigned int texture;
-	Font* font; 
+	TargetVar<int> base_width;
+	TargetVar<int> base_height;
+	TargetVar<float> width_scale;
+	TargetVar<float> height_scale;
+private:
+	void update_buffer_data();
 };

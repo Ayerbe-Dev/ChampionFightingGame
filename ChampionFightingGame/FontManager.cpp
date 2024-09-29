@@ -43,7 +43,7 @@ Font FontManager::load_font(std::string name, int size) {
 	Font ret;
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	for (unsigned char c = 0; c < 128; c++) { //woah i said the thing
+	for (unsigned char c = 0; c < 128; c++) {
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			GameManager::get_instance()->add_crash_log("Failed to load char " + c);
 			continue;

@@ -8,6 +8,7 @@
 #include "DebugMenu.h"
 #include "Battle.h"
 #include "StageSelect.h"
+#include "Opening.h"
 
 void cotr_imgui_init() {
 	IMGUI_CHECKVERSION();
@@ -122,6 +123,9 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	}
 	if (ImGui::MenuItem("Pause Menu")) {
 		game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
+	}
+	if (ImGui::MenuItem("Opening")) {
+		opening_main();
 	}
 	if (ImGui::Button("exit")) {
 		game_manager->update_state(GAME_STATE_CLOSE);

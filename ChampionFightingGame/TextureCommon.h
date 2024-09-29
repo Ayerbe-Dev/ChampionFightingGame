@@ -1,5 +1,5 @@
 #pragma once
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 const int TEX_COORD_TOP_LEFT = 0;
 const int TEX_COORD_TOP_RIGHT = 1;

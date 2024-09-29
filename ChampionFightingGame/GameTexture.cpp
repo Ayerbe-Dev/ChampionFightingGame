@@ -1044,7 +1044,7 @@ void GameTexture::render_prepared() {
 		if (shader->features & SHADER_FEAT_COLORMOD) {
 			shader->set_vec3("f_colormod", colormod);
 		}
-		shader->set_float("f_alphamod", 1.0 - ((float)alpha.get_val() / 255.0));
+		shader->set_float("f_alphamod", 1.0 - ((float)alpha.get_val() / 255.0f));
 		if (glIsEnabled(GL_CULL_FACE)) {
 			glDisable(GL_CULL_FACE);
 			glDrawArrays(GL_TRIANGLES, 0, 6);

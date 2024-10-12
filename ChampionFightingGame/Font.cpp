@@ -132,7 +132,31 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	glViewport(0, 0, width, height);
 
 	shader->set_active_vec4(rgba);
-	write_to_fbo(text, x_offset, y_offset, width, height);
+
+	x_offset -= char_map[text[0]].bearing.x;
+	x_offset -= width;
+	for (char c = 0, max = text.size(); c < max; c++) {
+		TexChar tex_char = char_map[text[c]];
+		float x_pos = (x_offset + tex_char.bearing.x) / width;
+		float y_pos = ((y_offset - (tex_char.size.y - tex_char.bearing.y)) / height) - 1.0f;
+		float w = tex_char.size.x / width;
+		float h = tex_char.size.y / height;
+
+		float coords[6][4] = {
+			{ x_pos, y_pos + h,		0.0f, 0.0f },
+			{ x_pos, y_pos,			0.0f, 1.0f },
+			{ x_pos + w, y_pos,		1.0f, 1.0f },
+
+			{ x_pos, y_pos + h,		0.0f, 0.0f },
+			{ x_pos + w, y_pos,		1.0f, 1.0f },
+			{ x_pos + w, y_pos + h,	1.0f, 0.0f },
+		};
+
+		glBindTexture(GL_TEXTURE_2D, tex_char.texture);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		x_offset += (tex_char.advance >> 6);
+	}
 
 	if (border_rgbs.a) {
 		glm::vec2 border_size = border_rgbs.a / glm::vec2(width, height);
@@ -173,41 +197,35 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	return texture;
 }
 
-unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned int* existing_texture) {
+unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned int* num_lines, unsigned int* existing_texture) {
 	WindowManager* window_manager = WindowManager::get_instance();
 	//Calculate the width of our texture by determining the width of each line, adding a new one
 	//every time either:
 	//- The width of the current line exceeds a user-specified limit
 	//- We encounter a '\n' character
 	std::vector<float> width_lines = { 0.0f };
+	std::vector<size_t> newline_indices = { 0 };
 	int longest_line = 0;
-	for (char c = 0, max = text.size(); c < max; c++) {
-		TexChar tex_char;
-		if (char_map.contains(text[c])) {
-			tex_char = char_map[text[c]];
-		}
+	for (size_t i = 0, max = text.size(); i < max; i++) {
+		if (!char_map.contains(text[i])) continue;
+		TexChar	tex_char = char_map[text[i]];
 		unsigned int char_width = (tex_char.advance >> 6);
-		if (width_lines.back() + char_width > spec.max_line_length || text[c] == '\n') {
+		if (width_lines.back() + char_width > spec.max_line_length || text[i] == '\n') {
 			if (width_lines.back() > width_lines[longest_line]) {
 				longest_line = width_lines.size() - 1;
 			}
 			width_lines.push_back(0.0f);
+			newline_indices.push_back(i+1);
+			
 		}
-		width_lines.back() += char_width;
+		if (text[i] != '\n') {
+			width_lines.back() += char_width;
+		}
 	}
+	*num_lines = width_lines.size();
 
-	float width = width_lines[longest_line] / 2.0f + spec.border_rgbs.a;
-	float height = base_height / 2.0f * (width_lines.size() + 1) + spec.border_rgbs.a;
-	std::vector<float> x_offsets;
-	for (size_t i = 0, max = width_lines.size(); i < max; i++) {
-		if (spec.enable_center) {
-			x_offsets.push_back((width - width_lines[i]) / 2.0f + spec.border_rgbs.a * 2.0f);
-		}
-		else {
-			x_offsets.push_back(spec.border_rgbs.a * 2.0f);
-		}
-	}
-	float y_offset = base_height * (width_lines.size() - 1) + base_y_offset + spec.border_rgbs.a * 2.0;
+	float width = width_lines[longest_line] + spec.border_rgbs.a * 2.0f;
+	float height = base_height * *num_lines + spec.border_rgbs.a * 2.0f; //Border size
 
 	//Texture setup
 
@@ -218,6 +236,11 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	else {
 		texture = *existing_texture;
 	}
+#ifdef DEBUG
+	float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+#else
+	float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+#endif
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -225,6 +248,7 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
 
 	//Renderbuffer setup
 
@@ -245,38 +269,37 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	glDepthMask(GL_FALSE);
 
 	glViewport(0, 0, prev_width, prev_height);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, width, height);
-	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, width * 2, height * 2);
+
 	shader->use();
 	shader->set_active_vec4(spec.rgba / 255.0f);
 
+	std::vector<float> x_offsets;
+	std::vector<float> y_offsets;
+	for (size_t i = 0; i < *num_lines; i++) {
+		if (spec.enable_center) {
+			x_offsets.push_back((width - width_lines[i]) / 2.0f + spec.border_rgbs.a - width);
+		}
+		else {
+			x_offsets.push_back(spec.border_rgbs.a - width);
+		}
+		y_offsets.push_back(
+			base_height * (*num_lines - i - 1)
+			+ base_y_offset
+			+ spec.border_rgbs.a 
+			- height
+		);
+	}
+	for (size_t i = 0, line_idx = -1; i < text.size(); i++) {
+		if (text[i] == '\n') continue;
+		if (newline_indices[line_idx + 1] == i) {
+			x_offsets[++line_idx] -= char_map[text[i]].bearing.x;
+		}
+		TexChar tex_char = char_map[text[i]];
 
-
-	//Post Render
-
-	glDepthMask(depth);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	prev_width = width;
-	prev_height = height;
-
-	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
-
-	return texture;
-}
-
-void Font::write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height) {
-	x_offset -= char_map[text[0]].bearing.x;
-	x_offset -= width;
-	for (char c = 0, max = text.size(); c < max; c++) {
-		TexChar tex_char = char_map[text[c]];
-		float x_pos = (x_offset + tex_char.bearing.x) / width;
-		float y_pos = ((y_offset - (tex_char.size.y - tex_char.bearing.y)) / height) - 1.0f;
+		float x_pos = (x_offsets[line_idx] + tex_char.bearing.x) / width;
+		float y_pos = (y_offsets[line_idx] - (tex_char.size.y - tex_char.bearing.y)) / height;
 		float w = tex_char.size.x / width;
 		float h = tex_char.size.y / height;
 
@@ -291,12 +314,47 @@ void Font::write_to_fbo(std::string text, float x_offset, float y_offset, float 
 		};
 
 		glBindTexture(GL_TEXTURE_2D, tex_char.texture);
+
+		//TODO: Fuck a coord, just use matrices like a normal person
+
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		x_offset += (tex_char.advance >> 6);
+		x_offsets[line_idx] += (tex_char.advance >> 6);
 	}
-}
 
-void Font::write_to_fbo(std::string text, std::vector<float> x_offset, float y_offset, float width, float height) {
+	if (spec.border_rgbs.a != 0.0f) {
+		glViewport(0, 0, width, height);
+		glm::vec2 border_size = spec.border_rgbs.a / glm::vec2(width * 2, height * 2);
+		border_shader->use();
+		border_shader->set_active_vec2(border_size);
+		border_shader->set_vec4("border_color", spec.border_rgbs.r / 255.0f, spec.border_rgbs.g / 255.0f, spec.border_rgbs.b / 255.0f, spec.rgba.a / 255.0f);
+		glBindTexture(GL_TEXTURE_2D, texture);
 
+		float coords[6][4] = {
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f,  0.0f, 0.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f
+		};
+
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	//Post Render
+
+	glDepthMask(depth);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	prev_width = width * 2;
+	prev_height = height * 2;
+
+	return texture;
 }

@@ -41,7 +41,7 @@ Font FontManager::load_font(std::string name, int size) {
 	FT_Set_Pixel_Sizes(face, 0, size);
 
 	Font ret;
-
+	float max_bearing = 0.0f;
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	for (unsigned char c = 0; c < 128; c++) {
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -61,17 +61,12 @@ Font FontManager::load_font(std::string name, int size) {
 		tex_char.size = glm::vec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
 		tex_char.bearing = glm::vec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
 		tex_char.advance = face->glyph->advance.x;
-		if (ret.base_height < tex_char.size.y) {
-			ret.base_height = tex_char.size.y;
-		}
-		if (ret.base_y_offset < tex_char.size.y - tex_char.bearing.y) {
-			ret.base_y_offset = tex_char.size.y - tex_char.bearing.y;
-		}
-
+		ret.base_y_offset = std::max(tex_char.size.y - tex_char.bearing.y, ret.base_y_offset);
+		max_bearing = std::max(tex_char.bearing.y, max_bearing);
 		ret.char_map.insert(std::pair<char, TexChar>(c, tex_char));
 	}
-	ret.base_height += ret.base_y_offset;
-
+	ret.base_height = max_bearing + ret.base_y_offset;
+	
 	return ret;
 }
 

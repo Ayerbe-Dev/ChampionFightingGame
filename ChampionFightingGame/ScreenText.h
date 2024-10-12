@@ -11,6 +11,7 @@ public:
 
 	ScreenText& init(Font* font, std::string text, TextSpecifier spec);
 	void destroy();
+	ScreenText& set_shader(std::string frag_shader);
 
 	ScreenText& set_screen_orientation(int orientation);
 	ScreenText& set_texture_orientation(int orientation);
@@ -55,10 +56,14 @@ public:
 	ScreenText& set_scale(float scale, int frames);
 
 	ScreenText& update_text(std::string new_text);
+	ScreenText& start_scroll(int frames);
 
 	void render();
 
 private:
+	void set_default_vertex_data();
+	void update_buffer_data();
+
 #ifdef TEX_IMPL_MODE_VULKAN
 	//TODO: However Fez handles Vulkan vert info, plop it here
 #else
@@ -70,10 +75,11 @@ private:
 	std::vector<TextureCoord> v_data_for_gpu;
 
 	unsigned int texture;
+	unsigned int num_lines;
 	Shader* shader;
 	std::string text;
 	Font* font;
-
+	TargetVar<float> scroll;
 	int screen_orientation;
 	int texture_orientation;
 
@@ -84,6 +90,5 @@ private:
 	TargetVar<int> base_height;
 	TargetVar<float> width_scale;
 	TargetVar<float> height_scale;
-private:
-	void update_buffer_data();
+	TextSpecifier spec;
 };

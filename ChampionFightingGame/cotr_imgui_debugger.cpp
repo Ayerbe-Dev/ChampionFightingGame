@@ -60,7 +60,6 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 
 	ImGui::Begin("P1 Chara Kind", nullptr, 
 		ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoResize);
 	for (size_t i = 0; i < 18; i++) {
@@ -78,7 +77,6 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 
 	ImGui::Begin("P2 Chara Kind", nullptr,
 		ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoResize);
 	for (size_t i = 0; i < 18; i++) {

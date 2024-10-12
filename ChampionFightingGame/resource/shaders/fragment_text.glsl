@@ -9,4 +9,5 @@ void main() {
     vec4 sampled = vec4(1.0, 1.0, 1.0, texture(f_texture, tex_coords).r);
     vec4 tex_col = vec4(f_colormod.rgba);
     FragColor = tex_col * sampled;
+//    FragColor = tex_col;
 }

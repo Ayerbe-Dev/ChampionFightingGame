@@ -15,6 +15,12 @@ public:
 		z = 0.0;
 	}
 
+	TargetVec3(float x, float y, float z) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+
 	operator glm::vec3() const {
 		return glm::vec3(x, y, z);
 	}
@@ -120,6 +126,11 @@ public:
 	TargetVec2() {
 		x = 0.0;
 		y = 0.0;
+	}
+
+	TargetVec2(float x, float y) {
+		this->x = x;
+		this->y = y;
 	}
 
 	operator glm::vec2() const {

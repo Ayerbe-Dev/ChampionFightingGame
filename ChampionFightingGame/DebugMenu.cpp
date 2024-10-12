@@ -10,13 +10,20 @@
 #include "InputManager.h"
 #include "HxAFile.h"
 #include "ScreenTexture.h"
+#include "ScreenText.h"
 
 void debug_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
+	FontManager* font_manager = FontManager::get_instance();
+
+	font_manager->load_face("Fiend-Oblique");
+	Font test_font = font_manager->load_font("Fiend-Oblique", 64);
 	
 	ScreenTexture test_screentexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
+	ScreenText test_screentext;
+	test_screentext.init(&test_font, "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
 
 	DebugMenu *debug = new DebugMenu;
 
@@ -33,9 +40,26 @@ void debug_main() {
 			game_manager->player[i]->controller.check_controllers();
 		}
 
+		if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
+			test_screentext.update_text("Updated after we pressed W!").start_scroll(10);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
+			test_screentext.update_text("Updated after we pressed A!").start_scroll(10);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
+			test_screentext.update_text("Updated after we pressed S!").start_scroll(10);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
+			test_screentext.update_text("Updated after we pressed D!").start_scroll(10);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_SPACE)) {
+			test_screentext.update_text("This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)").start_scroll(180);
+		}
+
 		debug->process_game_state();
 		debug->render_game_state();
 		test_screentexture.render();
+		test_screentext.render();
 
 		cotr_imgui_debug_dbmenu(debug);
 
@@ -102,16 +126,16 @@ void DebugMenu::process_main() {
 	go2.process_animate();
 	WindowManager* window_manager = WindowManager::get_instance();
 	if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
-//		go1.add_pos(glm::vec3(0.0, 2.0, 0.0));
+		go1.add_pos(glm::vec3(0.0, 2.0, 0.0));
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
-//		go1.add_pos(glm::vec3(-2.0, 0.0, 0.0));
+		go1.add_pos(glm::vec3(-2.0, 0.0, 0.0));
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
-//		go1.add_pos(glm::vec3(0.0, -2.0, 0.0));
+		go1.add_pos(glm::vec3(0.0, -2.0, 0.0));
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
-//		go1.add_pos(glm::vec3(2.0, 0.0, 0.0));
+		go1.add_pos(glm::vec3(2.0, 0.0, 0.0));
 	}
 }
 

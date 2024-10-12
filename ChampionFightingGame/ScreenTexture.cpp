@@ -1710,7 +1710,6 @@ unsigned int ScreenTexture::get_sprite() const {
 void ScreenTexture::render() {
 	glm::vec3 render_pos = pos.get_val();
 
-	
 	if (screen_orientation & TEXTURE_LEFT) {
 		render_pos.x -= WINDOW_WIDTH;
 	}

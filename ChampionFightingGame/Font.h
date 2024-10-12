@@ -7,7 +7,7 @@ struct TextSpecifier {
 	TextSpecifier() {
 		rgba = glm::vec4(255.0, 255.0, 255.0, 255.0);
 		border_rgbs = glm::vec4(0.0, 0.0, 0.0, 0.0);
-		enable_scroll = false;
+		enable_multiline_scroll = false;
 		enable_center = false;
 		max_line_length = UINT32_MAX;
 	}
@@ -44,8 +44,8 @@ struct TextSpecifier {
 		return *this;
 	}
 
-	TextSpecifier& scroll(bool enable_scroll = true) {
-		this->enable_scroll = enable_scroll;
+	TextSpecifier& multiline_scroll(bool enable_multiline_scroll) {
+		this->enable_multiline_scroll = enable_multiline_scroll;
 		return *this;
 	}
 
@@ -56,11 +56,12 @@ struct TextSpecifier {
 
 	TextSpecifier& centered(bool center) {
 		enable_center = center;
+		return *this;
 	}
 
 	glm::vec4 rgba;
 	glm::vec4 border_rgbs;
-	bool enable_scroll;
+	bool enable_multiline_scroll;
 	bool enable_center;
 	unsigned int max_line_length;
 };
@@ -87,7 +88,7 @@ public:
 	void unload_font();
 
 	unsigned int create_text(std::string text, glm::vec4 rgba, glm::vec4 border_rgbs, unsigned int* existing_texture = nullptr);
-	unsigned int create_text(std::string text, TextSpecifier spec, unsigned int* existing_texture = nullptr);
+	unsigned int create_text(std::string text, TextSpecifier spec, unsigned int* num_lines, unsigned int* existing_texture);
 
 	unsigned int VAO;
 	unsigned int VBO;
@@ -102,8 +103,4 @@ public:
 	float base_y_offset;
 
 	std::unordered_map<char, TexChar> char_map;
-
-private:
-	void write_to_fbo(std::string text, float x_offset, float y_offset, float width, float height);
-	void write_to_fbo(std::string text, std::vector<float> x_offset, float y_offset, float width, float height);
 };

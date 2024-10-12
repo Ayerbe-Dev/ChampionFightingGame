@@ -18,32 +18,52 @@ Font::Font() {
 	shader = shader_manager->get_shader("text", "text", "", 0);
 	shader->use();
 	shader->set_int("f_texture", 1);
-	shader->set_active_uniform_location("f_colormod");
+	shader->set_active_uniform_location("matrix");
 	border_shader = shader_manager->get_shader("2d_outline", "2d_outline", "", 0);
 	border_shader->set_int("f_texture", 1);
 	border_shader->set_active_uniform_location("border_offset");
 
+	{
+		float coords[6][4] = {
+			0.0f,	1.0f,	0.0f,	0.0f,
+			0.0f,	0.0f,	0.0f,	1.0f,
+			1.0f,	0.0f,	1.0f,	1.0f,
 
-	float coords[6][4] = {
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
+			0.0f,	1.0f,	0.0f,	0.0f,
+			1.0f,	0.0f,	1.0f,	1.0f,
+			1.0f,	1.0f,	1.0f,	0.0f
+		};
+		glGenVertexArrays(1, &VAO);
+		glBindVertexArray(VAO);
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+		glBufferData(GL_ARRAY_BUFFER, sizeof(coords), &coords, GL_STATIC_DRAW);
+	}
 
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f
-	};
+	{
+		float coords[6][4] = {
+			-1.0f,	1.0f,	0.0f,	1.0f,
+			-1.0f,	-1.0f,	0.0f,	0.0f,
+			1.0f,	-1.0f,	1.0f,	0.0f,
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), &coords, GL_DYNAMIC_DRAW);
-
+			-1.0f,	1.0f,	0.0f,	1.0f,
+			1.0f,	-1.0f,	1.0f,	0.0f,
+			1.0f,	1.0f,	1.0f,	1.0f
+		};
+		glGenVertexArrays(1, &VAO_outline);
+		glBindVertexArray(VAO_outline);
+		glGenBuffers(1, &VBO_outline);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_outline);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+		glBufferData(GL_ARRAY_BUFFER, sizeof(coords), &coords, GL_STATIC_DRAW);
+	}
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -58,6 +78,8 @@ void Font::unload_font() {
 	glDeleteRenderbuffers(1, &RBO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO_outline);
+	glDeleteVertexArrays(1, &VAO_outline);
 	for (auto& it : char_map) {
 		glDeleteTextures(1, &it.second.texture);
 	}
@@ -126,12 +148,12 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	glGetBooleanv(GL_DEPTH_WRITEMASK, &depth);
 	glDepthMask(GL_FALSE);
 
-	shader->use();
 	glViewport(0, 0, prev_width, prev_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, width, height);
 
-	shader->set_active_vec4(rgba);
+	shader->use();
+	shader->set_vec4("f_colormod", rgba);
 
 	x_offset -= char_map[text[0]].bearing.x;
 	x_offset -= width;
@@ -142,43 +164,22 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 		float w = tex_char.size.x / width;
 		float h = tex_char.size.y / height;
 
-		float coords[6][4] = {
-			{ x_pos, y_pos + h,		0.0f, 0.0f },
-			{ x_pos, y_pos,			0.0f, 1.0f },
-			{ x_pos + w, y_pos,		1.0f, 1.0f },
-
-			{ x_pos, y_pos + h,		0.0f, 0.0f },
-			{ x_pos + w, y_pos,		1.0f, 1.0f },
-			{ x_pos + w, y_pos + h,	1.0f, 0.0f },
-		};
-
+		glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), glm::vec3(w, h, 1.0f));
+		glm::mat4 pos_mat = glm::translate(glm::mat4(1.0f), glm::vec3(x_pos, y_pos, 0.0f));
+		shader->set_active_mat4(pos_mat * scale_mat);
 		glBindTexture(GL_TEXTURE_2D, tex_char.texture);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		x_offset += (tex_char.advance >> 6);
 	}
 
 	if (border_rgbs.a) {
+		glBindVertexArray(VAO_outline);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_outline);
 		glm::vec2 border_size = border_rgbs.a / glm::vec2(width, height);
 		border_shader->use();
 		border_shader->set_active_vec2(border_size);
 		border_shader->set_vec4("border_color", border_rgbs.r, border_rgbs.g, border_rgbs.b, rgba.a);
 		glBindTexture(GL_TEXTURE_2D, texture);
-
-		
-		float coords[6][4] = {
-			-1.0f,  1.0f,  0.0f, 1.0f,
-			-1.0f, -1.0f,  0.0f, 0.0f,
-			 1.0f, -1.0f,  1.0f, 0.0f,
-
-			-1.0f,  1.0f,  0.0f, 1.0f,
-			 1.0f, -1.0f,  1.0f, 0.0f,
-			 1.0f,  1.0f,  1.0f, 1.0f
-		};
-
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
-		
-
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
@@ -272,9 +273,6 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, width * 2, height * 2);
 
-	shader->use();
-	shader->set_active_vec4(spec.rgba / 255.0f);
-
 	std::vector<float> x_offsets;
 	std::vector<float> y_offsets;
 	for (size_t i = 0; i < *num_lines; i++) {
@@ -291,6 +289,9 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 			- height
 		);
 	}
+
+	shader->use();
+	shader->set_vec4("f_colormod", spec.rgba / 255.0f);
 	for (size_t i = 0, line_idx = -1; i < text.size(); i++) {
 		if (text[i] == '\n') continue;
 		if (newline_indices[line_idx + 1] == i) {
@@ -303,44 +304,24 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 		float w = tex_char.size.x / width;
 		float h = tex_char.size.y / height;
 
-		float coords[6][4] = {
-			{ x_pos, y_pos + h,		0.0f, 0.0f },
-			{ x_pos, y_pos,			0.0f, 1.0f },
-			{ x_pos + w, y_pos,		1.0f, 1.0f },
-
-			{ x_pos, y_pos + h,		0.0f, 0.0f },
-			{ x_pos + w, y_pos,		1.0f, 1.0f },
-			{ x_pos + w, y_pos + h,	1.0f, 0.0f },
-		};
+		glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), glm::vec3(w, h, 1.0f));
+		glm::mat4 pos_mat = glm::translate(glm::mat4(1.0f), glm::vec3(x_pos, y_pos, 0.0f));
+		shader->set_active_mat4(pos_mat * scale_mat);
 
 		glBindTexture(GL_TEXTURE_2D, tex_char.texture);
-
-		//TODO: Fuck a coord, just use matrices like a normal person
-
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		x_offsets[line_idx] += (tex_char.advance >> 6);
 	}
 
 	if (spec.border_rgbs.a != 0.0f) {
+		glBindVertexArray(VAO_outline);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_outline);
 		glViewport(0, 0, width, height);
 		glm::vec2 border_size = spec.border_rgbs.a / glm::vec2(width * 2, height * 2);
 		border_shader->use();
 		border_shader->set_active_vec2(border_size);
 		border_shader->set_vec4("border_color", spec.border_rgbs.r / 255.0f, spec.border_rgbs.g / 255.0f, spec.border_rgbs.b / 255.0f, spec.rgba.a / 255.0f);
 		glBindTexture(GL_TEXTURE_2D, texture);
-
-		float coords[6][4] = {
-			-1.0f,  1.0f,  0.0f, 1.0f,
-			-1.0f, -1.0f,  0.0f, 0.0f,
-			 1.0f, -1.0f,  1.0f, 0.0f,
-
-			-1.0f,  1.0f,  0.0f, 1.0f,
-			 1.0f, -1.0f,  1.0f, 0.0f,
-			 1.0f,  1.0f,  1.0f, 1.0f
-		};
-
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(coords), coords);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 

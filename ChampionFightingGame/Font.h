@@ -92,6 +92,8 @@ public:
 
 	unsigned int VAO;
 	unsigned int VBO;
+	unsigned int VAO_outline;
+	unsigned int VBO_outline;
 	unsigned int FBO;
 	unsigned int RBO;
 	Shader* shader;

@@ -18,6 +18,9 @@ void debug_main() {
 	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
+	Mouse mouse;
+	mouse.poll_buttons();
+	glm::vec2 prev_mouse_pos = mouse.get_pos_flip_y();
 
 	font_manager->load_face("Fiend-Oblique");
 	Font test_font = font_manager->load_font("Fiend-Oblique", 64);
@@ -41,6 +44,12 @@ void debug_main() {
 		for (int i = 0; i < 2; i++) {
 			game_manager->player[i]->controller.check_controllers();
 		}
+		mouse.poll_buttons();
+
+		glm::vec2 mouse_offset = mouse.get_pos_flip_y() - prev_mouse_pos;
+
+		window_manager->camera.add_rot(mouse_offset.x * 0.2, mouse_offset.y * 0.2, 0.0f);
+		prev_mouse_pos = mouse.get_pos_flip_y();
 
 		if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
 			test_screentext.update_text("Updated after we pressed W!").start_scroll(10);

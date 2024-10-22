@@ -9,14 +9,7 @@
 /// </summary>
 ScreenTexture::ScreenTexture() {
 #ifdef TEX_IMPL_MODE_VULKAN
-	this->top_right_corner_scale = 100.0f;
-	this->top_right_corner_crop = 100.0f;
-	this->top_left_corner_scale = 100.0f;
-	this->top_left_corner_crop = 100.0f;
-	this->bottom_right_corner_scale = 100.0f;
-	this->bottom_right_corner_crop = 100.0f;
-	this->bottom_left_corner_scale = 100.0f;
-	this->bottom_left_corner_crop = 100.0f;
+
 #else
 	this->VAO = 0;
 	this->VBO = 0;
@@ -50,14 +43,7 @@ ScreenTexture::ScreenTexture(std::vector<unsigned int> texture, unsigned char fe
 
 ScreenTexture::ScreenTexture(ScreenTexture& other) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	this->top_right_corner_scale = other.top_right_corner_scale;
-	this->top_right_corner_crop = other.top_right_corner_crop;
-	this->top_left_corner_scale = other.top_left_corner_scale;
-	this->top_left_corner_crop = other.top_left_corner_crop;
-	this->bottom_right_corner_scale = other.bottom_right_corner_scale;
-	this->bottom_right_corner_crop = other.bottom_right_corner_crop;
-	this->bottom_left_corner_scale = other.bottom_left_corner_scale;
-	this->bottom_left_corner_crop = other.bottom_left_corner_crop;
+
 #else
 	this->VAO = other.VAO;
 	this->VBO = other.VBO;
@@ -100,14 +86,7 @@ ScreenTexture::ScreenTexture(ScreenTexture& other) {
 
 ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
 #ifdef TEX_IMPL_MODE_VULKAN
-	this->top_right_corner_scale = other.top_right_corner_scale;
-	this->top_right_corner_crop = other.top_right_corner_crop;
-	this->top_left_corner_scale = other.top_left_corner_scale;
-	this->top_left_corner_crop = other.top_left_corner_crop;
-	this->bottom_right_corner_scale = other.bottom_right_corner_scale;
-	this->bottom_right_corner_crop = other.bottom_right_corner_crop;
-	this->bottom_left_corner_scale = other.bottom_left_corner_scale;
-	this->bottom_left_corner_crop = other.bottom_left_corner_crop;
+
 #else
 	this->VAO = other.VAO;
 	this->VBO = other.VBO;
@@ -152,14 +131,7 @@ ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
 ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
 	if (this != &other) {
 #ifdef TEX_IMPL_MODE_VULKAN
-		this->top_right_corner_scale = other.top_right_corner_scale;
-		this->top_right_corner_crop = other.top_right_corner_crop;
-		this->top_left_corner_scale = other.top_left_corner_scale;
-		this->top_left_corner_crop = other.top_left_corner_crop;
-		this->bottom_right_corner_scale = other.bottom_right_corner_scale;
-		this->bottom_right_corner_crop = other.bottom_right_corner_crop;
-		this->bottom_left_corner_scale = other.bottom_left_corner_scale;
-		this->bottom_left_corner_crop = other.bottom_left_corner_crop;
+
 #else
 		this->VAO = other.VAO;
 		this->VBO = other.VBO;
@@ -205,14 +177,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
 ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
 	if (this != &other) {
 #ifdef TEX_IMPL_MODE_VULKAN
-		this->top_right_corner_scale = other.top_right_corner_scale;
-		this->top_right_corner_crop = other.top_right_corner_crop;
-		this->top_left_corner_scale = other.top_left_corner_scale;
-		this->top_left_corner_crop = other.top_left_corner_crop;
-		this->bottom_right_corner_scale = other.bottom_right_corner_scale;
-		this->bottom_right_corner_crop = other.bottom_right_corner_crop;
-		this->bottom_left_corner_scale = other.bottom_left_corner_scale;
-		this->bottom_left_corner_crop = other.bottom_left_corner_crop;
+
 #else
 		this->VAO = other.VAO;
 		this->VBO = other.VBO;
@@ -266,7 +231,6 @@ ScreenTexture& ScreenTexture::init(std::string path, unsigned char features) {
 	//Setting up shaders is the same between OpenGL and Vulkan
 	this->features = features;
 	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
-	set_default_vertex_data();
 	set_shader("default");
 	shader->use();
 	shader->set_int("f_texture", 0);
@@ -305,15 +269,7 @@ ScreenTexture& ScreenTexture::init(std::string path, unsigned char features) {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_data_for_gpu[i].pos.x *= get_width() / (float)WINDOW_WIDTH;
-		v_data_for_gpu[i].pos.y *= get_height() / (float)WINDOW_HEIGHT;
-	}
-	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
-		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
-	}
-
-	glBufferData(GL_ARRAY_BUFFER, v_data_for_gpu.size() * sizeof(TextureCoord), v_data_for_gpu.data(), GL_DYNAMIC_DRAW);
+	set_default_vertex_data();
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -326,7 +282,6 @@ ScreenTexture& ScreenTexture::init(std::string path, unsigned char features) {
 ScreenTexture& ScreenTexture::init(std::vector<unsigned int> texture, unsigned char features, int width, int height) {
 	this->features = features;
 	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
-	set_default_vertex_data();
 	set_shader("default");
 	shader->use();
 	shader->set_int("f_texture", 0);
@@ -355,15 +310,7 @@ ScreenTexture& ScreenTexture::init(std::vector<unsigned int> texture, unsigned c
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
 	glEnableVertexAttribArray(1);
 
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_data_for_gpu[i].pos.x *= get_width() / (float)WINDOW_WIDTH;
-		v_data_for_gpu[i].pos.y *= get_height() / (float)WINDOW_HEIGHT;
-	}
-	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
-		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
-	}
-
-	glBufferData(GL_ARRAY_BUFFER, v_data_for_gpu.size() * sizeof(TextureCoord), v_data_for_gpu.data(), GL_DYNAMIC_DRAW);
+	set_default_vertex_data();
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -411,6 +358,22 @@ ScreenTexture ScreenTexture::init_copy() const {
 
 ScreenTexture& ScreenTexture::set_shader(std::string frag_shader) {
 	this->shader = ShaderManager::get_instance()->get_shader("screen_tex", "screen_tex_" + frag_shader, "", 0);
+	return *this;
+}
+
+ScreenTexture& ScreenTexture::set_features(unsigned char features) {
+	if ((this->features & TEX_FEAT_4T5V) != (features & TEX_FEAT_4T5V)) {
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+		v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
+		set_default_vertex_data();
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	this->features = features;
 	return *this;
 }
 
@@ -694,8 +657,7 @@ ScreenTexture& ScreenTexture::set_scale(float scale, int frames) {
 
 ScreenTexture& ScreenTexture::scale_right_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_scale = percent;
-	bottom_right_corner_scale = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -715,8 +677,7 @@ ScreenTexture& ScreenTexture::scale_right_edge(float percent) {
 
 ScreenTexture& ScreenTexture::scale_right_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_scale.set_target_val(percent, frames);
-	bottom_right_corner_scale.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -736,8 +697,7 @@ ScreenTexture& ScreenTexture::scale_right_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::crop_right_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_crop = percent;
-	bottom_right_corner_crop = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -761,8 +721,7 @@ ScreenTexture& ScreenTexture::crop_right_edge(float percent) {
 
 ScreenTexture& ScreenTexture::crop_right_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_crop.set_target_val(percent, frames);
-	bottom_right_corner_crop.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -786,8 +745,7 @@ ScreenTexture& ScreenTexture::crop_right_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::scale_left_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_scale = percent;
-	bottom_left_corner_scale = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -807,8 +765,7 @@ ScreenTexture& ScreenTexture::scale_left_edge(float percent) {
 
 ScreenTexture& ScreenTexture::scale_left_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_scale.set_target_val(percent, frames);
-	bottom_left_corner_scale.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -828,8 +785,7 @@ ScreenTexture& ScreenTexture::scale_left_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::crop_left_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_crop = percent;
-	bottom_left_corner_crop = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -853,8 +809,7 @@ ScreenTexture& ScreenTexture::crop_left_edge(float percent) {
 
 ScreenTexture& ScreenTexture::crop_left_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_crop.set_target_val(percent, frames);
-	bottom_left_corner_crop.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -878,8 +833,7 @@ ScreenTexture& ScreenTexture::crop_left_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::scale_top_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_scale = percent;
-	top_left_corner_scale = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -899,8 +853,7 @@ ScreenTexture& ScreenTexture::scale_top_edge(float percent) {
 
 ScreenTexture& ScreenTexture::scale_top_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_scale.set_target_val(percent, frames);
-	top_left_corner_scale.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -920,8 +873,7 @@ ScreenTexture& ScreenTexture::scale_top_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::crop_top_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_crop = percent;
-	top_left_corner_crop = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -945,8 +897,7 @@ ScreenTexture& ScreenTexture::crop_top_edge(float percent) {
 
 ScreenTexture& ScreenTexture::crop_top_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_crop.set_target_val(percent, frames);
-	top_left_corner_crop.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -970,8 +921,7 @@ ScreenTexture& ScreenTexture::crop_top_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::scale_bottom_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_scale = percent;
-	bottom_left_corner_scale = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -991,8 +941,7 @@ ScreenTexture& ScreenTexture::scale_bottom_edge(float percent) {
 
 ScreenTexture& ScreenTexture::scale_bottom_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_scale.set_target_val(percent, frames);
-	bottom_left_corner_scale.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -1012,8 +961,7 @@ ScreenTexture& ScreenTexture::scale_bottom_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::crop_bottom_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_crop = percent;
-	bottom_left_corner_crop = percent;
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -1037,8 +985,7 @@ ScreenTexture& ScreenTexture::crop_bottom_edge(float percent) {
 
 ScreenTexture& ScreenTexture::crop_bottom_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_crop.set_target_val(percent, frames);
-	bottom_left_corner_crop.set_target_val(percent, frames);
+
 #else
 	if (percent < 0.0 || percent > 1.0) {
 		return *this;
@@ -1062,7 +1009,7 @@ ScreenTexture& ScreenTexture::crop_bottom_edge(float percent, int frames) {
 
 ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_scale = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
@@ -1070,19 +1017,19 @@ ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float perc
 	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0);
 		} break;
@@ -1093,7 +1040,7 @@ ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float perc
 
 ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_scale.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
@@ -1101,19 +1048,19 @@ ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float perc
 	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0), frames);
 		} break;
@@ -1124,31 +1071,31 @@ ScreenTexture& ScreenTexture::scale_top_right_corner(float percent_x, float perc
 
 ScreenTexture& ScreenTexture::crop_top_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_crop = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_right_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_left_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
@@ -1161,31 +1108,31 @@ ScreenTexture& ScreenTexture::crop_top_right_corner(float percent_x, float perce
 
 ScreenTexture& ScreenTexture::crop_top_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_right_corner_crop.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
@@ -1198,25 +1145,25 @@ ScreenTexture& ScreenTexture::crop_top_right_corner(float percent_x, float perce
 
 ScreenTexture& ScreenTexture::scale_top_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_scale = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
@@ -1227,25 +1174,25 @@ ScreenTexture& ScreenTexture::scale_top_left_corner(float percent_x, float perce
 
 ScreenTexture& ScreenTexture::scale_top_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_scale.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
@@ -1256,31 +1203,31 @@ ScreenTexture& ScreenTexture::scale_top_left_corner(float percent_x, float perce
 
 ScreenTexture& ScreenTexture::crop_top_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_crop = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_left_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_right_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y = clampf(0.0, percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
@@ -1293,31 +1240,31 @@ ScreenTexture& ScreenTexture::crop_top_left_corner(float percent_x, float percen
 
 ScreenTexture& ScreenTexture::crop_top_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	top_left_corner_crop.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(0.0, percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
@@ -1330,25 +1277,25 @@ ScreenTexture& ScreenTexture::crop_top_left_corner(float percent_x, float percen
 
 ScreenTexture& ScreenTexture::scale_bottom_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_scale = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
@@ -1360,25 +1307,25 @@ ScreenTexture& ScreenTexture::scale_bottom_right_corner(float percent_x, float p
 
 ScreenTexture& ScreenTexture::scale_bottom_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_scale.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
@@ -1389,31 +1336,31 @@ ScreenTexture& ScreenTexture::scale_bottom_right_corner(float percent_x, float p
 
 ScreenTexture& ScreenTexture::crop_bottom_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_crop = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_right_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x = clampf(0.0, percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_left_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
@@ -1426,31 +1373,31 @@ ScreenTexture& ScreenTexture::crop_bottom_right_corner(float percent_x, float pe
 
 ScreenTexture& ScreenTexture::crop_bottom_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_right_corner_crop.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(0.0, percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
@@ -1463,25 +1410,25 @@ ScreenTexture& ScreenTexture::crop_bottom_right_corner(float percent_x, float pe
 
 ScreenTexture& ScreenTexture::scale_bottom_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_left_corner_scale = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
@@ -1492,25 +1439,25 @@ ScreenTexture& ScreenTexture::scale_bottom_left_corner(float percent_x, float pe
 
 ScreenTexture& ScreenTexture::scale_bottom_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_left_corner_scale.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
@@ -1521,31 +1468,31 @@ ScreenTexture& ScreenTexture::scale_bottom_left_corner(float percent_x, float pe
 
 ScreenTexture& ScreenTexture::crop_bottom_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_left_corner_crop = percent_x;
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
 			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_left_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
 			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x = clampf(0.0, 1.0 - percent_x, 1.0);
 			v_texcoord_accessor[v_spec.top_right_idx]->y = clampf(0.0, 1.0 - percent_y, 1.0);
 			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
@@ -1558,31 +1505,31 @@ ScreenTexture& ScreenTexture::crop_bottom_left_corner(float percent_x, float per
 
 ScreenTexture& ScreenTexture::crop_bottom_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
-	bottom_left_corner_crop.set_target_val(percent_x, frames);
+
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return *this;
 	}
 	switch (get_flipped()) {
-		case SCREEN_TEX_FLIP_N: {
+		case TEX_FLIP_N: {
 			v_texcoord_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_H: {
+		case TEX_FLIP_H: {
 			v_texcoord_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
 			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
-		case SCREEN_TEX_FLIP_V: {
+		case TEX_FLIP_V: {
 			v_texcoord_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
 			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		}break;
-		case SCREEN_TEX_FLIP_B: {
+		case TEX_FLIP_B: {
 			v_texcoord_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(0.0, 1.0 - percent_x, 1.0), frames);
 			v_texcoord_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(0.0, 1.0 - percent_y, 1.0), frames);
 			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
@@ -1786,17 +1733,24 @@ void ScreenTexture::set_default_vertex_data() {
 	v_texcoord[v_spec.bottom_right_idx] = glm::vec2(1.0, 0.0);
 
 	if (v_spec.num_vertices == 5) {
-		v_pos[ST_4T5V_MIDDLE] = glm::vec2(0.0, 0.0);
-		v_texcoord[ST_4T5V_MIDDLE] = glm::vec2(0.5, 0.5);
+		v_pos[TC_4T5V_MIDDLE] = glm::vec2(0.0, 0.0);
+		v_texcoord[TC_4T5V_MIDDLE] = glm::vec2(0.5, 0.5);
 	}
 	for (int i = 0; i < v_spec.num_vertices; i++) {
 		v_pos_accessor[i] = &v_pos[i];
 		v_texcoord_accessor[i] = &v_texcoord[i];
 		v_data_for_gpu[i] = { v_pos[i], v_texcoord[i] };
 	}
+
+	for (int i = 0; i < v_spec.num_vertices; i++) {
+		v_data_for_gpu[i].pos.x *= get_width() / (float)WINDOW_WIDTH;
+		v_data_for_gpu[i].pos.y *= get_height() / (float)WINDOW_HEIGHT;
+	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
 	}
+
+	glBufferData(GL_ARRAY_BUFFER, v_data_for_gpu.size() * sizeof(TextureCoord), v_data_for_gpu.data(), GL_DYNAMIC_DRAW);
 }
 
 void ScreenTexture::update_buffer_data() {
@@ -1809,60 +1763,60 @@ void ScreenTexture::update_buffer_data() {
 		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler
 		|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
 			if (v_spec.num_vertices == 5) {
-				if (v_pos[ST_4T5V_TOP_LEFT].x > 0.0f != h_flipped
-				|| v_pos[ST_4T5V_BOTTOM_LEFT].x > 0.0f != h_flipped) {
-					v_pos[ST_4T5V_MIDDLE].x = (h_flipped ?
-						std::min(v_pos[ST_4T5V_TOP_LEFT].x.get_val(), v_pos[ST_4T5V_BOTTOM_LEFT].x.get_val())
-						: std::max(v_pos[ST_4T5V_TOP_LEFT].x.get_val(), v_pos[ST_4T5V_BOTTOM_LEFT].x.get_val()));
+				if (v_pos[TC_4T5V_TOP_LEFT].x > 0.0f != h_flipped
+				|| v_pos[TC_4T5V_BOTTOM_LEFT].x > 0.0f != h_flipped) {
+					v_pos[TC_4T5V_MIDDLE].x = (h_flipped ?
+						std::min(v_pos[TC_4T5V_TOP_LEFT].x.get_val(), v_pos[TC_4T5V_BOTTOM_LEFT].x.get_val())
+						: std::max(v_pos[TC_4T5V_TOP_LEFT].x.get_val(), v_pos[TC_4T5V_BOTTOM_LEFT].x.get_val()));
 				}
-				else if (v_pos[ST_4T5V_TOP_RIGHT].x < 0.0f != h_flipped
-					|| v_pos[ST_4T5V_BOTTOM_RIGHT].x < 0.0f != h_flipped) {
-					v_pos[ST_4T5V_MIDDLE].x = (h_flipped ?
-						std::max(v_pos[ST_4T5V_TOP_RIGHT].x.get_val(), v_pos[ST_4T5V_BOTTOM_RIGHT].x.get_val())
-						: std::min(v_pos[ST_4T5V_TOP_RIGHT].x.get_val(), v_pos[ST_4T5V_BOTTOM_RIGHT].x.get_val()));
+				else if (v_pos[TC_4T5V_TOP_RIGHT].x < 0.0f != h_flipped
+					|| v_pos[TC_4T5V_BOTTOM_RIGHT].x < 0.0f != h_flipped) {
+					v_pos[TC_4T5V_MIDDLE].x = (h_flipped ?
+						std::max(v_pos[TC_4T5V_TOP_RIGHT].x.get_val(), v_pos[TC_4T5V_BOTTOM_RIGHT].x.get_val())
+						: std::min(v_pos[TC_4T5V_TOP_RIGHT].x.get_val(), v_pos[TC_4T5V_BOTTOM_RIGHT].x.get_val()));
 				}
 				else {
-					v_pos[ST_4T5V_MIDDLE].x = 0.0f;
+					v_pos[TC_4T5V_MIDDLE].x = 0.0f;
 				}
 
-				if (v_texcoord[ST_4T5V_TOP_LEFT].x > 0.5f
-				|| v_texcoord[ST_4T5V_BOTTOM_LEFT].x > 0.5f) {
-					v_texcoord[ST_4T5V_MIDDLE].x = std::max(v_texcoord[ST_4T5V_TOP_LEFT].x.get_val(), v_texcoord[ST_4T5V_BOTTOM_LEFT].x.get_val());
+				if (v_texcoord[TC_4T5V_TOP_LEFT].x > 0.5f
+				|| v_texcoord[TC_4T5V_BOTTOM_LEFT].x > 0.5f) {
+					v_texcoord[TC_4T5V_MIDDLE].x = std::max(v_texcoord[TC_4T5V_TOP_LEFT].x.get_val(), v_texcoord[TC_4T5V_BOTTOM_LEFT].x.get_val());
 				}
-				else if (v_texcoord[ST_4T5V_TOP_RIGHT].x < 0.5f
-				|| v_texcoord[ST_4T5V_BOTTOM_RIGHT].x < 0.5f) {
-					v_texcoord[ST_4T5V_MIDDLE].x = std::min(v_texcoord[ST_4T5V_TOP_RIGHT].x.get_val(), v_texcoord[ST_4T5V_BOTTOM_RIGHT].x.get_val());
+				else if (v_texcoord[TC_4T5V_TOP_RIGHT].x < 0.5f
+				|| v_texcoord[TC_4T5V_BOTTOM_RIGHT].x < 0.5f) {
+					v_texcoord[TC_4T5V_MIDDLE].x = std::min(v_texcoord[TC_4T5V_TOP_RIGHT].x.get_val(), v_texcoord[TC_4T5V_BOTTOM_RIGHT].x.get_val());
 				}
 				else {
-					v_texcoord[ST_4T5V_MIDDLE].x = 0.5f;
+					v_texcoord[TC_4T5V_MIDDLE].x = 0.5f;
 				}
 
-				if (v_pos[ST_4T5V_BOTTOM_LEFT].y > 0.0f != v_flipped
-				|| v_pos[ST_4T5V_BOTTOM_RIGHT].y > 0.0f != v_flipped) {
-					v_pos[ST_4T5V_MIDDLE].y = (v_flipped ?
-						std::min(v_pos[ST_4T5V_BOTTOM_LEFT].y.get_val(), v_pos[ST_4T5V_BOTTOM_RIGHT].y.get_val())
-						: std::max(v_pos[ST_4T5V_BOTTOM_LEFT].y.get_val(), v_pos[ST_4T5V_BOTTOM_RIGHT].y.get_val()));
+				if (v_pos[TC_4T5V_BOTTOM_LEFT].y > 0.0f != v_flipped
+				|| v_pos[TC_4T5V_BOTTOM_RIGHT].y > 0.0f != v_flipped) {
+					v_pos[TC_4T5V_MIDDLE].y = (v_flipped ?
+						std::min(v_pos[TC_4T5V_BOTTOM_LEFT].y.get_val(), v_pos[TC_4T5V_BOTTOM_RIGHT].y.get_val())
+						: std::max(v_pos[TC_4T5V_BOTTOM_LEFT].y.get_val(), v_pos[TC_4T5V_BOTTOM_RIGHT].y.get_val()));
 				}
-				else if (v_pos[ST_4T5V_TOP_LEFT].y < 0.0f != v_flipped
-				|| v_pos[ST_4T5V_TOP_RIGHT].y < 0.0f != v_flipped) {
-					v_pos[ST_4T5V_MIDDLE].y = (v_flipped ?
-						std::max(v_pos[ST_4T5V_TOP_LEFT].y.get_val(), v_pos[ST_4T5V_TOP_RIGHT].y.get_val())
-						: std::min(v_pos[ST_4T5V_TOP_LEFT].y.get_val(), v_pos[ST_4T5V_TOP_RIGHT].y.get_val()));
+				else if (v_pos[TC_4T5V_TOP_LEFT].y < 0.0f != v_flipped
+				|| v_pos[TC_4T5V_TOP_RIGHT].y < 0.0f != v_flipped) {
+					v_pos[TC_4T5V_MIDDLE].y = (v_flipped ?
+						std::max(v_pos[TC_4T5V_TOP_LEFT].y.get_val(), v_pos[TC_4T5V_TOP_RIGHT].y.get_val())
+						: std::min(v_pos[TC_4T5V_TOP_LEFT].y.get_val(), v_pos[TC_4T5V_TOP_RIGHT].y.get_val()));
 				}
 				else {
-					v_pos[ST_4T5V_MIDDLE].y = 0.0f;
+					v_pos[TC_4T5V_MIDDLE].y = 0.0f;
 				}
 
-				if (v_texcoord[ST_4T5V_BOTTOM_LEFT].y > 0.5f
-				|| v_texcoord[ST_4T5V_BOTTOM_RIGHT].y > 0.5f) {
-					v_texcoord[ST_4T5V_MIDDLE].y = std::max(v_texcoord[ST_4T5V_BOTTOM_LEFT].y.get_val(), v_texcoord[ST_4T5V_BOTTOM_RIGHT].y.get_val());
+				if (v_texcoord[TC_4T5V_BOTTOM_LEFT].y > 0.5f
+				|| v_texcoord[TC_4T5V_BOTTOM_RIGHT].y > 0.5f) {
+					v_texcoord[TC_4T5V_MIDDLE].y = std::max(v_texcoord[TC_4T5V_BOTTOM_LEFT].y.get_val(), v_texcoord[TC_4T5V_BOTTOM_RIGHT].y.get_val());
 				}
-				else if (v_texcoord[ST_4T5V_TOP_LEFT].y < 0.5f 
-				|| v_texcoord[ST_4T5V_TOP_RIGHT].y < 0.5f) {
-					v_texcoord[ST_4T5V_MIDDLE].y = std::min(v_texcoord[ST_4T5V_TOP_LEFT].y.get_val(), v_texcoord[ST_4T5V_TOP_RIGHT].y.get_val());
+				else if (v_texcoord[TC_4T5V_TOP_LEFT].y < 0.5f 
+				|| v_texcoord[TC_4T5V_TOP_RIGHT].y < 0.5f) {
+					v_texcoord[TC_4T5V_MIDDLE].y = std::min(v_texcoord[TC_4T5V_TOP_LEFT].y.get_val(), v_texcoord[TC_4T5V_TOP_RIGHT].y.get_val());
 				}
 				else {
-					v_texcoord[ST_4T5V_MIDDLE].y = 0.5f;
+					v_texcoord[TC_4T5V_MIDDLE].y = 0.5f;
 				}
 			}
 			for (int i = 0; i < v_spec.num_vertices; i++) {

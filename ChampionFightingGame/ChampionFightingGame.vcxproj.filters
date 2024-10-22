@@ -2003,6 +2003,12 @@
     <None Include="resource\shaders\vertex_screen_tex.glsl">
       <Filter>3. resource\shaders</Filter>
     </None>
+    <None Include="resource\shaders\vertex_world_tex.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
+    <None Include="resource\shaders\fragment_world_tex_default.glsl">
+      <Filter>3. resource\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="resource\fonts\Fiend-Oblique.ttf">

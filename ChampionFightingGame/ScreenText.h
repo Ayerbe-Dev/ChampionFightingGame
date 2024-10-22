@@ -8,6 +8,13 @@
 class ScreenText {
 public:
 	ScreenText();
+	ScreenText(Font* font, std::string text, TextSpecifier spec);
+
+	ScreenText(ScreenText& that);
+	ScreenText(ScreenText&& that) noexcept;
+	ScreenText& operator=(ScreenText& that);
+	ScreenText& operator=(ScreenText&& that) noexcept;
+	~ScreenText();
 
 	ScreenText& init(Font* font, std::string text, TextSpecifier spec);
 	void destroy();
@@ -91,4 +98,5 @@ private:
 	TargetVar<float> width_scale;
 	TargetVar<float> height_scale;
 	TextSpecifier spec;
+	bool loaded;
 };

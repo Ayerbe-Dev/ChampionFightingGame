@@ -25,6 +25,157 @@ ScreenText::ScreenText() {
 	base_height = 0;
 	width_scale = 1.0f;
 	height_scale = 1.0f;
+	loaded = false;
+}
+
+ScreenText::ScreenText(Font* font, std::string text, TextSpecifier spec) : ScreenText() {
+	init(font, text, spec);
+}
+
+ScreenText::ScreenText(ScreenText& that) {
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+	VAO = that.VAO;
+	VBO = that.VBO;
+#endif
+	v_pos.resize(that.v_pos.size());
+	v_texcoord.resize(that.v_texcoord.size());
+	v_data_for_gpu.resize(that.v_data_for_gpu.size());
+	for (int i = 0; i < that.v_pos.size(); i++) {
+		v_pos[i] = that.v_pos[i];
+		v_texcoord[i] = that.v_texcoord[i];
+		v_data_for_gpu[i] = that.v_data_for_gpu[i];
+	}
+	texture = that.texture;
+	num_lines = that.num_lines;
+	shader = that.shader;
+	text = that.text;
+	font = that.font;
+	scroll = that.scroll;
+	screen_orientation = that.screen_orientation;
+	texture_orientation = that.texture_orientation;
+	pos = that.pos;
+	rot = that.rot;
+	base_width = that.base_width;
+	base_height = that.base_height;
+	width_scale = that.width_scale;
+	height_scale = that.height_scale;
+	spec = that.spec;
+	loaded = false;
+}
+
+ScreenText::ScreenText(ScreenText&& that) noexcept {
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+	VAO = that.VAO;
+	VBO = that.VBO;
+#endif
+	v_pos.resize(that.v_pos.size());
+	v_texcoord.resize(that.v_texcoord.size());
+	v_data_for_gpu.resize(that.v_data_for_gpu.size());
+	for (int i = 0; i < that.v_pos.size(); i++) {
+		v_pos[i] = that.v_pos[i];
+		v_texcoord[i] = that.v_texcoord[i];
+		v_data_for_gpu[i] = that.v_data_for_gpu[i];
+	}
+	texture = that.texture;
+	num_lines = that.num_lines;
+	shader = that.shader;
+	text = that.text;
+	font = that.font;
+	scroll = that.scroll;
+	screen_orientation = that.screen_orientation;
+	texture_orientation = that.texture_orientation;
+	pos = that.pos;
+	rot = that.rot;
+	base_width = that.base_width;
+	base_height = that.base_height;
+	width_scale = that.width_scale;
+	height_scale = that.height_scale;
+	spec = that.spec;
+	loaded = that.loaded;
+	that.loaded = false;
+}
+
+ScreenText& ScreenText::operator=(ScreenText& that) {
+	if (this != &that) {
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+		VAO = that.VAO;
+		VBO = that.VBO;
+#endif
+		v_pos.resize(that.v_pos.size());
+		v_texcoord.resize(that.v_texcoord.size());
+		v_data_for_gpu.resize(that.v_data_for_gpu.size());
+		for (int i = 0; i < that.v_pos.size(); i++) {
+			v_pos[i] = that.v_pos[i];
+			v_texcoord[i] = that.v_texcoord[i];
+			v_data_for_gpu[i] = that.v_data_for_gpu[i];
+		}
+		texture = that.texture;
+		num_lines = that.num_lines;
+		shader = that.shader;
+		text = that.text;
+		font = that.font;
+		scroll = that.scroll;
+		screen_orientation = that.screen_orientation;
+		texture_orientation = that.texture_orientation;
+		pos = that.pos;
+		rot = that.rot;
+		base_width = that.base_width;
+		base_height = that.base_height;
+		width_scale = that.width_scale;
+		height_scale = that.height_scale;
+		spec = that.spec;
+		loaded = false;
+	}
+	return *this;
+}
+
+ScreenText& ScreenText::operator=(ScreenText&& that) noexcept {
+	if (this != &that) {
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+		VAO = that.VAO;
+		VBO = that.VBO;
+#endif
+		v_pos.resize(that.v_pos.size());
+		v_texcoord.resize(that.v_texcoord.size());
+		v_data_for_gpu.resize(that.v_data_for_gpu.size());
+		for (int i = 0; i < that.v_pos.size(); i++) {
+			v_pos[i] = that.v_pos[i];
+			v_texcoord[i] = that.v_texcoord[i];
+			v_data_for_gpu[i] = that.v_data_for_gpu[i];
+		}
+		texture = that.texture;
+		num_lines = that.num_lines;
+		shader = that.shader;
+		text = that.text;
+		font = that.font;
+		scroll = that.scroll;
+		screen_orientation = that.screen_orientation;
+		texture_orientation = that.texture_orientation;
+		pos = that.pos;
+		rot = that.rot;
+		base_width = that.base_width;
+		base_height = that.base_height;
+		width_scale = that.width_scale;
+		height_scale = that.height_scale;
+		spec = that.spec;
+		loaded = that.loaded;
+		that.loaded = false;
+	}
+	return *this;
+}
+
+ScreenText::~ScreenText() {
+	if (loaded) {
+		destroy();
+	}
 }
 
 ScreenText& ScreenText::init(Font* font, std::string text, TextSpecifier spec) {
@@ -56,12 +207,15 @@ ScreenText& ScreenText::init(Font* font, std::string text, TextSpecifier spec) {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	loaded = true;
+
 	return *this;
 }
 
 void ScreenText::destroy() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	loaded = false;
 }
 
 ScreenText& ScreenText::set_shader(std::string frag_shader) {

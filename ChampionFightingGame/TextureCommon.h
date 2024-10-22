@@ -10,34 +10,39 @@ const int TEX_COORD_BOTTOM_LEFT2 = 5;
 
 const int TEX_FEAT_4T5V = 1;
 
+const int TEX_FLIP_N = 0;
+const int TEX_FLIP_H = 1;
+const int TEX_FLIP_V = 2;
+const int TEX_FLIP_B = 3;
+
 //"2 triangles, 4 vertices" -- This set of constants gives us the vertex
-//indices for ScreenTextures which are composed of 2 triangles and 4 unique
-//vertex positions (I.E. ScreenTextures which don't have corner cropping 
+//indices for Screen/WorldTextures which are composed of 2 triangles and 4 unique
+//vertex positions (I.E. Screen/WorldTextures which don't have corner cropping 
 //enabled)
 
-const int ST_2T4V_TOP_LEFT = 0;
-const int ST_2T4V_TOP_RIGHT = 1;
-const int ST_2T4V_BOTTOM_LEFT = 2;
-const int ST_2T4V_BOTTOM_RIGHT = 3;
-const int ST_2T4V_TOP_RIGHT2 = 4;
-const int ST_2T4V_BOTTOM_LEFT2 = 5;
+const int TC_2T4V_TOP_LEFT = 0;
+const int TC_2T4V_TOP_RIGHT = 1;
+const int TC_2T4V_BOTTOM_LEFT = 2;
+const int TC_2T4V_BOTTOM_RIGHT = 3;
+const int TC_2T4V_TOP_RIGHT2 = 4;
+const int TC_2T4V_BOTTOM_LEFT2 = 5;
 
-//"4 triangles, 5 vertices" -- To make corner cropping work, we use 4
-//triangles and a central vertex which is part of all of them. This
+//"4 triangles, 5 vertices" -- To make corner cropping work for all 4 corners, 
+//we use 4 triangles and a central vertex which is part of all of them. This
 //needs to use a different ordering system, so different constants
 
-const int ST_4T5V_TOP_LEFT = 0;
-const int ST_4T5V_TOP_RIGHT = 1;
-const int ST_4T5V_MIDDLE = 2;
-const int ST_4T5V_BOTTOM_LEFT = 3;
-const int ST_4T5V_BOTTOM_RIGHT = 4;
-const int ST_4T5V_MIDDLE2 = 5;
-const int ST_4T5V_TOP_LEFT2 = 6;
-const int ST_4T5V_BOTTOM_LEFT2 = 7;
-const int ST_4T5V_MIDDLE3 = 8;
-const int ST_4T5V_TOP_RIGHT2 = 9;
-const int ST_4T5V_BOTTOM_RIGHT2 = 10;
-const int ST_4T5V_MIDDLE4 = 11;
+const int TC_4T5V_TOP_LEFT = 0;
+const int TC_4T5V_TOP_RIGHT = 1;
+const int TC_4T5V_MIDDLE = 2;
+const int TC_4T5V_BOTTOM_LEFT = 3;
+const int TC_4T5V_BOTTOM_RIGHT = 4;
+const int TC_4T5V_MIDDLE2 = 5;
+const int TC_4T5V_TOP_LEFT2 = 6;
+const int TC_4T5V_BOTTOM_LEFT2 = 7;
+const int TC_4T5V_MIDDLE3 = 8;
+const int TC_4T5V_TOP_RIGHT2 = 9;
+const int TC_4T5V_BOTTOM_RIGHT2 = 10;
+const int TC_4T5V_MIDDLE4 = 11;
 
 struct VertexSpecifier {
 	VertexSpecifier() {
@@ -70,20 +75,20 @@ struct VertexSpecifier {
 };
 
 const VertexSpecifier v_spec_2t4v = VertexSpecifier(4, 6,
-	ST_2T4V_TOP_LEFT, ST_2T4V_TOP_RIGHT, ST_2T4V_BOTTOM_LEFT, ST_2T4V_BOTTOM_RIGHT, {
-	{ST_2T4V_TOP_RIGHT2, ST_2T4V_TOP_RIGHT},
-	{ST_2T4V_BOTTOM_LEFT2, ST_2T4V_BOTTOM_LEFT},
+	TC_2T4V_TOP_LEFT, TC_2T4V_TOP_RIGHT, TC_2T4V_BOTTOM_LEFT, TC_2T4V_BOTTOM_RIGHT, {
+	{TC_2T4V_TOP_RIGHT2, TC_2T4V_TOP_RIGHT},
+	{TC_2T4V_BOTTOM_LEFT2, TC_2T4V_BOTTOM_LEFT},
 });
 
 const VertexSpecifier v_spec_4t5v = VertexSpecifier(5, 12,
-	ST_4T5V_TOP_LEFT, ST_4T5V_TOP_RIGHT, ST_4T5V_BOTTOM_LEFT, ST_4T5V_BOTTOM_RIGHT, {
-	{ST_4T5V_TOP_LEFT2, ST_4T5V_TOP_LEFT},
-	{ST_4T5V_TOP_RIGHT2, ST_4T5V_TOP_RIGHT},
-	{ST_4T5V_MIDDLE2, ST_4T5V_MIDDLE},
-	{ST_4T5V_MIDDLE3, ST_4T5V_MIDDLE},
-	{ST_4T5V_MIDDLE4, ST_4T5V_MIDDLE},
-	{ST_4T5V_BOTTOM_LEFT2, ST_4T5V_BOTTOM_LEFT},
-	{ST_4T5V_BOTTOM_RIGHT2, ST_4T5V_BOTTOM_RIGHT},
+	TC_4T5V_TOP_LEFT, TC_4T5V_TOP_RIGHT, TC_4T5V_BOTTOM_LEFT, TC_4T5V_BOTTOM_RIGHT, {
+	{TC_4T5V_TOP_LEFT2, TC_4T5V_TOP_LEFT},
+	{TC_4T5V_TOP_RIGHT2, TC_4T5V_TOP_RIGHT},
+	{TC_4T5V_MIDDLE2, TC_4T5V_MIDDLE},
+	{TC_4T5V_MIDDLE3, TC_4T5V_MIDDLE},
+	{TC_4T5V_MIDDLE4, TC_4T5V_MIDDLE},
+	{TC_4T5V_BOTTOM_LEFT2, TC_4T5V_BOTTOM_LEFT},
+	{TC_4T5V_BOTTOM_RIGHT2, TC_4T5V_BOTTOM_RIGHT},
 });
 
 struct TextureCoord {

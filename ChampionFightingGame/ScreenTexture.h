@@ -8,11 +8,6 @@
 
 class Shader;
 
-const int SCREEN_TEX_FLIP_N = 0;
-const int SCREEN_TEX_FLIP_H = 1;
-const int SCREEN_TEX_FLIP_V = 2;
-const int SCREEN_TEX_FLIP_B = 3;
-
 /// <summary>
 /// A rendering unit which operates in screen space. Instances of this class should usually be rendered 
 /// directly to the screen rather than through a framebuffer.
@@ -34,6 +29,7 @@ public:
 	void destroy();
 	ScreenTexture init_copy() const;
 	ScreenTexture& set_shader(std::string frag_shader);
+	ScreenTexture& set_features(unsigned char features);
 
 	std::string get_path() const;
 
@@ -52,6 +48,11 @@ public:
 	ScreenTexture& set_rot(glm::vec3 rot, int frames);
 	ScreenTexture& add_rot(glm::vec3 rot);
 	glm::vec3 get_rot() const;
+
+	//TODO: Consider scrapping the "set_base_dimension" funcs and making them just "set_dimension" 
+	//funcs which reset their respective scales to 1.0f. This would be an improvement for the set_ 
+	//ones, but it's unclear what the behavior would be for the "add_" ones, I.E. would they add
+	//(input) * dimension_scale, would they scale the base value itself before adding, etc.
 
 	ScreenTexture& set_base_width(int new_width);
 	ScreenTexture& set_base_width(int new_width, int frames);
@@ -144,14 +145,7 @@ private:
 	void set_default_vertex_data();
 	void update_buffer_data();
 #ifdef TEX_IMPL_MODE_VULKAN
-	TargetVar<float> top_right_corner_scale;
-	TargetVar<float> top_right_corner_crop;
-	TargetVar<float> top_left_corner_scale;
-	TargetVar<float> top_left_corner_crop;
-	TargetVar<float> bottom_right_corner_scale;
-	TargetVar<float> bottom_right_corner_crop;
-	TargetVar<float> bottom_left_corner_scale;
-	TargetVar<float> bottom_left_corner_crop;
+
 #else
 	unsigned int VAO;
 	unsigned int VBO;

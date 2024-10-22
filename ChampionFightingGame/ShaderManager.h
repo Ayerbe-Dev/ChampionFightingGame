@@ -3,16 +3,31 @@
 #include <map>
 #include "Shader.h"
 
+//Features used by Model shaders
+
 const int SHADER_FEAT_DIM_MUL = 1;
 const int SHADER_FEAT_BONES = 2;
-const int SHADER_FEAT_COLORMOD = 4;
-const int SHADER_FEAT_DIFFUSE = 8;
-const int SHADER_FEAT_SPECULAR = 16;
-const int SHADER_FEAT_NORMAL = 32;
-const int SHADER_FEAT_SSAO = 64;
-const int SHADER_FEAT_ALPHA_PASS = 128;
-const int SHADER_FEAT_OUTLINE = 256;
-const int SHADER_FEAT_BLOOM = 512;
+const int SHADER_FEAT_NORMAL = 4;
+const int SHADER_FEAT_ALPHA_PASS = 8;
+
+//Features used by WorldTexture shaders
+
+const int SHADER_FEAT_BILLBOARD_ON = 1;
+const int SHADER_FEAT_BILLBOARD_ON_FIX_SIZE = 2;
+
+//Features used by the GBuffer shader
+
+const int SHADER_FEAT_DIFFUSE = 1;
+const int SHADER_FEAT_SPECULAR = 2;
+const int SHADER_FEAT_SSAO = 4;
+const int SHADER_FEAT_OUTLINE = 8;
+
+//Features used by the HDR buffer shader
+
+const int SHADER_FEAT_BLOOM = 1;
+
+const int SHADER_FEAT_COLORMOD = 1; //Used by GameTextures, but will be removed as Screen/WorldTextures
+//don't use it
 
 class ShaderManager {
 public:

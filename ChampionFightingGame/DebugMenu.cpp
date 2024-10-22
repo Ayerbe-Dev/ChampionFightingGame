@@ -10,6 +10,7 @@
 #include "InputManager.h"
 #include "HxAFile.h"
 #include "ScreenTexture.h"
+#include "WorldTexture.h"
 #include "ScreenText.h"
 
 void debug_main() {
@@ -22,6 +23,7 @@ void debug_main() {
 	Font test_font = font_manager->load_font("Fiend-Oblique", 64);
 	
 	ScreenTexture test_screentexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
+	WorldTexture test_worldtexture("resource/game_state/battle/ui/meter/health.png", 0);
 	ScreenText test_screentext;
 	test_screentext.init(&test_font, "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
 
@@ -42,15 +44,23 @@ void debug_main() {
 
 		if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
 			test_screentext.update_text("Updated after we pressed W!").start_scroll(10);
+			test_screentexture.add_rot(glm::vec3(3.0, 0.0, 0.0));
+			test_worldtexture.add_pos(glm::vec3(0.0, 3.0, 0.0));
 		}
 		if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
 			test_screentext.update_text("Updated after we pressed A!").start_scroll(10);
+			test_screentexture.add_rot(glm::vec3(0.0, 0.0, -3.0));
+			test_worldtexture.add_pos(glm::vec3(-3.0, 0.0, 0.0));
 		}
 		if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
 			test_screentext.update_text("Updated after we pressed S!").start_scroll(10);
+			test_screentexture.add_rot(glm::vec3(-3.0, 0.0, 0.0));
+			test_worldtexture.add_pos(glm::vec3(0.0, -3.0, 0.0));
 		}
 		if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
 			test_screentext.update_text("Updated after we pressed D!").start_scroll(10);
+			test_screentexture.add_rot(glm::vec3(0.0, 0.0, 3.0));
+			test_worldtexture.add_pos(glm::vec3(3.0, 0.0, 0.0));
 		}
 		if (glfwGetKey(window_manager->window, GLFW_KEY_SPACE)) {
 			test_screentext.update_text("This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)").start_scroll(180);
@@ -58,8 +68,11 @@ void debug_main() {
 
 		debug->process_game_state();
 		debug->render_game_state();
+		glDisable(GL_DEPTH_TEST);
 		test_screentexture.render();
 		test_screentext.render();
+		test_worldtexture.render();
+		glEnable(GL_DEPTH_TEST);
 
 		cotr_imgui_debug_dbmenu(debug);
 

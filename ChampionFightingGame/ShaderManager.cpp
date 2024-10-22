@@ -306,6 +306,12 @@ std::string get_includes(unsigned int features) {
 	if (features & SHADER_FEAT_BLOOM) {
 		ret += "#define SHADER_FEAT_BLOOM\n";
 	}
+	if (features & SHADER_FEAT_BILLBOARD_ON) {
+		ret += "#define SHADER_FEAT_BILLBOARD_ON\n";
+	}
+	if (features & SHADER_FEAT_BILLBOARD_ON_FIX_SIZE) {
+		ret += "#define SHADER_FEAT_BILLBOARD_ON_FIX_SIZE\n";
+	}
 
 	return ret;
 }

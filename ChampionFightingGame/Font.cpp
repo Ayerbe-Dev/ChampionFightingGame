@@ -226,7 +226,7 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	*num_lines = width_lines.size();
 
 	float width = width_lines[longest_line] + spec.border_rgbs.a * 2.0f;
-	float height = base_height * *num_lines + spec.border_rgbs.a * 2.0f; //Border size
+	float height = (base_height + spec.border_rgbs.a * 2.0f) * *num_lines; //Border size
 
 	//Texture setup
 
@@ -283,7 +283,7 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 			x_offsets.push_back(spec.border_rgbs.a - width);
 		}
 		y_offsets.push_back(
-			base_height * (*num_lines - i - 1)
+			(base_height + spec.border_rgbs.a * 2.0f) * (*num_lines - i - 1)
 			+ base_y_offset
 			+ spec.border_rgbs.a 
 			- height

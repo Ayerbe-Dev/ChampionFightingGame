@@ -99,7 +99,7 @@ DebugMenu::DebugMenu() {
 	text.set_pos(glm::vec3(0.0, -400.0, 0.0));
 
 	test_screentexture.init("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
-	test_worldtexture.init("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V).set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0));
+	test_worldtexture.init("resource/game_state/chara_select/chara/rowan/render.png", TEX_FEAT_4T5V).set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0));
 	test_screentext.init(&get_font("test_font"), "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
 }
 
@@ -116,21 +116,21 @@ void DebugMenu::process_main() {
 	Camera& camera = window_manager->camera;
 	if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
 		go1.add_pos(glm::vec3(0.0, 3.0, 0.0));
-		camera.add_pos(0.0, 0.0, 3.0);
+		camera.add_pos(0.0, 0.0, 1.0);
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
 		go1.add_pos(glm::vec3(-3.0, 0.0, 0.0));
-		camera.add_pos(-3.0, 0.0, 0.0);
+		camera.add_pos(-1.0, 0.0, 0.0);
 
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
 		go1.add_pos(glm::vec3(0.0, -3.0, 0.0));
-		camera.add_pos(0.0, 0.0, -3.0);
+		camera.add_pos(0.0, 0.0, -1.0);
 	}
 
 	if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
 		go1.add_pos(glm::vec3(3.0, 0.0, 0.0));
-		camera.add_pos(3.0, 0.0, 0.0);
+		camera.add_pos(1.0, 0.0, 0.0);
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_Z)) {
 		test_worldtexture.set_billboard_setting(BILLBOARD_ON);

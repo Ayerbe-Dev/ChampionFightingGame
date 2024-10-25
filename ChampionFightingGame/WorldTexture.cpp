@@ -1554,7 +1554,6 @@ void WorldTexture::render() {
 
 		} break;
 		case BILLBOARD_ON: {
-			shader->set_vec3("world_pos", pos.get_val() / scale_vec);
 		} break;
 		case BILLBOARD_ON_FIXED_SIZE: {
 
@@ -1601,8 +1600,9 @@ void WorldTexture::set_default_vertex_data() {
 
 	for (int i = 0; i < v_spec.num_vertices; i++) {
 		v_data_for_gpu[i].pos *= glm::vec2(
-			WINDOW_WIDTH / (100 * scale.get_val().x),
-			WINDOW_HEIGHT / (100 * scale.get_val().y));
+			(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
+			(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
+		);
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -1614,8 +1614,8 @@ void WorldTexture::set_default_vertex_data() {
 void WorldTexture::update_buffer_data() {
 	bool update = false;
 	glm::vec2 v_pos_scaler = glm::vec2(
-		WINDOW_WIDTH / (100 * scale.get_val().x),
-		WINDOW_HEIGHT / (100 * scale.get_val().y)
+		(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
+		(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
 	);
 	for (int i = 0; i < v_spec.num_vertices; i++) {
 		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler

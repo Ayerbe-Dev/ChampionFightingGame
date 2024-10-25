@@ -34,6 +34,7 @@ void FontManager::unload_face(std::string name) {
 
 Font FontManager::load_font(std::string name, int size) {
 	if (!loaded_faces.contains(name)) {
+		std::cout << "Repeating Load Font\n";
 		GameManager::get_instance()->add_crash_log("Face for font " + name + " not loaded!");
 		return Font();
 	}

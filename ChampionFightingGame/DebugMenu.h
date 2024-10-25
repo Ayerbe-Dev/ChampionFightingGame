@@ -3,6 +3,9 @@
 #include "Player.h"
 #include "GameState.h"
 #include "GameManager.h"
+#include "ScreenTexture.h"
+#include "WorldTexture.h"
+#include "ScreenText.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
 #define DEBUG_MENU_FONT_SIZE 24
@@ -28,6 +31,11 @@ public:
     GameTexture tex;
     GameTexture text_field;
     GameTexture text;
+
+    ScreenTexture test_screentexture;
+    WorldTexture test_worldtexture;
+    ScreenText test_screentext;
+
     GameObject go1, go2;
 
     std::vector<std::string> debug_messages;

@@ -391,9 +391,9 @@ ScreenTexture& ScreenTexture::set_texture_orientation(int orientation) {
 	return *this;
 }
 
-ScreenTexture& ScreenTexture::set_orientation(int screen_orientation, int texture_orientation) {
-	this->screen_orientation = screen_orientation;
-	this->texture_orientation = texture_orientation;
+ScreenTexture& ScreenTexture::set_orientation(int orientation) {
+	this->screen_orientation = orientation;
+	this->texture_orientation = orientation;
 	return *this;
 }
 

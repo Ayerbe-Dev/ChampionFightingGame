@@ -1,5 +1,6 @@
 #include "WorldTexture.h"
 #include "WindowConstants.h"
+#include "WindowManager.h"
 #include "ResourceManager.h"
 #include "ShaderManager.h"
 #include "utils.h"
@@ -357,7 +358,7 @@ std::string WorldTexture::get_path() const {
 	return path;
 }
 
-WorldTexture& WorldTexture::set_texture_orientation(int orientation) {
+WorldTexture& WorldTexture::set_orientation(int orientation) {
 	this->texture_orientation = orientation;
 	return *this;
 }
@@ -1406,14 +1407,17 @@ WorldTexture& WorldTexture::crop_bottom_left_corner(float percent_x, float perce
 
 WorldTexture& WorldTexture::set_alpha(unsigned char alpha) {
 	this->alpha = alpha;
+	return *this;
 }
 
 WorldTexture& WorldTexture::set_alpha(unsigned char alpha, int frames) {
 	this->alpha.set_target_val(alpha, frames);
+	return *this;
 }
 
 WorldTexture& WorldTexture::add_alpha(unsigned char alpha) {
 	this->alpha += alpha;
+	return *this;
 }
 
 unsigned char WorldTexture::get_alpha() const {
@@ -1422,14 +1426,17 @@ unsigned char WorldTexture::get_alpha() const {
 
 WorldTexture& WorldTexture::set_colormod(glm::vec3 color) {
 	colormod = color;
+	return *this;
 }
 
 WorldTexture& WorldTexture::set_colormod(glm::vec3 color, int frames) {
 	colormod.set_target_val(color, frames);
+	return *this;
 }
 
 WorldTexture& WorldTexture::add_colormod(glm::vec3 color) {
 	colormod += color;
+	return *this;
 }
 
 glm::vec3 WorldTexture::get_colormod() const {
@@ -1438,10 +1445,12 @@ glm::vec3 WorldTexture::get_colormod() const {
 
 WorldTexture& WorldTexture::flip_h() {
 	h_flipped = !h_flipped;
+	return *this;
 }
 
 WorldTexture& WorldTexture::set_h_flipped(bool h_flipped) {
 	this->h_flipped = h_flipped;
+	return *this;
 }
 
 bool WorldTexture::is_h_flipped() const {
@@ -1450,10 +1459,12 @@ bool WorldTexture::is_h_flipped() const {
 
 WorldTexture& WorldTexture::flip_v() {
 	v_flipped = !v_flipped;
+	return *this;
 }
 
 WorldTexture& WorldTexture::set_v_flipped(bool v_flipped) {
 	this->v_flipped = v_flipped;
+	return *this;
 }
 
 bool WorldTexture::is_v_flipped() const {
@@ -1465,11 +1476,7 @@ int WorldTexture::get_flipped() const {
 }
 
 WorldTexture& WorldTexture::set_billboard_setting(int billboard_setting) {
-	this->shader = ShaderManager::get_instance()->get_shader_switch_features(
-		this->shader, 
-		this->billboard_setting, 
-		billboard_setting
-	);
+	this->shader = ShaderManager::get_instance()->get_shader_switch_features(shader, this->billboard_setting, billboard_setting);
 	this->billboard_setting = billboard_setting;
 	return *this;
 }
@@ -1482,6 +1489,7 @@ WorldTexture& WorldTexture::set_sprite(unsigned int sprite) {
 	if (sprite < texture.size()) {
 		this->sprite = sprite;
 	}
+	return *this;
 }
 
 WorldTexture& WorldTexture::next_sprite() {
@@ -1489,6 +1497,7 @@ WorldTexture& WorldTexture::next_sprite() {
 		sprite -= texture.size();
 	}
 	sprite++;
+	return *this;
 }
 
 WorldTexture& WorldTexture::prev_sprite() {
@@ -1496,6 +1505,7 @@ WorldTexture& WorldTexture::prev_sprite() {
 		sprite = texture.size();
 	}
 	sprite--;
+	return *this;
 }
 
 unsigned int WorldTexture::get_sprite() const {
@@ -1503,25 +1513,25 @@ unsigned int WorldTexture::get_sprite() const {
 }
 
 void WorldTexture::render() {
-	glm::vec3 render_pos = pos.get_val();
-
-	if (texture_orientation & TEXTURE_LEFT) {
-		render_pos.x += get_width();
-	}
-	else if (texture_orientation & TEXTURE_RIGHT) {
-		render_pos.x -= get_width();
-	}
-	if (texture_orientation & TEXTURE_TOP) {
-		render_pos.y -= get_height();
-	}
-	else if (texture_orientation & TEXTURE_BOTTOM) {
-		render_pos.y += get_height();
-	}
-	glm::mat4 matrix = glm::translate(glm::mat4(1.0), render_pos / glm::vec3(
+	glm::vec3 scale_vec = glm::vec3(
 		WINDOW_WIDTH / (100 * scale.get_val().x),
 		WINDOW_HEIGHT / (100 * scale.get_val().y),
 		WINDOW_DEPTH / (100 * scale.get_val().z)
-	));
+	);
+	glm::vec3 render_pos = pos.get_val() / scale_vec;
+	if (texture_orientation & TEXTURE_LEFT) {
+		render_pos.x += scale_vec.x;
+	}
+	else if (texture_orientation & TEXTURE_RIGHT) {
+		render_pos.x -= scale_vec.x;
+	}
+	if (texture_orientation & TEXTURE_TOP) {
+		render_pos.y -= scale_vec.y;
+	}
+	else if (texture_orientation & TEXTURE_BOTTOM) {
+		render_pos.y += scale_vec.y;
+	}
+	glm::mat4 matrix = glm::translate(glm::mat4(1.0), render_pos);
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
@@ -1538,6 +1548,18 @@ void WorldTexture::render() {
 	shader->set_vec3("f_colormod", colormod.get_val());
 	shader->set_float("f_alphamod", alpha.get_val() / 255.0f);
 	shader->set_mat4("matrix", matrix);
+	switch (billboard_setting) {
+		case BILLBOARD_OFF:
+		default: {
+
+		} break;
+		case BILLBOARD_ON: {
+			shader->set_vec3("world_pos", pos.get_val() / scale_vec);
+		} break;
+		case BILLBOARD_ON_FIXED_SIZE: {
+
+		} break;
+	}
 	if (glIsEnabled(GL_CULL_FACE)) {
 		glDisable(GL_CULL_FACE);
 		glDrawArrays(GL_TRIANGLES, 0, v_spec.num_vertices_internal);
@@ -1578,8 +1600,9 @@ void WorldTexture::set_default_vertex_data() {
 	}
 
 	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_data_for_gpu[i].pos.x *= get_width() / (float)WINDOW_WIDTH;
-		v_data_for_gpu[i].pos.y *= get_height() / (float)WINDOW_HEIGHT;
+		v_data_for_gpu[i].pos *= glm::vec2(
+			WINDOW_WIDTH / (100 * scale.get_val().x),
+			WINDOW_HEIGHT / (100 * scale.get_val().y));
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -1591,8 +1614,8 @@ void WorldTexture::set_default_vertex_data() {
 void WorldTexture::update_buffer_data() {
 	bool update = false;
 	glm::vec2 v_pos_scaler = glm::vec2(
-		get_width() / (float)WINDOW_WIDTH,
-		get_height() / (float)WINDOW_HEIGHT
+		WINDOW_WIDTH / (100 * scale.get_val().x),
+		WINDOW_HEIGHT / (100 * scale.get_val().y)
 	);
 	for (int i = 0; i < v_spec.num_vertices; i++) {
 		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler

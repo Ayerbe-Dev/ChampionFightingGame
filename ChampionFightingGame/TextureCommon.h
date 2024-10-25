@@ -15,6 +15,10 @@ const int TEX_FLIP_H = 1;
 const int TEX_FLIP_V = 2;
 const int TEX_FLIP_B = 3;
 
+const int BILLBOARD_OFF = 0;
+const int BILLBOARD_ON = 1;
+const int BILLBOARD_ON_FIXED_SIZE = 2;
+
 //"2 triangles, 4 vertices" -- This set of constants gives us the vertex
 //indices for Screen/WorldTextures which are composed of 2 triangles and 4 unique
 //vertex positions (I.E. Screen/WorldTextures which don't have corner cropping 

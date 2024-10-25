@@ -41,7 +41,8 @@ enum CancelKind {
 	CANCEL_KIND_CONTACT,
 };
 
-#define MOVESET_DIR_NEUTRAL { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+#define MOVESET_DIR_ALL { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+#define MOVESET_DIR_NEUTRAL { 4, 5, 6, 7, 8, 9 }
 #define MOVESET_DIR_UP { 7, 8, 9 }
 #define MOVESET_DIR_DOWN { 1, 2, 3 }
 #define MOVESET_DIR_FORWARD { 3, 6, 9 }

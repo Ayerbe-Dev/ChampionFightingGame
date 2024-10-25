@@ -813,7 +813,7 @@ void Fighter::exit_status_grab_air() {
 }
 
 void Fighter::status_throw_air() {
-	if (get_scaled_pos().y <= 0.0f) {
+	if (get_pos().y <= 0.0f) {
 		set_pos_y(0.0f);
 		change_context(FIGHTER_CONTEXT_GROUND);
 	}

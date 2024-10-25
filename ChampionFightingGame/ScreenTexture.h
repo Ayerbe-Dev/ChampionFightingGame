@@ -35,7 +35,7 @@ public:
 
 	ScreenTexture& set_screen_orientation(int orientation);
 	ScreenTexture& set_texture_orientation(int orientation);
-	ScreenTexture& set_orientation(int screen_orientation, int texture_orientation);
+	ScreenTexture& set_orientation(int orientation);
 	int get_screen_orientation() const;
 	int get_texture_orientation() const;
 

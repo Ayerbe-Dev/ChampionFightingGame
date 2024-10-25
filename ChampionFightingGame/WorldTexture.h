@@ -8,10 +8,6 @@
 
 class Shader;
 
-const int BILLBOARD_OFF = 0;
-const int BILLBOARD_ON = 1;
-const int BILLBOARD_ON_FIXED_SIZE = 2;
-
 class WorldTexture {
 public:
 	WorldTexture();
@@ -33,7 +29,7 @@ public:
 
 	std::string get_path() const;
 
-	WorldTexture& set_texture_orientation(int orientation);
+	WorldTexture& set_orientation(int orientation);
 	int get_texture_orientation() const;
 
 	WorldTexture& set_pos(glm::vec3 pos);

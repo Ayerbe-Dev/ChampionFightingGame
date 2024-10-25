@@ -38,8 +38,8 @@ Shader* ShaderManager::get_shader(std::string vertex, std::string fragment, std:
 }
 
 Shader* ShaderManager::get_shader_switch_features(Shader* base, unsigned int remove_features, unsigned int add_features) {
-	unsigned int feats = (base->features | add_features) & ~remove_features;
-	return get_shader(base->vertex, base->fragment, base->geometry, (base->features | add_features) & ~remove_features);
+	unsigned int feats = (base->features & ~remove_features) | add_features;
+	return get_shader(base->vertex, base->fragment, base->geometry, feats);
 }
 
 void ShaderManager::set_global_bool(const std::string& name, bool value, int index) const {

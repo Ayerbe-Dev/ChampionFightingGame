@@ -9,27 +9,17 @@
 #include "ShaderManager.h"
 #include "InputManager.h"
 #include "HxAFile.h"
-#include "ScreenTexture.h"
-#include "WorldTexture.h"
-#include "ScreenText.h"
 
 void debug_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 	ResourceManager* resource_manager = ResourceManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
+	font_manager->load_face("Fiend-Oblique");
 	Mouse mouse;
 	mouse.poll_buttons();
 	glm::vec2 prev_mouse_pos = mouse.get_pos_flip_y();
-
-	font_manager->load_face("Fiend-Oblique");
-	Font test_font = font_manager->load_font("Fiend-Oblique", 64);
 	
-	ScreenTexture test_screentexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
-	WorldTexture test_worldtexture("resource/game_state/battle/ui/meter/health.png", 0);
-	ScreenText test_screentext;
-	test_screentext.init(&test_font, "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
-
 	DebugMenu *debug = new DebugMenu;
 
 	window_manager->update_shader_cams();
@@ -46,53 +36,32 @@ void debug_main() {
 		}
 		mouse.poll_buttons();
 
-		glm::vec2 mouse_offset = mouse.get_pos_flip_y() - prev_mouse_pos;
-
-		window_manager->camera.add_rot(mouse_offset.x * 0.2, mouse_offset.y * 0.2, 0.0f);
+		if (mouse.check_button_on(GLFW_MOUSE_BUTTON_1)) {
+			glfwSetInputMode(window_manager->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			glm::vec2 mouse_offset = mouse.get_pos_flip_y() - prev_mouse_pos;
+			window_manager->camera.add_rot(mouse_offset.x * 0.2, mouse_offset.y * 0.2, 0.0f);
+		}
+		else {
+			glfwSetInputMode(window_manager->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
 		prev_mouse_pos = mouse.get_pos_flip_y();
 
-		if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
-			test_screentext.update_text("Updated after we pressed W!").start_scroll(10);
-			test_screentexture.add_rot(glm::vec3(3.0, 0.0, 0.0));
-			test_worldtexture.add_pos(glm::vec3(0.0, 3.0, 0.0));
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
-			test_screentext.update_text("Updated after we pressed A!").start_scroll(10);
-			test_screentexture.add_rot(glm::vec3(0.0, 0.0, -3.0));
-			test_worldtexture.add_pos(glm::vec3(-3.0, 0.0, 0.0));
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
-			test_screentext.update_text("Updated after we pressed S!").start_scroll(10);
-			test_screentexture.add_rot(glm::vec3(-3.0, 0.0, 0.0));
-			test_worldtexture.add_pos(glm::vec3(0.0, -3.0, 0.0));
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
-			test_screentext.update_text("Updated after we pressed D!").start_scroll(10);
-			test_screentexture.add_rot(glm::vec3(0.0, 0.0, 3.0));
-			test_worldtexture.add_pos(glm::vec3(3.0, 0.0, 0.0));
-		}
-		if (glfwGetKey(window_manager->window, GLFW_KEY_SPACE)) {
-			test_screentext.update_text("This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)").start_scroll(180);
-		}
+		window_manager->update_shader_cams();
 
 		debug->process_game_state();
 		debug->render_game_state();
-		glDisable(GL_DEPTH_TEST);
-		test_screentexture.render();
-		test_screentext.render();
-		test_worldtexture.render();
-		glEnable(GL_DEPTH_TEST);
 
 		cotr_imgui_debug_dbmenu(debug);
 
 		window_manager->update_screen();
 	}
 	cotr_imgui_terminate();
+	glfwSetInputMode(window_manager->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	delete debug;
-	test_screentexture.destroy();
 	resource_manager->unload_model("resource/chara/rowan/model/m0/model.fbx");
 	resource_manager->unload_model("resource/chara/eric/model/m0/model.fbx");
+	font_manager->unload_face("Fiend-Oblique");
 }
 
 DebugMenu::DebugMenu() {
@@ -106,22 +75,14 @@ DebugMenu::DebugMenu() {
 	go1.model.load_model_instance("resource/chara/rowan/model/m0/model.fbx");
 	go1.model.load_textures("c0");
 	go1.init_shader();
-
 	go1.set_pos(glm::vec3(-200.0, 0.0, 0.0));
 	go1.set_rot(glm::vec3(0.0, 0.0, 90.0));
-
-//	go1.load_anim_table("resource/chara/eric/anims/battle");
-//	go1.change_anim("wait", 0.5, 0.0);
-
 
 	go2.model.load_model_instance("resource/chara/eric/model/m0/model.fbx");
 	go2.model.load_textures("c1");
 	go2.init_shader();
-
 	go2.set_pos(glm::vec3(200.0, 0.0, 0.0));
 	go2.set_rot(glm::vec3(0.0, 0.0, 90.0));
-//	go2.load_anim_table("resource/chara/eric/anims/battle");
-//	go2.change_anim("wait", 0.5, 0.0);
 	go2.model.set_flip(true);
 
 	tex.init("resource/game_state/chara_select/chara/rowan/render.png");
@@ -133,8 +94,13 @@ DebugMenu::DebugMenu() {
 	text_field.set_colormod(glm::vec3(255.0, 255.0, 255.0));
 
 	load_font("text_input", "FiraCode", 96);
+	load_font("test_font", "Fiend-Oblique", 64);
 	text.init(get_font("text_input"), "", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
 	text.set_pos(glm::vec3(0.0, -400.0, 0.0));
+
+	test_screentexture.init("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
+	test_worldtexture.init("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V).set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0));
+	test_screentext.init(&get_font("test_font"), "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
 }
 
 DebugMenu::~DebugMenu() {
@@ -147,17 +113,30 @@ void DebugMenu::process_main() {
 	go1.process_animate();
 	go2.process_animate();
 	WindowManager* window_manager = WindowManager::get_instance();
+	Camera& camera = window_manager->camera;
 	if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
-		go1.add_pos(glm::vec3(0.0, 2.0, 0.0));
+		go1.add_pos(glm::vec3(0.0, 3.0, 0.0));
+		camera.add_pos(0.0, 0.0, 3.0);
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
-		go1.add_pos(glm::vec3(-2.0, 0.0, 0.0));
+		go1.add_pos(glm::vec3(-3.0, 0.0, 0.0));
+		camera.add_pos(-3.0, 0.0, 0.0);
+
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
-		go1.add_pos(glm::vec3(0.0, -2.0, 0.0));
+		go1.add_pos(glm::vec3(0.0, -3.0, 0.0));
+		camera.add_pos(0.0, 0.0, -3.0);
 	}
+
 	if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
-		go1.add_pos(glm::vec3(2.0, 0.0, 0.0));
+		go1.add_pos(glm::vec3(3.0, 0.0, 0.0));
+		camera.add_pos(3.0, 0.0, 0.0);
+	}
+	if (glfwGetKey(window_manager->window, GLFW_KEY_Z)) {
+		test_worldtexture.set_billboard_setting(BILLBOARD_ON);
+	}
+	if (glfwGetKey(window_manager->window, GLFW_KEY_X)) {
+		test_worldtexture.set_billboard_setting(BILLBOARD_OFF);
 	}
 }
 
@@ -197,4 +176,10 @@ void DebugMenu::render_main() {
 	tex.render();
 	text_field.render();
 	text.render();
+
+	glDisable(GL_DEPTH_TEST);
+	test_screentexture.render();
+	test_screentext.render();
+	test_worldtexture.render();
+	glEnable(GL_DEPTH_TEST);
 }

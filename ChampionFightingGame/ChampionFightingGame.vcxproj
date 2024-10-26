@@ -426,6 +426,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="Vesuvius.cpp" />
     <ClCompile Include="VesuviusMoves.cpp" />
     <ClCompile Include="VesuviusStatus.cpp" />
+    <ClCompile Include="WorldText.cpp" />
     <ClCompile Include="WorldTexture.cpp" />
     <ClCompile Include="Zyair.cpp" />
     <ClCompile Include="ZyairMoves.cpp" />
@@ -686,6 +687,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="VesuviusStatus.h" />
     <ClInclude Include="WallaceString.h" />
     <ClInclude Include="WindowConstants.h" />
+    <ClInclude Include="WorldText.h" />
     <ClInclude Include="WorldTexture.h" />
     <ClInclude Include="Zyair.h" />
     <ClInclude Include="ZyairConstants.h" />

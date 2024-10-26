@@ -598,6 +598,9 @@
     <ClCompile Include="LoadTextures.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
+    <ClCompile Include="WorldText.cpp">
+      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -1385,6 +1388,9 @@
     </ClInclude>
     <ClInclude Include="LoadTextures.h">
       <Filter>1. Header Files\I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldText.h">
+      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

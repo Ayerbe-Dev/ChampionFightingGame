@@ -6,6 +6,7 @@
 #include "ScreenTexture.h"
 #include "WorldTexture.h"
 #include "ScreenText.h"
+#include "WorldText.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
 #define DEBUG_MENU_FONT_SIZE 24
@@ -35,6 +36,7 @@ public:
     ScreenTexture test_screentexture;
     WorldTexture test_worldtexture;
     ScreenText test_screentext;
+    WorldText test_worldtext;
 
     GameObject go1, go2;
 

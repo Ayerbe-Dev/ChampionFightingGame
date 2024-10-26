@@ -20,6 +20,9 @@ public:
 	void destroy();
 	ScreenText& set_shader(std::string frag_shader);
 
+	ScreenText& update_text(std::string new_text);
+	ScreenText& start_scroll(int frames);
+
 	ScreenText& set_screen_orientation(int orientation);
 	ScreenText& set_texture_orientation(int orientation);
 	ScreenText& set_orientation(int screen_orientation, int texture_orientation);
@@ -61,9 +64,6 @@ public:
 
 	ScreenText& set_scale(float scale);
 	ScreenText& set_scale(float scale, int frames);
-
-	ScreenText& update_text(std::string new_text);
-	ScreenText& start_scroll(int frames);
 
 	void render();
 

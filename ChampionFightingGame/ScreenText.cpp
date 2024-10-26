@@ -213,9 +213,11 @@ ScreenText& ScreenText::init(Font* font, std::string text, TextSpecifier spec) {
 }
 
 void ScreenText::destroy() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	loaded = false;
+	if (loaded) {
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		loaded = false;
+	}
 }
 
 ScreenText& ScreenText::set_shader(std::string frag_shader) {
@@ -242,10 +244,6 @@ ScreenText& ScreenText::update_text(std::string text) {
 }
 
 ScreenText& ScreenText::start_scroll(int frames) {
-	glm::vec2 v_pos_scaler = glm::vec2(
-		get_width() / (float)WINDOW_WIDTH,
-		get_height() / (float)WINDOW_HEIGHT
-	);
 	for (int i = 0; i < num_lines; i++) {
 		v_pos[(i * 6) + 1].x = -1.0f;
 		v_texcoord[(i * 6) + 1].x = 0.0f;

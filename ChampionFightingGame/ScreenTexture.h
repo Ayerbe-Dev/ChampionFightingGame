@@ -2,15 +2,13 @@
 #include <vector>
 #include <iostream>
 #include <glew/glew.h>
-#include <glm/glm.hpp>
 #include "TextureCommon.h"
 #include "TargetStructs.h"
 
 class Shader;
 
 /// <summary>
-/// A rendering unit which operates in screen space. Instances of this class should usually be rendered 
-/// directly to the screen rather than through a framebuffer.
+/// A rendering unit which operates in screen space. Supports GIF.
 /// </summary>
 class ScreenTexture {
 public:

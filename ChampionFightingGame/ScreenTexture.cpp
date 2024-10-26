@@ -33,6 +33,12 @@ ScreenTexture::ScreenTexture() {
 	this->loaded = false;
 }
 
+/// <summary>
+/// Parameterized constructor for ScreenTexture.
+/// </summary>
+/// <param name="path">The path to the image which this texture will render.</param>
+/// <param name="features">0, or TEX_FEAT_4T5V for textures which need to provide 4 triangles 
+/// of vertex info (I.E. textures which crop the bottom right or top left corners)</param>
 ScreenTexture::ScreenTexture(std::string path, unsigned char features) : ScreenTexture() {
 	this->init(path, features);
 }

@@ -101,6 +101,7 @@ DebugMenu::DebugMenu() {
 	test_screentexture.init("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
 	test_worldtexture.init("resource/game_state/chara_select/chara/rowan/render.png", TEX_FEAT_4T5V).set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0));
 	test_screentext.init(&get_font("test_font"), "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
+	test_worldtext.init(&get_font("test_font"), "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
 }
 
 DebugMenu::~DebugMenu() {
@@ -134,9 +135,15 @@ void DebugMenu::process_main() {
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_Z)) {
 		test_worldtexture.set_billboard_setting(BILLBOARD_ON);
+		test_worldtext.set_billboard_setting(BILLBOARD_ON);
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_X)) {
 		test_worldtexture.set_billboard_setting(BILLBOARD_OFF);
+		test_worldtext.set_billboard_setting(BILLBOARD_OFF);
+	}
+
+	if (glfwGetKey(window_manager->window, GLFW_KEY_SPACE)) {
+		test_worldtext.update_text("Updating text after space was pressed!").start_scroll(10);
 	}
 }
 
@@ -181,5 +188,6 @@ void DebugMenu::render_main() {
 	test_screentexture.render();
 	test_screentext.render();
 	test_worldtexture.render();
+	test_worldtext.render();
 	glEnable(GL_DEPTH_TEST);
 }

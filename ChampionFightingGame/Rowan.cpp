@@ -1,7 +1,6 @@
 #include "Rowan.h"
 #include "RowanFireball.h"
 #include "ProjectileInterface.h"
-#include "SoundConstants.h"
 
 Rowan::Rowan() {
 

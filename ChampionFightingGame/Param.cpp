@@ -6,10 +6,6 @@ Param::Param() {
     type = -1;
 }
 
-Param::Param(std::string name) {
-    this->name = name;
-}
-
 ParamTable::ParamTable() {
     load_fail = false;
 }

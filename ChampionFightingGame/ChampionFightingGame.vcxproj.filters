@@ -304,12 +304,6 @@
     <ClCompile Include="FontManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>2. Code Files\Engine\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraAnim.cpp">
-      <Filter>2. Code Files\Engine\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="ProjectileScriptFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Projectile\ProjectileFunctions</Filter>
     </ClCompile>
@@ -421,17 +415,14 @@
     <ClCompile Include="BattleObjectCollisionFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
     </ClCompile>
-    <ClCompile Include="Sound.cpp">
-      <Filter>2. Code Files\Engine\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="Button.cpp">
-      <Filter>2. Code Files\Engine\Polling</Filter>
+      <Filter>2. Code Files\Polling</Filter>
     </ClCompile>
     <ClCompile Include="GameController.cpp">
-      <Filter>2. Code Files\Engine\Polling</Filter>
+      <Filter>2. Code Files\Polling</Filter>
     </ClCompile>
     <ClCompile Include="Mouse.cpp">
-      <Filter>2. Code Files\Engine\Polling</Filter>
+      <Filter>2. Code Files\Polling</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectStatusFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
@@ -440,46 +431,16 @@
       <Filter>2. Code Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>2. Code Files\Engine\Rendering\3DRendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>2. Code Files\Engine\Rendering\3DRendering\ModelComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Bone.cpp">
-      <Filter>2. Code Files\Engine\Rendering\3DRendering\ModelComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering\TextureComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Framebuffer.cpp">
-      <Filter>2. Code Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>2. Code Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>2. Code Files\Engine\Rendering\RenderingComponent</Filter>
+      <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
     </ClCompile>
     <ClCompile Include="GameRect.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
     </ClCompile>
     <ClCompile Include="GameTexture.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreenTexture.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldTexture.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreenText.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
     </ClCompile>
     <ClCompile Include="CollisionBox.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox</Filter>
@@ -505,9 +466,6 @@
     <ClCompile Include="Sndlst.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleEffect.cpp">
-      <Filter>2. Code Files\Engine\Rendering\3DRendering</Filter>
-    </ClCompile>
     <ClCompile Include="Efct.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
@@ -524,9 +482,6 @@
       <Filter>2. Code Files\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Fighter.cpp">
-      <Filter>2. Code Files\GameObject\BattleObject\Fighter</Filter>
-    </ClCompile>
-    <ClCompile Include="FighterInterface.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter</Filter>
     </ClCompile>
     <ClCompile Include="FighterStatus.cpp">
@@ -551,31 +506,19 @@
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
     </ClCompile>
     <ClCompile Include="VectorBoolPointer.cpp">
-      <Filter>2. Code Files\Container</Filter>
+      <Filter>2. Code Files\DataStruct\Container</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>2. Code Files\Player</Filter>
+      <Filter>2. Code Files\DataStruct\Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp">
-      <Filter>2. Code Files\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Param.cpp">
-      <Filter>2. Code Files\GameObject\ObjectComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveScript.cpp">
-      <Filter>2. Code Files\GameObject\ObjectComponent\Script</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptArg.cpp">
-      <Filter>2. Code Files\GameObject\ObjectComponent\Script</Filter>
+      <Filter>2. Code Files\DataStruct\Player</Filter>
     </ClCompile>
     <ClCompile Include="InputSequence.cpp">
-      <Filter>2. Code Files\Engine\Polling</Filter>
+      <Filter>2. Code Files\Polling</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectStatus.cpp">
       <Filter>2. Code Files\GameObject\BattleObject</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
-      <Filter>2. Code Files\GameObject\ObjectComponent</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectCameraFunctions.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
@@ -584,7 +527,7 @@
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
     </ClCompile>
     <ClCompile Include="UIMessage.cpp">
-      <Filter>2. Code Files\Engine\GUI</Filter>
+      <Filter>2. Code Files\Deprecated\GUI</Filter>
     </ClCompile>
     <ClCompile Include="FighterCPU.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterComponent</Filter>
@@ -598,8 +541,65 @@
     <ClCompile Include="LoadTextures.cpp">
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenText.cpp">
+      <Filter>2. Code Files\Scene\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenTexture.cpp">
+      <Filter>2. Code Files\Scene\Texture</Filter>
+    </ClCompile>
     <ClCompile Include="WorldText.cpp">
-      <Filter>2. Code Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>2. Code Files\Scene\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTexture.cpp">
+      <Filter>2. Code Files\Scene\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffer.cpp">
+      <Filter>2. Code Files\DataStruct\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>2. Code Files\DataStruct\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>2. Code Files\DataStruct\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="FighterInterface.cpp">
+      <Filter>2. Code Files\GameObject\BattleObject\Fighter</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveScript.cpp">
+      <Filter>2. Code Files\GameObject\ObjectComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Param.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptArg.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundPlayer.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraAnim.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1018,7 +1018,7 @@
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="CircularBuffer.h">
-      <Filter>1. Header Files\Containers</Filter>
+      <Filter>1. Header Files\DataStruct\Container</Filter>
     </ClInclude>
     <ClInclude Include="ParamAccessor.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1037,12 +1037,6 @@
     </ClInclude>
     <ClInclude Include="FontManager.h">
       <Filter>1. Header Files\Singleton</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>1. Header Files\Engine\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraAnim.h">
-      <Filter>1. Header Files\Engine\Camera</Filter>
     </ClInclude>
     <ClInclude Include="VariadicHelpers.h">
       <Filter>1. Header Files\Utils</Filter>
@@ -1089,65 +1083,29 @@
     <ClInclude Include="imgui_stdlib.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Sound.h">
-      <Filter>1. Header Files\Engine\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="Mouse.h">
-      <Filter>1. Header Files\Engine\Polling</Filter>
+      <Filter>1. Header Files\Polling</Filter>
     </ClInclude>
     <ClInclude Include="Button.h">
-      <Filter>1. Header Files\Engine\Polling</Filter>
+      <Filter>1. Header Files\Polling</Filter>
     </ClInclude>
     <ClInclude Include="GameController.h">
-      <Filter>1. Header Files\Engine\Polling</Filter>
+      <Filter>1. Header Files\Polling</Filter>
     </ClInclude>
     <ClInclude Include="utils.h">
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>1. Header Files\Engine\Rendering\3DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>1. Header Files\Engine\Rendering\3DRendering\ModelComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>1. Header Files\Engine\Rendering\3DRendering\ModelComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="Framebuffer.h">
-      <Filter>1. Header Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>1. Header Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>1. Header Files\Engine\Rendering\RenderingComponent</Filter>
-    </ClInclude>
     <ClInclude Include="Effect.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering\TextureComponent</Filter>
+      <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="GameRect.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="GameTexture.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureCommon.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering\TextureComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreenTexture.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldTexture.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreenText.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="FighterAttribute.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
@@ -1161,9 +1119,6 @@
     <ClInclude Include="FighterInt.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
     </ClInclude>
-    <ClInclude Include="FighterInterface.h">
-      <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
-    </ClInclude>
     <ClInclude Include="FighterStatus.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
     </ClInclude>
@@ -1171,7 +1126,7 @@
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
     </ClInclude>
     <ClInclude Include="TargetVar.h">
-      <Filter>1. Header Files\Containers</Filter>
+      <Filter>1. Header Files\DataStruct\Container</Filter>
     </ClInclude>
     <ClInclude Include="TargetVarManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1199,9 +1154,6 @@
     </ClInclude>
     <ClInclude Include="Sndlst.h">
       <Filter>1. Header Files\I/O</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleEffect.h">
-      <Filter>1. Header Files\Engine\Rendering\3DRendering</Filter>
     </ClInclude>
     <ClInclude Include="Efct.h">
       <Filter>1. Header Files\I/O</Filter>
@@ -1234,9 +1186,6 @@
       <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileComponent</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileInt.h">
-      <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectileInterface.h">
       <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileComponent</Filter>
     </ClInclude>
     <ClInclude Include="ProjectileKind.h">
@@ -1311,29 +1260,17 @@
     <ClInclude Include="RowanFireballString.h">
       <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClInclude>
-    <ClInclude Include="SoundConstants.h">
-      <Filter>1. Header Files\Engine\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="GameStates.h">
       <Filter>1. Header Files\Include</Filter>
     </ClInclude>
     <ClInclude Include="VectorBoolPointer.h">
-      <Filter>1. Header Files\Containers</Filter>
+      <Filter>1. Header Files\DataStruct\Container</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>1. Header Files\Player</Filter>
+      <Filter>1. Header Files\DataStruct\Player</Filter>
     </ClInclude>
     <ClInclude Include="PlayerInfo.h">
-      <Filter>1. Header Files\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Param.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptFunc.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveScript.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent\Script</Filter>
+      <Filter>1. Header Files\DataStruct\Player</Filter>
     </ClInclude>
     <ClInclude Include="CollisionBox.h">
       <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox</Filter>
@@ -1351,7 +1288,7 @@
       <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="InputSequence.h">
-      <Filter>1. Header Files\Engine\Polling</Filter>
+      <Filter>1. Header Files\Polling</Filter>
     </ClInclude>
     <ClInclude Include="BattleObjectInt.h">
       <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent</Filter>
@@ -1371,11 +1308,8 @@
     <ClInclude Include="CompileTimeCounter.h">
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="SoundPlayer.h">
-      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
-    </ClInclude>
     <ClInclude Include="UIMessage.h">
-      <Filter>1. Header Files\Engine\GUI</Filter>
+      <Filter>1. Header Files\Deprecated\GUI</Filter>
     </ClInclude>
     <ClInclude Include="FighterCPU.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter\Fighter Component</Filter>
@@ -1386,8 +1320,71 @@
     <ClInclude Include="LoadTextures.h">
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
+    <ClInclude Include="WorldTexture.h">
+      <Filter>1. Header Files\Scene\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenText.h">
+      <Filter>1. Header Files\Scene\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenTexture.h">
+      <Filter>1. Header Files\Scene\Texture</Filter>
+    </ClInclude>
     <ClInclude Include="WorldText.h">
-      <Filter>1. Header Files\Engine\Rendering\2DRendering</Filter>
+      <Filter>1. Header Files\Scene\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureCommon.h">
+      <Filter>1. Header Files\Scene\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="FighterInterface.h">
+      <Filter>1. Header Files\GameObject\BattleObject\Fighter</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileInterface.h">
+      <Filter>1. Header Files\GameObject\BattleObject\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveScript.h">
+      <Filter>1. Header Files\GameObject\ObjectComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptFunc.h">
+      <Filter>1. Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Param.h">
+      <Filter>1. Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPlayer.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>1. Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>1. Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>1. Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraAnim.h">
+      <Filter>1. Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>1. Header Files\DataStruct\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffer.h">
+      <Filter>1. Header Files\DataStruct\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>1. Header Files\DataStruct\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2305,9 +2302,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="2. Code Files\Engine">
-      <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Deps">
       <UniqueIdentifier>{ab0b6b8c-ccb9-4c4e-a064-f1e50d9609a3}</UniqueIdentifier>
     </Filter>
@@ -2636,14 +2630,8 @@
     <Filter Include="1. Header Files\Deps\ImGui">
       <UniqueIdentifier>{5aa86155-4f46-4f77-bac8-72e74c4c988e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Engine">
-      <UniqueIdentifier>{9ec22d83-104b-464a-aa9f-afb8793a2aba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Include">
       <UniqueIdentifier>{d2d27a10-df59-4cf7-bdb9-72a779b7dd31}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Containers">
-      <UniqueIdentifier>{8de0fa31-4bf8-4696-8a02-690b90a79a4a}</UniqueIdentifier>
     </Filter>
     <Filter Include="3. resource\chara\atlas\cam_anims">
       <UniqueIdentifier>{a1a31a71-f181-41cb-a990-43e5c1ce0983}</UniqueIdentifier>
@@ -2656,12 +2644,6 @@
     </Filter>
     <Filter Include="3. resource\chara\rook\anims">
       <UniqueIdentifier>{0729d815-5793-46ee-ac03-a27bc40036d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Camera">
-      <UniqueIdentifier>{460ef8ad-9bc2-48e7-834b-eff8a7c561f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Camera">
-      <UniqueIdentifier>{db51de9b-a212-476b-96b6-5e3a462ec374}</UniqueIdentifier>
     </Filter>
     <Filter Include="3. resource\chara\rowan">
       <UniqueIdentifier>{e296d33a-ab26-42d8-b335-8ea0b74da525}</UniqueIdentifier>
@@ -2711,71 +2693,17 @@
     <Filter Include="1. Header Files\Singleton">
       <UniqueIdentifier>{38771492-ed08-4029-9382-5c3eae299fe5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Engine\Rendering">
-      <UniqueIdentifier>{b5166abb-9cd9-4431-b494-47b5d743b007}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Rendering">
-      <UniqueIdentifier>{6f45579d-1787-44cc-828c-efd522f8e63c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Polling">
-      <UniqueIdentifier>{34c695d4-0b1a-498a-a9e5-91f08764a52b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Polling">
-      <UniqueIdentifier>{a0c3dcc6-f661-4bf1-a2f7-60d09c1dcb31}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\GUI">
-      <UniqueIdentifier>{58e70011-cc6d-456e-91ba-006ef8251168}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\GUI">
-      <UniqueIdentifier>{ea889b2f-e68c-4280-a608-d503bae2f5bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Utils">
       <UniqueIdentifier>{b09d0e5d-265e-4542-8026-df22f515a5c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\Utils">
       <UniqueIdentifier>{3b964603-72cf-4262-adae-bd6c8fea4f10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\Engine\Rendering\2DRendering">
-      <UniqueIdentifier>{a32a5175-bcb6-446c-95fc-badfc6bd9229}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Rendering\3DRendering">
-      <UniqueIdentifier>{d5dd666b-7fff-49c0-9875-90fe3ef7131f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Rendering\RenderingComponent">
-      <UniqueIdentifier>{74cc2b98-d75c-40e9-be93-d0dc82a67e54}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Rendering\3DRendering\ModelComponent">
-      <UniqueIdentifier>{0cf8031f-447b-46a8-bc46-33db31b0e150}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Rendering\2DRendering\TextureComponent">
-      <UniqueIdentifier>{aee91075-1cf6-4746-9639-b6c4181a1a85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Rendering\2DRendering">
-      <UniqueIdentifier>{957a5415-c70e-4aa7-9fa2-41e076eee0f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Rendering\3DRendering">
-      <UniqueIdentifier>{31cc8422-16e4-4292-98c3-1ab2af41b876}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Rendering\RenderingComponent">
-      <UniqueIdentifier>{b7518a56-22d3-43b5-bd2f-63ce3c21a3d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Rendering\3DRendering\ModelComponent">
-      <UniqueIdentifier>{83ae5614-5dc5-4c63-b9ed-902926488698}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Rendering\2DRendering\TextureComponent">
-      <UniqueIdentifier>{14cc8768-d758-4a2c-8add-d44f1c56402d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\I/O\HxA">
       <UniqueIdentifier>{cb00b470-c2d8-47a3-bc9c-4507e54ef41d}</UniqueIdentifier>
     </Filter>
     <Filter Include="2. Code Files\I/O\HxA">
       <UniqueIdentifier>{af3c76b4-5f80-46ed-ab2b-9d7e505bcb8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Engine\Sound">
-      <UniqueIdentifier>{0cb3cf38-37a7-455e-871c-f05847d43090}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Engine\Sound">
-      <UniqueIdentifier>{ed5d40d3-ae57-4fc4-b5bd-d8bd6115f34a}</UniqueIdentifier>
     </Filter>
     <Filter Include="1. Header Files\GameObject">
       <UniqueIdentifier>{e6464ca4-c8b6-41ba-b3d7-27e220de8946}</UniqueIdentifier>
@@ -2975,21 +2903,6 @@
     <Filter Include="2. Code Files\GameState\Battle">
       <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Container">
-      <UniqueIdentifier>{257c034c-04c5-467f-b9cb-c7a2822d538f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Player">
-      <UniqueIdentifier>{c2422741-a531-4919-a1e1-09398bbdf689}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\Player">
-      <UniqueIdentifier>{4b751973-1e32-4ade-8a55-cb725293b7b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\ObjectComponent\Script">
-      <UniqueIdentifier>{1d3126ee-21d4-4c32-a766-fbefea46d8f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\GameObject\ObjectComponent\Script">
-      <UniqueIdentifier>{9a4ae8cd-ddf5-4992-b9f5-d30c83125d0e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\GameObject\BattleObject\BattleObjectComponent">
       <UniqueIdentifier>{ae43b494-c9cc-47a9-b2ca-618fac5f1cc7}</UniqueIdentifier>
     </Filter>
@@ -3001,6 +2914,96 @@
     </Filter>
     <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Zyair">
       <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene">
+      <UniqueIdentifier>{e5c7d089-4179-413e-a990-a443a2c32aef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Polling">
+      <UniqueIdentifier>{34c695d4-0b1a-498a-a9e5-91f08764a52b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Scene">
+      <UniqueIdentifier>{817feaf5-5ef9-424a-8982-7f560108299e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Polling">
+      <UniqueIdentifier>{a0c3dcc6-f661-4bf1-a2f7-60d09c1dcb31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene\Texture">
+      <UniqueIdentifier>{08a374fa-c532-4a55-b118-5662aa5c2e9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated">
+      <UniqueIdentifier>{9ec22d83-104b-464a-aa9f-afb8793a2aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\Rendering">
+      <UniqueIdentifier>{b5166abb-9cd9-4431-b494-47b5d743b007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\Rendering\2DRendering">
+      <UniqueIdentifier>{a32a5175-bcb6-446c-95fc-badfc6bd9229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\Rendering\2DRendering\TextureComponent">
+      <UniqueIdentifier>{aee91075-1cf6-4746-9639-b6c4181a1a85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\Rendering\3DRendering">
+      <UniqueIdentifier>{d5dd666b-7fff-49c0-9875-90fe3ef7131f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\Rendering\3DRendering\ModelComponent">
+      <UniqueIdentifier>{0cf8031f-447b-46a8-bc46-33db31b0e150}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\Rendering\RenderingComponent">
+      <UniqueIdentifier>{74cc2b98-d75c-40e9-be93-d0dc82a67e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Deprecated\GUI">
+      <UniqueIdentifier>{58e70011-cc6d-456e-91ba-006ef8251168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated">
+      <UniqueIdentifier>{e3b31a87-fb1d-4117-b064-9b019d87250c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\Rendering">
+      <UniqueIdentifier>{6f45579d-1787-44cc-828c-efd522f8e63c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\Rendering\2DRendering">
+      <UniqueIdentifier>{957a5415-c70e-4aa7-9fa2-41e076eee0f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\Rendering\2DRendering\TextureComponent">
+      <UniqueIdentifier>{14cc8768-d758-4a2c-8add-d44f1c56402d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\Rendering\3DRendering">
+      <UniqueIdentifier>{31cc8422-16e4-4292-98c3-1ab2af41b876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\Rendering\3DRendering\ModelComponent">
+      <UniqueIdentifier>{83ae5614-5dc5-4c63-b9ed-902926488698}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\Rendering\RenderingComponent">
+      <UniqueIdentifier>{b7518a56-22d3-43b5-bd2f-63ce3c21a3d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Deprecated\GUI">
+      <UniqueIdentifier>{ea889b2f-e68c-4280-a608-d503bae2f5bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Scene\Texture">
+      <UniqueIdentifier>{09f3e27a-2cc5-4ab5-b923-a0db8f47efb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\DataStruct">
+      <UniqueIdentifier>{c4e41b9d-2b7f-435a-8825-cc7c4733ac12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\DataStruct\Container">
+      <UniqueIdentifier>{257c034c-04c5-467f-b9cb-c7a2822d538f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\DataStruct">
+      <UniqueIdentifier>{3c5a6330-a823-47ce-8e0f-4705951db0f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\DataStruct\Container">
+      <UniqueIdentifier>{8de0fa31-4bf8-4696-8a02-690b90a79a4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\DataStruct\Player">
+      <UniqueIdentifier>{4b751973-1e32-4ade-8a55-cb725293b7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\DataStruct\Render">
+      <UniqueIdentifier>{8fc1c6ef-2c9f-436a-bb4b-bdbb0cddba7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\DataStruct\Render">
+      <UniqueIdentifier>{83398fa2-812a-4fa0-a9c4-59084c293db1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\DataStruct\Player">
+      <UniqueIdentifier>{c2422741-a531-4919-a1e1-09398bbdf689}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

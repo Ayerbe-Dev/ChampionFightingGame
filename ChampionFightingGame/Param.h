@@ -7,7 +7,6 @@
 class Param {
 public:
 	Param();
-	Param(std::string name);
 	std::string name;
 	int type;
 	std::any value;

@@ -56,5 +56,5 @@ void TitleScreen::render_main() {
 }
 
 void TitleScreen::event_any_press() {
-	update_state(GAME_STATE_MENU);
+	update_state(GAME_STATE_MAIN_MENU);
 }

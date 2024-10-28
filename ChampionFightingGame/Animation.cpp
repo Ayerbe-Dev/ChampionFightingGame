@@ -122,10 +122,14 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 	}
 }
 
-float Animation::get_trans_offset(float frame, Skeleton skeleton) {
+float Animation::get_trans_offset(float frame) {
 	if (!flag_move) return 0.0f;
-	int trans_index = skeleton.get_bone_id("Trans");
-	return keyframes[(int)frame][trans_index].pos.z;
+	for (size_t i = 0; i < keyframes[(int)frame].size(); i++) {
+		if (keyframes[(int)frame][i].name == "Trans") {
+			return keyframes[(int)frame][i].pos.z;
+		}
+	}
+	return 0.0f;
 }
 
 AnimationTable::AnimationTable() {

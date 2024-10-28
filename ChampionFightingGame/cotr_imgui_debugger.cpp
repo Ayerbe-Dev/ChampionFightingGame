@@ -114,7 +114,7 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 		game_manager->update_state(GAME_STATE_STAGE_SELECT);
 	}
 	if (ImGui::MenuItem("Main Menu")) {
-		game_manager->update_state(GAME_STATE_MENU);
+		game_manager->update_state(GAME_STATE_MAIN_MENU);
 	}
 	if (ImGui::MenuItem("Title Screen")) {
 		game_manager->update_state(GAME_STATE_TITLE_SCREEN);

@@ -10,7 +10,7 @@ public:
 	Animation();
 
 	void init(std::string name, std::string filename, Skeleton skeleton);
-	float get_trans_offset(float frame, Skeleton skeleton);
+	float get_trans_offset(float frame);
 
 	std::string name;
 	std::vector<glm::mat4> trans_matrices;

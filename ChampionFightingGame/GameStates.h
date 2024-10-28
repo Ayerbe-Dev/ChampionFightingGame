@@ -2,7 +2,7 @@
 #include "CharaSelect.h"
 #include "DebugMenu.h"
 #include "Battle.h"
-#include "Menu.h"
+#include "MainMenu.h"
 #include "Opening.h"
 #include "Options.h"
 #include "StageSelect.h"

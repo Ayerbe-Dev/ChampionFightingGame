@@ -340,7 +340,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Nightsabre.cpp" />
     <ClCompile Include="NightsabreMoves.cpp" />
     <ClCompile Include="NightsabreStatus.cpp" />
@@ -541,7 +541,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameRect.h" />
-    <ClInclude Include="GameStateConstants.h" />
     <ClInclude Include="GameStates.h" />
     <ClInclude Include="GameTexture.h" />
     <ClInclude Include="LoadTextures.h" />
@@ -584,8 +583,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="LeonInt.h" />
     <ClInclude Include="LeonStatus.h" />
     <ClInclude Include="Light.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="MenuConstants.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="MainMenuConstants.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MoveScript.h" />
     <ClInclude Include="Nightsabre.h" />

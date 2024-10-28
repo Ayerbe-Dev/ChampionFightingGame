@@ -417,7 +417,7 @@ void StageSelect::event_select_press() {
 void StageSelect::event_back_press() {
 	WindowManager* window_manager = WindowManager::get_instance();
 	if (!selected) {
-		update_state(GAME_STATE_MENU);
+		update_state(GAME_STATE_MAIN_MENU);
 	}
 	else {
 		window_manager->camera.play_camera_anim(&stages[selection].selected_anim, -1.0, 0.0);

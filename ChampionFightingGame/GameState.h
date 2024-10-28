@@ -1,5 +1,4 @@
 #pragma once
-#include "GameStateConstants.h"
 #include <vector>
 #include <chrono>
 #include <functional>
@@ -11,6 +10,28 @@
 #include "Mouse.h"
 #include "SoundPlayer.h"
 #include "Player.h"
+
+const int GAME_STATE_NONE = 0;
+const int GAME_STATE_BATTLE = 1;
+const int GAME_STATE_MAIN_MENU = 2;
+const int GAME_STATE_CHARA_SELECT = 3;
+const int GAME_STATE_STAGE_SELECT = 4;
+const int GAME_STATE_CLOSE = 5;
+const int GAME_STATE_DEBUG_MENU = 6;
+const int GAME_STATE_TITLE_SCREEN = 7;
+const int GAME_STATE_CONTROLS = 8;
+const int GAME_STATE_PAUSE_BATTLE = 9;
+
+const int GAME_STATE_MAX = 10;
+
+const int GAME_CONTEXT_NORMAL = 0;
+const int GAME_CONTEXT_TRAINING = 1;
+const int GAME_CONTEXT_STORY = 2;
+const int GAME_CONTEXT_ARCADE = 3;
+const int GAME_CONTEXT_SPECIAL = 4;
+const int GAME_CONTEXT_ONLINE = 5;
+
+const int GAME_CONTEXT_MAX = 6;
 
 class GameManager;
 class GameState;

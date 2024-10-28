@@ -1556,7 +1556,7 @@ void CPUAction::init(Fighter* owner, std::string script_name, std::string anim_n
 	float max_trans_offset = 0.0f;
 	for (float frame = 0.0f, rate = 1.0f, max = (float)(anim->length); frame < max; frame += rate) {
 
-		float trans_offset = anim->get_trans_offset(frame, owner->model.get_skeleton());
+		float trans_offset = anim->get_trans_offset(frame);
 		min_trans_offset = std::min(min_trans_offset, trans_offset);
 		max_trans_offset = std::max(max_trans_offset, trans_offset);
 

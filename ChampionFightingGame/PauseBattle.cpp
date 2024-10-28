@@ -315,7 +315,7 @@ PauseBattle::PauseBattle() {
 										});
 										push_menu_select_event_function([this](MenuObject* object) {
 											GameManager* game_manager = GameManager::get_instance();
-											game_manager->update_state(GAME_STATE_MENU);
+											game_manager->update_state(GAME_STATE_MAIN_MENU);
 											game_manager->get_game_state(1)->looping = false;
 										});
 									} pop_menu_stack();

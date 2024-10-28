@@ -10,7 +10,7 @@
     <ClCompile Include="DebugMenu.cpp">
       <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
-    <ClCompile Include="Menu.cpp">
+    <ClCompile Include="MainMenu.cpp">
       <Filter>2. Code Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="TitleScreen.cpp">
@@ -1053,10 +1053,10 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.h">
+    <ClInclude Include="MainMenu.h">
       <Filter>1. Header Files\GameState\Menu</Filter>
     </ClInclude>
-    <ClInclude Include="MenuConstants.h">
+    <ClInclude Include="MainMenuConstants.h">
       <Filter>1. Header Files\GameState\Menu</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
@@ -1310,9 +1310,6 @@
     </ClInclude>
     <ClInclude Include="RowanFireballString.h">
       <Filter>1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateConstants.h">
-      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="SoundConstants.h">
       <Filter>1. Header Files\Engine\Sound</Filter>

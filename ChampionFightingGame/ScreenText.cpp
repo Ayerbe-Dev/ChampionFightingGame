@@ -225,6 +225,22 @@ ScreenText& ScreenText::set_shader(std::string frag_shader) {
 	return *this;
 }
 
+ScreenText& ScreenText::set_pause(bool pause) {
+	for (int i = 0; i < 6 * num_lines; i++) {
+		v_pos[i].x.set_pause(pause);
+		v_pos[i].y.set_pause(pause);
+		v_texcoord[i].x.set_pause(pause);
+		v_texcoord[i].y.set_pause(pause);
+	}
+	pos.set_pause(pause);
+	rot.set_pause(pause);
+	base_width.set_pause(pause);
+	base_height.set_pause(pause);
+	width_scale.set_pause(pause);
+	height_scale.set_pause(pause);
+	return *this;
+}
+
 ScreenText& ScreenText::update_text(std::string text) {
 	this->text = text;
 	texture = font->create_text(text, spec, &num_lines, &texture);
@@ -267,9 +283,9 @@ ScreenText& ScreenText::set_texture_orientation(int orientation) {
 	return *this;
 }
 
-ScreenText& ScreenText::set_orientation(int screen_orientation, int texture_orientation) {
-	this->screen_orientation = screen_orientation;
-	this->texture_orientation = texture_orientation;
+ScreenText& ScreenText::set_orientation(int orientation) {
+	this->screen_orientation = orientation;
+	this->texture_orientation = orientation;
 	return *this;
 }
 
@@ -538,12 +554,12 @@ void ScreenText::render() {
 		render_pos.x -= WINDOW_WIDTH;
 	}
 	else if (screen_orientation & TEXTURE_RIGHT) {
-		render_pos *= -1.0;
+		render_pos.x *= -1.0;
 		render_pos.x += WINDOW_WIDTH;
 	}
 
 	if (screen_orientation & TEXTURE_TOP) {
-		render_pos *= -1.0;
+		render_pos.y *= -1.0;
 		render_pos.y += WINDOW_HEIGHT;
 	}
 	else if (screen_orientation & TEXTURE_BOTTOM) {

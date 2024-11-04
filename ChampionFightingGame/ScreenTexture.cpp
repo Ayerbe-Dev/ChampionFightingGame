@@ -43,6 +43,10 @@ ScreenTexture::ScreenTexture(std::string path, unsigned char features) : ScreenT
 	this->init(path, features);
 }
 
+ScreenTexture::ScreenTexture(unsigned int texture, unsigned char features, int width, int height) : ScreenTexture() {
+	this->init(texture, features, width, height);
+}
+
 ScreenTexture::ScreenTexture(std::vector<unsigned int> texture, unsigned char features, int width, int height) : ScreenTexture() {
 	this->init(texture, features, width, height);
 }
@@ -65,7 +69,7 @@ ScreenTexture::ScreenTexture(ScreenTexture& other) {
 		this->v_texcoord[i] = other.v_texcoord[i];
 		this->v_pos_accessor[i] = &this->v_pos[i];
 		this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-		this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i]};
+		this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -108,7 +112,7 @@ ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
 		this->v_texcoord[i] = other.v_texcoord[i];
 		this->v_pos_accessor[i] = &this->v_pos[i];
 		this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-		this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+		this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -153,7 +157,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
 			this->v_texcoord[i] = other.v_texcoord[i];
 			this->v_pos_accessor[i] = &this->v_pos[i];
 			this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-			this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+			this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 		}
 		for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 			this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -199,7 +203,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
 			this->v_texcoord[i] = other.v_texcoord[i];
 			this->v_pos_accessor[i] = &this->v_pos[i];
 			this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-			this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+			this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 		}
 		for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 			this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -282,6 +286,47 @@ ScreenTexture& ScreenTexture::init(std::string path, unsigned char features) {
 #endif
 	loaded = true;
 	this->path = path;
+	return *this;
+}
+
+ScreenTexture& ScreenTexture::init(unsigned int texture, unsigned char features, int width, int height) {
+	this->features = features;
+	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
+	set_shader("default");
+	shader->use();
+	shader->set_int("f_texture", 0);
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+	glBindTexture(GL_TEXTURE_2D, texture);
+	if (width == -1) {
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+	}
+	if (height == -1) {
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+	}
+	base_width = width;
+	base_height = height;
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextureCoord), (void*)offsetof(TextureCoord, tex_coord));
+	glEnableVertexAttribArray(1);
+
+	set_default_vertex_data();
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
+	loaded = true;
+	this->texture.push_back(texture);
 	return *this;
 }
 
@@ -380,6 +425,24 @@ ScreenTexture& ScreenTexture::set_features(unsigned char features) {
 	}
 
 	this->features = features;
+	return *this;
+}
+
+ScreenTexture& ScreenTexture::set_pause(bool pause) {
+	for (int i = 0; i < v_spec.num_vertices_internal; i++) {
+		v_pos[i].x.set_pause(pause);
+		v_pos[i].y.set_pause(pause);
+		v_texcoord[i].x.set_pause(pause);
+		v_texcoord[i].y.set_pause(pause);
+	}
+	pos.set_pause(pause);
+	rot.set_pause(pause);
+	base_width.set_pause(pause);
+	base_height.set_pause(pause);
+	width_scale.set_pause(pause);
+	height_scale.set_pause(pause);
+	alpha.set_pause(pause);
+	colormod.set_pause(pause);
 	return *this;
 }
 
@@ -1667,12 +1730,12 @@ void ScreenTexture::render() {
 		render_pos.x -= WINDOW_WIDTH;
 	}
 	else if (screen_orientation & TEXTURE_RIGHT) {
-		render_pos *= -1.0;
+		render_pos.x *= -1.0;
 		render_pos.x += WINDOW_WIDTH;
 	}
 	
 	if (screen_orientation & TEXTURE_TOP) {
-		render_pos *= -1.0;
+		render_pos.y *= -1.0;
 		render_pos.y += WINDOW_HEIGHT;
 	}
 	else if (screen_orientation & TEXTURE_BOTTOM) {
@@ -1742,15 +1805,14 @@ void ScreenTexture::set_default_vertex_data() {
 		v_pos[TC_4T5V_MIDDLE] = glm::vec2(0.0, 0.0);
 		v_texcoord[TC_4T5V_MIDDLE] = glm::vec2(0.5, 0.5);
 	}
+	glm::vec2 v_pos_scaler = glm::vec2(
+		get_width() / WINDOW_WIDTH,
+		get_height() / WINDOW_HEIGHT
+	);
 	for (int i = 0; i < v_spec.num_vertices; i++) {
 		v_pos_accessor[i] = &v_pos[i];
 		v_texcoord_accessor[i] = &v_texcoord[i];
-		v_data_for_gpu[i] = { v_pos[i], v_texcoord[i] };
-	}
-
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_data_for_gpu[i].pos.x *= get_width() / (float)WINDOW_WIDTH;
-		v_data_for_gpu[i].pos.y *= get_height() / (float)WINDOW_HEIGHT;
+		v_data_for_gpu[i] = { (glm::vec2)v_pos[i] * v_pos_scaler, v_texcoord[i] };
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -1760,10 +1822,9 @@ void ScreenTexture::set_default_vertex_data() {
 }
 
 void ScreenTexture::update_buffer_data() {
-	bool update = false;
 	glm::vec2 v_pos_scaler = glm::vec2(
-		get_width() / (float)WINDOW_WIDTH,
-		get_height() / (float)WINDOW_HEIGHT
+		get_width() / WINDOW_WIDTH,
+		get_height() / WINDOW_HEIGHT
 	);
 	for (int i = 0; i < v_spec.num_vertices; i++) {
 		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler

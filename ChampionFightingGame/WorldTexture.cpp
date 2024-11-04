@@ -34,6 +34,11 @@ WorldTexture::WorldTexture(std::string path, unsigned char features) : WorldText
 	init(path, features);
 }
 
+WorldTexture::WorldTexture(unsigned int texture, unsigned char features, int width, int height) : WorldTexture() {
+	std::vector<unsigned int> tex{ texture };
+	init(tex, features, width, height);
+}
+
 WorldTexture::WorldTexture(std::vector<unsigned int> texture, unsigned char features, int width, int height) : WorldTexture() {
 	init(texture, features, width, height);
 }
@@ -56,7 +61,7 @@ WorldTexture::WorldTexture(WorldTexture& other) {
 		this->v_texcoord[i] = other.v_texcoord[i];
 		this->v_pos_accessor[i] = &this->v_pos[i];
 		this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-		this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+		this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -98,7 +103,7 @@ WorldTexture::WorldTexture(WorldTexture&& other) noexcept {
 		this->v_texcoord[i] = other.v_texcoord[i];
 		this->v_pos_accessor[i] = &this->v_pos[i];
 		this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-		this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+		this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -142,7 +147,7 @@ WorldTexture& WorldTexture::operator=(WorldTexture& other) {
 			this->v_texcoord[i] = other.v_texcoord[i];
 			this->v_pos_accessor[i] = &this->v_pos[i];
 			this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-			this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+			this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 		}
 		for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 			this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -187,7 +192,7 @@ WorldTexture& WorldTexture::operator=(WorldTexture&& other) noexcept {
 			this->v_texcoord[i] = other.v_texcoord[i];
 			this->v_pos_accessor[i] = &this->v_pos[i];
 			this->v_texcoord_accessor[i] = &this->v_texcoord[i];
-			this->v_data_for_gpu[i] = { this->v_pos[i], this->v_texcoord[i] };
+			this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
 		}
 		for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 			this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
@@ -351,6 +356,23 @@ WorldTexture& WorldTexture::set_features(unsigned char features) {
 	}
 
 	this->features = features;
+	return *this;
+}
+
+WorldTexture& WorldTexture::set_pause(bool pause) {
+	for (int i = 0; i < v_spec.num_vertices_internal; i++) {
+		v_pos[i].x.set_pause(pause);
+		v_pos[i].y.set_pause(pause);
+		v_texcoord[i].x.set_pause(pause);
+		v_texcoord[i].y.set_pause(pause);
+	}
+	pos.set_pause(pause);
+	rot.set_pause(pause);
+	scale.set_pause(pause);
+	width.set_pause(pause);
+	height.set_pause(pause);
+	alpha.set_pause(pause);
+	colormod.set_pause(pause);
 	return *this;
 }
 

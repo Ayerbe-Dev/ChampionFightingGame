@@ -11,8 +11,9 @@ class Shader;
 class WorldTexture {
 public:
 	WorldTexture();
-	WorldTexture(std::string path, unsigned char features);
-	WorldTexture(std::vector<unsigned int> texture, unsigned char features, int width = -1, int height = -1);
+	WorldTexture(std::string path, unsigned char features = 0);
+	WorldTexture(unsigned int texture, unsigned char features = 0, int width = -1, int height = -1);
+	WorldTexture(std::vector<unsigned int> texture, unsigned char features = 0, int width = -1, int height = -1);
 	WorldTexture(WorldTexture& that);
 	WorldTexture(WorldTexture&& that) noexcept;
 	WorldTexture& operator=(WorldTexture& that);
@@ -21,11 +22,12 @@ public:
 
 
 	WorldTexture& init(std::string path, unsigned char features);
-	WorldTexture& init(std::vector<unsigned int> texture, unsigned char features, int width = -1, int height = -1);
+	WorldTexture& init(std::vector<unsigned int> texture, unsigned char features = 0, int width = -1, int height = -1);
 	void destroy();
 	WorldTexture init_copy();
 	WorldTexture& set_shader(std::string frag_shader);
 	WorldTexture& set_features(unsigned char features);
+	WorldTexture& set_pause(bool pause);
 
 	std::string get_path() const;
 

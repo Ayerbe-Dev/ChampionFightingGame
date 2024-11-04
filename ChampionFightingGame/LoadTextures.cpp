@@ -8,17 +8,19 @@
 unsigned int loadGLTexture(std::string file_path) {
 	unsigned int texture_id;
 	glGenTextures(1, &texture_id);
-
+	
 	int width;
 	int height;
 	int num_components;
+	ResourceManager* resource_manager = ResourceManager::get_instance();
 	unsigned char* data = stbi_load(file_path.c_str(), &width, &height, &num_components, 0);
+
 	if (data) {
 		GLenum internal_format;
 		GLenum format;
 		switch (num_components) {
 			case 3: {
-				if (ResourceManager::get_instance()->is_srgb()) {
+				if (resource_manager->is_srgb()) {
 					internal_format = GL_SRGB;
 				}
 				else {
@@ -27,7 +29,7 @@ unsigned int loadGLTexture(std::string file_path) {
 				format = GL_RGB;
 			} break;
 			case 4: {
-				if (ResourceManager::get_instance()->is_srgb()) {
+				if (resource_manager->is_srgb()) {
 					internal_format = GL_SRGB8_ALPHA8;
 				}
 				else {
@@ -40,20 +42,17 @@ unsigned int loadGLTexture(std::string file_path) {
 				format = GL_RED;
 			} break;
 		}
-
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
 	}
 	else {
 		std::cout << "Failed to load texture at " << file_path << "\n";
-		stbi_image_free(data);
 	}
+	stbi_image_free(data);
 
 	return texture_id;
 }

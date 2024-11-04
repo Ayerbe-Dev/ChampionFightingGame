@@ -19,6 +19,10 @@ public:
 	WorldText& init(Font* font, std::string text, TextSpecifier spec);
 	void destroy();
 	WorldText& set_shader(std::string frag_shader);
+	WorldText& set_pause(bool pause);
+
+	WorldText& update_text(std::string new_text);
+	WorldText& start_scroll(int frames);
 
 	WorldText& set_orientation(int orientation);
 	int get_texture_orientation() const;
@@ -50,9 +54,6 @@ public:
 
 	WorldText& set_billboard_setting(int billboard_setting);
 	int get_billboard_setting() const;
-
-	WorldText& update_text(std::string new_text);
-	WorldText& start_scroll(int frames);
 
 	void render();
 private:

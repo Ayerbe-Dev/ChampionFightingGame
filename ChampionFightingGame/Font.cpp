@@ -337,5 +337,7 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	prev_width = width * 2;
 	prev_height = height * 2;
 
+	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+
 	return texture;
 }

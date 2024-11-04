@@ -13,8 +13,9 @@ class Shader;
 class ScreenTexture {
 public:
 	ScreenTexture();
-	ScreenTexture(std::string path, unsigned char features);
-	ScreenTexture(std::vector<unsigned int> texture, unsigned char features, int width = -1, int height = -1);
+	ScreenTexture(std::string path, unsigned char features = 0);
+	ScreenTexture(unsigned int texture, unsigned char features = 0, int width = -1, int height = -1);
+	ScreenTexture(std::vector<unsigned int> texture, unsigned char features = 0, int width = -1, int height = -1);
 
 	ScreenTexture(ScreenTexture& that);
 	ScreenTexture(ScreenTexture&& that) noexcept;
@@ -22,12 +23,14 @@ public:
 	ScreenTexture& operator=(ScreenTexture&& that) noexcept;
 	~ScreenTexture();
 
-	ScreenTexture& init(std::string path, unsigned char features);
-	ScreenTexture& init(std::vector<unsigned int> texture, unsigned char features, int width = -1, int height = -1);
+	ScreenTexture& init(std::string path, unsigned char features = 0);
+	ScreenTexture& init(unsigned int texture, unsigned char features = 0, int width = -1, int height = -1);
+	ScreenTexture& init(std::vector<unsigned int> texture, unsigned char features = 0, int width = -1, int height = -1);
 	void destroy();
 	ScreenTexture init_copy() const;
 	ScreenTexture& set_shader(std::string frag_shader);
 	ScreenTexture& set_features(unsigned char features);
+	ScreenTexture& set_pause(bool pause);
 
 	std::string get_path() const;
 

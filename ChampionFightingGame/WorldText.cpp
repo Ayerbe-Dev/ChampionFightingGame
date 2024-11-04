@@ -225,6 +225,53 @@ WorldText& WorldText::set_shader(std::string frag_shader) {
 	return *this;
 }
 
+WorldText& WorldText::set_pause(bool pause) {
+	for (int i = 0; i < 6 * num_lines; i++) {
+		v_pos[i].x.set_pause(pause);
+		v_pos[i].y.set_pause(pause);
+		v_texcoord[i].x.set_pause(pause);
+		v_texcoord[i].y.set_pause(pause);
+	}
+	pos.set_pause(pause);
+	rot.set_pause(pause);
+	scale.set_pause(pause);
+	width.set_pause(pause);
+	height.set_pause(pause);
+	return *this;
+}
+
+WorldText& WorldText::update_text(std::string text) {
+	this->text = text;
+	texture = font->create_text(text, spec, &num_lines, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, width.get_val_ptr());
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, height.get_val_ptr());
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	set_default_vertex_data();
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return *this;
+}
+
+WorldText& WorldText::start_scroll(int frames) {
+	for (int i = 0; i < num_lines; i++) {
+		v_pos[(i * 6) + 1].x = -1.0f;
+		v_texcoord[(i * 6) + 1].x = 0.0f;
+		v_pos[(i * 6) + 3].x = -1.0f;
+		v_texcoord[(i * 6) + 3].x = 0.0f;
+		v_pos[(i * 6) + 4].x = -1.0f;
+		v_texcoord[(i * 6) + 4].x = 0.0f;
+	}
+	scroll = 0.0f;
+	scroll.set_target_val(1.0f, frames);
+	return *this;
+}
+
 WorldText& WorldText::set_orientation(int orientation) {
 	this->texture_orientation = orientation;
 	return *this;
@@ -395,38 +442,6 @@ WorldText& WorldText::set_billboard_setting(int billboard_setting) {
 
 int WorldText::get_billboard_setting() const {
 	return billboard_setting;
-}
-
-WorldText& WorldText::update_text(std::string text) {
-	this->text = text;
-	texture = font->create_text(text, spec, &num_lines, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, width.get_val_ptr());
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, height.get_val_ptr());
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	set_default_vertex_data();
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return *this;
-}
-
-WorldText& WorldText::start_scroll(int frames) {
-	for (int i = 0; i < num_lines; i++) {
-		v_pos[(i * 6) + 1].x = -1.0f;
-		v_texcoord[(i * 6) + 1].x = 0.0f;
-		v_pos[(i * 6) + 3].x = -1.0f;
-		v_texcoord[(i * 6) + 3].x = 0.0f;
-		v_pos[(i * 6) + 4].x = -1.0f;
-		v_texcoord[(i * 6) + 4].x = 0.0f;
-	}
-	scroll = 0.0f;
-	scroll.set_target_val(1.0f, frames);
-	return *this;
 }
 
 void WorldText::render() {

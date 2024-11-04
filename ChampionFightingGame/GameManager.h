@@ -8,6 +8,7 @@
 #include <list>
 #include <any>
 #include "debug.h"
+#include "ScreenText.h"
 
 class GameManager {
 public:
@@ -62,8 +63,6 @@ private:
 	static GameManager* instance;
 
 	std::vector<GameState*> game_state;
-	std::vector<std::list<BaseTargetVar*>> game_state_targets;
-	std::list<BaseTargetVar*> unset_targets;
 
 
 	bool is_up_press(int id);
@@ -85,8 +84,7 @@ private:
 	//FPS stuff
 
 	Font fps_font;
-	GameTexture fps_counter;
-	GameTexture fps_texture;
+	ScreenText fps_counter;
 	int frame;
 	int fps;
 	int prev_fps;

@@ -38,12 +38,7 @@ GameManager::GameManager() {
 	fps = 60;
 	prev_fps = 0;
 	fps_font = font_manager->load_font("FiraCode", 48);
-	fps_counter.init(fps_font, std::to_string(60), glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	fps_counter.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_counter.set_pos(glm::vec3(0.0, 0.0, 0.0));
-	fps_texture.init(fps_font, "FPS", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	fps_texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-	fps_texture.set_pos(glm::vec3(80.0, 0.0, 0.0));
+	fps_counter.init(&fps_font, "60 FPS", TextSpecifier().color(glm::vec3(0.0f))).set_orientation(TEXTURE_LEFT | TEXTURE_TOP);
 }
 
 void GameManager::update_state(int next_game_state, int next_game_context) {
@@ -68,15 +63,12 @@ void GameManager::update_state(int next_game_state, int next_game_context) {
 }
 
 void GameManager::set_game_state(GameState* game_state) {
-	//Initialize GameManager values, assign the GameManager a target
 	this->game_state.push_back(game_state);
-	TargetVarManager::get_instance()->push_game_state_target_set();
 	game_state->game_context = next_game_context;
 }
 
 void GameManager::delete_game_state() {
 	game_state.pop_back();
-	TargetVarManager::get_instance()->pop_game_state_target_set();
 }
 
 GameState* GameManager::get_game_state(int depth) {
@@ -157,7 +149,6 @@ void GameManager::render_game_states() {
 			it->render();
 		}
 	}
-	fps_texture.render();
 	fps_counter.render();
 }
 
@@ -353,12 +344,7 @@ void GameManager::frame_delay_check_fps() {
 		frame++;
 	}
 	if (prev_fps != fps) {
-		fps_counter.update_text(fps_font, std::to_string(fps), glm::vec4(0, 0, 0, 255), glm::vec4(0.0));
-		int text_x = 0;
-		for (int i = 1; i <= fps; i *= 10) {
-			text_x += 38;
-		}
-		fps_texture.set_pos(glm::vec3(text_x, 0.0, 0.0));
+		fps_counter.update_text(std::to_string(fps) + " FPS");
 		prev_fps = fps;
 	}
 }
@@ -376,7 +362,6 @@ void GameManager::destroy_instance() {
 	delete player[1];
 	fps_font.unload_font();
 	fps_counter.destroy();
-	fps_texture.destroy();
 	if (instance != nullptr) {
 		delete instance;
 	}

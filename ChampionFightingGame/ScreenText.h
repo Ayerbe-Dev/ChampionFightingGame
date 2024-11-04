@@ -19,13 +19,14 @@ public:
 	ScreenText& init(Font* font, std::string text, TextSpecifier spec);
 	void destroy();
 	ScreenText& set_shader(std::string frag_shader);
+	ScreenText& set_pause(bool persistence);
 
 	ScreenText& update_text(std::string new_text);
 	ScreenText& start_scroll(int frames);
 
 	ScreenText& set_screen_orientation(int orientation);
 	ScreenText& set_texture_orientation(int orientation);
-	ScreenText& set_orientation(int screen_orientation, int texture_orientation);
+	ScreenText& set_orientation(int orientation);
 	int get_screen_orientation() const;
 	int get_texture_orientation() const;
 

@@ -36,6 +36,7 @@ void opening_main() {
 		}
 
 		window_manager->clear_screen();
+		glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 
 		if (fade_state == 0) {
 			title_alpha += 2;

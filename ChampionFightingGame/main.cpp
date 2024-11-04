@@ -34,6 +34,7 @@ int main() {
 
 	//Initialize all of the singletons
 
+	TargetVarManager* target_var_manager = TargetVarManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 	FontManager* font_manager = FontManager::get_instance();
 	font_manager->load_face("FiraCode");
@@ -47,7 +48,6 @@ int main() {
 	SaveManager* save_manager = SaveManager::get_instance();
 	ShaderManager* shader_manager = ShaderManager::get_instance();
 	SoundManager* sound_manager = SoundManager::get_instance();
-	TargetVarManager* target_var_manager = TargetVarManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 
 	opening_main();

@@ -280,12 +280,12 @@ void Shader::init(ShaderManager* shader_manager, std::string vertex_dir, std::st
 		shader_file.close();
 
 		const GLchar* vert_src = source.c_str();
-		glShaderSource(vertex, 1, &vert_src, NULL);
+		glShaderSource(vertex, 1, &vert_src, nullptr);
 		glCompileShader(vertex);
 
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 		if (!success) {
-			glGetShaderInfoLog(vertex, 512, NULL, info_log);
+			glGetShaderInfoLog(vertex, 512, nullptr, info_log);
 			std::cout << info_log << ", Shader File: " << vertex_dir << "\n";
 		}
 		else {
@@ -367,12 +367,12 @@ void Shader::init(ShaderManager* shader_manager, std::string vertex_dir, std::st
 			shader_file.close();
 
 			const GLchar* geom_src = source.c_str();
-			glShaderSource(geometry, 1, &geom_src, NULL);
+			glShaderSource(geometry, 1, &geom_src, nullptr);
 			glCompileShader(geometry);
 
 			glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
 			if (!success) {
-				glGetShaderInfoLog(geometry, 512, NULL, info_log);
+				glGetShaderInfoLog(geometry, 512, nullptr, info_log);
 				std::cout << info_log << ", Shader File: " << geometry_dir << "\n";
 			}
 			else {
@@ -469,12 +469,12 @@ void Shader::init(ShaderManager* shader_manager, std::string vertex_dir, std::st
 		shader_file.close();
 
 		const GLchar* frag_src = source.c_str();
-		glShaderSource(fragment, 1, &frag_src, NULL);
+		glShaderSource(fragment, 1, &frag_src, nullptr);
 		glCompileShader(fragment);
 
 		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 		if (!success) {
-			glGetShaderInfoLog(fragment, 512, NULL, info_log);
+			glGetShaderInfoLog(fragment, 512, nullptr, info_log);
 			std::cout << info_log << ", Shader File: " << fragment_dir << "\n";
 		}
 		else {
@@ -486,7 +486,7 @@ void Shader::init(ShaderManager* shader_manager, std::string vertex_dir, std::st
 
 	glGetShaderiv(id, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(id, 512, NULL, info_log);
+		glGetProgramInfoLog(id, 512, nullptr, info_log);
 		std::cout << info_log << "\n";
 	}
 

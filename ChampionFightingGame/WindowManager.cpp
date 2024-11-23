@@ -140,7 +140,7 @@ WindowManager::WindowManager() {
 	debug_textures.push_back(ScreenTexture(g_buffer.textures[2]));
 	debug_textures.push_back(ScreenTexture(blur.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
-		debug_textures[i].set_scale(0.4).set_pos(glm::vec3(0.0, 432 * i, 0.0)).set_orientation(TEXTURE_BOTTOM_RIGHT);
+		debug_textures[i].set_scale(0.2).set_pos(glm::vec3(0.0, 250 * i, 0.0)).set_orientation(TEXTURE_BOTTOM_RIGHT);
 	}
 	fade_texture.init("resource/misc/fade.png").set_alpha(0);
 	fade_frames = 0;

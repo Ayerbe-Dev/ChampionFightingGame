@@ -16,6 +16,7 @@ WorldTexture::WorldTexture() {
 	this->features = 0;
 	this->path = "";
 	this->texture_orientation = TEXTURE_MID;
+	this->anchor = nullptr;
 	this->pos = glm::vec3(0.0);
 	this->rot = glm::vec3(0.0);
 	this->scale = glm::vec3(1.0);
@@ -70,6 +71,7 @@ WorldTexture::WorldTexture(WorldTexture& other) {
 	this->features = other.features;
 	this->path = other.path;
 	this->texture_orientation = other.texture_orientation;
+	this->anchor = other.anchor;
 	this->texture = other.texture;
 	this->pos = other.pos;
 	this->rot = other.rot;
@@ -82,7 +84,57 @@ WorldTexture::WorldTexture(WorldTexture& other) {
 	this->v_flipped = other.v_flipped;
 	this->billboard_setting = other.billboard_setting;
 	this->sprite = other.sprite;
-	this->loaded = false;
+	if (ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
+		this->loaded = other.loaded;
+		other.loaded = false;
+	}
+	else {
+		this->loaded = false;
+	}
+}
+
+WorldTexture::WorldTexture(const WorldTexture& other) {
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+	this->VAO = other.VAO;
+	this->VBO = other.VBO;
+#endif
+	this->v_spec = other.v_spec;
+	this->v_pos.resize(v_spec.num_vertices);
+	this->v_pos_accessor.resize(v_spec.num_vertices);
+	this->v_texcoord.resize(v_spec.num_vertices);
+	this->v_texcoord_accessor.resize(v_spec.num_vertices);
+	this->v_data_for_gpu.resize(v_spec.num_vertices_internal);
+	for (int i = 0; i < v_spec.num_vertices; i++) {
+		this->v_pos[i] = other.v_pos[i];
+		this->v_texcoord[i] = other.v_texcoord[i];
+		this->v_pos_accessor[i] = &this->v_pos[i];
+		this->v_texcoord_accessor[i] = &this->v_texcoord[i];
+		this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
+	}
+	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
+		this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
+	}
+	this->shader = other.shader;
+	this->features = other.features;
+	this->path = other.path;
+	this->texture_orientation = other.texture_orientation;
+	this->anchor = other.anchor;
+	this->texture = other.texture;
+	this->pos = other.pos;
+	this->rot = other.rot;
+	this->scale = other.scale;
+	this->width = other.width;
+	this->height = other.height;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
+	this->h_flipped = other.h_flipped;
+	this->v_flipped = other.v_flipped;
+	this->billboard_setting = other.billboard_setting;
+	this->sprite = other.sprite;
+	this->loaded = other.loaded;
+	ResourceManager::get_instance()->store_const_copy_addr(texture[0], (WorldTexture*)&other);
 }
 
 WorldTexture::WorldTexture(WorldTexture&& other) noexcept {
@@ -112,6 +164,7 @@ WorldTexture::WorldTexture(WorldTexture&& other) noexcept {
 	this->features = other.features;
 	this->path = other.path;
 	this->texture_orientation = other.texture_orientation;
+	this->anchor = other.anchor;
 	this->texture = other.texture;
 	this->pos = other.pos;
 	this->rot = other.rot;
@@ -156,6 +209,7 @@ WorldTexture& WorldTexture::operator=(WorldTexture& other) {
 		this->features = other.features;
 		this->path = other.path;
 		this->texture_orientation = other.texture_orientation;
+		this->anchor = other.anchor;
 		this->texture = other.texture;
 		this->pos = other.pos;
 		this->rot = other.rot;
@@ -168,7 +222,60 @@ WorldTexture& WorldTexture::operator=(WorldTexture& other) {
 		this->v_flipped = other.v_flipped;
 		this->billboard_setting = other.billboard_setting;
 		this->sprite = other.sprite;
-		this->loaded = false;
+		if (ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
+			this->loaded = other.loaded;
+			other.loaded = false;
+		}
+		else {
+			this->loaded = false;
+		}
+	}
+	return *this;
+}
+
+WorldTexture& WorldTexture::operator=(const WorldTexture& other) {
+	if (this != &other) {
+#ifdef TEX_IMPL_MODE_VULKAN
+
+#else
+		this->VAO = other.VAO;
+		this->VBO = other.VBO;
+#endif
+		this->v_spec = other.v_spec;
+		this->v_pos.resize(v_spec.num_vertices);
+		this->v_pos_accessor.resize(v_spec.num_vertices);
+		this->v_texcoord.resize(v_spec.num_vertices);
+		this->v_texcoord_accessor.resize(v_spec.num_vertices);
+		this->v_data_for_gpu.resize(v_spec.num_vertices_internal);
+		for (int i = 0; i < v_spec.num_vertices; i++) {
+			this->v_pos[i] = other.v_pos[i];
+			this->v_texcoord[i] = other.v_texcoord[i];
+			this->v_pos_accessor[i] = &this->v_pos[i];
+			this->v_texcoord_accessor[i] = &this->v_texcoord[i];
+			this->v_data_for_gpu[i] = other.v_data_for_gpu[i];
+		}
+		for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
+			this->v_data_for_gpu[v_spec.vertex_bindings[i].first] = this->v_data_for_gpu[v_spec.vertex_bindings[i].second];
+		}
+		this->shader = other.shader;
+		this->features = other.features;
+		this->path = other.path;
+		this->texture_orientation = other.texture_orientation;
+		this->anchor = other.anchor;
+		this->texture = other.texture;
+		this->pos = other.pos;
+		this->rot = other.rot;
+		this->scale = other.scale;
+		this->width = other.width;
+		this->height = other.height;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
+		this->h_flipped = other.h_flipped;
+		this->v_flipped = other.v_flipped;
+		this->billboard_setting = other.billboard_setting;
+		this->sprite = other.sprite;
+		this->loaded = other.loaded;
+		ResourceManager::get_instance()->store_const_copy_addr(texture[0], (WorldTexture*)&other);
 	}
 	return *this;
 }
@@ -201,6 +308,7 @@ WorldTexture& WorldTexture::operator=(WorldTexture&& other) noexcept {
 		this->features = other.features;
 		this->path = other.path;
 		this->texture_orientation = other.texture_orientation;
+		this->anchor = other.anchor;
 		this->texture = other.texture;
 		this->pos = other.pos;
 		this->rot = other.rot;
@@ -220,12 +328,12 @@ WorldTexture& WorldTexture::operator=(WorldTexture&& other) noexcept {
 }
 
 WorldTexture::~WorldTexture() {
-	if (loaded) {
+	if (!ResourceManager::get_instance()->is_tex_const_copied(texture[0], this) && loaded) {
 		destroy();
 	}
 }
 
-WorldTexture& WorldTexture::init(std::string path, unsigned char features) {
+WorldTexture&& WorldTexture::init(std::string path, unsigned char features) {
 	//This function is identical to ScreenTexture::init, so documentation is there
 	this->features = features;
 	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
@@ -266,10 +374,10 @@ WorldTexture& WorldTexture::init(std::string path, unsigned char features) {
 #endif
 	loaded = true;
 	this->path = path;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::init(std::vector<unsigned int> texture, unsigned char features, int width, int height) {
+WorldTexture&& WorldTexture::init(std::vector<unsigned int> texture, unsigned char features, int width, int height) {
 	this->features = features;
 	v_spec = (features & TEX_FEAT_4T5V) ? v_spec_4t5v : v_spec_2t4v;
 	set_shader("default");
@@ -307,7 +415,7 @@ WorldTexture& WorldTexture::init(std::vector<unsigned int> texture, unsigned cha
 #endif
 	loaded = true;
 	this->texture = texture;
-	return *this;
+	return std::move(*this);
 }
 
 void WorldTexture::destroy() {
@@ -338,12 +446,12 @@ WorldTexture WorldTexture::init_copy() {
 	return ret;
 }
 
-WorldTexture& WorldTexture::set_shader(std::string frag_shader) {
+WorldTexture&& WorldTexture::set_shader(std::string frag_shader) {
 	this->shader = ShaderManager::get_instance()->get_shader("world_tex", "world_tex_" + frag_shader, "", billboard_setting);
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_features(unsigned char features) {
+WorldTexture&& WorldTexture::set_features(unsigned char features) {
 	if ((this->features & TEX_FEAT_4T5V) != (features & TEX_FEAT_4T5V)) {
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -356,10 +464,10 @@ WorldTexture& WorldTexture::set_features(unsigned char features) {
 	}
 
 	this->features = features;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_pause(bool pause) {
+WorldTexture&& WorldTexture::set_pause(bool pause) {
 	for (int i = 0; i < v_spec.num_vertices_internal; i++) {
 		v_pos[i].x.set_pause(pause);
 		v_pos[i].y.set_pause(pause);
@@ -373,181 +481,128 @@ WorldTexture& WorldTexture::set_pause(bool pause) {
 	height.set_pause(pause);
 	alpha.set_pause(pause);
 	colormod.set_pause(pause);
-	return *this;
+	return std::move(*this);
 }
 
 std::string WorldTexture::get_path() const {
 	return path;
 }
 
-WorldTexture& WorldTexture::set_orientation(int orientation) {
+WorldTexture&& WorldTexture::set_orientation(int orientation) {
 	this->texture_orientation = orientation;
-	return *this;
+	return std::move(*this);
 }
 
 int WorldTexture::get_texture_orientation() const {
 	return texture_orientation;
 }
 
-WorldTexture& WorldTexture::set_pos(glm::vec3 pos) {
+WorldTexture&& WorldTexture::set_anchor(TextureAnchor* anchor) {
+	this->anchor = anchor;
+	return std::move(*this);
+}
+
+WorldTexture&& WorldTexture::set_pos(glm::vec3 pos) {
 	this->pos = pos;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_pos(glm::vec3 pos, int frames) {
+WorldTexture&& WorldTexture::set_pos(glm::vec3 pos, int frames) {
 	this->pos.set_target_val(pos, frames);
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_pos(glm::vec3 pos) {
+WorldTexture&& WorldTexture::add_pos(glm::vec3 pos) {
 	this->pos += pos;
-	return *this;
+	return std::move(*this);
 }
 
 glm::vec3 WorldTexture::get_pos() const {
 	return pos.get_val();
 }
 
-WorldTexture& WorldTexture::set_rot(glm::vec3 rot) {
+WorldTexture&& WorldTexture::set_rot(glm::vec3 rot) {
 	this->rot = rot;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_rot(glm::vec3 rot, int frames) {
+WorldTexture&& WorldTexture::set_rot(glm::vec3 rot, int frames) {
 	this->rot.set_target_val(rot, frames);
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_rot(glm::vec3 rot) {
+WorldTexture&& WorldTexture::add_rot(glm::vec3 rot) {
 	this->rot += rot;
-	return *this;
+	return std::move(*this);
 }
 
 glm::vec3 WorldTexture::get_rot() const {
 	return rot.get_val();
 }
 
-WorldTexture& WorldTexture::set_width(int new_width) {
-	float prev_width_scaler = width / (float)WINDOW_WIDTH;
-	float curr_width_scaler = new_width / (float)WINDOW_WIDTH;
+WorldTexture&& WorldTexture::set_width(int new_width) {
 	width = new_width;
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		float val = v_pos[i].x.get_target_val() / prev_width_scaler * curr_width_scaler;
-		int frames = v_pos[i].x.get_frames();
-		if (frames) {
-			v_pos[i].x.set_target_val(val, frames);
-		}
-		else {
-			v_pos[i].x = val;
-		}
-	}
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_width(int new_width, int frames) {
-	float prev_width_scaler = width / (float)WINDOW_WIDTH;
-	float curr_width_scaler = new_width / (float)WINDOW_WIDTH;
+WorldTexture&& WorldTexture::set_width(int new_width, int frames) {
 	width.set_target_val(new_width, frames);
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_pos[i].x.set_target_val(v_pos[i].x / prev_width_scaler * curr_width_scaler, frames);
-	}
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_width(int width) {
-	float prev_width_scaler = width / (float)WINDOW_WIDTH;
-	width += width;
-	float curr_width_scaler = width / (float)WINDOW_WIDTH;
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		float val = v_pos[i].x.get_target_val() / prev_width_scaler * curr_width_scaler;
-		int frames = v_pos[i].x.get_frames();
-		if (frames) {
-			v_pos[i].x.set_target_val(val, frames);
-		}
-		else {
-			v_pos[i].x = val;
-		}
-	}
-	return *this;
+WorldTexture&& WorldTexture::add_width(int width) {
+	this->width += width;
+	return std::move(*this);
 }
 
 int WorldTexture::get_width() const {
 	return width.get_val();
 }
 
-WorldTexture& WorldTexture::set_height(int new_height) {
-	float prev_height_scaler = height / (float)WINDOW_HEIGHT;
-	float curr_height_scaler = new_height / (float)WINDOW_HEIGHT;
+WorldTexture&& WorldTexture::set_height(int new_height) {
 	height = new_height;
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		float val = v_pos[i].y.get_target_val() / prev_height_scaler * curr_height_scaler;
-		int frames = v_pos[i].y.get_frames();
-		if (frames) {
-			v_pos[i].y.set_target_val(val, frames);
-		}
-		else {
-			v_pos[i].y = val;
-		}
-	}
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_height(int new_height, int frames) {
-	float prev_height_scaler = height / (float)WINDOW_HEIGHT;
-	float curr_height_scaler = new_height / (float)WINDOW_HEIGHT;
+WorldTexture&& WorldTexture::set_height(int new_height, int frames) {
 	height.set_target_val(new_height, frames);
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_pos[i].y.set_target_val(v_pos[i].x / prev_height_scaler * curr_height_scaler, frames);
-	}
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_height(int height) {
-	float prev_height_scaler = height / (float)WINDOW_HEIGHT;
-	height += height;
-	float curr_height_scaler = height / (float)WINDOW_HEIGHT;
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		float val = v_pos[i].y.get_target_val() / prev_height_scaler * curr_height_scaler;
-		int frames = v_pos[i].y.get_frames();
-		if (frames) {
-			v_pos[i].y.set_target_val(val, frames);
-		}
-		else {
-			v_pos[i].y = val;
-		}
-	}
-	return *this;
+WorldTexture&& WorldTexture::add_height(int height) {
+	this->height += height;
+	return std::move(*this);
 }
 
 int WorldTexture::get_height() const {
 	return height.get_val();
 }
 
-WorldTexture& WorldTexture::set_scale(glm::vec3 scale) {
+WorldTexture&& WorldTexture::set_scale(glm::vec3 scale) {
 	this->scale = scale;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_scale(glm::vec3 scale, int frames) {
+WorldTexture&& WorldTexture::set_scale(glm::vec3 scale, int frames) {
 	this->scale.set_target_val(scale, frames);
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_scale(glm::vec3 scale) {
+WorldTexture&& WorldTexture::add_scale(glm::vec3 scale) {
 	this->scale += scale;
-	return *this;
+	return std::move(*this);
 }
 
 glm::vec3 WorldTexture::get_scale() const {
 	return scale.get_val();
 }
 
-WorldTexture& WorldTexture::scale_right_edge(float percent) {
+WorldTexture&& WorldTexture::scale_right_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -559,15 +614,15 @@ WorldTexture& WorldTexture::scale_right_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_right_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::scale_right_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -579,15 +634,15 @@ WorldTexture& WorldTexture::scale_right_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_right_edge(float percent) {
+WorldTexture&& WorldTexture::crop_right_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -603,15 +658,15 @@ WorldTexture& WorldTexture::crop_right_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_right_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::crop_right_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -627,15 +682,15 @@ WorldTexture& WorldTexture::crop_right_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_left_edge(float percent) {
+WorldTexture&& WorldTexture::scale_left_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -647,15 +702,15 @@ WorldTexture& WorldTexture::scale_left_edge(float percent) {
 		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_left_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::scale_left_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -667,15 +722,15 @@ WorldTexture& WorldTexture::scale_left_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_left_edge(float percent) {
+WorldTexture&& WorldTexture::crop_left_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -691,15 +746,15 @@ WorldTexture& WorldTexture::crop_left_edge(float percent) {
 		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_left_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::crop_left_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
@@ -715,15 +770,15 @@ WorldTexture& WorldTexture::crop_left_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_top_edge(float percent) {
+WorldTexture&& WorldTexture::scale_top_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -735,15 +790,15 @@ WorldTexture& WorldTexture::scale_top_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_top_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::scale_top_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -755,15 +810,15 @@ WorldTexture& WorldTexture::scale_top_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_top_edge(float percent) {
+WorldTexture&& WorldTexture::crop_top_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -779,15 +834,15 @@ WorldTexture& WorldTexture::crop_top_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_top_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::crop_top_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -803,15 +858,15 @@ WorldTexture& WorldTexture::crop_top_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_bottom_edge(float percent) {
+WorldTexture&& WorldTexture::scale_bottom_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -823,15 +878,15 @@ WorldTexture& WorldTexture::scale_bottom_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_bottom_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::scale_bottom_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -843,15 +898,15 @@ WorldTexture& WorldTexture::scale_bottom_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_bottom_edge(float percent) {
+WorldTexture&& WorldTexture::crop_bottom_edge(float percent) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -867,15 +922,15 @@ WorldTexture& WorldTexture::crop_bottom_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_bottom_edge(float percent, int frames) {
+WorldTexture&& WorldTexture::crop_bottom_edge(float percent, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent < 0.0 || percent > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
@@ -891,15 +946,15 @@ WorldTexture& WorldTexture::crop_bottom_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_top_right_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::scale_top_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
@@ -922,15 +977,15 @@ WorldTexture& WorldTexture::scale_top_right_corner(float percent_x, float percen
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_top_right_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::scale_top_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	float width_scale = (float)width / (float)WINDOW_WIDTH;
 	float height_scale = (float)height / (float)WINDOW_HEIGHT;
@@ -953,15 +1008,15 @@ WorldTexture& WorldTexture::scale_top_right_corner(float percent_x, float percen
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_top_right_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::crop_top_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -990,15 +1045,15 @@ WorldTexture& WorldTexture::crop_top_right_corner(float percent_x, float percent
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_top_right_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::crop_top_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1027,15 +1082,15 @@ WorldTexture& WorldTexture::crop_top_right_corner(float percent_x, float percent
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_top_left_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::scale_top_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1056,15 +1111,15 @@ WorldTexture& WorldTexture::scale_top_left_corner(float percent_x, float percent
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_top_left_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::scale_top_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1085,15 +1140,15 @@ WorldTexture& WorldTexture::scale_top_left_corner(float percent_x, float percent
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_top_left_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::crop_top_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1122,15 +1177,15 @@ WorldTexture& WorldTexture::crop_top_left_corner(float percent_x, float percent_
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_top_left_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::crop_top_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1159,15 +1214,15 @@ WorldTexture& WorldTexture::crop_top_left_corner(float percent_x, float percent_
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_bottom_right_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::scale_bottom_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1189,15 +1244,15 @@ WorldTexture& WorldTexture::scale_bottom_right_corner(float percent_x, float per
 	}
 
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_bottom_right_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::scale_bottom_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1218,15 +1273,15 @@ WorldTexture& WorldTexture::scale_bottom_right_corner(float percent_x, float per
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_bottom_right_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::crop_bottom_right_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1255,15 +1310,15 @@ WorldTexture& WorldTexture::crop_bottom_right_corner(float percent_x, float perc
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_bottom_right_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::crop_bottom_right_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1292,15 +1347,15 @@ WorldTexture& WorldTexture::crop_bottom_right_corner(float percent_x, float perc
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_bottom_left_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::scale_bottom_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1321,15 +1376,15 @@ WorldTexture& WorldTexture::scale_bottom_left_corner(float percent_x, float perc
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::scale_bottom_left_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::scale_bottom_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1350,15 +1405,15 @@ WorldTexture& WorldTexture::scale_bottom_left_corner(float percent_x, float perc
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_bottom_left_corner(float percent_x, float percent_y) {
+WorldTexture&& WorldTexture::crop_bottom_left_corner(float percent_x, float percent_y) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1387,15 +1442,15 @@ WorldTexture& WorldTexture::crop_bottom_left_corner(float percent_x, float perce
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::crop_bottom_left_corner(float percent_x, float percent_y, int frames) {
+WorldTexture&& WorldTexture::crop_bottom_left_corner(float percent_x, float percent_y, int frames) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
-		return *this;
+		return std::move(*this);
 	}
 	switch (get_flipped()) {
 	case TEX_FLIP_N: {
@@ -1424,69 +1479,69 @@ WorldTexture& WorldTexture::crop_bottom_left_corner(float percent_x, float perce
 	} break;
 	}
 #endif
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_alpha(unsigned char alpha) {
+WorldTexture&& WorldTexture::set_alpha(unsigned char alpha) {
 	this->alpha = alpha;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_alpha(unsigned char alpha, int frames) {
+WorldTexture&& WorldTexture::set_alpha(unsigned char alpha, int frames) {
 	this->alpha.set_target_val(alpha, frames);
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_alpha(unsigned char alpha) {
+WorldTexture&& WorldTexture::add_alpha(unsigned char alpha) {
 	this->alpha += alpha;
-	return *this;
+	return std::move(*this);
 }
 
 unsigned char WorldTexture::get_alpha() const {
 	return alpha.get_val();
 }
 
-WorldTexture& WorldTexture::set_colormod(glm::vec3 color) {
+WorldTexture&& WorldTexture::set_colormod(glm::vec3 color) {
 	colormod = color;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_colormod(glm::vec3 color, int frames) {
+WorldTexture&& WorldTexture::set_colormod(glm::vec3 color, int frames) {
 	colormod.set_target_val(color, frames);
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::add_colormod(glm::vec3 color) {
+WorldTexture&& WorldTexture::add_colormod(glm::vec3 color) {
 	colormod += color;
-	return *this;
+	return std::move(*this);
 }
 
 glm::vec3 WorldTexture::get_colormod() const {
 	return colormod.get_val();
 }
 
-WorldTexture& WorldTexture::flip_h() {
+WorldTexture&& WorldTexture::flip_h() {
 	h_flipped = !h_flipped;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_h_flipped(bool h_flipped) {
+WorldTexture&& WorldTexture::set_h_flipped(bool h_flipped) {
 	this->h_flipped = h_flipped;
-	return *this;
+	return std::move(*this);
 }
 
 bool WorldTexture::is_h_flipped() const {
 	return h_flipped;
 }
 
-WorldTexture& WorldTexture::flip_v() {
+WorldTexture&& WorldTexture::flip_v() {
 	v_flipped = !v_flipped;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::set_v_flipped(bool v_flipped) {
+WorldTexture&& WorldTexture::set_v_flipped(bool v_flipped) {
 	this->v_flipped = v_flipped;
-	return *this;
+	return std::move(*this);
 }
 
 bool WorldTexture::is_v_flipped() const {
@@ -1497,37 +1552,37 @@ int WorldTexture::get_flipped() const {
 	return (int)h_flipped | (((int)v_flipped) * 2);
 }
 
-WorldTexture& WorldTexture::set_billboard_setting(int billboard_setting) {
+WorldTexture&& WorldTexture::set_billboard_setting(int billboard_setting) {
 	this->shader = ShaderManager::get_instance()->get_shader_switch_features(shader, this->billboard_setting, billboard_setting);
 	this->billboard_setting = billboard_setting;
-	return *this;
+	return std::move(*this);
 }
 
 int WorldTexture::get_billboard_setting() const {
 	return billboard_setting;
 }
 
-WorldTexture& WorldTexture::set_sprite(unsigned int sprite) {
+WorldTexture&& WorldTexture::set_sprite(unsigned int sprite) {
 	if (sprite < texture.size()) {
 		this->sprite = sprite;
 	}
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::next_sprite() {
+WorldTexture&& WorldTexture::next_sprite() {
 	if (sprite == texture.size() - 1) {
 		sprite -= texture.size();
 	}
 	sprite++;
-	return *this;
+	return std::move(*this);
 }
 
-WorldTexture& WorldTexture::prev_sprite() {
+WorldTexture&& WorldTexture::prev_sprite() {
 	if (sprite == 0) {
 		sprite = texture.size();
 	}
 	sprite--;
-	return *this;
+	return std::move(*this);
 }
 
 unsigned int WorldTexture::get_sprite() const {
@@ -1540,7 +1595,8 @@ void WorldTexture::render() {
 		WINDOW_HEIGHT / (100 * scale.get_val().y),
 		WINDOW_DEPTH / (100 * scale.get_val().z)
 	);
-	glm::vec3 render_pos = pos.get_val() / scale_vec;
+	glm::vec3 render_pos = pos.get_val();
+	render_pos /= scale_vec;
 	if (texture_orientation & TEXTURE_LEFT) {
 		render_pos.x += scale_vec.x;
 	}
@@ -1558,6 +1614,9 @@ void WorldTexture::render() {
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
 	matrix = glm::scale(matrix, scale.get_val());
+	if (anchor) {
+		matrix = anchor->world_mat * matrix;
+	}
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else

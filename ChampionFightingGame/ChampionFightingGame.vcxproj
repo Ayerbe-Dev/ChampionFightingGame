@@ -349,6 +349,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
     <ClCompile Include="ProjectileActivationFunctions.cpp" />
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
+    <ClCompile Include="SceneElement.cpp" />
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
     <ClCompile Include="Sndlst.cpp" />
@@ -560,6 +561,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RowanFireballString.h" />
     <ClInclude Include="RowanString.h" />
     <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="SceneElement.h" />
     <ClInclude Include="ScreenText.h" />
     <ClInclude Include="ScreenTexture.h" />
     <ClInclude Include="ScriptFunc.h" />
@@ -673,7 +675,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TessaFloat.h" />
     <ClInclude Include="TessaInt.h" />
     <ClInclude Include="TessaStatus.h" />
-    <ClInclude Include="TextureCommon.h" />
+    <ClInclude Include="SceneElementBase.h" />
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="VariadicHelpers.h" />

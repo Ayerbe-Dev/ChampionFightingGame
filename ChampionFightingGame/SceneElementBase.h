@@ -1,5 +1,20 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <vector>
+#include "WindowConstants.h"
+
+struct TextureAnchor {
+	TextureAnchor() {
+		screen_mat = glm::mat4(1.0);
+		world_mat = glm::mat4(1.0);
+		w = WINDOW_WIDTH;
+		h = WINDOW_HEIGHT;
+	}
+	glm::mat4 screen_mat;
+	glm::mat4 world_mat;
+	float w;
+	float h;
+};
 
 const int TEX_COORD_TOP_LEFT = 0;
 const int TEX_COORD_TOP_RIGHT = 1;

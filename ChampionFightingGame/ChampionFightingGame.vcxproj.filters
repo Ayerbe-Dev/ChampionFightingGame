@@ -542,22 +542,16 @@
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
     <ClCompile Include="ScreenText.cpp">
-      <Filter>2. Code Files\Scene\Texture</Filter>
+      <Filter>2. Code Files\Scene\SceneElement</Filter>
     </ClCompile>
     <ClCompile Include="ScreenTexture.cpp">
-      <Filter>2. Code Files\Scene\Texture</Filter>
+      <Filter>2. Code Files\Scene\SceneElement</Filter>
     </ClCompile>
     <ClCompile Include="WorldText.cpp">
-      <Filter>2. Code Files\Scene\Texture</Filter>
+      <Filter>2. Code Files\Scene\SceneElement</Filter>
     </ClCompile>
     <ClCompile Include="WorldTexture.cpp">
-      <Filter>2. Code Files\Scene\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleEffect.cpp">
-      <Filter>2. Code Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>2. Code Files\Scene</Filter>
+      <Filter>2. Code Files\Scene\SceneElement</Filter>
     </ClCompile>
     <ClCompile Include="Framebuffer.cpp">
       <Filter>2. Code Files\DataStruct\Render</Filter>
@@ -583,23 +577,32 @@
     <ClCompile Include="Sound.cpp">
       <Filter>2. Code Files\DataStruct</Filter>
     </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
-      <Filter>2. Code Files\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>2. Code Files\DataStruct</Filter>
     </ClCompile>
     <ClCompile Include="Bone.cpp">
       <Filter>2. Code Files\DataStruct</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>2. Code Files\Scene</Filter>
+    <ClCompile Include="CameraAnim.cpp">
+      <Filter>2. Code Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneElement.cpp">
+      <Filter>2. Code Files\Scene\SceneElement</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>2. Code Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="CameraAnim.cpp">
-      <Filter>2. Code Files\DataStruct</Filter>
+    <ClCompile Include="Light.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>2. Code Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundPlayer.cpp">
+      <Filter>2. Code Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1321,25 +1324,19 @@
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
     <ClInclude Include="WorldTexture.h">
-      <Filter>1. Header Files\Scene\Texture</Filter>
+      <Filter>1. Header Files\Scene\SceneElement</Filter>
     </ClInclude>
     <ClInclude Include="ScreenText.h">
-      <Filter>1. Header Files\Scene\Texture</Filter>
+      <Filter>1. Header Files\Scene\SceneElement</Filter>
     </ClInclude>
     <ClInclude Include="ScreenTexture.h">
-      <Filter>1. Header Files\Scene\Texture</Filter>
+      <Filter>1. Header Files\Scene\SceneElement</Filter>
     </ClInclude>
     <ClInclude Include="WorldText.h">
-      <Filter>1. Header Files\Scene\Texture</Filter>
+      <Filter>1. Header Files\Scene\SceneElement</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>1. Header Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureCommon.h">
-      <Filter>1. Header Files\Scene\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleEffect.h">
-      <Filter>1. Header Files\Scene</Filter>
+    <ClInclude Include="SceneElementBase.h">
+      <Filter>1. Header Files\Scene\SceneElement</Filter>
     </ClInclude>
     <ClInclude Include="FighterInterface.h">
       <Filter>1. Header Files\GameObject\BattleObject\Fighter</Filter>
@@ -1355,15 +1352,6 @@
     </ClInclude>
     <ClInclude Include="Param.h">
       <Filter>1. Header Files\DataStruct</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>1. Header Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>1. Header Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundPlayer.h">
-      <Filter>1. Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>1. Header Files\DataStruct</Filter>
@@ -1385,6 +1373,24 @@
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>1. Header Files\DataStruct\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneElement.h">
+      <Filter>1. Header Files\Scene\SceneElement</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPlayer.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>1. Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2705,93 +2711,6 @@
     <Filter Include="2. Code Files\I/O\HxA">
       <UniqueIdentifier>{af3c76b4-5f80-46ed-ab2b-9d7e505bcb8c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\GameObject">
-      <UniqueIdentifier>{e6464ca4-c8b6-41ba-b3d7-27e220de8946}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\Stage">
-      <UniqueIdentifier>{7c3a2b02-67c3-414a-ba55-3b7a76b3eb67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject">
-      <UniqueIdentifier>{9edda90c-9f9d-4715-abc2-5088cc8502b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\ObjectComponent">
-      <UniqueIdentifier>{768c22dc-0776-4c77-90ee-cd6ee199d0ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter">
-      <UniqueIdentifier>{7f56f669-dc48-48b1-b785-785152c86340}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara">
-      <UniqueIdentifier>{89f4a669-4c3a-4c9b-a36f-3feb6798647b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Atlas">
-      <UniqueIdentifier>{eea94ffe-4b31-4d12-b834-703f6e472663}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Bruno">
-      <UniqueIdentifier>{d49a19b3-bff5-4062-88f4-70ea9616fbe6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Eric">
-      <UniqueIdentifier>{0bdc1526-7a6d-4a41-8711-ef0e50fd1f8b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Julius">
-      <UniqueIdentifier>{58ae0a9a-47fe-4aba-a47a-7b5e2a3c733b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Leon">
-      <UniqueIdentifier>{809dd26f-5c52-4ae2-82b5-5c9e37b6090b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Ramona">
-      <UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Tessa">
-      <UniqueIdentifier>{ef0cddad-ff51-47f2-9d3f-4849808a3e29}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Vesuvius">
-      <UniqueIdentifier>{d85384a9-35c0-4632-9bfb-08bb8a330702}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Rook">
-      <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Dante">
-      <UniqueIdentifier>{2d6f673b-5344-48ba-aaa0-25b260597256}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Rowan">
-      <UniqueIdentifier>{bd654e23-229e-44d8-bd71-63c99649a964}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Dingo">
-      <UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Desirae">
-      <UniqueIdentifier>{f4ed11fc-9f35-4f43-9f5d-79998f0e4424}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Nightsabre">
-      <UniqueIdentifier>{b3af1407-aabb-4604-85e6-570b6d1461d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Wallace">
-      <UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Athena">
-      <UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Fighter Component">
-      <UniqueIdentifier>{42cd51f1-61e5-47f3-9610-778452954a0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile">
-      <UniqueIdentifier>{a2c055c4-4086-4e5d-99a1-73887e096d17}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique">
-      <UniqueIdentifier>{f3958ae5-7fb1-4c04-ac3e-c848bf2d9467}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\EricFireball">
-      <UniqueIdentifier>{97ef6028-95f9-4bb7-aea3-ae88d6326ed3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball">
-      <UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\BattleObjectComponent">
-      <UniqueIdentifier>{f8aea9a4-b4df-4fc2-a6f0-0511d767f7da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileComponent">
-      <UniqueIdentifier>{42436549-4264-492b-9ab6-20e333e118b3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\GameObject">
       <UniqueIdentifier>{c730743e-4260-48c8-be3f-91ebcb61c776}</UniqueIdentifier>
     </Filter>
@@ -2909,26 +2828,11 @@
     <Filter Include="2. Code Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox">
       <UniqueIdentifier>{325d1283-98d4-4ef8-9be0-a255a9df67d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox">
-      <UniqueIdentifier>{b80697aa-d938-4efe-9209-6d954bfccb8f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Zyair">
-      <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Scene">
-      <UniqueIdentifier>{e5c7d089-4179-413e-a990-a443a2c32aef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="1. Header Files\Polling">
       <UniqueIdentifier>{34c695d4-0b1a-498a-a9e5-91f08764a52b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Scene">
-      <UniqueIdentifier>{817feaf5-5ef9-424a-8982-7f560108299e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\Polling">
       <UniqueIdentifier>{a0c3dcc6-f661-4bf1-a2f7-60d09c1dcb31}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\Scene\Texture">
-      <UniqueIdentifier>{08a374fa-c532-4a55-b118-5662aa5c2e9e}</UniqueIdentifier>
     </Filter>
     <Filter Include="1. Header Files\Deprecated">
       <UniqueIdentifier>{9ec22d83-104b-464a-aa9f-afb8793a2aba}</UniqueIdentifier>
@@ -2978,9 +2882,6 @@
     <Filter Include="2. Code Files\Deprecated\GUI">
       <UniqueIdentifier>{ea889b2f-e68c-4280-a608-d503bae2f5bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="2. Code Files\Scene\Texture">
-      <UniqueIdentifier>{09f3e27a-2cc5-4ab5-b923-a0db8f47efb3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\DataStruct">
       <UniqueIdentifier>{c4e41b9d-2b7f-435a-8825-cc7c4733ac12}</UniqueIdentifier>
     </Filter>
@@ -3004,6 +2905,111 @@
     </Filter>
     <Filter Include="1. Header Files\DataStruct\Player">
       <UniqueIdentifier>{c2422741-a531-4919-a1e1-09398bbdf689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject">
+      <UniqueIdentifier>{e6464ca4-c8b6-41ba-b3d7-27e220de8946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\Stage">
+      <UniqueIdentifier>{7c3a2b02-67c3-414a-ba55-3b7a76b3eb67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject">
+      <UniqueIdentifier>{9edda90c-9f9d-4715-abc2-5088cc8502b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter">
+      <UniqueIdentifier>{7f56f669-dc48-48b1-b785-785152c86340}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara">
+      <UniqueIdentifier>{89f4a669-4c3a-4c9b-a36f-3feb6798647b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Atlas">
+      <UniqueIdentifier>{eea94ffe-4b31-4d12-b834-703f6e472663}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Bruno">
+      <UniqueIdentifier>{d49a19b3-bff5-4062-88f4-70ea9616fbe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Eric">
+      <UniqueIdentifier>{0bdc1526-7a6d-4a41-8711-ef0e50fd1f8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Julius">
+      <UniqueIdentifier>{58ae0a9a-47fe-4aba-a47a-7b5e2a3c733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Leon">
+      <UniqueIdentifier>{809dd26f-5c52-4ae2-82b5-5c9e37b6090b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Ramona">
+      <UniqueIdentifier>{e60fb9e1-86d9-49e3-acd4-dbd0e38e9ce6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Tessa">
+      <UniqueIdentifier>{ef0cddad-ff51-47f2-9d3f-4849808a3e29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Vesuvius">
+      <UniqueIdentifier>{d85384a9-35c0-4632-9bfb-08bb8a330702}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Rook">
+      <UniqueIdentifier>{c457a580-a599-4809-9810-4e32ca57b685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Dante">
+      <UniqueIdentifier>{2d6f673b-5344-48ba-aaa0-25b260597256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Rowan">
+      <UniqueIdentifier>{bd654e23-229e-44d8-bd71-63c99649a964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Dingo">
+      <UniqueIdentifier>{7dee8c5e-8139-4030-be62-ee0a13d1b56b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Desirae">
+      <UniqueIdentifier>{f4ed11fc-9f35-4f43-9f5d-79998f0e4424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Nightsabre">
+      <UniqueIdentifier>{b3af1407-aabb-4604-85e6-570b6d1461d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Wallace">
+      <UniqueIdentifier>{029de83c-99b4-410c-9b1f-07353c266178}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Athena">
+      <UniqueIdentifier>{007b6504-a216-4247-af55-d2362a4e84a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Chara\Zyair">
+      <UniqueIdentifier>{c313618f-3fac-4f24-9daa-7dcebf11dd1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Fighter\Fighter Component">
+      <UniqueIdentifier>{42cd51f1-61e5-47f3-9610-778452954a0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile">
+      <UniqueIdentifier>{a2c055c4-4086-4e5d-99a1-73887e096d17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique">
+      <UniqueIdentifier>{f3958ae5-7fb1-4c04-ac3e-c848bf2d9467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\EricFireball">
+      <UniqueIdentifier>{97ef6028-95f9-4bb7-aea3-ae88d6326ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball">
+      <UniqueIdentifier>{2fa7b412-98b1-4a49-aca7-686431a03f96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\Projectile\ProjectileComponent">
+      <UniqueIdentifier>{42436549-4264-492b-9ab6-20e333e118b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\BattleObjectComponent">
+      <UniqueIdentifier>{f8aea9a4-b4df-4fc2-a6f0-0511d767f7da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox">
+      <UniqueIdentifier>{b80697aa-d938-4efe-9209-6d954bfccb8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\GameObject\ObjectComponent">
+      <UniqueIdentifier>{768c22dc-0776-4c77-90ee-cd6ee199d0ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene">
+      <UniqueIdentifier>{9975735c-ea25-4ba4-a1b5-9a6eabe445a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene\SceneElement">
+      <UniqueIdentifier>{08a374fa-c532-4a55-b118-5662aa5c2e9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Scene">
+      <UniqueIdentifier>{c45ab292-1aba-4eef-bad1-8721483fb73c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Scene\SceneElement">
+      <UniqueIdentifier>{09f3e27a-2cc5-4ab5-b923-a0db8f47efb3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

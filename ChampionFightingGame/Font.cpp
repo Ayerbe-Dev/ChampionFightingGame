@@ -223,6 +223,9 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 			width_lines.back() += char_width;
 		}
 	}
+	if (width_lines.back() > width_lines[longest_line]) {
+		longest_line = width_lines.size() - 1;
+	}
 	*num_lines = width_lines.size();
 
 	float width = width_lines[longest_line] + spec.border_rgbs.a * 2.0f;

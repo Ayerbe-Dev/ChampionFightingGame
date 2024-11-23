@@ -1,8 +1,8 @@
 #pragma once
+#include "SceneElementBase.h"
 #include <iostream>
 #include <glew/glew.h>
 #include "Font.h"
-#include "TextureCommon.h"
 #include "TargetStructs.h"
 
 class WorldText {
@@ -10,49 +10,53 @@ public:
 	WorldText();
 	WorldText(Font* font, std::string text, TextSpecifier spec);
 	WorldText(WorldText& that);
+	WorldText(const WorldText& that);
 	WorldText(WorldText&& that) noexcept;
 	WorldText& operator=(WorldText& that);
+	WorldText& operator=(const WorldText& that);
 	WorldText& operator=(WorldText&& that) noexcept;
 	~WorldText();
 
 
-	WorldText& init(Font* font, std::string text, TextSpecifier spec);
+	WorldText&& init(Font* font, std::string text, TextSpecifier spec);
 	void destroy();
-	WorldText& set_shader(std::string frag_shader);
-	WorldText& set_pause(bool pause);
+	WorldText&& set_shader(std::string frag_shader);
+	WorldText&& set_pause(bool pause);
 
-	WorldText& update_text(std::string new_text);
-	WorldText& start_scroll(int frames);
+	WorldText&& update_text(std::string new_text);
+	WorldText&& start_scroll(int frames);
 
-	WorldText& set_orientation(int orientation);
+	WorldText&& set_orientation(int orientation);
 	int get_texture_orientation() const;
 
-	WorldText& set_pos(glm::vec3 pos);
-	WorldText& set_pos(glm::vec3 pos, int frames);
-	WorldText& add_pos(glm::vec3 pos);
+	WorldText&& set_anchor(TextureAnchor* anchor);
+
+	WorldText&& set_pos(glm::vec3 pos);
+	WorldText&& set_pos(glm::vec3 pos, int frames);
+	WorldText&& add_pos(glm::vec3 pos);
 	glm::vec3 get_pos() const;
 
-	WorldText& set_rot(glm::vec3 rot);
-	WorldText& set_rot(glm::vec3 rot, int frames);
-	WorldText& add_rot(glm::vec3 rot);
+	WorldText&& set_rot(glm::vec3 rot);
+	WorldText&& set_rot(glm::vec3 rot, int frames);
+	WorldText&& add_rot(glm::vec3 rot);
 	glm::vec3 get_rot() const;
 
-	WorldText& set_width(int new_width);
-	WorldText& set_width(int new_width, int frames);
-	WorldText& add_width(int width);
+	WorldText&& set_width(int new_width);
+	WorldText&& set_width(int new_width, int frames);
+	WorldText&& add_width(int width);
 	int get_width() const;
 
-	WorldText& set_height(int new_height);
-	WorldText& set_height(int new_height, int frames);
-	WorldText& add_height(int height);
+	WorldText&& set_height(int new_height);
+	WorldText&& set_height(int new_height, int frames);
+	WorldText&& add_height(int height);
 	int get_height() const;
 
-	WorldText& set_scale(glm::vec3 scale);
-	WorldText& set_scale(glm::vec3 scale, int frames);
-	WorldText& add_scale(glm::vec3 scale);
+	WorldText&& set_scale(glm::vec3 scale);
+	WorldText&& set_scale(glm::vec3 scale, int frames);
+	WorldText&& add_scale(glm::vec3 scale);
 	glm::vec3 get_scale() const;
 
-	WorldText& set_billboard_setting(int billboard_setting);
+	WorldText&& set_billboard_setting(int billboard_setting);
 	int get_billboard_setting() const;
 
 	void render();
@@ -77,6 +81,8 @@ private:
 	TargetVar<float> scroll;
 
 	int texture_orientation;
+
+	TextureAnchor* anchor;
 
 	TargetVar<glm::vec3> pos;
 	TargetVar<glm::vec3> rot;

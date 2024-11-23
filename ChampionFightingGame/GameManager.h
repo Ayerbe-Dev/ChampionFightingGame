@@ -54,6 +54,7 @@ public:
 
 #ifdef DEBUG
 	bool frame_capped;
+	friend class DebugMenu;
 #endif
 
 	static GameManager* get_instance();

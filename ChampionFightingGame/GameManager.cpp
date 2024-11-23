@@ -37,8 +37,8 @@ GameManager::GameManager() {
 	frame = 0;
 	fps = 60;
 	prev_fps = 0;
-	fps_font = font_manager->load_font("FiraCode", 48);
-	fps_counter.init(&fps_font, "60 FPS", TextSpecifier().color(glm::vec3(0.0f))).set_orientation(TEXTURE_LEFT | TEXTURE_TOP);
+	fps_font = font_manager->load_font("FiraCode", 36);
+	fps_counter.init(&fps_font, "60 FPS", TextSpecifier().color(glm::vec3(255.0f))).set_orientation(TEXTURE_TOP_LEFT);
 }
 
 void GameManager::update_state(int next_game_state, int next_game_context) {

@@ -3,10 +3,7 @@
 #include "Player.h"
 #include "GameState.h"
 #include "GameManager.h"
-#include "ScreenTexture.h"
-#include "WorldTexture.h"
-#include "ScreenText.h"
-#include "WorldText.h"
+#include "SceneElement.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
 #define DEBUG_MENU_FONT_SIZE 24
@@ -29,14 +26,7 @@ public:
     void process_main();
     void render_main();
 
-    GameTexture tex;
-    GameTexture text_field;
-    GameTexture text;
-
-    ScreenTexture test_screentexture;
-    WorldTexture test_worldtexture;
-    ScreenText test_screentext;
-    WorldText test_worldtext;
+    SceneElement root;
 
     GameObject go1, go2;
 

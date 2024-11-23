@@ -3,7 +3,7 @@
 #include <iostream>
 #include <glew/glew.h>
 #include <glm/glm.hpp>
-#include "TextureCommon.h"
+#include "SceneElementBase.h"
 #include "Font.h"
 #include "TargetVar.h"
 

@@ -159,24 +159,24 @@ void Battle::process_collisions() {
 				fighter[i]->object_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX] = false;
 				if (fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 					if (combo_counter[!i] != nullptr) {
-						combo_counter[!i]->update_text(std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]));
-						combo_counter[!i]->texture.scale_all_percent(1.1f);
-						combo_hits[!i]->texture.scale_all_percent(1.1f);
+						combo_counter[!i]->ScreenText::update_text(std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]));
+						combo_counter[!i]->set_scale(1.1f);
+						combo_hits[!i]->set_scale(1.1f);
 					}
 					else {
 						add_message("combo", std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]), VBP(fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]), 5, glm::vec2(275.0, 500.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-						messages_active.back().texture.scale_all_percent(1.1f);
+						messages_active.back().set_scale(1.1f);
 						combo_counter[!i] = &messages_active.back();
 						add_message("message", "hits", VBP(fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]), 5, glm::vec2(275.0, 800.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-						messages_active.back().texture.scale_all_percent(1.1f);
+						messages_active.back().set_scale(1.1f);
 						combo_hits[!i] = &messages_active.back();
 						if (i) {
-							combo_counter[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-							combo_hits[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+							combo_counter[!i]->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+							combo_hits[!i]->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 						}
 						else {
-							combo_counter[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
-							combo_hits[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+							combo_counter[!i]->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+							combo_hits[!i]->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 						}
 					}
 				}

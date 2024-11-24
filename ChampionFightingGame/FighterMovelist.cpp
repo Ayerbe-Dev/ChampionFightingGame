@@ -2,6 +2,7 @@
 #include "Fighter.h"
 #include "VectorBoolPointer.h"
 #include "debug.h"
+#include <bit>
 
 FighterMoveListEntry::FighterMoveListEntry() {
 	name = "";

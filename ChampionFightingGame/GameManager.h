@@ -26,7 +26,7 @@ public:
 	GameState *get_game_state(int depth = 0);
 	void delete_game_state();
 
-	void process_game_state_events();
+	void process_events();
 	void render_game_states();
 
 	void event_up_press();

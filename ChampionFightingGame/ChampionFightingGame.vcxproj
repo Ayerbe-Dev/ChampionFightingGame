@@ -349,6 +349,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
     <ClCompile Include="ProjectileActivationFunctions.cpp" />
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneElement.cpp" />
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
@@ -561,6 +562,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RowanFireballString.h" />
     <ClInclude Include="RowanString.h" />
     <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneElement.h" />
     <ClInclude Include="ScreenText.h" />
     <ClInclude Include="ScreenTexture.h" />

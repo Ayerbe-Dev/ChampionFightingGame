@@ -14,6 +14,7 @@ const int ELEM_TYPE_SCRN_TXT = 2;
 const int ELEM_TYPE_WRLD_TEX = 3;
 const int ELEM_TYPE_WRLD_TXT = 4;
 
+class Scene;
 class SceneElement {
 public:
 	SceneElement();

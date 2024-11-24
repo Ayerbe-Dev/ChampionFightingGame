@@ -1,4 +1,5 @@
 #include "Fighter.h"
+#include "GameManager.h"
 
 void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) {
 	if (new_status_kind == status_kind

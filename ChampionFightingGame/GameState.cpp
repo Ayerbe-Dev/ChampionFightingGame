@@ -24,7 +24,6 @@ void GameState::event_record_input_press(){}
 void GameState::event_replay_input_press(){}
 void GameState::event_switch_input_press(){}
 void GameState::event_any_press() {}
-void GameState::process_background() {}
 
 GameState::GameState() {
 	looping = true;
@@ -64,7 +63,7 @@ void GameState::process_game_state() {
 		player[i]->poll_controller_menu();
 	}
 	pre_event_process_main();
-	game_manager->process_game_state_events();
+	game_manager->process_events();
 	process_main();
 	if (game_manager->get_game_state() == this) {
 		for (std::list<UIMessage>::iterator it = messages_active.begin();
@@ -77,12 +76,12 @@ void GameState::process_game_state() {
 		}
 		for (std::list<UIMessage>::iterator it = messages_fading.begin();
 			it != messages_fading.end(); it++) {
-			if (!it->texture.alpha) {
+			if (!it->get_alpha()) {
 				messages_fading.erase(it);				
 			}
 		}
 	}
-	ObjectManager::get_instance()->process();
+	ObjectManager::get_instance()->process_world_frame();
 	SoundManager::get_instance()->process_sounds();
 	internal_frame++;
 }
@@ -314,17 +313,17 @@ Font& GameState::get_font(std::string name) {
 
 void GameState::add_message(std::string font_name, std::string text, int active_duration, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	messages_active.push_back(UIMessage());
-	messages_active.back().init(&get_font(font_name), text, active_duration, fade_frames, pos, rgba, border_rgbs);
+	messages_active.back().init(&get_font(font_name), text, active_duration, fade_frames, pos, TextSpecifier().color(rgba).border(border_rgbs));
 }
 
 void GameState::add_message(std::string font_name, std::string text, bool* active_condition, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	messages_active.push_back(UIMessage());
-	messages_active.back().init(&get_font(font_name), text, active_condition, fade_frames, pos, rgba, border_rgbs);
+	messages_active.back().init(&get_font(font_name), text, active_condition, fade_frames, pos, TextSpecifier().color(rgba).border(border_rgbs));
 }
 
 void GameState::add_message(std::string font_name, std::string text, VBP active_condition, int fade_frames, glm::vec2 pos, glm::vec4 rgba, glm::vec4 border_rgbs) {
 	messages_active.push_back(UIMessage());
-	messages_active.back().init(&get_font(font_name), text, active_condition, fade_frames, pos, rgba, border_rgbs);
+	messages_active.back().init(&get_font(font_name), text, active_condition, fade_frames, pos, TextSpecifier().color(rgba).border(border_rgbs));
 }
 
 bool GameState::execute_if(std::string name, int num_allowed_executions, bool condition) {

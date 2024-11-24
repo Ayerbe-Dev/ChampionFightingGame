@@ -717,8 +717,8 @@ void Battle::process_main() {
 			combo_hits[!i] = nullptr;
 		}
 		else if (combo_counter[!i]) {
-			combo_counter[!i]->texture.scale_all_percent(1.0f);
-			combo_hits[!i]->texture.scale_all_percent(1.0f);
+			combo_counter[!i]->set_scale(1.0f);
+			combo_hits[!i]->set_scale(1.0f);
 		}
 	}
 	process_collisions();

@@ -1,6 +1,7 @@
 #include "Fighter.h"
 #include "Projectile.h"
 #include "utils.h"
+#include "GameManager.h"
 
 void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes, std::vector<Pushbox> that_pushboxes) {
 	Fighter* that = object_manager->fighter[1];
@@ -221,10 +222,10 @@ bool Fighter::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbo
 			GameState* battle = GameManager::get_instance()->get_game_state();
 			battle->add_message("message", "Armor Break", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->id) {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 			}
 			else {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			}
 			incoming_collision_kind = INCOMING_COLLISION_KIND_HIT;
 		}
@@ -482,10 +483,10 @@ bool Fighter::is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hi
 			GameState* battle = GameManager::get_instance()->get_game_state();
 			battle->add_message("message", "Armor Break", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->owner_id) {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 			}
 			else {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			}
 			incoming_collision_kind = INCOMING_COLLISION_KIND_HIT;
 		}
@@ -1360,10 +1361,10 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 	if (object_flag[FIGHTER_FLAG_FORCE_CRITICAL]) {
 		battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		if (attacker->id) {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		}
 		else {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		}
 		return COUNTERHIT_VAL_CRIT_STATUS;
 	}
@@ -1371,10 +1372,10 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 		if (hitbox->critical_condition & CRITICAL_CONDITION_DODGE_COUNTER) {
 			battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->id) {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 			}
 			else {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			}
 			return COUNTERHIT_VAL_CRIT_STATUS;
 		}
@@ -1386,10 +1387,10 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 		//option during real pressure sequences/wakeup
 		battle->add_message("message", "Counter", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		if (attacker->id) {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		}
 		else {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		}
 		return COUNTERHIT_VAL_COUNTER;
 	}
@@ -1397,19 +1398,19 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 		if (hitbox->critical_condition & CRITICAL_CONDITION_PUNISH) {
 			battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->id) {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 			}
 			else {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			}
 			return COUNTERHIT_VAL_CRIT_STATUS;
 		}
 		battle->add_message("message", "Punish", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		if (attacker->id) {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		}
 		else {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		}
 		return COUNTERHIT_VAL_PUNISH;
 	}
@@ -1417,19 +1418,19 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 		if (hitbox->critical_condition & CRITICAL_CONDITION_COUNTERHIT) {
 			battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->id) {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 			}
 			else {
-				battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			}
 			return COUNTERHIT_VAL_CRIT_STATUS;
 		}
 		battle->add_message("message", "Counter", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 		if (attacker->id) {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		}
 		else {
-			battle->messages_active.back().texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
+			battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 		}
 		return COUNTERHIT_VAL_COUNTER;
 	}

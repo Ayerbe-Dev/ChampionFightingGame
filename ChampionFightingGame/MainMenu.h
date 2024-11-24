@@ -19,7 +19,6 @@ public:
 
     void process_main();
     void render_main();
-    void process_background();
 
     void event_up_press();
     void event_down_press();

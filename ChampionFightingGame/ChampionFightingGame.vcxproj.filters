@@ -604,6 +604,9 @@
     <ClCompile Include="SoundPlayer.cpp">
       <Filter>2. Code Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>2. Code Files\GameState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
@@ -1391,6 +1394,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>1. Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

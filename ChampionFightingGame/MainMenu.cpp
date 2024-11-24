@@ -413,11 +413,6 @@ void MainMenu::render_main() {
 	theta += ((top_selection * -offset) - theta) / turn_frames;
 }
 
-void MainMenu::process_background() {
-	process_main();
-	render_main();
-}
-
 void MainMenu::event_up_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
 		if (top_selection < 4) {

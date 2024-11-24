@@ -282,8 +282,6 @@ public:
     virtual void event_switch_input_press();
     virtual void event_any_press();
 
-    virtual void process_background();
-
     void load_font(std::string name, std::string font_name, int font_size);
     Font& get_font(std::string name);
 

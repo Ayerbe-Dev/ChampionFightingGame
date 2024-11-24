@@ -25,6 +25,8 @@ WorldText::WorldText() {
 	this->scale = glm::vec3(1.0);
 	this->width = 0;
 	this->height = 0;
+	this->alpha = 255;
+	this->colormod = glm::vec3(0.0);
 	this->billboard_setting = BILLBOARD_OFF;
 	this->loaded = false;
 }
@@ -62,6 +64,8 @@ WorldText::WorldText(WorldText& other) {
 	this->scale = other.scale;
 	this->width = other.width;
 	this->height = other.height;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
 	this->billboard_setting = other.billboard_setting;
 	this->spec = other.spec;
 	if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
@@ -102,6 +106,8 @@ WorldText::WorldText(const WorldText& other) {
 	this->scale = other.scale;
 	this->width = other.width;
 	this->height = other.height;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
 	this->billboard_setting = other.billboard_setting;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
@@ -137,6 +143,8 @@ WorldText::WorldText(WorldText&& other) noexcept {
 	this->scale = other.scale;
 	this->width = other.width;
 	this->height = other.height;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
 	this->billboard_setting = other.billboard_setting;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
@@ -173,6 +181,8 @@ WorldText& WorldText::operator=(WorldText& other) {
 		this->scale = other.scale;
 		this->width = other.width;
 		this->height = other.height;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
 		this->billboard_setting = other.billboard_setting;
 		this->spec = other.spec;
 		if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
@@ -216,6 +226,8 @@ WorldText& WorldText::operator=(const WorldText& other) {
 		this->scale = other.scale;
 		this->width = other.width;
 		this->height = other.height;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
 		this->billboard_setting = other.billboard_setting;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
@@ -254,6 +266,8 @@ WorldText& WorldText::operator=(WorldText&& other) noexcept {
 		this->scale = other.scale;
 		this->width = other.width;
 		this->height = other.height;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
 		this->billboard_setting = other.billboard_setting;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
@@ -472,6 +486,44 @@ glm::vec3 WorldText::get_scale() const {
 	return scale.get_val();
 }
 
+WorldText&& WorldText::set_alpha(unsigned char alpha) {
+	this->alpha = alpha;
+	return std::move(*this);
+}
+
+WorldText&& WorldText::set_alpha(unsigned char alpha, int frames) {
+	this->alpha.set_target_val(alpha, frames);
+	return std::move(*this);
+}
+
+WorldText&& WorldText::add_alpha(unsigned char alpha) {
+	this->alpha += alpha;
+	return std::move(*this);
+}
+
+unsigned char WorldText::get_alpha() const {
+	return alpha.get_val();
+}
+
+WorldText&& WorldText::set_colormod(glm::vec3 color) {
+	colormod = color;
+	return std::move(*this);
+}
+
+WorldText&& WorldText::set_colormod(glm::vec3 color, int frames) {
+	colormod.set_target_val(color, frames);
+	return std::move(*this);
+}
+
+WorldText&& WorldText::add_colormod(glm::vec3 color) {
+	colormod += color;
+	return std::move(*this);
+}
+
+glm::vec3 WorldText::get_colormod() const {
+	return colormod.get_val();
+}
+
 WorldText&& WorldText::set_billboard_setting(int billboard_setting) {
 	this->shader = ShaderManager::get_instance()->get_shader_switch_features(shader, this->billboard_setting, billboard_setting);
 	this->billboard_setting = billboard_setting;
@@ -519,6 +571,8 @@ void WorldText::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->use();
+	shader->set_vec3("f_colormod", colormod.get_val());
+	shader->set_float("f_alphamod", alpha.get_val() / 255.0f);
 	shader->set_mat4("matrix", matrix);
 	switch (billboard_setting) {
 	case BILLBOARD_OFF:

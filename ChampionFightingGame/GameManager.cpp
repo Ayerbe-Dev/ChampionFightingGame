@@ -81,7 +81,7 @@ GameState* GameManager::get_game_state(int depth) {
 	}
 }
 
-void GameManager::process_game_state_events() {
+void GameManager::process_events() {
 	for (int i = 0; i < 2; i++) {
 		game_state.back()->player_id = i;
 		if (is_up_press(i)) {

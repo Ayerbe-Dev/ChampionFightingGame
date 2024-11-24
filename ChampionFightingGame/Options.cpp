@@ -15,7 +15,8 @@ void controls_main() {
 
 		options_menu->process_game_state();
 
-		background_menu->process_background();
+		background_menu->process_main();
+		background_menu->render_main();
 		options_menu->panel.render();
 
 		window_manager->update_screen();

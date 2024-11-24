@@ -21,7 +21,7 @@ public:
 
 	Stage* stage;
 
-	void process();
+	void process_world_frame();
 
 	void register_game_object(GameObject* object);
 	void unregister_game_object(GameObject* object);

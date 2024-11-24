@@ -27,6 +27,8 @@ ScreenText::ScreenText() {
 	this->base_height = 0;
 	this->width_scale = 1.0f;
 	this->height_scale = 1.0f;
+	this->alpha = 255;
+	this->colormod = glm::vec3(0.0);
 	this->loaded = false;
 }
 
@@ -66,6 +68,8 @@ ScreenText::ScreenText(ScreenText& other) {
 	this->base_height = other.base_height;
 	this->width_scale = other.width_scale;
 	this->height_scale = other.height_scale;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
 	this->spec = other.spec;
 	if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
 		std::cout << "Const Copy suspect hasn't been destroyed yet, treating copy constructor as move constructor\n";
@@ -108,6 +112,8 @@ ScreenText::ScreenText(const ScreenText& other) {
 	this->base_height = other.base_height;
 	this->width_scale = other.width_scale;
 	this->height_scale = other.height_scale;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
 	ResourceManager::get_instance()->store_const_copy_addr(texture, (ScreenText*)&other);
@@ -144,6 +150,8 @@ ScreenText::ScreenText(ScreenText&& other) noexcept {
 	this->base_height = other.base_height;
 	this->width_scale = other.width_scale;
 	this->height_scale = other.height_scale;
+	this->alpha = other.alpha;
+	this->colormod = other.colormod;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
 	other.loaded = false;
@@ -181,6 +189,8 @@ ScreenText& ScreenText::operator=(ScreenText& other) {
 		this->base_height = other.base_height;
 		this->width_scale = other.width_scale;
 		this->height_scale = other.height_scale;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
 		this->spec = other.spec;
 		if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
 			this->loaded = other.loaded;
@@ -225,6 +235,8 @@ ScreenText& ScreenText::operator=(const ScreenText& other) {
 		this->base_height = other.base_height;
 		this->width_scale = other.width_scale;
 		this->height_scale = other.height_scale;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
 		ResourceManager::get_instance()->store_const_copy_addr(texture, (ScreenText*)&other);
@@ -264,6 +276,8 @@ ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
 		this->base_height = other.base_height;
 		this->width_scale = other.width_scale;
 		this->height_scale = other.height_scale;
+		this->alpha = other.alpha;
+		this->colormod = other.colormod;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
 		other.loaded = false;
@@ -544,6 +558,44 @@ ScreenText&& ScreenText::set_scale(float scale, int frames) {
 	return std::move(*this);
 }
 
+ScreenText&& ScreenText::set_alpha(unsigned char alpha) {
+	this->alpha = alpha;
+	return std::move(*this);
+}
+
+ScreenText&& ScreenText::set_alpha(unsigned char alpha, int frames) {
+	this->alpha.set_target_val(alpha, frames);
+	return std::move(*this);
+}
+
+ScreenText&& ScreenText::add_alpha(unsigned char alpha) {
+	this->alpha += alpha;
+	return std::move(*this);
+}
+
+unsigned char ScreenText::get_alpha() const {
+	return alpha.get_val();
+}
+
+ScreenText&& ScreenText::set_colormod(glm::vec3 color) {
+	colormod = color;
+	return std::move(*this);
+}
+
+ScreenText&& ScreenText::set_colormod(glm::vec3 color, int frames) {
+	colormod.set_target_val(color, frames);
+	return std::move(*this);
+}
+
+ScreenText&& ScreenText::add_colormod(glm::vec3 color) {
+	colormod += color;
+	return std::move(*this);
+}
+
+glm::vec3 ScreenText::get_colormod() const {
+	return colormod.get_val();
+}
+
 void ScreenText::render() {
 	glm::vec3 render_pos = pos.get_val();
 	float window_width = WINDOW_WIDTH;
@@ -594,6 +646,8 @@ void ScreenText::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->use();
+	shader->set_vec3("f_colormod", colormod.get_val());
+	shader->set_float("f_alphamod", alpha.get_val() / 255.0f);
 	shader->set_mat4("matrix", matrix);
 	if (glIsEnabled(GL_CULL_FACE)) {
 		glDisable(GL_CULL_FACE);

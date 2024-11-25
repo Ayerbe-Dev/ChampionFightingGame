@@ -26,7 +26,6 @@ WorldText::WorldText() {
 	this->width = 0;
 	this->height = 0;
 	this->alpha = 255;
-	this->colormod = glm::vec3(0.0);
 	this->billboard_setting = BILLBOARD_OFF;
 	this->loaded = false;
 }
@@ -65,7 +64,6 @@ WorldText::WorldText(WorldText& other) {
 	this->width = other.width;
 	this->height = other.height;
 	this->alpha = other.alpha;
-	this->colormod = other.colormod;
 	this->billboard_setting = other.billboard_setting;
 	this->spec = other.spec;
 	if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
@@ -107,7 +105,6 @@ WorldText::WorldText(const WorldText& other) {
 	this->width = other.width;
 	this->height = other.height;
 	this->alpha = other.alpha;
-	this->colormod = other.colormod;
 	this->billboard_setting = other.billboard_setting;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
@@ -144,7 +141,6 @@ WorldText::WorldText(WorldText&& other) noexcept {
 	this->width = other.width;
 	this->height = other.height;
 	this->alpha = other.alpha;
-	this->colormod = other.colormod;
 	this->billboard_setting = other.billboard_setting;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
@@ -182,7 +178,6 @@ WorldText& WorldText::operator=(WorldText& other) {
 		this->width = other.width;
 		this->height = other.height;
 		this->alpha = other.alpha;
-		this->colormod = other.colormod;
 		this->billboard_setting = other.billboard_setting;
 		this->spec = other.spec;
 		if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
@@ -227,7 +222,6 @@ WorldText& WorldText::operator=(const WorldText& other) {
 		this->width = other.width;
 		this->height = other.height;
 		this->alpha = other.alpha;
-		this->colormod = other.colormod;
 		this->billboard_setting = other.billboard_setting;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
@@ -267,7 +261,6 @@ WorldText& WorldText::operator=(WorldText&& other) noexcept {
 		this->width = other.width;
 		this->height = other.height;
 		this->alpha = other.alpha;
-		this->colormod = other.colormod;
 		this->billboard_setting = other.billboard_setting;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
@@ -288,8 +281,9 @@ WorldText&& WorldText::init(Font* font, std::string text, TextSpecifier spec) {
 	shader->set_int("f_texture", 0);
 	this->text = text;
 	this->spec = spec;
+	this->alpha = spec.rgba.a;
 	this->font = font;
-	texture = font->create_text(text, spec, &num_lines, nullptr);
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, nullptr);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, width.get_val_ptr());
@@ -347,7 +341,7 @@ WorldText&& WorldText::set_pause(bool pause) {
 
 WorldText&& WorldText::update_text(std::string text) {
 	this->text = text;
-	texture = font->create_text(text, spec, &num_lines, &texture);
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, width.get_val_ptr());
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, height.get_val_ptr());
@@ -505,23 +499,22 @@ unsigned char WorldText::get_alpha() const {
 	return alpha.get_val();
 }
 
-WorldText&& WorldText::set_colormod(glm::vec3 color) {
-	colormod = color;
+WorldText&& WorldText::set_color(glm::vec3 color) {
+	spec.rgba = glm::vec4(color, alpha.get_val());
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, &texture);
 	return std::move(*this);
 }
 
-WorldText&& WorldText::set_colormod(glm::vec3 color, int frames) {
-	colormod.set_target_val(color, frames);
+WorldText&& WorldText::add_color(glm::vec3 color) {
+	spec.rgba.r += color.r;
+	spec.rgba.g += color.g;
+	spec.rgba.b += color.b;
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, &texture);
 	return std::move(*this);
 }
 
-WorldText&& WorldText::add_colormod(glm::vec3 color) {
-	colormod += color;
-	return std::move(*this);
-}
-
-glm::vec3 WorldText::get_colormod() const {
-	return colormod.get_val();
+glm::vec3 WorldText::get_color() const {
+	return glm::vec3(spec.rgba);
 }
 
 WorldText&& WorldText::set_billboard_setting(int billboard_setting) {
@@ -571,7 +564,6 @@ void WorldText::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->use();
-	shader->set_vec3("f_colormod", colormod.get_val());
 	shader->set_float("f_alphamod", alpha.get_val() / 255.0f);
 	shader->set_mat4("matrix", matrix);
 	switch (billboard_setting) {

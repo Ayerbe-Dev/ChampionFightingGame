@@ -5,7 +5,6 @@
 #include "ShaderManager.h"
 
 ScreenText::ScreenText() {
-	std::cout << "ScreenText default constructor - " << this << "\n";
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
@@ -28,17 +27,14 @@ ScreenText::ScreenText() {
 	this->width_scale = 1.0f;
 	this->height_scale = 1.0f;
 	this->alpha = 255;
-	this->colormod = glm::vec3(0.0);
 	this->loaded = false;
 }
 
 ScreenText::ScreenText(Font* font, std::string text, TextSpecifier spec) : ScreenText() {
-	std::cout << "ScreenText parameterized constructor - " << this << "\n";
 	init(font, text, spec);
 }
 
 ScreenText::ScreenText(ScreenText& other) {
-	std::cout << "ScreenText copy constructor " << &other << " -> " << this << "\n";
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
@@ -69,10 +65,8 @@ ScreenText::ScreenText(ScreenText& other) {
 	this->width_scale = other.width_scale;
 	this->height_scale = other.height_scale;
 	this->alpha = other.alpha;
-	this->colormod = other.colormod;
 	this->spec = other.spec;
 	if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
-		std::cout << "Const Copy suspect hasn't been destroyed yet, treating copy constructor as move constructor\n";
 		this->loaded = other.loaded;
 		other.loaded = false;
 	}
@@ -82,7 +76,6 @@ ScreenText::ScreenText(ScreenText& other) {
 }
 
 ScreenText::ScreenText(const ScreenText& other) {
-	std::cout << "ScreenText const copy constructor " << &other << " -> " << this << "\n";
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
@@ -113,14 +106,12 @@ ScreenText::ScreenText(const ScreenText& other) {
 	this->width_scale = other.width_scale;
 	this->height_scale = other.height_scale;
 	this->alpha = other.alpha;
-	this->colormod = other.colormod;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
 	ResourceManager::get_instance()->store_const_copy_addr(texture, (ScreenText*)&other);
 }
 
 ScreenText::ScreenText(ScreenText&& other) noexcept {
-	std::cout << "ScreenText move constructor " << &other << " -> " << this << "\n";
 #ifdef TEX_IMPL_MODE_VULKAN
 
 #else
@@ -151,14 +142,12 @@ ScreenText::ScreenText(ScreenText&& other) noexcept {
 	this->width_scale = other.width_scale;
 	this->height_scale = other.height_scale;
 	this->alpha = other.alpha;
-	this->colormod = other.colormod;
 	this->spec = other.spec;
 	this->loaded = other.loaded;
 	other.loaded = false;
 }
 
 ScreenText& ScreenText::operator=(ScreenText& other) {
-	std::cout << "ScreenText copy assignment operator " << &other << " -> " << this << "\n";
 	if (this != &other) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
@@ -190,7 +179,6 @@ ScreenText& ScreenText::operator=(ScreenText& other) {
 		this->width_scale = other.width_scale;
 		this->height_scale = other.height_scale;
 		this->alpha = other.alpha;
-		this->colormod = other.colormod;
 		this->spec = other.spec;
 		if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
 			this->loaded = other.loaded;
@@ -204,7 +192,6 @@ ScreenText& ScreenText::operator=(ScreenText& other) {
 }
 
 ScreenText& ScreenText::operator=(const ScreenText& other) {
-	std::cout << "ScreenText const copy assignment operator " << &other << " -> " << this << "\n";
 	if (this != &other) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
@@ -236,7 +223,6 @@ ScreenText& ScreenText::operator=(const ScreenText& other) {
 		this->width_scale = other.width_scale;
 		this->height_scale = other.height_scale;
 		this->alpha = other.alpha;
-		this->colormod = other.colormod;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
 		ResourceManager::get_instance()->store_const_copy_addr(texture, (ScreenText*)&other);
@@ -245,7 +231,6 @@ ScreenText& ScreenText::operator=(const ScreenText& other) {
 }
 
 ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
-	std::cout << "ScreenText move assignment operator " << &other << " -> " << this << "\n";
 	if (this != &other) {
 #ifdef TEX_IMPL_MODE_VULKAN
 
@@ -277,7 +262,6 @@ ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
 		this->width_scale = other.width_scale;
 		this->height_scale = other.height_scale;
 		this->alpha = other.alpha;
-		this->colormod = other.colormod;
 		this->spec = other.spec;
 		this->loaded = other.loaded;
 		other.loaded = false;
@@ -286,16 +270,8 @@ ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
 }
 
 ScreenText::~ScreenText() {
-	std::cout << "ScreenText destructor - " << this << " ";
 	if (!ResourceManager::get_instance()->is_tex_const_copied(texture, this) && loaded) {
-		std::cout << "(destroying)\n";
 		destroy();
-	}
-	else if (loaded) {
-		std::cout << "(not destroying) (const copy instance is still active)\n";
-	}
-	else {
-		std::cout << "(not destroying) (correctly unloaded)\n";
 	}
 }
 
@@ -305,8 +281,9 @@ ScreenText&& ScreenText::init(Font* font, std::string text, TextSpecifier spec) 
 	shader->set_int("f_texture", 0);
 	this->text = text;
 	this->spec = spec;
+	this->alpha = spec.rgba.a;
 	this->font = font;
-	texture = font->create_text(text, spec, &num_lines, nullptr);
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, nullptr);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, base_width.get_val_ptr());
@@ -365,7 +342,7 @@ ScreenText&& ScreenText::set_pause(bool pause) {
 
 ScreenText&& ScreenText::update_text(std::string text) {
 	this->text = text;
-	texture = font->create_text(text, spec, &num_lines, &texture);
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, nullptr);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, base_width.get_val_ptr());
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, base_height.get_val_ptr());
@@ -577,23 +554,22 @@ unsigned char ScreenText::get_alpha() const {
 	return alpha.get_val();
 }
 
-ScreenText&& ScreenText::set_colormod(glm::vec3 color) {
-	colormod = color;
+ScreenText&& ScreenText::set_color(glm::vec3 color) {
+	spec.rgba = glm::vec4(color, alpha.get_val());
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, &texture);
 	return std::move(*this);
 }
 
-ScreenText&& ScreenText::set_colormod(glm::vec3 color, int frames) {
-	colormod.set_target_val(color, frames);
+ScreenText&& ScreenText::add_color(glm::vec3 color) {
+	spec.rgba.r += color.r;
+	spec.rgba.g += color.g;
+	spec.rgba.b += color.b;
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, &texture);
 	return std::move(*this);
 }
 
-ScreenText&& ScreenText::add_colormod(glm::vec3 color) {
-	colormod += color;
-	return std::move(*this);
-}
-
-glm::vec3 ScreenText::get_colormod() const {
-	return colormod.get_val();
+glm::vec3 ScreenText::get_color() const {
+	return glm::vec3(spec.rgba);
 }
 
 void ScreenText::render() {
@@ -646,7 +622,6 @@ void ScreenText::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->use();
-	shader->set_vec3("f_colormod", colormod.get_val());
 	shader->set_float("f_alphamod", alpha.get_val() / 255.0f);
 	shader->set_mat4("matrix", matrix);
 	if (glIsEnabled(GL_CULL_FACE)) {

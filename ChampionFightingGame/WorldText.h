@@ -61,10 +61,9 @@ public:
 	WorldText&& add_alpha(unsigned char alpha);
 	unsigned char get_alpha() const;
 
-	WorldText&& set_colormod(glm::vec3 color);
-	WorldText&& set_colormod(glm::vec3 color, int frames);
-	WorldText&& add_colormod(glm::vec3 color);
-	glm::vec3 get_colormod() const;
+	WorldText&& set_color(glm::vec3 color);
+	WorldText&& add_color(glm::vec3 color);
+	glm::vec3 get_color() const;
 
 	WorldText&& set_billboard_setting(int billboard_setting);
 	int get_billboard_setting() const;
@@ -102,7 +101,6 @@ private:
 	TargetVar<int> height;
 
 	TargetVar<unsigned char> alpha;
-	TargetVar<glm::vec3> colormod;
 
 	int billboard_setting;
 

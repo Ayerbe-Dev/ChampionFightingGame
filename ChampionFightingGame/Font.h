@@ -88,7 +88,8 @@ public:
 	void unload_font();
 
 	unsigned int create_text(std::string text, glm::vec4 rgba, glm::vec4 border_rgbs, unsigned int* existing_texture = nullptr);
-	unsigned int create_text(std::string text, TextSpecifier spec, unsigned int* num_lines, unsigned int* existing_texture);
+	unsigned int create_text(std::string text, glm::vec3 rgb, glm::vec4 border_rgbs, bool enable_center, 
+		unsigned int max_line_length, unsigned int* num_lines, unsigned int* existing_texture);
 
 	unsigned int VAO;
 	unsigned int VBO;

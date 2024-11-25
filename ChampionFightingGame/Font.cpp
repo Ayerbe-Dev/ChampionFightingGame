@@ -198,7 +198,9 @@ unsigned int Font::create_text(std::string text, glm::vec4 rgba, glm::vec4 borde
 	return texture;
 }
 
-unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned int* num_lines, unsigned int* existing_texture) {
+unsigned int Font::create_text(std::string text, glm::vec3 rgb, glm::vec4 border_rgbs,
+	bool enable_center, unsigned int max_line_length, unsigned int* num_lines,
+	unsigned int* existing_texture) {
 	WindowManager* window_manager = WindowManager::get_instance();
 	//Calculate the width of our texture by determining the width of each line, adding a new one
 	//every time either:
@@ -211,7 +213,7 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 		if (!char_map.contains(text[i])) continue;
 		TexChar	tex_char = char_map[text[i]];
 		unsigned int char_width = (tex_char.advance >> 6);
-		if (width_lines.back() + char_width > spec.max_line_length || text[i] == '\n') {
+		if (width_lines.back() + char_width > max_line_length || text[i] == '\n') {
 			if (width_lines.back() > width_lines[longest_line]) {
 				longest_line = width_lines.size() - 1;
 			}
@@ -228,8 +230,8 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	}
 	*num_lines = width_lines.size();
 
-	float width = width_lines[longest_line] + spec.border_rgbs.a * 2.0f;
-	float height = (base_height + spec.border_rgbs.a * 2.0f) * *num_lines; //Border size
+	float width = width_lines[longest_line] + border_rgbs.a * 2.0f;
+	float height = (base_height + border_rgbs.a * 2.0f) * *num_lines; //Border size
 
 	//Texture setup
 
@@ -279,22 +281,22 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 	std::vector<float> x_offsets;
 	std::vector<float> y_offsets;
 	for (size_t i = 0; i < *num_lines; i++) {
-		if (spec.enable_center) {
-			x_offsets.push_back((width - width_lines[i]) / 2.0f + spec.border_rgbs.a - width);
+		if (enable_center) {
+			x_offsets.push_back((width - width_lines[i]) / 2.0f + border_rgbs.a - width);
 		}
 		else {
-			x_offsets.push_back(spec.border_rgbs.a - width);
+			x_offsets.push_back(border_rgbs.a - width);
 		}
 		y_offsets.push_back(
-			(base_height + spec.border_rgbs.a * 2.0f) * (*num_lines - i - 1)
+			(base_height + border_rgbs.a * 2.0f) * (*num_lines - i - 1)
 			+ base_y_offset
-			+ spec.border_rgbs.a 
+			+ border_rgbs.a 
 			- height
 		);
 	}
 
 	shader->use();
-	shader->set_vec4("f_colormod", spec.rgba / 255.0f);
+	shader->set_vec3("f_colormod", rgb / 255.0f);
 	for (size_t i = 0, line_idx = -1; i < text.size(); i++) {
 		if (text[i] == '\n') continue;
 		if (newline_indices[line_idx + 1] == i) {
@@ -316,14 +318,14 @@ unsigned int Font::create_text(std::string text, TextSpecifier spec, unsigned in
 		x_offsets[line_idx] += (tex_char.advance >> 6);
 	}
 
-	if (spec.border_rgbs.a != 0.0f) {
+	if (border_rgbs.a != 0.0f) {
 		glBindVertexArray(VAO_outline);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_outline);
 		glViewport(0, 0, width, height);
-		glm::vec2 border_size = spec.border_rgbs.a / glm::vec2(width * 2, height * 2);
+		glm::vec2 border_size = border_rgbs.a / glm::vec2(width * 2, height * 2);
 		border_shader->use();
 		border_shader->set_active_vec2(border_size);
-		border_shader->set_vec4("border_color", spec.border_rgbs.r / 255.0f, spec.border_rgbs.g / 255.0f, spec.border_rgbs.b / 255.0f, spec.rgba.a / 255.0f);
+		border_shader->set_vec4("border_color", border_rgbs.r / 255.0f, border_rgbs.g / 255.0f, border_rgbs.b / 255.0f, 1.0f);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

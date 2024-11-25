@@ -75,10 +75,9 @@ public:
 	ScreenText&& add_alpha(unsigned char alpha);
 	unsigned char get_alpha() const;
 
-	ScreenText&& set_colormod(glm::vec3 color);
-	ScreenText&& set_colormod(glm::vec3 color, int frames);
-	ScreenText&& add_colormod(glm::vec3 color);
-	glm::vec3 get_colormod() const;
+	ScreenText&& set_color(glm::vec3 color);
+	ScreenText&& add_color(glm::vec3 color);
+	glm::vec3 get_color() const;
 
 	void render();
 
@@ -110,7 +109,6 @@ private:
 	TargetVar<glm::vec3> pos;
 	TargetVar<glm::vec3> rot;
 	TargetVar<unsigned char> alpha;
-	TargetVar<glm::vec3> colormod;
 
 	TargetVar<int> base_width;
 	TargetVar<int> base_height;

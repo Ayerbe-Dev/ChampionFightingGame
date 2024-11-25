@@ -9,6 +9,7 @@ SceneElement::SceneElement() {
 	this->pos = glm::vec3(0.0f);
 	this->rot = glm::vec3(0.0f);
 	this->scale = glm::vec3(1.0f);
+	this->visible = true;
 }
 
 SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> elements) : SceneElement() {
@@ -55,10 +56,6 @@ SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> element
 
 SceneElement::SceneElement(SceneElement& other) {
 	this->name = other.name;
-	this->screen_orientation = other.screen_orientation;
-	this->pos = other.pos;
-	this->rot = other.rot;
-	this->scale = other.scale;
 	this->anchor = other.anchor;
 	this->parent = other.parent;
 	this->int_vars = other.int_vars;
@@ -95,14 +92,15 @@ SceneElement::SceneElement(SceneElement& other) {
 		this->render_indices.push_back(other.render_indices[i]);
 	}
 	this->event_functions = other.event_functions;
+	this->screen_orientation = other.screen_orientation;
+	this->pos = other.pos;
+	this->rot = other.rot;
+	this->scale = other.scale;
+	this->visible = other.visible;
 }
 
 SceneElement::SceneElement(const SceneElement& other) {
 	this->name = other.name;
-	this->screen_orientation = other.screen_orientation;
-	this->pos = other.pos;
-	this->rot = other.rot;
-	this->scale = other.scale;
 	this->anchor = other.anchor;
 	this->parent = other.parent;
 	this->int_vars = other.int_vars;
@@ -139,14 +137,15 @@ SceneElement::SceneElement(const SceneElement& other) {
 		this->render_indices.push_back(other.render_indices[i]);
 	}
 	this->event_functions = other.event_functions;
+	this->screen_orientation = other.screen_orientation;
+	this->pos = other.pos;
+	this->rot = other.rot;
+	this->scale = other.scale;
+	this->visible = other.visible;
 }
 
 SceneElement::SceneElement(SceneElement&& other) noexcept {
 	this->name = other.name;
-	this->screen_orientation = other.screen_orientation;
-	this->pos = other.pos;
-	this->rot = other.rot;
-	this->scale = other.scale;
 	this->anchor = other.anchor;
 	this->parent = other.parent;
 	this->int_vars = other.int_vars;
@@ -183,15 +182,16 @@ SceneElement::SceneElement(SceneElement&& other) noexcept {
 		this->render_indices.push_back(other.render_indices[i]);
 	}
 	this->event_functions = other.event_functions;
+	this->screen_orientation = other.screen_orientation;
+	this->pos = other.pos;
+	this->rot = other.rot;
+	this->scale = other.scale;
+	this->visible = other.visible;
 }
 
 SceneElement& SceneElement::operator=(SceneElement& other) {
 	if (this != &other) {
 		this->name = other.name;
-		this->screen_orientation = other.screen_orientation;
-		this->pos = other.pos;
-		this->rot = other.rot;
-		this->scale = other.scale;
 		this->anchor = other.anchor;
 		this->parent = other.parent;
 		this->int_vars = other.int_vars;
@@ -228,6 +228,11 @@ SceneElement& SceneElement::operator=(SceneElement& other) {
 			this->render_indices.push_back(other.render_indices[i]);
 		}
 		this->event_functions = other.event_functions;
+		this->screen_orientation = other.screen_orientation;
+		this->pos = other.pos;
+		this->rot = other.rot;
+		this->scale = other.scale;
+		this->visible = other.visible;
 	}
 	return *this;
 }
@@ -235,10 +240,6 @@ SceneElement& SceneElement::operator=(SceneElement& other) {
 SceneElement& SceneElement::operator=(const SceneElement& other) {
 	if (this != &other) {
 		this->name = other.name;
-		this->screen_orientation = other.screen_orientation;
-		this->pos = other.pos;
-		this->rot = other.rot;
-		this->scale = other.scale;
 		this->anchor = other.anchor;
 		this->parent = other.parent;
 		this->int_vars = other.int_vars;
@@ -275,6 +276,11 @@ SceneElement& SceneElement::operator=(const SceneElement& other) {
 			this->render_indices.push_back(other.render_indices[i]);
 		}
 		this->event_functions = other.event_functions;
+		this->screen_orientation = other.screen_orientation;
+		this->pos = other.pos;
+		this->rot = other.rot;
+		this->scale = other.scale;
+		this->visible = other.visible;
 	}
 	return *this;
 }
@@ -282,10 +288,6 @@ SceneElement& SceneElement::operator=(const SceneElement& other) {
 SceneElement& SceneElement::operator=(SceneElement&& other) noexcept {
 	if (this != &other) {
 		this->name = other.name;
-		this->screen_orientation = other.screen_orientation;
-		this->pos = other.pos;
-		this->rot = other.rot;
-		this->scale = other.scale;
 		this->anchor = other.anchor;
 		this->parent = other.parent;
 		this->int_vars = other.int_vars;
@@ -322,12 +324,21 @@ SceneElement& SceneElement::operator=(SceneElement&& other) noexcept {
 			this->render_indices.push_back(other.render_indices[i]);
 		}
 		this->event_functions = other.event_functions;
+		this->screen_orientation = other.screen_orientation;
+		this->pos = other.pos;
+		this->rot = other.rot;
+		this->scale = other.scale;
+		this->visible = other.visible;
 	}
 	return *this;
 }
 
 SceneElement::~SceneElement() {
 
+}
+
+std::string SceneElement::get_name() const {
+	return this->name;
 }
 
 SceneElement& SceneElement::add_element(std::string name, std::any element) {
@@ -580,6 +591,14 @@ glm::vec3 SceneElement::get_scale() const {
 	return scale;
 }
 
+SceneElement& SceneElement::show() {
+	this->visible = true;
+}
+
+SceneElement& SceneElement::hide() {
+	this->visible = false;
+}
+
 SceneElement& SceneElement::push_int_var(std::string name, int val) {
 	int_vars[name] = val;
 	return *this;
@@ -638,6 +657,7 @@ SceneElement& SceneElement::execute_event(std::string event_name) {
 }
 
 void SceneElement::render() {
+	if (!visible) return;
 	glm::vec3 screen_pos = pos.get_val();
 	float window_width = WINDOW_WIDTH;
 	float window_height = WINDOW_HEIGHT;

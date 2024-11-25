@@ -6,7 +6,13 @@
 Scene::Scene() {
 	active_element = &root;
 	flags = 0;
-
+	player_id = 0;
+	GameManager* game_manager = GameManager::get_instance();
+	for (int i = 0; i < 2; i++) {
+		player[i] = game_manager->player[i];
+	}
+//	game_manager->set_game_state(this);
+	looping = true;
 
 }
 
@@ -39,7 +45,9 @@ SceneElement& Scene::get_active_element() {
 }
 
 void Scene::set_active_element(SceneElement* element) {
-	this->active_element = element;
+	active_element->execute_event("deactivate");
+	active_element = element;
+	active_element->execute_event("activate");
 }
 
 void Scene::update_scene(unsigned int scene, unsigned int flags) {

@@ -28,8 +28,8 @@ public:
 	Mouse mouse;
 
 	int player_id;
-	int sub_scene;
 	unsigned int flags;
+	bool looping;
 
 	std::map<std::string, Font> font_map;
 private:

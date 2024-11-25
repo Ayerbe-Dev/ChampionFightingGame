@@ -3,6 +3,7 @@
 #include "ScreenText.h"
 #include "WorldTexture.h"
 #include "WorldText.h"
+#include "SoundPlayer.h"
 #include <any>
 #include <vector>
 #include <map>
@@ -27,6 +28,8 @@ public:
 	SceneElement& operator=(const SceneElement& other);
 	SceneElement& operator=(SceneElement&& other) noexcept;
 	~SceneElement();
+
+	std::string get_name() const;
 
 	SceneElement& add_element(std::string name, std::any element);
 	SceneElement& add_elements(std::vector<std::pair<std::string, std::any>> elements);
@@ -66,6 +69,9 @@ public:
 	SceneElement& add_scale(glm::vec3 scale);
 	glm::vec3 get_scale() const;
 
+	SceneElement& show();
+	SceneElement& hide();
+
 	SceneElement& push_int_var(std::string name, int val);
 	SceneElement& push_float_var(std::string name, float val);
 	SceneElement& push_bool_var(std::string name, bool val);
@@ -80,13 +86,11 @@ public:
 	SceneElement& add_event(std::string event_name, std::function<void(SceneElement*)> func);
 	SceneElement& execute_event(std::string event_name);
 
+	SoundPlayer sound_player;
+
 	void render();
 private:
 	std::string name;
-	int screen_orientation;
-	TargetVar<glm::vec3> pos;
-	TargetVar<glm::vec3> rot;
-	TargetVar<glm::vec3> scale;
 	TextureAnchor anchor;
 	SceneElement* parent;
 
@@ -114,4 +118,10 @@ private:
 	std::map<std::string, bool> bool_vars;
 	std::map<std::string, std::string> string_vars;
 	std::map<std::string, void*> ptr_vars;
+
+	int screen_orientation;
+	TargetVar<glm::vec3> pos;
+	TargetVar<glm::vec3> rot;
+	TargetVar<glm::vec3> scale;
+	bool visible;
 };

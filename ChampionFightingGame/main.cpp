@@ -55,15 +55,15 @@ int main() {
 	game_manager->player[0]->chara_kind = CHARA_KIND_ERIC;
 	game_manager->player[1]->chara_kind = CHARA_KIND_ERIC;
 
-	while (game_manager->next_game_state != GAME_STATE_CLOSE) {
+	while (game_manager->next_scene != SCENE_CLOSE) {
 		object_manager->game_objects.clear();
 		window_manager->reset_gl_environment();
-		if (game_manager->game_main[game_manager->next_game_state] != nullptr) {
-			game_manager->game_main[game_manager->next_game_state]();
+		if (game_manager->scene_main[game_manager->next_scene] != nullptr) {
+			game_manager->scene_main[game_manager->next_scene]();
 		}
-		else if (game_manager->next_game_state != GAME_STATE_CLOSE) {
-			game_manager->add_crash_log("Error: Next Game State was " + std::to_string(game_manager->next_game_state) + " (not GAME_STATE_CLOSE) but there was no associated function!");
-			game_manager->game_main[GAME_STATE_DEBUG_MENU]();
+		else if (game_manager->next_scene != SCENE_CLOSE) {
+			game_manager->add_crash_log("Error: Next Game State was " + std::to_string(game_manager->next_scene) + " (not SCENE_CLOSE) but there was no associated function!");
+			game_manager->scene_main[SCENE_DEBUG_MENU]();
 		}
 
 		save_manager->update_player_info();

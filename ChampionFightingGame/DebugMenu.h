@@ -1,8 +1,7 @@
 #pragma once
+#include "Scene.h"
 #include <string>
 #include "Player.h"
-#include "GameState.h"
-#include "GameManager.h"
 #include "SceneElement.h"
 
 #define DEBUG_MENU_ITEMS_MAX 50
@@ -18,15 +17,13 @@ enum{
     DEBUG_ITEM_ACTIVE
 };
 
-class DebugMenu : public GameState {
+class DebugMenu : public Scene {
 public:
     DebugMenu();
     ~DebugMenu();
 
     void process_main();
     void render_main();
-
-    SceneElement root;
 
     GameObject go1, go2;
 

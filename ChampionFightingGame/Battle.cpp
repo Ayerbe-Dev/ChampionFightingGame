@@ -94,31 +94,31 @@ Battle::Battle() {
 	}
 
 	switch (game_context) {
-		case (GAME_CONTEXT_NORMAL): {
+		case (SCENE_CONTEXT_NONE): {
 			internal_state = BATTLE_STATE_PRE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
-		case (GAME_CONTEXT_TRAINING): {
+		case (SCENE_CONTEXT_TRAINING): {
 			internal_state = BATTLE_STATE_BATTLE;
 			timer_setting = TIMER_SETTING_TRAINING;
 			player[1]->player_kind = PLAYER_KIND_DUMMY;
 		} break;
-		case (GAME_CONTEXT_ARCADE): {
+		case (SCENE_CONTEXT_ARCADE): {
 			internal_state = BATTLE_STATE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
 			player[1]->player_kind = PLAYER_KIND_CPU;
 		} break;
-		case (GAME_CONTEXT_STORY): {
+		case (SCENE_CONTEXT_STORY): {
 			internal_state = BATTLE_STATE_BATTLE;
 			timer_setting = TIMER_SETTING_NONE;
 			player[1]->player_kind = PLAYER_KIND_CPU;
 		} break;
-		case (GAME_CONTEXT_ONLINE): {
+		case (SCENE_CONTEXT_ONLINE): {
 			internal_state = BATTLE_STATE_PRE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
 			player[1]->player_kind = PLAYER_KIND_PLAYER;
 		} break;
-		case (GAME_CONTEXT_SPECIAL): {
+		case (SCENE_FLAG_SPECIAL): {
 			internal_state = BATTLE_STATE_PRE_INTRO;
 			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
@@ -241,10 +241,10 @@ void Battle::load_ui() {
 			push_menu_ptr_var("ended_hitstun", (void*)fighter[0]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
 			push_menu_ptr_var("health_recovery_timer", &fighter[0]->object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);
 
-			push_menu_texture("Combo Health", "resource/game_state/battle/ui/meter/combo_health.png");
-			push_menu_texture("Health", "resource/game_state/battle/ui/meter/health.png");
+			push_menu_texture("Combo Health", "resource/scene/battle/ui/meter/combo_health.png");
+			push_menu_texture("Health", "resource/scene/battle/ui/meter/health.png");
 			last_pushed_texture->set_alpha(127);
-			push_menu_texture("Partial Health", "resource/game_state/battle/ui/meter/health.png");
+			push_menu_texture("Partial Health", "resource/scene/battle/ui/meter/health.png");
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			push_menu_pos(glm::vec3(66.0, 114.0, 0.0));
 			push_menu_dimensions("Health");
@@ -273,12 +273,12 @@ void Battle::load_ui() {
 			push_menu_ptr_var("partial_health", &fighter[1]->object_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
 			push_menu_ptr_var("ended_hitstun", (void*)fighter[1]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]._Getptr());
 			push_menu_ptr_var("health_recovery_timer", &fighter[1]->object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER]);			
-			push_menu_texture("Combo Health", "resource/game_state/battle/ui/meter/combo_health.png");
+			push_menu_texture("Combo Health", "resource/scene/battle/ui/meter/combo_health.png");
 			last_pushed_texture->flip_h();
-			push_menu_texture("Health", "resource/game_state/battle/ui/meter/health.png");
+			push_menu_texture("Health", "resource/scene/battle/ui/meter/health.png");
 			last_pushed_texture->flip_h();
 			last_pushed_texture->set_alpha(127);
-			push_menu_texture("Partial Health", "resource/game_state/battle/ui/meter/health.png");
+			push_menu_texture("Partial Health", "resource/scene/battle/ui/meter/health.png");
 			last_pushed_texture->flip_h();
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 			push_menu_pos(glm::vec3(66.0, 114.0, 0.0));
@@ -293,10 +293,10 @@ void Battle::load_ui() {
 				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
 			});
 			push_menu_ptr_var("damage_scale", &fighter[0]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
-			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
-			push_menu_texture("Damage Scale 110", "resource/game_state/battle/ui/meter/damage_scale_110.png");
+			push_menu_texture("Damage Scale", "resource/scene/battle/ui/meter/damage_scale.png");
+			push_menu_texture("Damage Scale 110", "resource/scene/battle/ui/meter/damage_scale_110.png");
 			last_pushed_texture->set_alpha(0);
-			push_menu_texture("Damage Scale 120", "resource/game_state/battle/ui/meter/damage_scale_120.png");
+			push_menu_texture("Damage Scale 120", "resource/scene/battle/ui/meter/damage_scale_120.png");
 			last_pushed_texture->set_alpha(0);
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			push_menu_pos(glm::vec3(1026.0, 244.5, 0.0));
@@ -311,12 +311,12 @@ void Battle::load_ui() {
 				object->get_texture("Damage Scale").set_bottom_left_target(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
 			});
 			push_menu_ptr_var("damage_scale", &fighter[1]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI]);
-			push_menu_texture("Damage Scale", "resource/game_state/battle/ui/meter/damage_scale.png");
+			push_menu_texture("Damage Scale", "resource/scene/battle/ui/meter/damage_scale.png");
 			last_pushed_texture->flip_h();
-			push_menu_texture("Damage Scale 110", "resource/game_state/battle/ui/meter/damage_scale_110.png");
+			push_menu_texture("Damage Scale 110", "resource/scene/battle/ui/meter/damage_scale_110.png");
 			last_pushed_texture->set_alpha(0);
 			last_pushed_texture->flip_h();
-			push_menu_texture("Damage Scale 120", "resource/game_state/battle/ui/meter/damage_scale_120.png");
+			push_menu_texture("Damage Scale 120", "resource/scene/battle/ui/meter/damage_scale_120.png");
 			last_pushed_texture->set_alpha(0);
 			last_pushed_texture->flip_h();
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
@@ -340,9 +340,9 @@ void Battle::load_ui() {
 			push_menu_ptr_var("ex", &fighter[0]->object_float[FIGHTER_FLOAT_EX_METER]);
 			push_menu_float_var("prev_segments", 0.0);
 			
-			push_menu_texture("EX", "resource/game_state/battle/ui/meter/ex.png");
+			push_menu_texture("EX", "resource/scene/battle/ui/meter/ex.png");
 			last_pushed_texture->scale_left_percent(0.0);
-			push_menu_texture("EX Segment", "resource/game_state/battle/ui/meter/ex_segment.png");
+			push_menu_texture("EX Segment", "resource/scene/battle/ui/meter/ex_segment.png");
 			last_pushed_texture->scale_left_percent(0.0);
 			push_menu_pos(glm::vec3(324.0, 180.0, 0.0));
 			push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -365,10 +365,10 @@ void Battle::load_ui() {
 			push_menu_ptr_var("ex", &fighter[1]->object_float[FIGHTER_FLOAT_EX_METER]);
 			push_menu_float_var("prev_segments", 0.0);
 
-			push_menu_texture("EX", "resource/game_state/battle/ui/meter/ex.png");
+			push_menu_texture("EX", "resource/scene/battle/ui/meter/ex.png");
 			last_pushed_texture->flip_h();
 			last_pushed_texture->scale_left_percent(0.0);
-			push_menu_texture("EX Segment", "resource/game_state/battle/ui/meter/ex_segment.png");
+			push_menu_texture("EX Segment", "resource/scene/battle/ui/meter/ex_segment.png");
 			last_pushed_texture->flip_h();
 			last_pushed_texture->scale_left_percent(0.0);
 			push_menu_pos(glm::vec3(324.0, 180.0, 0.0));
@@ -388,7 +388,7 @@ void Battle::load_ui() {
 				});
 				push_menu_ptr_var("super", &fighter[0]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
-				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
+				push_menu_texture("Super", "resource/scene/battle/ui/meter/super.gif");
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
 				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 				push_menu_dimensions("Super");
@@ -404,7 +404,7 @@ void Battle::load_ui() {
 				});
 				push_menu_ptr_var("super", &fighter[0]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
-				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
+				push_menu_texture("Super Full", "resource/scene/battle/ui/meter/super_full.gif");
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
 				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 				push_menu_dimensions("Super Full");
@@ -423,7 +423,7 @@ void Battle::load_ui() {
 				});
 				push_menu_ptr_var("super", &fighter[1]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
-				push_menu_texture("Super", "resource/game_state/battle/ui/meter/super.gif");
+				push_menu_texture("Super", "resource/scene/battle/ui/meter/super.gif");
 				last_pushed_texture->flip_h();
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
 				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
@@ -440,7 +440,7 @@ void Battle::load_ui() {
 				});
 				push_menu_ptr_var("super", &fighter[1]->object_float[FIGHTER_FLOAT_SUPER_METER]);
 				push_menu_float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"));
-				push_menu_texture("Super Full", "resource/game_state/battle/ui/meter/super_full.gif");
+				push_menu_texture("Super Full", "resource/scene/battle/ui/meter/super_full.gif");
 				last_pushed_texture->flip_h();
 				push_menu_pos(glm::vec3(66.0, 70.0, 0.0));
 				push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
@@ -514,38 +514,38 @@ void Battle::load_ui() {
 			last_pushed_texture->set_alpha(0);
 		} pop_menu_stack();
 
-		push_menu_texture("HUD", "resource/game_state/battle/ui/battle_hud.png");
+		push_menu_texture("HUD", "resource/scene/battle/ui/battle_hud.png");
 
-		if (game_context != GAME_CONTEXT_TRAINING) {
+		if (game_context != SCENE_CONTEXT_TRAINING) {
 			push_menu_child("Round Counter P1", round_count_setting + 1); {
 				push_menu_int_var("Wins", 0);
 				switch (round_count_setting) {
 					case (1): {
-						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo1_l.gif");
+						push_menu_texture("Round Win1", "resource/scene/battle/ui/rounds/round_win_bo1_l.gif");
 						last_pushed_texture->set_pos(glm::vec3(6.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo1.png");
+						push_menu_texture("Round Bar", "resource/scene/battle/ui/rounds/round_bar_bo1.png");
 					} break;
 					case (2): {
-						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo3_l.gif");
+						push_menu_texture("Round Win1", "resource/scene/battle/ui/rounds/round_win_bo3_l.gif");
 						last_pushed_texture->set_pos(glm::vec3(204.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo3_l.gif");
+						push_menu_texture("Round Win2", "resource/scene/battle/ui/rounds/round_win_bo3_l.gif");
 						last_pushed_texture->set_pos(glm::vec3(-192.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo3.png");
+						push_menu_texture("Round Bar", "resource/scene/battle/ui/rounds/round_bar_bo3.png");
 					} break;
 					case (3): {
-						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo5_l.gif");
+						push_menu_texture("Round Win1", "resource/scene/battle/ui/rounds/round_win_bo5_l.gif");
 						last_pushed_texture->set_pos(glm::vec3(270.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo5_l.gif");
+						push_menu_texture("Round Win2", "resource/scene/battle/ui/rounds/round_win_bo5_l.gif");
 						last_pushed_texture->set_pos(glm::vec3(6.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Win3", "resource/game_state/battle/ui/rounds/round_win_bo5_l.gif");
+						push_menu_texture("Round Win3", "resource/scene/battle/ui/rounds/round_win_bo5_l.gif");
 						last_pushed_texture->set_pos(glm::vec3(-258.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo5.png");
+						push_menu_texture("Round Bar", "resource/scene/battle/ui/rounds/round_bar_bo5.png");
 					} break;
 					default: {
 
@@ -559,31 +559,31 @@ void Battle::load_ui() {
 				push_menu_int_var("Wins", 0);
 				switch (round_count_setting) {
 					case (1): {
-						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo1_r.gif");
+						push_menu_texture("Round Win1", "resource/scene/battle/ui/rounds/round_win_bo1_r.gif");
 						last_pushed_texture->set_pos(glm::vec3(-6.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo1.png");
+						push_menu_texture("Round Bar", "resource/scene/battle/ui/rounds/round_bar_bo1.png");
 					} break;
 					case (2): {
-						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo3_r.gif");
+						push_menu_texture("Round Win1", "resource/scene/battle/ui/rounds/round_win_bo3_r.gif");
 						last_pushed_texture->set_pos(glm::vec3(-204.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo3_r.gif");
+						push_menu_texture("Round Win2", "resource/scene/battle/ui/rounds/round_win_bo3_r.gif");
 						last_pushed_texture->set_pos(glm::vec3(192.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo3.png");
+						push_menu_texture("Round Bar", "resource/scene/battle/ui/rounds/round_bar_bo3.png");
 					} break;
 					case (3): {
-						push_menu_texture("Round Win1", "resource/game_state/battle/ui/rounds/round_win_bo5_r.gif");
+						push_menu_texture("Round Win1", "resource/scene/battle/ui/rounds/round_win_bo5_r.gif");
 						last_pushed_texture->set_pos(glm::vec3(-270.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Win2", "resource/game_state/battle/ui/rounds/round_win_bo5_r.gif");
+						push_menu_texture("Round Win2", "resource/scene/battle/ui/rounds/round_win_bo5_r.gif");
 						last_pushed_texture->set_pos(glm::vec3(-6.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Win3", "resource/game_state/battle/ui/rounds/round_win_bo5_r.gif");
+						push_menu_texture("Round Win3", "resource/scene/battle/ui/rounds/round_win_bo5_r.gif");
 						last_pushed_texture->set_pos(glm::vec3(258.0, -5.0, 0.0));
 						last_pushed_texture->set_alpha(0);
-						push_menu_texture("Round Bar", "resource/game_state/battle/ui/rounds/round_bar_bo5.png");
+						push_menu_texture("Round Bar", "resource/scene/battle/ui/rounds/round_bar_bo5.png");
 					} break;
 					default: {
 
@@ -647,17 +647,17 @@ void Battle::load_ui() {
 					push_menu_int_var("sec", 9);
 					push_menu_int_var("deca_frame", 5);
 					push_menu_int_var("frame", 9);
-					push_menu_texture("Background", "resource/game_state/battle/ui/timer/timer.png");
-					push_menu_texture("Deca Second", "resource/game_state/battle/ui/timer/sec.gif");
+					push_menu_texture("Background", "resource/scene/battle/ui/timer/timer.png");
+					push_menu_texture("Deca Second", "resource/scene/battle/ui/timer/sec.gif");
 					last_pushed_texture->set_pos(glm::vec3(-38.0, 19.0, 0.0));
 					last_pushed_texture->set_sprite(9);
-					push_menu_texture("Second", "resource/game_state/battle/ui/timer/sec.gif");
+					push_menu_texture("Second", "resource/scene/battle/ui/timer/sec.gif");
 					last_pushed_texture->set_pos(glm::vec3(38.0, 19.0, 0.0));
 					last_pushed_texture->set_sprite(9);
-					push_menu_texture("Deca Frame", "resource/game_state/battle/ui/timer/frame.gif");
+					push_menu_texture("Deca Frame", "resource/scene/battle/ui/timer/frame.gif");
 					last_pushed_texture->set_pos(glm::vec3(-18.0, -84.0, 0.0));
 					last_pushed_texture->set_sprite(5);
-					push_menu_texture("Frame", "resource/game_state/battle/ui/timer/frame.gif");
+					push_menu_texture("Frame", "resource/scene/battle/ui/timer/frame.gif");
 					last_pushed_texture->set_pos(glm::vec3(18.0, -84.0, 0.0));
 					last_pushed_texture->set_sprite(9);
 					push_menu_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_MIDDLE);
@@ -675,7 +675,7 @@ void Battle::load_ui() {
 	} pop_menu_stack();
 }
 
-void Battle::pre_event_process_main() {
+void Battle::process_pre_event() {
 	if (frame_advance) {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		sound_manager->pause_all_sounds();
@@ -809,7 +809,7 @@ void Battle::process_battle() {
 		post_process_fighters();
 		thread_manager->wait_thread(THREAD_KIND_UI);
 		camera->camera_main();
-		if (game_context == GAME_CONTEXT_TRAINING) {
+		if (game_context == SCENE_CONTEXT_TRAINING) {
 			process_training();
 		}
 	}
@@ -1176,7 +1176,7 @@ void Battle::process_ko() {
 }
 
 void Battle::process_outro() {
-	GameManager::get_instance()->update_state(GAME_STATE_DEBUG_MENU);
+	GameManager::get_instance()->update_scene(SCENE_DEBUG_MENU);
 }
 
 void Battle::process_debug_boxes() {
@@ -1429,7 +1429,7 @@ void Battle::render_world() {
 
 	//HITBOX PASS - Draws all collision boxes to their own framebuffer, then draws it to the screen.
 
-	if (game_context == GAME_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
+	if (game_context == SCENE_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
 		window_manager->box_layer.use();
 		glViewport(0, 0, window_manager->res_width, window_manager->res_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1501,7 +1501,7 @@ void Battle::render_ui() {
 	main_object.render();
 	//TRAINING PASS
 
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == SCENE_CONTEXT_TRAINING) {
 		for (int i = 0; i < 2; i++) {
 			training_info[i].render();
 		}
@@ -1525,8 +1525,8 @@ void Battle::event_start_press() {
 		} break;
 		default:
 		case (BATTLE_STATE_BATTLE): {
-			if (game_context != GAME_CONTEXT_ONLINE) {
-				GameManager::get_instance()->game_main[GAME_STATE_PAUSE_BATTLE]();
+			if (game_context != SCENE_CONTEXT_ONLINE) {
+				GameManager::get_instance()->game_main[SCENE_PAUSE_BATTLE]();
 				for (int i = 0; i < 2; i++) {
 					player[i]->poll_controller_fighter();
 					player[i]->controller.reset_buffer();
@@ -1548,7 +1548,7 @@ void Battle::event_start_press() {
 
 void Battle::event_frame_pause_press() {
 	if (internal_frame == 0) return;
-	if (game_context == GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE) {
+	if (game_context == SCENE_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE) {
 		SoundManager* sound_manager = SoundManager::get_instance();
 		if (frame_pause) {
 			camera->pos_x_interpolator.set_pause(false);
@@ -1576,7 +1576,7 @@ void Battle::event_frame_advance_press() {
 }
 
 void Battle::event_record_input_press() {
-	if (game_context == GAME_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
+	if (game_context == SCENE_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
 		switch (player[1]->input_mode) {
 			case (INPUT_MODE_POLL):
 			case (INPUT_MODE_PLAY_SEQ): {
@@ -1600,7 +1600,7 @@ void Battle::event_record_input_press() {
 }
 
 void Battle::event_replay_input_press() {
-	if (game_context == GAME_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
+	if (game_context == SCENE_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
 		switch (player[1]->input_mode) {
 			case (INPUT_MODE_PLAY_SEQ): {
 				player[1]->manual_seq.reset_idx();
@@ -1623,7 +1623,7 @@ void Battle::event_replay_input_press() {
 }
 
 void Battle::event_switch_input_press() {
-	if (game_context == GAME_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
+	if (game_context == SCENE_CONTEXT_TRAINING && player[1]->player_kind == PLAYER_KIND_DUMMY) {
 		player[0]->controller.swap_player_controller(&player[1]->controller);
 	}
 }

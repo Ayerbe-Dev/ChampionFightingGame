@@ -1,12 +1,12 @@
 #pragma once
-#include "GameState.h"
+#include "Scene.h"
 #include "GameTexture.h"
 #include "GameManager.h"
 #include "Player.h"
 
 void pause_battle_main();
 
-class PauseBattle : public GameState {
+class PauseBattle : public Scene {
 public:
 	PauseBattle();
 	~PauseBattle();

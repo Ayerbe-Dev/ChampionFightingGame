@@ -1,18 +1,16 @@
 #pragma once
+#include "Scene.h"
 #include <string>
 #include <iostream>
 #include <functional>
 #include <vector>
 #include "Button.h"
 #include "Player.h"
-#include "GameState.h"
-#include "GameManager.h"
-#include "GameTexture.h"
 #include "MainMenuConstants.h"
 
 void main_menu_main();
 
-class MainMenu: public GameState{
+class MainMenu: public Scene {
 public:
     MainMenu();
     ~MainMenu();
@@ -37,6 +35,6 @@ private:
     int menu_frame;
 
     int top_selection = SUB_MENU_VS;
-    int sub_selection = GAME_STATE_BATTLE;
+    int sub_selection = SCENE_BATTLE;
     int menu_level = MENU_LEVEL_TOP;
 };

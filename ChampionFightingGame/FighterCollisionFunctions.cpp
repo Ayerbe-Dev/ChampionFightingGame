@@ -219,7 +219,7 @@ bool Fighter::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbo
 	if (hurtbox->armor_hits) {
 		if ((hitbox->collision_kind & COLLISION_KIND_ARMOR) || object_int[FIGHTER_INT_ARMOR_HITS] == hurtbox->armor_hits) {
 			object_flag[FIGHTER_FLAG_ARMOR_BREAK] = true;
-			GameState* battle = GameManager::get_instance()->get_game_state();
+			GameState* battle = GameManager::get_instance()->get_scene();
 			battle->add_message("message", "Armor Break", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->id) {
 				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
@@ -480,7 +480,7 @@ bool Fighter::is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hi
 	if (hurtbox->armor_hits) {
 		if ((hitbox->collision_kind & COLLISION_KIND_ARMOR) || object_int[FIGHTER_INT_ARMOR_HITS] == hurtbox->armor_hits) {
 			object_flag[FIGHTER_FLAG_ARMOR_BREAK] = true;
-			GameState* battle = GameManager::get_instance()->get_game_state();
+			GameState* battle = GameManager::get_instance()->get_scene();
 			battle->add_message("message", "Armor Break", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 			if (attacker->owner_id) {
 				battle->messages_active.back().set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
@@ -1310,7 +1310,7 @@ void Fighter::process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter*
 	object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] = 60;
 
 	if (object_float[FIGHTER_FLOAT_HEALTH] == 0.0f 
-		&& GameManager::get_instance()->get_game_state()->game_context != GAME_CONTEXT_TRAINING) {
+		&& GameManager::get_instance()->get_scene()->game_context != SCENE_CONTEXT_TRAINING) {
 		if (hitbox->hit_flags & HIT_FLAG_CRUMPLE_ON_KO) {
 			post_collision_status = FIGHTER_STATUS_CRUMPLE;
 		}
@@ -1350,7 +1350,7 @@ void Fighter::process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter*
 }
 
 int Fighter::get_counterhit_val(Hitbox* hitbox) {
-	GameState* battle = GameManager::get_instance()->get_game_state();
+	GameState* battle = GameManager::get_instance()->get_scene();
 	Fighter* attacker = nullptr;
 	if (hitbox->object->object_type == BATTLE_OBJECT_TYPE_FIGHTER) {
 		attacker = (Fighter*)hitbox->object;
@@ -1459,7 +1459,7 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 		crouch_anim = "hitstun_crouch_critical";
 	}
 	if (object_float[FIGHTER_FLOAT_HEALTH] == 0.0f &&
-		GameManager::get_instance()->get_game_state()->game_context != GAME_CONTEXT_TRAINING) {
+		GameManager::get_instance()->get_scene()->game_context != SCENE_CONTEXT_TRAINING) {
 		if (hit_flags & HIT_FLAG_CRUMPLE_ON_KO) {
 			post_collision_status = FIGHTER_STATUS_CRUMPLE;
 		}

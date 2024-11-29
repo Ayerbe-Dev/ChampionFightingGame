@@ -3,6 +3,7 @@
 #include <sstream>
 #include "DebugMenu.h"
 #include "cotr_imgui_debugger.h"
+#include "GameManager.h"
 #include "WindowManager.h"
 #include "FontManager.h"
 #include "ResourceManager.h"
@@ -48,8 +49,8 @@ void debug_main() {
 
 		window_manager->update_shader_cams();
 
-		debug->process_game_state();
-		debug->render_game_state();
+		debug->process();
+		debug->render();
 
 		cotr_imgui_debug_dbmenu(debug);
 
@@ -91,7 +92,7 @@ DebugMenu::DebugMenu() {
 	root.add_elements({
 		{"Child", SceneElement({
 			{"Screen", SceneElement({
-				{"Texture", ScreenTexture("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V)
+				{"Texture", ScreenTexture("resource/scene/battle/ui/pause/overlay.png", TEX_FEAT_4T5V)
 					.set_pos(glm::vec3(200.0f, 0.0f, 0.0f))
 				},
 				{"Text", ScreenText(
@@ -106,7 +107,7 @@ DebugMenu::DebugMenu() {
 				}
 			})},
 			{"World", SceneElement({
-				{"WorldTexture", WorldTexture("resource/game_state/chara_select/chara/rowan/render.png", TEX_FEAT_4T5V)
+				{"WorldTexture", WorldTexture("resource/scene/chara_select/chara/rowan/render.png", TEX_FEAT_4T5V)
 					.set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0)) },
 				{"WorldText", WorldText(
 					&get_font("test_font"),
@@ -135,6 +136,7 @@ DebugMenu::~DebugMenu() {
 void DebugMenu::process_main() {
 	go1.process_animate();
 	go2.process_animate();
+	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 	Camera& camera = window_manager->camera;
 

@@ -328,7 +328,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="FighterStatusFunctions.cpp" />
     <ClCompile Include="CollisionBox.cpp" />
-    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="JuliusMoves.cpp" />
@@ -543,7 +542,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Battle.h" />
     <ClInclude Include="CollisionBox.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameState.h" />
     <ClInclude Include="GameRect.h" />
     <ClInclude Include="GameStates.h" />
     <ClInclude Include="GameTexture.h" />

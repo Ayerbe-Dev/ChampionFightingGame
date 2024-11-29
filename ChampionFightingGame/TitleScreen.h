@@ -1,21 +1,12 @@
 #pragma once
-#include "GameState.h"
-#include "GameTexture.h"
-#include "GameManager.h"
+#include "Scene.h"
 
 void title_screen_main();
 
-class TitleScreen: public GameState{
+class TitleScreen: public Scene {
 public:
     TitleScreen();
     ~TitleScreen();
 
     void render_main();
-    void event_any_press();
-private:
-    GameTexture title_l1;
-    GameTexture title_l2;
-    GameTexture title_l3;
-    GameTexture title_l4;
-    GameTexture text;
 };

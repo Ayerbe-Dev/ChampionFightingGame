@@ -1,4 +1,5 @@
 #include "CharaSelect.h"
+#include "GameManager.h"
 #include "FontManager.h"
 #include "WindowManager.h"
 #include "ResourceManager.h"
@@ -30,8 +31,8 @@ void chara_select_main() {
 		game_manager->frame_delay_check_fps();
 		window_manager->clear_screen();
 		
-		css->process_game_state();
-		css->render_game_state();
+		css->process();
+		css->render();
 
 		window_manager->update_screen();
 	}
@@ -71,38 +72,45 @@ CSS::CSS() {
 
 	load_font("Name Entry Font", "FiraCode", 46);
 
-	menu_objects.reserve(4);
-
-	push_menu_object("Background");
-		push_menu_texture("bg", "resource/game_state/chara_select/background.png");
-	pop_menu_stack();
-
-	push_menu_object("Foreground", 8); {
-		push_menu_texture("chara_deck", "resource/game_state/chara_select/chara_deck.png");
-		last_pushed_texture->set_pos(glm::vec3(0.0f, -2000.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("top_table", "resource/game_state/chara_select/top_table.png");
-		last_pushed_texture->set_pos(glm::vec3(0.0f, 2000.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("frame_l", "resource/game_state/chara_select/frame_l.png");
-		last_pushed_texture->set_pos(glm::vec3(-2000.0f, 0.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("frame_r", "resource/game_state/chara_select/frame_r.png");
-		last_pushed_texture->set_pos(glm::vec3(2000.0f, 0.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("panel_dl", "resource/game_state/chara_select/panel_dl.png");
-		last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("panel_dr", "resource/game_state/chara_select/panel_dr.png");
-		last_pushed_texture->set_pos(glm::vec3(2000.0f, -2000.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("panel_ul", "resource/game_state/chara_select/panel_ul.png");
-		last_pushed_texture->set_pos(glm::vec3(-2000.0f, 2000.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("panel_ur", "resource/game_state/chara_select/panel_ur.png");
-		last_pushed_texture->set_pos(glm::vec3(2000.0f, 2000.0f, 0.0f));
-		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-	} pop_menu_stack();
+	root.add_elements({ 
+		{"Background", SceneElement({
+			{"bg", ScreenTexture("resource/scene/chara_select/background.png")}
+		})},
+		{"Foreground", SceneElement({
+			{"chara_deck", ScreenTexture("resource/scene/chara_select/chara_deck.png")
+				.set_pos(glm::vec3(0.0f, -2000.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"top_table", ScreenTexture("resource/scene/chara_select/top_table.png")
+				.set_pos(glm::vec3(0.0f, 2000.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"frame_l", ScreenTexture("resource/scene/chara_select/frame_l.png")
+				.set_pos(glm::vec3(-2000.0f, 0.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"frame_r", ScreenTexture("resource/scene/chara_select/frame_r.png")
+				.set_pos(glm::vec3(2000.0f, 0.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"panel_dl", ScreenTexture("resource/scene/chara_select/panel_dl.png")
+				.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"panel_dr", ScreenTexture("resource/scene/chara_select/panel_dr.png")
+				.set_pos(glm::vec3(2000.0f, -2000.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"panel_ul", ScreenTexture("resource/scene/chara_select/panel_ul.png")
+				.set_pos(glm::vec3(2000.0f, -2000.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+			{"panel_ur", ScreenTexture("resource/scene/chara_select/panel_ur.png")
+				.set_pos(glm::vec3(2000.0f, 2000.0f, 0.0f))
+				.set_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16)
+			},
+		})}
+	});
 
 	if (!load_css()) {
 		game_manager->add_crash_log("Could not load CSS!");
@@ -289,7 +297,7 @@ CSS::CSS() {
 				} pop_menu_stack();
 
 				for (int i2 = 0; i2 < 5; i2++) {
-					push_menu_texture("Name Entry " + std::to_string(i2), "resource/game_state/chara_select/name_entry.png");
+					push_menu_texture("Name Entry " + std::to_string(i2), "resource/scene/chara_select/name_entry.png");
 					last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
 					last_pushed_texture->set_target_pos(glm::vec3(128, 338.5, 0.0f), 16);
 					if (i) {
@@ -303,7 +311,7 @@ CSS::CSS() {
 					last_pushed_texture->set_target_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16);
 					last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
 				}
-				push_menu_texture("Name Entry", "resource/game_state/chara_select/name_entry.png");
+				push_menu_texture("Name Entry", "resource/scene/chara_select/name_entry.png");
 				last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
 				last_pushed_texture->set_target_pos(glm::vec3(128, 338.5, 0.0f), 16);
 				if (i) {
@@ -321,7 +329,7 @@ CSS::CSS() {
 				last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
 				last_pushed_texture->set_target_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_MIDDLE);
-				push_menu_texture("Name Entry Cursor", "resource/game_state/chara_select/name_entry_cursor.gif");
+				push_menu_texture("Name Entry Cursor", "resource/scene/chara_select/name_entry_cursor.gif");
 				last_pushed_texture->set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f));
 				last_pushed_texture->set_target_pos(glm::vec3(128, 338.5, 0.0f), 16);
 				last_pushed_texture->set_alpha(0);
@@ -348,7 +356,7 @@ CSS::CSS() {
 				last_pushed_texture->set_pos(glm::vec3(130.5, 418, 0));
 				last_pushed_texture->set_alpha(127);
 
-				push_menu_texture("Cursor", "resource/game_state/chara_select/p" 
+				push_menu_texture("Cursor", "resource/scene/chara_select/p" 
 					+ std::to_string(i+1) + "_cursor.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
 				last_pushed_texture->set_target_pos(default_chara.pos.get_target_val(), 16);
@@ -578,7 +586,7 @@ CSS::CSS() {
 							if (thread_manager->is_active(THREAD_KIND_LOAD)) {
 								thread_manager->kill_thread(THREAD_KIND_LOAD);
 							}
-							update_state(GAME_STATE_STAGE_SELECT);
+							update_state(SCENE_STAGE_SELECT);
 						} break;
 						case (CHARA_SELECTION_STATE_CHARA): {
 							demo_models[i].change_anim("deselected", 1.0f, 0.0f);
@@ -594,10 +602,10 @@ CSS::CSS() {
 				});
 			} pop_menu_stack();
 		}
-		push_menu_texture("slot_hover_l", "resource/game_state/chara_select/slot_hover_l.png");
+		push_menu_texture("slot_hover_l", "resource/scene/chara_select/slot_hover_l.png");
 		last_pushed_texture->set_pos(glm::vec3(-2000.0f, 0.0f, 0.0f));
 		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
-		push_menu_texture("slot_hover_r", "resource/game_state/chara_select/slot_hover_r.png");
+		push_menu_texture("slot_hover_r", "resource/scene/chara_select/slot_hover_r.png");
 		last_pushed_texture->set_pos(glm::vec3(2000.0f, 0.0f, 0.0f));
 		last_pushed_texture->set_target_pos(glm::vec3(0.0f, 0.0f, 0.0f), 16);
 	} pop_menu_stack();
@@ -644,7 +652,7 @@ CSS::~CSS() {
 /// </summary>
 /// <returns>true if successful, false if the file fails to open.</returns>
 bool CSS::load_css() {
-	ParamTable css_params("resource/game_state/chara_select/css_param.prmlst");
+	ParamTable css_params("resource/scene/chara_select/css_param.prmlst");
 	if (css_params.load_failed()) {
 		return false;
 	}
@@ -770,7 +778,7 @@ bool CSS::load_css() {
 
 				push_menu_texture(
 					"Chara Render",
-					"resource/game_state/chara_select/chara/" + resource_name + "/render.png"
+					"resource/scene/chara_select/chara/" + resource_name + "/render.png"
 				);
 				last_pushed_texture->set_scale(0.5f);
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_LEFT);
@@ -921,7 +929,7 @@ void CSS::event_start_press() {
 			player[i]->alt_color = cursor.int_var("selected_color");
 			player[i]->update_player_info();
 		}
-		if (game_context == GAME_CONTEXT_NORMAL || game_context == GAME_CONTEXT_SPECIAL) {
+		if (game_context == SCENE_CONTEXT_NONE || game_context == SCENE_FLAG_SPECIAL) {
 			if (player[1]->controller.has_any_controller()) {
 				player[1]->player_kind = PLAYER_KIND_PLAYER;
 			}
@@ -929,7 +937,7 @@ void CSS::event_start_press() {
 				player[1]->player_kind = PLAYER_KIND_CPU;
 			}
 		}
-		update_state(GAME_STATE_BATTLE);
+		update_state(SCENE_BATTLE);
 		return;
 	}
 	if (get_menu_object("Player Cursors").get_child(player_id).int_var("chara_selection_state")

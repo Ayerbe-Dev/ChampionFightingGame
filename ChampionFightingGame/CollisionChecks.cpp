@@ -180,7 +180,7 @@ void Battle::process_collisions() {
 						}
 					}
 				}
-				if (game_context == GAME_CONTEXT_TRAINING) {
+				if (game_context == SCENE_CONTEXT_TRAINING) {
 					training_info[!i].fields[TRAINING_FIELD_STARTUP].update_text(
 						get_font("info"),
 						"Startup: " + std::to_string(
@@ -284,7 +284,7 @@ void Battle::process_collisions() {
 
 
 
-	if (game_context != GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE 
+	if (game_context != SCENE_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE 
 		&& (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == 0.0
 		|| fighter[1]->object_float[FIGHTER_FLOAT_HEALTH] == 0.0)) {
 		internal_state = BATTLE_STATE_KO;

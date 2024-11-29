@@ -1,5 +1,5 @@
 #pragma once
-#include "GameManager.h"
+#include "Scene.h"
 #include "GameObject.h"
 #include "Camera.h"
 #include "Light.h"
@@ -25,7 +25,7 @@ class Font;
 
 void chara_select_main();
 
-class CSS: public GameState{
+class CSS: public Scene {
 public:
     CSS();
     ~CSS();

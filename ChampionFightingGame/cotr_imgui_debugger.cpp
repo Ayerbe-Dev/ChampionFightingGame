@@ -99,34 +99,34 @@ void cotr_imgui_debug_dbmenu(DebugMenu* debug_menu) {
 	);
 
 	if (ImGui::MenuItem("Debug Menu")) {
-		game_manager->update_state(GAME_STATE_DEBUG_MENU);
+		game_manager->update_scene(SCENE_DEBUG_MENU);
 	}
 	if (ImGui::MenuItem("Battle (Training)")) {
-		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_TRAINING);
+		game_manager->update_scene(SCENE_BATTLE, SCENE_CONTEXT_TRAINING);
 	}
 	if (ImGui::MenuItem("Battle (VS)")) {
-		game_manager->update_state(GAME_STATE_BATTLE, GAME_CONTEXT_NORMAL);
+		game_manager->update_scene(SCENE_BATTLE, SCENE_CONTEXT_NONE);
 	}
 	if (ImGui::MenuItem("Character Select Screen")) {
-		game_manager->update_state(GAME_STATE_CHARA_SELECT);
+		game_manager->update_scene(SCENE_CHARA_SELECT);
 	}
 	if (ImGui::MenuItem("Stage Select Screen")) {
-		game_manager->update_state(GAME_STATE_STAGE_SELECT);
+		game_manager->update_scene(SCENE_STAGE_SELECT);
 	}
 	if (ImGui::MenuItem("Main Menu")) {
-		game_manager->update_state(GAME_STATE_MAIN_MENU);
+		game_manager->update_scene(SCENE_MAIN_MENU);
 	}
 	if (ImGui::MenuItem("Title Screen")) {
-		game_manager->update_state(GAME_STATE_TITLE_SCREEN);
+		game_manager->update_scene(SCENE_TITLE_SCREEN);
 	}
 	if (ImGui::MenuItem("Pause Menu")) {
-		game_manager->game_main[GAME_STATE_PAUSE_BATTLE]();
+		game_manager->scene_main[SCENE_PAUSE_BATTLE]();
 	}
 	if (ImGui::MenuItem("Opening")) {
 		opening_main();
 	}
 	if (ImGui::Button("exit")) {
-		game_manager->update_state(GAME_STATE_CLOSE);
+		game_manager->update_scene(SCENE_CLOSE);
 	}
 	for (int i = 0, max = debug_menu->debug_messages.size(); i < max; i++) {
 		ImGui::Text("%s", debug_menu->debug_messages[i].c_str());

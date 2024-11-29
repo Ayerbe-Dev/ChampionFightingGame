@@ -1,9 +1,8 @@
 #pragma once
+#include "Scene.h"
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
-#include "GameManager.h"
-#include "GameTexture.h"
 
 enum TimerSetting {
 	TIMER_SETTING_NORMAL,
@@ -262,7 +261,7 @@ public:
 	std::list<InputVisualizer> mini_visualizers;
 };
 
-class Battle : public GameState {
+class Battle : public Scene {
 public:
 	Battle();
 	~Battle();
@@ -270,7 +269,7 @@ public:
 	void load_world();
 	void load_ui();
 
-	void pre_event_process_main();
+	void process_pre_event();
 	void process_main();
 	void render_main();
 
@@ -306,9 +305,6 @@ public:
 	Stage stage;
 	Camera* camera;
 
-	UIMessage* combo_counter[2];
-	UIMessage* combo_hits[2];
-
 	int ko_timer;
 	int actionable_timer;
 
@@ -322,6 +318,8 @@ public:
 	int curr_round;
 	int round_count_setting;
 	TimerSetting timer_setting;
+
+	int battle_state;
 
 	bool frame_pause;
 	bool frame_advance;

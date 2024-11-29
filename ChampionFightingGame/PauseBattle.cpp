@@ -8,7 +8,7 @@
 void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
-	GameState* background_menu = game_manager->get_game_state();
+	GameState* background_menu = game_manager->get_scene();
 
 	PauseBattle* pause = new PauseBattle;
 
@@ -16,8 +16,8 @@ void pause_battle_main() {
 		game_manager->frame_delay_check_fps();
 		window_manager->clear_screen();
 
-		pause->process_game_state();
-		pause->render_game_state();
+		pause->process();
+		pause->render();
 		
 		window_manager->update_screen();
 	}
@@ -36,8 +36,8 @@ PauseBattle::PauseBattle() {
 		push_menu_bool_var("Confirm", false);
 		push_menu_texture("BG Dimmer", "resource/misc/fade.png");
 		last_pushed_texture->set_alpha(127);
-		push_menu_texture("Panel", "resource/game_state/battle/ui/pause/overlay.png");
-		if (game_context == GAME_CONTEXT_TRAINING) {
+		push_menu_texture("Panel", "resource/scene/battle/ui/pause/overlay.png");
+		if (game_context == SCENE_CONTEXT_TRAINING) {
 			push_menu_int_var("Page", save_manager->get_game_setting("pause_battle_training_page"));
 			push_menu_page_left_event_function([this](MenuObject* object) {
 				if (!object->bool_var("Confirm")) {
@@ -126,7 +126,7 @@ PauseBattle::PauseBattle() {
 								push_menu_back_event_function([this](MenuObject* object) {
 									object->set_active_sibling("Blank");
 								});
-								push_menu_texture("Confirm Window", "resource/game_state/battle/ui/pause/confirm.png");
+								push_menu_texture("Confirm Window", "resource/scene/battle/ui/pause/confirm.png");
 								push_menu_texture("Confirm Text", get_font("header"), "Confirm?", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 								last_pushed_texture->set_pos(glm::vec3(0.0, 90.0, 0.0));								
 								push_menu_left_event_function([this](MenuObject* object) {
@@ -148,8 +148,8 @@ PauseBattle::PauseBattle() {
 										});
 										push_menu_select_event_function([this](MenuObject* object) {
 											GameManager* game_manager = GameManager::get_instance();
-											game_manager->update_state(GAME_STATE_CHARA_SELECT);
-											game_manager->get_game_state(1)->looping = false;
+											game_manager->update_scene(SCENE_CHARA_SELECT);
+											game_manager->get_scene(1)->looping = false;
 										});
 									} pop_menu_stack();
 									push_menu_child("No"); {
@@ -210,7 +210,7 @@ PauseBattle::PauseBattle() {
 								push_menu_back_event_function([this](MenuObject* object) {
 									object->set_active_sibling("Blank");
 								});
-								push_menu_texture("Confirm Window", "resource/game_state/battle/ui/pause/confirm.png");
+								push_menu_texture("Confirm Window", "resource/scene/battle/ui/pause/confirm.png");
 								push_menu_texture("Confirm Text", get_font("header"), "Confirm?", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 								last_pushed_texture->set_pos(glm::vec3(0.0, 90.0, 0.0));								push_menu_left_event_function([this](MenuObject* object) {
 									object->get_activity_group("Selection").set_active_child("Yes");
@@ -231,8 +231,8 @@ PauseBattle::PauseBattle() {
 										});
 										push_menu_select_event_function([this](MenuObject* object) {
 											GameManager* game_manager = GameManager::get_instance();
-											game_manager->update_state(GAME_STATE_STAGE_SELECT);
-											game_manager->get_game_state(1)->looping = false;
+											game_manager->update_scene(SCENE_STAGE_SELECT);
+											game_manager->get_scene(1)->looping = false;
 										});
 									} pop_menu_stack();
 									push_menu_child("No"); {
@@ -293,7 +293,7 @@ PauseBattle::PauseBattle() {
 								push_menu_back_event_function([this](MenuObject* object) {
 									object->set_active_sibling("Blank");
 								});
-								push_menu_texture("Confirm Window", "resource/game_state/battle/ui/pause/confirm.png");
+								push_menu_texture("Confirm Window", "resource/scene/battle/ui/pause/confirm.png");
 								push_menu_texture("Confirm Text", get_font("header"), "Confirm?", glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
 								last_pushed_texture->set_pos(glm::vec3(0.0, 90.0, 0.0));
 								push_menu_left_event_function([this](MenuObject* object) {
@@ -315,8 +315,8 @@ PauseBattle::PauseBattle() {
 										});
 										push_menu_select_event_function([this](MenuObject* object) {
 											GameManager* game_manager = GameManager::get_instance();
-											game_manager->update_state(GAME_STATE_MAIN_MENU);
-											game_manager->get_game_state(1)->looping = false;
+											game_manager->update_scene(SCENE_MAIN_MENU);
+											game_manager->get_scene(1)->looping = false;
 										});
 									} pop_menu_stack();
 									push_menu_child("No"); {
@@ -563,7 +563,7 @@ PauseBattle::PauseBattle() {
 
 PauseBattle::~PauseBattle() {
 	SaveManager* save_manager = SaveManager::get_instance();
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == SCENE_CONTEXT_TRAINING) {
 		save_manager->set_game_setting("pause_battle_training_page", get_menu_object("Pause").int_var("Page"));
 	}
 }
@@ -608,13 +608,13 @@ void PauseBattle::event_right_press() {
 }
 
 void PauseBattle::event_page_left_press() {
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == SCENE_CONTEXT_TRAINING) {
 		get_menu_object("Pause").event_page_left_press();
 	}
 }
 
 void PauseBattle::event_page_right_press() {
-	if (game_context == GAME_CONTEXT_TRAINING) {
+	if (game_context == SCENE_CONTEXT_TRAINING) {
 		get_menu_object("Pause").event_page_right_press();
 	}
 }

@@ -295,9 +295,6 @@
     <ClCompile Include="BattleObjectBlockboxFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>2. Code Files\GameState</Filter>
-    </ClCompile>
     <ClCompile Include="SaveManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
@@ -1034,9 +1031,6 @@
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>1. Header Files\Singleton</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>1. Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="SaveManager.h">
       <Filter>1. Header Files\Singleton</Filter>

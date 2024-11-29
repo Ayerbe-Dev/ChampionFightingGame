@@ -1,5 +1,6 @@
 #pragma warning(disable : 4996)
 #include "MainMenu.h"
+#include "GameManager.h"
 #include <glew/glew.h>
 #include "WindowConstants.h"
 #include "Player.h"
@@ -26,20 +27,20 @@ void main_menu_main() {
 
 
 
-		main_menu->process_game_state();
-		main_menu->render_game_state();
+		main_menu->process();
+		main_menu->render();
 
 		window_manager->update_screen();
 
-		if (main_menu->sub_state != GAME_STATE_NONE) {
-			if (game_manager->game_main[main_menu->sub_state] != nullptr) {
-				game_manager->game_main[main_menu->sub_state]();
+		if (main_menu->sub_state != SCENE_NONE) {
+			if (game_manager->scene_main[main_menu->sub_state] != nullptr) {
+				game_manager->scene_main[main_menu->sub_state]();
 			}
 			else {
 				game_manager->add_crash_log("Error: Game State was " + std::to_string(main_menu->sub_state) + " (not GAME_SUBSTATE_NONE) but there was no associated function!");
-				game_manager->update_state(GAME_STATE_DEBUG_MENU);
+				game_manager->update_scene(SCENE_DEBUG_MENU);
 			}
-			main_menu->sub_state = GAME_STATE_NONE;
+			main_menu->sub_state = SCENE_NONE;
 		}
 	}
 
@@ -65,30 +66,30 @@ MainMenu::MainMenu() {
 
 	menu_objects.reserve(2);
 	push_menu_object("Background"); {
-		push_menu_texture("bg", "resource/game_state/menu/main/bg.gif");
+		push_menu_texture("bg", "resource/scene/menu/main/bg.gif");
 		push_menu_process_function([this](MenuObject* object) {
 			object->get_texture("bg").set_sprite(menu_frame);
 		});
 		push_menu_activity_group("Game State Background", &top_selection, true, 5); {
 			push_menu_child("Online Background"); {
-				push_menu_texture("Online Demo", "resource/game_state/menu/main/missingno.png");
+				push_menu_texture("Online Demo", "resource/scene/menu/main/missingno.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 				//TODO: Add a description text after each demo image
 			} pop_menu_stack();
 			push_menu_child("Solo Background"); {
-				push_menu_texture("Solo Demo", "resource/game_state/menu/main/missingno.png");
+				push_menu_texture("Solo Demo", "resource/scene/menu/main/missingno.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 			} pop_menu_stack();
 			push_menu_child("VS Background"); {
-				push_menu_texture("VS Demo", "resource/game_state/menu/main/vsimg.png");
+				push_menu_texture("VS Demo", "resource/scene/menu/main/vsimg.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 			} pop_menu_stack();
 			push_menu_child("Options Background"); {
-				push_menu_texture("Options Demo", "resource/game_state/menu/main/missingno.png");
+				push_menu_texture("Options Demo", "resource/scene/menu/main/missingno.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 			} pop_menu_stack();
 			push_menu_child("Extras Background"); {
-				push_menu_texture("Extras Demo", "resource/game_state/menu/main/missingno.png");
+				push_menu_texture("Extras Demo", "resource/scene/menu/main/missingno.png");
 				last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 			} pop_menu_stack();
 		} pop_menu_stack();
@@ -120,10 +121,10 @@ MainMenu::MainMenu() {
 	push_menu_object("Sub Table"); {
 		object_stack.top()->set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
 		object_stack.top()->set_pos(glm::vec3(glm::vec3(-450.0, 1080.0, 0.0)));
-		push_menu_texture("table", "resource/game_state/menu/main/SubMenu.png"); {
+		push_menu_texture("table", "resource/scene/menu/main/SubMenu.png"); {
 			last_pushed_texture->set_height_scale(1.2);
 		}
-		push_menu_texture("cursor", "resource/game_state/menu/main/Cursor.png"); {
+		push_menu_texture("cursor", "resource/scene/menu/main/Cursor.png"); {
 			last_pushed_texture->set_orientation(SCREEN_TEXTURE_ORIENTATION_MIDDLE_LEFT);
 			last_pushed_texture->set_pos(glm::vec3(1550.0, 0.0, 0.0));
 			last_pushed_texture->set_width(50);
@@ -149,16 +150,16 @@ MainMenu::MainMenu() {
 				push_menu_select_event_function([this](MenuObject* object) {
 					switch (object->int_var("Sub Selection")) {
 						case (0): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (1): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (2): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						default: {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 					}
 				});
@@ -195,16 +196,16 @@ MainMenu::MainMenu() {
 				push_menu_select_event_function([this](MenuObject* object) {
 					switch (object->int_var("Sub Selection")) {
 						case (0): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (1): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (2): {
-							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_TRAINING);
+							this->update_state(SCENE_STAGE_SELECT, SCENE_CONTEXT_TRAINING);
 						} break;
 						default: {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 					}
 				});
@@ -241,16 +242,16 @@ MainMenu::MainMenu() {
 				push_menu_select_event_function([this](MenuObject* object) {
 					switch (object->int_var("Sub Selection")) {
 						case (0): {
-							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_NORMAL);
+							this->update_state(SCENE_STAGE_SELECT, SCENE_CONTEXT_NONE);
 						} break;
 						case (1): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (2): {
-							this->update_state(GAME_STATE_STAGE_SELECT, GAME_CONTEXT_SPECIAL);
+							this->update_state(SCENE_STAGE_SELECT, SCENE_FLAG_SPECIAL);
 						} break;
 						default: {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 					}
 				});
@@ -287,22 +288,22 @@ MainMenu::MainMenu() {
 				push_menu_select_event_function([this](MenuObject* object) {
 					switch (object->int_var("Sub Selection")) {
 						case (0): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (1): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (2): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (3): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (4): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						default: {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 					}
 				});
@@ -345,19 +346,19 @@ MainMenu::MainMenu() {
 				push_menu_select_event_function([this](MenuObject* object) {
 					switch (object->int_var("Sub Selection")) {
 						case (0): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (1): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (2): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						case (3): {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 						default: {
-							this->update_state(GAME_STATE_DEBUG_MENU);
+							this->update_state(SCENE_DEBUG_MENU);
 						} break;
 					}
 				});
@@ -456,7 +457,7 @@ void MainMenu::event_right_press() {
 }
 
 void MainMenu::event_start_press() {
-	update_state(GAME_STATE_DEBUG_MENU);
+	update_state(SCENE_DEBUG_MENU);
 }
 
 void MainMenu::event_select_press() {
@@ -471,7 +472,7 @@ void MainMenu::event_select_press() {
 
 void MainMenu::event_back_press() {
 	if (menu_level == MENU_LEVEL_TOP) {
-		update_state(GAME_STATE_TITLE_SCREEN);
+		update_state(SCENE_TITLE_SCREEN);
 	}
 	else {
 		get_menu_object("Sub Table").set_pos(glm::vec3(-450.0, 1080.0, 0.0), 6);

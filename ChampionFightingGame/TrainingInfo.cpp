@@ -13,14 +13,14 @@ void InputVisualizer::init(Fighter* fighter, Font* font, bool keep_frames) {
 	this->fighter = fighter;
 	this->font = font;
 	this->keep_frames = keep_frames;
-	background.init("resource/game_state/battle/ui/training/visualizer.png");
+	background.init("resource/scene/battle/ui/training/visualizer.png");
 
-	buttons[0].init("resource/game_state/battle/ui/training/lp.png");
-	buttons[1].init("resource/game_state/battle/ui/training/mp.png");
-	buttons[2].init("resource/game_state/battle/ui/training/hp.png");
-	buttons[3].init("resource/game_state/battle/ui/training/lk.png");
-	buttons[4].init("resource/game_state/battle/ui/training/mk.png");
-	buttons[5].init("resource/game_state/battle/ui/training/hk.png");
+	buttons[0].init("resource/scene/battle/ui/training/lp.png");
+	buttons[1].init("resource/scene/battle/ui/training/mp.png");
+	buttons[2].init("resource/scene/battle/ui/training/hp.png");
+	buttons[3].init("resource/scene/battle/ui/training/lk.png");
+	buttons[4].init("resource/scene/battle/ui/training/mk.png");
+	buttons[5].init("resource/scene/battle/ui/training/hk.png");
 	if (keep_frames) {
 		float x = 30.0;
 		if (fighter->id) {
@@ -32,7 +32,7 @@ void InputVisualizer::init(Fighter* fighter, Font* font, bool keep_frames) {
 			buttons[i].set_scale(0.2);
 		}
 		for (int i = 0; i < 9; i++) {
-			stick[i].init("resource/game_state/battle/ui/training/" + std::to_string(i + 1) + ".png");
+			stick[i].init("resource/scene/battle/ui/training/" + std::to_string(i + 1) + ".png");
 			stick[i].set_pos(glm::vec3(x, 50.0, 0.0));
 			stick[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
 			stick[i].set_scale(0.2);
@@ -55,7 +55,7 @@ void InputVisualizer::init(Fighter* fighter, Font* font, bool keep_frames) {
 			buttons[i].set_scale(0.8);
 		}
 		for (int i = 0; i < 9; i++) {
-			stick[i].init("resource/game_state/battle/ui/training/" + std::to_string(i + 1) + ".png");
+			stick[i].init("resource/scene/battle/ui/training/" + std::to_string(i + 1) + ".png");
 			stick[i].set_pos(glm::vec3(1150.0, 0.0, 0.0));
 			stick[i].set_scale(0.8);
 		}
@@ -112,7 +112,7 @@ TrainingInfo::TrainingInfo() {
 
 void TrainingInfo::init(Fighter* fighter, Font* font) {
 	this->fighter = fighter;
-	background_texture.init("resource/game_state/battle/ui/training/training_info.png");
+	background_texture.init("resource/scene/battle/ui/training/training_info.png");
 	background_texture.set_pos(glm::vec3(350.0, 150.0, 0.0));
 	background_texture.set_scale(0.7);
 

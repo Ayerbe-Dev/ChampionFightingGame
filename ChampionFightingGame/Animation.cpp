@@ -115,7 +115,6 @@ void Animation::init(std::string name, std::string filename, Skeleton skeleton) 
 			if (parent_id != -1) {
 				keyframes[i][i2].pos = rotate(keyframes[i][i2].pos, keyframes[i][parent_id].rot);
 				keyframes[i][i2].pos += keyframes[i][parent_id].pos;
-
 				keyframes[i][i2].rot = keyframes[i][parent_id].rot * keyframes[i][i2].rot;
 			}
 		}

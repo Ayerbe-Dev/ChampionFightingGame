@@ -1,5 +1,5 @@
 #include "Opening.h"
-#include "GameTexture.h"
+#include "ScreenTexture.h"
 #include "WindowManager.h"
 #include "TimeFuncs.h"
 
@@ -11,11 +11,8 @@ void opening_main() {
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
 
-	GameTexture titleSplash;
-	titleSplash.init("resource/game_state/opening/game-splash-background.png");
-
-	GameTexture textSplash;
-	textSplash.init("resource/game_state/opening/game-splash-text.png");
+	ScreenTexture titleSplash("resource/scene/opening/game-splash-background.png");
+	ScreenTexture textSplash("resource/scene/opening/game-splash-text.png");
 
 	char title_alpha = 0;
 	char text_alpha = 0;
@@ -24,7 +21,7 @@ void opening_main() {
 
 	bool loop = true;
 
-	while (loop && game_manager->next_game_state != GAME_STATE_CLOSE) {
+	while (loop && game_manager->next_scene != SCENE_CLOSE) {
 		game_manager->frame_delay();
 
 		for (int i = 0; i < 2; i++) {
@@ -70,7 +67,4 @@ void opening_main() {
 
 		window_manager->update_screen();
 	}
-
-	titleSplash.destroy();
-	textSplash.destroy();
 }

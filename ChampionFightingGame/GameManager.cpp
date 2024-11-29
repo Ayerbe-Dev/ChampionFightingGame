@@ -14,20 +14,20 @@ GameManager::GameManager() {
 		l_hold_frames[i] = 0;
 		r_hold_frames[i] = 0;
 	}
-	for (int i = 0; i < GAME_STATE_MAX; i++) {
-		game_main[i] = nullptr;
+	for (int i = 0; i < SCENE_MAX; i++) {
+		scene_main[i] = nullptr;
 	}
-	game_main[GAME_STATE_BATTLE] = &battle_main;
-	game_main[GAME_STATE_CHARA_SELECT] = &chara_select_main;
-	game_main[GAME_STATE_STAGE_SELECT] = &stage_select_main;
-	game_main[GAME_STATE_DEBUG_MENU] = &debug_main;
-	game_main[GAME_STATE_MAIN_MENU] = &main_menu_main;
-	game_main[GAME_STATE_TITLE_SCREEN] = &title_screen_main;
-	game_main[GAME_STATE_CONTROLS] = &controls_main;
-	game_main[GAME_STATE_PAUSE_BATTLE] = &pause_battle_main;
+	scene_main[SCENE_BATTLE] = &battle_main;
+	scene_main[SCENE_CHARA_SELECT] = &chara_select_main;
+	scene_main[SCENE_STAGE_SELECT] = &stage_select_main;
+	scene_main[SCENE_DEBUG_MENU] = &debug_main;
+	scene_main[SCENE_MAIN_MENU] = &main_menu_main;
+	scene_main[SCENE_TITLE_SCREEN] = &title_screen_main;
+	scene_main[SCENE_CONTROLS] = &controls_main;
+	scene_main[SCENE_PAUSE_BATTLE] = &pause_battle_main;
 
-	next_game_state = GAME_STATE_DEBUG_MENU;
-	next_game_context = GAME_CONTEXT_NORMAL;
+	next_scene = SCENE_DEBUG_MENU;
+	next_scene_context = SCENE_CONTEXT_NONE;
 
 #ifdef DEBUG
 	frame_capped = true;
@@ -41,113 +41,103 @@ GameManager::GameManager() {
 	fps_counter.init(&fps_font, "60 FPS", TextSpecifier().color(glm::vec3(255.0f))).set_orientation(TEXTURE_TOP_LEFT);
 }
 
-void GameManager::update_state(int next_game_state, int next_game_context) {
-	if (next_game_state != GAME_STATE_MAX) {
-		if (next_game_state != this->next_game_state) {
-			this->next_game_state = next_game_state;
+void GameManager::update_scene(int next_scene, int next_scene_context) {
+	if (next_scene != SCENE_MAX) {
+		if (next_scene != this->next_scene) {
+			this->next_scene = next_scene;
 		}
-		if (next_game_state == GAME_STATE_CLOSE) {
-			for (int i = 0; i < game_state.size(); i++) {
-				game_state[i]->looping = false;
+		if (next_scene == SCENE_CLOSE) {
+			for (int i = 0; i < scenes.size(); i++) {
+				scenes[i]->looping = false;
 			}
 		}
 		else {
-			game_state.back()->looping = false;
+			scenes.back()->looping = false;
 		}
 	}
-	if (next_game_context != GAME_CONTEXT_MAX) {
-		if (next_game_context != this->next_game_context) {
-			this->next_game_context = next_game_context;
+	if (next_scene_context != SCENE_CONTEXT_MAX) {
+		if (next_scene_context != this->next_scene_context) {
+			this->next_scene_context = next_scene_context;
 		}
 	}
 }
 
-void GameManager::set_game_state(GameState* game_state) {
-	this->game_state.push_back(game_state);
-	game_state->game_context = next_game_context;
+void GameManager::set_scene(Scene* scene) {
+	this->scenes.push_back(scene);
+	scene->context = next_scene_context;
 }
 
-void GameManager::delete_game_state() {
-	game_state.pop_back();
+void GameManager::delete_scene() {
+	scenes.pop_back();
 }
 
-GameState* GameManager::get_game_state(int depth) {
-	if (depth >= game_state.size()) {
+Scene* GameManager::get_scene(int depth) {
+	if (depth >= scenes.size()) {
 		std::cout << "Tried to get GameState from invalid depth: " << depth << "\n";
-		return game_state.back();
+		return scenes.back();
 	}
 	else {
-		return game_state[game_state.size() - 1 - depth];
+		return scenes[scenes.size() - 1 - depth];
 	}
 }
 
 void GameManager::process_events() {
 	for (int i = 0; i < 2; i++) {
-		game_state.back()->player_id = i;
+		scenes.back()->player_id = i;
 		if (is_up_press(i)) {
-			event_up_press();
+			get_scene()->execute_event("up_press");
 		}
 		if (is_down_press(i)) {
-			event_down_press();
+			get_scene()->execute_event("down_press");
 		}
 		if (is_left_press(i)) {
-			event_left_press();
+			get_scene()->execute_event("left_press");
 		}
 		if (is_right_press(i)) {
-			event_right_press();
+			get_scene()->execute_event("right_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_START)) {
-			event_start_press();
+			get_scene()->execute_event("start_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_SELECT)) {
-			event_select_press();
+			get_scene()->execute_event("select_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_BACK)) {
-			event_back_press();
+			get_scene()->execute_event("back_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_PAGE_LEFT)) {
-			event_page_left_press();
+			get_scene()->execute_event("page_left_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_PAGE_RIGHT)) {
-			event_page_right_press();
+			get_scene()->execute_event("page_right_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_FRAME_PAUSE)) {
-			event_frame_pause_press();
+			get_scene()->execute_event("frame_pause_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_FRAME_ADVANCE)) {
-			event_frame_advance_press();
+			get_scene()->execute_event("frame_advance_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_RECORD_INPUT)) {
-			event_record_input_press();
+			get_scene()->execute_event("record_input_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_REPLAY_INPUT)) {
-			event_replay_input_press();
+			get_scene()->execute_event("replay_input_press");
 		}
 		if (player[i]->controller.check_button_trigger(BUTTON_MENU_SWITCH_INPUT)) {
-			event_switch_input_press();
+			get_scene()->execute_event("switch_input_press");
 		}
 		if (is_any_menu_input(i)) {
-			event_any_press();
+			get_scene()->execute_event("button_press");
 		}
 	}
 	if (is_crash()) {
-		update_state(GAME_STATE_DEBUG_MENU);
+		update_scene(SCENE_DEBUG_MENU);
 	}
 }
 
-void GameManager::render_game_states() {
-	for (size_t i = 0, max = game_state.size(); i < max; i++) {
-		game_state[i]->render_main();
-		for (std::list<UIMessage>::iterator it = game_state[i]->messages_active.begin(),
-			max = game_state[i]->messages_active.end();
-			it != max; it++) {
-			it->render();
-		}
-		for (std::list<UIMessage>::iterator it = game_state[i]->messages_fading.begin(),
-			max = game_state[i]->messages_fading.end();
-			it != max; it++) {
-			it->render();
-		}
+void GameManager::render() {
+	for (size_t i = 0, max = scenes.size(); i < max; i++) {
+		scenes[i]->render_main();
 	}
 	fps_counter.render();
 }
@@ -241,69 +231,9 @@ bool GameManager::is_any_menu_input(int id) {
 	return false;
 }
 
-void GameManager::event_up_press() {
-	(get_game_state()->*(&GameState::event_up_press))();
-}
-
-void GameManager::event_down_press() {
-	(get_game_state()->*(&GameState::event_down_press))();
-}
-
-void GameManager::event_left_press() {
-	(get_game_state()->*(&GameState::event_left_press))();
-}
-
-void GameManager::event_right_press() {
-	(get_game_state()->*(&GameState::event_right_press))();
-}
-
-void GameManager::event_start_press() {
-	(get_game_state()->*(&GameState::event_start_press))();
-}
-
-void GameManager::event_select_press() {
-	(get_game_state()->*(&GameState::event_select_press))();
-}
-
-void GameManager::event_back_press() {
-	(get_game_state()->*(&GameState::event_back_press))();
-}
-
-void GameManager::event_page_left_press() {
-	(get_game_state()->*(&GameState::event_page_left_press))();
-}
-
-void GameManager::event_page_right_press() {
-	(get_game_state()->*(&GameState::event_page_right_press))();
-}
-
-void GameManager::event_frame_pause_press() {
-	(get_game_state()->*(&GameState::event_frame_pause_press))();
-}
-
-void GameManager::event_frame_advance_press() {
-	(get_game_state()->*(&GameState::event_frame_advance_press))();
-}
-
-void GameManager::event_record_input_press() {
-	(get_game_state()->*(&GameState::event_record_input_press))();
-}
-
-void GameManager::event_replay_input_press() {
-	(get_game_state()->*(&GameState::event_replay_input_press))();
-}
-
-void GameManager::event_switch_input_press() {
-	(get_game_state()->*(&GameState::event_switch_input_press))();
-}
-
-void GameManager::event_any_press() {
-	(get_game_state()->*(&GameState::event_any_press))();
-}
-
 void GameManager::add_crash_log(std::string crash_reason) {
 	crash_log.push(crash_reason);
-	update_state(GAME_STATE_DEBUG_MENU);
+	update_scene(SCENE_DEBUG_MENU);
 }
 
 bool GameManager::get_crash_log(std::string* ret) {

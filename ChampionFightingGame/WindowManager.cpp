@@ -421,7 +421,7 @@ void window_resize_callback(GLFWwindow* window, int width, int height) {
 }
 
 void window_close_callback(GLFWwindow* window) {
-	GameManager::get_instance()->update_state(GAME_STATE_CLOSE);
+	GameManager::get_instance()->update_scene(SCENE_CLOSE);
 }
 
 void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {

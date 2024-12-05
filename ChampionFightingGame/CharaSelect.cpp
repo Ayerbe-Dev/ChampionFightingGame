@@ -700,8 +700,17 @@ bool CSS::load_css() {
 					{"Chara Render", ScreenTexture("resource/scene/chara_select/chara/" + resource_name + "/render.png")
 						.set_scale(0.5f)
 						.set_orientation(TEXTURE_BOTTOM_LEFT)
-					}
-					})
+						.set_pos(glm::vec3(
+							my_col * 164.0f - 3000,
+							2500 - (float)my_row * 239.0f,
+							0
+						))
+						.set_pos(glm::vec3(
+							my_col * 164.0f + 1092,
+							490 - (float)my_row * 239.0f,
+							0
+						), my_col * 5 + my_row * 2 + 8)
+					}})
 					.push_int_var("chara_kind", param_table.get_param_int("chara_kind"))
 					.push_string_var("resource_name", resource_name)
 					.push_int_var("num_costumes", num_costumes)
@@ -779,19 +788,6 @@ bool CSS::load_css() {
 						slot.push_int_var("right_neighbor", i + 1);
 					}
 				}
-
-				//(The texture references its own width and height so we have to do this)
-				ScreenTexture& tex = slot.get_screen_texture("Chara Render");
-				tex.set_pos(glm::vec3(
-					my_col * (tex.get_width() * 2 + 2) - 3000,
-					2500 - (float)my_row * (tex.get_height() * 2 + 3),
-					0
-				))
-				.set_pos(glm::vec3(
-					my_col * (tex.get_width() * 2 + 2) + 1092,
-					490 - (float)my_row * (tex.get_height() * 2 + 3),
-					0
-				), my_col * 5 + my_row * 2 + 8);
 			})}
 		})
 		.push_int_var("num_slots", num_slots)

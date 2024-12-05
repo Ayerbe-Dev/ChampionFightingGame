@@ -36,20 +36,29 @@ public:
 
 	SceneElement& get_child(std::string name);
 	SceneElement& get_child(std::size_t idx);
+	SceneElement& get_sibling(std::string name);
+	SceneElement& get_sibling(std::size_t idx);
+	SceneElement& get_sibling_bounded(std::size_t idx);
 	SceneElement& get_prev_sibling();
 	SceneElement& get_prev_sibling_bounded();
 	SceneElement& get_next_sibling();
 	SceneElement& get_next_sibling_bounded();
 	SceneElement& get_parent();
 
+	std::size_t get_num_children() const;
+
 	ScreenTexture& get_screen_texture(std::string name);
 	ScreenTexture& get_screen_texture(std::size_t idx);
+	std::size_t get_num_screen_textures() const;
 	ScreenText& get_screen_text(std::string name);
 	ScreenText& get_screen_text(std::size_t idx);
+	std::size_t get_num_screen_texts() const;
 	WorldTexture& get_world_texture(std::string name);
 	WorldTexture& get_world_texture(std::size_t idx);
+	std::size_t get_num_world_textures() const;
 	WorldText& get_world_text(std::string name);
 	WorldText& get_world_text(std::size_t idx);
+	std::size_t get_num_world_texts() const;
 
 	SceneElement& set_orientation(int orientation);
 	int get_orientation() const;
@@ -124,4 +133,15 @@ private:
 	TargetVar<glm::vec3> rot;
 	TargetVar<glm::vec3> scale;
 	bool visible;
+};
+
+struct SceneElementLoop {
+	SceneElementLoop();
+	SceneElementLoop(int n, std::function<void(SceneElement*, int)> f);
+	SceneElementLoop(const SceneElementLoop& other);
+	SceneElementLoop& operator=(const SceneElementLoop& other);
+	~SceneElementLoop();
+
+	int n;
+	std::function<void(SceneElement*, int)> f;
 };

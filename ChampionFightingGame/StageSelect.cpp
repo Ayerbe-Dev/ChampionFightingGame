@@ -221,12 +221,12 @@ bool StageSelect::load_stage_select() {
 	});
 	load_event("stage_slot_up_press", [this, num_slots_per_row](SceneElement* element) {
 		if (!selected) {
-			set_active_element(&element->get_parent().get_child(element->int_var("idx") - num_slots_per_row));
+			set_active_element(&element->get_sibling(element->int_var("idx") - num_slots_per_row));
 		}
 	});
 	load_event("stage_slot_down_press", [this, num_slots_per_row](SceneElement* element) {
 		if (!selected) {
-			set_active_element(&element->get_parent().get_child(element->int_var("idx") + num_slots_per_row));
+			set_active_element(&element->get_sibling(element->int_var("idx") + num_slots_per_row));
 		}
 	});
 	load_event("stage_slot_left_press", [this](SceneElement* element) {

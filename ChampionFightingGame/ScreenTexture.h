@@ -48,6 +48,7 @@ public:
 	ScreenTexture&& set_pos(glm::vec3 pos, int frames);
 	ScreenTexture&& add_pos(glm::vec3 pos);
 	glm::vec3 get_pos() const;
+	TargetVar<glm::vec3> get_pos_target() const;
 
 	ScreenTexture&& set_rot(glm::vec3 rot);
 	ScreenTexture&& set_rot(glm::vec3 rot, int frames);

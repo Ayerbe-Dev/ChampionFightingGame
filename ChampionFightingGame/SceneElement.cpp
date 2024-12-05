@@ -1,6 +1,7 @@
 #include "SceneElement.h"
 #include "GameManager.h"
 #include "WindowConstants.h"
+#include "utils.h"
 
 SceneElement::SceneElement() {
 	this->name = "root";
@@ -49,6 +50,12 @@ SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> element
 			world_texts.back().set_anchor(&this->anchor);
 			render_indices.push_back(ELEM_TYPE_WRLD_TXT);
 			continue;
+		}
+		if (elements[i].second.type() == typeid(SceneElementLoop)) {
+			SceneElementLoop loop = std::any_cast<SceneElementLoop>(elements[i].second);
+			for (int i = 0; i < loop.n; i++) {
+				loop.f(this, i);
+			}
 		}
 		std::cout << "Child " << elements[i].first << " of element " << name << " has invalid type << " << elements[i].second.type().name() << "\n";
 	}
@@ -437,6 +444,30 @@ SceneElement& SceneElement::get_child(std::size_t idx) {
 	return children[idx];
 }
 
+SceneElement& SceneElement::get_sibling(std::string name) {
+	if (parent) {
+		return parent->get_child(name);
+	}
+	GameManager::get_instance()->add_crash_log("Called get_sibling() as root element");
+	return *this;
+}
+
+SceneElement& SceneElement::get_sibling(std::size_t idx) {
+	if (parent) {
+		return parent->children[(parent->child_map[name] - 1) % parent->children.size()-1];
+	}
+	GameManager::get_instance()->add_crash_log("Called get_sibling() as root element");
+	return *this;
+}
+
+SceneElement& SceneElement::get_sibling_bounded(std::size_t idx) {
+	if (parent) {
+		return parent->children[clamp(0, (parent->child_map[name] - 1), parent->children.size() - 1)];
+	}
+	GameManager::get_instance()->add_crash_log("Called get_sibling() as root element");
+	return *this;
+}
+
 SceneElement& SceneElement::get_prev_sibling() {
 	if (parent) {
 		return parent->children[(parent->child_map[name] - 1) % parent->children.size()];
@@ -477,6 +508,10 @@ SceneElement& SceneElement::get_parent() {
 	return *this;
 }
 
+std::size_t SceneElement::get_num_children() const {
+	return children.size();
+}
+
 ScreenTexture& SceneElement::get_screen_texture(std::string name) {
 	std::size_t rec = name.find("/");
 	if (rec != name.npos) {
@@ -487,6 +522,10 @@ ScreenTexture& SceneElement::get_screen_texture(std::string name) {
 
 ScreenTexture& SceneElement::get_screen_texture(std::size_t idx) {
 	return screen_textures[idx];
+}
+
+std::size_t SceneElement::get_num_screen_textures() const {
+	return screen_textures.size();
 }
 
 ScreenText& SceneElement::get_screen_text(std::string name) {
@@ -501,6 +540,10 @@ ScreenText& SceneElement::get_screen_text(std::size_t idx) {
 	return screen_texts[idx];
 }
 
+std::size_t SceneElement::get_num_screen_texts() const {
+	return screen_texts.size();
+}
+
 WorldTexture& SceneElement::get_world_texture(std::string name) {
 	std::size_t rec = name.find("/");
 	if (rec != name.npos) {
@@ -513,6 +556,10 @@ WorldTexture& SceneElement::get_world_texture(std::size_t idx) {
 	return world_textures[idx];
 }
 
+std::size_t SceneElement::get_num_world_textures() const {
+	return world_textures.size();
+}
+
 WorldText& SceneElement::get_world_text(std::string name) {
 	std::size_t rec = name.find("/");
 	if (rec != name.npos) {
@@ -523,6 +570,10 @@ WorldText& SceneElement::get_world_text(std::string name) {
 
 WorldText& SceneElement::get_world_text(std::size_t idx) {
 	return world_texts[idx];
+}
+
+std::size_t SceneElement::get_num_world_texts() const {
+	return world_texts.size();
 }
 
 SceneElement& SceneElement::set_orientation(int orientation) {
@@ -726,4 +777,30 @@ void SceneElement::render() {
 		}
 		idx[render_indices[i]]++;
 	}
+}
+
+SceneElementLoop::SceneElementLoop() {
+	this->n = 0;
+}
+
+SceneElementLoop::SceneElementLoop(int n, std::function<void(SceneElement*, int)> f) {
+	this->n = n;
+	this->f = f;
+}
+
+SceneElementLoop::SceneElementLoop(const SceneElementLoop& other) {
+	this->n = other.n;
+	this->f = other.f;
+}
+
+SceneElementLoop& SceneElementLoop::operator=(const SceneElementLoop& other) {
+	if (this != &other) {
+		this->n = other.n;
+		this->f = other.f;
+	}
+	return *this;
+}
+
+SceneElementLoop::~SceneElementLoop() {
+
 }

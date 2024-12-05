@@ -608,6 +608,10 @@ glm::vec3 ScreenTexture::get_pos() const {
 	return pos.get_val();
 }
 
+TargetVar<glm::vec3> ScreenTexture::get_pos_target() const {
+	return pos;
+}
+
 ScreenTexture&& ScreenTexture::set_rot(glm::vec3 rot) {
 	this->rot = rot;
 	return std::move(*this);

@@ -420,6 +420,10 @@ glm::vec3 ScreenText::get_pos() const {
 	return pos.get_val();
 }
 
+TargetVar<glm::vec3> ScreenText::get_pos_target() const {
+	return pos;
+}
+
 ScreenText&& ScreenText::set_rot(glm::vec3 rot) {
 	this->rot = rot;
 	return std::move(*this);

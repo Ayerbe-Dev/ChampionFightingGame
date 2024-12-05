@@ -515,8 +515,7 @@ CSS::CSS() {
 					})
 					.add_event("start_press", [this](SceneElement* e) {
 						player_id = (bool)!player_id;
-						bool other_player_ready = (&get_active_element() == &root.get_child("P" + std::to_string(player_id + 1) + " Cursor/Ready"));
-						if (other_player_ready) {
+						if (&get_active_element() == &root.get_child("P" + std::to_string(player_id + 1) + " Cursor/Ready")) {
 							execute_event("confirm_chara");
 							player_id = (bool)!player_id;
 							execute_event("confirm_chara");

@@ -339,8 +339,8 @@ void StageSelect::add_stage_slot(ParamTable param_table, int num_slots, int num_
 			{"name_text", ScreenText(&get_font("main_text"), stage_name, TextSpecifier().border(2))},
 		})
 		.set_pos(slot_pos)
-		.push_ptr_var("stage_demo", &stages[index])
-		.push_int_var("idx", index)
+		.ptr_var("stage_demo", &stages[index])
+		.int_var("idx", index)
 		.add_event("activate", get_event("stage_slot_activate"))
 		.add_event("deactivate", get_event("stage_slot_deactivate"))
 		.add_event("select_press", get_event("stage_slot_select_press"))

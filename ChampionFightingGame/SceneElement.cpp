@@ -642,6 +642,12 @@ glm::vec3 SceneElement::get_scale() const {
 	return scale;
 }
 
+SceneElement& SceneElement::set_anchor_dimensions(int w, int h) {
+	this->anchor.w = w;
+	this->anchor.h = h;
+	return *this;
+}
+
 SceneElement& SceneElement::show() {
 	this->visible = true;
 }
@@ -650,27 +656,27 @@ SceneElement& SceneElement::hide() {
 	this->visible = false;
 }
 
-SceneElement& SceneElement::push_int_var(std::string name, int val) {
+SceneElement& SceneElement::int_var(std::string name, int val) {
 	int_vars[name] = val;
 	return *this;
 }
 
-SceneElement& SceneElement::push_float_var(std::string name, float val) {
+SceneElement& SceneElement::float_var(std::string name, float val) {
 	float_vars[name] = val;
 	return *this;
 }
 
-SceneElement& SceneElement::push_bool_var(std::string name, bool val) {
+SceneElement& SceneElement::bool_var(std::string name, bool val) {
 	bool_vars[name] = val;
 	return *this;
 }
 
-SceneElement& SceneElement::push_string_var(std::string name, std::string val) {
+SceneElement& SceneElement::string_var(std::string name, std::string val) {
 	string_vars[name] = val;
 	return *this;
 }
 
-SceneElement& SceneElement::push_ptr_var(std::string name, void* val) {
+SceneElement& SceneElement::ptr_var(std::string name, void* val) {
 	ptr_vars[name] = val;
 	return *this;
 }
@@ -756,6 +762,7 @@ void SceneElement::render() {
 	anchor.world_mat = glm::rotate(anchor.world_mat, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
 	anchor.world_mat = glm::scale(anchor.world_mat, scale.get_val());
 
+	execute_event("on_render");
 	std::size_t idx[5] = {0, 0, 0, 0, 0};
 	for (size_t i = 0; i < render_indices.size(); i++) {
 		switch (render_indices[i]) {

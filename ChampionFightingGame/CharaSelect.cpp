@@ -589,12 +589,12 @@ CSS::CSS() {
 					.set_pos(root.get_screen_texture("Chara Slots/chara_slot_rowan/Chara Render").get_pos_target().get_target_val(), 16)
 				}
 			})
-			.push_int_var("name_entry_idx", -1)
-			.push_int_var("prev_name_entry_idx", -1)
-			.push_int_var("selected_slot", 0)
-			.push_int_var("selected_costume", 0)
-			.push_int_var("prev_selected_slot", 0)
-			.push_bool_var("last_input_right", true)
+			.int_var("name_entry_idx", -1)
+			.int_var("prev_name_entry_idx", -1)
+			.int_var("selected_slot", 0)
+			.int_var("selected_costume", 0)
+			.int_var("prev_selected_slot", 0)
+			.bool_var("last_input_right", true)
 		);
 		if (player[i]->player_info != save_manager->get_player_info(-1)) {
 			root.get_child("Player Cursors/P" + std::to_string(i + 1) + " Cursor").int_var("name_entry_idx")
@@ -710,86 +710,86 @@ bool CSS::load_css() {
 							0
 						), my_col * 5 + my_row * 2 + 8)
 					}})
-					.push_int_var("chara_kind", param_table.get_param_int("chara_kind"))
-					.push_string_var("resource_name", resource_name)
-					.push_int_var("num_costumes", num_costumes)
-					.push_bool_var("selectable", 
+					.int_var("chara_kind", param_table.get_param_int("chara_kind"))
+					.string_var("resource_name", resource_name)
+					.int_var("num_costumes", num_costumes)
+					.bool_var("selectable", 
 						param_table.get_param_bool("selectable")
 					//	|| save_manager->is_chara_unlocked() <-- TODO: Make this a real function lol
 					)
 				);
 				SceneElement& slot = e->get_child("chara_slot_" + resource_name);
 				if (my_row == 0) {
-					slot.push_int_var("up_left_neighbor", -1);
-					slot.push_int_var("up_right_neighbor", -1);
+					slot.int_var("up_left_neighbor", -1);
+					slot.int_var("up_right_neighbor", -1);
 				}
 				else {
 					if (diagonal_neighbors) {
-						slot.push_int_var("up_left_neighbor", i - r_offset - 1);
-						slot.push_int_var("up_right_neighbor", i - r_offset);
+						slot.int_var("up_left_neighbor", i - r_offset - 1);
+						slot.int_var("up_right_neighbor", i - r_offset);
 					}
 					else {
-						slot.push_int_var("up_left_neighbor", i - r_offset);
-						slot.push_int_var("up_right_neighbor", i - r_offset);
+						slot.int_var("up_left_neighbor", i - r_offset);
+						slot.int_var("up_right_neighbor", i - r_offset);
 					}
 				}
 				if (my_row == num_rows - 1) {
-					slot.push_int_var("down_left_neighbor", -1);
-					slot.push_int_var("down_right_neighbor", -1);
+					slot.int_var("down_left_neighbor", -1);
+					slot.int_var("down_right_neighbor", -1);
 					if ((int)my_col == l_offset) {
-						slot.push_int_var("left_neighbor", -1);
-						slot.push_int_var("right_neighbor", i + 1);
+						slot.int_var("left_neighbor", -1);
+						slot.int_var("right_neighbor", i + 1);
 					}
 					else if ((int)my_col == num_cols_bottom_row) {
-						slot.push_int_var("left_neighbor", i - 1);
-						slot.push_int_var("right_neighbor", -1);
+						slot.int_var("left_neighbor", i - 1);
+						slot.int_var("right_neighbor", -1);
 					}
 					else {
-						slot.push_int_var("left_neighbor", i - 1);
-						slot.push_int_var("right_neighbor", i + 1);
+						slot.int_var("left_neighbor", i - 1);
+						slot.int_var("right_neighbor", i + 1);
 					}
 				}
 				else {
 					if (my_row == num_rows - 2) {
 						if (my_col <= l_offset) {
-							slot.push_int_var("down_left_neighbor", (my_row + 1) * 10);
-							slot.push_int_var("down_right_neighbor", (my_row + 1) * 10);
+							slot.int_var("down_left_neighbor", (my_row + 1) * 10);
+							slot.int_var("down_right_neighbor", (my_row + 1) * 10);
 						}
 						else if (my_col >= r_offset) {
-							slot.push_int_var("down_left_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
-							slot.push_int_var("down_right_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
+							slot.int_var("down_left_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
+							slot.int_var("down_right_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
 						}
 						else {
 							if (diagonal_neighbors) {
-								slot.push_int_var("down_left_neighbor", i + r_offset);
-								slot.push_int_var("down_right_neighbor", i + r_offset + 1);
+								slot.int_var("down_left_neighbor", i + r_offset);
+								slot.int_var("down_right_neighbor", i + r_offset + 1);
 							}
 							else {
-								slot.push_int_var("down_left_neighbor", i + r_offset);
-								slot.push_int_var("down_right_neighbor", i + r_offset);
+								slot.int_var("down_left_neighbor", i + r_offset);
+								slot.int_var("down_right_neighbor", i + r_offset);
 							}
 						}
 					}
 					else {
-						slot.push_int_var("down_left_neighbor", i + num_cols);
-						slot.push_int_var("down_right_neighbor", i + num_cols);
+						slot.int_var("down_left_neighbor", i + num_cols);
+						slot.int_var("down_right_neighbor", i + num_cols);
 					}
 					if ((int)my_col == 0) {
-						slot.push_int_var("left_neighbor", -1);
-						slot.push_int_var("right_neighbor", i + 1);
+						slot.int_var("left_neighbor", -1);
+						slot.int_var("right_neighbor", i + 1);
 					}
 					else if ((int)my_col == num_cols - 1) {
-						slot.push_int_var("left_neighbor", i - 1);
-						slot.push_int_var("right_neighbor", -1);
+						slot.int_var("left_neighbor", i - 1);
+						slot.int_var("right_neighbor", -1);
 					}
 					else {
-						slot.push_int_var("left_neighbor", i - 1);
-						slot.push_int_var("right_neighbor", i + 1);
+						slot.int_var("left_neighbor", i - 1);
+						slot.int_var("right_neighbor", i + 1);
 					}
 				}
 			})}
 		})
-		.push_int_var("num_slots", num_slots)
+		.int_var("num_slots", num_slots)
 	);
 	
 	return true;

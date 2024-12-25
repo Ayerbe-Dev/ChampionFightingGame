@@ -40,6 +40,11 @@ public:
 	SceneElement& get_active_element();
 	void set_active_element(SceneElement* element);
 	void set_player_active_element(SceneElement* element);
+	SceneElement& get_element(std::string name);
+	ScreenTexture& get_screen_texture(std::string name);
+	ScreenText& get_screen_text(std::string name);
+	WorldTexture& get_world_texture(std::string name);
+	WorldText& get_world_text(std::string name);
 
 	void update_scene(unsigned int scene, unsigned int context);
 	void execute_event(std::string event_name);

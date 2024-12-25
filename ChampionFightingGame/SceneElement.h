@@ -78,14 +78,16 @@ public:
 	SceneElement& add_scale(glm::vec3 scale);
 	glm::vec3 get_scale() const;
 
+	SceneElement& set_anchor_dimensions(int w, int h);
+
 	SceneElement& show();
 	SceneElement& hide();
 
-	SceneElement& push_int_var(std::string name, int val);
-	SceneElement& push_float_var(std::string name, float val);
-	SceneElement& push_bool_var(std::string name, bool val);
-	SceneElement& push_string_var(std::string name, std::string val);
-	SceneElement& push_ptr_var(std::string name, void* val);
+	SceneElement& int_var(std::string name, int val);
+	SceneElement& float_var(std::string name, float val);
+	SceneElement& bool_var(std::string name, bool val);
+	SceneElement& string_var(std::string name, std::string val);
+	SceneElement& ptr_var(std::string name, void* val);
 	int& int_var(std::string name);
 	float& float_var(std::string name);
 	bool& bool_var(std::string name);

@@ -62,6 +62,41 @@ void Scene::set_player_active_element(SceneElement* element) {
 	active_element[player_id]->execute_event("activate");
 }
 
+SceneElement& Scene::get_element(std::string name) {
+	if (name.starts_with("root/")) {
+		name = name.substr(5, name.npos);
+	}
+	return root.get_child(name);
+}
+
+ScreenTexture& Scene::get_screen_texture(std::string name) {
+	if (name.starts_with("root/")) {
+		name = name.substr(5, name.npos);
+	}
+	return root.get_screen_texture(name);
+}
+
+ScreenText& Scene::get_screen_text(std::string name) {
+	if (name.starts_with("root/")) {
+		name = name.substr(5, name.npos);
+	}
+	return root.get_screen_text(name);
+}
+
+WorldTexture& Scene::get_world_texture(std::string name) {
+	if (name.starts_with("root/")) {
+		name = name.substr(5, name.npos);
+	}
+	return root.get_world_texture(name);
+}
+
+WorldText& Scene::get_world_text(std::string name) {
+	if (name.starts_with("root/")) {
+		name = name.substr(5, name.npos);
+	}
+	return root.get_world_text(name);
+}
+
 void Scene::update_scene(unsigned int scene, unsigned int context) {
 	GameManager::get_instance()->update_scene(scene, context);
 }

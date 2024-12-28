@@ -17,8 +17,6 @@ public:
 
     void process_main();
     void render_main();
-
-    int sub_scene;
 private:
     //Menu Wheel Variables
     float offset;

@@ -53,7 +53,7 @@ public:
 	Font& get_font(std::string name);
 
 	void load_event(std::string name, std::function<void(SceneElement*)> fn);
-	std::function<void(SceneElement*)> get_event(std::string name);
+	std::function<void(SceneElement*)> get_event(std::string name, bool allow_unloaded = false);
 
 	Player* player[2];
 	Mouse mouse;
@@ -65,6 +65,8 @@ public:
 
 	std::map<std::string, Font> font_map;
 	std::map<std::string, std::function<void (SceneElement*)>> event_map;
+
+	int sub_scene;
 private:
 	SceneElement* active_element[2];
 };

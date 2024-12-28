@@ -29,6 +29,7 @@ public:
 	SceneElement& operator=(SceneElement&& other) noexcept;
 	~SceneElement();
 
+	int get_id() const;
 	std::string get_name() const;
 
 	SceneElement& add_element(std::string name, std::any element);
@@ -82,6 +83,7 @@ public:
 
 	SceneElement& show();
 	SceneElement& hide();
+	bool is_visible() const;
 
 	SceneElement& int_var(std::string name, int val);
 	SceneElement& float_var(std::string name, float val);

@@ -8,6 +8,7 @@ Scene::Scene() {
 	active_element[1] = &root;
 	context = 0;
 	player_id = 0;
+	sub_scene = SCENE_NONE;
 	GameManager* game_manager = GameManager::get_instance();
 	for (int i = 0; i < 2; i++) {
 		player[i] = game_manager->player[i];
@@ -128,8 +129,8 @@ void Scene::load_event(std::string name, std::function<void(SceneElement*)> fn) 
 	event_map[name] = fn;
 }
 
-std::function<void(SceneElement*)> Scene::get_event(std::string name) {
-	if (!event_map.contains(name)) {
+std::function<void(SceneElement*)> Scene::get_event(std::string name, bool allow_unloaded) {
+	if (!allow_unloaded && !event_map.contains(name)) {
 		GameManager::get_instance()->add_crash_log("Event " + name + " not loaded");
 	}
 	return event_map[name];

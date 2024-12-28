@@ -344,6 +344,13 @@ SceneElement::~SceneElement() {
 
 }
 
+int SceneElement::get_id() const {
+	if (parent) {
+		return parent->child_map[name];
+	}
+	return -1;
+}
+
 std::string SceneElement::get_name() const {
 	return this->name;
 }
@@ -654,6 +661,10 @@ SceneElement& SceneElement::show() {
 
 SceneElement& SceneElement::hide() {
 	this->visible = false;
+}
+
+bool SceneElement::is_visible() const {
+	return this->visible;
 }
 
 SceneElement& SceneElement::int_var(std::string name, int val) {

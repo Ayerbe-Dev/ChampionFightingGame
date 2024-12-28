@@ -49,7 +49,6 @@ void main_menu_main() {
 }
 
 MainMenu::MainMenu() {
-	sub_scene = SCENE_NONE;
 	offset = 3.14 / 11;
 	magnitude = WINDOW_WIDTH / 1.125;
 	menu_frame = 0;

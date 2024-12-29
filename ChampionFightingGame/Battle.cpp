@@ -14,6 +14,7 @@
 #include "Projectiles.h"
 #include "Stage.h"
 
+#include "GameManager.h"
 #include "EffectManager.h"
 #include "FontManager.h"
 #include "ObjectManager.h"
@@ -51,8 +52,8 @@ void battle_main() {
 		game_manager->frame_delay_check_fps();
 		window_manager->clear_screen();
 
-		battle->process_game_state();
-		battle->render_game_state();
+		battle->process();
+		battle->render();
 
 #ifdef DEBUG
 		cotr_imgui_debug_battle(battle);
@@ -93,39 +94,46 @@ Battle::Battle() {
 		}
 	}
 
-	switch (game_context) {
-		case (SCENE_CONTEXT_NONE): {
-			internal_state = BATTLE_STATE_PRE_INTRO;
+	switch (context) {
+		case SCENE_CONTEXT_NONE:
+		case SCENE_CONTEXT_SPECIAL: {
 			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
-		case (SCENE_CONTEXT_TRAINING): {
-			internal_state = BATTLE_STATE_BATTLE;
+		case SCENE_CONTEXT_TRAINING: {
 			timer_setting = TIMER_SETTING_TRAINING;
 			player[1]->player_kind = PLAYER_KIND_DUMMY;
 		} break;
-		case (SCENE_CONTEXT_ARCADE): {
-			internal_state = BATTLE_STATE_INTRO;
+		case SCENE_CONTEXT_ARCADE: {
 			timer_setting = TIMER_SETTING_NORMAL;
 			player[1]->player_kind = PLAYER_KIND_CPU;
 		} break;
-		case (SCENE_CONTEXT_STORY): {
-			internal_state = BATTLE_STATE_BATTLE;
+		case SCENE_CONTEXT_STORY: {
 			timer_setting = TIMER_SETTING_NONE;
 			player[1]->player_kind = PLAYER_KIND_CPU;
 		} break;
-		case (SCENE_CONTEXT_ONLINE): {
-			internal_state = BATTLE_STATE_PRE_INTRO;
+		case SCENE_CONTEXT_ONLINE: {
 			timer_setting = TIMER_SETTING_NORMAL;
 			player[1]->player_kind = PLAYER_KIND_PLAYER;
-		} break;
-		case (SCENE_FLAG_SPECIAL): {
-			internal_state = BATTLE_STATE_PRE_INTRO;
-			timer_setting = TIMER_SETTING_NORMAL;
 		} break;
 	}
 
 	load_world();
 	load_ui();
+
+	switch (context) {
+		case SCENE_CONTEXT_NONE:
+		case SCENE_CONTEXT_ONLINE:
+		case SCENE_CONTEXT_SPECIAL: {
+			//Pre-Intro
+		} break;
+		case SCENE_CONTEXT_TRAINING:
+		case SCENE_CONTEXT_STORY: {
+			//Battle
+		} break;
+		case SCENE_CONTEXT_ARCADE: {
+			//Intro
+		} break;
+	}
 
 	active_hitbox_object = fighter[0];
 	active_hitbox_object_index = 0;

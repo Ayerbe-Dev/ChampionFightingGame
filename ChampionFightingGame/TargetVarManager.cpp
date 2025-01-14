@@ -19,9 +19,7 @@ void TargetVarManager::register_target_var(BaseTargetVar* var) {
 }
 
 void TargetVarManager::unregister_target_var(BaseTargetVar* var) {
-	if (std::find(targets.begin(), targets.end(), var) != targets.end()) {
-		targets.remove(var);
-	}
+	targets.remove(var);
 }
 
 TargetVarManager* TargetVarManager::instance = nullptr;

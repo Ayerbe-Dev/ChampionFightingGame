@@ -226,7 +226,10 @@ bool StageSelect::load_stage_select() {
 	});
 	load_event("stage_slot_down_press", [this, num_slots_per_row](SceneElement* element) {
 		if (!selected) {
+			std::cout << element->int_var("idx") << ", " <<  element->int_var("idx") + num_slots_per_row << "\n";
+			std::cout << element->get_name() << ", " << element->get_sibling(element->int_var("idx") + num_slots_per_row).get_name() << "\n\n";
 			set_active_element(&element->get_sibling(element->int_var("idx") + num_slots_per_row));
+
 		}
 	});
 	load_event("stage_slot_left_press", [this](SceneElement* element) {
@@ -239,7 +242,7 @@ bool StageSelect::load_stage_select() {
 			set_active_element(&element->get_next_sibling());
 		}
 	});
-	load_event("select_press", [this](SceneElement* element) {
+	load_event("stage_slot_select_press", [this](SceneElement* element) {
 		WindowManager* window_manager = WindowManager::get_instance();
 		if (!selected) {
 			WindowManager* window_manager = WindowManager::get_instance();
@@ -250,7 +253,7 @@ bool StageSelect::load_stage_select() {
 			update_scene(SCENE_CHARA_SELECT, SCENE_CONTEXT_NONE);
 		}
 	});
-	load_event("back_press", [this](SceneElement* element) {
+	load_event("stage_slot_back_press", [this](SceneElement* element) {
 		WindowManager* window_manager = WindowManager::get_instance();
 		if (!selected) {
 			update_scene(SCENE_MAIN_MENU, SCENE_CONTEXT_NONE);

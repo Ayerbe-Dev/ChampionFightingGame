@@ -116,5 +116,6 @@ private:
 	TargetVar<float> width_scale;
 	TargetVar<float> height_scale;
 	TextSpecifier spec;
+	int buffer_updates;
 	bool loaded;
 };

@@ -35,10 +35,10 @@ TitleScreen::TitleScreen() {
 	GameManager* game_manager = GameManager::get_instance();
 	load_font("Title Font", "Fiend-Oblique", 64);
 	root.add_elements({
-		{"TitleL1", ScreenTexture("resource/scene/title/ui/title-l1.png")},
-		{"TitleL2", ScreenTexture("resource/scene/title/ui/title-l2.png")},
-		{"TitleL3", ScreenTexture("resource/scene/title/ui/title-l3.png")},
-		{"TitleL4", ScreenTexture("resource/scene/title/ui/title-l4.png")},
+		{"TitleL1", ScreenTexture("resource/scene/title/ui/title-l4.png")},
+		{"TitleL2", ScreenTexture("resource/scene/title/ui/title-l3.png")},
+		{"TitleL3", ScreenTexture("resource/scene/title/ui/title-l2.png")},
+		{"TitleL4", ScreenTexture("resource/scene/title/ui/title-l1.png")},
 		{"Title", ScreenText(&get_font("Title Font"), "Champions of the Ring", TextSpecifier().border(4))}
 	}).add_event("button_press", [this](SceneElement* elem) {
 		update_scene(SCENE_MAIN_MENU, SCENE_CONTEXT_NONE);

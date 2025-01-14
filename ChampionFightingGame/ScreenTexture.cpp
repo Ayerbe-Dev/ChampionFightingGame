@@ -31,6 +31,7 @@ ScreenTexture::ScreenTexture() {
 	this->h_flipped = false;
 	this->v_flipped = false;
 	this->sprite = 0;
+	this->buffer_updates = 0;
 	this->loaded = false;
 }
 
@@ -92,14 +93,15 @@ ScreenTexture::ScreenTexture(ScreenTexture& other) {
 	this->colormod = other.colormod;
 	this->h_flipped = other.h_flipped;
 	this->v_flipped = other.v_flipped;
+	this->buffer_updates = other.buffer_updates;
 	this->sprite = other.sprite;
-	if (ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
+	if (!texture.empty() && ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
 		this->loaded = other.loaded;
 		other.loaded = false;
 	}
 	else {
 		this->loaded = false;
-}
+	}
 }
 
 ScreenTexture::ScreenTexture(const ScreenTexture& other) {
@@ -143,8 +145,11 @@ ScreenTexture::ScreenTexture(const ScreenTexture& other) {
 	this->h_flipped = other.h_flipped;
 	this->v_flipped = other.v_flipped;
 	this->sprite = other.sprite;
+	this->buffer_updates = other.buffer_updates;
 	this->loaded = other.loaded;
-	ResourceManager::get_instance()->store_const_copy_addr(texture[0], (ScreenTexture*)&other);
+	if (!texture.empty()) {
+		ResourceManager::get_instance()->store_const_copy_addr(texture[0], (ScreenTexture*)&other);
+	}
 }
 
 ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
@@ -188,6 +193,7 @@ ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
 	this->h_flipped = other.h_flipped;
 	this->v_flipped = other.v_flipped;
 	this->sprite = other.sprite;
+	this->buffer_updates = other.buffer_updates;
 	this->loaded = other.loaded;
 	other.loaded = false;
 }
@@ -234,7 +240,8 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
 		this->h_flipped = other.h_flipped;
 		this->v_flipped = other.v_flipped;
 		this->sprite = other.sprite;
-		if (ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
+		this->buffer_updates = other.buffer_updates;
+		if (!texture.empty() && ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
 			this->loaded = other.loaded;
 			other.loaded = false;
 		}
@@ -287,8 +294,11 @@ ScreenTexture& ScreenTexture::operator=(const ScreenTexture& other) {
 		this->h_flipped = other.h_flipped;
 		this->v_flipped = other.v_flipped;
 		this->sprite = other.sprite;
+		this->buffer_updates = other.buffer_updates;
 		this->loaded = other.loaded;
-		ResourceManager::get_instance()->store_const_copy_addr(texture[0], (ScreenTexture*)&other);
+		if (!texture.empty()) {
+			ResourceManager::get_instance()->store_const_copy_addr(texture[0], (ScreenTexture*)&other);
+		}
 	}
 	return *this;
 }
@@ -335,6 +345,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
 		this->h_flipped = other.h_flipped;
 		this->v_flipped = other.v_flipped;
 		this->sprite = other.sprite;
+		this->buffer_updates = other.buffer_updates;
 		this->loaded = other.loaded;
 		other.loaded = false;
 	}
@@ -342,7 +353,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
 }
 
 ScreenTexture::~ScreenTexture() {
-	if (!ResourceManager::get_instance()->is_tex_const_copied(texture[0], this) && loaded) {
+	if ((texture.empty() || !ResourceManager::get_instance()->is_tex_const_copied(texture[0], this)) && loaded) {
 		destroy();
 	}
 }
@@ -633,16 +644,19 @@ glm::vec3 ScreenTexture::get_rot() const {
 
 ScreenTexture&& ScreenTexture::set_base_width(int new_width) {
 	base_width = new_width;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::set_base_width(int new_width, int frames) {
 	base_width.set_target_val(new_width, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::add_base_width(int width) {
 	base_width += width;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -652,16 +666,19 @@ int ScreenTexture::get_base_width() const {
 
 ScreenTexture&& ScreenTexture::set_base_height(int new_height) {
 	base_height = new_height;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::set_base_height(int new_height, int frames) {
 	base_height.set_target_val(new_height, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::add_base_height(int height) {
 	base_height += height;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -679,16 +696,19 @@ float ScreenTexture::get_height() const {
 
 ScreenTexture&& ScreenTexture::set_width_scale(float scale) {
 	width_scale = scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::set_width_scale(float scale, int frames) {
 	width_scale.set_target_val(scale, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::add_width_scale(float scale) {
 	width_scale += scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -698,16 +718,19 @@ float ScreenTexture::get_width_scale() const {
 
 ScreenTexture&& ScreenTexture::set_height_scale(float scale) {
 	height_scale = scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::set_height_scale(float scale, int frames) {
 	height_scale.set_target_val(scale, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::add_height_scale(float scale) {
 	height_scale += scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -744,6 +767,7 @@ ScreenTexture&& ScreenTexture::scale_right_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -764,6 +788,7 @@ ScreenTexture&& ScreenTexture::scale_right_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -788,6 +813,7 @@ ScreenTexture&& ScreenTexture::crop_right_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -812,6 +838,7 @@ ScreenTexture&& ScreenTexture::crop_right_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -832,6 +859,7 @@ ScreenTexture&& ScreenTexture::scale_left_edge(float percent) {
 		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -852,6 +880,7 @@ ScreenTexture&& ScreenTexture::scale_left_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -876,6 +905,7 @@ ScreenTexture&& ScreenTexture::crop_left_edge(float percent) {
 		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -900,6 +930,7 @@ ScreenTexture&& ScreenTexture::crop_left_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -920,6 +951,7 @@ ScreenTexture&& ScreenTexture::scale_top_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -940,6 +972,7 @@ ScreenTexture&& ScreenTexture::scale_top_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -964,6 +997,7 @@ ScreenTexture&& ScreenTexture::crop_top_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -988,6 +1022,7 @@ ScreenTexture&& ScreenTexture::crop_top_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1008,6 +1043,7 @@ ScreenTexture&& ScreenTexture::scale_bottom_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1028,6 +1064,7 @@ ScreenTexture&& ScreenTexture::scale_bottom_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1052,6 +1089,7 @@ ScreenTexture&& ScreenTexture::crop_bottom_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1076,6 +1114,7 @@ ScreenTexture&& ScreenTexture::crop_bottom_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1107,6 +1146,7 @@ ScreenTexture&& ScreenTexture::scale_top_right_corner(float percent_x, float per
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1138,6 +1178,7 @@ ScreenTexture&& ScreenTexture::scale_top_right_corner(float percent_x, float per
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1175,6 +1216,7 @@ ScreenTexture&& ScreenTexture::crop_top_right_corner(float percent_x, float perc
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1212,6 +1254,7 @@ ScreenTexture&& ScreenTexture::crop_top_right_corner(float percent_x, float perc
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1241,6 +1284,7 @@ ScreenTexture&& ScreenTexture::scale_top_left_corner(float percent_x, float perc
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1270,6 +1314,7 @@ ScreenTexture&& ScreenTexture::scale_top_left_corner(float percent_x, float perc
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1307,6 +1352,7 @@ ScreenTexture&& ScreenTexture::crop_top_left_corner(float percent_x, float perce
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1344,6 +1390,7 @@ ScreenTexture&& ScreenTexture::crop_top_left_corner(float percent_x, float perce
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1374,6 +1421,7 @@ ScreenTexture&& ScreenTexture::scale_bottom_right_corner(float percent_x, float 
 	}
 
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1403,6 +1451,7 @@ ScreenTexture&& ScreenTexture::scale_bottom_right_corner(float percent_x, float 
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1440,6 +1489,7 @@ ScreenTexture&& ScreenTexture::crop_bottom_right_corner(float percent_x, float p
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1477,6 +1527,7 @@ ScreenTexture&& ScreenTexture::crop_bottom_right_corner(float percent_x, float p
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1506,6 +1557,7 @@ ScreenTexture&& ScreenTexture::scale_bottom_left_corner(float percent_x, float p
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1535,6 +1587,7 @@ ScreenTexture&& ScreenTexture::scale_bottom_left_corner(float percent_x, float p
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1572,6 +1625,7 @@ ScreenTexture&& ScreenTexture::crop_bottom_left_corner(float percent_x, float pe
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1609,6 +1663,7 @@ ScreenTexture&& ScreenTexture::crop_bottom_left_corner(float percent_x, float pe
 		} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1658,6 +1713,7 @@ ScreenTexture&& ScreenTexture::flip_h() {
 	std::swap(v_pos_accessor[v_spec.top_left_idx], v_pos_accessor[v_spec.top_right_idx]);
 	std::swap(v_texcoord_accessor[v_spec.top_left_idx], v_texcoord_accessor[v_spec.top_right_idx]);
 	h_flipped = !h_flipped;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1680,6 +1736,7 @@ ScreenTexture&& ScreenTexture::flip_v() {
 	std::swap(v_pos_accessor[v_spec.bottom_right_idx], v_pos_accessor[v_spec.top_right_idx]);
 	std::swap(v_texcoord_accessor[v_spec.bottom_right_idx], v_texcoord_accessor[v_spec.top_right_idx]);
 	v_flipped = !v_flipped;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1727,6 +1784,7 @@ unsigned int ScreenTexture::get_sprite() const {
 }
 
 void ScreenTexture::render() {
+	if (texture.empty()) return;
 	glm::vec3 render_pos = pos.get_val();
 	float window_width = WINDOW_WIDTH;
 	float window_height = WINDOW_HEIGHT;
@@ -1776,7 +1834,10 @@ void ScreenTexture::render() {
 	}
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	update_buffer_data();
+	if (buffer_updates) {
+		update_buffer_data();
+		buffer_updates--;
+	}
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture[sprite]);
 	shader->use();

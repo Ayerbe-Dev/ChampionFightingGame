@@ -190,6 +190,7 @@ private:
 	bool v_flipped;
 
 	unsigned int sprite;
+	int buffer_updates;
 
 	bool loaded;
 };

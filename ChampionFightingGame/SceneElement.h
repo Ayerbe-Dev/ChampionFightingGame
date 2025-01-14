@@ -99,6 +99,9 @@ public:
 	SceneElement& add_event(std::string event_name, std::function<void(SceneElement*)> func);
 	SceneElement& execute_event(std::string event_name);
 
+	SceneElement& load_sound_list(std::string list, std::string dir);
+	SceneElement& load_sound(std::string name, std::string dir);
+
 	SoundPlayer sound_player;
 
 	void render();

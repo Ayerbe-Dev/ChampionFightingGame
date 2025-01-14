@@ -27,6 +27,7 @@ ScreenText::ScreenText() {
 	this->width_scale = 1.0f;
 	this->height_scale = 1.0f;
 	this->alpha = 255;
+	this->buffer_updates = 0;
 	this->loaded = false;
 }
 
@@ -66,6 +67,7 @@ ScreenText::ScreenText(ScreenText& other) {
 	this->height_scale = other.height_scale;
 	this->alpha = other.alpha;
 	this->spec = other.spec;
+	this->buffer_updates = other.buffer_updates;
 	if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
 		this->loaded = other.loaded;
 		other.loaded = false;
@@ -107,6 +109,7 @@ ScreenText::ScreenText(const ScreenText& other) {
 	this->height_scale = other.height_scale;
 	this->alpha = other.alpha;
 	this->spec = other.spec;
+	this->buffer_updates = other.buffer_updates;
 	this->loaded = other.loaded;
 	ResourceManager::get_instance()->store_const_copy_addr(texture, (ScreenText*)&other);
 }
@@ -143,6 +146,7 @@ ScreenText::ScreenText(ScreenText&& other) noexcept {
 	this->height_scale = other.height_scale;
 	this->alpha = other.alpha;
 	this->spec = other.spec;
+	this->buffer_updates = other.buffer_updates;
 	this->loaded = other.loaded;
 	other.loaded = false;
 }
@@ -180,6 +184,7 @@ ScreenText& ScreenText::operator=(ScreenText& other) {
 		this->height_scale = other.height_scale;
 		this->alpha = other.alpha;
 		this->spec = other.spec;
+		this->buffer_updates = other.buffer_updates;
 		if (ResourceManager::get_instance()->is_tex_const_copied(texture)) {
 			this->loaded = other.loaded;
 			other.loaded = false;
@@ -224,6 +229,7 @@ ScreenText& ScreenText::operator=(const ScreenText& other) {
 		this->height_scale = other.height_scale;
 		this->alpha = other.alpha;
 		this->spec = other.spec;
+		this->buffer_updates = other.buffer_updates;
 		this->loaded = other.loaded;
 		ResourceManager::get_instance()->store_const_copy_addr(texture, (ScreenText*)&other);
 	}
@@ -263,6 +269,7 @@ ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
 		this->height_scale = other.height_scale;
 		this->alpha = other.alpha;
 		this->spec = other.spec;
+		this->buffer_updates = other.buffer_updates;
 		this->loaded = other.loaded;
 		other.loaded = false;
 	}
@@ -369,6 +376,7 @@ ScreenText&& ScreenText::start_scroll(int frames) {
 	}
 	scroll = 0.0f;
 	scroll.set_target_val(1.0f, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -445,16 +453,19 @@ glm::vec3 ScreenText::get_rot() const {
 
 ScreenText&& ScreenText::set_base_width(int new_width) {
 	base_width = new_width;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::set_base_width(int new_width, int frames) {
 	base_width.set_target_val(new_width, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::add_base_width(int width) {
 	base_width += width;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -464,16 +475,19 @@ int ScreenText::get_base_width() const {
 
 ScreenText&& ScreenText::set_base_height(int new_height) {
 	base_height = new_height;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::set_base_height(int new_height, int frames) {
 	base_height.set_target_val(new_height, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::add_base_height(int height) {
 	base_height += height;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -491,16 +505,19 @@ float ScreenText::get_height() const {
 
 ScreenText&& ScreenText::set_width_scale(float scale) {
 	width_scale = scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::set_width_scale(float scale, int frames) {
 	width_scale.set_target_val(scale, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::add_width_scale(float scale) {
 	width_scale += scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -510,16 +527,19 @@ float ScreenText::get_width_scale() const {
 
 ScreenText&& ScreenText::set_height_scale(float scale) {
 	height_scale = scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::set_height_scale(float scale, int frames) {
 	height_scale.set_target_val(scale, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 ScreenText&& ScreenText::add_height_scale(float scale) {
 	height_scale += scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -622,7 +642,10 @@ void ScreenText::render() {
 	}
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	update_buffer_data();
+	if (buffer_updates) {
+		update_buffer_data();
+		buffer_updates--;
+	}
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	shader->use();
@@ -643,43 +666,78 @@ void ScreenText::render() {
 void ScreenText::set_default_vertex_data() {
 	if (!spec.enable_multiline_scroll) num_lines = 1;
 	bool new_size = (num_lines != v_data_for_gpu.size());
-	v_pos.clear();
-	v_texcoord.clear();
-	v_data_for_gpu.clear();
+	if (new_size) {
+		v_pos.resize(num_lines * 6);
+		v_texcoord.resize(num_lines * 6);
+		v_data_for_gpu.resize(num_lines * 6);
+	}
+	glm::vec2 v_pos_scaler = glm::vec2(
+		get_width() / (float)WINDOW_WIDTH,
+		get_height() / (float)WINDOW_HEIGHT
+	);
 	for (int i = 0; i < num_lines; i++) {
 		float y_bottom_coord = (float)(num_lines - i - 1) / (float)num_lines;
 		float y_bottom_pos = (y_bottom_coord * 2.0f) - 1.0f;
 		float y_top_coord = y_bottom_coord + (1.0f / (float)num_lines);
 		float y_top_pos = (y_top_coord * 2.0f) - 1.0f;
 
-		v_pos.push_back(TargetVec2(-1.0, y_top_pos));
-		v_texcoord.push_back(TargetVec2(0.0, y_top_coord));
-		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
+		v_pos[6 * i].x = -1.0f;
+		v_pos[6 * i].y = y_top_pos;
+		v_texcoord[6 * i].x = 0.0f;
+		v_texcoord[6 * i].y = y_top_coord;
+		v_data_for_gpu[6 * i].pos.x = -1.0f;
+		v_data_for_gpu[6 * i].pos.y = y_top_pos;
+		v_data_for_gpu[6 * i].tex_coord.x = 0.0f;
+		v_data_for_gpu[6 * i].tex_coord.y = y_top_coord;
 
-		v_pos.push_back(TargetVec2(1.0, y_top_pos));
-		v_texcoord.push_back(TargetVec2(1.0, y_top_coord));
-		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
+		v_pos[6 * i + 1].x = 1.0f;
+		v_pos[6 * i + 1].y = y_top_pos;
+		v_texcoord[6 * i + 1].x = 1.0f;
+		v_texcoord[6 * i + 1].y = y_top_coord;
+		v_data_for_gpu[6 * i + 1].pos.x = 1.0f;
+		v_data_for_gpu[6 * i + 1].pos.y = y_top_pos;
+		v_data_for_gpu[6 * i + 1].tex_coord.x = 1.0f;
+		v_data_for_gpu[6 * i + 1].tex_coord.y = y_top_coord;
 
-		v_pos.push_back(TargetVec2(-1.0, y_bottom_pos));
-		v_texcoord.push_back(TargetVec2(0.0, y_bottom_coord));
-		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
+		v_pos[6 * i + 2].x = -1.0f;
+		v_pos[6 * i + 2].y = y_bottom_pos;
+		v_texcoord[6 * i + 2].x = 0.0f;
+		v_texcoord[6 * i + 2].y = y_bottom_coord;
+		v_data_for_gpu[6 * i + 2].pos.x = -1.0f;
+		v_data_for_gpu[6 * i + 2].pos.y = y_bottom_pos;
+		v_data_for_gpu[6 * i + 2].tex_coord.x = 0.0f;
+		v_data_for_gpu[6 * i + 2].tex_coord.y = y_bottom_coord;
 
-		v_pos.push_back(TargetVec2(1.0, y_bottom_pos));
-		v_texcoord.push_back(TargetVec2(1.0, y_bottom_coord));
-		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
+		v_pos[6 * i + 3].x = 1.0f;
+		v_pos[6 * i + 3].y = y_bottom_pos;
+		v_texcoord[6 * i + 3].x = 1.0f;
+		v_texcoord[6 * i + 3].y = y_bottom_coord;
+		v_data_for_gpu[6 * i + 3].pos.x = 1.0f;
+		v_data_for_gpu[6 * i + 3].pos.y = y_bottom_pos;
+		v_data_for_gpu[6 * i + 3].tex_coord.x = 1.0f;
+		v_data_for_gpu[6 * i + 3].tex_coord.y = y_bottom_coord;
 
-		v_pos.push_back(TargetVec2(1.0, y_top_pos));
-		v_texcoord.push_back(TargetVec2(1.0, y_top_coord));
-		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
+		v_pos[6 * i + 4].x = 1.0f;
+		v_pos[6 * i + 4].y = y_top_pos;
+		v_texcoord[6 * i + 4].x = 1.0f;
+		v_texcoord[6 * i + 4].y = y_top_coord;
+		v_data_for_gpu[6 * i + 4].pos.x = 1.0f;
+		v_data_for_gpu[6 * i + 4].pos.y = y_top_pos;
+		v_data_for_gpu[6 * i + 4].tex_coord.x = 1.0f;
+		v_data_for_gpu[6 * i + 4].tex_coord.y = y_top_coord;
 
-		v_pos.push_back(TargetVec2(-1.0, y_bottom_pos));
-		v_texcoord.push_back(TargetVec2(0.0, y_bottom_coord));
-		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
+		v_pos[6 * i + 5].x = -1.0f;
+		v_pos[6 * i + 5].y = y_bottom_pos;
+		v_texcoord[6 * i + 5].x = 0.0f;
+		v_texcoord[6 * i + 5].y = y_bottom_coord;
+		v_data_for_gpu[6 * i + 5].pos.x = -1.0f;
+		v_data_for_gpu[6 * i + 5].pos.y = y_bottom_pos;
+		v_data_for_gpu[6 * i + 5].tex_coord.x = 0.0f;
+		v_data_for_gpu[6 * i + 5].tex_coord.y = y_bottom_coord;
 	}
 
 	for (int i = 0; i < v_data_for_gpu.size(); i++) {
-		v_data_for_gpu[i].pos.x *= get_width() / WINDOW_WIDTH;
-		v_data_for_gpu[i].pos.y *= get_height() / WINDOW_HEIGHT;
+		v_data_for_gpu[i].pos *= v_pos_scaler;
 	}
 
 	if (new_size) {
@@ -695,6 +753,7 @@ void ScreenText::update_buffer_data() {
 		get_width() / (float)WINDOW_WIDTH,
 		get_height() / (float)WINDOW_HEIGHT
 	);
+
 	if (scroll != -1.0f) {
 		int i = 0;
 		for (float add = 1.0f / (float)num_lines; scroll > add * (float)(i + 1); i++);
@@ -722,7 +781,7 @@ void ScreenText::update_buffer_data() {
 	}
 	for (int i = 0; i < v_data_for_gpu.size(); i++) {
 		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler
-		|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
+			|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
 			for (int i = 0; i < v_data_for_gpu.size(); i++) {
 				v_data_for_gpu[i] = { (glm::vec2)v_pos[i] * v_pos_scaler, v_texcoord[i] };
 			}

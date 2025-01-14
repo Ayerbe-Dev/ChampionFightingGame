@@ -56,8 +56,9 @@ SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> element
 			for (int i = 0; i < loop.n; i++) {
 				loop.f(this, i);
 			}
+			continue;
 		}
-		std::cout << "Child " << elements[i].first << " of element " << name << " has invalid type << " << elements[i].second.type().name() << "\n";
+		std::cout << "Child " << elements[i].first << " of element " << name << " has invalid type " << elements[i].second.type().name() << "\n";
 	}
 }
 
@@ -657,10 +658,12 @@ SceneElement& SceneElement::set_anchor_dimensions(int w, int h) {
 
 SceneElement& SceneElement::show() {
 	this->visible = true;
+	return *this;
 }
 
 SceneElement& SceneElement::hide() {
 	this->visible = false;
+	return *this;
 }
 
 bool SceneElement::is_visible() const {
@@ -721,6 +724,16 @@ SceneElement& SceneElement::execute_event(std::string event_name) {
 	if (event_functions.contains(event_name)) {
 		event_functions[event_name](this);
 	}
+	return *this;
+}
+
+SceneElement& SceneElement::load_sound_list(std::string list, std::string dir) {
+	sound_player.load_sound_list(list, dir);
+	return *this;
+}
+
+SceneElement& SceneElement::load_sound(std::string name, std::string dir) {
+	sound_player.load_sound(name, dir);
 	return *this;
 }
 

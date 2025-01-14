@@ -98,11 +98,11 @@ public:
 	}
 
 	bool operator==(const glm::vec3& rhs) {
-		return (glm::vec3)(*this) == rhs;
+		return x == rhs.x && y == rhs.y && z == rhs.z;
 	}
 
 	bool operator!=(const glm::vec3& rhs) {
-		return (glm::vec3)(*this) != rhs;
+		return x != rhs.x || y != rhs.y || z != rhs.z;
 	}
 
 	void set_target_val(glm::vec3 target, int frames) {
@@ -200,11 +200,11 @@ public:
 	}
 
 	bool operator==(const glm::vec2& rhs) {
-		return (glm::vec2)(*this) == rhs;
+		return x == rhs.x && y == rhs.y;
 	}
 
 	bool operator!=(const glm::vec2& rhs) {
-		return (glm::vec2)(*this) != rhs;
+		return x != rhs.x || y != rhs.y;
 	}
 
 	void set_target_val(glm::vec2 target, int frames) {

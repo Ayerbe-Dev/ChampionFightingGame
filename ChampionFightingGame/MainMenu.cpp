@@ -48,7 +48,7 @@ void main_menu_main() {
 
 MainMenu::MainMenu() {
 	offset = 3.14 / 11;
-	magnitude = WINDOW_WIDTH / 1.125;
+	magnitude = WINDOW_WIDTH * 1.15;
 	menu_frame = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
@@ -62,7 +62,7 @@ MainMenu::MainMenu() {
 
 	load_event("Top Level Up EX", [this](SceneElement* e) {
 		get_element("root/Rotating Text").int_var("top_selection") = 4;
-		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
+		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, offset * 5 * 60.0f));
 		e->hide();
 		set_active_element(&e->get_sibling("Top Menu Extras"));
 	});
@@ -73,7 +73,7 @@ MainMenu::MainMenu() {
 	});
 	load_event("Top Level Down EX", [this](SceneElement* e) {
 		get_element("root/Rotating Text").int_var("top_selection") = 0;
-		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, -offset * 5));
+		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, -offset * 5 * 60.0f));
 		e->hide();
 		set_active_element(&e->get_sibling("Top Menu Online"));
 	});
@@ -120,7 +120,7 @@ MainMenu::MainMenu() {
 		set_active_element(&e->get_parent());
 	});
 	load_event("Sub Level Activate", [this](SceneElement* e) {
-		e->set_pos(glm::vec3(3805.0f, 0.0f, 0.0f), 5);
+		e->set_pos(glm::vec3(1805.0f, 0.0f, 0.0f), 5);
 		int& selection = e->int_var("selection");
 		get_screen_text("root/Descriptions/Desc Text").update_text(e->string_var("Desc" + std::to_string(selection)));
 		menu_frame = 1;
@@ -183,6 +183,7 @@ MainMenu::MainMenu() {
 					.add_event("left_press", get_event("Sub Level Back"))
 					.add_event("back_press", get_event("Sub Level Back"))
 					.add_event("activate", get_event("Sub Level Activate"))
+					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
 					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
@@ -235,6 +236,7 @@ MainMenu::MainMenu() {
 					.add_event("left_press", get_event("Sub Level Back"))
 					.add_event("back_press", get_event("Sub Level Back"))
 					.add_event("activate", get_event("Sub Level Activate"))
+					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
 					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
@@ -289,6 +291,7 @@ MainMenu::MainMenu() {
 					.add_event("left_press", get_event("Sub Level Back"))
 					.add_event("back_press", get_event("Sub Level Back"))
 					.add_event("activate", get_event("Sub Level Activate"))
+					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
 					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
@@ -355,6 +358,7 @@ MainMenu::MainMenu() {
 					.add_event("left_press", get_event("Sub Level Back"))
 					.add_event("back_press", get_event("Sub Level Back"))
 					.add_event("activate", get_event("Sub Level Activate"))
+					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
 					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
@@ -409,6 +413,7 @@ MainMenu::MainMenu() {
 					.add_event("left_press", get_event("Sub Level Back"))
 					.add_event("back_press", get_event("Sub Level Back"))
 					.add_event("activate", get_event("Sub Level Activate"))
+					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
 					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
@@ -425,51 +430,54 @@ MainMenu::MainMenu() {
 			SceneElement({
 				//TODO: These all need to be given their starting pos/rot values
 				{"Online Label", ScreenText(&get_font("main_text"), "Online", main_spec)
-					.set_pos(glm::vec3(WINDOW_WIDTH * 1.15f + magnitude * cos(-2 * offset), magnitude * sin(2 * offset), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, ((2 * offset) * 180) / 3.14))
+					.set_pos(glm::vec3(magnitude * cos(2 * offset), magnitude * sin(2 * offset), 0.0))
+					.set_rot(glm::vec3(0.0, 0.0, 2 * offset * 60.0f))
 				},
 				{"Solo Label", ScreenText(&get_font("main_text"), "Solo", main_spec)
-					.set_pos(glm::vec3(WINDOW_WIDTH * 1.15f + int(magnitude * cos(-offset)), int(magnitude * sin(offset)), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, (offset * 180) / 3.14))
+					.set_pos(glm::vec3(magnitude * cos(offset), magnitude * sin(offset), 0.0))
+					.set_rot(glm::vec3(0.0, 0.0, offset * 60.0f))
 				},
 				{"VS Label", ScreenText(&get_font("main_text"), "VS", main_spec)
-					.set_pos(glm::vec3(WINDOW_WIDTH * 1.15f, 0.0, 0.0))
+					.set_pos(glm::vec3(magnitude, 0.0, 0.0))
 				},
 				{"Options Label", ScreenText(&get_font("main_text"), "Options", main_spec)
-					.set_pos(glm::vec3(WINDOW_WIDTH * 1.15f + int(magnitude * cos(offset)), int(magnitude * sin(-offset)), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, (-offset * 180) / 3.14))
+					.set_pos(glm::vec3(magnitude * cos(offset), magnitude * sin(-offset), 0.0))
+					.set_rot(glm::vec3(0.0, 0.0, -offset * 60.0f))
 				},
 				{"Extras Label", ScreenText(&get_font("main_text"), "Extras", main_spec)
-					.set_pos(glm::vec3(WINDOW_WIDTH * 1.15f + int(magnitude * cos(2 * offset)), int(magnitude * sin(-2 * offset)), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, ((-2 * offset) * 180) / 3.14))
+					.set_pos(glm::vec3(magnitude * cos(2 * offset), magnitude * sin(-2 * offset), 0.0))
+					.set_rot(glm::vec3(0.0, 0.0, -2 * offset * 60.0f))
 				},
 			})
 			.add_event("on_render", [this](SceneElement* e) {
 				float rot_z = e->get_rot().z;
-				e->add_rot(glm::vec3(0.0f, 0.0f, (((e->int_var("top_selection") - 2) * offset * 180 / 3.14) - rot_z) / 8));
+				e->add_rot(glm::vec3(0.0f, 0.0f, (((e->int_var("top_selection") - 2) * offset * 60.0f) - e->get_rot().z) / 8));
 
-				ScreenText& vs = e->get_screen_text("VS Label");
-
-				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5.0f));
-				for (int i = 0; i < 5; i++) {
-					e->get_screen_text(i).render();
-				}
-				e->add_rot(glm::vec3(0.0f, 0.0f, offset * -10.0f));
-				for (int i = 0; i < 5; i++) {
-					e->get_screen_text(i).render();
-				}
-				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5.0f));
+				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 300.0f));
+				e->render();
+				e->add_rot(glm::vec3(0.0f, 0.0f, offset * -600.0f));
+				e->render();
+				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 300.0f));
 			})
 			.int_var("top_selection", 2)
-			.set_orientation(TEXTURE_LEFT)
 		},
 		{"Descriptions",
 			SceneElement({
-				{"Desc Bar", ScreenTexture("resource/scene/menu/main/DescBar.png")},
-				{"Desc Text", ScreenText(&get_font("sub_text"), "Placeholder", sub_spec) },
+				{"Desc Bar", ScreenTexture("resource/scene/menu/main/DescBar.png")
+					.set_orientation(TEXTURE_BOTTOM)
+				},
+				{"Desc Text", ScreenText(&get_font("sub_text"), "Placeholder", sub_spec)
+					.set_orientation(TEXTURE_BOTTOM)
+				},
 			})
 		}
 	});
+	for (int i = 1; i < 5; i++) {
+		SceneElement& e = root.get_child(i).get_child("Sub Menu");
+		for (int j = 0; j < e.get_num_screen_texts(); j++) {
+			e.get_screen_text(j).add_pos(glm::vec3(0.0f, 60.0f * j, 0.0f));
+		}
+	}
 	set_active_element(&get_element("root/Top Menu VS"));
 }
 
@@ -479,7 +487,7 @@ MainMenu::~MainMenu() {
 
 void MainMenu::process_main() {
 	GameManager* game_manager = GameManager::get_instance();
-	std::cout << get_active_element().get_name() << "\n";
+	std::cout << get_active_element().get_full_name() << "\n";
 }
 
 void MainMenu::render_main() {

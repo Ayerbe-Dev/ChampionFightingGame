@@ -11,6 +11,7 @@ SceneElement::SceneElement() {
 	this->rot = glm::vec3(0.0f);
 	this->scale = glm::vec3(1.0f);
 	this->visible = true;
+	this->render_event = false;
 }
 
 SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> elements) : SceneElement() {
@@ -105,6 +106,7 @@ SceneElement::SceneElement(SceneElement& other) {
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->visible = other.visible;
+	this->render_event = other.render_event;
 }
 
 SceneElement::SceneElement(const SceneElement& other) {
@@ -150,6 +152,7 @@ SceneElement::SceneElement(const SceneElement& other) {
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->visible = other.visible;
+	this->render_event = other.render_event;
 }
 
 SceneElement::SceneElement(SceneElement&& other) noexcept {
@@ -195,6 +198,7 @@ SceneElement::SceneElement(SceneElement&& other) noexcept {
 	this->rot = other.rot;
 	this->scale = other.scale;
 	this->visible = other.visible;
+	this->render_event = other.render_event;
 }
 
 SceneElement& SceneElement::operator=(SceneElement& other) {
@@ -241,6 +245,7 @@ SceneElement& SceneElement::operator=(SceneElement& other) {
 		this->rot = other.rot;
 		this->scale = other.scale;
 		this->visible = other.visible;
+		this->render_event = other.render_event;
 	}
 	return *this;
 }
@@ -289,6 +294,7 @@ SceneElement& SceneElement::operator=(const SceneElement& other) {
 		this->rot = other.rot;
 		this->scale = other.scale;
 		this->visible = other.visible;
+		this->render_event = other.render_event;
 	}
 	return *this;
 }
@@ -337,6 +343,7 @@ SceneElement& SceneElement::operator=(SceneElement&& other) noexcept {
 		this->rot = other.rot;
 		this->scale = other.scale;
 		this->visible = other.visible;
+		this->render_event = other.render_event;
 	}
 	return *this;
 }
@@ -355,6 +362,15 @@ int SceneElement::get_id() const {
 std::string SceneElement::get_name() const {
 	return this->name;
 }
+
+std::string SceneElement::get_full_name() const {
+	std::string addr = "";
+	if (parent) {
+		addr = parent->get_full_name() + "/";
+	}
+	return addr + this->name;
+}
+
 
 SceneElement& SceneElement::add_element(std::string name, std::any element) {
 	if (element.type() == typeid(SceneElement)) {
@@ -462,7 +478,7 @@ SceneElement& SceneElement::get_sibling(std::string name) {
 
 SceneElement& SceneElement::get_sibling(std::size_t idx) {
 	if (parent) {
-		return parent->children[(parent->child_map[name] - 1) % parent->children.size()-1];
+		return parent->children[(parent->child_map[name] - 1) % parent->children.size()];
 	}
 	GameManager::get_instance()->add_crash_log("Called get_sibling() as root element");
 	return *this;
@@ -739,6 +755,11 @@ SceneElement& SceneElement::load_sound(std::string name, std::string dir) {
 
 void SceneElement::render() {
 	if (!visible) return;
+	if (!render_event) {
+		render_event = true;
+		execute_event("on_render");
+		render_event = false;
+	}
 	glm::vec3 screen_pos = pos.get_val();
 	float window_width = WINDOW_WIDTH;
 	float window_height = WINDOW_HEIGHT;
@@ -786,7 +807,6 @@ void SceneElement::render() {
 	anchor.world_mat = glm::rotate(anchor.world_mat, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
 	anchor.world_mat = glm::scale(anchor.world_mat, scale.get_val());
 
-	execute_event("on_render");
 	std::size_t idx[5] = {0, 0, 0, 0, 0};
 	for (size_t i = 0; i < render_indices.size(); i++) {
 		switch (render_indices[i]) {

@@ -31,6 +31,7 @@ public:
 
 	int get_id() const;
 	std::string get_name() const;
+	std::string get_full_name() const;
 
 	SceneElement& add_element(std::string name, std::any element);
 	SceneElement& add_elements(std::vector<std::pair<std::string, std::any>> elements);
@@ -140,6 +141,7 @@ private:
 	TargetVar<glm::vec3> rot;
 	TargetVar<glm::vec3> scale;
 	bool visible;
+	bool render_event;
 };
 
 struct SceneElementLoop {

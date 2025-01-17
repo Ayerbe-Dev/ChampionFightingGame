@@ -2,6 +2,7 @@
 #include "MainMenu.h"
 #include "GameManager.h"
 #include <glew/glew.h>
+#include "GLM Helpers.h"
 #include "WindowConstants.h"
 #include "Player.h"
 #include <math.h>
@@ -47,8 +48,8 @@ void main_menu_main() {
 }
 
 MainMenu::MainMenu() {
-	offset = 3.14 / 11;
-	magnitude = WINDOW_WIDTH * 1.15;
+	offset = 12.5;
+	magnitude = 1280;
 	menu_frame = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
@@ -62,7 +63,7 @@ MainMenu::MainMenu() {
 
 	load_event("Top Level Up EX", [this](SceneElement* e) {
 		get_element("root/Rotating Text").int_var("top_selection") = 4;
-		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, offset * 5 * 60.0f));
+		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
 		e->hide();
 		set_active_element(&e->get_sibling("Top Menu Extras"));
 	});
@@ -73,7 +74,7 @@ MainMenu::MainMenu() {
 	});
 	load_event("Top Level Down EX", [this](SceneElement* e) {
 		get_element("root/Rotating Text").int_var("top_selection") = 0;
-		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, -offset * 5 * 60.0f));
+		get_element("root/Rotating Text").add_rot(glm::vec3(0.0f, 0.0f, -offset * 5));
 		e->hide();
 		set_active_element(&e->get_sibling("Top Menu Online"));
 	});
@@ -430,36 +431,37 @@ MainMenu::MainMenu() {
 			SceneElement({
 				//TODO: These all need to be given their starting pos/rot values
 				{"Online Label", ScreenText(&get_font("main_text"), "Online", main_spec)
-					.set_pos(glm::vec3(magnitude * cos(2 * offset), magnitude * sin(2 * offset), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, 2 * offset * 60.0f))
+					.set_pos(get_circular_pos(glm::vec3(-114.0f, 0.0f, 0.0f), magnitude, 2 * glm::radians(offset)))
+					.set_rot(glm::vec3(0.0, 0.0, 2 * offset))
 				},
 				{"Solo Label", ScreenText(&get_font("main_text"), "Solo", main_spec)
-					.set_pos(glm::vec3(magnitude * cos(offset), magnitude * sin(offset), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, offset * 60.0f))
+					.set_pos(get_circular_pos(glm::vec3(-114.0f, 0.0f, 0.0f), magnitude, glm::radians(offset)))
+					.set_rot(glm::vec3(0.0, 0.0, offset))
 				},
 				{"VS Label", ScreenText(&get_font("main_text"), "VS", main_spec)
-					.set_pos(glm::vec3(magnitude, 0.0, 0.0))
+					.set_pos(get_circular_pos(glm::vec3(-114.0f, 0.0f, 0.0f), magnitude, 0))
 				},
 				{"Options Label", ScreenText(&get_font("main_text"), "Options", main_spec)
-					.set_pos(glm::vec3(magnitude * cos(offset), magnitude * sin(-offset), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, -offset * 60.0f))
+					.set_pos(get_circular_pos(glm::vec3(-114.0f, 0.0f, 0.0f), magnitude, -glm::radians(offset)))
+					.set_rot(glm::vec3(0.0, 0.0, -offset))
 				},
 				{"Extras Label", ScreenText(&get_font("main_text"), "Extras", main_spec)
-					.set_pos(glm::vec3(magnitude * cos(2 * offset), magnitude * sin(-2 * offset), 0.0))
-					.set_rot(glm::vec3(0.0, 0.0, -2 * offset * 60.0f))
+					.set_pos(get_circular_pos(glm::vec3(-114.0f, 0.0f, 0.0f), magnitude, -2 * glm::radians(offset)))
+					.set_rot(glm::vec3(0.0, 0.0, -2 * offset))
 				},
 			})
 			.add_event("on_render", [this](SceneElement* e) {
 				float rot_z = e->get_rot().z;
-				e->add_rot(glm::vec3(0.0f, 0.0f, (((e->int_var("top_selection") - 2) * offset * 60.0f) - e->get_rot().z) / 8));
+				e->add_rot(glm::vec3(0.0f, 0.0f, (((e->int_var("top_selection") - 2) * offset) - e->get_rot().z) / 8));
 
-				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 300.0f));
-				e->render();
-				e->add_rot(glm::vec3(0.0f, 0.0f, offset * -600.0f));
-				e->render();
-				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 300.0f));
+//				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
+//				e->render();
+//				e->add_rot(glm::vec3(0.0f, 0.0f, offset * -10));
+//				e->render();
+//				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
 			})
 			.int_var("top_selection", 2)
+//			.set_pos(glm::vec3(-114, 0.0f, 0.0f))
 		},
 		{"Descriptions",
 			SceneElement({

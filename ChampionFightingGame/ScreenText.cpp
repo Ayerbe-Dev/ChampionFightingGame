@@ -22,6 +22,7 @@ ScreenText::ScreenText() {
 	this->anchor = nullptr;
 	this->pos = glm::vec3(0.0);
 	this->rot = glm::vec3(0.0);
+	this->magnitude = glm::vec3(0.0);
 	this->base_width = 0;
 	this->base_height = 0;
 	this->width_scale = 1.0f;
@@ -61,6 +62,7 @@ ScreenText::ScreenText(ScreenText& other) {
 	this->anchor = other.anchor;
 	this->pos = other.pos;
 	this->rot = other.rot;
+	this->magnitude = other.magnitude;
 	this->base_width = other.base_width;
 	this->base_height = other.base_height;
 	this->width_scale = other.width_scale;
@@ -103,6 +105,7 @@ ScreenText::ScreenText(const ScreenText& other) {
 	this->anchor = other.anchor;
 	this->pos = other.pos;
 	this->rot = other.rot;
+	this->magnitude = other.magnitude;
 	this->base_width = other.base_width;
 	this->base_height = other.base_height;
 	this->width_scale = other.width_scale;
@@ -140,6 +143,7 @@ ScreenText::ScreenText(ScreenText&& other) noexcept {
 	this->anchor = other.anchor;
 	this->pos = other.pos;
 	this->rot = other.rot;
+	this->magnitude = other.magnitude;
 	this->base_width = other.base_width;
 	this->base_height = other.base_height;
 	this->width_scale = other.width_scale;
@@ -178,6 +182,7 @@ ScreenText& ScreenText::operator=(ScreenText& other) {
 		this->anchor = other.anchor;
 		this->pos = other.pos;
 		this->rot = other.rot;
+		this->magnitude = other.magnitude;
 		this->base_width = other.base_width;
 		this->base_height = other.base_height;
 		this->width_scale = other.width_scale;
@@ -223,6 +228,7 @@ ScreenText& ScreenText::operator=(const ScreenText& other) {
 		this->anchor = other.anchor;
 		this->pos = other.pos;
 		this->rot = other.rot;
+		this->magnitude = other.magnitude;
 		this->base_width = other.base_width;
 		this->base_height = other.base_height;
 		this->width_scale = other.width_scale;
@@ -263,6 +269,7 @@ ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
 		this->anchor = other.anchor;
 		this->pos = other.pos;
 		this->rot = other.rot;
+		this->magnitude = other.magnitude;
 		this->base_width = other.base_width;
 		this->base_height = other.base_height;
 		this->width_scale = other.width_scale;
@@ -451,6 +458,15 @@ glm::vec3 ScreenText::get_rot() const {
 	return rot.get_val();
 }
 
+ScreenText&& ScreenText::set_magnitude(glm::vec3 magnitude) {
+	this->magnitude = magnitude / glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f);
+	return std::move(*this);
+}
+
+glm::vec3 ScreenText::get_magnitude() const {
+	return magnitude;
+}
+
 ScreenText&& ScreenText::set_base_width(int new_width) {
 	base_width = new_width;
 	buffer_updates = std::max(buffer_updates, 1);
@@ -637,6 +653,7 @@ void ScreenText::render() {
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
+	matrix = glm::translate(matrix, magnitude);
 	if (anchor) {
 		matrix = anchor->screen_mat * matrix;
 	}

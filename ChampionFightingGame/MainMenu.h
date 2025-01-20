@@ -20,7 +20,6 @@ public:
 private:
     //Menu Wheel Variables
     float offset;
-    float magnitude;
 
     int menu_frame;
 

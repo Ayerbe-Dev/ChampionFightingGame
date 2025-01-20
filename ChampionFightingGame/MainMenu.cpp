@@ -49,14 +49,13 @@ void main_menu_main() {
 
 MainMenu::MainMenu() {
 	offset = 12.5;
-	magnitude = WINDOW_WIDTH * 1.25;
 	menu_frame = 0;
 
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 
 	FontManager* font_manager = FontManager::get_instance();
-	load_font("main_text", "Fiend-Oblique", 144);
+	load_font("main_text", "Fiend-Oblique", 96);
 	load_font("sub_text", "Fiend-Oblique", 80);
 	TextSpecifier main_spec = TextSpecifier().color(glm::vec4(255.0, 127.0, 0.0, 255.0)).border(glm::vec4(1.0, 1.0, 1.0, 2.0));
 	TextSpecifier sub_spec = TextSpecifier().color(glm::vec4(255.0, 127.0, 0.0, 255.0)).border(1);
@@ -431,22 +430,22 @@ MainMenu::MainMenu() {
 			SceneElement({
 				//TODO: These all need to be given their starting pos/rot values
 				{"Online Label", ScreenText(&get_font("main_text"), "Online", main_spec)
-					.set_magnitude(glm::vec3(magnitude, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, 2 * offset))
 				},
 				{"Solo Label", ScreenText(&get_font("main_text"), "Solo", main_spec)
-					.set_magnitude(glm::vec3(magnitude, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, offset))
 				},
 				{"VS Label", ScreenText(&get_font("main_text"), "VS", main_spec)
-					.set_magnitude(glm::vec3(magnitude, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
 				},
 				{"Options Label", ScreenText(&get_font("main_text"), "Options", main_spec)
-					.set_magnitude(glm::vec3(magnitude, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, -offset))
 				},
 				{"Extras Label", ScreenText(&get_font("main_text"), "Extras", main_spec)
-					.set_magnitude(glm::vec3(magnitude, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, -2 * offset))
 				},
 			})
@@ -454,13 +453,13 @@ MainMenu::MainMenu() {
 				float rot_z = e->get_rot().z;
 				e->add_rot(glm::vec3(0.0f, 0.0f, (((e->int_var("top_selection") - 2) * offset) - e->get_rot().z) / 8));
 
-//				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
-//				e->render();
-//				e->add_rot(glm::vec3(0.0f, 0.0f, offset * -10));
-//				e->render();
-//				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
+				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
+				e->render();
+				e->add_rot(glm::vec3(0.0f, 0.0f, offset * -10));
+				e->render();
+				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
 			})
-			.set_orientation(TEXTURE_LEFT)
+			.set_pos(glm::vec3(-3450.0f, 0.0f, 0.0f))
 			.int_var("top_selection", 2)
 		},
 		{"Descriptions",

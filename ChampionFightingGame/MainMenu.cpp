@@ -430,22 +430,22 @@ MainMenu::MainMenu() {
 			SceneElement({
 				//TODO: These all need to be given their starting pos/rot values
 				{"Online Label", ScreenText(&get_font("main_text"), "Online", main_spec)
-					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(4200.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, 2 * offset))
 				},
 				{"Solo Label", ScreenText(&get_font("main_text"), "Solo", main_spec)
-					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(4200.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, offset))
 				},
 				{"VS Label", ScreenText(&get_font("main_text"), "VS", main_spec)
-					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(4200.0f, 0.0f, 0.0f))
 				},
 				{"Options Label", ScreenText(&get_font("main_text"), "Options", main_spec)
-					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(4200.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, -offset))
 				},
 				{"Extras Label", ScreenText(&get_font("main_text"), "Extras", main_spec)
-					.set_magnitude(glm::vec3(3800.0f, 0.0f, 0.0f))
+					.set_magnitude(glm::vec3(4200.0f, 0.0f, 0.0f))
 					.set_rot(glm::vec3(0.0, 0.0, -2 * offset))
 				},
 			})
@@ -459,7 +459,7 @@ MainMenu::MainMenu() {
 				e->render();
 				e->add_rot(glm::vec3(0.0f, 0.0f, offset * 5));
 			})
-			.set_pos(glm::vec3(-3450.0f, 0.0f, 0.0f))
+			.set_pos(glm::vec3(-3850.0f, 0.0f, 0.0f))
 			.int_var("top_selection", 2)
 		},
 		{"Descriptions",

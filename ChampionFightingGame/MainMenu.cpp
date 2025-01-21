@@ -120,13 +120,13 @@ MainMenu::MainMenu() {
 		set_active_element(&e->get_parent());
 	});
 	load_event("Sub Level Activate", [this](SceneElement* e) {
-		e->set_pos(glm::vec3(1805.0f, 0.0f, 0.0f), 5);
+		e->set_pos(glm::vec3(450.0f, 0.0f, 0.0f), 5);
 		int& selection = e->int_var("selection");
 		get_screen_text("root/Descriptions/Desc Text").update_text(e->string_var("Desc" + std::to_string(selection)));
 		menu_frame = 1;
 	});
 	load_event("Sub Level Deactivate", [this](SceneElement* e) {
-		e->set_pos(glm::vec3(4065.0f, 0.0f, 0.0f), 5); //TODO: I'm pretty sure this visually breaks if
+		e->set_pos(glm::vec3(-600.0f, 0.0f, 0.0f), 5); //TODO: I'm pretty sure this visually breaks if
 		//you go from the sub level to top level and then switch top menu options within 5 frames since
 		//it will hide the sub menu
 		menu_frame = 0;
@@ -186,7 +186,8 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
-					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
+					.set_orientation(TEXTURE_RIGHT)
+					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
 			.add_event("up_press", get_event("Top Level Up EX"))
@@ -239,7 +240,8 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
-					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
+					.set_orientation(TEXTURE_RIGHT)
+					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
 			.add_event("up_press", get_event("Top Level Up"))
@@ -294,7 +296,8 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
-					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
+					.set_orientation(TEXTURE_RIGHT)
+					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
 			.add_event("up_press", get_event("Top Level Up"))
@@ -361,7 +364,8 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
-					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
+					.set_orientation(TEXTURE_RIGHT)
+					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
 			.add_event("up_press", get_event("Top Level Up"))
@@ -416,7 +420,8 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.int_var("selection", 0)
-					.set_pos(glm::vec3(4065.0f, 0.0f, 0.0f))
+					.set_orientation(TEXTURE_RIGHT)
+					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
 			.add_event("up_press", get_event("Top Level Up"))
@@ -466,9 +471,11 @@ MainMenu::MainMenu() {
 			SceneElement({
 				{"Desc Bar", ScreenTexture("resource/scene/menu/main/DescBar.png")
 					.set_orientation(TEXTURE_BOTTOM)
+					.set_pos(glm::vec3(0.0f, 400.0f, 0.0f))
 				},
 				{"Desc Text", ScreenText(&get_font("sub_text"), "Placeholder", sub_spec)
 					.set_orientation(TEXTURE_BOTTOM)
+					.set_pos(glm::vec3(0.0f, 400.0f, 0.0f))
 				},
 			})
 		}

@@ -11,6 +11,8 @@
 #include "utils.h"
 #include <chrono>
 
+//TODO: Integrate animations into the ResourceManager
+
 Animation::Animation() {
 	length = 0;
 	faf = 0;

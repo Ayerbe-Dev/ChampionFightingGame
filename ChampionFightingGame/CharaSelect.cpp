@@ -155,7 +155,7 @@ CSS::CSS() {
 	});
 
 	for (int i = 0; i < 2; i++) {
-		root.get_child("Player Cursors").add_element("P" + std::to_string(i + 1) + " Cursor",
+		get_element("root/Player Cursors").add_element("P" + std::to_string(i + 1) + " Cursor",
 			SceneElement({
 				{"Name Entry Hover", SceneElement()
 					.add_event("activate", [this](SceneElement* e) {
@@ -624,6 +624,7 @@ CSS::CSS() {
 		else {
 			demo_models[i].set_pos(glm::vec3(350.0, 0.0, 0.0));
 		}
+		set_player_active_element(&get_element("root/Player Cursors/P" + std::to_string(i + 1) + " Cursor/Chara Hover"));
 	}
 }
 

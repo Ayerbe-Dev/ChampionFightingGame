@@ -459,7 +459,7 @@ glm::vec3 ScreenText::get_rot() const {
 }
 
 ScreenText&& ScreenText::set_magnitude(glm::vec3 magnitude) {
-	this->magnitude = magnitude / glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f);
+	this->magnitude = magnitude;
 	return std::move(*this);
 }
 
@@ -653,7 +653,7 @@ void ScreenText::render() {
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
-	matrix = glm::translate(matrix, magnitude);
+	matrix = glm::translate(matrix, magnitude / glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f));
 	if (anchor) {
 		matrix = anchor->screen_mat * matrix;
 	}

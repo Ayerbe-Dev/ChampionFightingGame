@@ -264,8 +264,7 @@ bool StageSelect::load_stage_select() {
 		}
 	});
 
-
-	SceneElement& stage_slots = root.add_element("Stage Slots", SceneElement()).set_orientation(TEXTURE_BOTTOM_LEFT);
+	SceneElement& stage_slots = root.add_element("Stage Slots", SceneElement().set_orientation(TEXTURE_BOTTOM_LEFT));
 	switch (context) { //Load the training mode versions of stages for training mode, else load the normal ones
 		case (SCENE_CONTEXT_TRAINING): {
 			for (size_t i = list_start_offset, max = stages.capacity() + list_start_offset; i < max; i++) {

@@ -56,9 +56,11 @@ MainMenu::MainMenu() {
 
 	FontManager* font_manager = FontManager::get_instance();
 	load_font("main_text", "Fiend-Oblique", 96);
-	load_font("sub_text", "Fiend-Oblique", 80);
+	load_font("sub_text", "Fiend-Oblique", 64);
+	load_font("desc_text", "FiraCode", 48);
 	TextSpecifier main_spec = TextSpecifier().color(glm::vec4(255.0, 127.0, 0.0, 255.0)).border(glm::vec4(1.0, 1.0, 1.0, 2.0));
 	TextSpecifier sub_spec = TextSpecifier().color(glm::vec4(255.0, 127.0, 0.0, 255.0)).border(1);
+	TextSpecifier desc_spec = TextSpecifier().border(1);
 
 	load_event("Top Level Up EX", [this](SceneElement* e) {
 		get_element("root/Rotating Text").int_var("top_selection") = 4;
@@ -98,7 +100,7 @@ MainMenu::MainMenu() {
 			selection--;
 		}
 		e->get_screen_texture("Cursor").set_pos(glm::vec3(
-			0.0f,
+			100.0f,
 			e->get_screen_text(selection).get_pos().y,
 			0.0f
 		));
@@ -110,7 +112,7 @@ MainMenu::MainMenu() {
 			selection++;
 		}
 		e->get_screen_texture("Cursor").set_pos(glm::vec3(
-			0.0f,
+			100.0f,
 			e->get_screen_text(selection).get_pos().y,
 			0.0f
 		));
@@ -126,9 +128,13 @@ MainMenu::MainMenu() {
 		menu_frame = 1;
 	});
 	load_event("Sub Level Deactivate", [this](SceneElement* e) {
-		e->set_pos(glm::vec3(-600.0f, 0.0f, 0.0f), 5); //TODO: I'm pretty sure this visually breaks if
-		//you go from the sub level to top level and then switch top menu options within 5 frames since
-		//it will hide the sub menu
+		e->set_pos(glm::vec3(-600.0f, 0.0f, 0.0f), 5); 
+		//TODO: I'm pretty sure this visually breaks if you go from the sub level to top level and 
+		//then switch top menu options within 5 frames since it will hide the sub menu before it has a
+		//chance to go off screen
+
+		//It probably isn't super noticeable, but hypothetically this could be fixed by setting all 5
+		//sub menu elements to go off screen rather than just the specific one we're closing
 		menu_frame = 0;
 	});
 
@@ -149,19 +155,15 @@ MainMenu::MainMenu() {
 				{"Sub Menu",
 					SceneElement({
 						{"Sub Table", ScreenTexture("resource/scene/menu/main/SubMenu.png")},
-						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Lobby Text", ScreenText(&get_font("sub_text"), "Lobby", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Queue Text", ScreenText(&get_font("sub_text"), "Queue", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Coach Text", ScreenText(&get_font("sub_text"), "Coach", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						}
+						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")},
+						{"Lobby Text", ScreenText(&get_font("sub_text"), "Lobby", sub_spec)},
+						{"Queue Text", ScreenText(&get_font("sub_text"), "Queue", sub_spec)},
+						{"Coach Text", ScreenText(&get_font("sub_text"), "Coach", sub_spec)}
 					})
+					.int_var("selection", 0)
+					.string_var("Desc0", "Join an online lobby")
+					.string_var("Desc1", "Queue for a match")
+					.string_var("Desc2", "Spectate and coach a random player")
 					.add_event("up_press", get_event("Sub Level Up"))
 					.add_event("down_press", get_event("Sub Level Down"))
 					.add_event("select_press", [this](SceneElement* e) {
@@ -185,13 +187,14 @@ MainMenu::MainMenu() {
 					.add_event("activate", get_event("Sub Level Activate"))
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
-					.int_var("selection", 0)
 					.set_orientation(TEXTURE_RIGHT)
 					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
+			.string_var("Desc", "Take your gameplay online!")
 			.add_event("up_press", get_event("Top Level Up EX"))
 			.add_event("down_press", get_event("Top Level Down"))
+			.add_event("right_press", get_event("Top Level Select"))
 			.add_event("select_press", get_event("Top Level Select"))
 			.add_event("back_press", get_event("Top Level Back"))
 			.add_event("activate", get_event("Top Level Activate"))
@@ -206,16 +209,14 @@ MainMenu::MainMenu() {
 					SceneElement({
 						{"Sub Table", ScreenTexture("resource/scene/menu/main/SubMenu.png")},
 						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")},
-						{"Story Text", ScreenText(&get_font("sub_text"), "Story", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Arcade Text", ScreenText(&get_font("sub_text"), "Arcade", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Training Text", ScreenText(&get_font("sub_text"), "Training", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						}
+						{"Story Text", ScreenText(&get_font("sub_text"), "Story", sub_spec)},
+						{"Arcade Text", ScreenText(&get_font("sub_text"), "Arcade", sub_spec)},
+						{"Training Text", ScreenText(&get_font("sub_text"), "Training", sub_spec)}
 					})
+					.int_var("selection", 0)
+					.string_var("Desc0", "Play through the story!")
+					.string_var("Desc1", "It's arcade mode bro idk")
+					.string_var("Desc2", "hit the lab idiot")
 					.add_event("up_press", get_event("Sub Level Up"))
 					.add_event("down_press", get_event("Sub Level Down"))
 					.add_event("select_press", [this](SceneElement* e) {
@@ -239,13 +240,14 @@ MainMenu::MainMenu() {
 					.add_event("activate", get_event("Sub Level Activate"))
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
-					.int_var("selection", 0)
 					.set_orientation(TEXTURE_RIGHT)
 					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
+			.string_var("Desc", "Single player content!")
 			.add_event("up_press", get_event("Top Level Up"))
 			.add_event("down_press", get_event("Top Level Down"))
+			.add_event("right_press", get_event("Top Level Select"))
 			.add_event("select_press", get_event("Top Level Select"))
 			.add_event("back_press", get_event("Top Level Back"))
 			.add_event("activate", get_event("Top Level Activate"))
@@ -259,19 +261,15 @@ MainMenu::MainMenu() {
 				{"Sub Menu",
 					SceneElement({
 						{"Sub Table", ScreenTexture("resource/scene/menu/main/SubMenu.png")},
-						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Battle Text", ScreenText(&get_font("sub_text"), "Battle", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Tournament Text", ScreenText(&get_font("sub_text"), "Tournament", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Special Text", ScreenText(&get_font("sub_text"), "Special", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						}
+						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")},
+						{"Battle Text", ScreenText(&get_font("sub_text"), "Battle", sub_spec)},
+						{"Tournament Text", ScreenText(&get_font("sub_text"), "Tournament", sub_spec)},
+						{"Special Text", ScreenText(&get_font("sub_text"), "Special", sub_spec)}
 					})
+					.int_var("selection", 0)
+					.string_var("Desc0", "Kill your friends, guilt free")
+					.string_var("Desc1", "is this bracket")
+					.string_var("Desc2", "Mix it up with unique scenarios")
 					.add_event("up_press", get_event("Sub Level Up"))
 					.add_event("down_press", get_event("Sub Level Down"))
 					.add_event("select_press", [this](SceneElement* e) {
@@ -295,13 +293,14 @@ MainMenu::MainMenu() {
 					.add_event("activate", get_event("Sub Level Activate"))
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
-					.int_var("selection", 0)
 					.set_orientation(TEXTURE_RIGHT)
 					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
+			.string_var("Desc", "This do be the VS mode")
 			.add_event("up_press", get_event("Top Level Up"))
 			.add_event("down_press", get_event("Top Level Down"))
+			.add_event("right_press", get_event("Top Level Select"))
 			.add_event("select_press", get_event("Top Level Select"))
 			.add_event("back_press", get_event("Top Level Back"))
 			.add_event("activate", get_event("Top Level Activate"))
@@ -315,25 +314,19 @@ MainMenu::MainMenu() {
 				{"Sub Menu",
 					SceneElement({
 						{"Sub Table", ScreenTexture("resource/scene/menu/main/SubMenu.png")},
-						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Controls Text", ScreenText(&get_font("sub_text"), "Controls", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Graphics Text", ScreenText(&get_font("sub_text"), "Graphics", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Sound Text", ScreenText(&get_font("sub_text"), "Sound", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Save Data Text", ScreenText(&get_font("sub_text"), "Save Data", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Placeholder Text", ScreenText(&get_font("sub_text"), "Placeholder", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						}
+						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")},
+						{"Controls Text", ScreenText(&get_font("sub_text"), "Controls", sub_spec)},
+						{"Graphics Text", ScreenText(&get_font("sub_text"), "Graphics", sub_spec)},
+						{"Sound Text", ScreenText(&get_font("sub_text"), "Sound", sub_spec)},
+						{"Save Data Text", ScreenText(&get_font("sub_text"), "Save Data", sub_spec)},
+						{"Placeholder Text", ScreenText(&get_font("sub_text"), "Placeholder", sub_spec)}
 					})
+					.int_var("selection", 0)
+					.string_var("Desc0", "Control settings")
+					.string_var("Desc1", "Graphics settings")
+					.string_var("Desc2", "Sound settngs")
+					.string_var("Desc3", "Save data settings")
+					.string_var("Desc4", "idk i'll probably add a 5th options tab")
 					.add_event("up_press", get_event("Sub Level Up"))
 					.add_event("down_press", get_event("Sub Level Down"))
 					.add_event("select_press", [this](SceneElement* e) {
@@ -363,13 +356,14 @@ MainMenu::MainMenu() {
 					.add_event("activate", get_event("Sub Level Activate"))
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
-					.int_var("selection", 0)
 					.set_orientation(TEXTURE_RIGHT)
 					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
+			.string_var("Desc", "Bro it's an options menu")
 			.add_event("up_press", get_event("Top Level Up"))
 			.add_event("down_press", get_event("Top Level Down"))
+			.add_event("right_press", get_event("Top Level Select"))
 			.add_event("select_press", get_event("Top Level Select"))
 			.add_event("back_press", get_event("Top Level Back"))
 			.add_event("activate", get_event("Top Level Activate"))
@@ -383,19 +377,15 @@ MainMenu::MainMenu() {
 				{"Sub Menu",
 					SceneElement({
 						{"Sub Table", ScreenTexture("resource/scene/menu/main/SubMenu.png")},
-						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Gallery Text", ScreenText(&get_font("sub_text"), "Gallery", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Sound Test Text", ScreenText(&get_font("sub_text"), "Sound Test", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						},
-						{"Cutscenes Text", ScreenText(&get_font("sub_text"), "Cutscenes", sub_spec)
-							.set_screen_orientation(TEXTURE_TOP_LEFT)
-						}
+						{"Cursor", ScreenTexture("resource/scene/menu/main/Cursor.png")},
+						{"Gallery Text", ScreenText(&get_font("sub_text"), "Gallery", sub_spec)},
+						{"Sound Test Text", ScreenText(&get_font("sub_text"), "Sound Test", sub_spec)},
+						{"Cutscenes Text", ScreenText(&get_font("sub_text"), "Cutscenes", sub_spec)}
 					})
+					.int_var("selection", 0)
+					.string_var("Desc0", "Check out various art")
+					.string_var("Desc1", "Listen to music and voice lines")
+					.string_var("Desc2", "Watch the cutscenes from the story mode")
 					.add_event("up_press", get_event("Sub Level Up"))
 					.add_event("down_press", get_event("Sub Level Down"))
 					.add_event("select_press", [this](SceneElement* e) {
@@ -419,13 +409,14 @@ MainMenu::MainMenu() {
 					.add_event("activate", get_event("Sub Level Activate"))
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
-					.int_var("selection", 0)
 					.set_orientation(TEXTURE_RIGHT)
 					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
 				},
 			})
+			.string_var("Desc", "Check out the extra content that the game has to offer!")
 			.add_event("up_press", get_event("Top Level Up"))
 			.add_event("down_press", get_event("Top Level Down EX"))
+			.add_event("right_press", get_event("Top Level Select"))
 			.add_event("select_press", get_event("Top Level Select"))
 			.add_event("back_press", get_event("Top Level Back"))
 			.add_event("activate", get_event("Top Level Activate"))
@@ -471,19 +462,28 @@ MainMenu::MainMenu() {
 			SceneElement({
 				{"Desc Bar", ScreenTexture("resource/scene/menu/main/DescBar.png")
 					.set_orientation(TEXTURE_BOTTOM)
-					.set_pos(glm::vec3(0.0f, 400.0f, 0.0f))
+					.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
 				},
-				{"Desc Text", ScreenText(&get_font("sub_text"), "Placeholder", sub_spec)
+				{"Desc Text", ScreenText(&get_font("desc_text"), "Placeholder", desc_spec)
 					.set_orientation(TEXTURE_BOTTOM)
-					.set_pos(glm::vec3(0.0f, 400.0f, 0.0f))
+					.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
 				},
 			})
 		}
 	});
-	for (int i = 1; i < 5; i++) {
+	for (int i = 1; i < 6; i++) {
 		SceneElement& e = root.get_child(i).get_child("Sub Menu");
+		e.get_screen_texture("Cursor")
+			.set_pos(glm::vec3(100.0f, 200.0f, 0.0f))
+			.set_screen_orientation(TEXTURE_TOP_LEFT)
+			.set_texture_orientation(TEXTURE_LEFT)
+			.set_base_width(50)
+			.set_base_height(50);
 		for (int j = 0; j < e.get_num_screen_texts(); j++) {
-			e.get_screen_text(j).add_pos(glm::vec3(0.0f, 60.0f * j, 0.0f));
+			e.get_screen_text(j)
+				.set_pos(glm::vec3(200.0f, 200.0f + 125.0f * j, 0.0f))
+				.set_screen_orientation(TEXTURE_TOP_LEFT)
+				.set_texture_orientation(TEXTURE_LEFT);
 		}
 	}
 	set_active_element(&get_element("root/Top Menu VS"));
@@ -491,11 +491,6 @@ MainMenu::MainMenu() {
 
 MainMenu::~MainMenu() {
 
-}
-
-void MainMenu::process_main() {
-	GameManager* game_manager = GameManager::get_instance();
-	std::cout << get_active_element().get_full_name() << "\n";
 }
 
 void MainMenu::render_main() {

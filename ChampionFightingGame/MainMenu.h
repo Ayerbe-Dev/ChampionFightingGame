@@ -15,7 +15,6 @@ public:
     MainMenu();
     ~MainMenu();
 
-    void process_main();
     void render_main();
 private:
     //Menu Wheel Variables

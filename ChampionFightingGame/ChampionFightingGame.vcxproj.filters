@@ -5,22 +5,22 @@
       <Filter>2. Code Files</Filter>
     </ClCompile>
     <ClCompile Include="CharaSelect.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="DebugMenu.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="TitleScreen.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Opening.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Options.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Dingo.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter\Chara\Dingo</Filter>
@@ -290,7 +290,7 @@
       <Filter>2. Code Files\Singleton</Filter>
     </ClCompile>
     <ClCompile Include="PauseBattle.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="BattleObjectBlockboxFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\BattleObjectFunctions</Filter>
@@ -335,13 +335,13 @@
       <Filter>2. Code Files\GameObject\BattleObject\Projectile\ProjectileUnique\RowanFireball</Filter>
     </ClCompile>
     <ClCompile Include="Battle.cpp">
-      <Filter>2. Code Files\GameState\Battle</Filter>
+      <Filter>2. Code Files\Scene\Scenes\Battle</Filter>
     </ClCompile>
     <ClCompile Include="CollisionChecks.cpp">
-      <Filter>2. Code Files\GameState\Battle</Filter>
+      <Filter>2. Code Files\Scene\Scenes\Battle</Filter>
     </ClCompile>
     <ClCompile Include="HitboxSim.cpp">
-      <Filter>2. Code Files\GameState\Battle</Filter>
+      <Filter>2. Code Files\Scene\Scenes\Battle</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectAnimationFunctions.cpp">
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
@@ -356,7 +356,7 @@
       <Filter>2. Code Files\GameObject\GameObjectFunctions</Filter>
     </ClCompile>
     <ClCompile Include="StageSelect.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>2. Code Files\Singleton</Filter>
@@ -380,7 +380,7 @@
       <Filter>2. Code Files\I/O</Filter>
     </ClCompile>
     <ClCompile Include="TrainingInfo.cpp">
-      <Filter>2. Code Files\GameState\Battle</Filter>
+      <Filter>2. Code Files\Scene\Scenes\Battle</Filter>
     </ClCompile>
     <ClCompile Include="FighterFrameDataFunctions.cpp">
       <Filter>2. Code Files\GameObject\BattleObject\Fighter\FighterFunctions</Filter>
@@ -602,21 +602,21 @@
       <Filter>2. Code Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>2. Code Files\GameState</Filter>
+      <Filter>2. Code Files\Scene\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="TitleScreen.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Opening.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Options.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1048,10 +1048,10 @@
       <Filter>1. Header Files\Singleton</Filter>
     </ClInclude>
     <ClInclude Include="MainMenu.h">
-      <Filter>1. Header Files\GameState\Menu</Filter>
+      <Filter>1. Header Files\Scene\Scenes\Menu</Filter>
     </ClInclude>
     <ClInclude Include="MainMenuConstants.h">
-      <Filter>1. Header Files\GameState\Menu</Filter>
+      <Filter>1. Header Files\Scene\Scenes\Menu</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>1. Header Files\Singleton</Filter>
@@ -1072,7 +1072,7 @@
       <Filter>1. Header Files\I/O</Filter>
     </ClInclude>
     <ClInclude Include="PauseBattle.h">
-      <Filter>1. Header Files\GameState\PauseBattle</Filter>
+      <Filter>1. Header Files\Scene\Scenes\PauseBattle</Filter>
     </ClInclude>
     <ClInclude Include="cotr_imgui_debugger.h">
       <Filter>1. Header Files\Deps\ImGui</Filter>
@@ -1279,13 +1279,13 @@
       <Filter>1. Header Files\GameObject\BattleObject\BattleObjectComponent\CollisionBox</Filter>
     </ClInclude>
     <ClInclude Include="Battle.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="CharaSelect.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="StageSelect.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="InputSequence.h">
       <Filter>1. Header Files\Polling</Filter>
@@ -1390,7 +1390,7 @@
       <Filter>1. Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>1. Header Files\GameState</Filter>
+      <Filter>1. Header Files\Scene\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2807,21 +2807,6 @@
     <Filter Include="2. Code Files\GameObject\BattleObject\Fighter\FighterComponent">
       <UniqueIdentifier>{b20cc018-15ea-4edc-beaf-0e9e00133936}</UniqueIdentifier>
     </Filter>
-    <Filter Include="1. Header Files\GameState">
-      <UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameState\Menu">
-      <UniqueIdentifier>{fbd69fb1-4a33-4853-9a3e-e7d893825726}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Header Files\GameState\PauseBattle">
-      <UniqueIdentifier>{59d945f7-e9b4-4480-a490-1d41d967c21a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\GameState">
-      <UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2. Code Files\GameState\Battle">
-      <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
-    </Filter>
     <Filter Include="2. Code Files\GameObject\BattleObject\BattleObjectComponent">
       <UniqueIdentifier>{ae43b494-c9cc-47a9-b2ca-618fac5f1cc7}</UniqueIdentifier>
     </Filter>
@@ -3010,6 +2995,21 @@
     </Filter>
     <Filter Include="2. Code Files\Scene\SceneElement">
       <UniqueIdentifier>{09f3e27a-2cc5-4ab5-b923-a0db8f47efb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Scene\Scenes">
+      <UniqueIdentifier>{f31afaf3-9d3c-4ce2-86f4-fd2a3b8e56ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2. Code Files\Scene\Scenes\Battle">
+      <UniqueIdentifier>{8cbaeb84-792b-45f2-8637-29198c2d9114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene\Scenes">
+      <UniqueIdentifier>{45d2bf84-e3c5-470f-b4a4-40381b6e6c14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene\Scenes\Menu">
+      <UniqueIdentifier>{fbd69fb1-4a33-4853-9a3e-e7d893825726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1. Header Files\Scene\Scenes\PauseBattle">
+      <UniqueIdentifier>{59d945f7-e9b4-4480-a490-1d41d967c21a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

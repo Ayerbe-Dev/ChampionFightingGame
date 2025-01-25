@@ -174,6 +174,22 @@ CSS::CSS() {
 					.add_event("up_press", [this](SceneElement* e) {
 						set_player_active_element(&e->get_sibling("Controls Hover"));
 					})
+					.add_event("left_press", [this](SceneElement* e) {
+						if (player_id) {
+							e->int_var("selected_slot") = e->int_var("prev_selected_slot");
+							e->int_var("prev_selected_slot") = -1;
+							e->bool_var("last_input_right") = false;
+							set_player_active_element(&e->get_sibling("Chara Hover"));
+						}
+					})
+					.add_event("right_press", [this](SceneElement* e) {
+						if (!player_id) {
+							e->int_var("selected_slot") = e->int_var("prev_selected_slot");
+							e->int_var("prev_selected_slot") = -1;
+							e->bool_var("last_input_right") = true;
+							set_player_active_element(&e->get_sibling("Chara Hover"));
+						}
+					})
 					.add_event("select_press", [this](SceneElement* e) {
 						set_player_active_element(&e->get_sibling("Name Entry"));
 					})
@@ -328,7 +344,7 @@ CSS::CSS() {
 						SceneElement& parent = e->get_parent();
 						parent.get_screen_texture("Chara Slot Large").set_alpha(127);
 						parent.get_screen_texture("Name Entry Cursor").set_alpha(0);
-						select_slot(player_id);
+						select_slot();
 					})
 					.add_event("up_press", [this](SceneElement* e) {
 						std::string neighbor_val = "up_left_neighbor";
@@ -341,7 +357,7 @@ CSS::CSS() {
 						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
 						e->int_var("selected_slot") = new_selection;
 						e->bool_var("last_input_right") = !e->bool_var("last_input_right");
-						select_slot(player_id);
+						select_slot();
 					})
 					.add_event("down_press", [this](SceneElement* e) {
 						std::string neighbor_val = "down_left_neighbor";
@@ -354,7 +370,7 @@ CSS::CSS() {
 						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
 						e->int_var("selected_slot") = new_selection;
 						e->bool_var("last_input_right") = !e->bool_var("last_input_right");
-						select_slot(player_id);
+						select_slot();
 					})
 					.add_event("left_press", [this](SceneElement* e) {
 						int new_selection = root.get_child("Chara Slots")
@@ -371,7 +387,7 @@ CSS::CSS() {
 						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
 						e->int_var("selected_slot") = new_selection;
 						e->bool_var("last_input_right") = false;
-						select_slot(player_id);
+						select_slot();
 					})
 					.add_event("right_press", [this](SceneElement* e) {
 						int new_selection = root.get_child("Chara Slots")
@@ -388,7 +404,7 @@ CSS::CSS() {
 						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
 						e->int_var("selected_slot") = new_selection;
 						e->bool_var("last_input_right") = true;
-						select_slot(player_id);
+						select_slot();
 					})
 					.add_event("select_press", [this](SceneElement* e) {
 						demo_models[player_id].change_anim("selected", 1.0f, 0.0f);
@@ -422,7 +438,7 @@ CSS::CSS() {
 						else {
 							e->int_var("selected_costume")--;
 						}
-						select_costume(player_id);
+						select_costume();
 					})
 					.add_event("down_press", [this](SceneElement* e) {
 						if (e->int_var("selected_costume") + 1 == root.get_child("Chara Slots")
@@ -432,7 +448,7 @@ CSS::CSS() {
 						else {
 							e->int_var("selected_costume")++;
 						}
-						select_costume(player_id);
+						select_costume();
 					})
 					.add_event("left_press", [this](SceneElement* e) {
 						SceneElement& chara_slot = root.get_child("Chara Slots").get_child(e->int_var("selected_slot"));
@@ -443,7 +459,7 @@ CSS::CSS() {
 						else {
 							e->int_var("selected_color")--;
 						}
-						select_color(player_id);
+						select_color();
 					})
 					.add_event("right_press", [this](SceneElement* e) {
 						SceneElement& chara_slot = root.get_child("Chara Slots").get_child(e->int_var("selected_slot"));
@@ -455,7 +471,7 @@ CSS::CSS() {
 						else {
 							e->int_var("selected_color")++;
 						}
-						select_color(player_id);
+						select_color();
 					})
 					.add_event("select_press", [this](SceneElement* e) {
 						set_player_active_element(&e->get_sibling("Ready"));
@@ -616,7 +632,7 @@ CSS::CSS() {
 	for (int i = 0; i < 2; i++) {
 		player_id = i;
 		select_preferred_chara_kind(player[i]->player_info);
-		select_slot(i);
+		select_slot();
 		demo_models[i].set_rot(glm::vec3(0.0, 0.0, 90.0));
 		if (!i) {
 			demo_models[i].set_pos(glm::vec3(-350.0, 0.0, 0.0));
@@ -797,6 +813,11 @@ bool CSS::load_css() {
 }
 
 void CSS::process_main() {
+	std::cout << get_active_element().get_full_name() << ", ";
+	player_id = (bool)!player_id;
+	std::cout << get_active_element().get_full_name() << "\n";
+	player_id = (bool)!player_id;
+
 	GameManager* game_manager = GameManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 	if (thread_manager->is_active(THREAD_KIND_LOAD)) {
@@ -896,14 +917,14 @@ void CSS::render_main() {
 /// Select the CSS slot that the cursor is hovering over. Works by comparing the column and row of each slot to the column and row of the player, so 
 /// make sure to set that up properly if this function is copied into another menu.
 /// </summary>
-void CSS::select_slot(int player_idx) {
-	SceneElement& cursor = root.get_child("Player Cursors").get_child(player_idx);
+void CSS::select_slot() {
+	SceneElement& cursor = root.get_child("Player Cursors").get_child(player_id);
 	SceneElement& chara_slot = root.get_child("Chara Slots").get_child(cursor.int_var("selected_slot"));
 
 	cursor.get_screen_texture("Cursor").set_pos(chara_slot.get_screen_texture("Chara Render").get_pos_target().get_target_val(), 8);
 
-	cursor.int_var("selected_costume") = player[player_idx]->player_info->preferred_costume[chara_slot.int_var("chara_kind")];
-	cursor.int_var("selected_color") = player[player_idx]->player_info->preferred_color[chara_slot.int_var("chara_kind")];
+	cursor.int_var("selected_costume") = player[player_id]->player_info->preferred_costume[chara_slot.int_var("chara_kind")];
+	cursor.int_var("selected_color") = player[player_id]->player_info->preferred_color[chara_slot.int_var("chara_kind")];
 
 	ScreenTexture& large_css_slot = cursor.get_screen_texture("Chara Slot Large");
 
@@ -913,44 +934,44 @@ void CSS::select_slot(int player_idx) {
 		.set_orientation(TEXTURE_BOTTOM_LEFT)
 		.set_alpha(127);
 
-	if (demo_models[player_idx].model.is_loaded()) {
-		demo_models[player_idx].model.unload_model_instance();
+	if (demo_models[player_id].model.is_loaded()) {
+		demo_models[player_id].model.unload_model_instance();
 	}
 	if (cursor.int_var("selected_slot") < loaded_chars && cursor.int_var("selected_slot") != -1) {
-		demo_models[player_idx].load_model(
+		demo_models[player_id].load_model(
 			"resource/chara/" + chara_slot.string_var("resource_name") +
 			"/model/m" + std::to_string(cursor.int_var("selected_costume")) + "/model.fbx",
 			"c" + std::to_string(cursor.int_var("selected_color"))
 		);
-		demo_models[player_idx].init_shader();
-		demo_models[player_idx].anim_table = demo_anim_tables[cursor.int_var("selected_slot")];
-		if (cursor.int_var("chara_selection_state") == CHARA_SELECTION_STATE_CHARA_HOVER) {
-			demo_models[player_idx].change_anim("deselected_wait", 1.0f, 0.0f);
+		demo_models[player_id].init_shader();
+		demo_models[player_id].anim_table = demo_anim_tables[cursor.int_var("selected_slot")];
+		if (get_active_element().get_name() == "Chara Hover") {
+			demo_models[player_id].change_anim("deselected_wait", 1.0f, 0.0f);
 		}
 		else {
-			demo_models[player_idx].change_anim("selected_wait", 1.0f, 0.0f);
+			demo_models[player_id].change_anim("selected_wait", 1.0f, 0.0f);
 		}
 	}
 }
 
-void CSS::select_costume(int player_idx) {
-	if (demo_models[player_idx].model.is_loaded()) {
-		demo_models[player_idx].model.unload_model_instance();
+void CSS::select_costume() {
+	if (demo_models[player_id].model.is_loaded()) {
+		demo_models[player_id].model.unload_model_instance();
 	}
-	SceneElement& player_cursor = root.get_child("Player Cursors").get_child(player_idx);
+	SceneElement& player_cursor = root.get_child("Player Cursors").get_child(player_id);
 	SceneElement& selected_slot = root.get_child("Chara Slots").get_child(player_cursor.int_var("selected_slot"));
-	demo_models[player_idx].load_model(
+	demo_models[player_id].load_model(
 		"resource/chara/" + selected_slot.string_var("resource_name") +
 		"/model/m" + std::to_string(player_cursor.int_var("selected_costume")) + "/model.fbx",
 		"c0"
 	);
 }
 
-void CSS::select_color(int player_idx) {
-	if (demo_models[player_idx].model.is_loaded()) {
-		demo_models[player_idx].model.unload_textures();
-		demo_models[player_idx].model.load_textures("c" +
-			std::to_string(root.get_child("Player Cursors").get_child(player_idx).int_var("selected_color"))
+void CSS::select_color() {
+	if (demo_models[player_id].model.is_loaded()) {
+		demo_models[player_id].model.unload_textures();
+		demo_models[player_id].model.load_textures("c" +
+			std::to_string(root.get_child("Player Cursors").get_child(player_id).int_var("selected_color"))
 		);
 	}
 }
@@ -1002,7 +1023,7 @@ void CSS::load_chara_model_into_main_thread() {
 			);
 			demo_models[i].init_shader();
 			demo_models[i].anim_table = demo_anim_tables[selection];
-			if (cursor.int_var("chara_selection_state") == CHARA_SELECTION_STATE_CHARA_HOVER) {
+			if (get_active_element().get_name() == "Chara Hover") {
 				demo_models[i].change_anim("deselected_wait", 1.0f, 0.0f);
 			}
 			else {

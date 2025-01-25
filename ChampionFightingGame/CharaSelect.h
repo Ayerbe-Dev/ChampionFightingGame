@@ -45,9 +45,9 @@ public:
     int loaded_chars;
     int thread_loaded_chars;
 private:
-    void select_slot(int player_idx);
-    void select_costume(int player_idx);
-    void select_color(int player_idx);
+    void select_slot();
+    void select_costume();
+    void select_color();
     void select_preferred_chara_kind(PlayerInfo* player_info);
     void load_chara_model_into_main_thread();
 };

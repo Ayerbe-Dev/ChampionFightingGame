@@ -70,7 +70,7 @@ CSS::CSS() {
 	}
 	light_stream.close();
 
-	load_font("Name Entry Font", "FiraCode", 46);
+	load_font("Name Entry Font", "FiraCode", 24);
 
 	root.add_elements({ 
 		{"Background", SceneElement({
@@ -141,7 +141,8 @@ CSS::CSS() {
 	load_event("Hover Back Press", [this](SceneElement* e) {
 		if (!player[player_id]->controller.has_any_controller()) {
 			player_id = (bool)!player_id;
-			set_player_active_element(&e->get_sibling("Chara"));
+			SceneElement& other = get_active_element();
+			set_player_active_element(&other.get_sibling("Chara"));
 			execute_event("deactivate_from_ready");
 			player_id = (bool)!player_id;
 		}
@@ -159,14 +160,14 @@ CSS::CSS() {
 			SceneElement({
 				{"Name Entry Hover", SceneElement()
 					.add_event("activate", [this](SceneElement* e) {
-						SceneElement& parent = e->get_parent();
+						SceneElement& p = e->get_parent();
 						if (!player_id) {
-							parent.get_screen_texture("Cursor").set_pos(glm::vec3(125, 168.5, 0), 12);
+							p.get_screen_texture("Cursor").set_pos(glm::vec3(125, 168.5, 0), 12);
 						}
 						else {
-							parent.get_screen_texture("Cursor").set_pos(glm::vec3(3555, 168.5, 0), 12);
+							p.get_screen_texture("Cursor").set_pos(glm::vec3(3555, 168.5, 0), 12);
 						}
-						parent.get_screen_texture("Name Entry Cursor").set_alpha(255);
+						p.get_screen_texture("Name Entry Cursor").set_alpha(255);
 					})
 					.add_event("process", [this](SceneElement* e) {
 						e->get_parent().get_screen_texture("Name Entry Cursor").next_sprite();
@@ -176,18 +177,24 @@ CSS::CSS() {
 					})
 					.add_event("left_press", [this](SceneElement* e) {
 						if (player_id) {
-							e->int_var("selected_slot") = e->int_var("prev_selected_slot");
-							e->int_var("prev_selected_slot") = -1;
-							e->bool_var("last_input_right") = false;
+							SceneElement& p = e->get_parent();
+							p.int_var("selected_slot") = p.int_var("prev_selected_slot");
+							p.int_var("prev_selected_slot") = -1;
+							p.bool_var("last_input_right") = false;
 							set_player_active_element(&e->get_sibling("Chara Hover"));
+							SceneElement& chara_slot = root.get_child("Chara Slots").get_child(p.int_var("selected_slot"));
+							p.get_screen_texture("Cursor").set_pos(chara_slot.get_screen_texture("Chara Render").get_pos_target().get_target_val(), 5);
 						}
 					})
 					.add_event("right_press", [this](SceneElement* e) {
 						if (!player_id) {
-							e->int_var("selected_slot") = e->int_var("prev_selected_slot");
-							e->int_var("prev_selected_slot") = -1;
-							e->bool_var("last_input_right") = true;
+							SceneElement& p = e->get_parent();
+							p.int_var("selected_slot") = p.int_var("prev_selected_slot");
+							p.int_var("prev_selected_slot") = -1;
+							p.bool_var("last_input_right") = true;
 							set_player_active_element(&e->get_sibling("Chara Hover"));
+							SceneElement& chara_slot = root.get_child("Chara Slots").get_child(p.int_var("selected_slot"));
+							p.get_screen_texture("Cursor").set_pos(chara_slot.get_screen_texture("Chara Render").get_pos_target().get_target_val(), 5);
 						}
 					})
 					.add_event("select_press", [this](SceneElement* e) {
@@ -196,132 +203,153 @@ CSS::CSS() {
 					.add_event("back_press", get_event("Hover Back Press"))
 				},
 				{"Name Entry", SceneElement()
-					.add_event("activate", [this](SceneElement* e) {
-						SceneElement& parent = e->get_parent();
-						SaveManager* save_manager = SaveManager::get_instance();
-						int num_entries = save_manager->get_num_player_info();
-						for (int i2 = 0, max2 = std::min(5, num_entries + 1);
-							i2 < max2; i2++) {
-							parent.get_screen_texture("Name Entry " + std::to_string(i2)).set_pos(glm::vec3(128, 338.5 - 64 * (i2 + 1), 0.0f), 5);
-							parent.get_screen_text("Name Entry Text " + std::to_string(i2)).set_pos(glm::vec3(1580 * (player_id * 2 - 1), 340 - 64 * (i2 + 1), 0.0f), 5);
-						}
-						parent.get_screen_text("Name Entry Text").update_text("Player " + std::to_string(player_id + 1));
-						int idx = parent.int_var("name_entry_idx");
-						if (num_entries >= 5 && idx > 2) {
-							idx = std::max(4 - (num_entries - idx), 2);
-						}
-						parent.get_screen_texture("Name Entry Cursor").set_pos(glm::vec3(128, 338.5 - 64 * (idx + 1), 0.0f), 5);
-					})
-					.add_event("deactivate", [this](SceneElement* e) {
-						SceneElement& parent = e->get_parent();
-						SaveManager* save_manager = SaveManager::get_instance();
-						int num_entries = save_manager->get_num_player_info();
-						for (int i2 = 0, max2 = std::min(5, num_entries + 1);
-							i2 < max2; i2++) {
-							parent.get_screen_texture("Name Entry " + std::to_string(i2)).set_pos(glm::vec3(128, 338.5, 0.0f), 5);
-							parent.get_screen_texture("Name Entry Text " + std::to_string(i2)).set_pos(glm::vec3(1580 * (player_id * 2 - 1), 340, 0.0f), 5);
-						}
-						if (parent.int_var("name_entry_idx") == -1) {
-							parent.get_screen_text("Name Entry Text").update_text("Player " + std::to_string(player_id + 1));
-						}
-						else {
-							parent.get_screen_text("Name Entry Text").update_text(save_manager->get_player_info(parent.int_var("name_entry_idx"))->name);
-						}
-						parent.get_screen_texture("Name Entry Cursor").set_pos(glm::vec3(128, 338.5, 0.0f), 5);
-					})
-					.add_event("process", [this](SceneElement* e) {
+					.add_event("Update Name Texts", [this](SceneElement* e) {
 						SceneElement& p = e->get_parent();
 						SaveManager* save_manager = SaveManager::get_instance();
 						int num_entries = save_manager->get_num_player_info();
 						if (num_entries < 5) {
+							//If there are less than 5 entries, write all the ones we have, then put the
+							//"New Name" button after the last entry
+
 							int i2;
 							for (i2 = 0; i2 < num_entries; i2++) {
-								p.get_screen_text("Name Entry Text " + std::to_string(i2)).update_text(save_manager->get_player_info(i2)->name);
+								p.get_screen_text(i2).update_text(save_manager->get_player_info(i2)->name);
 							}
-							p.get_screen_text("Name Entry Text " + std::to_string(i2)).update_text("New Name");
+							p.get_screen_text(i2).update_text("New Name");
 						}
 						else if (p.int_var("name_entry_idx") < 3) {
+							//If there are 5 or more, but we're close enough for the first entry to
+							//be on screen, just show the first 5 entries, with no "New Name" option
 							for (int i2 = 0; i2 < 5; i2++) {
-								p.get_screen_text("Name Entry Text " + std::to_string(i2)).update_text(save_manager->get_player_info(i2)->name);
+								p.get_screen_text(i2).update_text(save_manager->get_player_info(i2)->name);
 							}
 						}
 						else if (num_entries - p.int_var("name_entry_idx") < 3) {
+							//If we can't put the first entry on screen, but we CAN put the last one on
+							//screen, show the last 4 entries and then the name entry button
 							int idx = 0;
 							for (int i2 = num_entries - 4; i2 < num_entries; i2++, idx++) {
-								p.get_screen_text("Name Entry Text " + std::to_string(idx)).update_text(save_manager->get_player_info(i2)->name);
+								p.get_screen_text(idx).update_text(save_manager->get_player_info(i2)->name);
 							}
-							p.get_screen_text("Name Entry Text 4").update_text("New Name");
+							p.get_screen_text(4).update_text("New Name");
 						}
 						else {
+							//If we can't see either end, show the 5 entries closest to our index
 							int idx = 0;
 							for (int i2 = p.int_var("name_entry_idx") - 2; i2 < p.int_var("name_entry_idx") + 3; i2++, idx++) {
-								p.get_screen_text("Name Entry Text " + std::to_string(idx)).update_text(save_manager->get_player_info(i2)->name);
+								p.get_screen_text(idx).update_text(save_manager->get_player_info(i2)->name);
 							}
 						}
+					})
+					.add_event("activate", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
+						SaveManager* save_manager = SaveManager::get_instance();
+						int num_entries = save_manager->get_num_player_info();
+						for (int i2 = 0, max2 = std::min(5, num_entries + 1);
+							i2 < max2; i2++) {
+							p.get_screen_texture("Name Entry " + std::to_string(i2)).set_pos(glm::vec3(128, 338.5 - 64 * (i2 + 1), 0.0f), 5);
+							p.get_screen_text(i2).set_pos(glm::vec3(1580 * (player_id * 2 - 1), 340 - 64 * (i2 + 1), 0.0f), 5);
+						}
+						p.get_screen_text("Name Entry Text").update_text("Player " + std::to_string(player_id + 1));
+						int idx = p.int_var("name_entry_idx");
+						if (num_entries >= 5 && idx > 2) {
+							idx = std::max(4 - (num_entries - idx), 2);
+						}
+						p.get_screen_texture("Name Entry Cursor").set_pos(glm::vec3(128, 338.5 - 64 * (idx + 1), 0.0f), 5);
+						execute_event("Update Name Texts");
+					})
+					.add_event("deactivate", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
+						SaveManager* save_manager = SaveManager::get_instance();
+						int num_entries = save_manager->get_num_player_info();
+						for (int i2 = 0, max2 = std::min(5, num_entries + 1);
+							i2 < max2; i2++) {
+							p.get_screen_texture("Name Entry " + std::to_string(i2)).set_pos(glm::vec3(128, 338.5, 0.0f), 5);
+							p.get_screen_text(i2).set_pos(glm::vec3(1580 * (player_id * 2 - 1), 340, 0.0f), 5);
+						}
+						if (p.int_var("name_entry_idx") == -1) {
+							p.get_screen_text("Name Entry Text").update_text("Player " + std::to_string(player_id + 1));
+						}
+						else {
+							p.get_screen_text("Name Entry Text").update_text(save_manager->get_player_info(p.int_var("name_entry_idx"))->name);
+						}
+						p.get_screen_texture("Name Entry Cursor").set_pos(glm::vec3(128, 338.5, 0.0f), 5);
+					})
+					.add_event("process", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						p.get_screen_texture("Name Entry Cursor").next_sprite();
 					})
 					.add_event("up_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						SaveManager* save_manager = SaveManager::get_instance();
 						int num_entries = save_manager->get_num_player_info();
-						if (e->int_var("name_entry_idx") == -1) return;
-						if (e->int_var("name_entry_idx") < 3
-						|| num_entries - e->int_var("name_entry_idx") < 2
+						if (p.int_var("name_entry_idx") == -1) return;
+						if (p.int_var("name_entry_idx") < 3
+						|| num_entries - p.int_var("name_entry_idx") < 2
 						|| num_entries <= 5) {
-							TargetVar<glm::vec3> target = e->get_screen_texture("Name Entry Cursor").get_pos_target();
+							TargetVar<glm::vec3> target = p.get_screen_texture("Name Entry Cursor").get_pos_target();
 							if (target.get_frames()) {
 								glm::vec3 target_pos = target.get_target_val();
-								e->get_screen_texture("Name Entry Cursor").set_pos(target_pos + glm::vec3(0.0, 64.0, 0.0), target.get_frames());
+								p.get_screen_texture("Name Entry Cursor").set_pos(target_pos + glm::vec3(0.0, 64.0, 0.0), target.get_frames());
 							}
 							else {
-								e->get_screen_texture("Name Entry Cursor").add_pos(glm::vec3(0.0, 64.0, 0.0));
+								p.get_screen_texture("Name Entry Cursor").add_pos(glm::vec3(0.0, 64.0, 0.0));
 							}
 						}
-						e->int_var("name_entry_idx")--;
+						p.int_var("name_entry_idx")--;
+						execute_event("Update Name Texts");
 					})
 					.add_event("down_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						SaveManager* save_manager = SaveManager::get_instance();
 						int num_entries = save_manager->get_num_player_info();
-						if (e->int_var("name_entry_idx") == num_entries) return;
-							if (e->int_var("name_entry_idx") < 2
-							|| num_entries - e->int_var("name_entry_idx") < 3
+						if (p.int_var("name_entry_idx") == num_entries) return;
+							if (p.int_var("name_entry_idx") < 2
+							|| num_entries - p.int_var("name_entry_idx") < 3
 							|| num_entries <= 5) {
-								TargetVar<glm::vec3> target = e->get_screen_texture("Name Entry Cursor").get_pos_target();
+								TargetVar<glm::vec3> target = p.get_screen_texture("Name Entry Cursor").get_pos_target();
 								if (target.get_frames()) {
 									glm::vec3 target_pos = target.get_target_val();
-									e->get_screen_texture("Name Entry Cursor").set_pos(target_pos - glm::vec3(0.0, 64.0, 0.0), target.get_frames());
+									p.get_screen_texture("Name Entry Cursor").set_pos(target_pos - glm::vec3(0.0, 64.0, 0.0), target.get_frames());
 								}
 								else {
-									e->get_screen_texture("Name Entry Cursor").add_pos(glm::vec3(0.0, -64.0, 0.0));
+									p.get_screen_texture("Name Entry Cursor").add_pos(glm::vec3(0.0, -64.0, 0.0));
 								}
 							}
-							e->int_var("name_entry_idx")++;
+							p.int_var("name_entry_idx")++;
+							execute_event("Update Name Texts");
 					})
 					.add_event("left_press", [this](SceneElement* e) {
 						if (player_id) {
-							e->int_var("selected_slot") = e->int_var("prev_selected_slot");
+							SceneElement& p = e->get_parent();
+							p.int_var("selected_slot") = p.int_var("prev_selected_slot");
 							set_player_active_element(&e->get_sibling("Chara Hover"));
 						}
 					})
 					.add_event("right_press", [this](SceneElement* e) {
 						if (!player_id) {
-							e->int_var("selected_slot") = e->int_var("prev_selected_slot");
+							SceneElement& p = e->get_parent();
+							p.int_var("selected_slot") = p.int_var("prev_selected_slot");
 							set_player_active_element(&e->get_sibling("Chara Hover"));
 						}
 					})
 					.add_event("select_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						SaveManager* save_manager = SaveManager::get_instance();
-						if (e->int_var("name_entry_idx") == save_manager->get_num_player_info()) {
+						if (p.int_var("name_entry_idx") == save_manager->get_num_player_info()) {
 							//We hit the "New Player Info" button, time to do some shenanigans
 							return;
 						}
-						e->int_var("prev_name_entry_idx") = e->int_var("name_entry_idx");
-						player[player_id]->load_player_info(e->int_var("name_entry_idx"));
+						p.int_var("prev_name_entry_idx") = p.int_var("name_entry_idx");
+						player[player_id]->load_player_info(p.int_var("name_entry_idx"));
 						select_preferred_chara_kind(player[player_id]->player_info);
 						player[player_id]->controller.poll_menu();
 						set_player_active_element(&e->get_sibling("Chara Hover"));
+						select_slot();
 					})
 					.add_event("back_press", [this](SceneElement* e) {
-						e->int_var("name_entry_idx") = e->int_var("prev_name_entry_idx");
+						SceneElement& p = e->get_parent();
+						p.int_var("name_entry_idx") = p.int_var("prev_name_entry_idx");
 						set_player_active_element(&e->get_sibling("Name Entry Hover"));
 					})
 				},
@@ -341,69 +369,73 @@ CSS::CSS() {
 				},
 				{"Chara Hover", SceneElement()
 					.add_event("activate", [this](SceneElement* e) {
-						SceneElement& parent = e->get_parent();
-						parent.get_screen_texture("Chara Slot Large").set_alpha(127);
-						parent.get_screen_texture("Name Entry Cursor").set_alpha(0);
-						select_slot();
+						SceneElement& p = e->get_parent();
+						p.get_screen_texture("Chara Slot Mobile").set_alpha(0);
+						p.get_screen_texture("Chara Slot Large").set_alpha(127);
+						p.get_screen_texture("Name Entry Cursor").set_alpha(0);
 					})
 					.add_event("up_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						std::string neighbor_val = "up_left_neighbor";
-						if (e->bool_var("last_input_right")) {
+						if (p.bool_var("last_input_right")) {
 							neighbor_val = "up_right_neighbor";
 						}
 						int new_selection = root.get_child("Chara Slots")
-							.get_child(e->int_var("selected_slot")).int_var(neighbor_val);
+							.get_child(p.int_var("selected_slot")).int_var(neighbor_val);
 						if (new_selection == -1) return;
-						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
-						e->int_var("selected_slot") = new_selection;
-						e->bool_var("last_input_right") = !e->bool_var("last_input_right");
+						p.int_var("prev_selected_slot") = p.int_var("selected_slot");
+						p.int_var("selected_slot") = new_selection;
+						p.bool_var("last_input_right") = !p.bool_var("last_input_right");
 						select_slot();
 					})
 					.add_event("down_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						std::string neighbor_val = "down_left_neighbor";
-						if (e->bool_var("last_input_right")) {
+						if (p.bool_var("last_input_right")) {
 							neighbor_val = "down_right_neighbor";
 						}
 						int new_selection = root.get_child("Chara Slots")
-							.get_child(e->int_var("selected_slot")).int_var(neighbor_val);
+							.get_child(p.int_var("selected_slot")).int_var(neighbor_val);
 						if (new_selection == -1) return;
-						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
-						e->int_var("selected_slot") = new_selection;
-						e->bool_var("last_input_right") = !e->bool_var("last_input_right");
+						p.int_var("prev_selected_slot") = p.int_var("selected_slot");
+						p.int_var("selected_slot") = new_selection;
+						p.bool_var("last_input_right") = !p.bool_var("last_input_right");
 						select_slot();
 					})
 					.add_event("left_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						int new_selection = root.get_child("Chara Slots")
-							.get_child(e->int_var("selected_slot")).int_var("left_neighbor");
+							.get_child(p.int_var("selected_slot")).int_var("left_neighbor");
 						if (new_selection == -1) {
 							if (!player_id) {
-								e->int_var("prev_selected_slot") = e->int_var("selected_slot");
-								e->int_var("selected_slot") = new_selection;
-								e->bool_var("last_input_right") = false;
+								p.int_var("prev_selected_slot") = p.int_var("selected_slot");
+								p.int_var("selected_slot") = new_selection;
+								p.bool_var("last_input_right") = false;
 								set_player_active_element(&e->get_sibling("Name Entry Hover"));
 							}
 							return;
 						}
-						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
-						e->int_var("selected_slot") = new_selection;
-						e->bool_var("last_input_right") = false;
+						p.int_var("prev_selected_slot") = p.int_var("selected_slot");
+						p.int_var("selected_slot") = new_selection;
+						p.bool_var("last_input_right") = false;
 						select_slot();
 					})
 					.add_event("right_press", [this](SceneElement* e) {
+						SceneElement& p = e->get_parent();
 						int new_selection = root.get_child("Chara Slots")
-							.get_child(e->int_var("selected_slot")).int_var("right_neighbor");
+							.get_child(p.int_var("selected_slot")).int_var("right_neighbor");
 						if (new_selection == -1) {
 							if (player_id) {
-								e->int_var("prev_selected_slot") = e->int_var("selected_slot");
-								e->int_var("selected_slot") = new_selection;
-								e->bool_var("last_input_right") = true;
+								p.int_var("prev_selected_slot") = p.int_var("selected_slot");
+								p.int_var("selected_slot") = new_selection;
+								p.bool_var("last_input_right") = true;
 								set_player_active_element(&e->get_sibling("Name Entry Hover"));
 							}
 							return;
 						}
-						e->int_var("prev_selected_slot") = e->int_var("selected_slot");
-						e->int_var("selected_slot") = new_selection;
-						e->bool_var("last_input_right") = true;
+						p.int_var("prev_selected_slot") = p.int_var("selected_slot");
+						p.int_var("selected_slot") = new_selection;
+						p.bool_var("last_input_right") = true;
 						select_slot();
 					})
 					.add_event("select_press", [this](SceneElement* e) {
@@ -423,7 +455,11 @@ CSS::CSS() {
 							.get_child(p.int_var("selected_slot"))
 							.get_screen_texture("Chara Render");
 
-						mobile_css_slot = ScreenTexture(chara_render);
+						mobile_css_slot.destroy();
+						mobile_css_slot = ScreenTexture(chara_render.init_copy())
+							.set_orientation(TEXTURE_BOTTOM_LEFT)
+							.set_pos(chara_render.get_pos())
+							.set_scale(chara_render.get_width_scale());
 						mobile_css_slot.set_pos(p.get_screen_texture("Chara Slot Large").get_pos(), 16);
 					})
 					.add_event("deactivate_from_ready", [this](SceneElement* e) {
@@ -431,45 +467,49 @@ CSS::CSS() {
 					})
 					.add_event("process", get_event("Move Mobile Slots"))
 					.add_event("up_press", [this](SceneElement* e) {
-						if (e->int_var("selected_costume") == 0) {
-								e->int_var("selected_costume") = root.get_child("Chara Slots")
-								.get_child(e->int_var("selected_slot")).int_var("num_costumes") - 1;
+						SceneElement& p = e->get_parent();
+						if (p.int_var("selected_costume") == 0) {
+								p.int_var("selected_costume") = root.get_child("Chara Slots")
+								.get_child(p.int_var("selected_slot")).int_var("num_costumes") - 1;
 						}
 						else {
-							e->int_var("selected_costume")--;
+							p.int_var("selected_costume")--;
 						}
 						select_costume();
 					})
 					.add_event("down_press", [this](SceneElement* e) {
-						if (e->int_var("selected_costume") + 1 == root.get_child("Chara Slots")
-								.get_child(e->int_var("selected_slot")).int_var("num_costumes")) {
-							e->int_var("selected_costume") = 0;
+						SceneElement& p = e->get_parent();
+						if (p.int_var("selected_costume") + 1 == root.get_child("Chara Slots")
+								.get_child(p.int_var("selected_slot")).int_var("num_costumes")) {
+							p.int_var("selected_costume") = 0;
 						}
 						else {
-							e->int_var("selected_costume")++;
+							p.int_var("selected_costume")++;
 						}
 						select_costume();
 					})
 					.add_event("left_press", [this](SceneElement* e) {
-						SceneElement& chara_slot = root.get_child("Chara Slots").get_child(e->int_var("selected_slot"));
-						if (e->int_var("selected_color") == 0) {
-							e->int_var("selected_color") = chara_slot.int_var("costume_" +
-							std::to_string(e->int_var("selected_costume")) + "_num_colors") - 1;
+						SceneElement& p = e->get_parent();
+						SceneElement& chara_slot = root.get_child("Chara Slots").get_child(p.int_var("selected_slot"));
+						if (p.int_var("selected_color") == 0) {
+							p.int_var("selected_color") = chara_slot.int_var("costume_" +
+							std::to_string(p.int_var("selected_costume")) + "_num_colors") - 1;
 						}
 						else {
-							e->int_var("selected_color")--;
+							p.int_var("selected_color")--;
 						}
 						select_color();
 					})
 					.add_event("right_press", [this](SceneElement* e) {
-						SceneElement& chara_slot = root.get_child("Chara Slots").get_child(e->int_var("selected_slot"));
-						if (e->int_var("selected_color") + 1 == chara_slot
-							.int_var("costume_" + std::to_string(e->int_var("selected_costume"))
+						SceneElement& p = e->get_parent();
+						SceneElement& chara_slot = root.get_child("Chara Slots").get_child(p.int_var("selected_slot"));
+						if (p.int_var("selected_color") + 1 == chara_slot
+							.int_var("costume_" + std::to_string(p.int_var("selected_costume"))
 								+ "_num_colors")) {
-							e->int_var("selected_color") = 0;
+							p.int_var("selected_color") = 0;
 						}
 						else {
-							e->int_var("selected_color")++;
+							p.int_var("selected_color")++;
 						}
 						select_color();
 					})
@@ -559,20 +599,66 @@ CSS::CSS() {
 						player[player_id]->update_player_info();
 					})
 				},
-				{"Name Entry Loop", SceneElementLoop(5, [this, i](SceneElement* e, int idx) {
-					e->add_elements({
-						{"Name Entry " + std::to_string(idx), ScreenTexture("resource/scene/chara_select/name_entry.png")
-							.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
-							.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
-							.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
-						},
-						{"Name Entry Text " + std::to_string(idx), ScreenText(&get_font("Name Entry Font"), "Name Entry", TextSpecifier().color(glm::vec3(0.0f)))
-							.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
-							.set_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16)
-							.set_orientation(TEXTURE_BOTTOM)
-						}
-					});
-				})},
+				{ "Name Entry 0", ScreenTexture("resource/scene/chara_select/name_entry.png")
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
+					.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
+				},
+				{ "Name Entry 1", ScreenTexture("resource/scene/chara_select/name_entry.png")
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
+					.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
+				},
+				{ "Name Entry 2", ScreenTexture("resource/scene/chara_select/name_entry.png")
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
+					.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
+				},
+				{ "Name Entry 3", ScreenTexture("resource/scene/chara_select/name_entry.png")
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
+					.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
+				},
+				{ "Name Entry 4", ScreenTexture("resource/scene/chara_select/name_entry.png")
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
+					.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
+				},
+				{ "Name Entry Text 0", ScreenText(&get_font("Name Entry Font"),
+					"Name Entry 1",
+					TextSpecifier().color(glm::vec3(0.0f)))
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16)
+					.set_orientation(TEXTURE_BOTTOM)
+				},
+				{ "Name Entry Text 1", ScreenText(&get_font("Name Entry Font"),
+					"Name Entry 2",
+					TextSpecifier().color(glm::vec3(0.0f)))
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16)
+					.set_orientation(TEXTURE_BOTTOM)
+				},
+				{ "Name Entry Text 2", ScreenText(&get_font("Name Entry Font"),
+					"Name Entry 3",
+					TextSpecifier().color(glm::vec3(0.0f)))
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16)
+					.set_orientation(TEXTURE_BOTTOM)
+				},
+				{ "Name Entry Text 3", ScreenText(&get_font("Name Entry Font"),
+					"Name Entry 4",
+					TextSpecifier().color(glm::vec3(0.0f)))
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16)
+					.set_orientation(TEXTURE_BOTTOM)
+				},
+				{ "Name Entry Text 4", ScreenText(&get_font("Name Entry Font"),
+					"Name Entry 5",
+					TextSpecifier().color(glm::vec3(0.0f)))
+					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
+					.set_pos(glm::vec3(1580 * (i * 2 - 1), 340, 0.0f), 16)
+					.set_orientation(TEXTURE_BOTTOM)
+				},
 				{"Name Entry", ScreenTexture("resource/scene/chara_select/name_entry.png")
 					.set_pos(glm::vec3(-2000.0f, -2000.0f, 0.0f))
 					.set_pos(glm::vec3(128, 338.5, 0.0f), 16)
@@ -593,7 +679,7 @@ CSS::CSS() {
 					.set_orientation(i ? TEXTURE_BOTTOM_RIGHT : TEXTURE_BOTTOM_LEFT)
 				},
 				{"Chara Slot Mobile", ScreenTexture()},
-				{"Chara Slot Large", ScreenTexture(root.get_screen_texture("Chara Slots/chara_slot_rowan/Chara Render"))
+				{"Chara Slot Large", ScreenTexture()
 					.set_scale(1.25f)
 					.set_pos(glm::vec3(i ? 3709.5f : 103.5f, 418.0f,0))
 					.set_orientation(TEXTURE_BOTTOM_LEFT)
@@ -695,129 +781,124 @@ bool CSS::load_css() {
 	demo_anim_tables.reserve(num_slots);
 
 	root.add_element("Chara Slots",
-		SceneElement({
-			//TODO: The following capture by reference feels really dangerous. I'm not sure if it'd 
-			//actually break the memory but I wouldn't be very surprised. If there are any weird CSS
-			//crashes while loading, this would be a good place to look
-			{"Loop", SceneElementLoop(num_slots, [&](SceneElement* e, int i) {
-				ParamTable param_table(css_params.get_param_table(i + css_param_sub_table_start));
-				std::string resource_name = param_table.get_param_string("resource_name");
-				int num_costumes = param_table.get_param_int("num_costumes");
-				ParamTable costume_table = param_table.get_param_table("costumes");
-				float my_col = i % num_cols;
-				int my_row = i / num_cols;
-				if (my_row == num_rows - 1) {
-					my_col += l_offset;
-					if (diagonal_neighbors) {
-						my_col += 0.5f;
-					}
-				}
-				e->add_element("chara_slot_" + resource_name, SceneElement({
-					{"Chara Render", ScreenTexture("resource/scene/chara_select/chara/" + resource_name + "/render.png")
-						.set_scale(0.5f)
-						.set_orientation(TEXTURE_BOTTOM_LEFT)
-						.set_pos(glm::vec3(
-							my_col * 164.0f - 3000,
-							2500 - (float)my_row * 239.0f,
-							0
-						))
-						.set_pos(glm::vec3(
-							my_col * 164.0f + 1092,
-							490 - (float)my_row * 239.0f,
-							0
-						), my_col * 5 + my_row * 2 + 8)
-					}})
-					.int_var("chara_kind", param_table.get_param_int("chara_kind"))
-					.string_var("resource_name", resource_name)
-					.int_var("num_costumes", num_costumes)
-					.bool_var("selectable", 
-						param_table.get_param_bool("selectable")
-					//	|| save_manager->is_chara_unlocked() <-- TODO: Make this a real function lol
-					)
-				);
-				SceneElement& slot = e->get_child("chara_slot_" + resource_name);
-				if (my_row == 0) {
-					slot.int_var("up_left_neighbor", -1);
-					slot.int_var("up_right_neighbor", -1);
-				}
-				else {
-					if (diagonal_neighbors) {
-						slot.int_var("up_left_neighbor", i - r_offset - 1);
-						slot.int_var("up_right_neighbor", i - r_offset);
-					}
-					else {
-						slot.int_var("up_left_neighbor", i - r_offset);
-						slot.int_var("up_right_neighbor", i - r_offset);
-					}
-				}
-				if (my_row == num_rows - 1) {
-					slot.int_var("down_left_neighbor", -1);
-					slot.int_var("down_right_neighbor", -1);
-					if ((int)my_col == l_offset) {
-						slot.int_var("left_neighbor", -1);
-						slot.int_var("right_neighbor", i + 1);
-					}
-					else if ((int)my_col == num_cols_bottom_row) {
-						slot.int_var("left_neighbor", i - 1);
-						slot.int_var("right_neighbor", -1);
-					}
-					else {
-						slot.int_var("left_neighbor", i - 1);
-						slot.int_var("right_neighbor", i + 1);
-					}
-				}
-				else {
-					if (my_row == num_rows - 2) {
-						if (my_col <= l_offset) {
-							slot.int_var("down_left_neighbor", (my_row + 1) * 10);
-							slot.int_var("down_right_neighbor", (my_row + 1) * 10);
-						}
-						else if (my_col >= r_offset) {
-							slot.int_var("down_left_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
-							slot.int_var("down_right_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
-						}
-						else {
-							if (diagonal_neighbors) {
-								slot.int_var("down_left_neighbor", i + r_offset);
-								slot.int_var("down_right_neighbor", i + r_offset + 1);
-							}
-							else {
-								slot.int_var("down_left_neighbor", i + r_offset);
-								slot.int_var("down_right_neighbor", i + r_offset);
-							}
-						}
-					}
-					else {
-						slot.int_var("down_left_neighbor", i + num_cols);
-						slot.int_var("down_right_neighbor", i + num_cols);
-					}
-					if ((int)my_col == 0) {
-						slot.int_var("left_neighbor", -1);
-						slot.int_var("right_neighbor", i + 1);
-					}
-					else if ((int)my_col == num_cols - 1) {
-						slot.int_var("left_neighbor", i - 1);
-						slot.int_var("right_neighbor", -1);
-					}
-					else {
-						slot.int_var("left_neighbor", i - 1);
-						slot.int_var("right_neighbor", i + 1);
-					}
-				}
-			})}
-		})
-		.int_var("num_slots", num_slots)
+		SceneElement().int_var("num_slots", num_slots)
 	);
+	SceneElement& e = root.get_child("Chara Slots");
+	for (int i = 0; i < num_slots; i++) {
+		ParamTable param_table(css_params.get_param_table(i + css_param_sub_table_start));
+		std::string resource_name = param_table.get_param_string("resource_name");
+		int num_costumes = param_table.get_param_int("num_costumes");
+		ParamTable costume_table = param_table.get_param_table("costumes");
+		float my_col = i % num_cols;
+		int my_row = i / num_cols;
+		if (my_row == num_rows - 1) {
+			my_col += l_offset;
+			if (diagonal_neighbors) {
+				my_col += 0.5f;
+			}
+		}
+		e.add_element("chara_slot_" + resource_name, SceneElement({
+			{"Chara Render", ScreenTexture("resource/scene/chara_select/chara/" + resource_name + "/render.png")
+				.set_scale(0.5f)
+				.set_orientation(TEXTURE_BOTTOM_LEFT)
+				.set_pos(glm::vec3(
+					my_col * 164.0f - 3000,
+					2500 - (float)my_row * 239.0f,
+					0
+				))
+				.set_pos(glm::vec3(
+					my_col * 164.0f + 1092,
+					490 - (float)my_row * 239.0f,
+					0
+				), my_col * 5 + my_row * 2 + 8)
+			} })
+			.int_var("chara_kind", param_table.get_param_int("chara_kind"))
+			.string_var("resource_name", resource_name)
+			.int_var("num_costumes", num_costumes)
+			.bool_var("selectable",
+				param_table.get_param_bool("selectable")
+				//	|| save_manager->is_chara_unlocked() <-- TODO: Make this a real function lol
+			)
+		);
+		SceneElement& slot = e.get_child("chara_slot_" + resource_name);
+		for (int i = 0; i < num_costumes; i++) {
+			slot.string_var("costume_" + std::to_string(i) + "_name", costume_table.get_param_table(i).get_param_string("costume_name"));
+			slot.int_var("costume_" + std::to_string(i) + "_num_colors", costume_table.get_param_table(i).get_param_int("num_colors"));
+		}
+		if (my_row == 0) {
+			slot.int_var("up_left_neighbor", -1);
+			slot.int_var("up_right_neighbor", -1);
+		}
+		else {
+			if (diagonal_neighbors) {
+				slot.int_var("up_left_neighbor", i - r_offset - 1);
+				slot.int_var("up_right_neighbor", i - r_offset);
+			}
+			else {
+				slot.int_var("up_left_neighbor", i - r_offset);
+				slot.int_var("up_right_neighbor", i - r_offset);
+			}
+		}
+		if (my_row == num_rows - 1) {
+			slot.int_var("down_left_neighbor", -1);
+			slot.int_var("down_right_neighbor", -1);
+			if ((int)my_col == l_offset) {
+				slot.int_var("left_neighbor", -1);
+				slot.int_var("right_neighbor", i + 1);
+			}
+			else if ((int)my_col == num_cols_bottom_row) {
+				slot.int_var("left_neighbor", i - 1);
+				slot.int_var("right_neighbor", -1);
+			}
+			else {
+				slot.int_var("left_neighbor", i - 1);
+				slot.int_var("right_neighbor", i + 1);
+			}
+		}
+		else {
+			if (my_row == num_rows - 2) {
+				if (my_col <= l_offset) {
+					slot.int_var("down_left_neighbor", (my_row + 1) * 10);
+					slot.int_var("down_right_neighbor", (my_row + 1) * 10);
+				}
+				else if (my_col >= r_offset) {
+					slot.int_var("down_left_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
+					slot.int_var("down_right_neighbor", (my_row + 1) * 10 + num_cols_bottom_row - 1);
+				}
+				else {
+					if (diagonal_neighbors) {
+						slot.int_var("down_left_neighbor", i + r_offset);
+						slot.int_var("down_right_neighbor", i + r_offset + 1);
+					}
+					else {
+						slot.int_var("down_left_neighbor", i + r_offset);
+						slot.int_var("down_right_neighbor", i + r_offset);
+					}
+				}
+			}
+			else {
+				slot.int_var("down_left_neighbor", i + num_cols);
+				slot.int_var("down_right_neighbor", i + num_cols);
+			}
+			if ((int)my_col == 0) {
+				slot.int_var("left_neighbor", -1);
+				slot.int_var("right_neighbor", i + 1);
+			}
+			else if ((int)my_col == num_cols - 1) {
+				slot.int_var("left_neighbor", i - 1);
+				slot.int_var("right_neighbor", -1);
+			}
+			else {
+				slot.int_var("left_neighbor", i - 1);
+				slot.int_var("right_neighbor", i + 1);
+			}
+		}
+	}
 	
 	return true;
 }
 
 void CSS::process_main() {
-	std::cout << get_active_element().get_full_name() << ", ";
-	player_id = (bool)!player_id;
-	std::cout << get_active_element().get_full_name() << "\n";
-	player_id = (bool)!player_id;
-
 	GameManager* game_manager = GameManager::get_instance();
 	ThreadManager* thread_manager = ThreadManager::get_instance();
 	if (thread_manager->is_active(THREAD_KIND_LOAD)) {
@@ -927,8 +1008,8 @@ void CSS::select_slot() {
 	cursor.int_var("selected_color") = player[player_id]->player_info->preferred_color[chara_slot.int_var("chara_kind")];
 
 	ScreenTexture& large_css_slot = cursor.get_screen_texture("Chara Slot Large");
-
-	large_css_slot = ScreenTexture(chara_slot.get_screen_texture("Chara Render"))
+	large_css_slot.destroy();
+	large_css_slot = ScreenTexture(chara_slot.get_screen_texture("Chara Render").init_copy())
 		.set_scale(1.25f)
 		.set_pos(glm::vec3(player_id ? 3709.5f : 103.5f, 418.0f, 0))
 		.set_orientation(TEXTURE_BOTTOM_LEFT)

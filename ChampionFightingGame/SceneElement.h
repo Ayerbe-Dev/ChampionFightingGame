@@ -6,7 +6,7 @@
 #include "SoundPlayer.h"
 #include <any>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <functional>
 
 const int ELEM_TYPE_ELEM = 0;
@@ -112,29 +112,29 @@ private:
 	SceneElement* parent;
 
 	std::vector<SceneElement> children;
-	std::map<std::string, std::size_t> child_map;
+	std::unordered_map<std::string, std::size_t> child_map;
 	
 	std::vector<ScreenTexture> screen_textures;
-	std::map<std::string, std::size_t> screen_texture_map;
+	std::unordered_map<std::string, std::size_t> screen_texture_map;
 
 	std::vector<ScreenText> screen_texts;
-	std::map<std::string, std::size_t> screen_text_map;
+	std::unordered_map<std::string, std::size_t> screen_text_map;
 
 	std::vector<WorldTexture> world_textures;
-	std::map<std::string, std::size_t> world_texture_map;
+	std::unordered_map<std::string, std::size_t> world_texture_map;
 
 	std::vector<WorldText> world_texts;
-	std::map<std::string, std::size_t> world_text_map;
+	std::unordered_map<std::string, std::size_t> world_text_map;
 
 	std::vector<std::size_t> render_indices;
 
-	std::map<std::string, std::function<void(SceneElement* elem)>> event_functions;
+	std::unordered_map<std::string, std::function<void(SceneElement* elem)>> event_functions;
 
-	std::map<std::string, int> int_vars;
-	std::map<std::string, float> float_vars;
-	std::map<std::string, bool> bool_vars;
-	std::map<std::string, std::string> string_vars;
-	std::map<std::string, void*> ptr_vars;
+	std::unordered_map<std::string, int> int_vars;
+	std::unordered_map<std::string, float> float_vars;
+	std::unordered_map<std::string, bool> bool_vars;
+	std::unordered_map<std::string, std::string> string_vars;
+	std::unordered_map<std::string, void*> ptr_vars;
 
 	int screen_orientation;
 	TargetVar<glm::vec3> pos;

@@ -55,6 +55,11 @@ public:
 	ScreenTexture&& add_rot(glm::vec3 rot);
 	glm::vec3 get_rot() const;
 
+	ScreenTexture&& set_magnitude(glm::vec3 magnitude);
+	ScreenTexture&& set_magnitude(glm::vec3 magnitude, int frames);
+	ScreenTexture&& add_magnitude(glm::vec3 magnitude);
+	glm::vec3 get_magnitude() const;
+
 	//TODO: Consider scrapping the "set_base_dimension" funcs and making them just "set_dimension" 
 	//funcs which reset their respective scales to 1.0f. This would be an improvement for the set_ 
 	//ones, but it's unclear what the behavior would be for the "add_" ones, I.E. would they add
@@ -177,6 +182,7 @@ private:
 
 	TargetVar<glm::vec3> pos;
 	TargetVar<glm::vec3> rot;
+	TargetVar<glm::vec3> magnitude;
 
 	TargetVar<int> base_width;
 	TargetVar<int> base_height;

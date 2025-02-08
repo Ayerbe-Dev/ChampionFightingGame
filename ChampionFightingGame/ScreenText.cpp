@@ -284,7 +284,7 @@ ScreenText& ScreenText::operator=(ScreenText&& other) noexcept {
 }
 
 ScreenText::~ScreenText() {
-	if (!ResourceManager::get_instance()->is_tex_const_copied(texture, this) && loaded) {
+	if (loaded && !ResourceManager::get_instance()->is_tex_const_copied(texture, this)) {
 		destroy();
 	}
 }
@@ -356,7 +356,7 @@ ScreenText&& ScreenText::set_pause(bool pause) {
 
 ScreenText&& ScreenText::update_text(std::string text) {
 	this->text = text;
-	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, nullptr);
+	texture = font->create_text(text, spec.rgba, spec.border_rgbs, spec.enable_center, spec.max_line_length, &num_lines, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, base_width.get_val_ptr());
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, base_height.get_val_ptr());
@@ -463,8 +463,18 @@ ScreenText&& ScreenText::set_magnitude(glm::vec3 magnitude) {
 	return std::move(*this);
 }
 
+ScreenText&& ScreenText::set_magnitude(glm::vec3 magnitude, int frames) {
+	this->magnitude.set_target_val(magnitude, frames);
+	return std::move(*this);
+}
+
+ScreenText&& ScreenText::add_magnitude(glm::vec3 magnitude) {
+	this->magnitude += magnitude;
+	return std::move(*this);
+}
+
 glm::vec3 ScreenText::get_magnitude() const {
-	return magnitude;
+	return magnitude.get_val();
 }
 
 ScreenText&& ScreenText::set_base_width(int new_width) {
@@ -653,7 +663,7 @@ void ScreenText::render() {
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
-	matrix = glm::translate(matrix, magnitude / glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f));
+	matrix = glm::translate(matrix, magnitude.get_val() / glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f));
 	if (anchor) {
 		matrix = anchor->screen_mat * matrix;
 	}

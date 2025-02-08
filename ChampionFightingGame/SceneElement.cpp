@@ -52,13 +52,6 @@ SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> element
 			render_indices.push_back(ELEM_TYPE_WRLD_TXT);
 			continue;
 		}
-		if (elements[i].second.type() == typeid(SceneElementLoop)) {
-			SceneElementLoop loop = std::any_cast<SceneElementLoop>(elements[i].second);
-			for (int i = 0; i < loop.n; i++) {
-				loop.f(this, i);
-			}
-			continue;
-		}
 		std::cout << "Child " << elements[i].first << " of element " << name << " has invalid type " << elements[i].second.type().name() << "\n";
 	}
 }
@@ -557,7 +550,10 @@ ScreenText& SceneElement::get_screen_text(std::string name) {
 	if (rec != name.npos) {
 		return get_child(name.substr(0, rec)).get_screen_text(name.substr(rec + 1, name.npos));
 	}
-	return screen_texts[screen_texture_map[name]];
+	if (!screen_text_map.contains(name)) {
+		std::cout << "Couldn't find " << name << "\n";
+	}
+	return screen_texts[screen_text_map[name]];
 }
 
 ScreenText& SceneElement::get_screen_text(std::size_t idx) {
@@ -589,7 +585,7 @@ WorldText& SceneElement::get_world_text(std::string name) {
 	if (rec != name.npos) {
 		return get_child(name.substr(0, rec)).get_world_text(name.substr(rec + 1, name.npos));
 	}
-	return world_texts[world_texture_map[name]];
+	return world_texts[world_text_map[name]];
 }
 
 WorldText& SceneElement::get_world_text(std::size_t idx) {

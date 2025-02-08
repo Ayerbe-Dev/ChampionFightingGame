@@ -22,6 +22,7 @@ ScreenTexture::ScreenTexture() {
 	this->anchor = nullptr;
 	this->pos = glm::vec3(0.0);
 	this->rot = glm::vec3(0.0);
+	this->magnitude = glm::vec3(0.0);
 	this->base_width = 0;
 	this->width_scale = 1.0;
 	this->base_height = 0;
@@ -85,6 +86,7 @@ ScreenTexture::ScreenTexture(ScreenTexture& other) {
 	this->anchor = other.anchor;
 	this->pos = other.pos;
 	this->rot = other.rot;
+	this->magnitude = other.magnitude;
 	this->base_width = other.base_width;
 	this->width_scale = other.width_scale;
 	this->base_height = other.base_height;
@@ -136,6 +138,7 @@ ScreenTexture::ScreenTexture(const ScreenTexture& other) {
 	this->anchor = other.anchor;
 	this->pos = other.pos;
 	this->rot = other.rot;
+	this->magnitude = other.magnitude;
 	this->base_width = other.base_width;
 	this->width_scale = other.width_scale;
 	this->base_height = other.base_height;
@@ -184,6 +187,7 @@ ScreenTexture::ScreenTexture(ScreenTexture&& other) noexcept {
 	this->anchor = other.anchor;
 	this->pos = other.pos;
 	this->rot = other.rot;
+	this->magnitude = other.magnitude;
 	this->base_width = other.base_width;
 	this->width_scale = other.width_scale;
 	this->base_height = other.base_height;
@@ -231,6 +235,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture& other) {
 		this->anchor = other.anchor;
 		this->pos = other.pos;
 		this->rot = other.rot;
+		this->magnitude = other.magnitude;
 		this->base_width = other.base_width;
 		this->width_scale = other.width_scale;
 		this->base_height = other.base_height;
@@ -285,6 +290,7 @@ ScreenTexture& ScreenTexture::operator=(const ScreenTexture& other) {
 		this->anchor = other.anchor;
 		this->pos = other.pos;
 		this->rot = other.rot;
+		this->magnitude = other.magnitude;
 		this->base_width = other.base_width;
 		this->width_scale = other.width_scale;
 		this->base_height = other.base_height;
@@ -336,6 +342,7 @@ ScreenTexture& ScreenTexture::operator=(ScreenTexture&& other) noexcept {
 		this->anchor = other.anchor;
 		this->pos = other.pos;
 		this->rot = other.rot;
+		this->magnitude = other.magnitude;
 		this->base_width = other.base_width;
 		this->width_scale = other.width_scale;
 		this->base_height = other.base_height;
@@ -640,6 +647,25 @@ ScreenTexture&& ScreenTexture::add_rot(glm::vec3 rot) {
 
 glm::vec3 ScreenTexture::get_rot() const {
 	return rot.get_val();
+}
+
+ScreenTexture&& ScreenTexture::set_magnitude(glm::vec3 magnitude) {
+	this->magnitude = magnitude;
+	return std::move(*this);
+}
+
+ScreenTexture&& ScreenTexture::set_magnitude(glm::vec3 magnitude, int frames) {
+	this->magnitude.set_target_val(magnitude, frames);
+	return std::move(*this);
+}
+
+ScreenTexture&& ScreenTexture::add_magnitude(glm::vec3 magnitude) {
+	this->magnitude += magnitude;
+	return std::move(*this);
+}
+
+glm::vec3 ScreenTexture::get_magnitude() const {
+	return magnitude.get_val();
 }
 
 ScreenTexture&& ScreenTexture::set_base_width(int new_width) {
@@ -1829,6 +1855,7 @@ void ScreenTexture::render() {
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
+	matrix = glm::translate(matrix, magnitude.get_val() / glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f));
 	if (anchor) {
 		matrix = anchor->screen_mat * matrix;
 	}

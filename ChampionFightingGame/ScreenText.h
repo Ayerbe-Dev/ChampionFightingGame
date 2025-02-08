@@ -46,6 +46,8 @@ public:
 	glm::vec3 get_rot() const;
 
 	ScreenText&& set_magnitude(glm::vec3 magnitude);
+	ScreenText&& set_magnitude(glm::vec3 magnitude, int frames);
+	ScreenText&& add_magnitude(glm::vec3 magnitude);
 	glm::vec3 get_magnitude() const;
 
 	ScreenText&& set_base_width(int new_width);
@@ -112,7 +114,7 @@ private:
 
 	TargetVar<glm::vec3> pos;
 	TargetVar<glm::vec3> rot;
-	glm::vec3 magnitude;
+	TargetVar<glm::vec3> magnitude;
 	TargetVar<unsigned char> alpha;
 
 	TargetVar<int> base_width;

@@ -808,7 +808,7 @@ void ScreenText::update_buffer_data() {
 	}
 	for (int i = 0; i < v_data_for_gpu.size(); i++) {
 		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler
-			|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
+		|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
 			for (int i = 0; i < v_data_for_gpu.size(); i++) {
 				v_data_for_gpu[i] = { (glm::vec2)v_pos[i] * v_pos_scaler, v_texcoord[i] };
 			}

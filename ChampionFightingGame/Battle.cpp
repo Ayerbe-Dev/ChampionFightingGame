@@ -218,7 +218,7 @@ void Battle::load_ui() {
 	FontManager* font_manager = FontManager::get_instance();
 	load_font("combo", "Fiend-Oblique", 256);
 	load_font("message", "Fiend-Oblique", 96);
-	load_font("info", "FiraCode", 64);
+	load_font("info", "FiraCode", 40);
 
 	const int scene_context = context;
 
@@ -229,20 +229,20 @@ void Battle::load_ui() {
 		float &partial_health = fighter->object_float[FIGHTER_FLOAT_PARTIAL_HEALTH];
 		bool ended_hitstun = fighter->object_flag[FIGHTER_FLAG_ENDED_HITSTUN];
 		if (partial_health < health) {
-			e->get_screen_texture("Combo Health").scale_left_edge(partial_health / max_health);
+			e->get_screen_texture("Combo Health").crop_left_edge(partial_health / max_health);
 		}
 		if (ended_hitstun) {
-			e->get_screen_texture("Combo Health").scale_left_edge(clampf(0.0, health / max_health, 1.0), 5);
+			e->get_screen_texture("Combo Health").crop_left_edge(clampf(0.0, health / max_health, 1.0), 5);
 		}
 		if (scene_context == SCENE_CONTEXT_TRAINING) {
 			if (fighter->object_int[FIGHTER_INT_TRAINING_HEALTH_RECOVERY_TIMER] == 0) {
-				e->get_screen_texture("Combo Health").scale_left_edge(clampf(0.0, health / max_health, 1.0));
+				e->get_screen_texture("Combo Health").crop_left_edge(clampf(0.0, health / max_health, 1.0));
 				health = std::min(health + 10.0f, max_health);
 				partial_health = health;
 			}
 		}
-		e->get_screen_texture("Health").scale_left_edge(health / max_health);
-		e->get_screen_texture("Partial Health").scale_left_edge(partial_health / max_health);
+		e->get_screen_texture("Health").crop_left_edge(health / max_health);
+		e->get_screen_texture("Partial Health").crop_left_edge(partial_health / max_health);
 	});
 	load_event("Process Scale Bar", [this](SceneElement* e) {
 		float scale = *(float*)e->ptr_var("damage_scale");
@@ -333,7 +333,7 @@ void Battle::load_ui() {
 						{"Partial Health", ScreenTexture("resource/scene/battle/ui/meter/health.png")}
 					})
 					.set_orientation(TEXTURE_TOP_LEFT)
-					.set_pos(glm::vec3(66.0, 114.0, 0.0))
+					.set_pos(glm::vec3(936.0, 177.0, 0.0))
 					.float_var("max_health", fighter[0]->get_param_float("health"))
 					.ptr_var("fighter", fighter[0])
 					.add_event("process", get_event("Process Health Bar"))
@@ -352,7 +352,7 @@ void Battle::load_ui() {
 						}
 					})
 					.set_orientation(TEXTURE_TOP_RIGHT)
-					.set_pos(glm::vec3(66.0, 114.0, 0.0))
+					.set_pos(glm::vec3(936.0, 177.0, 0.0))
 					.float_var("max_health", fighter[1]->get_param_float("health"))
 					.ptr_var("fighter", fighter[1])
 					.add_event("process", get_event("Process Health Bar"))
@@ -369,7 +369,7 @@ void Battle::load_ui() {
 					})
 					.ptr_var("damage_scale", &fighter[0]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI])
 					.set_orientation(TEXTURE_TOP_LEFT)
-					.set_pos(glm::vec3(1026.0f, 244.5f, 0.0f))
+					.set_pos(glm::vec3(1431.0f, 264.5f, 0.0f))
 					.add_event("process", get_event("Process Scale Bar"))
 				},
 				{"P2 Scale",
@@ -388,7 +388,7 @@ void Battle::load_ui() {
 					})
 					.ptr_var("damage_scale", &fighter[1]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI])
 					.set_orientation(TEXTURE_TOP_RIGHT)
-					.set_pos(glm::vec3(1026.0f, 244.5f, 0.0f))
+					.set_pos(glm::vec3(1431.0f, 264.5f, 0.0f))
 					.add_event("process", get_event("Process Scale Bar"))
 				},
 				{"P1 EX",
@@ -404,25 +404,25 @@ void Battle::load_ui() {
 					.ptr_var("ex", &fighter[0]->object_float[FIGHTER_FLOAT_EX_METER])
 					.float_var("prev_segments", 0.0f)
 					.set_orientation(TEXTURE_BOTTOM_LEFT)
-					.set_pos(glm::vec3(324.0, 180.0, 0.0))
+					.set_pos(glm::vec3(756.0, 237.0, 0.0))
 					.add_event("process", get_event("Process EX Bar"))
 				},
 				{"P2 EX",
 					SceneElement({
 						{"EX", ScreenTexture("resource/scene/battle/ui/meter/ex.png")
-							.scale_left_edge(0.0f)
 							.flip_h()
+							.scale_left_edge(0.0f)
 						},
 						{"EX Segment", ScreenTexture("resource/scene/battle/ui/meter/ex_segment.png")
-							.scale_left_edge(0.0f)
 							.flip_h()
+							.scale_left_edge(0.0f)
 						}
 					})
 					.float_var("max_ex", get_global_param_float(PARAM_FIGHTER, "ex_meter_size"))
 					.ptr_var("ex", &fighter[1]->object_float[FIGHTER_FLOAT_EX_METER])
 					.float_var("prev_segments", 0.0f)
 					.set_orientation(TEXTURE_BOTTOM_RIGHT)
-					.set_pos(glm::vec3(324.0, 180.0, 0.0))
+					.set_pos(glm::vec3(756.0, 237.0, 0.0))
 					.add_event("process", get_event("Process EX Bar"))
 				},
 				{"P1 Super",
@@ -433,7 +433,7 @@ void Battle::load_ui() {
 					.ptr_var("super", &fighter[0]->object_float[FIGHTER_FLOAT_SUPER_METER])
 					.float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"))
 					.set_orientation(TEXTURE_BOTTOM_LEFT)
-					.set_pos(glm::vec3(66.0f, 70.0f, 0.0f))
+					.set_pos(glm::vec3(236.0f, 240.0f, 0.0f))
 					.add_event("process", get_event("Process Super Bar"))
 				},
 				{"P2 Super",
@@ -448,7 +448,7 @@ void Battle::load_ui() {
 					.ptr_var("super", &fighter[1]->object_float[FIGHTER_FLOAT_SUPER_METER])
 					.float_var("max_super", get_global_param_float(PARAM_FIGHTER, "super_meter_size"))
 					.set_orientation(TEXTURE_BOTTOM_RIGHT)
-					.set_pos(glm::vec3(66.0f, 70.0f, 0.0f))
+					.set_pos(glm::vec3(236.0f, 240.0f, 0.0f))
 					.add_event("process", get_event("Process Super Bar"))
 				},
 				{"P1 Combo Counter", 

@@ -52,6 +52,13 @@ SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> element
 			render_indices.push_back(ELEM_TYPE_WRLD_TXT);
 			continue;
 		}
+		if (elements[i].second.type() == typeid(SceneElementLoop)) {
+			SceneElementLoop loop = std::any_cast<SceneElementLoop>(elements[i].second);
+			for (int i = 0; i < loop.n; i++) {
+				loop.f(this, i);
+			}
+			continue;
+		}
 		std::cout << "Child " << elements[i].first << " of element " << name << " has invalid type " << elements[i].second.type().name() << "\n";
 	}
 }
@@ -402,6 +409,13 @@ SceneElement& SceneElement::add_element(std::string name, std::any element) {
 		render_indices.push_back(ELEM_TYPE_WRLD_TXT);
 		return *this;
 	}
+	if (element.type() == typeid(SceneElementLoop)) {
+		SceneElementLoop loop = std::any_cast<SceneElementLoop>(element);
+		for (int i = 0; i < loop.n; i++) {
+			loop.f(this, i);
+		}
+		return *this;
+	}
 	std::cout << "Child " << name << " of element " << this->name << " has invalid type << " << element.type().name() << "\n";
 	return *this;
 }
@@ -442,6 +456,13 @@ SceneElement& SceneElement::add_elements(std::vector<std::pair<std::string, std:
 			world_texts.push_back(std::any_cast<WorldText>(elements[i].second));
 			world_texts.back().set_anchor(&this->anchor);
 			render_indices.push_back(ELEM_TYPE_WRLD_TXT);
+			continue;
+		}
+		if (elements[i].second.type() == typeid(SceneElementLoop)) {
+			SceneElementLoop loop = std::any_cast<SceneElementLoop>(elements[i].second);
+			for (int i = 0; i < loop.n; i++) {
+				loop.f(this, i);
+			}
 			continue;
 		}
 		std::cout << "Child " << elements[i].first << " of element " << name << " has invalid type << " << elements[i].second.type().name() << "\n";

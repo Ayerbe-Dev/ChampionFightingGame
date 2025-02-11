@@ -157,8 +157,8 @@ void Battle::process_collisions() {
 					&& fighter[i]->connected_hitbox == nullptr
 					&& !fighter[i]->object_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX])) continue;
 				fighter[i]->object_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX] = false;
-
-				get_element("root/Battle UI/Combo Counter P" + std::to_string((bool)(!i) + 1)).execute_event("on_hit");
+				
+				get_element("root/Battle UI/P" + std::to_string((bool)(!i) + 1) + " Combo Counter").execute_event("on_hit");
 				
 				if (context == SCENE_CONTEXT_TRAINING) {
 					training_info[!i].fields[TRAINING_FIELD_STARTUP].update_text(

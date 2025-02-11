@@ -409,6 +409,10 @@ ScreenTexture&& ScreenTexture::init(std::string path, unsigned char features) {
 
 	set_default_vertex_data();
 
+	if (path == "resource/scene/battle/ui/meter/health.png") {
+		buffer_updates = 1;
+	}
+
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif
@@ -783,14 +787,13 @@ ScreenTexture&& ScreenTexture::scale_right_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
-		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 	else {
-		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -804,14 +807,13 @@ ScreenTexture&& ScreenTexture::scale_right_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
-		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 	else {
-		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -825,18 +827,17 @@ ScreenTexture&& ScreenTexture::crop_right_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->x = clampf(0.0, percent, 1.0);
 		v_texcoord_accessor[v_spec.top_left_idx]->x = clampf(0.0, percent, 1.0);
-		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 	else {
 		v_texcoord_accessor[v_spec.bottom_right_idx]->x = clampf(0.0, percent, 1.0);
 		v_texcoord_accessor[v_spec.top_right_idx]->x = clampf(0.0, percent, 1.0);
-		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -850,18 +851,17 @@ ScreenTexture&& ScreenTexture::crop_right_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(0.0, percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(0.0, percent, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 	else {
 		v_texcoord_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(0.0, percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(0.0, percent, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -875,14 +875,13 @@ ScreenTexture&& ScreenTexture::scale_left_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
-		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 	else {
-		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -896,14 +895,13 @@ ScreenTexture&& ScreenTexture::scale_left_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
-		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 	else {
-		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -917,18 +915,17 @@ ScreenTexture&& ScreenTexture::crop_left_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
 		v_texcoord_accessor[v_spec.bottom_right_idx]->x = clampf(0.0, 1.0 - percent, 1.0);
 		v_texcoord_accessor[v_spec.top_right_idx]->x = clampf(0.0, 1.0 - percent, 1.0);
-		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 	else {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->x = clampf(0.0, 1.0 - percent, 1.0);
 		v_texcoord_accessor[v_spec.top_left_idx]->x = clampf(0.0, 1.0 - percent, 1.0);
-		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
-		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -942,18 +939,17 @@ ScreenTexture&& ScreenTexture::crop_left_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
 	if (h_flipped) {
 		v_texcoord_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 	else {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -967,14 +963,13 @@ ScreenTexture&& ScreenTexture::scale_top_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
-		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 	else {
-		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -988,14 +983,13 @@ ScreenTexture&& ScreenTexture::scale_top_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
-		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 	else {
-		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -1009,18 +1003,17 @@ ScreenTexture&& ScreenTexture::crop_top_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->y = clampf(0.0, percent, 1.0);
 		v_texcoord_accessor[v_spec.bottom_right_idx]->y = clampf(0.0, percent, 1.0);
-		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 	else {
 		v_texcoord_accessor[v_spec.top_left_idx]->y = clampf(0.0, percent, 1.0);
 		v_texcoord_accessor[v_spec.top_right_idx]->y = clampf(0.0, percent, 1.0);
-		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -1034,18 +1027,17 @@ ScreenTexture&& ScreenTexture::crop_top_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(0.0, percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(0.0, percent, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 	else {
 		v_texcoord_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(0.0, percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(0.0, percent, 1.0), frames);
-		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -1059,14 +1051,13 @@ ScreenTexture&& ScreenTexture::scale_bottom_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
-		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 	else {
-		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -1080,14 +1071,13 @@ ScreenTexture&& ScreenTexture::scale_bottom_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
-		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 	else {
-		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -1101,18 +1091,17 @@ ScreenTexture&& ScreenTexture::crop_bottom_edge(float percent) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
 		v_texcoord_accessor[v_spec.top_left_idx]->y = clampf(0.0, 1.0 - percent, 1.0);
 		v_texcoord_accessor[v_spec.top_right_idx]->y = clampf(0.0, 1.0 - percent, 1.0);
-		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
+		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0), 1.0);
 	}
 	else {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->y = clampf(0.0, 1.0 - percent, 1.0);
 		v_texcoord_accessor[v_spec.bottom_right_idx]->y = clampf(0.0, 1.0 - percent, 1.0);
-		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
-		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
+		v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
+		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0), 1.0);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, 1);
@@ -1126,18 +1115,17 @@ ScreenTexture&& ScreenTexture::crop_bottom_edge(float percent, int frames) {
 	if (percent < 0.0 || percent > 1.0) {
 		return std::move(*this);
 	}
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	if (v_flipped) {
 		v_texcoord_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
-		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
+		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0), 1.0), frames);
 	}
 	else {
 		v_texcoord_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
 		v_texcoord_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(0.0, 1.0 - percent, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
-		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
+		v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
+		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0), 1.0), frames);
 	}
 #endif
 	buffer_updates = std::max(buffer_updates, frames);
@@ -1151,24 +1139,22 @@ ScreenTexture&& ScreenTexture::scale_top_right_corner(float percent_x, float per
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	switch (get_flipped()) {
 		case TEX_FLIP_N: {
-			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0);
-			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0);
+			v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
+			v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
 		case TEX_FLIP_H: {
-			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0);
-			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0);
+			v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
+			v_pos_accessor[v_spec.top_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0);
 		} break;
 		case TEX_FLIP_V: {
-			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0);
-			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0);
+			v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0);
+			v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		}break;
 		case TEX_FLIP_B: {
-			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0);
-			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0);
+			v_pos_accessor[v_spec.bottom_left_idx]->x = clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0);
+			v_pos_accessor[v_spec.bottom_left_idx]->y = clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0);
 		} break;
 	}
 #endif
@@ -1183,24 +1169,22 @@ ScreenTexture&& ScreenTexture::scale_top_right_corner(float percent_x, float per
 	if (percent_x < 0.0 || percent_x > 1.0 || percent_y < 0.0 || percent_y > 1.0) {
 		return std::move(*this);
 	}
-	float width_scale = (float)base_width / (float)WINDOW_WIDTH;
-	float height_scale = (float)base_height / (float)WINDOW_HEIGHT;
 	switch (get_flipped()) {
 		case TEX_FLIP_N: {
-			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0), frames);
-			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0), frames);
+			v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
+			v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
 		case TEX_FLIP_H: {
-			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0), frames);
-			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0) * height_scale, 1.0), frames);
+			v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
+			v_pos_accessor[v_spec.top_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * 2.0), 1.0), frames);
 		} break;
 		case TEX_FLIP_V: {
-			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0) * width_scale, 1.0), frames);
-			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0), frames);
+			v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * 2.0), 1.0), frames);
+			v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		}break;
 		case TEX_FLIP_B: {
-			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0) * width_scale, 1.0), frames);
-			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0) * height_scale, 1.0), frames);
+			v_pos_accessor[v_spec.bottom_left_idx]->x.set_target_val(clampf(-1.0, ((percent_x - 0.5) * -2.0), 1.0), frames);
+			v_pos_accessor[v_spec.bottom_left_idx]->y.set_target_val(clampf(-1.0, ((percent_y - 0.5) * -2.0), 1.0), frames);
 		} break;
 	}
 #endif
@@ -1734,10 +1718,10 @@ glm::vec3 ScreenTexture::get_colormod() const {
 ScreenTexture&& ScreenTexture::flip_h() {
 	std::swap(v_pos[v_spec.bottom_left_idx].x.get_val_ref(), v_pos[v_spec.bottom_right_idx].x.get_val_ref());
 	std::swap(v_pos[v_spec.top_left_idx].x.get_val_ref(), v_pos[v_spec.top_right_idx].x.get_val_ref());
-	std::swap(v_pos_accessor[v_spec.bottom_left_idx], v_pos_accessor[v_spec.bottom_right_idx]);
-	std::swap(v_texcoord_accessor[v_spec.bottom_left_idx], v_texcoord_accessor[v_spec.bottom_right_idx]);
-	std::swap(v_pos_accessor[v_spec.top_left_idx], v_pos_accessor[v_spec.top_right_idx]);
-	std::swap(v_texcoord_accessor[v_spec.top_left_idx], v_texcoord_accessor[v_spec.top_right_idx]);
+	std::swap(v_pos_accessor[v_spec.bottom_left_idx]->x.get_val_ref(), v_pos_accessor[v_spec.bottom_right_idx]->x.get_val_ref());
+	std::swap(v_texcoord_accessor[v_spec.bottom_left_idx]->x.get_val_ref(), v_texcoord_accessor[v_spec.bottom_right_idx]->x.get_val_ref());
+	std::swap(v_pos_accessor[v_spec.top_left_idx]->x.get_val_ref(), v_pos_accessor[v_spec.top_right_idx]->x.get_val_ref());
+	std::swap(v_texcoord_accessor[v_spec.top_left_idx]->x.get_val_ref(), v_texcoord_accessor[v_spec.top_right_idx]->x.get_val_ref());
 	h_flipped = !h_flipped;
 	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
@@ -1757,10 +1741,10 @@ bool ScreenTexture::is_h_flipped() const {
 ScreenTexture&& ScreenTexture::flip_v() {
 	std::swap(v_pos[v_spec.bottom_left_idx].y.get_val_ref(), v_pos[v_spec.top_left_idx].y.get_val_ref());
 	std::swap(v_pos[v_spec.bottom_right_idx].y.get_val_ref(), v_pos[v_spec.top_right_idx].y.get_val_ref());
-	std::swap(v_pos_accessor[v_spec.bottom_left_idx], v_pos_accessor[v_spec.top_left_idx]);
-	std::swap(v_texcoord_accessor[v_spec.bottom_left_idx], v_texcoord_accessor[v_spec.top_left_idx]);
-	std::swap(v_pos_accessor[v_spec.bottom_right_idx], v_pos_accessor[v_spec.top_right_idx]);
-	std::swap(v_texcoord_accessor[v_spec.bottom_right_idx], v_texcoord_accessor[v_spec.top_right_idx]);
+	std::swap(v_pos_accessor[v_spec.bottom_left_idx]->y.get_val_ref(), v_pos_accessor[v_spec.top_left_idx]->y.get_val_ref());
+	std::swap(v_texcoord_accessor[v_spec.bottom_left_idx]->y.get_val_ref(), v_texcoord_accessor[v_spec.top_left_idx]->y.get_val_ref());
+	std::swap(v_pos_accessor[v_spec.bottom_right_idx]->y.get_val_ref(), v_pos_accessor[v_spec.top_right_idx]->y.get_val_ref());
+	std::swap(v_texcoord_accessor[v_spec.bottom_right_idx]->y.get_val_ref(), v_texcoord_accessor[v_spec.top_right_idx]->y.get_val_ref());
 	v_flipped = !v_flipped;
 	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);

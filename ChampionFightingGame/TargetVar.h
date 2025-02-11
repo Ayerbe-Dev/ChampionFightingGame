@@ -195,6 +195,7 @@ public:
 			target_change_per_frame *= -1;
 		}
 		this->frames = frames;
+		process();
 	}
 
 	void set_val(const T& val) {

@@ -89,7 +89,7 @@ PauseBattle::PauseBattle() {
 	load_event("Button Page Left Press", [this](SceneElement* e) {
 		e->get_parent().execute_event("page_left_press");
 	});
-	load_event("Button Page Left Press", [this](SceneElement* e) {
+	load_event("Button Page Right Press", [this](SceneElement* e) {
 		e->get_parent().execute_event("page_right_press");
 	});
 	load_event("Button Create Confirm Window", [this](SceneElement* e) {

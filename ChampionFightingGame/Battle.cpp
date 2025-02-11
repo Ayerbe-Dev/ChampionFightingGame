@@ -248,17 +248,17 @@ void Battle::load_ui() {
 		float scale = *(float*)e->ptr_var("damage_scale");
 		e->get_screen_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 		e->get_screen_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-		e->get_screen_texture("Damage Scale").scale_top_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.002f, 1.0f), 3);
-		e->get_screen_texture("Damage Scale").scale_bottom_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
+		e->get_screen_texture("Damage Scale").crop_top_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.002f, 1.0f), 3);
+		e->get_screen_texture("Damage Scale").crop_bottom_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
 	});
 	load_event("Process EX Bar", [this](SceneElement* e) {
 		float max_ex = e->float_var("max_ex");
 		float ex = *(float*)e->ptr_var("ex");
 		float& prev_segments = e->float_var("prev_segments");
-		e->get_screen_texture("EX").scale_left_edge(ex / max_ex, 6);
+		e->get_screen_texture("EX").crop_left_edge(ex / max_ex, 6);
 		float segments = std::floor(ex / 100.0);
 		if (prev_segments != segments) {
-			e->get_screen_texture("EX Segment").scale_left_edge(clampf(0.0, segments / 6.0, 1.0), 4);
+			e->get_screen_texture("EX Segment").crop_left_edge(clampf(0.0, segments / 6.0, 1.0), 4);
 		}
 		prev_segments = segments;
 	});
@@ -454,13 +454,13 @@ void Battle::load_ui() {
 				{"P1 Combo Counter", 
 					SceneElement({
 						{"Counter", ScreenText(&get_font("message"), "1", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 500.0f, 0.0f))
-							.set_orientation(TEXTURE_TOP_LEFT)
+							.set_pos(glm::vec3(475.0f, 600.0f, 0.0f))
+							.set_screen_orientation(TEXTURE_TOP_LEFT)
 							.set_alpha(0)
 						},
 						{"Hits", ScreenText(&get_font("message"), "hits", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 800.0f, 0.0f))
-							.set_orientation(TEXTURE_TOP_LEFT)
+							.set_pos(glm::vec3(475.0f, 800.0f, 0.0f))
+							.set_screen_orientation(TEXTURE_TOP_LEFT)
 							.set_alpha(0)
 						}
 					})
@@ -473,13 +473,13 @@ void Battle::load_ui() {
 				{ "P2 Combo Counter",
 					SceneElement({
 						{"Counter", ScreenText(&get_font("message"), "1", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 500.0f, 0.0f))
-							.set_orientation(TEXTURE_TOP_RIGHT)
+							.set_pos(glm::vec3(475.0f, 600.0f, 0.0f))
+							.set_screen_orientation(TEXTURE_TOP_RIGHT)
 							.set_alpha(0)
 						},
 						{"Hits", ScreenText(&get_font("message"), "hits", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 800.0f, 0.0f))
-							.set_orientation(TEXTURE_TOP_RIGHT)
+							.set_pos(glm::vec3(475.0f, 800.0f, 0.0f))
+							.set_screen_orientation(TEXTURE_TOP_RIGHT)
 							.set_alpha(0)
 						}
 					})
@@ -820,6 +820,7 @@ void Battle::load_ui() {
 						set_active_element(&get_element("root/KO Sequence/KO Text"));
 					}
 				}
+				e->bool_var("frame_advance") = false;
 			})
 			.add_event("start_press", [this](SceneElement* e) {
 				if (context != SCENE_CONTEXT_ONLINE) {

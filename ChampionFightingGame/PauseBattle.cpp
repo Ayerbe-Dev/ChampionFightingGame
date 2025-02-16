@@ -29,8 +29,8 @@ PauseBattle::PauseBattle() {
 	GameManager* game_manager = GameManager::get_instance();
 	SaveManager* save_manager = SaveManager::get_instance();
 	int text_height_diff = -120;
-	load_font("header", "FiraCode", 96);
-	load_font("button", "FiraCode", 64);
+	load_font("header", "FiraCode", 64);
+	load_font("button", "FiraCode", 48);
 
 	if (context == SCENE_CONTEXT_TRAINING) {
 		load_event("Page Activate", [this](SceneElement* e) {
@@ -108,13 +108,14 @@ PauseBattle::PauseBattle() {
 			{ "Main Page",
 				SceneElement({
 					{"Label", ScreenText(&get_font("header"), "Pause", TextSpecifier().border(2))
+						.set_pos(glm::vec3(0.0f, 50.0f, 0.0f))
 						.set_orientation(TEXTURE_TOP)
 					},
 					{"Character Select",
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Return to Character Select", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP)
-								.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							}
 						})
@@ -134,7 +135,7 @@ PauseBattle::PauseBattle() {
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Return to Stage Select", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP)
-								.set_pos(glm::vec3(0.0f, 320.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 370.0f, 0.0f))
 							}
 						})
 						.add_event("up_press", get_event("Button Up Press"))
@@ -153,7 +154,7 @@ PauseBattle::PauseBattle() {
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Return to Main Menu", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP)
-								.set_pos(glm::vec3(0.0f, 440.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 490.0f, 0.0f))
 							}
 						})
 						.add_event("up_press", get_event("Button Up Press"))
@@ -172,7 +173,7 @@ PauseBattle::PauseBattle() {
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Options", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP)
-								.set_pos(glm::vec3(0.0f, 560.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 610.0f, 0.0f))
 							}
 						})
 						.add_event("up_press", get_event("Button Up Press"))
@@ -193,18 +194,19 @@ PauseBattle::PauseBattle() {
 			{ "Training Page",
 				SceneElement({
 					{"Label", ScreenText(&get_font("header"), "Training Settings", TextSpecifier().border(2))
+						.set_pos(glm::vec3(0.0f, 50.0f, 0.0f))
 						.set_orientation(TEXTURE_TOP)
 					},
 					{"Hitbox Visuals",
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Hitbox Visuals", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_LEFT)
-								.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							},
 							{"Setting", ScreenText(&get_font("button"), "Off", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_RIGHT)
-								.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							}
 						})
@@ -232,7 +234,7 @@ PauseBattle::PauseBattle() {
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Reset", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP)
-								.set_pos(glm::vec3(0.0f, 320.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 370.0f, 0.0f))
 							}
 						})
 						.add_event("up_press", get_event("Button Up Press"))
@@ -254,22 +256,24 @@ PauseBattle::PauseBattle() {
 				.add_event("activate", get_event("Page Activate", true))
 				.add_event("page_left_press", get_event("Page Page Left Press", true))
 				.add_event("page_right_press", get_event("Page Page Right Press", true))
+				.hide()
 			},
 			{ "CPU Page",
 				SceneElement({
 					{"Label", ScreenText(&get_font("header"), "CPU Settings", TextSpecifier().border(2))
+						.set_pos(glm::vec3(0.0f, 50.0f, 0.0f))
 						.set_orientation(TEXTURE_TOP)
 					},
 					{"CPU Mode",
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "P2 Mode", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_LEFT)
-								.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							},
 							{"Setting", ScreenText(&get_font("button"), "Player Controlled", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_RIGHT)
-								.set_pos(glm::vec3(0.0f, 200.0f, 0.0f))
+								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							},
 						})
@@ -323,6 +327,7 @@ PauseBattle::PauseBattle() {
 				.add_event("activate", get_event("Page Activate", true))
 				.add_event("page_left_press", get_event("Page Page Left Press", true))
 				.add_event("page_right_press", get_event("Page Page Right Press", true))
+				.hide()
 			}
 		})},
 		{ "Confirm Window",
@@ -332,11 +337,11 @@ PauseBattle::PauseBattle() {
 					.set_pos(glm::vec3(0.0f, 90.0f, 0.0f))
 				},
 				{"Yes", ScreenText(&get_font("button"), "Yes", TextSpecifier().border(2)) 
-					.set_pos(glm::vec3(200.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(-200.0f, 0.0f, 0.0f))
 					.set_scale(1.1f)
 				},
 				{"No", ScreenText(&get_font("button"), "No", TextSpecifier().border(2)) 
-					.set_pos(glm::vec3(-200.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(200.0f, 0.0f, 0.0f))
 				},
 			})
 			.bool_var("yes", true)
@@ -367,11 +372,13 @@ PauseBattle::PauseBattle() {
 				set_active_element((SceneElement*)e->ptr_var("element_to_confirm"));
 				e->hide();
 			})
+			.hide()
 		}
 	}).set_anchor_dimensions(
 		get_screen_texture("root/Panel").get_base_width(), 
 		get_screen_texture("root/Panel").get_base_height()
 	);
+	set_active_element(&get_element("root/Pages/Main Page"));
 }
 
 

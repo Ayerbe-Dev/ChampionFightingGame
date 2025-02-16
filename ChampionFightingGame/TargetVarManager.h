@@ -1,5 +1,4 @@
 #pragma once
-#include <list>
 #include <vector>
 
 class BaseTargetVar;
@@ -19,5 +18,7 @@ private:
 	TargetVarManager();
 	static TargetVarManager* instance;
 
-	std::list<BaseTargetVar*> targets;
+	std::vector<BaseTargetVar*> targets;
+	int removal_idx;
+	int dir;
 };

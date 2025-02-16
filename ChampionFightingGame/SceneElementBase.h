@@ -7,13 +7,17 @@ struct TextureAnchor {
 	TextureAnchor() {
 		screen_mat = glm::mat4(1.0);
 		world_mat = glm::mat4(1.0);
-		w = WINDOW_WIDTH;
-		h = WINDOW_HEIGHT;
+		w = 1.0f;
+		h = 1.0f;
+		local_w = 1.0f;
+		local_h = 1.0f;
 	}
 	glm::mat4 screen_mat;
 	glm::mat4 world_mat;
 	float w;
 	float h;
+	float local_w;
+	float local_h;
 };
 
 const int TEX_COORD_TOP_LEFT = 0;

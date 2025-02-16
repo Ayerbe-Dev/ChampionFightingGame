@@ -122,13 +122,13 @@ MainMenu::MainMenu() {
 		set_active_element(&e->get_parent());
 	});
 	load_event("Sub Level Activate", [this](SceneElement* e) {
-		e->set_pos(glm::vec3(450.0f, 0.0f, 0.0f), 5);
+		e->set_pos(glm::vec3(-950.0f, 0.0f, 0.0f), 5);
 		int& selection = e->int_var("selection");
 		get_screen_text("root/Descriptions/Desc Text").update_text(e->string_var("Desc" + std::to_string(selection)));
 		menu_frame = 1;
 	});
 	load_event("Sub Level Deactivate", [this](SceneElement* e) {
-		e->set_pos(glm::vec3(-600.0f, 0.0f, 0.0f), 5); 
+		e->set_pos(glm::vec3(-1900.0f, 0.0f, 0.0f), 5); 
 		//TODO: I'm pretty sure this visually breaks if you go from the sub level to top level and 
 		//then switch top menu options within 5 frames since it will hide the sub menu before it has a
 		//chance to go off screen
@@ -188,7 +188,7 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.set_orientation(TEXTURE_RIGHT)
-					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(-1900.0f, 0.0f, 0.0f))
 				},
 			})
 			.string_var("Desc", "Take your gameplay online!")
@@ -241,7 +241,7 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.set_orientation(TEXTURE_RIGHT)
-					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(-1900.0f, 0.0f, 0.0f))
 				},
 			})
 			.string_var("Desc", "Single player content!")
@@ -294,7 +294,7 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.set_orientation(TEXTURE_RIGHT)
-					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(-1900.0f, 0.0f, 0.0f))
 				},
 			})
 			.string_var("Desc", "This do be the VS mode")
@@ -357,7 +357,7 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.set_orientation(TEXTURE_RIGHT)
-					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(-1900.0f, 0.0f, 0.0f))
 				},
 			})
 			.string_var("Desc", "Bro it's an options menu")
@@ -410,7 +410,7 @@ MainMenu::MainMenu() {
 					.add_event("deactivate", get_event("Sub Level Deactivate"))
 					.set_anchor_dimensions(450, 640)
 					.set_orientation(TEXTURE_RIGHT)
-					.set_pos(glm::vec3(-600.0f, 0.0f, 0.0f))
+					.set_pos(glm::vec3(-1900.0f, 0.0f, 0.0f))
 				},
 			})
 			.string_var("Desc", "Check out the extra content that the game has to offer!")

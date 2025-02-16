@@ -627,8 +627,8 @@ void ScreenText::render() {
 	float window_width = WINDOW_WIDTH;
 	float window_height = WINDOW_HEIGHT;
 	if (anchor) {
-		window_width = anchor->w;
-		window_height = anchor->h;
+		window_width *= anchor->w;
+		window_height *= anchor->h;
 	}
 	if (screen_orientation & TEXTURE_LEFT) {
 		render_pos.x -= window_width;

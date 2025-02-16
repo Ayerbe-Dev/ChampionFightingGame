@@ -80,7 +80,7 @@ public:
 	SceneElement& add_scale(glm::vec3 scale);
 	glm::vec3 get_scale() const;
 
-	SceneElement& set_anchor_dimensions(int w, int h);
+	SceneElement& set_anchor_dimensions(float w, float h);
 
 	SceneElement& show();
 	SceneElement& hide();
@@ -107,6 +107,8 @@ public:
 
 	void render();
 private:
+	void update_anchor_dimensions();
+
 	std::string name;
 	TextureAnchor anchor;
 	SceneElement* parent;

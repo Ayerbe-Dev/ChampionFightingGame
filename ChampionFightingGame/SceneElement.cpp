@@ -15,6 +15,14 @@ SceneElement::SceneElement() {
 }
 
 SceneElement::SceneElement(std::vector<std::pair<std::string, std::any>> elements) : SceneElement() {
+	//LAZY TEST: Adding these lines noticeably decreases load times for a menu structure, but the
+	//pause menu still loads far too slow
+	children.reserve(elements.size());
+	screen_textures.reserve(elements.size());
+	screen_texts.reserve(elements.size());
+	world_textures.reserve(elements.size());
+	world_texts.reserve(elements.size());
+	render_indices.reserve(elements.size()); //This one is actually just correct tho
 	for (size_t i = 0; i < elements.size(); i++) {
 		if (elements[i].second.type() == typeid(SceneElement)) {
 			child_map[elements[i].first] = children.size();
@@ -72,31 +80,37 @@ SceneElement::SceneElement(SceneElement& other) {
 	this->bool_vars = other.bool_vars;
 	this->string_vars = other.string_vars;
 	this->ptr_vars = other.ptr_vars;
+	this->children.reserve(other.children.size());
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 		this->children[i].parent = this;
 	}
 	this->child_map = other.child_map;
+	this->screen_textures.reserve(other.screen_textures.size());
 	for (size_t i = 0; i < other.screen_textures.size(); i++) {
 		this->screen_textures.push_back(other.screen_textures[i]);
 		this->screen_textures[i].set_anchor(&this->anchor);
 	}
 	this->screen_texture_map = other.screen_texture_map;
+	this->screen_texts.reserve(other.screen_texts.size());
 	for (size_t i = 0; i < other.screen_texts.size(); i++) {
 		this->screen_texts.push_back(other.screen_texts[i]);
 		this->screen_texts[i].set_anchor(&this->anchor);
 	}
 	this->screen_text_map = other.screen_text_map;
+	this->world_textures.reserve(other.world_textures.size());
 	for (size_t i = 0; i < other.world_textures.size(); i++) {
 		this->world_textures.push_back(other.world_textures[i]);
 		this->world_textures[i].set_anchor(&this->anchor);
 	}
 	this->world_texture_map = other.world_texture_map;
+	this->world_texts.reserve(other.world_texts.size());
 	for (size_t i = 0; i < other.world_texts.size(); i++) {
 		this->world_texts.push_back(other.world_texts[i]);
 		this->world_texts[i].set_anchor(&this->anchor);
 	}
 	this->world_text_map = other.world_text_map;
+	this->render_indices.reserve(other.render_indices.size());
 	for (size_t i = 0; i < other.render_indices.size(); i++) {
 		this->render_indices.push_back(other.render_indices[i]);
 	}
@@ -118,31 +132,37 @@ SceneElement::SceneElement(const SceneElement& other) {
 	this->bool_vars = other.bool_vars;
 	this->string_vars = other.string_vars;
 	this->ptr_vars = other.ptr_vars;
+	this->children.reserve(other.children.size());
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 		this->children[i].parent = this;
 	}
 	this->child_map = other.child_map;
+	this->screen_textures.reserve(other.screen_textures.size());
 	for (size_t i = 0; i < other.screen_textures.size(); i++) {
 		this->screen_textures.push_back(other.screen_textures[i]);
 		this->screen_textures[i].set_anchor(&this->anchor);
 	}
 	this->screen_texture_map = other.screen_texture_map;
+	this->screen_texts.reserve(other.screen_texts.size());
 	for (size_t i = 0; i < other.screen_texts.size(); i++) {
 		this->screen_texts.push_back(other.screen_texts[i]);
 		this->screen_texts[i].set_anchor(&this->anchor);
 	}
 	this->screen_text_map = other.screen_text_map;
+	this->world_textures.reserve(other.world_textures.size());
 	for (size_t i = 0; i < other.world_textures.size(); i++) {
 		this->world_textures.push_back(other.world_textures[i]);
 		this->world_textures[i].set_anchor(&this->anchor);
 	}
 	this->world_texture_map = other.world_texture_map;
+	this->world_texts.reserve(other.world_texts.size());
 	for (size_t i = 0; i < other.world_texts.size(); i++) {
 		this->world_texts.push_back(other.world_texts[i]);
 		this->world_texts[i].set_anchor(&this->anchor);
 	}
 	this->world_text_map = other.world_text_map;
+	this->render_indices.reserve(other.render_indices.size());
 	for (size_t i = 0; i < other.render_indices.size(); i++) {
 		this->render_indices.push_back(other.render_indices[i]);
 	}
@@ -164,31 +184,37 @@ SceneElement::SceneElement(SceneElement&& other) noexcept {
 	this->bool_vars = other.bool_vars;
 	this->string_vars = other.string_vars;
 	this->ptr_vars = other.ptr_vars;
+	this->children.reserve(other.children.size());
 	for (size_t i = 0; i < other.children.size(); i++) {
 		this->children.push_back(other.children[i]);
 		this->children[i].parent = this;
 	}
 	this->child_map = other.child_map;
+	this->screen_textures.reserve(other.screen_textures.size());
 	for (size_t i = 0; i < other.screen_textures.size(); i++) {
 		this->screen_textures.push_back(other.screen_textures[i]);
 		this->screen_textures[i].set_anchor(&this->anchor);
 	}
 	this->screen_texture_map = other.screen_texture_map;
+	this->screen_texts.reserve(other.screen_texts.size());
 	for (size_t i = 0; i < other.screen_texts.size(); i++) {
 		this->screen_texts.push_back(other.screen_texts[i]);
 		this->screen_texts[i].set_anchor(&this->anchor);
 	}
 	this->screen_text_map = other.screen_text_map;
+	this->world_textures.reserve(other.world_textures.size());
 	for (size_t i = 0; i < other.world_textures.size(); i++) {
 		this->world_textures.push_back(other.world_textures[i]);
 		this->world_textures[i].set_anchor(&this->anchor);
 	}
 	this->world_texture_map = other.world_texture_map;
+	this->world_texts.reserve(other.world_texts.size());
 	for (size_t i = 0; i < other.world_texts.size(); i++) {
 		this->world_texts.push_back(other.world_texts[i]);
 		this->world_texts[i].set_anchor(&this->anchor);
 	}
 	this->world_text_map = other.world_text_map;
+	this->render_indices.reserve(other.render_indices.size());
 	for (size_t i = 0; i < other.render_indices.size(); i++) {
 		this->render_indices.push_back(other.render_indices[i]);
 	}
@@ -211,31 +237,37 @@ SceneElement& SceneElement::operator=(SceneElement& other) {
 		this->bool_vars = other.bool_vars;
 		this->string_vars = other.string_vars;
 		this->ptr_vars = other.ptr_vars;
+		this->children.reserve(other.children.size());
 		for (size_t i = 0; i < other.children.size(); i++) {
 			this->children.push_back(other.children[i]);
 			this->children[i].parent = this;
 		}
 		this->child_map = other.child_map;
+		this->screen_textures.reserve(other.screen_textures.size());
 		for (size_t i = 0; i < other.screen_textures.size(); i++) {
 			this->screen_textures.push_back(other.screen_textures[i]);
 			this->screen_textures[i].set_anchor(&this->anchor);
 		}
 		this->screen_texture_map = other.screen_texture_map;
+		this->screen_texts.reserve(other.screen_texts.size());
 		for (size_t i = 0; i < other.screen_texts.size(); i++) {
 			this->screen_texts.push_back(other.screen_texts[i]);
 			this->screen_texts[i].set_anchor(&this->anchor);
 		}
 		this->screen_text_map = other.screen_text_map;
+		this->world_textures.reserve(other.world_textures.size());
 		for (size_t i = 0; i < other.world_textures.size(); i++) {
 			this->world_textures.push_back(other.world_textures[i]);
 			this->world_textures[i].set_anchor(&this->anchor);
 		}
 		this->world_texture_map = other.world_texture_map;
+		this->world_texts.reserve(other.world_texts.size());
 		for (size_t i = 0; i < other.world_texts.size(); i++) {
 			this->world_texts.push_back(other.world_texts[i]);
 			this->world_texts[i].set_anchor(&this->anchor);
 		}
 		this->world_text_map = other.world_text_map;
+		this->render_indices.reserve(other.render_indices.size());
 		for (size_t i = 0; i < other.render_indices.size(); i++) {
 			this->render_indices.push_back(other.render_indices[i]);
 		}
@@ -260,31 +292,37 @@ SceneElement& SceneElement::operator=(const SceneElement& other) {
 		this->bool_vars = other.bool_vars;
 		this->string_vars = other.string_vars;
 		this->ptr_vars = other.ptr_vars;
+		this->children.reserve(other.children.size());
 		for (size_t i = 0; i < other.children.size(); i++) {
 			this->children.push_back(other.children[i]);
 			this->children[i].parent = this;
 		}
 		this->child_map = other.child_map;
+		this->screen_textures.reserve(other.screen_textures.size());
 		for (size_t i = 0; i < other.screen_textures.size(); i++) {
 			this->screen_textures.push_back(other.screen_textures[i]);
 			this->screen_textures[i].set_anchor(&this->anchor);
 		}
 		this->screen_texture_map = other.screen_texture_map;
+		this->screen_texts.reserve(other.screen_texts.size());
 		for (size_t i = 0; i < other.screen_texts.size(); i++) {
 			this->screen_texts.push_back(other.screen_texts[i]);
 			this->screen_texts[i].set_anchor(&this->anchor);
 		}
 		this->screen_text_map = other.screen_text_map;
+		this->world_textures.reserve(other.world_textures.size());
 		for (size_t i = 0; i < other.world_textures.size(); i++) {
 			this->world_textures.push_back(other.world_textures[i]);
 			this->world_textures[i].set_anchor(&this->anchor);
 		}
 		this->world_texture_map = other.world_texture_map;
+		this->world_texts.reserve(other.world_texts.size());
 		for (size_t i = 0; i < other.world_texts.size(); i++) {
 			this->world_texts.push_back(other.world_texts[i]);
 			this->world_texts[i].set_anchor(&this->anchor);
 		}
 		this->world_text_map = other.world_text_map;
+		this->render_indices.reserve(other.render_indices.size());
 		for (size_t i = 0; i < other.render_indices.size(); i++) {
 			this->render_indices.push_back(other.render_indices[i]);
 		}
@@ -309,31 +347,37 @@ SceneElement& SceneElement::operator=(SceneElement&& other) noexcept {
 		this->bool_vars = other.bool_vars;
 		this->string_vars = other.string_vars;
 		this->ptr_vars = other.ptr_vars;
+		this->children.reserve(other.children.size());
 		for (size_t i = 0; i < other.children.size(); i++) {
 			this->children.push_back(other.children[i]);
 			this->children[i].parent = this;
 		}
 		this->child_map = other.child_map;
+		this->screen_textures.reserve(other.screen_textures.size());
 		for (size_t i = 0; i < other.screen_textures.size(); i++) {
 			this->screen_textures.push_back(other.screen_textures[i]);
 			this->screen_textures[i].set_anchor(&this->anchor);
 		}
 		this->screen_texture_map = other.screen_texture_map;
+		this->screen_texts.reserve(other.screen_texts.size());
 		for (size_t i = 0; i < other.screen_texts.size(); i++) {
 			this->screen_texts.push_back(other.screen_texts[i]);
 			this->screen_texts[i].set_anchor(&this->anchor);
 		}
 		this->screen_text_map = other.screen_text_map;
+		this->world_textures.reserve(other.world_textures.size());
 		for (size_t i = 0; i < other.world_textures.size(); i++) {
 			this->world_textures.push_back(other.world_textures[i]);
 			this->world_textures[i].set_anchor(&this->anchor);
 		}
 		this->world_texture_map = other.world_texture_map;
+		this->world_texts.reserve(other.world_texts.size());
 		for (size_t i = 0; i < other.world_texts.size(); i++) {
 			this->world_texts.push_back(other.world_texts[i]);
 			this->world_texts[i].set_anchor(&this->anchor);
 		}
 		this->world_text_map = other.world_text_map;
+		this->render_indices.reserve(other.render_indices.size());
 		for (size_t i = 0; i < other.render_indices.size(); i++) {
 			this->render_indices.push_back(other.render_indices[i]);
 		}
@@ -421,6 +465,12 @@ SceneElement& SceneElement::add_element(std::string name, std::any element) {
 }
 
 SceneElement& SceneElement::add_elements(std::vector<std::pair<std::string, std::any>> elements) {
+	children.reserve(children.size() + elements.size());
+	screen_textures.reserve(screen_textures.size() + elements.size());
+	screen_texts.reserve(screen_texts.size() + elements.size());
+	world_textures.reserve(world_textures.size() + elements.size());
+	world_texts.reserve(world_texts.size() + elements.size());
+	render_indices.reserve(render_indices.size() + elements.size());
 	for (size_t i = 0; i < elements.size(); i++) {
 		if (elements[i].second.type() == typeid(SceneElement)) {
 			child_map[elements[i].first] = children.size();
@@ -683,9 +733,9 @@ glm::vec3 SceneElement::get_scale() const {
 	return scale;
 }
 
-SceneElement& SceneElement::set_anchor_dimensions(int w, int h) {
-	this->anchor.w = w;
-	this->anchor.h = h;
+SceneElement& SceneElement::set_anchor_dimensions(float w, float h) {
+	this->anchor.local_w = w / WINDOW_WIDTH;
+	this->anchor.local_h = h / WINDOW_HEIGHT;
 	return *this;
 }
 
@@ -778,16 +828,18 @@ void SceneElement::render() {
 		render_event = false;
 	}
 	glm::vec3 screen_pos = pos.get_val();
-	float window_width = WINDOW_WIDTH;
-	float window_height = WINDOW_HEIGHT;
+	anchor.w = anchor.local_w;
+	anchor.h = anchor.local_h;
 	anchor.screen_mat = glm::mat4(1.0f);
 	anchor.world_mat = glm::mat4(1.0f);
 	if (parent) {
-		window_width = parent->anchor.w;
-		window_height = parent->anchor.h;
+		anchor.w *= parent->anchor.w;
+		anchor.h *= parent->anchor.h;
 		anchor.screen_mat = parent->anchor.screen_mat;
 		anchor.world_mat = parent->anchor.world_mat;
 	}
+	float window_width = WINDOW_WIDTH * anchor.w;
+	float window_height = WINDOW_HEIGHT * anchor.h;
 	if (screen_orientation & TEXTURE_LEFT) {
 		screen_pos.x -= window_width;
 	}
@@ -845,6 +897,11 @@ void SceneElement::render() {
 		}
 		idx[render_indices[i]]++;
 	}
+}
+
+void SceneElement::update_anchor_dimensions() {
+	this->anchor.w = this->anchor.local_w * parent->anchor.w;
+	this->anchor.h = this->anchor.local_h * parent->anchor.h;
 }
 
 SceneElementLoop::SceneElementLoop() {

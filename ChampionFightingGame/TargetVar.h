@@ -10,6 +10,7 @@ public:
 		pause = false;
 		TargetVarManager::get_instance()->register_target_var(this);
 	}
+
 	virtual	~BaseTargetVar() {
 		TargetVarManager::get_instance()->unregister_target_var(this);
 	}

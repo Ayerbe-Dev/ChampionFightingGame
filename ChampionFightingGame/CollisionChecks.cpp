@@ -157,52 +157,25 @@ void Battle::process_collisions() {
 					&& fighter[i]->connected_hitbox == nullptr
 					&& !fighter[i]->object_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX])) continue;
 				fighter[i]->object_flag[FIGHTER_FLAG_APPLIED_DEFINITE_HITBOX] = false;
-				if (fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT] > 1) {
-					if (combo_counter[!i] != nullptr) {
-						combo_counter[!i]->update_text(std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]));
-						combo_counter[!i]->texture.scale_all_percent(1.1f);
-						combo_hits[!i]->texture.scale_all_percent(1.1f);
-					}
-					else {
-						add_message("combo", std::to_string(fighter[!i]->object_int[FIGHTER_INT_COMBO_COUNT]), VBP(fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]), 5, glm::vec2(275.0, 500.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-						messages_active.back().texture.scale_all_percent(1.1f);
-						combo_counter[!i] = &messages_active.back();
-						add_message("message", "hits", VBP(fighter[i]->object_flag[FIGHTER_FLAG_ENDED_HITSTUN]), 5, glm::vec2(275.0, 800.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-						messages_active.back().texture.scale_all_percent(1.1f);
-						combo_hits[!i] = &messages_active.back();
-						if (i) {
-							combo_counter[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-							combo_hits[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_LEFT);
-						}
-						else {
-							combo_counter[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
-							combo_hits[!i]->texture.set_orientation(SCREEN_TEXTURE_ORIENTATION_TOP_RIGHT);
-						}
-					}
-				}
-				if (game_context == GAME_CONTEXT_TRAINING) {
+				
+				get_element("root/Battle UI/P" + std::to_string((bool)(!i) + 1) + " Combo Counter").execute_event("on_hit");
+				
+				if (context == SCENE_CONTEXT_TRAINING) {
 					training_info[!i].fields[TRAINING_FIELD_STARTUP].update_text(
-						get_font("info"),
 						"Startup: " + std::to_string(
 							fighter[!i]->object_int[FIGHTER_INT_EXTERNAL_FRAME] + 1
-						), glm::vec4(255.0), 
-						glm::vec4(0.0, 0.0, 0.0, 2.0)
+						)
 					);
 					training_info[!i].fields[TRAINING_FIELD_DAMAGE].update_text(
-						get_font("info"),
 						"Damage: " 
 						+ float_to_string(fighter[i]->object_float[FIGHTER_FLOAT_DAMAGE_UI_TRAINING], 3) 
 						+ "(" + float_to_string(fighter[i]->object_float[FIGHTER_FLOAT_DAMAGE_SCALE_UI_TRAINING], 3) 
-						+ "%)",
-						glm::vec4(255.0), glm::vec4(0.0, 0.0, 0.0, 2.0)
+						+ "%)"					
 					);
 					training_info[!i].fields[TRAINING_FIELD_COMBO_DAMAGE].update_text(
-						get_font("info"),
 						"Total: " + float_to_string(
 							fighter[!i]->object_float[FIGHTER_FLOAT_COMBO_DAMAGE_UI_TRAINING], 3
-						), 
-						glm::vec4(255.0), 
-						glm::vec4(0.0, 0.0, 0.0, 2.0)
+						)
 					);
 					int stun_frames = 0;
 					int airtime = 0;
@@ -251,30 +224,34 @@ void Battle::process_collisions() {
 					fighter[i]->object_int[FIGHTER_INT_FRAME_ADVANTAGE] = -frame_advantage;
 					std::string advantage = std::to_string(frame_advantage);
 					std::string air_advantage = std::to_string(air_frame_advantage);
+					glm::vec3 col(255.0f);
+					glm::vec3 air_col(255.0f);
 					if (frame_advantage >= 0) {
 						stun_frame_string += " (+" + advantage + ")";
+						if (frame_advantage != 0) {
+							col = glm::vec3(0.0f, 0.0f, 255.0f);
+						}
 					}
 					else {
 						stun_frame_string += " (" + advantage + ")";
+						col = glm::vec3(255.0f, 0.0f, 0.0f);
 					}
 					if (air_frame_advantage >= 0) {
 						airtime_string += " (+" + air_advantage + ")";
+						if (air_frame_advantage != 0) {
+							air_col = glm::vec3(0.0f, 0.0f, 255.0f);
+						}
 					}
 					else {
 						airtime_string += " (" + air_advantage + ")";
+						air_col = glm::vec3(255.0f, 0.0f, 0.0f);
 					}
-					training_info[!i].fields[TRAINING_FIELD_STUN_FRAMES].update_text(
-						get_font("info"),
-						stun_frame_string,
-						glm::vec4(255.0),
-						glm::vec4(0.0, 0.0, 0.0, 2.0)
-					);
-					training_info[!i].fields[TRAINING_FIELD_AIRTIME].update_text(
-						get_font("info"),
-						airtime_string,
-						glm::vec4(255.0),
-						glm::vec4(0.0, 0.0, 0.0, 2.0)
-					);
+					training_info[!i].fields[TRAINING_FIELD_STUN_FRAMES]
+						.update_text(stun_frame_string)
+						.set_color(col);
+					training_info[!i].fields[TRAINING_FIELD_AIRTIME]
+						.update_text(airtime_string)
+						.set_color(air_col);
 				}
 			}
 			objects[i][i2]->connected_hitbox = nullptr;
@@ -284,10 +261,10 @@ void Battle::process_collisions() {
 
 
 
-	if (game_context != GAME_CONTEXT_TRAINING && internal_state == BATTLE_STATE_BATTLE 
+	if (context != SCENE_CONTEXT_TRAINING && &get_active_element() == &get_element("root/Battle Sequence")
 		&& (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == 0.0
 		|| fighter[1]->object_float[FIGHTER_FLOAT_HEALTH] == 0.0)) {
-		internal_state = BATTLE_STATE_KO;
+		set_active_element(&get_element("root/KO Sequence/KO Text"));
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "BattleObject.h"
+#include "GameManager.h"
 
 void BattleObject::SET_RATE(ScriptArg args) {
 	UNWRAP(rate, float);

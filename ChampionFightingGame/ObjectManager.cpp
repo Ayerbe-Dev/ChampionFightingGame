@@ -10,7 +10,7 @@ ObjectManager::ObjectManager() {
 	stage = nullptr;
 }
 
-void ObjectManager::process() {
+void ObjectManager::process_world_frame() {
 	if (is_frame_elapsed()) {
 		world_frame = 0.0f;
 	}

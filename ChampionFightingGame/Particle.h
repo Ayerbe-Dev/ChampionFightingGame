@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
-#include "TextureCommon.h"
+#include "SceneElementBase.h"
 
 class Shader;
 

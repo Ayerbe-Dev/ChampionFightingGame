@@ -2,7 +2,6 @@
 #include <queue>
 #include <any>
 #include <iostream>
-#include "GameManager.h"
 
 template<typename ...T>
 std::queue<std::any> extract_variadic_to_queue_impl(const T&... args) {

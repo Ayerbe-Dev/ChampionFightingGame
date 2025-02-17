@@ -195,10 +195,12 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <StringPooling>true</StringPooling>
+      <StringPooling>false</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -326,7 +328,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="FighterStatusFunctions.cpp" />
     <ClCompile Include="CollisionBox.cpp" />
-    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="JuliusMoves.cpp" />
@@ -347,6 +348,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="BattleObjectPushboxFunctions.cpp" />
     <ClCompile Include="ProjectileActivationFunctions.cpp" />
     <ClCompile Include="ProjectileCollisionFunctions.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneElement.cpp" />
     <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="ScreenTexture.cpp" />
     <ClCompile Include="Sndlst.cpp" />
@@ -539,7 +542,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Battle.h" />
     <ClInclude Include="CollisionBox.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameState.h" />
     <ClInclude Include="GameRect.h" />
     <ClInclude Include="GameStates.h" />
     <ClInclude Include="GameTexture.h" />
@@ -558,6 +560,8 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="RowanFireballString.h" />
     <ClInclude Include="RowanString.h" />
     <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneElement.h" />
     <ClInclude Include="ScreenText.h" />
     <ClInclude Include="ScreenTexture.h" />
     <ClInclude Include="ScriptFunc.h" />
@@ -671,7 +675,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="TessaFloat.h" />
     <ClInclude Include="TessaInt.h" />
     <ClInclude Include="TessaStatus.h" />
-    <ClInclude Include="TextureCommon.h" />
+    <ClInclude Include="SceneElementBase.h" />
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="TitleScreen.h" />
     <ClInclude Include="VariadicHelpers.h" />

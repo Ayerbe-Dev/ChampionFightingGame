@@ -1,17 +1,12 @@
 #pragma once
-#include "GameState.h"
-#include "GameTexture.h"
-#include "GameManager.h"
+#include "Scene.h"
 #include "Player.h"
 
 void controls_main();
 
-class OptionsMenu : public GameState {
+class OptionsMenu : public Scene {
 public:
 	OptionsMenu();
 	~OptionsMenu();
-
-	void event_back_press();
-
-	GameTexture panel;
+	void render_main();
 };

@@ -11,7 +11,7 @@
 #include <functional>
 #include <set>
 #include <mutex>
-#include "GameTexture.h"
+#include "ScreenTexture.h"
 #include "ScriptFunc.h"
 #include "CircularBuffer.h"
 
@@ -66,8 +66,8 @@ public:
 	Framebuffer box_layer;
 	Framebuffer shadow_map;
 
-	std::vector<GameTexture> debug_textures;
-	GameTexture fade_texture;
+	std::vector<ScreenTexture> debug_textures;
+	ScreenTexture fade_texture;
 
 	float hdr_exposure;
 	std::vector<glm::vec3> ssao_samples;

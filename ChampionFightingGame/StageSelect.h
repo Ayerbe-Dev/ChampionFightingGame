@@ -1,5 +1,5 @@
 #pragma once
-#include "GameManager.h"
+#include "Scene.h"
 #include "GameObject.h"
 #include "Camera.h"
 #include "Light.h"
@@ -28,28 +28,18 @@ struct StageDemo {
 	std::vector<Light> lights;
 };
 
-class StageSelect : public GameState {
+class StageSelect : public Scene {
 public:
 	StageSelect();
 	~StageSelect();
 
 	bool load_stage_select();
-	void add_stage_slot(ParamTable param_table, Font* font);
+	void add_stage_slot(ParamTable param_table, int num_slots, int num_slots_per_row, float slot_width, float slot_height);
 
 	void process_main();
 	void render_main();
 
-	void event_up_press();
-	void event_down_press();
-	void event_left_press();
-	void event_right_press();
-	void event_select_press();
-	void event_back_press();
-
 	std::vector<StageDemo> stages;
 
-	int num_slots_per_row;
-	int selection;
-	int prev_selection;
 	bool selected;
 };

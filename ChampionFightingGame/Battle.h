@@ -1,9 +1,8 @@
 #pragma once
+#include "Scene.h"
 #include "Fighter.h"
 #include "Projectile.h"
 #include "BattleObject.h"
-#include "GameManager.h"
-#include "GameTexture.h"
 
 enum TimerSetting {
 	TIMER_SETTING_NORMAL,
@@ -206,15 +205,16 @@ class InputVisualizer {
 public:
 	InputVisualizer();
 	void init(Fighter* fighter, Font* font, bool keep_frames);
+	void reset();
 	void render();
 
 	Fighter* fighter;
 	Font* font;
 
-	GameTexture background;
-	GameTexture buttons[6];
-	GameTexture stick[9];
-	GameTexture num_frames;
+	ScreenTexture background;
+	ScreenTexture buttons[6];
+	ScreenTexture stick[9];
+	ScreenText num_frames;
 
 	short input_code;
 	bool keep_frames;
@@ -238,13 +238,13 @@ public:
 	void destroy();
 	void render();
 
-	GameTexture background_texture;
+	ScreenTexture background_texture;
 
 	const std::string field_names[TRAINING_FIELD_MAX] = {
 		"Startup: ", "Damage: ", "Combo Damage: ", "Stun Frames: ", "Airtime: ", 
 		"Frame Gap: ", "Juggle Value: "
 	};
-	GameTexture fields[TRAINING_FIELD_MAX];
+	ScreenText fields[TRAINING_FIELD_MAX];
 
 	/* TODO: Replace current fields with the following:
 	* Startup (Hit Frame)
@@ -259,10 +259,10 @@ public:
 	Fighter* fighter;
 
 	InputVisualizer input_visualizer;
-	std::list<InputVisualizer> mini_visualizers;
+	CircularBuffer<InputVisualizer> mini_visualizers;
 };
 
-class Battle : public GameState {
+class Battle : public Scene {
 public:
 	Battle();
 	~Battle();
@@ -270,14 +270,10 @@ public:
 	void load_world();
 	void load_ui();
 
-	void pre_event_process_main();
+	void process_pre_event();
 	void process_main();
 	void render_main();
 
-	void process_pre_intro();
-	void process_intro();
-	void process_round_start();
-	void process_battle();
 	void process_ko();
 	void process_outro();
 
@@ -289,28 +285,12 @@ public:
 	void process_collisions();
 	void process_cpus();
 
-	void render_world();
-	void render_ui();
-
-	void event_start_press();
-	void event_frame_pause_press();
-	void event_frame_advance_press();
-	void event_record_input_press();
-	void event_replay_input_press();
-	void event_switch_input_press();
-
 	ObjectManager* object_manager;
 	ThreadManager* thread_manager;
 
 	Fighter* fighter[2];
 	Stage stage;
 	Camera* camera;
-
-	UIMessage* combo_counter[2];
-	UIMessage* combo_hits[2];
-
-	int ko_timer;
-	int actionable_timer;
 
 	MusicInstance* battle_music;
 

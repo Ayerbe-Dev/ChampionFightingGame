@@ -12,7 +12,6 @@ Camera::Camera() {
 	pos = base_pos;
 	prev_pos = glm::vec3(0.0);
 	pos_x_interpolator = base_pos.x;
-	pos_x_interpolator.set_persistence(true);
 
 	yaw = 0.0;
 	pitch = 3.0;

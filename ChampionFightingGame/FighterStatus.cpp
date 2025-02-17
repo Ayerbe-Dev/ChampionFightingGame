@@ -8,6 +8,7 @@
 #include "GLM Helpers.h"
 #include "utils.h"
 #include <array>
+#include "PlayerInfo.h"
 
 bool Fighter::common_ground_status_act() {
 	unsigned int stick_dir = get_stick_dir();

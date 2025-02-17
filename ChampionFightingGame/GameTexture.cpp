@@ -1018,8 +1018,8 @@ void GameTexture::prepare_render() {
 	if (anchor_pos != nullptr) {
 		gl_pos += *anchor_pos;
 	}
-	gl_pos.x /= (float)WINDOW_WIDTH;
-	gl_pos.y /= (float)WINDOW_HEIGHT;
+	gl_pos.x /= WINDOW_WIDTH;
+	gl_pos.y /= WINDOW_HEIGHT;
 	matrix = translate(glm::mat4(1.0), gl_pos);
 	matrix = rotate(matrix, glm::radians(rot.x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = rotate(matrix, glm::radians(rot.y), glm::vec3(0.0, 1.0, 0.0));

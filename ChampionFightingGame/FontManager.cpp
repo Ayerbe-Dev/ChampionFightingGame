@@ -3,6 +3,9 @@
 #include "WindowManager.h"
 #include "WindowConstants.h"
 
+//TODO: This entire class can be condensed into the ResourceManager so unload_unused handles unused 
+//faces automatically
+
 FontManager::FontManager() {
 	if (FT_Init_FreeType(&ft)) {
 		std::cout << "ERROR::FREETYPE: Could not init FreeType Library\n";

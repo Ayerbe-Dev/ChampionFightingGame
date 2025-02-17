@@ -1,4 +1,5 @@
 #include "Fighter.h"
+#include "GameManager.h"
 
 void Fighter::change_status(unsigned int new_status_kind, bool call_end_status) {
 	if (new_status_kind == status_kind
@@ -103,5 +104,5 @@ bool Fighter::check_hitstun_parry() {
 }
 
 bool Fighter::is_ko() {
-	return object_float[FIGHTER_FLOAT_HEALTH] == 0.0f && GameManager::get_instance()->get_game_state()->game_context != GAME_CONTEXT_TRAINING;
+	return object_float[FIGHTER_FLOAT_HEALTH] == 0.0f && GameManager::get_instance()->get_scene()->context != SCENE_CONTEXT_TRAINING;
 }

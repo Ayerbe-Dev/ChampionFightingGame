@@ -3,6 +3,7 @@
 #include <sstream>
 #include "DebugMenu.h"
 #include "cotr_imgui_debugger.h"
+#include "GameManager.h"
 #include "WindowManager.h"
 #include "FontManager.h"
 #include "ResourceManager.h"
@@ -48,8 +49,8 @@ void debug_main() {
 
 		window_manager->update_shader_cams();
 
-		debug->process_game_state();
-		debug->render_game_state();
+		debug->process();
+		debug->render();
 
 		cotr_imgui_debug_dbmenu(debug);
 
@@ -85,27 +86,49 @@ DebugMenu::DebugMenu() {
 	go2.set_rot(glm::vec3(0.0, 0.0, 90.0));
 	go2.model.set_flip(true);
 
-	tex.init("resource/game_state/chara_select/chara/rowan/render.png");
-	text_field.init(0, 600, 80);
-	text_field.set_pos(glm::vec3(0.0, -400.0, 0.0));
-	text_field.attach_shader(ShaderManager::get_instance()->get_shader_switch_features(
-		text_field.shader, 0, SHADER_FEAT_COLORMOD
-	));
-	text_field.set_colormod(glm::vec3(255.0, 255.0, 255.0));
-
-	load_font("text_input", "FiraCode", 96);
 	load_font("test_font", "Fiend-Oblique", 64);
-	text.init(get_font("text_input"), "", glm::vec4(0.0, 0.0, 0.0, 255.0), glm::vec4(0.0));
-	text.set_pos(glm::vec3(0.0, -400.0, 0.0));
 
-	test_screentexture.init("resource/game_state/battle/ui/pause/overlay.png", TEX_FEAT_4T5V);
-	test_worldtexture.init("resource/game_state/chara_select/chara/rowan/render.png", TEX_FEAT_4T5V).set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0));
-	test_screentext.init(&get_font("test_font"), "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
-	test_worldtext.init(&get_font("test_font"), "This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)", TextSpecifier().color(glm::vec3(255.0, 0.0, 0.0)).border(4).centered(true).multiline_scroll(true));
+	std::cout << "Begin ScreenText constructor sequence:\n";
+	root.add_elements({
+		{"Child", SceneElement({
+			{"Screen", SceneElement({
+				{"Texture", ScreenTexture("resource/scene/battle/ui/pause/overlay.png", TEX_FEAT_4T5V)
+					.set_pos(glm::vec3(200.0f, 0.0f, 0.0f))
+				},
+				{"Text", ScreenText(
+					&get_font("test_font"),
+					"This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)",
+					TextSpecifier()
+						.color(glm::vec3(255.0, 0.0, 0.0))
+						.border(4)
+						.centered(true)
+						.multiline_scroll(true)
+					).set_pos(glm::vec3(2000.0f, 0.0f, 0.0f))
+				}
+			})},
+			{"World", SceneElement({
+				{"WorldTexture", WorldTexture("resource/scene/chara_select/chara/rowan/render.png", TEX_FEAT_4T5V)
+					.set_orientation(TEXTURE_BOTTOM).set_pos(glm::vec3(200.0, 0.0, 0.0)) },
+				{"WorldText", WorldText(
+					&get_font("test_font"),
+					"This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)",
+					TextSpecifier()
+						.color(glm::vec3(255.0, 0.0, 0.0))
+						.border(4).centered(true)
+						.multiline_scroll(true)
+					)
+				}
+			})}
+		}).add_event("up_press", [this](SceneElement* elem) {
+			elem->get_world_text("World/WorldText").update_text("Testing the up event!").start_scroll(10);
+		}).add_event("down_press", [this](SceneElement* elem) {
+			elem->get_world_text("World/WorldText").update_text("Testing the down event!").start_scroll(10);
+		})}
+	});
+	std::cout << "End ScreenText constructor sequence\n";
 }
 
 DebugMenu::~DebugMenu() {
-	tex.destroy();
 	go1.model.unload_textures();
 	go2.model.unload_textures();
 }
@@ -113,37 +136,101 @@ DebugMenu::~DebugMenu() {
 void DebugMenu::process_main() {
 	go1.process_animate();
 	go2.process_animate();
+	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
 	Camera& camera = window_manager->camera;
-	if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
-		go1.add_pos(glm::vec3(0.0, 3.0, 0.0));
-		camera.add_pos(0.0, 0.0, 1.0);
-	}
-	if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
-		go1.add_pos(glm::vec3(-3.0, 0.0, 0.0));
-		camera.add_pos(-1.0, 0.0, 0.0);
 
+	if (glfwGetKey(window_manager->window, GLFW_KEY_UP)) {
+		root.get_child("Child").execute_event("up_press");
 	}
-	if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
-		go1.add_pos(glm::vec3(0.0, -3.0, 0.0));
-		camera.add_pos(0.0, 0.0, -1.0);
+	if (glfwGetKey(window_manager->window, GLFW_KEY_DOWN)) {
+		root.get_child("Child").execute_event("down_press");
+	}
+	
+	//When we're holding down M1, WASD allows the camera to move around (The camera's rotation is also 
+	//controlled by the mouse in this state)
+	if (mouse.check_button_on(GLFW_MOUSE_BUTTON_1)) {
+		if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
+			camera.add_pos(0.0, 0.0, 1.0);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
+			camera.add_pos(-1.0, 0.0, 0.0);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
+			camera.add_pos(0.0, 0.0, -1.0);
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
+			camera.add_pos(1.0, 0.0, 0.0);
+		}
+	}
+	else {
+		//Otherwise, our key inputs are for testing MenuObject hierarchal movement:
+		//- WASD moves the child object around
+		//- TFGH rotates the object which all SCREEN SPACE textures are part of
+		//- IJKL rotates the object which all WORLD SPACE textures are part of
+
+		if (glfwGetKey(window_manager->window, GLFW_KEY_W)) {
+			root.get_child("Child").add_pos(glm::vec3(0.0, 1.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_A)) {
+			root.get_child("Child").add_pos(glm::vec3(-1.0, 0.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_S)) {
+			root.get_child("Child").add_pos(glm::vec3(0.0, -1.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
+			root.get_child("Child").add_pos(glm::vec3(1.0, 0.0, 0.0));
+		}
+
+		if (glfwGetKey(window_manager->window, GLFW_KEY_T)) {
+			root.get_child("Child/Screen").add_rot(glm::vec3(0.0, 1.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_F)) {
+			root.get_child("Child/Screen").add_rot(glm::vec3(0.0, 0.0, -1.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_G)) {
+			root.get_child("Child/Screen").add_rot(glm::vec3(0.0, -1.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_H)) {
+			root.get_child("Child/Screen").add_rot(glm::vec3(0.0, 0.0, 1.0));
+		}
+
+		if (glfwGetKey(window_manager->window, GLFW_KEY_I)) {
+			root.get_child("Child/World").add_rot(glm::vec3(0.0, 1.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_J)) {
+			root.get_child("Child/World").add_rot(glm::vec3(0.0, 0.0, -1.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_K)) {
+			root.get_child("Child/World").add_rot(glm::vec3(0.0, -1.0, 0.0));
+		}
+		if (glfwGetKey(window_manager->window, GLFW_KEY_L)) {
+			root.get_child("Child/World").add_rot(glm::vec3(0.0, 0.0, 1.0));
+		}
 	}
 
-	if (glfwGetKey(window_manager->window, GLFW_KEY_D)) {
-		go1.add_pos(glm::vec3(3.0, 0.0, 0.0));
-		camera.add_pos(1.0, 0.0, 0.0);
-	}
+	//Misc other scene tests
+
 	if (glfwGetKey(window_manager->window, GLFW_KEY_Z)) {
-		test_worldtexture.set_billboard_setting(BILLBOARD_ON);
-		test_worldtext.set_billboard_setting(BILLBOARD_ON);
+		root.get_world_texture("Child/World/Texture").set_billboard_setting(BILLBOARD_ON);
+		root.get_world_text("Child/World/Text").set_billboard_setting(BILLBOARD_ON);
+		game_manager->fps_counter.add_width_scale(0.01).add_height_scale(0.01);
+		for (int i = 0; i < window_manager->debug_textures.size(); i++) {
+			window_manager->debug_textures[i].add_width_scale(0.01).add_height_scale(0.01);
+		}
 	}
 	if (glfwGetKey(window_manager->window, GLFW_KEY_X)) {
-		test_worldtexture.set_billboard_setting(BILLBOARD_OFF);
-		test_worldtext.set_billboard_setting(BILLBOARD_OFF);
+		root.get_world_texture("Child/World/Texture").set_billboard_setting(BILLBOARD_OFF);
+		root.get_world_text("Child/World/Text").set_billboard_setting(BILLBOARD_OFF);
+		game_manager->fps_counter.add_width_scale(-0.01).add_height_scale(-0.01);
+		for (int i = 0; i < window_manager->debug_textures.size(); i++) {
+			window_manager->debug_textures[i].add_width_scale(-0.01).add_height_scale(-0.01);
+		}
 	}
 
 	if (glfwGetKey(window_manager->window, GLFW_KEY_SPACE)) {
-		test_worldtext.update_text("Updating text after space was pressed!").start_scroll(10);
+		root.get_world_text("Child/World/Text").update_text("Updating text after space was pressed!").start_scroll(10);
+		root.get_screen_text("Child/Screen/Text").update_text("This line is extremely long (relatively)\nThis one isn't\nThis line is extremely long (relatively)");
 	}
 }
 
@@ -180,14 +267,8 @@ void DebugMenu::render_main() {
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	window_manager->g_buffer.render();
 	glDisable(GL_FRAMEBUFFER_SRGB);
-	tex.render();
-	text_field.render();
-	text.render();
 
 	glDisable(GL_DEPTH_TEST);
-	test_screentexture.render();
-	test_screentext.render();
-	test_worldtexture.render();
-	test_worldtext.render();
+	root.render();
 	glEnable(GL_DEPTH_TEST);
 }

@@ -135,19 +135,14 @@ WindowManager::WindowManager() {
 	SSAO.bind_uniforms();
 	box_layer.bind_uniforms();
 
-	debug_textures.push_back(GameTexture(g_buffer.textures[0]));
-	debug_textures.push_back(GameTexture(g_buffer.textures[1]));
-	debug_textures.push_back(GameTexture(g_buffer.textures[2]));
-	debug_textures.push_back(GameTexture(blur.textures[0]));
+	debug_textures.push_back(ScreenTexture(g_buffer.textures[0]));
+	debug_textures.push_back(ScreenTexture(g_buffer.textures[1]));
+	debug_textures.push_back(ScreenTexture(g_buffer.textures[2]));
+	debug_textures.push_back(ScreenTexture(blur.textures[0]));
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
-		debug_textures[i].set_scale(0.2);
-		debug_textures[i].set_orientation(SCREEN_TEXTURE_ORIENTATION_BOTTOM_RIGHT);
-		debug_textures[i].set_pos(glm::vec3(0.0, 432 * i, 0.0));
+		debug_textures[i].set_scale(0.2).set_pos(glm::vec3(0.0, 250 * i, 0.0)).set_orientation(TEXTURE_BOTTOM_RIGHT);
 	}
-
-	fade_texture.init("resource/misc/fade.png");
-	fade_texture.alpha = 0;
-	fade_texture.alpha.set_persistence(true);
+	fade_texture.init("resource/misc/fade.png").set_alpha(0);
 	fade_frames = 0;
 	fading = false;
 	mid_fade_func = nullptr;
@@ -212,7 +207,7 @@ void WindowManager::dim_lights(float dim_mul, Shader** shader) {
 
 void WindowManager::start_fade_sequence(unsigned char fade_frames, std::function<void()> mid_fade_func) {
 	if (fading) return;
-	fade_texture.alpha.set_target_val(255, fade_frames);
+	fade_texture.set_alpha(255, fade_frames);
 	this->fade_frames = fade_frames;
 	this->mid_fade_func = mid_fade_func;
 	fading = true;
@@ -368,11 +363,11 @@ void WindowManager::render_debug_textures() {
 
 void WindowManager::update_screen() {
 	if (fading) {
-		if (fade_texture.alpha == 0 && fade_frames == 0) {
+		if (fade_texture.get_alpha() == 0 && fade_frames == 0) {
 			fading = false;
 		}
-		if (fade_texture.alpha == 255) {
-			fade_texture.alpha.set_target_val(0, fade_frames);
+		if (fade_texture.get_alpha() == 255) {
+			fade_texture.set_alpha(0, fade_frames);
 			mid_fade_func();
 			mid_fade_func = nullptr;
 			fade_frames = 0;
@@ -426,7 +421,7 @@ void window_resize_callback(GLFWwindow* window, int width, int height) {
 }
 
 void window_close_callback(GLFWwindow* window) {
-	GameManager::get_instance()->update_state(GAME_STATE_CLOSE);
+	GameManager::get_instance()->update_scene(SCENE_CLOSE);
 }
 
 void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {

@@ -1,5 +1,5 @@
 #pragma once
-#include "GameManager.h"
+#include "Scene.h"
 #include "GameObject.h"
 #include "Camera.h"
 #include "Light.h"
@@ -25,7 +25,7 @@ class Font;
 
 void chara_select_main();
 
-class CSS: public GameState{
+class CSS: public Scene {
 public:
     CSS();
     ~CSS();
@@ -34,14 +34,6 @@ public:
     
     void process_main();
     void render_main();
-
-    void event_select_press();
-    void event_back_press();
-    void event_start_press();
-    void event_up_press();
-    void event_down_press();
-    void event_left_press();
-    void event_right_press();
 
     GameObject stage_demo;
     GameObject demo_models[2];
@@ -53,9 +45,9 @@ public:
     int loaded_chars;
     int thread_loaded_chars;
 private:
-    void select_slot(int player_idx);
-    void select_costume(int player_idx);
-    void select_color(int player_idx);
+    void select_slot();
+    void select_costume();
+    void select_color();
     void select_preferred_chara_kind(PlayerInfo* player_info);
     void load_chara_model_into_main_thread();
 };

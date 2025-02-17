@@ -1,13 +1,15 @@
 #pragma once
 #include "Player.h"
 #include "PlayerInfo.h"
-#include "GameState.h"
+#include "Scene.h"
 #include <functional>
 #include <queue>
 #include <stack>
 #include <list>
 #include <any>
+#include <chrono>
 #include "debug.h"
+#include "ScreenText.h"
 
 class GameManager {
 public:
@@ -15,34 +17,18 @@ public:
 	void operator=(const GameManager& other) = delete;
 	
 	Player *player[2];
-	int next_game_state;
-	int next_game_context;
+	int next_scene;
+	int next_scene_context;
 
-	void (*game_main[GAME_STATE_MAX])();
+	void (*scene_main[SCENE_MAX])();
 
-	void update_state(int next_game_state = GAME_STATE_MAX, int next_game_context = GAME_CONTEXT_MAX);
-	void set_game_state(GameState *game_state);
-	GameState *get_game_state(int depth = 0);
-	void delete_game_state();
+	void update_scene(int next_scene = SCENE_MAX, int next_scene_context = SCENE_CONTEXT_MAX);
+	void set_scene(Scene *scene);
+	Scene *get_scene(int depth = 0);
+	void delete_scene();
 
-	void process_game_state_events();
-	void render_game_states();
-
-	void event_up_press();
-	void event_down_press();
-	void event_left_press();
-	void event_right_press();
-	void event_start_press();
-	void event_select_press();
-	void event_back_press();
-	void event_page_left_press();
-	void event_page_right_press();
-	void event_frame_pause_press();
-	void event_frame_advance_press();
-	void event_record_input_press();
-	void event_replay_input_press();
-	void event_switch_input_press();
-	void event_any_press();
+	void process_events();
+	void render();
 
 	void add_crash_log(std::string crash_reason);
 	bool get_crash_log(std::string* ret);
@@ -53,6 +39,7 @@ public:
 
 #ifdef DEBUG
 	bool frame_capped;
+	friend class DebugMenu;
 #endif
 
 	static GameManager* get_instance();
@@ -61,9 +48,7 @@ private:
 	GameManager();
 	static GameManager* instance;
 
-	std::vector<GameState*> game_state;
-	std::vector<std::list<BaseTargetVar*>> game_state_targets;
-	std::list<BaseTargetVar*> unset_targets;
+	std::vector<Scene*> scenes;
 
 
 	bool is_up_press(int id);
@@ -85,8 +70,7 @@ private:
 	//FPS stuff
 
 	Font fps_font;
-	GameTexture fps_counter;
-	GameTexture fps_texture;
+	ScreenText fps_counter;
 	int frame;
 	int fps;
 	int prev_fps;

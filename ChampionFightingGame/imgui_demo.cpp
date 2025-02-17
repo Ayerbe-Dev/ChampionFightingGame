@@ -561,7 +561,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
         if (ImGui::TreeNode("Backend Flags"))
         {
             HelpMarker(
-                "Those flags are set by the backends (imgui_impl_xxx files) to specify their capabilities.\n"
+                "Those context are set by the backends (imgui_impl_xxx files) to specify their capabilities.\n"
                 "Here we expose them as read-only fields to avoid breaking interactions with your backend.");
 
             // FIXME: Maybe we need a BeginReadonly() equivalent to keep label bright?
@@ -930,7 +930,7 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
 
         HelpMarker(
             "Tooltip are typically created by using a IsItemHovered() + SetTooltip() sequence.\n\n"
-            "We provide a helper SetItemTooltip() function to perform the two with standards flags.");
+            "We provide a helper SetItemTooltip() function to perform the two with standards context.");
 
         ImVec2 sz = ImVec2(-FLT_MIN, 0.0f);
 
@@ -970,7 +970,7 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
         HelpMarker(
             "Passing ImGuiHoveredFlags_ForTooltip to IsItemHovered() is the preferred way to standardize"
             "tooltip activation details across your application. You may however decide to use custom"
-            "flags for a specific tooltip instance.");
+            "context for a specific tooltip instance.");
 
         // The following examples are passed for documentation purpose but may not be useful to most users.
         // Passing ImGuiHoveredFlags_ForTooltip to IsItemHovered() will pull ImGuiHoveredFlags flags values from
@@ -1867,8 +1867,8 @@ static void ShowDemoWindowWidgets(ImGuiDemoWindowData* demo_data)
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Tabs/TabItemButton & Leading-Trailing flags");
-        if (ImGui::TreeNode("TabItemButton & Leading/Trailing flags"))
+        IMGUI_DEMO_MARKER("Widgets/Tabs/TabItemButton & Leading-Trailing context");
+        if (ImGui::TreeNode("TabItemButton & Leading/Trailing context"))
         {
             static ImVector<int> active_tabs;
             static int next_tab_id = 0;
@@ -3363,7 +3363,7 @@ static void ShowDemoWindowMultiSelect(ImGuiDemoWindowData* demo_data)
         if (ImGui::TreeNode("Multi-Select (checkboxes)"))
         {
             ImGui::Text("In a list of checkboxes (not selectable):");
-            ImGui::BulletText("Using _NoAutoSelect + _NoAutoClear flags.");
+            ImGui::BulletText("Using _NoAutoSelect + _NoAutoClear context.");
             ImGui::BulletText("Shift+Click to check multiple boxes.");
             ImGui::BulletText("Shift+Keyboard to copy current value to other boxes.");
 
@@ -5386,7 +5386,7 @@ static void ShowDemoWindowTables()
         // If there is not enough available width to fit all columns, they will however be resized down.
         // FIXME-TABLE: Providing a stretch-on-init would make sense especially for tables which don't have saved settings
         HelpMarker(
-            "Using _Resizable + _SizingFixedFit flags.\n"
+            "Using _Resizable + _SizingFixedFit context.\n"
             "Fixed-width columns generally makes more sense if you want to use horizontal scrolling.\n\n"
             "Double-click a column border to auto-fit the column to its contents.");
         PushStyleCompact();
@@ -5877,8 +5877,8 @@ static void ShowDemoWindowTables()
 
     if (open_action != -1)
         ImGui::SetNextItemOpen(open_action != 0);
-    IMGUI_DEMO_MARKER("Tables/Columns flags");
-    if (ImGui::TreeNode("Columns flags"))
+    IMGUI_DEMO_MARKER("Tables/Columns context");
+    if (ImGui::TreeNode("Columns context"))
     {
         // Create a first table just to show all the options/flags we want to make visible in our example!
         const int column_count = 3;
@@ -5896,10 +5896,10 @@ static void ShowDemoWindowTables()
                 ImGui::AlignTextToFramePadding(); // FIXME-TABLE: Workaround for wrong text baseline propagation across columns
                 ImGui::Text("'%s'", column_names[column]);
                 ImGui::Spacing();
-                ImGui::Text("Input flags:");
+                ImGui::Text("Input context:");
                 EditTableColumnsFlags(&column_flags[column]);
                 ImGui::Spacing();
-                ImGui::Text("Output flags:");
+                ImGui::Text("Output context:");
                 ImGui::BeginDisabled();
                 ShowTableColumnsStatusFlags(column_flags_out[column]);
                 ImGui::EndDisabled();
@@ -6266,7 +6266,7 @@ static void ShowDemoWindowTables()
         ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanTextWidth",  &tree_node_flags, ImGuiTreeNodeFlags_SpanTextWidth);
         ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanAllColumns", &tree_node_flags, ImGuiTreeNodeFlags_SpanAllColumns);
 
-        HelpMarker("See \"Columns flags\" section to configure how indentation is applied to individual columns.");
+        HelpMarker("See \"Columns context\" section to configure how indentation is applied to individual columns.");
         if (ImGui::BeginTable("3ways", 3, flags))
         {
             // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
@@ -7322,7 +7322,7 @@ static void ShowDemoWindowInputs()
             "Dear ImGui wants the corresponding inputs and we expect the underlying application to ignore them.\n\n"
             "The most typical case is: when hovering a window, Dear ImGui set io.WantCaptureMouse to true, "
             "and underlying application should ignore mouse inputs (in practice there are many and more subtle "
-            "rules leading to how those flags are set).");
+            "rules leading to how those context are set).");
         if (outputs_opened)
         {
             ImGui::Text("io.WantCaptureMouse: %d", io.WantCaptureMouse);

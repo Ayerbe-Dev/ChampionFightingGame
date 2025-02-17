@@ -7,16 +7,15 @@
 class BaseTargetVar {
 public:
 	BaseTargetVar() {
-		persistent = false;
 		pause = false;
-		TargetVarManager::get_instance()->register_target_var(this, persistent);
+		TargetVarManager::get_instance()->register_target_var(this);
 	}
+
 	virtual	~BaseTargetVar() {
-		TargetVarManager::get_instance()->unregister_target_var(this, persistent);
+		TargetVarManager::get_instance()->unregister_target_var(this);
 	}
 
 	virtual void process() {}
-	bool persistent;
 	bool pause;
 };
 
@@ -56,51 +55,39 @@ public:
 		return &val;
 	}
 
-	TargetVar<T>& operator=(const T& rhs) {
-		val = rhs;
-		target_val = val;
-		frames = 0;
-		return *this;
-	}
-
 	template <typename U>
-	TargetVar<T>& operator=(const U& rhs) {
+	void operator=(const U& rhs) {
 		val = (T)rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator+=(const U& rhs) {
+	void operator+=(const U& rhs) {
 		val += rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator-=(const U& rhs) {
+	void operator-=(const U& rhs) {
 		val -= rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator*=(const U& rhs) {
+	void operator*=(const U& rhs) {
 		val *= rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator/=(const U& rhs) {
+	void operator/=(const U& rhs) {
 		val /= rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
@@ -124,46 +111,40 @@ public:
 	}
 
 	template <typename U>
-	TargetVar<T>& operator=(const TargetVar<U>& rhs) {
+	void operator=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val = rhs.get_val();
 			target_val = val;
 			frames = 0;
 		}
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator+=(const TargetVar<U>& rhs) {
+	void operator+=(const TargetVar<U>& rhs) {
 		val += rhs.get_val();
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator-=(const TargetVar<U>& rhs) {
+	void operator-=(const TargetVar<U>& rhs) {
 		val -= rhs.get_val();
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator*=(const TargetVar<U>& rhs) {
+	void operator*=(const TargetVar<U>& rhs) {
 		val *= rhs.get_val();
 		target_val = val;
 		frames = 0;
-		
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator/=(const TargetVar<U>& rhs) {
+	void operator/=(const TargetVar<U>& rhs) {
 		val /= rhs.get_val();
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
@@ -197,6 +178,7 @@ public:
 			target_change_per_frame *= -1;
 		}
 		this->frames = frames;
+		process();
 	}
 
 	void set_val(const T& val) {
@@ -226,12 +208,6 @@ public:
 
 	unsigned int get_frames() const {
 		return frames;
-	}
-
-	void set_persistence(bool persistent) {
-		TargetVarManager::get_instance()->unregister_target_var(this, this->persistent);
-		this->persistent = persistent;
-		TargetVarManager::get_instance()->register_target_var(this, this->persistent);
 	}
 
 	void set_pause(bool pause) {

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set>
 #include "Model.h"
 
 struct ModelResource {
@@ -20,7 +21,7 @@ public:
 	void operator=(const ResourceManager& other) = delete;
 
 	void set_srgb(bool srgb);
-	bool is_srgb();
+	bool is_srgb() const;
 
 	void load_model(std::string dir);
 	void init_gl_model(std::string dir);
@@ -40,11 +41,17 @@ public:
 	void unload_unused();
 	void unload_all();
 
+	void store_const_copy_addr(unsigned int texture_id, void* addr);
+	bool is_tex_const_copied(unsigned int texture_id);
+	bool is_tex_const_copied(unsigned int texture_id, void* addr);
+	int get_num_const_copied_textures();
+
 	static ResourceManager* get_instance();
 	void destroy_instance();
 private:
 	std::map<std::string, ModelResource> model_map;
 	std::map<std::string, TextureResource> texture_map;
+	std::map<unsigned int, std::set<void*>> const_copy_addr;
 	bool srgb;
 
 	ResourceManager();

@@ -470,12 +470,12 @@ void ModelInstance::set_bones(float frame, Animation* anim_kind) {
 	}
 
 	glm::mat4 global_transform = model->get_global_transform();
-	std::vector<AnimBone> keyframes = anim_kind->keyframes[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
-	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[clamp(0, floorf(frame) + 1, anim_kind->keyframes.size() - 1)];
+	std::vector<AnimBone> keyframes = anim_kind->keyframes[std::min((size_t)floorf(frame), anim_kind->keyframes.size() - 1)];
+	std::vector<AnimBone> next_keyframes = anim_kind->keyframes[std::min((size_t)floorf(frame) + 1, anim_kind->keyframes.size() - 1)];
 	float interp_mul = (frame - (int)frame);
 	if (move) {
-		glm::mat4 trans_keyframe = anim_kind->trans_matrices[clamp(0, floorf(frame), anim_kind->keyframes.size() - 1)];
-		glm::mat4 next_trans_keyframe = anim_kind->trans_matrices[clamp(0, floorf(frame + 1), anim_kind->keyframes.size() - 1)];
+		glm::mat4 trans_keyframe = anim_kind->trans_matrices[std::min((size_t)floorf(frame), anim_kind->keyframes.size() - 1)];
+		glm::mat4 next_trans_keyframe = anim_kind->trans_matrices[std::min((size_t)floorf(frame + 1), anim_kind->keyframes.size() - 1)];
 		trans_matrix = trans_keyframe + (interp_mul * (next_trans_keyframe - trans_keyframe));
 	}
 

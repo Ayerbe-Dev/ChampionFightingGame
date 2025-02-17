@@ -1,14 +1,16 @@
 #include "TitleScreen.h"
-#include "GameTexture.h"
-#include "cotr_imgui_debugger.h"
-#include <glew/glew.h>
+#include "GameManager.h"
+#include "FontManager.h"
 #include "WindowManager.h"
+#include "cotr_imgui_debugger.h"
 #include "TimeFuncs.h"
+#include <glew/glew.h>
 
 void title_screen_main() {
 	GameManager* game_manager = GameManager::get_instance();
 	WindowManager* window_manager = WindowManager::get_instance();
-
+	FontManager* font_manager = FontManager::get_instance();
+	font_manager->load_face("Fiend-Oblique");
 	Player *player[2];
 	player[0] = game_manager->player[0];
 	player[1] = game_manager->player[1];
@@ -20,41 +22,33 @@ void title_screen_main() {
 
 		window_manager->clear_screen();
 
-		title_screen->process_game_state();
-		title_screen->render_game_state();
+		title_screen->process();
+		title_screen->render();
 
 		window_manager->update_screen();
 	}
-
 	delete title_screen;
+	font_manager->unload_face("Fiend-Oblique");
 }
 
 TitleScreen::TitleScreen() {
 	GameManager* game_manager = GameManager::get_instance();
-
-	title_l1.init("resource/game_state/title/ui/title-l1.png");
-	title_l2.init("resource/game_state/title/ui/title-l2.png");
-	title_l3.init("resource/game_state/title/ui/title-l3.png");
-	title_l4.init("resource/game_state/title/ui/title-l4.png");
-	text.init("resource/game_state/title/ui/Praeiudicium.png");
+	load_font("Title Font", "Fiend-Oblique", 64);
+	root.add_elements({
+		{"TitleL1", ScreenTexture("resource/scene/title/ui/title-l4.png")},
+		{"TitleL2", ScreenTexture("resource/scene/title/ui/title-l3.png")},
+		{"TitleL3", ScreenTexture("resource/scene/title/ui/title-l2.png")},
+		{"TitleL4", ScreenTexture("resource/scene/title/ui/title-l1.png")},
+		{"Title", ScreenText(&get_font("Title Font"), "Champions of the Ring", TextSpecifier().border(4))}
+	}).add_event("button_press", [this](SceneElement* elem) {
+		update_scene(SCENE_MAIN_MENU, SCENE_CONTEXT_NONE);
+	});
 }
 
 TitleScreen::~TitleScreen() {
-	title_l1.destroy();
-	title_l2.destroy();
-	title_l3.destroy();
-	title_l4.destroy();
-	text.destroy();
+
 }
 
 void TitleScreen::render_main() {
-	title_l4.render();
-	title_l3.render();
-	title_l2.render();
-	title_l1.render();
-	text.render();
-}
-
-void TitleScreen::event_any_press() {
-	update_state(GAME_STATE_MAIN_MENU);
+	root.render();
 }

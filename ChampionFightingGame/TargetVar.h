@@ -55,51 +55,39 @@ public:
 		return &val;
 	}
 
-	TargetVar<T>& operator=(const T& rhs) {
-		val = rhs;
-		target_val = val;
-		frames = 0;
-		return *this;
-	}
-
 	template <typename U>
-	TargetVar<T>& operator=(const U& rhs) {
+	void operator=(const U& rhs) {
 		val = (T)rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator+=(const U& rhs) {
+	void operator+=(const U& rhs) {
 		val += rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator-=(const U& rhs) {
+	void operator-=(const U& rhs) {
 		val -= rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator*=(const U& rhs) {
+	void operator*=(const U& rhs) {
 		val *= rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator/=(const U& rhs) {
+	void operator/=(const U& rhs) {
 		val /= rhs;
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
@@ -123,46 +111,40 @@ public:
 	}
 
 	template <typename U>
-	TargetVar<T>& operator=(const TargetVar<U>& rhs) {
+	void operator=(const TargetVar<U>& rhs) {
 		if (this != &rhs) {
 			val = rhs.get_val();
 			target_val = val;
 			frames = 0;
 		}
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator+=(const TargetVar<U>& rhs) {
+	void operator+=(const TargetVar<U>& rhs) {
 		val += rhs.get_val();
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator-=(const TargetVar<U>& rhs) {
+	void operator-=(const TargetVar<U>& rhs) {
 		val -= rhs.get_val();
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator*=(const TargetVar<U>& rhs) {
+	void operator*=(const TargetVar<U>& rhs) {
 		val *= rhs.get_val();
 		target_val = val;
 		frames = 0;
-		
-		return *this;
 	}
 
 	template <typename U>
-	TargetVar<T>& operator/=(const TargetVar<U>& rhs) {
+	void operator/=(const TargetVar<U>& rhs) {
 		val /= rhs.get_val();
 		target_val = val;
 		frames = 0;
-		return *this;
 	}
 
 	template <typename U>

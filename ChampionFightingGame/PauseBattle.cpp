@@ -201,12 +201,12 @@ PauseBattle::PauseBattle() {
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "Hitbox Visuals", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_LEFT)
-								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
+								.set_pos(glm::vec3(50.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							},
 							{"Setting", ScreenText(&get_font("button"), "Off", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_RIGHT)
-								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
+								.set_pos(glm::vec3(50.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							}
 						})
@@ -268,12 +268,12 @@ PauseBattle::PauseBattle() {
 						SceneElement({
 							{"Label", ScreenText(&get_font("button"), "P2 Mode", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_LEFT)
-								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
+								.set_pos(glm::vec3(50.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							},
 							{"Setting", ScreenText(&get_font("button"), "Player Controlled", TextSpecifier().border(2))
 								.set_orientation(TEXTURE_TOP_RIGHT)
-								.set_pos(glm::vec3(0.0f, 250.0f, 0.0f))
+								.set_pos(glm::vec3(50.0f, 250.0f, 0.0f))
 								.set_scale(1.1f)
 							},
 						})

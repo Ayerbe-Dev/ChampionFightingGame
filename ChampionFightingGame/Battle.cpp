@@ -248,8 +248,8 @@ void Battle::load_ui() {
 		float scale = *(float*)e->ptr_var("damage_scale");
 		e->get_screen_texture("Damage Scale 120").set_alpha(255 * (scale >= 1.2f));
 		e->get_screen_texture("Damage Scale 110").set_alpha(255 * (scale >= 1.1f));
-		e->get_screen_texture("Damage Scale").crop_top_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.002f, 1.0f), 3);
-		e->get_screen_texture("Damage Scale").crop_bottom_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.052f, 1.0f), 3);
+		e->get_screen_texture("Damage Scale").crop_top_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f, 1.0f), 1.0f, 3);
+		e->get_screen_texture("Damage Scale").crop_bottom_left_corner(clampf(0.0f, scale + (1.0f - scale) / 10.0f - 0.0469f, 1.0f), 1.0f, 3);
 	});
 	load_event("Process EX Bar", [this](SceneElement* e) {
 		float max_ex = e->float_var("max_ex");
@@ -508,7 +508,7 @@ void Battle::load_ui() {
 											.set_h_flipped(i)
 										}
 									})
-									.set_pos(glm::vec3(1002.0, 62.0, 0.0))
+									.set_pos(glm::vec3(1425.0, 89.0, 0.0))
 									.set_orientation(orientation)
 									.int_var("Wins", 0)
 								);
@@ -528,7 +528,7 @@ void Battle::load_ui() {
 											.set_h_flipped(i)
 										}
 									})
-									.set_pos(glm::vec3(1002.0, 62.0, 0.0))
+									.set_pos(glm::vec3(1425.0, 89.0, 0.0))
 									.set_orientation(orientation)
 									.int_var("Wins", 0)
 								);
@@ -552,7 +552,7 @@ void Battle::load_ui() {
 											.set_h_flipped(i)
 										}
 									})
-									.set_pos(glm::vec3(1002.0, 62.0, 0.0))
+									.set_pos(glm::vec3(1425.0, 89.0, 0.0))
 									.set_orientation(orientation)
 									.int_var("Wins", 0)
 								);
@@ -591,7 +591,7 @@ void Battle::load_ui() {
 									.int_var("deca_frame", 5)
 									.int_var("frame", 9)
 									.set_orientation(TEXTURE_TOP)
-									.set_pos(glm::vec3(0.0f, 74.0f, 0.0f))
+									.set_pos(glm::vec3(0.0f, 179.0f, 0.0f))
 									.add_event("process", [this](SceneElement* e) {
 										if (e->bool_var("pause") || e->bool_var("time_up")) return;
 										int& frame = e->int_var("frame");
@@ -716,7 +716,7 @@ void Battle::load_ui() {
 				e->int_var("fight_counter") = -1;
 				std::string display_text = "";
 				switch (curr_round) {
-					case 1: {
+					case 0: {
 						if (round_count_setting == 1) {
 							display_text = "Ready...";
 						}
@@ -724,10 +724,10 @@ void Battle::load_ui() {
 							display_text = "Round 1";
 						}
 					} break;
-					case 2: {
+					case 1: {
 						display_text = "Round 2";
 					} break;
-					case 3: {
+					case 2: {
 						if (round_count_setting == 2) {
 							display_text = "Final Round";
 						}
@@ -735,25 +735,27 @@ void Battle::load_ui() {
 							display_text = "Round 3";
 						}
 					} break;
-					case 4: {
+					case 3: {
 						display_text = "Round 4";
 					} break;
-					case 5: {
+					case 4: {
 						display_text = "Final Round";
 					} break;
-					case 6: {
+					case 5: {
 						display_text = "Sudden Death";
 					} break;
 				}
 				e->get_screen_text("Text").update_text(display_text);
 				e->show();
 				e->sound_player.play_reserved_sound(display_text, 0.0f);
+				get_element("root/Battle UI").show();
 			})
 			.add_event("process", [this](SceneElement* e) {
 				SoundManager* sound_manager = SoundManager::get_instance();
 				for (int i = 0; i < 2; i++) {
 					player[i]->poll_controller_fighter();
 				}
+				e->sound_player.process_sound();
 				process_fighters();
 				process_ui();
 				stage.process();
@@ -764,6 +766,9 @@ void Battle::load_ui() {
 					case -1: {
 						if (e->sound_player.is_sound_end()) {
 							e->int_var("fight_counter") = 60;
+							e->get_screen_text("Text").update_text("Fight");
+							e->sound_player.play_reserved_sound("Fight", 0.0f);
+
 						}
 					} break;
 					case 0: {
@@ -972,7 +977,7 @@ void Battle::load_ui() {
 								if (fighter[0]->object_float[FIGHTER_FLOAT_HEALTH] == fighter[1]->object_float[FIGHTER_FLOAT_HEALTH]) {
 									if ((fighter[0]->status_kind == FIGHTER_STATUS_ROUND_END && fighter[1]->status_kind == FIGHTER_STATUS_ROUND_END) || !e->int_var("actionable_timer")) {
 										if (curr_round == 5) {
-											window_manager->start_fade_sequence(40, [&]() {
+											window_manager->start_fade_sequence(40, [this]() {
 												set_active_element(&get_element("root/Round Start Sequence"));
 											});
 										}
@@ -982,7 +987,7 @@ void Battle::load_ui() {
 												&& *wins[1] + 1 == round_count_setting) {
 												round[0]->get_screen_texture("Round Win" + std::to_string(*wins[0] + 1)).set_alpha(255, 20);
 												round[1]->get_screen_texture("Round Win" + std::to_string(*wins[1] + 1)).set_alpha(255, 20);
-												window_manager->start_fade_sequence(40, [&]() {
+												window_manager->start_fade_sequence(40, [this, round]() {
 													round[0]->int_var("Wins")++;
 													round[1]->int_var("Wins")++;
 													curr_round = 5;
@@ -998,7 +1003,7 @@ void Battle::load_ui() {
 										else if (fighter[0]->anim_end || fighter[1]->anim_end || !e->int_var("actionable_timer")) {
 											round[0]->get_screen_texture("Round Win" + std::to_string(*wins[0] + 1)).set_alpha(255, 20);
 											round[1]->get_screen_texture("Round Win" + std::to_string(*wins[1] + 1)).set_alpha(255, 20);
-											window_manager->start_fade_sequence(40, [&]() {
+											window_manager->start_fade_sequence(40, [this, wins]() {
 												(*wins[0])++;
 												(*wins[1])++;
 												curr_round += 2;
@@ -1032,7 +1037,7 @@ void Battle::load_ui() {
 										}
 										else if (fighter[0]->anim_end || !e->int_var("actionable_timer")) {
 											round[0]->get_screen_texture("Round Win" + std::to_string(*wins[0] + 1)).set_alpha(255, 20);
-											window_manager->start_fade_sequence(40, [&]() {
+											window_manager->start_fade_sequence(40, [this, wins]() {
 												(*wins[0])++;
 												curr_round++;
 												set_active_element(&get_element("root/Round Start Sequence"));
@@ -1065,7 +1070,7 @@ void Battle::load_ui() {
 										}
 										else if (fighter[1]->anim_end || !e->int_var("actionable_timer")) {
 											round[1]->get_screen_texture("Round Win" + std::to_string(*wins[1] + 1)).set_alpha(255, 20);
-											window_manager->start_fade_sequence(40, [&]() {
+											window_manager->start_fade_sequence(40, [this, wins]() {
 												(*wins[1])++;
 												curr_round++;
 												set_active_element(&get_element("root/Round Start Sequence"));
@@ -1098,7 +1103,7 @@ void Battle::load_ui() {
 									}
 									else {
 										if (curr_round == 5) {
-											window_manager->start_fade_sequence(40, [&]() {
+											window_manager->start_fade_sequence(40, [this]() {
 												set_active_element(&get_element("root/Round Start Sequence"));
 											});
 										}
@@ -1108,7 +1113,7 @@ void Battle::load_ui() {
 												&& *wins[1] + 1 == round_count_setting) {
 												round[0]->get_screen_texture("Round Win" + std::to_string(*wins[0] + 1)).set_alpha(255, 20);
 												round[1]->get_screen_texture("Round Win" + std::to_string(*wins[1] + 1)).set_alpha(255, 20);
-												window_manager->start_fade_sequence(40, [&]() {
+												window_manager->start_fade_sequence(40, [this, wins]() {
 													(*wins[0])++;
 													(*wins[1])++;
 													curr_round = 5;
@@ -1126,7 +1131,7 @@ void Battle::load_ui() {
 											round[0]->get_screen_texture("Round Win" + std::to_string(++*wins[0])).set_alpha(255, 20);
 											round[1]->get_screen_texture("Round Win" + std::to_string(++*wins[1])).set_alpha(255, 20);
 
-											window_manager->start_fade_sequence(40, [&]() {
+											window_manager->start_fade_sequence(40, [this]() {
 												curr_round += 2;
 												set_active_element(&get_element("root/Round Start Sequence"));
 											});
@@ -1143,7 +1148,7 @@ void Battle::load_ui() {
 									}
 									else if (fighter[0]->anim_end || !e->int_var("actionable_timer")) {
 										round[0]->get_screen_texture("Round Win" + std::to_string(*wins[0] + 1)).set_alpha(255, 20);
-										window_manager->start_fade_sequence(40, [&]() {
+										window_manager->start_fade_sequence(40, [this, wins]() {
 											(*wins[0])++;
 											curr_round++;
 											set_active_element(&get_element("root/Round Start Sequence"));
@@ -1173,7 +1178,7 @@ void Battle::load_ui() {
 									}
 									else if (fighter[1]->anim_end || !e->int_var("actionable_timer")) {
 										round[1]->get_screen_texture("Round Win" + std::to_string(*wins[1] + 1)).set_alpha(255, 20);
-										window_manager->start_fade_sequence(40, [&]() {
+										window_manager->start_fade_sequence(40, [this, wins]() {
 											(*wins[1])++;
 											curr_round++;
 											set_active_element(&get_element("root/Round Start Sequence"));

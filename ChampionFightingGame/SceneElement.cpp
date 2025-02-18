@@ -121,6 +121,7 @@ SceneElement::SceneElement(SceneElement& other) {
 	this->scale = other.scale;
 	this->visible = other.visible;
 	this->render_event = other.render_event;
+	this->sound_player = other.sound_player;
 }
 
 SceneElement::SceneElement(const SceneElement& other) {
@@ -173,6 +174,7 @@ SceneElement::SceneElement(const SceneElement& other) {
 	this->scale = other.scale;
 	this->visible = other.visible;
 	this->render_event = other.render_event;
+	this->sound_player = other.sound_player;
 }
 
 SceneElement::SceneElement(SceneElement&& other) noexcept {
@@ -225,6 +227,7 @@ SceneElement::SceneElement(SceneElement&& other) noexcept {
 	this->scale = other.scale;
 	this->visible = other.visible;
 	this->render_event = other.render_event;
+	this->sound_player = other.sound_player;
 }
 
 SceneElement& SceneElement::operator=(SceneElement& other) {
@@ -278,6 +281,7 @@ SceneElement& SceneElement::operator=(SceneElement& other) {
 		this->scale = other.scale;
 		this->visible = other.visible;
 		this->render_event = other.render_event;
+		this->sound_player = other.sound_player;
 	}
 	return *this;
 }
@@ -333,6 +337,7 @@ SceneElement& SceneElement::operator=(const SceneElement& other) {
 		this->scale = other.scale;
 		this->visible = other.visible;
 		this->render_event = other.render_event;
+		this->sound_player = other.sound_player;
 	}
 	return *this;
 }
@@ -388,6 +393,7 @@ SceneElement& SceneElement::operator=(SceneElement&& other) noexcept {
 		this->scale = other.scale;
 		this->visible = other.visible;
 		this->render_event = other.render_event;
+		this->sound_player = other.sound_player;
 	}
 	return *this;
 }
@@ -558,7 +564,8 @@ SceneElement& SceneElement::get_sibling_bounded(std::size_t idx) {
 
 SceneElement& SceneElement::get_prev_sibling() {
 	if (parent) {
-		return parent->children[(parent->child_map[name] - 1) % parent->children.size()];
+		if (!parent->child_map[name]) return parent->children[parent->children.size() - 1];
+		return parent->children[parent->child_map[name] - 1];
 	}
 	GameManager::get_instance()->add_crash_log("Called get_prev_sibling() as root element");
 	return *this;

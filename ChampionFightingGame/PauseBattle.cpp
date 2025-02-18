@@ -4,6 +4,7 @@
 #include "ObjectManager.h"
 #include "Fighter.h"
 #include "TimeFuncs.h"
+#include "GameManager.h"
 
 void pause_battle_main() {
 	GameManager* game_manager = GameManager::get_instance();
@@ -277,11 +278,14 @@ PauseBattle::PauseBattle() {
 								.set_scale(1.1f)
 							},
 						})
-						.int_var("p2_mode", 0)
+						.ptr_var("p2_mode", &GameManager::get_instance()->player[1]->player_kind)
 						.add_event("up_press", get_event("Button Up Press"))
 						.add_event("down_press", get_event("Button Down Press"))
 						.add_event("hide_current_p2_mode", [this](SceneElement* e) {
-							switch (e->int_var("p2_mode")) {
+							//Not sure if the code in this event will actually be used. It's meant
+							//to hide the elements from the previous page, but I think that could just
+							//all get handled in the show event.
+							switch (*(int*)e->ptr_var("p2_mode")) {
 								case 0: {
 
 								} break;
@@ -294,7 +298,8 @@ PauseBattle::PauseBattle() {
 							}
 						})
 						.add_event("show_current_p2_mode", [this](SceneElement* e) {
-							switch (e->int_var("p2_mode")) {
+							Player* p2 = GameManager::get_instance()->player[1];
+							switch (*(int*)e->ptr_var("p2_mode")) {
 								case 0: {
 									e->get_screen_text("Setting").update_text("Player Controlled");
 								} break;
@@ -308,19 +313,21 @@ PauseBattle::PauseBattle() {
 						})
 						.add_event("left_press", [this](SceneElement* e) {
 							e->execute_event("hide_current_p2_mode");
-							int& p2_mode = e->int_var("p2_mode");
-							p2_mode = (p2_mode - 1) % 3;
+							int& p2_mode = *(int*)e->ptr_var("p2_mode");
+							if (!p2_mode) p2_mode = 2;
+							else p2_mode--;
 							e->execute_event("show_current_p2_mode");
 						})
 						.add_event("right_press", [this](SceneElement* e) {
 							e->execute_event("hide_current_p2_mode");
-							int& p2_mode = e->int_var("p2_mode");
+							int& p2_mode = *(int*)e->ptr_var("p2_mode");
 							p2_mode = (p2_mode + 1) % 3;
 							e->execute_event("show_current_p2_mode");
 						})
 						.add_event("page_left_press", get_event("Button Page Left Press"))
 						.add_event("page_right_press", get_event("Button Page Right Press"))
 						.add_event("start_press", get_event("Start Press"))
+						.execute_event("show_current_p2_mode")
 					}
 				})
 				.int_var("selection", 0)

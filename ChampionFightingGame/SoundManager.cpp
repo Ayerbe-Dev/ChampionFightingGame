@@ -156,7 +156,7 @@ void SoundManager::resume_all_sounds() {
 }
 
 void SoundManager::register_sound_player(SoundPlayer* sound_player) {
-	sound_players.push_back(sound_player);
+	sound_players.push_front(sound_player);
 }
 
 void SoundManager::unregister_sound_player(SoundPlayer* sound_player) {

@@ -430,12 +430,6 @@
     <ClCompile Include="Effect.cpp">
       <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
     </ClCompile>
-    <ClCompile Include="GameRect.cpp">
-      <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTexture.cpp">
-      <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>2. Code Files\Deprecated\Rendering\2DRendering</Filter>
     </ClCompile>
@@ -1096,12 +1090,6 @@
       <Filter>1. Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
-      <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="GameRect.h">
-      <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTexture.h">
       <Filter>1. Header Files\Deprecated\Rendering\2DRendering</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">

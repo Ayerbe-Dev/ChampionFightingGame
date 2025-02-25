@@ -2,7 +2,8 @@
 #include <map>
 #include <set>
 #include "GameController.h"
-#include "GameTexture.h"
+#include "ScreenText.h"
+#include "ScreenTexture.h"
 
 class InputManager {
 public:
@@ -25,7 +26,7 @@ public:
 private:
 	InputManager();
 	std::map<int, GameController*> controller_map;
-	GameTexture* text_input_texture;
+	ScreenText* text_input_text;
 	std::string clipboard_string;
 
 	static InputManager* instance;

@@ -24,6 +24,7 @@ public:
 	WorldText&& set_pause(bool pause);
 
 	WorldText&& update_text(std::string new_text);
+	std::string get_text() const;
 	WorldText&& start_scroll(int frames);
 
 	WorldText&& set_orientation(int orientation);

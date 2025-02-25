@@ -292,7 +292,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="GameObjectEffectFunctions.cpp" />
     <ClCompile Include="GameObjectRenderFunctions.cpp" />
     <ClCompile Include="GameObjectSoundFunctions.cpp" />
-    <ClCompile Include="GameRect.cpp" />
     <ClCompile Include="LoadTextures.cpp" />
     <ClCompile Include="GLM Helpers.cpp" />
     <ClCompile Include="BattleObjectGrabboxFunctions.cpp" />
@@ -328,7 +327,6 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClCompile Include="FighterStatus.cpp" />
     <ClCompile Include="FighterStatusFunctions.cpp" />
     <ClCompile Include="CollisionBox.cpp" />
-    <ClCompile Include="GameTexture.cpp" />
     <ClCompile Include="Julius.cpp" />
     <ClCompile Include="JuliusMoves.cpp" />
     <ClCompile Include="JuliusStatus.cpp" />
@@ -542,9 +540,7 @@ copy /Y "$(SolutionDir)dependencies\x86\assimp\bin\assimp-vc142-mt.dll" "$(Targe
     <ClInclude Include="Battle.h" />
     <ClInclude Include="CollisionBox.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameRect.h" />
     <ClInclude Include="GameStates.h" />
-    <ClInclude Include="GameTexture.h" />
     <ClInclude Include="LoadTextures.h" />
     <ClInclude Include="GLM Helpers.h" />
     <ClInclude Include="Framebuffer.h" />

@@ -24,6 +24,7 @@ public:
 	ScreenText&& set_pause(bool persistence);
 
 	ScreenText&& update_text(std::string new_text);
+	std::string get_text() const;
 	ScreenText&& start_scroll(int frames);
 
 	ScreenText&& set_screen_orientation(int orientation);

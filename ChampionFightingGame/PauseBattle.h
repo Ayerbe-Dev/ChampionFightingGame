@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include "GameTexture.h"
 #include "GameManager.h"
 #include "Player.h"
 

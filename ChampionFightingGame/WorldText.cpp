@@ -357,6 +357,10 @@ WorldText&& WorldText::update_text(std::string text) {
 	return std::move(*this);
 }
 
+std::string WorldText::get_text() const {
+	return this->text;
+}
+
 WorldText&& WorldText::start_scroll(int frames) {
 	for (int i = 0; i < num_lines; i++) {
 		v_pos[(i * 6) + 1].x = -1.0f;

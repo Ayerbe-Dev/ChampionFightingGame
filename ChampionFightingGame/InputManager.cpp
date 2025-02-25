@@ -6,7 +6,7 @@
 
 InputManager::InputManager() {
 	controller_map[-1] = nullptr;
-	text_input_texture = nullptr;
+	text_input_text = nullptr;
 }
 
 void InputManager::check_controllers() {
@@ -41,15 +41,15 @@ GameController* InputManager::get_owner(int controller_id) {
 }
 
 bool InputManager::is_using_text_input() const {
-	return text_input_texture;
+	return text_input_text;
 }
 
 void InputManager::modify_text_input(unsigned int key, unsigned int mods) {
-	std::string s = text_input_texture->get_text();
+	std::string s = text_input_text->get_text();
 
 	//TODO: Implement Text Entry Here
 
-	text_input_texture->update_text(s);
+	text_input_text->update_text(s);
 }
 
 InputManager* InputManager::instance = nullptr;
@@ -61,7 +61,7 @@ InputManager* InputManager::get_instance() {
 }
 
 void InputManager::destroy_instance() {
-	text_input_texture = nullptr;
+	text_input_text = nullptr;
 	if (instance != nullptr) {
 		delete instance;
 	}

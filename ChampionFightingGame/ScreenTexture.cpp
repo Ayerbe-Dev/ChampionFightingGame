@@ -1697,17 +1697,17 @@ unsigned char ScreenTexture::get_alpha() const {
 }
 
 ScreenTexture&& ScreenTexture::set_colormod(glm::vec3 color) {
-	colormod = color;
+	colormod = color / glm::vec3(255.0f);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::set_colormod(glm::vec3 color, int frames) {
-	colormod.set_target_val(color, frames);
+	colormod.set_target_val(color / glm::vec3(255.0f), frames);
 	return std::move(*this);
 }
 
 ScreenTexture&& ScreenTexture::add_colormod(glm::vec3 color) {
-	colormod += color;
+	colormod += color / glm::vec3(255.0f);
 	return std::move(*this);
 }
 

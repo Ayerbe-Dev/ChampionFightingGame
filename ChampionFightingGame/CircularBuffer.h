@@ -1,8 +1,10 @@
 #pragma once
 #include <algorithm>
 
-//Disclaimer: This class is NOT designed to have a changing number of elements.
-
+/// <summary>
+/// a circular buffer container class. 
+/// </summary>
+/// <typeparam name="T">The type of object contained by this instance</typeparam>
 template <typename T>
 class CircularBuffer {
 public:
@@ -16,6 +18,27 @@ public:
 		data = new T[size];
 		num_elements = size;
 		curr_index = 0;
+	}
+
+	CircularBuffer(const CircularBuffer& other) {
+		this->num_elements = other.num_elements;
+		this->data = new T[num_elements];
+		for (int i = 0; i < num_elements; i++) {
+			this->data[i] = other.data[i];
+		}
+		this->curr_index = other.curr_index;
+	}
+
+	CircularBuffer& operator=(const CircularBuffer& rhs) {
+		if (this != &rhs) {
+			this->num_elements = rhs.num_elements;
+			this->data = new T[num_elements];
+			for (int i = 0; i < num_elements; i++) {
+				this->data[i] = rhs.data[i];
+			}
+			this->curr_index = rhs.curr_index;
+		}
+		return *this;
 	}
 
 	~CircularBuffer() {

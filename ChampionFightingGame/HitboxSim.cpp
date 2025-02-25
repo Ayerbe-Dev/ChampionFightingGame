@@ -198,7 +198,7 @@ void HitboxSim::print_all(BattleObject* active_object) {
 }
 
 Simbox::Simbox() {
-	rect.init();
+	rect.init("resource/misc/black.png", 0).set_orientation(TEXTURE_BOTTOM_LEFT);
 	anchor = glm::vec2(0, 0);
 	offset = glm::vec2(0, 0);
 	relative_anchor = glm::vec2(0, 0);
@@ -247,7 +247,7 @@ void Simbox::update_rect(BattleObject* object) {
 		offset = relative_offset + glm::vec2(object->get_scaled_pos());
 		prev_offset = offset;
 	}
-	rect.update_corners(anchor, offset);
+	rect.set_pos(glm::vec3(anchor, 0.0f)).set_width(offset.x).set_height(offset.y);
 }
 
 void Simbox::render(BattleObject* active_object) {
@@ -298,7 +298,7 @@ SimHitbox::SimHitbox() {
 	damage_kind = DAMAGE_KIND_NORMAL;
 	hit_effect = -1;
 	hit_sound = -1;
-	rect.set_rgba(glm::vec4(255.0, 0.0, 0.0, 127.0));
+	rect.set_colormod(glm::vec3(255.0, 0.0, 0.0)).set_alpha(127);
 }
 
 void SimHitbox::print_start(BattleObject* object) {
@@ -643,7 +643,7 @@ SimHurtbox::SimHurtbox() {
 	intangible_kind_projectile = false;
 	intangible_kind_invincible = false;
 	intangible_kind_soft = false;
-	rect.set_rgba(glm::vec4(0.0, 0.0, 255.0, 127.0));
+	rect.set_colormod(glm::vec3(0.0, 0.0, 255.0)).set_alpha(127);
 }
 
 void SimHurtbox::print_start(BattleObject* object) {
@@ -755,7 +755,7 @@ SimGrabbox::SimGrabbox() {
 	collision_kind_armor = false;
 	attacker_status = "FIGHTER_STATUS_THROW";
 	defender_status = "FIGHTER_STATUS_GRABBED";
-	rect.set_rgba(glm::vec4(0.0, 255.0, 0.0, 127.0));
+	rect.set_colormod(glm::vec3(0.0, 255.0, 0.0)).set_alpha(127);
 }
 
 void SimGrabbox::print_start(BattleObject* object) {
@@ -835,7 +835,7 @@ void SimGrabbox::print_end(BattleObject* object) {
 }
 
 SimPushbox::SimPushbox() {
-	rect.set_rgba(glm::vec4(255.0, 255.0, 0.0, 127.0));
+	rect.set_colormod(glm::vec3(255.0, 255.0, 0.0)).set_alpha(127);
 }
 
 void SimPushbox::print_start(BattleObject* object) {

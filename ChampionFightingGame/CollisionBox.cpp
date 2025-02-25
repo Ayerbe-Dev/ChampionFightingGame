@@ -1,20 +1,21 @@
 #include "CollisionBox.h"
 #include "BattleObject.h"
 #include "Projectile.h"
+#include "Fighter.h"
 
 CollisionBox::CollisionBox() {
 	object = nullptr;
 	init_anchor = glm::vec2(0.0);
 	init_offset = glm::vec2(0.0);
+	anchor = glm::vec2(0.0);
+	offset = glm::vec2(0.0);
 	active = false;
 }
 
 void CollisionBox::update_pos() {
-	glm::vec2 anchor = init_anchor;
-	glm::vec2 offset = init_offset;
-	anchor += glm::vec2(object->get_scaled_pos());
-	offset += glm::vec2(object->get_scaled_pos());
-	this->rect.update_corners(anchor, offset);
+	anchor = init_anchor + glm::vec2(object->get_scaled_pos());
+	offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->world_tex.set_corners(anchor, offset);
 }
 
 void CollisionBox::clear() {
@@ -27,21 +28,21 @@ Pushbox::Pushbox() {
 
 void Pushbox::init(BattleObject* object) {
 	this->object = object;
-	rect.init();
-	rect.set_rgba(glm::vec4(255, 255, 0, 204));
+	world_tex
+		.init("resource/misc/black.png", 0)
+		.set_colormod(glm::vec3(255, 255, 0))
+		.set_alpha(204);
 }
 
 void Pushbox::activate(int id, glm::vec2 anchor, glm::vec2 offset) {
 	this->id = id;
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	anchor /= glm::vec2(object->get_scale_vec());
-	offset /= glm::vec2(object->get_scale_vec());
-	this->init_anchor = anchor;
-	this->init_offset = offset;
-	anchor += glm::vec2(object->get_scaled_pos());
-	offset += glm::vec2(object->get_scaled_pos());
-	this->rect.update_corners(anchor, offset);
+	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
+	this->init_offset = offset / glm::vec2(object->get_scale_vec());
+	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
+	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->world_tex.set_corners(this->anchor, this->offset);
 	active = true;
 }
 
@@ -54,20 +55,20 @@ Blockbox::Blockbox() {
 
 void Blockbox::init(BattleObject* object) {
 	this->object = object;
-	rect.init();
-	rect.set_rgba(glm::vec4(255, 165, 0, 204));
+	world_tex
+		.init("resource/misc/black.png", 0)
+		.set_colormod(glm::vec3(255, 165, 0))
+		.set_alpha(204);
 }
 
 void Blockbox::activate(glm::vec2 anchor, glm::vec2 offset) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	anchor /= glm::vec2(object->get_scale_vec());
-	offset /= glm::vec2(object->get_scale_vec());
-	this->init_anchor = anchor;
-	this->init_offset = offset;
-	anchor += glm::vec2(object->get_scaled_pos());
-	offset += glm::vec2(object->get_scaled_pos());
-	this->rect.update_corners(anchor, offset);
+	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
+	this->init_offset = offset / glm::vec2(object->get_scale_vec());
+	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
+	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->world_tex.set_corners(this->anchor, this->offset);
 	active = true;
 }
 
@@ -90,8 +91,10 @@ Hitbox::Hitbox() {
 
 void Hitbox::init(BattleObject* object) {
 	this->object = object;
-	rect.init();
-	rect.set_rgba(glm::vec4(255, 0, 0, 204));
+	world_tex
+		.init("resource/misc/black.png", 0)
+		.set_colormod(glm::vec3(255, 0, 0))
+		.set_alpha(204);
 }
 
 void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
@@ -105,13 +108,11 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	this->multihit = multihit;
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	anchor /= glm::vec2(object->get_scale_vec());
-	offset /= glm::vec2(object->get_scale_vec());
-	this->init_anchor = anchor;
-	this->init_offset = offset;
-	anchor += glm::vec2(object->get_scaled_pos());
-	offset += glm::vec2(object->get_scaled_pos());
-	this->rect.update_corners(anchor, offset);
+	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
+	this->init_offset = offset / glm::vec2(object->get_scale_vec());
+	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
+	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->world_tex.set_corners(this->anchor, this->offset);
 	this->collision_kind = collision_kind;
 	this->hit_result = hit_result;
 	this->hit_status = hit_status;
@@ -225,8 +226,9 @@ Grabbox::Grabbox() {
 
 void Grabbox::init(BattleObject* object) {
 	this->object = object;
-	rect.init();
-	rect.set_alpha(204);
+	world_tex
+		.init("resource/misc/black.png", 0)
+		.set_alpha(204);
 }
 
 void Grabbox::activate(int id, glm::vec2 anchor, glm::vec2 offset, 
@@ -234,23 +236,21 @@ void Grabbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	unsigned int defender_status_if_hit) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	anchor /= glm::vec2(object->get_scale_vec());
-	offset /= glm::vec2(object->get_scale_vec());
-	this->init_anchor = anchor;
-	this->init_offset = offset;
-	anchor += glm::vec2(object->get_scaled_pos());
-	offset += glm::vec2(object->get_scaled_pos());
-	this->rect.update_corners(anchor, offset);
+	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
+	this->init_offset = offset / glm::vec2(object->get_scale_vec());
+	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
+	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->world_tex.set_corners(this->anchor, this->offset);
 	this->id = id;
 	this->grabbox_kind = grabbox_kind;
 	this->collision_kind = hit_kind;
 	this->attacker_status_if_hit = attacker_status_if_hit;
 	this->defender_status_if_hit = defender_status_if_hit;
 	if (grabbox_kind & GRABBOX_KIND_NOTECH) {
-		rect.set_rgb(glm::vec3(128, 0, 128));
+		world_tex.set_colormod(glm::vec3(128, 0, 128));
 	}
 	else {
-		rect.set_rgb(glm::vec3(0, 255, 0));
+		world_tex.set_colormod(glm::vec3(0, 255, 0));
 	}
 	this->active = true;
 }
@@ -264,24 +264,228 @@ Hurtbox::Hurtbox() {
 
 void Hurtbox::init(BattleObject* object) {
 	this->object = object;
-	rect.init();
-	rect.set_rgba(glm::vec4(0, 0, 255, 204));
+	world_tex
+		.init("resource/misc/black.png", 0)
+		.set_colormod(glm::vec3(0, 0, 255))
+		.set_alpha(204);
 }
 
 void Hurtbox::activate(int id, glm::vec2 anchor, glm::vec2 offset, 
 	HurtboxKind hurtbox_kind, int armor_hits, IntangibleKind intangible_kind) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	anchor /= glm::vec2(object->get_scale_vec());
-	offset /= glm::vec2(object->get_scale_vec());
-	this->init_anchor = anchor;
-	this->init_offset = offset;
-	anchor += glm::vec2(object->get_scaled_pos());
-	offset += glm::vec2(object->get_scaled_pos());
-	this->rect.update_corners(anchor, offset);
+	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
+	this->init_offset = offset / glm::vec2(object->get_scale_vec());
+	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
+	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->world_tex.set_corners(this->anchor, this->offset);
 	this->id = id;
 	this->hurtbox_kind = hurtbox_kind;
 	this->armor_hits = armor_hits;
 	this->intangible_kind = intangible_kind;
 	this->active = true;
+}
+
+float get_rect_intersection(CollisionBox& RectA, CollisionBox& RectB) {
+	float AB = RectA.anchor.y;
+	float AT = RectA.offset.y;
+	float BB = RectB.anchor.y;
+	float BT = RectB.offset.y;
+	if (AB < AT) {
+		if (BB < BT) {
+			if (AT < BB || BT < AB) return -1.0f;
+
+		}
+		else {
+			if (AT < BT || BB < AB) return -1.0f;
+		}
+	}
+	else {
+		if (BB < BT) {
+			if (AB < BB || BT < AT) return -1.0f;
+		}
+		else {
+			if (AB < BT || BB < AT) return -1.0f;
+		}
+	}
+	float AL = RectA.anchor.x;
+	float AR = RectA.offset.x;
+	float BL = RectB.anchor.x;
+	float BR = RectB.offset.x;
+
+	if (AL < AR) {
+		if (BL < BR) {
+			if (AL < BL) {
+				if (AR < BL) return -1.0f;
+				if (AR < BR) return AR - BL;
+				return std::min(AR - BL, BR - AL);
+			}
+			else {
+				if (BR < AL) return -1.0f;
+				if (BR < AR) return BR - AL;
+				return std::min(BR - AL, AR - BL);
+			}
+		}
+		else {
+			if (AL < BR) {
+				if (AR < BR) return -1.0f;
+				if (AR < BL) return AR - BR;
+				return std::min(AR - BR, BL - AL);
+			}
+			else {
+				if (BL < AL) return -1.0f;
+				if (BL < AR) return BL - AL;
+				return std::min(BL - AL, AR - BR);
+			}
+		}
+	}
+	else {
+		if (BL < BR) {
+			if (AR < BL) {
+				if (AL < BL) return -1.0f;
+				if (AL < BR) return AL - BL;
+				return std::min(AL - BL, BR - AR);
+			}
+			else {
+				if (BR < AR) return -1.0f;
+				if (BR < AL) return BR - AR;
+				return std::min(BR - AR, AL - BL);
+			}
+		}
+		else {
+			if (AR < BR) {
+				if (AL < BR) return -1.0f;
+				if (AL < BL) return AL - BR;
+				return std::min(AL - BR, BL - AR);
+			}
+			else {
+				if (BL < AR) return -1.0f;
+				if (BL < AL) return BL - AR;
+				return std::min(BL - AR, AL - BR);
+			}
+		}
+	}
+}
+
+float get_rect_intersection(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b) {
+	float AB = c1a.y;
+	float AT = c2a.y;
+	float BB = c1b.y;
+	float BT = c2b.y;
+	if (AB < AT) {
+		if (BB < BT) {
+			if (AT < BB || BT < AB) return -1.0f;
+
+		}
+		else {
+			if (AT < BT || BB < AB) return -1.0f;
+		}
+	}
+	else {
+		if (BB < BT) {
+			if (AB < BB || BT < AT) return -1.0f;
+		}
+		else {
+			if (AB < BT || BB < AT) return -1.0f;
+		}
+	}
+	float AL = c1a.x;
+	float AR = c2a.x;
+	float BL = c1b.x;
+	float BR = c2b.x;
+
+	if (AL < AR) {
+		if (BL < BR) {
+			if (AL < BL) {
+				if (AR < BL) return -1.0f;
+				if (AR < BR) return AR - BL;
+				return std::min(AR - BL, BR - AL);
+			}
+			else {
+				if (BR < AL) return -1.0f;
+				if (BR < AR) return BR - AL;
+				return std::min(BR - AL, AR - BL);
+			}
+		}
+		else {
+			if (AL < BR) {
+				if (AR < BR) return -1.0f;
+				if (AR < BL) return AR - BR;
+				return std::min(AR - BR, BL - AL);
+			}
+			else {
+				if (BL < AL) return -1.0f;
+				if (BL < AR) return BL - AL;
+				return std::min(BL - AL, AR - BR);
+			}
+		}
+	}
+	else {
+		if (BL < BR) {
+			if (AR < BL) {
+				if (AL < BL) return -1.0f;
+				if (AL < BR) return AL - BL;
+				return std::min(AL - BL, BR - AR);
+			}
+			else {
+				if (BR < AR) return -1.0f;
+				if (BR < AL) return BR - AR;
+				return std::min(BR - AR, AL - BL);
+			}
+		}
+		else {
+			if (AR < BR) {
+				if (AL < BR) return -1.0f;
+				if (AL < BL) return AL - BR;
+				return std::min(AL - BR, BL - AR);
+			}
+			else {
+				if (BL < AR) return -1.0f;
+				if (BL < AL) return BL - AR;
+				return std::min(BL - AR, AL - BR);
+			}
+		}
+	}
+}
+
+bool is_rect_collide(CollisionBox& RectA, CollisionBox& RectB) {
+	return
+		((RectA.anchor.x >= RectB.anchor.x && RectA.anchor.x <= RectB.offset.x)
+			|| (RectA.offset.x >= RectB.anchor.x && RectA.offset.x <= RectB.offset.x)
+			|| (RectB.anchor.x >= RectA.anchor.x && RectB.anchor.x <= RectA.offset.x)
+			|| (RectB.offset.x >= RectA.anchor.x && RectB.offset.x <= RectA.offset.x)
+			|| (RectA.anchor.x <= RectB.anchor.x && RectA.anchor.x >= RectB.offset.x)
+			|| (RectA.offset.x <= RectB.anchor.x && RectA.offset.x >= RectB.offset.x)
+			|| (RectB.anchor.x <= RectA.anchor.x && RectB.anchor.x >= RectA.offset.x)
+			|| (RectB.offset.x <= RectA.anchor.x && RectB.offset.x >= RectA.offset.x))
+		&&
+		((RectA.anchor.y <= RectB.anchor.y && RectA.anchor.y >= RectB.offset.y)
+			|| (RectA.offset.y <= RectB.anchor.y && RectA.offset.y >= RectB.offset.y)
+			|| (RectB.anchor.y <= RectA.anchor.y && RectB.anchor.y >= RectA.offset.y)
+			|| (RectB.offset.y <= RectA.anchor.y && RectB.offset.y >= RectA.offset.y)
+			|| (RectA.anchor.y >= RectB.anchor.y && RectA.anchor.y <= RectB.offset.y)
+			|| (RectA.offset.y >= RectB.anchor.y && RectA.offset.y <= RectB.offset.y)
+			|| (RectB.anchor.y >= RectA.anchor.y && RectB.anchor.y <= RectA.offset.y)
+			|| (RectB.offset.y >= RectA.anchor.y && RectB.offset.y <= RectA.offset.y));
+}
+
+bool is_rect_collide(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b) {
+	return
+		((c1a.x >= c1b.x && c1a.x <= c2b.x)
+			|| (c2a.x >= c1b.x && c2a.x <= c2b.x)
+			|| (c1b.x >= c1a.x && c1b.x <= c2a.x)
+			|| (c2b.x >= c1a.x && c2b.x <= c2a.x)
+			|| (c1a.x <= c1b.x && c1a.x >= c2b.x)
+			|| (c2a.x <= c1b.x && c2a.x >= c2b.x)
+			|| (c1b.x <= c1a.x && c1b.x >= c2a.x)
+			|| (c2b.x <= c1a.x && c2b.x >= c2a.x))
+		&&
+		((c1a.y <= c1b.y && c1a.y >= c2b.y)
+			|| (c2a.y <= c1b.y && c2a.y >= c2b.y)
+			|| (c1b.y <= c1a.y && c1b.y >= c2a.y)
+			|| (c2b.y <= c1a.y && c2b.y >= c2a.y)
+			|| (c1a.y >= c1b.y && c1a.y <= c2b.y)
+			|| (c2a.y >= c1b.y && c2a.y <= c2b.y)
+			|| (c1b.y >= c1a.y && c1b.y <= c2a.y)
+			|| (c2b.y >= c1a.y && c2b.y <= c2a.y));
 }

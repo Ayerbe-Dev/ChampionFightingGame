@@ -12,7 +12,7 @@ EricFireball::EricFireball(int id, Player* player) {
 	object_int.resize(PROJECTILE_ERIC_FIREBALL_INT_MAX, 0);
 	object_float.resize(PROJECTILE_ERIC_FIREBALL_FLOAT_MAX, 0.0);
 	object_flag.resize(PROJECTILE_ERIC_FIREBALL_FLAG_MAX, false);
-	object_flag.resize(PROJECTILE_ERIC_FIREBALL_STRING_MAX, "");
+	object_string.resize(PROJECTILE_ERIC_FIREBALL_STRING_MAX, "");
 	status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
 	enter_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);
 	exit_status_script.resize(PROJECTILE_ERIC_FIREBALL_STATUS_MAX, nullptr);

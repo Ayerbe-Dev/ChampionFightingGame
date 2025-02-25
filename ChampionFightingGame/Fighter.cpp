@@ -30,15 +30,15 @@ Fighter::Fighter() {
 Fighter::~Fighter() {
 	projectiles.clear();
 	for (int i = 0; i < 10; i++) {
-		hitboxes[i].rect.destroy();
-		hurtboxes[i].rect.destroy();
-		grabboxes[i].rect.destroy();
-		pushboxes[i].rect.destroy();
+		hitboxes[i].world_tex.destroy();
+		hurtboxes[i].world_tex.destroy();
+		grabboxes[i].world_tex.destroy();
+		pushboxes[i].world_tex.destroy();
 	}
 	clear_effect_all();
 	stop_sound_all();
 	stop_reserved_sound();
-	blockbox.rect.destroy();
+	blockbox.world_tex.destroy();
 	object_int.clear();
 	object_float.clear();
 	object_flag.clear();

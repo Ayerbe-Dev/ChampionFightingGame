@@ -28,6 +28,7 @@ WorldTexture::WorldTexture() {
 	this->v_flipped = false;
 	this->billboard_setting = BILLBOARD_OFF;
 	this->sprite = 0;
+	this->buffer_updates = 0;
 	this->loaded = false;
 }
 
@@ -84,6 +85,7 @@ WorldTexture::WorldTexture(WorldTexture& other) {
 	this->v_flipped = other.v_flipped;
 	this->billboard_setting = other.billboard_setting;
 	this->sprite = other.sprite;
+	this->buffer_updates = other.buffer_updates;
 	if (ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
 		this->loaded = other.loaded;
 		other.loaded = false;
@@ -133,6 +135,7 @@ WorldTexture::WorldTexture(const WorldTexture& other) {
 	this->v_flipped = other.v_flipped;
 	this->billboard_setting = other.billboard_setting;
 	this->sprite = other.sprite;
+	this->buffer_updates = other.buffer_updates;
 	this->loaded = other.loaded;
 	ResourceManager::get_instance()->store_const_copy_addr(texture[0], (WorldTexture*)&other);
 }
@@ -177,6 +180,7 @@ WorldTexture::WorldTexture(WorldTexture&& other) noexcept {
 	this->v_flipped = other.v_flipped;
 	this->billboard_setting = other.billboard_setting;
 	this->sprite = other.sprite;
+	this->buffer_updates = other.buffer_updates;
 	this->loaded = other.loaded;
 	other.loaded = false;
 }
@@ -222,6 +226,7 @@ WorldTexture& WorldTexture::operator=(WorldTexture& other) {
 		this->v_flipped = other.v_flipped;
 		this->billboard_setting = other.billboard_setting;
 		this->sprite = other.sprite;
+		this->buffer_updates = other.buffer_updates;
 		if (ResourceManager::get_instance()->is_tex_const_copied(texture[0])) {
 			this->loaded = other.loaded;
 			other.loaded = false;
@@ -274,6 +279,7 @@ WorldTexture& WorldTexture::operator=(const WorldTexture& other) {
 		this->v_flipped = other.v_flipped;
 		this->billboard_setting = other.billboard_setting;
 		this->sprite = other.sprite;
+		this->buffer_updates = other.buffer_updates;
 		this->loaded = other.loaded;
 		ResourceManager::get_instance()->store_const_copy_addr(texture[0], (WorldTexture*)&other);
 	}
@@ -321,6 +327,7 @@ WorldTexture& WorldTexture::operator=(WorldTexture&& other) noexcept {
 		this->v_flipped = other.v_flipped;
 		this->billboard_setting = other.billboard_setting;
 		this->sprite = other.sprite;
+		this->buffer_updates = other.buffer_updates;
 		this->loaded = other.loaded;
 		other.loaded = false;
 	}
@@ -546,16 +553,19 @@ glm::vec3 WorldTexture::get_rot() const {
 
 WorldTexture&& WorldTexture::set_width(int new_width) {
 	width = new_width;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::set_width(int new_width, int frames) {
 	width.set_target_val(new_width, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::add_width(int width) {
 	this->width += width;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -565,16 +575,19 @@ int WorldTexture::get_width() const {
 
 WorldTexture&& WorldTexture::set_height(int new_height) {
 	height = new_height;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::set_height(int new_height, int frames) {
 	height.set_target_val(new_height, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::add_height(int height) {
 	this->height += height;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -584,16 +597,19 @@ int WorldTexture::get_height() const {
 
 WorldTexture&& WorldTexture::set_scale(glm::vec3 scale) {
 	this->scale = scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::set_scale(glm::vec3 scale, int frames) {
 	this->scale.set_target_val(scale, frames);
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::add_scale(glm::vec3 scale) {
 	this->scale += scale;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -617,6 +633,7 @@ WorldTexture&& WorldTexture::scale_right_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 	}
+	buffer_updates = std::max(buffer_updates, 1);
 #endif
 	return std::move(*this);
 }
@@ -637,6 +654,7 @@ WorldTexture&& WorldTexture::scale_right_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 	}
+	buffer_updates = std::max(buffer_updates, frames);
 #endif
 	return std::move(*this);
 }
@@ -662,6 +680,7 @@ WorldTexture&& WorldTexture::crop_right_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->x = clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -686,6 +705,7 @@ WorldTexture&& WorldTexture::crop_right_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -706,6 +726,7 @@ WorldTexture&& WorldTexture::scale_left_edge(float percent) {
 		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -726,6 +747,7 @@ WorldTexture&& WorldTexture::scale_left_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -750,6 +772,7 @@ WorldTexture&& WorldTexture::crop_left_edge(float percent) {
 		v_pos_accessor[v_spec.top_left_idx]->x = clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -774,6 +797,7 @@ WorldTexture&& WorldTexture::crop_left_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_left_idx]->x.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * width_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -794,6 +818,7 @@ WorldTexture&& WorldTexture::scale_top_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -814,6 +839,7 @@ WorldTexture&& WorldTexture::scale_top_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -838,6 +864,7 @@ WorldTexture&& WorldTexture::crop_top_edge(float percent) {
 		v_pos_accessor[v_spec.top_right_idx]->y = clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -862,6 +889,7 @@ WorldTexture&& WorldTexture::crop_top_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.top_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * 2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -882,6 +910,7 @@ WorldTexture&& WorldTexture::scale_bottom_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -902,6 +931,7 @@ WorldTexture&& WorldTexture::scale_bottom_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -926,6 +956,7 @@ WorldTexture&& WorldTexture::crop_bottom_edge(float percent) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y = clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -950,6 +981,7 @@ WorldTexture&& WorldTexture::crop_bottom_edge(float percent, int frames) {
 		v_pos_accessor[v_spec.bottom_right_idx]->y.set_target_val(clampf(-1.0, ((percent - 0.5) * -2.0) * height_scale, 1.0), frames);
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -981,6 +1013,7 @@ WorldTexture&& WorldTexture::scale_top_right_corner(float percent_x, float perce
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1012,6 +1045,7 @@ WorldTexture&& WorldTexture::scale_top_right_corner(float percent_x, float perce
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1049,6 +1083,7 @@ WorldTexture&& WorldTexture::crop_top_right_corner(float percent_x, float percen
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1086,6 +1121,7 @@ WorldTexture&& WorldTexture::crop_top_right_corner(float percent_x, float percen
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1115,6 +1151,7 @@ WorldTexture&& WorldTexture::scale_top_left_corner(float percent_x, float percen
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1144,6 +1181,7 @@ WorldTexture&& WorldTexture::scale_top_left_corner(float percent_x, float percen
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1181,6 +1219,7 @@ WorldTexture&& WorldTexture::crop_top_left_corner(float percent_x, float percent
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1218,6 +1257,7 @@ WorldTexture&& WorldTexture::crop_top_left_corner(float percent_x, float percent
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1248,6 +1288,7 @@ WorldTexture&& WorldTexture::scale_bottom_right_corner(float percent_x, float pe
 	}
 
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1277,6 +1318,7 @@ WorldTexture&& WorldTexture::scale_bottom_right_corner(float percent_x, float pe
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1314,6 +1356,7 @@ WorldTexture&& WorldTexture::crop_bottom_right_corner(float percent_x, float per
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1351,6 +1394,7 @@ WorldTexture&& WorldTexture::crop_bottom_right_corner(float percent_x, float per
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1380,6 +1424,7 @@ WorldTexture&& WorldTexture::scale_bottom_left_corner(float percent_x, float per
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1409,6 +1454,7 @@ WorldTexture&& WorldTexture::scale_bottom_left_corner(float percent_x, float per
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
 	return std::move(*this);
 }
 
@@ -1446,6 +1492,7 @@ WorldTexture&& WorldTexture::crop_bottom_left_corner(float percent_x, float perc
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1483,6 +1530,26 @@ WorldTexture&& WorldTexture::crop_bottom_left_corner(float percent_x, float perc
 	} break;
 	}
 #endif
+	buffer_updates = std::max(buffer_updates, frames);
+	return std::move(*this);
+}
+
+WorldTexture&& WorldTexture::set_corners(glm::vec2 c1, glm::vec2 c2) {
+	glm::vec2 v_pos_scaler = glm::vec2(
+		(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
+		(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
+	);
+	c1 /= v_pos_scaler;
+	c2 /= v_pos_scaler;
+	v_pos_accessor[v_spec.bottom_left_idx]->x = c1.x;
+	v_pos_accessor[v_spec.bottom_left_idx]->y = c1.y;
+	v_pos_accessor[v_spec.top_left_idx]->x = c1.x;
+	v_pos_accessor[v_spec.top_left_idx]->y = c2.y;
+	v_pos_accessor[v_spec.bottom_right_idx]->x = c2.x;
+	v_pos_accessor[v_spec.bottom_right_idx]->y = c1.y;
+	v_pos_accessor[v_spec.top_right_idx]->x = c2.x;
+	v_pos_accessor[v_spec.top_right_idx]->y = c2.y;
+	buffer_updates = std::max(buffer_updates, 1);
 	return std::move(*this);
 }
 
@@ -1506,17 +1573,17 @@ unsigned char WorldTexture::get_alpha() const {
 }
 
 WorldTexture&& WorldTexture::set_colormod(glm::vec3 color) {
-	colormod = color;
+	colormod = color / glm::vec3(255.0f);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::set_colormod(glm::vec3 color, int frames) {
-	colormod.set_target_val(color, frames);
+	colormod.set_target_val(color / glm::vec3(255.0f), frames);
 	return std::move(*this);
 }
 
 WorldTexture&& WorldTexture::add_colormod(glm::vec3 color) {
-	colormod += color;
+	colormod += color / glm::vec3(255.0f);
 	return std::move(*this);
 }
 
@@ -1626,7 +1693,10 @@ void WorldTexture::render() {
 #else
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	update_buffer_data();
+	if (buffer_updates) {
+		update_buffer_data();
+		buffer_updates--;
+	}
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture[sprite]);
 	shader->use();
@@ -1644,6 +1714,7 @@ void WorldTexture::render() {
 
 		} break;
 	}
+	glDepthMask(GL_FALSE);
 	if (glIsEnabled(GL_CULL_FACE)) {
 		glDisable(GL_CULL_FACE);
 		glDrawArrays(GL_TRIANGLES, 0, v_spec.num_vertices_internal);
@@ -1652,6 +1723,7 @@ void WorldTexture::render() {
 	else {
 		glDrawArrays(GL_TRIANGLES, 0, v_spec.num_vertices_internal);
 	}
+	glDepthMask(GL_TRUE);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif

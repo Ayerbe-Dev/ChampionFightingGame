@@ -33,7 +33,7 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 	}
 	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
 		for (size_t i2 = 0, max2 = that_pushboxes.size(); i2 < max2; i2++) {
-			float intersection = get_rect_intersection(pushboxes[i].rect, that->pushboxes[i2].rect);
+			float intersection = get_rect_intersection(pushboxes[i], that->pushboxes[i2]);
 			if (intersection == -1.0f || get_scaled_pos().x == that->get_scaled_pos().x) continue;
 			
 			float dir = get_scaled_pos().x > that->get_scaled_pos().x ? 1.0f : -1.0f;
@@ -75,7 +75,7 @@ void Fighter::process_fighter_pushbox_collisions(std::vector<Pushbox> pushboxes,
 void Fighter::process_projectile_pushbox_collisions(std::vector<Pushbox> pushboxes, std::vector<Pushbox> that_pushboxes) {
 	for (size_t i = 0, max = pushboxes.size(); i < max; i++) {
 		for (size_t i2 = 0, max2 = that_pushboxes.size(); i2 < max2; i2++) {
-			if (is_rect_collide(pushboxes[i].rect, that_pushboxes[i2].rect)) {
+			if (is_rect_collide(pushboxes[i], that_pushboxes[i2])) {
 				Projectile* that = (Projectile*)that_pushboxes[i2].object;
 				//Only they are moving.
 				float that_x_diff = that->object_float[BATTLE_OBJECT_FLOAT_X_SPEED];
@@ -220,13 +220,8 @@ bool Fighter::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbo
 		if ((hitbox->collision_kind & COLLISION_KIND_ARMOR) || object_int[FIGHTER_INT_ARMOR_HITS] == hurtbox->armor_hits) {
 			object_flag[FIGHTER_FLAG_ARMOR_BREAK] = true;
 			Scene* battle = GameManager::get_instance()->get_scene();
-//			battle->add_message("message", "Armor Break", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//			if (attacker->id) {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//			}
-//			else {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//			}
+			SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+			msg.string_var("next_msg", "Armor Break").execute_event("on_hit");
 			incoming_collision_kind = INCOMING_COLLISION_KIND_HIT;
 		}
 		else {
@@ -238,7 +233,7 @@ bool Fighter::is_valid_incoming_fighter_hitbox_collision(Hurtbox* hurtbox, Hitbo
 
 	object_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = false;
 	if (fighter_context == FIGHTER_CONTEXT_GROUND && hitbox->hit_result.chip_percent != -1.0) {
-		bool reverse_block = ((hitbox->rect.corners[0].x > get_scaled_pos().x && hitbox->rect.corners[3].x > get_scaled_pos().x)
+		bool reverse_block = ((hitbox->anchor.x > get_scaled_pos().x && hitbox->offset.x > get_scaled_pos().x)
 			!= internal_facing_right) && ((attacker->get_scaled_pos().x > get_scaled_pos().x) != internal_facing_right);
 		if (object_flag[FIGHTER_FLAG_AUTO_GUARD]) {
 			switch (hitbox->hit_height) {
@@ -481,13 +476,8 @@ bool Fighter::is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hi
 		if ((hitbox->collision_kind & COLLISION_KIND_ARMOR) || object_int[FIGHTER_INT_ARMOR_HITS] == hurtbox->armor_hits) {
 			object_flag[FIGHTER_FLAG_ARMOR_BREAK] = true;
 			Scene* battle = GameManager::get_instance()->get_scene();
-//			battle->add_message("message", "Armor Break", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//			if (attacker->owner_id) {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//			}
-//			else {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//			}
+			SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->owner_id + 1) + " Message");
+			msg.string_var("next_msg", "Armor Break").execute_event("on_hit");
 			incoming_collision_kind = INCOMING_COLLISION_KIND_HIT;
 		}
 		else {
@@ -500,7 +490,7 @@ bool Fighter::is_valid_incoming_projectile_hitbox_collision(Hurtbox* hurtbox, Hi
 	object_flag[FIGHTER_FLAG_LAST_HIT_WAS_PROJECTILE] = true;
 
 	if (fighter_context == FIGHTER_CONTEXT_GROUND && hitbox->hit_result.chip_percent != -1.0) {
-		bool reverse_block = ((hitbox->rect.corners[0].x > get_scaled_pos().x && hitbox->rect.corners[3].x > get_scaled_pos().x)
+		bool reverse_block = ((hitbox->anchor.x > get_scaled_pos().x && hitbox->offset.x > get_scaled_pos().x)
 			!= internal_facing_right) && ((attacker->get_scaled_pos().x > get_scaled_pos().x) != internal_facing_right);
 		if (object_flag[FIGHTER_FLAG_AUTO_GUARD]) {
 			switch (hitbox->hit_height) {
@@ -1119,7 +1109,7 @@ void Fighter::check_incoming_blockbox_collisions(std::vector<Blockbox*> blockbox
 	for (size_t i = 0; i < 10; i++) {
 		if (!hurtboxes[i].active) continue;
 		for (size_t i2 = 0, max2 = blockboxes.size(); i2 < max2; i2++) {
-			if (is_rect_collide(hurtboxes[i].rect, blockboxes[i2]->rect)) {
+			if (is_rect_collide(hurtboxes[i], *blockboxes[i2])) {
 				object_flag[FIGHTER_FLAG_PROX_GUARD] = true;
 				return;
 			}
@@ -1140,7 +1130,7 @@ void Fighter::check_incoming_grabbox_collisions(std::vector<Grabbox*> grabboxes)
 }
 
 bool Fighter::is_valid_incoming_grabbox_collision(Hurtbox* hurtbox, Grabbox* grabbox) {
-	if (!is_rect_collide(hurtbox->rect, grabbox->rect)) return false;
+	if (!is_rect_collide(*hurtbox, *grabbox)) return false;
 	if (hurtbox->intangible_kind & INTANGIBLE_KIND_INVINCIBLE) {
 		grabbox->clear();
 		return false;
@@ -1359,24 +1349,14 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 		attacker = (Fighter*)((Projectile*)hitbox->object)->owner;
 	}
 	if (object_flag[FIGHTER_FLAG_FORCE_CRITICAL]) {
-//		battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//		if (attacker->id) {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//		}
-//		else {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//		}
+		SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+		msg.string_var("next_msg", "Critical").execute_event("on_hit");
 		return COUNTERHIT_VAL_CRIT_STATUS;
 	}
 	if (object_flag[FIGHTER_FLAG_ENABLE_DODGE_COUNTER]) { 
 		if (hitbox->critical_condition & CRITICAL_CONDITION_DODGE_COUNTER) {
-//			battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//			if (attacker->id) {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//			}
-//			else {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//			}
+			SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+			msg.string_var("next_msg", "Critical").execute_event("on_hit");
 			return COUNTERHIT_VAL_CRIT_STATUS;
 		}
 		//NOTE: If a move doesn't crit on dodge dounter, getting hit while dodge counter is enabled will
@@ -1385,53 +1365,28 @@ int Fighter::get_counterhit_val(Hitbox* hitbox) {
 		//meant to frame trap people mashing offensive options out of otherwise fake pressure, while
 		//moves that crit on dodge counter are meant to punish people for picking the wrong defensive
 		//option during real pressure sequences/wakeup
-//		battle->add_message("message", "Counter", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//		if (attacker->id) {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//		}
-//		else {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//		}
+		SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+		msg.string_var("next_msg", "Counter").execute_event("on_hit");
 		return COUNTERHIT_VAL_COUNTER;
 	}
 	if (object_flag[FIGHTER_FLAG_ENABLE_PUNISH]) {
 		if (hitbox->critical_condition & CRITICAL_CONDITION_PUNISH) {
-//			battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//			if (attacker->id) {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//			}
-//			else {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//			}
+			SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+			msg.string_var("next_msg", "Critical Punish").execute_event("on_hit");
 			return COUNTERHIT_VAL_CRIT_STATUS;
 		}
-//		battle->add_message("message", "Punish", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//		if (attacker->id) {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//		}
-//		else {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//		}
+		SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+		msg.string_var("next_msg", "Punish").execute_event("on_hit");
 		return COUNTERHIT_VAL_PUNISH;
 	}
 	if (object_flag[FIGHTER_FLAG_ENABLE_COUNTERHIT]) {
 		if (hitbox->critical_condition & CRITICAL_CONDITION_COUNTERHIT) {
-//			battle->add_message("message", "Critical", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//			if (attacker->id) {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//			}
-//			else {
-//				battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//			}
+			SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+			msg.string_var("next_msg", "Critical Counter").execute_event("on_hit");
 			return COUNTERHIT_VAL_CRIT_STATUS;
 		}
-//		battle->add_message("message", "Counter", 40, 5, glm::vec2(275.0, 450.0), glm::vec4(255.0, 127.0, 0.0, 255.0), glm::vec4(0.0, 0.0, 0.0, 2.0));
-//		if (attacker->id) {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_RIGHT);
-//		}
-//		else {
-//			battle->messages_active.back().set_orientation(TEXTURE_TOP_LEFT);
-//		}
+		SceneElement& msg = battle->get_element("root/Battle UI/P" + std::to_string(attacker->id + 1) + " Message");
+		msg.string_var("next_msg", "Counter").execute_event("on_hit");
 		return COUNTERHIT_VAL_COUNTER;
 	}
 

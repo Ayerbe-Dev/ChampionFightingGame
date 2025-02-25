@@ -39,7 +39,7 @@ bool BattleObject::pushboxes_touching(BattleObject* object) {
 		if (!pushboxes[i].active) continue;
 		for (int i2 = 0; i2 < 10; i2++) {
 			if (!object->pushboxes[i2].active) continue;
-			if (is_rect_collide(pushboxes[i].rect, object->pushboxes[i2].rect)) {
+			if (is_rect_collide(pushboxes[i], object->pushboxes[i2])) {
 				return true;
 			}
 		}
@@ -48,9 +48,9 @@ bool BattleObject::pushboxes_touching(BattleObject* object) {
 }
 
 float BattleObject::get_pushbox_front(size_t id) {
-	return (pushboxes[id].rect.corners[2].x - get_scaled_pos().x) * get_scale_vec().x;
+	return (pushboxes[id].offset.x - get_scaled_pos().x) * get_scale_vec().x;
 }
 
 float BattleObject::get_pushbox_back(size_t id) {
-	return (pushboxes[id].rect.corners[0].x - get_scaled_pos().x) * get_scale_vec().x;
+	return (pushboxes[id].anchor.x - get_scaled_pos().x) * get_scale_vec().x;
 }

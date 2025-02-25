@@ -98,6 +98,8 @@ public:
 	WorldTexture&& crop_bottom_left_corner(float percent_x, float percent_y);
 	WorldTexture&& crop_bottom_left_corner(float percent_x, float percent_y, int frames);
 
+	WorldTexture&& set_corners(glm::vec2 c1, glm::vec2 c2);
+
 	WorldTexture&& set_alpha(unsigned char alpha);
 	WorldTexture&& set_alpha(unsigned char alpha, int frames);
 	WorldTexture&& add_alpha(unsigned char alpha);
@@ -167,6 +169,8 @@ private:
 
 	int billboard_setting;
 	unsigned int sprite;
+
+	int buffer_updates;
 
 	bool loaded;
 };

@@ -216,7 +216,7 @@ void Battle::load_world() {
 
 void Battle::load_ui() {
 	FontManager* font_manager = FontManager::get_instance();
-	load_font("combo", "Fiend-Oblique", 256);
+	load_font("combo", "Fiend-Oblique", 172);
 	load_font("message", "Fiend-Oblique", 96);
 	load_font("info", "FiraCode", 40);
 
@@ -305,7 +305,7 @@ void Battle::load_ui() {
 		int& timer = e->int_var("post_combo_fadeout");
 		Fighter* fighter = (Fighter*)e->ptr_var("fighter");
 		Fighter* opponent = (Fighter*)e->ptr_var("opponent");
-		if (fighter->object_int[FIGHTER_INT_COMBO_COUNT] != 1) {
+		if (fighter->object_int[FIGHTER_INT_COMBO_COUNT] > 1) {
 			e->get_screen_text("Counter")
 				.update_text(std::to_string(fighter->object_int[FIGHTER_INT_COMBO_COUNT]))
 				.set_scale(1.1f)
@@ -319,6 +319,66 @@ void Battle::load_ui() {
 			e->get_screen_text("Hits").set_alpha(0, opponent->object_int[BATTLE_OBJECT_INT_INIT_HITLAG_FRAMES]);
 		}
 		timer = -1;
+	});
+	load_event("Process Message", [this](SceneElement* e) {
+		if (e->int_var("timer0") != -1) {
+			e->int_var("timer0")--;
+			if (e->int_var("timer0") == -1) {
+				e->get_screen_text("Text0").set_alpha(0, 5);
+			}
+		}
+		if (e->int_var("timer1") != -1) {
+			e->int_var("timer1")--;
+			if (e->int_var("timer1") == -1) {
+				e->get_screen_text("Text1").set_alpha(0, 5);
+			}
+		}
+	});
+	load_event("Add Message", [this](SceneElement* e) {
+		if (e->bool_var("use_slot1")) {
+			if (e->get_screen_text("Text1").get_alpha()) {
+				e->get_screen_text("Text1").set_pos(glm::vec3(275.0f, 650.0f, 0.0f), 5);
+				e->get_screen_text("Text0")
+					.update_text(e->string_var("next_msg"))
+					.set_alpha(255)
+					.set_scale(1.1f)
+					.set_scale(1.0f, 2)
+					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+				e->bool_var("use_slot1") = false;
+				e->int_var("timer0") = 40;
+			}
+			else {
+				e->get_screen_text("Text1")
+					.update_text(e->string_var("next_msg"))
+					.set_alpha(255)
+					.set_scale(1.1f)
+					.set_scale(1.0f, 2)
+					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+				e->int_var("timer1") = 40;
+			}
+		}
+		else {
+			if (e->get_screen_text("Text0").get_alpha()) {
+				e->get_screen_text("Text0").set_pos(glm::vec3(275.0f, 650.0f, 0.0f), 5);
+				e->get_screen_text("Text1")
+					.update_text(e->string_var("next_msg"))
+					.set_alpha(255)
+					.set_scale(1.1f)
+					.set_scale(1.0f, 2)
+					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+				e->bool_var("use_slot1") = true;
+				e->int_var("timer1") = 40;
+			}
+			else {
+				e->get_screen_text("Text0")
+					.update_text(e->string_var("next_msg"))
+					.set_alpha(255)
+					.set_scale(1.1f)
+					.set_scale(1.0f, 2)
+					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+				e->int_var("timer0") = 40;
+			}
+		}
 	});
 
 	root.add_elements({
@@ -453,7 +513,7 @@ void Battle::load_ui() {
 				},
 				{"P1 Combo Counter", 
 					SceneElement({
-						{"Counter", ScreenText(&get_font("message"), "1", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
+						{"Counter", ScreenText(&get_font("combo"), "1", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
 							.set_pos(glm::vec3(475.0f, 600.0f, 0.0f))
 							.set_screen_orientation(TEXTURE_TOP_LEFT)
 							.set_alpha(0)
@@ -472,7 +532,7 @@ void Battle::load_ui() {
 				},
 				{ "P2 Combo Counter",
 					SceneElement({
-						{"Counter", ScreenText(&get_font("message"), "1", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
+						{"Counter", ScreenText(&get_font("combo"), "1", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
 							.set_pos(glm::vec3(475.0f, 600.0f, 0.0f))
 							.set_screen_orientation(TEXTURE_TOP_RIGHT)
 							.set_alpha(0)
@@ -488,6 +548,46 @@ void Battle::load_ui() {
 					.int_var("post_combo_fadeout", -1)
 					.add_event("process", get_event("Process Combo Counter"))
 					.add_event("on_hit", get_event("Combo Counter On Hit"))
+				},
+				{ "P1 Message",
+					SceneElement({
+						{"Text0", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
+							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_orientation(TEXTURE_TOP_LEFT)
+							.set_alpha(0)
+						},
+						{"Text1", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
+							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_orientation(TEXTURE_TOP_LEFT)
+							.set_alpha(0)
+						}
+					})
+					.bool_var("use_slot1", false)
+					.string_var("next_msg", "")
+					.int_var("timer0", -1)
+					.int_var("timer1", -1)
+					.add_event("process", get_event("Process Message"))
+					.add_event("on_hit", get_event("Add Message"))
+				},
+				{ "P2 Message",
+					SceneElement({
+						{"Text0", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
+							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_orientation(TEXTURE_TOP_RIGHT)
+							.set_alpha(0)
+						},
+						{"Text1", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
+							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_orientation(TEXTURE_TOP_RIGHT)
+							.set_alpha(0)
+						}
+					})
+					.bool_var("use_slot1", false)
+					.string_var("next_msg", "")
+					.int_var("timer0", -1)
+					.int_var("timer1", -1)
+					.add_event("process", get_event("Process Message"))
+					.add_event("on_hit", get_event("Add Message"))
 				},
 				{ "Round Counters", 
 					SceneElementLoop(2, [this](SceneElement* e, int i) {
@@ -1573,50 +1673,50 @@ void Battle::render_main() {
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->pushboxes[i2].active) {
-					fighter[i]->pushboxes[i2].rect.render();
+					fighter[i]->pushboxes[i2].world_tex.render();
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->hurtboxes[i2].active) {
-					fighter[i]->hurtboxes[i2].rect.render();
+					fighter[i]->hurtboxes[i2].world_tex.render();
 				}
 			}
 			if (fighter[i]->blockbox.active) {
-				fighter[i]->blockbox.rect.render();
+				fighter[i]->blockbox.world_tex.render();
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->grabboxes[i2].active) {
-					fighter[i]->grabboxes[i2].rect.render();
+					fighter[i]->grabboxes[i2].world_tex.render();
 				}
 			}
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->hitboxes[i2].active) {
-					fighter[i]->hitboxes[i2].rect.render();
+					fighter[i]->hitboxes[i2].world_tex.render();
 				}
 			}
 			for (int i2 = 0; i2 < fighter[i]->projectiles.size(); i2++) {
 				if (fighter[i]->projectiles[i2] != nullptr && fighter[i]->projectiles[i2]->active) {
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->pushboxes[i3].active) {
-							fighter[i]->projectiles[i2]->pushboxes[i3].rect.render();
+							fighter[i]->projectiles[i2]->pushboxes[i3].world_tex.render();
 						}
 					}
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->hurtboxes[i3].active) {
-							fighter[i]->projectiles[i2]->hurtboxes[i3].rect.render();
+							fighter[i]->projectiles[i2]->hurtboxes[i3].world_tex.render();
 						}
 					}
 					if (fighter[i]->projectiles[i2]->blockbox.active) {
-						fighter[i]->projectiles[i2]->blockbox.rect.render();
+						fighter[i]->projectiles[i2]->blockbox.world_tex.render();
 					}
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->grabboxes[i3].active) {
-							fighter[i]->projectiles[i2]->grabboxes[i3].rect.render();
+							fighter[i]->projectiles[i2]->grabboxes[i3].world_tex.render();
 						}
 					}
 					for (int i3 = 0; i3 < 10; i3++) {
 						if (fighter[i]->projectiles[i2]->hitboxes[i3].active) {
-							fighter[i]->projectiles[i2]->hitboxes[i3].rect.render();
+							fighter[i]->projectiles[i2]->hitboxes[i3].world_tex.render();
 						}
 					}
 				}

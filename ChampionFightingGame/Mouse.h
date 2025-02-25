@@ -28,3 +28,5 @@ private:
 	glm::vec2 pos;
 	MouseButton buttons[GLFW_MOUSE_BUTTON_MAX]; //if society ever adds a 6th mouse button, we'll be ready fr
 };
+
+glm::vec2 mouse_pos_to_rect_coord(glm::vec2 mouse_coords);

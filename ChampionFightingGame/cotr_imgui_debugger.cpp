@@ -1,6 +1,5 @@
 #include "cotr_imgui_debugger.h"
 #include "Fighter.h"
-#include "GameRect.h"
 #include "WindowManager.h"
 #include "ShaderManager.h"
 #include "utils.h"

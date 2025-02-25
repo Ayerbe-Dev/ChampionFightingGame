@@ -103,7 +103,7 @@ PauseBattle::PauseBattle() {
 	});
 
 	root.add_elements({
-		{ "BG Dimmer", ScreenTexture("resource/misc/fade.png").set_alpha(127) },
+		{ "BG Dimmer", ScreenTexture("resource/misc/black.png").set_alpha(127) },
 		{ "Panel", ScreenTexture("resource/scene/battle/ui/pause/overlay.png") },
 		{ "Pages", SceneElement({
 			{ "Main Page",

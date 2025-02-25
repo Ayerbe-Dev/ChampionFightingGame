@@ -142,7 +142,7 @@ WindowManager::WindowManager() {
 	for (int i = 0, max = debug_textures.size(); i < max; i++) {
 		debug_textures[i].set_scale(0.2).set_pos(glm::vec3(0.0, 250 * i, 0.0)).set_orientation(TEXTURE_BOTTOM_RIGHT);
 	}
-	fade_texture.init("resource/misc/fade.png").set_alpha(0);
+	fade_texture.init("resource/misc/black.png").set_alpha(0);
 	fade_frames = 0;
 	fading = false;
 	mid_fade_func = nullptr;

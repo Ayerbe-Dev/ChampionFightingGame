@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 enum CollisionKind : unsigned char {
 	COLLISION_KIND_GROUND = 1,

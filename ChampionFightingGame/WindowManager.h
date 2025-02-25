@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 #include "Model.h"
-#include "GameRect.h"
 #include "Camera.h"
 #include "Light.h"
 #include "Framebuffer.h"

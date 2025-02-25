@@ -9,12 +9,12 @@ Projectile::Projectile() {
 
 Projectile::~Projectile() {
 	for (int i = 0; i < 10; i++) {
-		hitboxes[i].rect.destroy();
-		hurtboxes[i].rect.destroy();
-		grabboxes[i].rect.destroy();
-		pushboxes[i].rect.destroy();
+		hitboxes[i].world_tex.destroy();
+		hurtboxes[i].world_tex.destroy();
+		grabboxes[i].world_tex.destroy();
+		pushboxes[i].world_tex.destroy();
 	}
-	blockbox.rect.destroy();
+	blockbox.world_tex.destroy();
 	stop_sound_all();
 	stop_reserved_sound();
 	model.unload_model_instance();

@@ -1,6 +1,6 @@
 #pragma once
-#include "GameRect.h"
 #include "CollisionBoxFields.h"
+#include "WorldTexture.h"
 
 class BattleObject;
 class Fighter;
@@ -13,9 +13,11 @@ public:
 	void clear();
 
 	BattleObject* object;
-	GameRect rect;
+	WorldTexture world_tex;
 	glm::vec2 init_anchor;
 	glm::vec2 init_offset;
+	glm::vec2 anchor;
+	glm::vec2 offset;
 	bool active;
 };
 
@@ -125,3 +127,8 @@ public:
 
 	int id;
 };
+
+float get_rect_intersection(CollisionBox& RectA, CollisionBox& RectB);
+float get_rect_intersection(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b);
+bool is_rect_collide(CollisionBox& RectA, CollisionBox& RectB);
+bool is_rect_collide(glm::vec2 c1a, glm::vec2 c2a, glm::vec2 c1b, glm::vec2 c2b);

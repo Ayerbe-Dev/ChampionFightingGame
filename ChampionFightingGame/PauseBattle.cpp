@@ -51,6 +51,11 @@ PauseBattle::PauseBattle() {
 			s->show();
 		});
 	}
+	else {
+		load_event("Page Activate", [this](SceneElement* e) {
+			set_active_element(&e->get_child(e->int_var("selection")));
+		});
+	}
 	load_event("Button Up Press", [this](SceneElement* e) {
 		for (int i = 0; i < e->get_num_screen_texts(); i++) {
 			e->get_screen_text(i).set_scale(1.0f);

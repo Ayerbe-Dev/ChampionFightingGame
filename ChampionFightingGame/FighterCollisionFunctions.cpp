@@ -857,7 +857,7 @@ void Fighter::process_incoming_fighter_hitbox_collision_blocked(Hitbox* hitbox, 
 	object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = hitbox->hit_result.blockstun;
 	if (hitbox->hit_move.pushback_frames) {
 		object_int[FIGHTER_INT_PUSHBACK_FRAMES] = hitbox->hit_move.pushback_frames;
-		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitbox->hit_move.pushback_ground_block / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
+		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitbox->hit_move.pushback_block / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
 	}
 	object_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] = 60;
 	object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - hitbox->hit_result.base_damage * hitbox->hit_result.chip_percent, object_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -888,7 +888,7 @@ void Fighter::process_incoming_projectile_hitbox_collision_blocked(Hitbox* hitbo
 	object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] = hitbox->hit_result.blockstun;
 	if (hitbox->hit_move.pushback_frames) {
 		object_int[FIGHTER_INT_PUSHBACK_FRAMES] = hitbox->hit_move.pushback_frames;
-		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitbox->hit_move.pushback_ground_block / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
+		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hitbox->hit_move.pushback_block / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
 	}
 	object_int[FIGHTER_INT_PARTIAL_HEALTH_FRAMES] = 60;
 	object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] = clampf(0.0, object_float[FIGHTER_FLOAT_PARTIAL_HEALTH] - hitbox->hit_result.base_damage * hitbox->hit_result.chip_percent, object_float[FIGHTER_FLOAT_PARTIAL_HEALTH]);
@@ -1246,21 +1246,10 @@ void Fighter::process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter*
 	if ((hit_flags & HIT_FLAG_FORCE_AERIAL) == HIT_FLAG_FORCE_AERIAL) {
 		change_context(FIGHTER_CONTEXT_AIR);
 	}
-	object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] = 0;
-	object_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES] = 0;
 	object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0f;
 	if (hit_move.pushback_frames) {
 		object_int[FIGHTER_INT_PUSHBACK_FRAMES] = hit_move.pushback_frames;
-		if (fighter_context == FIGHTER_CONTEXT_AIR) {
-			object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] = hitbox->hitstun - hit_move.pushback_frames;
-			object_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES] = object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES];
-			object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hit_move.pushback_air_x / object_int[FIGHTER_INT_PUSHBACK_FRAMES] * attacker->facing_dir;
-			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = hit_move.pushback_air_y / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
-		}
-		else {
-			object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hit_move.pushback_ground_hit / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
-		}
+		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hit_move.pushback_hit / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
 	}
 	switch (hitbox->hit_status) {
 		case (FIGHTER_STATUS_HITSTUN): {
@@ -1512,21 +1501,10 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 			} break;
 		}
 	}
-	object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] = 0;
-	object_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES] = 0;
 	object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0f;
 	if (hit_move.pushback_frames) {
 		object_int[FIGHTER_INT_PUSHBACK_FRAMES] = hit_move.pushback_frames;
-		if (fighter_context == FIGHTER_CONTEXT_AIR) {
-			object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] = hitbox->hit_result.hitstun - hit_move.pushback_frames;
-			object_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES] = object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES];
-			object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hit_move.pushback_air_x / object_int[FIGHTER_INT_PUSHBACK_FRAMES] * attacker->facing_dir;
-			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME];
-			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = hit_move.pushback_air_y / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
-		}
-		else {
-			object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hit_move.pushback_ground_hit / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
-		}
+		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = hit_move.pushback_hit / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
 	}
 	switch (post_collision_status) {
 		case (FIGHTER_STATUS_HITSTUN): {
@@ -1547,6 +1525,7 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 
 			object_int[FIGHTER_INT_JUGGLE_VALUE] = 0;
 		} break;
+		case (FIGHTER_STATUS_HITSTUN_AIR):
 		case (FIGHTER_STATUS_LAUNCH_START):
 		case (FIGHTER_STATUS_LAUNCH): {
 			if (hit_move.launch_gravity == 0.0f

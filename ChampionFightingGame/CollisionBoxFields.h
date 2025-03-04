@@ -264,10 +264,8 @@ struct HitResult {
 
 struct HitMove {
 	HitMove() {
-		pushback_ground_hit = 0.0f;
-		pushback_ground_block = 0.0f;
-		pushback_air_x = 0.0f;
-		pushback_air_y = 0.0f;
+		pushback_hit = 0.0f;
+		pushback_block = 0.0f;
 		pushback_frames = 0;
 		pushback_counter_mul = 1.0f;
 		pushback_punish_mul = 1.0f;
@@ -280,17 +278,10 @@ struct HitMove {
 		target_frames = 0.0f;
 	}
 
-	HitMove ground(float hit, float block) {
+	HitMove pushback(float hit, float block) {
 		HitMove ret = *this;
-		ret.pushback_ground_hit = hit;
-		ret.pushback_ground_block = block;
-		return ret;
-	}
-
-	HitMove air(float x, float y) {
-		HitMove ret = *this;
-		ret.pushback_air_x = x;
-		ret.pushback_air_y = y;
+		ret.pushback_hit = hit;
+		ret.pushback_block = block;
 		return ret;
 	}
 
@@ -312,7 +303,7 @@ struct HitMove {
 		return ret;
 	}
 
-	HitMove launch(float init_y, float gravity, float max_fall, float x) {
+	HitMove air(float init_y, float gravity, float max_fall, float x) {
 		HitMove ret = *this;
 		ret.launch_init_y = init_y;
 		ret.launch_gravity = gravity;
@@ -329,10 +320,8 @@ struct HitMove {
 		return ret;
 	}
 
-	float pushback_ground_hit;
-	float pushback_ground_block;
-	float pushback_air_x;
-	float pushback_air_y;
+	float pushback_hit;
+	float pushback_block;
 	int pushback_frames;
 	float pushback_counter_mul;
 	float pushback_punish_mul;

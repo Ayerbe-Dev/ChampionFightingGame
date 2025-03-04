@@ -130,8 +130,11 @@ void Scene::load_event(std::string name, std::function<void(SceneElement*)> fn) 
 }
 
 std::function<void(SceneElement*)> Scene::get_event(std::string name, bool allow_unloaded) {
-	if (!allow_unloaded && !event_map.contains(name)) {
-		GameManager::get_instance()->add_crash_log("Event " + name + " not loaded");
+	if (!event_map.contains(name)) {
+		if (!allow_unloaded) {
+			GameManager::get_instance()->add_crash_log("Event " + name + " not loaded");
+		}
+		event_map[name] = [this](SceneElement* e) {};
 	}
 	return event_map[name];
 }

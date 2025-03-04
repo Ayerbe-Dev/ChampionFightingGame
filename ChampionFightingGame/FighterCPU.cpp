@@ -1021,7 +1021,7 @@ CPUHitData FighterCPU::get_hit_data(CPUAction atk_action, int atk_frame, float a
 			ret.pos = atk_pos;
 			ret.opp_pos = def_pos;
 			ret.pushback_frames = atk_frame_data.hitboxes[hitbox_id].hit_move.pushback_frames;
-			ret.pushback_total.x = atk_frame_data.hitboxes[hitbox_id].hit_move.pushback_ground_hit;
+			ret.pushback_total.x = atk_frame_data.hitboxes[hitbox_id].hit_move.pushback_hit;
 			break;
 		}
 	}

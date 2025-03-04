@@ -14,6 +14,7 @@ Particle::Particle() {
 	duration = 0;
 	loop = false;
 }
+
 void Particle::render(ParticleEffectInstance* effect) {
 
 }
@@ -44,6 +45,12 @@ void ParticleBillboard::render(ParticleEffectInstance* effect) {
 	else {
 		frame = std::fmod(effect->get_frame(), duration);
 	}
+	texture.set_pos(pos_base + (pos_frame * frame));
+	texture.set_rot(rot_base + (rot_frame * frame));
+	texture.set_scale(scale_base + (scale_frame * frame));
+	texture.set_colormod(glm::vec3(rgba_base + (rgba_frame * frame)));
+	texture.set_alpha(rgba_base.a + (rgba_frame.a * frame));
+	texture.render();
 }
 
 ParticleTexture::ParticleTexture() {
@@ -58,6 +65,12 @@ void ParticleTexture::render(ParticleEffectInstance* effect) {
 	else {
 		frame = std::fmod(effect->get_frame(), duration);
 	}
+	texture.set_pos(pos_base + (pos_frame * frame));
+	texture.set_rot(rot_base + (rot_frame * frame));
+	texture.set_scale(scale_base + (scale_frame * frame));
+	texture.set_colormod(glm::vec3(rgba_base + (rgba_frame * frame)));
+	texture.set_alpha(rgba_base.a + (rgba_frame.a * frame));
+	texture.render();
 }
 
 ParticleTrail::ParticleTrail() {
@@ -80,7 +93,7 @@ ParticleEffect::ParticleEffect() {
 }
 
 void ParticleEffect::load_particle_effect(std::string dir) {
-
+	//Open the file at dir, use that to fill the particles array for this effect
 }
 
 void ParticleEffect::unload_particle_effect() {

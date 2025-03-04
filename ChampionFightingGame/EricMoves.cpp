@@ -315,7 +315,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(200, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(30).meter(18).scale(0.2f).hit(8, 12).block(8, 9).j_min(1)
 				.anims("light_high", "light_high", "high", "high"), HIT_STATUS_NORMAL,
-				HitMove().ground(30.0f, 30.0f).air(8.0, 8.0).frames(7), HIT_FLAG_NONE,
+				HitMove().pushback(30.0f, 30.0f).frames(7), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -340,7 +340,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(240, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(10).meter(6).scale(0.2f).hit(8, 12).block(8, 9).j_min(1)
 				.anims("light_high", "light_high", "high", "high"), HIT_STATUS_NORMAL,
-				HitMove().ground(80.0, 80.0).air(3.0, 25.0).frames(7), HIT_FLAG_NONE,
+				HitMove().pushback(80.0, 80.0).frames(7), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -375,7 +375,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(210, 165), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(60).meter(36).hit(10, 12).block(12, 11).j_min(2)
 			.anims("medium_high", "medium_high", "mid", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(80.0, 40.0).air(3.0, 28.0).frames(9), HIT_FLAG_NONE,
+				HitMove().pushback(80.0, 40.0).frames(9), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -414,7 +414,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(220, 170), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(100).meter(48).hit(16, 23).block(16, 23).j_start(2).j_inc(2).j_max(1)
 				.anims("heavy_high", "heavy_high", "mid", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(170.0, 80.0).air(5.0, 31.0).frames(11).launch(25.0, 1.6, 15.0, 16.0),
+				HitMove().pushback(170.0, 80.0).frames(11).air(25.0, 1.6, 15.0, 16.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01"
 			);
@@ -450,7 +450,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 0),
 			glm::vec2(250, 60), COLLISION_KIND_GROUND, HitResult().damage(30).meter(18).hit(8, 13)
 			.block(8, 8).anims("light_low", "light_mid", "low", "low"), HIT_STATUS_NORMAL,
-				HitMove().ground(80.0, 80.0).frames(7), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
+				HitMove().pushback(80.0, 80.0).frames(7), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
 				HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -488,7 +488,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(330, 155), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(60).meter(36).hit(10, 18).block(12, 12)
 				.anims("medium_mid", "medium_mid", "mid", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(100.0, 40.0).air(30.0, 28.0).frames(10).launch(10.0, 1.3, 15.0, 1.0),
+				HitMove().pushback(100.0, 40.0).frames(10).air(10.0, 1.3, 15.0, 1.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01");
 		});
@@ -511,7 +511,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(165, 135), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(50).meter(36).hit(6, 20).block(6, 13).j_start(4).j_inc(2)
 			.j_max(2).anims("heavy_high", "heavy_high", "high", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(130.0, 60.0).air(2.0, 31.0).frames(5).launch(22.0, 1.5, 15.0, 8.0),
+				HitMove().pushback(130.0, 60.0).frames(5).air(22.0, 1.5, 15.0, 8.0),
 				HIT_FLAG_DISABLE_HITSTUN_PARRY | HIT_FLAG_CONTINUE_LAUNCH,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
@@ -532,8 +532,8 @@ void Eric::load_move_scripts() {
 				glm::vec2(290, 180), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(40).scale(0.0f).start_scale(0.9f).meter(18).hit(6, 24).block(6, 15)
 				.anims("heavy_high", "heavy_high", "high", "mid").j_start(1).j_inc(1).j_max(3),
-				HIT_STATUS_NORMAL, HitMove().ground(170.0, 100.0).air(3.0, 31.0).frames(10)
-				.launch(27.0, 1.5, 15.0, 5.0), HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE,
+				HIT_STATUS_NORMAL, HitMove().pushback(170.0, 100.0).frames(10)
+				.air(27.0, 1.5, 15.0, 5.0), HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE,
 				HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 			push_function(&Fighter::NEW_HURTBOX, 1, glm::vec2(45, 75), glm::vec2(305, 190), HURTBOX_KIND_NORMAL, 0, INTANGIBLE_KIND_NONE);
@@ -568,7 +568,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(200, 89), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(30).meter(18).hit(6, 11).block(6, 5).j_min(1)
 				.anims("light_mid", "light_mid", "low", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(9.0, 11.0).air(4.0, 25.0).frames(8), HIT_FLAG_NONE,
+				HitMove().pushback(9.0, 11.0).frames(8), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01");
 		});
 		execute_wait(3, [this]() {
@@ -606,7 +606,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(280, 90), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(50).meter(36).hit(12, 21).block(12, 17)
 			.anims("medium_mid", "medium_mid", "mid", "mid").j_start(1).j_inc(1).j_max(3),
-				HIT_STATUS_NORMAL, HitMove().ground(80.0, 80.0).air(10.0, 18.0).frames(11),
+				HIT_STATUS_NORMAL, HitMove().pushback(80.0, 80.0).frames(11),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -636,9 +636,9 @@ void Eric::load_move_scripts() {
 			glm::vec2(180, 89), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
 			.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
-				HIT_STATUS_NORMAL, HitMove().ground(140.0, 80.0).air(130.0, 200.0).frames(10),
+				HIT_STATUS_NORMAL, HitMove().pushback(140.0, 80.0).frames(10),
 				HIT_FLAG_FORCE_STAND, CRITICAL_CONDITION_NONE, HIT_STATUS_LAUNCH,
-				HitMove().launch(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
+				HitMove().air(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
 				DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -647,9 +647,9 @@ void Eric::load_move_scripts() {
 			glm::vec2(180, 160), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
 			.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
-				HIT_STATUS_NORMAL, HitMove().ground(140.0, 80.0).air(130.0, 200.0).frames(10),
+				HIT_STATUS_NORMAL, HitMove().pushback(140.0, 80.0).frames(10),
 				HIT_FLAG_FORCE_STAND, CRITICAL_CONDITION_DODGE_COUNTER, HIT_STATUS_LAUNCH,
-				HitMove().launch(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
+				HitMove().air(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
 				DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -659,9 +659,9 @@ void Eric::load_move_scripts() {
 				glm::vec2(180, 220), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
 				.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
-				HIT_STATUS_NORMAL, HitMove().ground(140.0, 80.0).air(130.0, 200.0).frames(10),
+				HIT_STATUS_NORMAL, HitMove().pushback(140.0, 80.0).frames(10),
 				HIT_FLAG_FORCE_STAND, CRITICAL_CONDITION_NONE, HIT_STATUS_LAUNCH,
-				HitMove().launch(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
+				HitMove().air(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
 				DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 			push_function(&Fighter::DISABLE_ALL_CANCELS);
@@ -687,7 +687,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(130, 0),
 				glm::vec2(230, 40.0), COLLISION_KIND_GROUND, HitResult().damage(30).meter(18).hit(8, 11)
 				.block(8, 8).anims("light_low", "light_low", "", "low"),
-				HIT_STATUS_NORMAL, HitMove().ground(11.0, 13.0).frames(6),
+				HIT_STATUS_NORMAL, HitMove().pushback(11.0, 13.0).frames(6),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01"
 			);
@@ -719,7 +719,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(15, 0),
 				glm::vec2(295, 40), COLLISION_KIND_GROUND, HitResult().damage(60).meter(36).hit(10, 19)
 				.block(12, 13).anims("medium_low", "medium_low", "", "low"), HIT_STATUS_NORMAL,
-				HitMove().ground(14.0, 8.0).frames(10), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
+				HitMove().pushback(14.0, 8.0).frames(10), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
 				HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -744,7 +744,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, 0),
 			glm::vec2(250, 50), COLLISION_KIND_GROUND, HitResult().damage(80).meter(48).hit(12, 0)
 			.block(16, 13).anims("", "", "", "low"), HIT_STATUS_KNOCKDOWN,
-				HitMove().ground(0.0, 8.0).frames(10), HIT_FLAG_KNOCKDOWN_FACE_DOWN,
+				HitMove().pushback(0.0, 8.0).frames(10), HIT_FLAG_KNOCKDOWN_FACE_DOWN,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01");
 		});
 		execute_wait(2, [this]() {
@@ -763,7 +763,7 @@ void Eric::load_move_scripts() {
 		execute_frame(3, [this]() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(20, 85),
 			glm::vec2(145, 135), COLLISION_KIND_AIR, HitResult().damage(20).meter(18).hit(8, 16)
-			.j_start(3).j_inc(0).j_max(4), HIT_STATUS_NORMAL, HitMove().air(20.0, -20.0).frames(1),
+			.j_start(3).j_inc(0).j_max(4), HIT_STATUS_NORMAL, HitMove(),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01"
 			);
@@ -775,7 +775,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(185, 85), COLLISION_KIND_GROUND | COLLISION_KIND_AIR, HitResult().damage(20)
 				.meter(18).hit(8, 11).block(8, 7).j_start(3).j_inc(0).j_max(4)
 				.anims("light_high", "light_high", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(150.0, 150.0).air(50.0, 20.0).frames(8), HIT_FLAG_NONE,
+				HitMove().pushback(150.0, 150.0).frames(8), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -798,7 +798,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(215, 70), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(40).meter(24).hit(10, 14).block(10, 11).j_start(3).j_inc(0).j_max(4)
 			.anims("medium_high", "medium_high", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(220.0, 220.0).air(70.0, -30.0).frames(11), HIT_FLAG_NONE,
+				HitMove().pushback(220.0, 220.0).frames(11), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -820,15 +820,15 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(100, 75),
 			glm::vec2(280, 135), COLLISION_KIND_AIR,
 			HitResult().damage(50).meter(30).hit(12, 0).crit(12, 17).j_start(3).j_inc(0).j_max(4),
-			HIT_STATUS_LAUNCH, HitMove().launch(-20.0, 0.0, 20.0, 5.0), HIT_FLAG_NONE,
-			CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_FLOAT, HitMove().launch(-20.0, 0.0, 20.0, 5.0),
+			HIT_STATUS_LAUNCH, HitMove().air(-20.0, 0.0, 20.0, 5.0), HIT_FLAG_NONE,
+			CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_FLOAT, HitMove().air(-20.0, 0.0, 20.0, 5.0),
 			HIT_FLAG_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(100, 75),
 			glm::vec2(280, 135), COLLISION_KIND_GROUND,
 			HitResult().damage(50).meter(30).hit(12, 17).block(12, 14)
 			.anims("heavy_high", "heavy_high", "high", ""),
-			HIT_STATUS_NORMAL, HitMove().ground(150.0, 150.0).frames(12), HIT_FLAG_NONE,
+			HIT_STATUS_NORMAL, HitMove().pushback(150.0, 150.0).frames(12), HIT_FLAG_NONE,
 			CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_FLOAT, HitMove(),
 			HIT_FLAG_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 		);
@@ -837,15 +837,15 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(30, -10),
 			glm::vec2(180, 90), COLLISION_KIND_AIR,
 			HitResult().damage(50).meter(30).hit(12, 0).crit(12, 17).j_start(3).j_inc(0).j_max(4),
-			HIT_STATUS_LAUNCH, HitMove().launch(-20.0, 0.0, 20.0, 5.0), HIT_FLAG_NONE,
-			CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_FLOAT, HitMove().launch(-20.0, 0.0, 20.0, 5.0),
+			HIT_STATUS_LAUNCH, HitMove().air(-20.0, 0.0, 20.0, 5.0), HIT_FLAG_NONE,
+			CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_FLOAT, HitMove().air(-20.0, 0.0, 20.0, 5.0),
 			HIT_FLAG_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(30, -10),
 			glm::vec2(180, 90), COLLISION_KIND_GROUND,
 			HitResult().damage(50).meter(30).hit(12, 17).block(12, 21)
 			.anims("heavy_high", "heavy_high", "high", ""),
-			HIT_STATUS_NORMAL, HitMove().ground(150.0, 150.0).frames(12), HIT_FLAG_NONE,
+			HIT_STATUS_NORMAL, HitMove().pushback(150.0, 150.0).frames(12), HIT_FLAG_NONE,
 			CRITICAL_CONDITION_COUNTERHIT, HIT_STATUS_FLOAT, HitMove(),
 			HIT_FLAG_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 		);
@@ -866,14 +866,14 @@ void Eric::load_move_scripts() {
 			glm::vec2(190, 190), COLLISION_KIND_GROUND,
 			HitResult().damage(30).meter(18).hit(8, 11).block(8, 7)
 			.anims("light_high", "light_high", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(20.0, 20.0).frames(7), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
+				HitMove().pushback(20.0, 20.0).frames(7), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
 				HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(60, 100),
 			glm::vec2(190, 190), COLLISION_KIND_AIR,
 			HitResult().damage(30).meter(18).hit(8, 17).j_start(3).j_inc(0).j_max(4),
-			HIT_STATUS_NORMAL, HitMove().air(20.0, 60.0).frames(7), HIT_FLAG_NONE,
-			CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, HitMove().launch(25.0, 1.0, 10.0, 5.0),
+			HIT_STATUS_NORMAL, HitMove(), HIT_FLAG_NONE,
+			CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, HitMove().air(25.0, 1.0, 10.0, 5.0),
 			HIT_FLAG_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 		);
 		});
@@ -894,14 +894,14 @@ void Eric::load_move_scripts() {
 			glm::vec2(270, 45), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(40).meter(24).hit(10, 14).block(10, 11).j_start(3).j_inc(0).j_max(4)
 			.anims("medium_high", "medium_high", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(150.0, 150.0).air(20.0, 50.0).frames(5), HIT_FLAG_NONE,
+				HitMove().pushback(150.0, 150.0).frames(5), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(-45, 45),
 			glm::vec2(250, 80), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(40).meter(24).hit(10, 14).block(10, 11).j_start(3).j_inc(0).j_max(4)
 			.anims("medium_high", "medium_high", "high", ""), HIT_STATUS_NORMAL,
-			HitMove().ground(150.0, 150.0).air(20.0, 50.0).frames(5), HIT_FLAG_NONE,
+			HitMove().pushback(150.0, 150.0).frames(5), HIT_FLAG_NONE,
 			CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 		);
 		});
@@ -921,7 +921,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(250, 80), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(50).meter(30).hit(12, 17).block(12, 14).j_start(3).j_inc(0).j_max(4)
 			.anims("heavy_high", "heavy_high", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(150.0, 150.0).air(5.0, 15.0).frames(15), HIT_FLAG_NONE,
+				HitMove().pushback(150.0, 150.0).frames(15), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -945,7 +945,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(180, 168), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(80).meter(48).hit(12, 27).block(16, 23).j_start(0).j_inc(1).j_max(1)
 			.anims("overhead", "overhead", "high", ""), HIT_STATUS_NORMAL,
-				HitMove().ground(14.0, 8.0).air(5.0, 30.0).frames(11).launch(20.0, 1.3, 15.0, 25.0),
+				HitMove().pushback(14.0, 8.0).frames(11).air(20.0, 1.3, 15.0, 25.0),
 				HIT_FLAG_CONTINUE_LAUNCH, CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH, DAMAGE_KIND_NORMAL,
 				"", "common_attack_hit_01"
 			);
@@ -979,9 +979,9 @@ void Eric::load_move_scripts() {
 				glm::vec2(200, 70), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(90).meter(54).hit(12, 23).block(16, 16).crit(32, 0).j_start(1)
 				.j_inc(1).j_max(1).anims("forced", "", "mid", "mid"),
-				HIT_STATUS_NORMAL, HitMove().ground(14.0, 8.0).air(4.0, 31.0).frames(11),
+				HIT_STATUS_NORMAL, HitMove().pushback(14.0, 8.0).frames(11),
 				HIT_FLAG_FORCE_STAND, CRITICAL_CONDITION_DODGE_COUNTER, HIT_STATUS_LAUNCH,
-				HitMove().launch(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
+				HitMove().air(28.0, 1.3, 15.0, 7.0), HIT_FLAG_NONE, HIT_HEIGHT_MID,
 				DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -1019,8 +1019,8 @@ void Eric::load_move_scripts() {
 			glm::vec2(30, 130), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(50).meter(30).hit(12, 27).block(12, 20).j_start(0).j_inc(1).j_max(4)
 			.anims("medium_high", "medium_high", "high", "high"), HIT_STATUS_NORMAL,
-				HitMove().ground(15.0, 10.0).air(5.0, 31.0).frames(8), HIT_FLAG_CONTINUE_LAUNCH,
-				CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, HitMove().launch(30.0, 1.3, 15.0, 4.0),
+				HitMove().pushback(15.0, 10.0).frames(8), HIT_FLAG_CONTINUE_LAUNCH,
+				CRITICAL_CONDITION_PUNISH, HIT_STATUS_LAUNCH, HitMove().air(30.0, 1.3, 15.0, 4.0),
 				HIT_FLAG_HARD_KNOCKDOWN, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -1044,7 +1044,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(65, -2), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(120).meter(72).hit(14, 60).block(20, 5).j_start(0).j_inc(1).j_max(4)
 			.anims("", "", "high", ""), HIT_STATUS_FLOAT,
-				HitMove().ground(0.0, 5.0).frames(3).launch(-10.0, 0.0, 15.0, 0.0),
+				HitMove().pushback(0.0, 5.0).frames(3).air(-10.0, 0.0, 15.0, 0.0),
 				HIT_FLAG_KNOCKDOWN_FACE_DOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_HIGH,
 				DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
@@ -1065,7 +1065,7 @@ void Eric::load_move_scripts() {
 			glm::vec2(65, -2), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 			HitResult().damage(120).meter(72).hit(14, 60).block(20, 5).j_start(0).j_inc(1).j_max(4)
 			.anims("", "", "", "low"), HIT_STATUS_FLOAT,
-				HitMove().ground(0.0, 5.0).frames(3).launch(-10.0, 0.0, 15.0, 0.0),
+				HitMove().pushback(0.0, 5.0).frames(3).air(-10.0, 0.0, 15.0, 0.0),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 			);
 		});
@@ -1107,7 +1107,7 @@ void Eric::load_move_scripts() {
 		execute_frame(17, [this]() {
 			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
 			FIGHTER_STATUS_LAUNCH, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0, "",
-			HitMove().launch(15.0, 1.3, 8.0, 15.0), DAMAGE_KIND_NORMAL,
+			HitMove().air(15.0, 1.3, 8.0, 15.0), DAMAGE_KIND_NORMAL,
 			"", "common_attack_hit_01"
 			);
 		});
@@ -1121,7 +1121,7 @@ void Eric::load_move_scripts() {
 		execute_frame(39, [this]() {
 			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
 			FIGHTER_STATUS_LAUNCH, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0, "",
-			HitMove().launch(15.0, 1.3, 8.0, -35.0), DAMAGE_KIND_NORMAL,
+			HitMove().air(15.0, 1.3, 8.0, -35.0), DAMAGE_KIND_NORMAL,
 			"", "common_attack_hit_01"
 			);
 		});
@@ -1151,7 +1151,7 @@ void Eric::load_move_scripts() {
 		execute_frame(17, [this]() {
 			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
 			FIGHTER_STATUS_THROWN, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0, "",
-			HitMove().launch(-15.0, 1.3, 15.0, 15.0), DAMAGE_KIND_NORMAL,
+			HitMove().air(-15.0, 1.3, 15.0, 15.0), DAMAGE_KIND_NORMAL,
 			"", "common_attack_hit_01"
 			);
 		push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_DISABLE_AIR_GENERAL, false);
@@ -1167,7 +1167,7 @@ void Eric::load_move_scripts() {
 		execute_frame(17, [this]() {
 			push_function(&Fighter::SET_DEFINITE_HITBOX, object_manager->fighter[!id],
 			FIGHTER_STATUS_THROWN, HIT_FLAG_NONE, 0, 0, 50.0f, 0, 40.0f, 0, 0, "",
-			HitMove().launch(-15.0, 1.3, 15.0, -15.0), DAMAGE_KIND_NORMAL,
+			HitMove().air(-15.0, 1.3, 15.0, -15.0), DAMAGE_KIND_NORMAL,
 			"", "common_attack_hit_01"
 			);
 		push_function(&Fighter::SET_FLAG, FIGHTER_FLAG_DISABLE_AIR_GENERAL, false);
@@ -1317,7 +1317,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
 				glm::vec2(250, 30), COLLISION_KIND_GROUND,
 				HitResult().damage(70).meter(42).hit(12, 4).block(12, 16).anims("", "", "low", "low"),
-				HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20), HIT_FLAG_NONE,
+				HIT_STATUS_KNOCKDOWN, HitMove().pushback(0.0, 15.0).frames(20), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
 				"", "common_attack_hit_01"
 			);
@@ -1340,7 +1340,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
 				glm::vec2(250, 30), COLLISION_KIND_GROUND,
 				HitResult().damage(70).meter(42).hit(12, 4).block(12, 16).anims("", "", "low", "low"),
-				HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20), HIT_FLAG_NONE,
+				HIT_STATUS_KNOCKDOWN, HitMove().pushback(0.0, 15.0).frames(20), HIT_FLAG_NONE,
 				CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
 				"", "common_attack_hit_01"
 			);
@@ -1366,7 +1366,7 @@ void Eric::load_move_scripts() {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
 					glm::vec2(250, 30), COLLISION_KIND_GROUND,
 					HitResult().damage(70).meter(42).hit(12, 4).block(12, 16).anims("", "", "low", "low"),
-					HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20), HIT_FLAG_NONE,
+					HIT_STATUS_KNOCKDOWN, HitMove().pushback(0.0, 15.0).frames(20), HIT_FLAG_NONE,
 					CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
 					"", "common_attack_hit_01"
 				);
@@ -1389,7 +1389,7 @@ void Eric::load_move_scripts() {
 			push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(0, -12),
 				glm::vec2(250, 30), COLLISION_KIND_GROUND,
 				HitResult().damage(70).hit(12, 0).block(12, 19).anims("", "", "low", "low"),
-				HIT_STATUS_KNOCKDOWN, HitMove().ground(0.0, 15.0).frames(20),
+				HIT_STATUS_KNOCKDOWN, HitMove().pushback(0.0, 15.0).frames(20),
 				HIT_FLAG_HARD_KNOCKDOWN, CRITICAL_CONDITION_NONE, HIT_HEIGHT_LOW, DAMAGE_KIND_CHIP,
 				"", "common_attack_hit_01"
 			);
@@ -1412,20 +1412,20 @@ void Eric::load_move_scripts() {
 		execute_frame(8.0, [this]() {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45),
 					glm::vec2(231, 236), COLLISION_KIND_AIR, HitResult().damage(70).meter(56).hit(12, 0)
-					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
+					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().air(28.0, 2.0, 18.0, 0.5),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 				);
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45),
 					glm::vec2(201, 236), COLLISION_KIND_GROUND, HitResult().damage(70).meter(56)
 					.hit(12, 0).block(16, 30).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-					HitMove().ground(0.0, 15.0).frames(5).launch(35.0, 2.0, 18.0, 0.25),
+					HitMove().pushback(0.0, 15.0).frames(5).air(35.0, 2.0, 18.0, 0.25),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 				);
 		});
 		execute_frame(9.0, [this]() {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
 					glm::vec2(200, 255), COLLISION_KIND_AIR, HitResult().damage(70).meter(56).hit(12, 0)
-					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
+					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().air(28.0, 2.0, 18.0, 0.5),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 				);
 				push_function(&Fighter::CLEAR_HITBOX, 1);
@@ -1453,21 +1453,21 @@ void Eric::load_move_scripts() {
 		execute_frame(8.0, [this]() {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(62, 45),
 					glm::vec2(231, 236), COLLISION_KIND_AIR, HitResult().damage(70).hit(12, 0)
-					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5),
+					.j_inc(1).j_max(4), HIT_STATUS_LAUNCH, HitMove().air(28.0, 2.0, 18.0, 0.5),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 				);
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 1, /*Multihit ID*/ 0, glm::vec2(62, 45),
 					glm::vec2(231, 236), COLLISION_KIND_GROUND | COLLISION_KIND_DOWN,
 					HitResult().damage(70).hit(12, 0).block(16, 30).anims("", "", "mid", "mid"),
-					HIT_STATUS_LAUNCH, HitMove().ground(0.0, 15.0).frames(5)
-					.launch(35.0, 2.0, 18.0, 0.25), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
+					HIT_STATUS_LAUNCH, HitMove().pushback(0.0, 15.0).frames(5)
+					.air(35.0, 2.0, 18.0, 0.25), HIT_FLAG_NONE, CRITICAL_CONDITION_NONE,
 					HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 				);
 			});
 		execute_frame(9.0, [this]() {
 				push_function(&Fighter::NEW_HITBOX, /*ID*/ 0, /*Multihit ID*/ 0, glm::vec2(-70, 130),
 					glm::vec2(200, 255), COLLISION_KIND_AIR, HitResult().damage(70).hit(12, 0).j_inc(1)
-					.j_max(4), HIT_STATUS_LAUNCH, HitMove().launch(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
+					.j_max(4), HIT_STATUS_LAUNCH, HitMove().air(28.0, 2.0, 18.0, 0.5), HIT_FLAG_NONE,
 					CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_NORMAL, "", "common_attack_hit_01"
 				);
 			});
@@ -1506,7 +1506,7 @@ void Eric::load_move_scripts() {
 					glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 					HitResult().damage(30).scale(0).meter(18).hit(12, 38).block(8, 17).j_min(5).j_max(4)
 					.anims("light_mid", "light_mid", "mid", "mid"), HIT_STATUS_NORMAL,
-					HitMove().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+					HitMove().pushback(-10.0, 10.0).frames(5).target_pos(20.0, 0.0, 5),
 					HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
 					DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 				);
@@ -1524,7 +1524,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(30).scale(0).hit(12, 38).block(8, 17).j_min(7).j_max(6)
 				.anims("light_mid", "light_mid", "mid", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+				HitMove().pushback(-10.0, 10.0).frames(5).target_pos(20.0, 0.0, 5),
 				HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
 				DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 			);
@@ -1543,7 +1543,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(60).meter(36).hit(14, 0).block(20, 20).j_start(6).j_inc(1)
 				.j_max(5).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-				HitMove().ground(0.0, 20.0).frames(5).launch(43.0, 2.0, 22.0, 10.0),
+				HitMove().pushback(0.0, 20.0).frames(5).air(43.0, 2.0, 22.0, 10.0),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 			);
 		});
@@ -1564,7 +1564,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(100).meter(60).hit(14, 0).block(20, 20).j_min(7).j_max(5)
 				.anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-				HitMove().ground(0.0, 20.0).frames(5).launch(45.0, 2.0, 22.0, 10.0),
+				HitMove().pushback(0.0, 20.0).frames(5).air(45.0, 2.0, 22.0, 10.0),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
 				"", "common_attack_hit_01"
 			);
@@ -1588,7 +1588,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(110).meter(66).hit(14, 0).block(20, 20).j_min(7).j_max(5)
 				.anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-				HitMove().ground(0.0, 20.0).frames(5).launch(47.0, 2.0, 22.0, 10.0),
+				HitMove().pushback(0.0, 20.0).frames(5).air(47.0, 2.0, 22.0, 10.0),
 				HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
 				"", "common_attack_hit_01"
 			);
@@ -1610,7 +1610,7 @@ void Eric::load_move_scripts() {
 					glm::vec2(177, 194), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 					HitResult().damage(90).meter(54).hit(14, 0).block(20, 20).j_start(8)
 					.j_inc(1).j_max(7).anims("", "", "mid", "mid"), HIT_STATUS_LAUNCH,
-					HitMove().ground(0.0, 20.0).frames(5).launch(49.0, 2.0, 22.0, 10.0),
+					HitMove().pushback(0.0, 20.0).frames(5).air(49.0, 2.0, 22.0, 10.0),
 					HIT_FLAG_NONE, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID, DAMAGE_KIND_CHIP,
 					"", "common_attack_hit_01"
 				);
@@ -1658,7 +1658,7 @@ void Eric::load_move_scripts() {
 				glm::vec2(160, 120), COLLISION_KIND_GROUND | COLLISION_KIND_AIR,
 				HitResult().damage(30).scale(0).hit(1, 179).block(8, 17).j_min(5).j_max(4)
 				.anims("heavy_mid", "heavy_mid", "mid", "mid"), HIT_STATUS_NORMAL,
-				HitMove().ground(-10.0, 10.0).air(-3.0, -1.0).frames(5),
+				HitMove().pushback(-10.0, 10.0).frames(5),
 				HIT_FLAG_DISABLE_HITSTUN_PARRY, CRITICAL_CONDITION_NONE, HIT_HEIGHT_MID,
 				DAMAGE_KIND_CHIP, "", "common_attack_hit_01"
 			);

@@ -250,7 +250,7 @@ bool StageSelect::load_stage_select() {
 			selected = true;
 		}
 		else {
-			update_scene(SCENE_CHARA_SELECT, SCENE_CONTEXT_NONE);
+			update_scene(SCENE_CHARA_SELECT, SCENE_CONTEXT_MAX);
 		}
 	});
 	load_event("stage_slot_back_press", [this](SceneElement* element) {

@@ -1009,8 +1009,6 @@ void Fighter::status_hitstun_air() {
 		return;
 	}
 	if (object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES] == 0) {
-		object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = get_param_float("gravity");
-		object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = get_param_float("max_fall_speed");
 		change_status(FIGHTER_STATUS_FALL);
 		return;
 	}
@@ -1019,17 +1017,13 @@ void Fighter::status_hitstun_air() {
 		return;
 	}
 	if (object_int[BATTLE_OBJECT_INT_HITLAG_FRAMES] == 0) {
-		if (!object_int[FIGHTER_INT_PUSHBACK_FRAMES]) {
-			apply_gravity(object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX]);
-		}
+		apply_gravity(object_float[FIGHTER_FLOAT_CURRENT_GRAVITY], object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX]);
 		add_pos_validate(glm::vec3(object_float[BATTLE_OBJECT_FLOAT_X_SPEED], object_float[BATTLE_OBJECT_FLOAT_Y_SPEED], 0));
 	}
 }
 
 void Fighter::enter_status_hitstun_air() {
 	object_int[FIGHTER_INT_STATUS_GROUP] = STATUS_GROUP_HITSTUN;
-	object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] / object_int[FIGHTER_INT_PUSHBACK_FRAMES];
-	object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = 0.0f;
 	change_anim("jump_hitstun", object_int[FIGHTER_INT_FORCE_RECOVERY_FRAMES], -1.0);
 	change_script("jump_hitstun");
 }

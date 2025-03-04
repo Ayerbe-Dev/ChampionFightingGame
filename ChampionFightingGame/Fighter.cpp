@@ -179,13 +179,7 @@ void Fighter::process_post_position() {
 			}
 		}
 	}
-	else if (object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] != 0 && object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] != 0.0f) {
-		object_float[BATTLE_OBJECT_FLOAT_X_SPEED] -= object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] / object_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES];
-		object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES]--;
-	}
 	else {
-		object_int[FIGHTER_INT_POST_PUSHBACK_FRAMES] = 0;
-		object_int[FIGHTER_INT_INIT_POST_PUSHBACK_FRAMES] = 0;
 		object_float[FIGHTER_FLOAT_PUSHBACK_PER_FRAME] = 0.0f;
 	}
 	update_pushbox_pos();

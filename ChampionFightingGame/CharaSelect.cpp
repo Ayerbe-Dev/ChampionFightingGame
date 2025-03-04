@@ -151,7 +151,7 @@ CSS::CSS() {
 			if (thread_manager->is_active(THREAD_KIND_LOAD)) {
 				thread_manager->kill_thread(THREAD_KIND_LOAD);
 			}
-			update_scene(SCENE_STAGE_SELECT, SCENE_CONTEXT_NONE);
+			update_scene(SCENE_STAGE_SELECT, SCENE_CONTEXT_MAX);
 		}
 	});
 
@@ -584,7 +584,7 @@ CSS::CSS() {
 								}
 							}
 							player[player_id]->player_kind = PLAYER_KIND_PLAYER;
-							update_scene(SCENE_BATTLE, SCENE_CONTEXT_NONE);
+							update_scene(SCENE_BATTLE, SCENE_CONTEXT_MAX);
 						}
 						else {
 							player_id = (bool)!player_id;

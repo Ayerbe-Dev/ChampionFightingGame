@@ -537,9 +537,9 @@ int WorldText::get_billboard_setting() const {
 
 void WorldText::render() {
 	glm::vec3 scale_vec = glm::vec3(
-		WINDOW_WIDTH / (100 * scale.get_val().x),
-		WINDOW_HEIGHT / (100 * scale.get_val().y),
-		WINDOW_DEPTH / (100 * scale.get_val().z)
+		WINDOW_WIDTH / 100.0f,
+		WINDOW_HEIGHT / 100.0f,
+		WINDOW_DEPTH / 100.0f
 	);
 	glm::vec3 render_pos = pos.get_val();
 	render_pos /= scale_vec;
@@ -555,11 +555,12 @@ void WorldText::render() {
 	else if (texture_orientation & TEXTURE_BOTTOM) {
 		render_pos.y += scale_vec.y;
 	}
-	glm::mat4 matrix = glm::translate(glm::mat4(1.0), render_pos);
+	glm::mat4 matrix = glm::scale(glm::mat4(1.0f), scale.get_val());
+	matrix = glm::translate(matrix, render_pos);
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
-	matrix = glm::scale(matrix, scale.get_val());
+	
 	if (anchor) {
 		matrix = anchor->world_mat * matrix;
 	}
@@ -636,13 +637,6 @@ void WorldText::set_default_vertex_data() {
 		v_data_for_gpu.push_back({ v_pos.back(), v_texcoord.back() });
 	}
 
-	for (int i = 0; i < v_data_for_gpu.size(); i++) {
-		v_data_for_gpu[i].pos *= glm::vec2(
-			(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
-			(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
-		);
-	}
-
 	if (new_size) {
 		glBufferData(GL_ARRAY_BUFFER, v_data_for_gpu.size() * sizeof(TextureCoord), v_data_for_gpu.data(), GL_DYNAMIC_DRAW);
 	}
@@ -653,10 +647,6 @@ void WorldText::set_default_vertex_data() {
 
 void WorldText::update_buffer_data() {
 	bool update = false;
-	glm::vec2 v_pos_scaler = glm::vec2(
-		(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
-		(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
-	);
 	if (scroll != -1.0f) {
 		int i = 0;
 		for (float add = 1.0f / (float)num_lines; scroll > add * (float)(i + 1); i++);
@@ -683,10 +673,10 @@ void WorldText::update_buffer_data() {
 		}
 	}
 	for (int i = 0; i < v_data_for_gpu.size(); i++) {
-		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler
+		if (v_data_for_gpu[i].pos != v_pos[i]
 			|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
 			for (int i = 0; i < v_data_for_gpu.size(); i++) {
-				v_data_for_gpu[i] = { (glm::vec2)v_pos[i] * v_pos_scaler, v_texcoord[i] };
+				v_data_for_gpu[i] = { v_pos[i], v_texcoord[i] };
 			}
 			glBufferSubData(GL_ARRAY_BUFFER, 0, v_data_for_gpu.size() * sizeof(TextureCoord), v_data_for_gpu.data());
 			return;

@@ -873,15 +873,15 @@ void SceneElement::render() {
 	anchor.screen_mat = glm::scale(anchor.screen_mat, scale.get_val());
 
 	glm::vec3 world_pos = pos.get_val() / glm::vec3(
-		WINDOW_WIDTH / (100 * scale.get_val().x),
-		WINDOW_HEIGHT / (100 * scale.get_val().y),
-		WINDOW_DEPTH / (100 * scale.get_val().z)
+		WINDOW_WIDTH / 100.0f,
+		WINDOW_HEIGHT / 100.0f,
+		WINDOW_DEPTH / 100.0f
 	);
+	anchor.world_mat = glm::scale(anchor.world_mat, scale.get_val());
 	anchor.world_mat = glm::translate(anchor.world_mat, world_pos);
 	anchor.world_mat = glm::rotate(anchor.world_mat, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	anchor.world_mat = glm::rotate(anchor.world_mat, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	anchor.world_mat = glm::rotate(anchor.world_mat, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
-	anchor.world_mat = glm::scale(anchor.world_mat, scale.get_val());
 
 	std::size_t idx[5] = {0, 0, 0, 0, 0};
 	for (size_t i = 0; i < render_indices.size(); i++) {

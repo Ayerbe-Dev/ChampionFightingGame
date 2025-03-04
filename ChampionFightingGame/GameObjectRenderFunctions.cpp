@@ -4,9 +4,9 @@
 
 bool GameObject::is_in_camera_range() {
 	glm::mat4 model_mat = glm::mat4(1.0);
+	model_mat = glm::scale(model_mat, scale);
 	model_mat = glm::translate(model_mat, pos / scale_vec);
 	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
 	Camera &camera = window_manager->camera;
 	float camera_x = (camera.camera_matrix * model_mat * glm::vec4(0.0, 0.0, 0.0, 1.0)).x / camera.pos.z;
@@ -31,9 +31,9 @@ unsigned char GameObject::get_alpha() const {
 
 void GameObject::render() {
 	glm::mat4 model_mat = glm::mat4(1.0);
+	model_mat = glm::scale(model_mat, scale);
 	model_mat = glm::translate(model_mat, pos / scale_vec);
 	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
 	shader->use();
 	shader->set_mat4("model_matrix", model_mat);
@@ -42,9 +42,9 @@ void GameObject::render() {
 
 void GameObject::render_shadow() {
 	glm::mat4 model_mat = glm::mat4(1.0);
+	model_mat = glm::scale(model_mat, scale);
 	model_mat = glm::translate(model_mat, pos / scale_vec);
 	model_mat *= glm::orientate4(rot);
-	model_mat = glm::scale(model_mat, scale);
 	model_mat *= extra_mat;
 	shadow_shader->use();
 	shadow_shader->set_mat4("model_matrix", model_mat);

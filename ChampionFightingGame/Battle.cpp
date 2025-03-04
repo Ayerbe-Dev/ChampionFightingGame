@@ -380,6 +380,10 @@ void Battle::load_ui() {
 			}
 		}
 	});
+	load_event("Process Fighter Tag", [this](SceneElement* e) {
+		Fighter* fighter = (Fighter*)e->ptr_var("fighter");
+		e->set_pos(fighter->get_pos());
+	});
 
 	root.add_elements({
 		{"Battle UI", 
@@ -750,14 +754,42 @@ void Battle::load_ui() {
 						}
 					})
 				},
-				{"HUD", ScreenTexture("resource/scene/battle/ui/battle_hud.png")}
+				{"HUD", ScreenTexture("resource/scene/battle/ui/battle_hud.png")},
 			})
 			.add_event("process", [this](SceneElement* e) {
 				for (size_t i = 0; i < e->get_num_children(); i++) {
 					e->get_child(i).execute_event("process");
 				}
+				get_element("root/Post Render UI/P1 Tag").execute_event("process");
+				get_element("root/Post Render UI/P2 Tag").execute_event("process");
 			})
 		}, //UI
+		{"Post Render UI", 
+			SceneElement({
+				{"P1 Tag",
+					SceneElement({
+						{"Tag", WorldTexture("resource/scene/battle/ui/tag/p1_tag_no_nametag.png", 0)
+							.set_pos(glm::vec3(0.0f, 85.0f, 0.0f))
+							.set_scale(glm::vec3(2.0f))
+							.set_billboard_setting(BILLBOARD_ON)
+						}
+					})
+					.ptr_var("fighter", fighter[0])
+					.add_event("process", get_event("Process Fighter Tag"))
+				},
+				{ "P2 Tag",
+					SceneElement({
+						{"Tag", WorldTexture("resource/scene/battle/ui/tag/p2_tag_no_nametag.png", 0)
+							.set_pos(glm::vec3(0.0f, 85.0f, 0.0f))
+							.set_scale(glm::vec3(2.0f))
+							.set_billboard_setting(BILLBOARD_ON)
+						}
+					})
+					.ptr_var("fighter", fighter[1])
+					.add_event("process", get_event("Process Fighter Tag"))
+				},
+			})
+		},
 		{"Pre Intro Sequence", 
 			SceneElement()
 			.add_event("activate", [this](SceneElement* e) {
@@ -1665,11 +1697,13 @@ void Battle::render_main() {
 
 	//HITBOX PASS - Draws all collision boxes to their own framebuffer, then draws it to the screen.
 
-	if (context == SCENE_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
-		window_manager->box_layer.use();
-		glViewport(0, 0, window_manager->res_width, window_manager->res_height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	window_manager->box_layer.use();
+	glViewport(0, 0, window_manager->res_width, window_manager->res_height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	get_element("root/Post Render UI").render();
+
+	if (context == SCENE_CONTEXT_TRAINING && SaveManager::get_instance()->get_game_setting("visualize_boxes") == 1) {
 		for (int i = 0; i < 2; i++) {
 			for (int i2 = 0; i2 < 10; i2++) {
 				if (fighter[i]->pushboxes[i2].active) {
@@ -1726,11 +1760,11 @@ void Battle::render_main() {
 			hitbox_sim[active_hitbox_object->get_anim()].update(active_hitbox_object);
 			hitbox_sim[active_hitbox_object->get_anim()].render(active_hitbox_object);
 		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, window_manager->window_width, window_manager->window_height);
-		window_manager->box_layer.render();
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, window_manager->window_width, window_manager->window_height);
+	window_manager->box_layer.render();
 
 	//UI PASS
 

@@ -98,20 +98,10 @@ glm::vec3 GameObject::get_rot() const {
 
 void GameObject::add_scale(glm::vec3 scale) {
 	this->scale += scale;
-	scale_vec = glm::vec3(
-		WINDOW_WIDTH / (100 * scale.x),
-		WINDOW_HEIGHT / (100 * scale.y),
-		WINDOW_DEPTH / (100 * scale.z)
-	);
 }
 
 void GameObject::set_scale(glm::vec3 scale) {
 	this->scale = scale;
-	scale_vec = glm::vec3(
-		WINDOW_WIDTH / (100 * scale.x),
-		WINDOW_HEIGHT / (100 * scale.y),
-		WINDOW_DEPTH / (100 * scale.z)
-	);
 }
 
 glm::vec3 GameObject::get_scale() const {

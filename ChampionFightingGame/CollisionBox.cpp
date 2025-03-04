@@ -13,8 +13,8 @@ CollisionBox::CollisionBox() {
 }
 
 void CollisionBox::update_pos() {
-	anchor = init_anchor + glm::vec2(object->get_scaled_pos());
-	offset = init_offset + glm::vec2(object->get_scaled_pos());
+	anchor = init_anchor + glm::vec2(object->get_pos());
+	offset = init_offset + glm::vec2(object->get_pos());
 	this->world_tex.set_corners(anchor, offset);
 }
 
@@ -38,10 +38,10 @@ void Pushbox::activate(int id, glm::vec2 anchor, glm::vec2 offset) {
 	this->id = id;
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
-	this->init_offset = offset / glm::vec2(object->get_scale_vec());
-	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
-	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	this->anchor = init_anchor + glm::vec2(object->get_pos());
+	this->offset = init_offset + glm::vec2(object->get_pos());
 	this->world_tex.set_corners(this->anchor, this->offset);
 	active = true;
 }
@@ -64,10 +64,10 @@ void Blockbox::init(BattleObject* object) {
 void Blockbox::activate(glm::vec2 anchor, glm::vec2 offset) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
-	this->init_offset = offset / glm::vec2(object->get_scale_vec());
-	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
-	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	this->anchor = init_anchor + glm::vec2(object->get_pos());
+	this->offset = init_offset + glm::vec2(object->get_pos());
 	this->world_tex.set_corners(this->anchor, this->offset);
 	active = true;
 }
@@ -108,10 +108,10 @@ void Hitbox::activate(int id, int multihit, glm::vec2 anchor, glm::vec2 offset,
 	this->multihit = multihit;
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
-	this->init_offset = offset / glm::vec2(object->get_scale_vec());
-	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
-	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	this->anchor = init_anchor + glm::vec2(object->get_pos());
+	this->offset = init_offset + glm::vec2(object->get_pos());
 	this->world_tex.set_corners(this->anchor, this->offset);
 	this->collision_kind = collision_kind;
 	this->hit_result = hit_result;
@@ -236,10 +236,10 @@ void Grabbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	unsigned int defender_status_if_hit) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
-	this->init_offset = offset / glm::vec2(object->get_scale_vec());
-	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
-	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	this->anchor = init_anchor + glm::vec2(object->get_pos());
+	this->offset = init_offset + glm::vec2(object->get_pos());
 	this->world_tex.set_corners(this->anchor, this->offset);
 	this->id = id;
 	this->grabbox_kind = grabbox_kind;
@@ -274,10 +274,10 @@ void Hurtbox::activate(int id, glm::vec2 anchor, glm::vec2 offset,
 	HurtboxKind hurtbox_kind, int armor_hits, IntangibleKind intangible_kind) {
 	anchor.x *= object->facing_dir;
 	offset.x *= object->facing_dir;
-	this->init_anchor = anchor / glm::vec2(object->get_scale_vec());
-	this->init_offset = offset / glm::vec2(object->get_scale_vec());
-	this->anchor = init_anchor + glm::vec2(object->get_scaled_pos());
-	this->offset = init_offset + glm::vec2(object->get_scaled_pos());
+	this->init_anchor = anchor;
+	this->init_offset = offset;
+	this->anchor = init_anchor + glm::vec2(object->get_pos());
+	this->offset = init_offset + glm::vec2(object->get_pos());
 	this->world_tex.set_corners(this->anchor, this->offset);
 	this->id = id;
 	this->hurtbox_kind = hurtbox_kind;

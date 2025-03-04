@@ -1535,12 +1535,9 @@ WorldTexture&& WorldTexture::crop_bottom_left_corner(float percent_x, float perc
 }
 
 WorldTexture&& WorldTexture::set_corners(glm::vec2 c1, glm::vec2 c2) {
-	glm::vec2 v_pos_scaler = glm::vec2(
-		(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
-		(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
-	);
-	c1 /= v_pos_scaler;
-	c2 /= v_pos_scaler;
+	glm::vec2 scale_vec = glm::vec2(19.2, 10.8);
+	c1 /= scale_vec;
+	c2 /= scale_vec;
 	v_pos_accessor[v_spec.bottom_left_idx]->x = c1.x;
 	v_pos_accessor[v_spec.bottom_left_idx]->y = c1.y;
 	v_pos_accessor[v_spec.top_left_idx]->x = c1.x;
@@ -1662,9 +1659,9 @@ unsigned int WorldTexture::get_sprite() const {
 
 void WorldTexture::render() {
 	glm::vec3 scale_vec = glm::vec3(
-		WINDOW_WIDTH / (100 * scale.get_val().x),
-		WINDOW_HEIGHT / (100 * scale.get_val().y),
-		WINDOW_DEPTH / (100 * scale.get_val().z)
+		WINDOW_WIDTH / 100.0f,
+		WINDOW_HEIGHT / 100.0f,
+		WINDOW_DEPTH / 100.0f
 	);
 	glm::vec3 render_pos = pos.get_val();
 	render_pos /= scale_vec;
@@ -1680,11 +1677,12 @@ void WorldTexture::render() {
 	else if (texture_orientation & TEXTURE_BOTTOM) {
 		render_pos.y += scale_vec.y;
 	}
-	glm::mat4 matrix = glm::translate(glm::mat4(1.0), render_pos);
+	glm::mat4 matrix = glm::scale(glm::mat4(1.0f), scale.get_val());
+	matrix = glm::translate(matrix, render_pos);
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().x), glm::vec3(1.0, 0.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().y), glm::vec3(0.0, 1.0, 0.0));
 	matrix = glm::rotate(matrix, glm::radians(rot.get_val().z), glm::vec3(0.0, 0.0, 1.0));
-	matrix = glm::scale(matrix, scale.get_val());
+	
 	if (anchor) {
 		matrix = anchor->world_mat * matrix;
 	}
@@ -1754,13 +1752,6 @@ void WorldTexture::set_default_vertex_data() {
 		v_texcoord_accessor[i] = &v_texcoord[i];
 		v_data_for_gpu[i] = { v_pos[i], v_texcoord[i] };
 	}
-
-	for (int i = 0; i < v_spec.num_vertices; i++) {
-		v_data_for_gpu[i].pos *= glm::vec2(
-			(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
-			(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
-		);
-	}
 	for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 		v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];
 	}
@@ -1770,13 +1761,9 @@ void WorldTexture::set_default_vertex_data() {
 
 void WorldTexture::update_buffer_data() {
 	bool update = false;
-	glm::vec2 v_pos_scaler = glm::vec2(
-		(float)get_width() / (WINDOW_WIDTH / (10 * scale.get_val().x)),
-		(float)get_height() / (WINDOW_WIDTH / (10 * scale.get_val().y))
-	);
 	for (int i = 0; i < v_spec.num_vertices; i++) {
-		if (v_data_for_gpu[i].pos != (glm::vec2)v_pos[i] * v_pos_scaler
-			|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
+		if (v_data_for_gpu[i].pos != v_pos[i]
+		|| v_data_for_gpu[i].tex_coord != v_texcoord[i]) {
 			if (v_spec.num_vertices == 5) {
 				if (v_pos[TC_4T5V_TOP_LEFT].x > 0.0f != h_flipped
 					|| v_pos[TC_4T5V_BOTTOM_LEFT].x > 0.0f != h_flipped) {
@@ -1835,7 +1822,7 @@ void WorldTexture::update_buffer_data() {
 				}
 			}
 			for (int i = 0; i < v_spec.num_vertices; i++) {
-				v_data_for_gpu[i] = { (glm::vec2)v_pos[i] * v_pos_scaler, v_texcoord[i] };
+				v_data_for_gpu[i] = { v_pos[i], v_texcoord[i] };
 			}
 			for (size_t i = 0, max = v_spec.vertex_bindings.size(); i < max; i++) {
 				v_data_for_gpu[v_spec.vertex_bindings[i].first] = v_data_for_gpu[v_spec.vertex_bindings[i].second];

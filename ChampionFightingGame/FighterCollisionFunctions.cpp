@@ -1265,10 +1265,10 @@ void Fighter::process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter*
 		case (FIGHTER_STATUS_THROWN):
 		case (FIGHTER_STATUS_LAUNCH_START):
 		case (FIGHTER_STATUS_LAUNCH): {
-			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = hit_move.launch_x * attacker->facing_dir;
-			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = hit_move.launch_init_y;
-			object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = hit_move.launch_gravity;
-			object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = hit_move.launch_max_fall;
+			object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = hit_move.air_x * attacker->facing_dir;
+			object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = hit_move.air_init_y;
+			object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = hit_move.air_gravity;
+			object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = hit_move.air_max_fall;
 		} [[fallthrough]];
 		case (FIGHTER_STATUS_HITSTUN_FLOAT):
 		case (FIGHTER_STATUS_KNOCKDOWN_START):
@@ -1304,10 +1304,10 @@ void Fighter::process_definite_hitbox_activated(DefiniteHitbox* hitbox, Fighter*
 				}
 			} break;
 			case (FIGHTER_CONTEXT_AIR): {
-				if (hitbox->hit_move.launch_gravity == 0.0f
-					&& hitbox->hit_move.launch_init_y == 0.0f
-					&& hitbox->hit_move.launch_max_fall == 0.0f
-					&& hitbox->hit_move.launch_x == 0.0f) {
+				if (hitbox->hit_move.air_gravity == 0.0f
+					&& hitbox->hit_move.air_init_y == 0.0f
+					&& hitbox->hit_move.air_max_fall == 0.0f
+					&& hitbox->hit_move.air_x == 0.0f) {
 					object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 10.0f * attacker->facing_dir;
 					object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 15.0f;
 					object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = 1.5f;
@@ -1528,20 +1528,20 @@ void Fighter::set_post_collision_status(Hitbox* hitbox, int counterhit_val) {
 		case (FIGHTER_STATUS_HITSTUN_AIR):
 		case (FIGHTER_STATUS_LAUNCH_START):
 		case (FIGHTER_STATUS_LAUNCH): {
-			if (hit_move.launch_gravity == 0.0f
-			&& hit_move.launch_init_y == 0.0f
-			&& hit_move.launch_max_fall == 0.0f
-			&& hit_move.launch_x == 0.0f) {
+			if (hit_move.air_gravity == 0.0f
+			&& hit_move.air_init_y == 0.0f
+			&& hit_move.air_max_fall == 0.0f
+			&& hit_move.air_x == 0.0f) {
 				object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = 10.0f * attacker->facing_dir;
 				object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = 15.0f;
 				object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = 1.5f;
 				object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = 15.0f;
 			}
 			else {
-				object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = hit_move.launch_x * attacker->facing_dir;
-				object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = hit_move.launch_init_y;
-				object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = hit_move.launch_gravity;
-				object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = hit_move.launch_max_fall;
+				object_float[BATTLE_OBJECT_FLOAT_X_SPEED] = hit_move.air_x * attacker->facing_dir;
+				object_float[BATTLE_OBJECT_FLOAT_Y_SPEED] = hit_move.air_init_y;
+				object_float[FIGHTER_FLOAT_CURRENT_GRAVITY] = hit_move.air_gravity;
+				object_float[FIGHTER_FLOAT_CURRENT_FALL_SPEED_MAX] = hit_move.air_max_fall;
 			}
 		} [[fallthrough]];
 		case (FIGHTER_STATUS_HITSTUN_FLOAT):

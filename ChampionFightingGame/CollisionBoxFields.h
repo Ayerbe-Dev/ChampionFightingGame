@@ -269,10 +269,10 @@ struct HitMove {
 		pushback_frames = 0;
 		pushback_counter_mul = 1.0f;
 		pushback_punish_mul = 1.0f;
-		launch_init_y = 0.0f;
-		launch_gravity = 0.0f;
-		launch_max_fall = 0.0f;
-		launch_x = 0.0f;
+		air_init_y = 0.0f;
+		air_gravity = 0.0f;
+		air_max_fall = 0.0f;
+		air_x = 0.0f;
 		target_x = 0.0f;
 		target_y = 0.0f;
 		target_frames = 0.0f;
@@ -305,10 +305,10 @@ struct HitMove {
 
 	HitMove air(float init_y, float gravity, float max_fall, float x) {
 		HitMove ret = *this;
-		ret.launch_init_y = init_y;
-		ret.launch_gravity = gravity;
-		ret.launch_max_fall = max_fall;
-		ret.launch_x = x;
+		ret.air_init_y = init_y;
+		ret.air_gravity = gravity;
+		ret.air_max_fall = max_fall;
+		ret.air_x = x;
 		return ret;
 	}
 
@@ -326,10 +326,10 @@ struct HitMove {
 	float pushback_counter_mul;
 	float pushback_punish_mul;
 
-	float launch_init_y;
-	float launch_gravity;
-	float launch_max_fall;
-	float launch_x;
+	float air_init_y;
+	float air_gravity;
+	float air_max_fall;
+	float air_x;
 
 	float target_x;
 	float target_y;

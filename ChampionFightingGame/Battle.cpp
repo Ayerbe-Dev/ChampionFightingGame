@@ -337,13 +337,13 @@ void Battle::load_ui() {
 	load_event("Add Message", [this](SceneElement* e) {
 		if (e->bool_var("use_slot1")) {
 			if (e->get_screen_text("Text1").get_alpha()) {
-				e->get_screen_text("Text1").set_pos(glm::vec3(275.0f, 650.0f, 0.0f), 5);
+				e->get_screen_text("Text1").set_pos(glm::vec3(275.0f, 1075.0f, 0.0f), 5);
 				e->get_screen_text("Text0")
 					.update_text(e->string_var("next_msg"))
 					.set_alpha(255)
 					.set_scale(1.1f)
 					.set_scale(1.0f, 2)
-					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+					.set_pos(glm::vec3(275.0f, 875.0f, 0.0f));
 				e->bool_var("use_slot1") = false;
 				e->int_var("timer0") = 40;
 			}
@@ -353,19 +353,19 @@ void Battle::load_ui() {
 					.set_alpha(255)
 					.set_scale(1.1f)
 					.set_scale(1.0f, 2)
-					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+					.set_pos(glm::vec3(275.0f, 875.0f, 0.0f));
 				e->int_var("timer1") = 40;
 			}
 		}
 		else {
 			if (e->get_screen_text("Text0").get_alpha()) {
-				e->get_screen_text("Text0").set_pos(glm::vec3(275.0f, 650.0f, 0.0f), 5);
+				e->get_screen_text("Text0").set_pos(glm::vec3(275.0f, 1075.0f, 0.0f), 5);
 				e->get_screen_text("Text1")
 					.update_text(e->string_var("next_msg"))
 					.set_alpha(255)
 					.set_scale(1.1f)
 					.set_scale(1.0f, 2)
-					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+					.set_pos(glm::vec3(275.0f, 875.0f, 0.0f));
 				e->bool_var("use_slot1") = true;
 				e->int_var("timer1") = 40;
 			}
@@ -375,7 +375,7 @@ void Battle::load_ui() {
 					.set_alpha(255)
 					.set_scale(1.1f)
 					.set_scale(1.0f, 2)
-					.set_pos(glm::vec3(275.0f, 450.0f, 0.0f));
+					.set_pos(glm::vec3(275.0f, 875.0f, 0.0f));
 				e->int_var("timer0") = 40;
 			}
 		}
@@ -552,12 +552,12 @@ void Battle::load_ui() {
 				{ "P1 Message",
 					SceneElement({
 						{"Text0", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_pos(glm::vec3(275.0f, 875.0f, 0.0f))
 							.set_orientation(TEXTURE_TOP_LEFT)
 							.set_alpha(0)
 						},
 						{"Text1", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_pos(glm::vec3(275.0f, 875.0f, 0.0f))
 							.set_orientation(TEXTURE_TOP_LEFT)
 							.set_alpha(0)
 						}
@@ -572,12 +572,12 @@ void Battle::load_ui() {
 				{ "P2 Message",
 					SceneElement({
 						{"Text0", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_pos(glm::vec3(275.0f, 875.0f, 0.0f))
 							.set_orientation(TEXTURE_TOP_RIGHT)
 							.set_alpha(0)
 						},
 						{"Text1", ScreenText(&get_font("message"), "Counter", TextSpecifier().color(glm::vec3(255.0f, 127.0f, 0.0f)).border(2))
-							.set_pos(glm::vec3(275.0f, 450.0f, 0.0f))
+							.set_pos(glm::vec3(275.0f, 875.0f, 0.0f))
 							.set_orientation(TEXTURE_TOP_RIGHT)
 							.set_alpha(0)
 						}

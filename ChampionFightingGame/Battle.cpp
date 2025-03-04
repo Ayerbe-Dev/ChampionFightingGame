@@ -760,8 +760,6 @@ void Battle::load_ui() {
 				for (size_t i = 0; i < e->get_num_children(); i++) {
 					e->get_child(i).execute_event("process");
 				}
-				get_element("root/Post Render UI/P1 Tag").execute_event("process");
-				get_element("root/Post Render UI/P2 Tag").execute_event("process");
 			})
 		}, //UI
 		{"Post Render UI", 
@@ -1452,6 +1450,8 @@ void Battle::process_pre_event() {
 void Battle::process_main() {
 	execute_event("process");
 	process_collisions();
+	get_element("root/Post Render UI/P1 Tag").execute_event("process");
+	get_element("root/Post Render UI/P2 Tag").execute_event("process");
 }
 
 void Battle::process_ko() {
